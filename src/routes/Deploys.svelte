@@ -4,9 +4,12 @@
 
 <div class="container">
 	<div class="deploys">
-		<div class="icon"><DeploysIcon /></div>
-		Deploys
+		<DeploysIcon width="1.5rem" height="1.5rem" />
+		<h3>Deploys</h3>
 	</div>
+	<p>123 123 deploys</p>
+
+	<p>124 124 124 requests</p>
 </div>
 
 <style>
@@ -14,16 +17,13 @@
 		border-radius: 0.25rem;
 		background-color: var(--a-bg-default);
 		height: 100%;
+		padding: 0 1.5rem;
 	}
 	.deploys {
 		background-color: var(--a-bg-default);
 		display: flex;
 		border-radius: 0.25rem;
-		padding: 0.5rem;
 		align-items: center;
-		gap: 10px 0px;
-	}
-	.icon {
-		margin: 0.5rem;
+		gap: 12px;
 	}
 </style>

@@ -1,10 +1,11 @@
 <script lang="ts">
-	export let height = '23';
+	export let height = '1em';
+	export let width = '1em';
 </script>
 
 <svg
 	{...$$restProps}
-	width="24"
+	{width}
 	{height}
 	viewBox="0 0 24 23"
 	fill="none"

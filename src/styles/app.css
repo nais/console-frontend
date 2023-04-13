@@ -1,7 +1,35 @@
 body {
 	margin: 0px;
 	padding: 0px;
+	font-family: 'Source Sans Pro', Arial, sans-serif;
 }
 html {
 	font-size: 16px;
+}
+
+h1 {
+	font-size: 40px;
+	line-height: 53px;
+	spacing: 1%;
+}
+h2 {
+	font-size: 32px;
+	line-height: 40px;
+	spacing: 0.8%;
+}
+h3 {
+	font-size: 24px;
+	line-height: 32px;
+	spacing: 0.2%;
+	font-weight: 200;
+}
+h4 {
+	font-size: 20px;
+	line-height: 28px;
+	spacing: 0.1%;
+}
+h4 {
+	font-size: 16px;
+	line-height: 24px;
+	spacing: 0%;
 }

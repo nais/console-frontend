@@ -30,7 +30,6 @@
 		margin-top: 0.25rem;
 		margin-bottom: 2rem;
 		display: flex;
-		gap: 0.5rem;
 		justify-content: flex-start;
 		border-radius: 0.25rem;
 	}
@@ -52,7 +51,7 @@
 		color: var(--a-icon-info);
 		width: 2em;
 		height: 2em;
-		margin: 1rem;
+		margin: 1rem 0 1rem 1rem;
 	}
 	.title {
 		margin-bottom: 0.5rem;

@@ -4,8 +4,15 @@
 
 <div class="container">
 	<div class="footprint">
-		<div class="icon"><CostIcon /></div>
-		Footprint
+		<CostIcon width="1.5rem" height="1.5rem" />
+		<h3>Footprint</h3>
+	</div>
+	<div>
+		<p>NAV totalt - § 999 999 999</p>
+		<p>nada - $12 234</p>
+		<p>nais - $ 123 123</p>
+		<p>tbd - $ 123 123 123</p>
+		<a href="/">Se teamoversikt</a>
 	</div>
 </div>
 
@@ -14,16 +21,13 @@
 		border-radius: 0.25rem;
 		background-color: var(--a-bg-default);
 		height: 100%;
+		padding: 0 1.5rem;
 	}
 	.footprint {
 		background-color: var(--a-bg-default);
 		display: flex;
 		border-radius: 0.25rem;
-		padding: 0.5rem;
 		align-items: center;
-		gap: 10px 0px;
-	}
-	.icon {
-		margin: 0.5rem;
+		gap: 12px;
 	}
 </style>
