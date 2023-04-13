@@ -46,11 +46,13 @@
 		color: var(--a-icon-warning);
 		width: 2em;
 		height: 2em;
+		margin: 1rem;
 	}
 	.idea > .icon {
 		color: var(--a-icon-info);
 		width: 2em;
 		height: 2em;
+		margin: 1rem;
 	}
 	.title {
 		margin-bottom: 0.5rem;
