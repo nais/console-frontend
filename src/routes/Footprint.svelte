@@ -1,10 +1,11 @@
 <script lang="ts">
+	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 </script>
 
-<div class="container">
+<Card>
 	<div class="footprint">
-		<CostIcon width="1.5rem" height="1.5rem" />
+		<CostIcon size="1.5rem" />
 		<h3>Footprint</h3>
 	</div>
 	<div>
@@ -14,15 +15,9 @@
 		<p>tbd - $ 123 123 123</p>
 		<a href="/">Se teamoversikt</a>
 	</div>
-</div>
+</Card>
 
 <style>
-	.container {
-		border-radius: 0.25rem;
-		background-color: var(--a-bg-default);
-		height: 100%;
-		padding: 0 1.5rem;
-	}
 	.footprint {
 		background-color: var(--a-bg-default);
 		display: flex;

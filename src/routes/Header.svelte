@@ -4,10 +4,10 @@
 
 <div class="header">
 	<div class="header-content">
-		<div class="logo">
+		<a href="/" class="logo">
 			<Logo height="2rem" />
 			Console
-		</div>
+		</a>
 		<div>user</div>
 	</div>
 </div>
@@ -32,6 +32,8 @@
 		justify-content: space-between;
 	}
 	.logo {
+		color: var(--a-text-on-inverted);
+		text-decoration: none;
 		display: flex;
 		align-items: center;
 		gap: 1rem;

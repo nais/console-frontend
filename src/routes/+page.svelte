@@ -13,19 +13,17 @@
 </Alert>
 
 <div class="mainGrid">
-	<div class="teams"><Teams /></div>
-	<div class="foootprint"><Footprint /></div>
-	<div class="emissions"><Emissions /></div>
-	<div class="deploys"><Deploys /></div>
+	<Teams />
+	<Footprint />
+	<Emissions />
+	<Deploys />
 </div>
 
 <style>
 	.mainGrid {
 		display: grid;
-		grid-template-columns: repeat(5, auto);
+		grid-template-columns: 4fr 3fr 3fr 3fr;
 		grid-column-gap: 1rem;
-	}
-	.teams {
-		grid-column-start: span 2;
+		justify-content: stretch;
 	}
 </style>

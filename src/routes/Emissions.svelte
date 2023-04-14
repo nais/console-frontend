@@ -1,10 +1,11 @@
 <script lang="ts">
+	import Card from '$lib/Card.svelte';
 	import EmissionsIcon from '$lib/icons/EmissionsIcon.svelte';
 </script>
 
-<div class="container">
+<Card>
 	<div class="emissions">
-		<EmissionsIcon width="1.5rem" height="1.5rem" />
+		<EmissionsIcon size="1.5rem" />
 		<h3>Emissions</h3>
 	</div>
 	<p>NAV total - 1 012 124 t/mo CO2</p>
@@ -13,7 +14,7 @@
 	<a href="/">Read more on how to reduce your emissions</a>
 	<p>nais - 13 353 t/mo CO2</p>
 	<p>tbd - 13 353 t/mo CO2</p>
-</div>
+</Card>
 
 <style>
 	.container {

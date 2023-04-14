@@ -1,6 +1,32 @@
 body {
 	background-color: var(--a-bg-subtle);
 }
+tr {
+	border-bottom: 1px solid var(--a-border-divider);
+	line-height: 2rem;
+}
+td {
+	padding-left: 1rem;
+}
+tbody > tr:nth-child(odd) {
+	background-color: var(--a-surface-subtle);
+}
+tbody > tr:last-child {
+	border-bottom: none;
+}
+th {
+	text-align: left;
+}
+thead > tr {
+	border-bottom: 3px solid var(--a-border-default);
+}
+tr {
+	border-bottom: 1px solid var(--a-border-divider);
+	line-height: 2rem;
+}
+thead > tr {
+	border-bottom: 3px solid var(--a-border-divider);
+}
 
 :root,
 :host {
