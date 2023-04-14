@@ -5,7 +5,7 @@
 	import Sort from '$lib/icons/Sort.svelte';
 	$: team = $page.params.team;
 
-	const apps = [
+	let apps = [
 		{ name: 'appen', env: 'dev', instances: '4/4', notification: '' },
 		{ name: 'appto', env: 'dev', instances: '3/4', notification: 'alert' },
 		{ name: 'apptre', env: 'dev', instances: '5/5', notification: '' },
@@ -18,6 +18,26 @@
 		{ name: 'jobbto', env: 'dev', status: 'completed', notification: '' },
 		{ name: 'jobbtre', env: 'dev', status: 'completed', notification: '' }
 	];
+
+	// Holds table sort state.  Initialized to reflect table sorted by id column ascending.
+	let sortByApps = { col: 'name', ascending: true };
+
+	$: sort = (column: string) => {
+		if (sortByApps.col == column) {
+			sortByApps.ascending = !sortByApps.ascending;
+		} else {
+			sortByApps.col = column;
+			sortByApps.ascending = true;
+		}
+
+		// Modifier to sorting function for ascending or descending
+		let sortModifier = sortByApps.ascending ? 1 : -1;
+
+		let sort = (a: any, b: any) =>
+			a[column] < b[column] ? -1 * sortModifier : a[column] > b[column] ? 1 * sortModifier : 0;
+
+		apps = apps.sort(sort);
+	};
 </script>
 
 <Card>
@@ -25,10 +45,14 @@
 	<Table>
 		<thead>
 			<tr>
-				<th><div class="head">Workloads <Sort size="1.5rem" /></div></th>
-				<th><div class="head">Env <Sort size="1.5rem" /></div></th>
-				<th><div class="head">Instances <Sort size="1.5rem" /></div></th>
-				<th><div class="head">Status <Sort size="1.5rem" /></div></th>
+				<th><div class="head" on:click={sort('name')}>Workloads <Sort size="1.5rem" /></div></th>
+				<th><div class="head" on:click={sort('env')}>Env <Sort size="1.5rem" /></div></th>
+				<th
+					><div class="head" on:click={sort('instances')}>Instances <Sort size="1.5rem" /></div></th
+				>
+				<th
+					><div class="head" on:click={sort('notification')}>Status <Sort size="1.5rem" /></div></th
+				>
 			</tr>
 		</thead>
 		<tbody>
