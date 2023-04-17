@@ -45,14 +45,24 @@
 	<Table>
 		<thead>
 			<tr>
-				<th><div class="head" on:click={sort('name')}>Workloads <Sort size="1.5rem" /></div></th>
-				<th><div class="head" on:click={sort('env')}>Env <Sort size="1.5rem" /></div></th>
-				<th
-					><div class="head" on:click={sort('instances')}>Instances <Sort size="1.5rem" /></div></th
-				>
-				<th
-					><div class="head" on:click={sort('notification')}>Status <Sort size="1.5rem" /></div></th
-				>
+				<th>
+					<button class="head" on:click={() => sort('name')}>
+						Workloads <Sort size="1.5rem" />
+					</button>
+				</th>
+				<th>
+					<button class="head" on:click={() => sort('env')}> Env <Sort size="1.5rem" /></button>
+				</th>
+				<th>
+					<button class="head" on:click={() => sort('instances')}>
+						Instances <Sort size="1.5rem" />
+					</button>
+				</th>
+				<th>
+					<button class="head" on:click={() => sort('notification')}>
+						Status <Sort size="1.5rem" />
+					</button>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -73,10 +83,10 @@
 	<Table>
 		<thead>
 			<tr>
-				<th><div class="head">Workloads <Sort size="1.5rem" /></div></th>
-				<th><div class="head">Env <Sort size="1.5rem" /></div></th>
-				<th><div class="head">Status <Sort size="1.5rem" /></div></th>
-				<th><div class="head">Notification <Sort size="1.5rem" /></div></th>
+				<th><button class="head">Workloads <Sort size="1.5rem" /></button></th>
+				<th><button class="head">Env <Sort size="1.5rem" /></button></th>
+				<th><button class="head">Status <Sort size="1.5rem" /></button></th>
+				<th><button class="head">Notification <Sort size="1.5rem" /></button></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -97,6 +107,15 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+		background-color: var(--a-bg-default);
+		border: none;
+		font-size: 1rem;
+		font-weight: 500;
+		color: var(--a-text-default);
+		cursor: pointer;
+	}
+	.head:hover {
+		color: var(--a-text-subtle);
 	}
 	th {
 		text-align: left;

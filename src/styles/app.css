@@ -10,26 +10,32 @@ html {
 h1 {
 	font-size: 40px;
 	line-height: 53px;
-	spacing: 1%;
+	letter-spacing: 0.1rem;
+	color: var(--color-text-subtle);
 }
 h2 {
 	font-size: 32px;
 	line-height: 40px;
-	spacing: 0.8%;
+	letter-spacing: 0.08rem;
+	color: var(--color-text-subtle);
 }
 h3 {
 	font-size: 24px;
 	line-height: 32px;
-	spacing: 0.2%;
+	letter-spacing: 0.02rem;
 	font-weight: 200;
+	color: var(--color-text-subtle);
 }
 h4 {
 	font-size: 20px;
 	line-height: 28px;
-	spacing: 0.1%;
+	letter-spacing: 0.01rem;
+	font-weight: 100;
+	color: var(--color-text-subtle);
 }
 h4 {
 	font-size: 16px;
 	line-height: 24px;
-	spacing: 0%;
+	letter-spacing: 0;
+	color: var(--color-text-subtle);
 }
