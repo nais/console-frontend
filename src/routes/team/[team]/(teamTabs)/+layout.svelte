@@ -6,32 +6,33 @@
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import EmissionsIcon from '$lib/icons/EmissionsIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { replacer } from '$lib/repacer';
+	import { replacer } from '$lib/replacer';
 
 	$: team = $page.params.team;
 	$: currentRoute = $page.route.id;
 	const nav = [
 		{
 			tab: 'Workloads',
-			routeId: '/team/[team]'
+			routeId: '/team/[team]/(teamTabs)'
 		},
 		{
 			tab: 'Members',
-			routeId: '/team/[team]/members'
+			routeId: '/team/[team]/(teamTabs)/members'
 		},
 		{
 			tab: 'Settings',
-			routeId: '/team/[team]/settings'
+			routeId: '/team/[team]/(teamTabs)/settings'
 		},
 		{
 			tab: 'Deploy',
-			routeId: '/team/[team]/deploy'
+			routeId: '/team/[team]/(teamTabs)/deploy'
 		},
 		{
 			tab: 'Billing',
-			routeId: '/team/[team]/billing'
+			routeId: '/team/[team]/(teamTabs)/billing'
 		}
 	];
+	console.log($page.params);
 </script>
 
 <div class="header">

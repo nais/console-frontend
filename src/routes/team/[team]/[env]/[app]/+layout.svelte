@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import Tabs from '$lib/Tabs.svelte';
 	import Tab from '$lib/Tab.svelte';
-	import { replacer } from '$lib/repacer';
+	import { replacer } from '$lib/replacer';
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
@@ -37,7 +37,7 @@
 	];
 </script>
 
-<h3>{team} / {app} ({env})</h3>
+<h3><a href="/team/{team}"> {team}</a> / {app} ({env})</h3>
 <Tabs>
 	{#each nav as { tab, routeId }}
 		<Tab
