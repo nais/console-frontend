@@ -1,27 +1,32 @@
 <script lang="ts">
 	import Next from '$lib/icons/Next.svelte';
-	let data = [
-		{
-			name: 'nada',
-			purpose: 'world dominance'
-		},
-		{
-			name: 'nais',
-			purpose: 'core'
-		},
-		{
-			name: 'speilvendt',
-			purpose: 'frontend'
-		}
-	];
+	import { fragment, graphql } from '$houdini';
+	import type { UserTeams } from '$houdini';
+
+	export let user: UserTeams;
+	$: data = fragment(
+		user,
+		graphql(`
+			fragment UserTeams on User {
+				teams {
+					edges {
+						node {
+							name
+							description
+						}
+					}
+				}
+			}
+		`)
+	);
 </script>
 
 <div class="container">
-	{#each data as { name, purpose }}
-		<a class="team" href="/team/{name}">
+	{#each $data.teams.edges as edge}
+		<a class="team" href="/team/{edge.node.name}">
 			<div>
-				<h3>{name}</h3>
-				<p>{purpose}</p>
+				<h3>{edge.node.name}</h3>
+				<p>{edge.node.description}</p>
 			</div>
 			<div class="next">
 				<Next width="2rem" height="2rem" />

@@ -4,20 +4,32 @@
 	import Footprint from './Footprint.svelte';
 	import Emissions from './Emissions.svelte';
 	import Deploys from './Deploys.svelte';
+	import type { PageData } from './$houdini';
+
+	export let data: PageData;
+	$: ({ LandingPage } = data);
 </script>
 
-<Alert variant="idea">
-	<p>Here's an idea</p>
-	<p>Here's another idea</p>
-	<p>And even one more</p>
-</Alert>
+{#if $LandingPage.errors}
+	{#each $LandingPage.errors as error}
+		<p>{error.message}</p>
+	{/each}
+{/if}
 
-<div class="mainGrid">
-	<Teams />
-	<Footprint />
-	<Emissions />
-	<Deploys />
-</div>
+{#if $LandingPage.data}
+	<Alert variant="idea">
+		<p>Here's an idea</p>
+		<p>Here's another idea</p>
+		<p>And even one more</p>
+	</Alert>
+
+	<div class="mainGrid">
+		<Teams user={$LandingPage.data.user} />
+		<Footprint />
+		<Emissions />
+		<Deploys />
+	</div>
+{/if}
 
 <style>
 	.mainGrid {

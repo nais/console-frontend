@@ -1,0 +1,5 @@
+query LandingPage {
+	user {
+		...UserTeams
+	}
+}
