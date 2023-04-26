@@ -1,0 +1,161 @@
+directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+type App implements Node {
+  env: Env!
+  id: ID!
+  image: String!
+  instances: [Instance!]!
+  name: String!
+}
+
+type AppConnection {
+  edges: [AppEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AppEdge {
+  cursor: Cursor!
+  node: App!
+}
+
+scalar Cursor
+
+type Deployment {
+  created: Time!
+  env: String!
+  id: ID!
+  resources: [DeploymentResource!]!
+  statuses: [DeploymentStatus!]!
+  team: Team!
+  type: String!
+}
+
+type DeploymentConnection {
+  edges: [DeploymentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type DeploymentEdge {
+  cursor: Cursor!
+  node: Deployment!
+}
+
+type DeploymentResource {
+  group: String!
+  id: ID!
+  kind: String!
+  name: String!
+  namespace: String!
+  version: String!
+}
+
+type DeploymentStatus {
+  created: Time!
+  id: ID!
+  message: String
+  status: String!
+}
+
+type Env implements Node {
+  id: ID!
+  name: String!
+}
+
+type GithubRepository {
+  name: String!
+}
+
+type GithubRepositoryConnection {
+  edges: [GithubRepositoryEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type GithubRepositoryEdge {
+  cursor: Cursor!
+  node: GithubRepository!
+}
+
+type Instance implements Node {
+  id: ID!
+  name: String!
+  status: String!
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  endCursor: Cursor
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Cursor
+}
+
+type Query {
+  node(id: ID!): Node
+  team(name: String!): Team!
+  teams(after: Cursor, first: Int): TeamConnection!
+  user: User!
+}
+
+type SlackAlertsChannel {
+  env: String!
+  name: String!
+}
+
+type Team implements Node {
+  apps(after: Cursor, first: Int): AppConnection!
+  deployments(after: Cursor, first: Int): DeploymentConnection!
+  description: String
+  githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
+  id: ID!
+  members(after: Cursor, first: Int): TeamMemberConnection!
+  name: String!
+  slackAlertsChannels: [SlackAlertsChannel!]
+  slackChannel: String
+}
+
+type TeamConnection {
+  edges: [TeamEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TeamEdge {
+  cursor: Cursor!
+  node: Team!
+}
+
+type TeamMember implements Node {
+  email: String!
+  id: ID!
+  name: String!
+  role: String!
+}
+
+type TeamMemberConnection {
+  edges: [TeamMemberEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TeamMemberEdge {
+  cursor: Cursor!
+  node: TeamMember!
+}
+
+"""
+Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
+"""
+scalar Time
+
+type User implements Node {
+  email: String!
+  id: ID!
+  name: String!
+  teams(after: Cursor, first: Int): TeamConnection!
+}
