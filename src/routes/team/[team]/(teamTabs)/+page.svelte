@@ -3,7 +3,12 @@
 	import Card from '$lib/Card.svelte';
 	import Table from '$lib/Table.svelte';
 	import Sort from '$lib/icons/Sort.svelte';
-	$: team = $page.params.team;
+	import Accessories from '../[env]/[app]/Accessories.svelte';
+	import type { PageData } from './$houdini';
+
+	$: teamName = $page.params.team;
+	export let data: PageData;
+	$: ({ Workloads } = data);
 
 	let apps = [
 		{ name: 'appen', env: 'dev', instances: '4/4', notification: '' },
@@ -38,44 +43,48 @@
 
 		apps = apps.sort(sort);
 	};
+	$: console.log($Workloads.data);
 </script>
 
 <Card>
 	<h4>apper</h4>
-	<Table>
-		<thead>
-			<tr>
-				<th>
-					<button class="head" on:click={() => sort('name')}>
-						Workloads <Sort size="1.5rem" />
-					</button>
-				</th>
-				<th>
-					<button class="head" on:click={() => sort('env')}> Env <Sort size="1.5rem" /></button>
-				</th>
-				<th>
-					<button class="head" on:click={() => sort('instances')}>
-						Instances <Sort size="1.5rem" />
-					</button>
-				</th>
-				<th>
-					<button class="head" on:click={() => sort('notification')}>
-						Status <Sort size="1.5rem" />
-					</button>
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each apps as app}
+	{#if $Workloads.data}
+		<Table>
+			<thead>
 				<tr>
-					<td><a href="/team/{team}/{app.env}/{app.name}">{app.name}</a></td>
-					<td>{app.env}</td>
-					<td>{app.instances}</td>
-					<td>{app.notification}</td>
+					<th>
+						<button class="head" on:click={() => sort('name')}>
+							Workloads <Sort size="1.5rem" />
+						</button>
+					</th>
+					<th>
+						<button class="head" on:click={() => sort('env')}> Env <Sort size="1.5rem" /></button>
+					</th>
+					<th>
+						<button class="head" on:click={() => sort('instances')}>
+							Instances <Sort size="1.5rem" />
+						</button>
+					</th>
 				</tr>
-			{/each}
-		</tbody>
-	</Table>
+			</thead>
+			<tbody>
+				{#each $Workloads.data.team.apps.edges as edge}
+					{@debug edge}
+					<tr>
+						<td
+							><a href="/team/{teamName}/{edge.node.env.name}/{edge.node.name}">{edge.node.name}</a
+							></td
+						>
+						<td>{edge.node.env.name}</td>
+						<td
+							>{edge.node.instances.filter((i) => i.status === 'Running').length} / {edge.node
+								.instances.length}</td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</Table>
+	{/if}
 </Card>
 <br />
 <Card>
@@ -92,7 +101,7 @@
 		<tbody>
 			{#each jobs as job}
 				<tr>
-					<td><a href="/team/{team}/{job.env}/job/{job.name}">{job.name}</a></td>
+					<td><a href="/team/{teamName}/{job.env}/job/{job.name}">{job.name}</a></td>
 					<td>{job.env}</td>
 					<td>{job.status}</td>
 					<td>{job.notification}</td>

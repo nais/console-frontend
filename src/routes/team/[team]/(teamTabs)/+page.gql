@@ -1,0 +1,20 @@
+query Workloads($team: String!) {
+	team(name: $team) {
+		name
+		apps {
+			edges {
+				node {
+					name
+					image
+					env {
+						name
+					}
+					instances {
+						name
+						status
+					}
+				}
+			}
+		}
+	}
+}
