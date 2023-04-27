@@ -4,6 +4,7 @@
 	import Footprint from './Footprint.svelte';
 	import Emissions from './Emissions.svelte';
 	import Deploys from './Deploys.svelte';
+	import Input from '$lib/Input.svelte';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -22,6 +23,10 @@
 		<p>Here's another idea</p>
 		<p>And even one more</p>
 	</Alert>
+
+	<div class="mainGrid" style="margin-bottom: 2em">
+		<Input />
+	</div>
 
 	<div class="mainGrid">
 		<Teams user={$LandingPage.data.user} />

@@ -3,6 +3,8 @@
 	import Card from '$lib/Card.svelte';
 	import Table from '$lib/Table.svelte';
 	import Sort from '$lib/icons/Sort.svelte';
+	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Accessories from '../[env]/[app]/Accessories.svelte';
 	import type { PageData } from './$houdini';
 
@@ -65,11 +67,20 @@
 							Instances <Sort size="1.5rem" />
 						</button>
 					</th>
+					<th>
+						<button class="head" on:click={() => sort('instances')}>
+							Status <Sort size="1.5rem" />
+						</button>
+					</th>
+					<th>
+						<button class="head" on:click={() => sort('instances')}>
+							Deployed <Sort size="1.5rem" />
+						</button>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each $Workloads.data.team.apps.edges as edge}
-					{@debug edge}
 					<tr>
 						<td
 							><a href="/team/{teamName}/{edge.node.env.name}/{edge.node.name}">{edge.node.name}</a
@@ -80,35 +91,19 @@
 							>{edge.node.instances.filter((i) => i.status === 'Running').length} / {edge.node
 								.instances.length}</td
 						>
+						<td>
+							{#if edge.node.instances.filter((i) => i.status === 'Running').length > 0}
+								<SuccessIcon style="" />
+							{:else}
+								<WarningIcon />
+							{/if}
+						</td>
+						<td />
 					</tr>
 				{/each}
 			</tbody>
 		</Table>
 	{/if}
-</Card>
-<br />
-<Card>
-	<h4>Jobs</h4>
-	<Table>
-		<thead>
-			<tr>
-				<th><button class="head">Workloads <Sort size="1.5rem" /></button></th>
-				<th><button class="head">Env <Sort size="1.5rem" /></button></th>
-				<th><button class="head">Status <Sort size="1.5rem" /></button></th>
-				<th><button class="head">Notification <Sort size="1.5rem" /></button></th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each jobs as job}
-				<tr>
-					<td><a href="/team/{teamName}/{job.env}/job/{job.name}">{job.name}</a></td>
-					<td>{job.env}</td>
-					<td>{job.status}</td>
-					<td>{job.notification}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</Table>
 </Card>
 
 <style>

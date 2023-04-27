@@ -1,0 +1,59 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    team: team-a
+  name: up-b
+  namespace: team-a
+spec:
+  accessPolicy:
+    inbound:
+      rules:
+      - application: up-a
+    outbound:
+      external:
+      - host: www.db.no
+        ports:
+        - port: 6969
+        - port: 7070
+      rules:
+      - application: up-a
+      - application: up-c
+        namespace: team-c
+  azure:
+    application:
+      enabled: false
+  image: ghcr.io/nais/up:notworking
+  ingresses:
+  - https://up-b.dev.dev-nais.cloud.nais.io
+  - https://upidy-b.dev.dev-nais.cloud.nais.io
+  - https://upidyup-b.dev.dev-nais.cloud.nais.io
+  liveness:
+    failureThreshold: 3
+    path: /
+    periodSeconds: 10
+    timeout: 1
+  port: 8080
+  prometheus:
+    path: /metrics
+  readiness:
+    path: /
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  secureLogs:
+    enabled: false
+  service:
+    port: 80
+    protocol: http
+  strategy:
+    type: RollingUpdate
+  tokenx:
+    enabled: false

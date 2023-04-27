@@ -1,11 +1,19 @@
 directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
+type AccessPolicy {
+  inbound: Inbound!
+  outbound: Outbound!
+}
+
 type App implements Node {
+  accessPolicy: AccessPolicy!
   env: Env!
   id: ID!
   image: String!
+  ingresses: [String!]!
   instances: [Instance!]!
   name: String!
+  resources: Resources!
 }
 
 type AppConnection {
@@ -63,6 +71,11 @@ type Env implements Node {
   name: String!
 }
 
+type External {
+  host: String!
+  ports: [Port!]!
+}
+
 type GithubRepository {
   name: String!
 }
@@ -78,14 +91,28 @@ type GithubRepositoryEdge {
   node: GithubRepository!
 }
 
+type Inbound {
+  rules: [Rule!]!
+}
+
 type Instance implements Node {
   id: ID!
   name: String!
   status: String!
 }
 
+type Limits {
+  cpu: String!
+  memory: String!
+}
+
 interface Node {
   id: ID!
+}
+
+type Outbound {
+  external: [External!]!
+  rules: [Rule!]!
 }
 
 type PageInfo {
@@ -95,11 +122,30 @@ type PageInfo {
   startCursor: Cursor
 }
 
+type Port {
+  port: Int!
+}
+
 type Query {
   node(id: ID!): Node
   team(name: String!): Team!
   teams(after: Cursor, first: Int): TeamConnection!
   user: User!
+}
+
+type Requests {
+  cpu: String!
+  memory: String!
+}
+
+type Resources {
+  limits: Limits!
+  requests: Requests!
+}
+
+type Rule {
+  application: String!
+  namespace: String!
 }
 
 type SlackAlertsChannel {
