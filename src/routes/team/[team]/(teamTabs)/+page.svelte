@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import Table from '$lib/Table.svelte';
+	import Time from '$lib/Time.svelte';
 	import Sort from '$lib/icons/Sort.svelte';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
@@ -98,7 +99,11 @@
 								<WarningIcon />
 							{/if}
 						</td>
-						<td />
+						<td
+							>{#if edge.node.deploys.edges.length > 0}
+								<Time time={edge.node.deploys.edges[0].node.created} distance={true} />
+							{/if}
+						</td>
 					</tr>
 				{/each}
 			</tbody>

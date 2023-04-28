@@ -7,7 +7,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/query': {
-				target: 'http://127.0.0.1:6969',
+				target: 'http://127.0.0.1:4242',
 				rewrite: (path) => {
 					return path;
 				}

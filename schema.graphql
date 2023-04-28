@@ -7,6 +7,7 @@ type AccessPolicy {
 
 type App implements Node {
   accessPolicy: AccessPolicy!
+  deploys(after: Cursor, first: Int): DeploymentConnection!
   env: Env!
   id: ID!
   image: String!
