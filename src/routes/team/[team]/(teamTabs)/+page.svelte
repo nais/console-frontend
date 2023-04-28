@@ -100,8 +100,8 @@
 							{/if}
 						</td>
 						<td
-							>{#if edge.node.deploys.edges.length > 0}
-								<Time time={edge.node.deploys.edges[0].node.created} distance={true} />
+							>{#if edge.node.lastDeployed}
+								<Time time={edge.node.lastDeployed} distance={true} />
 							{/if}
 						</td>
 					</tr>

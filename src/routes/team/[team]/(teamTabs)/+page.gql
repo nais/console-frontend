@@ -13,13 +13,7 @@ query Workloads($team: String!) {
 						name
 						status
 					}
-					deploys {
-						edges {
-							node {
-								created
-							}
-						}
-					}
+					lastDeployed
 				}
 			}
 		}

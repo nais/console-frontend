@@ -5,62 +5,66 @@
 	import Footprint from './Footprint.svelte';
 	import Network from './Network.svelte';
 	import Traffic from './Traffic.svelte';
-	import { appSpec } from '$lib/mock/appSpec';
 	import Status from './Status.svelte';
 	import Emisions from './Emisions.svelte';
 	import Accessories from './Accessories.svelte';
 	import Authentications from './Authentications.svelte';
+	import type { PageData } from './$houdini';
+	import Time from '$lib/Time.svelte';
 
-	$: team = $page.params.team;
-	$: app = $page.params.app;
-	$: env = $page.params.env;
-	$: currentRoute = $page.route.id;
+	export let data: PageData;
+	$: ({ App } = data);
+	$: app = $App.data?.app;
 </script>
 
-<div class="grid">
-	<Card columns="3">
-		<h4>Available from</h4>
-		{#each appSpec.ingress as ingress}
-			<p><a href="/">{ingress}</a></p>
-		{/each}
-	</Card>
-	<Card columns="1">
-		<h4>Version</h4>
-		<p>{appSpec.version}</p>
-	</Card>
-	<Card columns="2"
-		><h4>Last deployed</h4>
-		<p>{timeAgo(appSpec.last_deployed - 60 * 10000)}</p>
-	</Card>
-	<Card columns="4">
-		<h4>Status</h4>
-		<Status />
-	</Card>
-	<Card columns="2">
-		<h4>Network</h4>
-		<Network />
-	</Card>
-	<Card columns="6"
-		><h4>Traffic</h4>
-		<Traffic />
-	</Card>
-	<Card columns="6"
-		><h4>App footprint</h4>
-		<Footprint /></Card
-	>
-	<Card columns="6"
-		><h4>Team's total emissions</h4>
-		<Emisions />
-	</Card>
-	<Card columns="6"
-		><h4>Peripherals</h4>
-		<Accessories /></Card
-	>
-	<Card columns="6"
-		><h4>Authentications</h4>
-		<Authentications /></Card
-	>
-</div>
+{#if app}
+	<div class="grid">
+		<Card columns="3">
+			<h4>Available from</h4>
+			{#each app.ingresses as ingress}
+				<p><a href="/">{ingress}</a></p>
+			{/each}
+		</Card>
+		<Card columns="1">
+			<h4>Image</h4>
+			<p>{app.image}</p>
+		</Card>
+		<Card columns="2"
+			><h4>Last deployed</h4>
+			{#if app.lastDeployed}
+				<Time time={app.lastDeployed} distance={true} />
+			{/if}
+		</Card>
+		<Card columns="4">
+			<h4>Status</h4>
+			<Status />
+		</Card>
+		<Card columns="2">
+			<h4>Network</h4>
+			<Network />
+		</Card>
+		<Card columns="6"
+			><h4>Traffic</h4>
+			<Traffic />
+		</Card>
+		<Card columns="6"
+			><h4>App footprint</h4>
+			<Footprint /></Card
+		>
+		<Card columns="6"
+			><h4>Team's total emissions</h4>
+			<Emisions />
+		</Card>
+		<Card columns="6"
+			><h4>Peripherals</h4>
+			<Accessories /></Card
+		>
+		<Card columns="6"
+			><h4>Authentications</h4>
+			<Authentications /></Card
+		>
+	</div>
+{/if}
 
 <style>
 	.grid {

@@ -13,6 +13,7 @@ type App implements Node {
   image: String!
   ingresses: [String!]!
   instances: [Instance!]!
+  lastDeployed: Time
   name: String!
   resources: Resources!
 }
@@ -128,6 +129,7 @@ type Port {
 }
 
 type Query {
+  app(env: String!, name: String!, team: String!): App!
   node(id: ID!): Node
   team(name: String!): Team!
   teams(after: Cursor, first: Int): TeamConnection!
