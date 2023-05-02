@@ -1,27 +1,33 @@
-<script>
+<script lang="ts">
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import { appSpec } from '$lib/mock/appSpec';
 	import { fragment, graphql } from '$houdini';
 	import type { Instances } from '$houdini';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
-	export let instances: Instances;
+	export let app: Instances;
 	$: data = fragment(
-		instances,
+		app,
 		graphql(`
 			fragment Instances on App {
-   	 			instances {
-      				name
-      				status
-    			}
+				instances {
+					name
+					status
+				}
 			}
 		`)
 	);
+
+	$: instances = $data.instances;
 </script>
 
 <div style="display: flex; align-items: center; flex-direction: row; gap: 1rem;">
-	<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
-	{appSpec.instances.length} running
+	{#if instances}
+		{#if instances.filter((instance) => instance.status === 'Running').length === instances.length}
+			<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
+		{:else}
+			<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
+		{/if}
+	{:else}
+		<!-- unknown -->
+	{/if}
 </div>
-<p>
-	Min. 2 / Max 8 <a href="/">Adjust</a>
-</p>

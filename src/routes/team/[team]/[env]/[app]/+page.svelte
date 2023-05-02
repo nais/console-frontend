@@ -37,7 +37,7 @@
 		</Card>
 		<Card columns="4">
 			<h4>Status</h4>
-			<Status />
+			<Status {app} />
 		</Card>
 		<Card columns="2">
 			<h4>Network</h4>

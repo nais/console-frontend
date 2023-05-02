@@ -9,6 +9,7 @@ type App implements Node {
   accessPolicy: AccessPolicy!
   deploys(after: Cursor, first: Int): DeploymentConnection!
   env: Env!
+  events: [Event!]
   id: ID!
   image: String!
   ingresses: [String!]!
@@ -71,6 +72,12 @@ type DeploymentStatus {
 type Env implements Node {
   id: ID!
   name: String!
+}
+
+type Event {
+  message: String!
+  severity: String!
+  timestamp: Time!
 }
 
 type External {
