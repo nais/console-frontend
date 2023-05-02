@@ -1,6 +1,21 @@
 <script>
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import { appSpec } from '$lib/mock/appSpec';
+	import { fragment, graphql } from '$houdini';
+	import type { Instances } from '$houdini';
+
+	export let instances: Instances;
+	$: data = fragment(
+		instances,
+		graphql(`
+			fragment Instances on App {
+   	 			instances {
+      				name
+      				status
+    			}
+			}
+		`)
+	);
 </script>
 
 <div style="display: flex; align-items: center; flex-direction: row; gap: 1rem;">
