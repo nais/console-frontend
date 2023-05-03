@@ -9,25 +9,25 @@ spec:
   accessPolicy:
     inbound:
       rules:
-      - application: up-a
+        - application: up-a
     outbound:
       external:
-      - host: www.db.no
-        ports:
-        - port: 6969
-        - port: 7070
+        - host: www.db.no
+          ports:
+            - port: 6969
+            - port: 7070
       rules:
-      - application: up-a
-      - application: up-c
-        namespace: team-c
+        - application: up-a
+        - application: up-c
+          namespace: team-c
   azure:
     application:
       enabled: false
   image: ghcr.io/nais/up:notworking
   ingresses:
-  - https://up-b.dev.dev-nais.cloud.nais.io
-  - https://upidy-b.dev.dev-nais.cloud.nais.io
-  - https://upidyup-b.dev.dev-nais.cloud.nais.io
+    - https://up-b.dev.dev-nais.cloud.nais.io
+    - https://upidy-b.dev.dev-nais.cloud.nais.io
+    - https://upidyup-b.dev.dev-nais.cloud.nais.io
   liveness:
     failureThreshold: 3
     path: /
