@@ -6,14 +6,11 @@ query Workloads($team: String!) {
 				node {
 					name
 					image
+					...AppInstancesStatus
 					env {
 						name
 					}
-					instances {
-						name
-						status
-					}
-					lastDeployed
+					deployed
 				}
 			}
 		}

@@ -3,8 +3,9 @@ query App($app: String!, $team: String!, $env: String!) {
 		name
 		ingresses
 		image
-		lastDeployed
-		...Instances
+		deployed
+		...AppInstances
+		...AppInstancesStatus
 		accessPolicy {
 			inbound {
 				rules {

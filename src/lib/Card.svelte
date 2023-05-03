@@ -1,15 +1,15 @@
 <script lang="ts">
-	let columns = '';
-	export { columns };
+	export let columns = 0;
+	export let paddingBottom = '';
 </script>
 
-<div style="--columns: {columns}"><slot /></div>
+<div {...$$restProps} style="--columns: {columns}; padding-bottom: {paddingBottom} "><slot /></div>
 
 <style>
 	div {
 		border-radius: 0.25rem;
 		background-color: var(--a-bg-default);
-		padding: 0 1.5rem;
+		padding: 1.5rem;
 		display: block;
 		grid-column: span var(--columns);
 	}

@@ -7,14 +7,13 @@ type AccessPolicy {
 
 type App implements Node {
   accessPolicy: AccessPolicy!
+  deployed: Time
   deploys(after: Cursor, first: Int): DeploymentConnection!
   env: Env!
-  events: [Event!]
   id: ID!
   image: String!
   ingresses: [String!]!
   instances: [Instance!]!
-  lastDeployed: Time
   name: String!
   resources: Resources!
 }
@@ -74,12 +73,6 @@ type Env implements Node {
   name: String!
 }
 
-type Event {
-  message: String!
-  severity: String!
-  timestamp: Time!
-}
-
 type External {
   host: String!
   ports: [Port!]!
@@ -105,8 +98,11 @@ type Inbound {
 }
 
 type Instance implements Node {
+  created: Time!
   id: ID!
+  image: String!
   name: String!
+  restarts: Int!
   status: String!
 }
 

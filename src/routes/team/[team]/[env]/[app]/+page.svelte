@@ -11,66 +11,73 @@
 	import Authentications from './Authentications.svelte';
 	import type { PageData } from './$houdini';
 	import Time from '$lib/Time.svelte';
+	import Instances from './Instances.svelte';
 
 	export let data: PageData;
+	$: env = $page.params.env;
 	$: ({ App } = data);
 	$: app = $App.data?.app;
 </script>
 
 {#if app}
 	<div class="grid">
-		<Card columns="3">
-			<h4>Available from</h4>
-			{#each app.ingresses as ingress}
-				<p><a href="/">{ingress}</a></p>
-			{/each}
+		<Card columns={3}>
+			<div class="metadata">
+				<span>
+					<h2>Status</h2>
+					<div>
+						<Status {app} />
+					</div>
+				</span>
+				<span>
+					<h2>Image</h2>
+					<div>{app.image}</div>
+				</span>
+				<span>
+					<h2>Deployed</h2>
+					{#if app.deployed}
+						<Time time={app.deployed} distance={true} />
+					{:else}
+						<span>Never</span>
+					{/if}
+				</span>
+			</div>
 		</Card>
-		<Card columns="1">
-			<h4>Image</h4>
-			<p>{app.image}</p>
+		<Card columns={6}>
+			<h2>Instances</h2>
+			<Instances {app} />
 		</Card>
-		<Card columns="2"
-			><h4>Last deployed</h4>
-			{#if app.lastDeployed}
-				<Time time={app.lastDeployed} distance={true} />
-			{/if}
-		</Card>
-		<Card columns="4">
-			<h4>Status</h4>
-			<Status {app} />
-		</Card>
-		<Card columns="2">
-			<h4>Network</h4>
-			<Network />
-		</Card>
-		<Card columns="6"
-			><h4>Traffic</h4>
+		<Card columns={6}>
+			<h2>Traffic</h2>
 			<Traffic />
 		</Card>
-		<Card columns="6"
-			><h4>App footprint</h4>
-			<Footprint /></Card
-		>
-		<Card columns="6"
-			><h4>Team's total emissions</h4>
-			<Emisions />
+		<Card columns={6}
+			><h2>Peripherals</h2>
+			<Accessories />
 		</Card>
-		<Card columns="6"
-			><h4>Peripherals</h4>
-			<Accessories /></Card
-		>
-		<Card columns="6"
-			><h4>Authentications</h4>
-			<Authentications /></Card
-		>
+		<Card columns={6}>
+			<h2>Authentications</h2>
+			<Authentications />
+		</Card>
 	</div>
 {/if}
 
 <style>
+	.metadata {
+		display: flex;
+		justify-content: space-between;
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
 		grid-gap: 0.5rem;
 		row-gap: 0.5rem;
+	}
+	td {
+		background-color: var(--a-surface-default);
+	}
+	h2 {
+		font-size: 1.5rem;
+		font-weight: 400;
 	}
 </style>

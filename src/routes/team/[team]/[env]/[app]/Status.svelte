@@ -1,16 +1,15 @@
 <script lang="ts">
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import { fragment, graphql } from '$houdini';
-	import type { Instances } from '$houdini';
+	import type { AppInstancesStatus } from '$houdini';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
-	export let app: Instances;
+	export let app: AppInstancesStatus;
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment Instances on App {
+			fragment AppInstancesStatus on App {
 				instances {
-					name
 					status
 				}
 			}
@@ -18,16 +17,20 @@
 	);
 
 	$: instances = $data.instances;
+	$: running = instances.filter((instance) => instance.status === 'Running').length;
+	$: total = instances.length;
 </script>
 
 <div style="display: flex; align-items: center; flex-direction: row; gap: 1rem;">
 	{#if instances}
-		{#if instances.filter((instance) => instance.status === 'Running').length === instances.length}
+		{#if running === total}
 			<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
 		{:else}
 			<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
 		{/if}
+		{running} / {total} running
 	{:else}
-		<!-- unknown -->
+		<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
+		0 / 0 running
 	{/if}
 </div>

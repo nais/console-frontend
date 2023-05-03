@@ -15,22 +15,6 @@
 			routeId: '/team/[team]/[env]/[app]'
 		},
 		{
-			tab: 'API',
-			routeId: '/team/[team]/[env]/[app]/api'
-		},
-		{
-			tab: 'Ingresses',
-			routeId: '/team/[team]/[env]/[app]/ingresses'
-		},
-		{
-			tab: 'Instances',
-			routeId: '/team/[team]/[env]/[app]/instances'
-		},
-		{
-			tab: 'Logs',
-			routeId: '/team/[team]/[env]/[app]/logs'
-		},
-		{
 			tab: 'nais.yaml',
 			routeId: '/team/[team]/[env]/[app]/yaml'
 		}

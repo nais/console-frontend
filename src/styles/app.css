@@ -12,12 +12,14 @@ h1 {
 	line-height: 53px;
 	letter-spacing: 0.1rem;
 	color: var(--color-text-subtle);
+	margin: 0;
 }
 h2 {
 	font-size: 32px;
 	line-height: 40px;
 	letter-spacing: 0.08rem;
 	color: var(--color-text-subtle);
+	margin: 0;
 }
 h3 {
 	font-size: 24px;
@@ -25,6 +27,7 @@ h3 {
 	letter-spacing: 0.02rem;
 	font-weight: 200;
 	color: var(--color-text-subtle);
+	margin: 0 0 24px;
 }
 h4 {
 	font-size: 20px;
@@ -32,10 +35,12 @@ h4 {
 	letter-spacing: 0.01rem;
 	font-weight: 100;
 	color: var(--color-text-subtle);
+	margin: 0 0 24px;
 }
-h4 {
+h5 {
 	font-size: 16px;
 	line-height: 24px;
 	letter-spacing: 0;
 	color: var(--color-text-subtle);
+	margin: 0;
 }

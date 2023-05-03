@@ -1,8 +1,10 @@
 <script>
 	import Header from './Header.svelte';
+	import '../styles/reset.css';
 	import '../styles/vars_light.css';
 	//import '../styles/vars_dark.css';
 	import '../styles/app.css';
+	import '$lib/font.css';
 </script>
 
 <Header />

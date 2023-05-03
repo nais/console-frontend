@@ -30,8 +30,8 @@
 
 	<div class="mainGrid">
 		<Teams user={$LandingPage.data.user} />
-		<Footprint />
-		<Emissions />
+		<!-- <Footprint />
+		<Emissions /> -->
 		<Deploys />
 	</div>
 {/if}
