@@ -6,25 +6,6 @@ query App($app: String!, $team: String!, $env: String!) {
 		deployed
 		...AppInstances
 		...AppInstancesStatus
-		accessPolicy {
-			inbound {
-				rules {
-					application
-					namespace
-				}
-			}
-			outbound {
-				rules {
-					application
-					namespace
-				}
-				external {
-					host
-					ports {
-						port
-					}
-				}
-			}
-		}
+		...AccessPolicy
 	}
 }

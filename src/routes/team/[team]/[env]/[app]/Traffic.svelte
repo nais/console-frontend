@@ -2,58 +2,93 @@
 	import { page } from '$app/stores';
 	import Arrow from '$lib/icons/Arrow.svelte';
 	import Globe from '$lib/icons/Globe.svelte';
-	import { appSpec } from '$lib/mock/appSpec';
+	import { fragment, graphql, type AccessPolicy, type AppInstances } from '$houdini';
+	import type { AppInstancesStatus } from '$houdini';
 
-	$: app = $page.params.app;
+	export let app: AccessPolicy;
+
+	$: data = fragment(
+		app,
+		graphql(`
+			fragment AccessPolicy on App {
+				name
+				ingresses
+				accessPolicy {
+					inbound {
+						rules {
+							application
+							namespace
+						}
+					}
+					outbound {
+						rules {
+							application
+							namespace
+						}
+						external {
+							host
+							ports {
+								port
+							}
+						}
+					}
+				}
+			}
+		`)
+	);
 </script>
 
 <div class="traffic">
 	<div class="directionContent">
-		<div>
-			<h5>Inbound:</h5>
-			<p>
-				{#each appSpec.network.inbound.rules as inbound}
-					<a href="/"
-						>{inbound.application}{#if inbound.namespace}.{inbound.namespace}{/if}</a
-					><br />
-				{/each}
-			</p>
+		<h5>Internal ingresses:</h5>
+		{#each $data.ingresses as ingress}
+			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
+			{#if !ingress.includes('external')}
+				<Globe /><a href="{ingress}">{ingress}</a>
+			{/if}
+			</div>
+		{/each}
+		<h5>External ingresses:</h5>
+		{#each $data.ingresses as ingress}
+			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
+			{#if ingress.includes('external')}
+				<Globe /><a href="{ingress}">{ingress}</a>
+			{/if}
 		</div>
-		<div>
-			<h5>External:</h5>
-			<p>
-				{#each appSpec.ingress as ingress}
-					<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
-						<a href="/">{ingress}</a><Globe />
-					</div>
-				{/each}
-			</p>
-		</div>
+		{/each}
+		<h5>Inbound access policy:</h5>
+		{#each $data.accessPolicy.inbound.rules as rule}
+			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
+				<a href="/">{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a><br/>
+			</div>
+		{/each}
 	</div>
 	<div class="arrow">
 		<Arrow size="2rem" />
 	</div>
 	<div class="applicationName">
-		{app}
+		{$data.name}
 	</div>
 	<div class="arrow">
 		<Arrow size="2rem" />
 	</div>
 	<div class="directionContent">
-		<h5>Outbound:</h5>
-		<p>
-			{#each appSpec.network.outbound.rules as outbound}
-				<a href="/"
-					>{outbound.application}{#if outbound.namespace}.{outbound.namespace}{/if}</a
-				><br />
+		<h5>Outbound access policy:</h5>
+			{#each $data.accessPolicy.outbound.rules as rule}
+			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
+				<a href="/">{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a><br />
+			</div>
 			{/each}
-		</p>
-		<h5>External:</h5>
-		<p>
-			{#each appSpec.network.outbound.external as outbound}
-				<a href="/">{outbound.host}</a><br />
+		<h5>Outbound external access policy:</h5>
+			{#each $data.accessPolicy.outbound.external as external}
+			<div>
+				{#each external.ports as port}
+					<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
+				{:else}
+					<Globe /><a href="{external.host}">{external.host}</a><br />
+				{/each}
+			</div>
 			{/each}
-		</p>
 	</div>
 </div>
 

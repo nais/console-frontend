@@ -49,7 +49,7 @@
 		</Card>
 		<Card columns={6}>
 			<h2>Traffic</h2>
-			<Traffic />
+			<Traffic {app} />
 		</Card>
 		<Card columns={6}
 			><h2>Peripherals</h2>
