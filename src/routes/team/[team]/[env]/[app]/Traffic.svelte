@@ -41,54 +41,66 @@
 <div class="traffic">
 	<div class="directionContent">
 		<h5>Internal ingresses:</h5>
-		{#each $data.ingresses as ingress}
-			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
-			{#if !ingress.includes('external')}
-				<Globe /><a href="{ingress}">{ingress}</a>
-			{/if}
-			</div>
-		{/each}
+		<ul>
+			{#each $data.ingresses as ingress}
+				{#if !ingress.includes('external')}
+					<li><Globe /><a href={ingress}>{ingress}</a></li>
+				{/if}
+			{/each}
+		</ul>
 		<h5>External ingresses:</h5>
-		{#each $data.ingresses as ingress}
-			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
-			{#if ingress.includes('external')}
-				<Globe /><a href="{ingress}">{ingress}</a>
-			{/if}
-		</div>
-		{/each}
+		<ul>
+			{#each $data.ingresses as ingress}
+				<li>
+					{#if ingress.includes('external')}
+						<Globe /><a href={ingress}>{ingress}</a>
+					{/if}
+				</li>
+			{/each}
+		</ul>
 		<h5>Inbound access policy:</h5>
-		{#each $data.accessPolicy.inbound.rules as rule}
-			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
-				<a href="/">{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a><br/>
-			</div>
-		{/each}
+		<ul>
+			{#each $data.accessPolicy.inbound.rules as rule}
+				<li>
+					<a href="/"
+						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
+					>
+				</li>
+			{/each}
+		</ul>
 	</div>
 	<div class="arrow">
 		<Arrow size="2rem" />
 	</div>
 	<div class="applicationName">
-		{$data.name}
+		<h1>{$data.name}</h1>
 	</div>
 	<div class="arrow">
 		<Arrow size="2rem" />
 	</div>
 	<div class="directionContent">
 		<h5>Outbound access policy:</h5>
+		<ul>
 			{#each $data.accessPolicy.outbound.rules as rule}
-			<div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;">
-				<a href="/">{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a><br />
-			</div>
+				<li>
+					<a href="/"
+						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
+					>
+				</li>
 			{/each}
+		</ul>
 		<h5>Outbound external access policy:</h5>
+		<ul>
 			{#each $data.accessPolicy.outbound.external as external}
-			<div>
 				{#each external.ports as port}
-					<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
+					<li>
+						<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
+					</li>
 				{:else}
-					<Globe /><a href="{external.host}">{external.host}</a><br />
+					<li><Globe /><a href={external.host}>{external.host}</a><br /></li>
 				{/each}
-			</div>
 			{/each}
+		</ul>
 	</div>
 </div>
 
@@ -119,7 +131,15 @@
 		margin: 0;
 	}
 	.directionContent,
-	p {
-		margin-top: 0;
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 1rem 0;
+	}
+	li {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-direction: row;
 	}
 </style>
