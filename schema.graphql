@@ -7,6 +7,7 @@ type AccessPolicy {
 
 type App implements Node {
   accessPolicy: AccessPolicy!
+  autoScaling: AutoScaling!
   deployed: Time
   deploys(after: Cursor, first: Int): DeploymentConnection!
   env: Env!
@@ -27,6 +28,13 @@ type AppConnection {
 type AppEdge {
   cursor: Cursor!
   node: App!
+}
+
+type AutoScaling {
+  cpuThresholdPercentage: Int!
+  disableAutoScaling: Boolean!
+  max: Int!
+  min: Int!
 }
 
 scalar Cursor

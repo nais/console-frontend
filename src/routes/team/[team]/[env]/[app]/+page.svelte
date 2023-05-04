@@ -12,6 +12,7 @@
 	import type { PageData } from './$houdini';
 	import Time from '$lib/Time.svelte';
 	import Instances from './Instances.svelte';
+	import AutoScaling from './AutoScaling.svelte';
 
 	export let data: PageData;
 	$: env = $page.params.env;
@@ -40,6 +41,12 @@
 					{:else}
 						<span>Never</span>
 					{/if}
+				</span>
+				<span>
+					<h2>AutoScaling</h2>
+					<div>
+						<AutoScaling {app} />
+					</div>
 				</span>
 			</div>
 		</Card>

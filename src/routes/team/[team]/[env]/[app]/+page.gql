@@ -7,5 +7,6 @@ query App($app: String!, $team: String!, $env: String!) {
 		...AppInstances
 		...AppInstancesStatus
 		...AccessPolicy
+		...AutoScaling
 	}
 }
