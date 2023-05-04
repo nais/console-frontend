@@ -13,6 +13,7 @@
 	import Time from '$lib/Time.svelte';
 	import Instances from './Instances.svelte';
 	import AutoScaling from './AutoScaling.svelte';
+	import Variables from './Variables.svelte';
 
 	export let data: PageData;
 	$: env = $page.params.env;
@@ -22,7 +23,7 @@
 
 {#if app}
 	<div class="grid">
-		<Card columns={3}>
+		<Card columns={6}>
 			<div class="metadata">
 				<span>
 					<h2>Status</h2>
@@ -46,6 +47,12 @@
 					<h2>AutoScaling</h2>
 					<div>
 						<AutoScaling {app} />
+					</div>
+				</span>
+				<span>
+					<h2>Variables</h2>
+					<div>
+						<Variables {app} />
 					</div>
 				</span>
 			</div>

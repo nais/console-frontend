@@ -9,5 +9,6 @@ query App($app: String!, $team: String!, $env: String!) {
 		...AccessPolicy
 		...AutoScaling
 		...Storage
+		...Variables
 	}
 }

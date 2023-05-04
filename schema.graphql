@@ -18,6 +18,7 @@ type App implements Node {
   name: String!
   resources: Resources!
   storage: [Storage!]!
+  variables: [Variable!]!
 }
 
 type AppConnection {
@@ -290,4 +291,9 @@ type User implements Node {
   id: ID!
   name: String!
   teams(after: Cursor, first: Int): TeamConnection!
+}
+
+type Variable {
+  name: String!
+  value: String!
 }
