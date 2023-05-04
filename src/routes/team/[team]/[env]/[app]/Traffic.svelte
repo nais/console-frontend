@@ -44,7 +44,7 @@
 		<ul>
 			{#each $data.ingresses as ingress}
 				{#if !ingress.includes('external')}
-					<li><Globe /><a href={ingress}>{ingress}</a></li>
+					<li><a href={ingress}>{ingress}</a></li>
 				{/if}
 			{/each}
 		</ul>
