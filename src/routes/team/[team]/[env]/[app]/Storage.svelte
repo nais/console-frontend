@@ -17,14 +17,6 @@
 					... on SqlInstance {
 						name
 						type
-						tier
-						databases {
-							name
-							envVarPrefix
-							users {
-								name
-							}
-						}
 					}
 				}
 			}
