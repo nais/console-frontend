@@ -35,26 +35,28 @@
 			}
 		`)
 	);
+	$: internalIngress = $data.ingresses.filter((ingress) => !ingress.includes('.external.'));
+	$: externalIngress = $data.ingresses.filter((ingress) => ingress.includes('.external.'));
 </script>
 
 <div class="traffic">
 	<div class="directionContent">
 		<h5>Internal ingresses:</h5>
 		<ul>
-			{#each $data.ingresses as ingress}
-				{#if !ingress.includes('external')}
-					<li><a href={ingress}>{ingress}</a></li>
-				{/if}
+			{#each internalIngress as ingress}
+				<li><a href={ingress}>{ingress}</a></li>
+			{:else}
+				<li>No internal ingresses</li>
 			{/each}
 		</ul>
 		<h5>External ingresses:</h5>
 		<ul>
-			{#each $data.ingresses as ingress}
+			{#each externalIngress as ingress}
 				<li>
-					{#if ingress.includes('external')}
-						<Globe /><a href={ingress}>{ingress}</a>
-					{/if}
+					<Globe /><a href={ingress}>{ingress}</a>
 				</li>
+			{:else}
+				<li>No external ingresses</li>
 			{/each}
 		</ul>
 		<h5>Inbound access policy:</h5>
@@ -65,6 +67,8 @@
 						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 					>
 				</li>
+			{:else}
+				<li>No inbound access policy</li>
 			{/each}
 		</ul>
 	</div>
@@ -86,6 +90,8 @@
 						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 					>
 				</li>
+			{:else}
+				<li>No outbound access policy</li>
 			{/each}
 		</ul>
 		<h5>Outbound external access policy:</h5>
@@ -98,6 +104,8 @@
 				{:else}
 					<li><Globe /><a href={external.host}>{external.host}</a><br /></li>
 				{/each}
+			{:else}
+				<li>No outbound external access policy</li>
 			{/each}
 		</ul>
 	</div>

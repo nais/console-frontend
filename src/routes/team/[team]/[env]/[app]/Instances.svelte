@@ -2,7 +2,7 @@
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import { fragment, graphql } from '$houdini';
 	import type { AppInstances } from '$houdini';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import Alert from '$lib/Alert.svelte';
 	import Table from '$lib/Table.svelte';
 	import Time from '$lib/Time.svelte';
 
@@ -27,7 +27,7 @@
 	$: total = instances.length;
 </script>
 
-{#if instances}
+{#if instances.length > 0}
 	<Table>
 		<thead>
 			<tr>
@@ -53,4 +53,6 @@
 			{/each}
 		</tbody>
 	</Table>
+{:else}
+	<Alert variant="warning">No instances found</Alert>
 {/if}
