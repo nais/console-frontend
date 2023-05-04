@@ -17,6 +17,7 @@ type App implements Node {
   instances: [Instance!]!
   name: String!
   resources: Resources!
+  storage: [Storage!]!
 }
 
 type AppConnection {
@@ -37,7 +38,32 @@ type AutoScaling {
   min: Int!
 }
 
+type BigQueryDataset implements Storage {
+  cascadingDelete: Boolean!
+  description: String!
+  name: String!
+  permission: String!
+}
+
+type Bucket implements Storage {
+  cascadingDelete: Boolean!
+  name: String!
+  publicAccessPrevention: Boolean!
+  retentionPeriodDays: Int!
+  uniformBucketLevelAccess: Boolean!
+}
+
 scalar Cursor
+
+type Database {
+  envVarPrefix: String!
+  name: String!
+  users: [DatabaseUser!]!
+}
+
+type DatabaseUser {
+  name: String!
+}
 
 type Deployment {
   created: Time!
@@ -86,6 +112,11 @@ type External {
   ports: [Port!]!
 }
 
+type Flag {
+  name: String!
+  value: String!
+}
+
 type GithubRepository {
   name: String!
 }
@@ -105,6 +136,13 @@ type Inbound {
   rules: [Rule!]!
 }
 
+type Insights {
+  enabled: Boolean!
+  queryStringLength: Int!
+  recordApplicationTags: Boolean!
+  recordClientAddress: Boolean!
+}
+
 type Instance implements Node {
   created: Time!
   id: ID!
@@ -117,6 +155,11 @@ type Instance implements Node {
 type Limits {
   cpu: String!
   memory: String!
+}
+
+type Maintenance {
+  day: Int!
+  hour: Int!
 }
 
 interface Node {
@@ -152,6 +195,12 @@ type Requests {
   memory: String!
 }
 
+type Resource {
+  apiVersion: String!
+  kind: String!
+  name: String!
+}
+
 type Resources {
   limits: Limits!
   requests: Requests!
@@ -164,6 +213,29 @@ type Rule {
 
 type SlackAlertsChannel {
   env: String!
+  name: String!
+}
+
+type SqlInstance implements Storage {
+  autoBackupHour: Int!
+  cascadingDelete: Boolean!
+  collation: String!
+  databases: [Database!]!
+  diskAutoresize: Boolean!
+  diskSize: Int!
+  diskType: String!
+  flags: [Flag!]!
+  highAvailability: Boolean!
+  insights: Insights!
+  maintenance: Maintenance!
+  name: String!
+  pointInTimeRecovery: Boolean!
+  retainedBackups: Int!
+  tier: String!
+  type: String!
+}
+
+interface Storage {
   name: String!
 }
 

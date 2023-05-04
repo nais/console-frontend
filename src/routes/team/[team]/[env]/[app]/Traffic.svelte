@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import Arrow from '$lib/icons/Arrow.svelte';
 	import Globe from '$lib/icons/Globe.svelte';
-	import { fragment, graphql, type AccessPolicy, type AppInstances } from '$houdini';
-	import type { AppInstancesStatus } from '$houdini';
+	import { fragment, graphql } from '$houdini';
+	import type { AccessPolicy } from '$houdini';
 
 	export let app: AccessPolicy;
 

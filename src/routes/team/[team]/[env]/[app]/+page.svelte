@@ -7,7 +7,7 @@
 	import Traffic from './Traffic.svelte';
 	import Status from './Status.svelte';
 	import Emisions from './Emisions.svelte';
-	import Accessories from './Accessories.svelte';
+	import Storage from './Storage.svelte';
 	import Authentications from './Authentications.svelte';
 	import type { PageData } from './$houdini';
 	import Time from '$lib/Time.svelte';
@@ -59,8 +59,8 @@
 			<Traffic {app} />
 		</Card>
 		<Card columns={6}
-			><h2>Peripherals</h2>
-			<Accessories />
+			><h2>Storage</h2>
+			<Storage {app} />
 		</Card>
 		<Card columns={6}>
 			<h2>Authentications</h2>

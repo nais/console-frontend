@@ -4,9 +4,6 @@
 	import Table from '$lib/Table.svelte';
 	import Time from '$lib/Time.svelte';
 	import Sort from '$lib/icons/Sort.svelte';
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import Accessories from '../[env]/[app]/Accessories.svelte';
 	import Status from '../[env]/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
 
