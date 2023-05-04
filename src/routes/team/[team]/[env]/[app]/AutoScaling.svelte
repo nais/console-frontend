@@ -8,11 +8,11 @@
 		graphql(`
 			fragment AutoScaling on App {
 				autoScaling {
-   					disableAutoScaling
-    				cpuThresholdPercentage
-    				max
-    				min
-  				}
+					disableAutoScaling
+					cpuThresholdPercentage
+					max
+					min
+				}
 			}
 		`)
 	);
@@ -22,12 +22,11 @@
 
 <div style="display: flex; align-items: center; flex-direction: row; gap: 1rem;">
 	<ul>
-		<li>Min: {$data.autoScaling.min}</li>
-		<li>Max: {$data.autoScaling.max}</li>
-		<li>CPU Threshold: {$data.autoScaling.cpuThresholdPercentage}%</li>
-		<li>Auto Scaling: {$data.autoScaling.disableAutoScaling ? 'Disabled' : 'Enabled'}</li>
+		<li>Min: {autoscaling.min}</li>
+		<li>Max: {autoscaling.max}</li>
+		<li>CPU Threshold: {autoscaling.cpuThresholdPercentage}%</li>
+		<li>Auto Scaling: {autoscaling.disableAutoScaling ? 'true' : 'false'}</li>
 	</ul>
-
 </div>
 
 <style>
