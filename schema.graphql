@@ -33,11 +33,12 @@ type AppEdge {
   node: App!
 }
 
-union Authz = AzureAD
+union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
-  cpuThresholdPercentage: Int!
-  disableAutoScaling: Boolean!
+  """CPU threshold in percent"""
+  cpuThreshold: Int!
+  disabled: Boolean!
   max: Int!
   min: Int!
 }
@@ -50,7 +51,6 @@ type AzureAD {
 type AzureApplication {
   allowAllUsers: Boolean!
   claims: Claims!
-  enabled: Boolean!
   replyURLs: [String!]!
   singlePageApplication: Boolean!
   tenant: String!
@@ -74,6 +74,15 @@ type Bucket implements Storage {
 type Claims {
   extra: [String!]!
   groups: [Group!]!
+}
+
+type Consume {
+  name: String!
+}
+
+type Consumer {
+  name: String!
+  orgno: String!
 }
 
 scalar Cursor
@@ -130,6 +139,15 @@ type Env implements Node {
   name: String!
 }
 
+type Expose {
+  allowedIntegrations: [String!]!
+  atMaxAge: Int!
+  consumers: [Consumer!]!
+  enabled: Boolean!
+  name: String!
+  product: String!
+}
+
 type External {
   host: String!
   ports: [Port!]!
@@ -157,6 +175,27 @@ type GithubRepositoryEdge {
 
 type Group {
   id: String!
+}
+
+type IDPorten {
+  accessTokenLifetime: Int
+  clientURI: String
+  frontchannelLogoutPath: String
+  integrationType: String
+  postLogoutRedirectURIs: [String]
+  redirectPath: String
+  scopes: [String]
+  sessionLifetime: Int
+  sidecar: IDPortenSidecar
+}
+
+type IDPortenSidecar {
+  autoLogin: Boolean
+  autoLoginIgnorePaths: [String]
+  enabled: Boolean
+  level: String
+  locale: String
+  resources: Resources
 }
 
 type Inbound {
@@ -187,6 +226,10 @@ type Limits {
 type Maintenance {
   day: Int!
   hour: Int!
+}
+
+type Maskinporten {
+  scopes: [Scope!]!
 }
 
 interface Node {
@@ -238,10 +281,14 @@ type Rule {
   namespace: String!
 }
 
+type Scope {
+  consumes: [Consume!]!
+  exposes: [Expose!]!
+}
+
 type Sidecar {
   autoLogin: Boolean!
   autoLoginIgnorePaths: [String!]!
-  enabled: Boolean!
   resources: Resources!
 }
 
@@ -318,6 +365,10 @@ type TeamMemberEdge {
 Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
 """
 scalar Time
+
+type TokenX {
+  mountSecretsAsFilesOnly: Boolean!
+}
 
 type User implements Node {
   email: String!

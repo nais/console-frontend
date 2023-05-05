@@ -87,9 +87,6 @@
 		grid-gap: 0.5rem;
 		row-gap: 0.5rem;
 	}
-	td {
-		background-color: var(--a-surface-default);
-	}
 	h2 {
 		font-size: 1.5rem;
 		font-weight: 400;

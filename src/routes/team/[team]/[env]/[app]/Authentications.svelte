@@ -10,13 +10,24 @@
 				authz {
 					... on AzureAD {
 						application {
-							claims {
-								extra
-							}
+							tenant
 						}
 						sidecar {
-							enabled
+							autoLogin
 						}
+					}
+					... on IDPorten {
+						integrationType
+					}
+					... on Maskinporten {
+						scopes {
+							consumes {
+								name
+							}
+						}
+					}
+					... on TokenX {
+						mountSecretsAsFilesOnly
 					}
 				}
 			}
@@ -28,8 +39,17 @@
 
 <div>
 	{#each authz as a}
-		{#if a.__typename === 'AzureAD' && a.application}
+		{#if a.__typename === 'AzureAD'}
 			<a href="/">Azure</a>
+		{/if}
+		{#if a.__typename === 'IDPorten'}
+			<a href="/">IDPorten</a>
+		{/if}
+		{#if a.__typename === 'Maskinporten'}
+			<a href="/">Maskinporten</a>
+		{/if}
+		{#if a.__typename === 'TokenX'}
+			<a href="/">TokenX</a>
 		{/if}
 	{:else}
 		<p>No authz</p>

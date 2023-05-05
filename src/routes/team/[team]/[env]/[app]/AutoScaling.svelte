@@ -8,8 +8,8 @@
 		graphql(`
 			fragment AutoScaling on App {
 				autoScaling {
-					disableAutoScaling
-					cpuThresholdPercentage
+					disabled
+					cpuThreshold
 					max
 					min
 				}
@@ -24,8 +24,8 @@
 	<ul>
 		<li>Min: {autoscaling.min}</li>
 		<li>Max: {autoscaling.max}</li>
-		<li>CPU Threshold: {autoscaling.cpuThresholdPercentage}%</li>
-		<li>Auto Scaling: {autoscaling.disableAutoScaling ? 'true' : 'false'}</li>
+		<li>CPU Threshold: {autoscaling.cpuThreshold}%</li>
+		<li>Auto Scaling: {autoscaling.disabled ? 'true' : 'false'}</li>
 	</ul>
 </div>
 
