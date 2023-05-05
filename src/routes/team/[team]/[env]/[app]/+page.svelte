@@ -71,7 +71,7 @@
 		</Card>
 		<Card columns={6}>
 			<h2>Authentications</h2>
-			<Authentications />
+			<Authentications {app} />
 		</Card>
 	</div>
 {/if}

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import { fragment, graphql } from '$houdini';
 	import type { AppInstances } from '$houdini';
 	import Alert from '$lib/Alert.svelte';

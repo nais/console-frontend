@@ -10,5 +10,6 @@ query App($app: String!, $team: String!, $env: String!) {
 		...AutoScaling
 		...Storage
 		...Variables
+		...Authz
 	}
 }
