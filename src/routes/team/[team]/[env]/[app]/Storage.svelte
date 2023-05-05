@@ -18,6 +18,14 @@
 						name
 						type
 					}
+					... on Kafka {
+						name
+						streams
+					}
+					... on OpenSearch {
+						name
+						access
+					}
 				}
 			}
 		`)
@@ -40,6 +48,16 @@
 			<div class="storageContent">
 				<h5>{storage.__typename}</h5>
 				{storage.name} ({storage.type})
+			</div>
+		{:else if storage.__typename === 'Kafka'}
+			<div class="storageContent">
+				<h5>{storage.__typename}</h5>
+				Pool: {storage.name}<br /> Streams: ({storage.streams})
+			</div>
+		{:else if storage.__typename === 'OpenSearch'}
+			<div class="storageContent">
+				<h5>{storage.__typename}</h5>
+				Instance: {storage.name}<br /> Access: ({storage.access})
 			</div>
 		{/if}
 	{:else}

@@ -218,6 +218,12 @@ type Instance implements Node {
   status: String!
 }
 
+type Kafka implements Storage {
+  """The kafka pool name"""
+  name: String!
+  streams: Boolean!
+}
+
 type Limits {
   cpu: String!
   memory: String!
@@ -234,6 +240,13 @@ type Maskinporten {
 
 interface Node {
   id: ID!
+}
+
+type OpenSearch implements Storage {
+  access: String!
+
+  """The opensearch instance name"""
+  name: String!
 }
 
 type Outbound {
