@@ -17,30 +17,37 @@
 		<p>{error.message}</p>
 	{/each}
 {/if}
-<div class="search">
-	<div style="width: 60%;">
-		<Search label="Search for teams or apps" />
-	</div>
-</div>
-{#if $LandingPage.data}
-	<div class="mainGrid">
-		<Teams user={$LandingPage.data.user} />
-		<!-- <Footprint />
+<div class="main">
+	<div>
+		<div class="search">
+			<div style="width: 60%;">
+				<Search label="Search for teams or apps" />
+			</div>
+		</div>
+		{#if $LandingPage.data}
+			<div class="mainGrid">
+				<Teams user={$LandingPage.data.user} />
+				<!-- <Footprint />
 		<Emissions />
 		<Deploys /> -->
+			</div>
+		{/if}
 	</div>
-{/if}
+</div>
 
 <style>
+	.main {
+		width: 100%;
+		height: 100%;
+		margin: 0 auto;
+	}
 	.mainGrid {
-		display: grid;
-		grid-template-columns: 4fr 3fr 3fr 3fr;
-		grid-column-gap: 1rem;
-		justify-content: stretch;
+		display: flex;
+		justify-content: center;
 	}
 	.search {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 2rem;
+		margin-bottom: 1rem;
 	}
 </style>

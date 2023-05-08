@@ -38,8 +38,8 @@
 <style>
 	.container {
 		display: flex;
-		flex-direction: column;
-		gap: 1rem;
+		width: 60%;
+		justify-content: space-between;
 	}
 	.team {
 		background-color: var(--a-bg-default);
@@ -53,6 +53,8 @@
 		cursor: pointer;
 		color: var(--a-text-default);
 		text-decoration: none;
+		min-width: 200px;
+		height: 60px;
 	}
 	.team:hover {
 		box-shadow: var(--a-shadow-medium);
@@ -68,6 +70,9 @@
 		transition: transform 200ms;
 	}
 	h3 {
-		margin: 1rem 0;
+		margin: 0;
+	}
+	p {
+		margin: 0;
 	}
 </style>

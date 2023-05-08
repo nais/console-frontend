@@ -20,5 +20,6 @@
 		flex-direction: column;
 		max-width: 1400px;
 		padding: 0 2rem;
+		height: 100%;
 	}
 </style>
