@@ -1,385 +1,372 @@
-directive @goField(
-	forceResolver: Boolean
-	name: String
-) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 type AccessPolicy {
-	inbound: Inbound!
-	outbound: Outbound!
+  inbound: Inbound!
+  outbound: Outbound!
 }
 
 type App implements Node {
-	accessPolicy: AccessPolicy!
-	authz: [Authz!]!
-	autoScaling: AutoScaling!
-	deployed: Time
-	deploys(after: Cursor, first: Int): DeploymentConnection!
-	env: Env!
-	id: ID!
-	image: String!
-	ingresses: [String!]!
-	instances: [Instance!]!
-	manifest: String!
-	name: String!
-	resources: Resources!
-	storage: [Storage!]!
-	variables: [Variable!]!
+  accessPolicy: AccessPolicy!
+  authz: [Authz!]!
+  autoScaling: AutoScaling!
+  deployed: Time
+  deploys(after: Cursor, first: Int): DeploymentConnection!
+  env: Env!
+  id: ID!
+  image: String!
+  ingresses: [String!]!
+  instances: [Instance!]!
+  manifest: String!
+  name: String!
+  resources: Resources!
+  storage: [Storage!]!
+  variables: [Variable!]!
 }
 
 type AppConnection {
-	edges: [AppEdge!]!
-	pageInfo: PageInfo!
-	totalCount: Int!
+  edges: [AppEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type AppEdge {
-	cursor: Cursor!
-	node: App!
+  cursor: Cursor!
+  node: App!
 }
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
-	"""
-	CPU threshold in percent
-	"""
-	cpuThreshold: Int!
-	disabled: Boolean!
-	max: Int!
-	min: Int!
+  """CPU threshold in percent"""
+  cpuThreshold: Int!
+  disabled: Boolean!
+  max: Int!
+  min: Int!
 }
 
 type AzureAD {
-	application: AzureApplication
-	sidecar: Sidecar
+  application: AzureApplication
+  sidecar: Sidecar
 }
 
 type AzureApplication {
-	allowAllUsers: Boolean!
-	claims: Claims!
-	replyURLs: [String!]!
-	singlePageApplication: Boolean!
-	tenant: String!
+  allowAllUsers: Boolean!
+  claims: Claims!
+  replyURLs: [String!]!
+  singlePageApplication: Boolean!
+  tenant: String!
 }
 
 type BigQueryDataset implements Storage {
-	cascadingDelete: Boolean!
-	description: String!
-	name: String!
-	permission: String!
+  cascadingDelete: Boolean!
+  description: String!
+  name: String!
+  permission: String!
 }
 
 type Bucket implements Storage {
-	cascadingDelete: Boolean!
-	name: String!
-	publicAccessPrevention: Boolean!
-	retentionPeriodDays: Int!
-	uniformBucketLevelAccess: Boolean!
+  cascadingDelete: Boolean!
+  name: String!
+  publicAccessPrevention: Boolean!
+  retentionPeriodDays: Int!
+  uniformBucketLevelAccess: Boolean!
 }
 
 type Claims {
-	extra: [String!]!
-	groups: [Group!]!
+  extra: [String!]!
+  groups: [Group!]!
 }
 
 type Consume {
-	name: String!
+  name: String!
 }
 
 type Consumer {
-	name: String!
-	orgno: String!
+  name: String!
+  orgno: String!
 }
 
 scalar Cursor
 
 type Database {
-	envVarPrefix: String!
-	name: String!
-	users: [DatabaseUser!]!
+  envVarPrefix: String!
+  name: String!
+  users: [DatabaseUser!]!
 }
 
 type DatabaseUser {
-	name: String!
+  name: String!
 }
 
 type Deployment {
-	created: Time!
-	env: String!
-	id: ID!
-	resources: [DeploymentResource!]!
-	statuses: [DeploymentStatus!]!
-	team: Team!
-	type: String!
+  created: Time!
+  env: String!
+  id: ID!
+  resources: [DeploymentResource!]!
+  statuses: [DeploymentStatus!]!
+  team: Team!
+  type: String!
 }
 
 type DeploymentConnection {
-	edges: [DeploymentEdge!]!
-	pageInfo: PageInfo!
-	totalCount: Int!
+  edges: [DeploymentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type DeploymentEdge {
-	cursor: Cursor!
-	node: Deployment!
+  cursor: Cursor!
+  node: Deployment!
 }
 
 type DeploymentResource {
-	group: String!
-	id: ID!
-	kind: String!
-	name: String!
-	namespace: String!
-	version: String!
+  group: String!
+  id: ID!
+  kind: String!
+  name: String!
+  namespace: String!
+  version: String!
 }
 
 type DeploymentStatus {
-	created: Time!
-	id: ID!
-	message: String
-	status: String!
+  created: Time!
+  id: ID!
+  message: String
+  status: String!
 }
 
 type Env implements Node {
-	id: ID!
-	name: String!
+  id: ID!
+  name: String!
 }
 
 type Expose {
-	allowedIntegrations: [String!]!
-	atMaxAge: Int!
-	consumers: [Consumer!]!
-	enabled: Boolean!
-	name: String!
-	product: String!
+  allowedIntegrations: [String!]!
+  atMaxAge: Int!
+  consumers: [Consumer!]!
+  enabled: Boolean!
+  name: String!
+  product: String!
 }
 
 type External {
-	host: String!
-	ports: [Port!]!
+  host: String!
+  ports: [Port!]!
 }
 
 type Flag {
-	name: String!
-	value: String!
+  name: String!
+  value: String!
 }
 
 type GithubRepository {
-	name: String!
+  name: String!
 }
 
 type GithubRepositoryConnection {
-	edges: [GithubRepositoryEdge!]!
-	pageInfo: PageInfo!
-	totalCount: Int!
+  edges: [GithubRepositoryEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type GithubRepositoryEdge {
-	cursor: Cursor!
-	node: GithubRepository!
+  cursor: Cursor!
+  node: GithubRepository!
 }
 
 type Group {
-	id: String!
+  id: String!
 }
 
 type IDPorten {
-	accessTokenLifetime: Int
-	clientURI: String
-	frontchannelLogoutPath: String
-	integrationType: String
-	postLogoutRedirectURIs: [String]
-	redirectPath: String
-	scopes: [String]
-	sessionLifetime: Int
-	sidecar: IDPortenSidecar
+  accessTokenLifetime: Int
+  clientURI: String
+  frontchannelLogoutPath: String
+  integrationType: String
+  postLogoutRedirectURIs: [String]
+  redirectPath: String
+  scopes: [String]
+  sessionLifetime: Int
+  sidecar: IDPortenSidecar
 }
 
 type IDPortenSidecar {
-	autoLogin: Boolean
-	autoLoginIgnorePaths: [String]
-	enabled: Boolean
-	level: String
-	locale: String
-	resources: Resources
+  autoLogin: Boolean
+  autoLoginIgnorePaths: [String]
+  enabled: Boolean
+  level: String
+  locale: String
+  resources: Resources
 }
 
 type Inbound {
-	rules: [Rule!]!
+  rules: [Rule!]!
 }
 
 type Insights {
-	enabled: Boolean!
-	queryStringLength: Int!
-	recordApplicationTags: Boolean!
-	recordClientAddress: Boolean!
+  enabled: Boolean!
+  queryStringLength: Int!
+  recordApplicationTags: Boolean!
+  recordClientAddress: Boolean!
 }
 
 type Instance implements Node {
-	created: Time!
-	id: ID!
-	image: String!
-	name: String!
-	restarts: Int!
-	status: String!
+  created: Time!
+  id: ID!
+  image: String!
+  name: String!
+  restarts: Int!
+  status: String!
 }
 
 type Kafka implements Storage {
-	"""
-	The kafka pool name
-	"""
-	name: String!
-	streams: Boolean!
+  """The kafka pool name"""
+  name: String!
+  streams: Boolean!
 }
 
 type Limits {
-	cpu: String!
-	memory: String!
+  cpu: String!
+  memory: String!
 }
 
 type Maintenance {
-	day: Int!
-	hour: Int!
-}
-
-type Manifest {
-	data: String!
+  day: Int!
+  hour: Int!
 }
 
 type Maskinporten {
-	scopes: [Scope!]!
+  scopes: [Scope!]!
 }
 
 interface Node {
-	id: ID!
+  id: ID!
 }
 
 type OpenSearch implements Storage {
-	access: String!
+  access: String!
 
-	"""
-	The opensearch instance name
-	"""
-	name: String!
+  """The opensearch instance name"""
+  name: String!
 }
 
 type Outbound {
-	external: [External!]!
-	rules: [Rule!]!
+  external: [External!]!
+  rules: [Rule!]!
 }
 
 type PageInfo {
-	endCursor: Cursor
-	hasNextPage: Boolean!
-	hasPreviousPage: Boolean!
-	startCursor: Cursor
+  endCursor: Cursor
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Cursor
 }
 
 type Port {
-	port: Int!
+  port: Int!
 }
 
 type Query {
-	app(env: String!, name: String!, team: String!): App!
-	node(id: ID!): Node
-	team(name: String!): Team!
-	teams(after: Cursor, first: Int): TeamConnection!
-	user: User!
+  app(env: String!, name: String!, team: String!): App!
+  node(id: ID!): Node
+  team(name: String!): Team!
+  teams(after: Cursor, first: Int): TeamConnection!
+  user: User!
 }
 
 type Requests {
-	cpu: String!
-	memory: String!
+  cpu: String!
+  memory: String!
 }
 
 type Resources {
-	limits: Limits!
-	requests: Requests!
+  limits: Limits!
+  requests: Requests!
 }
 
 type Rule {
-	application: String!
-	namespace: String!
+  application: String!
+  namespace: String!
 }
 
 type Scope {
-	consumes: [Consume!]!
-	exposes: [Expose!]!
+  consumes: [Consume!]!
+  exposes: [Expose!]!
 }
 
 type Sidecar {
-	autoLogin: Boolean!
-	autoLoginIgnorePaths: [String!]!
-	resources: Resources!
+  autoLogin: Boolean!
+  autoLoginIgnorePaths: [String!]!
+  resources: Resources!
 }
 
 type SlackAlertsChannel {
-	env: String!
-	name: String!
+  env: String!
+  name: String!
 }
 
 type SqlInstance implements Storage {
-	autoBackupHour: Int!
-	cascadingDelete: Boolean!
-	collation: String!
-	databases: [Database!]!
-	diskAutoresize: Boolean!
-	diskSize: Int!
-	diskType: String!
-	flags: [Flag!]!
-	highAvailability: Boolean!
-	insights: Insights!
-	maintenance: Maintenance!
-	name: String!
-	pointInTimeRecovery: Boolean!
-	retainedBackups: Int!
-	tier: String!
-	type: String!
+  autoBackupHour: Int!
+  cascadingDelete: Boolean!
+  collation: String!
+  databases: [Database!]!
+  diskAutoresize: Boolean!
+  diskSize: Int!
+  diskType: String!
+  flags: [Flag!]!
+  highAvailability: Boolean!
+  insights: Insights!
+  maintenance: Maintenance!
+  name: String!
+  pointInTimeRecovery: Boolean!
+  retainedBackups: Int!
+  tier: String!
+  type: String!
 }
 
 interface Storage {
-	name: String!
+  name: String!
 }
 
 type Team implements Node {
-	apps(after: Cursor, first: Int): AppConnection!
-	deployments(after: Cursor, first: Int): DeploymentConnection!
-	description: String
-	githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
-	id: ID!
-	members(after: Cursor, first: Int): TeamMemberConnection!
-	name: String!
-	slackAlertsChannels: [SlackAlertsChannel!]
-	slackChannel: String
+  apps(after: Cursor, first: Int): AppConnection!
+  deployments(after: Cursor, first: Int): DeploymentConnection!
+  description: String
+  githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
+  id: ID!
+  members(after: Cursor, first: Int): TeamMemberConnection!
+  name: String!
+  slackAlertsChannels: [SlackAlertsChannel!]
+  slackChannel: String
 }
 
 type TeamConnection {
-	edges: [TeamEdge!]!
-	pageInfo: PageInfo!
-	totalCount: Int!
+  edges: [TeamEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type TeamEdge {
-	cursor: Cursor!
-	node: Team!
+  cursor: Cursor!
+  node: Team!
 }
 
 type TeamMember implements Node {
-	email: String!
-	id: ID!
-	name: String!
-	role: String!
+  email: String!
+  id: ID!
+  name: String!
+  role: String!
 }
 
 type TeamMemberConnection {
-	edges: [TeamMemberEdge!]!
-	pageInfo: PageInfo!
-	totalCount: Int!
+  edges: [TeamMemberEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type TeamMemberEdge {
-	cursor: Cursor!
-	node: TeamMember!
+  cursor: Cursor!
+  node: TeamMember!
 }
 
 """
@@ -388,17 +375,17 @@ Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, 
 scalar Time
 
 type TokenX {
-	mountSecretsAsFilesOnly: Boolean!
+  mountSecretsAsFilesOnly: Boolean!
 }
 
 type User implements Node {
-	email: String!
-	id: ID!
-	name: String!
-	teams(after: Cursor, first: Int): TeamConnection!
+  email: String!
+  id: ID!
+  name: String!
+  teams(after: Cursor, first: Int): TeamConnection!
 }
 
 type Variable {
-	name: String!
-	value: String!
+  name: String!
+  value: String!
 }
