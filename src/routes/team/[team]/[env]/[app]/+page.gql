@@ -11,5 +11,6 @@ query App($app: String!, $team: String!, $env: String!) {
 		...Storage
 		...Variables
 		...Authz
+		...Manifest
 	}
 }

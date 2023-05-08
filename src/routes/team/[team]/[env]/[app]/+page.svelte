@@ -14,6 +14,7 @@
 	import Instances from './Instances.svelte';
 	import AutoScaling from './AutoScaling.svelte';
 	import Variables from './Variables.svelte';
+	import NaisYaml from './NaisYaml.svelte';
 
 	export let data: PageData;
 	$: env = $page.params.env;
@@ -72,6 +73,10 @@
 		<Card columns={6}>
 			<h2>Authentications</h2>
 			<Authentications {app} />
+		</Card>
+		<Card>
+			<h2>yaml</h2>
+			<NaisYaml {app} />
 		</Card>
 	</div>
 {/if}

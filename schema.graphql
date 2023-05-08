@@ -16,6 +16,7 @@ type App implements Node {
   image: String!
   ingresses: [String!]!
   instances: [Instance!]!
+  manifest: Manifest!
   name: String!
   resources: Resources!
   storage: [Storage!]!
@@ -234,6 +235,10 @@ type Maintenance {
   hour: Int!
 }
 
+type Manifest {
+  data: String!
+}
+
 type Maskinporten {
   scopes: [Scope!]!
 }
@@ -276,12 +281,6 @@ type Query {
 type Requests {
   cpu: String!
   memory: String!
-}
-
-type Resource {
-  apiVersion: String!
-  kind: String!
-  name: String!
 }
 
 type Resources {
