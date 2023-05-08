@@ -13,5 +13,8 @@ export default defineConfig({
 				}
 			}
 		}
+	},
+	ssr: {
+		noExternal: ['@navikt/ds-css']
 	}
 });
