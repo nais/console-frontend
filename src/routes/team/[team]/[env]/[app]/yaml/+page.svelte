@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
-	import { naisyaml } from '$lib/mock/naisyaml';
-	$: app = $page.params.app;
+
+	import type { PageData } from './$houdini';
+
+	export let data: PageData;
+	$: ({ AppManifest } = data);
 </script>
 
-<Card>
-	<h3>nais.yaml for {app}</h3>
-	<pre>
-{JSON.stringify(naisyaml, null, 2)}
-</pre>
-</Card>
+{#if $AppManifest.data}
+	<Card>
+		<h3>nais.yaml for {$AppManifest.data.app.name}</h3>
+		<pre>{$AppManifest.data.app.manifest}</pre>
+	</Card>
+{/if}

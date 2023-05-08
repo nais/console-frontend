@@ -16,7 +16,7 @@ type App implements Node {
   image: String!
   ingresses: [String!]!
   instances: [Instance!]!
-  manifest: Manifest!
+  manifest: String!
   name: String!
   resources: Resources!
   storage: [Storage!]!
