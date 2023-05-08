@@ -18,21 +18,11 @@
 {/if}
 
 {#if $LandingPage.data}
-	<Alert variant="idea">
-		<p>Here's an idea</p>
-		<p>Here's another idea</p>
-		<p>And even one more</p>
-	</Alert>
-
-	<div class="mainGrid" style="margin-bottom: 2em">
-		<Input />
-	</div>
-
 	<div class="mainGrid">
 		<Teams user={$LandingPage.data.user} />
 		<!-- <Footprint />
-		<Emissions /> -->
-		<Deploys />
+		<Emissions />
+		<Deploys /> -->
 	</div>
 {/if}
 
