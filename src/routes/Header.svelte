@@ -32,6 +32,7 @@
 		align-items: center;
 		padding: 0 2rem;
 		margin-bottom: 2rem;
+		min-width: 1000px;
 	}
 	.header-content {
 		margin: 0 auto;

@@ -50,9 +50,17 @@
 		<Tab href={replacer(routeId, { team })} active={currentRoute == routeId} title={tab} />
 	{/each}
 </Tabs>
-<slot />
+<div class="container">
+	<slot />
+</div>
 
 <style>
+	.container {
+		margin: auto;
+		min-width: 1000px;
+		max-width: 1432px;
+		padding: 1rem;
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;

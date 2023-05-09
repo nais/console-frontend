@@ -15,10 +15,10 @@
 
 <style>
 	.container {
-		display: flex;
-		flex-direction: column;
-		max-width: 1400px;
-		padding: 0 2rem;
-		height: 100vh;
+		margin: auto;
+		min-width: 1000px;
+		max-width: 1432px;
+		min-height: 100vh;
+		padding: 1rem;
 	}
 </style>
