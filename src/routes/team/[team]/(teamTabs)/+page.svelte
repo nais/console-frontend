@@ -61,6 +61,8 @@
 				{/each}
 			</tbody>
 		</Table>
+	{:else}
+		<p>loading...</p>
 	{/if}
 </Card>
 

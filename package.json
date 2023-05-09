@@ -12,7 +12,7 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@nais/ds-svelte": "^0.0.3",
+		"@nais/ds-svelte": "^0.0.5",
 		"@navikt/ds-css": "^2.9.8",
 		"@sveltejs/adapter-auto": "^2.0.1",
 		"@sveltejs/kit": "^1.15.9",

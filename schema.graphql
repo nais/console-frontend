@@ -268,6 +268,7 @@ type Port {
 
 type Query {
   app(env: String!, name: String!, team: String!): App!
+  deployments(after: Cursor, first: Int): DeploymentConnection!
   node(id: ID!): Node
   team(name: String!): Team!
   teams(after: Cursor, first: Int): TeamConnection!

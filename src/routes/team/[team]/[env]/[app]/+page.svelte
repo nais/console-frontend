@@ -14,6 +14,7 @@
 	import Instances from './Instances.svelte';
 	import AutoScaling from './AutoScaling.svelte';
 	import Variables from './Variables.svelte';
+	import { Alert } from '@nais/ds-svelte';
 
 	export let data: PageData;
 	$: env = $page.params.env;
@@ -74,6 +75,10 @@
 			<Authentications {app} />
 		</Card>
 	</div>
+{:else}
+	<Alert variant="error">
+		<p>App not found</p>
+	</Alert>
 {/if}
 
 <style>
