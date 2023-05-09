@@ -20,9 +20,7 @@
 <div class="main">
 	<div>
 		<div class="search">
-			<div style="width: 60%;">
-				<Search label="Search for teams or apps" />
-			</div>
+			<Search label="Search for teams or apps" />
 		</div>
 		{#if $LandingPage.data}
 			<div class="mainGrid">
@@ -39,7 +37,8 @@
 	.main {
 		width: 100%;
 		height: 100%;
-		margin: 0 auto;
+		place-items: center;
+		display: grid;
 	}
 	.mainGrid {
 		display: flex;
@@ -48,6 +47,8 @@
 	.search {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 1rem;
+		align-items: center;
+		margin: 1rem auto;
+		width: 60%;
 	}
 </style>

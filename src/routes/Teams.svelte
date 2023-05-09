@@ -21,7 +21,7 @@
 	);
 </script>
 
-<div class="container">
+<div class="teamscontainer">
 	{#each $data.teams.edges as edge}
 		<a class="team" href="/team/{edge.node.name}">
 			<div>
@@ -36,10 +36,11 @@
 </div>
 
 <style>
-	.container {
+	.teamscontainer {
 		display: flex;
-		width: 60%;
-		justify-content: space-between;
+		justify-content: flex-start;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 	.team {
 		background-color: var(--a-bg-default);
@@ -47,14 +48,13 @@
 		justify-content: space-between;
 		border-radius: 0.25rem;
 		padding: 0 1rem;
-		align-items: center;
-		gap: 10px 0px;
-		border: 1px solid transparent;
 		cursor: pointer;
 		color: var(--a-text-default);
 		text-decoration: none;
-		min-width: 200px;
-		height: 60px;
+		width: 200px;
+		max-width: 384px;
+		min-height: 60px;
+		text-overflow: clip;
 	}
 	.team:hover {
 		box-shadow: var(--a-shadow-medium);

@@ -15,11 +15,10 @@
 
 <style>
 	.container {
-		margin: auto;
 		display: flex;
 		flex-direction: column;
 		max-width: 1400px;
 		padding: 0 2rem;
-		height: 100%;
+		height: 100vh;
 	}
 </style>
