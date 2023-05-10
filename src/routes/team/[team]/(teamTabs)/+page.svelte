@@ -10,9 +10,6 @@
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
-
-	// Holds table sort state.  Initialized to reflect table sorted by id column ascending.
-	let sortByApps = { col: 'name', ascending: true };
 </script>
 
 <Card>

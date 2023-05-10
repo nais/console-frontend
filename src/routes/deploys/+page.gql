@@ -1,0 +1,28 @@
+query Deploys {
+	deployments {
+		totalCount
+		edges {
+			node {
+				team {
+					name
+				}
+				type
+				repository
+				resources {
+					group
+					kind
+					name
+					version
+					namespace
+				}
+				env
+				statuses {
+					status
+					message
+					created
+				}
+				created
+			}
+		}
+	}
+}

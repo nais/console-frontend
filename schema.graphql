@@ -102,6 +102,7 @@ type Deployment {
   created: Time!
   env: String!
   id: ID!
+  repository: String
   resources: [DeploymentResource!]!
   statuses: [DeploymentStatus!]!
   team: Team!

@@ -1,0 +1,25 @@
+query AppDeploys($app: String!, $team: String!, $env: String!) {
+	app(name: $app, team: $team, env: $env) {
+		name
+		deploys {
+			edges {
+				node {
+					type
+					resources {
+						group
+						kind
+						name
+						version
+					}
+					statuses {
+						status
+						message
+						created
+					}
+					created
+					repository
+				}
+			}
+		}
+	}
+}

@@ -1,51 +1,51 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
-	import Time from '$lib/Time.svelte';
-	import { Body, Button, DataCell, Header, HeaderCell, Row, Table, Tag } from '@nais/ds-svelte';
-	import { Branching } from '@nais/ds-svelte/icons';
-	import Status from '$lib/DeploymentStatus.svelte';
-	import type { PageData } from './$houdini';
 	import { page } from '$app/stores';
+	import Card from '$lib/Card.svelte';
+	import { Body, Button, DataCell, Header, HeaderCell, Row, Table, Tooltip } from '@nais/ds-svelte';
+	import { Branching } from '@nais/ds-svelte/icons';
+	import type { PageData } from './$houdini';
+	import Time from '$lib/Time.svelte';
+	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	export let data: PageData;
 
-	$: ({ TeamDeployments } = data);
+	$: ({ AppDeploys } = data);
 	$: team = $page.params.team;
+	$: env = $page.params.env;
+	$: app = $page.params.app;
 </script>
 
-{#if $TeamDeployments.errors}
-	{#each $TeamDeployments.errors as error}
+{#if $AppDeploys.errors}
+	{#each $AppDeploys.errors as error}
 		<p>{error.message}</p>
 	{/each}
 {/if}
-{#if $TeamDeployments.data}
+{#if $AppDeploys.data}
 	<Card>
 		<Table zebraStripes={true}>
 			<Header>
 				<HeaderCell>Resource(s)</HeaderCell>
 				<HeaderCell>Created</HeaderCell>
-				<HeaderCell>Environment</HeaderCell>
 				<HeaderCell>Status</HeaderCell>
 				<HeaderCell>Link</HeaderCell>
 			</Header>
 			<Body>
-				{#each $TeamDeployments.data.team.deployments.edges as edge}
+				{#each $AppDeploys.data.app.deploys.edges as edge}
 					<Row>
 						<DataCell>
 							{#each edge.node.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
-								{#if resource.kind === 'Application'}
-									<a href="/team/{team}/{edge.node.env}/{resource.name}/deploys">{resource.name}</a>
-								{:else}
-									{resource.name}
-								{/if}
+								{resource.name}
 								<br />
 							{/each}
 						</DataCell>
 						<DataCell>
 							<Time time={new Date(edge.node.created)} distance={true} />
 						</DataCell>
-						<DataCell>{edge.node.env}</DataCell>
-						<DataCell><Status status={edge.node.statuses[0].status} /></DataCell>
+						<DataCell
+							><Tooltip content={edge.node.statuses[0].message || ''}
+								><DeploymentStatus status={edge.node.statuses[0].status} /></Tooltip
+							></DataCell
+						>
 						<DataCell>
 							{#if edge.node.repository}
 								<Button

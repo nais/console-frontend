@@ -3,12 +3,15 @@
 	export let status: string;
 	let asdf = (
 		status: string
-	): { variant: 'success' | 'error' | 'neutral' | 'warning'; title: string } => {
+	): { variant: 'success' | 'error' | 'neutral' | 'warning' | 'info'; title: string } => {
+		console.log(status);
 		switch (status) {
 			case 'success':
 				return { variant: 'success', title: 'Success' };
 			case 'in_progress':
-				return { variant: 'warning', title: 'In progress' };
+				return { variant: 'info', title: 'In progress' };
+			case 'queued':
+				return { variant: 'neutral', title: 'Queued' };
 			case 'failure':
 				return { variant: 'error', title: 'Failed' };
 			default:

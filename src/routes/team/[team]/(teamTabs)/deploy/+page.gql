@@ -1,0 +1,25 @@
+query TeamDeployments($team: String!) {
+	team(name: $team) {
+		deployments {
+			edges {
+				node {
+					created
+					env
+					repository
+					resources {
+						group
+						kind
+						version
+						name
+						namespace
+					}
+					statuses {
+						created
+						message
+						status
+					}
+				}
+			}
+		}
+	}
+}
