@@ -2,6 +2,7 @@ query Workloads($team: String!) {
 	team(name: $team) {
 		name
 		apps(first: 2) @paginate(mode: SinglePage) {
+			totalCount
 			edges {
 				node {
 					name

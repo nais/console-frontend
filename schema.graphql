@@ -120,6 +120,12 @@ type DeploymentEdge {
   node: Deployment!
 }
 
+type DeploymentKey {
+  created: Time!
+  expires: Time!
+  key: String!
+}
+
 type DeploymentResource {
   group: String!
   id: ID!
@@ -240,6 +246,10 @@ type Maskinporten {
   scopes: [Scope!]!
 }
 
+type Mutation {
+  changeDeployKey(team: String!): DeploymentKey!
+}
+
 interface Node {
   id: ID!
 }
@@ -332,6 +342,7 @@ interface Storage {
 
 type Team implements Node {
   apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
+  deployKey: DeploymentKey!
   deployments(after: Cursor, first: Int): DeploymentConnection!
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!

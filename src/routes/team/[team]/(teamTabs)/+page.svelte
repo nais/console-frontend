@@ -3,19 +3,16 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import Sort from '$lib/icons/Sort.svelte';
-	import { Table, Header, HeaderCell, Body, Row, DataCell } from '@nais/ds-svelte';
+	import { Table, Header, HeaderCell, Body, Row, DataCell, Button } from '@nais/ds-svelte';
+	import { ChevronRight, ChevronLeft } from '@nais/ds-svelte/icons';
 	import Status from '../[env]/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
-	import type { SortState } from '@nais/ds-svelte/dist/components/Table/Table.svelte';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
 
-	let sortState: SortState = {
-		orderBy: 'workloads',
-		direction: 'ascending'
-	};
+	$: currentPage = 1;
 </script>
 
 <Card>
@@ -48,13 +45,43 @@
 				{/each}
 			</Body>
 		</Table>
-		{#if $Workloads.pageInfo.hasPreviousPage}
-			<button on:click={() => Workloads.loadPreviousPage()}> previous </button>
-		{/if}
-		{#if $Workloads.pageInfo.hasNextPage}
-			<button on:click={() => Workloads.loadNextPage()}> next </button>
-		{/if}
+		<div class="pagination">
+			<Button
+				size="xsmall"
+				on:click={() => {
+					if (!$Workloads.pageInfo.hasPreviousPage) return;
+					Workloads.loadPreviousPage();
+					currentPage--;
+				}}
+				disabled={!$Workloads.pageInfo.hasPreviousPage}
+				><svelte:fragment slot="icon-left"
+					><ChevronLeft aria-label="Previous page" /></svelte:fragment
+				></Button
+			>
+			<span>Page {currentPage} of {Math.ceil($Workloads.data.team.apps.totalCount / 10)}</span>
+			<Button
+				size="xsmall"
+				on:click={() => {
+					if (!$Workloads.pageInfo.hasNextPage) return;
+					Workloads.loadNextPage();
+					currentPage++;
+				}}
+				disabled={!$Workloads.pageInfo.hasNextPage}
+			>
+				<svelte:fragment slot="icon-left"><ChevronRight aria-label="Next page" /></svelte:fragment
+				></Button
+			>
+		</div>
 	{:else}
 		<p>loading...</p>
 	{/if}
 </Card>
+
+<style>
+	.pagination {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 1rem;
+		gap: 1rem;
+	}
+</style>

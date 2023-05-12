@@ -2,8 +2,8 @@
 	import { fragment, graphql } from '$houdini';
 	import type { AppInstances } from '$houdini';
 	import Alert from '$lib/Alert.svelte';
-	import Table from '$lib/Table.svelte';
 	import Time from '$lib/Time.svelte';
+	import { Body, Table, Header, HeaderCell, DataCell, Row } from '@nais/ds-svelte';
 
 	export let app: AppInstances;
 	$: data = fragment(
@@ -28,29 +28,28 @@
 
 {#if instances.length > 0}
 	<Table>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Restarts</th>
-				<th>Image</th>
-				<th>Status</th>
-				<th>Created</th>
-			</tr>
-		</thead>
-		<tbody>
+		<Header>
+			<HeaderCell>Name</HeaderCell>
+			<HeaderCell>Restarts</HeaderCell>
+			<HeaderCell>Image</HeaderCell>
+			<HeaderCell>Status</HeaderCell>
+			<HeaderCell>Created</HeaderCell>
+		</Header>
+		<Body>
 			{#each instances as instance}
-				<tr>
-					<td>{instance.name}</td>
-					<td>{instance.restarts}</td>
-					<td>{instance.image} </td><td>{instance.status}</td>
+				<Row>
+					<DataCell>{instance.name}</DataCell>
+					<DataCell>{instance.restarts}</DataCell>
+					<DataCell>{instance.image}</DataCell>
+					<DataCell>{instance.status}</DataCell>
 					{#if instance.created}
-						<td><Time time={instance.created} distance={true} /></td>
+						<DataCell><Time time={instance.created} distance={true} /></DataCell>
 					{:else}
-						<td>Unknown</td>
+						<DataCell>Unknown</DataCell>
 					{/if}
-				</tr>
+				</Row>
 			{/each}
-		</tbody>
+		</Body>
 	</Table>
 {:else}
 	<Alert variant="warning">No instances found</Alert>
