@@ -268,9 +268,11 @@ type Outbound {
 
 type PageInfo {
   endCursor: Cursor
+  from: Int!
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
   startCursor: Cursor
+  to: Int!
 }
 
 type Port {
