@@ -349,7 +349,7 @@ type Team implements Node {
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
-  members(after: Cursor, first: Int): TeamMemberConnection!
+  members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
   name: String!
   slackAlertsChannels: [SlackAlertsChannel!]
   slackChannel: String
@@ -397,7 +397,7 @@ type User implements Node {
   email: String!
   id: ID!
   name: String!
-  teams(after: Cursor, first: Int): TeamConnection!
+  teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
 }
 
 type Variable {

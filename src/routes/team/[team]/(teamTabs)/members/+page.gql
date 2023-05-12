@@ -1,7 +1,7 @@
-query Workloads($team: String!) {
+query Members($team: String!) {
 	team(name: $team) {
 		name
-		apps @paginate(mode: SinglePage) {
+		members(first: 10) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
@@ -13,13 +13,9 @@ query Workloads($team: String!) {
 			}
 			edges {
 				node {
+					email
 					name
-					image
-					...AppInstancesStatus
-					env {
-						name
-					}
-					deployed
+					role
 				}
 			}
 		}

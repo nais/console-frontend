@@ -32,7 +32,6 @@
 			routeId: '/team/[team]/(teamTabs)/billing'
 		}
 	];
-	console.log($page.params);
 </script>
 
 <div class="header">

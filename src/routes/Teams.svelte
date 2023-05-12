@@ -2,13 +2,24 @@
 	import Next from '$lib/icons/Next.svelte';
 	import { graphql, paginatedFragment } from '$houdini';
 	import type { UserTeams } from '$houdini';
+	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 
 	export let user: UserTeams;
 	$: teams = paginatedFragment(
 		user,
 		graphql(`
 			fragment UserTeams on User {
-				teams(first: 2) @paginate(mode: SinglePage) {
+				teams @paginate(mode: SinglePage) {
+					totalCount
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						startCursor
+						endCursor
+						from
+						to
+					}
 					edges {
 						node {
 							name
@@ -19,10 +30,10 @@
 			}
 		`)
 	);
-	$: console.log($teams);
 </script>
 
-<div class="teamscontainer">
+<Card>
+	<h3>My teams</h3>
 	{#each $teams.data.teams.edges as edge}
 		<a class="team" href="/team/{edge.node.name}">
 			<div>
@@ -34,13 +45,7 @@
 			</div>
 		</a>
 	{/each}
-	{#if $teams.pageInfo.hasPreviousPage}
-		<button on:click={() => teams.loadPreviousPage()}> previous </button>
-	{/if}
-	{#if $teams.pageInfo.hasNextPage}
-		<button on:click={() => teams.loadNextPage()}> next </button>
-	{/if}
-</div>
+</Card>
 
 <style>
 	.teamscontainer {
