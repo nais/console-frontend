@@ -272,7 +272,7 @@ type Query {
   deployments(after: Cursor, first: Int): DeploymentConnection!
   node(id: ID!): Node
   team(name: String!): Team!
-  teams(after: Cursor, first: Int): TeamConnection!
+  teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
   user: User!
 }
 
@@ -331,7 +331,7 @@ interface Storage {
 }
 
 type Team implements Node {
-  apps(after: Cursor, first: Int): AppConnection!
+  apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
   deployments(after: Cursor, first: Int): DeploymentConnection!
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!

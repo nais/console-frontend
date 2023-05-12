@@ -1,8 +1,6 @@
 <script>
 	import Alert from '$lib/Alert.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import EmissionsIcon from '$lib/icons/EmissionsIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 </script>
 
 <div class="iconBar">

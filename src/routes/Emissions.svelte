@@ -17,12 +17,6 @@
 </Card>
 
 <style>
-	.container {
-		border-radius: 0.25rem;
-		background-color: var(--a-bg-default);
-		height: 100%;
-		padding: 0 1.5rem;
-	}
 	.emissions {
 		background-color: var(--a-bg-default);
 		display: flex;

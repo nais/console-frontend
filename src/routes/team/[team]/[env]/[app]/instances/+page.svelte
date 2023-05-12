@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { appSpec } from '$lib/mock/appSpec';
 	import Card from '$lib/Card.svelte';
-	import Table from '$lib/Table.svelte';
+	import { Body, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 </script>
@@ -10,22 +10,20 @@
 <Card>
 	<h3>Instances of {app} in {env}</h3>
 	<Table>
-		<thead>
-			<tr>
-				<th>Instance</th>
-				<th>status</th>
-				<th>reason</th>
-			</tr>
-		</thead>
-		<tbody>
+		<Header>
+			<HeaderCell>Instance</HeaderCell>
+			<HeaderCell>status</HeaderCell>
+			<HeaderCell>reason</HeaderCell>
+		</Header>
+		<Body>
 			{#each appSpec.instances as instance}
-				<tr>
-					<td>{instance.name}</td>
-					<td>{instance.status}</td>
-					<td>{instance.reason || ''}</td>
-				</tr>
+				<Row>
+					<DataCell>{instance.name}</DataCell>
+					<DataCell>{instance.status}</DataCell>
+					<DataCell>{instance.reason || ''}</DataCell>
+				</Row>
 			{/each}
-		</tbody>
+		</Body>
 	</Table>
 
 	<p>2 running</p>

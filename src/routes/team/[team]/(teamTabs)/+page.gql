@@ -1,7 +1,7 @@
 query Workloads($team: String!) {
 	team(name: $team) {
 		name
-		apps {
+		apps(first: 2) @paginate(mode: SinglePage) {
 			edges {
 				node {
 					name

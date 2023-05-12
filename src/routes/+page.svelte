@@ -17,6 +17,7 @@
 		<p>{error.message}</p>
 	{/each}
 {/if}
+
 <div class="main">
 	<div>
 		<div class="search">
