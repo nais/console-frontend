@@ -1,0 +1,16 @@
+query TeamSettings($team: String!) {
+	team(name: $team) {
+		name
+		deployKey {
+			key
+			created
+			expires
+		}
+		slackAlertsChannels {
+			env
+			name
+		}
+		slackChannel
+		description
+	}
+}

@@ -1,6 +1,7 @@
 query Workloads($team: String!) {
 	team(name: $team) {
 		name
+
 		apps @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {

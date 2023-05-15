@@ -20,16 +20,16 @@
 			routeId: '/team/[team]/(teamTabs)/members'
 		},
 		{
-			tab: 'Settings',
-			routeId: '/team/[team]/(teamTabs)/settings'
-		},
-		{
 			tab: 'Deploy',
 			routeId: '/team/[team]/(teamTabs)/deploy'
 		},
 		{
 			tab: 'Billing',
 			routeId: '/team/[team]/(teamTabs)/billing'
+		},
+		{
+			tab: 'Settings',
+			routeId: '/team/[team]/(teamTabs)/settings'
 		}
 	];
 </script>
