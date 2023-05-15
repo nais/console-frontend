@@ -48,12 +48,6 @@
 </Card>
 
 <style>
-	.teamscontainer {
-		display: flex;
-		justify-content: flex-start;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
 	.team {
 		background-color: var(--a-bg-default);
 		display: flex;
