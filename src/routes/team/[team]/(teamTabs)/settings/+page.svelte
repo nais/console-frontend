@@ -30,24 +30,28 @@
 <br />
 <Card>
 	<h4>Deploy key</h4>
-	<dl>
+	<dl style="width: 70%">
 		<dt>Created:</dt>
 		<dd>{teamSettings?.deployKey?.created}</dd>
 		<dt>Expires:</dt>
 		<dd>{teamSettings?.deployKey?.expires}</dd>
 		<dt>Key:</dt>
-		<dd>
-			{showKey === true ? teamSettings?.deployKey?.key : '************'}
-			<Button
-				size="xsmall"
-				on:click={() => {
-					if (showKey) {
-						showKey = false;
-					} else {
-						showKey = true;
-					}
-				}}>Show key</Button
-			>
+		<dd class="deployKey">
+			<div>
+				{showKey === true ? teamSettings?.deployKey?.key : '************'}
+			</div>
+			<div>
+				<Button
+					size="xsmall"
+					on:click={() => {
+						if (showKey) {
+							showKey = false;
+						} else {
+							showKey = true;
+						}
+					}}>Show key</Button
+				>
+			</div>
 		</dd>
 	</dl>
 </Card>
@@ -55,5 +59,11 @@
 <style>
 	dt {
 		font-weight: bold;
+	}
+	.deployKey {
+		font-family: monospace;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 	}
 </style>
