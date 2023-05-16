@@ -2,6 +2,8 @@
 	import Card from '$lib/Card.svelte';
 	import { Button } from '@nais/ds-svelte';
 	import type { PageData } from './$houdini';
+	import { TextField } from '@nais/ds-svelte';
+	import { copyText } from 'svelte-copy';
 
 	export let data: PageData;
 
@@ -38,7 +40,12 @@
 		<dt>Key:</dt>
 		<dd class="deployKey">
 			<div>
-				{showKey === true ? teamSettings?.deployKey?.key : '************'}
+				<TextField
+					type={showKey ? 'text' : 'password'}
+					readonly="true"
+					value={teamSettings?.deployKey?.key}
+					htmlSize={teamSettings?.deployKey?.key.length}
+				/>
 			</div>
 			<div>
 				<Button
@@ -51,6 +58,12 @@
 						}
 					}}>Show key</Button
 				>
+				<Button
+					size="xsmall"
+					on:click={() => {
+						copyText(teamSettings?.deployKey?.key);
+					}}>Copy key</Button
+				>
 			</div>
 		</dd>
 	</dl>
@@ -61,10 +74,9 @@
 		font-weight: bold;
 	}
 	.deployKey {
-		width: 60%;
 		font-family: monospace;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
+	}
+	.deployKey > div {
+		padding-top: 1rem;
 	}
 </style>
