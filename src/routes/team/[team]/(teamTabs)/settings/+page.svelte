@@ -30,7 +30,7 @@
 <br />
 <Card>
 	<h4>Deploy key</h4>
-	<dl style="width: 70%">
+	<dl>
 		<dt>Created:</dt>
 		<dd>{teamSettings?.deployKey?.created}</dd>
 		<dt>Expires:</dt>
@@ -61,6 +61,7 @@
 		font-weight: bold;
 	}
 	.deployKey {
+		width: 60%;
 		font-family: monospace;
 		display: flex;
 		flex-direction: row;
