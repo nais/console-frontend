@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
+	import { Button } from '@nais/ds-svelte';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
 	$: ({ TeamSettings } = data);
 	$: teamSettings = $TeamSettings.data?.team;
+	$: showKey = false;
 </script>
 
 <Card>
@@ -17,7 +19,7 @@
 		<dl>
 			{#each teamSettings.slackAlertsChannels as channel}
 				<dt>{channel.env}:</dt>
-				<dd>{teamSettings.slackChannel}</dd>
+				<dd>{channel.name}</dd>
 			{:else}
 				<dt>Warning:</dt>
 				<dd>No alert channels</dd>
@@ -34,7 +36,19 @@
 		<dt>Expires:</dt>
 		<dd>{teamSettings?.deployKey?.expires}</dd>
 		<dt>Key:</dt>
-		<dd>{teamSettings?.deployKey?.key}</dd>
+		<dd>
+			{showKey === true ? teamSettings?.deployKey?.key : '************'}
+			<Button
+				size="xsmall"
+				on:click={() => {
+					if (showKey) {
+						showKey = false;
+					} else {
+						showKey = true;
+					}
+				}}>Show key</Button
+			>
+		</dd>
 	</dl>
 </Card>
 
