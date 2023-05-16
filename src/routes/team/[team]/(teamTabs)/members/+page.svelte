@@ -6,7 +6,6 @@
 
 	export let data: PageData;
 	$: ({ Members } = data);
-	$: console.log($Members.data);
 </script>
 
 {#if $Members.data}

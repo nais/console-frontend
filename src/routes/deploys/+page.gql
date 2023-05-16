@@ -6,7 +6,6 @@ query Deploys {
 				team {
 					name
 				}
-				type
 				repository
 				resources {
 					group

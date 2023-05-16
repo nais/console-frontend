@@ -4,7 +4,6 @@ query AppDeploys($app: String!, $team: String!, $env: String!) {
 		deploys {
 			edges {
 				node {
-					type
 					resources {
 						group
 						kind

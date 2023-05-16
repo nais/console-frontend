@@ -6,10 +6,6 @@
 	import Time from '$lib/Time.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Card from '$lib/Card.svelte';
-	let sortState: SortState = {
-		orderBy: 'name',
-		direction: 'ascending'
-	};
 	export let data: PageData;
 	$: ({ Deploys } = data);
 </script>

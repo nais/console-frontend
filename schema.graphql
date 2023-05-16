@@ -106,7 +106,6 @@ type Deployment {
   resources: [DeploymentResource!]!
   statuses: [DeploymentStatus!]!
   team: Team!
-  type: String!
 }
 
 type DeploymentConnection {
@@ -344,15 +343,15 @@ interface Storage {
 
 type Team implements Node {
   apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
-  deployKey: DeploymentKey
+  deployKey: DeploymentKey!
   deployments(after: Cursor, first: Int): DeploymentConnection!
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
   members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
   name: String!
-  slackAlertsChannels: [SlackAlertsChannel!]!
-  slackChannel: String!
+  slackAlertsChannels: [SlackAlertsChannel!]
+  slackChannel: String
 }
 
 type TeamConnection {
@@ -370,7 +369,7 @@ type TeamMember implements Node {
   email: String!
   id: ID!
   name: String!
-  role: String!
+  role: TeamRole!
 }
 
 type TeamMemberConnection {
@@ -382,6 +381,14 @@ type TeamMemberConnection {
 type TeamMemberEdge {
   cursor: Cursor!
   node: TeamMember!
+}
+
+enum TeamRole {
+  """Regular member, read only access."""
+  MEMBER
+
+  """Team owner, full access to the team."""
+  OWNER
 }
 
 """

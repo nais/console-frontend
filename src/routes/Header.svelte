@@ -1,14 +1,20 @@
 <script lang="ts">
 	import Button from '$lib/Button.svelte';
+	import { Search } from '@nais/ds-svelte';
 	import Logo from '../Logo.svelte';
 </script>
 
 <div class="header">
 	<div class="header-content">
-		<a href="/" class="logo">
-			<Logo height="2rem" />
-			Console
-		</a>
+		<div class="header-left">
+			<a href="/" class="logo">
+				<Logo height="2rem" />
+				Console
+			</a>
+			<div class="search">
+				<Search label="search" variant="primary" size="small" description="Search for anything" />
+			</div>
+		</div>
 		<nav>
 			<ul>
 				<li><a href="/teams">Teams</a></li>
@@ -24,6 +30,13 @@
 </div>
 
 <style>
+	.header-left {
+		display: flex;
+		gap: 2rem;
+	}
+	.search {
+		width: 250px;
+	}
 	.header {
 		background: var(--a-surface-inverted);
 		color: var(--a-text-on-inverted);
