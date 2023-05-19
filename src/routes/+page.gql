@@ -1,5 +1,7 @@
 query LandingPage {
 	user {
+		name
+		email
 		...UserTeams
 		...UserDeploys
 	}

@@ -2,7 +2,6 @@
 	import { graphql, paginatedFragment, type UserDeploys } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
-	import Data from '$lib/icons/Data.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
 	export let user: UserDeploys;
 	$: teams = paginatedFragment(

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Teams from './Teams.svelte';
-	import Emissions from './Emissions.svelte';
 	import Deploys from './Deploys.svelte';
 	import type { PageData } from './$houdini';
 

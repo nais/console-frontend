@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Header from './Header.svelte';
 	import '../styles/reset.css';
 	import '@navikt/ds-css/index.css';
@@ -8,9 +8,14 @@
 	//import '../styles/vars_dark.css';
 	import '../styles/app.css';
 	import '$lib/font.css';
+	import type { PageData } from './$houdini';
+
+	export let data: PageData;
+	$: ({ UserInfo } = data);
+	$: user = $UserInfo.data?.user;
 </script>
 
-<Header />
+<Header {user} />
 <div class="container">
 	<slot />
 </div>

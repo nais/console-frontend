@@ -1,7 +1,12 @@
 <script lang="ts">
-	import Button from '$lib/Button.svelte';
 	import { Search } from '@nais/ds-svelte';
 	import Logo from '../Logo.svelte';
+	export let user:
+		| {
+				readonly name: string;
+				readonly email: string;
+		  }
+		| undefined;
 </script>
 
 <div class="header">
@@ -25,11 +30,14 @@
 				<li><a href="https://docs.nais.io">Docs</a></li>
 			</ul>
 		</nav>
-		<div>user</div>
+		<div class="cap">{user ? user.name : 'unauthorized'}</div>
 	</div>
 </div>
 
 <style>
+	.cap {
+		text-transform: capitalize;
+	}
 	.header-left {
 		display: flex;
 		gap: 2rem;
