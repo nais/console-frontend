@@ -1,0 +1,19 @@
+query Teams {
+	teams(first: 2) @paginate(mode: SinglePage) {
+		totalCount
+		pageInfo {
+			hasNextPage
+			hasPreviousPage
+			startCursor
+			endCursor
+			from
+			to
+		}
+		edges {
+			node {
+				description
+				name
+			}
+		}
+	}
+}

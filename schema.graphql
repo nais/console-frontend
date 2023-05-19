@@ -119,9 +119,10 @@ type DeploymentEdge {
   node: Deployment!
 }
 
-type DeploymentKey {
+type DeploymentKey implements Node {
   created: Time!
   expires: Time!
+  id: ID!
   key: String!
 }
 
