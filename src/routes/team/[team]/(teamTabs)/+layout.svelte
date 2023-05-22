@@ -24,10 +24,6 @@
 			routeId: '/team/[team]/(teamTabs)/deploy'
 		},
 		{
-			tab: 'Billing',
-			routeId: '/team/[team]/(teamTabs)/billing'
-		},
-		{
 			tab: 'Settings',
 			routeId: '/team/[team]/(teamTabs)/settings'
 		}

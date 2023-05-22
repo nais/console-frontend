@@ -25,8 +25,6 @@
 				<li><a href="/teams">Teams</a></li>
 				<li><a href="/apps">Workloads</a></li>
 				<li><a href="/deploys">Deploys</a></li>
-				<li><a href="/billing">Billing</a></li>
-				<li><a href="/status">Status</a></li>
 				<li><a href="https://docs.nais.io">Docs</a></li>
 			</ul>
 		</nav>

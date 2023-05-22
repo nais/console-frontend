@@ -4,7 +4,6 @@
 	let asdf = (
 		status: string
 	): { variant: 'success' | 'error' | 'neutral' | 'warning' | 'info'; title: string } => {
-		console.log(status);
 		switch (status) {
 			case 'success':
 				return { variant: 'success', title: 'Success' };
