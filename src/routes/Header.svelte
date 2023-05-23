@@ -1,12 +1,58 @@
 <script lang="ts">
 	import { Search } from '@nais/ds-svelte';
 	import Logo from '../Logo.svelte';
+	import { graphql } from '$houdini';
+
+	import { json } from '@sveltejs/kit';
+	import { SearchQueryStore } from '$houdini';
+
+	const store = graphql(`
+		query SearchQuery($query: String!) {
+			search(first: 10, query: $query) {
+				edges {
+					node {
+						__typename
+						... on App {
+							name
+							team {
+								name
+							}
+							env {
+								name
+							}
+						}
+						... on Team {
+							name
+						}
+					}
+				}
+			}
+		}
+	`);
+
 	export let user:
 		| {
 				readonly name: string;
 				readonly email: string;
 		  }
 		| undefined;
+
+	let query = '';
+
+	let timeout: ReturnType<typeof setTimeout> | null = null;
+
+	$: {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+		}
+		if (query.length > 0) {
+			timeout = setTimeout(() => {
+				store.fetch({ variables: { query } });
+			}, 500);
+		}
+	}
+	$: console.log($store.data);
 </script>
 
 <div class="header">
@@ -17,7 +63,38 @@
 				Console
 			</a>
 			<div class="search">
-				<Search label="search" variant="primary" size="small" description="Search for anything" />
+				<Search
+					bind:value={query}
+					label="search"
+					variant="primary"
+					size="small"
+					description="Search for anything"
+				/>
+				{#if $store.data && query.length > 0}
+					<ul>
+						{#each $store.data.search.edges as { node }}
+							{#if node.__typename === 'App'}
+								<li>
+									<a
+										href="/team/{node.team.name}/{node.env.name}/{node.name}"
+										on:click={() => {
+											query = '';
+										}}>{node.name} ({node.env.name}/{node.team.name})</a
+									>
+								</li>
+							{:else if node.__typename === 'Team'}
+								<li>
+									<a
+										href="/team/{node.name}"
+										on:click={() => {
+											query = '';
+										}}>{node.name}</a
+									>
+								</li>
+							{/if}
+						{/each}
+					</ul>
+				{/if}
 			</div>
 		</div>
 		<nav>
@@ -33,6 +110,35 @@
 </div>
 
 <style>
+	.search > ul {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		background-color: white;
+		border: 1px solid var(--a-surface-inverted-border);
+		border-top: none;
+		border-radius: 0 0 0.25rem 0.25rem;
+		padding: 0;
+		margin: 0;
+	}
+	.search > ul > li {
+		display: flex;
+		align-items: center;
+		height: 3rem;
+		background-color: var(--a-surface-default);
+	}
+	.search > ul > li > a {
+		display: flex;
+		align-items: center;
+		height: 100%;
+		width: 100%;
+		padding: 0 1rem;
+		background-color: var(--a-surface-default);
+		color: black;
+	}
 	.cap {
 		text-transform: capitalize;
 	}
@@ -41,6 +147,7 @@
 		gap: 2rem;
 	}
 	.search {
+		position: relative;
 		width: 250px;
 	}
 	.header {

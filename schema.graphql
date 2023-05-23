@@ -20,6 +20,7 @@ type App implements Node {
   name: String!
   resources: Resources!
   storage: [Storage!]!
+  team: Team!
   variables: [Variable!]!
 }
 
@@ -283,6 +284,7 @@ type Query {
   app(env: String!, name: String!, team: String!): App!
   deployments(after: Cursor, first: Int): DeploymentConnection!
   node(id: ID!): Node
+  search(after: Cursor, before: Cursor, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
   teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
   user: User!
@@ -307,6 +309,19 @@ type Scope {
   consumes: [Consume!]!
   exposes: [Expose!]!
 }
+
+type SearchConnection {
+  edges: [SearchEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SearchEdge {
+  cursor: Cursor!
+  node: SearchNode!
+}
+
+union SearchNode = App | Team
 
 type Sidecar {
   autoLogin: Boolean!
