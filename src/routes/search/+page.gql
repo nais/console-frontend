@@ -11,6 +11,11 @@ query SearchPage($query: String!, $type: SearchType) {
 					env {
 						name
 					}
+					deployed
+					instances {
+						name
+						status
+					}
 				}
 				... on Team {
 					name

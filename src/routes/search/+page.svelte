@@ -5,6 +5,7 @@
 	import type { PageData } from './$houdini';
 	import Logo from '../../Logo.svelte';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
 	export let data: PageData;
 	$: ({ SearchPage, query } = data);
 
@@ -29,73 +30,100 @@
 		</div>
 	</div>
 </form>
+
 {#if $SearchPage.data}
 	<div class="results">
 		{#if $SearchPage.data.search.edges.length === 0}
-			<Card>
-				No results matching "{q}"
-			</Card>
+			No results matching "{q}"
 		{/if}
+
 		{#each $SearchPage.data.search.edges as { node }, i}
 			{#if node.__typename === 'App'}
-				<a href="/team/{node.team.name}/{node.env.name}/{node.name}">
-					<Card>
+				<div style="border-bottom: 1px solid silver; padding-bottom: 0.5rem">
+					<a href="/team/{node.team.name}/{node.env.name}/{node.name}">
 						<div class="result">
-							<div class="typeIcon">
-								<Logo height="1.5rem" />
-								<div>App</div>
-							</div>
-							<div>
-								<div>
-									{node.name}
+							<div class="resultLeft">
+								<div class="typeIcon">
+									<Logo height="1.5rem" />
+									<div>App</div>
 								</div>
 
-								<div class="searchInfo">
-									{node.env.name} /
-									{node.team.name}
+								<h3>{node.name}</h3>
+							</div>
+							<div class="statz">
+								<div>
+									<div class="stat">
+										{node.env.name}
+									</div>
+									<div class="title">Environment</div>
+								</div>
+								<div>
+									<div class="stat">
+										{node.team.name}
+									</div>
+									<div class="title">Team</div>
+								</div>
+								<div>
+									<div class="stat">
+										{node.instances.length}
+									</div>
+									<div class="title"># of instances</div>
+								</div>
+								<div>
+									<div class="stat">
+										{#if node.deployed}
+											<Time time={node.deployed} distance={true} />
+										{:else}
+											Never
+										{/if}
+									</div>
+									<div class="title">Last deployed</div>
 								</div>
 							</div>
 						</div>
-					</Card>
-				</a>
+					</a>
+				</div>
 			{:else if node.__typename === 'Team'}
-				<a href="/team/{node.name}">
-					<Card>
+				<div style="border-bottom: 1px solid silver; padding-bottom: 0.5rem">
+					<a href="/team/{node.name}">
 						<div class="result">
-							<div>
+							<div class="resultLeft">
 								<div class="typeIcon">
 									<PersonGroup size="1.5rem" />
 									<div>Team</div>
 								</div>
 								<div class="team">
-									<div class="teamName">
+									<h3>
 										{node.name}
-									</div>
+									</h3>
 									<div class="teamDescription">
-										{node.description}
+										Lorem ipsum dolor, sit amet consectetur adipisicing elit. Perferendis ullam
+										recusandae, quisquam sapiente aspernatur aliquid velit sed dolorum quod nesciunt
+										enim quidem deserunt totam autem. Eligendi eveniet veritatis porro laudantium.
 									</div>
 								</div>
 							</div>
 
 							<div class="statz">
 								<div>
-									<div class="title">Apps</div>
 									<div class="stat">
 										{node.members.totalCount}
 									</div>
+									<div class="title">Apps</div>
 								</div>
 
 								<div>
-									<div class="title">Members</div>
 									<div class="stat">
 										{node.members.totalCount}
 									</div>
+									<div class="title">Members</div>
 								</div>
 							</div>
 						</div>
-					</Card>
-				</a>
+					</a>
+				</div>
 			{/if}
+			<hr style="border-bottom: 1px solid gold" />
 		{/each}
 	</div>
 {/if}
@@ -105,18 +133,25 @@
 		text-decoration: none;
 		color: var(--a-text-default);
 	}
+	h3 {
+		margin-bottom: 0;
+		line-height: 1rem;
+	}
 	.statz {
 		display: flex;
 		flex-direction: row;
-		align-items: flex-end;
+		align-items: center;
 		gap: 0.5rem;
 	}
 	.stat {
 		font-size: 1.5rem;
+		white-space: nowrap;
+		width: 100%;
 	}
 	.title {
 		font-size: 0.75rem;
 		color: var(--a-text-subtle);
+		white-space: nowrap;
 	}
 	.team {
 		display: flex;
@@ -141,18 +176,19 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		justify-content: space-between;
+		width: 50vw;
+		margin: 0 auto;
 	}
 	.result {
 		text-decoration: none;
 		display: flex;
-		flex-direction: row;
-		justify-items: space-between;
 		gap: 0.5rem;
+		justify-content: space-between;
 	}
 	.searchInfo {
 		font-size: 0.75rem;
 		color: var(--a-text-subtle);
+		line-height: 10px;
 	}
 	.typeIcon {
 		display: flex;
@@ -163,5 +199,11 @@
 	}
 	.typeIcon > div {
 		font-size: 0.75rem;
+	}
+	.resultLeft {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 1rem;
 	}
 </style>
