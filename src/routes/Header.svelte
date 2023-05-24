@@ -74,7 +74,7 @@
 					<Search
 						bind:value={query}
 						label="search"
-						variant="primary"
+						variant="simple"
 						size="small"
 						description="Search for anything"
 						on:blur={() => {
@@ -91,7 +91,7 @@
 								showSearch = true;
 							}
 						}}
-						on:keyup={(e) => {
+						on:keyup={(e: KeyEvent) => {
 							if (e.key === 'ArrowDown') {
 								selected += 1;
 							}
