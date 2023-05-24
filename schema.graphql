@@ -284,7 +284,7 @@ type Query {
   app(env: String!, name: String!, team: String!): App!
   deployments(after: Cursor, first: Int): DeploymentConnection!
   node(id: ID!): Node
-  search(after: Cursor, before: Cursor, first: Int, last: Int, query: String!): SearchConnection!
+  search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
   teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
   user: User!
@@ -321,7 +321,16 @@ type SearchEdge {
   node: SearchNode!
 }
 
+input SearchFilter {
+  type: SearchType
+}
+
 union SearchNode = App | Team
+
+enum SearchType {
+  APP
+  TEAM
+}
 
 type Sidecar {
   autoLogin: Boolean!

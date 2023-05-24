@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { graphql, paginatedFragment } from '$houdini';
 	import type { UserTeams } from '$houdini';
+	import { PersonGroup } from '@nais/ds-svelte/icons';
 	import Card from '$lib/Card.svelte';
 	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte';
 
@@ -31,8 +32,11 @@
 	);
 </script>
 
-<Card width="250px" height="400px">
-	<h3>My teams</h3>
+<Card width="300px">
+	<h3>
+		<PersonGroup />
+		My teams
+	</h3>
 	<div class="teams">
 		{#each $teams.data.teams.edges as edge}
 			<LinkPanel about={edge.node.description} href="/team/{edge.node.name}" border={true} as="a">
@@ -44,6 +48,11 @@
 </Card>
 
 <style>
+	h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 	.teams {
 		display: flex;
 		flex-direction: column;

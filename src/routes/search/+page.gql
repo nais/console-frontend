@@ -1,0 +1,28 @@
+query SearchPage($query: String!, $type: SearchType) {
+	search(first: 10, query: $query, filter: { type: $type }) {
+		edges {
+			node {
+				__typename
+				... on App {
+					name
+					team {
+						name
+					}
+					env {
+						name
+					}
+				}
+				... on Team {
+					name
+					description
+					members {
+						totalCount
+					}
+					apps {
+						totalCount
+					}
+				}
+			}
+		}
+	}
+}

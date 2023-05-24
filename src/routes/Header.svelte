@@ -2,13 +2,13 @@
 	import { Search } from '@nais/ds-svelte';
 	import Logo from '../Logo.svelte';
 	import { graphql } from '$houdini';
-
-	import { json } from '@sveltejs/kit';
-	import { SearchQueryStore } from '$houdini';
+	import SearchResults from '$lib/SearchResults.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	const store = graphql(`
-		query SearchQuery($query: String!) {
-			search(first: 10, query: $query) {
+		query SearchQuery($query: String!, $type: SearchType) {
+			search(first: 10, query: $query, filter: { type: $type }) {
 				edges {
 					node {
 						__typename
@@ -38,7 +38,8 @@
 		| undefined;
 
 	let query = '';
-
+	let selected = -1;
+	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	$: {
@@ -47,12 +48,13 @@
 			timeout = null;
 		}
 		if (query.length > 0) {
+			showSearch = true;
 			timeout = setTimeout(() => {
 				store.fetch({ variables: { query } });
 			}, 500);
 		}
 	}
-	$: console.log($store.data);
+	$: subpage = $page.url.pathname;
 </script>
 
 <div class="header">
@@ -62,40 +64,67 @@
 				<Logo height="2rem" />
 				Console
 			</a>
-			<div class="search">
-				<Search
-					bind:value={query}
-					label="search"
-					variant="primary"
-					size="small"
-					description="Search for anything"
-				/>
-				{#if $store.data && query.length > 0}
-					<ul>
-						{#each $store.data.search.edges as { node }}
-							{#if node.__typename === 'App'}
-								<li>
-									<a
-										href="/team/{node.team.name}/{node.env.name}/{node.name}"
-										on:click={() => {
-											query = '';
-										}}>{node.name} ({node.env.name}/{node.team.name})</a
-									>
-								</li>
-							{:else if node.__typename === 'Team'}
-								<li>
-									<a
-										href="/team/{node.name}"
-										on:click={() => {
-											query = '';
-										}}>{node.name}</a
-									>
-								</li>
-							{/if}
-						{/each}
-					</ul>
-				{/if}
-			</div>
+			{#if !subpage.startsWith('/search')}
+				<form
+					class="search"
+					method="get"
+					action="/search"
+					on:submit|preventDefault={() => goto(`/search?q=${query}`)}
+				>
+					<Search
+						bind:value={query}
+						label="search"
+						variant="primary"
+						size="small"
+						description="Search for anything"
+						on:blur={() => {
+							setTimeout(() => {
+								showSearch = false;
+							}, 100);
+						}}
+						on:clear={() => {
+							query = '';
+							showSearch = false;
+						}}
+						on:focus={() => {
+							if (query.length > 0) {
+								showSearch = true;
+							}
+						}}
+						on:keyup={(e) => {
+							if (e.key === 'ArrowDown') {
+								selected += 1;
+							}
+							if (e.key === 'ArrowUp') {
+								selected -= 1;
+							}
+							selected = Math.min(
+								($store.data?.search.edges.length || 0) - 1,
+								Math.max(-1, selected)
+							);
+							if (e.key === 'Enter') {
+								if (selected >= 0) {
+									const node = $store.data?.search.edges[selected].node;
+									if (!node) return;
+									query = '';
+									selected = -1;
+									if (node.__typename === 'App') {
+										goto(`/team/${node.team.name}/${node.env.name}/${node.name}`);
+									} else if (node.__typename === 'Team') {
+										goto(`/team/${node.name}`);
+									}
+								}
+							}
+						}}
+					/>
+					{#if $store.fetching}
+						<div class="loading">Loading...</div>
+					{/if}
+					{#if $store.data && showSearch}
+						<SearchResults data={$store.data} {query} {selected} />
+					{/if}
+				</form>
+			{/if}
 		</div>
 		<nav>
 			<ul>
@@ -110,35 +139,6 @@
 </div>
 
 <style>
-	.search > ul {
-		position: absolute;
-		display: flex;
-		flex-direction: column;
-		top: 100%;
-		left: 0;
-		width: 100%;
-		background-color: white;
-		border: 1px solid var(--a-surface-inverted-border);
-		border-top: none;
-		border-radius: 0 0 0.25rem 0.25rem;
-		padding: 0;
-		margin: 0;
-	}
-	.search > ul > li {
-		display: flex;
-		align-items: center;
-		height: 3rem;
-		background-color: var(--a-surface-default);
-	}
-	.search > ul > li > a {
-		display: flex;
-		align-items: center;
-		height: 100%;
-		width: 100%;
-		padding: 0 1rem;
-		background-color: var(--a-surface-default);
-		color: black;
-	}
 	.cap {
 		text-transform: capitalize;
 	}

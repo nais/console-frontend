@@ -9,6 +9,7 @@ const config = {
 		'houdini-svelte': {}
 	},
 	scalars: {
+		Cursor: { type: 'string' },
 		Time: {
 			type: 'Date',
 			unmarshal(val) {

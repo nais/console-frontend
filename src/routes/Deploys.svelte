@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
+	import { Body, DataCell, Header, HeaderCell, Heading, Row, Table } from '@nais/ds-svelte';
 	export let user: UserDeploys;
 	$: teams = paginatedFragment(
 		user,
@@ -41,56 +42,61 @@
 		.map((team) => team.node.deployments)
 		.flatMap((deploys) => deploys.edges.map((deploy) => deploy.node))
 		.sort((a, b) => b.created.getTime() - a.created.getTime())
-		.slice(0, 5);
+		.slice(0, 10);
 	$: totalDeploys = $teams.data?.teams.edges
 		.map((edge) => edge.node.deployments.totalCount)
 		.reduce((a, b) => a + b, 0);
 </script>
 
-<Card width="250px" height="400px">
-	<div class="deployheading">
-		<div class="icon">
-			<DeploysIcon size="1.5rem" />
-		</div>
-		<h3>My latest deploys</h3>
-	</div>
-	{#each teamDeploys || [] as deploy}
-		<div class="dep">
-			<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
-			&nbsp;
-			<DeploysIcon />
-			&nbsp;
-			<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
-				{deploy.resources[0].name}</a
-			>&nbsp; to {deploy.env}&nbsp;
-			<Time time={deploy.created} distance={true} />
-		</div>
-	{:else}
-		<p>no deploys</p>
-	{/each}
+<Card width="250px">
+	<h3>
+		<DeploysIcon size="1.5rem" />
+		My latest deploys
+	</h3>
+	<Table size="small">
+		<Header>
+			<HeaderCell>Team</HeaderCell>
+			<HeaderCell>App</HeaderCell>
+			<HeaderCell>Env</HeaderCell>
+			<HeaderCell>When</HeaderCell>
+		</Header>
+		<Body>
+			{#each teamDeploys || [] as deploy}
+				<Row>
+					<DataCell>
+						<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
+					</DataCell>
+					<DataCell>
+						<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
+							{deploy.resources[0].name}</a
+						>
+					</DataCell>
+					<DataCell>
+						{deploy.env}
+					</DataCell>
+					<DataCell>
+						<Time time={deploy.created} distance={true} />
+					</DataCell>
+				</Row>
+			{:else}
+				<p>no deploys</p>
+			{/each}
+		</Body>
+	</Table>
 	<div class="tot">
-		{totalDeploys} deploys total
+		<a href="/deploys">{totalDeploys} deploys total</a>
 	</div>
 </Card>
 
 <style>
-	.icon {
-		margin-top: 0.2rem;
-	}
-	.deployheading {
+	h3 {
 		display: flex;
-		vertical-align: top;
+		align-items: center;
 		gap: 0.5rem;
+		margin-bottom: 0.5rem;
 	}
 	.tot {
 		text-align: right;
-	}
-	.dep {
-		padding: 0.5rem;
-		display: flex;
-		align-items: center;
-		margin-bottom: 1rem;
-		border: 1px solid var(--a-border-default);
-		border-radius: 0.25rem;
+		margin-top: 1rem;
 	}
 </style>

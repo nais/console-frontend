@@ -1,5 +1,4 @@
 <script lang="ts">
-	export let columns = 0;
 	export let paddingBottom = '';
 	export let width = '';
 	export let height = '';
@@ -7,7 +6,7 @@
 
 <div
 	{...$$restProps}
-	style="--columns: {columns}; padding-bottom: {paddingBottom}; min-width: {width}; max-height: {height} "
+	style="padding-bottom: {paddingBottom}; min-width: {width}; max-height: {height} "
 >
 	<slot />
 </div>
@@ -17,8 +16,6 @@
 		border-radius: 0.25rem;
 		background-color: var(--a-bg-default);
 		padding: 1.5rem;
-		display: block;
-		grid-column: span var(--columns);
 		overflow: scroll;
 	}
 </style>
