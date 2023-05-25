@@ -15,10 +15,12 @@
 </script>
 
 {#if $AppDeploys.errors}
+	<h3>No deploys found</h3>
 	{#each $AppDeploys.errors as error}
 		<p>{error.message}</p>
 	{/each}
 {/if}
+
 {#if $AppDeploys.data}
 	<Card>
 		<Table zebraStripes={true}>

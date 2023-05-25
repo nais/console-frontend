@@ -97,9 +97,7 @@
 										{node.name}
 									</h3>
 									<div class="teamDescription">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit. Perferendis ullam
-										recusandae, quisquam sapiente aspernatur aliquid velit sed dolorum quod nesciunt
-										enim quidem deserunt totam autem. Eligendi eveniet veritatis porro laudantium.
+										{node.description}
 									</div>
 								</div>
 							</div>
@@ -157,9 +155,6 @@
 		display: flex;
 		flex-direction: column;
 	}
-	.teamName {
-		font-weight: 600;
-	}
 	.teamDescription {
 		color: var(--a-text-subtle);
 		font-style: italic;
@@ -184,11 +179,6 @@
 		display: flex;
 		gap: 0.5rem;
 		justify-content: space-between;
-	}
-	.searchInfo {
-		font-size: 0.75rem;
-		color: var(--a-text-subtle);
-		line-height: 10px;
 	}
 	.typeIcon {
 		display: flex;

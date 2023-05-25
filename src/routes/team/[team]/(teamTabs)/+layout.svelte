@@ -49,14 +49,4 @@
 		display: flex;
 		justify-content: space-between;
 	}
-	.headerItems {
-		display: flex;
-		gap: 1rem;
-	}
-	.headerItem {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.2rem;
-	}
 </style>

@@ -41,6 +41,7 @@
 	let selected = -1;
 	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
+	$: console.log('SS: ', showSearch, 'length: ', $store.data?.search.edges.length);
 
 	$: {
 		if (timeout) {
@@ -55,6 +56,38 @@
 		}
 	}
 	$: subpage = $page.url.pathname;
+
+	function on_key_up(event: KeyboardEvent) {
+		switch (event.key) {
+			case 'ArrowDown':
+				selected += 1;
+				selected = Math.min(($store.data?.search.edges.length || 0) - 1, Math.max(-1, selected));
+				event.preventDefault();
+				break;
+			case 'ArrowUp':
+				selected -= 1;
+				selected = Math.min(($store.data?.search.edges.length || 0) - 1, Math.max(-1, selected));
+				event.preventDefault();
+				break;
+			case 'Enter':
+				if (selected >= 0) {
+					const node = $store.data?.search.edges[selected].node;
+					if (!node) return;
+					query = '';
+					selected = -1;
+					console.log(node.__typename);
+					if (node.__typename === 'App') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.name}/${node.env.name}/${node.name}`);
+					} else if (node.__typename === 'Team') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.name}`);
+					}
+				}
+		}
+	}
 </script>
 
 <div class="header">
@@ -64,67 +97,36 @@
 				<Logo height="2rem" />
 				Console
 			</a>
-			{#if !subpage.startsWith('/search')}
-				<form
-					class="search"
-					method="get"
-					action="/search"
-					on:submit|preventDefault={() => goto(`/search?q=${query}`)}
-				>
-					<Search
-						bind:value={query}
-						label="search"
-						variant="simple"
-						size="small"
-						description="Search for anything"
-						on:blur={() => {
-							setTimeout(() => {
-								showSearch = false;
-							}, 100);
-						}}
-						on:clear={() => {
-							query = '';
+			<div class="search">
+				<Search
+					bind:value={query}
+					label="search"
+					variant="simple"
+					size="small"
+					description="Search for anything"
+					on:blur={() => {
+						setTimeout(() => {
 							showSearch = false;
-						}}
-						on:focus={() => {
-							if (query.length > 0) {
-								showSearch = true;
-							}
-						}}
-						on:keyup={(e: KeyEvent) => {
-							if (e.key === 'ArrowDown') {
-								selected += 1;
-							}
-							if (e.key === 'ArrowUp') {
-								selected -= 1;
-							}
-							selected = Math.min(
-								($store.data?.search.edges.length || 0) - 1,
-								Math.max(-1, selected)
-							);
-							if (e.key === 'Enter') {
-								if (selected >= 0) {
-									const node = $store.data?.search.edges[selected].node;
-									if (!node) return;
-									query = '';
-									selected = -1;
-									if (node.__typename === 'App') {
-										goto(`/team/${node.team.name}/${node.env.name}/${node.name}`);
-									} else if (node.__typename === 'Team') {
-										goto(`/team/${node.name}`);
-									}
-								}
-							}
-						}}
-					/>
-					{#if $store.fetching}
-						<div class="loading">Loading...</div>
-					{/if}
-					{#if $store.data && showSearch}
-						<SearchResults data={$store.data} {query} {selected} />
-					{/if}
-				</form>
-			{/if}
+						}, 100);
+					}}
+					on:clear={() => {
+						query = '';
+						showSearch = false;
+					}}
+					on:focus={() => {
+						if (query.length > 0) {
+							showSearch = true;
+						}
+					}}
+					on:keyup={on_key_up}
+				/>
+				{#if $store.fetching}
+					<div class="loading">Loading...</div>
+				{/if}
+				{#if $store.data && showSearch}
+					<SearchResults {showSearch} data={$store.data} {query} {selected} />
+				{/if}
+			</div>
 		</div>
 		<nav>
 			<ul>

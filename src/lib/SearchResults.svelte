@@ -6,6 +6,7 @@
 	export let data: SearchQuery$result;
 	export let query: string;
 	export let selected: number;
+	export let showSearch: boolean;
 </script>
 
 <ul>
@@ -22,6 +23,7 @@
 					href="/team/{node.team.name}/{node.env.name}/{node.name}"
 					on:click={() => {
 						query = '';
+						showSearch = false;
 					}}
 				>
 					<div class="typeIcon">
@@ -47,6 +49,7 @@
 					href="/team/{node.name}"
 					on:click={() => {
 						query = '';
+						showSearch = false;
 					}}
 				>
 					<div class="typeIcon">
