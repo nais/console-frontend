@@ -7,6 +7,7 @@
 	import Time from '$lib/Time.svelte';
 	import { graphql } from '$houdini';
 	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: String!) {
 			changeDeployKey(team: $team) {
@@ -21,8 +22,8 @@
 
 	$: ({ TeamSettings } = data);
 	$: teamSettings = $TeamSettings.data?.team;
-	$: showKey = false;
-	$: showRotateKey = false;
+	let showKey = false;
+	let showRotateKey = false;
 	$: team = $page.params.team;
 </script>
 
@@ -99,27 +100,29 @@
 			</dd>
 		</dl>
 	</Card>
+	{#if browser}
+		<Modal bind:open={showRotateKey} closeButton={false}>
+			<h3>Rotate deploy key</h3>
+			<p>Are you sure you want to rotate the deploy key?</p>
+			<Button
+				on:click={() => {
+					showRotateKey = !showRotateKey;
+				}}
+			>
+				Cancel</Button
+			>
+			<Button
+				variant="danger"
+				on:click={() => {
+					showRotateKey = !showRotateKey;
+					rotateKey.mutate({ team });
+				}}
+			>
+				Rotate key</Button
+			>
+		</Modal>
+	{/if}
 {/if}
-<Modal bind:open={showRotateKey} closeButton={false}>
-	<h3>Rotate deploy key</h3>
-	<p>Are you sure you want to rotate the deploy key?</p>
-	<Button
-		on:click={() => {
-			showRotateKey = !showRotateKey;
-		}}
-	>
-		Cancel</Button
-	>
-	<Button
-		variant="danger"
-		on:click={() => {
-			showRotateKey = !showRotateKey;
-			rotateKey.mutate({ team });
-		}}
-	>
-		Rotate key</Button
-	>
-</Modal>
 
 <style>
 	dt {
