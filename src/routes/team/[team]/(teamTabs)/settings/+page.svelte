@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { Button, Modal } from '@nais/ds-svelte';
+	import { Alert, Button, Modal } from '@nais/ds-svelte';
 	import type { PageData } from './$houdini';
 	import { Eye, EyeSlash, ArrowsCirclepath, Clipboard } from '@nais/ds-svelte/icons';
 	import { copyText } from 'svelte-copy';
@@ -28,20 +28,32 @@
 </script>
 
 {#if teamSettings}
+	<div style="margin-bottom: 1rem;">
+		<Alert variant="info">
+			Team settings currently managed by <a href="https://teams.nav.cloud.nais.io">Teams</a>
+			<br />
+			This functionality will be incorporated into this app eventually
+		</Alert>
+	</div>
 	<Card>
 		<h3>{teamSettings.name}</h3>
-		<h5>{teamSettings.description}</h5>
-		<h4>Slack Channel: {teamSettings.slackChannel}</h4>
-		<h4>Alert channels</h4>
-		<dl>
-			{#each teamSettings.slackAlertsChannels || [] as channel}
-				<dt>{channel.env}:</dt>
-				<dd>{channel.name}</dd>
-			{:else}
-				<dt>Warning:</dt>
-				<dd>No alert channels</dd>
-			{/each}
-		</dl>
+		<i>{teamSettings.description}</i>
+
+		{#if teamSettings.slackChannel}
+			<dl>
+				<dh>Default Channel:</dh>
+				<dd>{teamSettings.slackChannel}</dd>
+			</dl>
+		{/if}
+		{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0}
+			<dl>
+				<dh>Overridden channels:</dh>
+				{#each teamSettings.slackAlertsChannels as channel}
+					<dt>{channel.env}:</dt>
+					<dd>{channel.name}</dd>
+				{/each}
+			</dl>
+		{/if}
 	</Card>
 	<br />
 	<Card>
@@ -131,5 +143,11 @@
 	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
+	}
+	h3 {
+		margin-bottom: 0.5rem;
+	}
+	i {
+		margin-bottom: 0.5rem;
 	}
 </style>
