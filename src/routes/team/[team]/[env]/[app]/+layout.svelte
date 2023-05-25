@@ -3,13 +3,17 @@
 	import Tabs from '$lib/Tabs.svelte';
 	import Tab from '$lib/Tab.svelte';
 	import { replacer } from '$lib/replacer';
+	import type { PageData } from './$houdini';
+
+	export let data: PageData;
+	$: ({ LayoutApp } = data);
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
 	$: app = $page.params.app;
 	$: currentRoute = $page.route.id;
 
-	const nav = [
+	$: nav = [
 		{
 			tab: 'Overview',
 			routeId: '/team/[team]/[env]/[app]'
@@ -23,6 +27,8 @@
 			routeId: '/team/[team]/[env]/[app]/yaml'
 		}
 	];
+	$: $LayoutApp.data?.app.variables &&
+		nav.push({ tab: 'Variables', routeId: '/team/[team]/[env]/[app]/variables' });
 </script>
 
 <h3><a href="/team/{team}"> {team}</a> / {app} ({env})</h3>

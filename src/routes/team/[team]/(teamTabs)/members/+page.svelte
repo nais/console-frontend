@@ -10,7 +10,7 @@
 
 {#if $Members.data}
 	<Card>
-		<h3>memeBears</h3>
+		<h3>Members</h3>
 		<Table>
 			<Header>
 				<HeaderCell>Name</HeaderCell>

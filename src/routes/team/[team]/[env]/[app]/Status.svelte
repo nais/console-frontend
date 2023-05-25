@@ -21,7 +21,7 @@
 	$: total = instances.length;
 </script>
 
-<div style="display: flex; align-items: center; flex-direction: row; gap: 1rem;">
+<div>
 	{#if instances}
 		{#if running === total}
 			<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
@@ -34,3 +34,12 @@
 		0 / 0 running
 	{/if}
 </div>
+
+<style>
+	div {
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+		gap: 1rem;
+	}
+</style>

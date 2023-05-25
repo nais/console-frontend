@@ -41,7 +41,6 @@
 	let selected = -1;
 	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
-	$: console.log('SS: ', showSearch, 'length: ', $store.data?.search.edges.length);
 
 	$: {
 		if (timeout) {
@@ -75,7 +74,6 @@
 					if (!node) return;
 					query = '';
 					selected = -1;
-					console.log(node.__typename);
 					if (node.__typename === 'App') {
 						query = '';
 						showSearch = false;
@@ -107,7 +105,7 @@
 					on:blur={() => {
 						setTimeout(() => {
 							showSearch = false;
-						}, 100);
+						}, 200);
 					}}
 					on:clear={() => {
 						query = '';
@@ -124,15 +122,14 @@
 					<div class="loading">Loading...</div>
 				{/if}
 				{#if $store.data && showSearch}
-					<SearchResults {showSearch} data={$store.data} {query} {selected} />
+					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
 				{/if}
 			</div>
 		</div>
 		<nav>
 			<ul>
-				<li><a href="/teams">Teams</a></li>
-				<li><a href="/apps">Workloads</a></li>
 				<li><a href="/deploys">Deploys</a></li>
+				<li><a href="https://console.nav.cloud.nais.io">Teams</a></li>
 				<li><a href="https://docs.nais.io">Docs</a></li>
 			</ul>
 		</nav>

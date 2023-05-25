@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { fragment, graphql } from '$houdini';
 	import type { AutoScaling } from '$houdini';
+	import CpuIcon from '$lib/icons/CpuIcon.svelte';
+	import { Tooltip } from '@nais/ds-svelte';
+	import { ArrowUp, ArrowDown } from '@nais/ds-svelte/icons';
 
 	export let app: AutoScaling;
 	$: data = fragment(
@@ -20,25 +23,36 @@
 	$: autoscaling = $data.autoScaling;
 </script>
 
-<div style="display: flex; align-items: center; flex-direction: row; gap: 1rem;">
-	<ul>
-		<li>Min: {autoscaling.min}</li>
-		<li>Max: {autoscaling.max}</li>
-		<li>CPU Threshold: {autoscaling.cpuThreshold}%</li>
-		<li>Auto Scaling: {autoscaling.disabled ? 'true' : 'false'}</li>
-	</ul>
+<div class="wrapper">
+	{#if autoscaling.disabled}
+		based on custom metrics
+	{:else}
+		<Tooltip content="Minimum replicas">
+			min: {autoscaling.min}</Tooltip
+		>
+		<Tooltip content="Maximum replicas">
+			max: {autoscaling.max}
+		</Tooltip>
+		<Tooltip content="CPU threshold"
+			><div class="cpu">
+				<div style="margin-top: 4px;"><CpuIcon /></div>
+				{autoscaling.cpuThreshold}%
+			</div></Tooltip
+		>
+	{/if}
 </div>
 
 <style>
-	ul {
-		list-style: none;
-		padding: 0;
-		margin: 0 0 1rem 0;
+	.wrapper {
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+		gap: 1rem;
+		color: var(--a-text-subtle);
 	}
-	li {
+	.cpu {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		flex-direction: row;
 	}
 </style>

@@ -21,6 +21,10 @@ query Workloads($team: String!) {
 						name
 					}
 					deployed
+
+					instances {
+						status
+					}
 				}
 			}
 		}

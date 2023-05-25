@@ -32,7 +32,7 @@
 	);
 </script>
 
-<Card width="300px">
+<Card minWidth="300px">
 	<h3>
 		<PersonGroup />
 		My teams

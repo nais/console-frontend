@@ -10,6 +10,9 @@
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
+	$: $Workloads.data?.team.apps.edges.sort((a, b) => {
+		return a.node.instances.every((instance) => instance.status === 'Running') ? 1 : -1;
+	});
 </script>
 
 <Card>

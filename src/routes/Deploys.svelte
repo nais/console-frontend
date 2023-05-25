@@ -48,7 +48,7 @@
 		.reduce((a, b) => a + b, 0);
 </script>
 
-<Card width="250px">
+<Card minWidth="250px">
 	<h3>
 		<DeploysIcon size="1.5rem" />
 		My latest deploys

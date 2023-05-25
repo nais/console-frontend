@@ -3,6 +3,7 @@
 	import Globe from '$lib/icons/Globe.svelte';
 	import { fragment, graphql } from '$houdini';
 	import type { AccessPolicy } from '$houdini';
+	import { Tooltip } from '@nais/ds-svelte';
 
 	export let app: AccessPolicy;
 
@@ -76,7 +77,11 @@
 		<Arrow size="2rem" />
 	</div>
 	<div class="applicationName">
-		<h1>{$data.name}</h1>
+		<h1>
+			<Tooltip content={$data.name}>
+				{$data.name.length > 7 ? $data.name.substring(0, 7) + '...' : $data.name}
+			</Tooltip>
+		</h1>
 	</div>
 	<div class="arrow">
 		<Arrow size="2rem" />
