@@ -377,6 +377,8 @@ type Team implements Node {
   name: String!
   slackAlertsChannels: [SlackAlertsChannel!]
   slackChannel: String
+  viewerIsAdmin: Boolean!
+  viewerIsMember: Boolean!
 }
 
 type TeamConnection {

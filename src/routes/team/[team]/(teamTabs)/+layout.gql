@@ -1,15 +1,6 @@
-query UserMemberships($team: String!) {
-	user {
-		email
-	}
+query TeamRoles($team: String!) {
 	team(name: $team) {
-		name
-		members {
-			edges {
-				node {
-					email
-				}
-			}
-		}
+		viewerIsAdmin
+		viewerIsMember
 	}
 }
