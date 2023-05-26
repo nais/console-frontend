@@ -3,6 +3,10 @@
 	import Tabs from '$lib/Tabs.svelte';
 	import Tab from '$lib/Tab.svelte';
 	import { replacer } from '$lib/replacer';
+	import type { PageData } from './$houdini';
+
+	export let data: PageData;
+	$: ({ UserMemberships, UserInfo } = data);
 
 	$: team = $page.params.team;
 	$: currentRoute = $page.route.id;
@@ -18,12 +22,14 @@
 		{
 			tab: 'Deploy',
 			routeId: '/team/[team]/(teamTabs)/deploy'
-		},
-		{
-			tab: 'Settings',
-			routeId: '/team/[team]/(teamTabs)/settings'
 		}
 	];
+	$: email = $UserInfo.data?.user.email;
+	$: console.log(email);
+	/*$: email = $UserMemberships.data?.user.email;
+	$: memberOfTeam = $UserMemberships.data?.team.members.edges.some(
+		(edge) => edge.node.email === email
+	);*/
 </script>
 
 <div class="header">
@@ -33,6 +39,13 @@
 	{#each nav as { tab, routeId }}
 		<Tab href={replacer(routeId, { team })} active={currentRoute == routeId} title={tab} />
 	{/each}
+	{#if memberOfTeam}
+		<Tab
+			href={replacer('/team/[team]/(teamTabs)/settings', { team })}
+			active={currentRoute == '/team/[team]/(teamTabs)/settings'}
+			title="Settings"
+		/>
+	{/if}
 </Tabs>
 <div class="container">
 	<slot />

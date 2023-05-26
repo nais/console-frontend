@@ -1,0 +1,15 @@
+query UserMemberships($team: String!) {
+	user {
+		email
+	}
+	team(name: $team) {
+		name
+		members {
+			edges {
+				node {
+					email
+				}
+			}
+		}
+	}
+}

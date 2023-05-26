@@ -56,9 +56,7 @@
 		</Card>
 	</div>
 {:else}
-	<Alert variant="error">
-		<p>App not found</p>
-	</Alert>
+	<Alert variant="error">App not found</Alert>
 {/if}
 
 <style>

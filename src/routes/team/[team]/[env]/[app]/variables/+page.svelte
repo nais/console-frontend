@@ -27,5 +27,6 @@
 		align-items: center;
 		gap: 0.5rem;
 		flex-direction: row;
+		font-family: monospace;
 	}
 </style>
