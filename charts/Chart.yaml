@@ -1,0 +1,5 @@
+apiVersion: v2
+name: console-frontend
+description: Frontend for NAIS console
+type: application
+version: 1.0.0
