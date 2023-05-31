@@ -1,11 +1,11 @@
-FROM node:20 AS node-with-deps
+FROM node:lts AS node-with-deps
 WORKDIR /usr/app
 
 COPY package*.json svelte.config.js ./
 
 RUN --mount=type=secret,id=GITHUB_TOKEN echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/GITHUB_TOKEN)" > ~/.npmrc
 
-RUN npm ci
+RUN npm ci --quiet
 
 COPY . ./
 
@@ -19,7 +19,7 @@ WORKDIR /usr/app
 ENV NODE_ENV production
 
 COPY --from=node-with-deps /usr/app/package*.json ./
-RUN npm i --omit=dev
+RUN npm ci --omit=dev
 
 COPY --from=node-with-deps /usr/app/build ./
 
