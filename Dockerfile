@@ -7,7 +7,6 @@ COPY frontend/package*.json frontend/svelte.config.js ./
 RUN npm install --quiet
 
 COPY ./frontend .
-COPY ./schema /usr/app/schema
 
 RUN npm run build
 
