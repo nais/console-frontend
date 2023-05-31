@@ -14,7 +14,6 @@ spec:
       labels:
         app: "{{ .Release.Name }}"
     spec:
-      serviceAccountName: "{{ .Release.Name }}"
       containers:
         - name: "{{ .Chart.Name }}"
           securityContext:
