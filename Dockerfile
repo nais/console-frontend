@@ -9,6 +9,9 @@ RUN npm ci --quiet
 
 COPY . ./
 
+# Fix
+ENV VITE_GRAPHQL_ENDPOINT http://console.dev-nais.cloud.nais.io/query
+
 RUN npm run build
 
 FROM node-with-deps
