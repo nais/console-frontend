@@ -5,7 +5,7 @@ COPY package*.json svelte.config.js ./
 
 RUN --mount=type=secret,id=GITHUB_TOKEN echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/GITHUB_TOKEN)" > ~/.npmrc
 
-RUN npm install --quiet
+RUN npm ci
 
 COPY . ./
 
