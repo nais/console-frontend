@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ .Release.Name }}"
+  namespace: nais-system
+spec:
+  ingressClassName: nais-ingress-iap
+  rules:
+  - host: "{{ .Values.host }} "
+    http:
+      paths:
+      - backend:
+          service:
+            name: "{{ .Release.Name }}"
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+
