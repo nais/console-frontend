@@ -1,10 +1,13 @@
-FROM node:20-alpine AS node-with-deps
-
+FROM node:20 AS node-with-deps
 WORKDIR /usr/app
 
 COPY package*.json svelte.config.js ./
 
+RUN --mount=type=secret,id=GITHUB_TOKEN echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/GITHUB_TOKEN)" > ~/.npmrc
+
 RUN npm install --quiet
+
+COPY . ./
 
 RUN npm run build
 
