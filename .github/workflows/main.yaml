@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
-      - uses: nais/platform-build-push-sign@8b336817c5749f179373fd63a7f511bae7246f10 # ratchet:nais/platform-build-push-sign@main
+      - uses: nais/platform-build-push-sign@main
         id: build-push-sign
         with:
           name: console-frontend

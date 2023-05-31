@@ -1,12 +1,10 @@
 FROM node:20-alpine AS node-with-deps
 
-WORKDIR /usr/app/frontend
+WORKDIR /usr/app
 
-COPY frontend/package*.json frontend/svelte.config.js ./
+COPY package*.json svelte.config.js ./
 
 RUN npm install --quiet
-
-COPY ./frontend .
 
 RUN npm run build
 
@@ -17,9 +15,9 @@ WORKDIR /usr/app
 
 ENV NODE_ENV production
 
-COPY --from=node-with-deps /usr/app/frontend/package*.json ./
+COPY --from=node-with-deps /usr/app/package*.json ./
 RUN npm i --omit=dev
 
-COPY --from=node-with-deps /usr/app/frontend/dist ./
+COPY --from=node-with-deps /usr/app/build ./
 
 CMD node ./index.js
