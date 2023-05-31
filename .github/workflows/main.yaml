@@ -18,7 +18,7 @@ jobs:
           name: console-frontend
           google_service_account: gh-console-frontend
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
-          build_secrets: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          build_secrets: GITHUB_TOKEN=${{ secrets.THOMAS_TOKEN }}
           push: true
       - uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab # ratchet:azure/setup-helm@v1
         name: "Setup Helm"
