@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: nais-ingress-iap
   rules:
-  - host: "{{ .Values.host }} "
+  - host: "{{ .Values.host }}"
     http:
       paths:
       - backend:
