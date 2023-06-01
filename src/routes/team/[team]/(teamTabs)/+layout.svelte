@@ -50,7 +50,6 @@
 		margin: auto;
 		min-width: 1000px;
 		max-width: 1432px;
-		padding: 1rem;
 	}
 	.header {
 		display: flex;

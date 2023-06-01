@@ -18,7 +18,6 @@
 		border-radius: 0.25rem;
 		background-color: var(--a-bg-default);
 		padding: 1.5rem;
-		overflow: scroll;
 		grid-column: span var(--columns);
 	}
 </style>
