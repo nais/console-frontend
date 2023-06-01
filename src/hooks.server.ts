@@ -1,5 +1,5 @@
-import type { HandleFetch } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
+import type { HandleFetch, Handle } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
@@ -24,4 +24,9 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 	}
 
 	return fetch(request);
+};
+
+export const handle: Handle = async ({ event, resolve }) => {
+	event.locals.tenantDomain = env.TENANT_DOMAIN || '';
+	return await resolve(event);
 };

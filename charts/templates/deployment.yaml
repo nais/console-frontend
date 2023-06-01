@@ -16,6 +16,9 @@ spec:
     spec:
       containers:
         - name: "{{ .Chart.Name }}"
+          env: 
+            - name: "TENANT_DOMAIN"
+              value: "{{ .Values.tenantDomain }}"
           securityContext:
             capabilities:
               drop:
