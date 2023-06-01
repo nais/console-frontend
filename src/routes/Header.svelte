@@ -129,7 +129,7 @@
 		<nav>
 			<ul>
 				<li><a href="/deploys">Deploys</a></li>
-				<li><a href="https://teams.{$page.data.tenantDomain}">Teams</a></li>
+				<li><a href="https://teams{$page.data.tenantDomain}">Teams</a></li>
 				<li><a href="https://docs.nais.io">Docs</a></li>
 			</ul>
 		</nav>
