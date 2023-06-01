@@ -40,16 +40,16 @@
 <div>
 	{#each authz as a}
 		{#if a.__typename === 'AzureAD'}
-			<a href="/">Azure</a>
+			Azure
 		{/if}
 		{#if a.__typename === 'IDPorten'}
-			<a href="/">IDPorten</a>
+			IDPorten
 		{/if}
 		{#if a.__typename === 'Maskinporten'}
-			<a href="/">Maskinporten</a>
+			Maskinporten
 		{/if}
 		{#if a.__typename === 'TokenX'}
-			<a href="/">TokenX</a>
+			TokenX
 		{/if}
 	{:else}
 		<p>No authz</p>

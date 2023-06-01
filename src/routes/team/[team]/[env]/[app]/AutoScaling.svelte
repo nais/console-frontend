@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fragment, graphql } from '$houdini';
+	import { AutoScalingStore, fragment, graphql } from '$houdini';
 	import type { AutoScaling } from '$houdini';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import { Tooltip } from '@nais/ds-svelte';
@@ -33,12 +33,14 @@
 		<Tooltip content="Maximum replicas">
 			max: {autoscaling.max}
 		</Tooltip>
-		<Tooltip content="CPU threshold"
-			><div class="cpu">
-				<div style="margin-top: 4px;"><CpuIcon /></div>
-				{autoscaling.cpuThreshold}%
-			</div></Tooltip
-		>
+		{#if autoscaling.cpuThreshold > 0}
+			<Tooltip content="CPU threshold"
+				><div class="cpu">
+					<div style="margin-top: 4px;"><CpuIcon /></div>
+					{autoscaling.cpuThreshold}%
+				</div>
+			</Tooltip>
+		{/if}
 	{/if}
 </div>
 

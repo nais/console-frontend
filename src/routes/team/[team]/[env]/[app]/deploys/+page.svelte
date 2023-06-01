@@ -21,6 +21,10 @@
 	{/each}
 {/if}
 
+{#if $AppDeploys.fetching}
+	<p>Loading...</p>
+{/if}
+
 {#if $AppDeploys.data}
 	<Card>
 		<Table zebraStripes={true}>

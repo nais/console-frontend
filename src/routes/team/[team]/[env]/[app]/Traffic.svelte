@@ -4,6 +4,7 @@
 	import { fragment, graphql } from '$houdini';
 	import type { AccessPolicy } from '$houdini';
 	import { Tooltip } from '@nais/ds-svelte';
+	import { page } from '$app/stores';
 
 	export let app: AccessPolicy;
 
@@ -36,6 +37,8 @@
 			}
 		`)
 	);
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 	$: internalIngress = $data.ingresses.filter((ingress) => !ingress.includes('.external.'));
 	$: externalIngress = $data.ingresses.filter((ingress) => ingress.includes('.external.'));
 </script>
@@ -64,7 +67,7 @@
 		<ul>
 			{#each $data.accessPolicy.inbound.rules as rule}
 				<li>
-					<a href="/"
+					<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
 						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 					>
 				</li>
@@ -91,7 +94,7 @@
 		<ul>
 			{#each $data.accessPolicy.outbound.rules as rule}
 				<li>
-					<a href="/"
+					<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
 						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 					>
 				</li>
