@@ -27,8 +27,6 @@
 			routeId: '/team/[team]/[env]/[app]/yaml'
 		}
 	];
-	$: $LayoutApp.data?.app.variables &&
-		nav.push({ tab: 'Variables', routeId: '/team/[team]/[env]/[app]/variables' });
 </script>
 
 <h3><a href="/team/{team}"> {team}</a> / {app} ({env})</h3>
