@@ -3,10 +3,6 @@
 	import Tabs from '$lib/Tabs.svelte';
 	import Tab from '$lib/Tab.svelte';
 	import { replacer } from '$lib/replacer';
-	import type { PageData } from './$houdini';
-
-	export let data: PageData;
-	$: ({ LayoutApp } = data);
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;

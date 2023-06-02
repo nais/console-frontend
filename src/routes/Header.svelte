@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Search } from '@nais/ds-svelte';
-	import Logo from '../Logo.svelte';
-	import { graphql } from '$houdini';
-	import SearchResults from '$lib/SearchResults.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
+	import SearchResults from '$lib/SearchResults.svelte';
+	import { Search } from '@nais/ds-svelte';
+	import Logo from '../Logo.svelte';
 
 	const store = graphql(`
 		query SearchQuery($query: String!, $type: SearchType) {
@@ -54,7 +54,6 @@
 			}, 500);
 		}
 	}
-	$: subpage = $page.url.pathname;
 
 	function on_key_up(event: KeyboardEvent) {
 		switch (event.key) {

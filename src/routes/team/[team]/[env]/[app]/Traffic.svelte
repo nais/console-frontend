@@ -1,17 +1,17 @@
 <script lang="ts">
-	import Arrow from '$lib/icons/Arrow.svelte';
 	import Globe from '$lib/icons/Globe.svelte';
-	import { fragment, graphql } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
 	import type { AccessPolicy } from '$houdini';
-	import { Tooltip } from '@nais/ds-svelte';
 	import { page } from '$app/stores';
+	import { ArrowRight } from '@nais/ds-svelte/icons';
+	import Loading from '$lib/Loading.svelte';
 
 	export let app: AccessPolicy;
 
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment AccessPolicy on App {
+			fragment AccessPolicy on App @loading {
 				name
 				ingresses
 				accessPolicy {
@@ -23,11 +23,11 @@
 					}
 					outbound {
 						rules {
-							application
+							application @loading
 							namespace
 						}
 						external {
-							host
+							host @loading
 							ports {
 								port
 							}
@@ -39,81 +39,94 @@
 	);
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: internalIngress = $data.ingresses.filter((ingress) => !ingress.includes('.external.'));
-	$: externalIngress = $data.ingresses.filter((ingress) => ingress.includes('.external.'));
 </script>
 
 <div class="traffic">
 	<div class="directionContent">
-		<h5>Internal ingresses:</h5>
+		<span style="margin-bottom: 1rem;">
+			<ArrowRight width="2rem" height="2rem" />
+			<h2>Inbound</h2>
+		</span>
+		<h5>External ingresses</h5>
 		<ul>
-			{#each internalIngress as ingress}
-				<li><a href={ingress}>{ingress}</a></li>
-			{:else}
-				<li>No internal ingresses</li>
-			{/each}
-		</ul>
-		<h5>External ingresses:</h5>
-		<ul>
-			{#each externalIngress as ingress}
-				<li>
-					<Globe /><a href={ingress}>{ingress}</a>
-				</li>
+			{#each $data.ingresses as ingress}
+				{#if ingress === PendingValue}
+					<Loading width="300px" />
+				{:else if ingress.includes('.external.')}
+					<li>
+						<Globe /><a href={ingress}>{ingress}</a>
+					</li>
+				{/if}
 			{:else}
 				<li>No external ingresses</li>
 			{/each}
 		</ul>
-		<h5>Inbound access policy:</h5>
+		<h5>Internal ingresses</h5>
+		<ul>
+			{#each $data.ingresses as ingress}
+				{#if ingress === PendingValue}
+					<Loading width="300px" />
+				{:else if !ingress.includes('.external.')}
+					<li><a href={ingress}>{ingress}</a></li>
+				{/if}
+			{:else}
+				<li>No internal ingresses</li>
+			{/each}
+		</ul>
+		<h5>Applications</h5>
 		<ul>
 			{#each $data.accessPolicy.inbound.rules as rule}
 				<li>
-					<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
-						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
-					>
+					{#if rule.application !== PendingValue}
+						<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
+							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
+						>
+					{:else}
+						<Loading width="300px" />
+					{/if}
 				</li>
 			{:else}
 				<li>No inbound access policy</li>
 			{/each}
 		</ul>
 	</div>
-	<div class="arrow">
-		<Arrow size="2rem" />
-	</div>
-	<div class="applicationName">
-		<h1>
-			<Tooltip content={$data.name}>
-				{$data.name.length > 7 ? $data.name.substring(0, 7) + '...' : $data.name}
-			</Tooltip>
-		</h1>
-	</div>
-	<div class="arrow">
-		<Arrow size="2rem" />
-	</div>
 	<div class="directionContent">
-		<h5>Outbound access policy:</h5>
+		<span style="margin-bottom: 1rem;">
+			<h2>Outbound</h2>
+			<ArrowRight width="2rem" height="2rem" />
+		</span>
+		<h5>External hostnames</h5>
+		<ul>
+			{#each $data.accessPolicy.outbound.external as external}
+				{#if external.host === PendingValue}
+					<Loading width="300px" />
+				{:else}
+					{#each external.ports as port}
+						<li>
+							<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
+						</li>
+					{:else}
+						<li><Globe /><a href={external.host}>{external.host}</a><br /></li>
+					{/each}
+				{/if}
+			{:else}
+				<li>No outbound external access policy</li>
+			{/each}
+		</ul>
+		<h5>Applications</h5>
 		<ul>
 			{#each $data.accessPolicy.outbound.rules as rule}
 				<li>
-					<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
-						>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
-					>
+					{#if rule.application === PendingValue}
+						<Loading width="300px" />
+					{:else}
+						<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
+							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
+						>
+					{/if}
 				</li>
 			{:else}
 				<li>No outbound access policy</li>
-			{/each}
-		</ul>
-		<h5>Outbound external access policy:</h5>
-		<ul>
-			{#each $data.accessPolicy.outbound.external as external}
-				{#each external.ports as port}
-					<li>
-						<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
-					</li>
-				{:else}
-					<li><Globe /><a href={external.host}>{external.host}</a><br /></li>
-				{/each}
-			{:else}
-				<li>No outbound external access policy</li>
 			{/each}
 		</ul>
 	</div>
@@ -121,25 +134,21 @@
 
 <style>
 	.traffic {
+		margin-top: 1rem;
 		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
+		gap: 2rem;
 	}
 	.directionContent {
-		display: flex;
-		flex-direction: column;
+		border: 1px solid var(--a-border-default);
+		border-radius: 0.25rem;
+		padding: 1rem;
 	}
-	.applicationName {
+	.directionContent span {
 		display: flex;
+		flex-direction: row;
 		align-items: center;
-		gap: 3rem;
-	}
-	.arrow {
-		width: 2rem;
-		height: 2rem;
-		transform: rotate(180deg);
-		color: var(--a-icon-default);
+		gap: 1rem;
+		margin-top: 1rem;
 	}
 	.directionContent,
 	h5 {
@@ -148,8 +157,8 @@
 	.directionContent,
 	ul {
 		list-style: none;
-		padding: 0;
 		margin: 0 0 1rem 0;
+		padding: 0 1rem 0 1rem;
 	}
 	li {
 		display: flex;

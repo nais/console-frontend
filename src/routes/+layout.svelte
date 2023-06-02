@@ -9,14 +9,15 @@
 	import '../styles/app.css';
 	import '$lib/font.css';
 	import type { PageData } from './$houdini';
-	import { page } from '$app/stores';
 
 	export let data: PageData;
 	$: ({ UserInfo } = data);
+
 	$: user = $UserInfo.data?.user;
 </script>
 
 <Header {user} />
+
 <div class="container">
 	<slot />
 </div>

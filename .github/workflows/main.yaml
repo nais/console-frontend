@@ -6,8 +6,8 @@ on:
 jobs:
   build:
     permissions:
-      contents: "read"
-      id-token: "write"
+      contents: 'read'
+      id-token: 'write'
     name: Build and push
     runs-on: ubuntu-latest
     steps:
@@ -21,9 +21,9 @@ jobs:
           build_secrets: GITHUB_TOKEN=${{ secrets.THOMAS_TOKEN }}
           push: true
       - uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab # ratchet:azure/setup-helm@v1
-        name: "Setup Helm"
+        name: 'Setup Helm'
         with:
-          version: "3.8.0"
+          version: '3.8.0'
       - name: Build Chart
         run: |-
           sed -i "s/^version: .*/version: ${{ steps.build-push-sign.outputs.version }}/g" charts/Chart.yaml

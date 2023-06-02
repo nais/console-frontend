@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
 	import Logo from '../Logo.svelte';
-	import { PersonGroup, Funnel } from '@nais/ds-svelte/icons';
+	import { PersonGroup } from '@nais/ds-svelte/icons';
 
 	export let data: SearchQuery$result;
 	export let query: string;

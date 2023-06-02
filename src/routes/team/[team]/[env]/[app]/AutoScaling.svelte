@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { AutoScalingStore, fragment, graphql } from '$houdini';
 	import type { AutoScaling } from '$houdini';
+	import { PendingValue, fragment, graphql } from '$houdini';
+	import Loading from '$lib/Loading.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import { Tooltip } from '@nais/ds-svelte';
-	import { ArrowUp, ArrowDown } from '@nais/ds-svelte/icons';
 
 	export let app: AutoScaling;
 	$: data = fragment(
 		app,
 		graphql(`
 			fragment AutoScaling on App {
-				autoScaling {
+				autoScaling @loading {
 					disabled
 					cpuThreshold
 					max
@@ -24,7 +24,9 @@
 </script>
 
 <div class="wrapper">
-	{#if autoscaling.disabled}
+	{#if autoscaling === PendingValue}
+		<Loading width="200px" />
+	{:else if autoscaling.disabled}
 		based on custom metrics
 	{:else}
 		<Tooltip content="Minimum replicas">

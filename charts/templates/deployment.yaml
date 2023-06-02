@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ .Release.Name }}"
+  name: '{{ .Release.Name }}'
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "{{ .Release.Name }}"
+      app: '{{ .Release.Name }}'
   template:
     metadata:
       annotations:
-        prometheus.io/path: "/metrics"
+        prometheus.io/path: '/metrics'
       labels:
-        app: "{{ .Release.Name }}"
+        app: '{{ .Release.Name }}'
     spec:
       containers:
-        - name: "{{ .Chart.Name }}"
-          env: 
-            - name: "TENANT_DOMAIN"
-              value: "{{ .Values.tenantDomain }}"
+        - name: '{{ .Chart.Name }}'
+          env:
+            - name: 'TENANT_DOMAIN'
+              value: '{{ .Values.tenantDomain }}'
           securityContext:
             capabilities:
               drop:
@@ -29,7 +29,7 @@ spec:
             allowPrivilegeEscalation: false
             seccompProfile:
               type: RuntimeDefault
-          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Chart.Version }}"
+          image: '{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Chart.Version }}'
           ports:
             - name: http
               containerPort: 8080

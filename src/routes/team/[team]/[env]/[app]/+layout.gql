@@ -1,8 +1,0 @@
-query LayoutApp($app: String!, $team: String!, $env: String!) {
-	app(name: $app, team: $team, env: $env) {
-		variables {
-			name
-			value
-		}
-	}
-}

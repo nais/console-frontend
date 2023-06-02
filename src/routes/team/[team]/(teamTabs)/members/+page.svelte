@@ -30,11 +30,11 @@
 		<Pagination
 			pageInfo={$Members.data.team.members.pageInfo}
 			totalCount={$Members.data.team.members.totalCount}
-			nextPage={() => {
+			on:nextPage={() => {
 				if (!$Members.pageInfo.hasNextPage) return;
 				Members.loadNextPage();
 			}}
-			previousPage={() => {
+			on:previousPage={() => {
 				if (!$Members.pageInfo.hasPreviousPage) return;
 				Members.loadPreviousPage();
 			}}

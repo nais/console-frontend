@@ -1,37 +1,36 @@
 <script lang="ts">
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import { fragment, graphql } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
 	import type { AppInstancesStatus } from '$houdini';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import Loading from '$lib/Loading.svelte';
 
 	export let app: AppInstancesStatus;
 	$: data = fragment(
 		app,
 		graphql(`
 			fragment AppInstancesStatus on App {
-				instances {
-					status
+				instances @loading {
+					status @loading
 				}
 			}
 		`)
 	);
 
-	$: instances = $data.instances;
-	$: running = instances.filter((instance) => instance.status === 'Running').length;
-	$: total = instances.length;
+	$: statuses = $data.instances.map((i) => i.status);
+	$: total = statuses.length;
 </script>
 
 <div>
-	{#if instances}
-		{#if running === total}
+	{#if statuses.includes(PendingValue)}
+		<Loading />
+	{:else}
+		{#if statuses.filter((s) => s === 'Running').length === total}
 			<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
 		{:else}
 			<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
 		{/if}
-		{running} / {total} running
-	{:else}
-		<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
-		0 / 0 running
+		{statuses.filter((s) => s === 'Running').length} / {total} running
 	{/if}
 </div>
 

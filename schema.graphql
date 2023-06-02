@@ -244,7 +244,13 @@ type Maintenance {
 }
 
 type Maskinporten {
-  scopes: [Scope!]!
+  enabled: Boolean!
+  scopes: MaskinportenScope!
+}
+
+type MaskinportenScope {
+  consumes: [Consume!]!
+  exposes: [Expose!]!
 }
 
 type Mutation {
@@ -303,11 +309,6 @@ type Resources {
 type Rule {
   application: String!
   namespace: String!
-}
-
-type Scope {
-  consumes: [Consume!]!
-  exposes: [Expose!]!
 }
 
 type SearchConnection {

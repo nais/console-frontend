@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { fragment, graphql } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
 	import type { AppInstances } from '$houdini';
-	import Alert from '$lib/Alert.svelte';
+	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Body, Table, Header, HeaderCell, DataCell, Row } from '@nais/ds-svelte';
 
@@ -10,7 +10,7 @@
 		app,
 		graphql(`
 			fragment AppInstances on App {
-				instances {
+				instances @loading(count: 2) {
 					name
 					status
 					restarts
@@ -22,22 +22,24 @@
 	);
 
 	$: instances = $data.instances;
-	$: running = instances.filter((instance) => instance.status === 'Running').length;
-	$: total = instances.length;
 </script>
 
-{#if instances.length > 0}
-	<Table>
-		<Header>
-			<HeaderCell>Name</HeaderCell>
-			<HeaderCell>Restarts</HeaderCell>
-			<HeaderCell>Image</HeaderCell>
-			<HeaderCell>Status</HeaderCell>
-			<HeaderCell>Created</HeaderCell>
-		</Header>
-		<Body>
-			{#each instances as instance}
-				<Row>
+<Table>
+	<Header>
+		<HeaderCell>Name</HeaderCell>
+		<HeaderCell>Restarts</HeaderCell>
+		<HeaderCell>Image</HeaderCell>
+		<HeaderCell>Status</HeaderCell>
+		<HeaderCell>Created</HeaderCell>
+	</Header>
+	<Body>
+		{#each instances as instance}
+			<Row>
+				{#if instance === PendingValue}
+					{#each new Array(5) as _}
+						<DataCell><Loading /></DataCell>
+					{/each}
+				{:else}
 					<DataCell>{instance.name}</DataCell>
 					<DataCell>{instance.restarts}</DataCell>
 					<DataCell>{instance.image}</DataCell>
@@ -47,10 +49,8 @@
 					{:else}
 						<DataCell>Unknown</DataCell>
 					{/if}
-				</Row>
-			{/each}
-		</Body>
-	</Table>
-{:else}
-	<Alert variant="warning">No instances found</Alert>
-{/if}
+				{/if}
+			</Row>
+		{/each}
+	</Body>
+</Table>

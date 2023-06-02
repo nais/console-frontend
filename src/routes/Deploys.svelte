@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Body, DataCell, Header, HeaderCell, Heading, Row, Table } from '@nais/ds-svelte';
+	import { Body, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
 	export let user: UserDeploys;
 	$: teams = paginatedFragment(
 		user,

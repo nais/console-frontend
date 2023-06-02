@@ -8,7 +8,7 @@
 
 <div
 	{...$$restProps}
-	style="--columns: {columns}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}  max-height: {height} "
+	style="--columns: {columns}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}  max-height: {height}"
 >
 	<slot />
 </div>

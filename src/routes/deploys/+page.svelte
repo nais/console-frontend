@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { Body, Button, DataCell, Header, HeaderCell, Row, Table, Tag } from '@nais/ds-svelte';
-	import type { SortState } from '@nais/ds-svelte/dist/components/Table/Table.svelte';
+	import Card from '$lib/Card.svelte';
+	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
+	import Time from '$lib/Time.svelte';
+	import { Body, Button, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
-	import Time from '$lib/Time.svelte';
-	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
-	import Card from '$lib/Card.svelte';
 	export let data: PageData;
 	$: ({ Deploys } = data);
 </script>

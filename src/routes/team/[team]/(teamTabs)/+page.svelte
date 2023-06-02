@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Table, Header, HeaderCell, Body, Row, DataCell, Button } from '@nais/ds-svelte';
+	import { Body, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
 	import Status from '../[env]/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
-	import Pagination from '$lib/Pagination.svelte';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
-	$: $Workloads.data?.team.apps.edges.sort((a, b) => {
+	$: $Workloads.data?.team.apps.edges.sort((a) => {
 		return a.node.instances.every((instance) => instance.status === 'Running') ? 1 : -1;
 	});
 </script>
@@ -34,7 +34,7 @@
 						>
 						<DataCell>{edge.node.env.name}</DataCell>
 						<DataCell>
-							<Status app={edge.node} />
+							<Status app={edge.node} loading={false} />
 						</DataCell>
 						<DataCell
 							>{#if edge.node.deployed}
@@ -48,11 +48,11 @@
 		<Pagination
 			pageInfo={$Workloads.data.team.apps.pageInfo}
 			totalCount={$Workloads.data.team.apps.totalCount}
-			nextPage={() => {
+			on:nextPage={() => {
 				if (!$Workloads.pageInfo.hasNextPage) return;
 				Workloads.loadNextPage();
 			}}
-			previousPage={() => {
+			on:previousPage={() => {
 				if (!$Workloads.pageInfo.hasPreviousPage) return;
 				Workloads.loadPreviousPage();
 			}}

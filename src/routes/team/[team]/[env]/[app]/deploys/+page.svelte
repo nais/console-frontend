@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
+	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
+	import Time from '$lib/Time.svelte';
 	import { Body, Button, DataCell, Header, HeaderCell, Row, Table, Tooltip } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
-	import Time from '$lib/Time.svelte';
-	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	export let data: PageData;
 
 	$: ({ AppDeploys } = data);

@@ -21,11 +21,11 @@
 	<Pagination
 		pageInfo={$Teams.data.teams.pageInfo}
 		totalCount={$Teams.data.teams.totalCount}
-		nextPage={() => {
+		on:nextPage={() => {
 			if (!$Teams.pageInfo.hasNextPage) return;
 			Teams.loadNextPage();
 		}}
-		previousPage={() => {
+		on:previousPage={() => {
 			if (!$Teams.pageInfo.hasPreviousPage) return;
 			Teams.loadPreviousPage();
 		}}
