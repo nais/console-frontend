@@ -19,5 +19,6 @@
 		background-color: var(--a-bg-default);
 		padding: 1.5rem;
 		grid-column: span var(--columns);
+		margin-bottom: 1rem;
 	}
 </style>

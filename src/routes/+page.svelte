@@ -16,7 +16,9 @@
 <div class="main">
 	{#if $LandingPage.data}
 		<Teams user={$LandingPage.data.user} />
-		<Deploys user={$LandingPage.data.user} />
+		<div class="grow">
+			<Deploys user={$LandingPage.data.user} />
+		</div>
 	{/if}
 </div>
 
@@ -24,8 +26,10 @@
 	.main {
 		width: 100%;
 		height: 100%;
-		place-items: top;
 		display: flex;
 		gap: 1rem;
+	}
+	.grow {
+		flex-grow: 1;
 	}
 </style>
