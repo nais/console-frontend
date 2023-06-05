@@ -9,12 +9,11 @@
 	import { PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { deployments } from '$lib/mock/deployments';
 
 	export let data: PageData;
 
 	$: ({ TeamDeployments } = data);
-	$: teamData = $TeamDeployments.data.team;
+	$: teamData = $TeamDeployments.data!.team;
 	$: team = $page.params.team;
 </script>
 

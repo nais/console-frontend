@@ -4,7 +4,7 @@
 	import type { UserTeams } from '$houdini';
 	import { PersonGroup } from '@nais/ds-svelte/icons';
 	import Card from '$lib/Card.svelte';
-	import { LinkPanel, LinkPanelDescription, LinkPanelTitle, Loader } from '@nais/ds-svelte';
+	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte';
 	import Loading from '$lib/Loading.svelte';
 
 	export let user: UserTeams;

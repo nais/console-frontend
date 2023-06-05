@@ -23,7 +23,9 @@
 	export let data: PageData;
 
 	$: ({ TeamSettings } = data);
-	$: teamSettings = $TeamSettings.data.team;
+
+	$: teamSettings = $TeamSettings.data!.team;
+
 	$: team = $page.params.team;
 
 	let showKey = false;
