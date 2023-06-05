@@ -110,6 +110,7 @@
 			<Button
 				size="xsmall"
 				on:click={() => {
+					if (teamSettings?.deployKey?.key === PendingValue) return;
 					copyText(teamSettings?.deployKey?.key || '');
 				}}
 			>

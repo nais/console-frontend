@@ -29,7 +29,7 @@
 					{:else}
 						<Td>{edge.node.name}</Td>
 						<Td>{edge.node.email}</Td>
-						<Td>{edge.node.role.toLowerCase()}</Td>
+						<Td>{edge.node.role.toString().toLowerCase()}</Td>
 					{/if}
 				</Tr>
 			{/each}

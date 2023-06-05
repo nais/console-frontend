@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@navikt/ds-css/button.css';
-	import Loader from './Loader.svelte';
+	import Loading from './Loading.svelte';
 	import { classes, omit } from './helpers';
 	import Label from './typography/Label.svelte';
 
@@ -65,7 +65,7 @@
 	on:click
 >
 	{#if overrideWidth}
-		<Loader {size} />
+		<Loading {size} />
 	{:else}
 		{#if $$slots['icon-left']}
 			<span class="navds-button__icon"><slot name="icon-left" /></span>
