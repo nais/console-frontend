@@ -1,5 +1,6 @@
-query TeamSettings($team: String!) {
+query TeamSettings($team: String!) @loading(cascade: true) {
 	team(name: $team) {
+		id
 		name
 		deployKey {
 			key
