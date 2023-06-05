@@ -39,14 +39,22 @@
 	);
 	$: env = $page.params.env;
 	$: team = $page.params.team;
+
+	let hasExternal = false;
+	let hasInternal = false;
+	const externalName = (v: string) => {
+		hasExternal = true;
+		return v;
+	};
+	const internalName = (v: string) => {
+		hasInternal = true;
+		return v;
+	};
 </script>
 
 <div class="traffic">
-	<div class="directionContent">
-		<span style="margin-bottom: 1rem;">
-			<ArrowRight width="2rem" height="2rem" />
-			<h2>Inbound</h2>
-		</span>
+	<div class="directionContent first">
+		<h3>Inbound</h3>
 		<h5>External ingresses</h5>
 		<ul>
 			{#each $data.ingresses as ingress}
@@ -54,12 +62,13 @@
 					<Loading width="300px" />
 				{:else if ingress.includes('.external.')}
 					<li>
-						<Globe /><a href={ingress}>{ingress}</a>
+						<Globe /><a href={ingress}>{externalName(ingress)}</a>
 					</li>
 				{/if}
-			{:else}
-				<li>No external ingresses</li>
 			{/each}
+			{#if !hasExternal}
+				<li>No external ingresses</li>
+			{/if}
 		</ul>
 		<h5>Internal ingresses</h5>
 		<ul>
@@ -67,11 +76,12 @@
 				{#if ingress === PendingValue}
 					<Loading width="300px" />
 				{:else if !ingress.includes('.external.')}
-					<li><a href={ingress}>{ingress}</a></li>
+					<li><a href={ingress}>{internalName(ingress)}</a></li>
 				{/if}
-			{:else}
-				<li>No internal ingresses</li>
 			{/each}
+			{#if !hasInternal}
+				<li>No internal ingresses</li>
+			{/if}
 		</ul>
 		<h5>Applications</h5>
 		<ul>
@@ -91,10 +101,7 @@
 		</ul>
 	</div>
 	<div class="directionContent">
-		<span style="margin-bottom: 1rem;">
-			<h2>Outbound</h2>
-			<ArrowRight width="2rem" height="2rem" />
-		</span>
+		<h3>Outbound</h3>
 		<h5>External hostnames</h5>
 		<ul>
 			{#each $data.accessPolicy.outbound.external as external}
@@ -139,16 +146,10 @@
 		gap: 2rem;
 	}
 	.directionContent {
-		border: 1px solid var(--a-border-default);
-		border-radius: 0.25rem;
 		padding: 1rem;
 	}
-	.directionContent span {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 1rem;
-		margin-top: 1rem;
+	.directionContent.first {
+		border-right: 1px solid var(--a-border-divider);
 	}
 	.directionContent,
 	h5 {
