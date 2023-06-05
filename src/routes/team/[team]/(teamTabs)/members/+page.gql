@@ -1,4 +1,4 @@
-query Members($team: String!) {
+query Members($team: String!) @loading(cascade: true) @cache(policy: NetworkOnly) {
 	team(name: $team) {
 		name
 		members(first: 10) @paginate(mode: SinglePage) {
@@ -11,7 +11,7 @@ query Members($team: String!) {
 				from
 				to
 			}
-			edges {
+			edges @loading(count: 10) {
 				node {
 					email
 					name

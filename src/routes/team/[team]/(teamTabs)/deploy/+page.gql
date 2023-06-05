@@ -1,8 +1,16 @@
-query TeamDeployments($team: String!) {
+query TeamDeployments($team: String!) @loading(cascade: true) @cache(policy: NetworkOnly) {
 	team(name: $team) {
-		deployments {
-			edges {
+		deployments(first: 10) @paginate(mode: SinglePage) {
+			totalCount
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				from
+				to
+			}
+			edges @loading(count: 10) {
 				node {
+					id
 					created
 					env
 					repository

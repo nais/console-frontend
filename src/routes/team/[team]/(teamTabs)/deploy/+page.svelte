@@ -6,9 +6,15 @@
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
+	import { PendingValue } from '$houdini';
+	import Loading from '$lib/Loading.svelte';
+	import Pagination from '$lib/Pagination.svelte';
+	import { deployments } from '$lib/mock/deployments';
+
 	export let data: PageData;
 
 	$: ({ TeamDeployments } = data);
+	$: teamData = $TeamDeployments.data.team;
 	$: team = $page.params.team;
 </script>
 
@@ -17,19 +23,23 @@
 		<p>{error.message}</p>
 	{/each}
 {/if}
-{#if $TeamDeployments.data}
-	<Card>
-		<Table zebraStripes={true}>
-			<Thead>
-				<Th>Resource(s)</Th>
-				<Th>Created</Th>
-				<Th>Environment</Th>
-				<Th>Status</Th>
-				<Th>Link</Th>
-			</Thead>
-			<Tbody>
-				{#each $TeamDeployments.data.team.deployments.edges as edge}
-					<Tr>
+<Card>
+	<Table zebraStripes={true}>
+		<Thead>
+			<Th>Resource(s)</Th>
+			<Th>Created</Th>
+			<Th>Environment</Th>
+			<Th>Status</Th>
+			<Th>Link</Th>
+		</Thead>
+		<Tbody>
+			{#each teamData.deployments.edges as edge}
+				<Tr>
+					{#if edge.node.id === PendingValue}
+						{#each new Array(5) as _}
+							<Td><Loading /></Td>
+						{/each}
+					{:else}
 						<Td>
 							{#each edge.node.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
@@ -58,9 +68,21 @@
 								>
 							{/if}
 						</Td>
-					</Tr>
-				{/each}
-			</Tbody>
-		</Table>
-	</Card>
-{/if}
+					{/if}
+				</Tr>
+			{/each}
+		</Tbody>
+	</Table>
+	<Pagination
+		pageInfo={teamData.deployments.pageInfo}
+		totalCount={teamData.deployments.totalCount}
+		on:nextPage={() => {
+			if (!teamData.deployments.pageInfo.hasNextPage) return;
+			TeamDeployments.loadNextPage();
+		}}
+		on:previousPage={() => {
+			if (!teamData.deployments.pageInfo.hasPreviousPage) return;
+			TeamDeployments.loadPreviousPage();
+		}}
+	/>
+</Card>
