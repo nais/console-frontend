@@ -40,17 +40,17 @@
 <Card>
 	<h3>{team}</h3>
 	{#if teamSettings.id === PendingValue}
-		<Loading />
+		<Loading width="400px" />
 	{:else}
 		<i>{teamSettings.description}</i>
 	{/if}
-	{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== null}
+	{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
 		<dl>
 			<dh>Default Channel:</dh>
 			<dd>{teamSettings.slackChannel}</dd>
 		</dl>
 	{/if}
-	{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0}
+	{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
 		<dl>
 			<dh>Overridden channels:</dh>
 			{#each teamSettings.slackAlertsChannels as channel}

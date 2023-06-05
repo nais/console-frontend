@@ -1,4 +1,4 @@
-query TeamSettings($team: String!) @loading(cascade: true) {
+query TeamSettings($team: String!) @loading(cascade: true) @cache(policy: NetworkOnly) {
 	team(name: $team) {
 		id
 		name
