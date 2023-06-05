@@ -1,4 +1,4 @@
-query Workloads($team: String!) {
+query Workloads($team: String!) @loading(count: 5, cascade: true) @cache(policy: NetworkOnly) {
 	team(name: $team) {
 		name
 		members {
@@ -10,7 +10,7 @@ query Workloads($team: String!) {
 				}
 			}
 		}
-		apps @paginate(mode: SinglePage) {
+		apps(first: 10) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
@@ -21,7 +21,7 @@ query Workloads($team: String!) {
 				to
 			}
 
-			edges {
+			edges @loading(count: 5) {
 				node {
 					name
 					image

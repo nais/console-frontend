@@ -2,17 +2,25 @@
 	import { ChevronRight, ChevronLeft } from '@nais/ds-svelte/icons';
 	import { Button } from '@nais/ds-svelte';
 	import { createEventDispatcher } from 'svelte';
-	export let totalCount: number;
-	export let pageInfo: {
-		readonly hasNextPage: boolean;
-		readonly hasPreviousPage: boolean;
-		readonly from: number;
-		readonly to: number;
-	};
+	import { PendingValue } from '$houdini';
+	export let totalCount: number | typeof PendingValue;
+	export let pageInfo:
+		| {
+				readonly hasNextPage: boolean;
+				readonly hasPreviousPage: boolean;
+				readonly from: number;
+				readonly to: number;
+		  }
+		| {
+				readonly hasNextPage: typeof PendingValue;
+				readonly hasPreviousPage: typeof PendingValue;
+				readonly from: typeof PendingValue;
+				readonly to: typeof PendingValue;
+		  };
 	const dispatch = createEventDispatcher();
 </script>
 
-{#if !pageInfo.hasNextPage && !pageInfo.hasPreviousPage}
+{#if (!pageInfo.hasNextPage && !pageInfo.hasPreviousPage) || totalCount === PendingValue}
 	<div />
 {:else}
 	<div>

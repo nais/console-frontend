@@ -6,28 +6,35 @@
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 	import Status from '../[env]/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
+	import { PendingValue } from '$houdini';
+	import Loading from '$lib/Loading.svelte';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
-	$: $Workloads.data?.team.apps.edges.sort((a) => {
-		return a.node.instances.every((instance) => instance.status === 'Running') ? 1 : -1;
+	$: team = $Workloads.data.team;
+	$: team.apps.edges.sort((a) => {
+		return a.node.instances.map((i) => i.status).every((status) => status === 'Running') ? 1 : -1;
 	});
 </script>
 
 <Card>
 	<h4>Applications</h4>
-	{#if $Workloads.data}
-		<Table>
-			<Thead>
-				<Th>Workload</Th>
-				<Th>Env</Th>
-				<Th>Instances</Th>
-				<Th>Deployed</Th>
-			</Thead>
-			<Tbody>
-				{#each $Workloads.data.team.apps.edges as edge}
-					<Tr>
+	<Table>
+		<Thead>
+			<Th>Workload</Th>
+			<Th>Env</Th>
+			<Th>Instances</Th>
+			<Th>Deployed</Th>
+		</Thead>
+		<Tbody>
+			{#each team.apps.edges as edge}
+				<Tr>
+					{#if edge.node.name === PendingValue}
+						{#each new Array(4) as _}
+							<Td><Loading /></Td>
+						{/each}
+					{:else}
 						<Td>
 							<a href="/team/{teamName}/{edge.node.env.name}/{edge.node.name}">{edge.node.name}</a>
 						</Td>
@@ -40,23 +47,21 @@
 								<Time time={edge.node.deployed} distance={true} />
 							{/if}
 						</Td>
-					</Tr>
-				{/each}
-			</Tbody>
-		</Table>
-		<Pagination
-			pageInfo={$Workloads.data.team.apps.pageInfo}
-			totalCount={$Workloads.data.team.apps.totalCount}
-			on:nextPage={() => {
-				if (!$Workloads.pageInfo.hasNextPage) return;
-				Workloads.loadNextPage();
-			}}
-			on:previousPage={() => {
-				if (!$Workloads.pageInfo.hasPreviousPage) return;
-				Workloads.loadPreviousPage();
-			}}
-		/>
-	{:else}
-		<p>loading...</p>
-	{/if}
+					{/if}
+				</Tr>
+			{/each}
+		</Tbody>
+	</Table>
+	<Pagination
+		totalCount={team.apps.totalCount}
+		pageInfo={team.apps.pageInfo}
+		on:nextPage={() => {
+			if (!$Workloads.pageInfo.hasNextPage) return;
+			Workloads.loadNextPage();
+		}}
+		on:previousPage={() => {
+			if (!$Workloads.pageInfo.hasPreviousPage) return;
+			Workloads.loadPreviousPage();
+		}}
+	/>
 </Card>
