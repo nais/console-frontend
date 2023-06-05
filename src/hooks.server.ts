@@ -11,7 +11,6 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 		'X-Goog-IAP-JWT-Assertion',
 		event.request.headers.get('X-Goog-IAP-JWT-Assertion') || ''
 	);
-	console.log(request.url);
 
 	return fetch(request);
 };

@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { fragment, graphql } from '$houdini';
 	import type { Authz } from '$houdini';
+	import Loading from '$lib/Loading.svelte';
+	import { PendingValue } from '$houdini';
 
 	export let app: Authz;
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment Authz on App {
+			fragment Authz on App @loading(cascade: true) {
 				authz {
 					... on AzureAD {
 						application {
@@ -33,11 +35,15 @@
 			}
 		`)
 	);
+	$: loading = $data.authz.map((d) => d.__typename).includes(PendingValue);
 
 	$: authz = $data.authz;
 </script>
 
 <div>
+	{#if loading}
+		<Loading width="300px" />
+	{/if}
 	{#each authz as a}
 		{#if a.__typename === 'AzureAD'}
 			Azure

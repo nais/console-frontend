@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { fragment, graphql } from '$houdini';
+	import { PendingValue, fragment, graphql } from '$houdini';
 	import type { Storage } from '$houdini';
+	import Loading from '$lib/Loading.svelte';
 
 	export let app: Storage;
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment Storage on App {
+			fragment Storage on App @loading {
 				storage {
 					... on Bucket {
 						name
@@ -33,6 +34,9 @@
 </script>
 
 <div class="storage">
+	{#if $data.storage.map((s) => s.__typename).includes(PendingValue)}
+		<Loading width="300px" />
+	{/if}
 	{#each $data.storage as storage}
 		{#if storage.__typename === 'Bucket'}
 			<div class="storageContent">

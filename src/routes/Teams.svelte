@@ -5,6 +5,7 @@
 	import { PersonGroup } from '@nais/ds-svelte/icons';
 	import Card from '$lib/Card.svelte';
 	import { LinkPanel, LinkPanelDescription, LinkPanelTitle, Loader } from '@nais/ds-svelte';
+	import Loading from '$lib/Loading.svelte';
 
 	export let user: UserTeams;
 	$: teams = paginatedFragment(
@@ -42,8 +43,8 @@
 		{#each $teams.data.teams.edges as edge}
 			{#if edge.node.name === PendingValue}
 				<LinkPanel about="" href="" border={true} as="a">
-					<LinkPanelTitle><Loader /></LinkPanelTitle>
-					<LinkPanelDescription><Loader /></LinkPanelDescription>
+					<LinkPanelTitle><Loading width="400px" /></LinkPanelTitle>
+					<LinkPanelDescription><Loading width="400px" /></LinkPanelDescription>
 				</LinkPanel>
 			{:else}
 				<LinkPanel about={edge.node.description} href="/team/{edge.node.name}" border={true} as="a">
