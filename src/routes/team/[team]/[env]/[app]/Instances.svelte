@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { fragment, graphql, PendingValue } from '$houdini';
 	import type { AppInstances } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Body, Table, Header, HeaderCell, DataCell, Row } from '@nais/ds-svelte';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 
 	export let app: AppInstances;
 	$: data = fragment(
@@ -25,32 +25,32 @@
 </script>
 
 <Table>
-	<Header>
-		<HeaderCell>Name</HeaderCell>
-		<HeaderCell>Restarts</HeaderCell>
-		<HeaderCell>Image</HeaderCell>
-		<HeaderCell>Status</HeaderCell>
-		<HeaderCell>Created</HeaderCell>
-	</Header>
-	<Body>
+	<Thead>
+		<Th>Name</Th>
+		<Th>Restarts</Th>
+		<Th>Image</Th>
+		<Th>Status</Th>
+		<Th>Created</Th>
+	</Thead>
+	<Tbody>
 		{#each instances as instance}
-			<Row>
+			<Tr>
 				{#if instance === PendingValue}
 					{#each new Array(5) as _}
-						<DataCell><Loading /></DataCell>
+						<Td><Loading /></Td>
 					{/each}
 				{:else}
-					<DataCell>{instance.name}</DataCell>
-					<DataCell>{instance.restarts}</DataCell>
-					<DataCell>{instance.image}</DataCell>
-					<DataCell>{instance.status}</DataCell>
+					<Td>{instance.name}</Td>
+					<Td>{instance.restarts}</Td>
+					<Td>{instance.image}</Td>
+					<Td>{instance.status}</Td>
 					{#if instance.created}
-						<DataCell><Time time={instance.created} distance={true} /></DataCell>
+						<Td><Time time={instance.created} distance={true} /></Td>
 					{:else}
-						<DataCell>Unknown</DataCell>
+						<Td>Unknown</Td>
 					{/if}
 				{/if}
-			</Row>
+			</Tr>
 		{/each}
-	</Body>
+	</Tbody>
 </Table>

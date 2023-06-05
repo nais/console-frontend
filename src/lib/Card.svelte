@@ -8,7 +8,7 @@
 
 <div
 	{...$$restProps}
-	style="--columns: {columns}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}  max-height: {height}"
+	style="--columns: {columns}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}; height: {height};"
 >
 	<slot />
 </div>
@@ -19,6 +19,5 @@
 		background-color: var(--a-bg-default);
 		padding: 1.5rem;
 		grid-column: span var(--columns);
-		margin-bottom: 1rem;
 	}
 </style>

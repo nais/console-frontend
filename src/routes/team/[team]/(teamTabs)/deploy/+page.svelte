@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Body, Button, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
+	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -20,17 +20,17 @@
 {#if $TeamDeployments.data}
 	<Card>
 		<Table zebraStripes={true}>
-			<Header>
-				<HeaderCell>Resource(s)</HeaderCell>
-				<HeaderCell>Created</HeaderCell>
-				<HeaderCell>Environment</HeaderCell>
-				<HeaderCell>Status</HeaderCell>
-				<HeaderCell>Link</HeaderCell>
-			</Header>
-			<Body>
+			<Thead>
+				<Th>Resource(s)</Th>
+				<Th>Created</Th>
+				<Th>Environment</Th>
+				<Th>Status</Th>
+				<Th>Link</Th>
+			</Thead>
+			<Tbody>
 				{#each $TeamDeployments.data.team.deployments.edges as edge}
-					<Row>
-						<DataCell>
+					<Tr>
+						<Td>
 							{#each edge.node.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
@@ -40,13 +40,13 @@
 								{/if}
 								<br />
 							{/each}
-						</DataCell>
-						<DataCell>
+						</Td>
+						<Td>
 							<Time time={new Date(edge.node.created)} distance={true} />
-						</DataCell>
-						<DataCell>{edge.node.env}</DataCell>
-						<DataCell><Status status={edge.node.statuses[0].status} /></DataCell>
-						<DataCell>
+						</Td>
+						<Td>{edge.node.env}</Td>
+						<Td><Status status={edge.node.statuses[0].status} /></Td>
+						<Td>
 							{#if edge.node.repository}
 								<Button
 									size="xsmall"
@@ -57,10 +57,10 @@
 									<svelte:fragment slot="icon-left"><Branching /></svelte:fragment>Repo</Button
 								>
 							{/if}
-						</DataCell>
-					</Row>
+						</Td>
+					</Tr>
 				{/each}
-			</Body>
+			</Tbody>
 		</Table>
 	</Card>
 {/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { Body, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
-	import type { PageData } from './$houdini';
 	import Pagination from '$lib/Pagination.svelte';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Members } = data);
@@ -12,20 +12,20 @@
 	<Card>
 		<h3>Members</h3>
 		<Table>
-			<Header>
-				<HeaderCell>Name</HeaderCell>
-				<HeaderCell>E-mail</HeaderCell>
-				<HeaderCell>Role</HeaderCell>
-			</Header>
-			<Body>
+			<Thead>
+				<Th>Name</Th>
+				<Th>E-mail</Th>
+				<Th>Role</Th>
+			</Thead>
+			<Tbody>
 				{#each $Members.data.team.members.edges as edge}
-					<Row>
-						<DataCell>{edge.node.name}</DataCell>
-						<DataCell>{edge.node.email}</DataCell>
-						<DataCell>{edge.node.role.toLowerCase()}</DataCell>
-					</Row>
+					<Tr>
+						<Td>{edge.node.name}</Td>
+						<Td>{edge.node.email}</Td>
+						<Td>{edge.node.role.toLowerCase()}</Td>
+					</Tr>
 				{/each}
-			</Body>
+			</Tbody>
 		</Table>
 		<Pagination
 			pageInfo={$Members.data.team.members.pageInfo}

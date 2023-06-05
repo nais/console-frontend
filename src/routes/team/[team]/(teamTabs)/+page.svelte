@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Body, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 	import Status from '../[env]/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
 
@@ -19,31 +19,30 @@
 	<h4>Applications</h4>
 	{#if $Workloads.data}
 		<Table>
-			<Header>
-				<HeaderCell>Workload</HeaderCell>
-				<HeaderCell>Env</HeaderCell>
-				<HeaderCell>Instances</HeaderCell>
-				<HeaderCell>Deployed</HeaderCell>
-			</Header>
-			<Body>
+			<Thead>
+				<Th>Workload</Th>
+				<Th>Env</Th>
+				<Th>Instances</Th>
+				<Th>Deployed</Th>
+			</Thead>
+			<Tbody>
 				{#each $Workloads.data.team.apps.edges as edge}
-					<Row>
-						<DataCell
-							><a href="/team/{teamName}/{edge.node.env.name}/{edge.node.name}">{edge.node.name}</a
-							></DataCell
-						>
-						<DataCell>{edge.node.env.name}</DataCell>
-						<DataCell>
-							<Status app={edge.node} loading={false} />
-						</DataCell>
-						<DataCell
-							>{#if edge.node.deployed}
+					<Tr>
+						<Td>
+							<a href="/team/{teamName}/{edge.node.env.name}/{edge.node.name}">{edge.node.name}</a>
+						</Td>
+						<Td>{edge.node.env.name}</Td>
+						<Td>
+							<Status app={edge.node} />
+						</Td>
+						<Td>
+							{#if edge.node.deployed}
 								<Time time={edge.node.deployed} distance={true} />
 							{/if}
-						</DataCell>
-					</Row>
+						</Td>
+					</Tr>
 				{/each}
-			</Body>
+			</Tbody>
 		</Table>
 		<Pagination
 			pageInfo={$Workloads.data.team.apps.pageInfo}

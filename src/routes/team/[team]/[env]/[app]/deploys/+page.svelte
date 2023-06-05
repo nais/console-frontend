@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
+	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Body, Button, DataCell, Header, HeaderCell, Row, Table, Tooltip } from '@nais/ds-svelte';
+	import { Button, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
-	import { PendingValue } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	export let data: PageData;
 
 	$: ({ AppDeploys } = data);
@@ -26,38 +26,38 @@
 {#if $AppDeploys.data}
 	<Card>
 		<Table zebraStripes={true}>
-			<Header>
-				<HeaderCell>Resource(s)</HeaderCell>
-				<HeaderCell>Created</HeaderCell>
-				<HeaderCell>Status</HeaderCell>
-				<HeaderCell>Link</HeaderCell>
-			</Header>
-			<Body>
+			<Thead>
+				<Th>Resource(s)</Th>
+				<Th>Created</Th>
+				<Th>Status</Th>
+				<Th>Link</Th>
+			</Thead>
+			<Tbody>
 				{#each $AppDeploys.data.app.deploys.edges as edge}
-					<Row>
+					<Tr>
 						{#if edge.node.id === PendingValue}
 							{#each new Array(4) as _}
-								<DataCell>
+								<Td>
 									<Loading />
-								</DataCell>
+								</Td>
 							{/each}
 						{:else}
-							<DataCell>
+							<Td>
 								{#each edge.node.resources as resource}
 									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{resource.name}
 									<br />
 								{/each}
-							</DataCell>
-							<DataCell>
+							</Td>
+							<Td>
 								<Time time={new Date(edge.node.created)} distance={true} />
-							</DataCell>
-							<DataCell
-								><Tooltip content={edge.node.statuses[0].message || ''}
+							</Td>
+							<Td>
+								<Tooltip content={edge.node.statuses[0].message || ''}
 									><DeploymentStatus status={edge.node.statuses[0].status} /></Tooltip
-								></DataCell
-							>
-							<DataCell>
+								>
+							</Td>
+							<Td>
 								{#if edge.node.repository}
 									<Button
 										size="xsmall"
@@ -68,11 +68,11 @@
 										<svelte:fragment slot="icon-left"><Branching /></svelte:fragment>Repo</Button
 									>
 								{/if}
-							</DataCell>
+							</Td>
 						{/if}
-					</Row>
+					</Tr>
 				{/each}
-			</Body>
+			</Tbody>
 		</Table>
 	</Card>
 {/if}

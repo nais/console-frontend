@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Body, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
+	import { Table, Tr, Td, Th, Thead, Tbody } from '@nais/ds-svelte';
 	export let user: UserDeploys;
 	$: teams = paginatedFragment(
 		user,
@@ -48,40 +48,40 @@
 		.reduce((a, b) => a + b, 0);
 </script>
 
-<Card minWidth="250px">
+<Card height="100%">
 	<h3>
 		<DeploysIcon size="1.5rem" />
 		My latest deploys
 	</h3>
 	<Table size="small">
-		<Header>
-			<HeaderCell>Team</HeaderCell>
-			<HeaderCell>App</HeaderCell>
-			<HeaderCell>Env</HeaderCell>
-			<HeaderCell>When</HeaderCell>
-		</Header>
-		<Body>
+		<Thead>
+			<Th>Team</Th>
+			<Th>App</Th>
+			<Th>Env</Th>
+			<Th>When</Th>
+		</Thead>
+		<Tbody>
 			{#each teamDeploys || [] as deploy}
-				<Row>
-					<DataCell>
+				<Tr>
+					<Td>
 						<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
-					</DataCell>
-					<DataCell>
+					</Td>
+					<Td>
 						<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
 							{deploy.resources[0].name}</a
 						>
-					</DataCell>
-					<DataCell>
+					</Td>
+					<Td>
 						{deploy.env}
-					</DataCell>
-					<DataCell>
+					</Td>
+					<Td>
 						<Time time={deploy.created} distance={true} />
-					</DataCell>
-				</Row>
+					</Td>
+				</Tr>
 			{:else}
 				<p>no deploys</p>
 			{/each}
-		</Body>
+		</Tbody>
 	</Table>
 	<div class="tot">
 		<a href="/deploys">{totalDeploys} deploys total</a>

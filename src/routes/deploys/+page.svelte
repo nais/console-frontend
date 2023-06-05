@@ -2,7 +2,7 @@
 	import Card from '$lib/Card.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Body, Button, DataCell, Header, HeaderCell, Row, Table } from '@nais/ds-svelte';
+	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -13,18 +13,18 @@
 	<h1>deploys</h1>
 	{#if $Deploys.data}
 		<Table zebraStripes={true}>
-			<Header>
-				<HeaderCell>Resource(s)</HeaderCell>
-				<HeaderCell>Created</HeaderCell>
-				<HeaderCell>Team</HeaderCell>
-				<HeaderCell>Cluster</HeaderCell>
-				<HeaderCell>Status</HeaderCell>
-				<HeaderCell>Links</HeaderCell>
-			</Header>
-			<Body>
+			<Thead>
+				<Th>Resource(s)</Th>
+				<Th>Created</Th>
+				<Th>Team</Th>
+				<Th>Cluster</Th>
+				<Th>Status</Th>
+				<Th>Links</Th>
+			</Thead>
+			<Tbody>
 				{#each $Deploys.data.deployments.edges as edge}
-					<Row>
-						<DataCell>
+					<Tr>
+						<Td>
 							{#each edge.node.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
@@ -36,15 +36,15 @@
 								{/if}
 								<br />
 							{/each}
-						</DataCell>
-						<DataCell><Time time={edge.node.created} distance={true} /></DataCell>
-						<DataCell
-							><a href="/team/{edge.node.team.name}/deploy">{edge.node.team.name}</a></DataCell
-						>
-						<DataCell>{edge.node.env}</DataCell>
+						</Td>
+						<Td><Time time={edge.node.created} distance={true} /></Td>
+						<Td>
+							<a href="/team/{edge.node.team.name}/deploy">{edge.node.team.name}</a>
+						</Td>
+						<Td>{edge.node.env}</Td>
 
-						<DataCell><DeploymentStatus status={edge.node.statuses[0].status} /></DataCell>
-						<DataCell>
+						<Td><DeploymentStatus status={edge.node.statuses[0].status} /></Td>
+						<Td>
 							{#if edge.node.repository}
 								<Button
 									size="xsmall"
@@ -55,10 +55,10 @@
 									<svelte:fragment slot="icon-left"><Branching /></svelte:fragment>Repo</Button
 								>
 							{/if}
-						</DataCell>
-					</Row>
+						</Td>
+					</Tr>
 				{/each}
-			</Body>
+			</Tbody>
 		</Table>
 	{:else}
 		<p>loading...</p>
