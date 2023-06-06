@@ -5,6 +5,9 @@
 	import type { PageData } from './$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import { page } from '$app/stores';
+	import { Button } from '@nais/ds-svelte';
+	import { copyText } from 'svelte-copy';
+	import { Clipboard } from '@nais/ds-svelte/icons';
 
 	export let data: PageData;
 	let name = $page.params.app;
@@ -13,10 +16,29 @@
 </script>
 
 <Card>
-	<h3>nais.yaml for {name}</h3>
+	<h3>
+		nais.yaml for {name}
+		<Button
+			size="xsmall"
+			on:click={() => {
+				if (appMan.manifest === PendingValue) return;
+				copyText(appMan.manifest);
+			}}
+		>
+			<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
+			Copy manifest</Button
+		>
+	</h3>
 	{#if appMan.name === PendingValue}
 		<Loading height="300px" />
 	{:else}
 		<pre>{appMan.manifest}</pre>
 	{/if}
 </Card>
+
+<style>
+	h3 {
+		display: flex;
+		justify-content: space-between;
+	}
+</style>
