@@ -2,6 +2,11 @@
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import type { Storage } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
+	import Bigquery from '$lib/icons/Bigquery.svelte';
+	import Bucket from '$lib/icons/Bucket.svelte';
+	import Kafka from '$lib/icons/Kafka.svelte';
+	import Opensearch from '$lib/icons/Opensearch.svelte';
+	import Postgres from '$lib/icons/Postgres.svelte';
 
 	export let app: Storage;
 	$: data = fragment(
@@ -40,27 +45,27 @@
 	{#each $data.storage as storage}
 		{#if storage.__typename === 'Bucket'}
 			<div class="storageContent">
-				<h5>{storage.__typename}</h5>
+				<h5><Bucket />{storage.__typename}</h5>
 				{storage.name}
 			</div>
 		{:else if storage.__typename === 'BigQueryDataset'}
 			<div class="storageContent">
-				<h5>{storage.__typename}</h5>
+				<h5><Bigquery /> {storage.__typename}</h5>
 				{storage.name}
 			</div>
 		{:else if storage.__typename === 'SqlInstance'}
 			<div class="storageContent">
-				<h5>{storage.__typename}</h5>
+				<h5 style="gap: 1rem"><Postgres /> {storage.__typename}</h5>
 				{storage.name} ({storage.type})
 			</div>
 		{:else if storage.__typename === 'Kafka'}
 			<div class="storageContent">
-				<h5>{storage.__typename}</h5>
+				<h5><Kafka /> {storage.__typename}</h5>
 				Pool: {storage.name}<br /> Streams: ({storage.streams})
 			</div>
 		{:else if storage.__typename === 'OpenSearch'}
 			<div class="storageContent">
-				<h5>{storage.__typename}</h5>
+				<h5><Opensearch /> {storage.__typename}</h5>
 				Instance: {storage.name}<br /> Access: ({storage.access})
 			</div>
 		{/if}
