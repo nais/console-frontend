@@ -1,6 +1,4 @@
-query AppDeploys($app: String!, $team: String!, $env: String!)
-@cache(policy: NetworkOnly)
-@loading {
+query AppDeploys($app: String!, $team: String!, $env: String!) @loading {
 	app(name: $app, team: $team, env: $env) {
 		name
 		deploys {

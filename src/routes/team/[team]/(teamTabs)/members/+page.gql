@@ -1,4 +1,4 @@
-query Members($team: String!) @loading(cascade: true) @cache(policy: NetworkOnly) {
+query Members($team: String!) @loading(cascade: true) {
 	team(name: $team) {
 		name
 		members(first: 10) @paginate(mode: SinglePage) {

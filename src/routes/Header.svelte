@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
-	import SearchResults from '$lib/SearchResults.svelte';
 	import { Search } from '@nais/ds-svelte';
 	import Logo from '../Logo.svelte';
+	import { graphql } from '$houdini';
+	import SearchResults from '$lib/SearchResults.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	const store = graphql(`
-		query SearchQuery($query: String!, $type: SearchType) {
+		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
 			search(first: 10, query: $query, filter: { type: $type }) {
-				edges {
+				edges @loading(count: 10) {
 					node {
 						__typename
 						... on App {
@@ -96,11 +96,12 @@
 			</a>
 			<div class="search">
 				<Search
+					loading={$store.fetching}
 					bind:value={query}
 					label="search"
 					variant="simple"
 					size="small"
-					description="Search for anything"
+					placeholder="Search for anything"
 					on:blur={() => {
 						setTimeout(() => {
 							showSearch = false;
@@ -117,9 +118,6 @@
 					}}
 					on:keyup={on_key_up}
 				/>
-				{#if $store.fetching}
-					<div class="loading">Loading...</div>
-				{/if}
 				{#if $store.data && showSearch}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
 				{/if}
@@ -128,7 +126,7 @@
 		<nav>
 			<ul>
 				<li><a href="/deploys">Deploys</a></li>
-				<li><a href="https://teams{$page.data.tenantDomain}">Teams</a></li>
+				<li><a href="https://console.nav.cloud.nais.io">Teams</a></li>
 				<li><a href="https://docs.nais.io">Docs</a></li>
 			</ul>
 		</nav>
@@ -146,7 +144,7 @@
 	}
 	.search {
 		position: relative;
-		width: 250px;
+		width: 350px;
 	}
 	.header {
 		background: var(--a-surface-inverted);
@@ -159,7 +157,7 @@
 		min-width: 1000px;
 	}
 	.header-content {
-		margin: 0 auto;
+		margin: 0 6rem;
 		width: 100%;
 		height: 100%;
 		max-width: 1400px;

@@ -1,4 +1,4 @@
-query Workloads($team: String!) @loading(count: 5, cascade: true) @cache(policy: NetworkOnly) {
+query Workloads($team: String!) @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		name
 		members {

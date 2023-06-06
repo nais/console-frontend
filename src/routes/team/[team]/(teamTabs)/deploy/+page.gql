@@ -1,4 +1,4 @@
-query TeamDeployments($team: String!) @loading(cascade: true) @cache(policy: NetworkOnly) {
+query TeamDeployments($team: String!) @loading(cascade: true) {
 	team(name: $team) {
 		deployments(first: 10) @paginate(mode: SinglePage) {
 			totalCount

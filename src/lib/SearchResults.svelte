@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Logo from '../Logo.svelte';
 	import { PersonGroup } from '@nais/ds-svelte/icons';
+	import Loading from './Loading.svelte';
 
 	export let data: SearchQuery$result;
 	export let query: string;
@@ -16,6 +18,11 @@
 		</li>
 	{/if}
 	{#each data.search.edges as { node }, i}
+		{#if node.__typename === PendingValue}
+			<li>
+				<Loading width="350px" height="2.5rem" />
+			</li>
+		{/if}
 		{#if node.__typename === 'App'}
 			<li>
 				<a
@@ -82,6 +89,7 @@
 		font-size: 0.75rem;
 	}
 	ul {
+		z-index: 1000;
 		position: absolute;
 		display: flex;
 		flex-direction: column;
@@ -96,6 +104,7 @@
 		margin: 0;
 		color: var(--a-text-default);
 		overflow: auto;
+		box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 	}
 	ul::after {
 		content: '';
