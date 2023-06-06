@@ -97,11 +97,11 @@
 			<div class="search">
 				<Search
 					loading={$store.fetching}
+					placeholder="Search for apps or teams"
 					bind:value={query}
 					label="search"
 					variant="simple"
 					size="small"
-					placeholder="Search for anything"
 					on:blur={() => {
 						setTimeout(() => {
 							showSearch = false;
