@@ -53,17 +53,25 @@
 		<h2>Traffic policies</h2>
 		<Traffic {app} />
 	</Card>
-	<Card columns={3}>
-		<h2>Storage</h2>
-		<Storage {app} />
-	</Card>
-	<Card columns={3}>
-		<h2>Authentications</h2>
-		<Authentications {app} />
-	</Card>
+	<div class="storauth">
+		<Card>
+			<h2>Storage</h2>
+			<Storage {app} />
+		</Card>
+		<Card>
+			<h2>Authentications</h2>
+			<Authentications {app} />
+		</Card>
+	</div>
 </div>
 
 <style>
+	.storauth {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		grid-column: span 2;
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
