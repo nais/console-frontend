@@ -42,6 +42,11 @@
 			Never
 		{:else}
 			<Time time={app.deployed} distance={true} />
+			<ul>
+				<li>Commit SHA: {app.commitSha}</li>
+				<li>Workflow run: {app.workflowRun}</li>
+				<li>Workflow actor: {app.actor}</li>
+			</ul>
 		{/if}
 	</Card>
 	<Card columns={6}>

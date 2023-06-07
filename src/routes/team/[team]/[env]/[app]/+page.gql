@@ -4,6 +4,9 @@ query App($app: String!, $team: String!, $env: String!) {
 		ingresses
 		image
 		deployed
+		actor
+		workflowRun
+		commitSha
 		...AppInstances
 		...AppInstancesStatus
 		...AccessPolicy

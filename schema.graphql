@@ -7,8 +7,10 @@ type AccessPolicy {
 
 type App implements Node {
   accessPolicy: AccessPolicy!
+  actor: String!
   authz: [Authz!]!
   autoScaling: AutoScaling!
+  commitSha: String!
   deployed: Time
   deploys(after: Cursor, first: Int): DeploymentConnection!
   env: Env!
@@ -22,6 +24,7 @@ type App implements Node {
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
+  workflowRun: String!
 }
 
 type AppConnection {
