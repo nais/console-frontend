@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+<script lang="ts">
+	export let size = '1em';
+</script>
+
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	{...$$restProps}
+	width={size}
+	height={size}
+	viewBox="0 0 24 24"
 	><defs
 		><style>
 			.cls-1 {

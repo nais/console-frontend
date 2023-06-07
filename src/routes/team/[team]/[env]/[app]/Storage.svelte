@@ -45,7 +45,7 @@
 	{#each $data.storage as storage}
 		{#if storage.__typename === 'Bucket'}
 			<div class="storageContent">
-				<h5><Bucket />{storage.__typename}</h5>
+				<h5><Bucket /> {storage.__typename}</h5>
 				{storage.name}
 			</div>
 		{:else if storage.__typename === 'BigQueryDataset'}
@@ -61,12 +61,14 @@
 		{:else if storage.__typename === 'Kafka'}
 			<div class="storageContent">
 				<h5><Kafka /> {storage.__typename}</h5>
-				Pool: {storage.name}<br /> Streams: ({storage.streams})
+				<b>Pool:</b>
+				{storage.name}<br /> <b>Streams:</b> ({storage.streams})
 			</div>
 		{:else if storage.__typename === 'OpenSearch'}
 			<div class="storageContent">
 				<h5><Opensearch /> {storage.__typename}</h5>
-				Instance: {storage.name}<br /> Access: ({storage.access})
+				<b>Instance:</b>
+				{storage.name}<br /> <b>Access:</b> ({storage.access})
 			</div>
 		{/if}
 	{:else}
@@ -76,14 +78,13 @@
 
 <style>
 	.storage {
-		display: flex;
 		align-items: center;
-		flex-direction: row;
-		gap: 2rem;
+		display: block;
 	}
 	.storageContent {
 		display: flex;
 		flex-direction: column;
+		padding: 1rem 0;
 	}
 	.storageContent,
 	h5 {

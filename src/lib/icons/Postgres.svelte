@@ -1,8 +1,13 @@
+<script lang="ts">
+	export let size = '1em';
+</script>
+
 <svg
 	xmlns="http://www.w3.org/2000/svg"
+	{...$$restProps}
+	width={size}
+	height={size}
 	xml:space="preserve"
-	width="1em"
-	height="1em"
 	viewBox="0 0 432.071 445.383"
 	><g
 		style="fill-rule:nonzero;clip-rule:nonzero;fill:none;stroke:#fff;stroke-width:12.4651;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4"

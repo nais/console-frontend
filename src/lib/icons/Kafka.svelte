@@ -1,9 +1,14 @@
+<script lang="ts">
+	export let size = '1em';
+</script>
+
 <svg
-	width="1em"
-	height="1em"
+	xmlns="http://www.w3.org/2000/svg"
+	{...$$restProps}
+	width={size}
+	height={size}
 	viewBox="-78.5 0 413 413"
 	version="1.1"
-	xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	preserveAspectRatio="xMidYMid"
 >
