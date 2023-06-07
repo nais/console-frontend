@@ -60,7 +60,7 @@
 					}}
 				>
 					<div class="typeIcon">
-						<PersonGroup size="1.5rem" />
+						<PersonGroup height="1.5rem" />
 						<div>Team</div>
 					</div>
 					{node.name}</a

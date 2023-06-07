@@ -14,7 +14,7 @@
 
 	export let data: PageData;
 	$: ({ App } = data);
-	$: app = $App.data.app;
+	$: app = $App.data!.app;
 
 	$: env = $page.params.env;
 </script>

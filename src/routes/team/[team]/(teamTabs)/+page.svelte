@@ -12,7 +12,7 @@
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
-	$: team = $Workloads.data.team;
+	$: team = $Workloads.data!.team;
 	$: team.apps.edges.sort((a) => {
 		return a.node.instances.map((i) => i.status).every((status) => status === 'Running') ? 1 : -1;
 	});
