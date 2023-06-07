@@ -20,13 +20,13 @@
 </script>
 
 <div class="grid">
-	<Card columns={1}>
+	<Card columns={2}>
 		<h3>Status</h3>
 		<div>
 			<Status {app} />
 		</div>
 	</Card>
-	<Card columns={2}>
+	<Card columns={4}>
 		<h3>Image</h3>
 		{#if app.image === PendingValue}
 			<Loading />
@@ -34,7 +34,7 @@
 			<div>{app.image}</div>
 		{/if}
 	</Card>
-	<Card columns={1}>
+	<Card columns={4}>
 		<h3>Deployed</h3>
 		{#if app.deployed === PendingValue}
 			<Loading />
@@ -42,19 +42,16 @@
 			Never
 		{:else}
 			<Time time={app.deployed} distance={true} />
-			<ul>
-				<li>Commit SHA: {app.commitSha}</li>
-				<li>Workflow run: {app.workflowRun}</li>
-				<li>Workflow actor: {app.actor}</li>
-			</ul>
+			<a href="https://github.com/{app.actor}">{app.actor}</a> triggered
+			<a href={app.workflowRun}>workflow</a>
 		{/if}
 	</Card>
-	<Card columns={6}>
+	<Card columns={12}>
 		<h2>Instances</h2>
 		<AutoScaling {app} />
 		<Instances {app} />
 	</Card>
-	<Card columns={4}>
+	<Card columns={8}>
 		<h2>Traffic policies</h2>
 		<Traffic {app} />
 	</Card>
@@ -75,16 +72,16 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		grid-column: span 2;
+		grid-column: span 4;
 	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(6, 1fr);
+		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
 	h3 {
 		font-weight: 400;
-		margin-bottom: 0px;
+		margin-bottom: 0.5rem;
 	}
 </style>
