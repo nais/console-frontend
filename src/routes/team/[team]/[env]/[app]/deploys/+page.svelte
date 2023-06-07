@@ -5,7 +5,7 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Button, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte';
+	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -33,15 +33,19 @@
 				<Th>Link</Th>
 			</Thead>
 			<Tbody>
-				{#each $AppDeploys.data.app.deploys.edges as edge}
+				{#if $AppDeploys.data.app.name === PendingValue}
 					<Tr>
-						{#if edge.node.id === PendingValue}
-							{#each new Array(4) as _}
-								<Td>
-									<Loading />
-								</Td>
-							{/each}
-						{:else}
+						{#each new Array(4) as _}
+							<Td>
+								<Loading />
+							</Td>
+						{/each}
+					</Tr>
+				{/if}
+
+				{#if $AppDeploys.data.app.deployInfo.history.__typename === 'DeploymentConnection'}
+					{#each $AppDeploys.data.app.deployInfo.history.edges as edge}
+						<Tr>
 							<Td>
 								{#each edge.node.resources as resource}
 									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
@@ -69,9 +73,13 @@
 									>
 								{/if}
 							</Td>
-						{/if}
-					</Tr>
-				{/each}
+						</Tr>
+					{/each}
+				{:else}
+					<Alert variant="error">
+						Could not fetch deploys for {app} in {env}.
+					</Alert>
+				{/if}
 			</Tbody>
 		</Table>
 	</Card>

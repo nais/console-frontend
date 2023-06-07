@@ -4,7 +4,6 @@
 	import { graphql } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 
 	const store = graphql(`
 		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {

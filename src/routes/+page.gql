@@ -1,8 +1,0 @@
-query LandingPage {
-	user @loading {
-		name
-		email
-		...UserTeams @loading
-		...UserDeploys
-	}
-}

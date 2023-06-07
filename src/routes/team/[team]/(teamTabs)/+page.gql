@@ -1,5 +1,6 @@
 query Workloads($team: String!) @loading(count: 5, cascade: true) {
 	team(name: $team) {
+		id
 		name
 		members {
 			edges {
@@ -23,13 +24,15 @@ query Workloads($team: String!) @loading(count: 5, cascade: true) {
 
 			edges @loading(count: 5) {
 				node {
+					deployInfo {
+						timestamp
+					}
 					name
 					image
 					...AppInstancesStatus
 					env {
 						name
 					}
-					deployed
 
 					instances {
 						status

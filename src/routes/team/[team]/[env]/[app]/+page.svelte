@@ -14,7 +14,7 @@
 
 	export let data: PageData;
 	$: ({ App } = data);
-	$: app = $App.data!.app;
+	$: app = $App.data.app;
 
 	$: env = $page.params.env;
 </script>
@@ -36,14 +36,14 @@
 	</Card>
 	<Card columns={4}>
 		<h3>Deployed</h3>
-		{#if app.deployed === PendingValue}
+		{#if app.deployInfo.timestamp === PendingValue}
 			<Loading />
-		{:else if app.deployed === null}
+		{:else if app.deployInfo.timestamp === null}
 			Never
 		{:else}
-			<Time time={app.deployed} distance={true} />
-			<a href="https://github.com/{app.actor}">{app.actor}</a> triggered
-			<a href={app.workflowRun}>workflow</a>
+			<Time time={app.deployInfo.timestamp} distance={true} />
+			<a href="https://github.com/{app.actor}">{app.deployInfo.deployer}</a> triggered
+			<a href={app.deployInfo.url}>workflow</a>
 		{/if}
 	</Card>
 	<Card columns={12}>

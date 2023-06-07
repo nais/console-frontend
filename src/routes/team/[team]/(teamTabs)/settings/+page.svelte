@@ -24,7 +24,7 @@
 
 	$: ({ TeamSettings } = data);
 
-	$: teamSettings = $TeamSettings.data!.team;
+	$: teamSettings = $TeamSettings.data.team;
 
 	$: team = $page.params.team;
 

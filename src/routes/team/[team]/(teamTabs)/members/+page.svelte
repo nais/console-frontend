@@ -8,7 +8,7 @@
 
 	export let data: PageData;
 	$: ({ Members } = data);
-	$: team = $Members.data!.team;
+	$: team = $Members.data.team;
 </script>
 
 <Card>

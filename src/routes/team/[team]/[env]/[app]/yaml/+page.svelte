@@ -12,7 +12,7 @@
 	export let data: PageData;
 	let name = $page.params.app;
 	$: ({ AppManifest } = data);
-	$: appMan = $AppManifest.data!.app;
+	$: appMan = $AppManifest.data.app;
 </script>
 
 <Card>

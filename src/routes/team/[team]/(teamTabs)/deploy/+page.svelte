@@ -12,9 +12,9 @@
 
 	export let data: PageData;
 
+	//	$: team = $page.params.team;
 	$: ({ TeamDeployments } = data);
-	$: teamData = $TeamDeployments.data!.team;
-	$: team = $page.params.team;
+	$: teamData = $TeamDeployments.data.team;
 </script>
 
 {#if $TeamDeployments.errors}
@@ -43,7 +43,8 @@
 							{#each edge.node.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
-									<a href="/team/{team}/{edge.node.env}/{resource.name}/deploys">{resource.name}</a>
+									<!-- <a href="/team/{team}/{edge.node.env}/{resource.name}/deploys">{resource.name}</a> -->
+									<p>ll</p>
 								{:else}
 									{resource.name}
 								{/if}

@@ -1,18 +1,15 @@
 <script lang="ts">
-	import { graphql, paginatedFragment } from '$houdini';
-	import { PendingValue } from '$houdini';
-	import type { UserTeams } from '$houdini';
-	import { PersonGroup } from '@nais/ds-svelte/icons';
+	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte';
 	import Loading from '$lib/Loading.svelte';
+	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte';
+	import { PersonGroup } from '@nais/ds-svelte/icons';
 
-	export let user: UserTeams;
-	$: teams = paginatedFragment(
-		user,
-		graphql(`
-			fragment UserTeams on User {
-				teams @paginate(mode: SinglePage) @loading(count: 3, cascade: true) {
+	const store = graphql(`
+		query UserTeams @loading(cascade: true, count: 3) @load {
+			user {
+				name
+				teams(first: 5) @paginate(mode: SinglePage) {
 					totalCount
 					pageInfo {
 						hasNextPage
@@ -30,8 +27,8 @@
 					}
 				}
 			}
-		`)
-	);
+		}
+	`);
 </script>
 
 <Card minWidth="300px">
@@ -40,19 +37,26 @@
 		My teams
 	</h3>
 	<div class="teams">
-		{#each $teams.data.teams.edges as edge}
-			{#if edge.node.name === PendingValue}
-				<LinkPanel about="" href="" border={true} as="a">
-					<LinkPanelTitle><Loading width="400px" /></LinkPanelTitle>
-					<LinkPanelDescription><Loading width="400px" /></LinkPanelDescription>
-				</LinkPanel>
-			{:else}
-				<LinkPanel about={edge.node.description} href="/team/{edge.node.name}" border={true} as="a">
-					<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
-					<LinkPanelDescription>{edge.node.description}</LinkPanelDescription>
-				</LinkPanel>
-			{/if}
-		{/each}
+		{#if $store.data}
+			{#each $store.data.user.teams.edges as edge}
+				{#if edge.node.name === PendingValue}
+					<LinkPanel about="" href="" border={true} as="a">
+						<LinkPanelTitle><Loading width="100px" height="32px" /></LinkPanelTitle>
+						<LinkPanelDescription><Loading width="450px" /></LinkPanelDescription>
+					</LinkPanel>
+				{:else}
+					<LinkPanel
+						about={edge.node.description}
+						href="/team/{edge.node.name}"
+						border={true}
+						as="a"
+					>
+						<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
+						<LinkPanelDescription>{edge.node.description}</LinkPanelDescription>
+					</LinkPanel>
+				{/if}
+			{/each}
+		{/if}
 	</div>
 </Card>
 

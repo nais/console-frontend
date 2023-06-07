@@ -12,10 +12,10 @@
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
-	$: team = $Workloads.data!.team;
-	$: team.apps.edges.sort((a) => {
-		return a.node.instances.map((i) => i.status).every((status) => status === 'Running') ? 1 : -1;
-	});
+	$: team = $Workloads.data.team;
+	// $: team.apps.edges.sort((a) => {
+	// 	return a.node.instances.map((i) => i.status).every((status) => status === 'Running') ? 1 : -1;
+	// });
 </script>
 
 <Card>
@@ -43,8 +43,8 @@
 							<Status app={edge.node} />
 						</Td>
 						<Td>
-							{#if edge.node.deployed}
-								<Time time={edge.node.deployed} distance={true} />
+							{#if edge.node.deployInfo.timestamp}
+								<Time time={edge.node.deployInfo.timestamp} distance={true} />
 							{/if}
 						</Td>
 					{/if}
