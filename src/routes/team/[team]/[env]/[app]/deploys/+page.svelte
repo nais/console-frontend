@@ -41,9 +41,7 @@
 							</Td>
 						{/each}
 					</Tr>
-				{/if}
-
-				{#if $AppDeploys.data.app.deployInfo.history.__typename === 'DeploymentConnection'}
+				{:else if $AppDeploys.data.app.deployInfo.history.__typename === 'DeploymentConnection'}
 					{#each $AppDeploys.data.app.deployInfo.history.edges as edge}
 						<Tr>
 							<Td>
