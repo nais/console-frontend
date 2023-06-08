@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
