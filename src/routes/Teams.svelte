@@ -6,10 +6,11 @@
 	import { PersonGroup } from '@nais/ds-svelte/icons';
 
 	const store = graphql(`
-		query UserTeams @loading(cascade: true, count: 3) @load {
-			user {
+		query UserTeams @load {
+			user @loading {
 				name
-				teams(first: 5) @paginate(mode: SinglePage) {
+				email @loading
+				teams @loading {
 					totalCount
 					pageInfo {
 						hasNextPage
@@ -19,7 +20,7 @@
 						from
 						to
 					}
-					edges {
+					edges @loading(count: 10) {
 						node {
 							name
 							description
@@ -29,6 +30,7 @@
 			}
 		}
 	`);
+	$: console.log('Teams store: ', $store.data);
 </script>
 
 <Card minWidth="300px">
@@ -39,7 +41,7 @@
 	<div class="teams">
 		{#if $store.data}
 			{#each $store.data.user.teams.edges as edge}
-				{#if edge.node.name === PendingValue}
+				{#if edge === PendingValue}
 					<LinkPanel about="" href="" border={true} as="a">
 						<LinkPanelTitle><Loading width="100px" height="32px" /></LinkPanelTitle>
 						<LinkPanelDescription><Loading width="450px" /></LinkPanelDescription>

@@ -8,10 +8,11 @@
 	import { PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
 
-	//	$: team = $page.params.team;
+	$: team = $page.params.team;
 	$: ({ TeamDeployments } = data);
 	$: teamData = $TeamDeployments.data.team;
 </script>
@@ -42,8 +43,7 @@
 							{#each edge.node.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
-									<!-- <a href="/team/{team}/{edge.node.env}/{resource.name}/deploys">{resource.name}</a> -->
-									<p>ll</p>
+									<a href="/team/{team}/{edge.node.env}/{resource.name}/deploys">{resource.name}</a>
 								{:else}
 									{resource.name}
 								{/if}

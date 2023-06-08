@@ -44,7 +44,7 @@
 			<Time time={app.deployInfo.timestamp} distance={true} /><br />
 			{#if app.deployInfo.deployer && app.deployInfo.url}
 				<a href={app.deployInfo.url}>Workflow</a> triggered by
-				<a href="https://github.com/{app.actor}">{app.deployInfo.deployer}</a>.
+				<a href="https://github.com/{app.deployInfo.deployer}">{app.deployInfo.deployer}</a>.
 			{/if}
 		{/if}
 	</Card>

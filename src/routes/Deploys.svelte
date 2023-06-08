@@ -1,17 +1,37 @@
 <script lang="ts">
-	import { PendingValue, graphql } from '$houdini';
+	import { PendingValue, graphql, type UserDeploys$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
+	import Sort from '$lib/icons/Sort.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+
+	type Deploys = Exclude<UserDeploys$result['user']['teams']['edges'], (typeof PendingValue)[]>;
+
+	const sortTeamDeploys = (userDeploys: UserDeploys$result['user'], slice = 10) => {
+		if ((userDeploys.teams.edges as (typeof PendingValue)[]).includes(PendingValue))
+			return userDeploys.teams.edges as (typeof PendingValue)[];
+		if ((userDeploys.teams.edges as unknown as null[]).includes(null))
+			return new Array(10).fill(PendingValue);
+
+		const edges = userDeploys.teams.edges as unknown as Deploys;
+
+		return edges
+			.map((team) => team.node.deployments)
+			.flatMap((deploys) => deploys.edges.map((deploy) => deploy.node))
+			.sort((a, b) => {
+				return b.created.getTime() - a.created.getTime();
+			})
+			.slice(0, slice);
+	};
+
 	const store = graphql(`
-		query UserDeploys @loading(cascade: true, count: 3) @load {
-			user {
-				email
-				teams @paginate(mode: SinglePage) {
+		query UserDeploys @load {
+			user @loading {
+				teams @loading {
 					totalCount
-					edges {
+					edges @loading(count: 10) {
 						node {
 							deployments {
 								totalCount
@@ -38,34 +58,15 @@
 			}
 		}
 	`);
-	// TODO: vi flytter denne logikken til egne funksjoner som vi kaller etter at vi har sjekket pending value i templatinga
-	$: teamDeploys = $store.data?.user.teams.edges
-		.map((team) => team.node.deployments)
-		.filter((deps) => deps.totalCount !== PendingValue)
-		.flatMap((deploys) => deploys.edges.map((deploy) => deploy.node))
-		.sort((a, b) => {
-			if (a.created !== PendingValue && b.created !== PendingValue) {
-				return a.created.getTime() - b.created.getTime();
-			}
-			return 0;
-		})
 
-		.slice(0, 10);
-	// $: totalDeploys = $store.data?.user.teams.edges
-	// 	.map((edge) => edge.node.deployments.totalCount)
-	// 	.reduce((a, b) => {
-	// 		if (a !== PendingValue && b !== PendingValue) {
-	// 			return a + b;
-	// 		}
-	// 		return 0;
-	// 	}, 0);
+	$: console.log('Deploys store: ', $store.data);
 </script>
 
-{#if $store.data}
+{#if $store.data !== null}
 	<Card height="100%">
 		<h3>
 			<DeploysIcon size="1.5rem" />
-			My latest deploys
+			My teams 10 latest deploys
 		</h3>
 		<Table size="small">
 			<Thead>
@@ -75,22 +76,26 @@
 				<Th>When</Th>
 			</Thead>
 			<Tbody>
-				{#if $store.data.user.email === PendingValue}
-					{#each new Array(10) as _}
+				{#each sortTeamDeploys($store.data.user) as deploy}
+					{#if deploy == PendingValue}
 						<Tr>
 							{#each new Array(4) as _}
-								<Td><Loading /></Td>
+								<Td>
+									<Loading />
+								</Td>
 							{/each}
 						</Tr>
-					{/each}
-				{:else}
-					{#each teamDeploys || [] as deploy}
+					{:else}
 						<Tr>
 							<Td>
-								<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
+								<a href="/team/{String(deploy)}">{deploy.team.name}</a>
 							</Td>
 							<Td>
-								<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
+								<a
+									href="/team/{String(deploy.team.name)}/{String(deploy.env)}/{String(
+										deploy.resources[0].name
+									)}"
+								>
 									{deploy.resources[0].name}</a
 								>
 							</Td>
@@ -98,21 +103,13 @@
 								{deploy.env}
 							</Td>
 							<Td>
-								<Time
-									time={(deploy.created !== PendingValue && deploy.created) || new Date()}
-									distance={true}
-								/>
+								<Time time={deploy.created} distance={true} />
 							</Td>
 						</Tr>
-					{:else}
-						<p>no deploys</p>
-					{/each}
-				{/if}
+					{/if}
+				{/each}
 			</Tbody>
 		</Table>
-		<div class="tot">
-			<!-- <a href="/deploys">{totalDeploys} deploys total</a> -->
-		</div>
 	</Card>
 {/if}
 
@@ -122,9 +119,5 @@
 		align-items: center;
 		gap: 0.5rem;
 		margin-bottom: 0.5rem;
-	}
-	.tot {
-		text-align: right;
-		margin-top: 1rem;
 	}
 </style>
