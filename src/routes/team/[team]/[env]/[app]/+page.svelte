@@ -41,9 +41,11 @@
 		{:else if app.deployInfo.timestamp === null}
 			Never
 		{:else}
-			<Time time={app.deployInfo.timestamp} distance={true} />
-			<a href="https://github.com/{app.actor}">{app.deployInfo.deployer}</a> triggered
-			<a href={app.deployInfo.url}>workflow</a>
+			<Time time={app.deployInfo.timestamp} distance={true} /><br />
+			{#if app.deployInfo.deployer && app.deployInfo.url}
+				<a href={app.deployInfo.url}>Workflow</a> triggered by
+				<a href="https://github.com/{app.actor}">{app.deployInfo.deployer}</a>.
+			{/if}
 		{/if}
 	</Card>
 	<Card columns={12}>
