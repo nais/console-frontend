@@ -4,7 +4,7 @@ query AppDeploys($app: String!, $team: String!, $env: String!) @loading {
 		deployInfo {
 			history {
 				... on DeploymentConnection {
-					edges @loading(count: 2) {
+					edges @loading(count: 5) {
 						node {
 							id
 							resources {

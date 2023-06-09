@@ -45,30 +45,33 @@
 	{#each $data.storage as storage}
 		{#if storage.__typename === 'Bucket'}
 			<div class="storageContent">
-				<h5><Bucket /> {storage.__typename}</h5>
+				<h5><Bucket />{storage.__typename}</h5>
 				{storage.name}
 			</div>
 		{:else if storage.__typename === 'BigQueryDataset'}
 			<div class="storageContent">
-				<h5><Bigquery /> {storage.__typename}</h5>
+				<h5><Bigquery />{storage.__typename}</h5>
 				{storage.name}
 			</div>
 		{:else if storage.__typename === 'SqlInstance'}
 			<div class="storageContent">
-				<h5 style="gap: 1rem"><Postgres /> {storage.__typename}</h5>
+				<h5><Postgres />{storage.__typename}</h5>
 				{storage.name} ({storage.type})
 			</div>
 		{:else if storage.__typename === 'Kafka'}
 			<div class="storageContent">
-				<h5><Kafka /> {storage.__typename}</h5>
-				<b>Pool:</b>
-				{storage.name}<br /> <b>Streams:</b> ({storage.streams})
+				<h5><Kafka />{storage.__typename}</h5>
+				<span
+					><b>Pool:</b>
+					{storage.name}</span
+				>
+				<span><b>Streams:</b> ({storage.streams})</span>
 			</div>
 		{:else if storage.__typename === 'OpenSearch'}
 			<div class="storageContent">
-				<h5><Opensearch /> {storage.__typename}</h5>
-				<b>Instance:</b>
-				{storage.name}<br /> <b>Access:</b> ({storage.access})
+				<h5><Opensearch />{storage.__typename}</h5>
+				<span><b>Instance:</b> {storage.name}</span>
+				<span><b>Access:</b> ({storage.access})</span>
 			</div>
 		{/if}
 	{:else}
@@ -78,17 +81,20 @@
 
 <style>
 	.storage {
-		align-items: center;
 		display: block;
 	}
 	.storageContent {
 		display: flex;
 		flex-direction: column;
 		padding: 1rem 0;
+		align-items: flex-start;
 	}
-	.storageContent,
 	h5 {
+		display: flex;
+		align-items: center;
 		margin-top: 0px;
 		align-self: start;
+		gap: 0.5rem;
+		font-size: 1.2rem;
 	}
 </style>

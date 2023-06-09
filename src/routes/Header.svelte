@@ -144,6 +144,7 @@
 	.search {
 		position: relative;
 		width: 350px;
+		color: black;
 	}
 	.header {
 		background: var(--a-surface-inverted);

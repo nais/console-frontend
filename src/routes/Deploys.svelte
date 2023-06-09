@@ -4,7 +4,6 @@
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import Sort from '$lib/icons/Sort.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 
 	type Deploys = Exclude<UserDeploys$result['user']['teams']['edges'], (typeof PendingValue)[]>;
@@ -88,14 +87,10 @@
 					{:else}
 						<Tr>
 							<Td>
-								<a href="/team/{String(deploy)}">{deploy.team.name}</a>
+								<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
 							</Td>
 							<Td>
-								<a
-									href="/team/{String(deploy.team.name)}/{String(deploy.env)}/{String(
-										deploy.resources[0].name
-									)}"
-								>
+								<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
 									{deploy.resources[0].name}</a
 								>
 							</Td>

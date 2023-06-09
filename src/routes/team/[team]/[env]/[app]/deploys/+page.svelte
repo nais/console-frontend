@@ -17,10 +17,11 @@
 </script>
 
 {#if $AppDeploys.errors}
-	<h3>No deploys found</h3>
-	{#each $AppDeploys.errors as error}
-		<p>{error.message}</p>
-	{/each}
+	<Alert variant="error">
+		{#each $AppDeploys.errors as error}
+			{error.message}
+		{/each}
+	</Alert>
 {/if}
 
 {#if $AppDeploys.data}
@@ -34,13 +35,15 @@
 			</Thead>
 			<Tbody>
 				{#if $AppDeploys.data.app.name === PendingValue}
-					<Tr>
-						{#each new Array(4) as _}
-							<Td>
-								<Loading />
-							</Td>
-						{/each}
-					</Tr>
+					{#each new Array(5) as _}
+						<Tr>
+							{#each new Array(4) as _}
+								<Td>
+									<Loading />
+								</Td>
+							{/each}
+						</Tr>
+					{/each}
 				{:else if $AppDeploys.data.app.deployInfo.history.__typename === 'DeploymentConnection'}
 					{#each $AppDeploys.data.app.deployInfo.history.edges as edge}
 						<Tr>

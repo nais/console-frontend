@@ -301,7 +301,7 @@ type Port {
 
 type Query {
   app(env: String!, name: String!, team: String!): App!
-  deployments(after: Cursor, first: Int): DeploymentConnection!
+  deployments(after: Cursor, before: Cursor, first: Int, last: Int): DeploymentConnection!
   node(id: ID!): Node
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
@@ -383,7 +383,7 @@ interface Storage {
 type Team implements Node {
   apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
   deployKey: DeploymentKey!
-  deployments(after: Cursor, first: Int): DeploymentConnection!
+  deployments(after: Cursor, before: Cursor, first: Int, last: Int): DeploymentConnection!
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
