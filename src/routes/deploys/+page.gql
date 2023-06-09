@@ -1,7 +1,15 @@
 query Deploys {
-	deployments {
-		totalCount
-		edges {
+	deployments(first: 10) @paginate(mode: SinglePage) @loading {
+		totalCount @loading
+		pageInfo @loading {
+			hasNextPage
+			hasPreviousPage
+			startCursor
+			endCursor
+			from
+			to
+		}
+		edges @loading(count: 10) {
 			node {
 				team {
 					name

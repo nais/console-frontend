@@ -8,7 +8,6 @@ const config = {
 	plugins: {
 		'houdini-svelte': {}
 	},
-	defaultCachePolicy: 'NetworkOnly',
 	scalars: {
 		Cursor: { type: 'string' },
 		Time: {

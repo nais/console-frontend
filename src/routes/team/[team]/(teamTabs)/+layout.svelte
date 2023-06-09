@@ -20,7 +20,7 @@
 			routeId: '/team/[team]/(teamTabs)/members'
 		},
 		{
-			tab: 'Deploy',
+			tab: 'Deploys',
 			routeId: '/team/[team]/(teamTabs)/deploy'
 		}
 	];

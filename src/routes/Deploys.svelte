@@ -57,8 +57,6 @@
 			}
 		}
 	`);
-
-	$: console.log('Deploys store: ', $store.data);
 </script>
 
 {#if $store.data !== null}
