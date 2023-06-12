@@ -5,15 +5,7 @@
 </script>
 
 <div class="info">
-	<Alert variant="info">
-		This page is under construction. Future versions will include:
-		<ul>
-			<li>Team management</li>
-			<li>Cost and billing information/analysis</li>
-			<li>Application metrics, logs and insight</li>
-			<li>Analysis and statistics</li>
-		</ul>
-	</Alert>
+	<Alert variant="info">This page is under construction.</Alert>
 </div>
 <div class="main">
 	<Teams />

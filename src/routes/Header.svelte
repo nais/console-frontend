@@ -125,7 +125,7 @@
 		<nav>
 			<ul>
 				<li><a href="/deploys">Deploys</a></li>
-				<li><a href="https://console.nav.cloud.nais.io">Teams</a></li>
+				<li><a href="https://teams.nav.cloud.nais.io">Teams</a></li>
 				<li><a href="https://docs.nais.io">Docs</a></li>
 			</ul>
 		</nav>
@@ -157,14 +157,13 @@
 		min-width: 1000px;
 	}
 	.header-content {
-		margin: 0 6rem;
-		width: 100%;
-		height: 100%;
-		max-width: 1400px;
 		display: flex;
-		align-items: center;
 		flex-direction: row;
 		justify-content: space-between;
+		margin: auto;
+		width: 100%;
+		min-width: 1000px;
+		max-width: 1432px;
 	}
 	.logo {
 		color: var(--a-text-on-inverted);

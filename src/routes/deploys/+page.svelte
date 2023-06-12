@@ -21,7 +21,9 @@
 				{error.message}
 			{/each}
 		</Alert>
-	{:else if deploys !== undefined}
+	{/if}
+
+	{#if deploys}
 		<Table zebraStripes={true}>
 			<Thead>
 				<Th>Resource(s)</Th>
@@ -33,7 +35,7 @@
 			</Thead>
 			<Tbody>
 				{#each deploys.edges as edge}
-					{#if edge === PendingValue}
+					{#if edge.node.id === PendingValue}
 						<Tr>
 							{#each new Array(6) as _}
 								<Td><Loading /></Td>
@@ -60,12 +62,11 @@
 							</Td>
 							<Td>{edge.node.env}</Td>
 
-							<Td>statuses: {edge.node.statuses.length}</Td>
-							<!--{#if edge.node.statuses.length === 0}
+							{#if edge.node.statuses.length === 0}
 								<Td><DeploymentStatus status={'unknown'} /></Td>
 							{:else}
 								<Td><DeploymentStatus status={edge.node.statuses[0].status} /></Td>
-							{/if}-->
+							{/if}
 							<Td>
 								{#if edge.node.repository}
 									<Button
@@ -83,21 +84,17 @@
 				{/each}
 			</Tbody>
 		</Table>
-	{/if}
-	{#if deploys !== undefined}
-		{#if deploys.pageInfo !== PendingValue}
-			<Pagination
-				totalCount={deploys.totalCount}
-				pageInfo={deploys.pageInfo}
-				on:nextPage={() => {
-					if (!deploys.pageInfo.hasNextPage) return;
-					Deploys.loadNextPage();
-				}}
-				on:previousPage={() => {
-					if (!deploys.pageInfo.hasPreviousPage) return;
-					Deploys.loadPreviousPage();
-				}}
-			/>
-		{/if}
+		<Pagination
+			totalCount={deploys.totalCount}
+			pageInfo={deploys.pageInfo}
+			on:nextPage={() => {
+				if (!deploys?.pageInfo.hasNextPage) return;
+				Deploys.loadNextPage();
+			}}
+			on:previousPage={() => {
+				if (!deploys?.pageInfo.hasPreviousPage) return;
+				Deploys.loadPreviousPage();
+			}}
+		/>
 	{/if}
 </Card>

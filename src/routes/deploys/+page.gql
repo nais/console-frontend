@@ -1,7 +1,7 @@
 query Deploys {
-	deployments(first: 10) @paginate(mode: SinglePage) @loading {
+	deployments(first: 10) @paginate(mode: SinglePage) @loading(cascade: true) {
 		totalCount
-		pageInfo @loading {
+		pageInfo {
 			hasNextPage
 			hasPreviousPage
 			startCursor
@@ -10,8 +10,8 @@ query Deploys {
 			to
 		}
 		edges @loading(count: 10) {
-			node @loading {
-				id @loading
+			node {
+				id
 				team {
 					name
 				}
