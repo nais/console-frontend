@@ -14,7 +14,7 @@
 </script>
 
 <Card>
-	<h1>Deploys</h1>
+	<h2>Deploys</h2>
 	{#if $Deploys.errors}
 		<Alert variant="error">
 			{#each $Deploys.errors as error}

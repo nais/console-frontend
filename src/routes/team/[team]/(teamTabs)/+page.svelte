@@ -26,7 +26,7 @@
 	</Alert>
 {:else}
 	<Card>
-		<h4>Applications</h4>
+		<h3>Applications</h3>
 		<Table>
 			<Thead>
 				<Th>Workload</Th>

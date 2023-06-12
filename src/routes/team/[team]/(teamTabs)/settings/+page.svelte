@@ -71,7 +71,7 @@
 	</Card>
 	<br />
 	<Card>
-		<h4>Deploy key</h4>
+		<h3>Deploy key</h3>
 		<dl>
 			<dt>Created:</dt>
 			{#if teamSettings.deployKey.key === PendingValue}

@@ -40,10 +40,10 @@
 	{/each}
 {:else}
 	<Card minWidth="300px">
-		<h3>
+		<h2>
 			<PersonGroup />
 			My teams
-		</h3>
+		</h2>
 		<div class="teams">
 			{#if $store.data}
 				{#each $store.data.user.teams.edges as edge}
@@ -70,10 +70,11 @@
 {/if}
 
 <style>
-	h3 {
+	h2 {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+		margin-bottom: 1.5rem;
 	}
 	.teams {
 		display: flex;

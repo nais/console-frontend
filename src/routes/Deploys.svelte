@@ -68,10 +68,10 @@
 {/if}
 {#if $store.data !== null}
 	<Card height="100%">
-		<h3>
+		<h2>
 			<DeploysIcon size="1.5rem" />
-			My teams 10 latest deploys
-		</h3>
+			My teams latest deploys
+		</h2>
 		<Table size="small">
 			<Thead>
 				<Th>Team</Th>
@@ -114,7 +114,7 @@
 {/if}
 
 <style>
-	h3 {
+	h2 {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;

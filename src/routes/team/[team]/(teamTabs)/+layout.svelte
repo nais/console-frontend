@@ -27,7 +27,7 @@
 </script>
 
 <div class="header">
-	<h3>{team}</h3>
+	<h2>{team}</h2>
 </div>
 <Tabs>
 	{#each nav as { tab, routeId }}
