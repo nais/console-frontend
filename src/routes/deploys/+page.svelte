@@ -2,7 +2,7 @@
 	import Card from '$lib/Card.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 	import { Branching } from '@nais/ds-svelte/icons';
 	import type { PageData } from './$houdini';
 	import { PendingValue } from '$houdini';
@@ -10,11 +10,18 @@
 	import Pagination from '$lib/Pagination.svelte';
 	export let data: PageData;
 	$: ({ Deploys } = data);
+	$: deploys = $Deploys.data?.deployments;
 </script>
 
 <Card>
 	<h1>Deploys</h1>
-	{#if $Deploys.data}
+	{#if $Deploys.errors}
+		<Alert variant="error">
+			{#each $Deploys.errors as error}
+				{error.message}
+			{/each}
+		</Alert>
+	{:else if deploys !== undefined}
 		<Table zebraStripes={true}>
 			<Thead>
 				<Th>Resource(s)</Th>
@@ -25,7 +32,7 @@
 				<Th>Links</Th>
 			</Thead>
 			<Tbody>
-				{#each $Deploys.data.deployments.edges as edge}
+				{#each deploys.edges as edge}
 					{#if edge === PendingValue}
 						<Tr>
 							{#each new Array(6) as _}
@@ -53,7 +60,12 @@
 							</Td>
 							<Td>{edge.node.env}</Td>
 
-							<Td><DeploymentStatus status={edge.node.statuses[0].status} /></Td>
+							<Td>statuses: {edge.node.statuses.length}</Td>
+							<!--{#if edge.node.statuses.length === 0}
+								<Td><DeploymentStatus status={'unknown'} /></Td>
+							{:else}
+								<Td><DeploymentStatus status={edge.node.statuses[0].status} /></Td>
+							{/if}-->
 							<Td>
 								{#if edge.node.repository}
 									<Button
@@ -71,17 +83,18 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $Deploys.data.deployments.pageInfo !== PendingValue}
+	{/if}
+	{#if deploys !== undefined}
+		{#if deploys.pageInfo !== PendingValue}
 			<Pagination
-				totalCount={$Deploys.data.deployments.totalCount}
-				pageInfo={$Deploys.data.deployments.pageInfo}
+				totalCount={deploys.totalCount}
+				pageInfo={deploys.pageInfo}
 				on:nextPage={() => {
-					if (!$Deploys.data.deployments.pageInfo.hasNextPage) return;
+					if (!deploys.pageInfo.hasNextPage) return;
 					Deploys.loadNextPage();
 				}}
 				on:previousPage={() => {
-					if (!$Deploys.data.deployments.pageInfo.hasPreviousPage) return;
-					console.log($Deploys.data.deployments.pageInfo);
+					if (!deploys.pageInfo.hasPreviousPage) return;
 					Deploys.loadPreviousPage();
 				}}
 			/>

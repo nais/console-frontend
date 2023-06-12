@@ -22,7 +22,7 @@ query Workloads($team: String!) @loading(count: 5, cascade: true) {
 				to
 			}
 
-			edges @loading(count: 5) {
+			edges {
 				node {
 					deployInfo {
 						timestamp

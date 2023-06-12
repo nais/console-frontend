@@ -1,6 +1,6 @@
 query Deploys {
 	deployments(first: 10) @paginate(mode: SinglePage) @loading {
-		totalCount @loading
+		totalCount
 		pageInfo @loading {
 			hasNextPage
 			hasPreviousPage
@@ -10,7 +10,8 @@ query Deploys {
 			to
 		}
 		edges @loading(count: 10) {
-			node {
+			node @loading {
+				id @loading
 				team {
 					name
 				}

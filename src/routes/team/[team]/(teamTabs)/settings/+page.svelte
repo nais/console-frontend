@@ -24,7 +24,7 @@
 
 	$: ({ TeamSettings } = data);
 
-	$: teamSettings = $TeamSettings.data.team;
+	$: teamSettings = $TeamSettings.data?.team;
 
 	$: team = $page.params.team;
 
@@ -32,127 +32,135 @@
 	let showRotateKey = false;
 </script>
 
-<div style="margin-bottom: 1rem;">
-	<Alert variant="info">
-		Team settings currently managed by <a href="https://teams.nav.cloud.nais.io">Teams</a>
-		<br />
-		This functionality will be incorporated into this app eventually
+{#if $TeamSettings.errors}
+	<Alert variant="error">
+		{#each $TeamSettings.errors as error}
+			{error.message}
+		{/each}
 	</Alert>
-</div>
-<Card>
-	<h3>{team}</h3>
-	{#if teamSettings.id === PendingValue}
-		<Loading width="400px" />
-	{:else}
-		<i>{teamSettings.description}</i>
-	{/if}
-	{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
-		<dl>
-			<dh>Default Channel:</dh>
-			<dd>{teamSettings.slackChannel}</dd>
-		</dl>
-	{/if}
-	{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
-		<dl>
-			<dh>Overridden channels:</dh>
-			{#each teamSettings.slackAlertsChannels as channel}
-				<dt>{channel.env}:</dt>
-				<dd>{channel.name}</dd>
-			{/each}
-		</dl>
-	{/if}
-</Card>
-<br />
-<Card>
-	<h4>Deploy key</h4>
-	<dl>
-		<dt>Created:</dt>
-		{#if teamSettings.deployKey.key === PendingValue}
-			<dd><Loading /></dd>
+{:else if teamSettings}
+	<div style="margin-bottom: 1rem;">
+		<Alert variant="info">
+			Team settings currently managed by <a href="https://teams.nav.cloud.nais.io">Teams</a>
+			<br />
+			This functionality will be incorporated into this app eventually
+		</Alert>
+	</div>
+	<Card>
+		<h3>{team}</h3>
+		{#if teamSettings.id === PendingValue}
+			<Loading width="400px" />
 		{:else}
-			<dd><Time time={teamSettings.deployKey.created} distance={true} /></dd>
+			<i>{teamSettings.description}</i>
 		{/if}
-		<dt>Expires:</dt>
-		{#if teamSettings.deployKey.expires === PendingValue}
-			<dd><Loading /></dd>
-		{:else}
-			<dd><Time time={teamSettings?.deployKey?.expires} distance={true} /></dd>
+		{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
+			<dl>
+				<dh>Default Channel:</dh>
+				<dd>{teamSettings.slackChannel}</dd>
+			</dl>
 		{/if}
-		<dt>Key:</dt>
-		<dd>
-			<div class="deployKey">
-				{#if showKey}
-					{teamSettings?.deployKey?.key}
-					<Button
-						size="xsmall"
-						variant="tertiary"
-						on:click={() => {
-							showKey = !showKey;
-						}}
-					>
-						<svelte:fragment slot="icon-left"><EyeSlash /></svelte:fragment></Button
-					>
-				{:else}
-					{#if teamSettings.deployKey.key === PendingValue}
-						<dd><Loading /></dd>
+		{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
+			<dl>
+				<dh>Overridden channels:</dh>
+				{#each teamSettings.slackAlertsChannels as channel}
+					<dt>{channel.env}:</dt>
+					<dd>{channel.name}</dd>
+				{/each}
+			</dl>
+		{/if}
+	</Card>
+	<br />
+	<Card>
+		<h4>Deploy key</h4>
+		<dl>
+			<dt>Created:</dt>
+			{#if teamSettings.deployKey.key === PendingValue}
+				<dd><Loading /></dd>
+			{:else}
+				<dd><Time time={teamSettings.deployKey.created} distance={true} /></dd>
+			{/if}
+			<dt>Expires:</dt>
+			{#if teamSettings.deployKey.expires === PendingValue}
+				<dd><Loading /></dd>
+			{:else}
+				<dd><Time time={teamSettings?.deployKey?.expires} distance={true} /></dd>
+			{/if}
+			<dt>Key:</dt>
+			<dd>
+				<div class="deployKey">
+					{#if showKey}
+						{teamSettings?.deployKey?.key}
+						<Button
+							size="xsmall"
+							variant="tertiary"
+							on:click={() => {
+								showKey = !showKey;
+							}}
+						>
+							<svelte:fragment slot="icon-left"><EyeSlash /></svelte:fragment></Button
+						>
 					{:else}
-						{teamSettings?.deployKey?.key.replaceAll(/./g, '*')}
+						{#if teamSettings.deployKey.key === PendingValue}
+							<dd><Loading /></dd>
+						{:else}
+							{teamSettings?.deployKey?.key.replaceAll(/./g, '*')}
+						{/if}
+						<Button
+							size="xsmall"
+							variant="tertiary"
+							on:click={() => {
+								showKey = !showKey;
+							}}
+						>
+							<svelte:fragment slot="icon-left"><Eye /></svelte:fragment></Button
+						>
 					{/if}
-					<Button
-						size="xsmall"
-						variant="tertiary"
-						on:click={() => {
-							showKey = !showKey;
-						}}
-					>
-						<svelte:fragment slot="icon-left"><Eye /></svelte:fragment></Button
-					>
-				{/if}
-			</div>
+				</div>
+				<Button
+					size="xsmall"
+					on:click={() => {
+						if (teamSettings?.deployKey?.key === PendingValue) return;
+						copyText(teamSettings?.deployKey?.key || '');
+					}}
+				>
+					<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
+					Copy key</Button
+				>
+				<Button
+					size="xsmall"
+					variant="danger"
+					on:click={() => {
+						showRotateKey = !showRotateKey;
+					}}
+				>
+					<svelte:fragment slot="icon-left"><ArrowsCirclepath /></svelte:fragment>
+					Rotate key</Button
+				>
+			</dd>
+		</dl>
+	</Card>
+	{#if browser}
+		<Modal bind:open={showRotateKey} closeButton={false}>
+			<h3>Rotate deploy key</h3>
+			<p>Are you sure you want to rotate the deploy key?</p>
 			<Button
-				size="xsmall"
-				on:click={() => {
-					if (teamSettings?.deployKey?.key === PendingValue) return;
-					copyText(teamSettings?.deployKey?.key || '');
-				}}
-			>
-				<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
-				Copy key</Button
-			>
-			<Button
-				size="xsmall"
-				variant="danger"
 				on:click={() => {
 					showRotateKey = !showRotateKey;
 				}}
 			>
-				<svelte:fragment slot="icon-left"><ArrowsCirclepath /></svelte:fragment>
+				Cancel</Button
+			>
+			<Button
+				variant="danger"
+				on:click={() => {
+					showRotateKey = !showRotateKey;
+					rotateKey.mutate({ team });
+				}}
+			>
 				Rotate key</Button
 			>
-		</dd>
-	</dl>
-</Card>
-{#if browser}
-	<Modal bind:open={showRotateKey} closeButton={false}>
-		<h3>Rotate deploy key</h3>
-		<p>Are you sure you want to rotate the deploy key?</p>
-		<Button
-			on:click={() => {
-				showRotateKey = !showRotateKey;
-			}}
-		>
-			Cancel</Button
-		>
-		<Button
-			variant="danger"
-			on:click={() => {
-				showRotateKey = !showRotateKey;
-				rotateKey.mutate({ team });
-			}}
-		>
-			Rotate key</Button
-		>
-	</Modal>
+		</Modal>
+	{/if}
 {/if}
 
 <style>

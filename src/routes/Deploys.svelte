@@ -4,7 +4,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
 
 	type Deploys = Exclude<UserDeploys$result['user']['teams']['edges'], (typeof PendingValue)[]>;
 
@@ -59,6 +59,13 @@
 	`);
 </script>
 
+{#if $store.errors !== null}
+	<Alert variant="error">
+		{#each $store.errors as error}
+			{error.message}
+		{/each}
+	</Alert>
+{/if}
 {#if $store.data !== null}
 	<Card height="100%">
 		<h3>
