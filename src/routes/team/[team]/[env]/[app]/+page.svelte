@@ -28,13 +28,13 @@
 {:else if $App.data}
 	<div class="grid">
 		<Card columns={2}>
-			<h3>Status</h3>
+			<h4>Status</h4>
 			<div>
 				<Status app={$App.data.app} />
 			</div>
 		</Card>
 		<Card columns={4}>
-			<h3>Image</h3>
+			<h4>Image</h4>
 			{#if $App.data.app.image === PendingValue}
 				<Loading />
 			{:else}
@@ -42,7 +42,7 @@
 			{/if}
 		</Card>
 		<Card columns={4}>
-			<h3>Deployed</h3>
+			<h4>Deployed</h4>
 			{#if $App.data.app.deployInfo.timestamp === PendingValue}
 				<Loading />
 			{:else if $App.data.app.deployInfo.timestamp === null}
@@ -58,21 +58,21 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<h2>Instances</h2>
+			<h4>Instances</h4>
 			<AutoScaling app={$App.data.app} />
 			<Instances app={$App.data.app} />
 		</Card>
 		<Card columns={8}>
-			<h2>Traffic policies</h2>
+			<h4>Traffic policies</h4>
 			<Traffic app={$App.data.app} />
 		</Card>
 		<div class="storauth">
 			<Card>
-				<h2>Storage</h2>
+				<h4>Storage</h4>
 				<Storage app={$App.data.app} />
 			</Card>
 			<Card>
-				<h2>Authentications</h2>
+				<h4>Authentications</h4>
 				<Authentications app={$App.data.app} />
 			</Card>
 		</div>
@@ -92,7 +92,7 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-	h3 {
+	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
 	}

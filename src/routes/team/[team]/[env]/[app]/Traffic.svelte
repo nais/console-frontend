@@ -3,7 +3,6 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import type { AccessPolicy } from '$houdini';
 	import { page } from '$app/stores';
-	import { ArrowRight } from '@nais/ds-svelte/icons';
 	import Loading from '$lib/Loading.svelte';
 
 	export let app: AccessPolicy;
@@ -54,7 +53,7 @@
 
 <div class="traffic">
 	<div class="directionContent first">
-		<h3>Inbound</h3>
+		<h4>Inbound</h4>
 		<h5>External ingresses</h5>
 		<ul>
 			{#each $data.ingresses as ingress}
@@ -101,7 +100,7 @@
 		</ul>
 	</div>
 	<div class="directionContent">
-		<h3>Outbound</h3>
+		<h4>Outbound</h4>
 		<h5>External hostnames</h5>
 		<ul>
 			{#each $data.accessPolicy.outbound.external as external}
@@ -154,6 +153,11 @@
 	.directionContent,
 	h5 {
 		margin: 0;
+	}
+
+	h4 {
+		font-weight: 400;
+		margin-bottom: 0.5rem;
 	}
 	.directionContent,
 	ul {

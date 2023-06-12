@@ -22,20 +22,20 @@
 	</Alert>
 {:else if $AppManifest.data}
 	<Card>
-		<h3>
+		<h4>
 			nais.yaml for {name}
 			<Button
 				size="xsmall"
 				on:click={() => {
 					if ($AppManifest.data?.app.manifest !== PendingValue) {
-						copyText($AppManifest.data.app.manifest);
+						copyText($AppManifest.data ? $AppManifest.data.app.manifest : '');
 					}
 				}}
 			>
 				<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
 				Copy manifest</Button
 			>
-		</h3>
+		</h4>
 		{#if $AppManifest.data.app.name === PendingValue}
 			<Loading height="300px" />
 		{:else}
@@ -45,7 +45,7 @@
 {/if}
 
 <style>
-	h3 {
+	h4 {
 		display: flex;
 		justify-content: space-between;
 	}

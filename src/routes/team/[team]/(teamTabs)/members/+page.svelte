@@ -9,6 +9,10 @@
 	export let data: PageData;
 	$: ({ Members } = data);
 	$: team = $Members.data?.team;
+
+	function capitalizeFirstLetterInEachWord(str: string): string {
+		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
+	}
 </script>
 
 {#if $Members.errors}
@@ -34,7 +38,7 @@
 								<Td><Loading /></Td>
 							{/each}
 						{:else}
-							<Td>{edge.node.name}</Td>
+							<Td>{capitalizeFirstLetterInEachWord(edge.node.name.toString())}</Td>
 							<Td>{edge.node.email}</Td>
 							<Td>{edge.node.role.toString().toLowerCase()}</Td>
 						{/if}
