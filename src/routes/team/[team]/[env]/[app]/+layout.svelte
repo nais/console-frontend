@@ -25,6 +25,8 @@
 	];
 </script>
 
+<svelte:head><title>{team} - Console</title></svelte:head>
+
 <h3><a href="/team/{team}"> {team}</a> / {app} ({env})</h3>
 <Tabs>
 	{#each nav as { tab, routeId }}

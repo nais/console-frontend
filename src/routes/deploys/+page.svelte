@@ -13,6 +13,8 @@
 	$: deploys = $Deploys.data?.deployments;
 </script>
 
+<svelte:head><title>Deploys - Console</title></svelte:head>
+
 <Card>
 	<h2>Deploys</h2>
 	{#if $Deploys.errors}

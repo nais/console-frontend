@@ -7,6 +7,8 @@
 	$: ({ Teams } = data);
 </script>
 
+<svelte:head><title>Teams - Console</title></svelte:head>
+
 {#if $Teams.data}
 	<div>
 		{#each $Teams.data.teams.edges as edge}

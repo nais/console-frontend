@@ -4,6 +4,7 @@
 	import { Alert } from '@nais/ds-svelte';
 </script>
 
+<svelte:head><title>Console</title></svelte:head>
 <div class="info">
 	<Alert variant="info">This page is under construction.</Alert>
 </div>

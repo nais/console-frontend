@@ -26,6 +26,8 @@
 	];
 </script>
 
+<svelte:head><title>{team} - Console</title></svelte:head>
+
 <div class="header">
 	<h2>{team}</h2>
 </div>
