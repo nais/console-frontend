@@ -1,5 +1,5 @@
 query Deploys {
-	deployments(first: 10) @paginate(mode: SinglePage) @loading(cascade: true) {
+	deployments(first: 100, limit: 100) @paginate(mode: SinglePage) @loading(cascade: true) {
 		totalCount
 		pageInfo {
 			hasNextPage

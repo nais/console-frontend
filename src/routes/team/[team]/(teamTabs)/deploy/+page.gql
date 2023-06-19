@@ -1,7 +1,7 @@
 query TeamDeployments($team: String!) @loading(cascade: true) {
 	team(name: $team) {
 		id
-		deployments(first: 10) @paginate(mode: SinglePage) {
+		deployments(first: 100, limit: 100) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
