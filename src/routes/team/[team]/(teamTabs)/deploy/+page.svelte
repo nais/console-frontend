@@ -2,8 +2,8 @@
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
-	import { Branching } from '@nais/ds-svelte/icons';
+	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Branching } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import { PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';

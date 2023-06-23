@@ -6,8 +6,8 @@
 	import Loading from '$lib/Loading.svelte';
 	import { page } from '$app/stores';
 	import { copyText } from 'svelte-copy';
-	import { Clipboard } from '@nais/ds-svelte/icons';
-	import { Alert, Button } from '@nais/ds-svelte';
+	import { Clipboard } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button } from '@nais/ds-svelte-community';
 
 	export let data: PageData;
 	let name = $page.params.app;

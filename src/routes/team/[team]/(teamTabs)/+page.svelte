@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import Status from '../[env]/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
 	import { PendingValue } from '$houdini';

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Teams from './Teams.svelte';
 	import Deploys from './Deploys.svelte';
-	import { Alert } from '@nais/ds-svelte';
+	import { Alert } from '@nais/ds-svelte-community';
 </script>
 
 <svelte:head><title>Console</title></svelte:head>

@@ -5,8 +5,18 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte';
-	import { Branching } from '@nais/ds-svelte/icons';
+	import {
+		Alert,
+		Button,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import { Branching } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 

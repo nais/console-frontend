@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tag } from '@nais/ds-svelte';
+	import { Tag } from '@nais/ds-svelte-community';
 	export let status: string;
 	let asdf = (
 		status: string

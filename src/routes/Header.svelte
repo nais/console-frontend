@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Search } from '@nais/ds-svelte';
+	import { Search } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import { graphql } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';

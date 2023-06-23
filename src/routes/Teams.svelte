@@ -2,8 +2,13 @@
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
-	import { Alert, LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte';
-	import { PersonGroup } from '@nais/ds-svelte/icons';
+	import {
+		Alert,
+		LinkPanel,
+		LinkPanelDescription,
+		LinkPanelTitle
+	} from '@nais/ds-svelte-community';
+	import { PersonGroup } from '@nais/ds-svelte-community/icons';
 
 	const store = graphql(`
 		query UserTeams @load {

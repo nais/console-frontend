@@ -2,7 +2,7 @@
 	import type { SearchQuery$result } from '$houdini';
 	import { PendingValue } from '$houdini';
 	import Logo from '../Logo.svelte';
-	import { PersonGroup } from '@nais/ds-svelte/icons';
+	import { PersonGroup } from '@nais/ds-svelte-community/icons';
 	import Loading from './Loading.svelte';
 
 	export let data: SearchQuery$result;

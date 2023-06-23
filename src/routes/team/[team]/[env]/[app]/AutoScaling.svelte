@@ -3,7 +3,7 @@
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import { Tooltip } from '@nais/ds-svelte';
+	import { Tooltip } from '@nais/ds-svelte-community';
 
 	export let app: AutoScaling;
 	$: data = fragment(

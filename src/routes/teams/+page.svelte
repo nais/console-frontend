@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte';
+	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Pagination from '$lib/Pagination.svelte';
 

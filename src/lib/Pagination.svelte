@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ChevronRight, ChevronLeft } from '@nais/ds-svelte/icons';
-	import { Button } from '@nais/ds-svelte';
+	import { ChevronRight, ChevronLeft } from '@nais/ds-svelte-community/icons';
+	import { Button } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 	import { PendingValue } from '$houdini';
 	export let totalCount: number | typeof PendingValue;

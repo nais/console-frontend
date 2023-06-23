@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { Alert, Button, Modal } from '@nais/ds-svelte';
+	import { Alert, Button, Modal } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import { Eye, EyeSlash, ArrowsCirclepath, Clipboard } from '@nais/ds-svelte/icons';
+	import { Eye, EyeSlash, ArrowsCirclepath, Clipboard } from '@nais/ds-svelte-community/icons';
 	import { copyText } from 'svelte-copy';
 	import Time from '$lib/Time.svelte';
 	import { graphql } from '$houdini';

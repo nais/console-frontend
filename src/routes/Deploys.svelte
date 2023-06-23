@@ -4,7 +4,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
 	type Deploys = Exclude<UserDeploys$result['user']['teams']['edges'], (typeof PendingValue)[]>;
 

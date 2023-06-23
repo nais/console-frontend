@@ -3,7 +3,7 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
 	export let app: AppInstances;
 	$: data = fragment(

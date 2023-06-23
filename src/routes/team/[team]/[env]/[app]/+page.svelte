@@ -11,7 +11,7 @@
 	import Traffic from './Traffic.svelte';
 	import Storage from './Storage.svelte';
 	import Authentications from './Authentications.svelte';
-	import { Alert } from '@nais/ds-svelte';
+	import { Alert } from '@nais/ds-svelte-community';
 
 	export let data: PageData;
 	$: ({ App } = data);
