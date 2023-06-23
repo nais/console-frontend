@@ -35,7 +35,7 @@
 	{#each nav as { tab, routeId }}
 		<Tab href={replacer(routeId, { team })} active={currentRoute == routeId} title={tab} />
 	{/each}
-	{#if $TeamRoles.data?.team.viewerIsAdmin || $TeamRoles.data?.team.viewerIsAdmin}
+	{#if $TeamRoles.data?.team.viewerIsMember || $TeamRoles.data?.team.viewerIsAdmin}
 		<Tab
 			href={replacer('/team/[team]/(teamTabs)/settings', { team })}
 			active={currentRoute == '/team/[team]/(teamTabs)/settings'}
