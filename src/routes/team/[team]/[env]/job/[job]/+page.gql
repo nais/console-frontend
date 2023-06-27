@@ -1,0 +1,14 @@
+query Job($job: String!, $team: String!, $env: String!) {
+	job(name: $job, team: $team, env: $env) @loading(cascade: true) {
+		name
+		schedule
+		deployInfo {
+			timestamp
+			deployer
+			url
+		}
+		image
+		...JobAccessPolicy
+		...JobInstances
+	}
+}

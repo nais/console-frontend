@@ -1,0 +1,6 @@
+query JobManifest($job: String!, $team: String!, $env: String!) @loading(cascade: true) {
+	job(name: $job, team: $team, env: $env) {
+		name
+		manifest
+	}
+}

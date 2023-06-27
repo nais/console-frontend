@@ -248,15 +248,20 @@ type Instance implements Node {
 
 type Job implements Node {
   accessPolicy: AccessPolicy!
+  activeDeadlineSeconds: Int!
+  backoffLimit: Int!
   concurrencyPolicy: ConcurrencyPolicy!
   deployInfo: DeployInfo!
   env: Env!
+  failedJobsHistoryLimit: Int!
   id: ID!
   image: String!
+  jobInstances: [JobInstance!]!
   manifest: String!
   name: String!
   resources: Resources!
   schedule: String!
+  successfulJobsHistoryLimit: Int!
   team: Team!
 }
 
@@ -269,6 +274,16 @@ type JobConnection {
 type JobEdge {
   cursor: Cursor!
   node: Job!
+}
+
+type JobInstance implements Node {
+  exitCode: Int!
+  finishedAt: Time!
+  id: ID!
+  name: String!
+  reason: String!
+  runDuration: String!
+  startedAt: Time!
 }
 
 type Kafka implements Storage {

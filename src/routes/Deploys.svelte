@@ -95,9 +95,15 @@
 								<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
 							</Td>
 							<Td>
-								<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
-									{deploy.resources[0].name}</a
-								>
+								{#if deploy.resources[0].kind === 'Naisjob'}
+									<a href="/team/{deploy.team.name}/{deploy.env}/job/{deploy.resources[0].name}">
+										{deploy.resources[0].name}</a
+									>
+								{:else}
+									<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
+										{deploy.resources[0].name}</a
+									>
+								{/if}
 							</Td>
 							<Td>
 								{deploy.env}
