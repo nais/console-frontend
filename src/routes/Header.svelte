@@ -23,6 +23,15 @@
 						... on Team {
 							name
 						}
+						... on Job {
+							name
+							team {
+								name
+							}
+							env {
+								name
+							}
+						}
 					}
 				}
 			}

@@ -16,6 +16,10 @@
 			routeId: '/team/[team]/(teamTabs)'
 		},
 		{
+			tab: 'Naisjobs',
+			routeId: '/team/[team]/(teamTabs)/jobs'
+		},
+		{
 			tab: 'Members',
 			routeId: '/team/[team]/(teamTabs)/members'
 		},

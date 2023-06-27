@@ -77,6 +77,12 @@ type Claims {
   groups: [Group!]!
 }
 
+enum ConcurrencyPolicy {
+  ALLOW
+  FORBID
+  REPLACE
+}
+
 type Consume {
   name: String!
 }
@@ -240,6 +246,31 @@ type Instance implements Node {
   status: String!
 }
 
+type Job implements Node {
+  accessPolicy: AccessPolicy!
+  concurrencyPolicy: ConcurrencyPolicy!
+  deployInfo: DeployInfo!
+  env: Env!
+  id: ID!
+  image: String!
+  manifest: String!
+  name: String!
+  resources: Resources!
+  schedule: String!
+  team: Team!
+}
+
+type JobConnection {
+  edges: [JobEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type JobEdge {
+  cursor: Cursor!
+  node: Job!
+}
+
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
@@ -302,6 +333,7 @@ type Port {
 type Query {
   app(env: String!, name: String!, team: String!): App!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+  job(env: String!, name: String!, team: String!): Job!
   node(id: ID!): Node
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
@@ -339,10 +371,11 @@ input SearchFilter {
   type: SearchType
 }
 
-union SearchNode = App | Team
+union SearchNode = App | Job | Team
 
 enum SearchType {
   APP
+  JOB
   TEAM
 }
 
@@ -387,6 +420,7 @@ type Team implements Node {
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
+  jobs(after: Cursor, before: Cursor, first: Int, last: Int): JobConnection!
   members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
   name: String!
   slackAlertsChannels: [SlackAlertsChannel!]

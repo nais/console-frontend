@@ -1,0 +1,39 @@
+query Jobs($team: String!) @loading(count: 5, cascade: true) {
+	team(name: $team) {
+		id
+		name
+		members {
+			edges {
+				node {
+					id
+					name
+					email
+				}
+			}
+		}
+		jobs(first: 10) @paginate(mode: SinglePage) {
+			totalCount
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+				from
+				to
+			}
+
+			edges {
+				node {
+					deployInfo {
+						timestamp
+					}
+					name
+					image
+					env {
+						name
+					}
+				}
+			}
+		}
+	}
+}
