@@ -8,6 +8,17 @@ query Job($job: String!, $team: String!, $env: String!) {
 			url
 		}
 		image
+		instances {
+			name
+			startTime
+			completionTime
+			failed
+			succeeded
+			runDuration
+			statusType
+			statusMessage
+			statusReason
+		}
 		...JobAccessPolicy
 		...JobInstances
 	}
