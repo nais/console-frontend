@@ -27,7 +27,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.name}/{node.env.name}/{node.name}"
+					href="/team/{node.team.name}/{node.env.name}/app/{node.name}"
 					on:click={() => {
 						query = '';
 						showSearch = false;
@@ -36,6 +36,32 @@
 					<div class="typeIcon">
 						<Logo height="1.5rem" />
 						<div>App</div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.name}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'NaisJob'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.name}/{node.env.name}/job/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<Logo height="1.5rem" />
+						<div>Job</div>
 					</div>
 					<div>
 						<div>

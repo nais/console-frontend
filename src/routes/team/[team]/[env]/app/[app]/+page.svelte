@@ -11,7 +11,9 @@
 	import Traffic from './Traffic.svelte';
 	import Storage from './Storage.svelte';
 	import Authentications from './Authentications.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { Clipboard } from '@nais/ds-svelte-community/icons';
+	import { copyText } from 'svelte-copy';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -34,14 +36,6 @@
 			</div>
 		</Card>
 		<Card columns={4}>
-			<h4>Image</h4>
-			{#if $App.data.app.image === PendingValue}
-				<Loading />
-			{:else}
-				<div>{$App.data.app.image}</div>
-			{/if}
-		</Card>
-		<Card columns={4}>
 			<h4>Deployed</h4>
 			{#if $App.data.app.deployInfo.timestamp === PendingValue}
 				<Loading />
@@ -55,6 +49,25 @@
 						>{$App.data.app.deployInfo.deployer}</a
 					>.
 				{/if}
+			{/if}
+		</Card>
+		<Card columns={6}>
+			<h4 class="image">
+				Image <Button
+					size="xsmall"
+					on:click={() => {
+						if ($App.data?.app.image !== PendingValue) {
+							copyText($App.data ? String($App.data.app.image) : '');
+						}
+					}}
+				>
+					<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
+				</Button>
+			</h4>
+			{#if $App.data.app.image === PendingValue}
+				<Loading />
+			{:else}
+				<div class="imageBreak">{$App.data.app.image}</div>
 			{/if}
 		</Card>
 		<Card columns={12}>
@@ -95,5 +108,15 @@
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
+	}
+	.image {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+	}
+
+	.imageBreak {
+		word-wrap: break-word;
 	}
 </style>

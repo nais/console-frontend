@@ -23,6 +23,15 @@
 						... on Team {
 							name
 						}
+						... on NaisJob {
+							name
+							team {
+								name
+							}
+							env {
+								name
+							}
+						}
 					}
 				}
 			}
@@ -75,11 +84,15 @@
 					if (node.__typename === 'App') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.name}/${node.env.name}/${node.name}`);
+						goto(`/team/${node.team.name}/${node.env.name}/app/${node.name}`);
 					} else if (node.__typename === 'Team') {
 						query = '';
 						showSearch = false;
 						goto(`/team/${node.name}`);
+					} else if (node.__typename === 'NaisJob') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.name}/${node.env.name}/job/${node.name}`);
 					}
 				}
 		}

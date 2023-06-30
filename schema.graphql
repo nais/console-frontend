@@ -270,6 +270,34 @@ type Mutation {
   changeDeployKey(team: String!): DeploymentKey!
 }
 
+type NaisJob implements Node {
+  accessPolicy: AccessPolicy!
+  completions: Int!
+  deployInfo: DeployInfo!
+  env: Env!
+  id: ID!
+  image: String!
+  manifest: String!
+  name: String!
+  parallelism: Int!
+  resources: Resources!
+  retries: Int!
+  runs: [Run!]!
+  schedule: String!
+  team: Team!
+}
+
+type NaisJobConnection {
+  edges: [NaisJobEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type NaisJobEdge {
+  cursor: Cursor!
+  node: NaisJob!
+}
+
 interface Node {
   id: ID!
 }
@@ -302,6 +330,7 @@ type Port {
 type Query {
   app(env: String!, name: String!, team: String!): App!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+  naisjob(env: String!, name: String!, team: String!): NaisJob!
   node(id: ID!): Node
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
@@ -324,6 +353,17 @@ type Rule {
   namespace: String!
 }
 
+type Run implements Node {
+  completionTime: Time
+  duration: String!
+  failed: Boolean!
+  id: ID!
+  image: String!
+  message: String!
+  name: String!
+  startTime: Time
+}
+
 type SearchConnection {
   edges: [SearchEdge!]!
   pageInfo: PageInfo!
@@ -339,10 +379,11 @@ input SearchFilter {
   type: SearchType
 }
 
-union SearchNode = App | Team
+union SearchNode = App | NaisJob | Team
 
 enum SearchType {
   APP
+  NAISJOB
   TEAM
 }
 
@@ -388,6 +429,7 @@ type Team implements Node {
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
   members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
+  naisjobs(after: Cursor, before: Cursor, first: Int, last: Int): NaisJobConnection!
   name: String!
   slackAlertsChannels: [SlackAlertsChannel!]
   slackChannel: String

@@ -6,32 +6,32 @@
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
-	$: app = $page.params.app;
+	$: job = $page.params.job;
 	$: currentRoute = $page.route.id;
 
 	$: nav = [
 		{
 			tab: 'Overview',
-			routeId: '/team/[team]/[env]/[app]'
+			routeId: '/team/[team]/[env]/job/[job]'
 		},
 		{
 			tab: 'Deploys',
-			routeId: '/team/[team]/[env]/[app]/deploys'
+			routeId: '/team/[team]/[env]/job/[job]/deploys'
 		},
 		{
 			tab: 'nais.yaml',
-			routeId: '/team/[team]/[env]/[app]/yaml'
+			routeId: '/team/[team]/[env]/job/[job]/yaml'
 		}
 	];
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
-<h3><a href="/team/{team}"> {team}</a> / {app} ({env})</h3>
+<h3><a href="/team/{team}"> {team}</a> / {job} ({env})</h3>
 <Tabs>
 	{#each nav as { tab, routeId }}
 		<Tab
-			href={replacer(routeId, { team, env, app })}
+			href={replacer(routeId, { team, env, job })}
 			active={currentRoute == routeId}
 			title={tab}
 		/>

@@ -1,0 +1,32 @@
+query JobDeploys($job: String!, $team: String!, $env: String!) @loading {
+	naisjob(name: $job, team: $team, env: $env) {
+		name @loading
+		deployInfo {
+			history {
+				... on DeploymentConnection {
+					edges @loading(count: 5) {
+						node {
+							id
+							resources {
+								group
+								kind
+								name
+								version
+							}
+							statuses {
+								status
+								message
+								created
+							}
+							created
+							repository
+						}
+					}
+				}
+				... on Error {
+					message
+				}
+			}
+		}
+	}
+}
