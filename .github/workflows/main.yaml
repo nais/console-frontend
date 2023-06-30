@@ -3,8 +3,13 @@ on:
   push:
     branches:
       - main
+env:
+  NAME: console-frontend
+  IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
 jobs:
-  build:
+  build_push:
+    outputs:
+      version: ${{ steps.build-push-sign.outputs.version }}
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -12,13 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
-      - uses: nais/platform-build-push-sign@main
+      - uses: nais/platform-build-push-sign@099ac96939c35cf243a1d13865e25224d2f5fa04 # ratchet:nais/platform-build-push-sign@main
         id: build-push-sign
         with:
-          name: console-frontend
-          google_service_account: gh-console-frontend
+          name: ${{ env.NAME }}
+          google_service_account: gh-${{ env.NAME }}
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
-          build_secrets: GITHUB_TOKEN=${{ secrets.THOMAS_TOKEN }}
           push: true
       - uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab # ratchet:azure/setup-helm@v1
         name: 'Setup Helm'
@@ -31,4 +35,16 @@ jobs:
           helm package charts
       - name: Push Chart
         run: |-
-          helm push ${{ env.NAME }}*.tgz oci://europe-north1-docker.pkg.dev/nais-io/nais
+          helm push ${{ env.NAME }}*.tgz ${{ env.IMAGE_REPOSITORY }}
+  rollout:
+    needs:
+      - build_push
+    runs-on: fasit-deploy
+    permissions:
+      id-token: write
+    steps:
+      - uses: nais/fasit-deploy@v2
+        with:
+          chart: ${{ env.IMAGE_REPOSITORY }}/${{ env.NAME }}
+          version: ${{ needs.build_push.outputs.version }}
+          feature_name: ${{ env.NAME }}

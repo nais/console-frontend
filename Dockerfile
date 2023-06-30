@@ -3,8 +3,6 @@ WORKDIR /usr/app
 
 COPY package*.json svelte.config.js ./
 
-RUN --mount=type=secret,id=GITHUB_TOKEN echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/GITHUB_TOKEN)" > ~/.npmrc
-
 RUN npm ci --quiet
 
 COPY . ./
