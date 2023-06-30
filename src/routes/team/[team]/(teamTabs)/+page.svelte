@@ -26,10 +26,9 @@
 	</Alert>
 {:else}
 	<Card>
-		<h3>Applications</h3>
 		<Table>
 			<Thead>
-				<Th>Workload</Th>
+				<Th>Name</Th>
 				<Th>Env</Th>
 				<Th>Instances</Th>
 				<Th>Deployed</Th>

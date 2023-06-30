@@ -1,5 +1,5 @@
 query JobDeploys($job: String!, $team: String!, $env: String!) @loading {
-	job(name: $job, team: $team, env: $env) {
+	naisjob(name: $job, team: $team, env: $env) {
 		name @loading
 		deployInfo {
 			history {

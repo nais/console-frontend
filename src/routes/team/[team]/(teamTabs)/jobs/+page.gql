@@ -11,7 +11,7 @@ query Jobs($team: String!) @loading(count: 5, cascade: true) {
 				}
 			}
 		}
-		jobs(first: 10) @paginate(mode: SinglePage) {
+		naisjobs(first: 10) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage

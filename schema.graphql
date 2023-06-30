@@ -77,12 +77,6 @@ type Claims {
   groups: [Group!]!
 }
 
-enum ConcurrencyPolicy {
-  ALLOW
-  FORBID
-  REPLACE
-}
-
 type Consume {
   name: String!
 }
@@ -246,45 +240,6 @@ type Instance implements Node {
   status: String!
 }
 
-type Job implements Node {
-  accessPolicy: AccessPolicy!
-  deployInfo: DeployInfo!
-  env: Env!
-  id: ID!
-  image: String!
-  instances: [JobInstance!]!
-  manifest: String!
-  name: String!
-  resources: Resources!
-  schedule: String!
-  team: Team!
-}
-
-type JobConnection {
-  edges: [JobEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type JobEdge {
-  cursor: Cursor!
-  node: Job!
-}
-
-type JobInstance implements Node {
-  active: Int!
-  completionTime: Time
-  failed: Int!
-  id: ID!
-  name: String!
-  runDuration: String
-  startTime: Time!
-  statusMessage: String
-  statusReason: String
-  statusType: String
-  succeeded: Int!
-}
-
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
@@ -313,6 +268,34 @@ type MaskinportenScope {
 
 type Mutation {
   changeDeployKey(team: String!): DeploymentKey!
+}
+
+type NaisJob implements Node {
+  accessPolicy: AccessPolicy!
+  completions: Int!
+  deployInfo: DeployInfo!
+  env: Env!
+  id: ID!
+  image: String!
+  manifest: String!
+  name: String!
+  parallelism: Int!
+  resources: Resources!
+  retries: Int!
+  runs: [Run!]!
+  schedule: String!
+  team: Team!
+}
+
+type NaisJobConnection {
+  edges: [NaisJobEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type NaisJobEdge {
+  cursor: Cursor!
+  node: NaisJob!
 }
 
 interface Node {
@@ -347,7 +330,7 @@ type Port {
 type Query {
   app(env: String!, name: String!, team: String!): App!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
-  job(env: String!, name: String!, team: String!): Job!
+  naisjob(env: String!, name: String!, team: String!): NaisJob!
   node(id: ID!): Node
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
@@ -370,6 +353,17 @@ type Rule {
   namespace: String!
 }
 
+type Run implements Node {
+  completionTime: Time
+  failed: Boolean!
+  id: ID!
+  image: String!
+  message: String!
+  name: String!
+  runDuration: String!
+  startTime: Time
+}
+
 type SearchConnection {
   edges: [SearchEdge!]!
   pageInfo: PageInfo!
@@ -385,11 +379,11 @@ input SearchFilter {
   type: SearchType
 }
 
-union SearchNode = App | Job | Team
+union SearchNode = App | NaisJob | Team
 
 enum SearchType {
   APP
-  JOB
+  NAISJOB
   TEAM
 }
 
@@ -434,8 +428,8 @@ type Team implements Node {
   description: String
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
-  jobs(after: Cursor, before: Cursor, first: Int, last: Int): JobConnection!
   members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
+  naisjobs(after: Cursor, before: Cursor, first: Int, last: Int): NaisJobConnection!
   name: String!
   slackAlertsChannels: [SlackAlertsChannel!]
   slackChannel: String

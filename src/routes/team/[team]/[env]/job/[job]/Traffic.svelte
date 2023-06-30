@@ -10,7 +10,7 @@
 	$: data = fragment(
 		job,
 		graphql(`
-			fragment JobAccessPolicy on Job @loading {
+			fragment JobAccessPolicy on NaisJob @loading {
 				name
 				accessPolicy {
 					inbound {

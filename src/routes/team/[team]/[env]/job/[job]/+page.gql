@@ -1,5 +1,5 @@
 query Job($job: String!, $team: String!, $env: String!) {
-	job(name: $job, team: $team, env: $env) @loading(cascade: true) {
+	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name
 		schedule
 		deployInfo {
@@ -8,16 +8,13 @@ query Job($job: String!, $team: String!, $env: String!) {
 			url
 		}
 		image
-		instances {
+		runs {
 			name
 			startTime
 			completionTime
 			failed
-			succeeded
 			runDuration
-			statusType
-			statusMessage
-			statusReason
+			message
 		}
 		...JobAccessPolicy
 		...JobInstances

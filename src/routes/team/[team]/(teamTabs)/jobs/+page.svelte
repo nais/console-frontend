@@ -36,12 +36,12 @@
 				{#if team !== undefined}
 					{#if team.id === PendingValue}
 						<Tr>
-							{#each team.jobs.edges as _}
+							{#each team.naisjobs.edges as _}
 								<Td><Loading /></Td>
 							{/each}
 						</Tr>
 					{:else}
-						{#each team.jobs.edges as edge}
+						{#each team.naisjobs.edges as edge}
 							<Tr>
 								<Td>
 									<a href="/team/{teamName}/{edge.node.env.name}/job/{edge.node.name}"
@@ -63,8 +63,8 @@
 		{#if team !== undefined}
 			{#if team.id !== PendingValue}
 				<Pagination
-					totalCount={team.jobs.totalCount}
-					pageInfo={team.jobs.pageInfo}
+					totalCount={team.naisjobs.totalCount}
+					pageInfo={team.naisjobs.pageInfo}
 					on:nextPage={() => {
 						if (!$Jobs.pageInfo.hasNextPage) return;
 						Jobs.loadNextPage();
