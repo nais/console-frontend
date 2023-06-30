@@ -12,15 +12,15 @@
 	$: nav = [
 		{
 			tab: 'Overview',
-			routeId: '/team/[team]/[env]/[app]'
+			routeId: '/team/[team]/[env]/app/[app]'
 		},
 		{
 			tab: 'Deploys',
-			routeId: '/team/[team]/[env]/[app]/deploys'
+			routeId: '/team/[team]/[env]/app/[app]/deploys'
 		},
 		{
 			tab: 'nais.yaml',
-			routeId: '/team/[team]/[env]/[app]/yaml'
+			routeId: '/team/[team]/[env]/app/[app]/yaml'
 		}
 	];
 </script>

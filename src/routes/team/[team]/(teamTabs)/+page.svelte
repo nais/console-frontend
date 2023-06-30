@@ -4,7 +4,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import Status from '../[env]/[app]/Status.svelte';
+	import Status from '../[env]/app/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
 	import { PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
@@ -45,7 +45,7 @@
 						{#each team.apps.edges as edge}
 							<Tr>
 								<Td>
-									<a href="/team/{teamName}/{edge.node.env.name}/{edge.node.name}"
+									<a href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}"
 										>{edge.node.name}</a
 									>
 								</Td>

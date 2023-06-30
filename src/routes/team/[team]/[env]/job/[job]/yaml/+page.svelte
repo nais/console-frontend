@@ -27,8 +27,8 @@
 			<Button
 				size="xsmall"
 				on:click={() => {
-					if ($JobManifest.data?.job.manifest !== PendingValue) {
-						copyText($JobManifest.data ? $JobManifest.data.job.manifest : '');
+					if ($JobManifest.data?.naisjob.manifest !== PendingValue) {
+						copyText($JobManifest.data ? $JobManifest.data.naisjob.manifest : '');
 					}
 				}}
 			>
@@ -36,10 +36,10 @@
 				Copy manifest</Button
 			>
 		</h4>
-		{#if $JobManifest.data.job.name === PendingValue}
+		{#if $JobManifest.data.naisjob.name === PendingValue}
 			<Loading height="300px" />
 		{:else}
-			<pre>{$JobManifest.data.job.manifest}</pre>
+			<pre>{$JobManifest.data.naisjob.manifest}</pre>
 		{/if}
 	</Card>
 {/if}

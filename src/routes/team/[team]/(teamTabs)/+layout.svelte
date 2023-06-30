@@ -13,7 +13,7 @@
 	const nav = [
 		{
 			tab: 'Apps',
-			routeId: '/team/[team]/(teamTabs)/apps'
+			routeId: '/team/[team]/(teamTabs)'
 		},
 		{
 			tab: 'Jobs',

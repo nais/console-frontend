@@ -5,7 +5,8 @@
 	import Time from '$lib/Time.svelte';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import { ArrowsCirclepath } from '@nais/ds-svelte-community/icons';
 
 	export let job: JobInstances;
 
@@ -17,8 +18,9 @@
 				runs @loading(count: 2) {
 					name
 					startTime
+					completionTime
 					failed
-					runDuration
+					duration
 					message
 				}
 			}
@@ -28,7 +30,7 @@
 
 <Table>
 	<Thead>
-		<Th>Status</Th>
+		<Th style="width: 4rem;">Status</Th>
 		<Th>Name</Th>
 		<Th>Started</Th>
 		<Th>Duration</Th>
@@ -42,11 +44,23 @@
 						<Td><Loading /></Td>
 					{/each}
 				{:else}
-					<Td>
-						{#if run.failed === false}
-							<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
+					<Td style="text-align: center;">
+						{#if run.failed === false && !run.completionTime}
+							<Tooltip content="Run in progress" placement="right">
+								<ArrowsCirclepath
+									width="1.5rem"
+									height="1.5rem"
+									style="color: var(--a-icon-success)"
+								/>
+							</Tooltip>
+						{:else if run.failed === false && run.completionTime}
+							<Tooltip content="Run completed successfully" placement="right"
+								><SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
+							</Tooltip>
 						{:else}
-							<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
+							<Tooltip content="Run failed" placement="right">
+								<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
+							</Tooltip>
 						{/if}
 					</Td>
 					<Td>{run.name}</Td>
@@ -57,7 +71,7 @@
 							Not started
 						{/if}
 					</Td>
-					<Td>{run.runDuration}</Td>
+					<Td>{run.duration}</Td>
 					{#if run.message}
 						<Td>
 							{run.message}

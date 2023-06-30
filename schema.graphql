@@ -355,12 +355,12 @@ type Rule {
 
 type Run implements Node {
   completionTime: Time
+  duration: String!
   failed: Boolean!
   id: ID!
   image: String!
   message: String!
   name: String!
-  runDuration: String!
   startTime: Time
 }
 

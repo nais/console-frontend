@@ -13,7 +13,7 @@ query Job($job: String!, $team: String!, $env: String!) {
 			startTime
 			completionTime
 			failed
-			runDuration
+			duration
 			message
 		}
 		...JobAccessPolicy

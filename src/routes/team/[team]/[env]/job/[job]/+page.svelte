@@ -31,11 +31,13 @@
 			<h4>Status</h4>
 			<div class="status">
 				{#if $Job.data.naisjob.runs.length > 0}
-					{#if $Job.data.naisjob.runs[0].failed === false}
+					{#if $Job.data.naisjob.runs[0].name === PendingValue}
+						<Loading />
+					{:else if $Job.data.naisjob.runs[0].failed === false}
 						<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
 						Last job completed successfully.
 					{:else}
-						<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
+						<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
 						Last job failed after {$Job.data.naisjob.runs[0].message} attempts.
 					{/if}
 				{:else}
@@ -46,7 +48,11 @@
 		</Card>
 		<Card columns={3}>
 			<h4>Schedule</h4>
-			<Schedule schedule={String($Job.data.naisjob.schedule)} />
+			{#if $Job.data.naisjob.schedule === PendingValue}
+				<Loading />
+			{:else}
+				<Schedule schedule={String($Job.data.naisjob.schedule)} />
+			{/if}
 		</Card>
 		<Card columns={3}>
 			<h4>Deployed</h4>

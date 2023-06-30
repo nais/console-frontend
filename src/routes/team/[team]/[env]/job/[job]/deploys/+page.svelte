@@ -21,7 +21,7 @@
 	export let data: PageData;
 
 	$: ({ JobDeploys } = data);
-	$: team = $page.params.team;
+	$: naisjob = $JobDeploys.data?.naisjob;
 	$: env = $page.params.env;
 	$: job = $page.params.app;
 </script>
@@ -44,7 +44,7 @@
 				<Th>Link</Th>
 			</Thead>
 			<Tbody>
-				{#if $JobDeploys.data.job.name === PendingValue}
+				{#if $JobDeploys.data.naisjob.name === PendingValue}
 					{#each new Array(5) as _}
 						<Tr>
 							{#each new Array(4) as _}
@@ -54,8 +54,8 @@
 							{/each}
 						</Tr>
 					{/each}
-				{:else if $JobDeploys.data.job.deployInfo.history.__typename === 'DeploymentConnection'}
-					{#each $JobDeploys.data.job.deployInfo.history.edges as edge}
+				{:else if $JobDeploys.data.naisjob.deployInfo.history.__typename === 'DeploymentConnection'}
+					{#each $JobDeploys.data.naisjob.deployInfo.history.edges as edge}
 						<Tr>
 							<Td>
 								{#each edge.node.resources as resource}
