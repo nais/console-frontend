@@ -49,7 +49,13 @@
 								{#each edge.node.resources as resource}
 									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{#if resource.kind === 'Application'}
-										<a href="/team/{edge.node.team.name}/{edge.node.env}/{resource.name}/deploys"
+										<a
+											href="/team/{edge.node.team.name}/{edge.node.env}/app/{resource.name}/deploys"
+											>{resource.name}</a
+										>
+									{:else if resource.kind === 'Naisjob'}
+										<a
+											href="/team/{edge.node.team.name}/{edge.node.env}/job/{resource.name}/deploys"
 											>{resource.name}</a
 										>
 									{:else}
