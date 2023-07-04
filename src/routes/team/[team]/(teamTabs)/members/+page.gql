@@ -1,7 +1,7 @@
 query Members($team: String!) @loading(cascade: true) {
 	team(name: $team) {
 		name
-		members(first: 10) @paginate(mode: SinglePage) {
+		members(first: 50) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage

@@ -1,17 +1,6 @@
 query Jobs($team: String!) @loading(count: 5, cascade: true) {
 	team(name: $team) {
-		id
-		name
-		members {
-			edges {
-				node {
-					id
-					name
-					email
-				}
-			}
-		}
-		naisjobs(first: 10) @paginate(mode: SinglePage) {
+		naisjobs(first: 50) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage

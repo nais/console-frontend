@@ -25,12 +25,16 @@
 	{#if statuses.includes(PendingValue)}
 		<Loading />
 	{:else}
-		{#if statuses.filter((s) => s === 'Running').length === total}
+		{#if statuses.filter((s) => s === 'Running').length === total && total !== 0}
 			<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
 		{:else}
 			<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
 		{/if}
-		{statuses.filter((s) => s === 'Running').length} / {total} running
+		{#if total === 0}
+			No instances found
+		{:else}
+			{statuses.filter((s) => s === 'Running').length} / {total} running
+		{/if}
 	{/if}
 </div>
 

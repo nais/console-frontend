@@ -1,17 +1,7 @@
 query Workloads($team: String!) @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
-		name
-		members {
-			edges {
-				node {
-					id
-					name
-					email
-				}
-			}
-		}
-		apps(first: 10) @paginate(mode: SinglePage) {
+		apps(first: 50) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
