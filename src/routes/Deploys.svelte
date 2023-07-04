@@ -100,7 +100,7 @@
 										{deploy.resources[0].name}</a
 									>
 								{:else}
-									<a href="/team/{deploy.team.name}/{deploy.env}/{deploy.resources[0].name}">
+									<a href="/team/{deploy.team.name}/{deploy.env}/app/{deploy.resources[0].name}">
 										{deploy.resources[0].name}</a
 									>
 								{/if}
