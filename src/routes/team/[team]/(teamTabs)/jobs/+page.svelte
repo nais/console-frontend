@@ -12,9 +12,6 @@
 	export let data: PageData;
 	$: ({ Jobs } = data);
 	$: team = $Jobs.data?.team;
-	/*$: team?.jobs.edges.sort((a) => {
-		return a.node.instances.map((i) => i.status).every((status) => status === 'Running') ? 1 : -1;
-	});*/
 </script>
 
 {#if $Jobs.errors}

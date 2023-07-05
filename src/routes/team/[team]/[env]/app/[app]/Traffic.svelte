@@ -87,7 +87,7 @@
 			{#each $data.accessPolicy.inbound.rules as rule}
 				<li>
 					{#if rule.application !== PendingValue}
-						<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
+						<a href="/team/{rule.namespace || team}/{env}/app/{rule.application}"
 							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 						>
 					{:else}
@@ -126,7 +126,7 @@
 					{#if rule.application === PendingValue}
 						<Loading width="300px" />
 					{:else}
-						<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
+						<a href="/team/{rule.namespace || team}/{env}/app/{rule.application}"
 							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 						>
 					{/if}
