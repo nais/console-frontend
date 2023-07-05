@@ -18,5 +18,7 @@ query Job($job: String!, $team: String!, $env: String!) {
 		}
 		...JobAccessPolicy
 		...JobInstances
+		...JobStorage
+		...JobAuthz
 	}
 }

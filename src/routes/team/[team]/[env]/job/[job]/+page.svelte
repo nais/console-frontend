@@ -7,7 +7,9 @@
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import Schedule from './Schedule.svelte';
+	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
+	import Authentications from './Authentications.svelte';
 	import NaisjobInstances from './Runs.svelte';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
@@ -99,10 +101,27 @@
 			<h4>Traffic policies</h4>
 			<Traffic job={$Job.data.naisjob} />
 		</Card>
+
+		<div class="storauth">
+			<Card>
+				<h4>Storage</h4>
+				<Storage job={$Job.data.naisjob} />
+			</Card>
+			<Card>
+				<h4>Authentications</h4>
+				<Authentications job={$Job.data.naisjob} />
+			</Card>
+		</div>
 	</div>
 {/if}
 
 <style>
+	.storauth {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		grid-column: span 4;
+	}
 	.status {
 		display: flex;
 		align-items: center;

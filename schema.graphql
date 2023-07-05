@@ -272,6 +272,7 @@ type Mutation {
 
 type NaisJob implements Node {
   accessPolicy: AccessPolicy!
+  authz: [Authz!]!
   completions: Int!
   deployInfo: DeployInfo!
   env: Env!
@@ -284,6 +285,7 @@ type NaisJob implements Node {
   retries: Int!
   runs: [Run!]!
   schedule: String!
+  storage: [Storage!]!
   team: Team!
 }
 
