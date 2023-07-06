@@ -1,23 +1,23 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Card from '$lib/Card.svelte';
-	import type { PageData } from './$houdini';
 	import { PendingValue } from '$houdini';
+	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button } from '@nais/ds-svelte-community';
+	import Nais from '$lib/icons/Nais.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import { Alert } from '@nais/ds-svelte-community';
+	import type { PageData } from './$houdini';
+	import Authentications from './Authentications.svelte';
+	import Image from './Image.svelte';
+	import NaisjobInstances from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
-	import Authentications from './Authentications.svelte';
-	import NaisjobInstances from './Runs.svelte';
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { copyText } from 'svelte-copy';
-	import { Clipboard } from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
 	$: ({ Job } = data);
+
 	$: env = $page.params.env;
 </script>
 
@@ -28,19 +28,20 @@
 		{/each}
 	</Alert>
 {:else if $Job.data}
+	{@const job = $Job.data.naisjob}
 	<div class="grid">
-		<Card columns={3}>
+		<Card columns={2}>
 			<h4>Status</h4>
 			<div class="status">
-				{#if $Job.data.naisjob.runs.length > 0}
-					{#if $Job.data.naisjob.runs[0].name === PendingValue}
+				{#if job.runs.length > 0}
+					{#if job.runs[0].name === PendingValue}
 						<Loading />
-					{:else if $Job.data.naisjob.runs[0].failed === false}
-						<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
-						Last job completed successfully.
+					{:else if job.runs[0].failed === false}
+						<Nais size="1.5rem" style="color: var(--a-icon-success)" />
+						Last job was completed naisly.
 					{:else}
 						<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
-						Last job failed after {$Job.data.naisjob.runs[0].message} attempts.
+						Last job failed non-naisly {job.runs[0].message} attempts.
 					{/if}
 				{:else}
 					<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
@@ -48,85 +49,59 @@
 				{/if}
 			</div>
 		</Card>
-		<Card columns={3}>
-			<h4>Schedule</h4>
-			{#if $Job.data.naisjob.schedule === PendingValue}
+
+		<Card columns={4}>
+			<h4>Last activity</h4>
+			{#if job.deployInfo.timestamp === PendingValue}
 				<Loading />
+			{:else if job.deployInfo.timestamp === null}
+				Not available
 			{:else}
-				<Schedule schedule={String($Job.data.naisjob.schedule)} />
-			{/if}
-		</Card>
-		<Card columns={3}>
-			<h4>Deployed</h4>
-			{#if $Job.data.naisjob.deployInfo.timestamp === PendingValue}
-				<Loading />
-			{:else if $Job.data.naisjob.deployInfo.timestamp === null}
-				Never
-			{:else}
-				<Time time={$Job.data.naisjob.deployInfo.timestamp} distance={true} /><br />
-				{#if $Job.data.naisjob.deployInfo.deployer && $Job.data.naisjob.deployInfo.url}
-					<a href={$Job.data.naisjob.deployInfo.url}>Workflow</a> triggered by
-					<a href="https://github.com/{$Job.data.naisjob.deployInfo.deployer}"
-						>{$Job.data.naisjob.deployInfo.deployer}</a
-					>.
+				<a href={job.deployInfo.url}>Deployed</a>
+				<Time time={job.deployInfo.timestamp} distance={true} />
+				{#if job.deployInfo.deployer && job.deployInfo.url}
+					by
+					<a href="https://github.com/{job.deployInfo.deployer}">{job.deployInfo.deployer}</a>.
 				{/if}
 			{/if}
 		</Card>
-		<Card columns={3}>
-			<h4 class="image">
-				Image <Button
-					size="xsmall"
-					on:click={() => {
-						if ($Job.data?.naisjob.image !== PendingValue) {
-							copyText($Job.data ? String($Job.data.naisjob.image) : '');
-						}
-					}}
-				>
-					<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
-				</Button>
-			</h4>
-			{#if $Job.data.naisjob.image === PendingValue}
+		<Card columns={6}>
+			<Image {job} />
+		</Card>
+		<Card columns={6}>
+			<h4>Schedule</h4>
+			{#if job.schedule === PendingValue}
 				<Loading />
 			{:else}
-				<div class="imageBreak">
-					{$Job.data.naisjob.image}
-				</div>
+				<Schedule schedule={String(job.schedule)} />
 			{/if}
 		</Card>
 		<Card columns={12}>
 			<h4>Runs</h4>
-			<NaisjobInstances job={$Job.data.naisjob} />
+			<NaisjobInstances {job} />
 		</Card>
-		<Card columns={8}>
+		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<Traffic job={$Job.data.naisjob} />
+			<Traffic {job} />
 		</Card>
 
-		<div class="storauth">
-			<Card>
-				<h4>Storage</h4>
-				<Storage job={$Job.data.naisjob} />
-			</Card>
-			<Card>
-				<h4>Authentications</h4>
-				<Authentications job={$Job.data.naisjob} />
-			</Card>
-		</div>
+		<Card columns={4}>
+			<h4>Storage</h4>
+			<Storage {job} />
+		</Card>
+		<Card columns={4}>
+			<h4>Authentications</h4>
+			<Authentications {job} />
+		</Card>
 	</div>
 {/if}
 
 <style>
-	.storauth {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		grid-column: span 4;
-	}
 	.status {
 		display: flex;
 		align-items: center;
 		flex-direction: row;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 	.grid {
 		display: grid;
@@ -137,14 +112,5 @@
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
-	}
-	.image {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-	}
-	.imageBreak {
-		word-wrap: break-word;
 	}
 </style>

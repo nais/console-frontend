@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import type { Storage } from '$houdini';
+	import type { JobStorage } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
 	import Bucket from '$lib/icons/Bucket.svelte';
@@ -8,7 +8,7 @@
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
 
-	export let job: Storage;
+	export let job: JobStorage;
 	$: data = fragment(
 		job,
 		graphql(`

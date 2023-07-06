@@ -6,8 +6,14 @@
 <div>
 	{#if schedule !== ''}
 		<span style="font-family: monospace">{schedule}</span>
-		<br />
-		<span style="font-size: 1rem">({cronstrue.toString(schedule, { verbose: true })})</span>
+		<span style="font-size: 1rem"
+			>({cronstrue.toString(schedule, {
+				verbose: true,
+				use24HourTimeFormat: true
+			})})</span
+		>
+
+		<p>All schedule times in UTC</p>
 	{:else}
 		No schedule
 	{/if}

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { JobInstances } from '$houdini';
-	import { fragment, graphql, PendingValue } from '$houdini';
+	import { PendingValue, fragment, graphql } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
+	import Nais from '$lib/icons/Nais.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import { ArrowsCirclepath } from '@nais/ds-svelte-community/icons';
@@ -34,7 +34,7 @@
 		<Th>Name</Th>
 		<Th>Started</Th>
 		<Th>Duration</Th>
-		<Th>Comment</Th>
+		<Th>Message</Th>
 	</Thead>
 	<Tbody>
 		{#each $data.runs as run}
@@ -55,7 +55,7 @@
 							</Tooltip>
 						{:else if run.failed === false && run.completionTime}
 							<Tooltip content="Run completed successfully" placement="right"
-								><SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
+								><Nais size="1.5rem" style="color: var(--a-icon-success)" />
 							</Tooltip>
 						{:else}
 							<Tooltip content="Run failed" placement="right">
@@ -73,9 +73,9 @@
 					</Td>
 					<Td>{run.duration}</Td>
 					{#if run.message}
-						<Td>
-							{run.message}
-						</Td>
+						<Td>{run.message}</Td>
+					{:else}
+						<Td />
 					{/if}
 				{/if}
 			</Tr>

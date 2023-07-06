@@ -8,11 +8,16 @@ query App($app: String!, $team: String!, $env: String!) {
 			url
 		}
 		image
+		instances {
+			name
+			image
+		}
 		...AppInstances
 		...AppInstancesStatus
 		...AccessPolicy
 		...AutoScaling
 		...Authz
 		...Storage
+		...AppImage
 	}
 }

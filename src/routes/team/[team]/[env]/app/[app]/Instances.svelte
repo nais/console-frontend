@@ -3,7 +3,7 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 
 	export let app: AppInstances;
 	$: data = fragment(
@@ -12,10 +12,11 @@
 			fragment AppInstances on App {
 				instances @loading(count: 2) {
 					name
-					status
+					state
+					message
 					restarts
-					image
 					created
+					image
 				}
 			}
 		`)
@@ -24,13 +25,13 @@
 	$: instances = $data.instances;
 </script>
 
-<Table>
+<Table style="margin-bottom: 1rem">
 	<Thead>
 		<Th>Name</Th>
 		<Th>Restarts</Th>
-		<Th>Image</Th>
 		<Th>Status</Th>
 		<Th>Created</Th>
+		<Th>Message</Th>
 	</Thead>
 	<Tbody>
 		{#each instances as instance}
@@ -42,12 +43,16 @@
 				{:else}
 					<Td>{instance.name}</Td>
 					<Td>{instance.restarts}</Td>
-					<Td>{instance.image}</Td>
-					<Td>{instance.status}</Td>
+					<Td>{instance.state}</Td>
 					{#if instance.created}
 						<Td><Time time={instance.created} distance={true} /></Td>
 					{:else}
 						<Td>Unknown</Td>
+					{/if}
+					{#if instance.message}
+						<Td>{instance.message}</Td>
+					{:else}
+						<Td />
 					{/if}
 				{/if}
 			</Tr>

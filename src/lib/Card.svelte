@@ -15,9 +15,9 @@
 
 <style>
 	div {
-		border-radius: 0.25rem;
+		border-radius: 0.5rem;
 		background-color: var(--a-bg-default);
-		padding: 1.5rem;
+		padding: 1rem;
 		grid-column: span var(--columns);
 	}
 </style>

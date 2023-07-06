@@ -109,6 +109,7 @@
 	}
 	.directionContent.first {
 		border-right: 1px solid var(--a-border-divider);
+		width: 40%;
 	}
 	.directionContent,
 	h5 {

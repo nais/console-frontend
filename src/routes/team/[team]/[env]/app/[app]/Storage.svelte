@@ -55,7 +55,7 @@
 			</div>
 		{:else if storage.__typename === 'SqlInstance'}
 			<div class="storageContent">
-				<h5><Postgres />{storage.__typename}</h5>
+				<h5><Postgres />Postgres</h5>
 				{storage.name} ({storage.type})
 			</div>
 		{:else if storage.__typename === 'Kafka'}

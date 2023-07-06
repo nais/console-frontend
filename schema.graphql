@@ -235,9 +235,16 @@ type Instance implements Node {
   created: Time!
   id: ID!
   image: String!
+  message: String!
   name: String!
   restarts: Int!
-  status: String!
+  state: InstanceState!
+}
+
+enum InstanceState {
+  FAILING
+  RUNNING
+  UNKNOWN
 }
 
 type Kafka implements Storage {
@@ -469,10 +476,7 @@ type TeamMemberEdge {
 }
 
 enum TeamRole {
-  """Regular member, read only access."""
   MEMBER
-
-  """Team owner, full access to the team."""
   OWNER
 }
 

@@ -4,6 +4,7 @@
 	import type { AppInstancesStatus } from '$houdini';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Loading from '$lib/Loading.svelte';
+	import Nais from '$lib/icons/Nais.svelte';
 
 	export let app: AppInstancesStatus;
 	$: data = fragment(
@@ -11,29 +12,31 @@
 		graphql(`
 			fragment AppInstancesStatus on App {
 				instances @loading {
-					status @loading
+					state @loading
+					message @loading
 				}
 			}
 		`)
 	);
 
-	$: statuses = $data.instances.map((i) => i.status);
-	$: total = statuses.length;
+	$: states = $data.instances.map((i) => i.state);
+	$: total = states.length;
 </script>
 
 <div>
-	{#if statuses.includes(PendingValue)}
+	{#if states.includes(PendingValue)}
 		<Loading />
 	{:else}
-		{#if statuses.filter((s) => s === 'Running').length === total && total !== 0}
-			<SuccessIcon size="1.5rem" style="color: var(--a-icon-success)" />
+		{#if states.filter((s) => s === 'RUNNING').length === total && total !== 0}
+			<Nais size="1.5rem" style="color: var(--a-icon-success)" />
 		{:else}
 			<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
 		{/if}
 		{#if total === 0}
 			No instances found
 		{:else}
-			{statuses.filter((s) => s === 'Running').length} / {total} running
+			<!--{states.filter((s) => s === 'RUNNING').length} / {total} running-->
+			Application is nais
 		{/if}
 	{/if}
 </div>
@@ -43,6 +46,6 @@
 		display: flex;
 		align-items: center;
 		flex-direction: row;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 </style>

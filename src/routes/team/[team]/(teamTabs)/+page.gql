@@ -25,7 +25,7 @@ query Workloads($team: String!) @loading(count: 5, cascade: true) {
 					}
 
 					instances {
-						status
+						state
 					}
 				}
 			}

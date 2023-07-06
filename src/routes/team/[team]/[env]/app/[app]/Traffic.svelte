@@ -53,8 +53,8 @@
 
 <div class="traffic">
 	<div class="directionContent first">
-		<h4>Inbound</h4>
-		<h5>External ingresses</h5>
+		<h5>Inbound</h5>
+		<h6>External ingresses</h6>
 		<ul>
 			{#each $data.ingresses as ingress}
 				{#if ingress === PendingValue}
@@ -69,7 +69,7 @@
 				<li>No external ingresses</li>
 			{/if}
 		</ul>
-		<h5>Internal ingresses</h5>
+		<h6>Internal ingresses</h6>
 		<ul>
 			{#each $data.ingresses as ingress}
 				{#if ingress === PendingValue}
@@ -82,7 +82,7 @@
 				<li>No internal ingresses</li>
 			{/if}
 		</ul>
-		<h5>Applications</h5>
+		<h6>Applications</h6>
 		<ul>
 			{#each $data.accessPolicy.inbound.rules as rule}
 				<li>
@@ -100,8 +100,8 @@
 		</ul>
 	</div>
 	<div class="directionContent">
-		<h4>Outbound</h4>
-		<h5>External hostnames</h5>
+		<h5>Outbound</h5>
+		<h6>External hostnames</h6>
 		<ul>
 			{#each $data.accessPolicy.outbound.external as external}
 				{#if external.host === PendingValue}
@@ -119,7 +119,7 @@
 				<li>No outbound external access policy</li>
 			{/each}
 		</ul>
-		<h5>Applications</h5>
+		<h6>Applications</h6>
 		<ul>
 			{#each $data.accessPolicy.outbound.rules as rule}
 				<li>
@@ -149,16 +149,13 @@
 	}
 	.directionContent.first {
 		border-right: 1px solid var(--a-border-divider);
+		width: 40%;
 	}
 	.directionContent,
 	h5 {
 		margin: 0;
 	}
 
-	h4 {
-		font-weight: 400;
-		margin-bottom: 0.5rem;
-	}
 	.directionContent,
 	ul {
 		list-style: none;

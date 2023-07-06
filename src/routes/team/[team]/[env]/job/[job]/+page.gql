@@ -20,5 +20,6 @@ query Job($job: String!, $team: String!, $env: String!) {
 		...JobInstances
 		...JobStorage
 		...JobAuthz
+		...JobImage
 	}
 }
