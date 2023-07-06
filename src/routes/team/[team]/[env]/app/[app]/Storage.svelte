@@ -27,6 +27,14 @@
 					... on Kafka {
 						name
 						streams
+						topics {
+							name
+							acl {
+								access
+								application
+								team
+							}
+						}
 					}
 					... on OpenSearch {
 						name
@@ -66,6 +74,19 @@
 					{storage.name}</span
 				>
 				<span><b>Streams:</b> ({storage.streams})</span>
+				<p style="margin-bottom: 0">Topics:</p>
+				<ul>
+					{#each storage.topics as topic}
+						<li>
+							{topic.name}
+							<ul>
+								{#each topic.acl as acl}
+									<li>{acl.access}</li>
+								{/each}
+							</ul>
+						</li>
+					{/each}
+				</ul>
 			</div>
 		{:else if storage.__typename === 'OpenSearch'}
 			<div class="storageContent">

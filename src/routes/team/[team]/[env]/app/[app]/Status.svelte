@@ -1,10 +1,9 @@
 <script lang="ts">
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import { fragment, graphql, PendingValue } from '$houdini';
 	import type { AppInstancesStatus } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
+	import Nais from '$lib/icons/Nais.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Loading from '$lib/Loading.svelte';
-	import Nais from '$lib/icons/Nais.svelte';
 
 	export let app: AppInstancesStatus;
 	$: data = fragment(
