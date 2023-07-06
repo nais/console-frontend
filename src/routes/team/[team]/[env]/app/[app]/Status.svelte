@@ -35,8 +35,7 @@
 		{#if total === 0}
 			No instances found
 		{:else}
-			<!--{states.filter((s) => s === 'RUNNING').length} / {total} running-->
-			Application is nais
+			{states.filter((s) => s === 'RUNNING').length} / {total} running
 		{/if}
 	{/if}
 </div>
