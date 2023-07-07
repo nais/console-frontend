@@ -37,15 +37,17 @@
 					{#if job.runs[0].name === PendingValue}
 						<Loading />
 					{:else if job.runs[0].failed === false}
-						<Nais size="1.5rem" style="color: var(--a-icon-success)" />
-						Last job was completed naisly.
+						<div class="icon"><Nais size="1.5rem" style="color: var(--a-icon-success)" /></div>
+						<div class="message">Last job was completed naisly.</div>
 					{:else}
-						<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
-						Last job failed non-naisly {job.runs[0].message} attempts.
+						<div class="icon">
+							<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
+						</div>
+						<div class="message">Last job failed non-naisly {job.runs[0].message} attempts.</div>
 					{/if}
 				{:else}
-					<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
-					No jobs found.
+					<div class="icon"><WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" /></div>
+					<div class="message">No jobs found.</div>
 				{/if}
 			</div>
 		</Card>
@@ -99,9 +101,7 @@
 <style>
 	.status {
 		display: flex;
-		align-items: center;
 		flex-direction: row;
-		gap: 0.5rem;
 	}
 	.grid {
 		display: grid;
@@ -112,5 +112,12 @@
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
+	}
+	.message {
+		display: flex;
+		flex-direction: column;
+	}
+	.icon {
+		padding: 0rem 1rem 0rem 0rem;
 	}
 </style>

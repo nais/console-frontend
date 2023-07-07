@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { PendingValue, fragment, graphql } from '$houdini';
 	import type { Storage } from '$houdini';
+	import { PendingValue, fragment, graphql } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
 	import Bucket from '$lib/icons/Bucket.svelte';
@@ -27,6 +27,14 @@
 					... on Kafka {
 						name
 						streams
+						topics {
+							name
+							acl {
+								access
+								application
+								team
+							}
+						}
 					}
 					... on OpenSearch {
 						name
@@ -66,6 +74,13 @@
 					{storage.name}</span
 				>
 				<span><b>Streams:</b> ({storage.streams})</span>
+				<h6>Topics:</h6>
+				{#each storage.topics as topic}
+					<code style="font-size: 1rem"
+						>{topic.name} -
+						{#each topic.acl as acl}{acl.access}{/each}
+					</code>
+				{/each}
 			</div>
 		{:else if storage.__typename === 'OpenSearch'}
 			<div class="storageContent">
@@ -96,5 +111,11 @@
 		align-self: start;
 		gap: 0.5rem;
 		font-size: 1.2rem;
+	}
+	h6 {
+		margin-bottom: 0px;
+		margin-top: 0.5rem;
+		gap: 0.5rem;
+		font-size: 1.1rem;
 	}
 </style>

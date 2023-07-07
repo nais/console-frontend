@@ -5,6 +5,12 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
+type Acl {
+  access: String!
+  application: String!
+  team: String!
+}
+
 type App implements Node {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
@@ -260,6 +266,7 @@ type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
   streams: Boolean!
+  topics: [Topic!]!
 }
 
 type Limits {
@@ -496,6 +503,11 @@ scalar Time
 
 type TokenX {
   mountSecretsAsFilesOnly: Boolean!
+}
+
+type Topic {
+  acl: [Acl!]!
+  name: String!
 }
 
 type User implements Node {
