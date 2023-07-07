@@ -29,7 +29,7 @@
 		{#if states.filter((s) => s === 'RUNNING').length === total && total !== 0}
 			<Nais size="1.5rem" style="color: var(--a-icon-success)" />
 		{:else}
-			<WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" />
+			<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
 		{/if}
 		{#if total === 0}
 			No instances found
