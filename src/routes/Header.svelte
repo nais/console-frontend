@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { Search } from '@nais/ds-svelte-community';
-	import Logo from '../Logo.svelte';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
-	import { goto } from '$app/navigation';
+	import { logEvent } from '$lib/amplitude';
+	import { Search } from '@nais/ds-svelte-community';
+	import Logo from '../Logo.svelte';
 
 	const store = graphql(`
 		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
@@ -59,6 +60,7 @@
 			showSearch = true;
 			timeout = setTimeout(() => {
 				store.fetch({ variables: { query } });
+				logEvent('search');
 			}, 500);
 		}
 	}
@@ -97,6 +99,13 @@
 				}
 		}
 	}
+	afterNavigate((nav) => {
+		let props = {};
+		if (nav.to?.route.id != null) {
+			props = { routeID: nav.to.route.id };
+		}
+		logEvent('pageview', props);
+	});
 </script>
 
 <div class="header">
