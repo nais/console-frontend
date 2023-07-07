@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Globe from '$lib/icons/Globe.svelte';
-	import { fragment, graphql, PendingValue } from '$houdini';
-	import type { AccessPolicy } from '$houdini';
 	import { page } from '$app/stores';
+	import type { AccessPolicy } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
+	import Globe from '$lib/icons/Globe.svelte';
 	import Loading from '$lib/Loading.svelte';
 
 	export let app: AccessPolicy;
@@ -152,10 +152,9 @@
 		width: 40%;
 	}
 	.directionContent,
-	h5 {
+	h6 {
 		margin: 0;
 	}
-
 	.directionContent,
 	ul {
 		list-style: none;
