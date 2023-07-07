@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -60,7 +60,7 @@
 			showSearch = true;
 			timeout = setTimeout(() => {
 				store.fetch({ variables: { query } });
-				logEvent('søk');
+				logEvent('search');
 			}, 500);
 		}
 	}
@@ -99,6 +99,13 @@
 				}
 		}
 	}
+	afterNavigate((nav) => {
+		let props = {};
+		if (nav.to?.route.id != null) {
+			props = { routeID: nav.to.route.id };
+		}
+		logEvent('pageview', props);
+	});
 </script>
 
 <div class="header">
