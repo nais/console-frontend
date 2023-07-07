@@ -33,7 +33,6 @@ if (browser) {
 		apiEndpoint: 'amplitude.nav.no/collect',
 		saveEvents: false,
 		includeUtm: true,
-		batchEvents: true,
 		includeReferrer: true,
 		trackingOptions: {
 			city: false,
