@@ -74,13 +74,19 @@
 					{storage.name}</span
 				>
 				<span><b>Streams:</b> ({storage.streams})</span>
-				<h6>Topics:</h6>
-				{#each storage.topics as topic}
-					<code style="font-size: 1rem"
-						>{topic.name} -
-						{#each topic.acl as acl}{acl.access}{/each}
-					</code>
-				{/each}
+				{#if storage.topics.length !== 0}
+					<h6>Topics:</h6>
+					<ul>
+						{#each storage.topics as topic}
+							<li>
+								<code style="font-size: 1rem"
+									>{topic.name} -
+									{#each topic.acl as acl}{acl.access}{/each}
+								</code>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</div>
 		{:else if storage.__typename === 'OpenSearch'}
 			<div class="storageContent">
@@ -113,9 +119,12 @@
 		font-size: 1.2rem;
 	}
 	h6 {
-		margin-bottom: 0px;
+		margin-bottom: 0;
 		margin-top: 0.5rem;
 		gap: 0.5rem;
 		font-size: 1.1rem;
+	}
+	ul {
+		margin-top: 0;
 	}
 </style>
