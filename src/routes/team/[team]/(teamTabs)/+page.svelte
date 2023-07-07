@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import Status from '../[env]/app/[app]/Status.svelte';
 	import type { PageData } from './$houdini';
-	import { PendingValue } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
+	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
@@ -48,7 +48,7 @@
 								</Td>
 								<Td>{edge.node.env.name}</Td>
 								<Td>
-									<Status app={edge.node} />
+									<InstanceStatus app={edge.node} />
 								</Td>
 								<Td>
 									{#if edge.node.deployInfo.timestamp}

@@ -13,6 +13,7 @@ query App($app: String!, $team: String!, $env: String!) {
 			image
 		}
 		...AppInstances
+		...AppStatus
 		...AppInstancesStatus
 		...AccessPolicy
 		...AutoScaling

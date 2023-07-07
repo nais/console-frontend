@@ -16,8 +16,10 @@ type App implements Node {
   ingresses: [String!]!
   instances: [Instance!]!
   manifest: String!
+  messages: [String!]
   name: String!
   resources: Resources!
+  state: AppState!
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
@@ -32,6 +34,13 @@ type AppConnection {
 type AppEdge {
   cursor: Cursor!
   node: App!
+}
+
+enum AppState {
+  FAILING
+  NAIS
+  NOTNAIS
+  UNKNOWN
 }
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
