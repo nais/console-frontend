@@ -5,9 +5,6 @@
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
-<div class="info">
-	<Alert variant="info">This page is under construction.</Alert>
-</div>
 <div class="main">
 	<Teams />
 	<div class="grow">
@@ -16,9 +13,6 @@
 </div>
 
 <style>
-	.info {
-		margin-bottom: 2rem;
-	}
 	.main {
 		width: 100%;
 		height: 100%;
