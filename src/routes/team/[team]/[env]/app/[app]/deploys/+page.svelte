@@ -68,8 +68,8 @@
 								<Time time={new Date(edge.node.created)} distance={true} />
 							</Td>
 							<Td>
-								<Tooltip content={edge.node.statuses[0].message || ''}
-									><DeploymentStatus status={edge.node.statuses[0].status} /></Tooltip
+								<Tooltip content={edge.node.statuses[0]?.message || ''}
+									><DeploymentStatus status={edge.node.statuses[0]?.status} /></Tooltip
 								>
 							</Td>
 							<Td>
