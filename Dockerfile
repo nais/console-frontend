@@ -3,7 +3,7 @@ WORKDIR /usr/app
 
 COPY package*.json svelte.config.js ./
 
-RUN npm ci --quiet
+RUN npm ci --quiet --legacy-peer-deps
 
 COPY . ./
 
