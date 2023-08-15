@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { AppInstances } from '$houdini';
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
@@ -23,6 +24,9 @@
 	);
 
 	$: instances = $data.instances;
+	$: appName = $page.params.app;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 <Table style="margin-bottom: 1rem">
@@ -41,7 +45,11 @@
 						<Td><Loading /></Td>
 					{/each}
 				{:else}
-					<Td>{instance.name}</Td>
+					<Td
+						><a href="/team/{team}/{env}/app/{appName}/instance/{instance.name}/log"
+							>{instance.name}</a
+						></Td
+					>
 					<Td>{instance.restarts}</Td>
 					<Td>{instance.state}</Td>
 					{#if instance.created}
