@@ -250,6 +250,7 @@ type Instance implements Node {
   created: Time!
   id: ID!
   image: String!
+  log(tailLines: Int!): [LogLine!]!
   message: String!
   name: String!
   restarts: Int!
@@ -272,6 +273,11 @@ type Kafka implements Storage {
 type Limits {
   cpu: String!
   memory: String!
+}
+
+type LogLine {
+  message: String!
+  time: Time!
 }
 
 type Maintenance {
