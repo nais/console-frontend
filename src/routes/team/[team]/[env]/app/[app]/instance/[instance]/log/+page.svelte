@@ -52,7 +52,7 @@
 							<div class="logline">
 								<a class="index" href="#ll-{index}">{index}</a>
 								<span class="timestamp">
-									{log.time.toLocaleString()}
+									{log.time.toLocaleString('en-GB')}
 								</span>
 								<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
 								<span class="message">
@@ -94,7 +94,7 @@
 		color: rgb(0, 0, 0);
 		display: inline-block;
 		margin-right: 8px;
-		min-width: 180px;
+		min-width: 150px;
 		text-align: right;
 	}
 
