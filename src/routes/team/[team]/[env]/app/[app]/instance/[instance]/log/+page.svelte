@@ -19,13 +19,16 @@
 		return 'INFO';
 	}
 
-	// onload function to scroll log to bottom
-	function scrollToBottom() {
-		const log = document.querySelector('.log');
-		if (log) {
-			log.scrollTop = log.scrollHeight;
-		}
-	}
+	const scrollToBottom = (node: HTMLElement) => {
+		const scroll = () =>
+			node.scroll({
+				top: node.scrollHeight,
+				behavior: 'smooth'
+			});
+		scroll();
+
+		return { update: scroll };
+	};
 </script>
 
 {#if $AppLog.errors}
@@ -55,9 +58,9 @@
 			{#each $AppLog.data.app.instances as instance}
 				{#if instanceName === instance.name}
 					<h4>Last {instance.log.length} log lines for {instanceName}</h4>
-					<div class="log">
+					<div use:scrollToBottom class="log">
 						{#each instance.log as log, index}
-							<div on:load={scrollToBottom()} class="logline" id="ll-{index}">
+							<div class="logline" id="ll-{index}">
 								<a class="index" href="#ll-{index + 1}">{index + 1}</a>
 								<span class="timestamp">
 									{log.time.toLocaleString('en-GB')}
