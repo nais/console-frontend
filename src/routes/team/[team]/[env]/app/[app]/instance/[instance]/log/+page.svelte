@@ -18,6 +18,14 @@
 		}
 		return 'INFO';
 	}
+
+	// onload function to scroll log to bottom
+	function scrollToBottom() {
+		const log = document.querySelector('.log');
+		if (log) {
+			log.scrollTop = log.scrollHeight;
+		}
+	}
 </script>
 
 {#if $AppLog.errors}
@@ -28,7 +36,6 @@
 	</Alert>
 {:else if $AppLog.data}
 	<Card>
-		<h4>{instanceName}</h4>
 		{#if $AppLog.data.app.name === PendingValue}
 			{#each new Array(5) as _, index}
 				<div class="log" id="ll-{index}">
@@ -47,10 +54,11 @@
 		{:else}
 			{#each $AppLog.data.app.instances as instance}
 				{#if instanceName === instance.name}
-					{#each instance.log as log, index}
-						<div class="log" id="ll-{index}">
-							<div class="logline">
-								<a class="index" href="#ll-{index}">{index}</a>
+					<h4>Last {instance.log.length} log lines for {instanceName}</h4>
+					<div class="log">
+						{#each instance.log as log, index}
+							<div on:load={scrollToBottom()} class="logline" id="ll-{index}">
+								<a class="index" href="#ll-{index + 1}">{index + 1}</a>
 								<span class="timestamp">
 									{log.time.toLocaleString('en-GB')}
 								</span>
@@ -59,8 +67,8 @@
 									{log.message}
 								</span>
 							</div>
-						</div>
-					{/each}
+						{/each}
+					</div>
 				{/if}
 			{/each}
 		{/if}
@@ -78,6 +86,8 @@
 		line-height: 18px;
 		padding-bottom: 4px;
 		padding-top: 4px;
+		overflow: auto;
+		height: 45vw;
 	}
 
 	.logline {
@@ -94,7 +104,7 @@
 		color: rgb(0, 0, 0);
 		display: inline-block;
 		margin-right: 8px;
-		min-width: 150px;
+		min-width: 160px;
 		text-align: right;
 	}
 

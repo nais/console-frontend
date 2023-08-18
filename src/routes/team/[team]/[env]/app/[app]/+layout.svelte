@@ -26,8 +26,13 @@
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
-
-<h3><a href="/team/{team}"> {team}</a> / {app} ({env})</h3>
+{#if app !== ''}
+	<h3>
+		<a href="/team/{team}"> {team}</a> / <a href="/team/{team}/{env}/app/{app}">{app}</a> ({env})
+	</h3>
+{:else}
+	<h3><a href="/team/{team}"> {team}</a> / {env}</h3>
+{/if}
 <Tabs>
 	{#each nav as { tab, routeId }}
 		<Tab
