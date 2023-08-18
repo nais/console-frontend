@@ -7,6 +7,7 @@
 	$: team = $page.params.team;
 	$: env = $page.params.env;
 	$: app = $page.params.app;
+	$: instance = $page.params.instance;
 	$: currentRoute = $page.route.id;
 
 	$: nav = [
@@ -26,9 +27,9 @@
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
-{#if app !== ''}
+{#if instance !== undefined}
 	<h3>
-		<a href="/team/{team}"> {team}</a> / <a href="/team/{team}/{env}/app/{app}">{app}</a> ({env})
+		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/app/{app}">{app}</a> / {instance}
 	</h3>
 {:else}
 	<h3><a href="/team/{team}"> {team}</a> / {env}</h3>
