@@ -1,3 +1,8 @@
+"""
+The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer.
+"""
+directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
 directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 type AccessPolicy {
@@ -276,8 +281,16 @@ type Limits {
 }
 
 type LogLine {
+  instance: String!
   message: String!
   time: Time!
+}
+
+input LogSubscriptionInput {
+  app: String!
+  env: String!
+  instances: [String!]
+  team: String!
 }
 
 type Maintenance {
@@ -450,6 +463,10 @@ type SqlInstance implements Storage {
 
 interface Storage {
   name: String!
+}
+
+type Subscription {
+  log(input: LogSubscriptionInput): LogLine!
 }
 
 type Team implements Node {
