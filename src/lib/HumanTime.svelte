@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { format, formatDistance } from "date-fns";
-	import enGB from "date-fns/locale/en-GB/index";
-	import { onDestroy } from "svelte";
+	import { format, formatDistance } from 'date-fns';
+	import enGB from 'date-fns/locale/en-GB/index';
+	import { onDestroy } from 'svelte';
 
 	export let time: Date;
-	export let dateFormat = "PPPP";
+	export let dateFormat = 'PPPP';
 	export let distance = false;
 
-	let title = format(time, "dd. MMMM yyyy HH:mm:ss", { locale: enGB });
+	let title = format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB });
 
 	let text: string;
 	const distanceText = () =>
 		formatDistance(time, Date.now(), {
 			addSuffix: true,
-			includeSeconds: true,
+			includeSeconds: true
 		});
 
 	let interval: ReturnType<typeof setTimeout> | undefined;

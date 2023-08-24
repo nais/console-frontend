@@ -17,9 +17,36 @@
 	$: env = $page.params.env;
 	$: app = $page.params.app;
 
+	function intersect(el: HTMLElement) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) {
+						updates.unlisten();
+					}
+				});
+			},
+			{
+				root: document.querySelector('#log'),
+				rootMargin: '0px',
+				threshold: 0
+			}
+		);
+
+		observer.observe(el);
+		return {
+			destroy: () => {
+				try {
+					observer.disconnect();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		};
+	}
+
 	const maxLines = 99;
 	let logs: LogLine[] = [];
-	let lastScrollTop = 0;
 
 	function getLogLevel(message: string) {
 		const logLevel = message.match(/"level":"(\w+)"/);
@@ -37,8 +64,7 @@
 		}
 		await tick();
 		logview.scroll({
-			top: logview.scrollHeight,
-			behavior: 'smooth'
+			top: logview.scrollHeight
 		});
 	};
 
@@ -51,16 +77,6 @@
 			}
 		}
 	`);
-
-	const onScroll = (e: UIEvent) => {
-		const target = e.target as HTMLElement;
-
-		if (target.scrollTop - 10 < target.scrollHeight - target.clientHeight) {
-			return;
-		}
-		lastScrollTop = target.scrollTop;
-		updates.unlisten();
-	};
 
 	const start = async (app: string, env: string, team: string) => {
 		if (!browser) {
@@ -91,27 +107,15 @@
 	$updates.data?.log.instance;
 </script>
 
-<h1>Log</h1>
-{#if $updates.fetching}
-	<Button on:click={() => updates.unlisten()}>Pause</Button>
-{:else}
-	<Button on:click={() => start(app, env, team)}>Restart</Button>
-{/if}
-<div class="log" on:scroll={onScroll} bind:this={logview}>
-	{#each logs as log, index}
-		<div class="logline">
-			<span class="timestamp">
-				<HumanTime time={log.time} dateFormat="HH:mm:ss" />
-			</span>
-			<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
-			<span>
-				{log.instance}
-			</span>
-			<span class="message">
-				{log.message}
-			</span>
-		</div>
-	{/each}
+<div class="topbar">
+	{#if $updates.fetching}
+		<Button on:click={() => updates.unlisten()}>Pause</Button>
+	{:else}
+		<Button on:click={() => start(app, env, team)}>Restart</Button>
+	{/if}
+	{#if $updates.fetching}
+		<span>Streaming logs...</span>
+	{/if}
 </div>
 {#if $updates.errors && $updates.errors.length > 0}
 	<div class="line">
@@ -121,21 +125,42 @@
 	{#each $updates.errors as error}
 		<div class="line"><code>{error.message}</code></div>
 	{/each}
-{:else if $updates.fetching}
-	<div class="line">
-		<code>Waiting for logs...</code>
-	</div>
 {/if}
 
+<div id="log" bind:this={logview}>
+	{#each logs as log, index}
+		<div class="logline">
+			<span class="timestamp">
+				<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
+			</span>
+			<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
+			<span class="instance">
+				{log.instance}
+			</span>
+			<span class="message">
+				{log.message}
+			</span>
+		</div>
+	{/each}
+	<div use:intersect id="bottom" />
+</div>
+
 <style>
-	.log {
-		color: rgb(31, 35, 40);
-		color-scheme: light;
+	.topbar {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+	#log {
+		border: 1px solid var(--a-border-subtle);
+		background-color: var(--a-surface-default);
 		display: block;
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
 			monospace;
 		font-size: 12px;
 		line-height: 18px;
+		margin-top: 18px;
 		padding-bottom: 4px;
 		padding-top: 4px;
 		overflow: auto;
@@ -145,6 +170,7 @@
 	.logline {
 		display: flex;
 		flex-direction: row;
+		margin-right: 8px;
 	}
 
 	.timestamp {
@@ -159,7 +185,7 @@
 		color: rgb(0, 0, 0);
 		display: inline-block;
 		margin-right: 8px;
-		min-width: 50px;
+		width: 50px;
 		text-align: left;
 	}
 
@@ -171,8 +197,12 @@
 		color: rgb(255, 165, 0);
 	}
 
+	.instance {
+		width: 120px;
+		margin-right: 8px;
+	}
+
 	.message {
-		overflow-wrap: break-word;
-		overflow-x: auto;
+		word-break: break-word;
 	}
 </style>
