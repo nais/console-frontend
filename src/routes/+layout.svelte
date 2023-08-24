@@ -27,6 +27,5 @@
 		margin: auto;
 		min-width: 1000px;
 		max-width: 1432px;
-		min-height: 100vh;
 	}
 </style>

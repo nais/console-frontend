@@ -16,6 +16,10 @@
 			routeId: '/team/[team]/[env]/app/[app]'
 		},
 		{
+			tab: 'Logs',
+			routeId: '/team/[team]/[env]/app/[app]/logs'
+		},
+		{
 			tab: 'Deploys',
 			routeId: '/team/[team]/[env]/app/[app]/deploys'
 		},
@@ -30,6 +34,10 @@
 {#if instance !== undefined}
 	<h3>
 		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/app/{app}">{app}</a> / {instance}
+	</h3>
+{:else if app !== undefined}
+	<h3>
+		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/app/{app}">{app}</a>
 	</h3>
 {:else}
 	<h3><a href="/team/{team}"> {team}</a> / {env}</h3>
