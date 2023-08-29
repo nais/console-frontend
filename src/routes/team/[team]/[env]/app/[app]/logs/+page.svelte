@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	import { onDestroy, tick } from 'svelte';
-	import { get } from 'svelte/store';
+	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
 	import HumanTime from '$lib/HumanTime.svelte';
 	import { Button } from '@nais/ds-svelte-community';
+	import { onDestroy, tick } from 'svelte';
+	import { get } from 'svelte/store';
+	import type { PageData } from './$houdini';
 
 	type LogLine = {
 		readonly time: Date;
@@ -16,6 +17,10 @@
 	$: team = $page.params.team;
 	$: env = $page.params.env;
 	$: app = $page.params.app;
+
+	export let data: PageData;
+
+	$: ({ Instances, instanceNames } = data);
 
 	function intersect(el: HTMLElement) {
 		const observer = new IntersectionObserver(
@@ -78,21 +83,29 @@
 		}
 	`);
 
-	const start = async (app: string, env: string, team: string) => {
+	let subscribed = false;
+	const start = async (app: string, env: string, team: string, instances: string[]) => {
 		if (!browser) {
 			return;
 		}
 		if (get(updates).fetching) {
 			await updates.unlisten();
 		}
-
-		updates.listen({ input: { app: app, env: env, team: team } });
-		updates.subscribe((result) => {
-			if (result.data) {
-				logs = [...logs.slice(-maxLines), result.data.log];
-			}
-			scrollToBottom();
+		if (instances.length === 0) {
+			return;
+		}
+		updates.listen({
+			input: { app: app, env: env, team: team, instances: instances }
 		});
+		if (!subscribed) {
+			updates.subscribe((result) => {
+				if (result.data) {
+					logs = [...logs.slice(-maxLines), result.data.log];
+				}
+				scrollToBottom();
+			});
+			subscribed = true;
+		}
 	};
 
 	// Destroy handler is a bit hacky in case the user navigates from
@@ -103,47 +116,78 @@
 
 	onDestroy(destroy);
 
-	$: start(app, env, team);
-	$updates.data?.log.instance;
+	$: start(app, env, team, Array.from(instanceNames));
+
+	function toggleInstance(i: string) {
+		console.log('Toggling instance', i);
+		if (instanceNames.has(i)) {
+			instanceNames.delete(i);
+		} else {
+			instanceNames.add(i);
+		}
+		instanceNames = instanceNames;
+		console.log('Instance names', instanceNames);
+	}
+
+	function renderInstanceName(i: string) {
+		return i.slice(app.length + 1);
+	}
 </script>
 
-<div class="topbar">
-	{#if $updates.fetching}
-		<Button on:click={() => updates.unlisten()}>Pause</Button>
-	{:else}
-		<Button on:click={() => start(app, env, team)}>Restart</Button>
-	{/if}
-	{#if $updates.fetching}
-		<span>Streaming logs...</span>
-	{/if}
-</div>
-{#if $updates.errors && $updates.errors.length > 0}
-	<div class="line">
-		<br /><br />
-		<code>Failed to fetch logs: Event error(s): </code>
-	</div>
-	{#each $updates.errors as error}
-		<div class="line"><code>{error.message}</code></div>
-	{/each}
-{/if}
-
-<div id="log" bind:this={logview}>
-	{#each logs as log, index}
-		<div class="logline">
-			<span class="timestamp">
-				<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
-			</span>
-			<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
-			<span class="instance">
-				{log.instance}
-			</span>
-			<span class="message">
-				{log.message}
-			</span>
+{#if $Instances.data}
+	<div class="topbar">
+		<div class="instances">
+			{#if $Instances.data}
+				{#each $Instances.data.app.instances as instance}
+					{@const name = instance.name}
+					<Button
+						size="small"
+						variant={instanceNames.has(name) ? 'primary' : 'secondary-neutral'}
+						on:click={() => toggleInstance(name)}>{renderInstanceName(name)}</Button
+					>
+				{/each}
+			{/if}
 		</div>
-	{/each}
-	<div use:intersect id="bottom" />
-</div>
+		<div>
+			{#if $updates.fetching}
+				<Button on:click={() => updates.unlisten()}>Pause</Button>
+			{:else}
+				<Button on:click={() => start(app, env, team, Array.from(instanceNames))}>Restart</Button>
+			{/if}
+		</div>
+	</div>
+	{#if $updates.fetching}
+		<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
+	{/if}
+
+	{#if $updates.errors && $updates.errors.length > 0}
+		<div class="line">
+			<br /><br />
+			<code>Failed to fetch logs: Event error(s): </code>
+		</div>
+		{#each $updates.errors as error}
+			<div class="line"><code>{error.message}</code></div>
+		{/each}
+	{/if}
+
+	<div id="log" bind:this={logview}>
+		{#each logs as log, index}
+			<div class="logline">
+				<span class="timestamp">
+					<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
+				</span>
+				<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
+				<span class="instance">
+					{renderInstanceName(log.instance)}
+				</span>
+				<span class="message">
+					{log.message}
+				</span>
+			</div>
+		{/each}
+		<div use:intersect id="bottom" />
+	</div>
+{/if}
 
 <style>
 	.topbar {
@@ -185,7 +229,7 @@
 		color: rgb(0, 0, 0);
 		display: inline-block;
 		margin-right: 8px;
-		width: 50px;
+		min-width: 50px;
 		text-align: left;
 	}
 
@@ -193,12 +237,19 @@
 		color: rgb(255, 0, 0);
 	}
 
-	.WARN {
+	.WARN,
+	.WARNING {
 		color: rgb(255, 165, 0);
 	}
-
+	.instances {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+	}
 	.instance {
-		width: 120px;
+		min-width: 120px;
 		margin-right: 8px;
 	}
 
