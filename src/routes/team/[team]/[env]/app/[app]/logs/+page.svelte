@@ -50,7 +50,7 @@
 		};
 	}
 
-	const maxLines = 99;
+	const maxLines = 255;
 	let logs: LogLine[] = [];
 
 	function getLogLevel(message: string) {
@@ -94,6 +94,7 @@
 		if (instances.length === 0) {
 			return;
 		}
+		logs = [];
 		updates.listen({
 			input: { app: app, env: env, team: team, instances: instances }
 		});
@@ -102,6 +103,7 @@
 				if (result.data) {
 					logs = [...logs.slice(-maxLines), result.data.log];
 				}
+				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
 				scrollToBottom();
 			});
 			subscribed = true;
@@ -126,7 +128,6 @@
 			instanceNames.add(i);
 		}
 		instanceNames = instanceNames;
-		console.log('Instance names', instanceNames);
 	}
 
 	function renderInstanceName(i: string) {
@@ -146,6 +147,18 @@
 						on:click={() => toggleInstance(name)}>{renderInstanceName(name)}</Button
 					>
 				{/each}
+				<Button
+					size="small"
+					variant="primary"
+					disabled={instanceNames.size === $Instances.data?.app.instances.length}
+					on:click={() => {
+						if (instanceNames.size === $Instances.data?.app.instances.length) {
+							return;
+						}
+						$Instances.data?.app.instances.forEach((i) => instanceNames.add(i.name));
+						instanceNames = instanceNames;
+					}}>All</Button
+				>
 			{/if}
 		</div>
 		<div>
@@ -171,7 +184,7 @@
 	{/if}
 
 	<div id="log" bind:this={logview}>
-		{#each logs as log, index}
+		{#each logs as log}
 			<div class="logline">
 				<span class="timestamp">
 					<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
