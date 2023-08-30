@@ -46,8 +46,7 @@
 					{/each}
 				{:else}
 					<Td
-						><a href="/team/{team}/{env}/app/{appName}/instance/{instance.name}/log"
-							>{instance.name}</a
+						><a href="/team/{team}/{env}/app/{appName}/logs?name={instance.name}">{instance.name}</a
 						></Td
 					>
 					<Td>{instance.restarts}</Td>

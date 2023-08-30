@@ -121,7 +121,6 @@
 	$: start(app, env, team, Array.from(instanceNames));
 
 	function toggleInstance(i: string) {
-		console.log('Toggling instance', i);
 		if (instanceNames.has(i)) {
 			instanceNames.delete(i);
 		} else {
