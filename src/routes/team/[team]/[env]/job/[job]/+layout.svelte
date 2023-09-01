@@ -31,7 +31,13 @@
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
-<h3><a href="/team/{team}"> {team}</a> / {job} ({env})</h3>
+{#if job !== undefined}
+	<h3>
+		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/job/{job}">{job}</a>
+	</h3>
+{:else}
+	<h3><a href="/team/{team}"> {team}</a> / {env}</h3>
+{/if}
 <Tabs>
 	{#each nav as { tab, routeId }}
 		<Tab
