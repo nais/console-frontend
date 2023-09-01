@@ -1,0 +1,10 @@
+query RunsWithPodNames($job: String!, $team: String!, $env: String!) {
+	naisjob(name: $job, env: $env, team: $team) {
+		name
+		runs {
+			name
+			podNames
+			startTime
+		}
+	}
+}

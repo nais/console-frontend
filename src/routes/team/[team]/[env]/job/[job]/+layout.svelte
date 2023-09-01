@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Tabs from '$lib/Tabs.svelte';
 	import Tab from '$lib/Tab.svelte';
+	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
 
 	$: team = $page.params.team;
@@ -17,6 +17,10 @@
 		{
 			tab: 'Deploys',
 			routeId: '/team/[team]/[env]/job/[job]/deploys'
+		},
+		{
+			tab: 'Logs',
+			routeId: '/team/[team]/[env]/job/[job]/logs'
 		},
 		{
 			tab: 'nais.yaml',

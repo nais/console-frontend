@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { JobInstances } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
@@ -26,6 +27,10 @@
 			}
 		`)
 	);
+
+	$: jobName = $page.params.job;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 <Table>
@@ -63,7 +68,7 @@
 							</Tooltip>
 						{/if}
 					</Td>
-					<Td>{run.name}</Td>
+					<Td><a href="/team/{team}/{env}/job/{jobName}/logs?name={run.name}">{run.name}</a></Td>
 					<Td>
 						{#if run.startTime}
 							<Time time={run.startTime} dateFormat="dd.MM.yyyy HH:mm:ss" distance={true} />

@@ -255,7 +255,6 @@ type Instance implements Node {
   created: Time!
   id: ID!
   image: String!
-  log(tailLines: Int!): [LogLine!]!
   message: String!
   name: String!
   restarts: Int!
@@ -287,9 +286,10 @@ type LogLine {
 }
 
 input LogSubscriptionInput {
-  app: String!
+  app: String
   env: String!
   instances: [String!]
+  job: String
   team: String!
 }
 
@@ -405,6 +405,7 @@ type Run implements Node {
   image: String!
   message: String!
   name: String!
+  podNames: [String!]!
   startTime: Time
 }
 
