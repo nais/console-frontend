@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import LogViewer from '$lib/LogViewer.svelte';
-	import { Button, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		Button,
+		Chips,
+		ToggleChip,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	let running = true;
@@ -27,6 +33,21 @@
 		running = true;
 	}
 	$: setSelected(selectedRun);
+
+	function renderRunName(i: string) {
+		return i.slice(job.length + 1);
+	}
+
+	const viewOptions = ['Time', 'Level', 'Name'];
+	let selectedViewOptions = new Set(viewOptions);
+	function toggleSelectedViewOptions(option: string) {
+		if (selectedViewOptions.has(option)) {
+			selectedViewOptions.delete(option);
+		} else {
+			selectedViewOptions.add(option);
+		}
+		selectedViewOptions = selectedViewOptions;
+	}
 </script>
 
 <div class="topbar">
@@ -34,8 +55,10 @@
 		{#if $RunsWithPodNames.data}
 			<ToggleGroup size="small" bind:value={selectedRun}>
 				{#each $RunsWithPodNames.data.naisjob.runs as run}
-					{@const name = run.name}
-					<ToggleGroupItem value={name}>{name}</ToggleGroupItem>
+					{#if run.podNames.length > 0}
+						{@const name = run.name}
+						<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
+					{/if}
 				{/each}
 			</ToggleGroup>
 		{/if}
@@ -59,12 +82,23 @@
 {#if fetching}
 	<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
 {/if}
-
+<Chips size="small">
+	{#each viewOptions as option}
+		<ToggleChip
+			value={option}
+			selected={selectedViewOptions.has(option)}
+			on:click={() => toggleSelectedViewOptions(option)}
+		/>
+	{/each}
+</Chips>
 <LogViewer
 	{job}
 	{env}
 	{team}
 	{running}
+	showName={selectedViewOptions.has('Name')}
+	showTime={selectedViewOptions.has('Time')}
+	showLevel={selectedViewOptions.has('Level')}
 	instances={pods}
 	on:fetching={(e) => {
 		fetching = e.detail;

@@ -210,10 +210,9 @@
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
 			monospace;
 		font-size: 12px;
-		line-height: 18px;
-		margin-top: 18px;
-		padding-bottom: 4px;
-		padding-top: 4px;
+		line-height: 1rem;
+		margin-top: 1rem;
+		padding: 0rem 1rem 1rem 1rem;
 		overflow: auto;
 		height: 45vw;
 	}
@@ -231,9 +230,7 @@
 	.timestamp {
 		color: rgb(0, 0, 0);
 		display: inline-block;
-		margin-right: 8px;
-		min-width: 160px;
-		text-align: right;
+		min-width: 148px;
 	}
 
 	.level {
