@@ -24,6 +24,7 @@
 				.map((run) => run.podNames)
 				.flatMap((pod) => pod)
 		);
+		running = true;
 	}
 	$: setSelected(selectedRun);
 </script>
