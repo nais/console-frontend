@@ -175,14 +175,14 @@
 {:else}
 	<div id="log" bind:this={logview}>
 		{#each logs as log}
-			<div class="logline">
+			<div class="logline {getLogLevel(log.message)}">
 				{#if showTime}
 					<span class="timestamp">
 						<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
 					</span>
 				{/if}
 				{#if showLevel}
-					<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
+					<span class="level">{getLogLevel(log.message)}</span>
 				{/if}
 				{#if showName}
 					<span class="instance">
@@ -227,28 +227,29 @@
 		margin-right: 8px;
 	}
 
+	.logline.WARN,
+	.logline.WARNING {
+		background-color: var(--a-surface-warning-subtle);
+		color: var(--a-text-on-warning);
+	}
+
+	.logline.ERROR {
+		background-color: var(--a-surface-danger-subtle);
+		color: var(--a-text-danger);
+	}
+
 	.timestamp {
-		color: rgb(0, 0, 0);
 		display: inline-block;
 		min-width: 148px;
 	}
 
 	.level {
-		color: rgb(0, 0, 0);
 		display: inline-block;
 		margin-right: 8px;
 		min-width: 50px;
 		text-align: left;
 	}
 
-	.ERROR {
-		color: rgb(255, 0, 0);
-	}
-
-	.WARN,
-	.WARNING {
-		color: rgb(255, 165, 0);
-	}
 	.instances {
 		display: flex;
 		flex-direction: row;

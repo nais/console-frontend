@@ -16,14 +16,16 @@
 				accessPolicy {
 					inbound {
 						rules {
-							application
+							application @loading
 							namespace
+							cluster
 						}
 					}
 					outbound {
 						rules {
 							application @loading
 							namespace
+							cluster
 						}
 						external {
 							host @loading
@@ -87,8 +89,13 @@
 			{#each $data.accessPolicy.inbound.rules as rule}
 				<li>
 					{#if rule.application !== PendingValue}
-						<a href="/team/{rule.namespace || team}/{env}/app/{rule.application}"
-							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
+						<a
+							href="/team/{rule.namespace || team}/{rule.cluster
+								? rule.cluster
+								: env}/app/{rule.application}"
+							>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+								? '.' + rule.cluster
+								: ''}</a
 						>
 					{:else}
 						<Loading width="300px" />
@@ -112,7 +119,7 @@
 							<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
 						</li>
 					{:else}
-						<li><Globe /><a href={external.host}>{external.host}</a><br /></li>
+						<li><Globe /><a href="https://{external.host}">https://{external.host}</a><br /></li>
 					{/each}
 				{/if}
 			{:else}
@@ -126,8 +133,13 @@
 					{#if rule.application === PendingValue}
 						<Loading width="300px" />
 					{:else}
-						<a href="/team/{rule.namespace || team}/{env}/app/{rule.application}"
-							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
+						<a
+							href="/team/{rule.namespace || team}/{rule.cluster
+								? rule.cluster
+								: env}/app/{rule.application}"
+							>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+								? '.' + rule.cluster
+								: ''}</a
 						>
 					{/if}
 				</li>

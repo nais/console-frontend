@@ -394,6 +394,7 @@ type Resources {
 
 type Rule {
   application: String!
+  cluster: String!
   namespace: String!
 }
 

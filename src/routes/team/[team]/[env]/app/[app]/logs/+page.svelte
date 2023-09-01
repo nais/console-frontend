@@ -88,15 +88,18 @@
 	{#if fetching}
 		<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
 	{/if}
-	<Chips size="small">
-		{#each viewOptions as option}
-			<ToggleChip
-				value={option}
-				selected={selectedViewOptions.has(option)}
-				on:click={() => toggleSelectedViewOptions(option)}
-			/>
-		{/each}
-	</Chips>
+	<div class="chips">
+		Columns:
+		<Chips size="small">
+			{#each viewOptions as option}
+				<ToggleChip
+					value={option}
+					selected={selectedViewOptions.has(option)}
+					on:click={() => toggleSelectedViewOptions(option)}
+				/>
+			{/each}
+		</Chips>
+	</div>
 	<LogViewer
 		{app}
 		{env}
@@ -125,6 +128,11 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		align-items: center;
+		gap: 0.5rem;
+	}
+	.chips {
+		display: flex;
+		flex-direction: row;
 		gap: 0.5rem;
 	}
 </style>
