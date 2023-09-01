@@ -4,6 +4,7 @@ query RunsWithPodNames($job: String!, $team: String!, $env: String!) {
 		runs {
 			name
 			podNames
+			startTime
 		}
 	}
 }

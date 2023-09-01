@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
+	import LogViewer from '$lib/LogViewer.svelte';
+	import { Button, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	let running = true;
@@ -9,76 +10,66 @@
 	$: team = $page.params.team;
 	$: env = $page.params.env;
 	$: job = $page.params.job;
-	$: run = $page.params.run;
 
 	export let data: PageData;
 
-	$: ({ RunsWithPodNames, runNames } = data);
+	$: ({ RunsWithPodNames, selected } = data);
 
-	$: console.log(runNames);
-
-	function toggleRuns(i: string) {
-		if (runNames.has(i)) {
-			runNames.delete(i);
-		} else {
-			runNames.add(i);
-		}
-		runNames = runNames;
-		if (!running) {
-			running = true;
-		}
+	let pods: Set<string> = new Set([selected]);
+	$: selectedRun = selected;
+	function setSelected(name: string) {
+		pods = new Set(
+			$RunsWithPodNames.data?.naisjob?.runs
+				.filter((run) => run.name === name)
+				.map((run) => run.podNames)
+				.flatMap((pod) => pod)
+		);
 	}
-
-	function renderRunName(i: string) {
-		return i.slice(job.length + 1);
-	}
+	$: setSelected(selectedRun);
 </script>
 
-{#if $RunsWithPodNames.data}
-	<div class="topbar">
-		<div class="instances">
-			{#if $RunsWithPodNames.data}
-				<Chips>
-					{#each $RunsWithPodNames.data.naisjob.runs as run}
-						{@const name = run.name}
-						<ToggleChip value={name} key={name} on:click={() => toggleInstance(name)}
-							>{renderRunName(name)}</ToggleChip
-						>
-					{/each}
-				</Chips>
-			{/if}
-		</div>
-		<div>
-			{#if fetching}
-				<Button
-					on:click={() => {
-						running = false;
-					}}>Pause</Button
-				>
-			{:else}
-				<Button
-					on:click={() => {
-						running = true;
-					}}>Restart</Button
-				>
-			{/if}
-		</div>
+<div class="topbar">
+	<div class="instances">
+		{#if $RunsWithPodNames.data}
+			<ToggleGroup size="small" bind:value={selectedRun}>
+				{#each $RunsWithPodNames.data.naisjob.runs as run}
+					{@const name = run.name}
+					<ToggleGroupItem value={name}>{name}</ToggleGroupItem>
+				{/each}
+			</ToggleGroup>
+		{/if}
 	</div>
-	{#if fetching}
-		<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
-	{/if}
-	<!--LogViewer
-		{job}
-		{env}
-		{team}
-		{running}
-		instances={runNames}
-		on:fetching={(e) => {
-			fetching = e.detail;
-		}}
-		on:scrolledUp={() => (running = false)}
-	/-->
+	<div>
+		{#if fetching}
+			<Button
+				on:click={() => {
+					running = false;
+				}}>Pause</Button
+			>
+		{:else}
+			<Button
+				on:click={() => {
+					running = true;
+				}}>Restart</Button
+			>
+		{/if}
+	</div>
+</div>
+{#if fetching}
+	<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
 {/if}
+
+<LogViewer
+	{job}
+	{env}
+	{team}
+	{running}
+	instances={pods}
+	on:fetching={(e) => {
+		fetching = e.detail;
+	}}
+	on:scrolledUp={() => (running = false)}
+/>
 
 <style>
 	.topbar {

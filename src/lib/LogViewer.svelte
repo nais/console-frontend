@@ -124,6 +124,10 @@
 			updates.subscribe((result) => {
 				publishEvent(result.fetching);
 				if (result.data) {
+					if (result.data.log.instance === 'console-backend') {
+						updates.unlisten();
+						return;
+					}
 					logs = [...logs.slice(-maxLines), result.data.log];
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
@@ -164,27 +168,33 @@
 	{/each}
 {/if}
 
-<div id="log" bind:this={logview}>
-	{#each logs as log}
-		<div class="logline">
-			{#if showTime}
-				<span class="timestamp">
-					<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
-				</span>
-			{/if}
-			{#if showLevel}
-				<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
-			{/if}
-			{#if showName}
-				<span class="instance">
-					{renderInstanceName(log.instance)}
-				</span>
-			{/if}
-			<pre class="message">{log.message}</pre>
-		</div>
-	{/each}
-	<div use:intersect id="bottom" />
-</div>
+{#if instances.size === 0}
+	<div id="log" bind:this={logview}>
+		<div class="logline"><p>No runs found</p></div>
+	</div>
+{:else}
+	<div id="log" bind:this={logview}>
+		{#each logs as log}
+			<div class="logline">
+				{#if showTime}
+					<span class="timestamp">
+						<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
+					</span>
+				{/if}
+				{#if showLevel}
+					<span class="level {getLogLevel(log.message)}">{getLogLevel(log.message)}</span>
+				{/if}
+				{#if showName}
+					<span class="instance">
+						{renderInstanceName(log.instance)}
+					</span>
+				{/if}
+				<pre class="message">{log.message}</pre>
+			</div>
+		{/each}
+		<div use:intersect id="bottom" />
+	</div>
+{/if}
 
 <style>
 	.topbar {
@@ -206,6 +216,10 @@
 		padding-top: 4px;
 		overflow: auto;
 		height: 45vw;
+	}
+
+	p {
+		margin: 1rem;
 	}
 
 	.logline {
