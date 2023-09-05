@@ -12,13 +12,12 @@ query App($app: String!, $team: String!, $env: String!) {
 			name
 			image
 		}
-		...AppInstances
-		...AppState
-		...AppInstancesStatus
 		...AccessPolicy
-		...AutoScaling
-		...Authz
-		...Storage
 		...AppImage
+		...AppInstances
+		...AppInstancesStatus
+		...Authz
+		...AutoScaling
+		...Storage
 	}
 }

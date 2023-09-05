@@ -47,7 +47,7 @@ type AppEdge {
 }
 
 type AppState {
-  errors: [ErrorType!]
+  errors: [StateError!]!
   state: State!
 }
 
@@ -473,6 +473,11 @@ enum State {
   NAIS
   NOTNAIS
   UNKNOWN
+}
+
+type StateError {
+  detail: String!
+  type: ErrorType!
 }
 
 interface Storage {

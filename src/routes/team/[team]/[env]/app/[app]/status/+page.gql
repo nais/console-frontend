@@ -1,0 +1,12 @@
+query AppStatus($app: String!, $team: String!, $env: String!) {
+	app(name: $app, team: $team, env: $env) @loading(cascade: true) {
+		name @loading
+		appState @loading {
+			state @loading
+			errors @loading {
+				detail @loading
+				type @loading
+			}
+		}
+	}
+}

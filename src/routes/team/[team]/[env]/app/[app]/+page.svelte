@@ -28,7 +28,7 @@
 		<Card columns={2}>
 			<h4>Status</h4>
 			<div>
-				<Status app={$App.data.app} />
+				<Status />
 			</div>
 		</Card>
 		<Card columns={4}>
