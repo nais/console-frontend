@@ -18,6 +18,7 @@ type Acl {
 
 type App implements Node {
   accessPolicy: AccessPolicy!
+  appState: AppState!
   authz: [Authz!]!
   autoScaling: AutoScaling!
   deployInfo: DeployInfo!
@@ -27,10 +28,8 @@ type App implements Node {
   ingresses: [String!]!
   instances: [Instance!]!
   manifest: String!
-  messages: [String!]
   name: String!
   resources: Resources!
-  state: AppState!
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
@@ -47,11 +46,9 @@ type AppEdge {
   node: App!
 }
 
-enum AppState {
-  FAILING
-  NAIS
-  NOTNAIS
-  UNKNOWN
+type AppState {
+  errors: [ErrorType!]
+  state: State!
 }
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
@@ -179,6 +176,14 @@ type Env implements Node {
 
 type Error {
   message: String!
+}
+
+enum ErrorType {
+  DEPRECATED_INGRESS
+  DEPRECATED_REGISTRY
+  INVALID_NAIS_YAML
+  NEW_INSTANCES_FAILING
+  NO_RUNNING_INSTANCES
 }
 
 type Expose {
@@ -461,6 +466,13 @@ type SqlInstance implements Storage {
   retainedBackups: Int!
   tier: String!
   type: String!
+}
+
+enum State {
+  FAILING
+  NAIS
+  NOTNAIS
+  UNKNOWN
 }
 
 interface Storage {
