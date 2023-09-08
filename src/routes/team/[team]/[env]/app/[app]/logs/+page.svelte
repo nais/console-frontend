@@ -85,9 +85,13 @@
 			{/if}
 		</div>
 	</div>
-	{#if fetching}
-		<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
-	{/if}
+	<div style="font-size: 12px; text-align:right; width: 100%">
+		{#if fetching}
+			Streaming logs...
+		{:else}
+			Streaming paused.
+		{/if}
+	</div>
 	<div class="chips">
 		Columns:
 		<Chips size="small">
@@ -134,5 +138,6 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.5rem;
+		padding-top: 0.8rem;
 	}
 </style>

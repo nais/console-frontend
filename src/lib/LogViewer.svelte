@@ -168,9 +168,13 @@
 	{/each}
 {/if}
 
-{#if instances.size === 0}
+{#if instances.size === 0 && job !== undefined}
 	<div id="log" bind:this={logview}>
 		<div class="logline"><p>No runs found</p></div>
+	</div>
+{:else if instances.size === 0 && app !== undefined}
+	<div id="log" bind:this={logview}>
+		<div class="logline"><p>No instances found</p></div>
 	</div>
 {:else}
 	<div id="log" bind:this={logview}>

@@ -169,6 +169,21 @@ type DeploymentStatus {
   status: String!
 }
 
+type DeprecatedIngressError implements StateError {
+  ingress: String!
+  level: ErrorLevel!
+  revision: String!
+}
+
+type DeprecatedRegistryError implements StateError {
+  level: ErrorLevel!
+  name: String!
+  registry: String!
+  repository: String!
+  revision: String!
+  tag: String!
+}
+
 type Env implements Node {
   id: ID!
   name: String!
@@ -178,12 +193,10 @@ type Error {
   message: String!
 }
 
-enum ErrorType {
-  DEPRECATED_INGRESS
-  DEPRECATED_REGISTRY
-  INVALID_NAIS_YAML
-  NEW_INSTANCES_FAILING
-  NO_RUNNING_INSTANCES
+enum ErrorLevel {
+  ERROR
+  INFO
+  WARNING
 }
 
 type Expose {
@@ -272,6 +285,12 @@ enum InstanceState {
   UNKNOWN
 }
 
+type InvalidNaisYamlError implements StateError {
+  detail: String!
+  level: ErrorLevel!
+  revision: String!
+}
+
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
@@ -347,6 +366,17 @@ type NaisJobEdge {
   node: NaisJob!
 }
 
+type NewInstancesFailingError implements StateError {
+  failingInstances: [String!]!
+  level: ErrorLevel!
+  revision: String!
+}
+
+type NoRunningInstancesError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+}
+
 interface Node {
   id: ID!
 }
@@ -384,6 +414,8 @@ type Query {
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
   teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
+
+  """Get the currently logged in user."""
   user: User!
 }
 
@@ -475,9 +507,9 @@ enum State {
   UNKNOWN
 }
 
-type StateError {
-  detail: String!
-  type: ErrorType!
+interface StateError {
+  level: ErrorLevel!
+  revision: String!
 }
 
 interface Storage {
@@ -553,9 +585,16 @@ type Topic {
 }
 
 type User implements Node {
+  """The user's email address."""
   email: String!
+
+  """The unique identifier for the user."""
   id: ID!
+
+  """The user's full name."""
   name: String!
+
+  """Teams that the user is a member and/or owner of."""
   teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
 }
 

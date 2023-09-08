@@ -16,14 +16,14 @@
 
 	export let data: PageData;
 
-	$: ({ AppStatus } = data);
-	$: status = $AppStatus.data;
+	$: ({ AppStatusDetailed } = data);
+	$: status = $AppStatusDetailed.data;
 </script>
 
 <Card>
-	{#if $AppStatus.errors}
+	{#if $AppStatusDetailed.errors}
 		<Alert variant="error">
-			{#each $AppStatus.errors as error}
+			{#each $AppStatusDetailed.errors as error}
 				{error.message}
 			{/each}
 		</Alert>
@@ -48,15 +48,13 @@
 					<h4>Application status for {status.app.name}</h4>
 				</div>
 			{/if}
-			<div class="message">
-				{#if status.app.appState.errors}
-					<ul>
-						{#each status.app.appState.errors as error}
-							<li><ErrorTypeToMessage errorType={error.type} detail={error.detail} /></li>
-						{/each}
-					</ul>
+			<div>
+				{#if status.app.appState.errors && status.app.appState.errors.length > 0}
+					{#each status.app.appState.errors as error}
+						<ErrorTypeToMessage {error} />
+					{/each}
 				{:else}
-					All nais
+					<Alert variant="success">All nais - nothing to report.</Alert>
 				{/if}
 			</div>
 		{/if}
