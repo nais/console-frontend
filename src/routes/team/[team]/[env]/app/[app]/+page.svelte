@@ -26,10 +26,7 @@
 {:else if $App.data}
 	<div class="grid">
 		<Card columns={2}>
-			<h4>Status</h4>
-			<div>
-				<Status app={$App.data.app} />
-			</div>
+			<Status app={$App.data.app} />
 		</Card>
 		<Card columns={4}>
 			<h4>Last activity</h4>

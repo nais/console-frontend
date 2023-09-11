@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Tabs from '$lib/Tabs.svelte';
 	import Tab from '$lib/Tab.svelte';
+	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
 
 	$: team = $page.params.team;
@@ -14,6 +14,10 @@
 		{
 			tab: 'Overview',
 			routeId: '/team/[team]/[env]/app/[app]'
+		},
+		{
+			tab: 'Status',
+			routeId: '/team/[team]/[env]/app/[app]/status'
 		},
 		{
 			tab: 'Logs',

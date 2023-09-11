@@ -52,7 +52,7 @@
 
 <div class="topbar">
 	<div class="instances">
-		{#if $RunsWithPodNames.data}
+		{#if $RunsWithPodNames.data && $RunsWithPodNames.data.naisjob.runs.length > 0}
 			<ToggleGroup size="small" bind:value={selectedRun}>
 				{#each $RunsWithPodNames.data.naisjob.runs as run}
 					{#if run.podNames.length > 0}

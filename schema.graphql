@@ -18,6 +18,7 @@ type Acl {
 
 type App implements Node {
   accessPolicy: AccessPolicy!
+  appState: AppState!
   authz: [Authz!]!
   autoScaling: AutoScaling!
   deployInfo: DeployInfo!
@@ -27,10 +28,8 @@ type App implements Node {
   ingresses: [String!]!
   instances: [Instance!]!
   manifest: String!
-  messages: [String!]
   name: String!
   resources: Resources!
-  state: AppState!
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
@@ -47,11 +46,9 @@ type AppEdge {
   node: App!
 }
 
-enum AppState {
-  FAILING
-  NAIS
-  NOTNAIS
-  UNKNOWN
+type AppState {
+  errors: [StateError!]!
+  state: State!
 }
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
@@ -172,6 +169,21 @@ type DeploymentStatus {
   status: String!
 }
 
+type DeprecatedIngressError implements StateError {
+  ingress: String!
+  level: ErrorLevel!
+  revision: String!
+}
+
+type DeprecatedRegistryError implements StateError {
+  level: ErrorLevel!
+  name: String!
+  registry: String!
+  repository: String!
+  revision: String!
+  tag: String!
+}
+
 type Env implements Node {
   id: ID!
   name: String!
@@ -179,6 +191,12 @@ type Env implements Node {
 
 type Error {
   message: String!
+}
+
+enum ErrorLevel {
+  ERROR
+  INFO
+  WARNING
 }
 
 type Expose {
@@ -267,6 +285,12 @@ enum InstanceState {
   UNKNOWN
 }
 
+type InvalidNaisYamlError implements StateError {
+  detail: String!
+  level: ErrorLevel!
+  revision: String!
+}
+
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
@@ -342,6 +366,17 @@ type NaisJobEdge {
   node: NaisJob!
 }
 
+type NewInstancesFailingError implements StateError {
+  failingInstances: [String!]!
+  level: ErrorLevel!
+  revision: String!
+}
+
+type NoRunningInstancesError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+}
+
 interface Node {
   id: ID!
 }
@@ -379,6 +414,8 @@ type Query {
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
   team(name: String!): Team!
   teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
+
+  """Get the currently logged in user."""
   user: User!
 }
 
@@ -463,6 +500,18 @@ type SqlInstance implements Storage {
   type: String!
 }
 
+enum State {
+  FAILING
+  NAIS
+  NOTNAIS
+  UNKNOWN
+}
+
+interface StateError {
+  level: ErrorLevel!
+  revision: String!
+}
+
 interface Storage {
   name: String!
 }
@@ -536,9 +585,16 @@ type Topic {
 }
 
 type User implements Node {
+  """The user's email address."""
   email: String!
+
+  """The unique identifier for the user."""
   id: ID!
+
+  """The user's full name."""
   name: String!
+
+  """Teams that the user is a member and/or owner of."""
   teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
 }
 
