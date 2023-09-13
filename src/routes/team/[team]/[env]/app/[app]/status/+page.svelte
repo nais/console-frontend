@@ -53,8 +53,6 @@
 					{#each status.app.appState.errors as error}
 						<ErrorTypeToMessage {error} />
 					{/each}
-				{:else}
-					<Alert variant="success">All nais - nothing to report.</Alert>
 				{/if}
 			</div>
 		{/if}

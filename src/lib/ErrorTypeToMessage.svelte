@@ -35,6 +35,24 @@
 				... on NoRunningInstancesError {
 					level
 				}
+				... on InboundAccessError {
+					level
+					rule {
+						application
+						cluster
+						mutual
+						namespace
+					}
+				}
+				... on OutboundAccessError {
+					level
+					rule {
+						application
+						cluster
+						mutual
+						namespace
+					}
+				}
 			}
 		`)
 	);
@@ -90,6 +108,28 @@
 				runs.
 			{/if}
 		</Alert>
+	{:else if $data.__typename === 'InboundAccessError'}
+		<Alert variant="warning"
+			><a
+				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+					? $data.rule.cluster
+					: env}/app/{$data.rule.application}">{$data.rule.application}</a
+			>
+			is missing outbound rule for
+			<a href="/team/{team}/{env}/app/{app}">{app}</a></Alert
+		>
+	{:else if $data.__typename === 'OutboundAccessError'}
+		<Alert variant="warning"
+			><a
+				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+					? $data.rule.cluster
+					: env}/app/{$data.rule.application}">{$data.rule.application}</a
+			>
+			is missing inbound rule for
+			<a href="/team/{team}/{env}/app/{app}">{app}</a></Alert
+		>
+	{:else}
+		<Alert variant="error">Unkown error</Alert>
 	{/if}
 </div>
 
