@@ -262,6 +262,12 @@ type Inbound {
   rules: [Rule!]!
 }
 
+type InboundAccessError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+  rule: Rule!
+}
+
 type Insights {
   enabled: Boolean!
   queryStringLength: Int!
@@ -393,6 +399,12 @@ type Outbound {
   rules: [Rule!]!
 }
 
+type OutboundAccessError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+  rule: Rule!
+}
+
 type PageInfo {
   endCursor: Cursor
   from: Int!
@@ -432,6 +444,7 @@ type Resources {
 type Rule {
   application: String!
   cluster: String!
+  mutual: Boolean!
   namespace: String!
 }
 

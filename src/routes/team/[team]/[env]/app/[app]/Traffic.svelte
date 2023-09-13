@@ -3,7 +3,9 @@
 	import type { AccessPolicy } from '$houdini';
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Loading from '$lib/Loading.svelte';
+	import { Tooltip } from '@nais/ds-svelte-community';
 
 	export let app: AccessPolicy;
 
@@ -19,6 +21,7 @@
 							application @loading
 							namespace
 							cluster
+							mutual
 						}
 					}
 					outbound {
@@ -26,6 +29,7 @@
 							application @loading
 							namespace
 							cluster
+							mutual
 						}
 						external {
 							host @loading
@@ -89,6 +93,13 @@
 			{#each $data.accessPolicy.inbound.rules as rule}
 				<li>
 					{#if rule.application !== PendingValue}
+						{#if !rule.mutual}
+							<Tooltip
+								placement="right"
+								content="{rule.application} is missing outbound policy for {String($data.name)}"
+								><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
+							>
+						{/if}
 						<a
 							href="/team/{rule.namespace || team}/{rule.cluster
 								? rule.cluster
@@ -133,6 +144,12 @@
 					{#if rule.application === PendingValue}
 						<Loading width="300px" />
 					{:else}
+						{#if !rule.mutual}
+							<Tooltip
+								placement="right"
+								content="{rule.application} is missing inbound policy for {String($data.name)}"
+								><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
+							>{/if}
 						<a
 							href="/team/{rule.namespace || team}/{rule.cluster
 								? rule.cluster
