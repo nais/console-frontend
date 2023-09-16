@@ -41,6 +41,7 @@
 						application
 						cluster
 						mutual
+						mutualExplanation
 						namespace
 					}
 				}
@@ -50,6 +51,7 @@
 						application
 						cluster
 						mutual
+						mutualExplanation
 						namespace
 					}
 				}
@@ -113,20 +115,38 @@
 			><a
 				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
 					? $data.rule.cluster
-					: env}/app/{$data.rule.application}">{$data.rule.application}</a
+					: env}/app/{$data.rule.application}"
+				>{$data.rule.application}.{$data.rule.namespace || team}.{$data.rule.cluster
+					? $data.rule.cluster
+					: env}</a
 			>
 			is missing outbound rule for
-			<a href="/team/{team}/{env}/app/{app}">{app}</a></Alert
+			<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
+			<br />
+			{$data.rule.mutualExplanation}
+			<br />
+			Consult
+			<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
+				>Nais Application reference - accessPolicy</a
+			>.</Alert
 		>
 	{:else if $data.__typename === 'OutboundAccessError'}
 		<Alert variant="warning"
 			><a
 				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
 					? $data.rule.cluster
-					: env}/app/{$data.rule.application}">{$data.rule.application}</a
+					: env}/app/{$data.rule.application}"
+				>{$data.rule.application}.{$data.rule.namespace || team}.{$data.rule.cluster
+					? $data.rule.cluster
+					: env}</a
 			>
 			is missing inbound rule for
-			<a href="/team/{team}/{env}/app/{app}">{app}</a></Alert
+			<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
+			<br />{$data.rule.mutualExplanation}
+			<br />Consult
+			<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
+				>Nais Application reference - accessPolicy</a
+			>.</Alert
 		>
 	{:else}
 		<Alert variant="error">Unkown error</Alert>
