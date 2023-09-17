@@ -111,25 +111,45 @@
 			{/if}
 		</Alert>
 	{:else if $data.__typename === 'InboundAccessError'}
-		<Alert variant="warning"
-			><a
-				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
-					? $data.rule.cluster
-					: env}/app/{$data.rule.application}"
-				>{$data.rule.application}.{$data.rule.namespace || team}.{$data.rule.cluster
-					? $data.rule.cluster
-					: env}</a
+		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST'}
+			<Alert variant="warning"
+				><a
+					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+						? $data.rule.cluster
+						: env}/app/{$data.rule.application}"
+					>{$data.rule.application}.{$data.rule.namespace || team}.{$data.rule.cluster
+						? $data.rule.cluster
+						: env}</a
+				>
+				is missing outbound rule for
+				<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
+				<br />
+				{#if $data.rule.mutualExplanation === 'APP_NOT_FOUND'}
+					Verify outbound rules for
+					<a
+						href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+							? $data.rule.cluster
+							: env}/app/{$data.rule.application}/yaml">manifest</a
+					>. Are namespace or cluster missing from rule?
+				{:else if $data.rule.mutualExplanation === 'RULE_NOT_FOUND'}
+					Please add outbound rule for {app}.{team}.{env} to
+					<a
+						href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+							? $data.rule.cluster
+							: env}/app/{$data.rule.application}/yaml">manifest</a
+					>.
+				{:else}
+					<!--Please verify outbound rule for {app}. Check rule in
+				<a href="/team/{team}/{env}/app/{app}/yaml">manifest</a>.-->
+					{$data.rule.mutualExplanation}
+				{/if}
+				<br />
+				Consult
+				<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
+					>Nais Application reference - accessPolicy</a
+				>.</Alert
 			>
-			is missing outbound rule for
-			<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
-			<br />
-			{$data.rule.mutualExplanation}
-			<br />
-			Consult
-			<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
-				>Nais Application reference - accessPolicy</a
-			>.</Alert
-		>
+		{/if}
 	{:else if $data.__typename === 'OutboundAccessError'}
 		<Alert variant="warning"
 			><a
@@ -142,7 +162,16 @@
 			>
 			is missing inbound rule for
 			<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
-			<br />{$data.rule.mutualExplanation}
+			<br />
+			{#if $data.rule.mutualExplanation == 'APP_NOT_FOUND'}
+				Please verify inbound rule for {app}. Check rule in
+				<a href="/team/{team}/{env}/app/{app}/yaml">manifest</a>. Are namespace or cluster missing
+				from rule?
+			{:else if $data.rule.mutualExplanation === 'RULE_NOT_FOUND'}
+				Fant ikke
+			{:else}
+				{$data.rule.mutualExplanation}
+			{/if}
 			<br />Consult
 			<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
 				>Nais Application reference - accessPolicy</a
