@@ -100,14 +100,28 @@
 								><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
 							>
 						{/if}
-						<a
-							href="/team/{rule.namespace || team}/{rule.cluster
-								? rule.cluster
-								: env}/app/{rule.application}"
-							>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-								? '.' + rule.cluster
-								: ''}</a
-						>
+						{#if rule.application == '*'}
+							Any app
+							{#if rule.namespace == '*'}
+								from any namespace
+							{:else}
+								in {rule.namespace}
+							{/if}
+							{#if rule.cluster == '*'}
+								in any cluster
+							{:else}
+								in {env}
+							{/if}
+						{:else}
+							<a
+								href="/team/{rule.namespace || team}/{rule.cluster
+									? rule.cluster
+									: env}/app/{rule.application}"
+								>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+									? '.' + rule.cluster
+									: ''}</a
+							>
+						{/if}
 					{:else}
 						<Loading width="300px" />
 					{/if}
@@ -149,15 +163,30 @@
 								placement="right"
 								content="{rule.application} is missing inbound policy for {String($data.name)}"
 								><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
-							>{/if}
-						<a
-							href="/team/{rule.namespace || team}/{rule.cluster
-								? rule.cluster
-								: env}/app/{rule.application}"
-							>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-								? '.' + rule.cluster
-								: ''}</a
-						>
+							>
+						{/if}
+						{#if rule.application == '*'}
+							Any app
+							{#if rule.namespace == '*'}
+								from any namespace
+							{:else}
+								in {rule.namespace}
+							{/if}
+							{#if rule.cluster == '*'}
+								in any cluster
+							{:else}
+								in {env}
+							{/if}
+						{:else}
+							<a
+								href="/team/{rule.namespace || team}/{rule.cluster
+									? rule.cluster
+									: env}/app/{rule.application}"
+								>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+									? '.' + rule.cluster
+									: ''}</a
+							>
+						{/if}
 					{/if}
 				</li>
 			{:else}

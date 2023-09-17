@@ -3,8 +3,6 @@ The @defer directive may be specified on a fragment spread to imply de-prioritiz
 """
 directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
-directive @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-
 type AccessPolicy {
   inbound: Inbound!
   outbound: Outbound!
@@ -103,6 +101,9 @@ type Consumer {
   orgno: String!
 }
 
+"""
+Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
+"""
 scalar Cursor
 
 type Database {
@@ -144,10 +145,18 @@ type DeploymentEdge {
   node: Deployment!
 }
 
+"""Deployment key type."""
 type DeploymentKey implements Node {
+  """The date the deployment key was created."""
   created: Time!
+
+  """The date the deployment key expires."""
   expires: Time!
+
+  """The unique identifier of the deployment key."""
   id: ID!
+
+  """The actual key."""
   key: String!
 }
 
@@ -218,18 +227,30 @@ type Flag {
   value: String!
 }
 
+"""GitHub repository type."""
 type GithubRepository {
+  """The name of the GitHub repository."""
   name: String!
 }
 
+"""GitHub repository connection type."""
 type GithubRepositoryConnection {
+  """A list of GitHub repository edges."""
   edges: [GithubRepositoryEdge!]!
+
+  """Pagination information."""
   pageInfo: PageInfo!
+
+  """The total count of available GitHub repositories."""
   totalCount: Int!
 }
 
+"""GitHub repository edge type."""
 type GithubRepositoryEdge {
+  """A cursor for use in pagination."""
   cursor: Cursor!
+
+  """The GitHub repository at the end of the edge."""
   node: GithubRepository!
 }
 
@@ -338,8 +359,13 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
+"""The root query for implementing GraphQL mutations."""
 type Mutation {
-  changeDeployKey(team: String!): DeploymentKey!
+  """Update the deploy key of a team. Returns the updated deploy key."""
+  changeDeployKey(
+    """The name of the team to update the deploy key for."""
+    team: String!
+  ): DeploymentKey!
 }
 
 type NaisJob implements Node {
@@ -383,7 +409,9 @@ type NoRunningInstancesError implements StateError {
   revision: String!
 }
 
+"""Node interface."""
 interface Node {
+  """The unique ID of an object."""
   id: ID!
 }
 
@@ -405,11 +433,21 @@ type OutboundAccessError implements StateError {
   rule: Rule!
 }
 
+"""
+PageInfo is a type that contains pagination information in a Relay style.
+"""
 type PageInfo {
+  """A cursor corresponding to the last node in the connection."""
   endCursor: Cursor
   from: Int!
+
+  """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
   hasPreviousPage: Boolean!
+
+  """A cursor corresponding to the first node in the connection."""
   startCursor: Cursor
   to: Int!
 }
@@ -418,14 +456,39 @@ type Port {
   port: Int!
 }
 
+"""The query root for the console-backend GraphQL API."""
 type Query {
   app(env: String!, name: String!, team: String!): App!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
   naisjob(env: String!, name: String!, team: String!): NaisJob!
-  node(id: ID!): Node
+
+  """Fetches an object given its ID."""
+  node(
+    """The ID of an object."""
+    id: ID!
+  ): Node
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
-  team(name: String!): Team!
-  teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
+
+  """Get a specific NAIS-team by the team name."""
+  team(
+    """The name of the NAIS-team to get."""
+    name: String!
+  ): Team!
+
+  """Get a list of NAIS-teams, in alphabetical order."""
+  teams(
+    """Get teams after the cursor."""
+    after: Cursor
+
+    """Get teams before the cursor."""
+    before: Cursor
+
+    """Returns the first n teams from the list."""
+    first: Int
+
+    """Returns the last n teams from the list."""
+    last: Int
+  ): TeamConnection!
 
   """Get the currently logged in user."""
   user: User!
@@ -445,6 +508,7 @@ type Rule {
   application: String!
   cluster: String!
   mutual: Boolean!
+  mutualExplanation: String!
   namespace: String!
 }
 
@@ -489,8 +553,12 @@ type Sidecar {
   resources: Resources!
 }
 
+"""Slack alerts channel type."""
 type SlackAlertsChannel {
+  """The environment for the Slack alerts channel."""
   env: String!
+
+  """The name of the Slack alerts channel."""
   name: String!
 }
 
@@ -533,6 +601,7 @@ type Subscription {
   log(input: LogSubscriptionInput): LogLine!
 }
 
+"""Team type."""
 type Team implements Node {
   apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
   deployKey: DeploymentKey!
@@ -549,37 +618,69 @@ type Team implements Node {
   viewerIsMember: Boolean!
 }
 
+"""Team connection type."""
 type TeamConnection {
+  """A list of team edges."""
   edges: [TeamEdge!]!
+
+  """Pagination information."""
   pageInfo: PageInfo!
+
+  """The total count of available teams."""
   totalCount: Int!
 }
 
+"""Team edge type."""
 type TeamEdge {
+  """A cursor for use in pagination."""
   cursor: Cursor!
+
+  """The team at the end of the edge."""
   node: Team!
 }
 
+"""Team member type."""
 type TeamMember implements Node {
+  """The email of the team member."""
   email: String!
+
+  """The unique identifier of the team member."""
   id: ID!
+
+  """The name of the team member."""
   name: String!
+
+  """The role of the team member."""
   role: TeamRole!
 }
 
+"""Team member connection type."""
 type TeamMemberConnection {
+  """A list of team member edges."""
   edges: [TeamMemberEdge!]!
+
+  """Pagination information."""
   pageInfo: PageInfo!
+
+  """The total count of available team members."""
   totalCount: Int!
 }
 
+"""Team member edge type."""
 type TeamMemberEdge {
+  """A cursor for use in pagination."""
   cursor: Cursor!
+
+  """The team member at the end of the edge."""
   node: TeamMember!
 }
 
+"""Team member roles."""
 enum TeamRole {
+  """A regular team member."""
   MEMBER
+
+  """A team owner/administrator."""
   OWNER
 }
 
