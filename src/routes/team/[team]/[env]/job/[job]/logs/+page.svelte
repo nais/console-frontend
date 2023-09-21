@@ -53,14 +53,16 @@
 <div class="topbar">
 	<div class="instances">
 		{#if $RunsWithPodNames.data && $RunsWithPodNames.data.naisjob.runs.length > 0}
-			<ToggleGroup size="small" bind:value={selectedRun}>
-				{#each $RunsWithPodNames.data.naisjob.runs as run}
-					{#if run.podNames.length > 0}
-						{@const name = run.name}
-						<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
-					{/if}
-				{/each}
-			</ToggleGroup>
+			{#if pods.size > 0}
+				<ToggleGroup size="small" bind:value={selectedRun}>
+					{#each $RunsWithPodNames.data.naisjob.runs as run}
+						{#if run.podNames.length > 0}
+							{@const name = run.name}
+							<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
+						{/if}
+					{/each}
+				</ToggleGroup>
+			{/if}
 		{/if}
 	</div>
 	<div>

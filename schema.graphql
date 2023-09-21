@@ -33,13 +33,13 @@ type App implements Node {
   variables: [Variable!]!
 }
 
-type AppConnection {
+type AppConnection implements Connection {
   edges: [AppEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
 
-type AppEdge {
+type AppEdge implements Edge {
   cursor: Cursor!
   node: App!
 }
@@ -92,6 +92,18 @@ type Claims {
   groups: [Group!]!
 }
 
+"""Connection interface."""
+interface Connection {
+  """A list of edges."""
+  edges: [Edge]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+
+  """The total count of items in the connection."""
+  totalCount: Int!
+}
+
 type Consume {
   name: String!
 }
@@ -134,13 +146,13 @@ type Deployment {
   team: Team!
 }
 
-type DeploymentConnection {
+type DeploymentConnection implements Connection {
   edges: [DeploymentEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
 
-type DeploymentEdge {
+type DeploymentEdge implements Edge {
   cursor: Cursor!
   node: Deployment!
 }
@@ -193,6 +205,12 @@ type DeprecatedRegistryError implements StateError {
   tag: String!
 }
 
+"""Edge interface."""
+interface Edge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+}
+
 type Env implements Node {
   id: ID!
   name: String!
@@ -234,7 +252,7 @@ type GithubRepository {
 }
 
 """GitHub repository connection type."""
-type GithubRepositoryConnection {
+type GithubRepositoryConnection implements Connection {
   """A list of GitHub repository edges."""
   edges: [GithubRepositoryEdge!]!
 
@@ -246,7 +264,7 @@ type GithubRepositoryConnection {
 }
 
 """GitHub repository edge type."""
-type GithubRepositoryEdge {
+type GithubRepositoryEdge implements Edge {
   """A cursor for use in pagination."""
   cursor: Cursor!
 
@@ -387,13 +405,13 @@ type NaisJob implements Node {
   team: Team!
 }
 
-type NaisJobConnection {
+type NaisJobConnection implements Connection {
   edges: [NaisJobEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
 
-type NaisJobEdge {
+type NaisJobEdge implements Edge {
   cursor: Cursor!
   node: NaisJob!
 }
@@ -524,13 +542,13 @@ type Run implements Node {
   startTime: Time
 }
 
-type SearchConnection {
+type SearchConnection implements Connection {
   edges: [SearchEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
 
-type SearchEdge {
+type SearchEdge implements Edge {
   cursor: Cursor!
   node: SearchNode!
 }
@@ -619,7 +637,7 @@ type Team implements Node {
 }
 
 """Team connection type."""
-type TeamConnection {
+type TeamConnection implements Connection {
   """A list of team edges."""
   edges: [TeamEdge!]!
 
@@ -631,7 +649,7 @@ type TeamConnection {
 }
 
 """Team edge type."""
-type TeamEdge {
+type TeamEdge implements Edge {
   """A cursor for use in pagination."""
   cursor: Cursor!
 
@@ -655,7 +673,7 @@ type TeamMember implements Node {
 }
 
 """Team member connection type."""
-type TeamMemberConnection {
+type TeamMemberConnection implements Connection {
   """A list of team member edges."""
   edges: [TeamMemberEdge!]!
 
@@ -667,7 +685,7 @@ type TeamMemberConnection {
 }
 
 """Team member edge type."""
-type TeamMemberEdge {
+type TeamMemberEdge implements Edge {
   """A cursor for use in pagination."""
   cursor: Cursor!
 
