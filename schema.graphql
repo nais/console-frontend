@@ -336,6 +336,11 @@ type InvalidNaisYamlError implements StateError {
   revision: String!
 }
 
+type JobState {
+  errors: [StateError!]!
+  state: State!
+}
+
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
@@ -394,6 +399,7 @@ type NaisJob implements Node {
   env: Env!
   id: ID!
   image: String!
+  jobState: JobState!
   manifest: String!
   name: String!
   parallelism: Int!

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { PendingValue, State } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import ErrorTypeToMessage from '$lib/ErrorTypeToMessage.svelte';
@@ -9,10 +8,6 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-
-	$: team = $page.params.team;
-	$: env = $page.params.env;
-	$: app = $page.params.app;
 
 	export let data: PageData;
 

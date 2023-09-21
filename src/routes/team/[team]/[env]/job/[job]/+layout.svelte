@@ -15,6 +15,10 @@
 			routeId: '/team/[team]/[env]/job/[job]'
 		},
 		{
+			tab: 'Status',
+			routeId: '/team/[team]/[env]/job/[job]/status'
+		},
+		{
 			tab: 'Deploys',
 			routeId: '/team/[team]/[env]/job/[job]/deploys'
 		},

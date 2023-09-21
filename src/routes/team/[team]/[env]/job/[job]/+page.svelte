@@ -4,14 +4,13 @@
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import Nais from '$lib/icons/Nais.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Image from './Image.svelte';
 	import NaisjobInstances from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
+	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
 
@@ -31,25 +30,7 @@
 	{@const job = $Job.data.naisjob}
 	<div class="grid">
 		<Card columns={2}>
-			<h4>Status</h4>
-			<div class="status">
-				{#if job.runs.length > 0}
-					{#if job.runs[0].name === PendingValue}
-						<Loading />
-					{:else if job.runs[0].failed === false}
-						<div class="icon"><Nais size="1.5rem" style="color: var(--a-icon-success)" /></div>
-						<div class="message">Last job was completed naisly.</div>
-					{:else}
-						<div class="icon">
-							<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
-						</div>
-						<div class="message">Last job failed non-naisly {job.runs[0].message} attempts.</div>
-					{/if}
-				{:else}
-					<div class="icon"><WarningIcon size="1.5rem" style="color: var(--a-icon-warning)" /></div>
-					<div class="message">No jobs found.</div>
-				{/if}
-			</div>
+			<Status job={$Job.data.naisjob} />
 		</Card>
 
 		<Card columns={4}>
