@@ -39,7 +39,7 @@
 	"dependencies": {
 		"amplitude-js": "^8.21.9",
 		"cronstrue": "^2.31.0",
-		"graphql": "^16.8.0",
+		"graphql": "^16.8.1",
 		"graphql-sse": "^2.2.1"
 	}
 }
