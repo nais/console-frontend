@@ -12,10 +12,7 @@
 			fragment JobErrorFragment on StateError {
 				revision @loading
 				type: __typename
-				... on DeprecatedIngressError {
-					level
-					ingress
-				}
+
 				... on DeprecatedRegistryError {
 					level
 					name
@@ -28,13 +25,7 @@
 					level
 					detail
 				}
-				... on NewInstancesFailingError {
-					level
-					failingInstances
-				}
-				... on NoRunningInstancesError {
-					level
-				}
+
 				... on InboundAccessError {
 					level
 					rule {
@@ -55,9 +46,10 @@
 						namespace
 					}
 				}
-				... on FailingInstancesError {
+				... on FailedRunError {
 					level
-					count
+					runMessage
+					runName
 				}
 			}
 		`)
@@ -78,33 +70,10 @@
 			<a href="https://github.com/nais/docker-build-push"> docker-build-push</a> on how to migrate to
 			Google Artifact Registry.
 		</Alert>
-	{:else if $data.__typename === 'NoRunningInstancesError'}
-		<Alert variant="error">
-			No running instances of <strong>{job}</strong> in <strong>{env}</strong>.
-		</Alert>
-	{:else if $data.__typename === 'DeprecatedIngressError'}
-		<Alert variant="warning">
-			Deprecated ingress <strong>{$data.ingress}</strong>. See
-			{#if env === 'dev-gcp'}
-				<a href="https://doc.nais.io/clusters/gcp/#dev-gcp-ingresses"> ingress documentation</a>
-			{:else if env === 'prod-gcp'}
-				<a href="https://doc.nais.io/clusters/gcp/#prod-gcp-ingresses"> ingress documentation</a>
-			{:else if env === 'dev-fss'}
-				<a href="https://doc.nais.io/clusters/on-premises/#dev-fss"> ingress documentation</a>
-			{:else if env === 'prod-fss'}
-				<a href="https://doc.nais.io/clusters/on-premises/#prod-fss"> ingress documentation</a>
-			{/if} for available ingress domains.
-		</Alert>
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
+		<!---->
 		<Alert variant="error">
 			Nais-yaml might be invalid for application <strong>{job}</strong>.
-		</Alert>
-	{:else if $data.__typename === 'NewInstancesFailingError'}
-		<Alert variant="warning">
-			{#if job}
-				Job runs are failing. Please check <a href="/team/{team}/{env}/job/{job}/logs">logs</a> of new
-				runs.
-			{/if}
 		</Alert>
 	{:else if $data.__typename === 'InboundAccessError'}
 		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST' && $data.rule.mutualExplanation !== 'CLUSTER_NOT_FOUND'}
@@ -173,11 +142,10 @@
 				>Nais Application reference - accessPolicy</a
 			>.</Alert
 		>
-	{:else if $data.__typename === 'FailingInstancesError'}
-		<Alert variant="warning">
-			{#if job}
-				Job runs are failing. Please check <a href="/team/{team}/{env}/job/{job}/logs">logs</a> of runs.
-			{/if}
+	{:else if $data.__typename === 'FailedRunError'}
+		<Alert variant="error">
+			{$data.runName} failed. {$data.runMessage}. Please consult the
+			<a href="/team/{team}/{env}/job/{job}/logs?{$data.runName}">logs</a> if still available.
 		</Alert>
 	{:else}
 		<Alert variant="error">Unkown error</Alert>

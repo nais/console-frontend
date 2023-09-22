@@ -240,10 +240,11 @@ type External {
   ports: [Port!]!
 }
 
-type FailingInstancesError implements StateError {
-  count: Int!
+type FailedRunError implements StateError {
   level: ErrorLevel!
   revision: String!
+  runMessage: String!
+  runName: String!
 }
 
 type Flag {
