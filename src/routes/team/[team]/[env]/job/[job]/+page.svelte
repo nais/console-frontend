@@ -80,10 +80,6 @@
 {/if}
 
 <style>
-	.status {
-		display: flex;
-		flex-direction: row;
-	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
@@ -93,12 +89,5 @@
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
-	}
-	.message {
-		display: flex;
-		flex-direction: column;
-	}
-	.icon {
-		padding: 0rem 1rem 0rem 0rem;
 	}
 </style>

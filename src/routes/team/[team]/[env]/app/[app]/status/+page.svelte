@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue, State } from '$houdini';
+	import ErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import Card from '$lib/Card.svelte';
-	import ErrorTypeToMessage from '$lib/ErrorTypeToMessage.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
@@ -48,6 +48,8 @@
 					{#each status.app.appState.errors as error}
 						<ErrorTypeToMessage {error} />
 					{/each}
+				{:else}
+					<Alert variant="info">All nais!</Alert>
 				{/if}
 			</div>
 		{/if}

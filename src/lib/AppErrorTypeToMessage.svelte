@@ -62,24 +62,29 @@
 	$: team = $page.params.team;
 	$: env = $page.params.env;
 	$: app = $page.params.app;
-	$: job = $page.params.job;
 </script>
 
-<div class="wrapper">
-	{#if $data.revision == PendingValue}
+{#if $data.revision == PendingValue}
+	<div class="wrapper">
 		<Loading />
-	{:else if $data.__typename === 'DeprecatedRegistryError'}
+	</div>
+{:else if $data.__typename === 'DeprecatedRegistryError'}
+	<div class="wrapper">
 		<Alert variant="warning">
 			Deprecated image registry <strong>{$data.registry}</strong> for image
 			<strong>{$data.name}</strong>. See
 			<a href="https://github.com/nais/docker-build-push"> docker-build-push</a> on how to migrate to
 			Google Artifact Registry.
 		</Alert>
-	{:else if $data.__typename === 'NoRunningInstancesError'}
+	</div>
+{:else if $data.__typename === 'NoRunningInstancesError'}
+	<div class="wrapper">
 		<Alert variant="error">
 			No running instances of <strong>{app}</strong> in <strong>{env}</strong>.
 		</Alert>
-	{:else if $data.__typename === 'DeprecatedIngressError'}
+	</div>
+{:else if $data.__typename === 'DeprecatedIngressError'}
+	<div class="wrapper">
 		<Alert variant="warning">
 			Deprecated ingress <strong>{$data.ingress}</strong>. See
 			{#if env === 'dev-gcp'}
@@ -92,11 +97,15 @@
 				<a href="https://doc.nais.io/clusters/on-premises/#prod-fss"> ingress documentation</a>
 			{/if} for available ingress domains.
 		</Alert>
-	{:else if $data.__typename === 'InvalidNaisYamlError'}
+	</div>
+{:else if $data.__typename === 'InvalidNaisYamlError'}
+	<div class="wrapper">
 		<Alert variant="error">
 			Nais-yaml might be invalid for application <strong>{app}</strong>.
 		</Alert>
-	{:else if $data.__typename === 'NewInstancesFailingError'}
+	</div>
+{:else if $data.__typename === 'NewInstancesFailingError'}
+	<div class="wrapper">
 		<Alert variant="warning">
 			{#if app}
 				New instances of <strong>{app}</strong> in <strong>{env}</strong> are failing. Check logs
@@ -105,13 +114,11 @@
 					<br /><a href="/team/{team}/{env}/app/{app}/logs?name={instance}">{instance}</a>
 				{/each}
 			{/if}
-			{#if job}
-				Job runs are failing. Please check <a href="/team/{team}/{env}/job/{job}/logs">logs</a> of new
-				runs.
-			{/if}
 		</Alert>
-	{:else if $data.__typename === 'InboundAccessError'}
-		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST'}
+	</div>
+{:else if $data.__typename === 'InboundAccessError'}
+	{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST' && $data.rule.mutualExplanation !== 'CLUSTER_NOT_FOUND'}
+		<div class="wrapper">
 			<Alert variant="warning"
 				><a
 					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
@@ -149,8 +156,10 @@
 					>Nais Application reference - accessPolicy</a
 				>.</Alert
 			>
-		{/if}
-	{:else if $data.__typename === 'OutboundAccessError'}
+		</div>
+	{/if}
+{:else if $data.__typename === 'OutboundAccessError'}
+	<div class="wrapper">
 		<Alert variant="warning"
 			><a
 				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
@@ -166,9 +175,15 @@
 			{#if $data.rule.mutualExplanation == 'APP_NOT_FOUND'}
 				Please verify inbound rule for {app}. Check rule in
 				<a href="/team/{team}/{env}/app/{app}/yaml">manifest</a>. Are namespace or cluster missing
-				from rule?
+				from rule? Does the application exist?
 			{:else if $data.rule.mutualExplanation === 'RULE_NOT_FOUND'}
-				Fant ikke
+				Please add inbound rule for {app}.{team}.{env} to {$data.rule.application}.{$data.rule
+					.namespace || team}.{$data.rule.cluster ? $data.rule.cluster : env}
+				<a
+					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+						? $data.rule.cluster
+						: env}/app/{$data.rule.application}/yaml">manifest</a
+				>.
 			{:else}
 				{$data.rule.mutualExplanation}
 			{/if}
@@ -177,10 +192,12 @@
 				>Nais Application reference - accessPolicy</a
 			>.</Alert
 		>
-	{:else}
+	</div>
+{:else}
+	<div class="wrapper">
 		<Alert variant="error">Unkown error</Alert>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.wrapper :global(.navds-alert__wrapper) {

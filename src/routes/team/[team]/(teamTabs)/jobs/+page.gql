@@ -22,6 +22,9 @@ query Jobs($team: String!) @loading(count: 5, cascade: true) {
 					env {
 						name
 					}
+					jobState {
+						state
+					}
 				}
 			}
 		}

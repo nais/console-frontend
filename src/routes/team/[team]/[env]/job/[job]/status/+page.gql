@@ -1,12 +1,11 @@
-query JobStatusDetailed($app: String!, $team: String!, $env: String!) {
-	naisjob(name: $app, team: $team, env: $env) @loading(cascade: true) {
+query JobStatusDetailed($job: String!, $team: String!, $env: String!) {
+	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name @loading
 
 		jobState @loading {
 			state
-
 			errors {
-				...AppErrorFragment
+				...JobErrorFragment
 			}
 		}
 		runs {

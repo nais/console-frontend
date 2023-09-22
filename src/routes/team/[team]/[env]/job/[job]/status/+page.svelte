@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue, State } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import ErrorTypeToMessage from '$lib/ErrorTypeToMessage.svelte';
+	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
@@ -40,14 +40,16 @@
 							<UnknownIcon size="2rem" style="color: var(--a-icon-warning)" />
 						{/if}
 					</div>
-					<h4>Application status for {status.naisjob.name}</h4>
+					<h4>Job status for {status.naisjob.name}</h4>
 				</div>
 			{/if}
 			<div>
 				{#if status.naisjob.jobState.errors && status.naisjob.jobState.errors.length > 0}
 					{#each status.naisjob.jobState.errors as error}
-						<ErrorTypeToMessage {error} />
+						<JobErrorTypeToMessage {error} />
 					{/each}
+				{:else}
+					<Alert variant="info">All nais!</Alert>
 				{/if}
 			</div>
 		{/if}

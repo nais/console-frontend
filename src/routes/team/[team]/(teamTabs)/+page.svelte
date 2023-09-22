@@ -4,10 +4,11 @@
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
 	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
+	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
@@ -25,6 +26,7 @@
 	<Card>
 		<Table>
 			<Thead>
+				<Th style="width: 2rem">Status</Th>
 				<Th>Name</Th>
 				<Th>Env</Th>
 				<Th>Instances</Th>
@@ -42,11 +44,22 @@
 						{#each team.apps.edges as edge}
 							<Tr>
 								<Td>
+									<div style="text-align: center;">
+										<a
+											href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}/status"
+											data-sveltekit-preload-data="off"
+										>
+											<Status size="1.5rem" state={edge.node.appState.state} />
+										</a>
+									</div>
+								</Td>
+								<Td>
 									<a href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}"
 										>{edge.node.name}</a
 									>
 								</Td>
 								<Td>{edge.node.env.name}</Td>
+
 								<Td>
 									<InstanceStatus app={edge.node} />
 								</Td>
@@ -79,3 +92,6 @@
 		{/if}
 	</Card>
 {/if}
+
+<style>
+</style>
