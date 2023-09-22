@@ -1,21 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, fragment, graphql, type AppErrorFragment } from '$houdini';
+	import { PendingValue, fragment, graphql, type JobErrorFragment } from '$houdini';
 	import { Alert } from '@nais/ds-svelte-community';
 	import Loading from './Loading.svelte';
 
-	export let error: AppErrorFragment;
+	export let error: JobErrorFragment;
 
 	$: data = fragment(
 		error,
 		graphql(`
-			fragment AppErrorFragment on StateError {
+			fragment JobErrorFragment on StateError {
 				revision @loading
 				type: __typename
-				... on DeprecatedIngressError {
-					level
-					ingress
-				}
+
 				... on DeprecatedRegistryError {
 					level
 					name
@@ -28,13 +25,7 @@
 					level
 					detail
 				}
-				... on NewInstancesFailingError {
-					level
-					failingInstances
-				}
-				... on NoRunningInstancesError {
-					level
-				}
+
 				... on InboundAccessError {
 					level
 					rule {
@@ -55,13 +46,17 @@
 						namespace
 					}
 				}
+				... on FailedRunError {
+					level
+					runMessage
+					runName
+				}
 			}
 		`)
 	);
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
-	$: app = $page.params.app;
 	$: job = $page.params.job;
 </script>
 
@@ -75,43 +70,13 @@
 			<a href="https://github.com/nais/docker-build-push"> docker-build-push</a> on how to migrate to
 			Google Artifact Registry.
 		</Alert>
-	{:else if $data.__typename === 'NoRunningInstancesError'}
-		<Alert variant="error">
-			No running instances of <strong>{app}</strong> in <strong>{env}</strong>.
-		</Alert>
-	{:else if $data.__typename === 'DeprecatedIngressError'}
-		<Alert variant="warning">
-			Deprecated ingress <strong>{$data.ingress}</strong>. See
-			{#if env === 'dev-gcp'}
-				<a href="https://doc.nais.io/clusters/gcp/#dev-gcp-ingresses"> ingress documentation</a>
-			{:else if env === 'prod-gcp'}
-				<a href="https://doc.nais.io/clusters/gcp/#prod-gcp-ingresses"> ingress documentation</a>
-			{:else if env === 'dev-fss'}
-				<a href="https://doc.nais.io/clusters/on-premises/#dev-fss"> ingress documentation</a>
-			{:else if env === 'prod-fss'}
-				<a href="https://doc.nais.io/clusters/on-premises/#prod-fss"> ingress documentation</a>
-			{/if} for available ingress domains.
-		</Alert>
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
+		<!---->
 		<Alert variant="error">
-			Nais-yaml might be invalid for application <strong>{app}</strong>.
-		</Alert>
-	{:else if $data.__typename === 'NewInstancesFailingError'}
-		<Alert variant="warning">
-			{#if app}
-				New instances of <strong>{app}</strong> in <strong>{env}</strong> are failing. Check logs
-				for one or more of the instances:
-				{#each $data.failingInstances as instance}
-					<br /><a href="/team/{team}/{env}/app/{app}/logs?name={instance}">{instance}</a>
-				{/each}
-			{/if}
-			{#if job}
-				Job runs are failing. Please check <a href="/team/{team}/{env}/job/{job}/logs">logs</a> of new
-				runs.
-			{/if}
+			Nais-yaml might be invalid for application <strong>{job}</strong>.
 		</Alert>
 	{:else if $data.__typename === 'InboundAccessError'}
-		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST'}
+		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST' && $data.rule.mutualExplanation !== 'CLUSTER_NOT_FOUND'}
 			<Alert variant="warning"
 				><a
 					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
@@ -122,7 +87,7 @@
 						: env}</a
 				>
 				is missing outbound rule for
-				<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
+				<a href="/team/{team}/{env}/job/{job}">{job}.{team}.{env}</a>.
 				<br />
 				{#if $data.rule.mutualExplanation === 'APP_NOT_FOUND'}
 					Verify outbound rules for
@@ -132,7 +97,7 @@
 							: env}/app/{$data.rule.application}/yaml">manifest</a
 					>. Are namespace or cluster missing from rule?
 				{:else if $data.rule.mutualExplanation === 'RULE_NOT_FOUND'}
-					Please add outbound rule for {app}.{team}.{env} to
+					Please add outbound rule for {job}.{team}.{env} to
 					<a
 						href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
 							? $data.rule.cluster
@@ -161,11 +126,11 @@
 					: env}</a
 			>
 			is missing inbound rule for
-			<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
+			<a href="/team/{team}/{env}/job/{job}">{job}.{team}.{env}</a>.
 			<br />
 			{#if $data.rule.mutualExplanation == 'APP_NOT_FOUND'}
-				Please verify inbound rule for {app}. Check rule in
-				<a href="/team/{team}/{env}/app/{app}/yaml">manifest</a>. Are namespace or cluster missing
+				Please verify inbound rule for {job}. Check rule in
+				<a href="/team/{team}/{env}/app/{job}/yaml">manifest</a>. Are namespace or cluster missing
 				from rule?
 			{:else if $data.rule.mutualExplanation === 'RULE_NOT_FOUND'}
 				Fant ikke
@@ -177,6 +142,11 @@
 				>Nais Application reference - accessPolicy</a
 			>.</Alert
 		>
+	{:else if $data.__typename === 'FailedRunError'}
+		<Alert variant="error">
+			{$data.runName} failed. {$data.runMessage}. Please consult the
+			<a href="/team/{team}/{env}/job/{job}/logs?{$data.runName}">logs</a> if still available.
+		</Alert>
 	{:else}
 		<Alert variant="error">Unkown error</Alert>
 	{/if}

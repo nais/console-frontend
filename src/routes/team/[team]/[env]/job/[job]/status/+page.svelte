@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue, State } from '$houdini';
-	import ErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import Card from '$lib/Card.svelte';
+	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
@@ -11,42 +11,42 @@
 
 	export let data: PageData;
 
-	$: ({ AppStatusDetailed } = data);
-	$: status = $AppStatusDetailed.data;
+	$: ({ JobStatusDetailed } = data);
+	$: status = $JobStatusDetailed.data;
 </script>
 
 <Card>
-	{#if $AppStatusDetailed.errors}
+	{#if $JobStatusDetailed.errors}
 		<Alert variant="error">
-			{#each $AppStatusDetailed.errors as error}
+			{#each $JobStatusDetailed.errors as error}
 				{error.message}
 			{/each}
 		</Alert>
 	{/if}
 	{#if status}
-		{#if status.app.name === PendingValue}
+		{#if status.naisjob.name === PendingValue}
 			<Loading />
 		{:else}
-			{#if status.app.appState.state}
+			{#if status.naisjob.jobState.state}
 				<div class="header">
 					<div class="icon">
-						{#if status.app.appState.state === State.NAIS}
+						{#if status.naisjob.jobState.state === State.NAIS}
 							<Nais alt="nais" size="2rem" style="color: var(--a-icon-success)" />
-						{:else if status.app.appState.state === State.FAILING}
+						{:else if status.naisjob.jobState.state === State.FAILING}
 							<WarningIcon size="2rem" style="color: var(--a-icon-danger)" />
-						{:else if status.app.appState.state === State.NOTNAIS}
+						{:else if status.naisjob.jobState.state === State.NOTNAIS}
 							<Nais alt="notnais" size="2rem" style="color: var(--a-icon-warning)" />
-						{:else if status.app.appState.state === State.UNKNOWN}
+						{:else if status.naisjob.jobState.state === State.UNKNOWN}
 							<UnknownIcon size="2rem" style="color: var(--a-icon-warning)" />
 						{/if}
 					</div>
-					<h4>Application status for {status.app.name}</h4>
+					<h4>Job status for {status.naisjob.name}</h4>
 				</div>
 			{/if}
 			<div>
-				{#if status.app.appState.errors && status.app.appState.errors.length > 0}
-					{#each status.app.appState.errors as error}
-						<ErrorTypeToMessage {error} />
+				{#if status.naisjob.jobState.errors && status.naisjob.jobState.errors.length > 0}
+					{#each status.naisjob.jobState.errors as error}
+						<JobErrorTypeToMessage {error} />
 					{/each}
 				{:else}
 					<Alert variant="info">All nais!</Alert>

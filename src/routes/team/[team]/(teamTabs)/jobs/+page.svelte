@@ -4,6 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -25,7 +26,8 @@
 		<h3>Naisjobs</h3>
 		<Table>
 			<Thead>
-				<Th>Job</Th>
+				<Th style="width: 2rem;">Status</Th>
+				<Th>Name</Th>
 				<Th>Env</Th>
 				<Th>Deployed</Th>
 			</Thead>
@@ -40,6 +42,16 @@
 					{:else}
 						{#each team.naisjobs.edges as edge}
 							<Tr>
+								<Td>
+									<div style="text-align: center;">
+										<a
+											href="/team/{teamName}/{edge.node.env.name}/job/{edge.node.name}/status"
+											data-sveltekit-preload-data="off"
+										>
+											<Status size="1.5rem" state={edge.node.jobState.state} />
+										</a>
+									</div>
+								</Td>
 								<Td>
 									<a href="/team/{teamName}/{edge.node.env.name}/job/{edge.node.name}"
 										>{edge.node.name}</a

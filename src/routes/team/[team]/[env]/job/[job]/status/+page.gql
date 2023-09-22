@@ -1,0 +1,35 @@
+query JobStatusDetailed($job: String!, $team: String!, $env: String!) {
+	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
+		name @loading
+
+		jobState @loading {
+			state
+			errors {
+				...JobErrorFragment
+			}
+		}
+		runs {
+			name
+
+			message
+		}
+		accessPolicy {
+			inbound {
+				rules {
+					application
+					namespace
+					cluster
+					mutual
+				}
+			}
+			outbound {
+				rules {
+					application
+					namespace
+					cluster
+					mutual
+				}
+			}
+		}
+	}
+}
