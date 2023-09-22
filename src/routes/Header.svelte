@@ -173,7 +173,6 @@
 		color: var(--a-text-on-inverted);
 		height: 3rem;
 		display: flex;
-		align-items: center;
 		padding: 0 2rem;
 		margin-bottom: 2rem;
 		min-width: 1000px;
@@ -186,12 +185,12 @@
 		width: 100%;
 		min-width: 1000px;
 		max-width: 1432px;
+		align-items: center;
 	}
 	.logo {
 		color: var(--a-text-on-inverted);
 		text-decoration: none;
 		display: flex;
-		align-items: center;
 		gap: 1rem;
 		font-size: 1.5rem;
 		font-weight: bold;
