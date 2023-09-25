@@ -60,8 +60,10 @@
 		}
 		if (query.length > 0) {
 			showSearch = true;
+			console.log('fetching', query);
 			fetch(query);
 			timeout = setTimeout(() => {
+				console.log('fetching', query);
 				fetch(query);
 				logEvent('search');
 			}, 500);
@@ -76,7 +78,7 @@
 		} else if (query.startsWith('job:')) {
 			store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
 		} else {
-			store.fetch({ variables: { query } });
+			store.fetch({ variables: { query, type: null } });
 		}
 	}
 
