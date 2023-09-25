@@ -66,8 +66,6 @@
 				fetch(query);
 				logEvent('search');
 			}, 500);
-		} else {
-			showHelpText = true;
 		}
 	}
 
