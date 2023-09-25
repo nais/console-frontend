@@ -4,6 +4,7 @@
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import { Search } from '@nais/ds-svelte-community';
+	import { InformationSquare } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
 	const store = graphql(`
@@ -49,6 +50,7 @@
 	let query = '';
 	let selected = -1;
 	let showSearch = false;
+	let showHelpText = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	$: {
@@ -58,10 +60,23 @@
 		}
 		if (query.length > 0) {
 			showSearch = true;
+			fetch(query);
 			timeout = setTimeout(() => {
-				store.fetch({ variables: { query } });
+				fetch(query);
 				logEvent('search');
 			}, 500);
+		}
+	}
+
+	function fetch(query: string) {
+		if (query.startsWith('app:')) {
+			store.fetch({ variables: { query: query.slice(4), type: 'APP' } });
+		} else if (query.startsWith('team:')) {
+			store.fetch({ variables: { query: query.slice(5), type: 'TEAM' } });
+		} else if (query.startsWith('job:')) {
+			store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
+		} else {
+			store.fetch({ variables: { query } });
 		}
 	}
 
@@ -78,6 +93,7 @@
 				event.preventDefault();
 				break;
 			case 'Enter':
+				showHelpText = false;
 				if (selected >= 0) {
 					const node = $store.data?.search.edges[selected].node;
 					if (!node) return;
@@ -97,6 +113,10 @@
 						goto(`/team/${node.team.name}/${node.env.name}/job/${node.name}`);
 					}
 				}
+				break;
+			case 'Escape':
+				showHelpText = false;
+				break;
 		}
 	}
 	afterNavigate((nav) => {
@@ -118,7 +138,7 @@
 			<div class="search">
 				<Search
 					loading={$store.fetching}
-					placeholder="Search for apps or teams"
+					placeholder="Search for apps, jobs or teams..."
 					bind:value={query}
 					label="search"
 					variant="simple"
@@ -126,21 +146,39 @@
 					on:blur={() => {
 						setTimeout(() => {
 							showSearch = false;
+							showHelpText = false;
 						}, 200);
 					}}
 					on:clear={() => {
 						query = '';
 						showSearch = false;
+						showHelpText = false;
 					}}
 					on:focus={() => {
 						if (query.length > 0) {
 							showSearch = true;
+						} else {
+							showHelpText = true;
 						}
 					}}
 					on:keyup={on_key_up}
 				/>
 				{#if $store.data && showSearch}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
+				{:else if showHelpText}
+					<ul class="helpText">
+						<li>
+							<div class="typeIcon">
+								<InformationSquare height="1.5rem" />
+							</div>
+							<div>
+								You can filter your searches with prefixes. Try one of the following:<br />
+								<code>app:myapp</code><br />
+								<code>job:myjob</code><br />
+								<code>team:myteam</code>
+							</div>
+						</li>
+					</ul>
 				{/if}
 			</div>
 		</div>
@@ -156,6 +194,41 @@
 </div>
 
 <style>
+	.helpText {
+		z-index: 1000;
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		top: 100%;
+		white-space: inherit;
+		left: 0;
+		background-color: var(--a-surface-default);
+		outline: 1px solid black;
+		border-top: none;
+		border-radius: 0 0 0.25rem 0.25rem;
+		padding: 0.5rem 0;
+		margin: 0;
+		color: var(--a-text-default);
+		overflow: auto;
+		box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+		min-height: 150px;
+		width: 350px;
+	}
+
+	.helpText > ul li {
+		height: 3rem;
+		background-color: var(--a-surface-default);
+		color: var(--a-text-default);
+	}
+
+	.typeIcon {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 3rem;
+		color: var(--a-text-subtle);
+	}
+
 	.cap {
 		text-transform: capitalize;
 	}

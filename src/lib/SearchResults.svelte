@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
 	import { PendingValue } from '$houdini';
-	import Logo from '../Logo.svelte';
 	import { PersonGroup } from '@nais/ds-svelte-community/icons';
+	import Logo from '../Logo.svelte';
 	import Loading from './Loading.svelte';
 
 	export let data: SearchQuery$result;
@@ -139,7 +139,7 @@
 	}
 
 	ul li {
-		height: 3rem;
+		height: 3.3rem;
 		background-color: var(--a-surface-default);
 		color: var(--a-text-default);
 	}
@@ -156,6 +156,7 @@
 	}
 	ul li a.selected {
 		border: 1px dashed var(--a-blue-600);
+		border-radius: 0.25rem;
 		background-color: var(--a-gray-100);
 	}
 
