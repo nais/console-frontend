@@ -51,6 +51,7 @@
 	let selected = -1;
 	let showSearch = false;
 	let showHelpText = false;
+	let unsupportedFilter = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	$: {
@@ -65,18 +66,26 @@
 				fetch(query);
 				logEvent('search');
 			}, 500);
+		} else {
+			showHelpText = true;
 		}
 	}
 
 	function fetch(query: string) {
 		if (query.startsWith('app:')) {
 			store.fetch({ variables: { query: query.slice(4), type: 'APP' } });
+			unsupportedFilter = false;
 		} else if (query.startsWith('team:')) {
 			store.fetch({ variables: { query: query.slice(5), type: 'TEAM' } });
+			unsupportedFilter = false;
 		} else if (query.startsWith('job:')) {
 			store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
+			unsupportedFilter = false;
+		} else if (query.lastIndexOf(':') >= 0) {
+			unsupportedFilter = true;
 		} else {
 			store.fetch({ variables: { query, type: null } });
+			unsupportedFilter = false;
 		}
 	}
 
@@ -116,6 +125,8 @@
 				break;
 			case 'Escape':
 				showHelpText = false;
+				showSearch = false;
+				query = '';
 				break;
 		}
 	}
@@ -163,9 +174,9 @@
 					}}
 					on:keyup={on_key_up}
 				/>
-				{#if $store.data && showSearch}
+				{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
-				{:else if showHelpText}
+				{:else if showHelpText || unsupportedFilter}
 					<ul class="helpText">
 						<li>
 							<div class="typeIcon">
