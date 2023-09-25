@@ -60,10 +60,8 @@
 		}
 		if (query.length > 0) {
 			showSearch = true;
-			console.log('fetching', query);
 			fetch(query);
 			timeout = setTimeout(() => {
-				console.log('fetching', query);
 				fetch(query);
 				logEvent('search');
 			}, 500);
