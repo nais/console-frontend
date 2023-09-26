@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { fragment, graphql, type JobImage, PendingValue } from '$houdini';
+	import { PendingValue, fragment, graphql, type JobImage } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
-	import { Button } from '@nais/ds-svelte-community';
-	import { Clipboard } from '@nais/ds-svelte-community/icons';
-	import { copyText } from 'svelte-copy';
+	import { CopyButton } from '@nais/ds-svelte-community';
 
 	export let job: JobImage;
 	$: data = fragment(
@@ -27,16 +25,14 @@
 </script>
 
 <h4 class="imageHeader">
-	Image <Button
-		size="xsmall"
-		on:click={() => {
-			if (image !== PendingValue) {
-				copyText(image);
-			}
-		}}
-	>
-		<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
-	</Button>
+	Image {#if image !== PendingValue}
+		<CopyButton
+			variant="action"
+			text="Copy image name"
+			activeText="Image name copied"
+			copyText={image}
+		/>
+	{/if}
 </h4>
 {#if image === PendingValue}
 	<Loading />

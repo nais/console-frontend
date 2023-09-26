@@ -1,13 +1,11 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
 	import { PendingValue } from '$houdini';
+	import Card from '$lib/Card.svelte';
 
-	import type { PageData } from './$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import { page } from '$app/stores';
-	import { copyText } from 'svelte-copy';
-	import { Clipboard } from '@nais/ds-svelte-community/icons';
-	import { Alert, Button } from '@nais/ds-svelte-community';
+	import Loading from '$lib/Loading.svelte';
+	import { Alert, CopyButton } from '@nais/ds-svelte-community';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	let name = $page.params.app;
@@ -24,17 +22,14 @@
 	<Card>
 		<h4>
 			nais.yaml for {name}
-			<Button
-				size="xsmall"
-				on:click={() => {
-					if ($AppManifest.data?.app.manifest !== PendingValue) {
-						copyText($AppManifest.data ? $AppManifest.data.app.manifest : '');
-					}
-				}}
-			>
-				<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
-				Copy manifest</Button
-			>
+			{#if $AppManifest.data?.app.manifest !== PendingValue}
+				<CopyButton
+					text="Copy manifest"
+					activeText="Manifest copied"
+					variant="action"
+					copyText={$AppManifest.data ? $AppManifest.data.app.manifest : ''}
+				/>
+			{/if}
 		</h4>
 		{#if $AppManifest.data.app.name === PendingValue}
 			<Loading height="300px" />

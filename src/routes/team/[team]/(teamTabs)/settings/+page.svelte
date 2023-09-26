@@ -1,15 +1,13 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
-	import { Alert, Button, Modal } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
-	import { Eye, EyeSlash, ArrowsCirclepath, Clipboard } from '@nais/ds-svelte-community/icons';
-	import { copyText } from 'svelte-copy';
-	import Time from '$lib/Time.svelte';
-	import { graphql } from '$houdini';
-	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	import { PendingValue } from '$houdini';
+	import { page } from '$app/stores';
+	import { PendingValue, graphql } from '$houdini';
+	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
+	import Time from '$lib/Time.svelte';
+	import { Alert, Button, CopyButton, Modal } from '@nais/ds-svelte-community';
+	import { ArrowsCirclepath, Eye, EyeSlash } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: String!) {
 			changeDeployKey(team: $team) {
@@ -116,28 +114,33 @@
 						>
 					{/if}
 				</div>
-				<Button
-					size="xsmall"
-					on:click={() => {
-						if (teamSettings?.deployKey?.key === PendingValue) return;
-						copyText(teamSettings?.deployKey?.key || '');
-					}}
-				>
-					<svelte:fragment slot="icon-left"><Clipboard /></svelte:fragment>
-					Copy key</Button
-				>
-				<Button
-					size="xsmall"
-					variant="danger"
-					on:click={() => {
-						showRotateKey = !showRotateKey;
-					}}
-				>
-					<svelte:fragment slot="icon-left"><ArrowsCirclepath /></svelte:fragment>
-					Rotate key</Button
-				>
 			</dd>
 		</dl>
+		<div class="buttons">
+			{#if teamSettings?.deployKey?.key !== PendingValue}
+				<div class="button">
+					<CopyButton
+						text="Copy key"
+						activeText="Key copied"
+						variant="action"
+						copyText={teamSettings?.deployKey?.key || ''}
+						size="small"
+					/>
+				</div>
+				<div class="button">
+					<Button
+						size="small"
+						variant="danger"
+						on:click={() => {
+							showRotateKey = !showRotateKey;
+						}}
+					>
+						<svelte:fragment slot="icon-left"><ArrowsCirclepath /></svelte:fragment>
+						Rotate key</Button
+					>
+				</div>
+			{/if}
+		</div>
 	</Card>
 	{#if browser}
 		<Modal bind:open={showRotateKey} closeButton={false}>
@@ -176,5 +179,13 @@
 	}
 	i {
 		margin-bottom: 0.5rem;
+	}
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+	}
+	.button {
+		width: 130px;
 	}
 </style>
