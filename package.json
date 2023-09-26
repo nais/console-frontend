@@ -8,8 +8,8 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write ."
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write ."
 	},
 	"devDependencies": {
 		"@nais/ds-svelte-community": "^0.2.1",
@@ -23,7 +23,7 @@
 		"date-fns": "^2.30.0",
 		"eslint": "^8.47.0",
 		"eslint-config-prettier": "^9.0.0",
-		"eslint-plugin-svelte3": "^4.0.0",
+		"eslint-plugin-svelte": "^2.33.2",
 		"houdini": "^1.2.8",
 		"houdini-svelte": "^1.2.8",
 		"prettier": "^3.0.1",
