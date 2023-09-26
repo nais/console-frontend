@@ -3,8 +3,10 @@
 	import { PendingValue, fragment, graphql, type JobStatus } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import {
+		ExclamationmarkTriangleFill,
+		QuestionmarkDiamondFill
+	} from '@nais/ds-svelte-community/icons';
 
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
@@ -17,86 +19,85 @@
 			fragment JobStatus on NaisJob {
 				jobState @loading {
 					state @loading
+					errors {
+						__typename
+					}
 				}
 			}
 		`)
 	);
+	$: state = $data.jobState?.state;
 </script>
 
-<div class="wrapper">
-	<h4>Status</h4>
-
+<div class="card {state.toString()}">
 	{#if $data.jobState.state == PendingValue}
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
 		<Loading />
 	{:else if $data.jobState.state === 'NAIS'}
-		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<div class="iconWrapper">
 			<Nais
 				size="5rem"
 				style="color: var(--a-icon-success)"
-				aria-label="Application is nais"
+				aria-label="Job is nais"
 				role="image"
 			/>
-		</a>
-		<a
-			class="status padding-top"
-			style="padding-top: 1rem"
-			href="/team/{teamName}/{envName}/job/{jobName}/status">All nais</a
-		>
+		</div>
 	{:else if $data.jobState.state === 'FAILING'}
-		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
-			<WarningIcon
-				size="5rem"
-				style="color: var(--a-icon-danger)"
-				aria-label="Application is failing"
-				role="image"
-			/>
-		</a>
-		<a class="status padding-top" href="/team/{teamName}/{envName}/job/{jobName}/status"
-			>App is failing</a
-		>
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-danger)" /></h4>
+		<div>
+			Job is failing.<br />
+			<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
+				{$data.jobState.errors.length}
+				{$data.jobState.errors.length > 1 ? 'issues' : 'issue'}
+			</a> detected.
+		</div>
 	{:else if $data.jobState.state === 'NOTNAIS'}
-		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
-			<Nais
-				size="5rem"
-				style="color: var(--a-icon-warning)"
-				aria-label="Application is not nais"
-				role="image"
-			/></a
-		>
-		<a class="status padding-top" href="/team/{teamName}/{envName}/job/{jobName}/status"
-			>App is not nais</a
-		>
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<div>
+			Job is not nais.<br />
+			<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
+				{$data.jobState.errors.length}
+				{$data.jobState.errors.length > 1 ? 'issues' : 'issue'}
+			</a>
+			detected.
+		</div>
 	{:else if $data.jobState.state === 'UNKNOWN'}
-		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
-			<UnknownIcon
-				size="5rem"
-				style="color: var(--a-icon-warning)"
-				aria-label="Unknown application status"
-				role="image"
-			/>
-		</a>
-		<a class="status padding-top" href="/team/{teamName}/{envName}/job/{jobName}/status">
-			Status is unknown
-		</a>
+		<h4>Status <QuestionmarkDiamondFill /></h4>
+		<div>Job status is unknown.</div>
 	{/if}
 </div>
 
 <style>
-	.wrapper {
+	h4 {
+		margin-bottom: 8px;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.iconWrapper {
 		display: flex;
 		flex-direction: column;
-	}
-	a.status {
-		display: flex;
-		flex-direction: row;
 		justify-content: center;
 		align-items: center;
-		flex-grow: 1;
-	}
-	a.status:hover {
-		text-decoration: none;
-	}
-	a.padding-top {
+		vertical-align: middle;
 		padding-top: 1rem;
+	}
+
+	.card {
+		border-radius: 0.5rem;
+		padding: 1rem;
+		grid-column: span 2;
+	}
+
+	.NOTNAIS {
+		background-color: var(--a-surface-warning-moderate);
+		color: var(--a-text-on-warning);
+		border: 2px solid var(--a-border-warning);
+	}
+
+	.FAILING {
+		background-color: var(--a-surface-danger-subtle);
+		border: 2px solid var(--a-border-danger);
 	}
 </style>

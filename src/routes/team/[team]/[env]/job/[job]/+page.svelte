@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
@@ -16,8 +15,6 @@
 
 	export let data: PageData;
 	$: ({ Job } = data);
-
-	$: env = $page.params.env;
 </script>
 
 {#if $Job.errors}
@@ -29,9 +26,7 @@
 {:else if $Job.data}
 	{@const job = $Job.data.naisjob}
 	<div class="grid">
-		<Card columns={2}>
-			<Status job={$Job.data.naisjob} />
-		</Card>
+		<Status job={$Job.data.naisjob} />
 
 		<Card columns={4}>
 			<h4>Last activity</h4>

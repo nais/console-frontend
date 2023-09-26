@@ -25,9 +25,12 @@
 	</Alert>
 {:else if $App.data}
 	<div class="grid">
-		<Card columns={2}>
+		<!--Card columns={2}>
 			<Status app={$App.data.app} />
-		</Card>
+		</Card-->
+
+		<Status app={$App.data.app} />
+
 		<Card columns={4}>
 			<h4>Last activity</h4>
 			{#if $App.data.app.deployInfo.timestamp === PendingValue}

@@ -3,8 +3,10 @@
 	import { PendingValue, fragment, graphql, type AppStatus } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import {
+		ExclamationmarkTriangleFill,
+		QuestionmarkDiamondFill
+	} from '@nais/ds-svelte-community/icons';
 
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
@@ -17,83 +19,85 @@
 			fragment AppStatus on App {
 				appState @loading {
 					state @loading
+					errors {
+						__typename
+					}
 				}
 			}
 		`)
 	);
+	$: state = $data.appState?.state;
 </script>
 
-<div class="wrapper">
-	<h4>Status</h4>
+<div class="card {state.toString()}">
 	{#if $data.appState.state == PendingValue}
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
 		<Loading />
 	{:else if $data.appState.state === 'NAIS'}
-		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<div class="iconWrapper">
 			<Nais
 				size="5rem"
 				style="color: var(--a-icon-success)"
 				aria-label="Application is nais"
 				role="image"
 			/>
-		</a>
-		<a
-			class="status padding-top"
-			style="padding-top: 1rem"
-			href="/team/{teamName}/{envName}/app/{appName}/status">All nais</a
-		>
+		</div>
 	{:else if $data.appState.state === 'FAILING'}
-		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
-			<WarningIcon
-				size="5rem"
-				style="color: var(--a-icon-danger)"
-				aria-label="Application is failing"
-				role="image"
-			/>
-		</a>
-		<a class="status padding-top" href="/team/{teamName}/{envName}/app/{appName}/status"
-			>App is failing</a
-		>
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-danger)" /></h4>
+		<div>
+			Application is failing.<br />
+			<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+				{$data.appState.errors.length}
+				{$data.appState.errors.length > 1 ? 'issues' : 'issue'}
+			</a> detected.
+		</div>
 	{:else if $data.appState.state === 'NOTNAIS'}
-		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status"
-			><Nais
-				size="5rem"
-				style="color: var(--a-icon-warning)"
-				aria-label="Application is not nais"
-				role="image"
-			/></a
-		>
-		<a class="status padding-top" href="/team/{teamName}/{envName}/app/{appName}/status"
-			>App is not nais</a
-		>
+		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<div>
+			Application is not nais.<br />
+			<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+				{$data.appState.errors.length}
+				{$data.appState.errors.length > 1 ? 'issues' : 'issue'}
+			</a>
+			detected.
+		</div>
 	{:else if $data.appState.state === 'UNKNOWN'}
-		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
-			<UnknownIcon
-				size="5rem"
-				style="color: var(--a-icon-warning)"
-				aria-label="Unknown application status"
-				role="image"
-			/>
-		</a>
-		<a class="status padding-top" href="/team/{teamName}/{envName}/app/{appName}/status"
-			>Status is unknown</a
-		>
+		<h4>Status <QuestionmarkDiamondFill /></h4>
+		<div>Application status is unknown.</div>
 	{/if}
 </div>
 
 <style>
-	.wrapper {
+	h4 {
+		margin-bottom: 8px;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.iconWrapper {
 		display: flex;
 		flex-direction: column;
-	}
-	a.status {
-		display: flex;
-		flex-direction: row;
 		justify-content: center;
 		align-items: center;
-		flex-grow: 1;
+		vertical-align: middle;
+		padding-top: 1rem;
 	}
 
-	a.padding-top {
-		padding-top: 1rem;
+	.card {
+		border-radius: 0.5rem;
+		padding: 1rem;
+		grid-column: span 2;
+	}
+
+	.NOTNAIS {
+		background-color: var(--a-surface-warning-moderate);
+		color: var(--a-text-on-warning);
+		border: 2px solid var(--a-border-warning);
+	}
+
+	.FAILING {
+		background-color: var(--a-surface-danger-subtle);
+		border: 2px solid var(--a-border-danger);
 	}
 </style>
