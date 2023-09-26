@@ -28,7 +28,7 @@
 			routeId: '/team/[team]/[env]/app/[app]/deploys'
 		},
 		{
-			tab: 'nais.yaml',
+			tab: 'Manifest',
 			routeId: '/team/[team]/[env]/app/[app]/yaml'
 		}
 	];

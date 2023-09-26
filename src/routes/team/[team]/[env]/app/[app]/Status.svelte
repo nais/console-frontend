@@ -25,39 +25,59 @@
 
 <div class="wrapper">
 	<h4>Status</h4>
-	<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
-		{#if $data.appState.state == PendingValue}
-			<Loading />
-		{:else if $data.appState.state === 'NAIS'}
+	{#if $data.appState.state == PendingValue}
+		<Loading />
+	{:else if $data.appState.state === 'NAIS'}
+		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
 			<Nais
 				size="5rem"
 				style="color: var(--a-icon-success)"
 				aria-label="Application is nais"
 				role="image"
 			/>
-		{:else if $data.appState.state === 'FAILING'}
+		</a>
+		<a
+			class="status padding-top"
+			style="padding-top: 1rem"
+			href="/team/{teamName}/{envName}/app/{appName}/status">All nais</a
+		>
+	{:else if $data.appState.state === 'FAILING'}
+		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
 			<WarningIcon
 				size="5rem"
 				style="color: var(--a-icon-danger)"
 				aria-label="Application is failing"
 				role="image"
 			/>
-		{:else if $data.appState.state === 'NOTNAIS'}
-			<Nais
+		</a>
+		<a class="status padding-top" href="/team/{teamName}/{envName}/app/{appName}/status"
+			>App is failing</a
+		>
+	{:else if $data.appState.state === 'NOTNAIS'}
+		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status"
+			><Nais
 				size="5rem"
 				style="color: var(--a-icon-warning)"
 				aria-label="Application is not nais"
 				role="image"
-			/>
-		{:else if $data.appState.state === 'UNKNOWN'}
+			/></a
+		>
+		<a class="status padding-top" href="/team/{teamName}/{envName}/app/{appName}/status"
+			>App is not nais</a
+		>
+	{:else if $data.appState.state === 'UNKNOWN'}
+		<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
 			<UnknownIcon
 				size="5rem"
 				style="color: var(--a-icon-warning)"
 				aria-label="Unknown application status"
 				role="image"
 			/>
-		{/if}
-	</a>
+		</a>
+		<a class="status padding-top" href="/team/{teamName}/{envName}/app/{appName}/status"
+			>Status is unknown</a
+		>
+	{/if}
 </div>
 
 <style>
@@ -71,5 +91,9 @@
 		justify-content: center;
 		align-items: center;
 		flex-grow: 1;
+	}
+
+	a.padding-top {
+		padding-top: 1rem;
 	}
 </style>

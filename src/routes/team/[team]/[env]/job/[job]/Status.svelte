@@ -25,39 +25,60 @@
 
 <div class="wrapper">
 	<h4>Status</h4>
-	<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
-		{#if $data.jobState.state == PendingValue}
-			<Loading />
-		{:else if $data.jobState.state === 'NAIS'}
+
+	{#if $data.jobState.state == PendingValue}
+		<Loading />
+	{:else if $data.jobState.state === 'NAIS'}
+		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
 			<Nais
 				size="5rem"
 				style="color: var(--a-icon-success)"
 				aria-label="Application is nais"
 				role="image"
 			/>
-		{:else if $data.jobState.state === 'FAILING'}
+		</a>
+		<a
+			class="status padding-top"
+			style="padding-top: 1rem"
+			href="/team/{teamName}/{envName}/job/{jobName}/status">All nais</a
+		>
+	{:else if $data.jobState.state === 'FAILING'}
+		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
 			<WarningIcon
 				size="5rem"
 				style="color: var(--a-icon-danger)"
 				aria-label="Application is failing"
 				role="image"
 			/>
-		{:else if $data.jobState.state === 'NOTNAIS'}
+		</a>
+		<a class="status padding-top" href="/team/{teamName}/{envName}/job/{jobName}/status"
+			>App is failing</a
+		>
+	{:else if $data.jobState.state === 'NOTNAIS'}
+		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
 			<Nais
 				size="5rem"
 				style="color: var(--a-icon-warning)"
 				aria-label="Application is not nais"
 				role="image"
-			/>
-		{:else if $data.jobState.state === 'UNKNOWN'}
+			/></a
+		>
+		<a class="status padding-top" href="/team/{teamName}/{envName}/job/{jobName}/status"
+			>App is not nais</a
+		>
+	{:else if $data.jobState.state === 'UNKNOWN'}
+		<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
 			<UnknownIcon
 				size="5rem"
 				style="color: var(--a-icon-warning)"
 				aria-label="Unknown application status"
 				role="image"
 			/>
-		{/if}
-	</a>
+		</a>
+		<a class="status padding-top" href="/team/{teamName}/{envName}/job/{jobName}/status">
+			Status is unknown
+		</a>
+	{/if}
 </div>
 
 <style>
@@ -71,5 +92,11 @@
 		justify-content: center;
 		align-items: center;
 		flex-grow: 1;
+	}
+	a.status:hover {
+		text-decoration: none;
+	}
+	a.padding-top {
+		padding-top: 1rem;
 	}
 </style>
