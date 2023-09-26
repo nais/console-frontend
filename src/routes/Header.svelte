@@ -61,29 +61,24 @@
 		}
 		if (query.length > 0) {
 			showSearch = true;
-			fetch(query);
 			timeout = setTimeout(() => {
-				fetch(query);
+				if (query.startsWith('app:')) {
+					store.fetch({ variables: { query: query.slice(4), type: 'APP' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('team:')) {
+					store.fetch({ variables: { query: query.slice(5), type: 'TEAM' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('job:')) {
+					store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
+					unsupportedFilter = false;
+				} else if (query.lastIndexOf(':') >= 0) {
+					unsupportedFilter = true;
+				} else {
+					store.fetch({ variables: { query, type: null } });
+					unsupportedFilter = false;
+				}
 				logEvent('search');
 			}, 500);
-		}
-	}
-
-	function fetch(query: string) {
-		if (query.startsWith('app:')) {
-			store.fetch({ variables: { query: query.slice(4), type: 'APP' } });
-			unsupportedFilter = false;
-		} else if (query.startsWith('team:')) {
-			store.fetch({ variables: { query: query.slice(5), type: 'TEAM' } });
-			unsupportedFilter = false;
-		} else if (query.startsWith('job:')) {
-			store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
-			unsupportedFilter = false;
-		} else if (query.lastIndexOf(':') >= 0) {
-			unsupportedFilter = true;
-		} else {
-			store.fetch({ variables: { query, type: null } });
-			unsupportedFilter = false;
 		}
 	}
 
