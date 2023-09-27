@@ -31,10 +31,10 @@
 
 <div class="card {state.toString()}">
 	{#if $data.jobState.state == PendingValue}
-		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<h4>Status</h4>
 		<Loading />
 	{:else if $data.jobState.state === 'NAIS'}
-		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<h4>Status {$data.jobState.state}</h4>
 		<div class="iconWrapper">
 			<Nais
 				size="5rem"
@@ -88,6 +88,10 @@
 		border-radius: 0.5rem;
 		padding: 1rem;
 		grid-column: span 2;
+	}
+
+	.NAIS {
+		background-color: var(--a-bg-default);
 	}
 
 	.NOTNAIS {
