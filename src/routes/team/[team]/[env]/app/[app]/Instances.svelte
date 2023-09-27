@@ -29,7 +29,7 @@
 	$: team = $page.params.team;
 </script>
 
-<Table style="margin-bottom: 1rem">
+<Table size="small" style="margin-bottom: 1rem">
 	<Thead>
 		<Th>Name</Th>
 		<Th>Restarts</Th>

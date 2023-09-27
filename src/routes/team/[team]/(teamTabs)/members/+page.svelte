@@ -24,7 +24,7 @@
 {:else if team}
 	<Card>
 		<h3>Members</h3>
-		<Table>
+		<Table size="small" zebraStripes={true}>
 			<Thead>
 				<Th>Name</Th>
 				<Th>E-mail</Th>

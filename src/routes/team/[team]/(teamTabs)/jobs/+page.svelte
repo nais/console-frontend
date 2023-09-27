@@ -24,7 +24,7 @@
 {:else}
 	<Card>
 		<h3>Naisjobs</h3>
-		<Table>
+		<Table size="small">
 			<Thead>
 				<Th style="width: 2rem;">Status</Th>
 				<Th>Name</Th>
@@ -43,7 +43,7 @@
 						{#each team.naisjobs.edges as edge}
 							<Tr>
 								<Td>
-									<div style="text-align: center;">
+									<div class="status">
 										<a
 											href="/team/{teamName}/{edge.node.env.name}/job/{edge.node.name}/status"
 											data-sveltekit-preload-data="off"
@@ -87,3 +87,12 @@
 		{/if}
 	</Card>
 {/if}
+
+<style>
+	.status {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 0.6;
+	}
+</style>

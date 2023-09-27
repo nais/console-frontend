@@ -21,7 +21,7 @@
 {:else if $AppManifest.data}
 	<Card>
 		<h4>
-			nais.yaml for {name}
+			Manifest for application {name}
 			{#if $AppManifest.data?.app.manifest !== PendingValue}
 				<CopyButton
 					text="Copy manifest"

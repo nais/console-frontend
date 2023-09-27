@@ -35,7 +35,7 @@
 
 {#if $JobDeploys.data}
 	<Card>
-		<Table zebraStripes={true}>
+		<Table size="small" zebraStripes={true}>
 			<Thead>
 				<Th>Resource(s)</Th>
 				<Th>Created</Th>
