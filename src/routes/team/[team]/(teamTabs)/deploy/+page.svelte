@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/DeploymentStatus.svelte';
-	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { Branching } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
-	import { PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { page } from '$app/stores';
+	import Time from '$lib/Time.svelte';
+	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { BranchingIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
@@ -39,8 +39,8 @@
 				{#each teamData.deployments.edges as edge}
 					<Tr>
 						{#if edge.node.id === PendingValue}
-							{#each new Array(5) as _}
-								<Td><Loading /></Td>
+							{#each new Array(5).fill('medium') as size}
+								<Td><Loading {size} /></Td>
 							{/each}
 						{:else}
 							<Td>
@@ -77,7 +77,8 @@
 										href="https://github.com/{edge.node.repository}"
 										as="a"
 									>
-										<svelte:fragment slot="icon-left"><Branching /></svelte:fragment>Repo</Button
+										<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment
+										>Repo</Button
 									>
 								{/if}
 							</Td>

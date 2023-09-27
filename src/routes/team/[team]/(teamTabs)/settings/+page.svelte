@@ -6,7 +6,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button, CopyButton, Modal } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepath, Eye, EyeSlash } from '@nais/ds-svelte-community/icons';
+	import { ArrowsCirclepathIcon, EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: String!) {
@@ -95,7 +95,7 @@
 								showKey = !showKey;
 							}}
 						>
-							<svelte:fragment slot="icon-left"><EyeSlash /></svelte:fragment></Button
+							<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
 						>
 					{:else}
 						{#if teamSettings.deployKey.key === PendingValue}
@@ -110,7 +110,7 @@
 								showKey = !showKey;
 							}}
 						>
-							<svelte:fragment slot="icon-left"><Eye /></svelte:fragment></Button
+							<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
 						>
 					{/if}
 				</div>
@@ -135,7 +135,7 @@
 							showRotateKey = !showRotateKey;
 						}}
 					>
-						<svelte:fragment slot="icon-left"><ArrowsCirclepath /></svelte:fragment>
+						<svelte:fragment slot="icon-left"><ArrowsCirclepathIcon /></svelte:fragment>
 						Rotate key</Button
 					>
 				</div>

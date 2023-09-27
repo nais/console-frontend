@@ -35,8 +35,8 @@
 				{#if team !== undefined}
 					{#if team.id === PendingValue}
 						<Tr>
-							{#each team.naisjobs.edges as _}
-								<Td><Loading /></Td>
+							{#each new Array(team.naisjobs.edges.length).fill('medium') as size}
+								<Td><Loading {size} /></Td>
 							{/each}
 						</Tr>
 					{:else}

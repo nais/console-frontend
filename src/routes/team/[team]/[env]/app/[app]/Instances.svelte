@@ -41,8 +41,8 @@
 		{#each instances as instance}
 			<Tr>
 				{#if instance === PendingValue}
-					{#each new Array(5) as _}
-						<Td><Loading /></Td>
+					{#each new Array(5).fill('medium') as size}
+						<Td><Loading {size} /></Td>
 					{/each}
 				{:else}
 					<Td

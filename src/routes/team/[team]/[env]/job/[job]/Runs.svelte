@@ -7,7 +7,7 @@
 	import Nais from '$lib/icons/Nais.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepath } from '@nais/ds-svelte-community/icons';
+	import { ArrowsCirclepathIcon } from '@nais/ds-svelte-community/icons';
 
 	export let job: JobInstances;
 
@@ -45,14 +45,14 @@
 		{#each $data.runs as run}
 			<Tr>
 				{#if run === PendingValue}
-					{#each new Array(6) as _}
-						<Td><Loading /></Td>
+					{#each new Array(6).fill('medium') as size}
+						<Td><Loading {size} /></Td>
 					{/each}
 				{:else}
 					<Td style="text-align: center;">
 						{#if run.failed === false && !run.completionTime}
 							<Tooltip content="Run in progress" placement="right">
-								<ArrowsCirclepath
+								<ArrowsCirclepathIcon
 									width="1.5rem"
 									height="1.5rem"
 									style="color: var(--a-icon-success)"

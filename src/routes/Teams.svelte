@@ -8,7 +8,7 @@
 		LinkPanelDescription,
 		LinkPanelTitle
 	} from '@nais/ds-svelte-community';
-	import { PersonGroup } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 
 	const store = graphql(`
 		query UserTeams @load {
@@ -46,7 +46,7 @@
 {:else}
 	<Card minWidth="300px">
 		<h2>
-			<PersonGroup />
+			<PersonGroupIcon />
 			My teams
 		</h2>
 		<div class="teams">

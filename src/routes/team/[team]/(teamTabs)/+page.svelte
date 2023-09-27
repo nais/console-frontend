@@ -36,8 +36,8 @@
 				{#if team !== undefined}
 					{#if team.id === PendingValue}
 						<Tr>
-							{#each team.apps.edges as _}
-								<Td><Loading /></Td>
+							{#each new Array(team.apps.edges.length).fill('medium') as size}
+								<Td><Loading {size} /></Td>
 							{/each}
 						</Tr>
 					{:else}

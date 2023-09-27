@@ -4,10 +4,9 @@
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
-		ExclamationmarkTriangleFill,
-		QuestionmarkDiamondFill
+		ExclamationmarkTriangleFillIcon,
+		QuestionmarkDiamondFillIcon
 	} from '@nais/ds-svelte-community/icons';
-
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
 	$: appName = $page.params.app;
@@ -44,7 +43,7 @@
 			/>
 		</div>
 	{:else if $data.appState.state === 'FAILING'}
-		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-danger)" /></h4>
+		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 		<div>
 			Application is failing.<br />
 			<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
@@ -53,7 +52,7 @@
 			</a> detected.
 		</div>
 	{:else if $data.appState.state === 'NOTNAIS'}
-		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 		<div>
 			Application is not nais.<br />
 			<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
@@ -63,7 +62,7 @@
 			detected.
 		</div>
 	{:else if $data.appState.state === 'UNKNOWN'}
-		<h4>Status <QuestionmarkDiamondFill /></h4>
+		<h4>Status <QuestionmarkDiamondFillIcon /></h4>
 		<div>Application status is unknown.</div>
 	{/if}
 </div>
@@ -88,6 +87,10 @@
 		border-radius: 0.5rem;
 		padding: 1rem;
 		grid-column: span 2;
+	}
+
+	.UNKOWN {
+		background-color: var(--a-bg-default);
 	}
 
 	.NAIS {

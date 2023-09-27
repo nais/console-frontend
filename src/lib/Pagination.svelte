@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { ChevronRight, ChevronLeft } from '@nais/ds-svelte-community/icons';
-	import { Button } from '@nais/ds-svelte-community';
-	import { createEventDispatcher } from 'svelte';
 	import { PendingValue } from '$houdini';
+	import { Button } from '@nais/ds-svelte-community';
+	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { createEventDispatcher } from 'svelte';
 	export let totalCount: number | typeof PendingValue;
 	export let pageInfo:
 		| {
@@ -31,7 +31,8 @@
 				dispatch('previousPage');
 			}}
 			disabled={!pageInfo.hasPreviousPage}
-			><svelte:fragment slot="icon-left"><ChevronLeft aria-label="Previous page" /></svelte:fragment
+			><svelte:fragment slot="icon-left"
+				><ChevronLeftIcon aria-label="Previous page" /></svelte:fragment
 			></Button
 		>
 		<span>
@@ -47,7 +48,7 @@
 			}}
 			disabled={!pageInfo.hasNextPage}
 		>
-			<svelte:fragment slot="icon-left"><ChevronRight aria-label="Next page" /></svelte:fragment
+			<svelte:fragment slot="icon-left"><ChevronRightIcon aria-label="Next page" /></svelte:fragment
 			></Button
 		>
 	</div>

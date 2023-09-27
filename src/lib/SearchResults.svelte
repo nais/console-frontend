@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
 	import { PendingValue } from '$houdini';
-	import { PersonGroup } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 	import Loading from './Loading.svelte';
 
@@ -86,7 +86,7 @@
 					}}
 				>
 					<div class="typeIcon">
-						<PersonGroup height="1.5rem" />
+						<PersonGroupIcon height="1.5rem" />
 						<div>Team</div>
 					</div>
 					{node.name}</a

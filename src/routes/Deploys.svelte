@@ -83,9 +83,9 @@
 				{#each sortTeamDeploys($store.data.user) as deploy}
 					{#if deploy == PendingValue}
 						<Tr>
-							{#each new Array(4) as _}
+							{#each new Array(4).fill('medium') as size}
 								<Td>
-									<Loading />
+									<Loading {size} />
 								</Td>
 							{/each}
 						</Tr>

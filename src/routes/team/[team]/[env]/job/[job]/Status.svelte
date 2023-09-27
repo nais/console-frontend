@@ -4,8 +4,8 @@
 	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
-		ExclamationmarkTriangleFill,
-		QuestionmarkDiamondFill
+		ExclamationmarkTriangleFillIcon,
+		QuestionmarkDiamondFillIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	$: teamName = $page.params.team;
@@ -44,7 +44,7 @@
 			/>
 		</div>
 	{:else if $data.jobState.state === 'FAILING'}
-		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-danger)" /></h4>
+		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 		<div>
 			Job is failing.<br />
 			<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
@@ -53,7 +53,7 @@
 			</a> detected.
 		</div>
 	{:else if $data.jobState.state === 'NOTNAIS'}
-		<h4>Status <ExclamationmarkTriangleFill style="color: var(--a-icon-warning)" /></h4>
+		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 		<div>
 			Job is not nais.<br />
 			<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
@@ -63,7 +63,7 @@
 			detected.
 		</div>
 	{:else if $data.jobState.state === 'UNKNOWN'}
-		<h4>Status <QuestionmarkDiamondFill /></h4>
+		<h4>Status <QuestionmarkDiamondFillIcon /></h4>
 		<div>Job status is unknown.</div>
 	{/if}
 </div>

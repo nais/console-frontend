@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import { PendingValue } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 
 	export let data: PageData;
 	$: ({ Members } = data);
@@ -34,8 +34,8 @@
 				{#each team.members.edges as edge}
 					<Tr>
 						{#if team.name === PendingValue}
-							{#each new Array(3) as _}
-								<Td><Loading /></Td>
+							{#each new Array(3).fill('medium') as size}
+								<Td><Loading {size} /></Td>
 							{/each}
 						{:else}
 							<Td>{capitalizeFirstLetterInEachWord(edge.node.name.toString())}</Td>

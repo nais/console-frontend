@@ -4,7 +4,7 @@
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import { Search } from '@nais/ds-svelte-community';
-	import { InformationSquare } from '@nais/ds-svelte-community/icons';
+	import { InformationSquareIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
 	const store = graphql(`
@@ -173,7 +173,7 @@
 					<ul class="helpText">
 						<li>
 							<div class="typeIcon">
-								<InformationSquare height="1.5rem" />
+								<InformationSquareIcon height="1.5rem" />
 							</div>
 							<div>
 								You can filter your searches with prefixes. Try one of the following:<br />

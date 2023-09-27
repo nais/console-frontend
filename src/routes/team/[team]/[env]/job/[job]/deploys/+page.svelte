@@ -16,12 +16,11 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { Branching } from '@nais/ds-svelte-community/icons';
+	import { BranchingIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 
 	$: ({ JobDeploys } = data);
-	$: naisjob = $JobDeploys.data?.naisjob;
 	$: env = $page.params.env;
 	$: job = $page.params.app;
 </script>
@@ -45,11 +44,11 @@
 			</Thead>
 			<Tbody>
 				{#if $JobDeploys.data.naisjob.name === PendingValue}
-					{#each new Array(5) as _}
+					{#each new Array(5).fill('medium') as sizemedium}
 						<Tr>
-							{#each new Array(4) as _}
+							{#each new Array(sizemedium) as size}
 								<Td>
-									<Loading />
+									<Loading {size} />
 								</Td>
 							{/each}
 						</Tr>
@@ -80,7 +79,8 @@
 										href="https://github.com/{edge.node.repository}"
 										as="a"
 									>
-										<svelte:fragment slot="icon-left"><Branching /></svelte:fragment>Repo</Button
+										<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment
+										>Repo</Button
 									>
 								{/if}
 							</Td>

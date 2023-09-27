@@ -1,24 +1,24 @@
 import { HoudiniClient } from '$houdini';
 import { browser, dev } from '$app/environment';
-import { subscription, type SubscriptionClient } from "$houdini/plugins";
+import { subscription, type SubscriptionClient } from '$houdini/plugins';
 import { createClient } from 'graphql-sse';
 import { updatesConnectionClosed } from '$lib/stores/update_complete';
 
 const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 export default new HoudiniClient({
 	url: browser || !graphqlEndpoint ? '/query' : graphqlEndpoint,
-	plugins: [subscription(sseSockets)],
+	plugins: [subscription(sseSockets)]
 });
 
 function sseSockets() {
 	const client = createClient({
-		url: "/query",
+		url: '/query',
 		onMessage: (data) => {
 			if (dev) {
-				console.debug("message", data);
+				console.debug('message', data);
 			}
 		},
-		retryAttempts: 1000,
+		retryAttempts: 1000
 	});
 
 	return {
@@ -32,7 +32,7 @@ function sseSockets() {
 				{
 					query: payload.query,
 					variables: vars,
-					operationName: payload.operationName,
+					operationName: payload.operationName
 				},
 				{
 					next: handlers.next,
@@ -40,13 +40,13 @@ function sseSockets() {
 					complete: () => {
 						updatesConnectionClosed.set(new Date());
 						handlers.complete();
-					},
-				},
+					}
+				}
 			);
 
 			return () => {
 				unsubscribe();
 			};
-		},
+		}
 	} as SubscriptionClient;
 }
