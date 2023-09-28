@@ -132,12 +132,8 @@
 				<a href="/team/{team}/{env}/app/{app}">{app}.{team}.{env}</a>.
 				<br />
 				{#if $data.rule.mutualExplanation === 'APP_NOT_FOUND'}
-					Verify outbound rules for
-					<a
-						href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
-							? $data.rule.cluster
-							: env}/app/{$data.rule.application}/yaml">manifest</a
-					>. Are namespace or cluster missing from rule?
+					Application not found. Verify outbound rules for {$data.rule.application}. Does
+					application exist, or are namespace or cluster missing from rule?
 				{:else if $data.rule.mutualExplanation === 'RULE_NOT_FOUND'}
 					Please add outbound rule for {app}.{team}.{env} to
 					<a

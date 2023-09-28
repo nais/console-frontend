@@ -1,27 +1,20 @@
 <script lang="ts">
-	import Nais from './icons/Nais.svelte';
+	import {
+		ExclamationmarkTriangleFillIcon,
+		XMarkOctagonFillIcon
+	} from '@nais/ds-svelte-community/icons';
 	import UnknownIcon from './icons/UnknownIcon.svelte';
-	import WarningIcon from './icons/WarningIcon.svelte';
 
 	export let state: string;
 	export let size: string;
 </script>
 
-{#if state === 'NAIS'}
-	<Nais {size} style="color: var(--a-icon-success)" aria-label="Application is nais" role="image" />
-{:else if state === 'FAILING'}
-	<WarningIcon
-		{size}
-		style="color: var(--a-icon-danger)"
-		aria-label="Application is failing"
-		role="image"
-	/>
+{#if state === 'FAILING'}
+	<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" title="Application is failing" />
 {:else if state === 'NOTNAIS'}
-	<Nais
-		{size}
+	<ExclamationmarkTriangleFillIcon
 		style="color: var(--a-icon-warning)"
-		aria-label="Application is not nais"
-		role="image"
+		title="Application is not nais"
 	/>
 {:else if state === 'UNKNOWN'}
 	<UnknownIcon

@@ -26,7 +26,7 @@
 	<Card>
 		<Table size="small">
 			<Thead>
-				<Th style="width: 2rem">Status</Th>
+				<Th style="width: 2rem"></Th>
 				<Th>Name</Th>
 				<Th>Env</Th>
 				<Th>Instances</Th>
