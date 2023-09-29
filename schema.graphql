@@ -113,10 +113,75 @@ type Consumer {
   orgno: String!
 }
 
+"""Cost type."""
+type Cost {
+  """The start date for the cost data."""
+  from: Date!
+
+  """The cost series."""
+  series: [CostSeries!]!
+
+  """The end date for the cost data."""
+  to: Date!
+}
+
+"""Cost filter type."""
+input CostFilter {
+  """The name of the application to get costs for."""
+  app: String!
+
+  """The name of the environment to get costs for."""
+  env: String!
+
+  """
+  Start date for the cost series, inclusive.
+  
+  Defaults to 7 days ago.
+  """
+  from: Date
+
+  """The name of the team to get costs for."""
+  team: String!
+
+  """
+  End date for cost series, inclusive.
+  
+  Defaults to the current date.
+  """
+  to: Date
+}
+
+"""Cost series type."""
+type CostSeries {
+  """The name of the application."""
+  app: String!
+
+  """The type of cost."""
+  costType: String!
+
+  """The cost data."""
+  data: [DailyCost!]!
+
+  """The name of the environment."""
+  env: String!
+
+  """The name of the team."""
+  team: String!
+}
+
 """
 Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
 """
 scalar Cursor
+
+"""Daily cost type."""
+type DailyCost {
+  """The actual cost in euros."""
+  cost: Float!
+
+  """The date for the cost data."""
+  date: Date!
+}
 
 type Database {
   envVarPrefix: String!
@@ -127,6 +192,9 @@ type Database {
 type DatabaseUser {
   name: String!
 }
+
+"""Date type in YYYY-MM-DD format."""
+scalar Date
 
 type DeployInfo {
   commitSha: String!
@@ -490,6 +558,9 @@ type Port {
 """The query root for the console-backend GraphQL API."""
 type Query {
   app(env: String!, name: String!, team: String!): App!
+
+  """Get costs."""
+  cost(filter: CostFilter!): Cost!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
   naisjob(env: String!, name: String!, team: String!): NaisJob!
 

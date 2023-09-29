@@ -31,6 +31,10 @@
 		{
 			tab: 'Manifest',
 			routeId: '/team/[team]/[env]/app/[app]/yaml'
+		},
+		{
+			tab: 'Cost',
+			routeId: '/team/[team]/[env]/app/[app]/cost'
 		}
 	];
 	export let data: PageData;

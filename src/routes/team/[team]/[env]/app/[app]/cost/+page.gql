@@ -1,0 +1,16 @@
+query AppCost($app: String!, $team: String!, $env: String!, $from: Date, $to: Date) {
+	cost(filter: { app: $app, team: $team, env: $env, from: $from, to: $to }) {
+		from
+		to
+		series {
+			costType
+			app
+			env
+			team
+			data {
+				date
+				cost
+			}
+		}
+	}
+}
