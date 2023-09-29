@@ -1,10 +1,11 @@
 import type { EChartsOption } from 'echarts';
 
-interface Series {
-	readonly data: number[];
+interface Type {
+	readonly date: Date;
+	readonly cost: number;
 }
 
-interface Data<Type extends Series> {
+interface Cost<Data extends Type> {
 	readonly from: Date;
 	readonly to: Date;
 	readonly series: {
@@ -12,14 +13,11 @@ interface Data<Type extends Series> {
 		readonly app: string;
 		readonly env: string;
 		readonly team: string;
-		readonly data: {
-			readonly date: Date;
-			readonly cost: number;
-		}[];
+		readonly data: Data[];
 	}[];
 }
 
-export function costTransform<SeriesType extends Series>(data: Data<SeriesType>): EChartsOption {
+export function costTransform<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
 	return {
 		title: {},
 		legend: {
