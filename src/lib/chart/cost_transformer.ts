@@ -17,7 +17,7 @@ interface Cost<Data extends Type> {
 	}[];
 }
 
-export function costTransform<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
+export function costTransformTrend<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
 	return {
 		title: {},
 		legend: {
@@ -46,5 +46,47 @@ export function costTransform<SeriesType extends Type>(data: Cost<SeriesType>): 
 				}
 			}
 		}))
+	} as EChartsOption;
+}
+
+type DataPoint = {
+	readonly name: string;
+	readonly value: number;
+};
+
+export function costTransformPie<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
+	const costTypes = new Array<DataPoint>();
+	for (const series of data.series) {
+		let total = 0;
+		for (const d of series.data) {
+			total += d.cost;
+		}
+		costTypes.push({ name: series.costType, value: total });
+	}
+
+	return {
+		title: {},
+		legend: {
+			orient: 'horizontal',
+			bottom: 0
+		},
+		tooltip: {
+			trigger: 'item'
+		},
+		series: [
+			{
+				name: 'Cost',
+				type: 'pie',
+				radius: '50%',
+				data: costTypes,
+				emphasis: {
+					itemStyle: {
+						shadowBlur: 5,
+						shadowOffsetX: 0,
+						shadowColor: 'rgba(0, 0, 0, 0.5)'
+					}
+				}
+			}
+		]
 	} as EChartsOption;
 }

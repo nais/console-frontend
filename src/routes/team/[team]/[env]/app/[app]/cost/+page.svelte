@@ -2,25 +2,27 @@
 	import type { AppCost$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransform } from '$lib/chart/cost_transformer';
+	import { costTransformPie, costTransformTrend } from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 
 	$: ({ AppCost } = data);
-	const sum = (a: { date: Date; cost: number }[]) => {
-		let sum = 0;
-		a.forEach((a: { date: Date; cost: number }) => {
-			sum += a.cost;
-		});
-		return sum;
-	};
-	function echartOptions(data: AppCost$result['cost']) {
-		const opts = costTransform(data);
+
+	function echartOptionsTrend(data: AppCost$result['cost']) {
+		const opts = costTransformTrend(data);
 
 		opts.title = {
-			text: 'Cost per product',
+			text: 'Cost trend per product last 30 days',
 			subtext: 'Cost per day (final day might be incomplete)'
+		};
+		return opts;
+	}
+	function echartOptionsPie(data: AppCost$result['cost']) {
+		const opts = costTransformPie(data);
+
+		opts.title = {
+			text: 'Cost per product last 30 days'
 		};
 		return opts;
 	}
@@ -36,18 +38,9 @@
 
 {#if $AppCost.data}
 	<Card>
-		<h4>Total cost per type</h4>
-		{#each $AppCost.data.cost.series as series}
-			<div>
-				{series.costType}<br />
-				{sum(series.data)}
-			</div>
-		{/each}
+		<EChart options={echartOptionsPie($AppCost.data.cost)} style="height: 400px" />
 	</Card>
-	<Card
-		><h4>Trend over time</h4>
-		{#if $AppCost.data?.cost}
-			<EChart options={echartOptions($AppCost.data.cost)} style="height: 400px" />
-		{/if}
+	<Card>
+		<EChart options={echartOptionsTrend($AppCost.data.cost)} style="height: 400px" />
 	</Card>
 {/if}
