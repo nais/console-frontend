@@ -7,6 +7,7 @@ query AppCost($app: String!, $team: String!, $env: String!, $from: Date, $to: Da
 			app
 			env
 			team
+			sum
 			data {
 				date
 				cost

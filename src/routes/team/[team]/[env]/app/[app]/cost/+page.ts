@@ -5,7 +5,7 @@ export const _AppCostVariables: AppCostVariables = (event) => {
 		app: event.params.app,
 		team: event.params.team,
 		env: event.params.env,
-		to: new Date(Date.now() - 1 * 1000 * 24 * 60 * 60),
-		from: new Date(Date.now() - 31 * 1000 * 24 * 60 * 60)
+		to: new Date(Date.now() - 2 * 1000 * 24 * 60 * 60),
+		from: new Date(Date.now() - 32 * 1000 * 24 * 60 * 60)
 	};
 };

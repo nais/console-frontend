@@ -2,7 +2,11 @@
 	import type { AppCost$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformPie, costTransformTrend } from '$lib/chart/cost_transformer';
+	import {
+		costTransformBar,
+		costTransformPie,
+		costTransformTrend
+	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -18,8 +22,18 @@
 		};
 		return opts;
 	}
+
 	function echartOptionsPie(data: AppCost$result['cost']) {
 		const opts = costTransformPie(data);
+
+		opts.title = {
+			text: 'Cost per product last 30 days'
+		};
+		return opts;
+	}
+
+	function echartOptionsBar(data: AppCost$result['cost']) {
+		const opts = costTransformBar(data);
 
 		opts.title = {
 			text: 'Cost per product last 30 days'
@@ -37,6 +51,9 @@
 {/if}
 
 {#if $AppCost.data}
+	<Card>
+		<EChart options={echartOptionsBar($AppCost.data.cost)} style="height: 400px" />
+	</Card>
 	<Card>
 		<EChart options={echartOptionsPie($AppCost.data.cost)} style="height: 400px" />
 	</Card>
