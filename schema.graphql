@@ -3,6 +3,8 @@ The @defer directive may be specified on a fragment spread to imply de-prioritiz
 """
 directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
 type AccessPolicy {
   inbound: Inbound!
   outbound: Outbound!
@@ -121,6 +123,9 @@ type Cost {
   """The cost series."""
   series: [CostSeries!]!
 
+  """The sum of all costs in the cost series in euros."""
+  sum: Float!
+
   """The end date for the cost data."""
   to: Date!
 }
@@ -164,6 +169,9 @@ type CostSeries {
 
   """The name of the environment."""
   env: String!
+
+  """The sum of all daily costs in the series for this cost type in euros."""
+  sum: Float!
 
   """The name of the team."""
   team: String!
