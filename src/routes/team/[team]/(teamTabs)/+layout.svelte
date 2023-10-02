@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Tabs from '$lib/Tabs.svelte';
+	import { PendingValue } from '$houdini';
+	import Loading from '$lib/Loading.svelte';
 	import Tab from '$lib/Tab.svelte';
+	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
 	import type { PageData } from './$houdini';
 
@@ -39,12 +41,16 @@
 	{#each nav as { tab, routeId }}
 		<Tab href={replacer(routeId, { team })} active={currentRoute == routeId} title={tab} />
 	{/each}
-	{#if $TeamRoles.data?.team.viewerIsMember || $TeamRoles.data?.team.viewerIsAdmin}
-		<Tab
-			href={replacer('/team/[team]/(teamTabs)/settings', { team })}
-			active={currentRoute == '/team/[team]/(teamTabs)/settings'}
-			title="Settings"
-		/>
+	{#if $TeamRoles.data}
+		{#if $TeamRoles.data.team === PendingValue}
+			<Loading />
+		{:else if $TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsAdmin}
+			<Tab
+				href={replacer('/team/[team]/(teamTabs)/settings', { team })}
+				active={currentRoute == '/team/[team]/(teamTabs)/settings'}
+				title="Settings"
+			/>
+		{/if}
 	{/if}
 </Tabs>
 <div class="container">

@@ -637,7 +637,7 @@ type Team implements Node {
   apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
   deployKey: DeploymentKey!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
-  description: String
+  description: String!
   githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
   id: ID!
   members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
