@@ -58,11 +58,19 @@
 {/if}
 <Tabs>
 	{#each nav as { tab, routeId }}
-		<Tab
-			href={replacer(routeId, { team, env, app })}
-			active={currentRoute == routeId}
-			title={tab}
-		/>
+		{#if tab !== 'Cost'}
+			<Tab
+				href={replacer(routeId, { team, env, app })}
+				active={currentRoute == routeId}
+				title={tab}
+			/>
+		{:else if env.indexOf('fss') === -1}
+			<Tab
+				href={replacer(routeId, { team, env, app })}
+				active={currentRoute == routeId}
+				title={tab}
+			/>
+		{/if}
 		{#if tab === 'Status' && state !== 'NAIS'}
 			{#if state === 'NOTNAIS'}
 				<div class="circle warning">{numberOfErrors}</div>
