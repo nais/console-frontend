@@ -120,13 +120,7 @@ export function costTransformBar<SeriesType extends Type>(data: Cost<SeriesType>
 			data: data
 		});
 	}
-	/*
-	series[series.length - 1].markLine = {
-		lineStyle: {
-			type: 'dashed'
-		},
-		data: [[{ type: 'min' }, { type: 'max' }]]
-	};*/
+
 	return {
 		title: {},
 		legend: {},
