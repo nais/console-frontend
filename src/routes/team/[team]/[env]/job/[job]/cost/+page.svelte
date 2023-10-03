@@ -3,8 +3,8 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
-		costTransformBar,
 		costTransformPie,
+		costTransformStackedColumnChart,
 		costTransformTrend
 	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
@@ -33,7 +33,7 @@
 	}
 
 	function echartOptionsBar(data: JobCost$result['cost']) {
-		const opts = costTransformBar(data);
+		const opts = costTransformStackedColumnChart(data);
 
 		opts.title = {
 			text: 'Cost per product last 30 days'

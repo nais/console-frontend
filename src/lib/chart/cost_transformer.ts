@@ -1,4 +1,4 @@
-import type { EChartsOption, SeriesOption } from 'echarts';
+import type { EChartsOption } from 'echarts';
 
 interface Type {
 	readonly date: Date;
@@ -18,118 +18,31 @@ interface Cost<Data extends Type> {
 	}[];
 }
 
-export function costTransformTrend<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
-	return {
-		title: {},
-		legend: {
-			orient: 'horizontal',
-			bottom: 0
-		},
-		tooltip: {
-			trigger: 'axis'
-		},
-		xAxis: {
-			type: 'category'
-		},
-		yAxis: {
-			type: 'value'
-		},
-		series: data.series.map((s) => ({
-			name: s.costType,
-			type: 'line',
-			data: s.data.map((d) => [d.date.toLocaleDateString('en-GB'), d.cost]),
-			tooltip: {
-				valueFormatter(value: number) {
-					return value.toLocaleString('en-GB', {
-						style: 'currency',
-						currency: 'EUR'
-					});
-				}
-			}
-		}))
-	} as EChartsOption;
-}
-
-type DataPoint = {
-	readonly name: string;
-	readonly value: number;
-};
-
-export function costTransformPie<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
-	const costTypes = new Array<DataPoint>();
-	for (const series of data.series) {
-		costTypes.push({ name: series.costType, value: series.sum });
-	}
-
-	return {
-		title: {},
-		legend: {
-			orient: 'horizontal',
-			bottom: 0
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		series: [
-			{
-				name: 'Cost',
-				type: 'pie',
-				radius: '50%',
-				data: costTypes,
-				emphasis: {
-					itemStyle: {
-						shadowBlur: 5,
-						shadowOffsetX: 0,
-						shadowColor: 'rgba(0, 0, 0, 0.5)'
-					}
-				}
-			}
-		]
-	} as EChartsOption;
-}
-
-export function costTransformBar<SeriesType extends Type>(data: Cost<SeriesType>): EChartsOption {
+export function costTransformStackedColumnChart<SeriesType extends Type>(
+	data: Cost<SeriesType>
+): EChartsOption {
 	const dates = new Array<Date>();
 	for (let d = data.from; d <= data.to; d.setDate(d.getDate() + 1)) {
 		dates.push(new Date(d));
 	}
 
-	const costTypes = new Map<string, Array<number>>();
-	for (const series of data.series) {
-		const costType = series.costType;
-		const costTypeData = new Array<number>(dates.length);
-		for (let i = 0; i < dates.length; i++) {
-			costTypeData[i] = 0;
-		}
-		for (const d of series.data) {
-			const index = dates.findIndex((date) => date.getTime() === d.date.getTime());
-			costTypeData[index] = d.cost;
-		}
-		costTypes.set(costType, costTypeData);
-	}
-
-	const series = new Array<SeriesOption>();
-	for (const [costType, data] of costTypes) {
-		series.push({
-			name: costType,
-			type: 'bar',
-			stack: 'Cost',
-			emphasis: {
-				focus: 'series'
-			},
-			data: data
-		});
-	}
-
 	return {
 		title: {},
-		legend: {},
+		legend: {
+			bottom: 0
+		},
+
 		tooltip: {
 			trigger: 'axis',
 			axisPointer: {
 				type: 'shadow'
+			},
+			valueFormatter(value: number) {
+				return euroValueFormatter(value);
 			}
 		},
+		color: ['#3386E0', '#005B82', '#C77300', '#368DA8', '#33AA5F', '#8269A2'].reverse(),
+
 		grid: {
 			left: '3%',
 			right: '4%',
@@ -144,9 +57,33 @@ export function costTransformBar<SeriesType extends Type>(data: Cost<SeriesType>
 		],
 		yAxis: [
 			{
-				type: 'value'
+				type: 'value',
+				axisLabel: {
+					formatter: (value: number) => euroValueFormatter(value)
+				}
 			}
 		],
-		series: series
+		series: data.series
+			.sort((a, b) => (a.sum < b.sum ? -1 : a.sum > b.sum ? 1 : 0))
+			.map((s) => {
+				return {
+					name: s.costType,
+					type: 'line',
+					stack: 'Cost',
+					emphasis: {
+						focus: 'series'
+					},
+					areaStyle: {},
+
+					data: s.data.map((d) => d.cost)
+				};
+			})
 	} as EChartsOption;
+}
+function euroValueFormatter(value: number): string {
+	return value.toLocaleString('en-GB', {
+		style: 'currency',
+		currency: 'EUR',
+		maximumFractionDigits: 5
+	});
 }

@@ -25,10 +25,6 @@
 	</Alert>
 {:else if $App.data}
 	<div class="grid">
-		<!--Card columns={2}>
-			<Status app={$App.data.app} />
-		</Card-->
-
 		<Status app={$App.data.app} />
 
 		<Card columns={4}>
