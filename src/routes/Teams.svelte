@@ -44,7 +44,7 @@
 		</Alert>
 	{/each}
 {:else}
-	<Card minWidth="300px">
+	<Card width="600px">
 		<h2>
 			<PersonGroupIcon />
 			My teams

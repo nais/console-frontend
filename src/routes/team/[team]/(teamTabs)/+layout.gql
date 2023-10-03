@@ -1,5 +1,5 @@
 query TeamRoles($team: String!) {
-	team(name: $team) {
+	team(name: $team) @loading {
 		viewerIsAdmin
 		viewerIsMember
 	}
