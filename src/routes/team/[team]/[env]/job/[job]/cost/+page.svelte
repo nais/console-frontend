@@ -1,44 +1,32 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import type { JobCost$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import {
-		costTransformPie,
-		costTransformStackedColumnChart,
-		costTransformTrend
-	} from '$lib/chart/cost_transformer';
+	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 
 	$: ({ JobCost } = data);
 
-	function echartOptionsTrend(data: JobCost$result['cost']) {
-		const opts = costTransformTrend(data);
+	let job = $page.params.job;
 
-		opts.title = {
-			text: 'Cost trend per product last 30 days',
-			subtext: 'Cost per day (final day might be incomplete)'
-		};
-		return opts;
-	}
-
-	function echartOptionsPie(data: JobCost$result['cost']) {
-		const opts = costTransformPie(data);
-
-		opts.title = {
-			text: 'Cost per product last 30 days'
-		};
-		return opts;
-	}
-
-	function echartOptionsBar(data: JobCost$result['cost']) {
+	function echartOptionsStackedColumnChart(data: JobCost$result['cost']) {
 		const opts = costTransformStackedColumnChart(data);
-
-		opts.title = {
-			text: 'Cost per product last 30 days'
-		};
+		opts.height = '250px';
+		opts.legend = { bottom: 50 };
 		return opts;
+	}
+	let from = data.fromDate?.toISOString().split('T')[0];
+	let to = data.toDate?.toISOString().split('T')[0];
+
+	function update() {
+		const old = $JobCost.variables!;
+		JobCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
+		const params = new URLSearchParams({ from, to });
+		goto(`?${params.toString()}`, { replaceState: true });
 	}
 </script>
 
@@ -51,13 +39,23 @@
 {/if}
 
 {#if $JobCost.data}
-	<Card>
-		<EChart options={echartOptionsBar($JobCost.data.cost)} style="height: 400px" />
-	</Card>
-	<Card>
-		<EChart options={echartOptionsPie($JobCost.data.cost)} style="height: 400px" />
-	</Card>
-	<Card>
-		<EChart options={echartOptionsTrend($JobCost.data.cost)} style="height: 400px" />
-	</Card>
+	<div class="grid">
+		<Card columns={12}>
+			<h4>Total cost for job {job} from {from} to {to}</h4>
+			<label for="from">From:</label>
+			<input type="date" id="from" bind:value={from} on:change={update} />
+			<label for="to">To:</label>
+			<input type="date" id="to" bind:value={to} on:change={update} />
+			<EChart options={echartOptionsStackedColumnChart($JobCost.data.cost)} style="height: 400px" />
+		</Card>
+	</div>
 {/if}
+
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
+</style>

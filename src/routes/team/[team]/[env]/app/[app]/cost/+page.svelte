@@ -41,7 +41,7 @@
 {#if $AppCost.data}
 	<div class="grid">
 		<Card columns={12}>
-			<h4>Total cost for {app} from {from} to {to}</h4>
+			<h4>Total cost for app {app} from {from} to {to}</h4>
 			<label for="from">From:</label>
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
