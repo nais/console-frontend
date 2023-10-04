@@ -1,3 +1,4 @@
+import { euroValueFormatter } from '$lib/utils/currency';
 import type { EChartsOption } from 'echarts';
 
 interface Type {
@@ -79,11 +80,4 @@ export function costTransformStackedColumnChart<SeriesType extends Type>(
 				};
 			})
 	} as EChartsOption;
-}
-function euroValueFormatter(value: number): string {
-	return value.toLocaleString('en-GB', {
-		style: 'currency',
-		currency: 'EUR',
-		maximumFractionDigits: 5
-	});
 }

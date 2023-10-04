@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PendingValue, fragment, graphql, type JobImage } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
+	import Time from '$lib/Time.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
 
 	export let job: JobImage;
@@ -9,6 +10,11 @@
 		graphql(`
 			fragment JobImage on NaisJob {
 				image @loading
+				deployInfo @loading {
+					timestamp @loading
+					deployer
+					url
+				}
 			}
 		`)
 	);
@@ -22,11 +28,13 @@
 	};
 
 	$: image = $data?.image;
+	$: deployInfo = $data?.deployInfo;
 </script>
 
 <h4 class="imageHeader">
 	Image {#if image !== PendingValue}
 		<CopyButton
+			size="xsmall"
 			variant="action"
 			text="Copy image name"
 			activeText="Image name copied"
@@ -34,6 +42,18 @@
 		/>
 	{/if}
 </h4>
+{#if deployInfo?.timestamp === PendingValue}
+	<Loading />
+{:else if deployInfo.timestamp !== null}
+	<p class="lastActivity">
+		<a href={deployInfo.url}>Deployed</a>
+		<Time time={deployInfo.timestamp} distance={true} />
+		{#if deployInfo.deployer && deployInfo.url}
+			by
+			<a href="https://github.com/{deployInfo.deployer}">{deployInfo.deployer}</a>.
+		{/if}
+	</p>
+{/if}
 {#if image === PendingValue}
 	<Loading />
 {:else}
@@ -59,10 +79,14 @@
 {/if}
 
 <style>
+	.lastActivity {
+		margin-top: 0px;
+	}
 	.imageHeader {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		margin-bottom: 8px;
 		gap: 0.5rem;
 	}
 	.imageGrid {

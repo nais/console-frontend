@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
-	import Time from '$lib/Time.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
@@ -15,6 +16,10 @@
 
 	export let data: PageData;
 	$: ({ Job } = data);
+
+	$: jobName = $page.params.job;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 {#if $Job.errors}
@@ -29,19 +34,7 @@
 		<Status job={$Job.data.naisjob} />
 
 		<Card columns={4}>
-			<h4>Last activity</h4>
-			{#if job.deployInfo.timestamp === PendingValue}
-				<Loading />
-			{:else if job.deployInfo.timestamp === null}
-				Not available
-			{:else}
-				<a href={job.deployInfo.url}>Deployed</a>
-				<Time time={job.deployInfo.timestamp} distance={true} />
-				{#if job.deployInfo.deployer && job.deployInfo.url}
-					by
-					<a href="https://github.com/{job.deployInfo.deployer}">{job.deployInfo.deployer}</a>.
-				{/if}
-			{/if}
+			<Cost app={jobName} {env} {team} />
 		</Card>
 		<Card columns={6}>
 			<Image {job} />

@@ -38,6 +38,8 @@
 	</Alert>
 {/if}
 
+<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
+
 {#if $JobCost.data}
 	<div class="grid">
 		<Card columns={12}>
@@ -53,6 +55,7 @@
 
 <style>
 	.grid {
+		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;

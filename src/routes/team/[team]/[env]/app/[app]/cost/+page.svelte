@@ -28,6 +28,11 @@
 		const params = new URLSearchParams({ from, to });
 		goto(`?${params.toString()}`, { replaceState: true });
 	}
+
+	// create new date equal today minus to days and format to yyyy-mm-dd
+	const today = new Date();
+	today.setDate(today.getDate() - 2);
+	const todayMinusTwoDays = today.toISOString().split('T')[0];
 </script>
 
 {#if $AppCost.errors}
@@ -38,6 +43,8 @@
 	</Alert>
 {/if}
 
+<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
+
 {#if $AppCost.data}
 	<div class="grid">
 		<Card columns={12}>
@@ -45,7 +52,7 @@
 			<label for="from">From:</label>
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" bind:value={to} on:change={update} />
+			<input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} />
 			<EChart options={echartOptionsStackedColumnChart($AppCost.data.cost)} style="height: 400px" />
 		</Card>
 	</div>
@@ -53,6 +60,7 @@
 
 <style>
 	.grid {
+		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;

@@ -130,7 +130,16 @@ type Cost {
   to: Date!
 }
 
-"""Cost filter type."""
+"""Cost entry type."""
+type CostEntry {
+  """The cost in euros."""
+  cost: Float!
+
+  """The date for the entry."""
+  date: Date!
+}
+
+"""Cost filter input type."""
 input CostFilter {
   """The name of the application to get costs for."""
   app: String!
@@ -165,7 +174,7 @@ type CostSeries {
   costType: String!
 
   """The cost data."""
-  data: [DailyCost!]!
+  data: [CostEntry!]!
 
   """The name of the environment."""
   env: String!
@@ -181,15 +190,6 @@ type CostSeries {
 Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
 """
 scalar Cursor
-
-"""Daily cost type."""
-type DailyCost {
-  """The actual cost in euros."""
-  cost: Float!
-
-  """The date for the cost data."""
-  date: Date!
-}
 
 type Database {
   envVarPrefix: String!
@@ -465,6 +465,27 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
+"""Montly cost type."""
+type MonthlyCost {
+  """A list of monthly cost entries."""
+  cost: [CostEntry!]!
+
+  """Sum for all months in the series."""
+  sum: Float!
+}
+
+"""Monthly cost filter input type."""
+input MonthlyCostFilter {
+  """The name of the application to get costs for."""
+  app: String!
+
+  """The name of the environment to get costs for."""
+  env: String!
+
+  """The name of the team to get costs for."""
+  team: String!
+}
+
 """The root query for implementing GraphQL mutations."""
 type Mutation {
   """Update the deploy key of a team. Returns the updated deploy key."""
@@ -570,6 +591,9 @@ type Query {
   """Get costs."""
   cost(filter: CostFilter!): Cost!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+
+  """Get monthly costs."""
+  monthlyCost(filter: MonthlyCostFilter!): MonthlyCost!
   naisjob(env: String!, name: String!, team: String!): NaisJob!
 
   """Fetches an object given its ID."""
@@ -587,16 +611,16 @@ type Query {
 
   """Get a list of NAIS-teams, in alphabetical order."""
   teams(
-    """Get teams after the cursor."""
+    """Get entries after the cursor."""
     after: Cursor
 
-    """Get teams before the cursor."""
+    """Get entries before the cursor."""
     before: Cursor
 
-    """Returns the first n teams from the list."""
+    """Returns the first n entries from the list."""
     first: Int
 
-    """Returns the last n teams from the list."""
+    """Returns the last n entries from the list."""
     last: Int
   ): TeamConnection!
 
@@ -713,18 +737,100 @@ type Subscription {
 
 """Team type."""
 type Team implements Node {
-  apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
+  """The NAIS applications owned by the team."""
+  apps(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+  ): AppConnection!
+
+  """The deploy key of the team."""
   deployKey: DeploymentKey!
-  deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+
+  """The deployments of the team's applications."""
+  deployments(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+
+    """Limit the number of entries returned."""
+    limit: Int
+  ): DeploymentConnection!
+
+  """The description of the team."""
   description: String!
-  githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
+
+  """The GitHub repositories that the team has access to."""
+  githubRepositories(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+  ): GithubRepositoryConnection!
+
+  """The unique identifier of the team."""
   id: ID!
-  members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
-  naisjobs(after: Cursor, before: Cursor, first: Int, last: Int): NaisJobConnection!
+
+  """Team members."""
+  members(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+  ): TeamMemberConnection!
+
+  """The NAIS jobs owned by the team."""
+  naisjobs(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+  ): NaisJobConnection!
+
+  """The name of the team."""
   name: String!
+
+  """Slack alerts channels for the team."""
   slackAlertsChannels: [SlackAlertsChannel!]
+
+  """The main Slack channel for the team."""
   slackChannel: String
+
+  """Whether or not the viewer is an administrator of the team."""
   viewerIsAdmin: Boolean!
+
+  """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
 }
 
