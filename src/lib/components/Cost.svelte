@@ -26,12 +26,17 @@
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();
-		console.log(daysKnown);
 		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-		console.log(daysInMonth);
 		const costPerDay = cost / daysKnown;
-		console.log(costPerDay);
 		return euroValueFormatter(costPerDay * daysInMonth);
+	}
+
+	// function that takes $costQuery.data.monthlyCost.cost array as input and returns index 0 fraction of index 1
+	function getFactor(cost: { date: Date; cost: number }[]) {
+		const daysKnown = cost[0].date.getDate();
+		const estCostPerDay = cost[0].cost / daysKnown;
+		console.log((estCostPerDay / (cost[1].cost / cost[1].date.getDate())) * 100 - 100);
+		return (estCostPerDay / (cost[1].cost / cost[1].date.getDate())) * 100 - 100;
 	}
 </script>
 
@@ -46,17 +51,20 @@
 		{#if $costQuery.data.monthlyCost === PendingValue}
 			<Loading />
 		{:else if $costQuery.data.monthlyCost.cost.length > 0}
+			{@const factor = getFactor($costQuery.data.monthlyCost.cost)}
 			{#each $costQuery.data.monthlyCost.cost.slice(0, 2) as cost}
-				<!-- only use word estimated if last day in month-->
 				{#if cost.date.getDate() === new Date(cost.date.getFullYear(), cost.date.getMonth() + 1, 0).getDate()}
-					Accumulated cost for {cost.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(
-						cost.cost
-					)}
+					{cost.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(cost.cost)}
 				{:else}
-					Estimated cost for {cost.date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(
+					{cost.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
 						cost.cost,
 						cost.date
 					)}
+					{#if factor > 1.0}
+						(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+					{:else}
+						(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+					{/if}
 				{/if}
 				<br />
 			{/each}
@@ -69,9 +77,5 @@
 <style>
 	h4 {
 		margin-bottom: 8px;
-	}
-	div {
-		display: flex;
-		flex-direction: column;
 	}
 </style>
