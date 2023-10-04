@@ -15,9 +15,9 @@
 	export let data: PageData;
 	$: ({ App } = data);
 
-	const app = $page.params.app;
-	const env = $page.params.env;
-	const team = $page.params.team;
+	$: app = $page.params.app;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 {#if $App.errors}

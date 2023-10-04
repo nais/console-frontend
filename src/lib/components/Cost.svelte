@@ -45,20 +45,23 @@
 	<div>
 		{#if $costQuery.data.monthlyCost === PendingValue}
 			<Loading />
-		{:else}
-			{@const cost = $costQuery.data.monthlyCost.cost}
-			{#if cost.length > 0}
-				Estimated cost for {cost[0].date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(
-					cost[0].cost,
-					cost[0].date
-				)}
-			{/if}
-			{#if cost.length > 1}
+		{:else if $costQuery.data.monthlyCost.cost.length > 0}
+			{#each $costQuery.data.monthlyCost.cost.slice(0, 2) as cost}
+				<!-- only use word estimated if last day in month-->
+				{#if cost.date.getDate() === new Date(cost.date.getFullYear(), cost.date.getMonth() + 1, 0).getDate()}
+					Accumulated cost for {cost.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(
+						cost.cost
+					)}
+				{:else}
+					Estimated cost for {cost.date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(
+						cost.cost,
+						cost.date
+					)}
+				{/if}
 				<br />
-				Accumulated cost for {cost[1].date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(
-					cost[1].cost
-				)}
-			{/if}
+			{/each}
+		{:else}
+			No cost data available
 		{/if}
 	</div>
 {/if}
