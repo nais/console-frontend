@@ -31,7 +31,6 @@
 		return euroValueFormatter(costPerDay * daysInMonth);
 	}
 
-	// function that takes $costQuery.data.monthlyCost.cost array as input and returns index 0 fraction of index 1
 	function getFactor(cost: { date: Date; cost: number }[]) {
 		const daysKnown = cost[0].date.getDate();
 		const estCostPerDay = cost[0].cost / daysKnown;

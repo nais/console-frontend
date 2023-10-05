@@ -5,6 +5,7 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -29,10 +30,11 @@
 		goto(`?${params.toString()}`, { replaceState: true });
 	}
 
-	// create new date equal today minus to days and format to yyyy-mm-dd
 	const today = new Date();
 	today.setDate(today.getDate() - 2);
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
+	$: fromDate = new Date(from);
+	$: toDate = new Date(to);
 </script>
 
 {#if $TeamCost.errors}
@@ -47,17 +49,21 @@
 
 {#if $TeamCost.data}
 	<div class="grid">
-		<Card columns={12}>
-			<h4>Total cost for team {team} from {from} to {to}</h4>
+		<Card columns={4}>
 			<label for="from">From:</label>
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
 			<input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} />
+		</Card>
+		<Card columns={12}>
+			<h4>Total cost for team {team} from {from} to {to}</h4>
 			<EChart
 				options={echartOptionsStackedColumnChart($TeamCost.data.cost)}
 				style="height: 400px"
 			/>
 		</Card>
+
+		<TeamCostEnv {team} from={fromDate} to={toDate} />
 	</div>
 {/if}
 

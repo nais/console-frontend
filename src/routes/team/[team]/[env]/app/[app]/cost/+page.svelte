@@ -29,7 +29,6 @@
 		goto(`?${params.toString()}`, { replaceState: true });
 	}
 
-	// create new date equal today minus to days and format to yyyy-mm-dd
 	const today = new Date();
 	today.setDate(today.getDate() - 2);
 	const todayMinusTwoDays = today.toISOString().split('T')[0];

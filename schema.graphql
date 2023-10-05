@@ -41,9 +41,15 @@ type AppConnection implements Connection {
   totalCount: Int!
 }
 
+"""App cost type."""
 type AppCost {
+  """The name of the application."""
   app: String!
+
+  """A list of cost entries for the application."""
   cost: [CostEntry!]!
+
+  """The sum of all cost entries for the application in euros."""
   sum: Float!
 }
 
@@ -290,14 +296,27 @@ type Env implements Node {
   name: String!
 }
 
+"""Env cost type."""
 type EnvCost {
+  """A list of app costs in the environment."""
   apps: [AppCost!]!
+
+  """The name of the environment."""
   env: String!
+
+  """The sum of all app costs for the environment in euros."""
+  sum: Float!
 }
 
+"""Env cost filter input type."""
 input EnvCostFilter {
+  """Start date for the cost series, inclusive."""
   from: Date!
+
+  """The name of the team to get costs for."""
   team: String!
+
+  """End date for cost series, inclusive."""
   to: Date!
 }
 
@@ -479,7 +498,7 @@ type MonthlyCost {
   """A list of monthly cost entries."""
   cost: [CostEntry!]!
 
-  """Sum for all months in the series."""
+  """Sum for all months in the series in euros."""
   sum: Float!
 }
 
@@ -600,6 +619,8 @@ type Query {
   """Get costs."""
   cost(filter: CostFilter!): Cost!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+
+  """Get env cost for a team."""
   envCost(filter: EnvCostFilter!): [EnvCost!]!
 
   """Get monthly costs."""
