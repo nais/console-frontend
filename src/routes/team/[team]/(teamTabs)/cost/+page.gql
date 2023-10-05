@@ -1,4 +1,4 @@
-query TeamCost($team: String!, $from: Date, $to: Date) {
+query TeamCost($team: String!, $from: Date!, $to: Date!) {
 	cost(filter: { app: "", team: $team, env: "", from: $from, to: $to }) {
 		from
 		to

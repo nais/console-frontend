@@ -41,6 +41,12 @@ type AppConnection implements Connection {
   totalCount: Int!
 }
 
+type AppCost {
+  app: String!
+  cost: [CostEntry!]!
+  sum: Float!
+}
+
 type AppEdge implements Edge {
   cursor: Cursor!
   node: App!
@@ -147,22 +153,14 @@ input CostFilter {
   """The name of the environment to get costs for."""
   env: String!
 
-  """
-  Start date for the cost series, inclusive.
-  
-  Defaults to 7 days ago.
-  """
-  from: Date
+  """Start date for the cost series, inclusive."""
+  from: Date!
 
   """The name of the team to get costs for."""
   team: String!
 
-  """
-  End date for cost series, inclusive.
-  
-  Defaults to the current date.
-  """
-  to: Date
+  """End date for cost series, inclusive."""
+  to: Date!
 }
 
 """Cost series type."""
@@ -290,6 +288,17 @@ interface Edge {
 type Env implements Node {
   id: ID!
   name: String!
+}
+
+type EnvCost {
+  apps: [AppCost!]!
+  env: String!
+}
+
+input EnvCostFilter {
+  from: Date!
+  team: String!
+  to: Date!
 }
 
 type Error {
@@ -591,6 +600,7 @@ type Query {
   """Get costs."""
   cost(filter: CostFilter!): Cost!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+  envCost(filter: EnvCostFilter!): [EnvCost!]!
 
   """Get monthly costs."""
   monthlyCost(filter: MonthlyCostFilter!): MonthlyCost!
