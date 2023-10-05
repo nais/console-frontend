@@ -94,7 +94,7 @@ export type TeamCostEnvType = {
 	}[];
 };
 
-export function costTransformStackedColumnChartTeamCostEnvApps(data: TeamCostEnvType) {
+export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 	const dates = new Array<Date>();
 	for (
 		let d = data.apps[0].cost[0].date;
@@ -145,11 +145,9 @@ export function costTransformStackedColumnChartTeamCostEnvApps(data: TeamCostEnv
 			return {
 				name: s.app,
 				type: 'line',
-				stack: 'Cost',
 				emphasis: {
 					focus: 'series'
 				},
-				areaStyle: {},
 
 				data: s.cost.map((d) => d.cost)
 			};

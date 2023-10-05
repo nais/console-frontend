@@ -4,7 +4,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
-		costTransformStackedColumnChartTeamCostEnvApps,
+		costTransformColumnChartTeamCostEnv,
 		type TeamCostEnvType
 	} from '$lib/chart/cost_transformer';
 	import type { TeamCostEnvVariables } from './$houdini';
@@ -34,7 +34,7 @@
 	export let team: string;
 
 	function echartOptionsStackedColumnChart(data: TeamCostEnvType) {
-		const opts = costTransformStackedColumnChartTeamCostEnvApps(data);
+		const opts = costTransformColumnChartTeamCostEnv(data);
 		opts.height = '250px';
 		opts.legend = { bottom: 0 };
 		return opts;
