@@ -56,7 +56,7 @@
 			<Loading />
 		{:else if cost.apps.length > 0}
 			<Card columns={12}>
-				<h4>Accumulated per app for each {cost.env}</h4>
+				<h4>Daily cost per app for {cost.env}</h4>
 				<EChart
 					options={echartOptionsStackedColumnChart(cost)}
 					style="height: {calculateHeight(cost)}"
