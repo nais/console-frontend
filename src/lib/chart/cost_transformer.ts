@@ -1,29 +1,26 @@
 import { euroValueFormatter } from '$lib/utils/currency';
 import type { EChartsOption } from 'echarts';
 
-interface Type {
+interface CostEntry {
 	readonly date: Date;
 	readonly cost: number;
 }
 
-interface Cost<Data extends Type> {
-	readonly from: Date;
-	readonly to: Date;
+interface DailyCost<Data extends CostEntry> {
 	readonly series: {
 		readonly costType: string;
-		readonly app: string;
-		readonly env: string;
 		readonly sum: number;
-		readonly team: string;
 		readonly data: Data[];
 	}[];
 }
 
-export function costTransformStackedColumnChart<SeriesType extends Type>(
-	data: Cost<SeriesType>
+export function costTransformStackedColumnChart<SeriesType extends CostEntry>(
+	from: Date,
+	to: Date,
+	data: DailyCost<SeriesType>
 ): EChartsOption {
 	const dates = new Array<Date>();
-	for (let d = data.from; d <= data.to; d.setDate(d.getDate() + 1)) {
+	for (let d = from; d <= to; d.setDate(d.getDate() + 1)) {
 		dates.push(new Date(d));
 	}
 

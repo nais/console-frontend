@@ -127,21 +127,6 @@ type Consumer {
   orgno: String!
 }
 
-"""Cost type."""
-type Cost {
-  """The start date for the cost data."""
-  from: Date!
-
-  """The cost series."""
-  series: [CostSeries!]!
-
-  """The sum of all costs in the cost series in euros."""
-  sum: Float!
-
-  """The end date for the cost data."""
-  to: Date!
-}
-
 """Cost entry type."""
 type CostEntry {
   """The cost in euros."""
@@ -151,49 +136,31 @@ type CostEntry {
   date: Date!
 }
 
-"""Cost filter input type."""
-input CostFilter {
-  """The name of the application to get costs for."""
-  app: String!
-
-  """The name of the environment to get costs for."""
-  env: String!
-
-  """Start date for the cost series, inclusive."""
-  from: Date!
-
-  """The name of the team to get costs for."""
-  team: String!
-
-  """End date for cost series, inclusive."""
-  to: Date!
-}
-
 """Cost series type."""
 type CostSeries {
-  """The name of the application."""
-  app: String!
-
   """The type of cost."""
   costType: String!
 
   """The cost data."""
   data: [CostEntry!]!
 
-  """The name of the environment."""
-  env: String!
-
   """The sum of all daily costs in the series for this cost type in euros."""
   sum: Float!
-
-  """The name of the team."""
-  team: String!
 }
 
 """
 Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
 """
 scalar Cursor
+
+"""Daily cost type."""
+type DailyCost {
+  """The cost series."""
+  series: [CostSeries!]!
+
+  """The sum of all costs in the cost series in euros."""
+  sum: Float!
+}
 
 type Database {
   envVarPrefix: String!
@@ -616,8 +583,35 @@ type Port {
 type Query {
   app(env: String!, name: String!, team: String!): App!
 
-  """Get costs."""
-  cost(filter: CostFilter!): Cost!
+  """Get the daily cost for a team application in a specific environment."""
+  dailyCostForApp(
+    """The name of the application to get costs for."""
+    app: String!
+
+    """The environment that the application runs in."""
+    env: String!
+
+    """Start date for the cost series, inclusive."""
+    from: Date!
+
+    """The name of the team that owns the application."""
+    team: String!
+
+    """End date for cost series, inclusive."""
+    to: Date!
+  ): DailyCost!
+
+  """Get the daily cost for a team across all apps and environments."""
+  dailyCostForTeam(
+    """Start date for the cost series, inclusive."""
+    from: Date!
+
+    """The name of the team that owns the application."""
+    team: String!
+
+    """End date for cost series, inclusive."""
+    to: Date!
+  ): DailyCost!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
 
   """Get env cost for a team."""

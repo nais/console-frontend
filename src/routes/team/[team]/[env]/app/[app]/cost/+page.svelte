@@ -12,15 +12,15 @@
 	$: ({ AppCost } = data);
 
 	let app = $page.params.app;
+	let from = data.fromDate?.toISOString().split('T')[0];
+	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(data: AppCost$result['cost']) {
-		const opts = costTransformStackedColumnChart(data);
+	function echartOptionsStackedColumnChart(data: AppCost$result['dailyCostForApp']) {
+		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
 		opts.legend = { bottom: 50 };
 		return opts;
 	}
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
 
 	function update() {
 		const old = $AppCost.variables!;
@@ -52,7 +52,7 @@
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
 			<input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} />
-			<EChart options={echartOptionsStackedColumnChart($AppCost.data.cost)} style="height: 400px" />
+			<EChart options={echartOptionsStackedColumnChart($AppCost.data.dailyCostForApp)} style="height: 400px" />
 		</Card>
 	</div>
 {/if}

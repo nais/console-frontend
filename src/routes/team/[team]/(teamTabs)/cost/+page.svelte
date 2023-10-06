@@ -13,15 +13,15 @@
 	$: ({ TeamCost } = data);
 
 	let team = $page.params.team;
+	let from = data.fromDate?.toISOString().split('T')[0];
+	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(data: TeamCost$result['cost']) {
-		const opts = costTransformStackedColumnChart(data);
+	function echartOptionsStackedColumnChart(data: TeamCost$result['dailyCostForTeam']) {
+		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
 		opts.legend = { bottom: 50 };
 		return opts;
 	}
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
 
 	function update() {
 		const old = $TeamCost.variables!;
@@ -58,7 +58,7 @@
 		<Card columns={12}>
 			<h4>Total cost for team {team} from {from} to {to}</h4>
 			<EChart
-				options={echartOptionsStackedColumnChart($TeamCost.data.cost)}
+				options={echartOptionsStackedColumnChart($TeamCost.data.dailyCostForTeam)}
 				style="height: 400px"
 			/>
 		</Card>

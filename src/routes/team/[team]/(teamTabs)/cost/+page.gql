@@ -1,12 +1,7 @@
 query TeamCost($team: String!, $from: Date!, $to: Date!) {
-	cost(filter: { app: "", team: $team, env: "", from: $from, to: $to }) {
-		from
-		to
+	dailyCostForTeam(team: $team, from: $from, to: $to) {
 		series {
 			costType
-			app
-			env
-			team
 			sum
 			data {
 				date
