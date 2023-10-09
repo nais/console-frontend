@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { PendingValue } from '$houdini';
+	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
-	import Time from '$lib/Time.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
@@ -15,6 +14,10 @@
 
 	export let data: PageData;
 	$: ({ App } = data);
+
+	$: app = $page.params.app;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 {#if $App.errors}
@@ -25,28 +28,10 @@
 	</Alert>
 {:else if $App.data}
 	<div class="grid">
-		<!--Card columns={2}>
-			<Status app={$App.data.app} />
-		</Card-->
-
 		<Status app={$App.data.app} />
 
 		<Card columns={4}>
-			<h4>Last activity</h4>
-			{#if $App.data.app.deployInfo.timestamp === PendingValue}
-				<Loading />
-			{:else if $App.data.app.deployInfo.timestamp === null}
-				Not available
-			{:else}
-				<a href={$App.data.app.deployInfo.url}>Deployed</a>
-				<Time time={$App.data.app.deployInfo.timestamp} distance={true} />
-				{#if $App.data.app.deployInfo.deployer && $App.data.app.deployInfo.url}
-					by
-					<a href="https://github.com/{$App.data.app.deployInfo.deployer}"
-						>{$App.data.app.deployInfo.deployer}</a
-					>.
-				{/if}
-			{/if}
+			<Cost {app} {env} {team} />
 		</Card>
 		<Card columns={6}>
 			<Image app={$App.data.app} />

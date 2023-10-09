@@ -1,0 +1,12 @@
+query TeamCost($team: String!, $from: Date!, $to: Date!) {
+	dailyCostForTeam(team: $team, from: $from, to: $to) {
+		series {
+			costType
+			sum
+			data {
+				date
+				cost
+			}
+		}
+	}
+}

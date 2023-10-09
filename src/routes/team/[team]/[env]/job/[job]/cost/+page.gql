@@ -1,0 +1,12 @@
+query JobCost($job: String!, $team: String!, $env: String!, $from: Date!, $to: Date!) {
+	dailyCostForApp(app: $job, team: $team, env: $env, from: $from, to: $to) {
+		series {
+			costType
+			sum
+			data {
+				date
+				cost
+			}
+		}
+	}
+}

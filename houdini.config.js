@@ -10,6 +10,25 @@ const config = {
 	},
 	scalars: {
 		Cursor: { type: 'string' },
+		Date: {
+			type: 'Date',
+			unmarshal(val) {
+				return new Date(val);
+			},
+			// turn the value into something the API can use
+			marshal(d) {
+				if (typeof d === 'string') {
+					return d;
+				}
+				return (
+					d.getFullYear() +
+					'-' +
+					('0' + (d.getMonth() + 1)).slice(-2) +
+					'-' +
+					('0' + d.getDate()).slice(-2)
+				);
+			}
+		},
 		Time: {
 			type: 'Date',
 			unmarshal(val) {

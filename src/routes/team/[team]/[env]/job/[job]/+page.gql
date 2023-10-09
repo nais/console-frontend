@@ -2,11 +2,7 @@ query Job($job: String!, $team: String!, $env: String!) {
 	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name
 		schedule
-		deployInfo {
-			timestamp
-			deployer
-			url
-		}
+
 		image
 		runs {
 			name

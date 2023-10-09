@@ -64,7 +64,7 @@
 	$: app = $page.params.app;
 </script>
 
-{#if $data.revision == PendingValue}
+{#if $data.revision === PendingValue}
 	<div class="wrapper">
 		<Loading />
 	</div>

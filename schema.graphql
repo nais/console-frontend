@@ -3,6 +3,8 @@ The @defer directive may be specified on a fragment spread to imply de-prioritiz
 """
 directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
 type AccessPolicy {
   inbound: Inbound!
   outbound: Outbound!
@@ -37,6 +39,18 @@ type AppConnection implements Connection {
   edges: [AppEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
+}
+
+"""App cost type."""
+type AppCost {
+  """The name of the application."""
+  app: String!
+
+  """A list of cost entries for the application."""
+  cost: [CostEntry!]!
+
+  """The sum of all cost entries for the application in euros."""
+  sum: Float!
 }
 
 type AppEdge implements Edge {
@@ -113,10 +127,40 @@ type Consumer {
   orgno: String!
 }
 
+"""Cost entry type."""
+type CostEntry {
+  """The cost in euros."""
+  cost: Float!
+
+  """The date for the entry."""
+  date: Date!
+}
+
+"""Cost series type."""
+type CostSeries {
+  """The type of cost."""
+  costType: String!
+
+  """The cost data."""
+  data: [CostEntry!]!
+
+  """The sum of all daily costs in the series for this cost type in euros."""
+  sum: Float!
+}
+
 """
 Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
 """
 scalar Cursor
+
+"""Daily cost type."""
+type DailyCost {
+  """The cost series."""
+  series: [CostSeries!]!
+
+  """The sum of all costs in the cost series in euros."""
+  sum: Float!
+}
 
 type Database {
   envVarPrefix: String!
@@ -127,6 +171,9 @@ type Database {
 type DatabaseUser {
   name: String!
 }
+
+"""Date type in YYYY-MM-DD format."""
+scalar Date
 
 type DeployInfo {
   commitSha: String!
@@ -214,6 +261,30 @@ interface Edge {
 type Env implements Node {
   id: ID!
   name: String!
+}
+
+"""Env cost type."""
+type EnvCost {
+  """A list of app costs in the environment."""
+  apps: [AppCost!]!
+
+  """The name of the environment."""
+  env: String!
+
+  """The sum of all app costs for the environment in euros."""
+  sum: Float!
+}
+
+"""Env cost filter input type."""
+input EnvCostFilter {
+  """Start date for the cost series, inclusive."""
+  from: Date!
+
+  """The name of the team to get costs for."""
+  team: String!
+
+  """End date for cost series, inclusive."""
+  to: Date!
 }
 
 type Error {
@@ -389,6 +460,27 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
+"""Montly cost type."""
+type MonthlyCost {
+  """A list of monthly cost entries."""
+  cost: [CostEntry!]!
+
+  """Sum for all months in the series in euros."""
+  sum: Float!
+}
+
+"""Monthly cost filter input type."""
+input MonthlyCostFilter {
+  """The name of the application to get costs for."""
+  app: String!
+
+  """The name of the environment to get costs for."""
+  env: String!
+
+  """The name of the team to get costs for."""
+  team: String!
+}
+
 """The root query for implementing GraphQL mutations."""
 type Mutation {
   """Update the deploy key of a team. Returns the updated deploy key."""
@@ -490,7 +582,43 @@ type Port {
 """The query root for the console-backend GraphQL API."""
 type Query {
   app(env: String!, name: String!, team: String!): App!
+
+  """Get the daily cost for a team application in a specific environment."""
+  dailyCostForApp(
+    """The name of the application to get costs for."""
+    app: String!
+
+    """The environment that the application runs in."""
+    env: String!
+
+    """Start date for the cost series, inclusive."""
+    from: Date!
+
+    """The name of the team that owns the application."""
+    team: String!
+
+    """End date for cost series, inclusive."""
+    to: Date!
+  ): DailyCost!
+
+  """Get the daily cost for a team across all apps and environments."""
+  dailyCostForTeam(
+    """Start date for the cost series, inclusive."""
+    from: Date!
+
+    """The name of the team that owns the application."""
+    team: String!
+
+    """End date for cost series, inclusive."""
+    to: Date!
+  ): DailyCost!
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+
+  """Get env cost for a team."""
+  envCost(filter: EnvCostFilter!): [EnvCost!]!
+
+  """Get monthly costs."""
+  monthlyCost(filter: MonthlyCostFilter!): MonthlyCost!
   naisjob(env: String!, name: String!, team: String!): NaisJob!
 
   """Fetches an object given its ID."""
@@ -508,16 +636,16 @@ type Query {
 
   """Get a list of NAIS-teams, in alphabetical order."""
   teams(
-    """Get teams after the cursor."""
+    """Get entries after the cursor."""
     after: Cursor
 
-    """Get teams before the cursor."""
+    """Get entries before the cursor."""
     before: Cursor
 
-    """Returns the first n teams from the list."""
+    """Returns the first n entries from the list."""
     first: Int
 
-    """Returns the last n teams from the list."""
+    """Returns the last n entries from the list."""
     last: Int
   ): TeamConnection!
 
@@ -634,18 +762,100 @@ type Subscription {
 
 """Team type."""
 type Team implements Node {
-  apps(after: Cursor, before: Cursor, first: Int, last: Int): AppConnection!
+  """The NAIS applications owned by the team."""
+  apps(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+  ): AppConnection!
+
+  """The deploy key of the team."""
   deployKey: DeploymentKey!
-  deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+
+  """The deployments of the team's applications."""
+  deployments(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+
+    """Limit the number of entries returned."""
+    limit: Int
+  ): DeploymentConnection!
+
+  """The description of the team."""
   description: String!
-  githubRepositories(after: Cursor, first: Int): GithubRepositoryConnection!
+
+  """The GitHub repositories that the team has access to."""
+  githubRepositories(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+  ): GithubRepositoryConnection!
+
+  """The unique identifier of the team."""
   id: ID!
-  members(after: Cursor, before: Cursor, first: Int, last: Int): TeamMemberConnection!
-  naisjobs(after: Cursor, before: Cursor, first: Int, last: Int): NaisJobConnection!
+
+  """Team members."""
+  members(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+  ): TeamMemberConnection!
+
+  """The NAIS jobs owned by the team."""
+  naisjobs(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+  ): NaisJobConnection!
+
+  """The name of the team."""
   name: String!
+
+  """Slack alerts channels for the team."""
   slackAlertsChannels: [SlackAlertsChannel!]
+
+  """The main Slack channel for the team."""
   slackChannel: String
+
+  """Whether or not the viewer is an administrator of the team."""
   viewerIsAdmin: Boolean!
+
+  """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
 }
 
