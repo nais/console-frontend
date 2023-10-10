@@ -23,18 +23,21 @@
 		return opts;
 	}
 
+	let fromDate = new Date(from);
+	let toDate = new Date(to);
+
 	function update() {
 		const old = $TeamCost.variables!;
 		TeamCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
 		const params = new URLSearchParams({ from, to });
+		fromDate = new Date(from);
+		toDate = new Date(to);
 		goto(`?${params.toString()}`, { replaceState: true });
 	}
 
 	const today = new Date();
 	today.setDate(today.getDate() - 2);
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
-	$: fromDate = new Date(from);
-	$: toDate = new Date(to);
 </script>
 
 {#if $TeamCost.errors}

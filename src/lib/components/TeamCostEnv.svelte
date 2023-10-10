@@ -40,7 +40,7 @@
 		return opts;
 	}
 	function calculateHeight(data: TeamCostEnvType) {
-		return (data.apps.length / 10) * 16 + 385 + 'px';
+		return (data.apps.length / 10) * 20 + 385 + 'px';
 	}
 </script>
 
