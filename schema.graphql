@@ -385,6 +385,10 @@ type InboundAccessError implements StateError {
   rule: Rule!
 }
 
+type InfluxDb implements Storage {
+  name: String!
+}
+
 type Insights {
   enabled: Boolean!
   queryStringLength: Int!
@@ -651,6 +655,11 @@ type Query {
 
   """Get the currently logged in user."""
   user: User!
+}
+
+type Redis implements Storage {
+  access: String!
+  name: String!
 }
 
 type Requests {
