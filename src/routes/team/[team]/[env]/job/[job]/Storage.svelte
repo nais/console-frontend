@@ -40,6 +40,13 @@
 						name
 						access
 					}
+					... on Redis {
+						name
+						access
+					}
+					... on InfluxDb {
+						name
+					}
 				}
 			}
 		`)
@@ -93,6 +100,18 @@
 				<h5><Opensearch />{storage.__typename}</h5>
 				<span><b>Instance:</b> {storage.name}</span>
 				<span><b>Access:</b> ({storage.access})</span>
+			</div>
+		{:else if storage.__typename === 'Redis'}
+			<div class="storageContent">
+				<h5><!--Opensearch /-->{storage.__typename}</h5>
+
+				<span><b>Instance:</b> {storage.name}</span>
+				<span><b>Access:</b> {storage.access}</span>
+			</div>
+		{:else if storage.__typename === 'InfluxDb'}
+			<div class="storageContent">
+				<h5><!--Opensearch /-->{storage.__typename}</h5>
+				<span><b>Instance:</b> {storage.name}</span>
 			</div>
 		{/if}
 	{:else}
