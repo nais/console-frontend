@@ -36,7 +36,7 @@
 	function echartOptionsColumnChart(data: TeamCostEnvType) {
 		const opts = costTransformColumnChartTeamCostEnv(data);
 		opts.height = '250px';
-		opts.legend = { bottom: 0 };
+		opts.legend = { ...opts.legend, bottom: 0 };
 		return opts;
 	}
 	function calculateHeight(data: TeamCostEnvType) {

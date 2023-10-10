@@ -19,7 +19,7 @@
 	function echartOptionsStackedColumnChart(data: TeamCost$result['dailyCostForTeam']) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
-		opts.legend = { bottom: 50 };
+		opts.legend = { ...opts.legend, bottom: 50 };
 		return opts;
 	}
 

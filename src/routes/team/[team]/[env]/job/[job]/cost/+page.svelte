@@ -18,7 +18,7 @@
 	function echartOptionsStackedColumnChart(data: JobCost$result['dailyCostForApp']) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
-		opts.legend = { bottom: 50 };
+		opts.legend = { ...opts.legend, bottom: 50 };
 		return opts;
 	}
 
@@ -48,7 +48,10 @@
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
 			<input type="date" id="to" bind:value={to} on:change={update} />
-			<EChart options={echartOptionsStackedColumnChart($JobCost.data.dailyCostForApp)} style="height: 400px" />
+			<EChart
+				options={echartOptionsStackedColumnChart($JobCost.data.dailyCostForApp)}
+				style="height: 400px"
+			/>
 		</Card>
 	</div>
 {/if}

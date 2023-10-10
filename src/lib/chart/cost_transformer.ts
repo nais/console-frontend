@@ -27,11 +27,18 @@ export function costTransformStackedColumnChart<SeriesType extends CostEntry>(
 	return {
 		title: {},
 		legend: {
-			bottom: 0
+			bottom: 0,
+			width: '90%',
+			selector: [
+				{
+					title: 'Inverse selection',
+					type: 'inverse'
+				}
+			]
 		},
 
 		tooltip: {
-			trigger: 'axis',
+			trigger: data.series.length > 10 ? 'item' : 'axis',
 			axisPointer: {
 				type: 'shadow'
 			},
@@ -104,11 +111,19 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 	return {
 		title: {},
 		legend: {
-			bottom: 0
+			bottom: 0,
+			width: '90%',
+
+			selector: [
+				{
+					title: 'Inverse selection',
+					type: 'inverse'
+				}
+			]
 		},
 
 		tooltip: {
-			trigger: 'axis',
+			trigger: data.apps.length > 10 ? 'item' : 'axis',
 			axisPointer: {
 				type: 'shadow'
 			},
