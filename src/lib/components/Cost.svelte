@@ -34,7 +34,6 @@
 	function getFactor(cost: { date: Date; cost: number }[]) {
 		const daysKnown = cost[0].date.getDate();
 		const estCostPerDay = cost[0].cost / daysKnown;
-		console.log((estCostPerDay / (cost[1].cost / cost[1].date.getDate())) * 100 - 100);
 		return (estCostPerDay / (cost[1].cost / cost[1].date.getDate())) * 100 - 100;
 	}
 </script>
@@ -49,7 +48,7 @@
 	<div>
 		{#if $costQuery.data.monthlyCost === PendingValue}
 			<Loading />
-		{:else if $costQuery.data.monthlyCost.cost.length > 0}
+		{:else if $costQuery.data.monthlyCost.cost.length > 1}
 			{@const factor = getFactor($costQuery.data.monthlyCost.cost)}
 			{#each $costQuery.data.monthlyCost.cost.slice(0, 2) as cost}
 				{#if cost.date.getDate() === new Date(cost.date.getFullYear(), cost.date.getMonth() + 1, 0).getDate()}
@@ -67,6 +66,12 @@
 				{/if}
 				<br />
 			{/each}
+		{:else if $costQuery.data.monthlyCost.cost.length == 1}
+			{@const cost = $costQuery.data.monthlyCost.cost[0]}
+			{cost.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
+				cost.cost,
+				cost.date
+			)}
 		{:else}
 			No cost data available
 		{/if}

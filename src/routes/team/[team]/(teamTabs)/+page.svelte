@@ -74,6 +74,10 @@
 										{/if}
 									</Td>
 								</Tr>
+							{:else}
+								<Tr>
+									<Td colspan={4}>No apps found</Td>
+								</Tr>
 							{/each}
 						{/if}
 					{/if}

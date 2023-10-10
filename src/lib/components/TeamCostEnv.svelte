@@ -33,7 +33,7 @@
 	export let to: Date;
 	export let team: string;
 
-	function echartOptionsStackedColumnChart(data: TeamCostEnvType) {
+	function echartOptionsColumnChart(data: TeamCostEnvType) {
 		const opts = costTransformColumnChartTeamCostEnv(data);
 		opts.height = '250px';
 		opts.legend = { bottom: 0 };
@@ -56,11 +56,8 @@
 			<Loading />
 		{:else if cost.apps.length > 0}
 			<Card columns={12}>
-				<h4>Daily cost per app for {cost.env}</h4>
-				<EChart
-					options={echartOptionsStackedColumnChart(cost)}
-					style="height: {calculateHeight(cost)}"
-				/>
+				<h4>Daily cost per app/job for {cost.env}</h4>
+				<EChart options={echartOptionsColumnChart(cost)} style="height: {calculateHeight(cost)}" />
 			</Card>
 		{/if}
 	{/each}
