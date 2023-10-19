@@ -323,6 +323,18 @@ type Flag {
   value: String!
 }
 
+"""GCP project type."""
+type GcpProject {
+  """The environment for the GCP project."""
+  environment: String!
+
+  """The unique identifier of the GCP project."""
+  id: String!
+
+  """The name of the GCP project."""
+  name: String!
+}
+
 """GitHub repository type."""
 type GithubRepository {
   """The name of the GitHub repository."""
@@ -809,6 +821,7 @@ type Team implements Node {
 
   """The description of the team."""
   description: String!
+  gcpProjects: [GcpProject!]!
 
   """The GitHub repositories that the team has access to."""
   githubRepositories(
