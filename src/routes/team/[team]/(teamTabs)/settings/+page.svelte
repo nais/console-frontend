@@ -70,14 +70,16 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Managed resources</h3>
-			{#each teamSettings.gcpProjects as project}
-				{#if project.environment !== 'ci-gcp'}
-					<dl>
-						<dt>GCP project ID ({project.environment}):</dt>
-						<dd>{project.id}</dd>
-					</dl>
-				{/if}
-			{/each}
+			{#if teamSettings.gcpProjects.length > 0 && teamSettings.gcpProjects[0].environment !== PendingValue}
+				{#each teamSettings.gcpProjects as project}
+					{#if project.environment !== 'ci-gcp'}
+						<dl>
+							<dt>GCP project ID ({project.environment}):</dt>
+							<dd>{project.id}</dd>
+						</dl>
+					{/if}
+				{/each}
+			{/if}
 			<!--p>GitHub repositories:</p>
 
 			{#each teamSettings.githubRepositories.edges as repo}
