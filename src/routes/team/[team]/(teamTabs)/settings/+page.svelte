@@ -52,15 +52,16 @@
 			{:else}
 				<i>{teamSettings.description}</i>
 			{/if}
+			<h4>Slack channels</h4>
 			{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
 				<dl>
-					<dh>Default Channel:</dh>
+					<dt>Default slack-channel:</dt>
 					<dd>{teamSettings.slackChannel}</dd>
 				</dl>
 			{/if}
 			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
 				<dl>
-					<dh>Overridden channels:</dh>
+					<dh>Per-environment slack-channels to be used for alerts sent by the platform.</dh>
 					{#each teamSettings.slackAlertsChannels as channel}
 						<dt>{channel.env}:</dt>
 						<dd>{channel.name}</dd>
@@ -186,8 +187,20 @@
 {/if}
 
 <style>
+	dl {
+		display: block;
+		margin-block-start: 1em;
+		margin-block-end: 1em;
+		margin-inline-start: 0px;
+		margin-inline-end: 0px;
+	}
 	dt {
 		font-weight: bold;
+	}
+	dd {
+		margin-inline-start: 40px;
+		font-family: monospace;
+		font-size: 1rem;
 	}
 	.deployKey {
 		font-family: monospace;
@@ -195,6 +208,9 @@
 	}
 	h3 {
 		margin-bottom: 0.5rem;
+	}
+	h4 {
+		margin: 0.8rem 0rem;
 	}
 	i {
 		margin-bottom: 0.5rem;
