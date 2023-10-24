@@ -1,4 +1,4 @@
-FROM node:lts AS node-with-deps
+FROM node:21-alpine AS node-with-deps
 WORKDIR /usr/app
 
 COPY package*.json svelte.config.js ./
@@ -11,9 +11,7 @@ ENV VITE_GRAPHQL_ENDPOINT http://console-backend/query
 
 RUN npm run build
 
-FROM node-with-deps
-
-FROM node:20-alpine
+FROM node:21-alpine
 WORKDIR /usr/app
 
 ENV NODE_ENV production
