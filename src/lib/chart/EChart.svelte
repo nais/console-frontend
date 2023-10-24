@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { DefaultLabelFormatterCallbackParams, EChartsOption } from 'echarts';
-	import * as echarts from 'echarts';
+	import type { DefaultLabelFormatterCallbackParams, EChartsOption, EChartsType } from 'echarts';
 	import Legends from './Legends.svelte';
 
 	export let options: EChartsOption;
@@ -36,28 +35,35 @@
 			}
 		} as EChartsOption;
 
-		const ins = echarts.init(el, theme, { renderer: 'svg' });
+		let ins: EChartsType | undefined;
+
 		options = { ...defaultOptions, ...options };
 		options.tooltip = { ...options.tooltip, ...defaultOptions.tooltip };
-		ins.setOption(options);
-		ins.on('mouseover', (e) => {
-			activeSeries = e.seriesId;
-		});
-		ins.on('mouseout', () => {
-			activeSeries = undefined;
-		});
 
 		const resize = () => {
-			ins.resize();
+			ins?.resize();
 		};
+
+		import('echarts').then((echarts) => {
+			const ins = echarts.init(el, theme, { renderer: 'svg' });
+			ins.setOption(options);
+			ins.on('mouseover', (e) => {
+				activeSeries = e.seriesId;
+			});
+			ins.on('mouseout', () => {
+				activeSeries = undefined;
+			});
+			window.addEventListener('resize', resize);
+		});
+
 		window.addEventListener('resize', resize);
 
 		return {
 			update(newOptions: EChartsOption) {
-				ins.setOption({ ...options, ...newOptions });
+				ins?.setOption({ ...options, ...newOptions });
 			},
 			destroy() {
-				ins.dispose();
+				ins?.dispose();
 				window.removeEventListener('resize', resize);
 			}
 		};
