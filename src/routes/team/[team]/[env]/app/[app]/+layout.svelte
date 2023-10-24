@@ -42,7 +42,6 @@
 
 	$: state = $AppNotificationState.data?.app.appState.state;
 	$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
-	$: console.log(numberOfErrors);
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
