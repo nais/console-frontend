@@ -3,7 +3,6 @@
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
-	import type { PageData } from './$houdini';
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
@@ -37,11 +36,11 @@
 			routeId: '/team/[team]/[env]/app/[app]/cost'
 		}
 	];
-	export let data: PageData;
-	$: ({ AppNotificationState } = data);
+	//export let data: PageData;
+	//$: ({ AppNotificationState } = data);
 
-	$: state = $AppNotificationState.data?.app.appState.state;
-	$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
+	//$: state = $AppNotificationState.data?.app.appState.state;
+	//$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -71,21 +70,19 @@
 				title={tab}
 			/>
 		{/if}
-		{#if tab === 'Status' && state !== 'NAIS'}
-			{#if numberOfErrors !== undefined}
-				{#if state === 'NOTNAIS'}
-					<div class="circle warning">{numberOfErrors}</div>
-				{:else if state === 'FAILING' || state !== 'UNKNOWN'}
-					<div class="circle error">{numberOfErrors}</div>
-				{/if}
+		<!--{#if tab === 'Status' && state !== 'NAIS'}
+			{#if state === 'NOTNAIS'}
+				<div class="circle warning">{numberOfErrors}</div>
+			{:else if state === 'FAILING' || state !== 'UNKNOWN'}
+				<div class="circle error">{numberOfErrors}</div>
 			{/if}
-		{/if}
+		{/if}-->
 	{/each}
 </Tabs>
 <slot />
 
 <style>
-	.error {
+	/*.error {
 		background-color: var(--a-icon-danger);
 		color: var(--a-text-on-danger);
 	}
@@ -105,5 +102,5 @@
 		font:
 			8px Arial,
 			sans-serif;
-	}
+	}*/
 </style>
