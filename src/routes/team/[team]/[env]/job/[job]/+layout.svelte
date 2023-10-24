@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { State } from '$houdini';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
-	import type { PageData } from './$houdini';
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
@@ -37,11 +35,11 @@
 			routeId: '/team/[team]/[env]/job/[job]/cost'
 		}
 	];
-	export let data: PageData;
-	$: ({ JobNotificationState } = data);
+	//export let data: PageData;
+	//$: ({ JobNotificationState } = data);
 
-	$: state = $JobNotificationState.data?.naisjob.jobState.state;
-	$: numberOfErrors = $JobNotificationState.data?.naisjob.jobState.errors.length;
+	//$: state = $JobNotificationState.data?.naisjob.jobState.state;
+	//$: numberOfErrors = $JobNotificationState.data?.naisjob.jobState.errors.length;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -68,19 +66,19 @@
 				title={tab}
 			/>
 		{/if}
-		{#if tab === 'Status' && state !== State.NAIS}
+		<!--{#if tab === 'Status' && state !== State.NAIS}
 			{#if state === State.NOTNAIS}
 				<div class="circle warning">{numberOfErrors}</div>
 			{:else if state === State.FAILING || state !== State.UNKNOWN}
 				<div class="circle error">{numberOfErrors}</div>
 			{/if}
-		{/if}
+		{/if}-->
 	{/each}
 </Tabs>
 <slot />
 
 <style>
-	.error {
+	/*.error {
 		background-color: var(--a-icon-danger);
 		color: var(--a-text-on-danger);
 	}
@@ -100,5 +98,5 @@
 		font:
 			8px Arial,
 			sans-serif;
-	}
+	}*/
 </style>

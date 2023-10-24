@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
@@ -11,6 +10,7 @@
 	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
