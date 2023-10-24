@@ -42,6 +42,7 @@
 
 	$: state = $AppNotificationState.data?.app.appState.state;
 	$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
+	$: console.log(numberOfErrors);
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -72,10 +73,12 @@
 			/>
 		{/if}
 		{#if tab === 'Status' && state !== 'NAIS'}
-			{#if state === 'NOTNAIS'}
-				<div class="circle warning">{numberOfErrors}</div>
-			{:else if state === 'FAILING' || state !== 'UNKNOWN'}
-				<div class="circle error">{numberOfErrors}</div>
+			{#if numberOfErrors !== undefined}
+				{#if state === 'NOTNAIS'}
+					<div class="circle warning">{numberOfErrors}</div>
+				{:else if state === 'FAILING' || state !== 'UNKNOWN'}
+					<div class="circle error">{numberOfErrors}</div>
+				{/if}
 			{/if}
 		{/if}
 	{/each}
