@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { State } from '$houdini/graphql/enums';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
+	import type { LayoutData } from './$houdini';
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
@@ -36,12 +38,11 @@
 			routeId: '/team/[team]/[env]/app/[app]/cost'
 		}
 	];
-	//export let data: PageData;
-	//$: ({ AppNotificationState } = data);
+	export let data: LayoutData;
+	$: ({ AppNotificationState } = data);
 
-	//$: state = $AppNotificationState.data?.app.appState.state;
-	//$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
-	//$: console.log($AppNotificationState);
+	$: state = $AppNotificationState.data?.app.appState.state;
+	$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -71,20 +72,19 @@
 				title={tab}
 			/>
 		{/if}
-		<!--
-		{#if tab === 'Status' && state !== 'NAIS'}
-			{#if state === 'NOTNAIS'}
+		{#if tab === 'Status' && state !== State.NAIS}
+			{#if state === State.NOTNAIS}
 				<div class="circle warning">{numberOfErrors}</div>
-			{:else if state === 'FAILING' || state !== 'UNKNOWN'}
+			{:else if state === State.FAILING || state !== State.UNKNOWN}
 				<div class="circle error">{numberOfErrors}</div>
 			{/if}
-		{/if}-->
+		{/if}
 	{/each}
 </Tabs>
 <slot />
 
 <style>
-	/*.error {
+	.error {
 		background-color: var(--a-icon-danger);
 		color: var(--a-text-on-danger);
 	}
@@ -104,5 +104,5 @@
 		font:
 			8px Arial,
 			sans-serif;
-	}*/
+	}
 </style>

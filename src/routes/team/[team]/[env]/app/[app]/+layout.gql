@@ -1,10 +1,9 @@
-query AppNotificationState($app: String!, $team: String!, $env: String!)
-@cache(policy: NetworkOnly) {
+query AppNotificationState($app: String!, $team: String!, $env: String!) {
 	app(name: $app, team: $team, env: $env) {
 		appState {
 			state
 			errors {
-				level
+				__typename
 			}
 		}
 	}

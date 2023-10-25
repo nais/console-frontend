@@ -11,13 +11,12 @@
 		graphql(`
 			fragment AppErrorFragment on StateError {
 				revision @loading
+				level
 				type: __typename
 				... on DeprecatedIngressError {
-					level
 					ingress
 				}
 				... on DeprecatedRegistryError {
-					level
 					name
 					registry
 					repository
@@ -25,18 +24,12 @@
 					tag
 				}
 				... on InvalidNaisYamlError {
-					level
 					detail
 				}
 				... on NewInstancesFailingError {
-					level
 					failingInstances
 				}
-				... on NoRunningInstancesError {
-					level
-				}
 				... on InboundAccessError {
-					level
 					rule {
 						application
 						cluster
@@ -45,8 +38,10 @@
 						namespace
 					}
 				}
-				... on OutboundAccessError {
+				... on NoRunningInstancesError {
 					level
+				}
+				... on OutboundAccessError {
 					rule {
 						application
 						cluster

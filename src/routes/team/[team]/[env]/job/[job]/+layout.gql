@@ -1,9 +1,9 @@
 query JobNotificationState($job: String!, $team: String!, $env: String!) {
-	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
-		jobState @loading {
+	naisjob(name: $job, team: $team, env: $env) {
+		jobState {
 			state
 			errors {
-				level
+				__typename
 			}
 		}
 	}
