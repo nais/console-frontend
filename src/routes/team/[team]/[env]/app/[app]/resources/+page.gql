@@ -1,0 +1,10 @@
+query AppResources($app: String!, $team: String!, $env: String!) {
+	dailyMemoryUsageForApp(env: $env, team: $team, app: $app) {
+		timestamp
+		value
+	}
+	dailyMemoryRequestForApp(env: $env, team: $team, app: $app) {
+		timestamp
+		value
+	}
+}
