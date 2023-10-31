@@ -2,7 +2,8 @@
     import {PendingValue, fragment, graphql, type AppImage} from '$houdini';
     import Loading from '$lib/Loading.svelte';
     import Time from '$lib/Time.svelte';
-    import {CopyButton} from '@nais/ds-svelte-community';
+    import {CopyButton, Tooltip} from '@nais/ds-svelte-community';
+    import WarningIcon from "$lib/icons/WarningIcon.svelte";
 
     export let app: AppImage;
     $: data = fragment(
@@ -92,19 +93,28 @@
             {#if $data?.dependencyTrack === PendingValue}
                 <Loading/>
             {:else if $data?.dependencyTrack === null}
-                <code>No data found in dependencytrack</code>
+                <code>No data found in dependencytrack.</code>
             {:else}
                 {#if $data.dependencyTrack.summary.critical > 0 }
+                    <Tooltip placement="right" content="severity: CRITICAL">
                     <span class="circle red"> {$data.dependencyTrack.summary.critical} </span>
+                    </Tooltip>
                 {/if}
                 {#if $data.dependencyTrack.summary.high > 0 }
+                    <Tooltip placement="right" content="severity: HIGH">
                     <span class="circle orange"> {$data.dependencyTrack.summary.high} </span>
+                    </Tooltip>
+
                 {/if}
                 {#if $data.dependencyTrack.summary.medium > 0 }
+                    <Tooltip placement="right" content="severity: MEDIUM">
                     <span class="circle yellow"> {$data.dependencyTrack.summary.medium} </span>
+                    </Tooltip>
                 {/if}
                 {#if $data.dependencyTrack.summary.low > 0 }
+                    <Tooltip placement="right" content="severity: LOW">
                     <span class="circle"> {$data.dependencyTrack.summary.low} </span>
+                    </Tooltip>
                 {/if}
                 {#if $data.dependencyTrack.summary.total === 0 }
                     <span class="green">No vulnerabilities registered!</span>
