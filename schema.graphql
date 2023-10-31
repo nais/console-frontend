@@ -21,6 +21,7 @@ type App implements Node {
   appState: AppState!
   authz: [Authz!]!
   autoScaling: AutoScaling!
+  dependencyTrack: DependencyTrack
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
@@ -175,6 +176,13 @@ type DatabaseUser {
 """Date type in YYYY-MM-DD format."""
 scalar Date
 
+type DependencyTrack {
+  findingsLink: String!
+  projectName: String!
+  projectUUID: String!
+  vulnerabilities: [Vulnerability!]
+}
+
 type DeployInfo {
   commitSha: String!
   deployer: String!
@@ -187,7 +195,7 @@ type Deployment {
   created: Time!
   env: String!
   id: ID!
-  repository: String
+  repository: String!
   resources: [DeploymentResource!]!
   statuses: [DeploymentStatus!]!
   team: Team!
@@ -597,7 +605,17 @@ type Port {
 
 """The query root for the console-backend GraphQL API."""
 type Query {
-  app(env: String!, name: String!, team: String!): App!
+  """Get an app by name, team and env."""
+  app(
+    """The environment the application is deployed to."""
+    env: String!
+
+    """The name of the application."""
+    name: String!
+
+    """The name of the team who owns the application."""
+    team: String!
+  ): App!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
@@ -628,6 +646,8 @@ type Query {
     """End date for cost series, inclusive."""
     to: Date!
   ): DailyCost!
+
+  """Get a list of deployments."""
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
 
   """Get env cost for a team."""
@@ -635,7 +655,18 @@ type Query {
 
   """Get monthly costs."""
   monthlyCost(filter: MonthlyCostFilter!): MonthlyCost!
-  naisjob(env: String!, name: String!, team: String!): NaisJob!
+
+  """Get a naisjob by name, team and env."""
+  naisjob(
+    """The environment the naisjob is deployed in."""
+    env: String!
+
+    """The name of the naisjob."""
+    name: String!
+
+    """The name of the team who owns the naisjob."""
+    team: String!
+  ): NaisJob!
 
   """Fetches an object given its ID."""
   node(
@@ -777,6 +808,7 @@ interface Storage {
   name: String!
 }
 
+"""The root subscription type for implementing GraphQL subscriptions."""
 type Subscription {
   log(input: LogSubscriptionInput): LogLine!
 }
@@ -869,10 +901,10 @@ type Team implements Node {
   name: String!
 
   """Slack alerts channels for the team."""
-  slackAlertsChannels: [SlackAlertsChannel!]
+  slackAlertsChannels: [SlackAlertsChannel!]!
 
   """The main Slack channel for the team."""
-  slackChannel: String
+  slackChannel: String!
 
   """Whether or not the viewer is an administrator of the team."""
   viewerIsAdmin: Boolean!
@@ -978,4 +1010,12 @@ type User implements Node {
 type Variable {
   name: String!
   value: String!
+}
+
+type Vulnerability {
+  componentPurl: String!
+  id: String!
+  name: String!
+  severity: String!
+  severityRank: Int!
 }

@@ -15,6 +15,14 @@
 					deployer
 					url
 				}
+				dependencyTrack @loading {
+					projectName
+					findingsLink
+					vulnerabilities {
+						severity
+						severityRank
+					}
+				}
 			}
 		`)
 	);
@@ -74,6 +82,9 @@
 		<div class="tag">
 			<h5>Tag</h5>
 			<code>{tag}</code>
+		</div>
+		<div>
+			{ JSON.stringify($data.dependencyTrack) }
 		</div>
 	</div>
 {/if}
