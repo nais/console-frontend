@@ -94,11 +94,23 @@
             {:else if $data?.dependencyTrack === null}
                 <code>No data found in dependencytrack</code>
             {:else}
-                <span class="circle red"> {$data.dependencyTrack.summary.critical} </span>
-                <span class="circle orange"> {$data.dependencyTrack.summary.high} </span>
-                <span class="circle yellow"> {$data.dependencyTrack.summary.medium} </span>
-                <span class="circle green"> {$data.dependencyTrack.summary.low} </span>
-                <p><a href="{$data.dependencyTrack.findingsLink}">View findings in DependencyTrack</a></p>
+                {#if $data.dependencyTrack.summary.critical > 0 }
+                    <span class="circle red"> {$data.dependencyTrack.summary.critical} </span>
+                {/if}
+                {#if $data.dependencyTrack.summary.high > 0 }
+                    <span class="circle orange"> {$data.dependencyTrack.summary.high} </span>
+                {/if}
+                {#if $data.dependencyTrack.summary.medium > 0 }
+                    <span class="circle yellow"> {$data.dependencyTrack.summary.medium} </span>
+                {/if}
+                {#if $data.dependencyTrack.summary.low > 0 }
+                    <span class="circle"> {$data.dependencyTrack.summary.low} </span>
+                {/if}
+                {#if $data.dependencyTrack.summary.total === 0 }
+                    <span class="green">No vulnerabilities registered!</span>
+                {:else}
+                    <p><a href="{$data.dependencyTrack.findingsLink}">View findings in DependencyTrack</a></p>
+                {/if}
             {/if}
         </div>
     </div>
@@ -145,60 +157,47 @@
     }
 
     .vulnerabilities {
+        margin-top: 0.5rem;
         grid-column: 1 / span 2;
         grid-row: 3;
     }
 
+    .vulnerabilities h5 {
+        margin-bottom: 0.5rem;
+    }
+
     .circle {
-        background: #e3e3e3;
         border-radius: 50%;
         -moz-border-radius: 50%;
         -webkit-border-radius: 50%;
+        border: 4px solid #6e6e6e;
         color: #6e6e6e;
         display: inline-block;
         font-weight: bold;
-        line-height: 40px;
         margin-right: 5px;
         text-align: center;
         width: 40px;
+        height: 40px;
+        padding: 4px;
     }
 
     .red {
-        background: #f86c6b;
+        border-color: #f86c6b;
     }
 
     .orange {
-        background: #fd8c00;
+        border-color: orange;
     }
 
     .yellow {
-        background: #ffc107;
+        border-color: #ffc107;
     }
 
     .green {
-        background: #4dbd74;
+        border-color: #4dbd74;
     }
 
     code {
         font-size: 1rem;
     }
 </style>
-
-
-<!--&#45;&#45;severity-critical: #f86c6b;-->
-<!--&#45;&#45;severity-high: #fd8c00;-->
-<!--&#45;&#45;severity-medium: #ffc107;-->
-<!--&#45;&#45;severity-low: #4dbd74;-->
-<!--&#45;&#45;severity-info: #20a8d8;-->
-<!--&#45;&#45;severity-unassigned: #777;-->
-<!--&#45;&#45;notification-fail: #f86c6b;-->
-<!--&#45;&#45;notification-warn: #ffc107;-->
-<!--&#45;&#45;notification-info: #20a8d8;-->
-<!--&#45;&#45;component-active-color: #17232f;-->
-<!--&#45;&#45;widget-1: #21a8d9;-->
-<!--&#45;&#45;widget-2: #a66bf8;-->
-<!--&#45;&#45;widget-3: #6d6bf8;-->
-<!--&#45;&#45;widget-4: #f86d6b;-->
-<!--&#45;&#45;primary: #20a8d8;-->
-<!--&#45;&#45;primary-lighter: #6dd9ff;-->
-<!--&#45;&#45;recessed: #0f161e;-->
