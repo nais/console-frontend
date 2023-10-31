@@ -93,7 +93,7 @@
             {#if $data?.dependencyTrack === PendingValue}
                 <Loading/>
             {:else if $data?.dependencyTrack === null}
-                <code>No data found in dependencytrack.</code>
+                <WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 1.0rem" /><code>No data found in dependencytrack.</code>
             {:else}
                 {#if $data.dependencyTrack.summary.critical > 0 }
                     <Tooltip placement="right" content="severity: CRITICAL">
@@ -104,7 +104,6 @@
                     <Tooltip placement="right" content="severity: HIGH">
                     <span class="circle orange"> {$data.dependencyTrack.summary.high} </span>
                     </Tooltip>
-
                 {/if}
                 {#if $data.dependencyTrack.summary.medium > 0 }
                     <Tooltip placement="right" content="severity: MEDIUM">
