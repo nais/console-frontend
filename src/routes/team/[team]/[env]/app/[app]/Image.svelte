@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { PendingValue, fragment, graphql, type AppImage } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
-	import Time from '$lib/Time.svelte';
-	import { CopyButton } from '@nais/ds-svelte-community';
+    import {PendingValue, fragment, graphql, type AppImage} from '$houdini';
+    import Loading from '$lib/Loading.svelte';
+    import Time from '$lib/Time.svelte';
+    import {CopyButton} from '@nais/ds-svelte-community';
 
-	export let app: AppImage;
-	$: data = fragment(
-		app,
-		graphql(`
+    export let app: AppImage;
+    $: data = fragment(
+        app,
+        graphql(`
 			fragment AppImage on App {
 				image @loading
 				deployInfo @loading {
@@ -28,115 +28,158 @@
 				}
 			}
 		`)
-	);
+    );
 
-	const parseImage = (image: string) => {
-		const tag = image.split(':')[1];
-		const name = image.split(':')[0].split('/').pop();
-		const registry = image.split('/')[0];
-		const repository = image.split('/').slice(1, -1).join('/');
-		return { registry, repository, name, tag };
-	};
+    const parseImage = (image: string) => {
+        const tag = image.split(':')[1];
+        const name = image.split(':')[0].split('/').pop();
+        const registry = image.split('/')[0];
+        const repository = image.split('/').slice(1, -1).join('/');
+        return {registry, repository, name, tag};
+    };
 
-	$: image = $data?.image;
-	$: deployInfo = $data?.deployInfo;
+    $: image = $data?.image;
+    $: deployInfo = $data?.deployInfo;
 </script>
 
 <h4 class="imageHeader">
-	Image {#if image !== PendingValue}
-		<CopyButton
-			size="xsmall"
-			variant="action"
-			text="Copy image name"
-			activeText="Image name copied"
-			copyText={image}
-		/>
-	{/if}
+    Image
+    {#if image !== PendingValue}
+        <CopyButton
+                size="xsmall"
+                variant="action"
+                text="Copy image name"
+                activeText="Image name copied"
+                copyText={image}
+        />
+    {/if}
 </h4>
 {#if deployInfo?.timestamp === PendingValue}
-	<Loading />
+    <Loading/>
 {:else if deployInfo.timestamp !== null}
-	<p class="lastActivity">
-		<a href={deployInfo.url}>Deployed</a>
-		<Time time={deployInfo.timestamp} distance={true} />
-		{#if deployInfo.deployer && deployInfo.url}
-			by
-			<a href="https://github.com/{deployInfo.deployer}">{deployInfo.deployer}</a>.
-		{/if}
-	</p>
+    <p class="lastActivity">
+        <a href={deployInfo.url}>Deployed</a>
+        <Time time={deployInfo.timestamp} distance={true}/>
+        {#if deployInfo.deployer && deployInfo.url}
+            by
+            <a href="https://github.com/{deployInfo.deployer}">{deployInfo.deployer}</a>.
+        {/if}
+    </p>
 {/if}
 {#if image === PendingValue}
-	<Loading />
+    <Loading/>
 {:else}
-	{@const { registry, repository, name, tag } = parseImage(image)}
-	<div class="imageGrid">
-		<div class="registry">
-			<h5>Registry</h5>
-			<code>{registry}</code>
-		</div>
-		<div class="repository">
-			<h5>Repository</h5>
-			<code>{repository}</code>
-		</div>
-		<div class="imageName">
-			<h5>Name</h5>
-			<code>{name}</code>
-		</div>
-		<div class="tag">
-			<h5>Tag</h5>
-			<code>{tag}</code>
-		</div>
-		<div class="vulnerabilities">
-			<h5>Vulnerabilities</h5>
-		{#if $data?.dependencyTrack === PendingValue}
-			<Loading />
-		{:else if $data?.dependencyTrack === null}
-			<code>No data found in dependencytrack</code>
-		{:else}
-			{ JSON.stringify($data.dependencyTrack) }
-		{/if}
-		</div>
-	</div>
+    {@const {registry, repository, name, tag} = parseImage(image)}
+    <div class="imageGrid">
+        <div class="registry">
+            <h5>Registry</h5>
+            <code>{registry}</code>
+        </div>
+        <div class="repository">
+            <h5>Repository</h5>
+            <code>{repository}</code>
+        </div>
+        <div class="imageName">
+            <h5>Name</h5>
+            <code>{name}</code>
+        </div>
+        <div class="tag">
+            <h5>Tag</h5>
+            <code>{tag}</code>
+        </div>
+        <div class="vulnerabilities">
+            <h5>Vulnerabilities</h5>
+            {#if $data?.dependencyTrack === PendingValue}
+                <Loading/>
+            {:else if $data?.dependencyTrack === null}
+                <code>No data found in dependencytrack</code>
+            {:else}
+                <span class="circle red"> {$data.dependencyTrack.summary.critical} </span>
+                <span class="circle orange"> {$data.dependencyTrack.summary.high} </span>
+                <span class="circle yellow"> {$data.dependencyTrack.summary.medium} </span>
+                <span class="circle green"> {$data.dependencyTrack.summary.low} </span>
+                <p><a href="{$data.dependencyTrack.findingsLink}">View findings in DependencyTrack</a></p>
+            {/if}
+        </div>
+    </div>
 {/if}
 
 <style>
-	.lastActivity {
-		margin-top: 0px;
-	}
-	.imageHeader {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 8px;
-		gap: 0.5rem;
-	}
-	.imageGrid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		column-gap: 0rem;
-		row-gap: 0rem;
-	}
-	.registry {
-		grid-column: 1;
-		grid-row: 1;
-	}
-	.repository {
-		grid-column: 2;
-		grid-row: 1;
-	}
-	.imageName {
-		grid-column: 1;
-		grid-row: 2;
-	}
-	.tag {
-		grid-column: 2;
-		grid-row: 2;
-	}
-	.vulnerabilities {
-		grid-column: 1 / span 2;
-		grid-row: 3;
-	}
-	code {
-		font-size: 1rem;
-	}
+    .lastActivity {
+        margin-top: 0px;
+    }
+
+    .imageHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        gap: 0.5rem;
+    }
+
+    .imageGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 0rem;
+        row-gap: 0rem;
+    }
+
+    .registry {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .repository {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .imageName {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .tag {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .vulnerabilities {
+        grid-column: 1 / span 2;
+        grid-row: 3;
+    }
+
+    .circle {
+        background: #e3e3e3;
+        border-radius: 50%;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        color: #6e6e6e;
+        display: inline-block;
+        font-weight: bold;
+        line-height: 40px;
+        margin-right: 5px;
+        text-align: center;
+        width: 40px;
+    }
+
+    .red {
+        background: darkred;
+    }
+
+    .orange {
+        background: orange;
+    }
+
+    .yellow {
+        background: yellow;
+    }
+
+    .green {
+        background: green;
+    }
+
+    code {
+        font-size: 1rem;
+    }
 </style>
