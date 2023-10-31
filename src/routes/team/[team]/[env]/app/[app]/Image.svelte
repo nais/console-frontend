@@ -83,8 +83,15 @@
 			<h5>Tag</h5>
 			<code>{tag}</code>
 		</div>
-		<div>
+		<div class="vulnerabilities">
+			<h5>Vulnerabilities</h5>
+		{#if $data?.dependencyTrack === PendingValue}
+			<Loading />
+		{:else if $data?.dependencyTrack === null}
+			<code>No data found in dependencytrack</code>
+		{:else}
 			{ JSON.stringify($data.dependencyTrack) }
+		{/if}
 		</div>
 	</div>
 {/if}
@@ -121,6 +128,10 @@
 	.tag {
 		grid-column: 2;
 		grid-row: 2;
+	}
+	.vulnerabilities {
+		grid-column: 1 / span 2;
+		grid-row: 3;
 	}
 	code {
 		font-size: 1rem;
