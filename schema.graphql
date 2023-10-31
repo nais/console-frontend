@@ -180,6 +180,7 @@ type DependencyTrack {
   findingsLink: String!
   projectName: String!
   projectUUID: String!
+  summary: VulnerabilitySummary!
   vulnerabilities: [Vulnerability!]
 }
 
@@ -1018,4 +1019,13 @@ type Vulnerability {
   name: String!
   severity: String!
   severityRank: Int!
+}
+
+type VulnerabilitySummary {
+  critical: Int!
+  high: Int!
+  low: Int!
+  medium: Int!
+  total: Int!
+  unassigned: Int!
 }

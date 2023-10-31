@@ -18,9 +18,12 @@
 				dependencyTrack @loading {
 					projectName
 					findingsLink
-					vulnerabilities {
-						severity
-						severityRank
+					summary {
+						total
+						critical
+						high
+						medium
+						low
 					}
 				}
 			}
