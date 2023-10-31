@@ -1,10 +1,18 @@
-query AppResources($app: String!, $team: String!, $env: String!) {
-	dailyMemoryUsageForApp(env: $env, team: $team, app: $app) {
+query AppResourceUtilization($app: String!, $team: String!, $env: String!) {
+	memoryUtilizationForApp(env: $env, team: $team, app: $app) {
 		timestamp
-		value
+		request
+		requestCost
+		usage
+		usageCost
+		requestedFactor
 	}
-	dailyMemoryRequestForApp(env: $env, team: $team, app: $app) {
+	CPUUtilizationForApp(env: $env, team: $team, app: $app) {
 		timestamp
-		value
+		request
+		requestCost
+		usage
+		usageCost
+		requestedFactor
 	}
 }

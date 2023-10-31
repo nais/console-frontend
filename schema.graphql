@@ -597,6 +597,8 @@ type Port {
 
 """The query root for the console-backend GraphQL API."""
 type Query {
+  CPUUtilizationForApp(app: String!, env: String!, team: String!): [ResourceUtilization!]!
+
   """Get an app by name, team and env."""
   app(
     """The environment the application is deployed to."""
@@ -608,8 +610,6 @@ type Query {
     """The name of the team who owns the application."""
     team: String!
   ): App!
-  dailyCPURequestForApp(app: String!, env: String!, team: String!): [ResourceUsageValue!]!
-  dailyCPUUsageForApp(app: String!, env: String!, team: String!): [ResourceUsageValue!]!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
@@ -640,14 +640,13 @@ type Query {
     """End date for cost series, inclusive."""
     to: Date!
   ): DailyCost!
-  dailyMemoryRequestForApp(app: String!, env: String!, team: String!): [ResourceUsageValue!]!
-  dailyMemoryUsageForApp(app: String!, env: String!, team: String!): [ResourceUsageValue!]!
 
   """Get a list of deployments."""
   deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
 
   """Get env cost for a team."""
   envCost(filter: EnvCostFilter!): [EnvCost!]!
+  memoryUtilizationForApp(app: String!, env: String!, team: String!): [ResourceUtilization!]!
 
   """Get monthly costs."""
   monthlyCost(filter: MonthlyCostFilter!): MonthlyCost!
@@ -706,9 +705,13 @@ type Requests {
   memory: String!
 }
 
-type ResourceUsageValue {
+type ResourceUtilization {
+  request: Float!
+  requestCost: Float!
+  requestedFactor: Float!
   timestamp: Time!
-  value: Float!
+  usage: Float!
+  usageCost: Float!
 }
 
 type Resources {
