@@ -164,22 +164,41 @@
     }
 
     .red {
-        background: darkred;
+        background: #f86c6b;
     }
 
     .orange {
-        background: orange;
+        background: #fd8c00;
     }
 
     .yellow {
-        background: yellow;
+        background: #ffc107;
     }
 
     .green {
-        background: green;
+        background: #4dbd74;
     }
 
     code {
         font-size: 1rem;
     }
 </style>
+
+
+<!--&#45;&#45;severity-critical: #f86c6b;-->
+<!--&#45;&#45;severity-high: #fd8c00;-->
+<!--&#45;&#45;severity-medium: #ffc107;-->
+<!--&#45;&#45;severity-low: #4dbd74;-->
+<!--&#45;&#45;severity-info: #20a8d8;-->
+<!--&#45;&#45;severity-unassigned: #777;-->
+<!--&#45;&#45;notification-fail: #f86c6b;-->
+<!--&#45;&#45;notification-warn: #ffc107;-->
+<!--&#45;&#45;notification-info: #20a8d8;-->
+<!--&#45;&#45;component-active-color: #17232f;-->
+<!--&#45;&#45;widget-1: #21a8d9;-->
+<!--&#45;&#45;widget-2: #a66bf8;-->
+<!--&#45;&#45;widget-3: #6d6bf8;-->
+<!--&#45;&#45;widget-4: #f86d6b;-->
+<!--&#45;&#45;primary: #20a8d8;-->
+<!--&#45;&#45;primary-lighter: #6dd9ff;-->
+<!--&#45;&#45;recessed: #0f161e;-->
