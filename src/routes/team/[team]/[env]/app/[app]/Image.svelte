@@ -117,7 +117,9 @@
                     </Tooltip>
                 {/if}
                 {#if $data.dependencyTrack.summary.total === 0 }
-                    <span class="green">No vulnerabilities registered!</span>
+                    <Tooltip placement="right" content="No vulnerabilities found, keep up the good work!">
+                    <span class="circle green">0</span>
+                    </Tooltip>
                 {:else}
                     <p><a href="{$data.dependencyTrack.findingsLink}">View findings in DependencyTrack</a></p>
                 {/if}
