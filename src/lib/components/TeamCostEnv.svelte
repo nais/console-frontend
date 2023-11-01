@@ -14,7 +14,7 @@
 	};
 
 	const costQuery = graphql(`
-		query TeamCostEnv($filter: EnvCostFilter!) @load {
+		query TeamCostEnv($filter: EnvCostFilter!) @load @cache(policy: NetworkOnly) {
 			envCost(filter: $filter) @loading {
 				env
 				apps {

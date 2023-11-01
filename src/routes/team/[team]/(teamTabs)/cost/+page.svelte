@@ -32,7 +32,7 @@
 		const params = new URLSearchParams({ from, to });
 		fromDate = new Date(from);
 		toDate = new Date(to);
-		goto(`?${params.toString()}`, { replaceState: true });
+		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
 	const today = new Date();

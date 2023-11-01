@@ -26,7 +26,7 @@
 		const old = $AppCost.variables!;
 		AppCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
 		const params = new URLSearchParams({ from, to });
-		goto(`?${params.toString()}`, { replaceState: true });
+		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
 	const today = new Date();

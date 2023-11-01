@@ -1,4 +1,5 @@
-query AppCost($app: String!, $team: String!, $env: String!, $from: Date!, $to: Date!) {
+query AppCost($app: String!, $team: String!, $env: String!, $from: Date!, $to: Date!)
+@cache(policy: NetworkOnly) {
 	dailyCostForApp(app: $app, team: $team, env: $env, from: $from, to: $to) {
 		series {
 			costType
