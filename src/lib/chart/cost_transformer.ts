@@ -19,9 +19,9 @@ export function costTransformStackedColumnChart<SeriesType extends CostEntry>(
 	to: Date,
 	data: DailyCost<SeriesType>
 ): EChartsOption {
-	const dates = new Array<Date>();
-	for (let d = from; d <= to; d.setDate(d.getDate() + 1)) {
-		dates.push(new Date(d));
+	const dates = new Array<string>();
+	for (let d = from; d <= to; d.setUTCDate(d.getUTCDate() + 1)) {
+		dates.push(d.toISOString().split('T')[0]);
 	}
 
 	return {
@@ -57,7 +57,8 @@ export function costTransformStackedColumnChart<SeriesType extends CostEntry>(
 		xAxis: [
 			{
 				type: 'category',
-				data: dates.map((date) => date.toLocaleDateString('en-GB'))
+				data: dates.map((date) => date),
+				boundaryGap: false
 			}
 		],
 		yAxis: [
@@ -99,13 +100,13 @@ export type TeamCostEnvType = {
 };
 
 export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
-	const dates = new Array<Date>();
+	const dates = new Array<string>();
 	for (
 		let d = data.apps[0].cost[0].date;
 		d <= data.apps[0].cost[data.apps[0].cost.length - 1].date;
-		d.setDate(d.getDate() + 1)
+		d.setUTCDate(d.getUTCDate() + 1)
 	) {
-		dates.push(new Date(d));
+		dates.push(d.toISOString().split('T')[0]);
 	}
 
 	return {
@@ -142,7 +143,8 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		xAxis: [
 			{
 				type: 'category',
-				data: dates.map((date) => date.toLocaleDateString('en-GB'))
+				data: dates.map((date) => date),
+				boundaryGap: false
 			}
 		],
 		yAxis: [
