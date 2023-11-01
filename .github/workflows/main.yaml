@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
-      - uses: nais/platform-build-push-sign@099ac96939c35cf243a1d13865e25224d2f5fa04 # ratchet:nais/platform-build-push-sign@main
+      - uses: nais/platform-build-push-sign@main # ratchet:nais/platform-build-push-sign@main
         id: build-push-sign
         with:
           name: ${{ env.NAME }}
