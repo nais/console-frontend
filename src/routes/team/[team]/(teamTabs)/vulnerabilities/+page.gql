@@ -1,4 +1,4 @@
-query Workloads($team: String!) @loading(count: 5, cascade: true) {
+query TeamVulnerabilities($team: String!) @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
 		apps(first: 50) @paginate(mode: SinglePage) {
