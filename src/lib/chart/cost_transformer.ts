@@ -57,7 +57,8 @@ export function costTransformStackedColumnChart<SeriesType extends CostEntry>(
 		xAxis: [
 			{
 				type: 'category',
-				data: dates.map((date) => date.toLocaleDateString('en-GB'))
+				data: dates.map((date) => date.toLocaleDateString('en-GB')),
+				boundaryGap: false
 			}
 		],
 		yAxis: [
@@ -142,7 +143,8 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		xAxis: [
 			{
 				type: 'category',
-				data: dates.map((date) => date.toLocaleDateString('en-GB'))
+				data: dates.map((date) => date.toLocaleDateString('en-GB')),
+				boundaryGap: false
 			}
 		],
 		yAxis: [
