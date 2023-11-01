@@ -18,7 +18,7 @@
 	) {
 		const opts = resourceUsageCPUTransformStackedColumnChart(data);
 		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 50 };
+		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
@@ -27,9 +27,11 @@
 	) {
 		const opts = resourceUsageMemTransformStackedColumnChart(data);
 		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 50 };
+		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
+
+	const today = new Date().toISOString().split('T')[0];
 </script>
 
 {#if $AppResourceUtilization.errors}
@@ -43,13 +45,21 @@
 <div class="grid">
 	<Card columns={12}>
 		<h3>Resources</h3>
+		<label for="from">From:</label>
+		<!--input type="date" id="from" bind:value={from} on:change={update} /-->
+		<input type="date" id="from" />
+		<label for="to">To:</label>
+		<!--input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} /-->
+		<input type="date" id="to" max={today} />
 		<h4>CPUUtilizationForApp</h4>
+
 		{#if $AppResourceUtilization.data && $AppResourceUtilization.fetching === false}
 			<EChart
 				options={echartOptionsStackedColumnChart($AppResourceUtilization.data.CPUUtilizationForApp)}
 				style="height: 400px"
 			/>
 		{/if}
+
 		<h4>MemoryUtilizationForApp</h4>
 		{#if $AppResourceUtilization.data && $AppResourceUtilization.fetching === false}
 			<EChart
@@ -60,14 +70,6 @@
 			/>
 		{/if}
 	</Card>
-	<!--Card columns={12}>
-		<h3>Resources</h3>
-		{#if $AppResources.data}
-			{#each $AppResources.data.dailyMemoryRequestForApp as metric}
-				<p>{metric.timestamp}/{metric.value}</p>
-			{/each}
-		{/if}
-	</Card-->
 </div>
 
 <style>
