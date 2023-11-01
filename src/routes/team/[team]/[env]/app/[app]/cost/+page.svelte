@@ -51,7 +51,14 @@
 			<label for="from">From:</label>
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} />
+			<input
+				type="date"
+				id="to"
+				min={from}
+				max={todayMinusTwoDays}
+				bind:value={to}
+				on:change={update}
+			/>
 			<EChart
 				options={echartOptionsStackedColumnChart($AppCost.data.dailyCostForApp)}
 				style="height: 400px"

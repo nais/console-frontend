@@ -56,7 +56,14 @@
 			<label for="from">From:</label>
 			<input type="date" id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} />
+			<input
+				type="date"
+				id="to"
+				min={from}
+				max={todayMinusTwoDays}
+				bind:value={to}
+				on:change={update}
+			/>
 		</Card>
 		<Card columns={12}>
 			<h4>Total cost for team {team} from {from} to {to}</h4>
