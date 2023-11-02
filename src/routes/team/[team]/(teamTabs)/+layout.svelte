@@ -32,6 +32,10 @@
 		{
 			tab: 'Cost',
 			routeId: '/team/[team]/(teamTabs)/cost'
+		},
+		{
+			tab: 'Resources',
+			routeId: '/team/[team]/(teamTabs)/resources'
 		}
 	];
 </script>

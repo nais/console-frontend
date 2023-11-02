@@ -1,4 +1,4 @@
-query ResourceUtilizationForApp(
+query ResourceUtilizationForJob(
 	$app: String!
 	$team: String!
 	$env: String!

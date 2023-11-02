@@ -1,4 +1,4 @@
-import { load_ResourceUtilizationForApp } from '$houdini';
+import { load_ResourceUtilizationForJob } from '$houdini';
 import type { PageLoad } from './$houdini';
 
 export const load: PageLoad = async (event) => {
@@ -11,10 +11,10 @@ export const load: PageLoad = async (event) => {
 	return {
 		fromDate,
 		toDate,
-		...(await load_ResourceUtilizationForApp({
+		...(await load_ResourceUtilizationForJob({
 			event,
 			variables: {
-				app: event.params.app,
+				app: event.params.job,
 				team: event.params.team,
 				env: event.params.env,
 				to: toDate,

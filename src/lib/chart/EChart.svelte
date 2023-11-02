@@ -1,10 +1,18 @@
 <script lang="ts">
-	import type { DefaultLabelFormatterCallbackParams, EChartsOption, EChartsType } from 'echarts';
+	import type {
+		DefaultLabelFormatterCallbackParams,
+		ECElementEvent,
+		EChartsOption,
+		EChartsType
+	} from 'echarts';
+	import { createEventDispatcher } from 'svelte';
 	import Legends from './Legends.svelte';
 
 	export let options: EChartsOption;
 	export let theme = 'london';
 	export let style = '';
+
+	const dispatcher = createEventDispatcher<{ click: ECElementEvent }>();
 
 	let activeSeries: string | undefined = undefined;
 
@@ -54,6 +62,9 @@
 				activeSeries = undefined;
 			});
 			window.addEventListener('resize', resize);
+			ins.on('click', (e) => {
+				dispatcher('click', e);
+			});
 		});
 
 		window.addEventListener('resize', resize);

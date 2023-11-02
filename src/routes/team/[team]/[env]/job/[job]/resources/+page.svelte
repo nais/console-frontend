@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import type { ResourceUtilizationForApp$result } from '$houdini';
+	//import { page } from '$app/stores';
+	import type { ResourceUtilizationForJob$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
@@ -12,10 +12,10 @@
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
-	$: ({ ResourceUtilizationForApp } = data);
+	$: ({ ResourceUtilizationForJob } = data);
 
-	let app = $page.params.app;
-	let team = $page.params.team;
+	//let job = $page.params.job;
+	//let team = $page.params.team;
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
@@ -24,15 +24,15 @@
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
-	function echartOptionsCPUChart(data: ResourceUtilizationForApp$result['cpu']) {
-		const opts = resourceUsageCPUTransformLineChart(data);
+	function echartOptionsStackedColumnChart(data: ResourceUtilizationForJob$result['cpu']) {
+		const opts = resourceUsageMemoryTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsMemoryChart(data: ResourceUtilizationForApp$result['memory']) {
-		const opts = resourceUsageMemoryTransformLineChart(data);
+	function echartOptionsStackedColumnChart2(data: ResourceUtilizationForJob$result['memory']) {
+		const opts = resourceUsageCPUTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
@@ -44,23 +44,17 @@
 		.split('T')[0];
 </script>
 
-{#if $ResourceUtilizationForApp.errors}
+{#if $ResourceUtilizationForJob.errors}
 	<Alert variant="error">
-		{#each $ResourceUtilizationForApp.errors as error}
+		{#each $ResourceUtilizationForJob.errors as error}
 			{error.message}
 		{/each}
 	</Alert>
 {/if}
 
-<Alert variant="info"
-	>These graphs shows the CPU and memory usage over time for {team}:{app} in conjunction with the defined
-	requests. If usage is below requests, you are kind of waisting money, and should set a lower request.<br
-	/>
-	Within a duration of a week the resolution is hourly, and with a higher durations the resolution is
-	daily.</Alert
->
-{#if $ResourceUtilizationForApp.data}
+{#if $ResourceUtilizationForJob.data}
 	<div class="grid">
+		<Card columns={8}>Description</Card>
 		<Card columns={12}>
 			<h4>Resource utilization</h4>
 
@@ -76,11 +70,11 @@
 			<label for="to">To:</label>
 			<input type="date" id="to" min={from} max={today} bind:value={to} on:change={update} />
 			<EChart
-				options={echartOptionsCPUChart($ResourceUtilizationForApp.data.cpu)}
+				options={echartOptionsStackedColumnChart($ResourceUtilizationForJob.data.cpu)}
 				style="height: 400px"
 			/>
 			<EChart
-				options={echartOptionsMemoryChart($ResourceUtilizationForApp.data.memory)}
+				options={echartOptionsStackedColumnChart2($ResourceUtilizationForJob.data.memory)}
 				style="height: 400px"
 			/>
 		</Card>

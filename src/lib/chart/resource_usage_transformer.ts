@@ -2,7 +2,7 @@ import type { ResourceUtilizationForApp$result } from '$houdini';
 import type { EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
-export function resourceUsageMemTransformStackedColumnChart(
+export function resourceUsageMemoryTransformLineChart(
 	input: ResourceUtilizationForApp$result['memory']
 ): EChartsOption {
 	const dates = new Array<Date>();
@@ -47,20 +47,22 @@ export function resourceUsageMemTransformStackedColumnChart(
 				name: 'Memory request',
 				data: input.map((s) => {
 					return s.request;
-				})
+				}),
+				showSymbol: false
 			},
 			{
 				type: 'line',
 				name: 'Memory usage',
 				data: input.map((s) => {
 					return s.usage;
-				})
+				}),
+				showSymbol: false
 			}
 		]
 	} as EChartsOption;
 }
 
-export function resourceUsageCPUTransformStackedColumnChart(
+export function resourceUsageCPUTransformLineChart(
 	input: ResourceUtilizationForApp$result['cpu']
 ): EChartsOption {
 	const dates = new Array<Date>();
@@ -101,14 +103,16 @@ export function resourceUsageCPUTransformStackedColumnChart(
 				name: 'Requested cores',
 				data: input.map((s) => {
 					return s.request;
-				})
+				}),
+				showSymbol: false
 			},
 			{
 				type: 'line',
 				name: 'Used cores',
 				data: input.map((s) => {
 					return s.usage;
-				})
+				}),
+				showSymbol: false
 			}
 		]
 	} as EChartsOption;

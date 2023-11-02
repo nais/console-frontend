@@ -681,9 +681,6 @@ type Query {
     """
     from: Date
 
-    """The resolution of the data. Defaults to HOURLY."""
-    resolution: Resolution
-
     """Resource type."""
     resource: ResourceType!
 

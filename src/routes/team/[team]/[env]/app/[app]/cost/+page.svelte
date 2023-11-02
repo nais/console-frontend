@@ -57,6 +57,7 @@
 				bind:value={to}
 				on:change={update}
 			/>
+
 			<EChart
 				options={echartOptionsStackedColumnChart($AppCost.data.dailyCostForApp)}
 				style="height: 400px"
