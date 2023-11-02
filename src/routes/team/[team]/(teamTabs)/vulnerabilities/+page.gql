@@ -1,7 +1,7 @@
 query TeamVulnerabilities($team: String!) @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
-		apps(first: 50) @paginate(mode: SinglePage) {
+		apps(first: 30) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
@@ -14,24 +14,22 @@ query TeamVulnerabilities($team: String!) @loading(count: 5, cascade: true) {
 
 			edges {
 				node {
-					deployInfo {
-						timestamp
-					}
 					name
 					image
-					...AppInstancesStatus
+					dependencyTrack {
+                        projectName
+                         findingsLink
+                         summary {
+                             total
+                             critical
+                             high
+                             medium
+                             low
+                        }
+                    }
 					env {
 						name
 					}
-
-					appState {
-						state
-					}
-
-					instances {
-						state
-					}
-					...VulnerabilitySummary
 				}
 			}
 		}
