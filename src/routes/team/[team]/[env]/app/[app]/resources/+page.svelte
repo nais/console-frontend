@@ -1,5 +1,7 @@
 <script lang="ts">
-	import type { AppResourceUtilization$result } from '$houdini';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import type { ResourceUtilizationForApp$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
@@ -10,21 +12,35 @@
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
+	$: ({ ResourceUtilizationForApp } = data);
 
-	$: ({ AppResourceUtilization } = data);
+	let app = $page.params.app;
+	let from = data.fromDate?.toISOString().split('T')[0];
+	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(
-		data: AppResourceUtilization$result['CPUUtilizationForApp']
-	) {
+	let fromDate = new Date(from);
+	let toDate = new Date(to);
+	console.log(fromDate, toDate);
+
+	function update() {
+		const old = $ResourceUtilizationForApp.variables!;
+		ResourceUtilizationForApp.fetch({
+			variables: { ...old, from: new Date(from), to: new Date(to) }
+		});
+		const params = new URLSearchParams({ from, to });
+		fromDate = new Date(from);
+		toDate = new Date(to);
+		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
+	}
+
+	function echartOptionsStackedColumnChart(data: ResourceUtilizationForApp$result['cpu']) {
 		const opts = resourceUsageCPUTransformStackedColumnChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsStackedColumnChart2(
-		data: AppResourceUtilization$result['memoryUtilizationForApp']
-	) {
+	function echartOptionsStackedColumnChart2(data: ResourceUtilizationForApp$result['memory']) {
 		const opts = resourceUsageMemTransformStackedColumnChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
@@ -32,45 +48,47 @@
 	}
 
 	const today = new Date().toISOString().split('T')[0];
+	const todayMinus30 = new Date(new Date().setDate(new Date().getDate() - 30))
+		.toISOString()
+		.split('T')[0];
 </script>
 
-{#if $AppResourceUtilization.errors}
+{#if $ResourceUtilizationForApp.errors}
 	<Alert variant="error">
-		{#each $AppResourceUtilization.errors as error}
+		{#each $ResourceUtilizationForApp.errors as error}
 			{error.message}
 		{/each}
 	</Alert>
 {/if}
 
-<div class="grid">
-	<Card columns={12}>
-		<h3>Resources</h3>
-		<label for="from">From:</label>
-		<!--input type="date" id="from" bind:value={from} on:change={update} /-->
-		<input type="date" id="from" />
-		<label for="to">To:</label>
-		<!--input type="date" id="to" max={todayMinusTwoDays} bind:value={to} on:change={update} /-->
-		<input type="date" id="to" max={today} />
-		<h4>CPUUtilizationForApp</h4>
-
-		{#if $AppResourceUtilization.data && $AppResourceUtilization.fetching === false}
+{#if $ResourceUtilizationForApp.data}
+	<div class="grid">
+		<Card columns={4}>
+			<label for="from">From:</label>
+			<input
+				type="date"
+				id="from"
+				min={todayMinus30}
+				max={to}
+				bind:value={from}
+				on:change={update}
+			/>
+			<label for="to">To:</label>
+			<input type="date" id="to" min={from} max={today} bind:value={to} on:change={update} />
+		</Card>
+		<Card columns={12}>
+			<h4>Resource utilization for {app} from {from} to {to}</h4>
 			<EChart
-				options={echartOptionsStackedColumnChart($AppResourceUtilization.data.CPUUtilizationForApp)}
+				options={echartOptionsStackedColumnChart($ResourceUtilizationForApp.data.cpu)}
 				style="height: 400px"
 			/>
-		{/if}
-
-		<h4>MemoryUtilizationForApp</h4>
-		{#if $AppResourceUtilization.data && $AppResourceUtilization.fetching === false}
 			<EChart
-				options={echartOptionsStackedColumnChart2(
-					$AppResourceUtilization.data.memoryUtilizationForApp
-				)}
+				options={echartOptionsStackedColumnChart2($ResourceUtilizationForApp.data.memory)}
 				style="height: 400px"
 			/>
-		{/if}
-	</Card>
-</div>
+		</Card>
+	</div>
+{/if}
 
 <style>
 	.grid {

@@ -1,9 +1,9 @@
-import type { AppResourceUtilization$result } from '$houdini';
+import type { ResourceUtilizationForApp$result } from '$houdini';
 import type { EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
 export function resourceUsageMemTransformStackedColumnChart(
-	input: AppResourceUtilization$result['memoryUtilizationForApp']
+	input: ResourceUtilizationForApp$result['memory']
 ): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
@@ -20,6 +20,7 @@ export function resourceUsageMemTransformStackedColumnChart(
 		},
 		xAxis: {
 			type: 'category',
+			boundaryGap: false,
 			data: dates.map(
 				(date) => {
 					return date.toLocaleDateString('en-GB', {
@@ -60,7 +61,7 @@ export function resourceUsageMemTransformStackedColumnChart(
 }
 
 export function resourceUsageCPUTransformStackedColumnChart(
-	input: AppResourceUtilization$result['CPUUtilizationForApp']
+	input: ResourceUtilizationForApp$result['cpu']
 ): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
@@ -68,8 +69,15 @@ export function resourceUsageCPUTransformStackedColumnChart(
 	}
 
 	return {
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'line'
+			}
+		},
 		xAxis: {
 			type: 'category',
+			boundaryGap: false,
 			data: dates.map(
 				(date) => {
 					return date.toLocaleTimeString('en-GB', {

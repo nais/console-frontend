@@ -1,5 +1,20 @@
-query AppResourceUtilization($app: String!, $team: String!, $env: String!) {
-	memoryUtilizationForApp(env: $env, team: $team, app: $app) {
+query ResourceUtilizationForApp(
+	$resolution: Resolution
+	$app: String!
+	$team: String!
+	$env: String!
+	$from: Date
+	$to: Date!
+) @cache(policy: NetworkOnly) {
+	cpu: resourceUtilizationForApp(
+		app: $app
+		env: $env
+		from: $from
+		resolution: $resolution
+		resource: CPU
+		team: $team
+		to: $to
+	) {
 		timestamp
 		request
 		requestCost
@@ -7,7 +22,16 @@ query AppResourceUtilization($app: String!, $team: String!, $env: String!) {
 		usageCost
 		requestedFactor
 	}
-	CPUUtilizationForApp(env: $env, team: $team, app: $app) {
+
+	memory: resourceUtilizationForApp(
+		app: $app
+		env: $env
+		from: $from
+		resolution: $resolution
+		resource: MEMORY
+		team: $team
+		to: $to
+	) {
 		timestamp
 		request
 		requestCost
