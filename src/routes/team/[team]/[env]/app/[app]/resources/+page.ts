@@ -11,8 +11,9 @@ export const load: PageLoad = async (event) => {
 	const toDate = to ? new Date(to) : new Date(Date.now());
 
 	return {
-		fromDate: fromDate,
+		fromDate,
 		toDate,
+		resolution: res,
 		...(await load_ResourceUtilizationForApp({
 			event,
 			variables: {

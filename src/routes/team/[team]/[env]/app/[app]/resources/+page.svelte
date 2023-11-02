@@ -17,19 +17,10 @@
 	let app = $page.params.app;
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
-
-	let fromDate = new Date(from);
-	let toDate = new Date(to);
-	console.log(fromDate, toDate);
+	let resolution = data.resolution;
 
 	function update() {
-		const old = $ResourceUtilizationForApp.variables!;
-		ResourceUtilizationForApp.fetch({
-			variables: { ...old, from: new Date(from), to: new Date(to) }
-		});
-		const params = new URLSearchParams({ from, to });
-		fromDate = new Date(from);
-		toDate = new Date(to);
+		const params = new URLSearchParams({ from, to, resolution });
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
@@ -63,7 +54,7 @@
 
 {#if $ResourceUtilizationForApp.data}
 	<div class="grid">
-		<Card columns={4}>
+		<Card columns={5}>
 			<label for="from">From:</label>
 			<input
 				type="date"
@@ -75,6 +66,11 @@
 			/>
 			<label for="to">To:</label>
 			<input type="date" id="to" min={from} max={today} bind:value={to} on:change={update} />
+			<label for="resolution">Resolution:</label>
+			<select id="resolution" bind:value={resolution} on:change={update}>
+				<option value="HOURLY">Hourly</option>
+				<option value="DAILY">Daily</option>
+			</select>
 		</Card>
 		<Card columns={12}>
 			<h4>Resource utilization for {app} from {from} to {to}</h4>
