@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Globe from '$lib/icons/Globe.svelte';
-	import { fragment, graphql, PendingValue } from '$houdini';
-	import type { JobAccessPolicy } from '$houdini';
 	import { page } from '$app/stores';
+	import type { JobAccessPolicy } from '$houdini';
+	import { fragment, graphql, PendingValue } from '$houdini';
+	import Globe from '$lib/icons/Globe.svelte';
 	import Loading from '$lib/Loading.svelte';
 
 	export let job: JobAccessPolicy;
@@ -86,7 +86,7 @@
 					{#if rule.application === PendingValue}
 						<Loading width="300px" />
 					{:else}
-						<a href="/team/{rule.namespace || team}/{env}/{rule.application}"
+						<a href="/team/{rule.namespace || team}/{env}/app/{rule.application}"
 							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 						>
 					{/if}
