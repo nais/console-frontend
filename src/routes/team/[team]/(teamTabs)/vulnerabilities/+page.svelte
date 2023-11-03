@@ -7,12 +7,90 @@
     import {Alert, Table, Tbody, Td, Th, Thead, Tr} from '@nais/ds-svelte-community';
     import type {PageData} from './$houdini';
     import Vulnerability from "$lib/components/Vulnerability.svelte";
+    import {afterNavigate} from "$app/navigation";
+    import {logEvent} from "$lib/amplitude";
 
 
     $: teamName = $page.params.team;
     export let data: PageData;
     $: ({TeamVulnerabilities} = data);
     $: team = $TeamVulnerabilities.data?.team;
+
+
+    function sortBy(type: string, multiplier: number) {
+        if (team !== undefined) {
+            team.apps.edges.sort((a, b) => {
+                if (a.node.name !== PendingValue && b.node.name !== PendingValue) {
+                    if (a.node.dependencyTrack !== null && b.node.dependencyTrack !== null) {
+                        if (type === "critical") {
+                            if (a.node.dependencyTrack.summary.critical > b.node.dependencyTrack.summary.critical) {
+                                return 1 * multiplier;
+                            }
+                            if (a.node.dependencyTrack.summary.critical < b.node.dependencyTrack.summary.critical) {
+                                return -1 * multiplier;
+                            }
+                        }
+                        if (type === "high") {
+                            if (a.node.dependencyTrack.summary.high > b.node.dependencyTrack.summary.high) {
+                                return 1 * multiplier;
+                            }
+                            if (a.node.dependencyTrack.summary.high < b.node.dependencyTrack.summary.high) {
+                                return -1 * multiplier;
+                            }
+                        }
+                        if (type === "medium") {
+                            if (a.node.dependencyTrack.summary.medium > b.node.dependencyTrack.summary.medium) {
+                                return 1 * multiplier;
+                            }
+                            if (a.node.dependencyTrack.summary.medium < b.node.dependencyTrack.summary.medium) {
+                                return -1 * multiplier;
+                            }
+                        }
+                        if (type === "low") {
+                            if (a.node.dependencyTrack.summary.low > b.node.dependencyTrack.summary.low) {
+                                return 1 * multiplier;
+                            }
+                            if (a.node.dependencyTrack.summary.low < b.node.dependencyTrack.summary.low) {
+                                return -1 * multiplier;
+                            }
+                        }
+
+                    } else if (a.node.dependencyTrack !== null && b.node.dependencyTrack === null) {
+                        return 1 * multiplier;
+                    } else if (a.node.dependencyTrack === null && b.node.dependencyTrack !== null) {
+                        return -1 * multiplier;
+                    }
+                    if (type === "name") {
+                        if (a.node.name > b.node.name) {
+                            return 1 * multiplier;
+                        }
+                        if (a.node.name < b.node.name) {
+                            return -1 * multiplier;
+                        }
+                    }
+                    if (type === "env") {
+                        if (a.node.env.name > b.node.env.name) {
+                            return 1 * multiplier;
+                        }
+                        if (a.node.env.name < b.node.env.name) {
+                            return -1 * multiplier;
+                        }
+                    }
+                }
+                return 0;
+            })
+            team = team;
+        }
+    }
+
+    afterNavigate((nav) => {
+        let props = {};
+        if (nav.to?.route.id != null) {
+            props = {routeID: nav.to.route.id};
+        }
+        console.log('page')
+        logEvent('pageview', props);
+    });
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -26,13 +104,34 @@
         <Card columns={12}>
             <Table size="small">
                 <Thead>
-                <Th>Name</Th>
-                <Th>Env</Th>
+                <Th>
+                    Name
+                    <!-- Sort by name LOW to HIGH -->
+                    <button class="triangle_upp" on:click={() => {sortBy("name", 1)}}></button>
+                    <!-- Sort by name HIGH to LOW -->
+                    <button class="triangle_down" on:click={() => {sortBy("name", -1)}}></button>
+                </Th>
+                <Th>Env
+                    <button class="triangle_upp" on:click={() => {sortBy("env", 1)}}></button>
+                    <button class="triangle_down" on:click={() => {sortBy("env", -1)}}></button>
+                </Th>
                 <Th>Findings</Th>
-                <Th>Critical</Th>
-                <Th>High</Th>
-                <Th>Medium</Th>
-                <Th>Low</Th>
+                <Th>Critical
+                    <button class="triangle_upp" on:click={() => {sortBy("critical", 1)}}></button>
+                    <button class="triangle_down" on:click={() => {sortBy("critical", -1)}}></button>
+                </Th>
+                <Th>High
+                    <button class="triangle_upp" on:click={() => {sortBy("high", 1)}}></button>
+                    <button class="triangle_down" on:click={() => {sortBy("high", -1)}}></button>
+                </Th>
+                <Th>Medium
+                    <button class="triangle_upp" on:click={() => {sortBy("medium", 1)}}></button>
+                    <button class="triangle_down" on:click={() => {sortBy("medium", -1)}}></button>
+                </Th>
+                <Th>Low
+                    <button class="triangle_upp" on:click={() => {sortBy("low", 1)}}></button>
+                    <button class="triangle_down" on:click={() => {sortBy("low", -1)}}></button>
+                </Th>
                 </Thead>
                 <Tbody>
                 {#if team !== undefined}
@@ -132,5 +231,23 @@
     .na {
         padding-left: 10px;
         color: lightslategray;
+    }
+
+    .triangle_upp {
+        padding: 0px;
+        padding-top: 1px;
+        border-left: solid 5px transparent;
+        border-right: solid 5px transparent;
+        border-bottom: solid 10px lightslategray;
+        border-top: none;
+    }
+
+    .triangle_down {
+        padding: 0px;
+        padding-top: 1px;
+        border-left: solid 5px transparent;
+        border-right: solid 5px transparent;
+        border-bottom: solid 10px lightslategray;
+        border-top: none;
     }
 </style>
