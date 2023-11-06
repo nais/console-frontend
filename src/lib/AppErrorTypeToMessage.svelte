@@ -114,8 +114,18 @@
 {:else if $data.__typename === 'InboundAccessError'}
 	{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST' && $data.rule.mutualExplanation !== 'CLUSTER_NOT_FOUND'}
 		<div class="wrapper">
-			<Alert variant="warning"
-				><a
+			<Alert variant="warning">
+				You allow traffic from <a
+					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
+						? $data.rule.cluster
+						: env}/app/{$data.rule.application}">{$data.rule.application}</a
+				>
+				in namespace {$data.rule.namespace || team} in {$data.rule.cluster
+					? $data.rule.cluster
+					: env}, but that application doesn’t have a outbound rule for you.
+
+				<!--
+				<a
 					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
 						? $data.rule.cluster
 						: env}/app/{$data.rule.application}"
@@ -136,23 +146,20 @@
 							? $data.rule.cluster
 							: env}/app/{$data.rule.application}/yaml">manifest</a
 					>.
-				{:else}
-					<!--Please verify outbound rule for {app}. Check rule in
-				<a href="/team/{team}/{env}/app/{app}/yaml">manifest</a>.-->
-					{$data.rule.mutualExplanation}
-				{/if}
+
+				{/if}-->
 				<br />
-				Consult
+				Please consult
 				<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
 					>Nais Application reference - accessPolicy</a
-				>.</Alert
-			>
+				>.
+			</Alert>
 		</div>
 	{/if}
 {:else if $data.__typename === 'OutboundAccessError'}
 	<div class="wrapper">
-		<Alert variant="warning"
-			><a
+		<Alert variant="warning">
+			<a
 				href="/team/{$data.rule.namespace || team}/{$data.rule.cluster
 					? $data.rule.cluster
 					: env}/app/{$data.rule.application}"
