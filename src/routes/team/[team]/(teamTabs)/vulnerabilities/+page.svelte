@@ -2,13 +2,11 @@
     import {page} from '$app/stores';
     import {PendingValue} from '$houdini';
     import Card from '$lib/Card.svelte';
-    import Loading from '$lib/Loading.svelte';
-    import Pagination from '$lib/Pagination.svelte';
-    import {Alert, Table, Tbody, Td, Th, Thead, Tr} from '@nais/ds-svelte-community';
+    import {Alert, Table, TableSortState, Tbody, Td, Th, Thead, Tr} from '@nais/ds-svelte-community';
     import type {PageData} from './$houdini';
+    import Loading from "$lib/Loading.svelte";
+    import Pagination from "$lib/Pagination.svelte";
     import Vulnerability from "$lib/components/Vulnerability.svelte";
-    import {afterNavigate} from "$app/navigation";
-    import {logEvent} from "$lib/amplitude";
 
     $: teamName = $page.params.team;
     export let data: PageData;
@@ -29,15 +27,25 @@
                 delete sortKey.reverse;
                 sortKey.key = key;
             }
+            sortState = {
+                orderBy: key,
+                direction: sortKey.reverse ? 'descending' : 'ascending'
+            }
+           /* TeamVulnerabilities.fetch({
+				variables: {
+					team: "aura",
+				}
+			})*/
+
             team.apps.edges.sort((a, b) => {
                     if (a.node.name !== PendingValue && b.node.name !== PendingValue) {
                         if (key === 'env') {
                             return (a.node[key].name > b.node[key].name ? 1 : -1) * (sortKey.reverse ? 1 : -1)
                         }
-                        if (key === 'name'){
+                        if (key === 'name') {
                             return (a.node[key] > b.node[key] ? 1 : -1) * (sortKey.reverse ? 1 : -1)
                         }
-                        if (['critical', 'high', 'medium', 'low'].includes(key)){
+                        if (['critical', 'high', 'medium', 'low'].includes(key)) {
                             if (a.node.dependencyTrack !== null && b.node.dependencyTrack !== null) {
                                 return (a.node.dependencyTrack.summary[key] > b.node.dependencyTrack.summary[key] ? 1 : -1) * (sortKey.reverse ? 1 : -1)
                             } else if (a.node.dependencyTrack !== null && b.node.dependencyTrack === null) {
@@ -54,13 +62,11 @@
         }
     };
 
-    afterNavigate((nav) => {
-        let props = {};
-        if (nav.to?.route.id != null) {
-            props = {routeID: nav.to.route.id};
-        }
-        logEvent('pageview', props);
-    });
+
+    let sortState: TableSortState = {
+        orderBy: 'name',
+        direction: 'ascending'
+    }
 
 
 </script>
@@ -74,27 +80,26 @@
 {:else}
     <div class="grid">
         <Card columns={12}>
-            <Table size="small">
+            <Table size="small" sort={sortState}
+                   on:sortChange={(e) => {
+		            const { key } = e.detail;
+                    sortData(key);
+                   }}>
+
                 <Thead>
-                <Th>
+                <Th sortable={true} sortKey="name">
                     Name
-                    <button on:click={() => sortData('name')} class="arrow {sortKey.reverse ? '' : 'up'}"></button>
                 </Th>
-                <Th>Env
-                   <button on:click={() => sortData('env')} class="arrow {sortKey.reverse ? '' : 'up'}"></button>
+                <Th sortable={true} sortKey="env">Env
                 </Th>
                 <Th>Findings</Th>
-                <Th>Critical
-                    <button on:click={() => sortData('critical')} class="arrow {sortKey.reverse ? '' : 'up'}"></button>
+                <Th sortable={true} sortKey="critical">Critical
                 </Th>
-                <Th>High
-                    <button on:click={() => sortData('high')} class="arrow {sortKey.reverse ? '' : 'up'}"></button>
+                <Th sortable={true} sortKey="high">High
                 </Th>
-                <Th>Medium
-                    <button on:click={() => sortData('medium')} class="arrow {sortKey.reverse ? '' : 'up'}"></button>
+                <Th sortable={true} sortKey="medium">Medium
                 </Th>
-                <Th>Low
-                    <button on:click={() => sortData('low')} class="arrow {sortKey.reverse ? '' : 'up'}"></button>
+                <Th sortable={true} sortKey="low">Low
                 </Th>
                 </Thead>
                 <Tbody>
