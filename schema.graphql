@@ -710,6 +710,7 @@ type Resources {
 type Rule {
   application: String!
   cluster: String!
+  isJob: Boolean!
   mutual: Boolean!
   mutualExplanation: String!
   namespace: String!
