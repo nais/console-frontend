@@ -64,6 +64,29 @@ type AppState {
   state: State!
 }
 
+input AppsOrderBy {
+  """Order direction"""
+  direction: Sort
+  field: AppsOrderByField
+}
+
+enum AppsOrderByField {
+  """Order apps by name."""
+  NAME
+
+  """Order apps by vulnerability severity critical"""
+  SEVERITY_CRITICAL
+
+  """Order apps by vulnerability severity high"""
+  SEVERITY_HIGH
+
+  """Order apps by vulnerability severity low"""
+  SEVERITY_LOW
+
+  """Order apps by vulnerability severity medium"""
+  SEVERITY_MEDIUM
+}
+
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
@@ -699,6 +722,25 @@ type Query {
 
   """Get the currently logged in user."""
   user: User!
+  vulnerabilitiesForTeam(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+
+    """Order apps by"""
+    orderBy: AppsOrderBy
+
+    """The name of the team to get vulnerabilities for."""
+    team: String!
+  ): [DependencyTrack]!
 }
 
 type Redis implements Storage {
@@ -772,6 +814,14 @@ type SlackAlertsChannel {
 
   """The name of the Slack alerts channel."""
   name: String!
+}
+
+enum Sort {
+  """Ascending sort order."""
+  ASC
+
+  """Descending sort order."""
+  DESC
 }
 
 type SqlInstance implements Storage {
