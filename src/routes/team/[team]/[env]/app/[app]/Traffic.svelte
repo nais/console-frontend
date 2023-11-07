@@ -14,7 +14,7 @@
 		graphql(`
 			fragment AccessPolicy on App @loading {
 				name
-				ingresses
+				ingresses @loading
 				accessPolicy {
 					inbound {
 						rules {
@@ -22,6 +22,8 @@
 							namespace
 							cluster
 							mutual
+							mutualExplanation
+							isJob
 						}
 					}
 					outbound {
@@ -30,6 +32,8 @@
 							namespace
 							cluster
 							mutual
+							mutualExplanation
+							isJob
 						}
 						external {
 							host @loading
@@ -57,144 +61,178 @@
 	};
 </script>
 
-<div class="traffic">
-	<div class="directionContent first">
-		<h5>Inbound</h5>
-		<h6>External ingresses</h6>
-		<ul>
-			{#each $data.ingresses as ingress}
-				{#if ingress === PendingValue}
-					<Loading width="300px" />
-				{:else if ingress.includes('.external.')}
-					<li>
-						<Globe /><a href={ingress}>{externalName(ingress)}</a>
-					</li>
-				{/if}
-			{/each}
-			{#if !hasExternal}
-				<li>No external ingresses</li>
-			{/if}
-		</ul>
-		<h6>Internal ingresses</h6>
-		<ul>
-			{#each $data.ingresses as ingress}
-				{#if ingress === PendingValue}
-					<Loading width="300px" />
-				{:else if !ingress.includes('.external.')}
-					<li><a href={ingress}>{internalName(ingress)}</a></li>
-				{/if}
-			{/each}
-			{#if !hasInternal}
-				<li>No internal ingresses</li>
-			{/if}
-		</ul>
-		<h6>Applications</h6>
-		<ul>
-			{#each $data.accessPolicy.inbound.rules as rule}
-				<li>
-					{#if rule.application !== PendingValue}
-						{#if !rule.mutual}
-							<Tooltip
-								placement="right"
-								content="{rule.application} is missing outbound policy for {String($data.name)}"
-								><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
-							>
-						{/if}
-						{#if rule.application == '*'}
-							Any app
-							{#if rule.namespace == '*'}
-								from any namespace
-							{:else}
-								in {rule.namespace}
-							{/if}
-							{#if rule.cluster == '*'}
-								in any cluster
-							{:else}
-								in {env}
-							{/if}
-						{:else}
-							<a
-								href="/team/{rule.namespace || team}/{rule.cluster
-									? rule.cluster
-									: env}/app/{rule.application}"
-								>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-									? '.' + rule.cluster
-									: ''}</a
-							>
-						{/if}
-					{:else}
+{#if $data}
+	<div class="traffic">
+		<div class="directionContent first">
+			<h5>Inbound</h5>
+			<h6>External ingresses</h6>
+			<ul>
+				{#each $data.ingresses as ingress}
+					{#if ingress === PendingValue}
 						<Loading width="300px" />
-					{/if}
-				</li>
-			{:else}
-				<li>No inbound access policy</li>
-			{/each}
-		</ul>
-	</div>
-	<div class="directionContent">
-		<h5>Outbound</h5>
-		<h6>External hostnames</h6>
-		<ul>
-			{#each $data.accessPolicy.outbound.external as external}
-				{#if external.host === PendingValue}
-					<Loading width="300px" />
-				{:else}
-					{#each external.ports as port}
+					{:else if ingress.includes('.external.')}
 						<li>
-							<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
+							<Globe /><a href={ingress}>{externalName(ingress)}</a>
 						</li>
-					{:else}
-						<li><Globe /><a href="https://{external.host}">https://{external.host}</a><br /></li>
-					{/each}
+					{/if}
+				{/each}
+				{#if !hasExternal}
+					<li>No external ingresses</li>
 				{/if}
-			{:else}
-				<li>No outbound external access policy</li>
-			{/each}
-		</ul>
-		<h6>Applications</h6>
-		<ul>
-			{#each $data.accessPolicy.outbound.rules as rule}
-				<li>
-					{#if rule.application === PendingValue}
+			</ul>
+			<h6>Internal ingresses</h6>
+			<ul>
+				{#each $data.ingresses as ingress}
+					{#if ingress === PendingValue}
 						<Loading width="300px" />
-					{:else}
-						{#if !rule.mutual}
-							<Tooltip
-								placement="right"
-								content="{rule.application} is missing inbound policy for {String($data.name)}"
-								><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
-							>
-						{/if}
-						{#if rule.application == '*'}
-							Any app
-							{#if rule.namespace == '*'}
-								from any namespace
-							{:else}
-								in {rule.namespace}
+					{:else if !ingress.includes('.external.')}
+						<li><a href={ingress}>{internalName(ingress)}</a></li>
+					{/if}
+				{/each}
+				{#if !hasInternal}
+					<li>No internal ingresses</li>
+				{/if}
+			</ul>
+			<h6>Applications</h6>
+			<ul>
+				{#each $data.accessPolicy.inbound.rules as rule}
+					<li>
+						{#if rule.application !== PendingValue}
+							{#if !rule.mutual}
+								<Tooltip
+									placement="right"
+									content="{rule.application} is missing outbound policy for {String($data.name)}"
+									><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
+								>
 							{/if}
-							{#if rule.cluster == '*'}
-								in any cluster
+							{#if rule.application == '*'}
+								Any app
+								{#if rule.namespace == '*'}
+									from any namespace
+								{:else}
+									in {rule.namespace}
+								{/if}
+								{#if rule.cluster == '*'}
+									in any cluster
+								{:else}
+									in {env}
+								{/if}
+							{:else if rule.isJob}
+								{#if rule.mutualExplanation === 'APP_NOT_FOUND'}
+									{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+										? '.' + rule.cluster
+										: ''}
+								{:else}
+									<a
+										href="/team/{rule.namespace || team}/{rule.cluster
+											? rule.cluster
+											: env}/job/{rule.application}"
+										>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+											? '.' + rule.cluster
+											: ''}</a
+									>
+								{/if}
+							{:else if rule.mutualExplanation === 'APP_NOT_FOUND'}
+								{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+									? '.' + rule.cluster
+									: ''}
+							{:else if rule.mutualExplanation === 'LOCALHOST'}
+								{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+									? '.' + rule.cluster
+									: ''}
 							{:else}
-								in {env}
+								<a
+									href="/team/{rule.namespace || team}/{rule.cluster
+										? rule.cluster
+										: env}/app/{rule.application}"
+									>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+										? '.' + rule.cluster
+										: ''}</a
+								>
 							{/if}
 						{:else}
-							<a
-								href="/team/{rule.namespace || team}/{rule.cluster
-									? rule.cluster
-									: env}/app/{rule.application}"
-								>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-									? '.' + rule.cluster
-									: ''}</a
-							>
+							<Loading width="300px" />
 						{/if}
+					</li>
+				{:else}
+					<li>No inbound access policy</li>
+				{/each}
+			</ul>
+		</div>
+		<div class="directionContent">
+			<h5>Outbound</h5>
+			<h6>External hostnames</h6>
+			<ul>
+				{#each $data.accessPolicy.outbound.external as external}
+					{#if external.host === PendingValue}
+						<Loading width="300px" />
+					{:else}
+						{#each external.ports as port}
+							<li>
+								<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
+							</li>
+						{:else}
+							<li><Globe /><a href="https://{external.host}">https://{external.host}</a><br /></li>
+						{/each}
 					{/if}
-				</li>
-			{:else}
-				<li>No outbound access policy</li>
-			{/each}
-		</ul>
+				{:else}
+					<li>No outbound external access policy</li>
+				{/each}
+			</ul>
+			<h6>Applications</h6>
+			<ul>
+				{#each $data.accessPolicy.outbound.rules as rule}
+					<li>
+						{#if rule.application === PendingValue}
+							<Loading width="300px" />
+						{:else}
+							{#if !rule.mutual}
+								<Tooltip
+									placement="right"
+									content="{rule.application} is missing inbound policy for {String($data.name)}"
+									><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
+								>
+							{/if}
+							{#if rule.application == '*'}
+								Any app
+								{#if rule.namespace == '*'}
+									from any namespace
+								{:else}
+									in {rule.namespace}
+								{/if}
+								{#if rule.cluster == '*'}
+									in any cluster
+								{:else}
+									in {env}
+								{/if}
+							{:else if rule.isJob}
+								<a
+									href="/team/{rule.namespace || team}/{rule.cluster
+										? rule.cluster
+										: env}/job/{rule.application}"
+									>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+										? '.' + rule.cluster
+										: ''}</a
+								>
+							{:else}
+								<a
+									href="/team/{rule.namespace || team}/{rule.cluster
+										? rule.cluster
+										: env}/app/{rule.application}"
+									>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
+										? '.' + rule.cluster
+										: ''}</a
+								>
+							{/if}
+						{/if}
+					</li>
+				{:else}
+					<li>No outbound access policy</li>
+				{/each}
+			</ul>
+		</div>
 	</div>
-</div>
+{/if}
 
 <style>
 	.traffic {
