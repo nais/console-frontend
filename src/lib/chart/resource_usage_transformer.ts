@@ -7,7 +7,7 @@ export function resourceUsageMemoryTransformLineChart(
 ): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
-		dates.push(input[i].timestamp);
+		dates.push(new Date(input[i].timestamp));
 	}
 
 	return {
@@ -16,7 +16,7 @@ export function resourceUsageMemoryTransformLineChart(
 			axisPointer: {
 				type: 'line'
 			},
-			valueFormatter: prettyBytes
+			valueFormatter: (value: number) => prettyBytes(value == null ? 0 : value)
 		},
 		xAxis: {
 			type: 'category',
@@ -46,6 +46,9 @@ export function resourceUsageMemoryTransformLineChart(
 				type: 'line',
 				name: 'Memory request',
 				data: input.map((s) => {
+					if (s.request === 0) {
+						return null;
+					}
 					return s.request;
 				}),
 				showSymbol: false
@@ -54,6 +57,10 @@ export function resourceUsageMemoryTransformLineChart(
 				type: 'line',
 				name: 'Memory usage',
 				data: input.map((s) => {
+					if (s.usage === 0) {
+						return null;
+					}
+
 					return s.usage;
 				}),
 				showSymbol: false
@@ -67,7 +74,7 @@ export function resourceUsageCPUTransformLineChart(
 ): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
-		dates.push(input[i].timestamp);
+		dates.push(new Date(input[i].timestamp));
 	}
 
 	return {
@@ -75,7 +82,8 @@ export function resourceUsageCPUTransformLineChart(
 			trigger: 'axis',
 			axisPointer: {
 				type: 'line'
-			}
+			},
+			valueFormatter: (value: number) => (value == null ? '0' : value)
 		},
 		xAxis: {
 			type: 'category',
@@ -102,6 +110,9 @@ export function resourceUsageCPUTransformLineChart(
 				type: 'line',
 				name: 'Requested cores',
 				data: input.map((s) => {
+					if (s.request === 0) {
+						return null;
+					}
 					return s.request;
 				}),
 				showSymbol: false
@@ -110,6 +121,9 @@ export function resourceUsageCPUTransformLineChart(
 				type: 'line',
 				name: 'Used cores',
 				data: input.map((s) => {
+					if (s.usage === 0) {
+						return null;
+					}
 					return s.usage;
 				}),
 				showSymbol: false

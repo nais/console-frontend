@@ -15,10 +15,7 @@ query ResourceUtilizationForApp(
 	) {
 		timestamp
 		request
-		requestCost
 		usage
-		usageCost
-		requestedFactor
 	}
 
 	memory: resourceUtilizationForApp(
@@ -31,9 +28,6 @@ query ResourceUtilizationForApp(
 	) {
 		timestamp
 		request
-		requestCost
 		usage
-		usageCost
-		requestedFactor
 	}
 }
