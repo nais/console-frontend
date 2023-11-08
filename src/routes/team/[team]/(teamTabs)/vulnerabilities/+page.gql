@@ -4,7 +4,7 @@ query TeamVulnerabilities($team: String!, $orderBy: VulnerabilitiesOrderBy = {
 }) @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
-		vulnerabilitiesForTeam(first: 30, orderBy: $orderBy) @loading @paginate(mode: SinglePage) {
+		vulnerabilities(first: 30, orderBy: $orderBy) @loading @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage

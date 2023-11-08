@@ -13,7 +13,7 @@
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
 	$: team = $TeamVulnerabilities.data?.team;
-	$: vulns = $TeamVulnerabilities.data?.team?.vulnerabilitiesForTeam;
+	$: vulns = $TeamVulnerabilities.data?.team?.vulnerabilities;
 
 	const sort = (key) => {
 		if (!sortState) {
@@ -50,7 +50,6 @@
 		orderBy: 'SEVERITY_CRITICAL',
 		direction: 'descending'
 	};
-
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -83,14 +82,14 @@
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(team.vulnerabilitiesForTeam.edges.length).fill('medium') as size}
+								{#each new Array(7).fill('medium') as size}
 									<Td>
 										<Loading {size} />
 									</Td>
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.vulnerabilitiesForTeam.edges as edge}
+							{#each team.vulnerabilities.edges as edge}
 								<Tr>
 									<Td>
 										<a href="/team/{teamName}/{edge.node.env}/app/{edge.node.appName}"
@@ -136,8 +135,8 @@
 			{#if team !== undefined}
 				{#if team.id !== PendingValue}
 					<Pagination
-						totalCount={team.vulnerabilitiesForTeam.totalCount}
-						pageInfo={team.vulnerabilitiesForTeam.pageInfo}
+						totalCount={team.vulnerabilities.totalCount}
+						pageInfo={team.vulnerabilities.pageInfo}
 						on:nextPage={() => {
 							if (!$TeamVulnerabilities.pageInfo.hasNextPage) return;
 							TeamVulnerabilities.loadNextPage();
@@ -165,5 +164,4 @@
 		padding-left: 10px;
 		color: lightslategray;
 	}
-
 </style>
