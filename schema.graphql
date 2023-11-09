@@ -701,7 +701,7 @@ type Query {
 
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
-  ): [ResourceUtilizationInEnv!]!
+  ): [ResourceUtilizationForEnv!]!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
   """Get a specific NAIS-team by the team name."""
@@ -739,12 +739,6 @@ type Requests {
   memory: String!
 }
 
-"""Resolution type."""
-enum Resolution {
-  DAILY
-  HOURLY
-}
-
 """Resource type."""
 enum ResourceType {
   CPU
@@ -775,8 +769,8 @@ type ResourceUtilization {
   usageCost: Float!
 }
 
-"""ResourceUtilization in env type."""
-type ResourceUtilizationInEnv {
+"""Resource utilization for env type."""
+type ResourceUtilizationForEnv {
   """CPU resource utilization data for the environment."""
   cpu: [ResourceUtilization!]!
 
