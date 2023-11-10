@@ -182,7 +182,6 @@ type DependencyTrack implements Node {
   projectName: String!
   projectUUID: String!
   summary: VulnerabilitySummary
-  vulnerabilities: [Vulnerability!]
 }
 
 type DeployInfo {
@@ -783,6 +782,14 @@ enum Sort {
   DESC
 }
 
+enum SortOrder {
+  """Ascending sort order."""
+  ASC
+
+  """Descending sort order."""
+  DESC
+}
+
 type SqlInstance implements Storage {
   autoBackupHour: Int!
   cascadingDelete: Boolean!
@@ -1084,14 +1091,6 @@ enum VulnerabilitiesOrderByField {
 
   """Order apps by vulnerability severity medium"""
   SEVERITY_MEDIUM
-}
-
-type Vulnerability {
-  componentPurl: String!
-  id: String!
-  name: String!
-  severity: String!
-  severityRank: Int!
 }
 
 type VulnerabilitySummary {
