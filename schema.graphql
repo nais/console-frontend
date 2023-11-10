@@ -679,17 +679,14 @@ type Query {
     """
     from: Date
 
-    """Resource type."""
-    resource: ResourceType!
-
     """The team who owns the app."""
     team: String!
 
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
-  ): [ResourceUtilization!]!
+  ): ResourceUtilizationForApp!
 
-  """Get the resource utilization for a team."""
+  """Get the resource utilization for a team across all environments."""
   resourceUtilizationForTeam(
     """
     Fetch resource utilization from this date. Defaults to 7 days before the to date.
@@ -767,6 +764,15 @@ type ResourceUtilization {
 
   """The cost associated with the actual resource usage."""
   usageCost: Float!
+}
+
+"""Resource utilization for app type."""
+type ResourceUtilizationForApp {
+  """CPU resource utilization data for the environment."""
+  cpu: [ResourceUtilization!]!
+
+  """Memory resource utilization data for the environment."""
+  memory: [ResourceUtilization!]!
 }
 
 """Resource utilization for env type."""

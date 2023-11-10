@@ -3,7 +3,7 @@ import type { EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
 export function resourceUsageMemoryTransformLineChart(
-	input: ResourceUtilizationForApp$result['memory']
+	input: ResourceUtilizationForApp$result['resourceUtilizationForApp']['memory']
 ): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
@@ -70,7 +70,7 @@ export function resourceUsageMemoryTransformLineChart(
 }
 
 export function resourceUsageCPUTransformLineChart(
-	input: ResourceUtilizationForApp$result['cpu']
+	input: ResourceUtilizationForApp$result['resourceUtilizationForApp']['cpu']
 ): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {

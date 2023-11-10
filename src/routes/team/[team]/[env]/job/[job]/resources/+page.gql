@@ -5,29 +5,22 @@ query ResourceUtilizationForJob(
 	$from: Date
 	$to: Date!
 ) @cache(policy: NetworkOnly) {
-	cpu: resourceUtilizationForApp(
+	resourceUtilizationForApp(
 		app: $app
 		env: $env
 		from: $from
-		resource: CPU
 		team: $team
 		to: $to
 	) {
-		timestamp
-		request
-		usage
-	}
-
-	memory: resourceUtilizationForApp(
-		app: $app
-		env: $env
-		from: $from
-		resource: MEMORY
-		team: $team
-		to: $to
-	) {
-		timestamp
-		request
-		usage
+		cpu {
+			timestamp
+			request
+			usage
+		}
+		memory {
+			timestamp
+			request
+			usage
+		}
 	}
 }
