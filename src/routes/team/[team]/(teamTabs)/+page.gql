@@ -1,7 +1,10 @@
-query Workloads($team: String!) @loading(count: 5, cascade: true) {
+query Workloads($team: String!, $orderBy: OrderBy  = {
+	field: NAME
+	direction: ASC
+}) @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
-		apps(first: 50) @paginate(mode: SinglePage) {
+		apps(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage

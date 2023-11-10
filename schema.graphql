@@ -571,6 +571,41 @@ type OpenSearch implements Storage {
   name: String!
 }
 
+input OrderBy {
+  """Order direction"""
+  direction: SortOrder!
+  field: OrderByField!
+}
+
+enum OrderByField {
+  """Order by appName."""
+  APP_NAME
+
+  """Order by env"""
+  ENV
+
+  """Order by env."""
+  ENV_NAME
+
+  """Order by name"""
+  NAME
+
+  """Order by risk score"""
+  RISK_SCORE
+
+  """Order apps by vulnerability severity critical"""
+  SEVERITY_CRITICAL
+
+  """Order apps by vulnerability severity high"""
+  SEVERITY_HIGH
+
+  """Order apps by vulnerability severity low"""
+  SEVERITY_LOW
+
+  """Order apps by vulnerability severity medium"""
+  SEVERITY_MEDIUM
+}
+
 type Outbound {
   external: [External!]!
   rules: [Rule!]!
@@ -775,14 +810,6 @@ type SlackAlertsChannel {
   name: String!
 }
 
-enum Sort {
-  """Ascending sort order."""
-  ASC
-
-  """Descending sort order."""
-  DESC
-}
-
 enum SortOrder {
   """Ascending sort order."""
   ASC
@@ -846,6 +873,9 @@ type Team implements Node {
 
     """Returns the last n entries from the list."""
     last: Int
+
+    """Order apps by"""
+    orderBy: OrderBy
   ): AppConnection!
 
   """The deploy key of the team."""
@@ -945,7 +975,7 @@ type Team implements Node {
     last: Int
 
     """Order apps by"""
-    orderBy: VulnerabilitiesOrderBy
+    orderBy: OrderBy
   ): VulnerabilitiesConnection!
 }
 
@@ -1066,35 +1096,6 @@ type VulnerabilitiesNode implements Node {
   image: String!
   project: DependencyTrack
   team: String!
-}
-
-input VulnerabilitiesOrderBy {
-  """Order direction"""
-  direction: Sort!
-  field: VulnerabilitiesOrderByField!
-}
-
-enum VulnerabilitiesOrderByField {
-  """Order by appName."""
-  APP_NAME
-
-  """Order by env."""
-  ENV_NAME
-
-  """Order by risk score"""
-  RISK_SCORE
-
-  """Order apps by vulnerability severity critical"""
-  SEVERITY_CRITICAL
-
-  """Order apps by vulnerability severity high"""
-  SEVERITY_HIGH
-
-  """Order apps by vulnerability severity low"""
-  SEVERITY_LOW
-
-  """Order apps by vulnerability severity medium"""
-  SEVERITY_MEDIUM
 }
 
 type VulnerabilitySummary {

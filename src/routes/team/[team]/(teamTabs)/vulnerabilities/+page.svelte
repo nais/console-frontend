@@ -14,7 +14,6 @@
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
 	$: team = $TeamVulnerabilities.data?.team;
-
 	const sort = (key) => {
 		if (!sortState) {
 			sortState = {
@@ -29,7 +28,7 @@
 			}
 		} else {
 			sortState.orderBy = key;
-			if (key === 'APP_NAME') {
+			if (key === 'NAME') {
 				sortState.direction = 'ascending';
 			} else {
 				sortState.direction = 'descending';
@@ -70,8 +69,8 @@
 				}}
 			>
 				<Thead>
-					<Th sortable={true} sortKey="APP_NAME">Name</Th>
-					<Th sortable={true} sortKey="ENV_NAME">Env</Th>
+					<Th sortable={true} sortKey="NAME">Name</Th>
+					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Findings</Th>
 					<Th sortable={true} sortKey="SEVERITY_CRITICAL">Critical</Th>
 					<Th sortable={true} sortKey="SEVERITY_HIGH">High</Th>
@@ -140,7 +139,7 @@
                                             </Td>
 											<Td>
 												<Tooltip placement="left" content="Risk score is calculated based on the number of vulnerabilities and their severity, includes unassigned">
-												<span class="rectangle">{edge.node.project?.summary?.riskScore}</span>
+												<span class="na">{edge.node.project?.summary?.riskScore}</span>
 												</Tooltip>
 											</Td>
                                         {/if}
@@ -181,18 +180,6 @@
 {/if}
 
 <style>
-	.rectangle {
-		border: 2px solid lightgray;
-		color: #6e6e6e;
-		display: inline-block;
-		font-weight: bold;
-		margin-right: 5px;
-		text-align: center;
-		width: 30px;
-		height: 30px;
-		padding: 3px;
-	}
-
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

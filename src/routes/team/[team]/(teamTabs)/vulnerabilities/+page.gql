@@ -1,4 +1,4 @@
-query TeamVulnerabilities($team: String!, $orderBy: VulnerabilitiesOrderBy = {
+query TeamVulnerabilities($team: String!, $orderBy: OrderBy = {
 	field: SEVERITY_CRITICAL
 	direction: DESC
 }) @loading(count: 5, cascade: true) {

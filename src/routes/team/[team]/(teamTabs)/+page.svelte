@@ -7,7 +7,8 @@
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {Alert, Table, Tbody, Td, Th, Thead, Tr} from '@nais/ds-svelte-community';
+	import type { TableSortState } from '@nais/ds-svelte-community';
 	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
 
@@ -15,6 +16,42 @@
 	export let data: PageData;
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
+
+	const sort = (key) => {
+		if (!sortState) {
+			sortState = {
+				orderBy: key,
+				direction: 'descending'
+			};
+		} else if (sortState.orderBy === key) {
+			if (sortState.direction === 'ascending') {
+				sortState.direction = 'descending';
+			} else {
+				sortState.direction = 'ascending';
+			}
+		} else {
+			sortState.orderBy = key;
+			if (key === 'NAME') {
+				sortState.direction = 'ascending';
+			} else {
+				sortState.direction = 'descending';
+			}
+		}
+
+		Workloads.fetch({
+			variables: {
+				team: teamName,
+				orderBy: {
+					field: key,
+					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
+				}
+			}
+		});
+	};
+	let sortState: TableSortState = {
+		orderBy: 'NAME',
+		direction: 'ascending'
+	};
 </script>
 
 {#if $Workloads.errors}
@@ -29,11 +66,16 @@
 			<Cost app="" env="" team={teamName} />
 		</Card>
 		<Card columns={12}>
-			<Table size="small">
+			<Table size="small"
+				   sort={sortState}
+				   on:sortChange={(e) => {
+					const { key } = e.detail;
+					sort(key);
+				}}>
 				<Thead>
 					<Th style="width: 2rem"></Th>
-					<Th>Name</Th>
-					<Th>Env</Th>
+					<Th sortable={true} sortKey="NAME">Name</Th>
+					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Instances</Th>
 					<Th>Deployed</Th>
 				</Thead>
