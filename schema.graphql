@@ -178,6 +178,7 @@ scalar Date
 
 type DependencyTrack implements Node {
   findingsLink: String!
+  hasBom: Boolean!
   id: ID!
   projectName: String!
   projectUUID: String!
@@ -1080,6 +1081,9 @@ enum VulnerabilitiesOrderByField {
   """Order by env."""
   ENV_NAME
 
+  """Order by risk score"""
+  RISK_SCORE
+
   """Order apps by vulnerability severity critical"""
   SEVERITY_CRITICAL
 
@@ -1098,6 +1102,7 @@ type VulnerabilitySummary {
   high: Int!
   low: Int!
   medium: Int!
+  riskScore: Float!
   total: Int!
   unassigned: Int!
 }

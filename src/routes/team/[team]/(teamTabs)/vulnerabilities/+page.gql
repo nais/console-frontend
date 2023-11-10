@@ -22,7 +22,11 @@ query TeamVulnerabilities($team: String!, $orderBy: VulnerabilitiesOrderBy = {
 					project {
 						projectName
 						findingsLink
+						hasBom
 						summary{
+							riskScore
+							unassigned
+							total
 							critical
 							high
 							medium

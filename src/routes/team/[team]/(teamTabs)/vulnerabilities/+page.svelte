@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, type VulnerabilitiesOrderByField$options } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import type { TableSortState } from '@nais/ds-svelte-community';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {Alert, Table, Tbody, Td, Th, Thead, Tooltip, Tr} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
+	import {ExclamationmarkTriangleFillIcon} from "@nais/ds-svelte-community/icons";
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
 	$: team = $TeamVulnerabilities.data?.team;
-	$: vulns = $TeamVulnerabilities.data?.team?.vulnerabilities;
 
 	const sort = (key) => {
 		if (!sortState) {
@@ -77,12 +77,13 @@
 					<Th sortable={true} sortKey="SEVERITY_HIGH">High</Th>
 					<Th sortable={true} sortKey="SEVERITY_MEDIUM">Medium</Th>
 					<Th sortable={true} sortKey="SEVERITY_LOW">Low</Th>
+					<Th sortable={true} sortKey="RISK_SCORE">Risk Score</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(7).fill('medium') as size}
+								{#each new Array(8).fill('medium') as size}
 									<Td>
 										<Loading {size} />
 									</Td>
@@ -98,34 +99,61 @@
 									</Td>
 									<Td>{edge.node.env}</Td>
 									{#if edge.node.project !== null}
-										<Td>
-											<a href={edge.node.project.findingsLink}>View</a>
-										</Td>
-
-										<Td>
-											<Vulnerability
-												severity="critical"
-												count={edge.node.project?.summary?.critical}
-											/>
-										</Td>
-										<Td>
-											<Vulnerability severity="high" count={edge.node.project?.summary?.high} />
-										</Td>
-										<Td>
-											<Vulnerability severity="medium" count={edge.node.project?.summary?.medium} />
-										</Td>
-										<Td>
-											<Vulnerability severity="low" count={edge.node.project?.summary?.low} />
-										</Td>
+										{#if !edge.node.project.hasBom}
+											<Td>
+												<div style="display: flex; align-items: center">
+													<span style="color:lightslategray; font-size:14px"> <a href={edge.node.project.findingsLink}>View</a> </span>
+													<Tooltip placement="right" content="Data was discovered, but the SBOM was not rendered. Please refer to the NAIS documentation for further assistance">
+														<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)"/>
+													</Tooltip>
+												</div>
+											</Td>
+											<Td><span class="na">-</span></Td>
+											<Td><span class="na">-</span></Td>
+											<Td><span class="na">-</span></Td>
+											<Td><span class="na">-</span></Td>
+											<Td><span class="na">-</span></Td>
+                                        {:else}
+                                            <Td>
+                                                <span style="color:lightslategray; font-size:14px"> <a href={edge.node.project.findingsLink}>View</a> </span>
+                                            </Td>
+                                            <Td>
+                                                <Vulnerability
+                                                        severity="critical"
+                                                        count={edge.node.project?.summary?.critical}
+                                                />
+                                            </Td>
+                                            <Td>
+                                                <Vulnerability
+                                                        severity="high"
+                                                        count={edge.node.project?.summary?.high}/>
+                                            </Td>
+                                            <Td>
+                                                <Vulnerability
+                                                        severity="medium"
+                                                        count={edge.node.project?.summary?.medium}/>
+                                            </Td>
+                                            <Td>
+                                                <Vulnerability
+                                                        severity="low"
+                                                        count={edge.node.project?.summary?.low}/>
+                                            </Td>
+											<Td>
+												<Tooltip placement="left" content="Risk score is calculated based on the number of vulnerabilities and their severity, includes unassigned">
+												<span class="rectangle">{edge.node.project?.summary?.riskScore}</span>
+												</Tooltip>
+											</Td>
+                                        {/if}
 									{:else}
 										<Td>
-											<span style="color:lightslategray">No data found in dependencytrack</span>
+											<span style="color:lightslategray; font-size:14px">No data was found in DependencyTrack</span>
 										</Td>
 										<Td><span class="na">-</span></Td>
 										<Td><span class="na">-</span></Td>
 										<Td><span class="na">-</span></Td>
 										<Td><span class="na">-</span></Td>
-									{/if}
+										<Td><span class="na">-</span></Td>
+                                        {/if}
 								</Tr>
 							{/each}
 						{/if}
@@ -153,6 +181,18 @@
 {/if}
 
 <style>
+	.rectangle {
+		border: 2px solid lightgray;
+		color: #6e6e6e;
+		display: inline-block;
+		font-weight: bold;
+		margin-right: 5px;
+		text-align: center;
+		width: 30px;
+		height: 30px;
+		padding: 3px;
+	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

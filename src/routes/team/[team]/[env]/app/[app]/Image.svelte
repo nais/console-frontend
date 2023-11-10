@@ -95,6 +95,7 @@
             {:else if $data?.dependencyTrack === null}
                 <WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 1.0rem" /><code>No data found in dependencytrack.</code>
             {:else}
+                {#if $data.dependencyTrack.summary}
                 {#if $data.dependencyTrack.summary.critical > 0 }
                     <Tooltip placement="right" content="severity: CRITICAL">
                     <span class="circle red"> {$data.dependencyTrack.summary.critical} </span>
@@ -122,6 +123,7 @@
                 {:else}
                     <p><a href="{$data.dependencyTrack.findingsLink}">View findings in DependencyTrack</a></p>
                 {/if}
+            {/if}
             {/if}
         </div>
     </div>
