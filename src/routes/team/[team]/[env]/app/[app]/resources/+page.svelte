@@ -24,14 +24,18 @@
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
-	function echartOptionsCPUChart(data: ResourceUtilizationForApp$result['resourceUtilizationForApp']['cpu']) {
+	function echartOptionsCPUChart(
+		data: ResourceUtilizationForApp$result['resourceUtilizationForApp']['cpu']
+	) {
 		const opts = resourceUsageCPUTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsMemoryChart(data: ResourceUtilizationForApp$result['resourceUtilizationForApp']['memory']) {
+	function echartOptionsMemoryChart(
+		data: ResourceUtilizationForApp$result['resourceUtilizationForApp']['memory']
+	) {
 		const opts = resourceUsageMemoryTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
@@ -76,11 +80,15 @@
 			<label for="to">To:</label>
 			<input type="date" id="to" min={from} max={today} bind:value={to} on:change={update} />
 			<EChart
-				options={echartOptionsCPUChart($ResourceUtilizationForApp.data.resourceUtilizationForApp.cpu)}
+				options={echartOptionsCPUChart(
+					$ResourceUtilizationForApp.data.resourceUtilizationForApp.cpu
+				)}
 				style="height: 400px"
 			/>
 			<EChart
-				options={echartOptionsMemoryChart($ResourceUtilizationForApp.data.resourceUtilizationForApp.memory)}
+				options={echartOptionsMemoryChart(
+					$ResourceUtilizationForApp.data.resourceUtilizationForApp.memory
+				)}
 				style="height: 400px"
 			/>
 		</Card>

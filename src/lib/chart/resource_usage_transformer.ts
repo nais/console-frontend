@@ -103,7 +103,7 @@ export function resourceUsageCPUTransformLineChart(
 		},
 		yAxis: {
 			type: 'value',
-			name: 'CPU Cores'
+			name: 'CPU'
 		},
 		series: [
 			{
@@ -131,8 +131,6 @@ export function resourceUsageCPUTransformLineChart(
 		]
 	} as EChartsOption;
 }
-
-/////////////
 
 export interface Utilization {
 	readonly resource: ValueOf<typeof ResourceType>;
@@ -173,7 +171,7 @@ export function resourceUsageTeamCPUTransformLineChart(input: Utilization[]): EC
 		},
 		yAxis: {
 			type: 'value',
-			name: 'CPU Cores'
+			name: 'CPU'
 		},
 		series: [
 			{

@@ -24,14 +24,18 @@
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
-	function echartOptionsStackedColumnChart(data: ResourceUtilizationForJob$result['cpu']) {
+	function echartOptionsStackedColumnChart(
+		data: ResourceUtilizationForJob$result['resourceUtilizationForApp']['cpu']
+	) {
 		const opts = resourceUsageMemoryTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsStackedColumnChart2(data: ResourceUtilizationForJob$result['memory']) {
+	function echartOptionsStackedColumnChart2(
+		data: ResourceUtilizationForJob$result['resourceUtilizationForApp']['memory']
+	) {
 		const opts = resourceUsageCPUTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
@@ -70,11 +74,15 @@
 			<label for="to">To:</label>
 			<input type="date" id="to" min={from} max={today} bind:value={to} on:change={update} />
 			<EChart
-				options={echartOptionsStackedColumnChart($ResourceUtilizationForJob.data.cpu)}
+				options={echartOptionsStackedColumnChart(
+					$ResourceUtilizationForJob.data.resourceUtilizationForApp.cpu
+				)}
 				style="height: 400px"
 			/>
 			<EChart
-				options={echartOptionsStackedColumnChart2($ResourceUtilizationForJob.data.memory)}
+				options={echartOptionsStackedColumnChart2(
+					$ResourceUtilizationForJob.data.resourceUtilizationForApp.memory
+				)}
 				style="height: 400px"
 			/>
 		</Card>

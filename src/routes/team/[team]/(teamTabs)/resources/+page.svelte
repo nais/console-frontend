@@ -70,11 +70,12 @@
 	function waste(data: ResourceUtilizationForTeam$result) {
 		let waste = 0;
 
-		data.resourceUtilizationForTeam.forEach((env) => {
-			env.cpu.forEach((c) => {
+		data.resourceUtilizationForTeam.forEach((utilization) => {
+			if (utilization.env === PendingValue) return;
+			utilization.cpu.forEach((c) => {
 				waste += c.requestCostOverage;
 			});
-			env.memory.forEach((m) => {
+			utilization.memory.forEach((m) => {
 				waste += m.requestCostOverage;
 			});
 		});
@@ -141,25 +142,30 @@
 			/>
 		</Card>
 		{#each $ResourceUtilizationForTeam.data.resourceUtilizationForTeam as env}
-			<Card columns={6}>
-				{#if env.env === PendingValue}
-					<div class="loading">
-						<Loader />
-					</div>
-				{:else}
-					<h4>CPU utilization in {env.env}</h4>
-					<EChart options={echartOptionsCPUChart(env.cpu)} style="height: 400px" />
+			<Card columns={12}>
+				{#if env.env !== PendingValue}
+					<h4>Utilization in {env.env}</h4>
 				{/if}
-			</Card>
-			<Card columns={6}>
-				{#if env.env === PendingValue}
-					<div class="loading">
-						<Loader />
+				<div style="display: flex; ">
+					<div style="width: 50%;">
+						{#if env.env === PendingValue}
+							<div class="loading">
+								<Loader />
+							</div>
+						{:else}
+							<EChart options={echartOptionsCPUChart(env.cpu)} style="height: 400px" />
+						{/if}
 					</div>
-				{:else}
-					<h4>Memory utilization in {env.env}</h4>
-					<EChart options={echartOptionsMemoryChart(env.memory)} style="height: 400px" />
-				{/if}
+					<div style="width: 50%; margin: 0; padding: 0;">
+						{#if env.env === PendingValue}
+							<div class="loading">
+								<Loader />
+							</div>
+						{:else}
+							<EChart options={echartOptionsMemoryChart(env.memory)} style="height: 400px" />
+						{/if}
+					</div>
+				</div>
 			</Card>
 		{/each}
 	</div>
