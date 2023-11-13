@@ -1,5 +1,5 @@
 import type { ResourceType, ResourceUtilizationForApp$result, ValueOf } from '$houdini';
-import type { EChartsOption } from 'echarts';
+import { graphic, type EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
 export function resourceUsageMemoryTransformLineChart(
@@ -262,5 +262,61 @@ export function resourceUsageTeamMemoryTransformLineChart(input: Utilization[]):
 				showSymbol: false
 			}
 		]
+	} as EChartsOption;
+}
+
+export interface Overage {
+	readonly overage: number;
+	readonly env: string;
+	readonly app: string;
+}
+
+export function resourceUtilizationOverageTransformLineChart(input: Overage[]): EChartsOption {
+	console.log(input);
+
+	return {
+		xAxis: {
+			type: 'category',
+			data: input.slice(0, 10).map((s) => {
+				return s.env.concat(':').concat(s.app);
+			}),
+			axisLabel: {
+				rotate: 25
+			}
+		},
+		legend: {
+			data: input.slice(0, 10).map((s) => {
+				return s.env.concat(':').concat(s.app);
+			})
+		},
+		yAxis: {
+			type: 'value',
+			axisLabel: {
+				formatter: (value: number) => value + ' NOK'
+			}
+		},
+		series: {
+			name: 'Overage',
+			data: input.slice(0, 10).map((s) => {
+				return s.overage;
+			}),
+			type: 'bar',
+			itemStyle: {
+				color: new graphic.LinearGradient(0, 0, 0, 1, [
+					{ offset: 0, color: '#83bff6' },
+					{ offset: 0.5, color: '#188df0' },
+					{ offset: 1, color: '#188df0' }
+				])
+			},
+			emphasis: {
+				itemStyle: {
+					color: new graphic.LinearGradient(0, 0, 0, 1, [
+						{ offset: 0, color: '#2378f7' },
+						{ offset: 0.7, color: '#2378f7' },
+						{ offset: 1, color: '#83bff6' }
+					])
+				}
+			}
+		}
 	} as EChartsOption;
 }

@@ -63,10 +63,18 @@ type AppState {
   state: State!
 }
 
-type AppWithResourceUtilizationOverage {
+"""Resouce utilization overage cost for an app."""
+type AppWithResourceUtilizationOverageCost {
+  """The name of the app."""
   app: String!
+
+  """The environment where the app is running."""
   env: String!
+
+  """The overage cost for the app."""
   overage: Float!
+
+  """The name of the team who owns the app."""
   team: String!
 }
 
@@ -717,18 +725,20 @@ type Query {
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
   ): [ResourceUtilizationForEnv!]!
-  resourceUtilizationOverageForTeam(
+
+  """Get resource utilization overage cost for a team."""
+  resourceUtilizationOverageCostForTeam(
     """
-    Fetch resource utilization from this date. Defaults to 7 days before the to date.
+    Fetch resource utilization overage data from this date. Defaults to 7 days before the to date.
     """
     from: Date
 
-    """The team to fetch data for."""
+    """The name of the team."""
     team: String!
 
-    """Fetch resource utilization until this date. Defaults to today."""
+    """Fetch resource utilization overage until this date. Defaults to today."""
     to: Date
-  ): ResourceUtilizationOverageForTeam!
+  ): ResourceUtilizationOverageCostForTeam!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
   """Get a specific NAIS-team by the team name."""
@@ -826,8 +836,14 @@ type ResourceUtilizationForEnv {
   memory: [ResourceUtilization!]!
 }
 
-type ResourceUtilizationOverageForTeam {
-  apps: [AppWithResourceUtilizationOverage!]!
+"""Resouce utilization overage cost for team type."""
+type ResourceUtilizationOverageCostForTeam {
+  """
+  A list of apps with overage cost for the team, sorted by overage cost in descending order.
+  """
+  apps: [AppWithResourceUtilizationOverageCost!]!
+
+  """The sum of the overage cost for all apps."""
   sum: Float!
 }
 
