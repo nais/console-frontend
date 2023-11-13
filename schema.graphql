@@ -1103,7 +1103,7 @@ type VulnerabilitySummary {
   high: Int!
   low: Int!
   medium: Int!
-  riskScore: Float!
+  riskScore: Int!
   total: Int!
   unassigned: Int!
 }
