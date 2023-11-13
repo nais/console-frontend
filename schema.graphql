@@ -63,6 +63,13 @@ type AppState {
   state: State!
 }
 
+type AppWithResourceUtilizationOverage {
+  app: String!
+  env: String!
+  overage: Float!
+  team: String!
+}
+
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
@@ -666,6 +673,17 @@ type Query {
     id: ID!
   ): Node
 
+  """Get the date range for resource utilization for an app."""
+  resourceUtilizationDateRangeForApp(app: String!, env: String!, team: String!): ResourceUtilizationDateRange!
+
+  """
+  Get the date range for resource utilization for a team across all environments.
+  """
+  resourceUtilizationDateRangeForTeam(
+    """The name of the team."""
+    team: String!
+  ): ResourceUtilizationDateRange!
+
   """Get the resource utilization for an app."""
   resourceUtilizationForApp(
     """Optional name of an app."""
@@ -699,6 +717,18 @@ type Query {
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
   ): [ResourceUtilizationForEnv!]!
+  resourceUtilizationOverageForTeam(
+    """
+    Fetch resource utilization from this date. Defaults to 7 days before the to date.
+    """
+    from: Date
+
+    """The team to fetch data for."""
+    team: String!
+
+    """Fetch resource utilization until this date. Defaults to today."""
+    to: Date
+  ): ResourceUtilizationOverageForTeam!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
   """Get a specific NAIS-team by the team name."""
@@ -766,6 +796,15 @@ type ResourceUtilization {
   usageCost: Float!
 }
 
+"""Date range type."""
+type ResourceUtilizationDateRange {
+  """The start of the range."""
+  from: Date
+
+  """The end of the range."""
+  to: Date
+}
+
 """Resource utilization for app type."""
 type ResourceUtilizationForApp {
   """CPU resource utilization data for the environment."""
@@ -785,6 +824,11 @@ type ResourceUtilizationForEnv {
 
   """Memory resource utilization data for the environment."""
   memory: [ResourceUtilization!]!
+}
+
+type ResourceUtilizationOverageForTeam {
+  apps: [AppWithResourceUtilizationOverage!]!
+  sum: Float!
 }
 
 type Resources {

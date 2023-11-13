@@ -10,7 +10,6 @@
 		type Utilization
 	} from '$lib/chart/resource_usage_transformer';
 	import { Alert, Loader } from '@nais/ds-svelte-community';
-	import type { EChartsOption } from 'echarts';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -18,7 +17,7 @@
 
 	$: team = $page.params.team;
 
-	function options(): EChartsOption {
+	/*function options(): EChartsOption {
 		return {
 			xAxis: {
 				type: 'category',
@@ -29,30 +28,55 @@
 					'prod-gcp:sparkel-oppgave-endret',
 					'prod-gcp:spetakkel',
 					'prod-gcp:spout',
-					'prod-gcp:spoiler'
+					'prod-gcp:spoiler',
+					'prod-gcp:sporbar',
+					'prod-gcp:sporbar-frontend',
+					'prod-gcp:sporbar-frontend-utvikling'
 				],
 				axisLabel: {
-					rotate: 270,
-					inside: true,
-					color: '#c0c0c0',
-					textShadowBlur: 5,
-					textShadowColor: '#000',
-					textShadowOffsetX: 1,
-					textShadowOffsetY: 1
-				},
-				z: 10
+					rotate: 25
+				}
+			},
+			legend: {
+				data: [
+					'prod-gcp:sprute',
+					'prod-gcp:spleis',
+					'prod-gcp:spammer',
+					'prod-gcp:sparkel-oppgave-endret',
+					'prod-gcp:spetakkel',
+					'prod-gcp:spout',
+					'prod-gcp:spoiler',
+					'prod-gcp:sporbar',
+					'prod-gcp:sporbar-frontend',
+					'prod-gcp:sporbar-frontend-utvikling'
+				]
 			},
 			yAxis: {
 				type: 'value'
 			},
-			series: [
-				{
-					data: [120, 200, 150, 80, 70, 110, 130],
-					type: 'bar'
+			series: {
+				data: [123, 120, 111, 110, 109, 108, 107, 106, 105, 104],
+				type: 'bar',
+				itemStyle: {
+					color: new graphic.LinearGradient(0, 0, 0, 1, [
+						{ offset: 0, color: '#83bff6' },
+						{ offset: 0.5, color: '#188df0' },
+						{ offset: 1, color: '#188df0' }
+					])
+				},
+				emphasis: {
+					itemStyle: {
+						color: new graphic.LinearGradient(0, 0, 0, 1, [
+							{ offset: 0, color: '#2378f7' },
+							{ offset: 0.7, color: '#2378f7' },
+							{ offset: 1, color: '#83bff6' }
+						])
+					}
 				}
-			]
+			},
+			height: '200px'
 		};
-	}
+	}*/
 
 	function echartOptionsCPUChart(data: Utilization[]) {
 		const opts = resourceUsageTeamCPUTransformLineChart(data);
@@ -88,15 +112,24 @@
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
+	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
+	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
+
+	$: min = minDate && minDate !== PendingValue ? minDate.toISOString().split('T')[0] : '';
+	$: max = maxDate && maxDate !== PendingValue ? maxDate.toISOString().split('T')[0] : '';
+
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
-	const today = new Date().toISOString().split('T')[0];
-
-	// should be set to the first date in the data
-	const minDateFrom = new Date(new Date().setDate(new Date().getDate() - 120))
-		.toISOString()
-		.split('T')[0];
+	$: {
+		if (maxDate && maxDate !== PendingValue) {
+			if (data.toDate > maxDate) {
+				from = new Date(maxDate.getTime() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
+				to = max;
+				update();
+			}
+		}
+	}
 </script>
 
 {#if $ResourceUtilizationForTeam.errors}
@@ -110,16 +143,9 @@
 	<div class="grid">
 		<Card columns={12}>
 			<label for="from">From:</label>
-			<input
-				type="date"
-				id="from"
-				min={minDateFrom}
-				max={to}
-				bind:value={from}
-				on:change={update}
-			/>
+			<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" min={from} max={today} bind:value={to} on:change={update} />
+			<input type="date" id="to" {min} {max} bind:value={to} on:change={update} />
 		</Card>
 		<Card columns={4}>
 			{#if $ResourceUtilizationForTeam.data.resourceUtilizationForTeam[0].env === PendingValue}
@@ -130,7 +156,7 @@
 				<p>Waste: {waste($ResourceUtilizationForTeam.data)} NOK</p>
 			{/if}
 		</Card>
-		<Card columns={8}>
+		<!--Card columns={8}>
 			<EChart
 				options={options()}
 				style="height: 400px"
@@ -140,7 +166,7 @@
 					goto(`/team/${team}/${env}/app/${app}/resources`);
 				}}
 			/>
-		</Card>
+		</Card-->
 		{#each $ResourceUtilizationForTeam.data.resourceUtilizationForTeam as env}
 			<Card columns={12}>
 				{#if env.env !== PendingValue}
@@ -152,6 +178,8 @@
 							<div class="loading">
 								<Loader />
 							</div>
+						{:else if env.cpu.length === 0}
+							<p>No CPU utilization data for team {team} in {env.env}</p>
 						{:else}
 							<EChart options={echartOptionsCPUChart(env.cpu)} style="height: 400px" />
 						{/if}
@@ -161,6 +189,8 @@
 							<div class="loading">
 								<Loader />
 							</div>
+						{:else if env.memory.length === 0}
+							<p>No memory utilization data for team {team} in {env.env}</p>
 						{:else}
 							<EChart options={echartOptionsMemoryChart(env.memory)} style="height: 400px" />
 						{/if}

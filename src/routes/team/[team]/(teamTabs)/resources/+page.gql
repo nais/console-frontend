@@ -20,4 +20,8 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 			usageCost
 		}
 	}
+	resourceUtilizationDateRangeForTeam(team: $team) @loading {
+		from @loading
+		to @loading
+	}
 }
