@@ -9,6 +9,8 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import {ExclamationmarkTriangleFillIcon} from "@nais/ds-svelte-community/icons";
+	import {logEvent} from "$lib/amplitude";
+	import {get} from "svelte/store";
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
@@ -48,6 +50,14 @@
 	let sortState: TableSortState = {
 		orderBy: 'SEVERITY_CRITICAL',
 		direction: 'descending'
+	};
+
+	const onClick = () => {
+		let props = {};
+		props = {
+			routeID: '/dependencytrack/team/findings'
+		};
+		logEvent('pageview', props);
 	};
 </script>
 
@@ -114,7 +124,7 @@
 											<Td><span class="na">-</span></Td>
                                         {:else}
                                             <Td>
-                                                <span style="color:lightslategray; font-size:14px"> <a href={edge.node.project.findingsLink}>View</a> </span>
+                                                <span style="color:lightslategray; font-size:14px"> <a href={edge.node.project.findingsLink} on:click={onClick}>View</a> </span>
                                             </Td>
                                             <Td>
                                                 <Vulnerability
