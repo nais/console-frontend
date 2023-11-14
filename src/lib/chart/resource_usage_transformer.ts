@@ -1,4 +1,5 @@
 import type { ResourceType, ResourceUtilizationForApp$result, ValueOf } from '$houdini';
+import { nokValueFormatter } from '$lib/utils/currency';
 import { graphic, type EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
@@ -272,8 +273,6 @@ export interface Overage {
 }
 
 export function resourceUtilizationOverageTransformLineChart(input: Overage[]): EChartsOption {
-	console.log(input);
-
 	return {
 		xAxis: {
 			type: 'category',
@@ -285,14 +284,12 @@ export function resourceUtilizationOverageTransformLineChart(input: Overage[]): 
 			}
 		},
 		legend: {
-			data: input.slice(0, 10).map((s) => {
-				return s.env.concat(':').concat(s.app);
-			})
+			show: false
 		},
 		yAxis: {
 			type: 'value',
 			axisLabel: {
-				formatter: (value: number) => value + ' NOK'
+				formatter: nokValueFormatter
 			}
 		},
 		series: {

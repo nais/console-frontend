@@ -1,6 +1,7 @@
 import { load_ResourceUtilizationForTeam } from '$houdini';
 import type { PageLoad } from './$houdini';
 
+export const ssr = false;
 export const load: PageLoad = async (event) => {
 	const from = event.url.searchParams.get('from');
 	const to = event.url.searchParams.get('to');

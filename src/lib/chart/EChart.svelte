@@ -53,7 +53,7 @@
 		};
 
 		import('echarts').then((echarts) => {
-			const ins = echarts.init(el, theme, { renderer: 'svg' });
+			ins = echarts.init(el, theme, { renderer: 'svg' });
 			ins.setOption(options);
 			ins.on('mouseover', (e) => {
 				activeSeries = e.seriesId;
@@ -71,6 +71,7 @@
 
 		return {
 			update(newOptions: EChartsOption) {
+				console.log('update:', ins);
 				ins?.setOption({ ...options, ...newOptions });
 			},
 			destroy() {
