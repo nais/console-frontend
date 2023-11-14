@@ -28,6 +28,7 @@
 						high
 						medium
 						low
+						unassigned
 					}
 				}
 			}
@@ -127,10 +128,15 @@
                             <span class="circle"> {$data.dependencyTrack.summary.low} </span>
                         </Tooltip>
                     {/if}
-                    {#if $data.dependencyTrack.summary.total === 0 }
+                    {#if $data.dependencyTrack.summary.total <= 0 }
                         <Tooltip placement="right" content="No vulnerabilities found, keep up the good work!">
                             <span class="circle green">0</span>
                         </Tooltip>
+                    {:else if $data.dependencyTrack.summary.unassigned > 0}
+                        <Tooltip placement="right" content="severity: UNASSIGNED">
+                            <span class="circle"> {$data.dependencyTrack.summary.unassigned} </span>
+                        </Tooltip>
+                            <p><a href="{$data.dependencyTrack.findingsLink}" on:click={onClick}>View findings in DependencyTrack</a></p>
                     {:else}
                         <p><a href="{$data.dependencyTrack.findingsLink}" on:click={onClick}>View findings in DependencyTrack</a></p>
                     {/if}

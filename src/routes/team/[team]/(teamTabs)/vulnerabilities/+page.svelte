@@ -158,7 +158,7 @@
                                                     count={edge.node.project?.summary?.riskScore}/>
                                                 {:else}
                                                     <Tooltip placement="left"
-                                                             content="Risk score is calculated based on the number of vulnerabilities and their severity, includes unassigned">
+                                                             content="Risk score is calculated based on the number of vulnerabilities, includes unassigned">
                                                     <span class="na">{edge.node.project?.summary?.riskScore}</span>
                                                     </Tooltip>
                                                 {/if}
