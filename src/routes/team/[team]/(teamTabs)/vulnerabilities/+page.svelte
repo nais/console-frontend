@@ -1,6 +1,7 @@
 <script lang="ts">
     import {page} from '$app/stores';
     import {PendingValue} from '$houdini';
+    import {OrderByField} from "$houdini/graphql";
     import Card from '$lib/Card.svelte';
     import type {TableSortState} from '@nais/ds-svelte-community';
     import {Alert, Table, Tbody, Td, Th, Thead, Tooltip, Tr} from '@nais/ds-svelte-community';
@@ -10,42 +11,13 @@
     import Vulnerability from '$lib/components/Vulnerability.svelte';
     import {ExclamationmarkTriangleFillIcon} from "@nais/ds-svelte-community/icons";
     import {logEvent} from "$lib/amplitude";
+    import {sortTable} from "../../../../../helpers";
 
     $: teamName = $page.params.team;
     export let data: PageData;
     $: ({TeamVulnerabilities} = data);
     $: team = $TeamVulnerabilities.data?.team;
-    const sort = (key) => {
-        if (!sortState) {
-            sortState = {
-                orderBy: key,
-                direction: 'descending'
-            };
-        } else if (sortState.orderBy === key) {
-            if (sortState.direction === 'ascending') {
-                sortState.direction = 'descending';
-            } else {
-                sortState.direction = 'ascending';
-            }
-        } else {
-            sortState.orderBy = key;
-            if (key === 'NAME') {
-                sortState.direction = 'ascending';
-            } else {
-                sortState.direction = 'descending';
-            }
-        }
 
-        TeamVulnerabilities.fetch({
-            variables: {
-                team: teamName,
-                orderBy: {
-                    field: key,
-                    direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-                }
-            }
-        });
-    };
     let sortState: TableSortState = {
         orderBy: 'SEVERITY_CRITICAL',
         direction: 'descending'
@@ -58,6 +30,20 @@
         };
         logEvent('pageview', props);
     };
+
+    const refetch = (key: string) => {
+        const field = Object.values(OrderByField).find((value) => value === key);
+        TeamVulnerabilities.fetch({
+            variables: {
+                team: teamName,
+                orderBy: {
+                    field: field !== undefined ? field : 'SEVERITY_CRITICAL',
+                    direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
+                }
+            }
+        });
+    };
+
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -74,7 +60,7 @@
                     sort={sortState}
                     on:sortChange={(e) => {
 					const { key } = e.detail;
-					sort(key);
+                    sortTable(key, sortState, refetch)
 				}}
             >
                 <Thead>
