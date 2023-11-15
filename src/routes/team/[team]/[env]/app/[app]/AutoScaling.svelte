@@ -27,7 +27,7 @@
 	{#if autoscaling === PendingValue}
 		<Loading width="200px" />
 	{:else if autoscaling.disabled}
-		based on custom metrics
+		Scaling based on custom metrics
 	{:else}
 		<Tooltip content="Minimum replicas">
 			min: {autoscaling.min}</Tooltip

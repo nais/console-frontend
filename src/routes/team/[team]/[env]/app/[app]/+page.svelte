@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
@@ -10,7 +12,6 @@
 	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -18,6 +19,8 @@
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
+	$: cpuUtilization = $App.data?.currentResourceUtilizationForApp.cpu;
+	$: memoryUtilization = $App.data?.currentResourceUtilizationForApp.memory;
 </script>
 
 {#if $App.errors}
@@ -30,8 +33,10 @@
 	<div class="grid">
 		<Status app={$App.data.app} />
 
-		<Card columns={4}>
-			<Cost {app} {env} {team} />
+		<Card columns={2}>
+			{#if cpuUtilization && cpuUtilization !== PendingValue && memoryUtilization && memoryUtilization !== PendingValue}
+				<Cost {app} {env} {team} {cpuUtilization} {memoryUtilization} />
+			{/if}
 		</Card>
 		<Card columns={6}>
 			<Image app={$App.data.app} />

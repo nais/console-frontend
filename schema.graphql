@@ -163,6 +163,15 @@ type CostSeries {
   sum: Float!
 }
 
+"""Current resource utilization for app type."""
+type CurrentResourceUtilizationForApp {
+  """The percentage of CPU used."""
+  cpu: Float!
+
+  """The percentage of memory used."""
+  memory: Float!
+}
+
 """
 Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
 """
@@ -624,6 +633,18 @@ type Query {
     team: String!
   ): App!
 
+  """Get the current resource utilization for a specific app."""
+  currentResourceUtilizationForApp(
+    """The name of the app."""
+    app: String!
+
+    """The environment where the app is running."""
+    env: String!
+
+    """The name of the team."""
+    team: String!
+  ): CurrentResourceUtilizationForApp!
+
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
     """The name of the application to get costs for."""
@@ -682,7 +703,16 @@ type Query {
   ): Node
 
   """Get the date range for resource utilization for an app."""
-  resourceUtilizationDateRangeForApp(app: String!, env: String!, team: String!): ResourceUtilizationDateRange!
+  resourceUtilizationDateRangeForApp(
+    """The name of the app."""
+    app: String!
+
+    """The environment where the app is running."""
+    env: String!
+
+    """The name of the team."""
+    team: String!
+  ): ResourceUtilizationDateRange!
 
   """
   Get the date range for resource utilization for a team across all environments.
@@ -694,7 +724,7 @@ type Query {
 
   """Get the resource utilization for an app."""
   resourceUtilizationForApp(
-    """Optional name of an app."""
+    """The name of the app."""
     app: String!
 
     """The environment where the app is running."""
@@ -705,7 +735,7 @@ type Query {
     """
     from: Date
 
-    """The team who owns the app."""
+    """The name of the team."""
     team: String!
 
     """Fetch resource utilization until this date. Defaults to today."""

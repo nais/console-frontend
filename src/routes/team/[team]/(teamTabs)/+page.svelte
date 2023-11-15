@@ -26,7 +26,7 @@
 {:else}
 	<div class="grid">
 		<Card columns={3}>
-			<Cost app="" env="" team={teamName} />
+			<Cost app="" env="" team={teamName} cpuUtilization={-1} memoryUtilization={-1} />
 		</Card>
 		<Card columns={12}>
 			<Table size="small">

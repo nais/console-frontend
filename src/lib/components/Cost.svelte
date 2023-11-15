@@ -20,6 +20,9 @@
 		}
 	`);
 
+	export let cpuUtilization: number;
+	export let memoryUtilization: number;
+
 	export let app: string;
 	export let env: string;
 	export let team: string;
@@ -75,10 +78,30 @@
 		{:else}
 			No cost data available
 		{/if}
+		{#if cpuUtilization > 0 && memoryUtilization > 0}
+			<br /><br />
+			<h4>Resource utilization</h4>
+			<div class={cpuUtilization < 50 ? 'bad' : 'good'}>
+				Cpu: {cpuUtilization.toLocaleString('en-GB', {
+					maximumFractionDigits: 2
+				})}%<br />
+			</div>
+			<div class={memoryUtilization < 50 ? 'bad' : 'good'}>
+				Memory: {memoryUtilization.toLocaleString('en-GB', {
+					maximumFractionDigits: 2
+				})}%
+			</div>
+		{/if}
 	</div>
 {/if}
 
 <style>
+	.bad {
+		color: var(--a-surface-warning);
+	}
+	.good {
+		color: var(--a-surface-success);
+	}
 	h4 {
 		margin-bottom: 8px;
 	}
