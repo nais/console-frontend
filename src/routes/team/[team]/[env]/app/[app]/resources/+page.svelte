@@ -1,34 +1,43 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { PendingValue, type ResourceUtilizationForApp$result } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
 		resourceUsageCPUTransformLineChart,
-		resourceUsageMemoryTransformLineChart
+		resourceUsageMemoryTransformLineChart,
+		type CPU,
+		type Memory
 	} from '$lib/chart/resource_usage_transformer';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForApp } = data);
 
-	let app = $page.params.app;
-	let team = $page.params.team;
+	$: resourceUtilization = $ResourceUtilizationForApp.data?.resourceUtilizationForApp;
+	$: dateRange = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam;
 
-	function echartOptionsCPUChart(
-		data: ResourceUtilizationForApp$result['resourceUtilizationForApp']['cpu']
-	) {
+	$: minDate = dateRange?.from;
+	$: maxDate = dateRange?.to;
+
+	$: min =
+		minDate && minDate !== PendingValue
+			? minDate.toISOString().split('T')[0]
+			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
+	$: max =
+		maxDate && maxDate !== PendingValue
+			? maxDate.toISOString().split('T')[0]
+			: new Date(Date.now()).toISOString().split('T')[0];
+
+	function echartOptionsCPUChart(data: CPU[]) {
 		const opts = resourceUsageCPUTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsMemoryChart(
-		data: ResourceUtilizationForApp$result['resourceUtilizationForApp']['memory']
-	) {
+	function echartOptionsMemoryChart(data: Memory[]) {
 		const opts = resourceUsageMemoryTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
@@ -39,18 +48,6 @@
 		const params = new URLSearchParams({ from, to });
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
-
-	$: minDate = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam.from;
-	$: maxDate = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam.to;
-
-	$: min =
-		minDate && minDate !== PendingValue
-			? minDate.toISOString().split('T')[0]
-			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-	$: max =
-		maxDate && maxDate !== PendingValue
-			? maxDate.toISOString().split('T')[0]
-			: new Date(Date.now()).toISOString().split('T')[0];
 
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
@@ -74,11 +71,7 @@
 	</Alert>
 {/if}
 
-<!--Alert variant="info"
-	>These graphs shows the CPU and memory usage over time for {team}:{app} in conjunction with the defined
-	requests. If usage is below requests, you are wasting money, and should set a lower request.</Alert
--->
-{#if $ResourceUtilizationForApp.data}
+{#if resourceUtilization}
 	<div class="grid">
 		<Card columns={12}>
 			<h4>Resource utilization</h4>
@@ -86,19 +79,24 @@
 			<label for="from">From:</label>
 			<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" {min} {max} bind:value={to} on:change={update} />
-			<EChart
-				options={echartOptionsCPUChart(
-					$ResourceUtilizationForApp.data.resourceUtilizationForApp.cpu
-				)}
-				style="height: 400px"
-			/>
-			<EChart
-				options={echartOptionsMemoryChart(
-					$ResourceUtilizationForApp.data.resourceUtilizationForApp.memory
-				)}
-				style="height: 400px"
-			/>
+			<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
+			{#if resourceUtilization && resourceUtilization !== PendingValue}
+				<EChart options={echartOptionsCPUChart(resourceUtilization.cpu)} style="height: 400px" />
+			{:else}
+				<div class="loading">
+					<Loader />
+				</div>
+			{/if}
+			{#if resourceUtilization && resourceUtilization !== PendingValue}
+				<EChart
+					options={echartOptionsMemoryChart(resourceUtilization.memory)}
+					style="height: 400px"
+				/>
+			{:else}
+				<div class="loading">
+					<Loader />
+				</div>
+			{/if}
 		</Card>
 	</div>
 {/if}
@@ -110,5 +108,11 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.loading {
+		height: 400px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

@@ -11,12 +11,26 @@
 		type Overage,
 		type Utilization
 	} from '$lib/chart/resource_usage_transformer';
-	import { nokValueFormatter } from '$lib/utils/currency';
+	import { euroValueFormatter } from '$lib/utils/currency';
 	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForTeam } = data);
+	$: overageCostForTeam = $ResourceUtilizationForTeam.data?.resourceUtilizationOverageCostForTeam;
+	$: resourceUtilization = $ResourceUtilizationForTeam.data?.resourceUtilizationForTeam;
+
+	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
+	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
+
+	$: min =
+		minDate && minDate !== PendingValue
+			? minDate.toISOString().split('T')[0]
+			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
+	$: max =
+		maxDate && maxDate !== PendingValue
+			? maxDate.toISOString().split('T')[0]
+			: new Date(Date.now()).toISOString().split('T')[0];
 
 	$: team = $page.params.team;
 
@@ -45,18 +59,6 @@
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
-	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
-	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
-
-	$: min =
-		minDate && minDate !== PendingValue
-			? minDate.toISOString().split('T')[0]
-			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-	$: max =
-		maxDate && maxDate !== PendingValue
-			? maxDate.toISOString().split('T')[0]
-			: new Date(Date.now()).toISOString().split('T')[0];
-
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
@@ -78,37 +80,33 @@
 		{/each}
 	</Alert>
 {/if}
-{#if $ResourceUtilizationForTeam.data}
+{#if overageCostForTeam}
 	<div class="grid">
 		<Card columns={4}>
 			<label for="from">From:</label>
 			<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" {min} {max} bind:value={to} on:change={update} />
+			<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 		</Card>
 
 		<Card columns={8}>
-			{#if $ResourceUtilizationForTeam.data.resourceUtilizationOverageCostForTeam.sum === PendingValue}
+			{#if overageCostForTeam === PendingValue}
 				<div class="loading">
 					<Loader />
 				</div>
 			{:else}
-				Waste: {nokValueFormatter(
-					$ResourceUtilizationForTeam.data.resourceUtilizationOverageCostForTeam.sum
-				)}
+				Waste: {euroValueFormatter(overageCostForTeam.sum)}
 			{/if}
 		</Card>
 		<Card columns={12}>
 			<h3>Overage for {team}</h3>
-			{#if $ResourceUtilizationForTeam.data.resourceUtilizationOverageCostForTeam.sum === PendingValue}
+			{#if overageCostForTeam === PendingValue}
 				<div class="loading">
 					<Loader />
 				</div>
 			{:else}
 				<EChart
-					options={echartOptionsOverageChart(
-						$ResourceUtilizationForTeam.data.resourceUtilizationOverageCostForTeam.apps
-					)}
+					options={echartOptionsOverageChart(overageCostForTeam.apps)}
 					style="height: 400px"
 					on:click={(e) => {
 						const [env, app] = e.detail.name.split(':');
@@ -117,38 +115,39 @@
 				/>
 			{/if}
 		</Card>
-
-		{#each $ResourceUtilizationForTeam.data.resourceUtilizationForTeam as env}
-			<Card columns={12}>
-				{#if env.env !== PendingValue}
-					<h4>Utilization in {env.env}</h4>
-				{/if}
-				<div style="display: flex; ">
-					<div style="width: 50%;">
-						{#if env.env === PendingValue}
-							<div class="loading">
-								<Loader />
-							</div>
-						{:else if env.cpu.length === 0}
-							<p>No CPU utilization data for team {team} in {env.env}</p>
-						{:else}
-							<EChart options={echartOptionsCPUChart(env.cpu)} style="height: 400px" />
-						{/if}
+		{#if resourceUtilization}
+			{#each resourceUtilization as env}
+				<Card columns={12}>
+					{#if env.env !== PendingValue}
+						<h4>Utilization in {env.env}</h4>
+					{/if}
+					<div style="display: flex; ">
+						<div style="width: 50%;">
+							{#if env.env === PendingValue}
+								<div class="loading">
+									<Loader />
+								</div>
+							{:else if env.cpu.length === 0}
+								<p>No CPU utilization data for team {team} in {env.env}</p>
+							{:else}
+								<EChart options={echartOptionsCPUChart(env.cpu)} style="height: 400px" />
+							{/if}
+						</div>
+						<div style="width: 50%; margin: 0; padding: 0;">
+							{#if env.env === PendingValue}
+								<div class="loading">
+									<Loader />
+								</div>
+							{:else if env.memory.length === 0}
+								<p>No memory utilization data for team {team} in {env.env}</p>
+							{:else}
+								<EChart options={echartOptionsMemoryChart(env.memory)} style="height: 400px" />
+							{/if}
+						</div>
 					</div>
-					<div style="width: 50%; margin: 0; padding: 0;">
-						{#if env.env === PendingValue}
-							<div class="loading">
-								<Loader />
-							</div>
-						{:else if env.memory.length === 0}
-							<p>No memory utilization data for team {team} in {env.env}</p>
-						{:else}
-							<EChart options={echartOptionsMemoryChart(env.memory)} style="height: 400px" />
-						{/if}
-					</div>
-				</div>
-			</Card>
-		{/each}
+				</Card>
+			{/each}
+		{/if}
 	</div>
 {/if}
 

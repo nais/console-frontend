@@ -1,11 +1,15 @@
-import type { ResourceType, ResourceUtilizationForApp$result, ValueOf } from '$houdini';
-import { nokValueFormatter } from '$lib/utils/currency';
+import type { ResourceType, ValueOf } from '$houdini';
+import { euroValueFormatter } from '$lib/utils/currency';
 import { graphic, type EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
-export function resourceUsageMemoryTransformLineChart(
-	input: ResourceUtilizationForApp$result['resourceUtilizationForApp']['memory']
-): EChartsOption {
+export interface Memory {
+	readonly timestamp: Date;
+	readonly request: number;
+	readonly usage: number;
+}
+
+export function resourceUsageMemoryTransformLineChart(input: Memory[]): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
 		dates.push(new Date(input[i].timestamp));
@@ -71,9 +75,13 @@ export function resourceUsageMemoryTransformLineChart(
 	} as EChartsOption;
 }
 
-export function resourceUsageCPUTransformLineChart(
-	input: ResourceUtilizationForApp$result['resourceUtilizationForApp']['cpu']
-): EChartsOption {
+export interface CPU {
+	readonly timestamp: Date;
+	readonly request: number;
+	readonly usage: number;
+}
+
+export function resourceUsageCPUTransformLineChart(input: CPU[]): EChartsOption {
 	const dates = new Array<Date>();
 	for (let i = 0; i < input.length; i++) {
 		dates.push(new Date(input[i].timestamp));
@@ -280,7 +288,7 @@ export function resourceUtilizationOverageTransformLineChart(input: Overage[]): 
 			axisPointer: {
 				type: 'shadow'
 			},
-			valueFormatter: nokValueFormatter
+			valueFormatter: euroValueFormatter
 		},
 		xAxis: {
 			type: 'category',
@@ -297,7 +305,7 @@ export function resourceUtilizationOverageTransformLineChart(input: Overage[]): 
 		yAxis: {
 			type: 'value',
 			axisLabel: {
-				formatter: nokValueFormatter
+				formatter: euroValueFormatter
 			}
 		},
 		series: {

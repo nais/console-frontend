@@ -6,12 +6,12 @@ query ResourceUtilizationForApp(
 	$to: Date!
 ) {
 	resourceUtilizationForApp(app: $app, env: $env, from: $from, team: $team, to: $to) @loading {
-		cpu @loading(count: 1) {
+		cpu {
 			timestamp
 			request
 			usage
 		}
-		memory @loading(count: 1) {
+		memory {
 			timestamp
 			request
 			usage
