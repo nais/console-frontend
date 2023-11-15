@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {PendingValue } from '$houdini';
+	import {OrderByField, PendingValue} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -11,47 +11,31 @@
 	import type { TableSortState } from '@nais/ds-svelte-community';
 	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
+	import {sortTable} from "../../../../helpers";
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
 
-	const sort = (key) => {
-		if (!sortState) {
-			sortState = {
-				orderBy: key,
-				direction: 'descending'
-			};
-		} else if (sortState.orderBy === key) {
-			if (sortState.direction === 'ascending') {
-				sortState.direction = 'descending';
-			} else {
-				sortState.direction = 'ascending';
-			}
-		} else {
-			sortState.orderBy = key;
-			if (key === 'NAME') {
-				sortState.direction = 'ascending';
-			} else {
-				sortState.direction = 'descending';
-			}
-		}
+	let sortState: TableSortState = {
+		orderBy: 'NAME',
+		direction: 'descending'
+	};
 
+	const refetch = (key: string) => {
+		const field = Object.values(OrderByField).find((value) => value === key);
 		Workloads.fetch({
 			variables: {
 				team: teamName,
 				orderBy: {
-					field: key,
+					field: field !== undefined ? field : 'NAME',
 					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
 				}
 			}
 		});
 	};
-	let sortState: TableSortState = {
-		orderBy: 'NAME',
-		direction: 'ascending'
-	};
+
 </script>
 
 {#if $Workloads.errors}
@@ -70,8 +54,8 @@
 				   sort={sortState}
 				   on:sortChange={(e) => {
 					const { key } = e.detail;
-					sort(key);
-				}}>
+					sortTable(key, sortState, refetch)
+				 }}>
 				<Thead>
 					<Th style="width: 2rem"></Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>

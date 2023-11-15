@@ -204,10 +204,10 @@
         color: #6e6e6e;
         display: inline-block;
         font-weight: bold;
-        margin-right: 5px;
+        margin-right: 3px;
         text-align: center;
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         padding: 4px;
     }
 
