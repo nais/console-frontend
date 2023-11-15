@@ -26,9 +26,11 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 	}
 	resourceUtilizationOverageCostForTeam(team: $team, from: $from, to: $to) @loading {
 		sum @loading
+
 		apps @loading(count: 1) {
 			overage
 			env
+			team
 			app
 		}
 	}

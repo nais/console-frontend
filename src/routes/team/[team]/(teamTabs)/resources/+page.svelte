@@ -35,7 +35,7 @@
 
 	function echartOptionsOverageChart(data: Overage[]) {
 		const opts = resourceUtilizationOverageTransformLineChart(data);
-		opts.height = '250px'; //height: '200px'
+		opts.height = '150px'; //height: '200px'
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
@@ -99,6 +99,7 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
+			<h3>Overage for {team}</h3>
 			{#if $ResourceUtilizationForTeam.data.resourceUtilizationOverageCostForTeam.sum === PendingValue}
 				<div class="loading">
 					<Loader />

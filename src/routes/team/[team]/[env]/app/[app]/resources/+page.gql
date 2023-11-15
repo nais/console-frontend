@@ -4,23 +4,21 @@ query ResourceUtilizationForApp(
 	$env: String!
 	$from: Date
 	$to: Date!
-) @cache(policy: NetworkOnly) {
-	resourceUtilizationForApp(
-		app: $app
-		env: $env
-		from: $from
-		team: $team
-		to: $to
-	) {
-		cpu {
+) {
+	resourceUtilizationForApp(app: $app, env: $env, from: $from, team: $team, to: $to) @loading {
+		cpu @loading(count: 1) {
 			timestamp
 			request
 			usage
 		}
-		memory {
+		memory @loading(count: 1) {
 			timestamp
 			request
 			usage
 		}
+	}
+	resourceUtilizationDateRangeForTeam(team: $team) @loading {
+		from @loading
+		to @loading
 	}
 }

@@ -71,7 +71,6 @@
 
 		return {
 			update(newOptions: EChartsOption) {
-				console.log('update:', ins);
 				ins?.setOption({ ...options, ...newOptions });
 			},
 			destroy() {

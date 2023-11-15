@@ -269,11 +269,19 @@ export function resourceUsageTeamMemoryTransformLineChart(input: Utilization[]):
 export interface Overage {
 	readonly overage: number;
 	readonly env: string;
+	readonly team: string;
 	readonly app: string;
 }
 
 export function resourceUtilizationOverageTransformLineChart(input: Overage[]): EChartsOption {
 	return {
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'shadow'
+			},
+			valueFormatter: nokValueFormatter
+		},
 		xAxis: {
 			type: 'category',
 			data: input.slice(0, 10).map((s) => {
