@@ -97,52 +97,52 @@
             <h5>Tag</h5>
             <code>{tag}</code>
         </div>
-        <div class="vulnerabilities">
-            <h5>Vulnerabilities</h5>
-            {#if $data?.vulnerabilities === PendingValue}
-                <Loading/>
-            {:else if $data?.vulnerabilities?.summary === null}
-                <WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem"/>
-                No data found in dependencytrack.
-            {:else}
-                {#if $data.vulnerabilities.summary}
-                    {#if $data.vulnerabilities.summary.critical > 0 }
-                        <Tooltip placement="right" content="severity: CRITICAL">
-                            <span class="circle red"> {$data.vulnerabilities.summary.critical} </span>
-                        </Tooltip>
-                    {/if}
-                    {#if $data.vulnerabilities.summary.high > 0 }
-                        <Tooltip placement="right" content="severity: HIGH">
-                            <span class="circle orange"> {$data.vulnerabilities.summary.high} </span>
-                        </Tooltip>
-                    {/if}
-                    {#if $data.vulnerabilities.summary.medium > 0 }
-                        <Tooltip placement="right" content="severity: MEDIUM">
-                            <span class="circle yellow"> {$data.vulnerabilities.summary.medium} </span>
-                        </Tooltip>
-                    {/if}
-                    {#if $data.vulnerabilities.summary.low > 0 }
-                        <Tooltip placement="right" content="severity: LOW">
-                            <span class="circle"> {$data.vulnerabilities.summary.low} </span>
-                        </Tooltip>
-                    {/if}
-                    {#if $data.vulnerabilities.summary.total === 0 }
-                        <Tooltip placement="right" content="No vulnerabilities found, keep up the good work!">
-                            <span class="circle green">0</span>
-                        </Tooltip>
-                    {:else if !$data.vulnerabilities.hasBom }
-                        <WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem"/>
-                        <span class="small-text">Data was discovered, but the SBOM was not rendered. Please refer to the NAIS documentation for further assistance</span>
-                    {:else if $data.vulnerabilities.summary.unassigned > 0}
-                        <Tooltip placement="right" content="severity: UNASSIGNED">
-                            <span class="circle"> {$data.vulnerabilities.summary.unassigned} </span>
-                        </Tooltip>
-                    {/if}
-                    <p><a href="{$data.vulnerabilities.findingsLink}" on:click={onClick}>View findings in
-                        DependencyTrack</a></p>
+        {#if $data !== null && $data?.vulnerabilities !== null}
+            <div class="vulnerabilities">
+                <h5>Vulnerabilities</h5>
+                {#if $data.vulnerabilities === PendingValue}
+                    <Loading/>
+                {:else if $data.vulnerabilities.summary === null}
+                    <WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem"/>
+                    No data found in dependencytrack.
+                {:else}
+                        {#if $data.vulnerabilities.summary.critical > 0 }
+                            <Tooltip placement="right" content="severity: CRITICAL">
+                                <span class="circle red"> {$data.vulnerabilities.summary.critical} </span>
+                            </Tooltip>
+                        {/if}
+                        {#if $data.vulnerabilities.summary.high > 0 }
+                            <Tooltip placement="right" content="severity: HIGH">
+                                <span class="circle orange"> {$data.vulnerabilities.summary.high} </span>
+                            </Tooltip>
+                        {/if}
+                        {#if $data.vulnerabilities.summary.medium > 0 }
+                            <Tooltip placement="right" content="severity: MEDIUM">
+                                <span class="circle yellow"> {$data.vulnerabilities.summary.medium} </span>
+                            </Tooltip>
+                        {/if}
+                        {#if $data.vulnerabilities.summary.low > 0 }
+                            <Tooltip placement="right" content="severity: LOW">
+                                <span class="circle"> {$data.vulnerabilities.summary.low} </span>
+                            </Tooltip>
+                        {/if}
+                        {#if $data.vulnerabilities.summary.total === 0 }
+                            <Tooltip placement="right" content="No vulnerabilities found, keep up the good work!">
+                                <span class="circle green">0</span>
+                            </Tooltip>
+                        {:else if !$data.vulnerabilities.hasBom }
+                            <WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem"/>
+                            <span class="small-text">Data was discovered, but the SBOM was not rendered. Please refer to the NAIS documentation for further assistance</span>
+                        {:else if $data.vulnerabilities.summary.unassigned > 0}
+                            <Tooltip placement="right" content="severity: UNASSIGNED">
+                                <span class="circle"> {$data.vulnerabilities.summary.unassigned} </span>
+                            </Tooltip>
+                        {/if}
+                        <p><a href="{$data.vulnerabilities.findingsLink}" on:click={onClick}>View findings in
+                            DependencyTrack</a></p>
                 {/if}
-            {/if}
-        </div>
+            </div>
+        {/if}
     </div>
 {/if}
 
