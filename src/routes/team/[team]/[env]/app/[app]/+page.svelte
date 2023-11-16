@@ -34,9 +34,7 @@
 		<Status app={$App.data.app} />
 
 		<Card columns={2}>
-			{#if cpuUtilization && cpuUtilization !== PendingValue && memoryUtilization && memoryUtilization !== PendingValue}
-				<Cost {app} {env} {team} {cpuUtilization} {memoryUtilization} />
-			{/if}
+			<Cost {app} {env} {team} />
 		</Card>
 		<Card columns={6}>
 			<Image app={$App.data.app} />
@@ -44,7 +42,9 @@
 		<Card columns={12}>
 			<h4>Instances</h4>
 			<AutoScaling app={$App.data.app} />
-			<Instances app={$App.data.app} />
+			{#if cpuUtilization && cpuUtilization !== PendingValue && memoryUtilization && memoryUtilization !== PendingValue}
+				<Instances app={$App.data.app} {cpuUtilization} {memoryUtilization} />
+			{/if}
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>

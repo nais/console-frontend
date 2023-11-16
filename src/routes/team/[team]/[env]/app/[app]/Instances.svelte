@@ -4,8 +4,11 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import bytes from 'bytes-iec';
+
+	export let cpuUtilization: number;
+	export let memoryUtilization: number;
 
 	export let app: AppInstances;
 	$: data = fragment(
@@ -116,13 +119,44 @@
 			<Td
 				>{resources && resources.requests !== PendingValue
 					? sumCPURequests(instances.length, resources.requests.cpu)
-					: '-'}</Td
+					: '-'}
+				<Tooltip content="Current CPU utilization"
+					>({cpuUtilization.toLocaleString('en-GB', {
+						maximumFractionDigits: 2
+					})}%)</Tooltip
+				></Td
 			>
 			<Td
 				>{resources && resources.requests !== PendingValue
 					? sumMemoryRequests(instances.length, resources.requests.memory)
-					: '-'}</Td
+					: '-'}
+				<Tooltip content="Current memory utilization"
+					>({memoryUtilization.toLocaleString('en-GB', {
+						maximumFractionDigits: 2
+					})}%)</Tooltip
+				></Td
 			>
+			<!--
+{#if cpuUtilization > 0 && memoryUtilization > 0}
+			<br /><br />
+			<h4>Resource utilization</h4>
+			<div class={cpuUtilization < 50 ? 'bad' : 'good'}>
+				<Tooltip content="Current CPU utilization for app"
+					>Cpu: {cpuUtilization.toLocaleString('en-GB', {
+						maximumFractionDigits: 2
+					})}%</Tooltip
+				><br />
+			</div>
+			<div class={memoryUtilization < 50 ? 'bad' : 'good'}>
+				<Tooltip content="Current memory utilization for app"
+					>Memory: {memoryUtilization.toLocaleString('en-GB', {
+						maximumFractionDigits: 2
+					})}%</Tooltip
+				>
+			</div>
+		{/if}
+
+			-->
 			<Td></Td>
 			<Td></Td>
 			<Td></Td>
