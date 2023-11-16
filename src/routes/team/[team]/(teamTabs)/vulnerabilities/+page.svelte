@@ -92,12 +92,12 @@
                                     >
                                 </Td>
                                 <Td>{edge.node.env}</Td>
-                                {#if edge.node.project !== null}
-                                    {#if !edge.node.project.hasBom}
+                                {#if edge.node.summary !== null}
+                                    {#if !edge.node.hasBom}
                                         <Td>
                                             <div style="display: flex; align-items: center">
                                                 <span style="color:lightslategray; font-size:14px"> <a
-                                                        href={edge.node.project.findingsLink}>View</a> </span>
+                                                        href={edge.node.findingsLink}>View</a> </span>
                                                 <Tooltip placement="right"
                                                          content="Data was discovered, but the SBOM was not rendered. Please refer to the NAIS documentation for further assistance">
                                                     <ExclamationmarkTriangleFillIcon
@@ -113,39 +113,39 @@
                                     {:else}
                                         <Td>
                                             <span style="color:lightslategray; font-size:14px"> <a
-                                                    href={edge.node.project.findingsLink}
+                                                    href={edge.node.findingsLink}
                                                     on:click={onClick}>View</a> </span>
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="critical"
-                                                    count={edge.node.project?.summary?.critical}
+                                                    count={edge.node.summary?.critical}
                                             />
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="high"
-                                                    count={edge.node.project?.summary?.high}/>
+                                                    count={edge.node.summary?.high}/>
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="medium"
-                                                    count={edge.node.project?.summary?.medium}/>
+                                                    count={edge.node.summary?.medium}/>
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="low"
-                                                    count={edge.node.project?.summary?.low}/>
+                                                    count={edge.node.summary?.low}/>
                                         </Td>
                                         <Td>
-                                                {#if edge.node.project?.summary?.riskScore === -1}
+                                                {#if edge.node.summary?.riskScore === -1}
                                                     <Vulnerability
                                                     severity="low"
-                                                    count={edge.node.project?.summary?.riskScore}/>
+                                                    count={edge.node.summary?.riskScore}/>
                                                 {:else}
                                                     <Tooltip placement="left"
                                                              content="Calculated based on the number of vulnerabilities, includes unassigned">
-                                                    <span class="na">{edge.node.project?.summary?.riskScore}</span>
+                                                    <span class="na">{edge.node.summary?.riskScore}</span>
                                                     </Tooltip>
                                                 {/if}
                                         </Td>

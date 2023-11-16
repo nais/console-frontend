@@ -21,7 +21,6 @@ type App implements Node {
   appState: AppState!
   authz: [Authz!]!
   autoScaling: AutoScaling!
-  dependencyTrack: DependencyTrack
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
@@ -34,6 +33,7 @@ type App implements Node {
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
+  vulnerabilities: VulnerabilitiesNode
 }
 
 type AppConnection implements Connection {
@@ -175,15 +175,6 @@ type DatabaseUser {
 
 """Date type in YYYY-MM-DD format."""
 scalar Date
-
-type DependencyTrack implements Node {
-  findingsLink: String!
-  hasBom: Boolean!
-  id: ID!
-  projectName: String!
-  projectUUID: String!
-  summary: VulnerabilitySummary
-}
 
 type DeployInfo {
   commitSha: String!
@@ -1092,10 +1083,10 @@ type VulnerabilitiesEdge implements Edge {
 type VulnerabilitiesNode implements Node {
   appName: String!
   env: String!
+  findingsLink: String!
+  hasBom: Boolean!
   id: ID!
-  image: String!
-  project: DependencyTrack
-  team: String!
+  summary: VulnerabilitySummary
 }
 
 type VulnerabilitySummary {
