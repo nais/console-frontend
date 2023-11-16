@@ -119,33 +119,33 @@
                                         <Td>
                                             <Vulnerability
                                                     severity="critical"
-                                                    count={edge.node.summary?.critical}
+                                                    count={edge.node.summary.critical}
                                             />
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="high"
-                                                    count={edge.node.summary?.high}/>
+                                                    count={edge.node.summary.high}/>
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="medium"
-                                                    count={edge.node.summary?.medium}/>
+                                                    count={edge.node.summary.medium}/>
                                         </Td>
                                         <Td>
                                             <Vulnerability
                                                     severity="low"
-                                                    count={edge.node.summary?.low}/>
+                                                    count={edge.node.summary.low}/>
                                         </Td>
                                         <Td>
-                                                {#if edge.node.summary?.riskScore === -1}
+                                                {#if edge.node.summary.riskScore === -1}
                                                     <Vulnerability
                                                     severity="low"
-                                                    count={edge.node.summary?.riskScore}/>
+                                                    count={edge.node.summary.riskScore}/>
                                                 {:else}
                                                     <Tooltip placement="left"
                                                              content="Calculated based on the number of vulnerabilities, includes unassigned">
-                                                    <span class="na">{edge.node.summary?.riskScore}</span>
+                                                    <span class="na">{edge.node.summary.riskScore}</span>
                                                     </Tooltip>
                                                 {/if}
                                         </Td>
