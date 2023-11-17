@@ -76,7 +76,7 @@
 			Nais-yaml might be invalid for application <strong>{job}</strong>.
 		</Alert>
 	{:else if $data.__typename === 'InboundAccessError'}
-		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST' && $data.rule.mutualExplanation !== 'CLUSTER_NOT_FOUND'}
+		{#if $data.rule.mutualExplanation !== 'NO_ZERO_TRUST'}
 			<Alert variant="warning"
 				><a
 					href="/team/{$data.rule.namespace || team}/{$data.rule.cluster

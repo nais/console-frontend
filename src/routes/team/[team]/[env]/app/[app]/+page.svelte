@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
@@ -10,7 +12,6 @@
 	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -18,6 +19,8 @@
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
+	$: cpuUtilization = $App.data?.currentResourceUtilizationForApp.cpu;
+	$: memoryUtilization = $App.data?.currentResourceUtilizationForApp.memory;
 </script>
 
 {#if $App.errors}
@@ -30,7 +33,7 @@
 	<div class="grid">
 		<Status app={$App.data.app} />
 
-		<Card columns={4}>
+		<Card columns={2}>
 			<Cost {app} {env} {team} />
 		</Card>
 		<Card columns={6}>
@@ -39,7 +42,9 @@
 		<Card columns={12}>
 			<h4>Instances</h4>
 			<AutoScaling app={$App.data.app} />
-			<Instances app={$App.data.app} />
+			{#if cpuUtilization && cpuUtilization !== PendingValue && memoryUtilization && memoryUtilization !== PendingValue}
+				<Instances app={$App.data.app} {cpuUtilization} {memoryUtilization} />
+			{/if}
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
