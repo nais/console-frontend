@@ -11,6 +11,7 @@
 		type Overage,
 		type Utilization
 	} from '$lib/chart/resource_usage_transformer';
+	import CircleWithText from '$lib/icons/NotificationBadge.svelte';
 	import { euroValueFormatter } from '$lib/utils/currency';
 	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -99,6 +100,7 @@
 					overageCostForTeam.sum
 				)}
 			{/if}
+			<CircleWithText text={'999'} />
 		</Card>
 		<Card columns={12}>
 			<h3>Overage for {team}</h3>
