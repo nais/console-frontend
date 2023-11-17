@@ -36,7 +36,11 @@
 		{
 			tab: 'Resources',
 			routeId: '/team/[team]/(teamTabs)/resources'
-		}
+		},
+        {
+            tab: 'Vulnerabilities',
+            routeId: '/team/[team]/(teamTabs)/vulnerabilities'
+        }
 	];
 </script>
 

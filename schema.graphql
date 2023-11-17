@@ -33,6 +33,7 @@ type App implements Node {
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
+  vulnerabilities: VulnerabilitiesNode
 }
 
 type AppConnection implements Connection {
@@ -585,6 +586,41 @@ type OpenSearch implements Storage {
   name: String!
 }
 
+input OrderBy {
+  """Order direction"""
+  direction: SortOrder!
+  field: OrderByField!
+}
+
+enum OrderByField {
+  """Order by appName."""
+  APP_NAME
+
+  """Order by env"""
+  ENV
+
+  """Order by env."""
+  ENV_NAME
+
+  """Order by name"""
+  NAME
+
+  """Order by risk score"""
+  RISK_SCORE
+
+  """Order apps by vulnerability severity critical"""
+  SEVERITY_CRITICAL
+
+  """Order apps by vulnerability severity high"""
+  SEVERITY_HIGH
+
+  """Order apps by vulnerability severity low"""
+  SEVERITY_LOW
+
+  """Order apps by vulnerability severity medium"""
+  SEVERITY_MEDIUM
+}
+
 type Outbound {
   external: [External!]!
   rules: [Rule!]!
@@ -941,6 +977,14 @@ type SlackAlertsChannel {
   name: String!
 }
 
+enum SortOrder {
+  """Ascending sort order."""
+  ASC
+
+  """Descending sort order."""
+  DESC
+}
+
 type SqlInstance implements Storage {
   autoBackupHour: Int!
   cascadingDelete: Boolean!
@@ -996,6 +1040,9 @@ type Team implements Node {
 
     """Returns the last n entries from the list."""
     last: Int
+
+    """Order apps by"""
+    orderBy: OrderBy
   ): AppConnection!
 
   """The deploy key of the team."""
@@ -1079,6 +1126,24 @@ type Team implements Node {
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
+
+  """The vulnerabilities for the team's applications."""
+  vulnerabilities(
+    """Get entries after the cursor."""
+    after: Cursor
+
+    """Get entries before the cursor."""
+    before: Cursor
+
+    """Returns the first n entries from the list."""
+    first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+
+    """Order apps by"""
+    orderBy: OrderBy
+  ): VulnerabilitiesConnection!
 }
 
 """Team connection type."""
@@ -1178,4 +1243,34 @@ type User implements Node {
 type Variable {
   name: String!
   value: String!
+}
+
+type VulnerabilitiesConnection implements Connection {
+  edges: [VulnerabilitiesEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type VulnerabilitiesEdge implements Edge {
+  cursor: Cursor!
+  node: VulnerabilitiesNode!
+}
+
+type VulnerabilitiesNode implements Node {
+  appName: String!
+  env: String!
+  findingsLink: String!
+  hasBom: Boolean!
+  id: ID!
+  summary: VulnerabilitySummary
+}
+
+type VulnerabilitySummary {
+  critical: Int!
+  high: Int!
+  low: Int!
+  medium: Int!
+  riskScore: Int!
+  total: Int!
+  unassigned: Int!
 }

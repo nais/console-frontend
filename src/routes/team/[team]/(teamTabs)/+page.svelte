@@ -1,20 +1,41 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import {OrderByField, PendingValue} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {Alert, Table, Tbody, Td, Th, Thead, Tr} from '@nais/ds-svelte-community';
+	import type { TableSortState } from '@nais/ds-svelte-community';
 	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
+	import {sortTable} from "../../../../helpers";
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
+
+	let sortState: TableSortState = {
+		orderBy: 'NAME',
+		direction: 'descending'
+	};
+
+	const refetch = (key: string) => {
+		const field = Object.values(OrderByField).find((value) => value === key);
+		Workloads.fetch({
+			variables: {
+				team: teamName,
+				orderBy: {
+					field: field !== undefined ? field : 'NAME',
+					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
+				}
+			}
+		});
+	};
+
 </script>
 
 {#if $Workloads.errors}
@@ -29,11 +50,16 @@
 			<Cost app="" env="" team={teamName} />
 		</Card>
 		<Card columns={12}>
-			<Table size="small">
+			<Table size="small"
+				   sort={sortState}
+				   on:sortChange={(e) => {
+					const { key } = e.detail;
+					sortTable(key, sortState, refetch)
+				 }}>
 				<Thead>
 					<Th style="width: 2rem"></Th>
-					<Th>Name</Th>
-					<Th>Env</Th>
+					<Th sortable={true} sortKey="NAME">Name</Th>
+					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Instances</Th>
 					<Th>Deployed</Th>
 				</Thead>
