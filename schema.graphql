@@ -63,6 +63,21 @@ type AppState {
   state: State!
 }
 
+"""Resouce utilization overage cost for an app."""
+type AppWithResourceUtilizationOverageCost {
+  """The name of the app."""
+  app: String!
+
+  """The environment where the app is running."""
+  env: String!
+
+  """The overage cost for the app."""
+  overage: Float!
+
+  """The name of the team who owns the app."""
+  team: String!
+}
+
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
@@ -146,6 +161,15 @@ type CostSeries {
 
   """The sum of all daily costs in the series for this cost type in euros."""
   sum: Float!
+}
+
+"""Current resource utilization for app type."""
+type CurrentResourceUtilizationForApp {
+  """The percentage of CPU used."""
+  cpu: Float!
+
+  """The percentage of memory used."""
+  memory: Float!
 }
 
 """
@@ -609,6 +633,18 @@ type Query {
     team: String!
   ): App!
 
+  """Get the current resource utilization for a specific app."""
+  currentResourceUtilizationForApp(
+    """The name of the app."""
+    app: String!
+
+    """The environment where the app is running."""
+    env: String!
+
+    """The name of the team."""
+    team: String!
+  ): CurrentResourceUtilizationForApp!
+
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
     """The name of the application to get costs for."""
@@ -665,6 +701,74 @@ type Query {
     """The ID of an object."""
     id: ID!
   ): Node
+
+  """Get the date range for resource utilization for an app."""
+  resourceUtilizationDateRangeForApp(
+    """The name of the app."""
+    app: String!
+
+    """The environment where the app is running."""
+    env: String!
+
+    """The name of the team."""
+    team: String!
+  ): ResourceUtilizationDateRange!
+
+  """
+  Get the date range for resource utilization for a team across all environments.
+  """
+  resourceUtilizationDateRangeForTeam(
+    """The name of the team."""
+    team: String!
+  ): ResourceUtilizationDateRange!
+
+  """Get the resource utilization for an app."""
+  resourceUtilizationForApp(
+    """The name of the app."""
+    app: String!
+
+    """The environment where the app is running."""
+    env: String!
+
+    """
+    Fetch resource utilization from this date. Defaults to 7 days before the to date.
+    """
+    from: Date
+
+    """The name of the team."""
+    team: String!
+
+    """Fetch resource utilization until this date. Defaults to today."""
+    to: Date
+  ): ResourceUtilizationForApp!
+
+  """Get the resource utilization for a team across all environments."""
+  resourceUtilizationForTeam(
+    """
+    Fetch resource utilization from this date. Defaults to 7 days before the to date.
+    """
+    from: Date
+
+    """The team to fetch data for."""
+    team: String!
+
+    """Fetch resource utilization until this date. Defaults to today."""
+    to: Date
+  ): [ResourceUtilizationForEnv!]!
+
+  """Get resource utilization overage cost for a team."""
+  resourceUtilizationOverageCostForTeam(
+    """
+    Fetch resource utilization overage data from this date. Defaults to 7 days before the to date.
+    """
+    from: Date
+
+    """The name of the team."""
+    team: String!
+
+    """Fetch resource utilization overage until this date. Defaults to today."""
+    to: Date
+  ): ResourceUtilizationOverageCostForTeam!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
   """Get a specific NAIS-team by the team name."""
@@ -700,6 +804,77 @@ type Redis implements Storage {
 type Requests {
   cpu: String!
   memory: String!
+}
+
+"""Resource type."""
+enum ResourceType {
+  CPU
+  MEMORY
+}
+
+"""Resource utilization type."""
+type ResourceUtilization {
+  """The requested resource amount per pod."""
+  request: Float!
+
+  """The cost associated with the requested resource amount."""
+  requestCost: Float!
+
+  """The overage of the requested resource amount."""
+  requestCostOverage: Float!
+
+  """Resource type."""
+  resource: ResourceType!
+
+  """Timestamp of the value."""
+  timestamp: Time!
+
+  """The actual resource usage."""
+  usage: Float!
+
+  """The cost associated with the actual resource usage."""
+  usageCost: Float!
+}
+
+"""Date range type."""
+type ResourceUtilizationDateRange {
+  """The start of the range."""
+  from: Date
+
+  """The end of the range."""
+  to: Date
+}
+
+"""Resource utilization for app type."""
+type ResourceUtilizationForApp {
+  """CPU resource utilization data for the environment."""
+  cpu: [ResourceUtilization!]!
+
+  """Memory resource utilization data for the environment."""
+  memory: [ResourceUtilization!]!
+}
+
+"""Resource utilization for env type."""
+type ResourceUtilizationForEnv {
+  """CPU resource utilization data for the environment."""
+  cpu: [ResourceUtilization!]!
+
+  """Name of the environment."""
+  env: String!
+
+  """Memory resource utilization data for the environment."""
+  memory: [ResourceUtilization!]!
+}
+
+"""Resouce utilization overage cost for team type."""
+type ResourceUtilizationOverageCostForTeam {
+  """
+  A list of apps with overage cost for the team, sorted by overage cost in descending order.
+  """
+  apps: [AppWithResourceUtilizationOverageCost!]!
+
+  """The sum of the overage cost for all apps."""
+  sum: Float!
 }
 
 type Resources {

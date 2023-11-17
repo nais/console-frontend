@@ -23,8 +23,6 @@
 	}
 
 	function update() {
-		const old = $AppCost.variables!;
-		AppCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
 		const params = new URLSearchParams({ from, to });
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
@@ -59,6 +57,7 @@
 				bind:value={to}
 				on:change={update}
 			/>
+
 			<EChart
 				options={echartOptionsStackedColumnChart($AppCost.data.dailyCostForApp)}
 				style="height: 400px"

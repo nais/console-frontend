@@ -36,6 +36,10 @@
 		{
 			tab: 'Cost',
 			routeId: '/team/[team]/[env]/app/[app]/cost'
+		},
+		{
+			tab: 'Resources',
+			routeId: '/team/[team]/[env]/app/[app]/resources'
 		}
 	];
 	export let data: LayoutData;

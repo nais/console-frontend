@@ -8,6 +8,7 @@ query App($app: String!, $team: String!, $env: String!) {
 			name
 			image
 		}
+
 		...AccessPolicy
 		...AppImage
 		...AppInstances
@@ -16,5 +17,9 @@ query App($app: String!, $team: String!, $env: String!) {
 		...AutoScaling
 		...Storage
 		...AppStatus
+	}
+	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
+		cpu @loading
+		memory @loading
 	}
 }

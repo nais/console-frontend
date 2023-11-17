@@ -1,0 +1,24 @@
+query ResourceUtilizationForApp(
+	$app: String!
+	$team: String!
+	$env: String!
+	$from: Date
+	$to: Date!
+) {
+	resourceUtilizationForApp(app: $app, env: $env, from: $from, team: $team, to: $to) @loading {
+		cpu {
+			timestamp
+			request
+			usage
+		}
+		memory {
+			timestamp
+			request
+			usage
+		}
+	}
+	resourceUtilizationDateRangeForTeam(team: $team) @loading {
+		from @loading
+		to @loading
+	}
+}
