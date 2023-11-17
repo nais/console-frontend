@@ -95,7 +95,9 @@
 					<Loader />
 				</div>
 			{:else}
-				Waste: {euroValueFormatter(overageCostForTeam.sum)}
+				Estimated cost of excess resource usage for the given period: {euroValueFormatter(
+					overageCostForTeam.sum
+				)}
 			{/if}
 		</Card>
 		<Card columns={12}>
