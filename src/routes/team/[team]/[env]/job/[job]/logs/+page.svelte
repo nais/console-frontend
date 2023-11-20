@@ -35,7 +35,12 @@
 	$: setSelected(selectedRun);
 
 	function renderRunName(i: string) {
-		return i.slice(job.length + 1);
+		console.log(i);
+		if (i.startsWith(job)) {
+			return i.slice(job.length + 1);
+		} else {
+			return i;
+		}
 	}
 
 	const viewOptions = ['Time', 'Level', 'Name'];
