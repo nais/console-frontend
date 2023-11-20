@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let text = '999';
 	export let color = '#ff0000';
-	console.log($$restProps);
+	export let size = '32px';
 </script>
 
 <svg
@@ -10,8 +10,8 @@
 	xml:space="preserve"
 	style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
 	viewBox="0 0 32 32"
-	width="32px"
-	height="32px"
+	width={size}
+	height={size}
 	{...$$restProps}
 >
 	<g id="UrTavla">

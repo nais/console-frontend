@@ -3,6 +3,7 @@
 	import { State } from '$houdini/graphql/enums';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
+	import NotificationBadge from '$lib/icons/NotificationBadge.svelte';
 	import { replacer } from '$lib/replacer';
 	import type { LayoutData } from './$houdini';
 
@@ -78,9 +79,21 @@
 		{/if}
 		{#if tab === 'Status' && state !== State.NAIS}
 			{#if state === State.NOTNAIS}
-				<div class="circle warning">{numberOfErrors}</div>
+				<div class="notification">
+					<NotificationBadge
+						text={String(numberOfErrors)}
+						color={'var(--a-surface-warning-moderate)'}
+						size={'18px'}
+					/>
+				</div>
 			{:else if state === State.FAILING || state !== State.UNKNOWN}
-				<div class="circle error">{numberOfErrors}</div>
+				<div class="notification">
+					<NotificationBadge
+						text={String(numberOfErrors)}
+						color={'var(--a-icon-danger)'}
+						size={'18px'}
+					/>
+				</div>
 			{/if}
 		{/if}
 	{/each}
@@ -88,25 +101,9 @@
 <slot />
 
 <style>
-	.error {
-		background-color: var(--a-icon-danger);
-		color: var(--a-text-on-danger);
-	}
-	.warning {
-		background-color: var(--a-surface-warning-moderate);
-		color: var(--a-text-on-warning);
-	}
-	.circle {
+	.notification {
 		position: relative;
 		left: -10px;
 		top: 12px;
-		border-radius: 50%;
-		width: 17px;
-		height: 17px;
-		padding: 4px;
-		text-align: center;
-		font:
-			8px Arial,
-			sans-serif;
 	}
 </style>
