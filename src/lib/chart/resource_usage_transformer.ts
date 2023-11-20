@@ -45,7 +45,7 @@ export function resourceUsageMemoryTransformLineChart(input: Memory[]): EChartsO
 			axisLabel: {
 				formatter: (value: number) => prettyBytes(value)
 			},
-			scale: true
+			scale: false
 		},
 		series: [
 			{
@@ -114,7 +114,7 @@ export function resourceUsageCPUTransformLineChart(input: CPU[]): EChartsOption 
 		yAxis: {
 			type: 'value',
 			name: 'CPU',
-			scale: true
+			scale: false
 		},
 		series: [
 			{
@@ -183,7 +183,7 @@ export function resourceUsageTeamCPUTransformLineChart(input: Utilization[]): EC
 		yAxis: {
 			type: 'value',
 			name: 'CPU',
-			scale: true
+			scale: false
 		},
 		series: [
 			{
@@ -245,7 +245,7 @@ export function resourceUsageTeamMemoryTransformLineChart(input: Utilization[]):
 			axisLabel: {
 				formatter: (value: number) => prettyBytes(value)
 			},
-			scale: true
+			scale: false
 		},
 		series: [
 			{
