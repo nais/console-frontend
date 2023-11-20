@@ -71,6 +71,13 @@
 			}
 		}
 	}
+
+	function getYearlyOverage(from: Date, to: Date, overage: number) {
+		const diff = Math.abs(from.getTime() - to.getTime());
+		const days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
+		const yearlyOverage = (overage / days) * 365;
+		return yearlyOverage;
+	}
 </script>
 
 {#if $ResourceUtilizationForTeam.errors}
@@ -97,6 +104,9 @@
 			{:else}
 				Estimated cost of excess resource usage for the given period: {euroValueFormatter(
 					overageCostForTeam.sum
+				)}<br />
+				Estimated total yearly cost of excess resource usage: {euroValueFormatter(
+					getYearlyOverage(new Date(from), new Date(to), overageCostForTeam.sum)
 				)}
 			{/if}
 		</Card>

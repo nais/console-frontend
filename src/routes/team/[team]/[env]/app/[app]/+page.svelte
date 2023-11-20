@@ -33,11 +33,11 @@
 	<div class="grid">
 		<Status app={$App.data.app} />
 
-		<Card columns={2}>
-			<Cost {app} {env} {team} />
-		</Card>
-		<Card columns={6}>
+		<Card columns={9} rows={2}>
 			<Image app={$App.data.app} />
+		</Card>
+		<Card columns={3} rows={1}>
+			<Cost {app} {env} {team} />
 		</Card>
 		<Card columns={12}>
 			<h4>Instances</h4>

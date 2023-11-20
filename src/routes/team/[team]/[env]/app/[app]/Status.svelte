@@ -86,7 +86,8 @@
 	.card {
 		border-radius: 0.5rem;
 		padding: 1rem;
-		grid-column: span 2;
+		grid-column: span 3;
+		grid-row: span 1;
 	}
 
 	.UNKOWN {
