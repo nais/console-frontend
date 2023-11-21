@@ -34,13 +34,13 @@
 			routeId: '/team/[team]/(teamTabs)/cost'
 		},
 		{
-			tab: 'Resources',
-			routeId: '/team/[team]/(teamTabs)/resources'
+			tab: 'Utilization',
+			routeId: '/team/[team]/(teamTabs)/utilization'
 		},
-        {
-            tab: 'Vulnerabilities',
-            routeId: '/team/[team]/(teamTabs)/vulnerabilities'
-        }
+		{
+			tab: 'Vulnerabilities',
+			routeId: '/team/[team]/(teamTabs)/vulnerabilities'
+		}
 	];
 </script>
 

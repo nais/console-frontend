@@ -18,8 +18,4 @@ query App($app: String!, $team: String!, $env: String!) {
 		...Storage
 		...AppStatus
 	}
-	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
-		cpu @loading
-		memory @loading
-	}
 }

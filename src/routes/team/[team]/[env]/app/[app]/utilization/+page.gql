@@ -10,11 +10,13 @@ query ResourceUtilizationForApp(
 			timestamp
 			request
 			usage
+			usagePercentage
 		}
 		memory {
 			timestamp
 			request
 			usage
+			usagePercentage
 		}
 	}
 	resourceUtilizationDateRangeForTeam(team: $team) @loading {

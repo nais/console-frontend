@@ -870,6 +870,9 @@ type ResourceUtilization {
 
   """The cost associated with the actual resource usage."""
   usageCost: Float!
+
+  """The usage percentage of the requested resource amount."""
+  usagePercentage: Float!
 }
 
 """Date range type."""

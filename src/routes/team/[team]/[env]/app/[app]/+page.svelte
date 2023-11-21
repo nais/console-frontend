@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { CurrentResourceUtilizationForAppVariables, PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import AutoScaling from './AutoScaling.svelte';
 	import Image from './Image.svelte';
@@ -16,20 +15,28 @@
 	export let data: PageData;
 	$: ({ App } = data);
 
+	export const _CurrentResourceUtilizationForAppVariables: CurrentResourceUtilizationForAppVariables =
+		() => {
+			return { app: app, env: env, team: team };
+		};
+
+	const utilization = graphql(`
+		query CurrentResourceUtilizationForApp($app: String!, $team: String!, $env: String!) @load {
+			currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
+				cpu @loading
+				memory @loading
+			}
+		}
+	`);
+
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: cpuUtilization = $App.data?.currentResourceUtilizationForApp.cpu;
-	$: memoryUtilization = $App.data?.currentResourceUtilizationForApp.memory;
+	$: cpuUtilization = $utilization.data?.currentResourceUtilizationForApp.cpu;
+	$: memoryUtilization = $utilization.data?.currentResourceUtilizationForApp.memory;
 </script>
 
-{#if $App.errors}
-	<Alert variant="error">
-		{#each $App.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $App.data}
+{#if $App.data}
 	<div class="grid">
 		<Status app={$App.data.app} />
 
@@ -42,9 +49,7 @@
 		<Card columns={12}>
 			<h4>Instances</h4>
 			<AutoScaling app={$App.data.app} />
-			{#if cpuUtilization && cpuUtilization !== PendingValue && memoryUtilization && memoryUtilization !== PendingValue}
-				<Instances app={$App.data.app} {cpuUtilization} {memoryUtilization} />
-			{/if}
+			<Instances app={$App.data.app} {cpuUtilization} {memoryUtilization} />
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>

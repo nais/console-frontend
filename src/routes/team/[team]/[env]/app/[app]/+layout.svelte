@@ -40,8 +40,8 @@
 			routeId: '/team/[team]/[env]/app/[app]/cost'
 		},
 		{
-			tab: 'Resources',
-			routeId: '/team/[team]/[env]/app/[app]/resources'
+			tab: 'Utilization',
+			routeId: '/team/[team]/[env]/app/[app]/utilization'
 		}
 	];
 	export let data: LayoutData;
