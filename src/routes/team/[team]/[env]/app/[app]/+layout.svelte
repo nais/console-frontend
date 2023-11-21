@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import { State } from '$houdini/graphql/enums';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
@@ -77,7 +78,7 @@
 				title={tab}
 			/>
 		{/if}
-		{#if tab === 'Status' && state !== State.NAIS}
+		{#if tab === 'Status' && state && state !== PendingValue && numberOfErrors !== undefined}
 			{#if state === State.NOTNAIS}
 				<div class="notification">
 					<NotificationBadge
@@ -86,7 +87,7 @@
 						size={'18px'}
 					/>
 				</div>
-			{:else if state === State.FAILING || state !== State.UNKNOWN}
+			{:else if state === State.FAILING}
 				<div class="notification">
 					<NotificationBadge
 						text={String(numberOfErrors)}
