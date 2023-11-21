@@ -122,7 +122,7 @@
 					style="height: 400px"
 					on:click={(e) => {
 						const [env, app] = e.detail.name.split(':');
-						goto(`/team/${team}/${env}/app/${app}/resources`);
+						goto(`/team/${team}/${env}/app/${app}/utilization`);
 					}}
 				/>
 			{/if}
