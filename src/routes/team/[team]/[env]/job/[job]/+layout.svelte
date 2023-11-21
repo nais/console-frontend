@@ -3,7 +3,7 @@
 	import { State } from '$houdini/graphql/enums';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
-	import NotificationBadge from '$lib/icons/NotificationBadge.svelte';
+	import NotificationBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { replacer } from '$lib/replacer';
 	import type { LayoutData } from './$houdini';
 

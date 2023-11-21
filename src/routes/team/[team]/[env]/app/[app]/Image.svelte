@@ -3,7 +3,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import { logEvent } from '$lib/amplitude';
-	import NotificationBadge from '$lib/icons/NotificationBadge.svelte';
+	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
 
@@ -126,7 +126,7 @@
 				{:else}
 					{#if $data.vulnerabilities.summary.critical > 0}
 						<Tooltip placement="right" content="severity: CRITICAL">
-							<NotificationBadge
+							<VulnerabilityBadge
 								text={String($data.vulnerabilities.summary.critical)}
 								color={severityToColor('critical')}
 								size={notificationBadgeSize}
@@ -135,7 +135,7 @@
 					{/if}
 					{#if $data.vulnerabilities.summary.high > 0}
 						<Tooltip placement="right" content="severity: HIGH">
-							<NotificationBadge
+							<VulnerabilityBadge
 								text={String($data.vulnerabilities.summary.high)}
 								color={severityToColor('high')}
 								size={notificationBadgeSize}
@@ -144,7 +144,7 @@
 					{/if}
 					{#if $data.vulnerabilities.summary.medium > 0}
 						<Tooltip placement="right" content="severity: MEDIUM">
-							<NotificationBadge
+							<VulnerabilityBadge
 								text={String($data.vulnerabilities.summary.medium)}
 								color={severityToColor('medium')}
 								size={notificationBadgeSize}
@@ -153,7 +153,7 @@
 					{/if}
 					{#if $data.vulnerabilities.summary.low > 0}
 						<Tooltip placement="right" content="severity: LOW">
-							<NotificationBadge
+							<VulnerabilityBadge
 								text={String($data.vulnerabilities.summary.low)}
 								color={severityToColor('low')}
 								size={notificationBadgeSize}
@@ -162,7 +162,7 @@
 					{/if}
 					{#if $data.vulnerabilities.summary.total === 0}
 						<Tooltip placement="right" content="No vulnerabilities found, keep up the good work!">
-							<NotificationBadge
+							<VulnerabilityBadge
 								text={'0'}
 								color={'--var(--a-icon-success)'}
 								size={notificationBadgeSize}
@@ -176,7 +176,7 @@
 						>
 					{:else if $data.vulnerabilities.summary.unassigned > 0}
 						<Tooltip placement="right" content="severity: UNASSIGNED">
-							<NotificationBadge
+							<VulnerabilityBadge
 								text={String($data.vulnerabilities.summary.unassigned)}
 								color={'#6e6e6e'}
 								size={notificationBadgeSize}
