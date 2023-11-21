@@ -16,7 +16,7 @@
 >
 	<g id="UrTavla">
 		<circle
-			style="fill:{color};fill-opacity:25%;stroke:{color};stroke-width:1.6871;stroke-miterlimit:10;"
+			style="stroke:{color};stroke-width:1.6871;stroke-miterlimit:10;"
 			cx="50%"
 			cy="50%"
 			r="45%"
