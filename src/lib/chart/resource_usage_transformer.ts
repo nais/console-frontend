@@ -362,7 +362,7 @@ function truncateString(str: string, num: number) {
 	if (str.length <= num) {
 		return str;
 	}
-	return str.slice(0, num) + '...';
+	return str.slice(0, num - 3) + '...';
 }
 
 export function resourceUtilizationCPUOverageTransformLineChart(input: Overage[]): EChartsOption {
@@ -382,7 +382,7 @@ export function resourceUtilizationCPUOverageTransformLineChart(input: Overage[]
 			axisLabel: {
 				rotate: 60,
 				formatter: (value: string) => {
-					return truncateString(value, 20);
+					return truncateString(value, 23);
 				}
 			}
 		},
@@ -439,7 +439,7 @@ export function resourceUtilizationMemoryOverageTransformLineChart(
 			axisLabel: {
 				rotate: 60,
 				formatter: (value: string) => {
-					return truncateString(value, 20);
+					return truncateString(value, 23);
 				}
 			}
 		},
@@ -463,15 +463,15 @@ export function resourceUtilizationMemoryOverageTransformLineChart(
 			itemStyle: {
 				color: new graphic.LinearGradient(0, 0, 0, 1, [
 					{ offset: 0, color: '#91dc75' },
-					{ offset: 0.5, color: '#51cc35' },
-					{ offset: 1, color: '#51cc35' }
+					{ offset: 0.5, color: '#41bc25' },
+					{ offset: 1, color: '#41bc25' }
 				])
 			},
 			emphasis: {
 				itemStyle: {
 					color: new graphic.LinearGradient(0, 0, 0, 1, [
-						{ offset: 0, color: '#51cc35' },
-						{ offset: 0.7, color: '#51cc35' },
+						{ offset: 0, color: '#41bc25' },
+						{ offset: 0.7, color: '#41bc25' },
 						{ offset: 1, color: '#91dc75' }
 					])
 				}
