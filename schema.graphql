@@ -64,15 +64,15 @@ type AppState {
   state: State!
 }
 
-"""Resouce utilization overage cost for an app."""
-type AppWithResourceUtilizationOverageCost {
+"""Resource utilization overage cost for an app."""
+type AppWithResourceUtilizationOverage {
   """The name of the app."""
   app: String!
 
   """The environment where the app is running."""
   env: String!
 
-  """The overage cost for the app."""
+  """The overage for the app."""
   overage: Float!
 
   """The name of the team who owns the app."""
@@ -792,8 +792,8 @@ type Query {
     to: Date
   ): [ResourceUtilizationForEnv!]!
 
-  """Get resource utilization overage cost for a team."""
-  resourceUtilizationOverageCostForTeam(
+  """Get resource utilization overage data for a team."""
+  resourceUtilizationOverageForTeam(
     """
     Fetch resource utilization overage data from this date. Defaults to 7 days before the to date.
     """
@@ -804,7 +804,7 @@ type Query {
 
     """Fetch resource utilization overage until this date. Defaults to today."""
     to: Date
-  ): ResourceUtilizationOverageCostForTeam!
+  ): ResourceUtilizationOverageForTeam!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
   """Get a specific NAIS-team by the team name."""
@@ -905,15 +905,16 @@ type ResourceUtilizationForEnv {
   memory: [ResourceUtilization!]!
 }
 
-"""Resouce utilization overage cost for team type."""
-type ResourceUtilizationOverageCostForTeam {
-  """
-  A list of apps with overage cost for the team, sorted by overage cost in descending order.
-  """
-  apps: [AppWithResourceUtilizationOverageCost!]!
+"""Resource utilization overage cost for team type."""
+type ResourceUtilizationOverageForTeam {
+  """List of CPU overage data for all apps."""
+  cpu: [AppWithResourceUtilizationOverage!]!
+
+  """List of memory overage data for all apps."""
+  memory: [AppWithResourceUtilizationOverage!]!
 
   """The sum of the overage cost for all apps."""
-  sum: Float!
+  overageCost: Float!
 }
 
 type Resources {
