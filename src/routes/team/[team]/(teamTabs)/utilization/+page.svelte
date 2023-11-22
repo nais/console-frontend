@@ -7,7 +7,8 @@
 	import {
 		resourceUsageTeamCPUTransformLineChart,
 		resourceUsageTeamMemoryTransformLineChart,
-		resourceUtilizationOverageTransformLineChart,
+		resourceUtilizationCPUOverageTransformLineChart,
+		resourceUtilizationMemoryOverageTransformLineChart,
 		type Overage,
 		type Utilization
 	} from '$lib/chart/resource_usage_transformer';
@@ -17,7 +18,7 @@
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForTeam } = data);
-	$: overageCostForTeam = $ResourceUtilizationForTeam.data?.resourceUtilizationOverageCostForTeam;
+	$: overageCostForTeam = $ResourceUtilizationForTeam.data?.resourceUtilizationOverageForTeam;
 	$: resourceUtilization = $ResourceUtilizationForTeam.data?.resourceUtilizationForTeam;
 
 	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
@@ -47,8 +48,15 @@
 		return opts;
 	}
 
-	function echartOptionsOverageChart(data: Overage[]) {
-		const opts = resourceUtilizationOverageTransformLineChart(data);
+	function echartOptionsCPUOverageChart(data: Overage[]) {
+		const opts = resourceUtilizationCPUOverageTransformLineChart(data);
+		opts.height = '150px'; //height: '200px'
+		opts.legend = { ...opts.legend, bottom: 20 };
+		return opts;
+	}
+
+	function echartOptionsMemoryOverageChart(data: Overage[]) {
+		const opts = resourceUtilizationMemoryOverageTransformLineChart(data);
 		opts.height = '150px'; //height: '200px'
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
@@ -103,23 +111,40 @@
 				</div>
 			{:else}
 				Estimated cost of excess resource usage for the given period: {euroValueFormatter(
-					overageCostForTeam.sum
+					overageCostForTeam.overageCost
 				)}<br />
 				Estimated total yearly cost of excess resource usage: {euroValueFormatter(
-					getYearlyOverage(new Date(from), new Date(to), overageCostForTeam.sum)
+					getYearlyOverage(new Date(from), new Date(to), overageCostForTeam.overageCost)
 				)}
 			{/if}
 		</Card>
-		<Card columns={12}>
-			<h3>Overage for {team}</h3>
+		<Card columns={6}>
+			<h3>Unutilized CPU</h3>
 			{#if overageCostForTeam === PendingValue}
 				<div class="loading">
 					<Loader />
 				</div>
 			{:else}
 				<EChart
-					options={echartOptionsOverageChart(overageCostForTeam.apps)}
-					style="height: 400px"
+					options={echartOptionsCPUOverageChart(overageCostForTeam.cpu)}
+					style="height: 350px"
+					on:click={(e) => {
+						const [env, app] = e.detail.name.split(':');
+						goto(`/team/${team}/${env}/app/${app}/utilization`);
+					}}
+				/>
+			{/if}
+		</Card>
+		<Card columns={6}>
+			<h3>Unutilized memory</h3>
+			{#if overageCostForTeam === PendingValue}
+				<div class="loading">
+					<Loader />
+				</div>
+			{:else}
+				<EChart
+					options={echartOptionsMemoryOverageChart(overageCostForTeam.memory)}
+					style="height: 350px;"
 					on:click={(e) => {
 						const [env, app] = e.detail.name.split(':');
 						goto(`/team/${team}/${env}/app/${app}/utilization`);

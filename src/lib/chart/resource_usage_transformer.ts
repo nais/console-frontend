@@ -1,5 +1,4 @@
 import type { ResourceType, ValueOf } from '$houdini';
-import { euroValueFormatter } from '$lib/utils/currency';
 import { graphic, type EChartsOption } from 'echarts';
 import prettyBytes from 'pretty-bytes';
 
@@ -359,14 +358,21 @@ export interface Overage {
 	readonly app: string;
 }
 
-export function resourceUtilizationOverageTransformLineChart(input: Overage[]): EChartsOption {
+function truncateString(str: string, num: number) {
+	if (str.length <= num) {
+		return str;
+	}
+	return str.slice(0, num) + '...';
+}
+
+export function resourceUtilizationCPUOverageTransformLineChart(input: Overage[]): EChartsOption {
 	return {
 		tooltip: {
 			trigger: 'axis',
 			axisPointer: {
-				type: 'shadow'
+				type: 'line'
 			},
-			valueFormatter: euroValueFormatter
+			valueFormatter: (value: number) => (value == null ? '0' : value)
 		},
 		xAxis: {
 			type: 'category',
@@ -374,7 +380,10 @@ export function resourceUtilizationOverageTransformLineChart(input: Overage[]): 
 				return s.env.concat(':').concat(s.app);
 			}),
 			axisLabel: {
-				rotate: 25
+				rotate: 60,
+				formatter: (value: string) => {
+					return truncateString(value, 20);
+				}
 			}
 		},
 		legend: {
@@ -382,14 +391,13 @@ export function resourceUtilizationOverageTransformLineChart(input: Overage[]): 
 		},
 		yAxis: {
 			type: 'value',
-			axisLabel: {
-				formatter: euroValueFormatter
-			}
+			name: 'CPU',
+			scale: false
 		},
 		series: {
-			name: 'Overage',
+			name: 'Unutilized CPU',
 			data: input.slice(0, 10).map((s) => {
-				return s.overage;
+				return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
 			}),
 			type: 'bar',
 			itemStyle: {
@@ -405,6 +413,66 @@ export function resourceUtilizationOverageTransformLineChart(input: Overage[]): 
 						{ offset: 0, color: '#2378f7' },
 						{ offset: 0.7, color: '#2378f7' },
 						{ offset: 1, color: '#83bff6' }
+					])
+				}
+			}
+		}
+	} as EChartsOption;
+}
+
+export function resourceUtilizationMemoryOverageTransformLineChart(
+	input: Overage[]
+): EChartsOption {
+	return {
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'line'
+			},
+			valueFormatter: (value: number) => prettyBytes(value)
+		},
+		xAxis: {
+			type: 'category',
+			data: input.slice(0, 10).map((s) => {
+				return s.env.concat(':').concat(s.app);
+			}),
+			axisLabel: {
+				rotate: 60,
+				formatter: (value: string) => {
+					return truncateString(value, 20);
+				}
+			}
+		},
+		legend: {
+			show: false
+		},
+		yAxis: {
+			type: 'value',
+			name: 'Memory',
+			axisLabel: {
+				formatter: (value: number) => prettyBytes(value)
+			},
+			scale: false
+		},
+		series: {
+			name: 'Unutilized memory',
+			data: input.slice(0, 10).map((s) => {
+				return s.overage;
+			}),
+			type: 'bar',
+			itemStyle: {
+				color: new graphic.LinearGradient(0, 0, 0, 1, [
+					{ offset: 0, color: '#91dc75' },
+					{ offset: 0.5, color: '#51cc35' },
+					{ offset: 1, color: '#51cc35' }
+				])
+			},
+			emphasis: {
+				itemStyle: {
+					color: new graphic.LinearGradient(0, 0, 0, 1, [
+						{ offset: 0, color: '#51cc35' },
+						{ offset: 0.7, color: '#51cc35' },
+						{ offset: 1, color: '#91dc75' }
 					])
 				}
 			}
