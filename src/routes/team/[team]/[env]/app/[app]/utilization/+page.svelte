@@ -53,35 +53,12 @@
 			}
 		}
 	}
-	$: env = $page.params.env;
-	$: team = $page.params.team;
-	$: app = $page.params.app;
 
 	let tenant = $page.url.hostname;
 	if (tenant === 'localhost') {
 		tenant = 'nav';
 	} else {
 		tenant = tenant.split('.')[1];
-	}
-
-	function getPrometheusDateString(date: Date) {
-		return (
-			date.getFullYear().toString() +
-			'-' +
-			(date.getMonth() + 1).toString() +
-			'-' +
-			date.getDate().toString() +
-			' ' +
-			date.getUTCHours().toString().padStart(2, '0') +
-			':00:00'
-		);
-	}
-
-	function getPrometheusDuration(from: Date, to: Date): string {
-		let unix_from = from.getTime() / 1000;
-		let unix_to = to.getTime() / 1000;
-		let duration_secs = unix_to - unix_from;
-		return (Math.floor(duration_secs / 86400) + 1).toString() + 'd';
 	}
 </script>
 

@@ -33,7 +33,7 @@ export function resourceUsagePercentageTransformLineChart(
 				type: 'line'
 			},
 			valueFormatter: (value: number) =>
-				value.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '%'
+				value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '%'
 		},
 		xAxis: {
 			type: 'category',
@@ -65,7 +65,7 @@ export function resourceUsagePercentageTransformLineChart(
 				type: 'line',
 				name: 'Memory usage',
 				data: input.memory.map((s) => {
-					return s.usagePercentage;
+					return s.usagePercentage > 0.0 ? s.usagePercentage : undefined;
 				}),
 				showSymbol: false
 			},
@@ -73,7 +73,7 @@ export function resourceUsagePercentageTransformLineChart(
 				type: 'line',
 				name: 'CPU usage',
 				data: input.cpu.map((s) => {
-					return s.usagePercentage;
+					return s.usagePercentage > 0.0 ? s.usagePercentage : undefined;
 				}),
 				showSymbol: false
 			}
