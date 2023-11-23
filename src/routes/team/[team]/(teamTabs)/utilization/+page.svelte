@@ -84,7 +84,7 @@
 {/if}
 <div class="grid">
 	{#if overageCostForTeam && resourceUtilization}
-		<Card columns={3}>
+		<Card columns={3} borderColor="#83bff6">
 			<div class="summaryCard">
 				<div class="summaryIcon" style="--bg-color: #83bff6">
 					<CpuIcon size="32" color="#83bff6" />
@@ -95,7 +95,7 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={3}>
+		<Card columns={3} borderColor="#91dc75">
 			<div class="summaryCard" style="--bg-color: #91dc75">
 				<div class="summaryIcon">
 					<MemoryIcon size="32" color="#91dc75" />
@@ -106,7 +106,7 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={3}>
+		<Card columns={3} borderColor="#83bff6">
 			<div class="summaryCard" style="--bg-color: #83bff6">
 				<div class="summaryIcon">
 					<CostIcon size="32" color="#83bff6" />
@@ -117,7 +117,7 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={3}>
+		<Card columns={3} borderColor="#91dc75">
 			<div class="summaryCard" style="--bg-color: #91dc75">
 				<div class="summaryIcon">
 					<CostIcon size="32" color="#91dc75" />
@@ -128,7 +128,7 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={12}>
+		<Card columns={12} borderColor="var(--a-gray-200)">
 			<h3>Unused resources per application</h3>
 			<label for="from">From:</label>
 			<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
