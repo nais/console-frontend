@@ -61,7 +61,6 @@
 	}
 
 	$: instances = $data.instances;
-	$: console.log(instances);
 	$: resources = $data.resources;
 	$: appName = $page.params.app;
 	$: env = $page.params.env;
@@ -124,9 +123,11 @@
 						? sumCPURequests(instances.length, resources.requests.cpu)
 						: '-'}
 					<Tooltip content="Current CPU utilization"
-						>({cpuUtilization.toLocaleString('en-GB', {
-							maximumFractionDigits: 2
-						})}%)</Tooltip
+						>({cpuUtilization > 100
+							? '>100'
+							: cpuUtilization.toLocaleString('en-GB', {
+									maximumFractionDigits: 2
+							  })}%)</Tooltip
 					></Td
 				>
 				<Td

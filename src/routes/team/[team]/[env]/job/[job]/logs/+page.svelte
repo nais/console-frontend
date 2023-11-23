@@ -35,7 +35,6 @@
 	$: setSelected(selectedRun);
 
 	function renderRunName(i: string) {
-		console.log(i);
 		if (i.startsWith(job)) {
 			return i.slice(job.length + 1);
 		} else {

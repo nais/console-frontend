@@ -4,10 +4,8 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import {
-		resourceUsagePercentageTransformLineChart,
-		type resourceUtilizationForApp
-	} from '$lib/chart/resource_usage_transformer';
+	import { resourceUsagePercentageTransformLineChart } from '$lib/chart/resource_usage_app_transformer';
+	import type { ResourceUtilizationApp } from '$lib/chart/types';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -29,7 +27,7 @@
 			? maxDate.toISOString().split('T')[0]
 			: new Date(Date.now()).toISOString().split('T')[0];
 
-	function echartOptionsUsagePercentage(data: resourceUtilizationForApp) {
+	function echartOptionsUsagePercentage(data: ResourceUtilizationApp) {
 		const opts = resourceUsagePercentageTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
@@ -60,6 +58,8 @@
 	} else {
 		tenant = tenant.split('.')[1];
 	}
+
+	let annualCostUnusedResources = 540.0;
 </script>
 
 {#if $ResourceUtilizationForApp.errors}
@@ -72,6 +72,27 @@
 
 {#if resourceUtilization && resourceUtilization !== PendingValue}
 	<div class="grid">
+		<Card columns={4}
+			><div class="summary">
+				<h4>CPU utilization</h4>
+				<p class="metric">0.99% of 1024Mi</p>
+			</div></Card
+		>
+
+		<Card columns={4}
+			><div class="summary">
+				<h4>Memory utilization</h4>
+				<p class="metric">21.47% of 3Gi</p>
+			</div></Card
+		>
+		<Card columns={4}
+			><div class="summary">
+				<h4>Annual cost of unused resources</h4>
+				<p class="metric {annualCostUnusedResources > 0 ? 'high' : 'low'}">
+					€{annualCostUnusedResources}
+				</p>
+			</div></Card
+		>
 		<Card columns={12}>
 			{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
 				{#if resourceUtilization.cpu.length > 0}
@@ -109,5 +130,17 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.summary {
+		text-align: center;
+	}
+	.metric {
+		font-size: 1.5rem;
+	}
+	.high {
+		color: var(--a-icon-danger);
+	}
+	.low {
+		color: var(--color-success);
 	}
 </style>

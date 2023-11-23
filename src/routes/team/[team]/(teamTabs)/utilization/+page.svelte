@@ -5,14 +5,11 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
-		resourceUsageTeamCPUTransformLineChart,
-		resourceUsageTeamMemoryTransformLineChart,
+		resourceUsageTeamTransformLineChart,
 		resourceUtilizationCPUOverageTransformLineChart,
-		resourceUtilizationMemoryOverageTransformLineChart,
-		type Overage,
-		type Utilization
-	} from '$lib/chart/resource_usage_transformer';
-	import { euroValueFormatter } from '$lib/utils/currency';
+		resourceUtilizationMemoryOverageTransformLineChart
+	} from '$lib/chart/resource_usage_team_transformers';
+	import type { Overage, Utilization } from '$lib/chart/types';
 	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -35,14 +32,8 @@
 
 	$: team = $page.params.team;
 
-	function echartOptionsCPUChart(data: Utilization[]) {
-		const opts = resourceUsageTeamCPUTransformLineChart(data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
-	function echartOptionsMemoryChart(data: Utilization[]) {
-		const opts = resourceUsageTeamMemoryTransformLineChart(data);
+	function echartOptionsUsageChart(data: Utilization) {
+		const opts = resourceUsageTeamTransformLineChart(data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
@@ -50,14 +41,14 @@
 
 	function echartOptionsCPUOverageChart(data: Overage[]) {
 		const opts = resourceUtilizationCPUOverageTransformLineChart(data);
-		opts.height = '150px'; //height: '200px'
+		opts.height = '150px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
 	function echartOptionsMemoryOverageChart(data: Overage[]) {
 		const opts = resourceUtilizationMemoryOverageTransformLineChart(data);
-		opts.height = '150px'; //height: '200px'
+		opts.height = '150px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
@@ -79,13 +70,6 @@
 			}
 		}
 	}
-
-	function getYearlyOverage(from: Date, to: Date, overage: number) {
-		const diff = Math.abs(from.getTime() - to.getTime());
-		const days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
-		const yearlyOverage = (overage / days) * 365;
-		return yearlyOverage;
-	}
 </script>
 
 {#if $ResourceUtilizationForTeam.errors}
@@ -95,98 +79,87 @@
 		{/each}
 	</Alert>
 {/if}
-{#if overageCostForTeam}
-	<div class="grid">
-		<Card columns={4}>
+<div class="grid">
+	{#if overageCostForTeam && resourceUtilization}
+		<Card columns={3}
+			><div class="summary">
+				<h4>CPU utilization</h4>
+				<p class="metric">0.99% of 1024Mi</p>
+			</div></Card
+		>
+		<Card columns={3}
+			><div class="summary">
+				<h4>Memory utilization</h4>
+				<p class="metric">21.47% of 3Gi</p>
+			</div></Card
+		>
+		<Card columns={3}
+			><div class="summary">
+				<h4>Annual cost of unused CPU</h4>
+				<p class="metric">€100000</p>
+			</div></Card
+		>
+		<Card columns={3}
+			><div class="summary">
+				<h4>Annual cost of unused memory</h4>
+				<p class="metric">€100000</p>
+			</div></Card
+		>
+		<Card columns={12}>
+			<h3>Unused resources per application</h3>
 			<label for="from">From:</label>
 			<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
 			<label for="to">To:</label>
 			<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
-		</Card>
-
-		<Card columns={8}>
-			{#if overageCostForTeam === PendingValue}
-				<div class="loading">
-					<Loader />
-				</div>
-			{:else}
-				Estimated cost of excess resource usage for the given period: {euroValueFormatter(
-					overageCostForTeam.overageCost
-				)}<br />
-				Estimated total yearly cost of excess resource usage: {euroValueFormatter(
-					getYearlyOverage(new Date(from), new Date(to), overageCostForTeam.overageCost)
-				)}
-			{/if}
-		</Card>
-		<Card columns={6}>
-			<h3>Unutilized CPU</h3>
-			{#if overageCostForTeam === PendingValue}
-				<div class="loading">
-					<Loader />
-				</div>
-			{:else}
-				<EChart
-					options={echartOptionsCPUOverageChart(overageCostForTeam.cpu)}
-					style="height: 350px"
-					on:click={(e) => {
-						const [env, app] = e.detail.name.split(':');
-						goto(`/team/${team}/${env}/app/${app}/utilization`);
-					}}
-				/>
-			{/if}
-		</Card>
-		<Card columns={6}>
-			<h3>Unutilized memory</h3>
-			{#if overageCostForTeam === PendingValue}
-				<div class="loading">
-					<Loader />
-				</div>
-			{:else}
-				<EChart
-					options={echartOptionsMemoryOverageChart(overageCostForTeam.memory)}
-					style="height: 350px;"
-					on:click={(e) => {
-						const [env, app] = e.detail.name.split(':');
-						goto(`/team/${team}/${env}/app/${app}/utilization`);
-					}}
-				/>
-			{/if}
-		</Card>
-		{#if resourceUtilization}
-			{#each resourceUtilization as env}
-				<Card columns={12}>
-					{#if env.env !== PendingValue}
-						<h4>Utilization in {env.env}</h4>
-					{/if}
-					<div style="display: flex; ">
-						<div style="width: 50%;">
-							{#if env.env === PendingValue}
-								<div class="loading">
-									<Loader />
-								</div>
-							{:else if env.cpu.length === 0}
-								<p>No CPU utilization data for team {team} in {env.env}</p>
-							{:else}
-								<EChart options={echartOptionsCPUChart(env.cpu)} style="height: 400px" />
-							{/if}
-						</div>
-						<div style="width: 50%; margin: 0; padding: 0;">
-							{#if env.env === PendingValue}
-								<div class="loading">
-									<Loader />
-								</div>
-							{:else if env.memory.length === 0}
-								<p>No memory utilization data for team {team} in {env.env}</p>
-							{:else}
-								<EChart options={echartOptionsMemoryChart(env.memory)} style="height: 400px" />
-							{/if}
-						</div>
+			<div style="display: flex">
+				{#if overageCostForTeam === PendingValue}
+					<div class="loading">
+						<Loader />
 					</div>
-				</Card>
+				{:else}
+					<EChart
+						options={echartOptionsCPUOverageChart(overageCostForTeam.cpu)}
+						style="height: 350px; width: 50%;"
+						on:click={(e) => {
+							const [env, app] = e.detail.name.split(':');
+							goto(`/team/${team}/${env}/app/${app}/utilization`);
+						}}
+					/>
+				{/if}
+
+				{#if overageCostForTeam === PendingValue}
+					<div class="loading">
+						<Loader />
+					</div>
+				{:else}
+					<EChart
+						options={echartOptionsMemoryOverageChart(overageCostForTeam.memory)}
+						style="height: 350px; width: 50%;"
+						on:click={(e) => {
+							const [env, app] = e.detail.name.split(':');
+							goto(`/team/${team}/${env}/app/${app}/utilization`);
+						}}
+					/>
+				{/if}
+			</div>
+
+			{#each resourceUtilization as env}
+				{#if env.env !== PendingValue}
+					<h3>Resource utilization in {env.env}</h3>
+				{/if}
+				{#if env.env === PendingValue}
+					<div class="loading">
+						<Loader />
+					</div>
+				{:else if env.cpu.length === 0}
+					<p>No utilization data for team {team} in {env.env}</p>
+				{:else}
+					<EChart options={echartOptionsUsageChart(env)} style="height: 400px" />
+				{/if}
 			{/each}
-		{/if}
-	</div>
-{/if}
+		</Card>
+	{/if}
+</div>
 
 <style>
 	.grid {
@@ -201,5 +174,11 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+	.summary {
+		text-align: center;
+	}
+	.metric {
+		font-size: 1.5rem;
 	}
 </style>

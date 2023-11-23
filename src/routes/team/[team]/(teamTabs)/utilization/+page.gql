@@ -2,22 +2,16 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 	resourceUtilizationForTeam(team: $team, from: $from, to: $to) @loading(count: 2) {
 		env @loading
 		cpu {
-			resource
 			timestamp
 			request
 			usage
-			requestCost
-			requestCostOverage
-			usageCost
+			usagePercentage
 		}
 		memory {
-			resource
 			timestamp
 			request
 			usage
-			requestCost
-			requestCostOverage
-			usageCost
+			usagePercentage
 		}
 	}
 	resourceUtilizationDateRangeForTeam(team: $team) @loading {
