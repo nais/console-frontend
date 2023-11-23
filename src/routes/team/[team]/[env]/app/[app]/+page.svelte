@@ -23,8 +23,12 @@
 	const utilization = graphql(`
 		query CurrentResourceUtilizationForApp($app: String!, $team: String!, $env: String!) @load {
 			currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
-				cpu @loading
-				memory @loading
+				cpu @loading {
+					utilization @loading
+				}
+				memory @loading {
+					utilization @loading
+				}
 			}
 		}
 	`);
@@ -32,8 +36,8 @@
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: cpuUtilization = $utilization.data?.currentResourceUtilizationForApp.cpu;
-	$: memoryUtilization = $utilization.data?.currentResourceUtilizationForApp.memory;
+	$: cpuUtilization = $utilization.data?.currentResourceUtilizationForApp?.cpu.utilization;
+	$: memoryUtilization = $utilization.data?.currentResourceUtilizationForApp?.memory.utilization;
 </script>
 
 {#if $App.data}

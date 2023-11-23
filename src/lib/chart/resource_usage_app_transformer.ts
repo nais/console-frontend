@@ -48,7 +48,7 @@ export function resourceUsagePercentageTransformLineChart(
 				type: 'line',
 				name: 'Memory usage',
 				data: input.memory.map((s) => {
-					return s.usagePercentage > 0.0 ? s.usagePercentage : undefined;
+					return s.utilization > 0.0 ? s.utilization : undefined;
 				}),
 				showSymbol: false
 			},
@@ -56,7 +56,7 @@ export function resourceUsagePercentageTransformLineChart(
 				type: 'line',
 				name: 'CPU usage',
 				data: input.cpu.map((s) => {
-					return s.usagePercentage > 0.0 ? s.usagePercentage : undefined;
+					return s.utilization > 0.0 ? s.utilization : undefined;
 				}),
 				showSymbol: false
 			}

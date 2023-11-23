@@ -167,10 +167,19 @@ type CostSeries {
 """Current resource utilization for app type."""
 type CurrentResourceUtilizationForApp {
   """The percentage of CPU used."""
-  cpu: Float!
+  cpu: ResourceUtilization!
 
   """The percentage of memory used."""
-  memory: Float!
+  memory: ResourceUtilization!
+}
+
+"""Current resource utilization for team type."""
+type CurrentResourceUtilizationForTeam {
+  """The CPU utilization."""
+  cpu: ResourceUtilization!
+
+  """The memory utilization."""
+  memory: ResourceUtilization!
 }
 
 """
@@ -669,7 +678,7 @@ type Query {
     team: String!
   ): App!
 
-  """Get the current resource utilization for a specific app."""
+  """Get the current resource utilization values for a specific app."""
   currentResourceUtilizationForApp(
     """The name of the app."""
     app: String!
@@ -680,6 +689,14 @@ type Query {
     """The name of the team."""
     team: String!
   ): CurrentResourceUtilizationForApp!
+
+  """
+  Get the current resource utilization for a team across all apps and environments.
+  """
+  currentResourceUtilizationForTeam(
+    """The name of the team."""
+    team: String!
+  ): CurrentResourceUtilizationForTeam!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
@@ -850,6 +867,9 @@ enum ResourceType {
 
 """Resource utilization type."""
 type ResourceUtilization {
+  """Estimated annual cost of the request overage."""
+  estimatedAnnualOverageCost: Float!
+
   """The requested resource amount per pod."""
   request: Float!
 
@@ -871,8 +891,8 @@ type ResourceUtilization {
   """The cost associated with the actual resource usage."""
   usageCost: Float!
 
-  """The usage percentage of the requested resource amount."""
-  usagePercentage: Float!
+  """The utilization in percent."""
+  utilization: Float!
 }
 
 """Date range type."""

@@ -85,7 +85,7 @@
 					<div class="summary">
 						<h4>CPU utilization</h4>
 						<p class="metric">
-							{currentUtilization.cpu.toLocaleString('en-GB', {
+							{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
 								maximumFractionDigits: 0
 							})}% of {sumCPURequests(app?.instances.length, app?.resources.requests.cpu)} CPUs
 						</p>
@@ -100,7 +100,7 @@
 					<div class="summary">
 						<h4>Memory utilization</h4>
 						<p class="metric">
-							{currentUtilization.memory.toLocaleString('en-GB', {
+							{currentUtilization.memory.utilization.toLocaleString('en-GB', {
 								maximumFractionDigits: 0
 							})}% of {sumMemoryRequests(app?.instances.length, app?.resources.requests.memory)}
 						</p>

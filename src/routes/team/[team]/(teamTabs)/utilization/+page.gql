@@ -5,13 +5,13 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 			timestamp
 			request
 			usage
-			usagePercentage
+			utilization
 		}
 		memory {
 			timestamp
 			request
 			usage
-			usagePercentage
+			utilization
 		}
 	}
 	resourceUtilizationDateRangeForTeam(team: $team) @loading {

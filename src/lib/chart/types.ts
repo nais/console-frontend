@@ -7,7 +7,7 @@ export interface Overage {
 
 export interface Usage {
 	readonly timestamp: Date;
-	readonly usagePercentage: number;
+	readonly utilization: number;
 }
 
 export interface Utilization {
@@ -19,10 +19,10 @@ export interface Utilization {
 export interface ResourceUtilizationApp {
 	readonly cpu: {
 		readonly timestamp: Date;
-		readonly usagePercentage: number;
+		readonly utilization: number;
 	}[];
 	readonly memory: {
 		readonly timestamp: Date;
-		readonly usagePercentage: number;
+		readonly utilization: number;
 	}[];
 }
