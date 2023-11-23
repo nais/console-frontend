@@ -47,7 +47,8 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 						return null;
 					}
 					return s.usagePercentage;
-				})
+				}),
+				showSymbol: false
 			},
 			{
 				type: 'line',
@@ -57,7 +58,8 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 						return null;
 					}
 					return s.usagePercentage;
-				})
+				}),
+				showSymbol: false
 			}
 		]
 	} as EChartsOption;
