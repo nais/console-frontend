@@ -42,7 +42,7 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 		series: [
 			{
 				type: 'line',
-				name: 'CPU usage',
+				name: 'CPU',
 				data: input.cpu.map((s) => {
 					if (s.usagePercentage === 0) {
 						return null;
@@ -53,7 +53,7 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 			},
 			{
 				type: 'line',
-				name: 'Memory usage',
+				name: 'Memory',
 				data: input.memory.map((s) => {
 					if (s.usagePercentage === 0) {
 						return null;
