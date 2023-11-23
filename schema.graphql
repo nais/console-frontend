@@ -164,17 +164,8 @@ type CostSeries {
   sum: Float!
 }
 
-"""Current resource utilization for app type."""
-type CurrentResourceUtilizationForApp {
-  """The percentage of CPU used."""
-  cpu: ResourceUtilization!
-
-  """The percentage of memory used."""
-  memory: ResourceUtilization!
-}
-
-"""Current resource utilization for team type."""
-type CurrentResourceUtilizationForTeam {
+"""Current resource utilization type."""
+type CurrentResourceUtilization {
   """The CPU utilization."""
   cpu: ResourceUtilization!
 
@@ -688,7 +679,7 @@ type Query {
 
     """The name of the team."""
     team: String!
-  ): CurrentResourceUtilizationForApp!
+  ): CurrentResourceUtilization!
 
   """
   Get the current resource utilization for a team across all apps and environments.
@@ -696,7 +687,7 @@ type Query {
   currentResourceUtilizationForTeam(
     """The name of the team."""
     team: String!
-  ): CurrentResourceUtilizationForTeam!
+  ): CurrentResourceUtilization!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
