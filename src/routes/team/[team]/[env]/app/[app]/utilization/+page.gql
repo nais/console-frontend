@@ -23,4 +23,19 @@ query ResourceUtilizationForApp(
 		from @loading
 		to @loading
 	}
+	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
+		cpu @loading
+		memory @loading
+	}
+	app(name: $app, team: $team, env: $env) @loading {
+		resources {
+			requests {
+				cpu
+				memory
+			}
+		}
+		instances {
+			name
+		}
+	}
 }

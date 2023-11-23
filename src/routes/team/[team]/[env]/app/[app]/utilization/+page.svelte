@@ -6,6 +6,7 @@
 	import EChart from '$lib/chart/EChart.svelte';
 	import { resourceUsagePercentageTransformLineChart } from '$lib/chart/resource_usage_app_transformer';
 	import type { ResourceUtilizationApp } from '$lib/chart/types';
+	import { sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -14,6 +15,8 @@
 
 	$: resourceUtilization = $ResourceUtilizationForApp.data?.resourceUtilizationForApp;
 	$: dateRange = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam;
+	$: currentUtilization = $ResourceUtilizationForApp.data?.currentResourceUtilizationForApp;
+	$: app = $ResourceUtilizationForApp.data?.app;
 
 	$: minDate = dateRange?.from;
 	$: maxDate = dateRange?.to;
@@ -72,19 +75,31 @@
 
 {#if resourceUtilization && resourceUtilization !== PendingValue}
 	<div class="grid">
-		<Card columns={4}
-			><div class="summary">
-				<h4>CPU utilization</h4>
-				<p class="metric">0.99% of 1024Mi</p>
-			</div></Card
-		>
+		{#if app && app !== PendingValue && app.instances.length > 0 && currentUtilization && currentUtilization.cpu !== PendingValue}
+			<Card columns={4}
+				><div class="summary">
+					<h4>Current CPU utilization</h4>
 
-		<Card columns={4}
-			><div class="summary">
-				<h4>Memory utilization</h4>
-				<p class="metric">21.47% of 3Gi</p>
-			</div></Card
-		>
+					<p class="metric">
+						{currentUtilization.cpu.toLocaleString('en-GB', {
+							maximumFractionDigits: 0
+						})}% of {sumCPURequests(app?.instances.length, app?.resources.requests.cpu)} CPUs
+					</p>
+				</div></Card
+			>
+
+			<Card columns={4}
+				><div class="summary">
+					<h4>Current memory utilization</h4>
+					<p class="metric">
+						{currentUtilization.memory.toLocaleString('en-GB', {
+							maximumFractionDigits: 0
+						})}% of {sumMemoryRequests(app?.instances.length, app?.resources.requests.memory)}
+					</p>
+				</div></Card
+			>
+		{/if}
+
 		<Card columns={4}
 			><div class="summary">
 				<h4>Annual cost of unused resources</h4>
