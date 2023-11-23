@@ -12,6 +12,9 @@
 	import type { Overage, Utilization } from '$lib/chart/types';
 	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import CpuIcon from '$lib/icons/CpuIcon.svelte';
+	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForTeam } = data);
@@ -81,28 +84,48 @@
 {/if}
 <div class="grid">
 	{#if overageCostForTeam && resourceUtilization}
-		<Card columns={3}
-			><div class="summary">
-				<h4>CPU utilization</h4>
-				<p class="metric">0.99% of 1024Mi</p>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #83bff6">
+					<CpuIcon size="32" color="#83bff6" />
+				</div>
+				<div class="summary">
+					<h4>CPU utilization</h4>
+					<p class="metric">0.99% of 1024Mi</p>
+				</div>
 			</div></Card
 		>
-		<Card columns={3}
-			><div class="summary">
-				<h4>Memory utilization</h4>
-				<p class="metric">21.47% of 3Gi</p>
+		<Card columns={3}>
+			<div class="summaryCard" style="--bg-color: #91dc75">
+				<div class="summaryIcon">
+					<MemoryIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>Memory utilization</h4>
+					<p class="metric">21.47% of 3Gi</p>
+				</div>
 			</div></Card
 		>
-		<Card columns={3}
-			><div class="summary">
-				<h4>Annual cost of unused CPU</h4>
-				<p class="metric">€100000</p>
+		<Card columns={3}>
+			<div class="summaryCard" style="--bg-color: #83bff6">
+				<div class="summaryIcon">
+					<CostIcon size="32" color="#83bff6" />
+				</div>
+				<div class="summary">
+					<h4>Cost of unused CPU</h4>
+					<p class="metric">€100000</p>
+				</div>
 			</div></Card
 		>
-		<Card columns={3}
-			><div class="summary">
-				<h4>Annual cost of unused memory</h4>
-				<p class="metric">€100000</p>
+		<Card columns={3}>
+			<div class="summaryCard" style="--bg-color: #91dc75">
+				<div class="summaryIcon">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>Cost of unused memory</h4>
+					<p class="metric">€100000</p>
+				</div>
 			</div></Card
 		>
 		<Card columns={12}>
@@ -175,10 +198,28 @@
 		justify-content: center;
 		align-items: center;
 	}
-	.summary {
-		text-align: center;
+	.summaryIcon {
+		display: flex;
+		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
+		justify-content: center;
+		align-items: center;
+		width: 50px;
+		height: 50px;
+		border: 2px solid var(--bg-color);
+		border-radius: 5px;
+	}
+	.summary > h4 {
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
 	}
 	.metric {
 		font-size: 1.5rem;
+		margin: 0;
+	}
+	.summaryCard {
+		display: flex;
+		align-items: center;
+		gap: 20px;
 	}
 </style>
