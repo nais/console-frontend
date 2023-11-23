@@ -77,7 +77,7 @@
 {#if resourceUtilization && resourceUtilization !== PendingValue}
 	<div class="grid">
 		{#if app && app !== PendingValue && app.instances.length > 0 && currentUtilization && currentUtilization.cpu !== PendingValue}
-			<Card columns={3}>
+			<Card columns={3} borderColor="#83bff6">
 				<div class="summaryCard">
 					<div class="summaryIcon" style="--bg-color: #83bff6">
 						<CpuIcon size="32" color="#83bff6" />
@@ -92,7 +92,7 @@
 					</div>
 				</div></Card
 			>
-			<Card columns={3}>
+			<Card columns={3} borderColor="#91dc75">
 				<div class="summaryCard" style="--bg-color: #91dc75">
 					<div class="summaryIcon">
 						<MemoryIcon size="32" color="#91dc75" />
@@ -109,7 +109,7 @@
 			>
 		{/if}
 
-		<Card columns={3}>
+		<Card columns={3} borderColor="#83bff6">
 			<div class="summaryCard" style="--bg-color: #83bff6">
 				<div class="summaryIcon">
 					<CostIcon size="32" color="#83bff6" />
@@ -120,7 +120,7 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={3}>
+		<Card columns={3} borderColor="#91dc75">
 			<div class="summaryCard" style="--bg-color: #91dc75">
 				<div class="summaryIcon">
 					<CostIcon size="32" color="#91dc75" />
@@ -131,7 +131,7 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={12}>
+		<Card columns={12} borderColor="var(--a-gray-200)">
 			{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
 				{#if resourceUtilization.cpu.length > 0}
 					<h3>Utilization</h3>
