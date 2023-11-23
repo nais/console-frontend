@@ -36,8 +36,7 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 			axisLabel: {
 				formatter: (value: number) =>
 					value.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '%'
-			},
-			scale: false
+			}
 		},
 		series: [
 			{
@@ -48,8 +47,7 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 						return null;
 					}
 					return s.usagePercentage;
-				}),
-				showSymbol: false
+				})
 			},
 			{
 				type: 'line',
@@ -59,8 +57,7 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 						return null;
 					}
 					return s.usagePercentage;
-				}),
-				showSymbol: false
+				})
 			}
 		]
 	} as EChartsOption;
@@ -92,8 +89,7 @@ export function resourceUtilizationCPUOverageTransformLineChart(input: Overage[]
 		},
 		yAxis: {
 			type: 'value',
-			name: 'CPU',
-			scale: false
+			name: 'CPU'
 		},
 		series: {
 			name: 'Unutilized CPU',
@@ -152,8 +148,7 @@ export function resourceUtilizationMemoryOverageTransformLineChart(
 			name: 'Memory',
 			axisLabel: {
 				formatter: (value: number) => prettyBytes(value)
-			},
-			scale: false
+			}
 		},
 		series: {
 			name: 'Unutilized memory',
