@@ -79,21 +79,9 @@
 			/>
 		{/if}
 		{#if tab === 'Status' && state && state !== PendingValue && numberOfErrors !== undefined}
-			{#if state === State.NOTNAIS}
+			{#if state === State.NOTNAIS || state === State.FAILING}
 				<div class="notification">
-					<NotificationBadge
-						text={String(numberOfErrors)}
-						color={'var(--a-surface-warning-moderate)'}
-						size={'18px'}
-					/>
-				</div>
-			{:else if state === State.FAILING}
-				<div class="notification">
-					<NotificationBadge
-						text={String(numberOfErrors)}
-						color={'var(--a-icon-danger)'}
-						size={'18px'}
-					/>
+					<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />
 				</div>
 			{/if}
 		{/if}
@@ -104,7 +92,7 @@
 <style>
 	.notification {
 		position: relative;
-		left: -10px;
-		top: 12px;
+		left: -14px;
+		top: 4px;
 	}
 </style>
