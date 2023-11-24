@@ -26,9 +26,13 @@ query ResourceUtilizationForApp(
 	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
 		cpu @loading {
 			utilization
+			estimatedAnnualOverageCost
+			request
 		}
 		memory @loading {
 			utilization
+			estimatedAnnualOverageCost
+			request
 		}
 	}
 	app(name: $app, team: $team, env: $env) @loading {

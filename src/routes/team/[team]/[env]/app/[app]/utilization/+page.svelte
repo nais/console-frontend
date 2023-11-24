@@ -9,8 +9,8 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -19,7 +19,6 @@
 	$: resourceUtilization = $ResourceUtilizationForApp.data?.resourceUtilizationForApp;
 	$: dateRange = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam;
 	$: currentUtilization = $ResourceUtilizationForApp.data?.currentResourceUtilizationForApp;
-	$: app = $ResourceUtilizationForApp.data?.app;
 
 	$: minDate = dateRange?.from;
 	$: maxDate = dateRange?.to;
@@ -76,7 +75,7 @@
 
 {#if resourceUtilization && resourceUtilization !== PendingValue}
 	<div class="grid">
-		{#if app && app !== PendingValue && app.instances.length > 0 && currentUtilization && currentUtilization.cpu !== PendingValue}
+		{#if currentUtilization && currentUtilization.cpu !== PendingValue}
 			<Card columns={3} borderColor="#83bff6">
 				<div class="summaryCard">
 					<div class="summaryIcon" style="--bg-color: #83bff6">
@@ -86,8 +85,9 @@
 						<h4>CPU utilization</h4>
 						<p class="metric">
 							{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
-								maximumFractionDigits: 0
-							})}% of {sumCPURequests(app?.instances.length, app?.resources.requests.cpu)} CPUs
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}% of {currentUtilization.cpu.request} CPUs
 						</p>
 					</div>
 				</div></Card
@@ -101,36 +101,51 @@
 						<h4>Memory utilization</h4>
 						<p class="metric">
 							{currentUtilization.memory.utilization.toLocaleString('en-GB', {
-								maximumFractionDigits: 0
-							})}% of {sumMemoryRequests(app?.instances.length, app?.resources.requests.memory)}
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}% of {prettyBytes(currentUtilization.memory.request)}
+						</p>
+					</div>
+				</div></Card
+			>
+			<Card columns={3} borderColor="#83bff6">
+				<div class="summaryCard" style="--bg-color: #83bff6">
+					<div class="summaryIcon">
+						<CostIcon size="32" color="#83bff6" />
+					</div>
+					<div class="summary">
+						<h4>Annual cost of unused CPU</h4>
+						<p class="metric">
+							€{currentUtilization.cpu.estimatedAnnualOverageCost > 0.0
+								? currentUtilization.cpu.estimatedAnnualOverageCost.toLocaleString('en-GB', {
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+								  })
+								: '0.00'}
+						</p>
+					</div>
+				</div></Card
+			>
+			<Card columns={3} borderColor="#91dc75">
+				<div class="summaryCard" style="--bg-color: #91dc75">
+					<div class="summaryIcon">
+						<CostIcon size="32" color="#91dc75" />
+					</div>
+					<div class="summary">
+						<h4>Annual cost of unused memory</h4>
+						<p class="metric">
+							€{currentUtilization.memory.estimatedAnnualOverageCost > 0.0
+								? currentUtilization.memory.estimatedAnnualOverageCost.toLocaleString('en-GB', {
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+								  })
+								: '0.00'}
 						</p>
 					</div>
 				</div></Card
 			>
 		{/if}
 
-		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard" style="--bg-color: #83bff6">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>Cost of unused CPU</h4>
-					<p class="metric">€100000</p>
-				</div>
-			</div></Card
-		>
-		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>Cost of unused memory</h4>
-					<p class="metric">€100000</p>
-				</div>
-			</div></Card
-		>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
 				{#if resourceUtilization.cpu.length > 0}
@@ -152,13 +167,19 @@
 				{:else}
 					<Alert variant="warning">No data available</Alert>
 				{/if}
+			{:else}
+				<div class="loading">
+					<Skeleton variant={'rectangle'} />
+				</div>
 			{/if}
 		</Card>
 	</div>
 {:else}
-	<div class="grid">
-		<Skeleton variant={'rectangle'} />
-	</div>
+	<Card columns={12}>
+		<div class="grid">
+			<Skeleton variant={'rectangle'} width="100%" />
+		</div>
+	</Card>
 {/if}
 
 <style>

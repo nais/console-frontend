@@ -18,6 +18,22 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 		from @loading
 		to @loading
 	}
+	currentResourceUtilizationForTeam(team: $team) @loading {
+		cpu @loading {
+			estimatedAnnualOverageCost
+			timestamp
+			request
+			usage
+			utilization
+		}
+		memory @loading {
+			estimatedAnnualOverageCost
+			timestamp
+			request
+			usage
+			utilization
+		}
+	}
 	resourceUtilizationOverageForTeam(team: $team, from: $from, to: $to) @loading {
 		overageCost
 		cpu {

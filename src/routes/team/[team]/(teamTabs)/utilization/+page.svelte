@@ -10,16 +10,20 @@
 		resourceUtilizationMemoryOverageTransformLineChart
 	} from '$lib/chart/resource_usage_team_transformers';
 	import type { Overage, Utilization } from '$lib/chart/types';
-	import { Alert, Loader } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import prettyBytes from 'pretty-bytes';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForTeam } = data);
+
 	$: overageCostForTeam = $ResourceUtilizationForTeam.data?.resourceUtilizationOverageForTeam;
 	$: resourceUtilization = $ResourceUtilizationForTeam.data?.resourceUtilizationForTeam;
+	$: currentResourceUtilizationForTeam =
+		$ResourceUtilizationForTeam.data?.currentResourceUtilizationForTeam;
 
 	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
 	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
@@ -83,7 +87,7 @@
 	</Alert>
 {/if}
 <div class="grid">
-	{#if overageCostForTeam && resourceUtilization}
+	{#if overageCostForTeam && resourceUtilization && currentResourceUtilizationForTeam}
 		<Card columns={3} borderColor="#83bff6">
 			<div class="summaryCard">
 				<div class="summaryIcon" style="--bg-color: #83bff6">
@@ -91,7 +95,19 @@
 				</div>
 				<div class="summary">
 					<h4>CPU utilization</h4>
-					<p class="metric">0.99% of 1024Mi</p>
+					<p class="metric">
+						{#if currentResourceUtilizationForTeam.cpu !== PendingValue}
+							{currentResourceUtilizationForTeam.cpu.utilization.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}% of {currentResourceUtilizationForTeam.cpu.request.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})} CPUs
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
+					</p>
 				</div>
 			</div></Card
 		>
@@ -102,7 +118,16 @@
 				</div>
 				<div class="summary">
 					<h4>Memory utilization</h4>
-					<p class="metric">21.47% of 3Gi</p>
+					<p class="metric">
+						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
+							{currentResourceUtilizationForTeam?.memory.utilization.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}% of {prettyBytes(currentResourceUtilizationForTeam?.memory.request)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
+					</p>
 				</div>
 			</div></Card
 		>
@@ -112,8 +137,22 @@
 					<CostIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>Cost of unused CPU</h4>
-					<p class="metric">€100000</p>
+					<h4>Annual cost of unused CPU</h4>
+					<p class="metric">
+						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
+							€{currentResourceUtilizationForTeam.cpu.estimatedAnnualOverageCost > 0.0
+								? currentResourceUtilizationForTeam.cpu.estimatedAnnualOverageCost.toLocaleString(
+										'en-GB',
+										{
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2
+										}
+								  )
+								: '0.00'}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
+					</p>
 				</div>
 			</div></Card
 		>
@@ -123,8 +162,22 @@
 					<CostIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Cost of unused memory</h4>
-					<p class="metric">€100000</p>
+					<h4>Annual cost of unused memory</h4>
+					<p class="metric">
+						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
+							€{currentResourceUtilizationForTeam.memory.estimatedAnnualOverageCost > 0.0
+								? currentResourceUtilizationForTeam.memory.estimatedAnnualOverageCost.toLocaleString(
+										'en-GB',
+										{
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2
+										}
+								  )
+								: '0.00'}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
+					</p>
 				</div>
 			</div></Card
 		>
@@ -137,7 +190,7 @@
 			<div style="display: flex">
 				{#if overageCostForTeam === PendingValue}
 					<div class="loading">
-						<Loader />
+						<Skeleton variant="rectangle" />
 					</div>
 				{:else}
 					<EChart
@@ -151,8 +204,8 @@
 				{/if}
 
 				{#if overageCostForTeam === PendingValue}
-					<div class="loading">
-						<Loader />
+					<div class="loading" style="width: 50%;">
+						<Skeleton variant="rectangle" />
 					</div>
 				{:else}
 					<EChart
@@ -171,8 +224,8 @@
 					<h3>Resource utilization in {env.env}</h3>
 				{/if}
 				{#if env.env === PendingValue}
-					<div class="loading">
-						<Loader />
+					<div class="loading" style="width: 100%;">
+						<Skeleton variant="rectangle" />
 					</div>
 				{:else if env.cpu.length === 0}
 					<p>No utilization data for team {team} in {env.env}</p>
