@@ -5,7 +5,7 @@
 	export let height = '';
 	export let columns = 0;
 	export let rows = 0;
-	export let borderColor = 'none';
+	export let borderColor = 'var(--a-gray-200)';
 </script>
 
 <div
