@@ -101,11 +101,11 @@
 	.NOTNAIS {
 		background-color: var(--a-surface-warning-moderate);
 		color: var(--a-text-on-warning);
-		border: 2px solid var(--a-border-warning);
+		border: 1px solid var(--a-border-warning);
 	}
 
 	.FAILING {
 		background-color: var(--a-surface-danger-subtle);
-		border: 2px solid var(--a-border-danger);
+		border: 1px solid var(--a-border-danger);
 	}
 </style>

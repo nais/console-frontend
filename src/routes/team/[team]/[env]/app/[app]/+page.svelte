@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
+	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import type { CurrentResourceUtilizationForAppVariables, PageData } from './$houdini';
@@ -23,8 +23,14 @@
 	const utilization = graphql(`
 		query CurrentResourceUtilizationForApp($app: String!, $team: String!, $env: String!) @load {
 			currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
-				cpu @loading
-				memory @loading
+				cpu {
+					utilization
+					request
+				}
+				memory {
+					utilization
+					request
+				}
 			}
 		}
 	`);
@@ -32,8 +38,7 @@
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: cpuUtilization = $utilization.data?.currentResourceUtilizationForApp.cpu;
-	$: memoryUtilization = $utilization.data?.currentResourceUtilizationForApp.memory;
+	$: appUtilization = $utilization.data?.currentResourceUtilizationForApp;
 </script>
 
 {#if $App.data}
@@ -49,7 +54,9 @@
 		<Card columns={12}>
 			<h4>Instances</h4>
 			<AutoScaling app={$App.data.app} />
-			<Instances app={$App.data.app} {cpuUtilization} {memoryUtilization} />
+			{#if appUtilization !== undefined && appUtilization !== PendingValue}
+				<Instances app={$App.data.app} utilization={appUtilization} />
+			{/if}
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>

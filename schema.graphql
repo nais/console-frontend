@@ -164,13 +164,13 @@ type CostSeries {
   sum: Float!
 }
 
-"""Current resource utilization for app type."""
-type CurrentResourceUtilizationForApp {
-  """The percentage of CPU used."""
-  cpu: Float!
+"""Current resource utilization type."""
+type CurrentResourceUtilization {
+  """The CPU utilization."""
+  cpu: ResourceUtilization!
 
-  """The percentage of memory used."""
-  memory: Float!
+  """The memory utilization."""
+  memory: ResourceUtilization!
 }
 
 """
@@ -669,7 +669,7 @@ type Query {
     team: String!
   ): App!
 
-  """Get the current resource utilization for a specific app."""
+  """Get the current resource utilization values for a specific app."""
   currentResourceUtilizationForApp(
     """The name of the app."""
     app: String!
@@ -679,7 +679,15 @@ type Query {
 
     """The name of the team."""
     team: String!
-  ): CurrentResourceUtilizationForApp!
+  ): CurrentResourceUtilization!
+
+  """
+  Get the current resource utilization for a team across all apps and environments.
+  """
+  currentResourceUtilizationForTeam(
+    """The name of the team."""
+    team: String!
+  ): CurrentResourceUtilization!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
@@ -850,6 +858,9 @@ enum ResourceType {
 
 """Resource utilization type."""
 type ResourceUtilization {
+  """Estimated annual cost of the request overage."""
+  estimatedAnnualOverageCost: Float!
+
   """The requested resource amount per pod."""
   request: Float!
 
@@ -858,9 +869,6 @@ type ResourceUtilization {
 
   """The overage of the requested resource amount."""
   requestCostOverage: Float!
-
-  """Resource type."""
-  resource: ResourceType!
 
   """Timestamp of the value."""
   timestamp: Time!
@@ -871,8 +879,8 @@ type ResourceUtilization {
   """The cost associated with the actual resource usage."""
   usageCost: Float!
 
-  """The usage percentage of the requested resource amount."""
-  usagePercentage: Float!
+  """The utilization in percent."""
+  utilization: Float!
 }
 
 """Date range type."""

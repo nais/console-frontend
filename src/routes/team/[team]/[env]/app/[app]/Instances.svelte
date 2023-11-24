@@ -4,11 +4,13 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
+	import { sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
-	import bytes from 'bytes-iec';
 
-	export let cpuUtilization: number | undefined | typeof PendingValue;
-	export let memoryUtilization: number | undefined | typeof PendingValue;
+	export let utilization: {
+		readonly cpu: { readonly utilization: number; readonly request: number };
+		readonly memory: { readonly utilization: number; readonly request: number };
+	};
 
 	export let app: AppInstances;
 	$: data = fragment(
@@ -24,7 +26,7 @@
 					image
 				}
 				resources @loading {
-					requests @loading {
+					requests {
 						cpu
 						memory
 					}
@@ -33,35 +35,7 @@
 		`)
 	);
 
-	function sumCPURequests(numOfInstances: number, cpuRequest: string) {
-		if (cpuRequest.includes('m')) {
-			const cpuRequestInMilliCPU = parseInt(cpuRequest.replace('m', ''));
-			const cpuRequestInCPU = cpuRequestInMilliCPU / 1000;
-			const totalCPURequest = cpuRequestInCPU * numOfInstances;
-			return totalCPURequest.toLocaleString('en-GB', {
-				maximumFractionDigits: 3
-			});
-		} else {
-			const totalCPURequest = parseInt(cpuRequest) * numOfInstances;
-			return totalCPURequest.toLocaleString('en-GB', {
-				maximumFractionDigits: 3
-			});
-		}
-	}
-
-	function sumMemoryRequests(numOfInstances: number, memoryRequest: string) {
-		let request = bytes.parse(memoryRequest.concat('B'));
-		if (request) {
-			if (memoryRequest.includes('i')) {
-				return bytes(request * numOfInstances, { mode: 'binary' })?.replace('B', '');
-			}
-			return bytes(request * numOfInstances)?.replace('B', '');
-		}
-		return '-';
-	}
-
 	$: instances = $data.instances;
-	$: console.log(instances);
 	$: resources = $data.resources;
 	$: appName = $page.params.app;
 	$: env = $page.params.env;
@@ -91,12 +65,12 @@
 						></Td
 					>
 					<Td
-						>{resources && resources.requests !== PendingValue && resources.requests.cpu
+						>{resources && resources !== PendingValue && resources.requests.cpu
 							? resources.requests.cpu
 							: '-'}</Td
 					>
 					<Td
-						>{resources && resources.requests !== PendingValue && resources.requests.memory !== ''
+						>{resources && resources !== PendingValue && resources.requests.memory !== ''
 							? resources.requests.memory
 							: '-'}</Td
 					>
@@ -116,25 +90,27 @@
 			</Tr>
 		{/each}
 
-		{#if instances.length > 0 && cpuUtilization !== undefined && cpuUtilization !== PendingValue && memoryUtilization !== undefined && memoryUtilization !== PendingValue}
-			<Tr>
+		<Tr>
+			{#if resources === PendingValue}
+				{#each new Array(7).fill('medium') as size}
+					<Td><Loading {size} /></Td>
+				{/each}
+			{:else}
 				<Td><b>Total:</b></Td>
 				<Td
-					>{resources && resources.requests !== PendingValue
-						? sumCPURequests(instances.length, resources.requests.cpu)
-						: '-'}
+					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
 					<Tooltip content="Current CPU utilization"
-						>({cpuUtilization.toLocaleString('en-GB', {
+						>({utilization.cpu.utilization.toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
 						})}%)</Tooltip
 					></Td
 				>
 				<Td
-					>{resources && resources.requests !== PendingValue
-						? sumMemoryRequests(instances.length, resources.requests.memory)
-						: '-'}
+					>{sumMemoryRequests(instances.length, resources.requests.memory)}
 					<Tooltip content="Current memory utilization"
-						>({memoryUtilization.toLocaleString('en-GB', {
+						>({utilization.memory.utilization.toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
 						})}%)</Tooltip
 					></Td
@@ -143,7 +119,7 @@
 				<Td></Td>
 				<Td></Td>
 				<Td></Td>
-			</Tr>
-		{/if}
+			{/if}
+		</Tr>
 	</Tbody>
 </Table>

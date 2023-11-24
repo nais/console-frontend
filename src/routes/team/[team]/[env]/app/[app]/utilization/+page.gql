@@ -10,17 +10,40 @@ query ResourceUtilizationForApp(
 			timestamp
 			request
 			usage
-			usagePercentage
+			utilization
 		}
 		memory {
 			timestamp
 			request
 			usage
-			usagePercentage
+			utilization
 		}
 	}
 	resourceUtilizationDateRangeForTeam(team: $team) @loading {
 		from @loading
 		to @loading
+	}
+	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
+		cpu @loading {
+			utilization
+			estimatedAnnualOverageCost
+			request
+		}
+		memory @loading {
+			utilization
+			estimatedAnnualOverageCost
+			request
+		}
+	}
+	app(name: $app, team: $team, env: $env) @loading {
+		resources {
+			requests {
+				cpu
+				memory
+			}
+		}
+		instances {
+			name
+		}
 	}
 }
