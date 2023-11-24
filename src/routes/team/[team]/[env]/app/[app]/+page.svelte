@@ -25,9 +25,11 @@
 			currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
 				cpu {
 					utilization
+					request
 				}
 				memory {
 					utilization
+					request
 				}
 			}
 		}

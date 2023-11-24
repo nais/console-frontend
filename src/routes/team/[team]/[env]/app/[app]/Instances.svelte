@@ -4,11 +4,12 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
+	import { sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 
 	export let utilization: {
-		readonly cpu: { readonly utilization: number };
-		readonly memory: { readonly utilization: number };
+		readonly cpu: { readonly utilization: number; readonly request: number };
+		readonly memory: { readonly utilization: number; readonly request: number };
 	};
 
 	export let app: AppInstances;
@@ -25,7 +26,7 @@
 					image
 				}
 				resources @loading {
-					requests @loading {
+					requests {
 						cpu
 						memory
 					}
@@ -33,15 +34,6 @@
 			}
 		`)
 	);
-
-	$: totalCPU =
-		$data.resources.requests !== PendingValue
-			? Number($data.resources.requests.cpu) * $data.instances.length
-			: '-';
-	$: totalMemory =
-		$data.resources.requests !== PendingValue
-			? Number($data.resources.requests.memory) * $data.instances.length
-			: '-';
 
 	$: instances = $data.instances;
 	$: resources = $data.resources;
@@ -73,12 +65,12 @@
 						></Td
 					>
 					<Td
-						>{resources && resources.requests !== PendingValue && resources.requests.cpu
+						>{resources && resources !== PendingValue && resources.requests.cpu
 							? resources.requests.cpu
 							: '-'}</Td
 					>
 					<Td
-						>{resources && resources.requests !== PendingValue && resources.requests.memory !== ''
+						>{resources && resources !== PendingValue && resources.requests.memory !== ''
 							? resources.requests.memory
 							: '-'}</Td
 					>
@@ -99,26 +91,35 @@
 		{/each}
 
 		<Tr>
-			<Td><b>Total:</b></Td>
-			<Td
-				>{resources && resources.requests !== PendingValue ? totalCPU : '-'}
-				<Tooltip content="Current CPU utilization"
-					>({utilization.cpu.utilization > 100
-						? '>100'
-						: utilization.cpu.utilization.toLocaleString('en-GB', {
-								maximumFractionDigits: 2
-						  })}%)</Tooltip
-				></Td
-			>
-			<Td
-				>{resources && resources.requests !== PendingValue ? totalMemory : '-'}
-				<Tooltip content="Current memory utilization">({utilization.memory.utilization}%)</Tooltip
-				></Td
-			>
-			<Td></Td>
-			<Td></Td>
-			<Td></Td>
-			<Td></Td>
+			{#if resources === PendingValue}
+				{#each new Array(7).fill('medium') as size}
+					<Td><Loading {size} /></Td>
+				{/each}
+			{:else}
+				<Td><b>Total:</b></Td>
+				<Td
+					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
+					<Tooltip content="Current CPU utilization"
+						>({utilization.cpu.utilization.toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}%)</Tooltip
+					></Td
+				>
+				<Td
+					>{sumMemoryRequests(instances.length, resources.requests.memory)}
+					<Tooltip content="Current memory utilization"
+						>({utilization.memory.utilization.toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}%)</Tooltip
+					></Td
+				>
+				<Td></Td>
+				<Td></Td>
+				<Td></Td>
+				<Td></Td>
+			{/if}
 		</Tr>
 	</Tbody>
 </Table>
