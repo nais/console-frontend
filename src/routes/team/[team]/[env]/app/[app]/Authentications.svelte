@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { fragment, graphql } from '$houdini';
 	import type { Authz } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
-	import { PendingValue } from '$houdini';
+	import { PendingValue, fragment, graphql } from '$houdini';
+	import { Skeleton } from '@nais/ds-svelte-community';
 
 	export let app: Authz;
 	$: data = fragment(
@@ -42,7 +41,7 @@
 
 <div>
 	{#if loading}
-		<Loading width="300px" />
+		<Skeleton variant="text" width="300px" />
 	{/if}
 	{#each authz as a}
 		{#if a.__typename === 'AzureAD'}

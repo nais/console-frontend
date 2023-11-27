@@ -2,11 +2,10 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
@@ -35,8 +34,8 @@
 				{#if team !== undefined}
 					{#if team.id === PendingValue}
 						<Tr>
-							{#each new Array(team.naisjobs.edges.length).fill('medium') as size}
-								<Td><Loading {size} /></Td>
+							{#each new Array(team.naisjobs.edges.length).fill('text') as variant}
+								<Td><Skeleton {variant} /></Td>
 							{/each}
 						</Tr>
 					{:else}

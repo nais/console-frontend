@@ -3,7 +3,7 @@
 	import type { JobAccessPolicy } from '$houdini';
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
-	import Loading from '$lib/Loading.svelte';
+	import { Skeleton } from '@nais/ds-svelte-community';
 
 	export let job: JobAccessPolicy;
 
@@ -51,7 +51,7 @@
 							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a
 						>
 					{:else}
-						<Loading width="300px" />
+						<Skeleton variant="text" width="300px" />
 					{/if}
 				</li>
 			{:else}
@@ -65,7 +65,7 @@
 		<ul>
 			{#each $data.accessPolicy.outbound.external as external}
 				{#if external.host === PendingValue}
-					<Loading width="300px" />
+					<Skeleton variant="text" width="300px" />
 				{:else}
 					{#each external.ports as port}
 						<li>
@@ -84,7 +84,7 @@
 			{#each $data.accessPolicy.outbound.rules as rule}
 				<li>
 					{#if rule.application === PendingValue}
-						<Loading width="300px" />
+						<Skeleton variant="text" width="300px" />
 					{:else}
 						<a href="/team/{rule.namespace || team}/{env}/app/{rule.application}"
 							>{rule.application}{#if rule.namespace}.{rule.namespace}{/if}</a

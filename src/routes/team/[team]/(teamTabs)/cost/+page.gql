@@ -1,5 +1,5 @@
 query TeamCost($team: String!, $from: Date!, $to: Date!) @cache(policy: NetworkOnly) {
-	dailyCostForTeam(team: $team, from: $from, to: $to) {
+	dailyCostForTeam(team: $team, from: $from, to: $to) @loading {
 		series {
 			costType
 			sum

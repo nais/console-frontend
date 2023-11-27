@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import { euroValueFormatter } from '$lib/utils/currency';
+	import { Skeleton } from '@nais/ds-svelte-community';
 	import type { AggregatedCostAppVariables } from './$houdini';
 
 	export const _AggregatedCostAppVariables: AggregatedCostAppVariables = () => {
@@ -47,7 +47,8 @@
 	<h4>Cost</h4>
 	<div>
 		{#if $costQuery.data.monthlyCost === PendingValue}
-			<Loading />
+			<Skeleton variant="text" />
+			<Skeleton variant="text" />
 		{:else if $costQuery.data.monthlyCost.cost.length > 1}
 			{@const factor = getFactor($costQuery.data.monthlyCost.cost)}
 			{#each $costQuery.data.monthlyCost.cost.slice(0, 2) as cost}

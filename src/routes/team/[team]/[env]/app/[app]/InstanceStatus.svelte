@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { AppInstancesStatus } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
+	import { Skeleton } from '@nais/ds-svelte-community';
 
 	export let app: AppInstancesStatus;
 	$: data = fragment(
@@ -22,7 +22,7 @@
 
 <div>
 	{#if states.includes(PendingValue)}
-		<Loading />
+		<Skeleton variant="rectangle" />
 	{:else if total === 0}
 		No instances found
 	{:else}

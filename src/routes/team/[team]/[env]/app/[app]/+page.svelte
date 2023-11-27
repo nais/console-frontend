@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, graphql } from '$houdini';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import type { CurrentResourceUtilizationForAppVariables, PageData } from './$houdini';
@@ -54,9 +54,7 @@
 		<Card columns={12}>
 			<h4>Instances</h4>
 			<AutoScaling app={$App.data.app} />
-			{#if appUtilization !== undefined && appUtilization !== PendingValue}
-				<Instances app={$App.data.app} utilization={appUtilization} />
-			{/if}
+			<Instances app={$App.data.app} utilization={appUtilization} />
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>

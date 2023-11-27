@@ -3,8 +3,7 @@
 	import Card from '$lib/Card.svelte';
 
 	import { page } from '$app/stores';
-	import Loading from '$lib/Loading.svelte';
-	import { Alert, CopyButton } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -32,7 +31,7 @@
 			{/if}
 		</h4>
 		{#if $AppManifest.data.app.name === PendingValue}
-			<Loading height="300px" />
+			<Skeleton variant="rounded" height="700px" />
 		{:else}
 			<pre>{$AppManifest.data.app.manifest}</pre>
 		{/if}

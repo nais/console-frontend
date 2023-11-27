@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import {
 		Alert,
 		LinkPanel,
 		LinkPanelDescription,
-		LinkPanelTitle
+		LinkPanelTitle,
+		Skeleton
 	} from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 
@@ -54,8 +54,12 @@
 				{#each $store.data.user.teams.edges as edge}
 					{#if edge === PendingValue}
 						<LinkPanel about="" href="" border={true} as="a">
-							<LinkPanelTitle><Loading width="100px" height="32px" /></LinkPanelTitle>
-							<LinkPanelDescription><Loading width="450px" /></LinkPanelDescription>
+							<LinkPanelTitle
+								><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
+							>
+							<LinkPanelDescription
+								><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
+							>
 						</LinkPanel>
 					{:else}
 						<LinkPanel

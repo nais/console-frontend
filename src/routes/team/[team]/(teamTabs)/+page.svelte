@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {OrderByField, PendingValue} from '$houdini';
+	import { OrderByField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import {Alert, Table, Tbody, Td, Th, Thead, Tr} from '@nais/ds-svelte-community';
 	import type { TableSortState } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { sortTable } from '../../../../helpers';
 	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
-	import {sortTable} from "../../../../helpers";
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
@@ -35,7 +34,6 @@
 			}
 		});
 	};
-
 </script>
 
 {#if $Workloads.errors}
@@ -50,12 +48,14 @@
 			<Cost app="" env="" team={teamName} />
 		</Card>
 		<Card columns={12}>
-			<Table size="small"
-				   sort={sortState}
-				   on:sortChange={(e) => {
+			<Table
+				size="small"
+				sort={sortState}
+				on:sortChange={(e) => {
 					const { key } = e.detail;
-					sortTable(key, sortState, refetch)
-				 }}>
+					sortTable(key, sortState, refetch);
+				}}
+			>
 				<Thead>
 					<Th style="width: 2rem"></Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>
@@ -67,8 +67,8 @@
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(team.apps.edges.length).fill('medium') as size}
-									<Td><Loading {size} /></Td>
+								{#each new Array(team.apps.edges.length).fill('text') as variant}
+									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
 						{:else}

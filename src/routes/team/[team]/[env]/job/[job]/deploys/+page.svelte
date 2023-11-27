@@ -3,11 +3,11 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import {
 		Alert,
 		Button,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -44,11 +44,11 @@
 			</Thead>
 			<Tbody>
 				{#if $JobDeploys.data.naisjob.name === PendingValue}
-					{#each new Array(5).fill('medium') as sizemedium}
+					{#each new Array(5).fill('text') as type}
 						<Tr>
-							{#each new Array(sizemedium) as size}
+							{#each new Array(type) as variant}
 								<Td>
-									<Loading {size} />
+									<Skeleton {variant} />
 								</Td>
 							{/each}
 						</Tr>

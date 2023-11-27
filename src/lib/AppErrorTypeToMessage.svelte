@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type AppErrorFragment } from '$houdini';
-	import { Alert } from '@nais/ds-svelte-community';
-	import Loading from './Loading.svelte';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 
 	export let error: AppErrorFragment;
 
@@ -64,7 +63,7 @@
 {#if $data}
 	{#if $data.revision === PendingValue}
 		<div class="wrapper">
-			<Loading />
+			<Skeleton variant="rounded" />
 		</div>
 	{:else if $data.__typename === 'DeprecatedRegistryError'}
 		<div class="wrapper">

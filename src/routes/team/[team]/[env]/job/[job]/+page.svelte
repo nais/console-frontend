@@ -2,9 +2,8 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Image from './Image.svelte';
@@ -42,7 +41,7 @@
 		<Card columns={6}>
 			<h4>Schedule</h4>
 			{#if job.schedule === PendingValue}
-				<Loading />
+				<Skeleton variant="text" />
 			{:else}
 				<Schedule schedule={String(job.schedule)} />
 			{/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type JobStatus } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
+	import { Skeleton } from '@nais/ds-svelte-community';
 	import {
 		ExclamationmarkTriangleFillIcon,
 		QuestionmarkDiamondFillIcon
@@ -32,7 +32,7 @@
 <div class="card {state.toString()}">
 	{#if $data.jobState.state == PendingValue}
 		<h4>Status</h4>
-		<Loading />
+		<Skeleton variant="text" />
 	{:else if $data.jobState.state === 'NAIS'}
 		<h4>Status {$data.jobState.state}</h4>
 		<div class="iconWrapper">

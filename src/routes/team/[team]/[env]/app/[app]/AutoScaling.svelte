@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { AutoScaling } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import { Tooltip } from '@nais/ds-svelte-community';
+	import { Skeleton, Tooltip } from '@nais/ds-svelte-community';
 
 	export let app: AutoScaling;
 	$: data = fragment(
@@ -24,11 +23,9 @@
 </script>
 
 <div class="wrapper">
-	{#if autoscaling === PendingValue}
-		<Loading width="200px" />
-	{:else if autoscaling.disabled}
+	{#if autoscaling !== PendingValue && autoscaling.disabled}
 		Scaling based on custom metrics
-	{:else}
+	{:else if autoscaling !== PendingValue}
 		<Tooltip content="Minimum replicas">
 			min: {autoscaling.min}</Tooltip
 		>
@@ -43,6 +40,8 @@
 				</div>
 			</Tooltip>
 		{/if}
+	{:else}
+		<Skeleton variant="text" width="100px" />
 	{/if}
 </div>
 

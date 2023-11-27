@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Storage } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
 	import Bucket from '$lib/icons/Bucket.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
+	import { Skeleton } from '@nais/ds-svelte-community';
 
 	export let app: Storage;
 	$: data = fragment(
@@ -55,7 +55,7 @@
 
 <div class="storage">
 	{#if $data.storage.map((s) => s.__typename).includes(PendingValue)}
-		<Loading width="300px" />
+		<Skeleton variant="text" width="300px" />
 	{/if}
 	{#each $data.storage as storage}
 		{#if storage.__typename === 'Bucket'}

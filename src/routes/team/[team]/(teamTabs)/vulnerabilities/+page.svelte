@@ -3,12 +3,21 @@
 	import { PendingValue } from '$houdini';
 	import { OrderByField } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import type { TableSortState } from '@nais/ds-svelte-community';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import { sortTable } from '../../../../../helpers';
 	import type { PageData } from './$houdini';
@@ -76,9 +85,9 @@
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(8).fill('medium') as size}
+								{#each new Array(8).fill('text') as variant}
 									<Td>
-										<Loading {size} />
+										<Skeleton {variant} />
 									</Td>
 								{/each}
 							</Tr>

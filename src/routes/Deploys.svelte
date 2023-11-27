@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { PendingValue, graphql, type UserDeploys$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
 	type Deploys = Exclude<UserDeploys$result['user']['teams']['edges'], (typeof PendingValue)[]>;
 
@@ -83,9 +82,9 @@
 				{#each sortTeamDeploys($store.data.user) as deploy}
 					{#if deploy == PendingValue}
 						<Tr>
-							{#each new Array(4).fill('medium') as size}
+							{#each new Array(4).fill('text') as variant}
 								<Td>
-									<Loading {size} />
+									<Skeleton {variant} />
 								</Td>
 							{/each}
 						</Tr>

@@ -2,10 +2,19 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { BranchingIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -39,8 +48,8 @@
 				{#each deploys.edges as edge}
 					{#if edge.node.id === PendingValue}
 						<Tr>
-							{#each new Array(6).fill('medium') as size}
-								<Td><Loading {size} /></Td>
+							{#each new Array(6).fill('text') as variant}
+								<Td><Skeleton {variant} /></Td>
 							{/each}
 						</Tr>
 					{:else}

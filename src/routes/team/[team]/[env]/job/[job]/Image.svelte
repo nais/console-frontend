@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { PendingValue, fragment, graphql, type JobImage } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { CopyButton } from '@nais/ds-svelte-community';
+	import { parseImage } from '$lib/utils/image';
+	import { CopyButton, Skeleton } from '@nais/ds-svelte-community';
 
 	export let job: JobImage;
 	$: data = fragment(
@@ -19,13 +19,16 @@
 		`)
 	);
 
-	const parseImage = (image: string) => {
-		const tag = image.split(':')[1];
-		const name = image.split(':')[0].split('/').pop();
-		const registry = image.split('/')[0];
-		const repository = image.split('/').slice(1, -1).join('/');
-		return { registry, repository, name, tag };
-	};
+	let registry: string;
+	let repository: string;
+	let name: string;
+	let tag: string;
+
+	$: {
+		if (image !== PendingValue) {
+			({ registry, repository, name, tag } = parseImage(image));
+		}
+	}
 
 	$: image = $data?.image;
 	$: deployInfo = $data?.deployInfo;
@@ -42,41 +45,53 @@
 		/>
 	{/if}
 </h4>
-{#if deployInfo?.timestamp === PendingValue}
-	<Loading />
-{:else if deployInfo.timestamp !== null}
-	<p class="lastActivity">
+<p class="lastActivity">
+	{#if deployInfo?.timestamp === PendingValue}
+		<Skeleton variant="text" />
+	{:else if deployInfo.timestamp !== null}
 		<a href={deployInfo.url}>Deployed</a>
 		<Time time={deployInfo.timestamp} distance={true} />
 		{#if deployInfo.deployer && deployInfo.url}
 			by
 			<a href="https://github.com/{deployInfo.deployer}">{deployInfo.deployer}</a>.
 		{/if}
-	</p>
-{/if}
-{#if image === PendingValue}
-	<Loading />
-{:else}
-	{@const { registry, repository, name, tag } = parseImage(image)}
-	<div class="imageGrid">
-		<div class="registry">
-			<h5>Registry</h5>
+	{/if}
+</p>
+
+<div class="imageGrid">
+	<div class="registry">
+		<h5>Registry</h5>
+		{#if image === PendingValue}
+			<Skeleton variant="text" width="80%" />
+		{:else}
 			<code>{registry}</code>
-		</div>
-		<div class="repository">
-			<h5>Repository</h5>
-			<code>{repository}</code>
-		</div>
-		<div class="imageName">
-			<h5>Name</h5>
-			<code>{name}</code>
-		</div>
-		<div class="tag">
-			<h5>Tag</h5>
-			<code>{tag}</code>
-		</div>
+		{/if}
 	</div>
-{/if}
+	<div class="repository">
+		<h5>Repository</h5>
+		{#if image === PendingValue}
+			<Skeleton variant="text" width="80%" />
+		{:else}
+			<code>{repository}</code>
+		{/if}
+	</div>
+	<div class="imageName">
+		<h5>Name</h5>
+		{#if image === PendingValue}
+			<Skeleton variant="text" width="80%" />
+		{:else}
+			<code>{name}</code>
+		{/if}
+	</div>
+	<div class="tag">
+		<h5>Tag</h5>
+		{#if image === PendingValue}
+			<Skeleton variant="text" width="80%" />
+		{:else}
+			<code>{tag}</code>
+		{/if}
+	</div>
+</div>
 
 <style>
 	.lastActivity {

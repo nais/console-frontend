@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type JobErrorFragment } from '$houdini';
-	import { Alert } from '@nais/ds-svelte-community';
-	import Loading from './Loading.svelte';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 
 	export let error: JobErrorFragment;
 
@@ -62,7 +61,7 @@
 
 <div class="wrapper">
 	{#if $data.revision == PendingValue}
-		<Loading />
+		<Skeleton variant="rounded" />
 	{:else if $data.__typename === 'DeprecatedRegistryError'}
 		<Alert variant="warning">
 			Deprecated image registry <strong>{$data.registry}</strong> for image

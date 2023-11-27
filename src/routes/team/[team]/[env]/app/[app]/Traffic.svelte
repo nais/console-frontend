@@ -4,8 +4,7 @@
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import Loading from '$lib/Loading.svelte';
-	import { Tooltip } from '@nais/ds-svelte-community';
+	import { Skeleton, Tooltip } from '@nais/ds-svelte-community';
 
 	export let app: AccessPolicy;
 
@@ -69,7 +68,7 @@
 			<ul>
 				{#each $data.ingresses as ingress}
 					{#if ingress === PendingValue}
-						<Loading width="300px" />
+						<Skeleton variant="text" width="300px" />
 					{:else if ingress.includes('.external.')}
 						<li>
 							<Globe /><a href={ingress}>{externalName(ingress)}</a>
@@ -84,7 +83,7 @@
 			<ul>
 				{#each $data.ingresses as ingress}
 					{#if ingress === PendingValue}
-						<Loading width="300px" />
+						<Skeleton variant="text" width="300px" />
 					{:else if !ingress.includes('.external.')}
 						<li><a href={ingress}>{internalName(ingress)}</a></li>
 					{/if}
@@ -151,7 +150,7 @@
 								>
 							{/if}
 						{:else}
-							<Loading width="300px" />
+							<Skeleton variant="text" width="300px" />
 						{/if}
 					</li>
 				{:else}
@@ -165,7 +164,7 @@
 			<ul>
 				{#each $data.accessPolicy.outbound.external as external}
 					{#if external.host === PendingValue}
-						<Loading width="300px" />
+						<Skeleton variant="text" width="300px" />
 					{:else}
 						{#each external.ports as port}
 							<li>
@@ -184,7 +183,7 @@
 				{#each $data.accessPolicy.outbound.rules as rule}
 					<li>
 						{#if rule.application === PendingValue}
-							<Loading width="300px" />
+							<Skeleton variant="text" width="300px" />
 						{:else}
 							{#if !rule.mutual}
 								<Tooltip

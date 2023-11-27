@@ -141,7 +141,6 @@
 			</a>
 			<div class="search">
 				<Search
-					loading={$store.fetching}
 					placeholder="Search for apps, jobs or teams..."
 					bind:value={query}
 					label="search"

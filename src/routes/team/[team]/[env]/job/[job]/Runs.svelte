@@ -2,11 +2,10 @@
 	import { page } from '$app/stores';
 	import type { JobInstances } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import { ArrowsCirclepathIcon } from '@nais/ds-svelte-community/icons';
 
 	export let job: JobInstances;
@@ -45,8 +44,8 @@
 		{#each $data.runs as run}
 			<Tr>
 				{#if run === PendingValue}
-					{#each new Array(6).fill('medium') as size}
-						<Td><Loading {size} /></Td>
+					{#each new Array(6).fill('text') as variant}
+						<Td><Skeleton {variant} /></Td>
 					{/each}
 				{:else}
 					<Td style="text-align: center;">

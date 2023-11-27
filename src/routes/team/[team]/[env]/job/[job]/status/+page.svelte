@@ -2,11 +2,10 @@
 	import { PendingValue, State } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -25,7 +24,7 @@
 	{/if}
 	{#if status}
 		{#if status.naisjob.name === PendingValue}
-			<Loading />
+			<Skeleton variant="rectangle" />
 		{:else}
 			{#if status.naisjob.jobState.state}
 				<div class="header">

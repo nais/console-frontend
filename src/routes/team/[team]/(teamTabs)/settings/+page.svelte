@@ -3,9 +3,8 @@
 	import { page } from '$app/stores';
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, CopyButton, Modal } from '@nais/ds-svelte-community';
+	import { Alert, Button, CopyButton, Modal, Skeleton } from '@nais/ds-svelte-community';
 	import { ArrowsCirclepathIcon, EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	const rotateKey = graphql(`
@@ -48,7 +47,7 @@
 		<Card columns={6}>
 			<h3>{team}</h3>
 			{#if teamSettings.id === PendingValue}
-				<Loading width="400px" />
+				<Skeleton variant="text" width="400px" />
 			{:else}
 				<i>{teamSettings.description}</i>
 			{/if}
@@ -92,13 +91,13 @@
 			<dl>
 				<dt>Created:</dt>
 				{#if teamSettings.deployKey.key === PendingValue}
-					<dd><Loading /></dd>
+					<dd><Skeleton variant="text" /></dd>
 				{:else}
 					<dd><Time time={teamSettings.deployKey.created} distance={true} /></dd>
 				{/if}
 				<dt>Expires:</dt>
 				{#if teamSettings.deployKey.expires === PendingValue}
-					<dd><Loading /></dd>
+					<dd><Skeleton variant="text" /></dd>
 				{:else}
 					<dd><Time time={teamSettings?.deployKey?.expires} distance={true} /></dd>
 				{/if}
@@ -118,7 +117,7 @@
 							>
 						{:else}
 							{#if teamSettings.deployKey.key === PendingValue}
-								<dd><Loading /></dd>
+								<dd><Skeleton variant="text" /></dd>
 							{:else}
 								{teamSettings?.deployKey?.key.replaceAll(/./g, '*')}
 							{/if}

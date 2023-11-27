@@ -2,22 +2,24 @@
 	import { page } from '$app/stores';
 	import type { AppInstances } from '$houdini';
 	import { fragment, graphql, PendingValue } from '$houdini';
-	import Loading from '$lib/Loading.svelte';
 	import Time from '$lib/Time.svelte';
 	import { sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
-	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 
-	export let utilization: {
-		readonly cpu: { readonly utilization: number; readonly request: number };
-		readonly memory: { readonly utilization: number; readonly request: number };
-	};
+	export let utilization:
+		| {
+				readonly cpu: { readonly utilization: number; readonly request: number };
+				readonly memory: { readonly utilization: number; readonly request: number };
+		  }
+		| typeof PendingValue
+		| undefined;
 
 	export let app: AppInstances;
 	$: data = fragment(
 		app,
 		graphql(`
 			fragment AppInstances on App {
-				instances @loading(count: 2) {
+				instances @loading {
 					name
 					state
 					message
@@ -56,8 +58,8 @@
 		{#each instances as instance}
 			<Tr>
 				{#if instance === PendingValue}
-					{#each new Array(7).fill('medium') as size}
-						<Td><Loading {size} /></Td>
+					{#each new Array(7).fill('text') as variant}
+						<Td><Skeleton {variant} /></Td>
 					{/each}
 				{:else}
 					<Td
@@ -92,29 +94,37 @@
 
 		<Tr>
 			{#if resources === PendingValue}
-				{#each new Array(7).fill('medium') as size}
-					<Td><Loading {size} /></Td>
+				{#each new Array(7).fill('text') as variant}
+					<Td><Skeleton {variant} /></Td>
 				{/each}
 			{:else}
 				<Td><b>Total:</b></Td>
 				<Td
 					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
-					<Tooltip content="Current CPU utilization"
-						>({utilization.cpu.utilization.toLocaleString('en-GB', {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2
-						})}%)</Tooltip
-					></Td
-				>
+					{#if utilization !== undefined && utilization !== PendingValue}
+						<Tooltip content="Current CPU utilization"
+							>({utilization.cpu.utilization.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}%)</Tooltip
+						>
+					{:else}
+						<Skeleton variant="text" width="40%" />
+					{/if}
+				</Td>
 				<Td
 					>{sumMemoryRequests(instances.length, resources.requests.memory)}
-					<Tooltip content="Current memory utilization"
-						>({utilization.memory.utilization.toLocaleString('en-GB', {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2
-						})}%)</Tooltip
-					></Td
-				>
+					{#if utilization !== undefined && utilization !== PendingValue}
+						<Tooltip content="Current memory utilization"
+							>({utilization.memory.utilization.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}%)</Tooltip
+						>
+					{:else}
+						<Skeleton variant="text" width="40%" />
+					{/if}
+				</Td>
 				<Td></Td>
 				<Td></Td>
 				<Td></Td>

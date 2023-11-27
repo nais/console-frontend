@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
 	import { PendingValue } from '$houdini';
+	import { Skeleton } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
-	import Loading from './Loading.svelte';
 
 	export let data: SearchQuery$result;
 	export let query: string;
@@ -20,7 +20,7 @@
 	{#each data.search.edges as { node }, i}
 		{#if node.__typename === PendingValue}
 			<li>
-				<Loading width="350px" height="2.5rem" />
+				<Skeleton variant="rounded" width="350px" height="2.5rem" />
 			</li>
 		{/if}
 		{#if node.__typename === 'App'}

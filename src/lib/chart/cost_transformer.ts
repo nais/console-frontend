@@ -1,12 +1,12 @@
 import { euroValueFormatter } from '$lib/utils/currency';
 import type { EChartsOption } from 'echarts';
 
-interface CostEntry {
+export interface CostEntry {
 	readonly date: Date;
 	readonly cost: number;
 }
 
-interface DailyCost<Data extends CostEntry> {
+export interface DailyCost<Data extends CostEntry> {
 	readonly series: {
 		readonly costType: string;
 		readonly sum: number;

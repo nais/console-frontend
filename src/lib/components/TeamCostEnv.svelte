@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
 		costTransformColumnChartTeamCostEnv,
 		type TeamCostEnvType
 	} from '$lib/chart/cost_transformer';
+	import { Skeleton } from '@nais/ds-svelte-community';
 	import type { TeamCostEnvVariables } from './$houdini';
 
 	export const _TeamCostEnvVariables: TeamCostEnvVariables = () => {
@@ -52,13 +52,13 @@
 
 {#if $costQuery.data !== null}
 	{#each $costQuery.data.envCost as cost}
-		{#if cost === PendingValue}
-			<Loading />
-		{:else if cost.apps.length > 0}
-			<Card columns={12}>
+		<Card columns={12}>
+			{#if cost === PendingValue}
+				<Skeleton variant="rectangle" height="385px" />
+			{:else if cost.apps.length > 0}
 				<h4>Daily cost per app/job for {cost.env}</h4>
 				<EChart options={echartOptionsColumnChart(cost)} style="height: {calculateHeight(cost)}" />
-			</Card>
-		{/if}
+			{/if}
+		</Card>
 	{/each}
 {/if}

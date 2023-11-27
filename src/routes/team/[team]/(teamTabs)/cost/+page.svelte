@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { TeamCost$result } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import {
+		costTransformStackedColumnChart,
+		type CostEntry,
+		type DailyCost
+	} from '$lib/chart/cost_transformer';
 	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -16,7 +20,7 @@
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(data: TeamCost$result['dailyCostForTeam']) {
+	function echartOptionsStackedColumnChart(data: DailyCost<CostEntry>) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 50 };
@@ -67,10 +71,14 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Total cost for team {team} from {from} to {to}</h4>
-			<EChart
-				options={echartOptionsStackedColumnChart($TeamCost.data.dailyCostForTeam)}
-				style="height: 400px"
-			/>
+			{#if $TeamCost.data.dailyCostForTeam === PendingValue}
+				<Skeleton variant="rectangle" height="385px" />
+			{:else}
+				<EChart
+					options={echartOptionsStackedColumnChart($TeamCost.data.dailyCostForTeam)}
+					style="height: 400px"
+				/>
+			{/if}
 		</Card>
 
 		<TeamCostEnv {team} from={fromDate} to={toDate} />

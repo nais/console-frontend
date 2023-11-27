@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Loading from '$lib/Loading.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -34,8 +33,8 @@
 				{#each team.members.edges as edge}
 					<Tr>
 						{#if team.name === PendingValue}
-							{#each new Array(3).fill('medium') as size}
-								<Td><Loading {size} /></Td>
+							{#each new Array(3).fill('text') as variant}
+								<Td><Skeleton {variant} /></Td>
 							{/each}
 						{:else}
 							<Td>{capitalizeFirstLetterInEachWord(edge.node.name.toString())}</Td>

@@ -1,8 +1,8 @@
-import { HoudiniClient } from '$houdini';
 import { browser, dev } from '$app/environment';
+import { HoudiniClient } from '$houdini';
 import { subscription, type SubscriptionClient } from '$houdini/plugins';
-import { createClient } from 'graphql-sse';
 import { updatesConnectionClosed } from '$lib/stores/update_complete';
+import { createClient } from 'graphql-sse';
 
 const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 export default new HoudiniClient({
