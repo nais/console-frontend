@@ -87,7 +87,10 @@
 						{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
-						})}% of {currentUtilization.cpu.request} CPUs
+						})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})} CPUs
 					{:else}
 						<Skeleton variant="text" width="200px" />
 					{/if}
@@ -108,7 +111,11 @@
 						{currentUtilization.memory.utilization.toLocaleString('en-GB', {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
-						})}% of {prettyBytes(currentUtilization.memory.request)}
+						})}% of {prettyBytes(currentUtilization.memory.request, {
+							locale: 'en',
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}
 					{:else}
 						<Skeleton variant="text" width="200px" />
 					{/if}
@@ -163,10 +170,6 @@
 
 	<Card columns={12} borderColor="var(--a-gray-200)">
 		<h3>Resource utilization</h3>
-		<p>
-			This graph displays the percentage of requests used for memory and CPU. You should aim for at
-			least 100% to save cost.
-		</p>
 		{#if resourceUtilization && resourceUtilization !== PendingValue}
 			{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
 				{#if resourceUtilization.cpu.length > 0}
@@ -175,6 +178,7 @@
 					<label for="to">To:</label>
 					<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 
+					<p>This graph displays the percentage of requests used for memory and CPU.</p>
 					<EChart
 						options={echartOptionsUsagePercentage(resourceUtilization)}
 						style="height: 400px"

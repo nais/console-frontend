@@ -171,12 +171,12 @@
 					<Skeleton variant="circle" width="34px" height="34px" />
 				</div>
 			{:else if appVulnerabilities.app.vulnerabilities.summary === null}
-					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem"/>
-					No data found in dependencytrack.
-					<a href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais" on:click={onClick}
+				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				No data found in dependencytrack.
+				<a href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais" on:click={onClick}
 					>How to fix</a
-					>
-			{:else}
+				>
+			{:else if appVulnerabilities.app.vulnerabilities.hasBom}
 				<Tooltip placement="right" content="severity: CRITICAL">
 					<VulnerabilityBadge
 						text={String(appVulnerabilities.app.vulnerabilities.summary.critical)}
@@ -205,27 +205,31 @@
 						size={notificationBadgeSize}
 					/>
 				</Tooltip>
-
-				{#if !appVulnerabilities.app.vulnerabilities.hasBom}
-					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-					<span class="small-text"
-						>Data was discovered, but the SBOM was not rendered. Please refer to the NAIS
-						documentation for further assistance</span
-					>
-				{:else if appVulnerabilities.app.vulnerabilities.summary.unassigned > 0}
-					<Tooltip placement="right" content="severity: UNASSIGNED">
-						<VulnerabilityBadge
-							text={String(appVulnerabilities.app.vulnerabilities.summary.unassigned)}
-							color={'#6e6e6e'}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
+			{/if}
+			{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.vulnerabilities !== null}
+				{#if appVulnerabilities.app.vulnerabilities !== PendingValue && appVulnerabilities.app.vulnerabilities.summary !== null}
+					{#if appVulnerabilities.app.vulnerabilities.summary.unassigned > 0}
+						<Tooltip placement="right" content="severity: UNASSIGNED">
+							<VulnerabilityBadge
+								text={String(appVulnerabilities.app.vulnerabilities.summary.unassigned)}
+								color={'#6e6e6e'}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+					{:else if !appVulnerabilities.app.vulnerabilities.hasBom}
+						<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+						Data was discovered, but the SBOM was not rendered. Please refer to the
+						<a href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais" on:click={onClick}
+							>NAIS documentation</a
+						>
+						for further assistance.
+					{/if}
+					<p>
+						<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
+							>View findings in DependencyTrack</a
+						>
+					</p>
 				{/if}
-				<p>
-					<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
-						>View findings in DependencyTrack</a
-					>
-				</p>
 			{/if}
 		{/if}
 	</div>
@@ -283,9 +287,5 @@
 
 	code {
 		font-size: 1rem;
-	}
-
-	.small-text {
-		font-size: 0.8rem;
 	}
 </style>
