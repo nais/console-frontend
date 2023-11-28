@@ -8,12 +8,13 @@ export function sumCPURequests(numOfInstances: number, cpuRequest: string) {
 		return totalCPURequest.toLocaleString('en-GB', {
 			maximumFractionDigits: 3
 		});
-	} else {
+	} else if (cpuRequest !== '') {
 		const totalCPURequest = parseInt(cpuRequest) * numOfInstances;
 		return totalCPURequest.toLocaleString('en-GB', {
 			maximumFractionDigits: 3
 		});
 	}
+	return '-';
 }
 
 export function sumMemoryRequests(numOfInstances: number, memoryRequest: string) {

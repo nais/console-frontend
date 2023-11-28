@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type AppImage } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -6,6 +7,7 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { CopyButton, Skeleton, Tooltip } from '@nais/ds-svelte-community';
+	import type { VulnerabilitiesForAppVariables } from './$houdini';
 
 	export let app: AppImage;
 	$: data = fragment(
@@ -18,6 +20,21 @@
 					deployer
 					url
 				}
+			}
+		`)
+	);
+
+	$: appName = $page.params.app;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
+
+	export const _VulnerabilitiesForAppVariables: VulnerabilitiesForAppVariables = () => {
+		return { app: appName, env: env, team: team };
+	};
+
+	const vulnerabilities = graphql(`
+		query VulnerabilitiesForApp($app: String!, $team: String!, $env: String!) @load {
+			app(name: $app, team: $team, env: $env) @loading {
 				vulnerabilities @loading {
 					findingsLink
 					hasBom
@@ -31,21 +48,23 @@
 					}
 				}
 			}
-		`)
-	);
+		}
+	`);
+
+	$: appVulnerabilities = $vulnerabilities.data;
 
 	function severityToColor(severity: string) {
 		switch (severity) {
 			case 'critical':
 				return '#f86c6b';
 			case 'high':
-				return 'orange';
+				return '#fd8b00';
 			case 'medium':
 				return '#ffc107';
 			case 'low':
-				return '#6e6e6e';
+				return '#4dbd74';
 			default:
-				return '#6e6e6e';
+				return '#777777';
 		}
 	}
 
@@ -137,64 +156,70 @@
 	</div>
 	<div class="vulnerabilities">
 		<h5>Vulnerabilities</h5>
-		{#if $data !== null && $data?.vulnerabilities !== null}
-			{#if $data.vulnerabilities === PendingValue}
+		{#if $vulnerabilities.errors}
+			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+			Could not fetch vulnerabilities. Please try again, and if the error persists, contact the NAIS
+			team.
+		{/if}
+
+		{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.vulnerabilities !== null}
+			{#if appVulnerabilities.app.vulnerabilities === PendingValue}
 				<div style="display: flex;  gap: 0.5rem">
-					<Skeleton variant="circle" width="32px" height="32px" />
-					<Skeleton variant="circle" width="32px" height="32px" />
-					<Skeleton variant="circle" width="32px" height="32px" />
-					<Skeleton variant="circle" width="32px" height="32px" />
+					<Skeleton variant="circle" width="34px" height="34px" />
+					<Skeleton variant="circle" width="34px" height="34px" />
+					<Skeleton variant="circle" width="34px" height="34px" />
+					<Skeleton variant="circle" width="34px" height="34px" />
 				</div>
-			{:else if $data.vulnerabilities.summary === null}
+			{:else if appVulnerabilities.app.vulnerabilities.summary === null}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				No data found in dependencytrack.
 			{:else}
 				<Tooltip placement="right" content="severity: CRITICAL">
 					<VulnerabilityBadge
-						text={String($data.vulnerabilities.summary.critical)}
+						text={String(appVulnerabilities.app.vulnerabilities.summary.critical)}
 						color={severityToColor('critical')}
 						size={notificationBadgeSize}
 					/>
 				</Tooltip>
 				<Tooltip placement="right" content="severity: HIGH">
 					<VulnerabilityBadge
-						text={String($data.vulnerabilities.summary.high)}
+						text={String(appVulnerabilities.app.vulnerabilities.summary.high)}
 						color={severityToColor('high')}
 						size={notificationBadgeSize}
 					/>
 				</Tooltip>
 				<Tooltip placement="right" content="severity: MEDIUM">
 					<VulnerabilityBadge
-						text={String($data.vulnerabilities.summary.medium)}
+						text={String(appVulnerabilities.app.vulnerabilities.summary.medium)}
 						color={severityToColor('medium')}
 						size={notificationBadgeSize}
 					/>
 				</Tooltip>
 				<Tooltip placement="right" content="severity: LOW">
 					<VulnerabilityBadge
-						text={String($data.vulnerabilities.summary.low)}
+						text={String(appVulnerabilities.app.vulnerabilities.summary.low)}
 						color={severityToColor('low')}
 						size={notificationBadgeSize}
 					/>
 				</Tooltip>
 
-				{#if !$data.vulnerabilities.hasBom}
+				{#if !appVulnerabilities.app.vulnerabilities.hasBom}
 					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 					<span class="small-text"
 						>Data was discovered, but the SBOM was not rendered. Please refer to the NAIS
 						documentation for further assistance</span
 					>
-				{:else if $data.vulnerabilities.summary.unassigned > 0}
+				{:else if appVulnerabilities.app.vulnerabilities.summary.unassigned > 0}
 					<Tooltip placement="right" content="severity: UNASSIGNED">
 						<VulnerabilityBadge
-							text={String($data.vulnerabilities.summary.unassigned)}
+							text={String(appVulnerabilities.app.vulnerabilities.summary.unassigned)}
 							color={'#6e6e6e'}
 							size={notificationBadgeSize}
 						/>
 					</Tooltip>
 				{/if}
 				<p>
-					<a href={$data.vulnerabilities.findingsLink} on:click={onClick}
+					<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
 						>View findings in DependencyTrack</a
 					>
 				</p>
