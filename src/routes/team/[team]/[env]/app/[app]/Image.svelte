@@ -171,8 +171,11 @@
 					<Skeleton variant="circle" width="34px" height="34px" />
 				</div>
 			{:else if appVulnerabilities.app.vulnerabilities.summary === null}
-				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-				No data found in dependencytrack.
+					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem"/>
+					No data found in dependencytrack.
+					<a href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais" on:click={onClick}
+					>How to fix</a
+					>
 			{:else}
 				<Tooltip placement="right" content="severity: CRITICAL">
 					<VulnerabilityBadge
