@@ -253,13 +253,11 @@
 						>
 						for further assistance.
 					{/if}
-					{#if appVulnerabilities.app.vulnerabilities.hasBom && isFindings(appVulnerabilities.app.vulnerabilities.summary)}
-						<p>
-							<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
-								>View findings in DependencyTrack</a
-							>
-						</p>
-					{/if}
+					<p>
+						<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
+							>View findings in DependencyTrack</a
+						>
+					</p>
 				{/if}
 			{/if}
 		{/if}
