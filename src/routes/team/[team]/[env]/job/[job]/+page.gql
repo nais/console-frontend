@@ -1,4 +1,4 @@
-query Job($job: String!, $team: String!, $env: String!) {
+query Job($job: String!, $team: String!, $env: String!) @cache(policy: NetworkOnly) {
 	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name
 		schedule

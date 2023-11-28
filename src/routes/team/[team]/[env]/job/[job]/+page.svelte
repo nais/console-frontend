@@ -32,13 +32,15 @@
 	<div class="grid">
 		<Status job={$Job.data.naisjob} />
 
-		<Card columns={4}>
-			<Cost app={jobName} {env} {team} />
-		</Card>
-		<Card columns={6}>
+		<Card columns={9} rows={1}>
 			<Image {job} />
 		</Card>
-		<Card columns={6}>
+
+		<Card columns={3} rows={1}>
+			<Cost app={jobName} {env} {team} />
+		</Card>
+
+		<Card columns={3}>
 			<h4>Schedule</h4>
 			{#if job.schedule === PendingValue}
 				<Skeleton variant="text" />

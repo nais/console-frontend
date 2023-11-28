@@ -89,9 +89,13 @@
 	{#if deployInfo?.timestamp === PendingValue}
 		<Skeleton variant="text" width="40%" />
 	{:else if deployInfo.timestamp !== null}
-		<a href={deployInfo.url}>Deployed</a>
+		{#if deployInfo.url === ''}
+			Deployed
+		{:else}
+			<a href={deployInfo.url}>Deployed</a>
+		{/if}
 		<Time time={deployInfo.timestamp} distance={true} />
-		{#if deployInfo.deployer && deployInfo.url}
+		{#if deployInfo.deployer !== ''}
 			by
 			<a href="https://github.com/{deployInfo.deployer}">{deployInfo.deployer}</a>.
 		{/if}

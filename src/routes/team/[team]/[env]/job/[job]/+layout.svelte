@@ -76,11 +76,6 @@
 				</div>
 			{/if}
 		{/if}
-		{#if tab === 'Status' && (state === State.NOTNAIS || state === State.FAILING)}
-			<div class="notification">
-				<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />
-			</div>
-		{/if}
 	{/each}
 </Tabs>
 <slot />
