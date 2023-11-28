@@ -1,4 +1,4 @@
-query JobNotificationState($job: String!, $team: String!, $env: String!) {
+query JobNotificationState($job: String!, $team: String!, $env: String!) @loading(cascade: true) {
 	naisjob(name: $job, team: $team, env: $env) {
 		jobState {
 			state

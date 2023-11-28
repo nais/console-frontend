@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import { State } from '$houdini/graphql/enums';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
-	import NotificationBadge from '$lib/icons/VulnerabilityBadge.svelte';
+	import NotificationBadge from '$lib/icons/NotificationBadge.svelte';
 	import { replacer } from '$lib/replacer';
 	import type { LayoutData } from './$houdini';
 
@@ -42,7 +43,6 @@
 	$: ({ JobNotificationState } = data);
 
 	$: state = $JobNotificationState.data?.naisjob.jobState.state;
-	$: numberOfErrors = $JobNotificationState.data?.naisjob.jobState.errors.length;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -69,24 +69,17 @@
 				title={tab}
 			/>
 		{/if}
-		{#if tab === 'Status' && state !== State.NAIS}
-			{#if state === State.NOTNAIS}
+		{#if tab === 'Status' && state !== undefined && state !== PendingValue}
+			{#if state === State.NOTNAIS || state === State.FAILING}
 				<div class="notification">
-					<NotificationBadge
-						text={String(numberOfErrors)}
-						color={'var(--a-surface-warning-moderate)'}
-						size={'18px'}
-					/>
-				</div>
-			{:else if state === State.FAILING || state !== State.UNKNOWN}
-				<div class="notification">
-					<NotificationBadge
-						text={String(numberOfErrors)}
-						color={'var(--a-icon-danger)'}
-						size={'18px'}
-					/>
+					<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />
 				</div>
 			{/if}
+		{/if}
+		{#if tab === 'Status' && (state === State.NOTNAIS || state === State.FAILING)}
+			<div class="notification">
+				<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />
+			</div>
 		{/if}
 	{/each}
 </Tabs>
@@ -95,7 +88,7 @@
 <style>
 	.notification {
 		position: relative;
-		left: -10px;
-		top: 12px;
+		left: -14px;
+		top: 4px;
 	}
 </style>

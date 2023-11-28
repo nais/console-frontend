@@ -48,7 +48,8 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 					}
 					return s.utilization;
 				}),
-				showSymbol: false
+				showSymbol: false,
+				color: '#2378f7'
 			},
 			{
 				type: 'line',
@@ -59,7 +60,8 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 					}
 					return s.utilization;
 				}),
-				showSymbol: false
+				showSymbol: false,
+				color: '#41bc25'
 			}
 		]
 	} as EChartsOption;

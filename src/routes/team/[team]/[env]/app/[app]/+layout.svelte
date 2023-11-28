@@ -48,7 +48,6 @@
 	$: ({ AppNotificationState } = data);
 
 	$: state = $AppNotificationState.data?.app.appState.state;
-	$: numberOfErrors = $AppNotificationState.data?.app.appState.errors.length;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -78,7 +77,7 @@
 				title={tab}
 			/>
 		{/if}
-		{#if tab === 'Status' && state && state !== PendingValue && numberOfErrors !== undefined}
+		{#if tab === 'Status' && state !== undefined && state !== PendingValue}
 			{#if state === State.NOTNAIS || state === State.FAILING}
 				<div class="notification">
 					<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />

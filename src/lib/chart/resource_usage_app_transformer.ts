@@ -50,7 +50,8 @@ export function resourceUsagePercentageTransformLineChart(
 				data: input.memory.map((s) => {
 					return s.utilization > 0.0 ? s.utilization : undefined;
 				}),
-				showSymbol: false
+				showSymbol: false,
+				color: '#41bc25'
 			},
 			{
 				type: 'line',
@@ -58,7 +59,8 @@ export function resourceUsagePercentageTransformLineChart(
 				data: input.cpu.map((s) => {
 					return s.utilization > 0.0 ? s.utilization : undefined;
 				}),
-				showSymbol: false
+				showSymbol: false,
+				color: '#2378f7'
 			}
 		]
 	} as EChartsOption;
