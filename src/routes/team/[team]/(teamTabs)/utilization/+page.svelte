@@ -14,7 +14,19 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { euroValueFormatter } from '$lib/utils/currency';
+	import {
+		Accordion,
+		AccordionItem,
+		Alert,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
@@ -68,6 +80,46 @@
 
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
+
+	function overageTableData() {
+		if (overageCostForTeam === undefined) return [];
+		if (overageCostForTeam === PendingValue) return [];
+
+		return overageCostForTeam.cpu
+			.map((cpu) => {
+				if (overageCostForTeam === undefined || overageCostForTeam === PendingValue) {
+					return {
+						app: cpu.app,
+						env: cpu.env,
+						cpu: '-',
+						memory: '-',
+						cost: '-'
+					};
+				}
+				const memory = overageCostForTeam.memory.filter(
+					(s) => s.app === cpu.app && s.env === cpu.env && s.team === cpu.team
+				)[0];
+				return {
+					app: cpu.app,
+					env: cpu.env,
+					cpu:
+						cpu.overage > 0.0
+							? cpu.overage.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+							  })
+							: '-',
+					memory: memory.overage > 0.0 ? prettyBytes(memory.overage) : '-',
+					cost: euroValueFormatter(cpu.overageCost + memory.overageCost),
+					team: cpu.team
+				};
+			})
+			.sort((a, b) => {
+				if (a.cost > b.cost) return -1;
+				if (a.cost < b.cost) return 1;
+				return 0;
+			});
+	}
 
 	$: {
 		if (maxDate && maxDate !== PendingValue) {
@@ -224,6 +276,48 @@
 						}}
 					/>
 				{/if}
+			</div>
+			<div>
+				<Accordion>
+					<Accordion>
+						<AccordionItem heading="All applications" open={false}>
+							<Table size={'small'}>
+								<Thead>
+									<Tr>
+										<Th>Application</Th>
+										<Th>Environment</Th>
+										<Th>Unused CPU</Th>
+										<Th>Unused memory</Th>
+									</Tr>
+								</Thead>
+								<Tbody>
+									{#if overageCostForTeam === PendingValue}
+										<div class="loading">
+											<Skeleton variant="rectangle" />
+										</div>
+									{:else}
+										{#each overageTableData() as overage}
+											<Tr>
+												<Td>
+													<a
+														href={`/team/${team}/${overage.env}/app/${overage.app}/utilization`}
+														target="_blank"
+														rel="noopener noreferrer"
+													>
+														{overage.app}
+													</a>
+												</Td>
+												<Td>{overage.env}</Td>
+												<Td>{overage.cpu}</Td>
+												<Td>{overage.memory}</Td>
+											</Tr>
+										{/each}
+									{/if}
+								</Tbody>
+							</Table>
+						</AccordionItem>
+					</Accordion>
+				</Accordion>
 			</div>
 		</Card>
 		<Card columns={12}>

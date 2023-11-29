@@ -75,6 +75,9 @@ type AppWithResourceUtilizationOverage {
   """The overage for the app."""
   overage: Float!
 
+  """The overage cost for the app."""
+  overageCost: Float!
+
   """The name of the team who owns the app."""
   team: String!
 }
