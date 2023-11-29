@@ -802,16 +802,8 @@ type Query {
 
   """Get resource utilization overage data for a team."""
   resourceUtilizationOverageForTeam(
-    """
-    Fetch resource utilization overage data from this date. Defaults to 7 days before the to date.
-    """
-    from: Date
-
     """The name of the team."""
     team: String!
-
-    """Fetch resource utilization overage until this date. Defaults to today."""
-    to: Date
   ): ResourceUtilizationOverageForTeam!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
@@ -923,6 +915,7 @@ type ResourceUtilizationOverageForTeam {
 
   """The sum of the overage cost for all apps."""
   overageCost: Float!
+  timestamp: Time
 }
 
 type Resources {
