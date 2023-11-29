@@ -1,141 +1,43 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
-	import Status from '$lib/Status.svelte';
-	import Time from '$lib/Time.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import type { TableSortState } from '@nais/ds-svelte-community';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { sortTable } from '../../../../helpers';
-	import InstanceStatus from '../[env]/app/[app]/InstanceStatus.svelte';
-	import type { PageData } from './$houdini';
+	import Vulnerability from '$lib/components/Vulnerability.svelte';
+	import Deploys from '$lib/overview/Deploys.svelte';
 
 	$: teamName = $page.params.team;
-	export let data: PageData;
-	$: ({ Workloads } = data);
-	$: team = $Workloads.data?.team;
-
-	let sortState: TableSortState = {
-		orderBy: 'NAME',
-		direction: 'descending'
-	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		Workloads.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'NAME',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
-	};
 </script>
 
-{#if $Workloads.errors}
-	<Alert variant="error">
-		{#each $Workloads.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else}
-	<div class="grid">
-		<Card columns={3}>
-			<Cost app="" env="" team={teamName} />
-		</Card>
-		<Card columns={12}>
-			<Table
-				size="small"
-				sort={sortState}
-				on:sortChange={(e) => {
-					const { key } = e.detail;
-					sortTable(key, sortState, refetch);
-				}}
-			>
-				<Thead>
-					<Th style="width: 2rem"></Th>
-					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th sortable={true} sortKey="ENV">Env</Th>
-					<Th>Instances</Th>
-					<Th>Deployed</Th>
-				</Thead>
-				<Tbody>
-					{#if team !== undefined}
-						{#if team.id === PendingValue}
-							<Tr>
-								{#each new Array(team.apps.edges.length).fill('text') as variant}
-									<Td><Skeleton {variant} /></Td>
-								{/each}
-							</Tr>
-						{:else}
-							{#each team.apps.edges as edge}
-								<Tr>
-									<Td>
-										<div class="status">
-											<a
-												href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}/status"
-												data-sveltekit-preload-data="off"
-											>
-												<Status size="1.5rem" state={edge.node.appState.state} />
-											</a>
-										</div>
-									</Td>
-									<Td>
-										<a href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}"
-											>{edge.node.name}</a
-										>
-									</Td>
-									<Td>{edge.node.env.name}</Td>
+<div class="grid">
+	<Card rows={1} columns={3}>
+		<h4>Statuses</h4>
+		<p>2 failing apps</p>
+		<p>1 failing job</p>
+		<p>1337 apss running OK</p>
+	</Card>
+	<Card rows={1} columns={2}>
+		<h4>Vulnerabilities</h4>
+		<Vulnerability severity="critical" count={69} />
+		<Vulnerability severity="high" count={96} />
+		<Vulnerability severity="medium" count={66} />
+		<Vulnerability severity="low" count={666} />
+		<Vulnerability severity="unassigned" count={6} />
+	</Card>
+	<Card rows={6} columns={7}>
+		<h4>Deployments</h4>
+		<Deploys {teamName} />
+	</Card>
 
-									<Td>
-										<InstanceStatus app={edge.node} />
-									</Td>
-									<Td>
-										{#if edge.node.deployInfo.timestamp}
-											<Time time={edge.node.deployInfo.timestamp} distance={true} />
-										{/if}
-									</Td>
-								</Tr>
-							{:else}
-								<Tr>
-									<Td colspan={4}>No apps found</Td>
-								</Tr>
-							{/each}
-						{/if}
-					{/if}
-				</Tbody>
-			</Table>
-			{#if team !== undefined}
-				{#if team.id !== PendingValue}
-					<Pagination
-						totalCount={team.apps.totalCount}
-						pageInfo={team.apps.pageInfo}
-						on:nextPage={() => {
-							if (!$Workloads.pageInfo.hasNextPage) return;
-							Workloads.loadNextPage();
-						}}
-						on:previousPage={() => {
-							if (!$Workloads.pageInfo.hasPreviousPage) return;
-							Workloads.loadPreviousPage();
-						}}
-					/>
-				{/if}
-			{/if}
-		</Card>
-	</div>
-{/if}
+	<Card rows={1} columns={5}>
+		<Cost app="" env="" team={teamName} />
+	</Card>
+
+	<Card rows={1} columns={5}>
+		<h4>Utilization</h4>
+	</Card>
+</div>
 
 <style>
-	.status {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		line-height: 0.6;
-	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

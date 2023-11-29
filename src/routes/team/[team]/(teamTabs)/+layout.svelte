@@ -13,8 +13,12 @@
 	$: currentRoute = $page.route.id;
 	const nav = [
 		{
-			tab: 'Apps',
+			tab: 'Overview',
 			routeId: '/team/[team]/(teamTabs)'
+		},
+		{
+			tab: 'Apps',
+			routeId: '/team/[team]/(teamTabs)/applications'
 		},
 		{
 			tab: 'Jobs',
