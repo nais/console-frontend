@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
       - name: npm run check
         run: |-
-          npm install && npm run check
+          npm install && npm run build && npm run check
       - uses: nais/platform-build-push-sign@main # ratchet:nais/platform-build-push-sign@main
         id: build-push-sign
         with:
