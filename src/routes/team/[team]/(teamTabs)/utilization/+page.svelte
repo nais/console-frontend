@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
 		resourceUsageTeamTransformLineChart,
@@ -182,7 +183,16 @@
 			</div></Card
 		>
 		<Card columns={12} borderColor="var(--a-gray-200)">
-			<h3>Unused resources per application</h3>
+			<div style="display: flex; justify-content: space-between;">
+				<h3>Unused resources per application</h3>
+				{#if overageCostForTeam !== PendingValue && overageCostForTeam.timestamp !== null}
+					<p style="text-align: right; color: var(--a-text-subtle)">
+						Last updated: <Time time={overageCostForTeam.timestamp} distance={true} />
+					</p>
+				{:else}
+					<p>Laste updated: <Skeleton variant="text" /></p>
+				{/if}
+			</div>
 
 			<div style="display: flex">
 				{#if overageCostForTeam === PendingValue}
