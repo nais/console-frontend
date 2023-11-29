@@ -183,10 +183,7 @@
 		>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<h3>Unused resources per application</h3>
-			<label for="from">From:</label>
-			<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
-			<label for="to">To:</label>
-			<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
+
 			<div style="display: flex">
 				{#if overageCostForTeam === PendingValue}
 					<div class="loading">
@@ -218,10 +215,18 @@
 					/>
 				{/if}
 			</div>
-
+		</Card>
+		<Card columns={12}>
+			<h3>Resource utilization per environment</h3>
+			<div class="datepicker">
+				<label for="from">From:</label>
+				<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
+				<label for="to">To:</label>
+				<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
+			</div>
 			{#each resourceUtilization as env}
 				{#if env.env !== PendingValue}
-					<h3>Resource utilization in {env.env}</h3>
+					<h4>Resource utilization in {env.env}</h4>
 				{/if}
 				{#if env.env === PendingValue}
 					<div class="loading" style="width: 100%;">
@@ -244,6 +249,10 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.datepicker {
+		margin-top: 1rem;
+		margin-bottom: 1rem;
 	}
 	.loading {
 		height: 400px;

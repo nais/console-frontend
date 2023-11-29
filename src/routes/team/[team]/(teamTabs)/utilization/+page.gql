@@ -34,8 +34,9 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 			utilization
 		}
 	}
-	resourceUtilizationOverageForTeam(team: $team, from: $from, to: $to) @loading {
+	resourceUtilizationOverageForTeam(team: $team) @loading {
 		overageCost
+		timestamp
 		cpu {
 			app
 			env
