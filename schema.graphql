@@ -915,7 +915,9 @@ type ResourceUtilizationOverageForTeam {
 
   """The sum of the overage cost for all apps."""
   overageCost: Float!
-  timestamp: Time
+
+  """Timestamp used for the calculated values."""
+  timestamp: Time!
 }
 
 type Resources {
