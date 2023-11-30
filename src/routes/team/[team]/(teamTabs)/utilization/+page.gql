@@ -43,6 +43,7 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 			overage
 			team
 			overageCost
+			estimatedAnnualOverageCost
 		}
 		memory {
 			app
@@ -50,6 +51,7 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 			overage
 			team
 			overageCost
+			estimatedAnnualOverageCost
 		}
 	}
 }

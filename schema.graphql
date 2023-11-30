@@ -72,6 +72,9 @@ type AppWithResourceUtilizationOverage {
   """The environment where the app is running."""
   env: String!
 
+  """Estimated annual cost of the request overage."""
+  estimatedAnnualOverageCost: Float!
+
   """The overage for the app."""
   overage: Float!
 
@@ -80,6 +83,9 @@ type AppWithResourceUtilizationOverage {
 
   """The name of the team who owns the app."""
   team: String!
+
+  """The utilization in percent."""
+  utilization: Float!
 }
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX

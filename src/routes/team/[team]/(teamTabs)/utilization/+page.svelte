@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import type { ResourceUtilizationForTeam$result } from '$houdini';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
@@ -15,6 +16,7 @@
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { euroValueFormatter } from '$lib/utils/currency';
+	import type { TableSortState } from '@nais/ds-svelte-community';
 	import {
 		Accordion,
 		AccordionItem,
@@ -37,6 +39,7 @@
 	$: resourceUtilization = $ResourceUtilizationForTeam.data?.resourceUtilizationForTeam;
 	$: currentResourceUtilizationForTeam =
 		$ResourceUtilizationForTeam.data?.currentResourceUtilizationForTeam;
+	$: overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
 
 	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
 	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
@@ -81,19 +84,52 @@
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
-	function overageTableData() {
-		if (overageCostForTeam === undefined) return [];
-		if (overageCostForTeam === PendingValue) return [];
+	const sortTable = (key: string, sortState: TableSortState) => {
+		if (!sortState) {
+			sortState = {
+				orderBy: key,
+				direction: 'descending'
+			};
+		} else if (sortState.orderBy === key) {
+			if (sortState.direction === 'ascending') {
+				sortState.direction = 'descending';
+			} else {
+				sortState.direction = 'ascending';
+			}
+		} else {
+			sortState.orderBy = key;
+			if (key === 'NAME') {
+				sortState.direction = 'ascending';
+			} else {
+				sortState.direction = 'descending';
+			}
+		}
 
-		return overageCostForTeam.cpu
+		overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
+
+		return sortState;
+	};
+
+	function overageTableData(
+		data:
+			| ResourceUtilizationForTeam$result['resourceUtilizationOverageForTeam']
+			| typeof PendingValue
+			| undefined,
+		sortedBy: string = 'ENVIROMENT',
+		sortDirection: string = 'descending'
+	) {
+		if (data === undefined) return [];
+		if (data === PendingValue) return [];
+		return data.cpu
 			.map((cpu) => {
 				if (overageCostForTeam === undefined || overageCostForTeam === PendingValue) {
 					return {
 						app: cpu.app,
 						env: cpu.env,
-						cpu: '-',
-						memory: '-',
-						cost: '-'
+						cpu: 0.0,
+						memory: 0.0,
+						utilization: 0.0,
+						estimatedAnnualOverageCost: 0.0
 					};
 				}
 				const memory = overageCostForTeam.memory.filter(
@@ -102,21 +138,66 @@
 				return {
 					app: cpu.app,
 					env: cpu.env,
-					cpu:
-						cpu.overage > 0.0
-							? cpu.overage.toLocaleString('en-GB', {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-							  })
-							: '-',
-					memory: memory.overage > 0.0 ? prettyBytes(memory.overage) : '-',
-					cost: euroValueFormatter(cpu.overageCost + memory.overageCost),
-					team: cpu.team
+					cpu: cpu.overage,
+					memory: memory.overage,
+					team: cpu.team,
+					estimatedAnnualOverageCost:
+						cpu.estimatedAnnualOverageCost + memory.estimatedAnnualOverageCost
 				};
 			})
+			.filter((s) => s.cpu > 0.0 || s.memory > 0.0)
 			.sort((a, b) => {
-				if (a.cost > b.cost) return -1;
-				if (a.cost < b.cost) return 1;
+				if (sortedBy === 'APPLICATION') {
+					if (sortDirection === 'descending') {
+						if (a.app > b.app) return -1;
+						if (a.app < b.app) return 1;
+						return 0;
+					} else {
+						if (a.app > b.app) return 1;
+						if (a.app < b.app) return -1;
+						return 0;
+					}
+				} else if (sortedBy === 'ENVIRONMENT') {
+					if (sortDirection === 'descending') {
+						if (a.env > b.env) return -1;
+						if (a.env < b.env) return 1;
+						return 0;
+					} else {
+						if (a.env > b.env) return 1;
+						if (a.env < b.env) return -1;
+						return 0;
+					}
+				} else if (sortedBy === 'CPU') {
+					if (sortDirection === 'descending') {
+						if (a.cpu > b.cpu) return -1;
+						if (a.cpu < b.cpu) return 1;
+						return 0;
+					} else {
+						if (a.cpu > b.cpu) return 1;
+						if (a.cpu < b.cpu) return -1;
+						return 0;
+					}
+				} else if (sortedBy === 'MEMORY') {
+					if (sortDirection === 'descending') {
+						if (a.memory > b.memory) return -1;
+						if (a.memory < b.memory) return 1;
+						return 0;
+					} else {
+						if (a.memory > b.memory) return 1;
+						if (a.memory < b.memory) return -1;
+						return 0;
+					}
+				} else if (sortedBy === 'COST') {
+					if (sortDirection === 'descending') {
+						if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return -1;
+						if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return 1;
+						return 0;
+					} else {
+						if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return 1;
+						if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return -1;
+						return 0;
+					}
+				}
 				return 0;
 			});
 	}
@@ -130,6 +211,11 @@
 			}
 		}
 	}
+
+	let sortState: TableSortState = {
+		orderBy: 'COST',
+		direction: 'descending'
+	};
 </script>
 
 {#if $ResourceUtilizationForTeam.errors}
@@ -281,13 +367,21 @@
 				<Accordion>
 					<Accordion>
 						<AccordionItem heading="All applications" open={false}>
-							<Table size={'small'}>
+							<Table
+								size={'small'}
+								sort={sortState}
+								on:sortChange={(e) => {
+									const { key } = e.detail;
+									sortTable(key, sortState);
+								}}
+							>
 								<Thead>
 									<Tr>
-										<Th>Application</Th>
-										<Th>Environment</Th>
-										<Th>Unused CPU</Th>
-										<Th>Unused memory</Th>
+										<Th sortable={true} sortKey="APPLICATION">Application</Th>
+										<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+										<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+										<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+										<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
 									</Tr>
 								</Thead>
 								<Tbody>
@@ -296,21 +390,27 @@
 											<Skeleton variant="rectangle" />
 										</div>
 									{:else}
-										{#each overageTableData() as overage}
+										{#each overageTable as overage}
 											<Tr>
 												<Td>
-													<a
-														href={`/team/${team}/${overage.env}/app/${overage.app}/utilization`}
-														target="_blank"
-														rel="noopener noreferrer"
-													>
+													<a href={`/team/${team}/${overage.env}/app/${overage.app}/utilization`}>
 														{overage.app}
 													</a>
 												</Td>
 												<Td>{overage.env}</Td>
-												<Td>{overage.cpu}</Td>
-												<Td>{overage.memory}</Td>
+												<Td
+													>{overage.cpu > 0.0
+														? overage.cpu.toLocaleString('en-GB', {
+																minimumFractionDigits: 2,
+																maximumFractionDigits: 2
+														  })
+														: '-'}</Td
+												>
+												<Td>{overage.memory > 0.0 ? prettyBytes(overage.memory) : '-'}</Td>
+												<Td>{euroValueFormatter(overage.estimatedAnnualOverageCost)}</Td>
 											</Tr>
+										{:else}
+											<p>No overage data for team {team}</p>
 										{/each}
 									{/if}
 								</Tbody>
