@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
 	import { euroValueFormatter } from '$lib/utils/currency';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { AggregatedCostAppVariables } from './$houdini';
 
 	export const _AggregatedCostAppVariables: AggregatedCostAppVariables = () => {
@@ -38,13 +38,14 @@
 	}
 </script>
 
+<h4>Cost</h4>
 {#if $costQuery.errors}
-	{#each $costQuery.errors as error}
-		{error.message}
-	{/each}
-{/if}
-{#if $costQuery.data !== null}
-	<h4>Cost</h4>
+	<Alert variant="error">
+		{#each $costQuery.errors as error}
+			{error.message}
+		{/each}
+	</Alert>
+{:else if $costQuery.data !== null}
 	<div>
 		{#if $costQuery.data.monthlyCost === PendingValue}
 			<Skeleton variant="text" />

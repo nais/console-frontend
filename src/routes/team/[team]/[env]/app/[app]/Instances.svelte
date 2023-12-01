@@ -101,29 +101,34 @@
 				<Td><b>Total:</b></Td>
 				<Td
 					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
-					{#if utilization !== undefined && utilization !== PendingValue}
-						<Tooltip content="Current CPU utilization"
-							>({utilization.cpu.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}%)</Tooltip
-						>
-					{:else}
-						<Skeleton variant="text" width="40%" />
-					{/if}
+
+					<Tooltip content="Current CPU utilization"
+						>{#if utilization !== undefined && utilization !== PendingValue}({utilization.cpu.utilization.toLocaleString(
+								'en-GB',
+								{
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}
+							)}%){:else}
+							(NA)
+						{/if}</Tooltip
+					>
 				</Td>
 				<Td
 					>{sumMemoryRequests(instances.length, resources.requests.memory)}
-					{#if utilization !== undefined && utilization !== PendingValue}
-						<Tooltip content="Current memory utilization"
-							>({utilization.memory.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}%)</Tooltip
-						>
-					{:else}
-						<Skeleton variant="text" width="40%" />
-					{/if}
+
+					<Tooltip content="Current memory utilization"
+						>{#if utilization !== undefined && utilization !== PendingValue}({utilization.memory.utilization.toLocaleString(
+								'en-GB',
+								{
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}
+							)}%)
+						{:else}
+							(NA)
+						{/if}</Tooltip
+					>
 				</Td>
 				<Td></Td>
 				<Td></Td>
