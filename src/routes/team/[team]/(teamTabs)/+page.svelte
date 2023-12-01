@@ -53,7 +53,7 @@
 				sort={sortState}
 				on:sortChange={(e) => {
 					const { key } = e.detail;
-					sortTable(key, sortState, refetch);
+					sortState = sortTable(key, sortState, refetch);
 				}}
 			>
 				<Thead>
