@@ -172,12 +172,12 @@
 		<h3>Resource utilization</h3>
 		{#if resourceUtilization && resourceUtilization !== PendingValue}
 			{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
-				{#if resourceUtilization.cpu.length > 0}
-					<label for="from">From:</label>
-					<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
-					<label for="to">To:</label>
-					<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
+				<label for="from">From:</label>
+				<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
+				<label for="to">To:</label>
+				<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 
+				{#if resourceUtilization.cpu.length > 0}
 					<p>This graph displays the percentage of requests used for memory and CPU.</p>
 					<EChart
 						options={echartOptionsUsagePercentage(resourceUtilization)}
@@ -194,12 +194,6 @@
 		{/if}
 	</Card>
 </div>
-
-<!--Card columns={12}>
-		<div class="grid">
-			<Skeleton variant={'rectangle'} width="100%" />
-		</div>
-	</Card-->
 
 <style>
 	.grid {
