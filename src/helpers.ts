@@ -1,27 +1,26 @@
-import type {TableSortState} from "@nais/ds-svelte-community";
-import type {OrderByField} from "$houdini/graphql";
+import { OrderByField } from '$houdini';
+import type { TableSortState } from '@nais/ds-svelte-community';
 
-export const sortTable = (key :string, sortState: TableSortState, fetch: (key: string) => void ) => {
-    if (!sortState) {
-        sortState = {
-            orderBy: key,
-            direction: 'descending'
-        };
-    } else if (sortState.orderBy === key) {
-        if (sortState.direction === 'ascending') {
-            sortState.direction = 'descending';
-        } else {
-            sortState.direction = 'ascending';
-        }
-    } else {
-        sortState.orderBy = key;
-        if (key === 'NAME') {
-            sortState.direction = 'ascending';
-        } else {
-            sortState.direction = 'descending';
-        }
-    }
-
-    fetch(key);
-    return sortState;
+export const sortTable = (key: string, sortState: TableSortState, fetch: (key: string) => void) => {
+	if (!sortState) {
+		sortState = {
+			orderBy: OrderByField[key as keyof typeof OrderByField],
+			direction: 'descending'
+		};
+	} else if (sortState.orderBy === OrderByField[key as keyof typeof OrderByField]) {
+		if (sortState.direction === 'ascending') {
+			sortState.direction = 'descending';
+		} else {
+			sortState.direction = 'ascending';
+		}
+	} else {
+		sortState.orderBy = OrderByField[key as keyof typeof OrderByField];
+		if (key === OrderByField.NAME) {
+			sortState.direction = 'ascending';
+		} else {
+			sortState.direction = 'descending';
+		}
+	}
+	fetch(key);
+	return sortState;
 };

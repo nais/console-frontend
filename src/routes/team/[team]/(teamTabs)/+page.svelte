@@ -19,11 +19,12 @@
 
 	let sortState: TableSortState = {
 		orderBy: 'NAME',
-		direction: 'descending'
+		direction: 'ascending'
 	};
 
 	const refetch = (key: string) => {
 		const field = Object.values(OrderByField).find((value) => value === key);
+
 		Workloads.fetch({
 			variables: {
 				team: teamName,
@@ -58,10 +59,10 @@
 			>
 				<Thead>
 					<Th style="width: 2rem"></Th>
-					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th sortable={true} sortKey="ENV">Env</Th>
+					<Th sortable={true} sortKey={OrderByField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={OrderByField.ENV}>Env</Th>
 					<Th>Instances</Th>
-					<Th>Deployed</Th>
+					<Th sortable={true} sortKey={OrderByField.DEPLOYED}>Deployed</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}

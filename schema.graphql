@@ -605,6 +605,9 @@ enum OrderByField {
   """Order by appName."""
   APP_NAME
 
+  """Order by deployed time"""
+  DEPLOYED
+
   """Order by env"""
   ENV
 
@@ -628,6 +631,9 @@ enum OrderByField {
 
   """Order apps by vulnerability severity medium"""
   SEVERITY_MEDIUM
+
+  """Order apps by vulnerability severity unassigned"""
+  SEVERITY_UNASSIGNED
 }
 
 type Outbound {

@@ -72,15 +72,15 @@
 				}}
 			>
 				<Thead>
-					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th sortable={true} sortKey="ENV">Env</Th>
+					<Th sortable={true} sortKey={OrderByField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={OrderByField.ENV}>Env</Th>
 					<Th>Findings</Th>
-					<Th sortable={true} sortKey="SEVERITY_CRITICAL">Critical</Th>
-					<Th sortable={true} sortKey="SEVERITY_HIGH">High</Th>
-					<Th sortable={true} sortKey="SEVERITY_MEDIUM">Medium</Th>
-					<Th sortable={true} sortKey="SEVERITY_LOW">Low</Th>
-					<Th sortable={true} sortKey="UNASSIGNED">Unassigned</Th>
-					<Th sortable={true} sortKey="RISK_SCORE">Risk Score</Th>
+					<Th sortable={true} sortKey={OrderByField.SEVERITY_CRITICAL}>Critical</Th>
+					<Th sortable={true} sortKey={OrderByField.SEVERITY_HIGH}>High</Th>
+					<Th sortable={true} sortKey={OrderByField.SEVERITY_MEDIUM}>Medium</Th>
+					<Th sortable={true} sortKey={OrderByField.SEVERITY_LOW}>Low</Th>
+					<Th sortable={true} sortKey={OrderByField.SEVERITY_UNASSIGNED}>Unassigned</Th>
+					<Th sortable={true} sortKey={OrderByField.RISK_SCORE}>Risk Score</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
