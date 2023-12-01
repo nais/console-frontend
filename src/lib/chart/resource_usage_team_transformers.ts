@@ -9,6 +9,15 @@ export function resourceUsageTeamTransformLineChart(input: Utilization): ECharts
 		dates.push(new Date(input.cpu[i].timestamp));
 	}
 
+	if (
+		input.memory[input.memory.length - 1].utilization === 0.0 &&
+		input.cpu[input.cpu.length - 1].utilization === 0.0
+	) {
+		dates.pop();
+		input.memory.pop();
+		input.cpu.pop();
+	}
+
 	return {
 		tooltip: {
 			trigger: 'axis',
