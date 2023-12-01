@@ -174,7 +174,7 @@
 			{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
 				{#if resourceUtilization.cpu.length > 0}
 					<label for="from">From:</label>
-					<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
+					<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
 					<label for="to">To:</label>
 					<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 

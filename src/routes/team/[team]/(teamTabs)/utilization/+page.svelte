@@ -424,7 +424,7 @@
 			<h3>Resource utilization per environment</h3>
 			<div class="datepicker">
 				<label for="from">From:</label>
-				<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
+				<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
 				<label for="to">To:</label>
 				<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 			</div>
