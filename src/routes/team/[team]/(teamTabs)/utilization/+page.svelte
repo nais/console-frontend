@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { ResourceUtilizationForTeam$result } from '$houdini';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
@@ -16,6 +15,7 @@
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { euroValueFormatter } from '$lib/utils/currency';
+	import { overageTableData } from '$lib/utils/resources';
 	import type { TableSortState } from '@nais/ds-svelte-community';
 	import {
 		Accordion,
@@ -106,101 +106,8 @@
 		}
 
 		overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
-
 		return sortState;
 	};
-
-	function overageTableData(
-		data:
-			| ResourceUtilizationForTeam$result['resourceUtilizationOverageForTeam']
-			| typeof PendingValue
-			| undefined,
-		sortedBy: string = 'ENVIROMENT',
-		sortDirection: string = 'descending'
-	) {
-		if (data === undefined) return [];
-		if (data === PendingValue) return [];
-		return data.cpu
-			.map((cpu) => {
-				if (overageCostForTeam === undefined || overageCostForTeam === PendingValue) {
-					return {
-						app: cpu.app,
-						env: cpu.env,
-						cpu: 0.0,
-						memory: 0.0,
-						utilization: 0.0,
-						estimatedAnnualOverageCost: 0.0
-					};
-				}
-				const memory = overageCostForTeam.memory.filter(
-					(s) => s.app === cpu.app && s.env === cpu.env && s.team === cpu.team
-				)[0];
-				return {
-					app: cpu.app,
-					env: cpu.env,
-					cpu: cpu.overage,
-					memory: memory.overage,
-					team: cpu.team,
-					estimatedAnnualOverageCost:
-						cpu.estimatedAnnualOverageCost + memory.estimatedAnnualOverageCost
-				};
-			})
-			.filter((s) => s.cpu > 0.0 || s.memory > 0.0)
-			.sort((a, b) => {
-				if (sortedBy === 'APPLICATION') {
-					if (sortDirection === 'descending') {
-						if (a.app > b.app) return -1;
-						if (a.app < b.app) return 1;
-						return 0;
-					} else {
-						if (a.app > b.app) return 1;
-						if (a.app < b.app) return -1;
-						return 0;
-					}
-				} else if (sortedBy === 'ENVIRONMENT') {
-					if (sortDirection === 'descending') {
-						if (a.env > b.env) return -1;
-						if (a.env < b.env) return 1;
-						return 0;
-					} else {
-						if (a.env > b.env) return 1;
-						if (a.env < b.env) return -1;
-						return 0;
-					}
-				} else if (sortedBy === 'CPU') {
-					if (sortDirection === 'descending') {
-						if (a.cpu > b.cpu) return -1;
-						if (a.cpu < b.cpu) return 1;
-						return 0;
-					} else {
-						if (a.cpu > b.cpu) return 1;
-						if (a.cpu < b.cpu) return -1;
-						return 0;
-					}
-				} else if (sortedBy === 'MEMORY') {
-					if (sortDirection === 'descending') {
-						if (a.memory > b.memory) return -1;
-						if (a.memory < b.memory) return 1;
-						return 0;
-					} else {
-						if (a.memory > b.memory) return 1;
-						if (a.memory < b.memory) return -1;
-						return 0;
-					}
-				} else if (sortedBy === 'COST') {
-					if (sortDirection === 'descending') {
-						if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return -1;
-						if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return 1;
-						return 0;
-					} else {
-						if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return 1;
-						if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return -1;
-						return 0;
-					}
-				}
-				return 0;
-			});
-	}
 
 	$: {
 		if (maxDate && maxDate !== PendingValue) {
@@ -372,7 +279,7 @@
 								sort={sortState}
 								on:sortChange={(e) => {
 									const { key } = e.detail;
-									sortTable(key, sortState);
+									sortState = sortTable(key, sortState);
 								}}
 							>
 								<Thead>
@@ -407,7 +314,11 @@
 														: '-'}</Td
 												>
 												<Td>{overage.memory > 0.0 ? prettyBytes(overage.memory) : '-'}</Td>
-												<Td>{euroValueFormatter(overage.estimatedAnnualOverageCost)}</Td>
+												<Td
+													>{overage.estimatedAnnualOverageCost > 0.0
+														? euroValueFormatter(overage.estimatedAnnualOverageCost)
+														: '€0.00'}</Td
+												>
 											</Tr>
 										{:else}
 											<p>No overage data for team {team}</p>
