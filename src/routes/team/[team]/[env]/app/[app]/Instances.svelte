@@ -8,8 +8,16 @@
 
 	export let utilization:
 		| {
-				readonly cpu: { readonly utilization: number; readonly request: number };
-				readonly memory: { readonly utilization: number; readonly request: number };
+				readonly cpu: {
+					readonly utilization: number;
+					readonly request: number;
+					readonly timestamp: Date;
+				};
+				readonly memory: {
+					readonly utilization: number;
+					readonly request: number;
+					readonly timestamp: Date;
+				};
 		  }
 		| typeof PendingValue
 		| undefined;
@@ -103,14 +111,13 @@
 					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
 
 					<Tooltip content="Current CPU utilization"
-						>{#if utilization !== undefined && utilization !== PendingValue}({utilization.cpu.utilization.toLocaleString(
-								'en-GB',
-								{
+						>{#if utilization !== undefined && utilization !== PendingValue}
+							{#if utilization.cpu.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
+								({utilization.cpu.utilization.toLocaleString('en-GB', {
 									minimumFractionDigits: 2,
 									maximumFractionDigits: 2
-								}
-							)}%){:else}
-							(NA)
+								})}%)
+							{/if}
 						{/if}</Tooltip
 					>
 				</Td>
@@ -118,15 +125,13 @@
 					>{sumMemoryRequests(instances.length, resources.requests.memory)}
 
 					<Tooltip content="Current memory utilization"
-						>{#if utilization !== undefined && utilization !== PendingValue}({utilization.memory.utilization.toLocaleString(
-								'en-GB',
-								{
+						>{#if utilization !== undefined && utilization !== PendingValue}
+							{#if utilization.memory.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
+								({utilization.memory.utilization.toLocaleString('en-GB', {
 									minimumFractionDigits: 2,
 									maximumFractionDigits: 2
-								}
-							)}%)
-						{:else}
-							(NA)
+								})}%)
+							{/if}
 						{/if}</Tooltip
 					>
 				</Td>

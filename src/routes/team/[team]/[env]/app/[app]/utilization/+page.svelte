@@ -83,13 +83,17 @@
 
 					<p class="metric">
 						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})} CPUs
+							{#if currentUtilization.cpu.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
+								{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})} CPUs
+							{:else}
+								0.00% of 0.00 CPUs
+							{/if}
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -107,14 +111,18 @@
 					<h4>Memory utilization</h4>
 					<p class="metric">
 						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{currentUtilization.memory.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {prettyBytes(currentUtilization.memory.request, {
-								locale: 'en',
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
+							{#if currentUtilization.memory.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
+								{currentUtilization.memory.utilization.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}% of {prettyBytes(currentUtilization.memory.request, {
+									locale: 'en',
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}
+							{:else}
+								0.00% of 0.00 GB
+							{/if}
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
