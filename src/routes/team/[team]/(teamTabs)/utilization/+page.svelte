@@ -21,6 +21,7 @@
 		Accordion,
 		AccordionItem,
 		Alert,
+		HelpText,
 		Skeleton,
 		Table,
 		Tbody,
@@ -140,7 +141,17 @@
 					<CpuIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>CPU utilization</h4>
+					<h4>
+						CPU utilization<HelpText title="Current CPU utilization"
+							>CPU utilization for the last elapsed hour for team {team}.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.cpu.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.cpu !== PendingValue}
 							{currentResourceUtilizationForTeam.cpu.utilization.toLocaleString('en-GB', {
@@ -163,7 +174,17 @@
 					<MemoryIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Memory utilization</h4>
+					<h4>
+						Memory utilization<HelpText title="Current memory utilization"
+							>Memory utilization for the last elapsed hour for team {team}.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.memory.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
 							{currentResourceUtilizationForTeam?.memory.utilization.toLocaleString('en-GB', {
@@ -183,7 +204,18 @@
 					<CostIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>Annual cost of unused CPU</h4>
+					<h4>
+						Cost of unused CPU<HelpText title="Annual cost of unused CPU"
+							>Estimate of annual cost of unused CPU for team {team} calculated from utilization data
+							for the last elapsed hour.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.cpu.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
 							€{currentResourceUtilizationForTeam.cpu.estimatedAnnualOverageCost > 0.0
@@ -208,7 +240,18 @@
 					<CostIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Annual cost of unused memory</h4>
+					<h4>
+						Cost of unused memory<HelpText placement={'left'} title="Annual cost of unused memory"
+							>Estimate of annual cost of unused memory for team {team} calculated from utilization data
+							for the last elapsed hour.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.memory.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
 							€{currentResourceUtilizationForTeam.memory.estimatedAnnualOverageCost > 0.0
@@ -386,6 +429,8 @@
 		border-radius: 5px;
 	}
 	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);

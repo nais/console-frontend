@@ -13,7 +13,7 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@nais/ds-svelte-community": "^0.7.0",
+		"@nais/ds-svelte-community": "^0.7.1",
 		"@nais/ds-svelte-community-preprocess-svelte": "^0.7.0",
 		"@navikt/ds-css": "^5.11.3",
 		"@sveltejs/adapter-auto": "^2.1.1",
@@ -44,6 +44,7 @@
 		"echarts": "^5.4.3",
 		"graphql": "^16.8.1",
 		"graphql-sse": "^2.4.0",
-		"pretty-bytes": "^6.1.1"
+		"pretty-bytes": "^6.1.1",
+		"svelte-floating-ui": "^1.5.8"
 	}
 }

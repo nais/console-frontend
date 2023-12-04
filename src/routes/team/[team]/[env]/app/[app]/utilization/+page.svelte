@@ -3,13 +3,14 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { resourceUsagePercentageTransformLineChart } from '$lib/chart/resource_usage_app_transformer';
 	import type { ResourceUtilizationApp } from '$lib/chart/types';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
@@ -79,21 +80,23 @@
 					<CpuIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>CPU utilization</h4>
-
+					<h4>
+						CPU utilization<HelpText title="Current CPU utilization"
+							>CPU utilization for the last elapsed hour.
+							{#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
+								<br />Last updated <Time distance={true} time={currentUtilization.cpu.timestamp} />
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{#if currentUtilization.cpu.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
-								{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								})} CPUs
-							{:else}
-								0.00% of 0.00 CPUs
-							{/if}
+							{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})} CPUs
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -108,21 +111,27 @@
 					<MemoryIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Memory utilization</h4>
+					<h4>
+						Memory utilization<HelpText title="Current memory utilization"
+							>Memory utilization for the last elapsed hour.
+							{#if currentUtilization !== undefined && currentUtilization.memory !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentUtilization.memory.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{#if currentUtilization.memory.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
-								{currentUtilization.memory.utilization.toLocaleString('en-GB', {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								})}% of {prettyBytes(currentUtilization.memory.request, {
-									locale: 'en',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								})}
-							{:else}
-								0.00% of 0.00 GB
-							{/if}
+							{currentUtilization.memory.utilization.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}% of {prettyBytes(currentUtilization.memory.request, {
+								locale: 'en',
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -136,7 +145,15 @@
 					<CostIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>Annual cost of unused CPU</h4>
+					<h4>
+						Cost of unused CPU<HelpText title="Annual cost of unused CPU"
+							>Estimate of annual cost of unused CPU calculated from utilization data for the last
+							elapsed hour.
+							{#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
+								<br />Last updated <Time distance={true} time={currentUtilization.cpu.timestamp} />
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
 							€{currentUtilization.cpu.estimatedAnnualOverageCost > 0.0
@@ -158,7 +175,15 @@
 					<CostIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Annual cost of unused memory</h4>
+					<h4>
+						Cost of unused memory<HelpText placement={'left'} title="Annual cost of unused memory"
+							>Estimate of annual cost of unused memory calculated from utilization data for the
+							last elapsed hour.
+							{#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
+								<br />Last updated <Time distance={true} time={currentUtilization?.cpu.timestamp} />
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
 							€{currentUtilization.memory.estimatedAnnualOverageCost > 0.0
@@ -223,13 +248,18 @@
 		border-radius: 5px;
 	}
 	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);
 	}
 	.metric {
+		display: flex;
+		gap: 0.5rem;
 		font-size: 1.5rem;
 		margin: 0;
+		white-space: nowrap;
 	}
 	.summaryCard {
 		display: flex;
