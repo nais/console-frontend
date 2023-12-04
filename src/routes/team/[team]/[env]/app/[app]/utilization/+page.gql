@@ -28,10 +28,12 @@ query ResourceUtilizationForApp(
 			utilization
 			estimatedAnnualOverageCost
 			request
+			timestamp
 		}
 		memory @loading {
 			utilization
 			estimatedAnnualOverageCost
+			timestamp
 			request
 		}
 	}

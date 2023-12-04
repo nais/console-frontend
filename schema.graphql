@@ -72,11 +72,20 @@ type AppWithResourceUtilizationOverage {
   """The environment where the app is running."""
   env: String!
 
+  """Estimated annual cost of the request overage."""
+  estimatedAnnualOverageCost: Float!
+
   """The overage for the app."""
   overage: Float!
 
+  """The overage cost for the app."""
+  overageCost: Float!
+
   """The name of the team who owns the app."""
   team: String!
+
+  """The utilization in percent."""
+  utilization: Float!
 }
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
@@ -596,6 +605,9 @@ enum OrderByField {
   """Order by appName."""
   APP_NAME
 
+  """Order by deployed time"""
+  DEPLOYED
+
   """Order by env"""
   ENV
 
@@ -619,6 +631,9 @@ enum OrderByField {
 
   """Order apps by vulnerability severity medium"""
   SEVERITY_MEDIUM
+
+  """Order apps by vulnerability severity unassigned"""
+  SEVERITY_UNASSIGNED
 }
 
 type Outbound {
@@ -915,7 +930,9 @@ type ResourceUtilizationOverageForTeam {
 
   """The sum of the overage cost for all apps."""
   overageCost: Float!
-  timestamp: Time
+
+  """Timestamp used for the calculated values."""
+  timestamp: Time!
 }
 
 type Resources {
@@ -1149,6 +1166,7 @@ type Team implements Node {
     """Order apps by"""
     orderBy: OrderBy
   ): VulnerabilitiesConnection!
+  vulnerabilitiesSummary: VulnerabilitySummary!
 }
 
 """Team connection type."""

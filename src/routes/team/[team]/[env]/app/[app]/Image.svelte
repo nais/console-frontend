@@ -99,7 +99,6 @@
 		readonly low: number;
 		readonly unassigned: number;
 	}): boolean => {
-		console.log(summary);
 		if (summary.critical > 0) {
 			return true;
 		}
@@ -193,6 +192,7 @@
 		{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.vulnerabilities !== null}
 			{#if appVulnerabilities.app.vulnerabilities === PendingValue}
 				<div style="display: flex;  gap: 0.5rem">
+					<Skeleton variant="circle" width="34px" height="34px" />
 					<Skeleton variant="circle" width="34px" height="34px" />
 					<Skeleton variant="circle" width="34px" height="34px" />
 					<Skeleton variant="circle" width="34px" height="34px" />

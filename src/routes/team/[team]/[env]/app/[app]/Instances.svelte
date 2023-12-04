@@ -8,8 +8,16 @@
 
 	export let utilization:
 		| {
-				readonly cpu: { readonly utilization: number; readonly request: number };
-				readonly memory: { readonly utilization: number; readonly request: number };
+				readonly cpu: {
+					readonly utilization: number;
+					readonly request: number;
+					readonly timestamp: Date;
+				};
+				readonly memory: {
+					readonly utilization: number;
+					readonly request: number;
+					readonly timestamp: Date;
+				};
 		  }
 		| typeof PendingValue
 		| undefined;
@@ -101,29 +109,31 @@
 				<Td><b>Total:</b></Td>
 				<Td
 					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
-					{#if utilization !== undefined && utilization !== PendingValue}
-						<Tooltip content="Current CPU utilization"
-							>({utilization.cpu.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}%)</Tooltip
-						>
-					{:else}
-						<Skeleton variant="text" width="40%" />
-					{/if}
+
+					<Tooltip content="Current CPU utilization"
+						>{#if utilization !== undefined && utilization !== PendingValue}
+							{#if utilization.cpu.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
+								({utilization.cpu.utilization.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}%)
+							{/if}
+						{/if}</Tooltip
+					>
 				</Td>
 				<Td
 					>{sumMemoryRequests(instances.length, resources.requests.memory)}
-					{#if utilization !== undefined && utilization !== PendingValue}
-						<Tooltip content="Current memory utilization"
-							>({utilization.memory.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}%)</Tooltip
-						>
-					{:else}
-						<Skeleton variant="text" width="40%" />
-					{/if}
+
+					<Tooltip content="Current memory utilization"
+						>{#if utilization !== undefined && utilization !== PendingValue}
+							{#if utilization.memory.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()}
+								({utilization.memory.utilization.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}%)
+							{/if}
+						{/if}</Tooltip
+					>
 				</Td>
 				<Td></Td>
 				<Td></Td>

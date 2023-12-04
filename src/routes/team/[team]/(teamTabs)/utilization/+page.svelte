@@ -14,7 +14,22 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { euroValueFormatter } from '$lib/utils/formatters';
+	import { overageTableData } from '$lib/utils/resources';
+	import type { TableSortState } from '@nais/ds-svelte-community';
+	import {
+		Accordion,
+		AccordionItem,
+		Alert,
+		HelpText,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
@@ -25,6 +40,7 @@
 	$: resourceUtilization = $ResourceUtilizationForTeam.data?.resourceUtilizationForTeam;
 	$: currentResourceUtilizationForTeam =
 		$ResourceUtilizationForTeam.data?.currentResourceUtilizationForTeam;
+	$: overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
 
 	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
 	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
@@ -69,6 +85,31 @@
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
+	const sortTable = (key: string, sortState: TableSortState) => {
+		if (!sortState) {
+			sortState = {
+				orderBy: key,
+				direction: 'descending'
+			};
+		} else if (sortState.orderBy === key) {
+			if (sortState.direction === 'ascending') {
+				sortState.direction = 'descending';
+			} else {
+				sortState.direction = 'ascending';
+			}
+		} else {
+			sortState.orderBy = key;
+			if (key === 'NAME') {
+				sortState.direction = 'ascending';
+			} else {
+				sortState.direction = 'descending';
+			}
+		}
+
+		overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
+		return sortState;
+	};
+
 	$: {
 		if (maxDate && maxDate !== PendingValue) {
 			if (data.toDate > maxDate) {
@@ -78,6 +119,11 @@
 			}
 		}
 	}
+
+	let sortState: TableSortState = {
+		orderBy: 'COST',
+		direction: 'descending'
+	};
 </script>
 
 {#if $ResourceUtilizationForTeam.errors}
@@ -95,7 +141,17 @@
 					<CpuIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>CPU utilization</h4>
+					<h4>
+						CPU utilization<HelpText title="Current CPU utilization"
+							>CPU utilization for the last elapsed hour for team {team}.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.cpu.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.cpu !== PendingValue}
 							{currentResourceUtilizationForTeam.cpu.utilization.toLocaleString('en-GB', {
@@ -118,7 +174,17 @@
 					<MemoryIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Memory utilization</h4>
+					<h4>
+						Memory utilization<HelpText title="Current memory utilization"
+							>Memory utilization for the last elapsed hour for team {team}.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.memory.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
 							{currentResourceUtilizationForTeam?.memory.utilization.toLocaleString('en-GB', {
@@ -138,7 +204,18 @@
 					<CostIcon size="32" color="#83bff6" />
 				</div>
 				<div class="summary">
-					<h4>Annual cost of unused CPU</h4>
+					<h4>
+						Cost of unused CPU<HelpText title="Annual cost of unused CPU"
+							>Estimate of annual cost of unused CPU for team {team} calculated from utilization data
+							for the last elapsed hour.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.cpu.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
 							€{currentResourceUtilizationForTeam.cpu.estimatedAnnualOverageCost > 0.0
@@ -163,7 +240,18 @@
 					<CostIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>Annual cost of unused memory</h4>
+					<h4>
+						Cost of unused memory<HelpText placement={'left'} title="Annual cost of unused memory"
+							>Estimate of annual cost of unused memory for team {team} calculated from utilization data
+							for the last elapsed hour.
+							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
+								<br />Last updated <Time
+									distance={true}
+									time={currentResourceUtilizationForTeam.memory.timestamp}
+								/>
+							{/if}
+						</HelpText>
+					</h4>
 					<p class="metric">
 						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
 							€{currentResourceUtilizationForTeam.memory.estimatedAnnualOverageCost > 0.0
@@ -225,12 +313,72 @@
 					/>
 				{/if}
 			</div>
+			<div>
+				<Accordion>
+					<Accordion>
+						<AccordionItem heading="All applications" open={false}>
+							<Table
+								size={'small'}
+								sort={sortState}
+								on:sortChange={(e) => {
+									const { key } = e.detail;
+									sortState = sortTable(key, sortState);
+								}}
+							>
+								<Thead>
+									<Tr>
+										<Th sortable={true} sortKey="APPLICATION">Application</Th>
+										<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+										<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+										<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+										<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+									</Tr>
+								</Thead>
+								<Tbody>
+									{#if overageCostForTeam === PendingValue}
+										<div class="loading">
+											<Skeleton variant="rectangle" />
+										</div>
+									{:else}
+										{#each overageTable as overage}
+											<Tr>
+												<Td>
+													<a href={`/team/${team}/${overage.env}/app/${overage.app}/utilization`}>
+														{overage.app}
+													</a>
+												</Td>
+												<Td>{overage.env}</Td>
+												<Td
+													>{overage.cpu > 0.0
+														? overage.cpu.toLocaleString('en-GB', {
+																minimumFractionDigits: 2,
+																maximumFractionDigits: 2
+														  })
+														: '-'}</Td
+												>
+												<Td>{overage.memory > 0.0 ? prettyBytes(overage.memory) : '-'}</Td>
+												<Td
+													>{overage.estimatedAnnualOverageCost > 0.0
+														? euroValueFormatter(overage.estimatedAnnualOverageCost)
+														: '€0.00'}</Td
+												>
+											</Tr>
+										{:else}
+											<p>No overage data for team {team}</p>
+										{/each}
+									{/if}
+								</Tbody>
+							</Table>
+						</AccordionItem>
+					</Accordion>
+				</Accordion>
+			</div>
 		</Card>
 		<Card columns={12}>
 			<h3>Resource utilization per environment</h3>
 			<div class="datepicker">
 				<label for="from">From:</label>
-				<input type="date" id="from" {min} {max} bind:value={from} on:change={update} />
+				<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
 				<label for="to">To:</label>
 				<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 			</div>
@@ -281,6 +429,8 @@
 		border-radius: 5px;
 	}
 	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);

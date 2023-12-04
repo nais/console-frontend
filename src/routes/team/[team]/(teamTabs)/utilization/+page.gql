@@ -42,12 +42,16 @@ query ResourceUtilizationForTeam($team: String!, $from: Date!, $to: Date!) {
 			env
 			overage
 			team
+			overageCost
+			estimatedAnnualOverageCost
 		}
 		memory {
 			app
 			env
 			overage
 			team
+			overageCost
+			estimatedAnnualOverageCost
 		}
 	}
 }
