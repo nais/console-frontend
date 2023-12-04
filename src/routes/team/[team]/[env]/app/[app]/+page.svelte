@@ -26,10 +26,12 @@
 				cpu {
 					utilization
 					request
+					timestamp
 				}
 				memory {
 					utilization
 					request
+					timestamp
 				}
 			}
 		}
