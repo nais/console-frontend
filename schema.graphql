@@ -88,6 +88,12 @@ type AppWithResourceUtilizationOverage {
   utilization: Float!
 }
 
+"""Team status for apps."""
+type AppsStatus {
+  failing: Int!
+  total: Int!
+}
+
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
@@ -467,6 +473,12 @@ type InvalidNaisYamlError implements StateError {
 type JobState {
   errors: [StateError!]!
   state: State!
+}
+
+"""Team status for jobs."""
+type JobsStatus {
+  failing: Int!
+  total: Int!
 }
 
 type Kafka implements Storage {
@@ -1143,6 +1155,9 @@ type Team implements Node {
   """The main Slack channel for the team."""
   slackChannel: String!
 
+  """The status of the team."""
+  status: TeamStatus!
+
   """Whether or not the viewer is an administrator of the team."""
   viewerIsAdmin: Boolean!
 
@@ -1233,6 +1248,12 @@ enum TeamRole {
 
   """A team owner/administrator."""
   OWNER
+}
+
+"""Team status."""
+type TeamStatus {
+  apps: AppsStatus!
+  jobs: JobsStatus!
 }
 
 """

@@ -3,6 +3,7 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import TeamStatus from '$lib/components/TeamStatus.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import Deploys from '$lib/overview/Deploys.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
@@ -20,10 +21,7 @@
 
 <div class="grid">
 	<Card rows={1} columns={2}>
-		<h4>Statuses</h4>
-		<p>2 failing apps</p>
-		<p>1 failing job</p>
-		<p>1337 apss running OK</p>
+		<TeamStatus {teamName} />
 	</Card>
 	<Card rows={1} columns={3}>
 		<VulnerabilitySummary {teamName} /></Card
