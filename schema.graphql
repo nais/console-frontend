@@ -1147,6 +1147,9 @@ type Team implements Node {
 
     """Returns the last n entries from the list."""
     last: Int
+
+    """Order naisjobs by"""
+    orderBy: OrderBy
   ): NaisJobConnection!
 
   """The name of the team."""

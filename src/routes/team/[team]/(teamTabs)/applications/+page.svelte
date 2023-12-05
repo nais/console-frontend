@@ -18,7 +18,7 @@
 
 	let sortState: TableSortState = {
 		orderBy: 'STATUS',
-		direction: 'descending'
+		direction: 'ascending'
 	};
 
 	const refetch = (key: string) => {
@@ -53,7 +53,7 @@
 				}}
 			>
 				<Thead>
-					<Th sortable={true} sortKey="STATUS" style="width: 2rem">Status</Th>
+					<Th sortable={true} sortKey="STATUS" style="width: 2rem"></Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Instances</Th>

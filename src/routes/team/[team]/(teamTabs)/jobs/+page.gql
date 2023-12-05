@@ -1,7 +1,8 @@
-query Jobs($team: String!) @loading(count: 5, cascade: true) {
+query Jobs($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
+@loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
-		naisjobs(first: 50) @paginate(mode: SinglePage) {
+		naisjobs(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
