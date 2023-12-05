@@ -7,6 +7,7 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { parseImage } from '$lib/utils/image';
+	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { CopyButton, Skeleton, Tooltip } from '@nais/ds-svelte-community';
 	import type { VulnerabilitiesForAppVariables } from './$houdini';
 
@@ -53,21 +54,6 @@
 	`);
 
 	$: appVulnerabilities = $vulnerabilities.data;
-
-	function severityToColor(severity: string) {
-		switch (severity) {
-			case 'critical':
-				return '#f86c6b';
-			case 'high':
-				return '#fd8b00';
-			case 'medium':
-				return '#ffc107';
-			case 'low':
-				return '#4dbd74';
-			default:
-				return '#777777';
-		}
-	}
 
 	$: image = $data?.image;
 	$: deployInfo = $data?.deployInfo;

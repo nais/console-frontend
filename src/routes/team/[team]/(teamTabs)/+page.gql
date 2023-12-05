@@ -1,0 +1,12 @@
+query Overview($team: String!) @cache(policy: NetworkOnly) {
+	currentResourceUtilizationForTeam(team: $team) @loading {
+		cpu {
+			utilization
+			estimatedAnnualOverageCost
+		}
+		memory {
+			utilization
+			estimatedAnnualOverageCost
+		}
+	}
+}
