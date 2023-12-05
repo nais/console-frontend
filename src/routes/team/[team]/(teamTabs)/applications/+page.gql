@@ -1,8 +1,8 @@
-query Jobs($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
+query Workloads($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
 @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
-		naisjobs(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
+		apps(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				hasNextPage
@@ -20,10 +20,16 @@ query Jobs($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC }
 					}
 					name
 					image
+					...AppInstancesStatus
 					env {
 						name
 					}
-					jobState {
+
+					appState {
+						state
+					}
+
+					instances {
 						state
 					}
 				}

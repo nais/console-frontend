@@ -14,7 +14,7 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { euroValueFormatter } from '$lib/utils/currency';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { overageTableData } from '$lib/utils/resources';
 	import type { TableSortState } from '@nais/ds-svelte-community';
 	import {

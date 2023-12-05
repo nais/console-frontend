@@ -1,17 +1,46 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { OrderByField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community';
+	import { sortTable } from '../../../../../helpers';
 	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Jobs } = data);
 	$: team = $Jobs.data?.team;
+
+	let sortState: TableSortState = {
+		orderBy: 'STATUS',
+		direction: 'ascending'
+	};
+
+	const refetch = (key: string) => {
+		const field = Object.values(OrderByField).find((value) => value === key);
+		Jobs.fetch({
+			variables: {
+				team: teamName,
+				orderBy: {
+					field: field !== undefined ? field : 'STATUS',
+					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
+				}
+			}
+		});
+	};
 </script>
 
 {#if $Jobs.errors}
@@ -23,12 +52,19 @@
 {:else}
 	<Card>
 		<h3>Naisjobs</h3>
-		<Table size="small">
+		<Table
+			size="small"
+			sort={sortState}
+			on:sortChange={(e) => {
+				const { key } = e.detail;
+				sortState = sortTable(key, sortState, refetch);
+			}}
+		>
 			<Thead>
-				<Th style="width: 2rem;"></Th>
-				<Th>Name</Th>
-				<Th>Env</Th>
-				<Th>Deployed</Th>
+				<Th style="width: 2rem;" sortable={true} sortKey="STATUS"></Th>
+				<Th sortable={true} sortKey="NAME">Name</Th>
+				<Th sortable={true} sortKey="ENV">Env</Th>
+				<Th sortable={true} sortKey="DEPLOYED">Deployed</Th>
 			</Thead>
 			<Tbody>
 				{#if team !== undefined}

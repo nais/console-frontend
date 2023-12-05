@@ -88,6 +88,12 @@ type AppWithResourceUtilizationOverage {
   utilization: Float!
 }
 
+"""Team status for apps."""
+type AppsStatus {
+  failing: Int!
+  total: Int!
+}
+
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
 type AutoScaling {
@@ -469,6 +475,12 @@ type JobState {
   state: State!
 }
 
+"""Team status for jobs."""
+type JobsStatus {
+  failing: Int!
+  total: Int!
+}
+
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
@@ -634,6 +646,9 @@ enum OrderByField {
 
   """Order apps by vulnerability severity unassigned"""
   SEVERITY_UNASSIGNED
+
+  """Order by status"""
+  STATUS
 }
 
 type Outbound {
@@ -1132,6 +1147,9 @@ type Team implements Node {
 
     """Returns the last n entries from the list."""
     last: Int
+
+    """Order naisjobs by"""
+    orderBy: OrderBy
   ): NaisJobConnection!
 
   """The name of the team."""
@@ -1142,6 +1160,9 @@ type Team implements Node {
 
   """The main Slack channel for the team."""
   slackChannel: String!
+
+  """The status of the team."""
+  status: TeamStatus!
 
   """Whether or not the viewer is an administrator of the team."""
   viewerIsAdmin: Boolean!
@@ -1166,6 +1187,7 @@ type Team implements Node {
     """Order apps by"""
     orderBy: OrderBy
   ): VulnerabilitiesConnection!
+  vulnerabilitiesSummary: VulnerabilitySummary!
 }
 
 """Team connection type."""
@@ -1232,6 +1254,12 @@ enum TeamRole {
 
   """A team owner/administrator."""
   OWNER
+}
+
+"""Team status."""
+type TeamStatus {
+  apps: AppsStatus!
+  jobs: JobsStatus!
 }
 
 """

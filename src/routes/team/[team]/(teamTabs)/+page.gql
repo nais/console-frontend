@@ -1,41 +1,12 @@
-query Workloads($team: String!, $orderBy: OrderBy  = {
-	field: NAME
-	direction: ASC
-}) @loading(count: 5, cascade: true) {
-	team(name: $team) {
-		id
-		apps(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
-			totalCount
-			pageInfo {
-				hasNextPage
-				hasPreviousPage
-				startCursor
-				endCursor
-				from
-				to
-			}
-
-			edges {
-				node {
-					deployInfo {
-						timestamp
-					}
-					name
-					image
-					...AppInstancesStatus
-					env {
-						name
-					}
-
-					appState {
-						state
-					}
-
-					instances {
-						state
-					}
-				}
-			}
+query Overview($team: String!) @cache(policy: NetworkOnly) {
+	currentResourceUtilizationForTeam(team: $team) @loading {
+		cpu {
+			utilization
+			estimatedAnnualOverageCost
+		}
+		memory {
+			utilization
+			estimatedAnnualOverageCost
 		}
 	}
 }

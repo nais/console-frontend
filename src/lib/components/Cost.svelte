@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
-	import { euroValueFormatter } from '$lib/utils/currency';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import type { AggregatedCostAppVariables } from './$houdini';
 
