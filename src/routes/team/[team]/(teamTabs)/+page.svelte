@@ -8,7 +8,6 @@
 	import Deploys from '$lib/overview/Deploys.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { HelpText, Skeleton, Table, Tbody, Td, Tr } from '@nais/ds-svelte-community';
-	import { TrendDownIcon, TrendUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -45,33 +44,35 @@
 						<Td>Memory</Td>
 						{#if utilization && utilization === PendingValue}
 							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
+							<!--Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td-->
 							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
 						{:else}
 							<Td style="text-align: right;"
 								>{percentageFormatter(utilization.memory.utilization)}</Td
 							>
-							<Td><TrendUpIcon color={'green'} /> +6%</Td>
-							<Td><HelpText title="Utilization trend is negative">Tell me more</HelpText></Td>
+							<!--Td><TrendUpIcon color={'green'} /> +6%</Td-->
+							<Td
+								><HelpText title="Memory utilization">Current team memory utilization</HelpText></Td
+							>
 						{/if}
 					</Tr>
 					<Tr>
 						<Td>CPU</Td>
 						{#if utilization && utilization === PendingValue}
 							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
+							<!--Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td-->
 							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
 						{:else}
 							<Td style="text-align: right;">{percentageFormatter(utilization.cpu.utilization)}</Td>
-							<Td><TrendDownIcon color={'red'} /> -9%</Td>
-							<Td><HelpText title="Utilization trend is negative">Tell me more</HelpText></Td>
+							<!--Td><TrendDownIcon color={'red'} /> -9%</Td-->
+							<Td><HelpText title="CPU utilization">Current team CPU utilization</HelpText></Td>
 						{/if}
 					</Tr>
 					<Tr>
 						<Td>Overage cost</Td>
 						{#if utilization && utilization === PendingValue}
 							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
+							<!--Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td-->
 							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
 						{:else}
 							<Td style="text-align: right;"
@@ -80,7 +81,7 @@
 										utilization.memory.estimatedAnnualOverageCost
 								)}</Td
 							>
-							<Td />
+							<!--Td /-->
 							<Td>
 								<HelpText title="Estimated annual overage cost"
 									>Estimate of yearly cost with current utilization of CPU and memory requests.</HelpText
