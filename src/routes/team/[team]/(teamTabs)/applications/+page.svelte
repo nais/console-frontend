@@ -17,7 +17,7 @@
 	$: team = $Workloads.data?.team;
 
 	let sortState: TableSortState = {
-		orderBy: 'NAME',
+		orderBy: 'STATUS',
 		direction: 'descending'
 	};
 
@@ -27,7 +27,7 @@
 			variables: {
 				team: teamName,
 				orderBy: {
-					field: field !== undefined ? field : 'NAME',
+					field: field !== undefined ? field : 'STATUS',
 					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
 				}
 			}
@@ -53,11 +53,11 @@
 				}}
 			>
 				<Thead>
-					<Th style="width: 2rem"></Th>
+					<Th sortable={true} sortKey="STATUS" style="width: 2rem">Status</Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Instances</Th>
-					<Th>Deployed</Th>
+					<Th sortable={true} sortKey="DEPLOYED">Deployed</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}

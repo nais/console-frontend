@@ -646,6 +646,9 @@ enum OrderByField {
 
   """Order apps by vulnerability severity unassigned"""
   SEVERITY_UNASSIGNED
+
+  """Order by status"""
+  STATUS
 }
 
 type Outbound {

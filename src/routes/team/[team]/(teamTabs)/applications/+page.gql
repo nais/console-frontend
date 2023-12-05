@@ -1,4 +1,4 @@
-query Workloads($team: String!, $orderBy: OrderBy = { field: NAME, direction: ASC })
+query Workloads($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
 @loading(count: 5, cascade: true) {
 	team(name: $team) {
 		id
