@@ -26,7 +26,6 @@
 			}
 		}
 	`);
-	$: console.log($status.data);
 </script>
 
 <h4>Workloads</h4>
