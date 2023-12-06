@@ -186,6 +186,9 @@ type CurrentResourceUtilization {
 
   """The memory utilization."""
   memory: ResourceUtilization!
+
+  """The timestamp used for the calculated values."""
+  timestamp: Time!
 }
 
 """
@@ -835,6 +838,12 @@ type Query {
     """The name of the team."""
     team: String!
   ): ResourceUtilizationOverageForTeam!
+
+  """Get the resource utilization trend for a team."""
+  resourceUtilizationTrendForTeam(
+    """The name of the team."""
+    team: String!
+  ): ResourceUtilizationTrend!
   search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
 
   """Get a specific NAIS-team by the team name."""
@@ -948,6 +957,27 @@ type ResourceUtilizationOverageForTeam {
 
   """Timestamp used for the calculated values."""
   timestamp: Time!
+}
+
+"""Resource utilization trend type."""
+type ResourceUtilizationTrend {
+  """The average CPU utilization from the previous week."""
+  averageCpuUtilization: Float!
+
+  """The average memory utilization from the previous week."""
+  averageMemoryUtilization: Float!
+
+  """The CPU utilization trend in percentage."""
+  cpuUtilizationTrend: Float!
+
+  """The current CPU utilization."""
+  currentCpuUtilization: Float!
+
+  """The current memory utilization."""
+  currentMemoryUtilization: Float!
+
+  """The memory utilization trend in percentage."""
+  memoryUtilizationTrend: Float!
 }
 
 type Resources {
