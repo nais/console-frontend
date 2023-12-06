@@ -9,4 +9,8 @@ query Overview($team: String!) @cache(policy: NetworkOnly) {
 			estimatedAnnualOverageCost
 		}
 	}
+	resourceUtilizationTrendForTeam(team: $team) @loading {
+		cpuUtilizationTrend
+		memoryUtilizationTrend
+	}
 }

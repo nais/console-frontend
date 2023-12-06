@@ -47,7 +47,7 @@
 				{$status.data.team.status.apps.total} app{$status.data.team.status.apps.total > 1
 					? 's'
 					: ''}</a
-			> running
+			>
 		</p>
 	{/if}
 	{#if $status.data.team.status.jobs.failing !== PendingValue && $status.data.team.status.jobs.failing > 0}

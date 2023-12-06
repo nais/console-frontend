@@ -7,13 +7,15 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import Deploys from '$lib/overview/Deploys.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
-	import { HelpText, Skeleton, Table, Tbody, Td, Tr } from '@nais/ds-svelte-community';
+	import { HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { TrendDownIcon, TrendUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Overview } = data);
 
 	$: utilization = $Overview.data?.currentResourceUtilizationForTeam;
+	$: trend = $Overview.data?.resourceUtilizationTrendForTeam;
 
 	$: teamName = $page.params.team;
 </script>
@@ -39,56 +41,104 @@
 		<h4>Utilization</h4>
 		{#if utilization}
 			<Table>
+				<Thead>
+					<Tr>
+						<Th>Resource</Th>
+						<Th
+							><div class="tableHeader">
+								Current<HelpText title="Current team utilization"
+									>Current CPU and memory utilization for the team's application.<br />Overage cost
+									is an annual estimate based on current utilization.</HelpText
+								>
+							</div></Th
+						>
+						<Th
+							><div class="tableHeader">
+								Trend<HelpText title="Utilization trend"
+									>Utilization trend for the team's application based on last weeks average.</HelpText
+								>
+							</div></Th
+						>
+					</Tr>
+				</Thead>
 				<Tbody>
 					<Tr>
 						<Td>Memory</Td>
 						{#if utilization && utilization === PendingValue}
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-							<!--Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td-->
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
+							<Td><Skeleton variant="text" width="100px" /></Td>
+							<Td><Skeleton variant="text" width="100px" /></Td>
+							<Td><Skeleton variant="text" width="100px" /></Td>
 						{:else}
-							<Td style="text-align: right;"
-								>{percentageFormatter(utilization.memory.utilization)}</Td
-							>
-							<!--Td><TrendUpIcon color={'green'} /> +6%</Td-->
-							<Td
-								><HelpText title="Memory utilization">Current team memory utilization</HelpText></Td
-							>
+							<Td>
+								{percentageFormatter(utilization.memory.utilization)}
+							</Td>
+							{#if trend && trend !== PendingValue}
+								{#if trend.memoryUtilizationTrend < 0.0}
+									<Td>
+										<div class="trend bad">
+											<TrendDownIcon />
+											{trend.memoryUtilizationTrend.toLocaleString('en-GB', {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2
+											}) + '%'}
+										</div>
+									</Td>
+								{:else}
+									<Td>
+										<div class="trend good">
+											<TrendUpIcon />{trend.memoryUtilizationTrend.toLocaleString('en-GB', {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2
+											}) + '%'}
+										</div>
+									</Td>
+								{/if}
+							{/if}
 						{/if}
 					</Tr>
 					<Tr>
 						<Td>CPU</Td>
 						{#if utilization && utilization === PendingValue}
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-							<!--Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td-->
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
+							<Td><Skeleton variant="text" width="100px" /></Td>
+							<Td><Skeleton variant="text" width="100px" /></Td>
+							<Td><Skeleton variant="text" width="100px" /></Td>
 						{:else}
-							<Td style="text-align: right;">{percentageFormatter(utilization.cpu.utilization)}</Td>
-							<!--Td><TrendDownIcon color={'red'} /> -9%</Td-->
-							<Td><HelpText title="CPU utilization">Current team CPU utilization</HelpText></Td>
+							<Td>{percentageFormatter(utilization.cpu.utilization)}</Td>
+							{#if trend && trend !== PendingValue}
+								{#if trend.cpuUtilizationTrend < 0.0}
+									<Td>
+										<div class="trend bad">
+											<TrendDownIcon />{trend.cpuUtilizationTrend.toLocaleString('en-GB', {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2
+											}) + '%'}
+										</div></Td
+									>
+								{:else}
+									<Td
+										><div class="trend good">
+											<TrendUpIcon />{trend.cpuUtilizationTrend.toLocaleString('en-GB', {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2
+											}) + '%'}
+										</div></Td
+									>
+								{/if}
+							{/if}
 						{/if}
 					</Tr>
-					<Tr>
-						<Td>Overage cost</Td>
-						{#if utilization && utilization === PendingValue}
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-							<!--Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td-->
-							<Td style="text-align: right;"><Skeleton variant="text" width="100px" /></Td>
-						{:else}
-							<Td style="text-align: right;"
-								>{euroValueFormatter(
-									utilization.cpu.estimatedAnnualOverageCost +
-										utilization.memory.estimatedAnnualOverageCost
-								)}</Td
-							>
-							<!--Td /-->
-							<Td>
-								<HelpText title="Estimated annual overage cost"
-									>Estimate of yearly cost with current utilization of CPU and memory requests.</HelpText
-								>
-							</Td>
-						{/if}
-					</Tr>
+
+					{#if utilization && utilization === PendingValue}
+						<p>Overage cost: <Skeleton variant="text" width="100px" /></p>
+					{:else}
+						<p>
+							Overage cost:
+							{euroValueFormatter(
+								utilization.cpu.estimatedAnnualOverageCost +
+									utilization.memory.estimatedAnnualOverageCost
+							)}
+						</p>
+					{/if}
 				</Tbody>
 			</Table>
 		{/if}
@@ -101,5 +151,19 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.tableHeader {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.trend {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.good {
+		color: var(--a-icon-success);
+	}
+	.bad {
+		color: var(--a-icon-danger);
 	}
 </style>
