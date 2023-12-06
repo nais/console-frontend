@@ -15,13 +15,7 @@ query TeamSettings($team: String!) @loading(cascade: true) {
 			id
 			environment
 		}
-		githubRepositories {
-			edges {
-				node {
-					name
-				}
-			}
-		}
+
 		slackChannel
 		description
 	}

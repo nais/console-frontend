@@ -63,6 +63,11 @@
 				active={currentRoute == '/team/[team]/(teamTabs)/settings'}
 				title="Settings"
 			/>
+			<Tab
+				href={replacer('/team/[team]/(teamTabs)/repositories', { team })}
+				active={currentRoute == '/team/[team]/(teamTabs)/repositories'}
+				title="Repositories"
+			/>
 		{/if}
 	{/if}
 </Tabs>

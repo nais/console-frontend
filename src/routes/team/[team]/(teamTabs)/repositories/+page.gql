@@ -1,0 +1,20 @@
+query Repositories($team: String!) @loading {
+	team(name: $team) {
+		githubRepositories(first: 20) @paginate(mode: SinglePage) {
+			totalCount
+			pageInfo {
+				from
+				to
+				startCursor
+				endCursor
+				hasNextPage
+				hasPreviousPage
+			}
+			edges @loading(count: 10) {
+				node {
+					name
+				}
+			}
+		}
+	}
+}
