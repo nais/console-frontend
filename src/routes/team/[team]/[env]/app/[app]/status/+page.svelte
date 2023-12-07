@@ -8,7 +8,6 @@
 	export let data: PageData;
 
 	$: ({ AppNotificationState } = data);
-	$: console.log(data);
 </script>
 
 <Card>
