@@ -1,6 +1,6 @@
-query Repositories($team: String!) @loading {
+query Repositories($team: String!, $orderBy: OrderBy = { field: NAME, direction: ASC }) @loading {
 	team(name: $team) {
-		githubRepositories(first: 20) @paginate(mode: SinglePage) {
+		githubRepositories(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			totalCount
 			pageInfo {
 				from
@@ -10,9 +10,12 @@ query Repositories($team: String!) @loading {
 				hasNextPage
 				hasPreviousPage
 			}
-			edges @loading(count: 10) {
+			edges @loading(count: 20) {
 				node {
 					name
+					authorizations
+					permissions
+					roleName
 				}
 			}
 		}
