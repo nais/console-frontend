@@ -3,12 +3,13 @@
 	import Card from '$lib/Card.svelte';
 	import {
 		Alert,
+		Button,
 		LinkPanel,
 		LinkPanelDescription,
 		LinkPanelTitle,
 		Skeleton
 	} from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	const store = graphql(`
 		query UserTeams @load {
@@ -45,10 +46,15 @@
 	{/each}
 {:else}
 	<Card width="600px">
-		<h2>
-			<PersonGroupIcon />
-			My teams
-		</h2>
+		<div class="header">
+			<h2>
+				<PersonGroupIcon />
+				My teams
+			</h2>
+			<Button as="a" size="small" href="/team/create" variant="primary"
+				><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Create team</Button
+			>
+		</div>
 		<div class="teams">
 			{#if $store.data}
 				{#each $store.data.user.teams.edges as edge}
@@ -83,11 +89,16 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		margin-bottom: 1.5rem;
 	}
 	.teams {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
 	}
 </style>

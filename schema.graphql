@@ -179,6 +179,18 @@ type CostSeries {
   sum: Float!
 }
 
+"""Input for creating a new team."""
+input CreateTeamInput {
+  """Team purpose."""
+  description: String!
+
+  """Team slug. After creation, this value can not be changed."""
+  name: String!
+
+  """Specify the Slack channel for the team."""
+  slackChannel: String!
+}
+
 """Current resource utilization type."""
 type CurrentResourceUtilization {
   """The CPU utilization."""
@@ -553,6 +565,19 @@ type Mutation {
     """The name of the team to update the deploy key for."""
     team: String!
   ): DeploymentKey!
+
+  """
+  Create a new team
+  
+  The user creating the team will be granted team ownership, unless the user is a service account, in which case the
+  team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
+  
+  The new team will be returned on success.
+  """
+  createTeam(
+    """Input for creation of the new team."""
+    input: CreateTeamInput!
+  ): Team!
 }
 
 type NaisJob implements Node {
