@@ -7,26 +7,26 @@
 
 	export let data: PageData;
 
-	$: ({ AppStatusDetailed } = data);
-	$: status = $AppStatusDetailed.data;
+	$: ({ AppNotificationState } = data);
+	$: console.log(data);
 </script>
 
 <Card>
-	{#if $AppStatusDetailed.errors}
+	{#if $AppNotificationState.errors}
 		<Alert variant="error">
-			{#each $AppStatusDetailed.errors as error}
+			{#each $AppNotificationState.errors as error}
 				{error.message}
 			{/each}
 		</Alert>
 	{/if}
-	{#if status}
+	{#if $AppNotificationState.data}
 		<h4>Application status</h4>
-		{#if status.app.name === PendingValue}
+		{#if $AppNotificationState.data.app.name === PendingValue}
 			<Skeleton variant="text" />
 		{:else}
 			<div>
-				{#if status.app.appState.errors && status.app.appState.errors.length > 0}
-					{#each status.app.appState.errors as error}
+				{#if $AppNotificationState.data.app.appState.errors && $AppNotificationState.data.app.appState.errors.length > 0}
+					{#each $AppNotificationState.data.app.appState.errors as error}
 						<ErrorTypeToMessage {error} />
 					{/each}
 				{:else}
