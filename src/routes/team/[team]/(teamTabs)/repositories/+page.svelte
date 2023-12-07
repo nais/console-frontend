@@ -62,26 +62,6 @@
 			}
 		});
 	};
-	/*
-	Triage
-Can read and clone this repository. Can also manage issues and pull requests.
-
-Read
-Can read and clone this repository. Can also open and comment on issues and
-										pull requests.
-
-										Write
-Can read, clone, and push to this repository. Can also manage issues and pull requests.
-
-Maintain
-Can read, clone, and push to this repository. They can also manage issues, pull requests, and some repository settings.
-
-Admin
-Can read, clone, and push to this repository. Can also manage issues, pull requests, and repository settings, including adding collaborators.
-
-ISOC Triage & Follow up
-Gir ISOC mulighet til å følge opp
-	*/
 </script>
 
 {#if team && team !== undefined}
@@ -147,5 +127,6 @@ Gir ISOC mulighet til å følge opp
 		gap: 0.5rem;
 		font-family: monospace;
 		font-size: 1rem;
+		justify-content: space-between;
 	}
 </style>
