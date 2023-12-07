@@ -5,14 +5,36 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button, CopyButton, Modal, Skeleton } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepathIcon, EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowsCirclepathIcon,
+		ChatExclamationmarkIcon,
+		EyeIcon,
+		EyeSlashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import EditText from './EditText.svelte';
+
+	export let data: PageData;
+
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: String!) {
 			changeDeployKey(team: $team) {
 				key
 				created
 				expires
+			}
+		}
+	`);
+
+	const updateTeam = graphql(`
+		mutation UpdateTeam($name: String!, $input: UpdateTeamInput!) {
+			updateTeam(name: $name, input: $input) {
+				description
+				slackChannel
+				slackAlertsChannels {
+					env
+					name
+				}
 			}
 		}
 	`);
@@ -30,8 +52,6 @@
 		}
 	`);
 
-	export let data: PageData;
-
 	$: ({ TeamSettings } = data);
 
 	$: teamSettings = $TeamSettings.data?.team;
@@ -40,6 +60,10 @@
 
 	let showKey = false;
 	let showRotateKey = false;
+
+	let descriptionError = false;
+	let defaultSlackChannelError = false;
+	let slackChannelsError = false;
 </script>
 
 {#if $TeamSettings.errors}
@@ -49,36 +73,116 @@
 		{/each}
 	</Alert>
 {:else if teamSettings}
-	<div style="margin-bottom: 1rem;">
-		<Alert variant="info">
-			Team settings currently managed by <a href="https://teams.nav.cloud.nais.io">Teams</a>
-			<br />
-			This functionality will be incorporated into this app eventually
-		</Alert>
-	</div>
 	<div class="grid">
 		<Card columns={6}>
 			<h3>{team}</h3>
 			{#if teamSettings.id === PendingValue}
 				<Skeleton variant="text" width="400px" />
 			{:else}
-				<i>{teamSettings.description}</i>
+				<i>
+					<EditText
+						text={teamSettings.description}
+						on:save={async (e) => {
+							descriptionError = false;
+							const data = await updateTeam.mutate({
+								name: team,
+								input: {
+									description: e.detail
+								}
+							});
+
+							if (data.errors) {
+								descriptionError = true;
+							}
+						}}
+					/>
+				</i>
+
+				{#if descriptionError}
+					<Alert variant="error" size="small">
+						Error updating description. Please try again later.
+					</Alert>
+				{/if}
 			{/if}
-			<h4>Slack channels</h4>
+			<h4><ChatExclamationmarkIcon /> Slack channels</h4>
 			{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
-				<dl>
-					<dt>Default slack-channel:</dt>
-					<dd>{teamSettings.slackChannel}</dd>
-				</dl>
+				<p>
+					<b>Default slack-channel:</b>
+					<EditText
+						text={teamSettings.slackChannel}
+						variant="textfield"
+						on:save={async (e) => {
+							defaultSlackChannelError = false;
+							const data = await updateTeam.mutate({
+								name: team,
+								input: {
+									slackChannel: e.detail
+								}
+							});
+
+							if (data.errors) {
+								defaultSlackChannelError = true;
+							}
+						}}
+					/>
+				</p>
+				{#if defaultSlackChannelError}
+					<Alert variant="error" size="small">
+						Error updating default slack-channel. Please try again later.
+					</Alert>
+				{/if}
 			{/if}
 			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
-				<dl>
-					<dh>Per-environment slack-channels to be used for alerts sent by the platform.</dh>
+				<p>
+					Per-environment slack-channels to be used for alerts sent by the platform.
 					{#each teamSettings.slackAlertsChannels as channel}
-						<dt>{channel.env}:</dt>
-						<dd>{channel.name}</dd>
+						<div class="channel">
+							<b>{channel.env}:</b>
+							<EditText
+								text={channel.name == PendingValue ? '' : channel.name}
+								variant="textfield"
+								on:save={async (e) => {
+									slackChannelsError = false;
+									if (!teamSettings || channel.name === PendingValue) {
+										return;
+									}
+
+									const updates = teamSettings.slackAlertsChannels.map((c) => {
+										if (c.env === channel.env) {
+											return {
+												environment: c.env,
+												channelName: e.detail
+											};
+										}
+
+										return {
+											environment: c.env,
+											channelName: c.name
+										};
+									});
+
+									const data = await updateTeam.mutate({
+										name: team,
+										input: {
+											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+											// @ts-expect-error
+											slackAlertsChannels: updates
+										}
+									});
+
+									if (data.errors) {
+										slackChannelsError = true;
+									}
+								}}
+							/>
+						</div>
 					{/each}
-				</dl>
+				</p>
+				{#if slackChannelsError}
+					<Alert variant="error" size="small">
+						Error updating slack-channels. Please try again later.
+					</Alert>
+				{/if}
 			{/if}
 		</Card>
 		<Card columns={6}>
@@ -244,5 +348,11 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+
+	.channel {
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
 	}
 </style>

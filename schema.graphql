@@ -578,6 +578,21 @@ type Mutation {
     """Input for creation of the new team."""
     input: CreateTeamInput!
   ): Team!
+
+  """
+  Update an existing team
+  
+  This mutation can be used to update the team purpose. It is not possible to update the team name.
+  
+  The updated team will be returned on success.
+  """
+  updateTeam(
+    """Input for updating the team."""
+    input: UpdateTeamInput!
+
+    """Name of the team to update."""
+    name: String!
+  ): Team!
 }
 
 type NaisJob implements Node {
@@ -1069,6 +1084,15 @@ type SlackAlertsChannel {
   name: String!
 }
 
+"""Slack alerts channel input."""
+input SlackAlertsChannelInput {
+  """The name of the Slack channel."""
+  channelName: String
+
+  """The environment for the alerts sent to the channel."""
+  environment: String!
+}
+
 enum SortOrder {
   """Ascending sort order."""
   ASC
@@ -1329,6 +1353,18 @@ type TokenX {
 type Topic {
   acl: [Acl!]!
   name: String!
+}
+
+"""Input for updating an existing team."""
+input UpdateTeamInput {
+  """Specify team description to update the existing value."""
+  description: String
+
+  """A list of Slack channels for NAIS alerts."""
+  slackAlertsChannels: [SlackAlertsChannelInput!]
+
+  """Specify the Slack channel to update the existing value."""
+  slackChannel: String
 }
 
 type User implements Node {
