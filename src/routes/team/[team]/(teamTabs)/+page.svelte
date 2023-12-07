@@ -139,6 +139,7 @@
 							)}
 						</p>
 					{/if}
+					<a href="/team/{teamName}/utilization">View team utilization</a>
 				</Tbody>
 			</Table>
 		{/if}
