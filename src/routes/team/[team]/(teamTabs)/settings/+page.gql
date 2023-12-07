@@ -2,11 +2,6 @@ query TeamSettings($team: String!) @loading(cascade: true) {
 	team(name: $team) {
 		id
 		name
-		deployKey {
-			key
-			created
-			expires
-		}
 		slackAlertsChannels {
 			env
 			name

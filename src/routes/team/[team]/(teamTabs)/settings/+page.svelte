@@ -17,6 +17,19 @@
 		}
 	`);
 
+	$: hookdResponse = graphql(`
+		query HookdDeployKey($team: String!) @load {
+			team(name: $team) @loading(cascade: true) {
+				id
+				deployKey {
+					key
+					created
+					expires
+				}
+			}
+		}
+	`);
+
 	export let data: PageData;
 
 	$: ({ TeamSettings } = data);
@@ -88,60 +101,62 @@
 		</Card>
 		<Card columns={12}>
 			<h3>Deploy key</h3>
-			<dl>
-				<dt>Created:</dt>
-				{#if teamSettings.deployKey.key === PendingValue}
-					<dd><Skeleton variant="text" /></dd>
-				{:else}
-					<dd><Time time={teamSettings.deployKey.created} distance={true} /></dd>
-				{/if}
-				<dt>Expires:</dt>
-				{#if teamSettings.deployKey.expires === PendingValue}
-					<dd><Skeleton variant="text" /></dd>
-				{:else}
-					<dd><Time time={teamSettings?.deployKey?.expires} distance={true} /></dd>
-				{/if}
-				<dt>Key:</dt>
-				<dd>
-					<div class="deployKey">
-						{#if showKey}
-							{teamSettings?.deployKey?.key}
-							<Button
-								size="xsmall"
-								variant="tertiary"
-								on:click={() => {
-									showKey = !showKey;
-								}}
-							>
-								<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
-							>
-						{:else}
-							{#if teamSettings.deployKey.key === PendingValue}
-								<dd><Skeleton variant="text" /></dd>
+
+			{#if $hookdResponse.data?.team}
+				{@const deployKey = $hookdResponse.data.team.deployKey}
+				<dl>
+					<dt>Created:</dt>
+					{#if deployKey.key === PendingValue}
+						<dd><Skeleton variant="text" /></dd>
+					{:else}
+						<dd><Time time={deployKey.created} distance={true} /></dd>
+					{/if}
+					<dt>Expires:</dt>
+					{#if deployKey.expires === PendingValue}
+						<dd><Skeleton variant="text" /></dd>
+					{:else}
+						<dd><Time time={deployKey.expires} distance={true} /></dd>
+					{/if}
+					<dt>Key:</dt>
+					<dd>
+						<div class="deployKey">
+							{#if showKey}
+								{deployKey.key}
+								<Button
+									size="xsmall"
+									variant="tertiary"
+									on:click={() => {
+										showKey = !showKey;
+									}}
+								>
+									<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
+								>
 							{:else}
-								{teamSettings?.deployKey?.key.replaceAll(/./g, '*')}
+								{#if deployKey.key === PendingValue}
+									<dd><Skeleton variant="text" /></dd>
+								{:else}
+									{deployKey.key.replaceAll(/./g, '*')}
+								{/if}
+								<Button
+									size="xsmall"
+									variant="tertiary"
+									on:click={() => {
+										showKey = !showKey;
+									}}
+								>
+									<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
+								>
 							{/if}
-							<Button
-								size="xsmall"
-								variant="tertiary"
-								on:click={() => {
-									showKey = !showKey;
-								}}
-							>
-								<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
-							>
-						{/if}
-					</div>
-				</dd>
-			</dl>
-			<div class="buttons">
-				{#if teamSettings?.deployKey?.key !== PendingValue}
+						</div>
+					</dd>
+				</dl>
+				<div class="buttons">
 					<div class="button">
 						<CopyButton
 							text="Copy key"
 							activeText="Key copied"
 							variant="action"
-							copyText={teamSettings?.deployKey?.key || ''}
+							copyText={deployKey.key === PendingValue ? '' : deployKey.key}
 							size="small"
 						/>
 					</div>
@@ -157,8 +172,10 @@
 							Rotate key</Button
 						>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{:else}
+				<Alert variant="error">Error getting deploy key. Please try again later.</Alert>
+			{/if}
 		</Card>
 		{#if browser}
 			<Modal bind:open={showRotateKey} closeButton={false}>
