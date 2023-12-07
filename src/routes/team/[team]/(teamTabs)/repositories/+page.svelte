@@ -31,6 +31,25 @@
 		direction: 'ascending'
 	};
 
+	const roleDesc = (role: string) => {
+		switch (role) {
+			case 'TRIAGE':
+				return 'Can read and clone this repository. Can also manage issues and pull requests.';
+			case 'READ':
+				return 'Can read and clone this repository. Can also open and comment on issues and pull requests.';
+			case 'WRITE':
+				return 'Can read, clone, and push to this repository. Can also manage issues and pull requests.';
+			case 'MAINTAIN':
+				return 'Can read, clone, and push to this repository. They can also manage issues, pull requests, and some repository settings.';
+			case 'ADMIN':
+				return 'Can read, clone, and push to this repository. Can also manage issues, pull requests, and repository settings, including adding collaborators.';
+			case 'ISOC_TRIAGE_FOLLOWUP':
+				return 'Gir ISOC mulighet til å følge opp';
+			default:
+				return 'Ukjent rolle';
+		}
+	};
+
 	const refetch = (key: string) => {
 		const field = Object.values(OrderByField).find((value) => value === key);
 		Repositories.fetch({
@@ -96,9 +115,8 @@ Gir ISOC mulighet til å følge opp
 							<Td>{repo.node.authorizations}</Td>
 							<Td
 								><div class="roleHelpText">
-									{repo.node.roleName}<HelpText title="Role description"
-										>Can read and clone this repository. Can also open and comment on issues and
-										pull requests.</HelpText
+									{repo.node.roleName}<HelpText placement={'left'} title="Role description"
+										>{roleDesc(repo.node.roleName.toUpperCase())}</HelpText
 									>
 								</div></Td
 							>
