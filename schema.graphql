@@ -385,6 +385,7 @@ type GithubRepository {
 
   """The authorizations for the GitHub repository."""
   authorizations: [RepositoryAuthorization!]
+  id: ID!
 
   """The name of the GitHub repository."""
   name: String!
@@ -560,11 +561,35 @@ input MonthlyCostFilter {
 
 """The root query for implementing GraphQL mutations."""
 type Mutation {
+  """Authorize a team to perform an action from a GitHub repository."""
+  authorizeRepository(
+    """The action to authorize."""
+    authorization: RepositoryAuthorization!
+
+    """Name of the repository, with the org prefix, for instance 'org/repo'."""
+    repository: String!
+
+    """The team to authorize the action for."""
+    team: String!
+  ): GithubRepository!
+
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
     """The name of the team to update the deploy key for."""
     team: String!
   ): DeploymentKey!
+
+  """Deauthorize an action from a team."""
+  deauthorizeRepository(
+    """The action to deauthorize."""
+    authorization: RepositoryAuthorization!
+
+    """Name of the repository, with the org prefix, for instance 'org/repo'."""
+    repository: String!
+
+    """The team to deauthorize the action for."""
+    team: String!
+  ): GithubRepository!
 }
 
 type NaisJob implements Node {

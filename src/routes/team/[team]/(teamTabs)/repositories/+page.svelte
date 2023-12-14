@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue } from '$houdini';
+	import { OrderByField, RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import {
+		Button,
 		HelpText,
-		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -21,8 +21,6 @@
 
 	$: ({ Repositories } = data);
 	$: team = $Repositories.data?.team;
-
-	$: console.log(team);
 
 	$: teamName = $page.params.team;
 
@@ -62,11 +60,52 @@
 			}
 		});
 	};
+
+	const authorizeRepositoryForDeploy = graphql(`
+		mutation AuthorizeRepository(
+			$authorization: RepositoryAuthorization!
+			$repository: String!
+			$team: String!
+		) {
+			authorizeRepository(authorization: $authorization, repository: $repository, team: $team) {
+				name
+				authorizations
+			}
+		}
+	`);
+
+	const deauthorizeRepositoryForDeploy = graphql(`
+		mutation DeauthorizeRepository(
+			$authorization: RepositoryAuthorization!
+			$repository: String!
+			$team: String!
+		) {
+			deauthorizeRepository(authorization: $authorization, repository: $repository, team: $team) {
+				name
+				authorizations
+			}
+		}
+	`);
+
+	const authorizeDeploy = (team: string, repository: string) => {
+		authorizeRepositoryForDeploy.mutate({
+			authorization: RepositoryAuthorization.DEPLOY,
+			repository,
+			team
+		});
+	};
+	const deauthorizeDeploy = (team: string, repository: string) => {
+		deauthorizeRepositoryForDeploy.mutate({
+			authorization: RepositoryAuthorization.DEPLOY,
+			repository,
+			team
+		});
+	};
 </script>
 
 {#if team && team !== undefined}
 	<Card>
-		<h3>Authorized repositories</h3>
+		<h3>Repositories</h3>
 
 		<Table
 			size="small"
@@ -79,28 +118,44 @@
 			<Thead>
 				<Tr>
 					<Th sortable={true} sortKey="NAME">Repository</Th>
-					<Th>Authorizations</Th>
+					<Th>Deploy</Th>
 					<Th sortable={true} sortKey="ROLE">Role</Th>
 				</Tr>
 			</Thead>
 			<Tbody>
 				{#each team.githubRepositories.edges as repo}
 					<Tr>
-						{#if repo.node.name === PendingValue}
-							{#each new Array(3).fill('text') as variant}
-								<Td><Skeleton {variant} /></Td>
-							{/each}
-						{:else}
-							<Td>{repo.node.name}</Td>
-							<Td>{repo.node.authorizations}</Td>
-							<Td
-								><div class="roleHelpText">
-									{repo.node.roleName}<HelpText placement={'left'} title="Role description"
-										>{roleDesc(repo.node.roleName.toUpperCase())}</HelpText
+						<Td>{repo.node.name}</Td>
+						{#if repo.node.authorizations !== null && repo.node.name !== null}
+							<Td>
+								{#if repo.node.authorizations.includes('DEPLOY')}
+									<Button
+										size="xsmall"
+										variant="danger"
+										on:click={() => {
+											deauthorizeDeploy(teamName, repo.node.name);
+										}}>Deauthorize</Button
 									>
-								</div></Td
-							>
+								{:else}
+									<Button
+										size="xsmall"
+										variant="primary-neutral"
+										on:click={() => {
+											authorizeDeploy(teamName, repo.node.name);
+										}}>Authorize</Button
+									>
+								{/if}
+							</Td>
 						{/if}
+						<Td
+							><div class="roleHelpText">
+								{repo.node.roleName}<HelpText placement={'left'} title="Role description"
+									>The team's role for the repository.<br />{repo.node.roleName.toUpperCase()}: {roleDesc(
+										repo.node.roleName.toUpperCase()
+									)}</HelpText
+								>
+							</div></Td
+						>
 					</Tr>
 				{/each}
 			</Tbody>
@@ -127,6 +182,5 @@
 		gap: 0.5rem;
 		font-family: monospace;
 		font-size: 1rem;
-		justify-content: space-between;
 	}
 </style>
