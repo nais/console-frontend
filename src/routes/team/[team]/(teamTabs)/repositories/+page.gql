@@ -1,0 +1,24 @@
+query Repositories($team: String!, $orderBy: OrderBy = { field: NAME, direction: ASC })
+@cache(policy: NetworkOnly) {
+	team(name: $team) {
+		githubRepositories(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			totalCount
+			pageInfo {
+				from
+				to
+				startCursor
+				endCursor
+				hasNextPage
+				hasPreviousPage
+			}
+			edges {
+				node {
+					name
+					authorizations
+					permissions
+					roleName
+				}
+			}
+		}
+	}
+}

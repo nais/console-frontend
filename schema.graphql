@@ -380,8 +380,21 @@ type GcpProject {
 
 """GitHub repository type."""
 type GithubRepository {
+  """Whether or not the repository is archived."""
+  archived: Boolean!
+
+  """The authorizations for the GitHub repository."""
+  authorizations: [RepositoryAuthorization!]
+  id: ID!
+
   """The name of the GitHub repository."""
   name: String!
+
+  """The permissions the team has for the GitHub repository."""
+  permissions: [String!]
+
+  """The name of the role the team has been granted in the repository."""
+  roleName: String!
 }
 
 """GitHub repository connection type."""
@@ -548,11 +561,35 @@ input MonthlyCostFilter {
 
 """The root query for implementing GraphQL mutations."""
 type Mutation {
+  """Authorize a team to perform an action from a GitHub repository."""
+  authorizeRepository(
+    """The action to authorize."""
+    authorization: RepositoryAuthorization!
+
+    """Name of the repository, with the org prefix, for instance 'org/repo'."""
+    repository: String!
+
+    """The team to authorize the action for."""
+    team: String!
+  ): GithubRepository!
+
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
     """The name of the team to update the deploy key for."""
     team: String!
   ): DeploymentKey!
+
+  """Deauthorize an action from a team."""
+  deauthorizeRepository(
+    """The action to deauthorize."""
+    authorization: RepositoryAuthorization!
+
+    """Name of the repository, with the org prefix, for instance 'org/repo'."""
+    repository: String!
+
+    """The team to deauthorize the action for."""
+    team: String!
+  ): GithubRepository!
 }
 
 type NaisJob implements Node {
@@ -634,6 +671,9 @@ enum OrderByField {
 
   """Order by risk score"""
   RISK_SCORE
+
+  """Order by authorizations"""
+  ROLE
 
   """Order apps by vulnerability severity critical"""
   SEVERITY_CRITICAL
@@ -874,6 +914,12 @@ type Query {
 type Redis implements Storage {
   access: String!
   name: String!
+}
+
+"""Repo authorizations."""
+enum RepositoryAuthorization {
+  """Authorized for NAIS deployment."""
+  DEPLOY
 }
 
 type Requests {
@@ -1142,8 +1188,17 @@ type Team implements Node {
     """Get entries after the cursor."""
     after: Cursor
 
+    """Get entries before the cursor."""
+    before: Cursor
+
     """Returns the first n entries from the list."""
     first: Int
+
+    """Returns the last n entries from the list."""
+    last: Int
+
+    """Order apps by"""
+    orderBy: OrderBy
   ): GithubRepositoryConnection!
 
   """The unique identifier of the team."""
