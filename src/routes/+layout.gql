@@ -1,6 +1,7 @@
 query UserInfo {
-	user {
-		name
-		email
+	me {
+		... on User {
+			name
+		}
 	}
 }

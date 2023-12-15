@@ -13,7 +13,12 @@
 	export let data: PageData;
 	$: ({ UserInfo } = data);
 
-	$: user = $UserInfo.data?.user;
+	$: user = $UserInfo.data?.me as
+		| {
+				readonly name: string;
+				readonly __typename: 'User';
+		  }
+		| undefined;
 </script>
 
 <Header {user} />

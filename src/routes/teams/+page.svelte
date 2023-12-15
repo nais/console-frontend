@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import Pagination from '$lib/Pagination.svelte';
 
 	export let data: PageData;
 	$: ({ Teams } = data);
@@ -11,16 +10,16 @@
 
 {#if $Teams.data}
 	<div>
-		{#each $Teams.data.teams.edges as edge}
-			<LinkPanel about={edge.node.description} href="/team/{edge.node.name}" border={true} as="a">
-				<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
-				<LinkPanelDescription
-					>{edge.node.description ? edge.node.description : 'no description'}</LinkPanelDescription
-				>
+		{#each $Teams.data.teams.nodes as node}
+			<LinkPanel about={node.purpose} href="/team/{node.slug}" border={true} as="a">
+				<LinkPanelTitle>{node.slug}</LinkPanelTitle>
+				<LinkPanelDescription>
+					{node.purpose ? node.purpose : 'no description'}
+				</LinkPanelDescription>
 			</LinkPanel>
 		{/each}
 	</div>
-	<Pagination
+	<!-- <Pagination
 		pageInfo={$Teams.data.teams.pageInfo}
 		totalCount={$Teams.data.teams.totalCount}
 		on:nextPage={() => {
@@ -31,7 +30,7 @@
 			if (!$Teams.pageInfo.hasPreviousPage) return;
 			Teams.loadPreviousPage();
 		}}
-	/>
+	/> -->
 {/if}
 
 <style>

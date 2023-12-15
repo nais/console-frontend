@@ -1,32 +1,28 @@
-query TeamDeployments($team: String!) @loading(cascade: true) {
-	team(name: $team) {
+query TeamDeployments($team: Slug!) @loading(cascade: true) {
+	team(slug: $team) {
 		id
-		deployments(first: 100, limit: 100) @paginate(mode: SinglePage) {
-			totalCount
+		deployments(limit: 100) @paginate(mode: SinglePage) {
 			pageInfo {
+				totalCount
 				hasNextPage
 				hasPreviousPage
-				from
-				to
 			}
-			edges @loading(count: 10) {
-				node {
-					id
+			nodes @loading(count: 10) {
+				id
+				created
+				env
+				repository
+				resources {
+					group
+					kind
+					version
+					name
+					namespace
+				}
+				statuses {
 					created
-					env
-					repository
-					resources {
-						group
-						kind
-						version
-						name
-						namespace
-					}
-					statuses {
-						created
-						message
-						status
-					}
+					message
+					status
 				}
 			}
 		}

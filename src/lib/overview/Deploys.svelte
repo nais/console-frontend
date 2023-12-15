@@ -11,20 +11,20 @@
 	};
 
 	const store = graphql(`
-		query TeamDeploys($team: String!) @load {
-			team(name: $team) {
-				deployments(first: 20, limit: 20) {
-					totalCount
-					edges {
-						node {
-							resources {
-								kind
-								name
-								version
-							}
-							env
-							created
+		query TeamDeploys($team: Slug!) @load {
+			team(slug: $team) {
+				deployments(limit: 20) {
+					pageInfo {
+						totalCount
+					}
+					nodes {
+						resources {
+							name
+							kind
+							version
 						}
+						env
+						created
 					}
 				}
 			}
@@ -48,21 +48,17 @@
 			<Th>Deployed</Th>
 		</Thead>
 		<Tbody>
-			{#each $store.data.team.deployments.edges as { node: deployment }}
+			{#each $store.data.team.deployments.nodes as { resources, env, created }}
 				<Tr>
-					<Td>{deployment.resources[0].name}</Td>
-					<Td>{deployment.env}</Td>
+					<Td>{resources[0].name}</Td>
+					<Td>{env}</Td>
 					<Td>
-						{#each deployment.resources as resource}
+						{#each resources as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
-								<a href="/team/{teamName}/{deployment.env}/app/{resource.name}/deploys"
-									>{resource.name}</a
-								>
+								<a href="/team/{teamName}/{env}/app/{resource.name}/deploys">{resource.name}</a>
 							{:else if resource.kind === 'Naisjob'}
-								<a href="/team/{teamName}/{deployment.env}/job/{resource.name}/deploys"
-									>{resource.name}</a
-								>
+								<a href="/team/{teamName}/{env}/job/{resource.name}/deploys">{resource.name}</a>
 							{:else}
 								{resource.name}
 							{/if}
@@ -70,7 +66,7 @@
 						{/each}
 					</Td>
 					<Td>
-						<Time time={deployment.created} distance={true} />
+						<Time time={created} distance={true} />
 					</Td>
 				</Tr>
 			{/each}

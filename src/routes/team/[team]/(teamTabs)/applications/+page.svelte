@@ -2,7 +2,6 @@
 	import { page } from '$app/stores';
 	import { OrderByField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import type { TableSortState } from '@nais/ds-svelte-community';
@@ -63,36 +62,34 @@
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(team.apps.edges.length).fill('text') as variant}
+								{#each new Array(team.apps.nodes.length).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.apps.edges as edge}
+							{#each team.apps.nodes as node}
 								<Tr>
 									<Td>
 										<div class="status">
 											<a
-												href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}/status"
+												href="/team/{teamName}/{node.env.name}/app/{node.name}/status"
 												data-sveltekit-preload-data="off"
 											>
-												<Status size="1.5rem" state={edge.node.appState.state} />
+												<Status size="1.5rem" state={node.appState.state} />
 											</a>
 										</div>
 									</Td>
 									<Td>
-										<a href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}"
-											>{edge.node.name}</a
-										>
+										<a href="/team/{teamName}/{node.env.name}/app/{node.name}">{node.name}</a>
 									</Td>
-									<Td>{edge.node.env.name}</Td>
+									<Td>{node.env.name}</Td>
 
 									<Td>
-										<InstanceStatus app={edge.node} />
+										<InstanceStatus app={node} />
 									</Td>
 									<Td>
-										{#if edge.node.deployInfo.timestamp}
-											<Time time={edge.node.deployInfo.timestamp} distance={true} />
+										{#if node.deployInfo.timestamp}
+											<Time time={node.deployInfo.timestamp} distance={true} />
 										{/if}
 									</Td>
 								</Tr>
@@ -107,7 +104,7 @@
 			</Table>
 			{#if team !== undefined}
 				{#if team.id !== PendingValue}
-					<Pagination
+					<!-- <Pagination
 						totalCount={team.apps.totalCount}
 						pageInfo={team.apps.pageInfo}
 						on:nextPage={() => {
@@ -118,7 +115,7 @@
 							if (!$Workloads.pageInfo.hasPreviousPage) return;
 							Workloads.loadPreviousPage();
 						}}
-					/>
+					/> -->
 				{/if}
 			{/if}
 		</Card>

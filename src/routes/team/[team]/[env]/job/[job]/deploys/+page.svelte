@@ -53,30 +53,30 @@
 							{/each}
 						</Tr>
 					{/each}
-				{:else if $JobDeploys.data.naisjob.deployInfo.history.__typename === 'DeploymentConnection'}
-					{#each $JobDeploys.data.naisjob.deployInfo.history.edges as edge}
+				{:else if $JobDeploys.data.naisjob.deployInfo.history.__typename === 'DeploymentList'}
+					{#each $JobDeploys.data.naisjob.deployInfo.history.nodes as node}
 						<Tr>
 							<Td>
-								{#each edge.node.resources as resource}
+								{#each node.resources as resource}
 									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{resource.name}
 									<br />
 								{/each}
 							</Td>
 							<Td>
-								<Time time={new Date(edge.node.created)} distance={true} />
+								<Time time={new Date(node.created)} distance={true} />
 							</Td>
 							<Td>
-								<Tooltip content={edge.node.statuses[0].message || ''}
-									><DeploymentStatus status={edge.node.statuses[0].status} /></Tooltip
+								<Tooltip content={node.statuses[0].message || ''}
+									><DeploymentStatus status={node.statuses[0].status} /></Tooltip
 								>
 							</Td>
 							<Td>
-								{#if edge.node.repository}
+								{#if node.repository}
 									<Button
 										size="xsmall"
 										variant="secondary"
-										href="https://github.com/{edge.node.repository}"
+										href="https://github.com/{node.repository}"
 										as="a"
 									>
 										<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment

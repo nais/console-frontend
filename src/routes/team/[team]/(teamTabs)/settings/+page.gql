@@ -1,23 +1,28 @@
-query TeamSettings($team: String!) @loading(cascade: true) {
-	team(name: $team) {
+query TeamSettings($team: Slug!) @loading(cascade: true) {
+	team(slug: $team) {
 		id
-		name
+		slug
+		purpose
+		slackChannel
 		slackAlertsChannels {
-			env
-			name
-		}
-		gcpProjects {
-			id
+			channelName
 			environment
 		}
-		githubRepositories {
-			edges {
-				node {
-					name
-				}
+		reconcilerState {
+			gcpProjects {
+				projectId
+				environment
 			}
 		}
-		slackChannel
-		description
+		gitHubRepositories(limit: 10) {
+			nodes {
+				name
+			}
+			pageInfo {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+			}
+		}
 	}
 }

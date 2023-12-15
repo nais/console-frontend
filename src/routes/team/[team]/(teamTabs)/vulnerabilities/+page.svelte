@@ -3,7 +3,6 @@
 	import { PendingValue } from '$houdini';
 	import { OrderByField } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import type { TableSortState } from '@nais/ds-svelte-community';
@@ -93,20 +92,18 @@
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.vulnerabilities.edges as edge}
+							{#each team.vulnerabilities.nodes as node}
 								<Tr>
 									<Td>
-										<a href="/team/{teamName}/{edge.node.env}/app/{edge.node.appName}"
-											>{edge.node.appName}</a
-										>
+										<a href="/team/{teamName}/{node.env}/app/{node.appName}">{node.appName}</a>
 									</Td>
-									<Td>{edge.node.env}</Td>
-									{#if edge.node.summary !== null}
-										{#if !edge.node.hasBom}
+									<Td>{node.env}</Td>
+									{#if node.summary !== null}
+										{#if !node.hasBom}
 											<Td colspan={8}>
 												<div style="display: flex; align-items: center">
 													<span style="color:lightslategray; font-size:16px">
-														<a href={edge.node.findingsLink}>View</a>
+														<a href={node.findingsLink}>View</a>
 													</span>
 													<div class="sbom">
 														<Tooltip
@@ -123,47 +120,44 @@
 										{:else}
 											<Td>
 												<span style="color:lightslategray; font-size:16px">
-													<a href={edge.node.findingsLink} on:click={onClick}>View</a>
+													<a href={node.findingsLink} on:click={onClick}>View</a>
 												</span>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="critical" count={edge.node.summary.critical} />
+													<Vulnerability severity="critical" count={node.summary.critical} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="high" count={edge.node.summary.high} />
+													<Vulnerability severity="high" count={node.summary.high} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="medium" count={edge.node.summary.medium} />
+													<Vulnerability severity="medium" count={node.summary.medium} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="low" count={edge.node.summary.low} />
+													<Vulnerability severity="low" count={node.summary.low} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability
-														severity="unassigned"
-														count={edge.node.summary.unassigned}
-													/>
+													<Vulnerability severity="unassigned" count={node.summary.unassigned} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													{#if edge.node.summary.riskScore === -1}
-														<Vulnerability severity="low" count={edge.node.summary.riskScore} />
+													{#if node.summary.riskScore === -1}
+														<Vulnerability severity="low" count={node.summary.riskScore} />
 													{:else}
 														<Tooltip
 															placement="left"
 															content="Calculated based on the number of vulnerabilities, includes unassigned"
 														>
-															<span class="na">{edge.node.summary.riskScore}</span>
+															<span class="na">{node.summary.riskScore}</span>
 														</Tooltip>
 													{/if}
 												</div>
@@ -204,7 +198,7 @@
 			</Table>
 			{#if team !== undefined}
 				{#if team.id !== PendingValue}
-					<Pagination
+					<!-- <Pagination
 						totalCount={team.vulnerabilities.totalCount}
 						pageInfo={team.vulnerabilities.pageInfo}
 						on:nextPage={() => {
@@ -215,7 +209,7 @@
 							if (!$TeamVulnerabilities.pageInfo.hasPreviousPage) return;
 							TeamVulnerabilities.loadPreviousPage();
 						}}
-					/>
+					/> -->
 				{/if}
 			{/if}
 		</Card>

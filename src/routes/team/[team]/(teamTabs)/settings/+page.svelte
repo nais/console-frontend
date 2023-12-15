@@ -27,21 +27,21 @@
 	`);
 
 	const updateTeam = graphql(`
-		mutation UpdateTeam($name: String!, $input: UpdateTeamInput!) {
-			updateTeam(name: $name, input: $input) {
-				description
+		mutation UpdateTeam($slug: Slug!, $input: UpdateTeamInput!) {
+			updateTeam(slug: $slug, input: $input) {
+				purpose
 				slackChannel
 				slackAlertsChannels {
-					env
-					name
+					channelName
+					environment
 				}
 			}
 		}
 	`);
 
 	$: hookdResponse = graphql(`
-		query HookdDeployKey($team: String!) @load {
-			team(name: $team) @loading(cascade: true) {
+		query HookdDeployKey($team: Slug!) @load {
+			team(slug: $team) @loading(cascade: true) {
 				id
 				deployKey {
 					key
@@ -81,13 +81,13 @@
 			{:else}
 				<i>
 					<EditText
-						text={teamSettings.description}
+						text={teamSettings.purpose}
 						on:save={async (e) => {
 							descriptionError = false;
 							const data = await updateTeam.mutate({
-								name: team,
+								slug: team,
 								input: {
-									description: e.detail
+									purpose: e.detail
 								}
 							});
 
@@ -114,7 +114,7 @@
 						on:save={async (e) => {
 							defaultSlackChannelError = false;
 							const data = await updateTeam.mutate({
-								name: team,
+								slug: team,
 								input: {
 									slackChannel: e.detail
 								}
@@ -132,32 +132,32 @@
 					</Alert>
 				{/if}
 			{/if}
-			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
+			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].environment !== PendingValue}
 				<p>
 					Per-environment slack-channels to be used for alerts sent by the platform.
 					{#each teamSettings.slackAlertsChannels as channel}
 						<div class="channel">
-							<b>{channel.env}:</b>
+							<b>{channel.environment}:</b>
 							<EditText
-								text={channel.name == PendingValue ? '' : channel.name}
+								text={channel.channelName == PendingValue ? '' : channel.channelName}
 								variant="textfield"
 								on:save={async (e) => {
 									slackChannelsError = false;
-									if (!teamSettings || channel.name === PendingValue) {
+									if (!teamSettings || channel.channelName === PendingValue) {
 										return;
 									}
 
 									const updates = teamSettings.slackAlertsChannels.map((c) => {
-										if (c.env === channel.env) {
+										if (c.environment === channel.environment) {
 											return {
-												environment: c.env,
+												environment: c.environment,
 												channelName: e.detail
 											};
 										}
 
 										return {
-											environment: c.env,
-											channelName: c.name
+											environment: c.environment,
+											channelName: c.channelName
 										};
 									});
 
@@ -187,12 +187,12 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Managed resources</h3>
-			{#if teamSettings.gcpProjects.length > 0 && teamSettings.gcpProjects[0].environment !== PendingValue}
-				{#each teamSettings.gcpProjects as project}
+			{#if teamSettings.reconcilerState.gcpProjects.length > 0 && teamSettings.reconcilerState.gcpProjects[0].environment !== PendingValue}
+				{#each teamSettings.reconcilerState.gcpProjects as project}
 					{#if project.environment !== 'ci-gcp'}
 						<dl>
 							<dt>GCP project ID ({project.environment}):</dt>
-							<dd>{project.id}</dd>
+							<dd>{project.projectId}</dd>
 						</dl>
 					{/if}
 				{/each}

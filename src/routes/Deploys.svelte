@@ -5,19 +5,14 @@
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	type Deploys = Exclude<UserDeploys$result['user']['teams']['edges'], (typeof PendingValue)[]>;
+	const sortTeamDeploys = (userDeploys: UserDeploys$result['me'], slice = 10) => {
+		if (userDeploys === PendingValue)
+			return [PendingValue, PendingValue, PendingValue, PendingValue] as (typeof PendingValue)[];
+		if (userDeploys.__typename !== 'User') return [];
 
-	const sortTeamDeploys = (userDeploys: UserDeploys$result['user'], slice = 10) => {
-		if ((userDeploys.teams.edges as (typeof PendingValue)[]).includes(PendingValue))
-			return userDeploys.teams.edges as (typeof PendingValue)[];
-		if ((userDeploys.teams.edges as unknown as null[]).includes(null))
-			return new Array(10).fill(PendingValue);
-
-		const edges = userDeploys.teams.edges as unknown as Deploys;
-
-		return edges
-			.map((team) => team.node.deployments)
-			.flatMap((deploys) => deploys.edges.map((deploy) => deploy.node))
+		return userDeploys.teams.nodes
+			.map((team) => team.team.deployments)
+			.flatMap((deploys) => deploys.nodes)
 			.sort((a, b) => {
 				return b.created.getTime() - a.created.getTime();
 			})
@@ -26,19 +21,24 @@
 
 	const store = graphql(`
 		query UserDeploys @load {
-			user @loading {
-				teams @loading {
-					totalCount
-					edges @loading(count: 10) {
-						node {
-							deployments {
-								totalCount
-								edges {
-									node {
+			me @loading {
+				__typename
+				... on User {
+					teams {
+						pageInfo {
+							totalCount
+						}
+						nodes {
+							team {
+								deployments {
+									pageInfo {
+										totalCount
+									}
+									nodes {
 										created
 										env
 										team {
-											name
+											slug
 										}
 										resources {
 											kind
@@ -79,7 +79,7 @@
 				<Th>When</Th>
 			</Thead>
 			<Tbody>
-				{#each sortTeamDeploys($store.data.user) as deploy}
+				{#each sortTeamDeploys($store.data.me) as deploy}
 					{#if deploy == PendingValue}
 						<Tr>
 							{#each new Array(4).fill('text') as variant}
@@ -91,15 +91,15 @@
 					{:else}
 						<Tr>
 							<Td>
-								<a href="/team/{deploy.team.name}">{deploy.team.name}</a>
+								<a href="/team/{deploy.team.slug}">{deploy.team.slug}</a>
 							</Td>
 							<Td>
 								{#if deploy.resources[0].kind === 'Naisjob'}
-									<a href="/team/{deploy.team.name}/{deploy.env}/job/{deploy.resources[0].name}">
+									<a href="/team/{deploy.team.slug}/{deploy.env}/job/{deploy.resources[0].name}">
 										{deploy.resources[0].name}</a
 									>
 								{:else}
-									<a href="/team/{deploy.team.name}/{deploy.env}/app/{deploy.resources[0].name}">
+									<a href="/team/{deploy.team.slug}/{deploy.env}/app/{deploy.resources[0].name}">
 										{deploy.resources[0].name}</a
 									>
 								{/if}

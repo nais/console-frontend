@@ -9,30 +9,28 @@
 
 	const store = graphql(`
 		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
-			search(first: 10, query: $query, filter: { type: $type }) {
-				edges @loading(count: 10) {
-					node {
-						__typename
-						... on App {
-							name
-							team {
-								name
-							}
-							env {
-								name
-							}
+			search(limit: 10, query: $query, filter: { type: $type }) {
+				nodes @loading(count: 10) {
+					__typename
+					... on App {
+						name
+						team {
+							slug
 						}
-						... on Team {
+						env {
 							name
 						}
-						... on NaisJob {
+					}
+					... on Team {
+						slug
+					}
+					... on NaisJob {
+						name
+						team {
+							slug
+						}
+						env {
 							name
-							team {
-								name
-							}
-							env {
-								name
-							}
 						}
 					}
 				}
@@ -43,7 +41,6 @@
 	export let user:
 		| {
 				readonly name: string;
-				readonly email: string;
 		  }
 		| undefined;
 
@@ -86,33 +83,33 @@
 		switch (event.key) {
 			case 'ArrowDown':
 				selected += 1;
-				selected = Math.min(($store.data?.search.edges.length || 0) - 1, Math.max(-1, selected));
+				selected = Math.min(($store.data?.search.nodes.length || 0) - 1, Math.max(-1, selected));
 				event.preventDefault();
 				break;
 			case 'ArrowUp':
 				selected -= 1;
-				selected = Math.min(($store.data?.search.edges.length || 0) - 1, Math.max(-1, selected));
+				selected = Math.min(($store.data?.search.nodes.length || 0) - 1, Math.max(-1, selected));
 				event.preventDefault();
 				break;
 			case 'Enter':
 				showHelpText = false;
 				if (selected >= 0) {
-					const node = $store.data?.search.edges[selected].node;
+					const node = $store.data?.search.nodes[selected];
 					if (!node) return;
 					query = '';
 					selected = -1;
 					if (node.__typename === 'App') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.name}/${node.env.name}/app/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.env.name}/app/${node.name}`);
 					} else if (node.__typename === 'Team') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.name}`);
+						goto(`/team/${node.slug}`);
 					} else if (node.__typename === 'NaisJob') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.name}/${node.env.name}/job/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.env.name}/job/${node.name}`);
 					}
 				}
 				break;

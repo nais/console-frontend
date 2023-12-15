@@ -13,23 +13,22 @@
 
 	const store = graphql(`
 		query UserTeams @load {
-			user @loading {
-				name
-				email @loading
-				teams @loading {
-					totalCount
-					pageInfo {
-						hasNextPage
-						hasPreviousPage
-						startCursor
-						endCursor
-						from
-						to
-					}
-					edges @loading(count: 10) {
-						node {
-							name
-							description
+			me @loading {
+				__typename
+				... on User {
+					name
+					email
+					teams {
+						pageInfo {
+							totalCount
+							hasNextPage
+							hasPreviousPage
+						}
+						nodes {
+							team {
+								slug
+								purpose
+							}
 						}
 					}
 				}
@@ -57,28 +56,24 @@
 		</div>
 		<div class="teams">
 			{#if $store.data}
-				{#each $store.data.user.teams.edges as edge}
-					{#if edge === PendingValue}
-						<LinkPanel about="" href="" border={true} as="a">
-							<LinkPanelTitle
-								><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
-							>
-							<LinkPanelDescription
-								><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
-							>
-						</LinkPanel>
-					{:else}
-						<LinkPanel
-							about={edge.node.description}
-							href="/team/{edge.node.name}"
-							border={true}
-							as="a"
+				{#if $store.data.me == PendingValue}
+					<LinkPanel about="" href="" border={true} as="a">
+						<LinkPanelTitle
+							><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
 						>
-							<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
-							<LinkPanelDescription>{edge.node.description}</LinkPanelDescription>
+						<LinkPanelDescription
+							><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
+						>
+					</LinkPanel>
+				{:else if $store.data.me.__typename == 'User'}
+					{#each $store.data.me.teams.nodes as node}
+						{@const team = node.team}
+						<LinkPanel about={team.purpose} href="/team/{team.slug}" border={true} as="a">
+							<LinkPanelTitle>{team.slug}</LinkPanelTitle>
+							<LinkPanelDescription>{team.purpose}</LinkPanelDescription>
 						</LinkPanel>
-					{/if}
-				{/each}
+					{/each}
+				{/if}
 			{/if}
 		</div>
 	</Card>

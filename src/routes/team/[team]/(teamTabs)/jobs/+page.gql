@@ -1,31 +1,25 @@
-query Jobs($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
+query Jobs($team: Slug!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
 @loading(count: 5, cascade: true) {
-	team(name: $team) {
+	team(slug: $team) {
 		id
-		naisjobs(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
-			totalCount
+		naisjobs(limit: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			pageInfo {
+				totalCount
 				hasNextPage
 				hasPreviousPage
-				startCursor
-				endCursor
-				from
-				to
 			}
 
-			edges {
-				node {
-					deployInfo {
-						timestamp
-					}
+			nodes {
+				deployInfo {
+					timestamp
+				}
+				name
+				image
+				env {
 					name
-					image
-					env {
-						name
-					}
-					jobState {
-						state
-					}
+				}
+				jobState {
+					state
 				}
 			}
 		}

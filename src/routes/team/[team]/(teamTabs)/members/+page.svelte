@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -30,22 +29,22 @@
 				<Th>Role</Th>
 			</Thead>
 			<Tbody>
-				{#each team.members.edges as edge}
+				{#each team.members.nodes as node}
 					<Tr>
-						{#if team.name === PendingValue}
+						{#if team.slug === PendingValue}
 							{#each new Array(3).fill('text') as variant}
 								<Td><Skeleton {variant} /></Td>
 							{/each}
 						{:else}
-							<Td>{capitalizeFirstLetterInEachWord(edge.node.name.toString())}</Td>
-							<Td>{edge.node.email}</Td>
-							<Td>{edge.node.role.toString().toLowerCase()}</Td>
+							<Td>{capitalizeFirstLetterInEachWord(node.user.name.toString())}</Td>
+							<Td>{node.user.email}</Td>
+							<Td>{node.role.toString().toLowerCase()}</Td>
 						{/if}
 					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
-		<Pagination
+		<!-- <Pagination
 			pageInfo={team.members.pageInfo}
 			totalCount={team.members.totalCount}
 			on:nextPage={() => {
@@ -56,6 +55,6 @@
 				if (!$Members.pageInfo.hasPreviousPage) return;
 				Members.loadPreviousPage();
 			}}
-		/>
+		/> -->
 	</Card>
 {/if}

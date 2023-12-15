@@ -1,13 +1,13 @@
-import type { Actions } from './$types';
 import { graphql } from '$houdini';
 import { redirect } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
 export const actions = {
 	default: async (event) => {
 		const query = graphql(`
 			mutation CreateTeam($input: CreateTeamInput!) {
 				createTeam(input: $input) {
-					name
+					slug
 				}
 			}
 		`);
@@ -16,8 +16,8 @@ export const actions = {
 		const resp = await query.mutate(
 			{
 				input: {
-					name: (data.get('name') as string) || '',
-					description: (data.get('description') as string) || '',
+					slug: (data.get('name') as string) || '',
+					purpose: (data.get('description') as string) || '',
 					slackChannel: (data.get('slackChannel') as string) || ''
 				}
 			},
@@ -26,8 +26,8 @@ export const actions = {
 		if (resp.errors) {
 			return { errors: resp.errors };
 		}
-		if (resp.data?.createTeam.name) {
-			throw redirect(303, `/team/${resp.data.createTeam.name}`);
+		if (resp.data?.createTeam.slug) {
+			throw redirect(303, `/team/${resp.data.createTeam.slug}`);
 		}
 	}
 } satisfies Actions;

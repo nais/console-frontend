@@ -1,19 +1,13 @@
 query Teams {
-	teams(first: 50) @paginate(mode: SinglePage) {
-		totalCount
+	teams(limit: 50) @paginate(mode: SinglePage) {
+		nodes {
+			slug
+			purpose
+		}
 		pageInfo {
+			totalCount
 			hasNextPage
 			hasPreviousPage
-			startCursor
-			endCursor
-			from
-			to
-		}
-		edges {
-			node {
-				description
-				name
-			}
 		}
 	}
 }
