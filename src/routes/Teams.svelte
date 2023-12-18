@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import {
 		Alert,
 		LinkPanel,
@@ -44,38 +43,36 @@
 		</Alert>
 	{/each}
 {:else}
-	<Card width="600px">
-		<h2>
-			<PersonGroupIcon />
-			My teams
-		</h2>
-		<div class="teams">
-			{#if $store.data}
-				{#each $store.data.user.teams.edges as edge}
-					{#if edge === PendingValue}
-						<LinkPanel about="" href="" border={true} as="a">
-							<LinkPanelTitle
-								><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
-							>
-							<LinkPanelDescription
-								><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
-							>
-						</LinkPanel>
-					{:else}
-						<LinkPanel
-							about={edge.node.description}
-							href="/team/{edge.node.name}"
-							border={true}
-							as="a"
+	<h2>
+		<PersonGroupIcon />
+		My teams
+	</h2>
+	<div class="teams">
+		{#if $store.data}
+			{#each $store.data.user.teams.edges as edge}
+				{#if edge === PendingValue}
+					<LinkPanel about="" href="" border={true} as="a">
+						<LinkPanelTitle
+							><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
 						>
-							<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
-							<LinkPanelDescription>{edge.node.description}</LinkPanelDescription>
-						</LinkPanel>
-					{/if}
-				{/each}
-			{/if}
-		</div>
-	</Card>
+						<LinkPanelDescription
+							><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
+						>
+					</LinkPanel>
+				{:else}
+					<LinkPanel
+						about={edge.node.description}
+						href="/team/{edge.node.name}"
+						border={true}
+						as="a"
+					>
+						<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
+						<LinkPanelDescription>{edge.node.description}</LinkPanelDescription>
+					</LinkPanel>
+				{/if}
+			{/each}
+		{/if}
+	</div>
 {/if}
 
 <style>
