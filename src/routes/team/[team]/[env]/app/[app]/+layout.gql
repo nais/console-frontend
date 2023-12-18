@@ -1,37 +1,7 @@
-query AppNotificationState($app: String!, $team: String!, $env: String!) @loading {
-	app(name: $app, team: $team, env: $env) @loading {
-		name @loading
-
+query AppNotificationDot($app: String!, $team: String!, $env: String!) {
+	app(name: $app, team: $team, env: $env) {
 		appState {
-			state @loading
-
-			errors {
-				__typename
-				...AppErrorFragment
-			}
-		}
-		instances {
-			name
 			state
-			message
-		}
-		accessPolicy {
-			inbound {
-				rules {
-					application
-					namespace
-					cluster
-					mutual
-				}
-			}
-			outbound {
-				rules {
-					application
-					namespace
-					cluster
-					mutual
-				}
-			}
 		}
 	}
 }
