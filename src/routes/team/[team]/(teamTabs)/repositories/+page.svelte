@@ -6,6 +6,7 @@
 	import {
 		Button,
 		HelpText,
+		Link,
 		Table,
 		Tbody,
 		Td,
@@ -125,7 +126,7 @@
 			<Tbody>
 				{#each team.githubRepositories.edges as repo}
 					<Tr>
-						<Td>{repo.node.name}</Td>
+						<Td><Link href="https://github.com/{repo.node.name}">{repo.node.name}</Link></Td>
 						{#if repo.node.authorizations !== null && repo.node.name !== null}
 							<Td>
 								{#if repo.node.authorizations.includes('DEPLOY')}
