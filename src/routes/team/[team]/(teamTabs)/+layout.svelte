@@ -43,6 +43,10 @@
 		{
 			tab: 'Vulnerabilities',
 			routeId: '/team/[team]/(teamTabs)/vulnerabilities'
+		},
+		{
+			tab: 'Repositories',
+			routeId: '/team/[team]/(teamTabs)/repositories'
 		}
 	];
 </script>
@@ -62,11 +66,6 @@
 				href={replacer('/team/[team]/(teamTabs)/settings', { team })}
 				active={currentRoute == '/team/[team]/(teamTabs)/settings'}
 				title="Settings"
-			/>
-			<Tab
-				href={replacer('/team/[team]/(teamTabs)/repositories', { team })}
-				active={currentRoute == '/team/[team]/(teamTabs)/repositories'}
-				title="Repositories"
 			/>
 		{/if}
 	{/if}

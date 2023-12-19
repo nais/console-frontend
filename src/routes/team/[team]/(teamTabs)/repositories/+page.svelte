@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, RepositoryAuthorization, graphql } from '$houdini';
+	import { OrderByField, PendingValue, RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import {
@@ -20,8 +20,10 @@
 
 	export let data: PageData;
 
-	$: ({ Repositories } = data);
+	$: ({ Repositories, TeamRoles } = data);
 	$: team = $Repositories.data?.team;
+
+	$: teamRoles = $TeamRoles.data?.team;
 
 	$: teamName = $page.params.team;
 
@@ -119,44 +121,48 @@
 			<Thead>
 				<Tr>
 					<Th sortable={true} sortKey="NAME">Repository</Th>
-					<Th>Deploy</Th>
-					<Th sortable={true} sortKey="ROLE">Role</Th>
+					{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
+						<Th>Deploy</Th>
+						<Th sortable={true} sortKey="ROLE">Role</Th>
+					{/if}
 				</Tr>
 			</Thead>
 			<Tbody>
 				{#each team.githubRepositories.edges as repo}
 					<Tr>
 						<Td><Link href="https://github.com/{repo.node.name}">{repo.node.name}</Link></Td>
-						{#if repo.node.authorizations !== null && repo.node.name !== null}
-							<Td>
-								{#if repo.node.authorizations.includes('DEPLOY')}
-									<Button
-										size="xsmall"
-										variant="danger"
-										on:click={() => {
-											deauthorizeDeploy(teamName, repo.node.name);
-										}}>Deauthorize</Button
+						{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
+							{#if repo.node.authorizations !== null && repo.node.name !== null}
+								<Td>
+									{#if repo.node.authorizations.includes('DEPLOY')}
+										<Button
+											size="xsmall"
+											variant="danger"
+											on:click={() => {
+												deauthorizeDeploy(teamName, repo.node.name);
+											}}>Deauthorize</Button
+										>
+									{:else}
+										<Button
+											size="xsmall"
+											variant="primary-neutral"
+											on:click={() => {
+												authorizeDeploy(teamName, repo.node.name);
+											}}>Authorize</Button
+										>
+									{/if}
+								</Td>
+							{/if}
+							<Td
+								><div class="roleHelpText">
+									{repo.node.roleName}<HelpText placement={'left'} title="Role description"
+										>The team's role for the repository.<br />{repo.node.roleName.toUpperCase()}: {roleDesc(
+											repo.node.roleName.toUpperCase()
+										)}</HelpText
 									>
-								{:else}
-									<Button
-										size="xsmall"
-										variant="primary-neutral"
-										on:click={() => {
-											authorizeDeploy(teamName, repo.node.name);
-										}}>Authorize</Button
-									>
-								{/if}
-							</Td>
+								</div></Td
+							>
 						{/if}
-						<Td
-							><div class="roleHelpText">
-								{repo.node.roleName}<HelpText placement={'left'} title="Role description"
-									>The team's role for the repository.<br />{repo.node.roleName.toUpperCase()}: {roleDesc(
-										repo.node.roleName.toUpperCase()
-									)}</HelpText
-								>
-							</div></Td
-						>
 					</Tr>
 				{/each}
 			</Tbody>
