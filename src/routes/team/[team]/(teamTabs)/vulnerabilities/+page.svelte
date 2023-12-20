@@ -3,9 +3,15 @@
 	import { PendingValue } from '$houdini';
 	import { OrderByField } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
-	import type { TableSortState } from '@nais/ds-svelte-community';
+	import {
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
 	import {
 		Alert,
 		Skeleton,
@@ -18,7 +24,6 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
-	import { sortTable } from '../../../../../helpers';
 	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
@@ -26,10 +31,11 @@
 	$: ({ TeamVulnerabilities } = data);
 	$: team = $TeamVulnerabilities.data?.team;
 
-	let sortState: TableSortState = {
-		orderBy: 'SEVERITY_CRITICAL',
-		direction: 'descending'
-	};
+	$: ({ sortState, limit, offset } = tableStateFromVariables(
+		$TeamVulnerabilities.variables,
+		OrderByField.SEVERITY_CRITICAL,
+		'descending'
+	));
 
 	const onClick = () => {
 		let props = {};
@@ -37,19 +43,6 @@
 			routeID: '/dependencytrack/team/findings'
 		};
 		logEvent('pageview', props);
-	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		TeamVulnerabilities.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'SEVERITY_CRITICAL',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
 	};
 </script>
 
@@ -67,7 +60,8 @@
 				sort={sortState}
 				on:sortChange={(e) => {
 					const { key } = e.detail;
-					sortState = sortTable(key, sortState, refetch);
+					const ss = sortTable(key, sortState);
+					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 				}}
 			>
 				<Thead>
@@ -196,22 +190,15 @@
 					{/if}
 				</Tbody>
 			</Table>
-			{#if team !== undefined}
-				{#if team.id !== PendingValue}
-					<!-- <Pagination
-						totalCount={team.vulnerabilities.totalCount}
-						pageInfo={team.vulnerabilities.pageInfo}
-						on:nextPage={() => {
-							if (!$TeamVulnerabilities.pageInfo.hasNextPage) return;
-							TeamVulnerabilities.loadNextPage();
-						}}
-						on:previousPage={() => {
-							if (!$TeamVulnerabilities.pageInfo.hasPreviousPage) return;
-							TeamVulnerabilities.loadPreviousPage();
-						}}
-					/> -->
-				{/if}
-			{/if}
+
+			<Pagination
+				pageInfo={team?.vulnerabilities.pageInfo}
+				{limit}
+				{offset}
+				changePage={(e) => {
+					changeParams({ page: e.toString() });
+				}}
+			/>
 		</Card>
 	</div>
 {/if}

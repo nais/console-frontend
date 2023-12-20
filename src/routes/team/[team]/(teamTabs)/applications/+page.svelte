@@ -1,47 +1,27 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, SortOrder } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
-	import type { TableSortState } from '@nais/ds-svelte-community';
+	import {
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { sortTable } from '../../../../../helpers';
 	import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
-	import { goto } from '$app/navigation';
-	import Pagination from '$lib/Pagination.svelte';
 
 	export let data: PageData;
 
 	$: teamName = $page.params.team;
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
-	$: limit = $Workloads.variables?.limit || 0;
-	$: offset = $Workloads.variables?.offset || 0;
-	$: sortState = $Workloads.variables?.orderBy
-		? ({
-				orderBy: $Workloads.variables.orderBy.field,
-				direction: mapDirection[$Workloads.variables.orderBy.direction]
-		  } as TableSortState)
-		: ({ orderBy: 'STATUS', direction: 'ascending' } as TableSortState);
 
-	const changePage = (pg: number) => {
-		changeParams({ page: pg.toString() });
-	};
-	const changeParams = (params: Record<string, string>) => {
-		let query = new URLSearchParams($page.url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
-	};
-	const mapDirection = {
-		ascending: SortOrder.ASC,
-		descending: SortOrder.DESC,
-		[SortOrder.ASC]: 'ascending',
-		[SortOrder.DESC]: 'descending'
-	};
+	$: ({ sortState, limit, offset } = tableStateFromVariables($Workloads.variables));
 </script>
 
 {#if $Workloads.errors}
@@ -59,7 +39,7 @@
 				on:sortChange={(e) => {
 					const { key } = e.detail;
 					const ss = sortTable(key, sortState);
-					changeParams({ col: ss.orderBy, dir: mapDirection[ss.direction] });
+					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 				}}
 			>
 				<Thead>
@@ -113,23 +93,14 @@
 					{/if}
 				</Tbody>
 			</Table>
-			<Pagination pageInfo={team?.apps.pageInfo} {limit} {offset} {changePage} />
-			{#if team !== undefined}
-				{#if team.id !== PendingValue}
-					<!-- <Pagination
-						totalCount={team.apps.totalCount}
-						pageInfo={team.apps.pageInfo}
-						on:nextPage={() => {
-							if (!$Workloads.pageInfo.hasNextPage) return;
-							Workloads.loadNextPage();
-						}}
-						on:previousPage={() => {
-							if (!$Workloads.pageInfo.hasPreviousPage) return;
-							Workloads.loadPreviousPage();
-						}}
-					/> -->
-				{/if}
-			{/if}
+			<Pagination
+				pageInfo={team?.apps.pageInfo}
+				{limit}
+				{offset}
+				changePage={(e) => {
+					changeParams({ page: e.toString() });
+				}}
+			/>
 		</Card>
 	</div>
 {/if}

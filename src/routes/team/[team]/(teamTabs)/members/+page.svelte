@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Members } = data);
 	$: team = $Members.data?.team;
+
+	$: ({ limit, offset } = limitOffset($Members.variables));
 
 	function capitalizeFirstLetterInEachWord(str: string): string {
 		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
@@ -44,17 +48,13 @@
 				{/each}
 			</Tbody>
 		</Table>
-		<!-- <Pagination
+		<Pagination
 			pageInfo={team.members.pageInfo}
-			totalCount={team.members.totalCount}
-			on:nextPage={() => {
-				if (!$Members.pageInfo.hasNextPage) return;
-				Members.loadNextPage();
+			{limit}
+			{offset}
+			changePage={(page) => {
+				changeParams({ page: page.toString() });
 			}}
-			on:previousPage={() => {
-				if (!$Members.pageInfo.hasPreviousPage) return;
-				Members.loadPreviousPage();
-			}}
-		/> -->
+		/>
 	</Card>
 {/if}

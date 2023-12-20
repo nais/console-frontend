@@ -1,8 +1,12 @@
-query Jobs($team: Slug!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
-@loading(count: 5, cascade: true) {
+query Jobs(
+	$limit: Int
+	$offset: Int
+	$team: Slug!
+	$orderBy: OrderBy = { field: STATUS, direction: ASC }
+) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
-		naisjobs(limit: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
+		naisjobs(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {
 				totalCount
 				hasNextPage

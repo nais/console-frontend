@@ -1,5 +1,5 @@
-query Teams {
-	teams(limit: 50) @paginate(mode: SinglePage) {
+query Teams($limit: Int, $offset: Int) {
+	teams(limit: $limit, offset: $offset) {
 		nodes {
 			slug
 			purpose

@@ -2,7 +2,9 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import {
 		Alert,
 		Button,
@@ -19,6 +21,7 @@
 	export let data: PageData;
 	$: ({ Deploys } = data);
 	$: deploys = $Deploys.data?.deployments;
+	$: ({ limit, offset } = limitOffset($Deploys.variables));
 </script>
 
 <svelte:head><title>Deploys - Console</title></svelte:head>
@@ -99,17 +102,13 @@
 				{/each}
 			</Tbody>
 		</Table>
-		<!-- <Pagination
-			totalCount={deploys.totalCount}
+		<Pagination
 			pageInfo={deploys.pageInfo}
-			on:nextPage={() => {
-				if (!deploys?.pageInfo.hasNextPage) return;
-				Deploys.loadNextPage();
+			{limit}
+			{offset}
+			changePage={(page) => {
+				changeParams({ page: page.toString() });
 			}}
-			on:previousPage={() => {
-				if (!deploys?.pageInfo.hasPreviousPage) return;
-				Deploys.loadPreviousPage();
-			}}
-		/> -->
+		/>
 	{/if}
 </Card>

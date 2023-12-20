@@ -3,7 +3,9 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/DeploymentStatus.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import {
 		Alert,
 		Button,
@@ -23,6 +25,7 @@
 	$: team = $page.params.team;
 	$: ({ TeamDeployments } = data);
 	$: teamData = $TeamDeployments.data?.team;
+	$: ({ limit, offset } = limitOffset($TeamDeployments.variables));
 </script>
 
 {#if $TeamDeployments.errors}
@@ -93,21 +96,14 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if teamData !== undefined}
-			{#if teamData.id !== PendingValue}
-				<!-- <Pagination
-					pageInfo={teamData.deployments.pageInfo}
-					totalCount={teamData.deployments.totalCount}
-					on:nextPage={() => {
-						if (!teamData?.deployments.pageInfo.hasNextPage) return;
-						TeamDeployments.loadNextPage();
-					}}
-					on:previousPage={() => {
-						if (!teamData?.deployments.pageInfo.hasPreviousPage) return;
-						TeamDeployments.loadPreviousPage();
-					}}
-				/> -->
-			{/if}
-		{/if}
+
+		<Pagination
+			pageInfo={teamData.deployments.pageInfo}
+			{limit}
+			{offset}
+			changePage={(page) => {
+				changeParams({ page: page.toString() });
+			}}
+		/>
 	</Card>
 {/if}

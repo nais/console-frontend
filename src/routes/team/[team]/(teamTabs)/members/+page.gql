@@ -1,7 +1,7 @@
-query Members($team: Slug!) @loading(cascade: true) {
+query Members($limit: Int, $offset: Int, $team: Slug!) @loading(cascade: true) {
 	team(slug: $team) {
 		slug
-		members(limit: 50) @paginate(mode: SinglePage) {
+		members(limit: $limit, offset: $offset) {
 			pageInfo {
 				totalCount
 				hasNextPage

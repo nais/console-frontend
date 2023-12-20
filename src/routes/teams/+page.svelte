@@ -1,9 +1,12 @@
 <script lang="ts">
+	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import { LinkPanel, LinkPanelDescription, LinkPanelTitle } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Teams } = data);
+	$: ({ limit, offset } = limitOffset($Teams.variables));
 </script>
 
 <svelte:head><title>Teams - Console</title></svelte:head>
@@ -19,18 +22,15 @@
 			</LinkPanel>
 		{/each}
 	</div>
-	<!-- <Pagination
-		pageInfo={$Teams.data.teams.pageInfo}
-		totalCount={$Teams.data.teams.totalCount}
-		on:nextPage={() => {
-			if (!$Teams.pageInfo.hasNextPage) return;
-			Teams.loadNextPage();
+
+	<Pagination
+		pageInfo={$Teams.data?.teams?.pageInfo}
+		{limit}
+		{offset}
+		changePage={(page) => {
+			changeParams({ page: page.toString() });
 		}}
-		on:previousPage={() => {
-			if (!$Teams.pageInfo.hasPreviousPage) return;
-			Teams.loadPreviousPage();
-		}}
-	/> -->
+	/>
 {/if}
 
 <style>
