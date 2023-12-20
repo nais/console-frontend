@@ -5,7 +5,7 @@ export const _WorkloadsVariables: WorkloadsVariables = ({ url }) => {
 	if (!page || page < 1) {
 		throw error(400, 'Bad pagenumber');
 	}
-	const limit = 1;
+	const limit = 25;
 	const offset = (page - 1) * limit;
 	const field = (url.searchParams.get('col') || 'STATUS') as never;
 	const direction = (url.searchParams.get('dir') || 'ASC') as never;

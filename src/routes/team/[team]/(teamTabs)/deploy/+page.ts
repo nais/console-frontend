@@ -5,7 +5,7 @@ export const _TeamDeploymentsVariables: TeamDeploymentsVariables = ({ url }) => 
 	if (!page || page < 1) {
 		throw error(400, 'Bad pagenumber');
 	}
-	const limit = 10;
+	const limit = 100;
 	const offset = (page - 1) * limit;
 
 	return { limit, offset };

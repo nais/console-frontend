@@ -5,7 +5,7 @@ export const _MembersVariables: MembersVariables = ({ url }) => {
 	if (!page || page < 1) {
 		throw error(400, 'Bad pagenumber');
 	}
-	const limit = 10;
+	const limit = 25;
 	const offset = (page - 1) * limit;
 
 	return { limit, offset };
