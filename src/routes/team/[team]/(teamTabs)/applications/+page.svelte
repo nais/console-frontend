@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue } from '$houdini';
+	import { PendingValue, SortOrder } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
@@ -9,28 +9,38 @@
 	import { sortTable } from '../../../../../helpers';
 	import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
+	import { goto } from '$app/navigation';
+	import Pagination from '$lib/Pagination.svelte';
+
+	export let data: PageData;
 
 	$: teamName = $page.params.team;
-	export let data: PageData;
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
+	$: limit = $Workloads.variables?.limit || 0;
+	$: offset = $Workloads.variables?.offset || 0;
+	$: sortState = $Workloads.variables?.orderBy
+		? ({
+				orderBy: $Workloads.variables.orderBy.field,
+				direction: mapDirection[$Workloads.variables.orderBy.direction]
+		  } as TableSortState)
+		: ({ orderBy: 'STATUS', direction: 'ascending' } as TableSortState);
 
-	let sortState: TableSortState = {
-		orderBy: 'STATUS',
-		direction: 'ascending'
+	const changePage = (pg: number) => {
+		changeParams({ page: pg.toString() });
 	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		Workloads.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'STATUS',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
+	const changeParams = (params: Record<string, string>) => {
+		let query = new URLSearchParams($page.url.searchParams);
+		for (const [key, value] of Object.entries(params)) {
+			query.set(key, value);
+		}
+		goto(`?${query.toString()}`);
+	};
+	const mapDirection = {
+		ascending: SortOrder.ASC,
+		descending: SortOrder.DESC,
+		[SortOrder.ASC]: 'ascending',
+		[SortOrder.DESC]: 'descending'
 	};
 </script>
 
@@ -48,7 +58,8 @@
 				sort={sortState}
 				on:sortChange={(e) => {
 					const { key } = e.detail;
-					sortState = sortTable(key, sortState, refetch);
+					const ss = sortTable(key, sortState);
+					changeParams({ col: ss.orderBy, dir: mapDirection[ss.direction] });
 				}}
 			>
 				<Thead>
@@ -102,6 +113,7 @@
 					{/if}
 				</Tbody>
 			</Table>
+			<Pagination pageInfo={team?.apps.pageInfo} {limit} {offset} {changePage} />
 			{#if team !== undefined}
 				{#if team.id !== PendingValue}
 					<!-- <Pagination

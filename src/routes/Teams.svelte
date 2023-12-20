@@ -19,7 +19,7 @@
 	};
 
 	const limit = 3;
-	$: offset = 0;
+	let offset = 0;
 	export const _UserTeamsVariables: UserTeamsVariables = () => {
 		return { limit, offset };
 	};
@@ -84,7 +84,7 @@
 							<LinkPanelDescription>{team.purpose}</LinkPanelDescription>
 						</LinkPanel>
 					{/each}
-					<Pagination pageInfo={$store.data.me.teams.pageInfo} {limit} bind:offset={offset} {changePage} />
+					<Pagination pageInfo={$store.data.me.teams.pageInfo} {limit} {offset} {changePage} />
 				{/if}
 			{/if}
 		</div>

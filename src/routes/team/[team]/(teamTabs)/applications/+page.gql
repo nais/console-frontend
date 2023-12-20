@@ -1,8 +1,12 @@
-query Workloads($team: Slug!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
-@loading(count: 5, cascade: true) {
+query Workloads(
+	$team: Slug!
+	$orderBy: OrderBy = { field: STATUS, direction: ASC }
+	$limit: Int
+	$offset: Int
+) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
-		apps(limit: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
+		apps(limit: $limit, offset: $offset, orderBy: $orderBy)  {
 			pageInfo {
 				totalCount
 				hasNextPage

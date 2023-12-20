@@ -1,7 +1,7 @@
 import { OrderByField } from '$houdini';
 import type { TableSortState } from '@nais/ds-svelte-community';
 
-export const sortTable = (key: string, sortState: TableSortState, fetch: (key: string) => void) => {
+export const sortTable = (key: string, sortState: TableSortState) => {
 	if (!sortState) {
 		sortState = {
 			orderBy: OrderByField[key as keyof typeof OrderByField],
@@ -21,6 +21,5 @@ export const sortTable = (key: string, sortState: TableSortState, fetch: (key: s
 			sortState.direction = 'descending';
 		}
 	}
-	fetch(key);
 	return sortState;
 };

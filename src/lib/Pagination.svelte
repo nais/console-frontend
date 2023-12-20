@@ -1,21 +1,33 @@
 <script lang="ts">
+	import { PendingValue } from '$houdini';
 	import { Pagination } from '@nais/ds-svelte-community';
 	export let limit: number;
 	export let offset: number;
 	export let changePage: (page: number) => void;
 
-	export let pageInfo: {
-		readonly totalCount: number;
-		readonly hasNextPage: boolean;
-		readonly hasPreviousPage: boolean;
-	};
+	export let pageInfo:
+		| {
+				readonly totalCount: number | typeof PendingValue;
+		  }
+		| undefined;
 
-	$: count = Math.ceil(pageInfo.totalCount / limit);
-	$: page = Math.ceil(offset / limit) + 1;
+	function count(totalCount: number) {
+		return Math.ceil(totalCount / limit);
+	}
+	function page(offset: number, limit: number) {
+		return Math.ceil(offset / limit) + 1;
+	}
 </script>
 
-{#if !pageInfo.hasNextPage && !pageInfo.hasPreviousPage}
-	<div>{pageInfo.hasNextPage} - {pageInfo.hasPreviousPage}</div>
+{#if !pageInfo || pageInfo.totalCount == PendingValue}
+	<div />
+{:else if pageInfo.totalCount <= limit}
+	<div />
 {:else}
-	<Pagination {count} {page} size="small" on:change={(e) => changePage(e.detail.page)} />
+	<Pagination
+		count={count(pageInfo.totalCount)}
+		page={page(offset, limit)}
+		size="small"
+		on:change={(e) => changePage(e.detail.page)}
+	/>
 {/if}
