@@ -70,7 +70,7 @@
 			<Alert variant="warning">
 				Deprecated image registry <strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
-				<a href="https://github.com/nais/docker-build-push"> docker-build-push</a> on how to migrate
+				<a href="https://doc.nais.io/guides/oci-migration/"> docker-build-push</a> on how to migrate
 				to Google Artifact Registry.
 			</Alert>
 		</div>
