@@ -1,64 +1,21 @@
 <script lang="ts">
-	import { PendingValue } from '$houdini';
-	import { Button } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
-	import { createEventDispatcher } from 'svelte';
-	export let totalCount: number | typeof PendingValue;
-	export let pageInfo:
-		| {
-				readonly hasNextPage: boolean;
-				readonly hasPreviousPage: boolean;
-				readonly from: number;
-				readonly to: number;
-		  }
-		| {
-				readonly hasNextPage: typeof PendingValue;
-				readonly hasPreviousPage: typeof PendingValue;
-				readonly from: typeof PendingValue;
-				readonly to: typeof PendingValue;
-		  };
-	const dispatch = createEventDispatcher();
+	import { Pagination } from '@nais/ds-svelte-community';
+	export let limit: number;
+	export let offset: number;
+	export let changePage: (page: number) => void;
+
+	export let pageInfo: {
+		readonly totalCount: number;
+		readonly hasNextPage: boolean;
+		readonly hasPreviousPage: boolean;
+	};
+
+	$: count = Math.ceil(pageInfo.totalCount / limit);
+	$: page = Math.ceil(offset / limit) + 1;
 </script>
 
-{#if (!pageInfo.hasNextPage && !pageInfo.hasPreviousPage) || totalCount === PendingValue}
-	<div />
+{#if !pageInfo.hasNextPage && !pageInfo.hasPreviousPage}
+	<div>{pageInfo.hasNextPage} - {pageInfo.hasPreviousPage}</div>
 {:else}
-	<div>
-		<Button
-			size="xsmall"
-			on:click={() => {
-				if (!pageInfo.hasPreviousPage) return;
-				dispatch('previousPage');
-			}}
-			disabled={!pageInfo.hasPreviousPage}
-			><svelte:fragment slot="icon-left"
-				><ChevronLeftIcon aria-label="Previous page" /></svelte:fragment
-			></Button
-		>
-		<span>
-			{pageInfo.from} -
-			{pageInfo.to} of
-			{totalCount}
-		</span>
-		<Button
-			size="xsmall"
-			on:click={() => {
-				if (!pageInfo.hasNextPage) return;
-				dispatch('nextPage');
-			}}
-			disabled={!pageInfo.hasNextPage}
-		>
-			<svelte:fragment slot="icon-left"><ChevronRightIcon aria-label="Next page" /></svelte:fragment
-			></Button
-		>
-	</div>
+	<Pagination {count} {page} size="small" on:change={(e) => changePage(e.detail.page)} />
 {/if}
-
-<style>
-	div {
-		display: flex;
-		justify-content: flex-end;
-		margin-top: 1rem;
-		gap: 1rem;
-	}
-</style>

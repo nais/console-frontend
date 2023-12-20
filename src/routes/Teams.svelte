@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import {
 		Alert,
 		Button,
@@ -10,15 +11,25 @@
 		Skeleton
 	} from '@nais/ds-svelte-community';
 	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import type { UserTeamsVariables } from './$houdini';
+
+	const changePage = (page: number) => {
+		offset = (page - 1) * limit;
+		store.fetch({ variables: { offset } });
+	};
+
+	const limit = 3;
+	$: offset = 0;
+	export const _UserTeamsVariables: UserTeamsVariables = () => {
+		return { limit, offset };
+	};
 
 	const store = graphql(`
-		query UserTeams @load {
+		query UserTeams($limit: Int, $offset: Int) @load {
 			me @loading {
 				__typename
 				... on User {
-					name
-					email
-					teams {
+					teams(limit: $limit, offset: $offset) {
 						pageInfo {
 							totalCount
 							hasNextPage
@@ -73,6 +84,7 @@
 							<LinkPanelDescription>{team.purpose}</LinkPanelDescription>
 						</LinkPanel>
 					{/each}
+					<Pagination pageInfo={$store.data.me.teams.pageInfo} {limit} bind:offset={offset} {changePage} />
 				{/if}
 			{/if}
 		</div>
