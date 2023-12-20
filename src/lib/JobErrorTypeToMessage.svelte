@@ -66,7 +66,7 @@
 		<Alert variant="warning">
 			Deprecated image registry <strong>{$data.registry}</strong> for image
 			<strong>{$data.name}</strong>. See
-			<a href="https://doc.nais.io/nais-application/oci-migration/"> docker-build-push</a> on how to migrate to
+			<a href="https://doc.nais.io/guides/oci-migration/"> docker-build-push</a> on how to migrate to
 			Google Artifact Registry.
 		</Alert>
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
