@@ -1,10 +1,25 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import AddMember from './AddMember.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams, limitOffset } from '$lib/pagination';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Heading,
+		Modal,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import Header from '../../../../Header.svelte';
 
 	export let data: PageData;
 	$: ({ Members } = data);
@@ -15,6 +30,8 @@
 	function capitalizeFirstLetterInEachWord(str: string): string {
 		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
 	}
+
+	let addMemberOpen = false;
 </script>
 
 {#if $Members.errors}
@@ -25,7 +42,16 @@
 	</Alert>
 {:else if team}
 	<Card>
-		<h3>Members</h3>
+		<div class="header">
+			<h3>Members</h3>
+			<Button
+				size="small"
+				on:click={() => {
+					addMemberOpen = !addMemberOpen;
+				}}><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Add member</Button
+			>
+		</div>
+
 		<Table size="small" zebraStripes={true}>
 			<Thead>
 				<Th>Name</Th>
@@ -57,4 +83,17 @@
 			}}
 		/>
 	</Card>
+	<AddMember bind:open={addMemberOpen} />
 {/if}
+
+<style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
+	.header h3 {
+		margin: 0;
+	}
+</style>
