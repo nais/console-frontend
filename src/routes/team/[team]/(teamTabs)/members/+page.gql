@@ -9,6 +9,7 @@ query Members($limit: Int, $offset: Int, $team: Slug!) @loading(cascade: true) {
 			}
 			nodes @loading(count: 10) {
 				user {
+					id
 					email
 					name
 				}

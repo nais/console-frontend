@@ -10,6 +10,7 @@ const config = {
 	},
 	scalars: {
 		Slug: { type: 'string' },
+		ReconcilerName: { type: 'string' },
 		Date: {
 			type: 'Date',
 			unmarshal(val) {

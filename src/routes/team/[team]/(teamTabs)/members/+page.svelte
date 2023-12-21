@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import AddMember from './AddMember.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams, limitOffset } from '$lib/pagination';
 	import {
 		Alert,
 		Button,
-		Heading,
-		Modal,
 		Skeleton,
 		Table,
 		Tbody,
@@ -17,9 +14,9 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
-	import Header from '../../../../Header.svelte';
+	import type { PageData } from './$houdini';
+	import AddMember from './AddMember.svelte';
 
 	export let data: PageData;
 	$: ({ Members } = data);
@@ -83,7 +80,17 @@
 			}}
 		/>
 	</Card>
-	<AddMember bind:open={addMemberOpen} />
+	{#if team && team.slug != PendingValue}
+		<AddMember
+			bind:open={addMemberOpen}
+			team={team.slug}
+			on:created={() => {
+				Members.fetch({
+					policy: 'NetworkOnly'
+				});
+			}}
+		/>
+	{/if}
 {/if}
 
 <style>
