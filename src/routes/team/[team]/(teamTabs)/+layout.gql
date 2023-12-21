@@ -1,6 +1,6 @@
 query TeamRoles($team: Slug!) {
 	team(slug: $team) @loading {
-		viewerIsAdmin
+		viewerIsOwner
 		viewerIsMember
 	}
 }

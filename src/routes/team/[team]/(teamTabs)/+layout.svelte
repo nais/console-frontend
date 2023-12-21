@@ -57,7 +57,7 @@
 		<Tab href={replacer(routeId, { team })} active={currentRoute == routeId} title={tab} />
 	{/each}
 	{#if $TeamRoles.data}
-		{#if $TeamRoles.data.team !== PendingValue && ($TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsAdmin)}
+		{#if $TeamRoles.data.team !== PendingValue && ($TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsOwner)}
 			<Tab
 				href={replacer('/team/[team]/(teamTabs)/settings', { team })}
 				active={currentRoute == '/team/[team]/(teamTabs)/settings'}

@@ -2256,11 +2256,11 @@ type Team {
   """
   syncErrors: [SyncError!]!
 
-  """Whether or not the viewer is an administrator of the team."""
-  viewerIsAdmin: Boolean!
-
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
+
+  """Whether or not the viewer is an owner of the team."""
+  viewerIsOwner: Boolean!
 
   """The vulnerabilities for the team's applications."""
   vulnerabilities(
