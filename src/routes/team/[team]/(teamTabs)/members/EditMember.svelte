@@ -11,11 +11,13 @@
 		Select
 	} from '@nais/ds-svelte-community';
 	import type { TeamMemberVariables } from './$houdini';
+	import { createEventDispatcher } from 'svelte';
 
 	export let open: boolean;
 	export let team: string;
 	export let userID: string;
 
+	const dispatcher = createEventDispatcher<{ updated: null }>();
 	const store = graphql(`
 		query TeamMember($team: Slug!, $userId: ID!) @load {
 			team(slug: $team) {
@@ -80,6 +82,7 @@
 			userId: userID,
 			role: e.target?.value as TeamRole
 		});
+		dispatcher('updated', null);
 	};
 
 	const updateReconciler = async (enabled: boolean, reconciler: string) => {
@@ -96,6 +99,7 @@
 				reconciler
 			});
 		}
+		dispatcher('updated', null);
 	};
 </script>
 

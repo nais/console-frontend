@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { graphql } from '$houdini';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import { changeParams, limitOffset } from '$lib/pagination';
 	import {
 		Alert,
 		Button,
+		Heading,
 		Skeleton,
 		Table,
 		Tbody,
@@ -14,7 +17,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
@@ -29,9 +32,25 @@
 		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
 	}
 
+	const deleteTeamMember = graphql(`
+		mutation DeleteTeamMember($team: Slug!, $userId: ID!) {
+			removeUserFromTeam(slug: $team, userId: $userId) {
+				slug
+			}
+		}
+	`);
+
+	const refetch = () => {
+		Members.fetch({
+			policy: 'CacheAndNetwork'
+		});
+	};
+
 	let addMemberOpen = false;
 	let editUser: string | null = null;
 	let editUserOpen = false;
+	let deleteUser: { id: string; name: string } | null = null;
+	let deleteUserOpen = false;
 </script>
 
 {#if $Members.errors}
@@ -44,12 +63,14 @@
 	<Card>
 		<div class="header">
 			<h3>Members</h3>
-			<Button
-				size="small"
-				on:click={() => {
-					addMemberOpen = !addMemberOpen;
-				}}><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Add member</Button
-			>
+			{#if team.viewerIsOwner}
+				<Button
+					size="small"
+					on:click={() => {
+						addMemberOpen = !addMemberOpen;
+					}}><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Add member</Button
+				>
+			{/if}
 		</div>
 
 		<Table size="small" zebraStripes={true}>
@@ -57,7 +78,7 @@
 				<Th>Name</Th>
 				<Th>E-mail</Th>
 				<Th>Role</Th>
-				<Th>&nbsp;</Th>
+				<Th style="width:100px">&nbsp;</Th>
 			</Thead>
 			<Tbody>
 				{#each team.members.nodes as node}
@@ -73,14 +94,30 @@
 							<Td>
 								{#if team.viewerIsOwner}
 									<Button
+										iconOnly
+										title="Edit member"
 										size="small"
-										variant="secondary"
+										variant="tertiary"
 										on:click={() => {
 											editUser = node.user.id.toString();
 											editUserOpen = true;
 										}}
 									>
-										Edit
+										<svelte:fragment slot="icon-left"><PencilIcon /></svelte:fragment>
+									</Button>
+									<Button
+										iconOnly
+										title="Delete member"
+										size="small"
+										variant="tertiary-neutral"
+										on:click={() => {
+											deleteUser = { id: node.user.id.toString(), name: node.user.name.toString() };
+											deleteUserOpen = true;
+										}}
+									>
+										<svelte:fragment slot="icon-left"
+											><TrashIcon style="color:var(--a-icon-danger)!important" /></svelte:fragment
+										>
 									</Button>
 								{/if}
 							</Td>
@@ -99,25 +136,34 @@
 		/>
 	</Card>
 	{#if team && team.slug != PendingValue}
-		<AddMember
-			bind:open={addMemberOpen}
-			team={team.slug}
-			on:created={() => {
-				Members.fetch({
-					policy: 'NetworkOnly'
-				});
-			}}
-		/>
+		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
 
 		{#if editUser && editUserOpen}
 			<EditMember
 				bind:open={editUserOpen}
 				team={team.slug}
 				userID={editUser}
+				on:updated={refetch}
 				on:closed={() => {
 					editUser = null;
 				}}
 			/>
+		{/if}
+		{#if deleteUser && deleteUserOpen}
+			{@const teamSlug = team.slug}
+			{@const userId = deleteUser.id}
+			<Confirm
+				bind:open={deleteUserOpen}
+				confirmText="Delete"
+				variant="danger"
+				on:confirm={async () => {
+					await deleteTeamMember.mutate({ team: teamSlug, userId });
+					refetch();
+				}}
+			>
+				<svelte:fragment slot="header"><Heading>Delete member</Heading></svelte:fragment>
+				Are you sure you want to remove <b>{deleteUser.name} </b>from this team?
+			</Confirm>
 		{/if}
 	{/if}
 {/if}
