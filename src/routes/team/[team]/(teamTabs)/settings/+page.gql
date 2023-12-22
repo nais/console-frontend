@@ -1,10 +1,10 @@
-query TeamSettings($team: Slug!) @loading(cascade: true) {
-	team(slug: $team) {
-		id
+query TeamSettings($team: Slug!) {
+	team(slug: $team) @loading {
+		id @loading
 		slug
 		purpose
-		slackChannel
-		slackAlertsChannels {
+		slackChannel @loading
+		slackAlertsChannels @loading(count: 2) {
 			channelName
 			environment
 		}
@@ -12,6 +12,14 @@ query TeamSettings($team: Slug!) @loading(cascade: true) {
 			gcpProjects {
 				projectId
 				environment
+			}
+			azureADGroupId
+			garRepositoryName
+			gitHubTeamSlug
+			googleWorkspaceGroupEmail
+			naisNamespaces {
+				environment
+				namespace
 			}
 		}
 		gitHubRepositories(limit: 10) {

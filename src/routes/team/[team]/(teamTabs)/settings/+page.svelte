@@ -4,7 +4,7 @@
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, CopyButton, Modal, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, Button, CopyButton, Loader, Modal, Skeleton } from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
 		ChatExclamationmarkIcon,
@@ -64,6 +64,11 @@
 	let descriptionError = false;
 	let defaultSlackChannelError = false;
 	let slackChannelsError = false;
+
+	const formatGARRepo = (repo: string) => {
+		const [, projectId, , location, , repository] = repo.split('/');
+		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
+	};
 </script>
 
 {#if $TeamSettings.errors}
@@ -132,50 +137,57 @@
 					</Alert>
 				{/if}
 			{/if}
-			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].environment !== PendingValue}
+			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0}
 				<p>
 					Per-environment slack-channels to be used for alerts sent by the platform.
 					{#each teamSettings.slackAlertsChannels as channel}
-						<div class="channel">
-							<b>{channel.environment}:</b>
-							<EditText
-								text={channel.channelName == PendingValue ? '' : channel.channelName}
-								variant="textfield"
-								on:save={async (e) => {
-									slackChannelsError = false;
-									if (!teamSettings || channel.channelName === PendingValue) {
-										return;
-									}
+						{#if channel !== PendingValue}
+							<div class="channel">
+								<b>{channel.environment}:</b>
+								<EditText
+									text={channel.channelName}
+									variant="textfield"
+									on:save={async (e) => {
+										slackChannelsError = false;
+										if (!teamSettings) {
+											return;
+										}
 
-									const updates = teamSettings.slackAlertsChannels.map((c) => {
-										if (c.environment === channel.environment) {
+										const updates = teamSettings.slackAlertsChannels.map((c) => {
+											if (c === PendingValue || channel === PendingValue) {
+												return {
+													environment: '',
+													channelName: ''
+												};
+											}
+
+											if (c.environment === channel.environment) {
+												return {
+													environment: c.environment,
+													channelName: e.detail
+												};
+											}
+
 											return {
 												environment: c.environment,
-												channelName: e.detail
+												channelName: c.channelName
 											};
+										});
+
+										const data = await updateTeam.mutate({
+											slug: team,
+											input: {
+												slackAlertsChannels: updates
+											}
+										});
+
+										if (data.errors) {
+											slackChannelsError = true;
 										}
-
-										return {
-											environment: c.environment,
-											channelName: c.channelName
-										};
-									});
-
-									const data = await updateTeam.mutate({
-										name: team,
-										input: {
-											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-											// @ts-expect-error
-											slackAlertsChannels: updates
-										}
-									});
-
-									if (data.errors) {
-										slackChannelsError = true;
-									}
-								}}
-							/>
-						</div>
+									}}
+								/>
+							</div>
+						{/if}
 					{/each}
 				</p>
 				{#if slackChannelsError}
@@ -187,14 +199,51 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Managed resources</h3>
-			{#if teamSettings.reconcilerState.gcpProjects.length > 0 && teamSettings.reconcilerState.gcpProjects[0].environment !== PendingValue}
-				{#each teamSettings.reconcilerState.gcpProjects as project}
+			{#if teamSettings.id === PendingValue}
+				<Loader />
+			{:else}
+				{@const state = teamSettings.reconcilerState}
+				{#each state.gcpProjects as project}
 					{#if project.environment !== 'ci-gcp'}
 						<dl>
 							<dt>GCP project ID ({project.environment}):</dt>
 							<dd>{project.projectId}</dd>
 						</dl>
 					{/if}
+					{#if state.azureADGroupId}
+						<dl>
+							<dt>Azure AD group ID:</dt>
+							<dd>{state.azureADGroupId}</dd>
+						</dl>
+					{/if}
+					{#if state.garRepositoryName}
+						<dl>
+							<dt>Artifact Registry repository</dt>
+							<dd>{formatGARRepo(state.garRepositoryName)}</dd>
+						</dl>
+					{/if}
+					{#if state.gitHubTeamSlug}
+						<dl>
+							<dt>GitHub team:</dt>
+							<dd>{state.gitHubTeamSlug}</dd>
+						</dl>
+					{/if}
+					{#if state.googleWorkspaceGroupEmail}
+						<dl>
+							<dt>Google group email:</dt>
+							<dd>{state.googleWorkspaceGroupEmail}</dd>
+						</dl>
+					{/if}
+					{#each state.naisNamespaces as ns}
+						{#if project.environment !== 'ci-gcp'}
+							<dl>
+								<dt>NAIS namespace ({ns.environment}):</dt>
+								<dd>{ns.namespace}</dd>
+							</dl>
+						{/if}
+					{/each}
+				{:else}
+					<p>No managed resources</p>
 				{/each}
 			{/if}
 			<!--p>GitHub repositories:</p>
