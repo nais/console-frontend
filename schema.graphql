@@ -2444,6 +2444,9 @@ type User {
   """Unique ID of the user."""
   id: ID!
 
+  """This field will only be populated via the me query"""
+  isAdmin: Boolean
+
   """The name of the user."""
   name: String!
 

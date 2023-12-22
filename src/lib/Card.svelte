@@ -6,11 +6,12 @@
 	export let columns = 0;
 	export let rows = 0;
 	export let borderColor = 'var(--a-gray-200)';
+	export let style = '';
 </script>
 
 <div
 	{...$$restProps}
-	style="--columns: {columns}; --rows: {rows}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}; height: {height}; --borderColor: {borderColor};"
+	style="{style}; --columns: {columns}; --rows: {rows}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}; height: {height}; --borderColor: {borderColor};"
 >
 	<slot />
 </div>

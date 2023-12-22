@@ -11,6 +11,9 @@ const config = {
 	scalars: {
 		Slug: { type: 'string' },
 		ReconcilerName: { type: 'string' },
+		ReconcilerConfigKey: {
+			type: 'string'
+		},
 		Date: {
 			type: 'Date',
 			unmarshal(val) {

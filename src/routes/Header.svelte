@@ -41,6 +41,7 @@
 	export let user:
 		| {
 				readonly name: string;
+				readonly isAdmin: boolean;
 		  }
 		| undefined;
 
@@ -185,8 +186,10 @@
 		<nav>
 			<ul>
 				<li><a href="/deploys">Deploys</a></li>
-				<li><a href="https://teams.nav.cloud.nais.io">Teams</a></li>
 				<li><a href="https://docs.nais.io">Docs</a></li>
+				{#if user?.isAdmin}
+					<li><a href="/admin">Admin</a></li>
+				{/if}
 			</ul>
 		</nav>
 		<div class="cap">{user ? user.name : 'unauthorized'}</div>
