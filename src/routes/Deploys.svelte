@@ -95,7 +95,7 @@
 							{#each deploy.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
-									<a href="/team/{resource.name}/{deploy.env}/app/{resource.name}/deploys"
+									<a href="/team/{deploy.team.name}/{deploy.env}/app/{resource.name}/deploys"
 										>{resource.name}</a
 									>
 								{:else if resource.kind === 'Naisjob'}
