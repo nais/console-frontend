@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { graphql, type TeamRole$options } from '$houdini';
 	import Label from '$lib/typography/Label.svelte';
 	import {
 		Alert,
@@ -77,23 +77,26 @@
 
 	let errors: string[] = [];
 	const updateRole = async (e: Event) => {
-		alterRole.mutate({
+		if (!e.target) return;
+		if (!(e.target instanceof HTMLSelectElement)) return;
+
+		await alterRole.mutate({
 			team,
 			userId: userID,
-			role: e.target?.value as TeamRole
+			role: e.target?.value as TeamRole$options
 		});
 		dispatcher('updated', null);
 	};
 
 	const updateReconciler = async (enabled: boolean, reconciler: string) => {
 		if (enabled) {
-			addReconcilerOptOut.mutate({
+			await addReconcilerOptOut.mutate({
 				team,
 				userId: userID,
 				reconciler
 			});
 		} else {
-			removeReconcilerOptOut.mutate({
+			await removeReconcilerOptOut.mutate({
 				team,
 				userId: userID,
 				reconciler

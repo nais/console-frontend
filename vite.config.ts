@@ -12,7 +12,7 @@ export default defineConfig({
 					return path;
 				},
 				headers: {
-					'X-Goog-Authenticated-User-Email': 'mail:admin.usersen@nais.io'
+					'X-Goog-Authenticated-User-Email': 'mail:dev.usersen@nais.io'
 				}
 			}
 		}

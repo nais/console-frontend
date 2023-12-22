@@ -13,7 +13,7 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@nais/ds-svelte-community": "^0.7.1",
+		"@nais/ds-svelte-community": "^0.7.4",
 		"@nais/ds-svelte-community-preprocess-svelte": "^0.7.0",
 		"@navikt/ds-css": "^5.11.4",
 		"@sveltejs/adapter-auto": "^2.1.1",
