@@ -17,6 +17,7 @@
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
+	import EditMember from './EditMember.svelte';
 
 	export let data: PageData;
 	$: ({ Members } = data);
@@ -29,6 +30,8 @@
 	}
 
 	let addMemberOpen = false;
+	let editUser: string | null = null;
+	let editUserOpen = false;
 </script>
 
 {#if $Members.errors}
@@ -54,18 +57,33 @@
 				<Th>Name</Th>
 				<Th>E-mail</Th>
 				<Th>Role</Th>
+				<Th>&nbsp;</Th>
 			</Thead>
 			<Tbody>
 				{#each team.members.nodes as node}
 					<Tr>
 						{#if team.slug === PendingValue}
-							{#each new Array(3).fill('text') as variant}
+							{#each new Array(4).fill('text') as variant}
 								<Td><Skeleton {variant} /></Td>
 							{/each}
 						{:else}
 							<Td>{capitalizeFirstLetterInEachWord(node.user.name.toString())}</Td>
 							<Td>{node.user.email}</Td>
 							<Td>{node.role.toString().toLowerCase()}</Td>
+							<Td>
+								{#if team.viewerIsOwner}
+									<Button
+										size="small"
+										variant="secondary"
+										on:click={() => {
+											editUser = node.user.id.toString();
+											editUserOpen = true;
+										}}
+									>
+										Edit
+									</Button>
+								{/if}
+							</Td>
 						{/if}
 					</Tr>
 				{/each}
@@ -90,6 +108,17 @@
 				});
 			}}
 		/>
+
+		{#if editUser && editUserOpen}
+			<EditMember
+				bind:open={editUserOpen}
+				team={team.slug}
+				userID={editUser}
+				on:closed={() => {
+					editUser = null;
+				}}
+			/>
+		{/if}
 	{/if}
 {/if}
 

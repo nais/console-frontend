@@ -2210,6 +2210,12 @@ type Team {
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time
 
+  """Single team member"""
+  member(
+    """The ID of the user."""
+    userId: ID!
+  ): TeamMember!
+
   """Team members."""
   members(
     """Limit the number of team members to return. Default is 20."""

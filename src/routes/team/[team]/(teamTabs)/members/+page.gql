@@ -1,6 +1,7 @@
 query Members($limit: Int, $offset: Int, $team: Slug!) @loading(cascade: true) {
 	team(slug: $team) {
 		slug
+		viewerIsOwner
 		members(limit: $limit, offset: $offset) {
 			pageInfo {
 				totalCount
@@ -12,6 +13,15 @@ query Members($limit: Int, $offset: Int, $team: Slug!) @loading(cascade: true) {
 					id
 					email
 					name
+				}
+
+				reconcilers {
+					enabled
+					reconciler {
+						displayName
+						description
+						name
+					}
 				}
 				role
 			}

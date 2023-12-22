@@ -70,9 +70,10 @@
 
 	let errors: string[] = [];
 	const submit = async () => {
+		errors = [];
 		const userID = $store.data?.users.nodes.find((u) => u.email === email)?.id;
 		if (!userID) {
-			alert('User not found');
+			errors = ['User not found'];
 			return;
 		}
 
@@ -98,8 +99,6 @@
 
 		dispatcher('created', null);
 	};
-
-	let form: HTMLFormElement;
 </script>
 
 <Modal bind:open>
@@ -109,7 +108,7 @@
 		<Alert variant="error">{error}</Alert>
 	{/each}
 
-	<form bind:this={form} on:submit|preventDefault={submit} class="wrapper">
+	<form on:submit|preventDefault={submit} class="wrapper">
 		<TextField list="add-member-email" type="email" bind:value={email}>
 			<svelte:fragment slot="label">Email</svelte:fragment>
 		</TextField>
@@ -129,9 +128,9 @@
 				<Checkbox value={reconciler.value} checked>
 					<span class="option">
 						{reconciler.name}
-						<HelpText title="" wrapperClass="tooltipAddMemberWrapper"
-							>{reconciler.description}</HelpText
-						>
+						<HelpText title="" wrapperClass="tooltipAddMemberWrapper">
+							{reconciler.description}
+						</HelpText>
 					</span>
 				</Checkbox>
 			{/each}
