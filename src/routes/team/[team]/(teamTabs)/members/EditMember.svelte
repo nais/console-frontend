@@ -10,8 +10,8 @@
 		Modal,
 		Select
 	} from '@nais/ds-svelte-community';
-	import type { TeamMemberVariables } from './$houdini';
 	import { createEventDispatcher } from 'svelte';
+	import type { TeamMemberVariables } from './$houdini';
 
 	export let open: boolean;
 	export let team: string;
@@ -30,8 +30,8 @@
 					reconcilers {
 						enabled
 						reconciler {
-							value: name
-							name: displayName
+							name
+							displayName
 							description
 						}
 					}
@@ -127,14 +127,14 @@
 
 				{#each member.reconcilers as { reconciler, enabled }}
 					<Checkbox
-						value={reconciler.value}
+						value={reconciler.name}
 						checked={enabled}
-						on:change={(e) => {
-							updateReconciler(e.target?.checked, reconciler.value);
+						on:change={() => {
+							updateReconciler(!enabled, reconciler.name);
 						}}
 					>
 						<span class="option">
-							{reconciler.name}
+							{reconciler.displayName}
 							<HelpText title="" wrapperClass="tooltipAddMemberWrapper">
 								{reconciler.description}
 							</HelpText>

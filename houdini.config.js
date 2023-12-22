@@ -43,6 +43,11 @@ const config = {
 				return date.toString();
 			}
 		}
+	},
+	types: {
+		Reconciler: {
+			keys: ['name']
+		}
 	}
 };
 
