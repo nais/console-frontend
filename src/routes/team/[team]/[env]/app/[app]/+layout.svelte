@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import { State } from '$houdini/graphql/enums';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
@@ -45,9 +44,9 @@
 		}
 	];
 	export let data: LayoutData;
-	$: ({ AppNotificationState } = data);
+	$: ({ AppNotificationDot } = data);
 
-	$: state = $AppNotificationState.data?.app.appState.state;
+	$: state = $AppNotificationDot?.data?.app.appState.state;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -77,7 +76,7 @@
 				title={tab}
 			/>
 		{/if}
-		{#if tab === 'Status' && state !== undefined && state !== PendingValue}
+		{#if tab === 'Status' && state !== undefined}
 			{#if state === State.NOTNAIS || state === State.FAILING}
 				<div class="notification">
 					<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />

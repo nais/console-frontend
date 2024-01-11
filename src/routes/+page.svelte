@@ -1,25 +1,25 @@
 <script lang="ts">
+	import Card from '$lib/Card.svelte';
 	import Deploys from './Deploys.svelte';
 	import Teams from './Teams.svelte';
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
-<div class="main">
-	<Teams />
-	<div class="grow">
+<div class="grid">
+	<Card columns={4} rows={1}>
+		<Teams />
+	</Card>
+
+	<Card columns={8} rows={2}>
 		<Deploys />
-	</div>
+	</Card>
 </div>
 
 <style>
-	.main {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		gap: 1rem;
-	}
-	.grow {
-		flex-grow: 1;
-		margin: 0;
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
 	}
 </style>

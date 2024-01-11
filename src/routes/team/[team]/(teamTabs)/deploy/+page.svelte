@@ -5,19 +5,7 @@
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { changeParams, limitOffset } from '$lib/pagination';
-	import {
-		Alert,
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { BranchingIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -44,13 +32,13 @@
 				<Th>Created</Th>
 				<Th>Environment</Th>
 				<Th>Status</Th>
-				<Th>Link</Th>
+				<!--Th>Link</Th-->
 			</Thead>
 			<Tbody>
 				{#each teamData.deployments.nodes as node}
 					<Tr>
-						{#if node.id === PendingValue}
-							{#each new Array(5).fill('text') as variant}
+						{#if edge.node.id === PendingValue}
+							{#each new Array(4).fill('text') as variant}
 								<Td><Skeleton {variant} /></Td>
 							{/each}
 						{:else}
@@ -78,8 +66,8 @@
 							{:else}
 								<Td><Status status={node.statuses[0].status} /></Td>
 							{/if}
-							<Td>
-								{#if node.repository}
+							<!--Td>
+								{#if edge.node.repository}
 									<Button
 										size="xsmall"
 										variant="secondary"
@@ -90,7 +78,7 @@
 										>Repo</Button
 									>
 								{/if}
-							</Td>
+							</Td-->
 						{/if}
 					</Tr>
 				{/each}

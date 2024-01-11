@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { TeamDeploysVariables } from './$houdini';
@@ -23,6 +24,11 @@
 							kind
 							version
 						}
+						statuses {
+							status
+							message
+							created
+						}
 						env
 						created
 					}
@@ -42,18 +48,17 @@
 {#if $store.data !== null}
 	<Table size="small">
 		<Thead>
-			<Th>Name</Th>
-			<Th>Env</Th>
-			<Th>Resources</Th>
-			<Th>Deployed</Th>
+			<Th>Resource(s)</Th>
+			<Th>Created</Th>
+			<Th>Cluster</Th>
+			<Th>Status</Th>
+			<!--Th>Link</Th-->
 		</Thead>
 		<Tbody>
-			{#each $store.data.team.deployments.nodes as { resources, env, created }}
+			{#each $store.data.team.deployments.nodes as { resources, env, created, statuses }}
 				<Tr>
-					<Td>{resources[0].name}</Td>
-					<Td>{env}</Td>
-					<Td>
-						{#each resources as resource}
+					<Td
+						>{#each resources as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
 								<a href="/team/{teamName}/{env}/app/{resource.name}/deploys">{resource.name}</a>
@@ -63,11 +68,32 @@
 								{resource.name}
 							{/if}
 							<br />
-						{/each}
-					</Td>
+						{/each}</Td
+					>
+					<Td><Time time={created} distance={true} /></Td>
 					<Td>
-						<Time time={created} distance={true} />
+						{env}
 					</Td>
+
+					<Td
+						>{#if statuses.length === 0}<DeploymentStatus
+								status={'unknown'}
+							/>{:else}<DeploymentStatus status={statuses[0].status} />{/if}</Td
+					>
+					<!--Td>
+						{#if deployment.repository}
+							<Button
+								size="xsmall"
+								variant="secondary"
+								href="https://github.com/{edge.node.repository}"
+								as="a"
+							>
+								<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment>Repo</Button
+							>
+						{:else}
+							No link
+						{/if}
+					</Td-->
 				</Tr>
 			{/each}
 		</Tbody>

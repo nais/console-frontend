@@ -246,12 +246,8 @@
 					<p>No managed resources</p>
 				{/each}
 			{/if}
-			<!--p>GitHub repositories:</p>
-
-			{#each teamSettings.githubRepositories.edges as repo}
-				{repo.node.name}<br />
-			{/each}-->
 		</Card>
+
 		<Card columns={12}>
 			<h3>Deploy key</h3>
 
