@@ -3,17 +3,13 @@
 /** @type {import('houdini').ConfigFile} */
 const config = {
 	watchSchema: {
-		url: 'http://127.0.0.1:4000/query'
+		url: 'http://127.0.0.1:3000/query'
 	},
 	plugins: {
 		'houdini-svelte': {}
 	},
 	scalars: {
 		Slug: { type: 'string' },
-		ReconcilerName: { type: 'string' },
-		ReconcilerConfigKey: {
-			type: 'string'
-		},
 		Date: {
 			type: 'Date',
 			unmarshal(val) {

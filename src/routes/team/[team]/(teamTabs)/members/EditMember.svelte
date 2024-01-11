@@ -56,7 +56,7 @@
 	`);
 
 	const addReconcilerOptOut = graphql(`
-		mutation AddReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: ReconcilerName!) {
+		mutation AddReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: String!) {
 			addReconcilerOptOut(teamSlug: $team, userId: $userId, reconciler: $reconciler) {
 				role
 			}
@@ -64,11 +64,7 @@
 	`);
 
 	const removeReconcilerOptOut = graphql(`
-		mutation RemoveReconcilerOptOutMutation(
-			$team: Slug!
-			$userId: ID!
-			$reconciler: ReconcilerName!
-		) {
+		mutation RemoveReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: String!) {
 			removeReconcilerOptOut(teamSlug: $team, userId: $userId, reconciler: $reconciler) {
 				role
 			}

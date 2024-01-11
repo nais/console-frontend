@@ -1,4 +1,4 @@
-query AppNotificationState($app: String!, $team: String!, $env: String!) @loading {
+query AppNotificationState($app: String!, $team: Slug!, $env: String!) @loading {
 	app(name: $app, team: $team, env: $env) @loading {
 		name @loading
 

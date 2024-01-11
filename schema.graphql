@@ -6,81 +6,41 @@ directive @admin on FIELD_DEFINITION
 """Require an authenticated user for all requests with this directive."""
 directive @auth on FIELD_DEFINITION
 
-""""""
+"""
+The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer.
+"""
+directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
 directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
-""""""
 type AccessPolicy {
-  """"""
   inbound: Inbound!
-
-  """"""
   outbound: Outbound!
 }
 
-""""""
 type Acl {
-  """"""
   access: String!
-
-  """"""
   application: String!
-
-  """"""
-  team: String!
+  team: Slug!
 }
 
-""""""
 type App {
-  """"""
   accessPolicy: AccessPolicy!
-
-  """"""
   appState: AppState!
-
-  """"""
   authz: [Authz!]!
-
-  """"""
   autoScaling: AutoScaling!
-
-  """"""
   deployInfo: DeployInfo!
-
-  """"""
   env: Env!
-
-  """"""
   id: ID!
-
-  """"""
   image: String!
-
-  """"""
   ingresses: [String!]!
-
-  """"""
   instances: [Instance!]!
-
-  """"""
   manifest: String!
-
-  """"""
   name: String!
-
-  """"""
   resources: Resources!
-
-  """"""
   storage: [Storage!]!
-
-  """"""
   team: Team!
-
-  """"""
   variables: [Variable!]!
-
-  """"""
   vulnerabilities: Vulnerability
 }
 
@@ -96,21 +56,13 @@ type AppCost {
   sum: Float!
 }
 
-""""""
 type AppList {
-  """"""
   nodes: [App!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
-""""""
 type AppState {
-  """"""
   errors: [StateError!]!
-
-  """"""
   state: State!
 }
 
@@ -132,7 +84,7 @@ type AppWithResourceUtilizationOverage {
   overageCost: Float!
 
   """The name of the team who owns the app."""
-  team: String!
+  team: Slug!
 
   """The utilization in percent."""
   utilization: Float!
@@ -140,20 +92,14 @@ type AppWithResourceUtilizationOverage {
 
 """Team status for apps."""
 type AppsStatus {
-  """"""
   failing: Int!
-
-  """"""
   total: Int!
 }
-
-"""String value representing an audit action."""
-scalar AuditAction
 
 """Audit log type."""
 type AuditLog {
   """String representation of the action performed."""
-  action: AuditAction!
+  action: String!
 
   """
   The identity of the actor who performed the action. When this field is empty it means that some backend process performed the action. The value, when present, is either the name of a service account, or the email address of a user.
@@ -161,10 +107,10 @@ type AuditLog {
   actor: String
 
   """The related component."""
-  componentName: ComponentName!
+  componentName: String!
 
   """The related correlation ID."""
-  correlationID: ID!
+  correlationID: String!
 
   """Creation time of the log entry."""
   createdAt: Time!
@@ -179,126 +125,66 @@ type AuditLog {
   targetIdentifier: String!
 
   """The type of the audit log target."""
-  targetType: AuditLogsTargetType!
+  targetType: String!
 }
 
-""""""
 type AuditLogList {
-  """"""
   nodes: [AuditLog!]!
-
-  """"""
   pageInfo: PageInfo!
 }
-
-"""String value representing the type of the audit log target."""
-scalar AuditLogsTargetType
 
 """Authenticated user type. Can be a user or a service account."""
 union AuthenticatedUser = ServiceAccount | User
 
-""""""
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
-""""""
 type AutoScaling {
   """CPU threshold in percent"""
   cpuThreshold: Int!
-
-  """"""
   disabled: Boolean!
-
-  """"""
   max: Int!
-
-  """"""
   min: Int!
 }
 
-""""""
 type AzureAD {
-  """"""
   application: AzureApplication
-
-  """"""
   sidecar: Sidecar
 }
 
-""""""
 type AzureApplication {
-  """"""
   allowAllUsers: Boolean!
-
-  """"""
   claims: Claims!
-
-  """"""
   replyURLs: [String!]!
-
-  """"""
   singlePageApplication: Boolean!
-
-  """"""
   tenant: String!
 }
 
-""""""
 type BigQueryDataset implements Storage {
-  """"""
   cascadingDelete: Boolean!
-
-  """"""
   description: String!
-
-  """"""
   name: String!
-
-  """"""
   permission: String!
 }
 
-""""""
 type Bucket implements Storage {
-  """"""
   cascadingDelete: Boolean!
-
-  """"""
   name: String!
-
-  """"""
   publicAccessPrevention: Boolean!
-
-  """"""
   retentionPeriodDays: Int!
-
-  """"""
   uniformBucketLevelAccess: Boolean!
 }
 
-""""""
 type Claims {
-  """"""
   extra: [String!]!
-
-  """"""
   groups: [Group!]!
 }
 
-"""String value representing a system name."""
-scalar ComponentName
-
-""""""
 type Consume {
-  """"""
   name: String!
 }
 
-""""""
 type Consumer {
-  """"""
   name: String!
-
-  """"""
   orgno: String!
 }
 
@@ -361,66 +247,34 @@ type DailyCost {
   sum: Float!
 }
 
-""""""
 type Database {
-  """"""
   envVarPrefix: String!
-
-  """"""
   name: String!
-
-  """"""
   users: [DatabaseUser!]!
 }
 
-""""""
 type DatabaseUser {
-  """"""
   name: String!
 }
 
 """Date type in YYYY-MM-DD format."""
 scalar Date
 
-""""""
 type DeployInfo {
-  """"""
   commitSha: String!
-
-  """"""
   deployer: String!
-
-  """"""
   history(limit: Int, offset: Int): DeploymentResponse!
-
-  """"""
   timestamp: Time
-
-  """"""
   url: String!
 }
 
-""""""
 type Deployment {
-  """"""
   created: Time!
-
-  """"""
   env: String!
-
-  """"""
   id: ID!
-
-  """"""
   repository: String!
-
-  """"""
   resources: [DeploymentResource!]!
-
-  """"""
   statuses: [DeploymentStatus!]!
-
-  """"""
   team: Team!
 }
 
@@ -439,93 +293,46 @@ type DeploymentKey {
   key: String!
 }
 
-""""""
 type DeploymentList {
-  """"""
   nodes: [Deployment!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
-""""""
 type DeploymentResource {
-  """"""
   group: String!
-
-  """"""
   id: ID!
-
-  """"""
   kind: String!
-
-  """"""
   name: String!
-
-  """"""
   namespace: String!
-
-  """"""
   version: String!
 }
 
-""""""
 union DeploymentResponse = DeploymentList | Error
 
-""""""
 type DeploymentStatus {
-  """"""
   created: Time!
-
-  """"""
   id: ID!
-
-  """"""
   message: String
-
-  """"""
   status: String!
 }
 
-""""""
 type DeprecatedIngressError implements StateError {
-  """"""
   ingress: String!
-
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
 }
 
-""""""
 type DeprecatedRegistryError implements StateError {
-  """"""
   level: ErrorLevel!
-
-  """"""
   name: String!
-
-  """"""
   registry: String!
-
-  """"""
   repository: String!
-
-  """"""
   revision: String!
-
-  """"""
   tag: String!
 }
 
-""""""
 type Env {
-  """"""
   id: ID!
-
-  """"""
   name: String!
 }
 
@@ -547,81 +354,45 @@ input EnvCostFilter {
   from: Date!
 
   """The name of the team to get costs for."""
-  team: String!
+  team: Slug!
 
   """End date for cost series, inclusive."""
   to: Date!
 }
 
-""""""
 type Error {
-  """"""
   message: String!
 }
 
-""""""
 enum ErrorLevel {
-  """"""
   ERROR
-
-  """"""
   INFO
-
-  """"""
   WARNING
 }
 
-""""""
 type Expose {
-  """"""
   allowedIntegrations: [String!]!
-
-  """"""
   atMaxAge: Int!
-
-  """"""
   consumers: [Consumer!]!
-
-  """"""
   enabled: Boolean!
-
-  """"""
   name: String!
-
-  """"""
   product: String!
 }
 
-""""""
 type External {
-  """"""
   host: String!
-
-  """"""
   ports: [Port!]!
 }
 
-""""""
 type FailedRunError implements StateError {
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
-
-  """"""
   runMessage: String!
-
-  """"""
   runName: String!
 }
 
-""""""
 type Flag {
-  """"""
   name: String!
-
-  """"""
   value: String!
 }
 
@@ -679,243 +450,123 @@ type GitHubRepositoryPermission {
   name: String!
 }
 
-""""""
 type Group {
-  """"""
   id: String!
 }
 
-""""""
 type IDPorten {
-  """"""
   accessTokenLifetime: Int
-
-  """"""
   clientURI: String
-
-  """"""
   frontchannelLogoutPath: String
-
-  """"""
   integrationType: String
-
-  """"""
   postLogoutRedirectURIs: [String]
-
-  """"""
   redirectPath: String
-
-  """"""
   scopes: [String]
-
-  """"""
   sessionLifetime: Int
-
-  """"""
   sidecar: IDPortenSidecar
 }
 
-""""""
 type IDPortenSidecar {
-  """"""
   autoLogin: Boolean
-
-  """"""
   autoLoginIgnorePaths: [String]
-
-  """"""
   enabled: Boolean
-
-  """"""
   level: String
-
-  """"""
   locale: String
-
-  """"""
   resources: Resources
 }
 
-""""""
 type Inbound {
-  """"""
   rules: [Rule!]!
 }
 
-""""""
 type InboundAccessError implements StateError {
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
-
-  """"""
   rule: Rule!
 }
 
-""""""
 type InfluxDb implements Storage {
-  """"""
   name: String!
 }
 
-""""""
 type Insights {
-  """"""
   enabled: Boolean!
-
-  """"""
   queryStringLength: Int!
-
-  """"""
   recordApplicationTags: Boolean!
-
-  """"""
   recordClientAddress: Boolean!
 }
 
-""""""
 type Instance {
-  """"""
   created: Time!
-
-  """"""
   id: ID!
-
-  """"""
   image: String!
-
-  """"""
   message: String!
-
-  """"""
   name: String!
-
-  """"""
   restarts: Int!
-
-  """"""
   state: InstanceState!
 }
 
-""""""
 enum InstanceState {
-  """"""
   FAILING
-
-  """"""
   RUNNING
-
-  """"""
   UNKNOWN
 }
 
-""""""
 type InvalidNaisYamlError implements StateError {
-  """"""
   detail: String!
-
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
 }
 
-""""""
 type JobState {
-  """"""
   errors: [StateError!]!
-
-  """"""
   state: State!
 }
 
 """Team status for jobs."""
 type JobsStatus {
-  """"""
   failing: Int!
-
-  """"""
   total: Int!
 }
 
-""""""
 type Kafka implements Storage {
   """The kafka pool name"""
   name: String!
-
-  """"""
   streams: Boolean!
-
-  """"""
   topics: [Topic!]!
 }
 
-""""""
 type Limits {
-  """"""
   cpu: String!
-
-  """"""
   memory: String!
 }
 
-""""""
 type LogLine {
-  """"""
   instance: String!
-
-  """"""
   message: String!
-
-  """"""
   time: Time!
 }
 
-""""""
 input LogSubscriptionInput {
-  """"""
   app: String
-
-  """"""
   env: String!
-
-  """"""
   instances: [String!]
-
-  """"""
   job: String
-
-  """"""
-  team: String!
+  team: Slug!
 }
 
-""""""
 type Maintenance {
-  """"""
   day: Int!
-
-  """"""
   hour: Int!
 }
 
-""""""
 type Maskinporten {
-  """"""
   enabled: Boolean!
-
-  """"""
   scopes: MaskinportenScope!
 }
 
-""""""
 type MaskinportenScope {
-  """"""
   consumes: [Consume!]!
-
-  """"""
   exposes: [Expose!]!
 }
 
@@ -937,17 +588,16 @@ input MonthlyCostFilter {
   env: String!
 
   """The name of the team to get costs for."""
-  team: String!
+  team: Slug!
 }
 
-""""""
 type Mutation {
   """
   Add opt-out of a reconciler for a team member. Only reconcilers that uses team memberships can be opted out from.
   """
   addReconcilerOptOut(
     """The name of the reconciler to opt the team member out of."""
-    reconciler: ReconcilerName!
+    reconciler: String!
 
     """The team slug."""
     teamSlug: Slug!
@@ -1018,7 +668,7 @@ type Mutation {
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
     """The name of the team to update the deploy key for."""
-    team: String!
+    team: Slug!
   ): DeploymentKey!
 
   """Configure a reconciler."""
@@ -1027,7 +677,7 @@ type Mutation {
     config: [ReconcilerConfigInput!]!
 
     """The name of the reconciler to configure."""
-    name: ReconcilerName!
+    name: String!
   ): Reconciler!
 
   """
@@ -1042,8 +692,8 @@ type Mutation {
   """
   confirmTeamDeletion(
     """Deletion key, acquired using the requestTeamDeletion mutation."""
-    key: ID!
-  ): ID!
+    key: String!
+  ): Boolean!
 
   """
   Create a new team
@@ -1077,7 +727,7 @@ type Mutation {
   """
   disableReconciler(
     """The name of the reconciler to disable."""
-    name: ReconcilerName!
+    name: String!
   ): Reconciler!
 
   """
@@ -1087,13 +737,13 @@ type Mutation {
   """
   enableReconciler(
     """The name of the reconciler to enable."""
-    name: ReconcilerName!
+    name: String!
   ): Reconciler!
 
   """Remove opt-out of a reconciler for a team member."""
   removeReconcilerOptOut(
     """The name of the reconciler to clear the opt-out from."""
-    reconciler: ReconcilerName!
+    reconciler: String!
 
     """The team slug."""
     teamSlug: Slug!
@@ -1146,7 +796,7 @@ type Mutation {
   """
   resetReconciler(
     """The name of the reconciler to reset."""
-    name: ReconcilerName!
+    name: String!
   ): Reconciler!
 
   """Set the Azure AD group ID for a NAIS team."""
@@ -1245,7 +895,7 @@ type Mutation {
   This mutation will trigger a full user synchronization with the connected Google Workspace, and return a correlation
   ID that can later be matched to the log entries. The user synchronization itself is asynchronous.
   """
-  synchronizeUsers: ID!
+  synchronizeUsers: String!
 
   """
   Update an existing team
@@ -1263,66 +913,28 @@ type Mutation {
   ): Team!
 }
 
-""""""
 type NaisJob {
-  """"""
   accessPolicy: AccessPolicy!
-
-  """"""
   authz: [Authz!]!
-
-  """"""
   completions: Int!
-
-  """"""
   deployInfo: DeployInfo!
-
-  """"""
   env: Env!
-
-  """"""
   id: ID!
-
-  """"""
   image: String!
-
-  """"""
   jobState: JobState!
-
-  """"""
   manifest: String!
-
-  """"""
   name: String!
-
-  """"""
   parallelism: Int!
-
-  """"""
   resources: Resources!
-
-  """"""
   retries: Int!
-
-  """"""
   runs: [Run!]!
-
-  """"""
   schedule: String!
-
-  """"""
   storage: [Storage!]!
-
-  """"""
   team: Team!
 }
 
-""""""
 type NaisJobList {
-  """"""
   nodes: [NaisJob!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
@@ -1335,46 +947,30 @@ type NaisNamespace {
   namespace: Slug!
 }
 
-""""""
 type NewInstancesFailingError implements StateError {
-  """"""
   failingInstances: [String!]!
-
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
 }
 
-""""""
 type NoRunningInstancesError implements StateError {
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
 }
 
-""""""
 type OpenSearch implements Storage {
-  """"""
   access: String!
 
   """The opensearch instance name"""
   name: String!
 }
 
-""""""
 input OrderBy {
   """Order direction"""
   direction: SortOrder!
-
-  """"""
   field: OrderByField!
 }
 
-""""""
 enum OrderByField {
   """Order by appName."""
   APP_NAME
@@ -1413,46 +1009,27 @@ enum OrderByField {
   STATUS
 }
 
-""""""
 type Outbound {
-  """"""
   external: [External!]!
-
-  """"""
   rules: [Rule!]!
 }
 
-""""""
 type OutboundAccessError implements StateError {
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
-
-  """"""
   rule: Rule!
 }
 
-""""""
 type PageInfo {
-  """"""
   hasNextPage: Boolean!
-
-  """"""
   hasPreviousPage: Boolean!
-
-  """"""
   totalCount: Int!
 }
 
-""""""
 type Port {
-  """"""
   port: Int!
 }
 
-""""""
 type Query {
   """Get an app by name, team and env."""
   app(
@@ -1463,7 +1040,7 @@ type Query {
     name: String!
 
     """The name of the team who owns the application."""
-    team: String!
+    team: Slug!
   ): App!
 
   """Get the current resource utilization values for a specific app."""
@@ -1475,7 +1052,7 @@ type Query {
     env: String!
 
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): CurrentResourceUtilization!
 
   """
@@ -1483,7 +1060,7 @@ type Query {
   """
   currentResourceUtilizationForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): CurrentResourceUtilization!
 
   """Get the daily cost for a team application in a specific environment."""
@@ -1498,7 +1075,7 @@ type Query {
     from: Date!
 
     """The name of the team that owns the application."""
-    team: String!
+    team: Slug!
 
     """End date for cost series, inclusive."""
     to: Date!
@@ -1510,7 +1087,7 @@ type Query {
     from: Date!
 
     """The name of the team that owns the application."""
-    team: String!
+    team: Slug!
 
     """End date for cost series, inclusive."""
     to: Date!
@@ -1537,7 +1114,7 @@ type Query {
     name: String!
 
     """The name of the team who owns the naisjob."""
-    team: String!
+    team: Slug!
   ): NaisJob!
 
   """Get a collection of reconcilers."""
@@ -1552,7 +1129,7 @@ type Query {
     env: String!
 
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationDateRange!
 
   """
@@ -1560,7 +1137,7 @@ type Query {
   """
   resourceUtilizationDateRangeForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationDateRange!
 
   """Get the resource utilization for an app."""
@@ -1577,7 +1154,7 @@ type Query {
     from: Date
 
     """The name of the team."""
-    team: String!
+    team: Slug!
 
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
@@ -1591,7 +1168,7 @@ type Query {
     from: Date
 
     """The team to fetch data for."""
-    team: String!
+    team: Slug!
 
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
@@ -1600,16 +1177,14 @@ type Query {
   """Get resource utilization overage data for a team."""
   resourceUtilizationOverageForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationOverageForTeam!
 
   """Get the resource utilization trend for a team."""
   resourceUtilizationTrendForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationTrend!
-
-  """"""
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
 
   """Get a specific team."""
@@ -1621,7 +1196,7 @@ type Query {
   """Get a team delete key."""
   teamDeleteKey(
     """The key to get."""
-    key: ID!
+    key: String!
   ): TeamDeleteKey!
 
   """Get a collection of teams. Default limit is 20"""
@@ -1636,12 +1211,8 @@ type Query {
     offset: Int
   ): TeamList!
 
-  """"""
-  teamsInternal: TeamsInternal!
-
   """Get a specific user."""
   user(
-    """"""
     email: String
 
     """ID of the user."""
@@ -1678,7 +1249,7 @@ type Reconciler {
   enabled: Boolean!
 
   """The name of the reconciler."""
-  name: ReconcilerName!
+  name: String!
 
   """The run order of the reconciler."""
   runOrder: Int!
@@ -1699,7 +1270,7 @@ type ReconcilerConfig {
   displayName: String!
 
   """Configuration key."""
-  key: ReconcilerConfigKey!
+  key: String!
 
   """
   Whether or not the configuration value is considered a secret. Secret values will not be exposed through the API.
@@ -1715,17 +1286,11 @@ type ReconcilerConfig {
 """Reconciler configuration input."""
 input ReconcilerConfigInput {
   """Configuration key."""
-  key: ReconcilerConfigKey!
+  key: String!
 
   """Configuration value."""
   value: String!
 }
-
-"""String value representing a reconciler configuration key."""
-scalar ReconcilerConfigKey
-
-"""String value representing a reconciler name."""
-scalar ReconcilerName
 
 """Reconciler state type."""
 type ReconcilerState {
@@ -1751,12 +1316,8 @@ type ReconcilerState {
   naisNamespaces: [NaisNamespace!]!
 }
 
-""""""
 type Redis implements Storage {
-  """"""
   access: String!
-
-  """"""
   name: String!
 }
 
@@ -1766,21 +1327,14 @@ enum RepositoryAuthorization {
   DEPLOY
 }
 
-""""""
 type Requests {
-  """"""
   cpu: String!
-
-  """"""
   memory: String!
 }
 
 """Resource type."""
 enum ResourceType {
-  """"""
   CPU
-
-  """"""
   MEMORY
 }
 
@@ -1877,12 +1431,8 @@ type ResourceUtilizationTrend {
   memoryUtilizationTrend: Float!
 }
 
-""""""
 type Resources {
-  """"""
   limits: Limits!
-
-  """"""
   requests: Requests!
 }
 
@@ -1892,98 +1442,54 @@ type Role {
   isGlobal: Boolean!
 
   """Name of the role."""
-  name: RoleName!
+  name: String!
 
   """
-  Optional service account ID if the role binding targets a service account.
+  Optional service account ID if the role binding targets a service account. TODO: Make these resolvers returning service account and team, not IDs
   """
   targetServiceAccountID: ID
 
-  """Optional team slug if the role binding targets a team."""
+  """
+  Optional team slug if the role binding targets a team. TODO: Make these resolvers returning service account and team, not IDs
+  """
   targetTeamSlug: Slug
 }
 
-"""String value representing a role name."""
-scalar RoleName
-
-""""""
 type Rule {
-  """"""
   application: String!
-
-  """"""
   cluster: String!
-
-  """"""
   isJob: Boolean!
-
-  """"""
   mutual: Boolean!
-
-  """"""
   mutualExplanation: String!
-
-  """"""
   namespace: String!
 }
 
-""""""
 type Run {
-  """"""
   completionTime: Time
-
-  """"""
   duration: String!
-
-  """"""
   failed: Boolean!
-
-  """"""
   id: ID!
-
-  """"""
   image: String!
-
-  """"""
   message: String!
-
-  """"""
   name: String!
-
-  """"""
   podNames: [String!]!
-
-  """"""
   startTime: Time
 }
 
-""""""
 input SearchFilter {
-  """"""
   type: SearchType
 }
 
-""""""
 type SearchList {
-  """"""
   nodes: [SearchNode!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
-""""""
 union SearchNode = App | NaisJob | Team
 
-""""""
 enum SearchType {
-  """"""
   APP
-
-  """"""
   NAISJOB
-
-  """"""
   TEAM
 }
 
@@ -1999,15 +1505,9 @@ type ServiceAccount {
   roles: [Role!]!
 }
 
-""""""
 type Sidecar {
-  """"""
   autoLogin: Boolean!
-
-  """"""
   autoLoginIgnorePaths: [String!]!
-
-  """"""
   resources: Resources!
 }
 
@@ -2046,7 +1546,6 @@ Examples of valid slugs:
 """
 scalar Slug
 
-""""""
 enum SortOrder {
   """Ascending sort order."""
   ASC
@@ -2055,90 +1554,42 @@ enum SortOrder {
   DESC
 }
 
-""""""
 type SqlInstance implements Storage {
-  """"""
   autoBackupHour: Int!
-
-  """"""
   cascadingDelete: Boolean!
-
-  """"""
   collation: String!
-
-  """"""
   databases: [Database!]!
-
-  """"""
   diskAutoresize: Boolean!
-
-  """"""
   diskSize: Int!
-
-  """"""
   diskType: String!
-
-  """"""
   flags: [Flag!]!
-
-  """"""
   highAvailability: Boolean!
-
-  """"""
   insights: Insights!
-
-  """"""
   maintenance: Maintenance!
-
-  """"""
   name: String!
-
-  """"""
   pointInTimeRecovery: Boolean!
-
-  """"""
   retainedBackups: Int!
-
-  """"""
   tier: String!
-
-  """"""
   type: String!
 }
 
-""""""
 enum State {
-  """"""
   FAILING
-
-  """"""
   NAIS
-
-  """"""
   NOTNAIS
-
-  """"""
   UNKNOWN
 }
 
-""""""
 interface StateError {
-  """"""
   level: ErrorLevel!
-
-  """"""
   revision: String!
 }
 
-""""""
 interface Storage {
-  """"""
   name: String!
 }
 
-""""""
 type Subscription {
-  """"""
   log(input: LogSubscriptionInput): LogLine!
 }
 
@@ -2151,7 +1602,7 @@ type SyncError {
   error: String!
 
   """The name of the reconciler."""
-  reconciler: ReconcilerName!
+  reconciler: String!
 }
 
 """Team type."""
@@ -2203,8 +1654,6 @@ type Team {
     """Offset to start listing repositories from. Default is 0."""
     offset: Int
   ): GitHubRepositoryList!
-
-  """"""
   id: ID!
 
   """Timestamp of the last successful synchronization of the team."""
@@ -2279,8 +1728,6 @@ type Team {
     """Order apps by"""
     orderBy: OrderBy
   ): VulnerabilityList!
-
-  """"""
   vulnerabilitiesSummary: VulnerabilitySummary!
 }
 
@@ -2296,7 +1743,7 @@ type TeamDeleteKey {
   expires: Time!
 
   """The unique key used to confirm the deletion of a team."""
-  key: ID!
+  key: String!
 
   """The team the delete key is for."""
   team: Team!
@@ -2329,7 +1776,7 @@ type TeamMember {
 """Team member input."""
 input TeamMemberInput {
   """Reconcilers to opt the team member out of."""
-  reconcilerOptOuts: [ReconcilerName!]
+  reconcilerOptOuts: [String!]
 
   """The role that the user will receive."""
   role: TeamRole!
@@ -2338,12 +1785,8 @@ input TeamMemberInput {
   userId: ID!
 }
 
-""""""
 type TeamMemberList {
-  """"""
   nodes: [TeamMember!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
@@ -2367,10 +1810,7 @@ enum TeamRole {
 
 """Team status."""
 type TeamStatus {
-  """"""
   apps: AppsStatus!
-
-  """"""
   jobs: JobsStatus!
 }
 
@@ -2382,11 +1822,9 @@ type TeamSync {
 
 """Input for filtering teams."""
 input TeamsFilter {
-  """"""
   github: TeamsFilterGitHub
 }
 
-""""""
 input TeamsFilterGitHub {
   """Filter repostiories by permission name"""
   permissionName: String!
@@ -2395,29 +1833,17 @@ input TeamsFilterGitHub {
   repoName: String!
 }
 
-""""""
-type TeamsInternal {
-  """List all roles."""
-  roles: [RoleName!]!
-}
-
 """
 Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
 """
 scalar Time
 
-""""""
 type TokenX {
-  """"""
   mountSecretsAsFilesOnly: Boolean!
 }
 
-""""""
 type Topic {
-  """"""
   acl: [Acl!]!
-
-  """"""
   name: String!
 }
 
@@ -2457,12 +1883,8 @@ type User {
   teams(limit: Int, offset: Int): TeamMemberList!
 }
 
-""""""
 type UserList {
-  """"""
   nodes: [User!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
@@ -2499,65 +1921,31 @@ enum UserSyncRunStatus {
   SUCCESS
 }
 
-""""""
 type Variable {
-  """"""
   name: String!
-
-  """"""
   value: String!
 }
 
-""""""
 type Vulnerability {
-  """"""
   appName: String!
-
-  """"""
   env: String!
-
-  """"""
   findingsLink: String!
-
-  """"""
   hasBom: Boolean!
-
-  """"""
   id: ID!
-
-  """"""
   summary: VulnerabilitySummary
 }
 
-""""""
 type VulnerabilityList {
-  """"""
   nodes: [Vulnerability!]!
-
-  """"""
   pageInfo: PageInfo!
 }
 
-""""""
 type VulnerabilitySummary {
-  """"""
   critical: Int!
-
-  """"""
   high: Int!
-
-  """"""
   low: Int!
-
-  """"""
   medium: Int!
-
-  """"""
   riskScore: Int!
-
-  """"""
   total: Int!
-
-  """"""
   unassigned: Int!
 }

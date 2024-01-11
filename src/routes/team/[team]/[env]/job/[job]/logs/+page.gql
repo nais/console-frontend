@@ -1,4 +1,4 @@
-query RunsWithPodNames($job: String!, $team: String!, $env: String!) {
+query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 	naisjob(name: $job, env: $env, team: $team) {
 		name
 		runs {

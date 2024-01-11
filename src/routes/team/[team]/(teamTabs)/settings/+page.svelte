@@ -17,7 +17,7 @@
 	export let data: PageData;
 
 	const rotateKey = graphql(`
-		mutation RotateDeployKey($team: String!) {
+		mutation RotateDeployKey($team: Slug!) {
 			changeDeployKey(team: $team) {
 				key
 				created
