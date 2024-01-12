@@ -16,12 +16,15 @@
 	$: user = $UserInfo.data?.me as
 		| {
 				readonly name: string;
+				readonly isAdmin: boolean;
 				readonly __typename: 'User';
 		  }
 		| undefined;
 </script>
 
-<Header {user} />
+{#if user?.__typename === 'User'}
+	<Header {user} />
+{/if}
 
 <div class="container">
 	<slot />

@@ -5,6 +5,7 @@
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -37,7 +38,7 @@
 			<Tbody>
 				{#each teamData.deployments.nodes as node}
 					<Tr>
-						{#if edge.node.id === PendingValue}
+						{#if node.id === PendingValue}
 							{#each new Array(4).fill('text') as variant}
 								<Td><Skeleton {variant} /></Td>
 							{/each}

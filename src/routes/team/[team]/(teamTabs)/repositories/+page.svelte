@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue, RepositoryAuthorization, graphql } from '$houdini';
+	import { PendingValue, RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { sortTable } from '$lib/pagination';
@@ -17,6 +17,10 @@
 		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+
+	/*
+	TODO: FIX THIS
+	*/
 
 	export let data: PageData;
 
@@ -51,15 +55,10 @@
 		}
 	};
 
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
+	const refetch = () => {
 		Repositories.fetch({
 			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'NAME',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
+				team: teamName
 			}
 		});
 	};
@@ -115,7 +114,7 @@
 			sort={sortState}
 			on:sortChange={(e) => {
 				const { key } = e.detail;
-				sortState = sortTable(key, sortState, refetch);
+				sortState = sortTable(key, sortState);
 			}}
 		>
 			<Thead>

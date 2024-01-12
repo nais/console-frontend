@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
+	import Pagination from '$lib/Pagination.svelte';
 	import {
 		Alert,
+		Button,
 		LinkPanel,
 		LinkPanelDescription,
 		LinkPanelTitle,
 		Skeleton
 	} from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { UserTeamsVariables } from './$houdini';
 
 	const changePage = (page: number) => {
@@ -52,34 +54,35 @@
 		</Alert>
 	{/each}
 {:else}
-	<h2>
-		<PersonGroupIcon />
-		My teams
-	</h2>
+	<div class="header">
+		<h2>
+			<PersonGroupIcon />
+			My teams
+		</h2>
+		<Button as="a" size="small" href="/team/create" variant="primary"
+			><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Create team</Button
+		>
+	</div>
 	<div class="teams">
 		{#if $store.data}
-			{#each $store.data.user.teams.edges as edge}
-				{#if edge === PendingValue}
-					<LinkPanel about="" href="" border={true} as="a">
-						<LinkPanelTitle
-							><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
-						>
-						<LinkPanelDescription
-							><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
-						>
-					</LinkPanel>
-				{:else}
-					<LinkPanel
-						about={edge.node.description}
-						href="/team/{edge.node.name}"
-						border={true}
-						as="a"
+			{#if $store.data.me == PendingValue}
+				<LinkPanel about="" href="" border={true} as="a">
+					<LinkPanelTitle
+						><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
 					>
-						<LinkPanelTitle>{edge.node.name}</LinkPanelTitle>
-						<LinkPanelDescription>{edge.node.description}</LinkPanelDescription>
+					<LinkPanelDescription><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
+					>
+				</LinkPanel>
+			{:else if $store.data.me.__typename == 'User'}
+				{#each $store.data.me.teams.nodes as node}
+					{@const team = node.team}
+					<LinkPanel about={team.purpose} href="/team/{team.slug}" border={true} as="a">
+						<LinkPanelTitle>{team.slug}</LinkPanelTitle>
+						<LinkPanelDescription>{team.purpose}</LinkPanelDescription>
 					</LinkPanel>
-				{/if}
-			{/each}
+				{/each}
+				<Pagination pageInfo={$store.data.me.teams.pageInfo} {limit} {offset} {changePage} />
+			{/if}
 		{/if}
 	</div>
 {/if}
