@@ -47,7 +47,11 @@
 		{
 			tab: 'Repositories',
 			routeId: '/team/[team]/(teamTabs)/repositories'
-		}
+        },
+        {
+	tab: 'Secrets',
+			routeId: '/team/[team]/(teamTabs)/secrets'
+		},
 	];
 </script>
 
