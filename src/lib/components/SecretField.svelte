@@ -1,5 +1,5 @@
 <script lang="ts">
-import { EyeIcon } from "@nais/ds-svelte-community/icons";
+import { EyeIcon, EyeSlashIcon } from "@nais/ds-svelte-community/icons";
 
 	let show = false; 
     export let value: String;
@@ -14,7 +14,13 @@ import { EyeIcon } from "@nais/ds-svelte-community/icons";
 {:else}
 <input type="password" bind:value={value} />
 {/if}
-<button on:click={toggle}><EyeIcon/></button>
+<button on:click={toggle}>
+    {#if show}
+    <EyeSlashIcon/>
+    {:else}
+    <EyeIcon/>
+    {/if}
+</button>
 
 <style>
     button {
