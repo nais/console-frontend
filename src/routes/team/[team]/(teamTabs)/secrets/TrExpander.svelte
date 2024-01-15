@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Button, Tr } from "@nais/ds-svelte-community";
 	import type { TableRowProps } from "@nais/ds-svelte-community/dist/components/Table/type";
-    import { ChevronDownIcon, ChevronUpIcon
-     } from "@nais/ds-svelte-community/icons";
+    import { ChevronDownIcon, ChevronUpIcon     } from "@nais/ds-svelte-community/icons";
 
      import { classes } from '$lib/helpers';
 

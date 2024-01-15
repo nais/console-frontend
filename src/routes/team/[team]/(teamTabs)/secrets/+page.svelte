@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
+	import SecretField from '$lib/components/SecretField.svelte';
 	import { Table, Thead, Tr, Td, Tbody, Th, Button } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 </script>
@@ -21,7 +22,7 @@
 					<svelte:fragment slot="row-content">
 						<Td><input type="text" value="MY_SECRET"/></Td>
 						
-					<Td><input type="password" value="hunter2"/></Td>
+					<Td><SecretField value="fooo"/></Td>
 					<Td>
 						<button>Edit</button><button>Delete</button><button>Save</button>
 					</Td>		
