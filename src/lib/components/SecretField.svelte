@@ -1,31 +1,45 @@
 <script lang="ts">
-import { EyeIcon, EyeSlashIcon } from "@nais/ds-svelte-community/icons";
+	import { PencilIcon, TrashIcon, FloppydiskIcon } from '@nais/ds-svelte-community/icons';
+	import { TextField, Button } from '@nais/ds-svelte-community';
 
-	let show = false; 
-    export let value: String;
-
-    function toggle() {
-        show = !show 
-    }
+	let show = false;
+	export let key: string;
+	export let value: string;
+	function toggle() {
+		show = !show;
+	}
 </script>
 
 {#if show}
-<input type="text" bind:value={value} />
+	<div class="entry">
+		<div class="keyfield">
+			<TextField hideLabel size="small" htmlSize={14} bind:value={key} />
+		</div>
+		<div>
+			<TextField hideLabel size="small" htmlSize={14} bind:value />
+		</div>
+		<Button size="small" on:click={toggle}><FloppydiskIcon /></Button>
+		<Button size="small"><TrashIcon /></Button>
+	</div>
 {:else}
-<input type="password" bind:value={value} />
+	<div class="entry">
+		<div class="keyfield">
+            <TextField hideLabel size="small" htmlSize={14} bind:value={key} disabled={true} readonly={true}/>
+		
+            
+		</div>
+		<TextField hideLabel size="small" htmlSize={14} bind:value={value} disabled={true} readonly={true}/>
+		
+    
+		<Button size="small" on:click={toggle}><PencilIcon /></Button>
+		<Button size="small"><TrashIcon /></Button>
+	</div>
 {/if}
-<button on:click={toggle}>
-    {#if show}
-    <EyeSlashIcon/>
-    {:else}
-    <EyeIcon/>
-    {/if}
-</button>
 
 <style>
-    button {
-        background: transparent;
-        border: none; 
-        margin-left: -30px; 
-    }
+	button {
+		background: transparent;
+		border: none;
+	}
+    .entry {display: flex;}
 </style>

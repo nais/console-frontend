@@ -1,97 +1,47 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import SecretField from '$lib/components/SecretField.svelte';
-	import { Table, Thead, Tr, Td, Tbody, Th, Button } from '@nais/ds-svelte-community';
+	import { Table, Thead, Tr, Td, Tbody, Th, Button,TextField } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
+
+	import { TrashIcon, PencilIcon } from '@nais/ds-svelte-community/icons';
+	import NewSecretEntry from './NewSecretEntry.svelte';
 </script>
 
 <div class="grid">
 	<Card columns={12}>
-		<h3>Prod</h3> 
+		<h3>Prod</h3>
 		<Table size="small">
 			<Thead>
 				<Th style="width: 50px"></Th>
 				<Th>Name</Th>
-				<Th>Secret</Th>
-				<Th>Action</Th>
-				
+				<Th>Updated</Th>
 			</Thead>
 			<Tbody>
-
 				<TrExpander>
 					<svelte:fragment slot="row-content">
-						<Td><input type="text" value="MY_SECRET"/></Td>
-						
-					<Td><SecretField value="fooo"/></Td>
-					<Td>
-						<button>Edit</button><button>Delete</button><button>Save</button>
-					</Td>		
-				</svelte:fragment>
-					<dl slot="expander-content">
-						<dt><input type="text" value="mysecret"/><dt>
-						<dd></dd>	
-
-					</dl>
-					
+						<Td>Some-secret</Td>
+						<Td>Alice</Td>
+					</svelte:fragment>
+					<div slot="expander-content">
+						<SecretField key="foo" value="bar"/>
+						<NewSecretEntry></NewSecretEntry>
+						<div>
+							<details>
+								<summary>Audit log</summary>
+								Carl did a thign
+							</details>
+							<details>
+								<summary>Used by</summary>
+								<p>My app</p>
+								<p>Other App</p>
+							</details>
+						</div>
+					</div>
 				</TrExpander>
-				<TrExpander>
-					<svelte:fragment slot="row-content">
-						<Td><input type="text" value="MY_SECRET"/></Td>
-						
-					<Td><input type="password" value="hunter2"/></Td>
-						
-				</svelte:fragment>
-					<p slot="expander-content">This secret is used in several places</p>
-					
-				</TrExpander>
-				<TrExpander>
-					<svelte:fragment slot="row-content">
-						<Td><input type="text" value="MY_SECRET"/></Td>
-						
-					<Td><input type="password" value="hunter2"/></Td>
-						
-				</svelte:fragment>
-					<p slot="expander-content">This secret is used in several places</p>
-					
-				</TrExpander>
-				<TrExpander>
-					<svelte:fragment slot="row-content">
-						<Td><input type="text" value="MY_SECRET"/></Td>
-						
-					<Td><input type="password" value="hunter2"/></Td>
-						
-				</svelte:fragment>
-					<p slot="expander-content">This secret is used in several places</p>
-					
-				</TrExpander>
-
-	
-				
-			</Tbody>
-		</Table>
-		<Button>Add New Secret</Button>
-	</Card>
-	<Card columns={12}>
-		<h3>Dev</h3>
-		<Table size="small">
-			<Thead>
-				<Th>Name</Th>
-				<Th>Value</Th>
-				<Th>Action</Th>
-			</Thead>
-			<Tbody>
-				<Tr>
-					<Td>No apps found</Td>
-					<Td>No apps found</Td>
-					<Td>No apps found</Td>
-				</Tr>
 			</Tbody>
 		</Table>
 	</Card>
-	<summary>
-		<details>fooo</details>
-		Stuff
-	</summary>
 </div>
 
 <style>
@@ -100,5 +50,9 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.entry {
+		display: flex;
+
 	}
 </style>
