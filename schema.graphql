@@ -693,6 +693,21 @@ type Mutation {
     key: String!
   ): Boolean!
 
+  """Create a new secret for a team and env."""
+  createSecret(
+    """The secret data."""
+    data: [SecretTupleInput!]!
+
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Secret!
+
   """
   Create a new team
   
@@ -717,6 +732,18 @@ type Mutation {
     """The slug of the team to deauthorize the action for."""
     teamSlug: Slug!
   ): GitHubRepository!
+
+  """Delete an existing secret for a team and env."""
+  deleteSecret(
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Boolean!
 
   """
   Disable a reconciler
@@ -843,6 +870,21 @@ type Mutation {
   ID that can later be matched to the log entries. The user synchronization itself is asynchronous.
   """
   synchronizeUsers: String!
+
+  """Update an existing secret for a team and env."""
+  updateSecret(
+    """The secret data."""
+    data: [SecretTupleInput!]!
+
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Secret!
 
   """
   Update an existing team
@@ -1134,6 +1176,24 @@ type Query {
   ): ResourceUtilizationTrend!
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
 
+  """Get a secret by name, team and env."""
+  secret(
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Secret!
+
+  """Get all secrets for a team."""
+  secrets(
+    """The name of the team who owns the secrets."""
+    team: Slug!
+  ): [Secret!]!
+
   """Get a specific team."""
   team(
     """Slug of the team."""
@@ -1418,6 +1478,23 @@ enum SearchType {
   APP
   NAISJOB
   TEAM
+}
+
+type Secret {
+  data: [SecretTuple!]!
+  env: Env!
+  id: ID!
+  name: String!
+}
+
+type SecretTuple {
+  key: String!
+  value: String!
+}
+
+input SecretTupleInput {
+  key: String!
+  value: String!
 }
 
 """Service account type."""
