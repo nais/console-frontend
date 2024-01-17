@@ -4,13 +4,31 @@
 	import { Table, Thead, Tr, Td, Tbody, Th, Button, TextField } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 
-	import { TrashIcon, PencilIcon } from '@nais/ds-svelte-community/icons';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import NewSecretEntry from './NewSecretEntry.svelte';
 	import type { PageData } from './$houdini';
+	import { graphql } from '$houdini';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
 
 	$: ({ Secrets } = data);
+
+	const deleteSecret = graphql(`
+		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
+			deleteSecret(name: $name, team: $team, env: $env)
+		}
+	`);
+
+	const updateSecret = graphql(`
+		mutation updateSecret($name: String!, $team: Slug!, $env: String!, $data: [SecretTupleInput!]!) {
+			updateSecret(name: $name, team: $team, env: $env, data: $data) {
+			 id
+			}
+		}
+	`);
+
+	let team = $page.params.team;
 </script>
 
 {#if $Secrets.data}
@@ -32,8 +50,8 @@
 								<div slot="expander-content">
 									{#each secret.data as data}
 										<SecretField key={data.key} value={data.value} />
-										<NewSecretEntry></NewSecretEntry>
 									{/each}
+									<NewSecretEntry></NewSecretEntry>
 									<div>
 										<details>
 											<summary>Audit log</summary>
@@ -45,6 +63,18 @@
 											<p>Other App</p>
 										</details>
 									</div>
+									<Button variant="primary" size="small" on:click={async () => {
+									  await updateSecret.mutate({ name: secret.name, team: team, env: secrets.env.name, data: [] });
+										Secrets.fetch();
+									}}>
+										<TrashIcon />
+									</Button>
+									<Button variant="danger" size="small" on:click={async () => {
+									  await deleteSecret.mutate({ name: secret.name, team: team, env: secrets.env.name });
+										Secrets.fetch();
+									}}>
+										<TrashIcon />
+									</Button>
 								</div>
 							</TrExpander>
 						{/each}
@@ -61,8 +91,5 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-	.entry {
-		display: flex;
 	}
 </style>

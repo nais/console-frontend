@@ -8,14 +8,28 @@
 	function toggle() {
 		show = !show;
 	}
+
+	function updateKey(e) {
+		key = e.target.value;
+	}
+
+	function updateValue(e) {
+		value = e.target.value;
+	}
+
+	function deleteKv() {
+
+	}
 </script>
 
 {#if show}
 	<div class="entry">
-		<TextField hideLabel size="small" htmlSize={14} bind:value={key} />
-		<TextField hideLabel size="small" htmlSize={14} bind:value />
+		<TextField hideLabel size="small" htmlSize={14} bind:value={key}
+							 on:change={updateKey}/>
+		<TextField hideLabel size="small" htmlSize={14} bind:value
+							 on:change={updateValue}/>
 		<Button size="small" on:click={toggle}><FloppydiskIcon /></Button>
-		<Button size="small"><TrashIcon /></Button>
+		<Button size="small" on:click={deleteKv}><TrashIcon /></Button>
 	</div>
 {:else}
 	<div class="entry">
@@ -36,12 +50,7 @@
 {/if}
 
 <style>
-	button {
-		background: transparent;
-		border: none;
-	}
 	.entry {
 		display: flex;
-  
-}
+  }
 </style>
