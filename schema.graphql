@@ -355,6 +355,11 @@ input EnvCostFilter {
   to: Date!
 }
 
+type EnvSecret {
+  env: Env!
+  secrets: [Secret!]!
+}
+
 type Error {
   message: String!
 }
@@ -1192,7 +1197,7 @@ type Query {
   secrets(
     """The name of the team who owns the secrets."""
     team: Slug!
-  ): [Secret!]!
+  ): [EnvSecret!]!
 
   """Get a specific team."""
   team(

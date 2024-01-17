@@ -11,23 +11,24 @@
 	export let data: PageData;
 
 	$: ({ Secrets } = data);
+	$: foo = $Secrets.data?.secrets
 </script>
 
+{#if $Secrets.data }
 <div class="grid">
+	{#each $Secrets.data.secrets as secrets  }		
 	<Card columns={12}>
-		<h3>Prod</h3>
+		<h3>{secrets.env.name}</h3>
 		<Table size="small">
 			<Thead>
 				<Th style="width: 50px"></Th>
 				<Th>Name</Th>
-				<Th>Updated</Th>
 			</Thead>
 			<Tbody>
-				{#each $Secrets.data?.secrets as secret}
+				{#each secrets.secrets as secret }
 					<TrExpander>
 						<svelte:fragment slot="row-content">
 							<Td>{secret.name}</Td>
-							<Td>bogus</Td>
 						</svelte:fragment>
 						<div slot="expander-content">
 							{#each secret.data as data}
@@ -51,8 +52,9 @@
 			</Tbody>
 		</Table>
 	</Card>
+	{/each}
 </div>
-
+{/if}
 <style>
 	.grid {
 		display: grid;

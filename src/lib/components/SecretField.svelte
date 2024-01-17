@@ -12,25 +12,24 @@
 
 {#if show}
 	<div class="entry">
-		<div class="keyfield">
-			<TextField hideLabel size="small" htmlSize={14} bind:value={key} />
-		</div>
-		<div>
-			<TextField hideLabel size="small" htmlSize={14} bind:value />
-		</div>
+		<TextField hideLabel size="small" htmlSize={14} bind:value={key} />
+		<TextField hideLabel size="small" htmlSize={14} bind:value />
 		<Button size="small" on:click={toggle}><FloppydiskIcon /></Button>
 		<Button size="small"><TrashIcon /></Button>
 	</div>
 {:else}
 	<div class="entry">
-		<div class="keyfield">
-            <TextField hideLabel size="small" htmlSize={14} bind:value={key} disabled={true} readonly={true}/>
-		
-            
-		</div>
-		<TextField hideLabel size="small" htmlSize={14} bind:value={value} disabled={true} readonly={true}/>
-		
-    
+		<TextField
+			hideLabel
+			size="small"
+			htmlSize={14}
+			bind:value={key}
+			disabled={true}
+			readonly={true}
+		/>
+
+		<TextField hideLabel size="small" htmlSize={14} bind:value disabled={true} readonly={true} />
+
 		<Button size="small" on:click={toggle}><PencilIcon /></Button>
 		<Button size="small"><TrashIcon /></Button>
 	</div>
@@ -41,5 +40,8 @@
 		background: transparent;
 		border: none;
 	}
-    .entry {display: flex;}
+	.entry {
+		display: flex;
+  
+}
 </style>
