@@ -1,6 +1,11 @@
-<script>
+<script lang="ts">
 	import { Button, TextField } from '@nais/ds-svelte-community';
+
+	export let i: number; 
+	export let j: number;
+
 </script>
+
 
 <div class="entry">
 	<div class="keyfield">

@@ -64,9 +64,10 @@
 			}
 		}
 	`);
-
+	
 	let team = $page.params.team;
-	let addSecretOpen = false;
+	let addSecretOpen = [1,2,3,4,5].map(x => ({[x]: false}));
+	console.log(addSecretOpen)
 </script>
 
 {#if $Secrets.data}
@@ -90,7 +91,7 @@
 										{#each secret.data as data, k}
 											<SecretField {i} {j} {k} key={data.key} value={data.value} bind:update />
 										{/each}
-										<NewSecretEntry></NewSecretEntry>
+										<NewSecretEntry i={i} j={j}></NewSecretEntry>
 									</div>
 									<div>
 										<details>
@@ -142,12 +143,12 @@
 							variant="primary"
 							size="small"
 							on:click={() => {
-								addSecretOpen = true;
+								addSecretOpen[i] = true;
 							}}
 						>
 							Add secret {secrets.env.name}
 						</Button>
-						<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen} bind:team env={secrets.env.name} />
+						<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen[i]} bind:team env={secrets.env.name} />
 					</Tbody>
 				</Table>
 			</Card>
