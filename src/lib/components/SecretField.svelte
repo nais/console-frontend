@@ -33,7 +33,12 @@
 		}
 	}
 
-	let deleteKv = () => {};
+	let deleteKv = () => {
+		if (update) {
+			update[i].secrets[j].data.splice(k, 1); 
+			console.log("REMOVE", update)
+		}
+	};
 </script>
 
 {#if show}
@@ -57,7 +62,7 @@
 		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
 		<div class="buttons">
 			<Button size="small" on:click={toggle}><PencilIcon /></Button>
-			<Button size="small" variant="danger"><TrashIcon /></Button>
+			<Button size="small" variant="danger" on:click={deleteKv}><TrashIcon /></Button>
 		</div>
 	</div>
 {/if}

@@ -4,17 +4,41 @@
 	export let i: number; 
 	export let j: number;
 
+	export let update:
+		| {
+				env: string;
+				secrets: {
+					name: string;
+					id: string;
+					data: {
+						key: string;
+						value: string;
+					}[];
+				}[];
+		  }[]
+		| undefined;
+
+
+		function updateKv(key: string, value: string ) {
+		if (update) {
+			
+			update[i].secrets[j].data = update[i].secrets[j].data.concat({ key: key, value: value });
+		}
+	}
+
+	let key: string 
+	let value: string
 </script>
 
 
 <div class="entry">
 	<div class="keyfield">
-		<TextField size="small" htmlSize={30}  placeholder="New value" />
+		<TextField size="small" htmlSize={30}   bind:value={key} placeholder="New key" />
 	</div>
 	<div>
-		<TextField size="small" htmlSize={30} placeholder="New secret" />
+		<TextField size="small" htmlSize={30}  bind:value placeholder="New value" />
 	</div>
-	<Button size="small" on:click={() => {}}>Add</Button>
+	<Button size="small" on:click={() => updateKv(key, value) }>Add</Button>
 	
 </div>
 

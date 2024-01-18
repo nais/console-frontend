@@ -91,7 +91,7 @@
 										{#each secret.data as data, k}
 											<SecretField {i} {j} {k} key={data.key} value={data.value} bind:update />
 										{/each}
-										<NewSecretEntry i={i} j={j}></NewSecretEntry>
+										<NewSecretEntry {i} {j} bind:update></NewSecretEntry>
 									</div>
 									<div>
 										<details>
