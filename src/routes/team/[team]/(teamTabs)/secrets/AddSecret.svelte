@@ -10,6 +10,7 @@
 	export let open: boolean;
 	export let team: string;
 	export let env: string;
+	export let refetch;
 
 	let name: string = 'Secret name';
 	let data: SecretTupleInput[] = [];
@@ -35,6 +36,7 @@
 		});
 
 		open = false;
+		refetch()
 	};
 
 </script>

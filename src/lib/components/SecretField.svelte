@@ -57,7 +57,7 @@
 		<TextField hideLabel size="small" htmlSize={14} bind:value disabled={true} readonly={true} />
 
 		<Button size="small" on:click={toggle}><PencilIcon /></Button>
-		<Button size="small"><TrashIcon /></Button>
+		<Button size="small" variant="danger"><TrashIcon /></Button>
 	</div>
 {/if}
 

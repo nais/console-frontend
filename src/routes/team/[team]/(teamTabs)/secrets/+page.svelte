@@ -147,8 +147,7 @@
 						>
 							Add secret {secrets.env.name}
 						</Button>
-						<AddSecret bind:open={addSecretOpen} bind:team env={secrets.env.name} />
-
+						<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen} bind:team env={secrets.env.name} />
 					</Tbody>
 				</Table>
 			</Card>
@@ -163,5 +162,4 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-
 </style>
