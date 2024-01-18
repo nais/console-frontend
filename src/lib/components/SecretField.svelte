@@ -9,16 +9,16 @@
 
 	export let update:
 		| {
-				env: string;
-				secrets: {
-					name: string;
-					id: string;
-					data: {
-						key: string;
-						value: string;
-					}[];
-				}[];
-		  }[]
+		env: string;
+		secrets: {
+			name: string;
+			id: string;
+			data: {
+				key: string;
+				value: string;
+			}[];
+		}[];
+	}[]
 		| undefined;
 
 	function toggle() {
@@ -45,8 +45,14 @@
 	<div class="entry">
 		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
 		<TextField hideLabel size="small" htmlSize={30} bind:value />
-		<Button size="small" on:click={updateKv}><FloppydiskIcon /></Button>
-		<Button size="small" on:click={deleteKv}><TrashIcon /></Button>
+		<div class="buttons">
+			<Button size="small" on:click={updateKv}>
+				<FloppydiskIcon />
+			</Button>
+			<Button size="small" on:click={deleteKv} variant="danger">
+				<TrashIcon />
+			</Button>
+		</div>
 	</div>
 {:else}
 	<div class="entry">
@@ -61,8 +67,12 @@
 
 		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
 		<div class="buttons">
-			<Button size="small" on:click={toggle}><PencilIcon /></Button>
-			<Button size="small" variant="danger" on:click={deleteKv}><TrashIcon /></Button>
+			<Button size="small" on:click={toggle}>
+				<PencilIcon />
+			</Button>
+			<Button size="small" variant="danger" on:click={deleteKv}>
+				<TrashIcon />
+			</Button>
 		</div>
 	</div>
 {/if}

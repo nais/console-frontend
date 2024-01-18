@@ -64,7 +64,7 @@
 			}
 		}
 	`);
-	
+
 	let team = $page.params.team;
 	let addSecretOpen = [0,1,2,3,4,5].map(x => ({[x]: false}));
 	console.log(addSecretOpen)
@@ -74,7 +74,22 @@
 	<div class="grid">
 		{#each $Secrets.data.secrets as secrets, i}
 			<Card columns={12}>
-				<h3>{secrets.env.name}</h3>
+				<div class="heading">
+					<h3>{secrets.env.name}</h3>
+					<Button
+						class="add-secret"
+						variant="primary"
+						size="small"
+						on:click={() => {
+								addSecretOpen[i] = {[i]: true};
+							}}
+					>
+						Add secret
+					</Button>
+				</div>
+
+				<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen[i][i]} bind:team env={secrets.env.name} />
+
 				<Table size="small">
 					<Thead>
 						<Th style="width: 50px"></Th>
@@ -104,51 +119,43 @@
 											<p>Other App</p>
 										</details>
 									</div>
-									<Button
-										variant="primary"
-										size="small"
-										on:click={async () => {
-											console.log('UPDATECLICK', update);
-											update
-												? await updateSecret.mutate({
-														name: secret.name,
-														team: team,
-														env: secrets.env.name,
-														data: update[i].secrets[j].data
-												  })
-												: () => {};
-											update = undefined;
-											Secrets.fetch();
-										}}
-									>
-										<FloppydiskIcon />Save
-									</Button>
-									<Button
-										variant="danger"
-										size="small"
-										on:click={async () => {
-											await deleteSecret.mutate({
-												name: secret.name,
-												team: team,
-												env: secrets.env.name
-											});
-										}}
-									>
-										<TrashIcon />
-									</Button>
+									<div class="secrets-edit-buttons">
+											<Button
+												variant="primary"
+												size="small"
+												on:click={async () => {
+													console.log('UPDATECLICK', update);
+													update
+														 ? await updateSecret.mutate({
+																	name: secret.name,
+																	team: team,
+																	env: secrets.env.name,
+																	data: update[i].secrets[j].data
+															 })
+														 : () => {};
+													update = undefined;
+													Secrets.fetch();
+												}}
+											>
+												<FloppydiskIcon />Save
+											</Button>
+											<Button
+												variant="danger"
+												size="small"
+												on:click={async () => {
+													await deleteSecret.mutate({
+														 name: secret.name,
+														 team: team,
+														 env: secrets.env.name
+													});
+												}}
+											>
+												<TrashIcon />
+											</Button>
+										</div>
 								</div>
 							</TrExpander>
 						{/each}
-						<Button
-							variant="primary"
-							size="small"
-							on:click={() => {
-								addSecretOpen[i] = {[i]: true};
-							}}
-						>
-							Add secret
-						</Button>
-						<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen[i][i]} bind:team env={secrets.env.name} />
 					</Tbody>
 				</Table>
 			</Card>
@@ -163,4 +170,18 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+
+	:global(.add-secret) {
+			display: inline-block;
+	}
+
+	.heading {
+			display: flex;
+			justify-content: space-between;
+	}
+
+	.secrets-edit-buttons {
+			margin: 16px 0 0 16px;
+	}
+
 </style>

@@ -32,15 +32,11 @@
 
 
 <div class="entry">
-
 		<TextField size="small" htmlSize={30}   bind:value={key} placeholder="New key" />
-
-
 		<TextField size="small" htmlSize={30}  bind:value placeholder="New value" />
-
-  
+	<div class="buttons">
 	<Button size="small" on:click={() => updateKv(key, value) }>Add</Button>
-	
+	</div>
 </div>
 
 <style>
@@ -48,6 +44,10 @@
 		display: flex;
 	}
 	.entry > :global(*) {
-		margin: 16px 0 0 16px; 
+		margin: 16px 0 0 16px;
+		border: red solid 1px;
 	}
+  .buttons {
+      margin-left: 8px;
+  }
 </style>
