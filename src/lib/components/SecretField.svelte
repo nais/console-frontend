@@ -65,4 +65,7 @@
 	.entry {
 		display: flex;
 	}
+	.entry > :global(*) {
+		margin: 16px 0 0 16px;
+	}
 </style>

@@ -16,4 +16,7 @@
 	.entry {
 		display: flex;
 	}
+	.entry > :global(*) {
+		margin: 16px 0 16px 16px; 
+	}
 </style>

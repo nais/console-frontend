@@ -86,10 +86,12 @@
 									<Td>{secret.name}</Td>
 								</svelte:fragment>
 								<div slot="expander-content">
-									{#each secret.data as data, k}
-										<SecretField {i} {j} {k} key={data.key} value={data.value} bind:update />
-									{/each}
-									<NewSecretEntry></NewSecretEntry>
+									<div class="secrets-edit">
+										{#each secret.data as data, k}
+											<SecretField {i} {j} {k} key={data.key} value={data.value} bind:update />
+										{/each}
+										<NewSecretEntry></NewSecretEntry>
+									</div>
 									<div>
 										<details>
 											<summary>Audit log</summary>
@@ -105,7 +107,7 @@
 										variant="primary"
 										size="small"
 										on:click={async () => {
-											console.log("UPDATECLICK", update)
+											console.log('UPDATECLICK', update);
 											update
 												? await updateSecret.mutate({
 														name: secret.name,
@@ -118,7 +120,7 @@
 											Secrets.fetch();
 										}}
 									>
-										<FloppydiskIcon />Save 
+										<FloppydiskIcon />Save
 									</Button>
 									<Button
 										variant="danger"
@@ -142,10 +144,11 @@
 							on:click={() => {
 								addSecretOpen = true;
 							}}
-							>
+						>
 							Add secret {secrets.env.name}
 						</Button>
-						<AddSecret bind:open={addSecretOpen} bind:team={team} env={secrets.env.name} />
+						<AddSecret bind:open={addSecretOpen} bind:team env={secrets.env.name} />
+
 					</Tbody>
 				</Table>
 			</Card>
@@ -160,4 +163,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+
 </style>
