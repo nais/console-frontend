@@ -11,7 +11,7 @@
 	export let team: string;
 	export let env: string;
 	export let refetch;
-	
+
 	let name: string = 'Secret name';
 	let data: SecretTupleInput[] = [];
 
@@ -34,7 +34,6 @@
 			env: env,
 			data: data
 		});
-
 		open = false;
 		refetch()
 	};
@@ -43,7 +42,7 @@
 
 <Modal bind:open>
 	<svelte:fragment slot="header">
-		<Heading>Add secret for {env}</Heading>
+		<Heading>Add secret</Heading>
 	</svelte:fragment>
 	<TextField hideLabel size="small" htmlSize={14} bind:value={name} />
 

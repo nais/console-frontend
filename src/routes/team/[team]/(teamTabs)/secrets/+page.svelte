@@ -66,7 +66,7 @@
 	`);
 	
 	let team = $page.params.team;
-	let addSecretOpen = [1,2,3,4,5].map(x => ({[x]: false}));
+	let addSecretOpen = [0,1,2,3,4,5].map(x => ({[x]: false}));
 	console.log(addSecretOpen)
 </script>
 
@@ -143,12 +143,12 @@
 							variant="primary"
 							size="small"
 							on:click={() => {
-								addSecretOpen[i] = true;
+								addSecretOpen[i] = {[i]: true};
 							}}
 						>
-							Add secret {secrets.env.name}
+							Add secret
 						</Button>
-						<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen[i]} bind:team env={secrets.env.name} />
+						<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen[i][i]} bind:team env={secrets.env.name} />
 					</Tbody>
 				</Table>
 			</Card>

@@ -26,20 +26,20 @@
 	}
 
 	function updateKv() {
-		console.log("secretfilec", update, i, j, k)
+		console.log('secretfilec', update, i, j, k);
 		if (update) {
 			update[i].secrets[j].data[k] = { key: key, value: value };
 			show = !show;
 		}
 	}
 
-	let deleteKv = () => {}
+	let deleteKv = () => {};
 </script>
 
 {#if show}
 	<div class="entry">
-		<TextField hideLabel size="small" htmlSize={14} bind:value={key} />
-		<TextField hideLabel size="small" htmlSize={14} bind:value />
+		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
+		<TextField hideLabel size="small" htmlSize={30} bind:value />
 		<Button size="small" on:click={updateKv}><FloppydiskIcon /></Button>
 		<Button size="small" on:click={deleteKv}><TrashIcon /></Button>
 	</div>
@@ -48,16 +48,17 @@
 		<TextField
 			hideLabel
 			size="small"
-			htmlSize={14}
+			htmlSize={30}
 			bind:value={key}
 			disabled={true}
 			readonly={true}
 		/>
 
-		<TextField hideLabel size="small" htmlSize={14} bind:value disabled={true} readonly={true} />
-
-		<Button size="small" on:click={toggle}><PencilIcon /></Button>
-		<Button size="small" variant="danger"><TrashIcon /></Button>
+		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
+		<div class="buttons">
+			<Button size="small" on:click={toggle}><PencilIcon /></Button>
+			<Button size="small" variant="danger"><TrashIcon /></Button>
+		</div>
 	</div>
 {/if}
 
@@ -67,5 +68,8 @@
 	}
 	.entry > :global(*) {
 		margin: 16px 0 0 16px;
+	}
+	.buttons {
+		margin-left: 8px; 
 	}
 </style>

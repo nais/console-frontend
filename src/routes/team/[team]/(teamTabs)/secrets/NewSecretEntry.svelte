@@ -9,12 +9,13 @@
 
 <div class="entry">
 	<div class="keyfield">
-		<TextField hideLabel size="small" htmlSize={14} placeholder="New value" />
+		<TextField size="small" htmlSize={30}  placeholder="New value" />
 	</div>
 	<div>
-		<TextField hideLabel size="small" htmlSize={14} placeholder="New secret" />
+		<TextField size="small" htmlSize={30} placeholder="New secret" />
 	</div>
-	<Button size="small">Add</Button>
+	<Button size="small" on:click={() => {}}>Add</Button>
+	
 </div>
 
 <style>
