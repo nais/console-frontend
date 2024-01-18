@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import SecretField from '$lib/components/SecretField.svelte';
-	import { Table, Thead, Tr, Td, Tbody, Th, Button, TextField } from '@nais/ds-svelte-community';
+	import { Table, Thead, Td, Tbody, Th, Button } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 
 	import { FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -9,6 +9,7 @@
 	import type { PageData } from './$houdini';
 	import { graphql, type Secrets$result } from '$houdini';
 	import { page } from '$app/stores';
+	import AddSecret from './AddSecret.svelte';
 
 	export let data: PageData;
 
@@ -40,6 +41,7 @@
 		update = JSON.parse(JSON.stringify(secret));
 		console.log('yes', update);
 	};
+
 	const deleteSecret = graphql(`
 		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
 			deleteSecret(name: $name, team: $team, env: $env)
@@ -64,6 +66,7 @@
 	`);
 
 	let team = $page.params.team;
+	let addSecretOpen = false;
 </script>
 
 {#if $Secrets.data}
@@ -133,6 +136,16 @@
 								</div>
 							</TrExpander>
 						{/each}
+						<Button
+							variant="primary"
+							size="small"
+							on:click={() => {
+								addSecretOpen = true;
+							}}
+							>
+							Add secret {secrets.env.name}
+						</Button>
+						<AddSecret bind:open={addSecretOpen} bind:team={team} env={secrets.env.name} />
 					</Tbody>
 				</Table>
 			</Card>
