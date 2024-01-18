@@ -10,6 +10,11 @@ export default defineConfig({
 				target: 'http://127.0.0.1:3000',
 				rewrite: (path) => {
 					return path;
+				},
+				headers: {
+					'X-User-Email': import.meta.env?.VITE_API_USER_EMAIL
+						? import.meta.env?.VITE_API_USER_EMAIL
+						: 'dev.usersen@example.com'
 				}
 			}
 		}
