@@ -45,9 +45,9 @@
 	}
 	.entry > :global(*) {
 		margin: 16px 0 0 16px;
-		border: red solid 1px;
 	}
   .buttons {
-      margin-left: 8px;
+		margin-left: 8px;
+		align-self: flex-end;
   }
 </style>

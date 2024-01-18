@@ -36,13 +36,18 @@
 	let deleteKv = () => {
 		if (update) {
 			update[i].secrets[j].data.splice(k, 1);
+			deleted = true;
 			console.log('REMOVE', update);
+			console.log('REMOVED', deleted);
 		}
 	};
+
+	$: deleted = false;
+	let entryClass = `entry ${deleted ? 'deleted' : 'foo'}`;
 </script>
 
 {#if show}
-	<div class="entry">
+	<div class={entryClass}>
 		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
 		<TextField hideLabel size="small" htmlSize={30} bind:value />
 		<div class="buttons">
@@ -55,7 +60,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="entry">
+	<div class={entryClass}>
 		<TextField
 			hideLabel
 			size="small"
@@ -70,9 +75,6 @@
 			<Button size="small" on:click={toggle}>
 				<PencilIcon />
 			</Button>
-			<Button size="small" variant="danger" on:click={deleteKv}>
-				<TrashIcon />
-			</Button>
 		</div>
 	</div>
 {/if}
@@ -86,5 +88,8 @@
 	}
 	.buttons {
 		margin-left: 8px;
+	}
+	.deleted {
+		border: red 1px solid;
 	}
 </style>
