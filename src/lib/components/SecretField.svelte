@@ -35,8 +35,8 @@
 
 	let deleteKv = () => {
 		if (update) {
-			update[i].secrets[j].data.splice(k, 1); 
-			console.log("REMOVE", update)
+			update[i].secrets[j].data.splice(k, 1);
+			console.log('REMOVE', update);
 		}
 	};
 </script>
@@ -75,6 +75,6 @@
 		margin: 16px 0 0 16px;
 	}
 	.buttons {
-		margin-left: 8px; 
+		margin-left: 8px;
 	}
 </style>
