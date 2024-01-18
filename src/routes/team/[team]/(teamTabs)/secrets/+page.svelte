@@ -4,7 +4,7 @@
 	import { Table, Thead, Tr, Td, Tbody, Th, Button, TextField } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import NewSecretEntry from './NewSecretEntry.svelte';
 	import type { PageData } from './$houdini';
 	import { graphql, type Secrets$result } from '$houdini';
@@ -15,7 +15,7 @@
 	$: ({ Secrets } = data);
 
 	$: mkUpdate($Secrets.data?.secrets);
-    
+
 	type update =
 		| {
 				env: string;
@@ -33,12 +33,12 @@
 	let update: update;
 
 	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
-		if ( !secret) {
+		if (!secret) {
 			return;
 		}
-		
+
 		update = JSON.parse(JSON.stringify(secret));
-		console.log("yes", update )
+		console.log('yes', update);
 	};
 	const deleteSecret = graphql(`
 		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
@@ -55,6 +55,10 @@
 		) {
 			updateSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
+				data {
+					key
+					value
+				}
 			}
 		}
 	`);
@@ -80,7 +84,7 @@
 								</svelte:fragment>
 								<div slot="expander-content">
 									{#each secret.data as data, k}
-										<SecretField i={i} j={j} k={k} key={data.key} value={data.value} bind:update={update} />
+										<SecretField {i} {j} {k} key={data.key} value={data.value} bind:update />
 									{/each}
 									<NewSecretEntry></NewSecretEntry>
 									<div>
@@ -98,16 +102,20 @@
 										variant="primary"
 										size="small"
 										on:click={async () => {
-											await updateSecret.mutate({
-												name: secret.name,
-												team: team,
-												env: secrets.env.name,
-												data: []
-											});
+											console.log("UPDATECLICK", update)
+											update
+												? await updateSecret.mutate({
+														name: secret.name,
+														team: team,
+														env: secrets.env.name,
+														data: update[i].secrets[j].data
+												  })
+												: () => {};
+											update = undefined;
 											Secrets.fetch();
 										}}
 									>
-										<TrashIcon />
+										<FloppydiskIcon />Save 
 									</Button>
 									<Button
 										variant="danger"
@@ -118,7 +126,6 @@
 												team: team,
 												env: secrets.env.name
 											});
-											Secrets.fetch();
 										}}
 									>
 										<TrashIcon />
