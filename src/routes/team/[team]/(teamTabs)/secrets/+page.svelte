@@ -1,15 +1,16 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import SecretField from '$lib/components/SecretField.svelte';
-	import { Table, Thead, Td, Tbody, Th, Button } from '@nais/ds-svelte-community';
+	import { Table, Thead, Td, Tbody, Th, Button, Heading } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 
-	import { FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import NewSecretEntry from './NewSecretEntry.svelte';
 	import type { PageData } from './$houdini';
 	import { graphql, type Secrets$result } from '$houdini';
 	import { page } from '$app/stores';
 	import AddSecret from './AddSecret.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 
 	export let data: PageData;
 
@@ -68,6 +69,7 @@
 	let team = $page.params.team;
 	// TODO: this should really be update.map( x => {[x.env]: false}) but v0v
 	let addSecretOpen = [0, 1, 2, 3, 4, 5].map((x) => ({ [x]: false }));
+	let deleteSecretOpen = [0, 1, 2, 3, 4, 5].map((x) => ({ [x]: false }));
 </script>
 
 {#if update}
@@ -137,18 +139,40 @@
 											Confirm
 										</Button>
 										<Button
-											variant="danger"
+											variant="secondary"
 											size="small"
 											on:click={async () => {
+												update = undefined;
+												Secrets.fetch();
+											}}
+										>
+											Cancel
+										</Button>
+										<Button
+											variant="danger"
+											size="small"
+											on:click={() => {
+												deleteSecretOpen[i] = { [i]: true };
+											}}
+										>
+											<TrashIcon />
+										</Button>
+										<Confirm
+											bind:open={deleteSecretOpen[i][i]}
+											confirmText="Delete"
+											variant="danger"
+											on:confirm={async () => {
 												await deleteSecret.mutate({
 													name: secret.name,
 													team: team,
 													env: secrets.env.name
 												});
+												Secrets.fetch();
 											}}
 										>
-											<TrashIcon />
-										</Button>
+											<svelte:fragment slot="header"><Heading>Delete secret</Heading></svelte:fragment>
+											Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{secrets.env.name}</b>?
+										</Confirm>
 									</div>
 								</div>
 							</TrExpander>

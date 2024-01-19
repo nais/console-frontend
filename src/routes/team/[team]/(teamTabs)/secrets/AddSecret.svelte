@@ -42,7 +42,7 @@
 
 <Modal bind:open width="small">
 	<svelte:fragment slot="header">
-		<Heading>Add secret to {env}</Heading>
+		<Heading>Add new secret to <b>{env}</b></Heading>
 	</svelte:fragment>
 
 	<TextField hideLabel size="small" htmlSize={14} bind:value={name} />

@@ -24,7 +24,7 @@
 	/**
 	 * Is expanded ?
 	 */
-	let expanded = false;
+	let expanded = true;
     
 	/**
 	 * Expander toggle
