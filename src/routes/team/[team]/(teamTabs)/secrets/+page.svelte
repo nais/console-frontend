@@ -38,8 +38,8 @@
 			return;
 		}
 
+		// TOdo: I cant even, surely we can avoid a deepcopy here by mappy-reducy
 		update = JSON.parse(JSON.stringify(secret));
-		console.log('yes', update);
 	};
 
 	const deleteSecret = graphql(`
@@ -66,8 +66,8 @@
 	`);
 
 	let team = $page.params.team;
-	let addSecretOpen = [0,1,2,3,4,5].map(x => ({[x]: false}));
-	console.log(addSecretOpen)
+	// TODO: this should really be update.map( x => {[x.env]: false}) but v0v 
+	let addSecretOpen = [0, 1, 2, 3, 4, 5].map((x) => ({ [x]: false }));
 </script>
 
 {#if $Secrets.data}
@@ -81,14 +81,19 @@
 						variant="primary"
 						size="small"
 						on:click={() => {
-								addSecretOpen[i] = {[i]: true};
-							}}
+							addSecretOpen[i] = { [i]: true };
+						}}
 					>
 						Add secret
 					</Button>
 				</div>
 
-				<AddSecret refetch={() => Secrets.fetch({})} bind:open={addSecretOpen[i][i]} bind:team env={secrets.env.name} />
+				<AddSecret
+					refetch={() => Secrets.fetch({})}
+					bind:open={addSecretOpen[i][i]}
+					bind:team
+					env={secrets.env.name}
+				/>
 
 				<Table size="small">
 					<Thead>
@@ -120,39 +125,38 @@
 										</details>
 									</div>
 									<div class="secrets-edit-buttons">
-											<Button
-												variant="primary"
-												size="small"
-												on:click={async () => {
-													console.log('UPDATECLICK', update);
-													update
-														 ? await updateSecret.mutate({
-																	name: secret.name,
-																	team: team,
-																	env: secrets.env.name,
-																	data: update[i].secrets[j].data
-															 })
-														 : () => {};
-													update = undefined;
-													Secrets.fetch();
-												}}
-											>
-												<FloppydiskIcon />Save
-											</Button>
-											<Button
-												variant="danger"
-												size="small"
-												on:click={async () => {
-													await deleteSecret.mutate({
-														 name: secret.name,
-														 team: team,
-														 env: secrets.env.name
-													});
-												}}
-											>
-												<TrashIcon />
-											</Button>
-										</div>
+										<Button
+											variant="primary"
+											size="small"
+											on:click={async () => {
+												update
+													? await updateSecret.mutate({
+															name: secret.name,
+															team: team,
+															env: secrets.env.name,
+															data: update[i].secrets[j].data
+													  })
+													: () => {};
+												update = undefined;
+												Secrets.fetch();
+											}}
+										>
+											<FloppydiskIcon />Save
+										</Button>
+										<Button
+											variant="danger"
+											size="small"
+											on:click={async () => {
+												await deleteSecret.mutate({
+													name: secret.name,
+													team: team,
+													env: secrets.env.name
+												});
+											}}
+										>
+											<TrashIcon />
+										</Button>
+									</div>
 								</div>
 							</TrExpander>
 						{/each}
@@ -172,16 +176,15 @@
 	}
 
 	:global(.add-secret) {
-			display: inline-block;
+		display: inline-block;
 	}
 
 	.heading {
-			display: flex;
-			justify-content: space-between;
+		display: flex;
+		justify-content: space-between;
 	}
 
 	.secrets-edit-buttons {
-			margin: 16px 0 0 16px;
+		margin: 16px 0 0 16px;
 	}
-
 </style>
