@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PencilIcon, TrashIcon, FloppydiskIcon, RecycleIcon } from '@nais/ds-svelte-community/icons';
+	import { PencilIcon, TrashIcon, RecycleIcon } from '@nais/ds-svelte-community/icons';
 	import { TextField, Button } from '@nais/ds-svelte-community';
 
 	let show = false;
@@ -9,13 +9,17 @@
 
 	export let update:
 		| {
-				env: string;
+				env: {
+					name: string;
+				};
 				secrets: {
 					name: string;
 					id: string;
 					data: {
 						key: string;
 						value: string;
+						added?: boolean;
+						deleted?: boolean;
 					}[];
 				}[];
 		  }[]
@@ -40,7 +44,10 @@
 	}
 
 	let deleted = false;
-	let added = update[i].secrets[j].data[k].added;
+	let added: boolean | undefined = false;
+	if (update) {
+		added = update[i].secrets[j].data[k].added;
+	}
 </script>
 
 

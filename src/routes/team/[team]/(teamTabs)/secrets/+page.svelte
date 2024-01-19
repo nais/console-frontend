@@ -1,6 +1,23 @@
 <script lang="ts">
+	/**
+	 * TODOS:
+	 * - Refactor data model - we don't need to deepcopy
+	 * - Push fetching down to the leaves;
+	 *    - Initial fetch should only list envs and secret names per env (no data)
+	 *    - Data is fetched per secret when the expander is opened
+	 * - Refactor away the i,j,k madness
+	 * - Replace it with manipulating objects by ID
+	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
+	 * - Fix the expanders losing their state on confirm/cancel
+	 * - Make type for the 'update' record
+	 * - Fix 'npm run check' tslint errors
+	 * - The KV field is really a (DELETED, ADDED, UNCHANGED, MODIFIED) field
+	 * 		- the current state of the data type does not reflect this
+	 * 		- e.g: a KV field may be both added and deleted at the same time
+	 */
+
 	import Card from '$lib/Card.svelte';
-	import SecretField from '$lib/components/SecretField.svelte';
+	import SecretField from './SecretField.svelte';
 	import { Table, Thead, Td, Tbody, Th, Button, Heading } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 
@@ -20,13 +37,17 @@
 
 	type update =
 		| {
-				env: string;
+				env: {
+					name: string;
+				};
 				secrets: {
 					name: string;
 					id: string;
 					data: {
 						key: string;
 						value: string;
+						added?: boolean;
+						deleted?: boolean;
 					}[];
 				}[];
 		  }[]

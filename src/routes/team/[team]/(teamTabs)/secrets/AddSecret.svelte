@@ -10,7 +10,7 @@
 	export let open: boolean;
 	export let team: string;
 	export let env: string;
-	export let refetch;
+	export let refetch: () => void;
 
 	let name: string = 'Secret name';
 	let data: SecretTupleInput[] = [];

@@ -1,25 +1,6 @@
 <script lang="ts">
-	import { Button, Tr } from "@nais/ds-svelte-community";
-	import type { TableRowProps } from "@nais/ds-svelte-community/dist/components/Table/type";
-    import { ChevronDownIcon, ChevronUpIcon     } from "@nais/ds-svelte-community/icons";
-
-     import { classes } from '$lib/helpers';
-
-	type $$Props = TableRowProps;
-
-	/* TODOs
-	 *
-	 * AnimateHeight compoent
-	 * BodyShort component
-	 */
-	/**
-	 * Highlight row as selected.
-	 */
-	export let selected = false;
-	/**
-	 * Shade row on hover.
-	 */
-	export let shadeOnHover = true;
+	import { Tr } from "@nais/ds-svelte-community";
+	import { ChevronDownIcon, ChevronUpIcon } from "@nais/ds-svelte-community/icons";
 
 	/**
 	 * Is expanded ?

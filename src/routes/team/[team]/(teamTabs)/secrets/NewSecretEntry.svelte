@@ -6,13 +6,17 @@
 
 	export let update:
 		| {
-				env: string;
+				env: {
+					name: string;
+				};
 				secrets: {
 					name: string;
 					id: string;
 					data: {
 						key: string;
 						value: string;
+						added?: boolean;
+						deleted?: boolean;
 					}[];
 				}[];
 		  }[]
