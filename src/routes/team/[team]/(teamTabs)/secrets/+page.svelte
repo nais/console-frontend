@@ -66,13 +66,13 @@
 	`);
 
 	let team = $page.params.team;
-	// TODO: this should really be update.map( x => {[x.env]: false}) but v0v 
+	// TODO: this should really be update.map( x => {[x.env]: false}) but v0v
 	let addSecretOpen = [0, 1, 2, 3, 4, 5].map((x) => ({ [x]: false }));
 </script>
 
-{#if $Secrets.data}
+{#if update}
 	<div class="grid">
-		{#each $Secrets.data.secrets as secrets, i}
+		{#each update as secrets, i}
 			<Card columns={12}>
 				<div class="heading">
 					<h3>{secrets.env.name}</h3>
@@ -109,33 +109,25 @@
 								<div slot="expander-content">
 									<div class="secrets-edit">
 										{#each secret.data as data, k}
-											<SecretField {i} {j} {k} key={data.key} value={data.value} bind:update />
+											<SecretField {i} {j} {k} bind:key={data.key} bind:value={data.value} bind:update />
 										{/each}
 										<NewSecretEntry {i} {j} bind:update></NewSecretEntry>
-									</div>
-									<div>
-										<details>
-											<summary>Audit log</summary>
-											Carl did a thign
-										</details>
-										<details>
-											<summary>Used by</summary>
-											<p>My app</p>
-											<p>Other App</p>
-										</details>
 									</div>
 									<div class="secrets-edit-buttons">
 										<Button
 											variant="primary"
 											size="small"
 											on:click={async () => {
-												console.log("PEE POO UPDATE", update);
+												update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.deleted !== true)
 												update
 													? await updateSecret.mutate({
 															name: secret.name,
 															team: team,
 															env: secrets.env.name,
-															data: update[i].secrets[j].data
+															data: update[i].secrets[j].data.map((kv) => ({
+																key: kv.key,
+																value: kv.value
+															}))
 													  })
 													: () => {};
 												update = undefined;

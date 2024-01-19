@@ -25,47 +25,37 @@
 		show = !show;
 	}
 
-	function updateKv() {
-		if (update) {
-			update[i].secrets[j].data[k] = { key: key, value: value, deleted: deleted };
-			update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.deleted !== true)
-			show = !show;
-		}
-	}
-
 	let deleteKv = () => {
 		if (update) {
-			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted: true }
 			deleted = true;
+			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted }
 		}
 	};
 
 	let unDeleteKv = () => {
 		if (update) {
-			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted: false }
 			deleted = false
+			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted }
 		}
 	}
-	$: deleted = false;
 
+	let deleted = false;
+	let added = update[i].secrets[j].data[k].added;
 </script>
 
 
 {#if show}
-	<div class="entry" class:deleted>
+	<div class="entry" class:deleted class:added>
 		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
 		<TextField hideLabel size="small" htmlSize={30} bind:value />
 		<div class="buttons">
-			<Button size="small" on:click={updateKv}>
-				<FloppydiskIcon />
-			</Button>
-			<Button size="small" on:click={!update[i].secrets[j].data[k].deleted ? deleteKv : unDeleteKv} variant="danger">
-				{#if !update[i].secrets[j].data[k].deleted }<TrashIcon /> {:else} <RecycleIcon/> {/if}
+			<Button size="small" on:click={deleted ? unDeleteKv : deleteKv} variant="danger">
+				{#if deleted}<RecycleIcon /> {:else} <TrashIcon/> {/if}
 			</Button>
 		</div>
 	</div>
 {:else}
-	<div class="entry" class:deleted>
+	<div class="entry" class:deleted class:added>
 		<TextField
 			hideLabel
 			size="small"
@@ -74,8 +64,7 @@
 			disabled={true}
 			readonly={true}
 		/>
-
-		<TextField class="{deleted ? 'deleted' : ''}" hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
+		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
 		<div class="buttons">
 			<Button size="small" on:click={toggle}>
 				<PencilIcon />
@@ -97,5 +86,9 @@
 	.deleted {
 		--ac-textfield-border: var(--a-border-danger);
 		--ac-textfield-bg: var(--a-surface-danger-subtle);
+	}
+	.added {
+		--ac-textfield-border: var(--a-surface-success-moderate);
+		--ac-textfield-bg: var(--a-surface-success-subtle);
 	}
 </style>

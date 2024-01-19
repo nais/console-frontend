@@ -18,13 +18,11 @@
 		  }[]
 		| undefined;
 
-
-		function updateKv(key: string, value: string ) {
+	let updateKv = (key: string, value: string ) => {
 		if (update) {
-			
-			update[i].secrets[j].data = update[i].secrets[j].data.concat({ key: key, value: value });
+			update[i].secrets[j].data = update[i].secrets[j].data.concat({ key: key, value: value, added: true });
 		}
-	}
+	};
 
 	let key: string 
 	let value: string
