@@ -40,10 +40,11 @@
 
 </script>
 
-<Modal bind:open>
+<Modal bind:open width="small">
 	<svelte:fragment slot="header">
-		<Heading>Add secret</Heading>
+		<Heading>Add secret to {env}</Heading>
 	</svelte:fragment>
+
 	<TextField hideLabel size="small" htmlSize={14} bind:value={name} />
 
 	<svelte:fragment slot="footer">

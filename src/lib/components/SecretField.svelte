@@ -27,25 +27,26 @@
 
 	function updateKv() {
 		if (update) {
-			update[i].secrets[j].data[k] = { key: key, value: value };
+			update[i].secrets[j].data[k] = { key: key, value: value, deleted: deleted };
+			update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.deleted !== true)
 			show = !show;
 		}
 	}
 
 	let deleteKv = () => {
 		if (update) {
-			current = { current, deleted: true  } 
+			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted: true }
 			deleted = true;
 		}
 	};
 
 	let unDeleteKv = () => {
 		if (update) {
-			current = { current, deleted: false } 
+			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted: false }
+			deleted = false
 		}
 	}
 	$: deleted = false;
-	let current = update[i].secrets[j].data[k]
 
 </script>
 
@@ -58,8 +59,8 @@
 			<Button size="small" on:click={updateKv}>
 				<FloppydiskIcon />
 			</Button>
-			<Button size="small" on:click={!current.deleted ? deleteKv : unDeleteKv} variant="danger">
-				{#if !current.deleted }<TrashIcon /> {:else} <RecycleIcon/> {/if}
+			<Button size="small" on:click={!update[i].secrets[j].data[k].deleted ? deleteKv : unDeleteKv} variant="danger">
+				{#if !update[i].secrets[j].data[k].deleted }<TrashIcon /> {:else} <RecycleIcon/> {/if}
 			</Button>
 		</div>
 	</div>
@@ -74,7 +75,7 @@
 			readonly={true}
 		/>
 
-		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
+		<TextField class="{deleted ? 'deleted' : ''}" hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
 		<div class="buttons">
 			<Button size="small" on:click={toggle}>
 				<PencilIcon />
@@ -94,6 +95,7 @@
 		margin-left: 8px;
 	}
 	.deleted {
-
+		--ac-textfield-border: var(--a-border-danger);
+		--ac-textfield-bg: var(--a-surface-danger-subtle);
 	}
 </style>

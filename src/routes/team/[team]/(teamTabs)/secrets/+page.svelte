@@ -129,6 +129,7 @@
 											variant="primary"
 											size="small"
 											on:click={async () => {
+												console.log("PEE POO UPDATE", update);
 												update
 													? await updateSecret.mutate({
 															name: secret.name,
@@ -141,7 +142,7 @@
 												Secrets.fetch();
 											}}
 										>
-											<FloppydiskIcon />Save
+											Confirm
 										</Button>
 										<Button
 											variant="danger"
