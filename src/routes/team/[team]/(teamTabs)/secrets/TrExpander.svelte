@@ -22,6 +22,7 @@
 
 <Tr class="navds-table--expandable-row">
 	<td
+
     class:navds-table--data-cell={true}
     class:navds-table--toggle-expand-cell={true}
     class:navds-table--toggle-expand-cell--open={expanded} 
@@ -45,12 +46,26 @@
 			{/if}
 		</button>
 	</td>
+	<td class:expanded class="env-heading">
 	<slot name="row-content" />
+	</td>
 </Tr>
 {#if expanded}
 <tr>
-	<td colspan={n} class="navds-table--expanded-row-cell">
+	<td colspan={n} class:expanded class="navds-table--expanded-row-cell">
 		<slot name="expander-content" />
 	</td>
 </tr>
 {/if}
+
+
+<style>
+	 .expanded {
+			 border-bottom: 1px solid black;
+			 padding: 16px 0;
+	 }
+
+	 td.expanded.env-heading {
+			 border-bottom: none;
+	 }
+</style>

@@ -21,7 +21,7 @@
 	export enum editState {
 		Deleted, Added, Unchanged
 		// This should also track state for individual edits for keys and values
-		// e.g Modified with styles for changed keys and or values. 
+		// e.g Modified with styles for changed keys and or values.
 	}
 
 
@@ -133,7 +133,7 @@
 					{#each secrets.secrets as secret, j}
 						<TrExpander>
 							<svelte:fragment slot="row-content">
-								<Td>{secret.name}</Td>
+								{secret.name}
 							</svelte:fragment>
 							<div slot="expander-content">
 								<div>
