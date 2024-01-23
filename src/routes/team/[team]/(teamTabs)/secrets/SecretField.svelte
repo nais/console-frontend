@@ -1,30 +1,14 @@
 <script lang="ts">
 	import { PencilIcon, TrashIcon, RecycleIcon } from '@nais/ds-svelte-community/icons';
 	import { TextField, Button } from '@nais/ds-svelte-community';
-
+import type update from "./+page.svelte"
 	let show = false;
 	export let key: string;
 	export let value: string;
 	export let i: number, j: number, k: number;
 
-	export let update:
-		| {
-				env: {
-					name: string;
-				};
-				secrets: {
-					apps: [string];
-					name: string;
-					id: string;
-					data: {
-						key: string;
-						value: string;
-						added?: boolean;
-						deleted?: boolean;
-					}[];
-				}[];
-		  }[]
-		| undefined;
+	/* eslint-disable-next-line no-import-assign */
+	export let update: update
 
 	function toggle() {
 		show = !show;

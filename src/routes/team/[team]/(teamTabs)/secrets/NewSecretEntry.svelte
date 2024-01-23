@@ -1,28 +1,12 @@
 <script lang="ts">
 	import { Button, TextField } from '@nais/ds-svelte-community';
+	import type update from "./+page.svelte"
 
 	export let i: number; 
 	export let j: number;
 
-	export let update:
-		| {
-				env: {
-					name: string;
-				};
-				secrets: {
-					name: string;
-					id: string;
-					secrets: [string];
-					data: {
-
-						key: string;
-						value: string;
-						added?: boolean;
-						deleted?: boolean;
-					}[];
-				}[];
-		  }[]
-		| undefined;
+	/* eslint-disable-next-line no-import-assign */
+	export let update: update
 
 	let updateKv = (key: string, value: string ) => {
 		if (update) {

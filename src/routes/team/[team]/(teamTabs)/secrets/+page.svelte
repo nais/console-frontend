@@ -1,41 +1,6 @@
-<script lang="ts">
-	/**
-	 * TODOS:
-	 * - Refactor data model - we don't need to deepcopy(??????)
-	 * - Push fetching down to the leaves;
-	 *    - Initial fetch should only list envs and secret names per env (no data)
-	 *    - Data is fetched per secret when the expander is opened
-	 * - Refactor away the i,j,k madness
-	 * - Replace it with manipulating objects by ID
-	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
-	 * - Fix the expanders losing their state on confirm/cancel
-	 * - Make type for the 'update' record
-	 * - Fix 'npm run check' tslint errors
-	 * - The KV field is really a (DELETED, ADDED, UNCHANGED, MODIFIED) field
-	 * 		- the current state of the data type does not reflect this
-	 * 		- e.g: a KV field may be both added and deleted at the same time
-	 */
+<script context="module" lang="ts">
 
-	import Card from '$lib/Card.svelte';
-	import SecretField from './SecretField.svelte';
-	import { Table, Thead, Td, Tbody, Th, Button, Heading, Alert } from '@nais/ds-svelte-community';
-	import TrExpander from './TrExpander.svelte';
-
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
-	import NewSecretEntry from './NewSecretEntry.svelte';
-	import type { PageData } from './$houdini';
-	import { graphql, type Secrets$result } from '$houdini';
-	import { page } from '$app/stores';
-	import AddSecret from './AddSecret.svelte';
-	import Confirm from '$lib/components/Confirm.svelte';
-
-	export let data: PageData;
-
-	$: ({ Secrets } = data);
-
-	$: mkUpdate($Secrets.data?.secrets);
-
-	type update =
+	export type update =
 		| {
 		env: {
 			name: string;
@@ -53,6 +18,47 @@
 		}[];
 	}[]
 		| undefined;
+
+
+</script>
+
+<script lang="ts">
+	/**
+	 * TODOS:
+	 * - Refactor data model - we don't need to deepcopy(??????)
+	 * - Push fetching down to the leaves;
+	 *    - Initial fetch should only list envs and secret names per env (no data)
+	 *    - Data is fetched per secret when the expander is opened
+	 * - Refactor away the i,j,k madness
+	 * - Replace it with manipulating objects by ID
+	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
+	 * - Fix the expanders losing their state on confirm/cancel
+	 * - Fix 'npm run check' tslint errors
+	 * - The KV field is really a (DELETED, ADDED, UNCHANGED, MODIFIED) field
+	 * 		- the current state of the data type does not reflect this
+	 * 		- e.g: a KV field may be both added and deleted at the same time
+	 */
+
+	import Card from '$lib/Card.svelte';
+	import { Table, Thead, Td, Tbody, Th, Button, Heading, Alert } from '@nais/ds-svelte-community';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
+
+	import { graphql, type Secrets$result } from '$houdini';
+	import { page } from '$app/stores';
+	import Confirm from '$lib/components/Confirm.svelte';
+
+	import AddSecret from './AddSecret.svelte';
+	import NewSecretEntry from './NewSecretEntry.svelte';
+	import SecretField from './SecretField.svelte';
+	import TrExpander from './TrExpander.svelte';
+
+	export let data: PageData;
+
+	$: ({ Secrets } = data);
+
+	$: mkUpdate($Secrets.data?.secrets);
+
 
 	let update: update;
 
