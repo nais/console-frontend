@@ -64,6 +64,9 @@
 			 border-bottom: 1px solid black;
 			 padding: 16px 0;
 	 }
+	 .env-heading {
+			 padding: 8px; 
+	 }
 
 	 td.expanded.env-heading {
 			 border-bottom: none;
