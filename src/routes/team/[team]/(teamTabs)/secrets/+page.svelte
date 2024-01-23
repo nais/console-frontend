@@ -19,7 +19,9 @@
 		| undefined;
 
 	export enum editState {
-		Deleted, Added, Unchanged, Modified,
+		Deleted, Added, Unchanged
+		// This should also track state for individual edits for keys and values
+		// e.g Modified with styles for changed keys and or values. 
 	}
 
 
