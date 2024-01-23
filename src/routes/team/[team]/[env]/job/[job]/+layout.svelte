@@ -32,7 +32,7 @@
 		},
 		{
 			tab: 'Manifest',
-			routeId: '/team/[team]/[env]/job/[job]/yaml'
+			routeId: '/team/[team]/[env]/job/[job]/manifest'
 		},
 		{
 			tab: 'Cost',

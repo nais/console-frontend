@@ -104,7 +104,7 @@
 					>.
 				{:else}
 					<!--Please verify outbound rule for {app}. Check rule in
-				<a href="/team/{team}/{env}/app/{app}/yaml">manifest</a>.-->
+				<a href="/team/{team}/{env}/app/{app}/manifest">manifest</a>.-->
 					{$data.rule.mutualExplanation}
 				{/if}
 				<br />
