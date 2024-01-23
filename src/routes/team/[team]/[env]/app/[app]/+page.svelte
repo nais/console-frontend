@@ -70,18 +70,31 @@
 			<h4>Authentications</h4>
 			<Authentications app={$App.data.app} />
 		</Card>
+		<Card columns={4}>
+			<h4>Secrets</h4>
+			<ul>
+				{#each $App.data.app.secrets as secret}
+					<li><a href="/team/{team}/secrets">{secret}</a></li>
+				{/each}
+			</ul>
+		</Card>
 	</div>
 {/if}
 
 <style>
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-	h4 {
-		font-weight: 400;
-		margin-bottom: 0.5rem;
-	}
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        column-gap: 1rem;
+        row-gap: 1rem;
+    }
+
+    h4 {
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+    }
+
+    ul {
+        list-style: none;
+    }
 </style>

@@ -36,6 +36,7 @@ type App {
   manifest: String!
   name: String!
   resources: Resources!
+  secrets: [String!]!
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
