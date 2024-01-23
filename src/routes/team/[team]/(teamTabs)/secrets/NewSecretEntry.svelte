@@ -12,7 +12,9 @@
 				secrets: {
 					name: string;
 					id: string;
+					secrets: [string];
 					data: {
+
 						key: string;
 						value: string;
 						added?: boolean;

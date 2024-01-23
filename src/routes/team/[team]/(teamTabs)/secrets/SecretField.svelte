@@ -13,6 +13,7 @@
 					name: string;
 				};
 				secrets: {
+					apps: [string];
 					name: string;
 					id: string;
 					data: {

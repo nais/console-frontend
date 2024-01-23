@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * TODOS:
-	 * - Refactor data model - we don't need to deepcopy
+	 * - Refactor data model - we don't need to deepcopy(??????)
 	 * - Push fetching down to the leaves;
 	 *    - Initial fetch should only list envs and secret names per env (no data)
 	 *    - Data is fetched per secret when the expander is opened
@@ -18,7 +18,7 @@
 
 	import Card from '$lib/Card.svelte';
 	import SecretField from './SecretField.svelte';
-	import { Table, Thead, Td, Tbody, Th, Button, Heading } from '@nais/ds-svelte-community';
+	import { Table, Thead, Td, Tbody, Th, Button, Heading, Alert } from '@nais/ds-svelte-community';
 	import TrExpander from './TrExpander.svelte';
 
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -37,20 +37,21 @@
 
 	type update =
 		| {
-				env: {
-					name: string;
-				};
-				secrets: {
-					name: string;
-					id: string;
-					data: {
-						key: string;
-						value: string;
-						added?: boolean;
-						deleted?: boolean;
-					}[];
-				}[];
-		  }[]
+		env: {
+			name: string;
+		};
+		secrets: {
+			name: string;
+			id: string;
+			apps: [string];
+			data: {
+				key: string;
+				value: string;
+				added?: boolean;
+				deleted?: boolean;
+			}[];
+		}[];
+	}[]
 		| undefined;
 
 	let update: update;
@@ -120,16 +121,17 @@
 
 				<Table size="small">
 					<Thead>
-						<Th style="width: 50px"></Th>
-						<Th>Name</Th>
+					<Th style="width: 50px"></Th>
+					<Th>Name</Th>
 					</Thead>
 					<Tbody>
-						{#each secrets.secrets as secret, j}
-							<TrExpander>
-								<svelte:fragment slot="row-content">
-									<Td>{secret.name}</Td>
-								</svelte:fragment>
-								<div slot="expander-content">
+					{#each secrets.secrets as secret, j}
+						<TrExpander>
+							<svelte:fragment slot="row-content">
+								<Td>{secret.name}</Td>
+							</svelte:fragment>
+							<div slot="expander-content">
+								<div>
 									<div class="secrets-edit">
 										{#each secret.data as data, k}
 											<SecretField {i} {j} {k} bind:key={data.key} bind:value={data.value} bind:update />
@@ -191,13 +193,27 @@
 												Secrets.fetch();
 											}}
 										>
-											<svelte:fragment slot="header"><Heading>Delete secret</Heading></svelte:fragment>
+											<svelte:fragment slot="header">
+												<Heading>Delete secret</Heading>
+											</svelte:fragment>
 											Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{secrets.env.name}</b>?
 										</Confirm>
 									</div>
 								</div>
-							</TrExpander>
-						{/each}
+								<div class="apps">
+									{#if secret.apps.length}<h4>Used in</h4>
+										{:else} <Alert size="small" variant="info">Unused secret</Alert>
+									{/if}
+
+									<ul>
+										{#each secret.apps as app}
+											<li><a href="/team/{team}/{secrets.env.name}/app/{app}">{app}</a></li>
+										{/each}
+									</ul>
+								</div>
+							</div>
+						</TrExpander>
+					{/each}
 					</Tbody>
 				</Table>
 			</Card>
@@ -206,23 +222,44 @@
 {/if}
 
 <style>
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        column-gap: 1rem;
+        row-gap: 1rem;
+    }
 
-	:global(.add-secret) {
-		display: inline-block;
-	}
+    :global(.add-secret) {
+        display: inline-block;
+    }
 
-	.heading {
-		display: flex;
-		justify-content: space-between;
-	}
+    .heading {
+        display: flex;
+        justify-content: space-between;
+    }
 
-	.secrets-edit-buttons {
-		margin: 16px 0 0 16px;
-	}
+    .secrets-edit-buttons {
+        margin: 16px 0 0 16px;
+    }
+
+    div[slot="expander-content"] {
+        display: flex;
+        justify-content: space-evenly;
+    }
+
+    .apps {
+				padding: 16px;
+        width: 400px;
+    }
+
+    .apps ul {
+        list-style: none;
+				margin-block-start: 0;
+    }
+
+		.apps h4 {
+				margin: 0 0 8px;
+		}
+
+
 </style>

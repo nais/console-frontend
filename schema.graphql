@@ -1487,6 +1487,7 @@ enum SearchType {
 }
 
 type Secret {
+  apps: [String!]!
   data: [SecretTuple!]!
   env: Env!
   id: ID!
