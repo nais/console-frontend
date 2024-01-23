@@ -12,7 +12,7 @@
 	export let env: string;
 	export let refetch: () => void;
 
-	let name: string = 'Secret name';
+	let name: string;
 	let data: SecretTupleInput[] = [];
 
 	const createSecret = graphql(`
@@ -44,9 +44,9 @@
 	<svelte:fragment slot="header">
 		<Heading>Add new secret to <b>{env}</b></Heading>
 	</svelte:fragment>
-
-	<TextField hideLabel size="small" htmlSize={14} bind:value={name} />
-
+	<div>
+	<TextField size="small" htmlSize={30} bind:value={name} placeholder="New secret name" />
+	</div>
 	<svelte:fragment slot="footer">
 		<Button
 			type="submit"
@@ -60,5 +60,7 @@
 </Modal>
 
 <style>
-
+	div {
+			padding: 16px;
+	}
 </style>

@@ -31,7 +31,6 @@
 	 *    - Data is fetched per secret when the expander is opened
 	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
 	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
-	 * - Fix the expanders losing their state on confirm/cancel
 	 * - Fix 'npm run check' tslint errors
 	 * - The KV field is really a (DELETED, ADDED, UNCHANGED, MODIFIED) field
 	 * 		- the current state of the data type does not reflect this

@@ -8,14 +8,16 @@
 	/* eslint-disable-next-line no-import-assign */
 	export let update: update
 
-	let updateKv = (key: string, value: string ) => {
+	let updateKv = () => {
 		if (update) {
 			update[i].secrets[j].data = update[i].secrets[j].data.concat({ key: key, value: value, added: true });
+			key = undefined
+			value = undefined
 		}
 	};
 
-	let key: string 
-	let value: string
+	let key: string | undefined
+	let value: string | undefined
 </script>
 
 
@@ -23,7 +25,7 @@
 		<TextField size="small" htmlSize={30}   bind:value={key} placeholder="New key" />
 		<TextField size="small" htmlSize={30}  bind:value placeholder="New value" />
 	<div class="buttons">
-	<Button size="small" on:click={() => updateKv(key, value) }>Add</Button>
+	<Button size="small" on:click={updateKv }>Add</Button>
 	</div>
 </div>
 
