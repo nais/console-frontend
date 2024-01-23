@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { PencilIcon, TrashIcon, RecycleIcon } from '@nais/ds-svelte-community/icons';
 	import { TextField, Button } from '@nais/ds-svelte-community';
-import type update from "./+page.svelte"
+	import type updateState from "./+page.svelte"
+	import {editState}  from "./+page.svelte"
+
 	let show = false;
 	export let key: string;
 	export let value: string;
 	export let i: number, j: number, k: number;
 
-	/* eslint-disable-next-line no-import-assign */
-	export let update: update
+
+	export let update : updateState
 
 	function toggle() {
 		show = !show;
@@ -17,21 +19,21 @@ import type update from "./+page.svelte"
 	let deleteKv = () => {
 		if (update) {
 			deleted = true;
-			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted }
+			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], editState: editState.Deleted }
 		}
 	};
 
 	let unDeleteKv = () => {
 		if (update) {
 			deleted = false
-			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], deleted }
+			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], editState: editState.Unchanged }
 		}
 	}
 
 	let deleted = false;
 	let added: boolean | undefined = false;
 	if (update) {
-		added = update[i].secrets[j].data[k].added;
+		added = update[i].secrets[j].data[k].editState == editState.Added;
 	}
 </script>
 

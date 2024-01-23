@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 
-	export type update =
+	export type updateState =
 		| {
 		env: {
 			name: string;
@@ -12,12 +12,15 @@
 			data: {
 				key: string;
 				value: string;
-				added?: boolean;
-				deleted?: boolean;
+				editState: editState;
 			}[];
 		}[];
 	}[]
 		| undefined;
+
+	export enum editState {
+		Deleted, Added, Unchanged, Modified,
+	}
 
 
 </script>
@@ -58,7 +61,7 @@
 	$: mkUpdate($Secrets.data?.secrets);
 
 
-	let update: update;
+	let update: updateState;
 
 	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
 		if (!secret) {
@@ -147,7 +150,7 @@
 											variant="primary"
 											size="small"
 											on:click={async () => {
-												update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.deleted !== true)
+												update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
 												update
 													? await updateSecret.mutate({
 															name: secret.name,
