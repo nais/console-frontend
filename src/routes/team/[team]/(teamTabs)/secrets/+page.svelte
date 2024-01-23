@@ -33,9 +33,6 @@
 	 *    - Initial fetch should only list envs and secret names per env (no data)
 	 *    - Data is fetched per secret when the expander is opened
 	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
-	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
-	 * - Fix 'npm run check' tslint errors
-	 * 		- e.g: a KV field may be both added and deleted at the same time
 	 */
 
 	import Card from '$lib/Card.svelte';
@@ -94,9 +91,10 @@
 	`);
 
 	let team = $page.params.team;
-	// TODO: this should really be update.map( x => {[x.env]: false}) but v0v
-	let addSecretOpen = [0, 1, 2, 3, 4, 5].map((x) => ({ [x]: false }));
-	let deleteSecretOpen = [0, 1, 2, 3, 4, 5].map((x) => ({ [x]: false }));
+
+	// (obj: Record<string, any>) => obj[key];
+	let addSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({ ...acc, [curr.env.name]: false }), {} ) : {};
+	let deleteSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({ ...acc, [curr.env.name]: false}), {} ) : {};
 </script>
 
 {#if update}
@@ -110,7 +108,7 @@
 						variant="primary"
 						size="small"
 						on:click={() => {
-							addSecretOpen[i] = { [i]: true };
+							addSecretOpen[secrets.env.name] =  true;
 						}}
 					>
 						Add secret
@@ -119,7 +117,7 @@
 
 				<AddSecret
 					refetch={() => Secrets.fetch({})}
-					bind:open={addSecretOpen[i][i]}
+					bind:open={addSecretOpen[secrets.env.name]}
 					bind:team
 					env={secrets.env.name}
 				/>
@@ -183,13 +181,13 @@
 											variant="danger"
 											size="small"
 											on:click={() => {
-												deleteSecretOpen[i] = { [i]: true };
+												deleteSecretOpen[secrets.env.name] = true;
 											}}
 										>
 											<TrashIcon />
 										</Button>
 										<Confirm
-											bind:open={deleteSecretOpen[i][i]}
+											bind:open={deleteSecretOpen[secrets.env.name]}
 											confirmText="Delete"
 											variant="danger"
 											on:confirm={async () => {
