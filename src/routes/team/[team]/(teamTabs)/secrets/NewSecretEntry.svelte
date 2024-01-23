@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { Button, TextField } from '@nais/ds-svelte-community';
-	import type updateState from "./+page.svelte"
+	import type { updateState } from "./+page.svelte"
 	import {editState}  from "./+page.svelte"
 
 	export let i: number; 
 	export let j: number;
 
-	/* eslint-disable-next-line no-import-assign */
+
 	export let update: updateState
 
 	let updateKv = () => {
-		if (update) {
-			update[i].secrets[j].data = update[i].secrets[j].data.concat({ key: key, value: value, editState: editState.Added  });
+		if (update && key && value ) {
+			update[i].secrets[j].data =
+				[...update[i].secrets[j].data, { key: key, value: value, editState: editState.Added  }];
 			key = undefined
 			value = undefined
 		}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PencilIcon, TrashIcon, RecycleIcon } from '@nais/ds-svelte-community/icons';
 	import { TextField, Button } from '@nais/ds-svelte-community';
-	import type updateState from "./+page.svelte"
+	import type { updateState } from "./+page.svelte"
 	import {editState}  from "./+page.svelte"
 
 	let show = false;

@@ -35,8 +35,6 @@
 	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
 	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
 	 * - Fix 'npm run check' tslint errors
-	 * - The KV field is really a (DELETED, ADDED, UNCHANGED, MODIFIED) field
-	 * 		- the current state of the data type does not reflect this
 	 * 		- e.g: a KV field may be both added and deleted at the same time
 	 */
 
@@ -150,7 +148,9 @@
 											variant="primary"
 											size="small"
 											on:click={async () => {
+												if (update) {
 												update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
+												}
 												update
 													? await updateSecret.mutate({
 															name: secret.name,
@@ -162,7 +162,8 @@
 															}))
 													  })
 													: () => {};
-												update[i].secrets[j].data = [];
+
+												if (update) update[i].secrets[j].data = []
 												Secrets.fetch();
 											}}
 										>
@@ -172,7 +173,7 @@
 											variant="secondary"
 											size="small"
 											on:click={async () => {
-												update[i].secrets[j].data = [];
+												if (update )update[i].secrets[j].data = [];
 												Secrets.fetch();
 											}}
 										>
