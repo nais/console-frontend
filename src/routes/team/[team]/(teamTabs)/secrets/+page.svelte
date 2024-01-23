@@ -29,8 +29,7 @@
 	 * - Push fetching down to the leaves;
 	 *    - Initial fetch should only list envs and secret names per env (no data)
 	 *    - Data is fetched per secret when the expander is opened
-	 * - Refactor away the i,j,k madness
-	 * - Replace it with manipulating objects by ID
+	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
 	 * - Fix the addSecretOpen and deleteSecretOpen so that we don't need the indices workaround
 	 * - Fix the expanders losing their state on confirm/cancel
 	 * - Fix 'npm run check' tslint errors
@@ -161,7 +160,7 @@
 															}))
 													  })
 													: () => {};
-												update = undefined;
+												update[i].secrets[j].data = [];
 												Secrets.fetch();
 											}}
 										>
@@ -171,7 +170,7 @@
 											variant="secondary"
 											size="small"
 											on:click={async () => {
-												update = undefined;
+												update[i].secrets[j].data = [];
 												Secrets.fetch();
 											}}
 										>

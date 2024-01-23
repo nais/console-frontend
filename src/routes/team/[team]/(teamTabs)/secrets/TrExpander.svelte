@@ -5,7 +5,7 @@
 	/**
 	 * Is expanded ?
 	 */
-	let expanded = true;
+	let expanded = false
     
 	/**
 	 * Expander toggle
