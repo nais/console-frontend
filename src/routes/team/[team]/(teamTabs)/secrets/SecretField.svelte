@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PencilIcon, TrashIcon, RecycleIcon } from '@nais/ds-svelte-community/icons';
+	import { PencilIcon, TrashIcon, ArrowUndoIcon } from '@nais/ds-svelte-community/icons';
 	import { TextField, Button } from '@nais/ds-svelte-community';
 	import type { updateState } from "./+page.svelte"
 	import {editState}  from "./+page.svelte"
@@ -44,7 +44,7 @@
 		<TextField hideLabel size="small" htmlSize={30} bind:value />
 		<div class="buttons">
 			<Button size="small" on:click={deleted ? unDeleteKv : deleteKv} variant="danger">
-				{#if deleted}<RecycleIcon /> {:else} <TrashIcon/> {/if}
+				{#if deleted}Undo{:else}Delete{/if}
 			</Button>
 		</div>
 	</div>
@@ -61,7 +61,7 @@
 		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
 		<div class="buttons">
 			<Button size="small" on:click={toggle}>
-				<PencilIcon />
+				Edit
 			</Button>
 		</div>
 	</div>

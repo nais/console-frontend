@@ -167,13 +167,13 @@
 												Secrets.fetch();
 											}}
 										>
-											Confirm
+											Update
 										</Button>
 										<Button
 											variant="secondary"
 											size="small"
 											on:click={async () => {
-												if (update )update[i].secrets[j].data = [];
+												if (update) update[i].secrets[j].data = [];
 												Secrets.fetch();
 											}}
 										>
@@ -186,7 +186,7 @@
 												deleteSecretOpen[secrets.env.name] = true;
 											}}
 										>
-											<TrashIcon />
+											Delete
 										</Button>
 										<Confirm
 											bind:open={deleteSecretOpen[secrets.env.name]}
