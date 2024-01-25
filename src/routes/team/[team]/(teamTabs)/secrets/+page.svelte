@@ -35,6 +35,7 @@
 	 *    - Initial fetch should only list envs and secret names per env (no data)
 	 *    - Data is fetched per secret when the expander is opened
 	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
+	 * - Error handling: display error messages from the server
 	 */
 
 	import Card from '$lib/Card.svelte';
