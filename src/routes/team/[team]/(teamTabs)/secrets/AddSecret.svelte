@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { graphql, type SecretTupleInput } from '$houdini';
 	import {
+		Alert,
 		Button,
 		Heading,
 		Modal,
@@ -34,8 +35,13 @@
 			env: env,
 			data: data
 		});
-		open = false;
-		refetch()
+		if ($createSecret.errors) {
+			open = true
+
+		} else {
+			open = false
+			refetch()
+		}
 	};
 
 </script>
@@ -46,6 +52,10 @@
 	</svelte:fragment>
 	<div>
 	<TextField size="small" htmlSize={30} bind:value={name} placeholder="New secret name" />
+		{#if $createSecret.errors }
+			<Alert variant="error">{$createSecret.errors[0].message}</Alert>
+		{/if}
+
 	</div>
 	<svelte:fragment slot="footer">
 		<Button
@@ -56,11 +66,15 @@
 			<FloppydiskIcon />
 			Save
 		</Button>
-	</svelte:fragment>
+			</svelte:fragment>
 </Modal>
 
 <style>
 	div {
 			padding: 16px;
+	}
+
+	div > :global(*) {
+			margin-bottom: 32px;
 	}
 </style>

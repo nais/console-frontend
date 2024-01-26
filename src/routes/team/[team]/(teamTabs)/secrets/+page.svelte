@@ -39,7 +39,7 @@
 	 */
 
 	import Card from '$lib/Card.svelte';
-	import { Table, Thead, Td, Tbody, Th, Button, Heading, Alert } from '@nais/ds-svelte-community';
+	import { Table, Thead, Td, Tbody, Th, Button, Heading, Alert, Loader } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -57,7 +57,6 @@
 	$: ({ Secrets } = data);
 
 	$: mkUpdate($Secrets.data?.secrets);
-
 
 	let update: updateState;
 
@@ -96,27 +95,39 @@
 	let team = $page.params.team;
 
 	// (obj: Record<string, any>) => obj[key];
-	let addSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({ ...acc, [curr.env.name]: false }), {} ) : {};
-	let deleteSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({ ...acc, [curr.env.name]: false}), {} ) : {};
+	let addSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({
+		...acc,
+		[curr.env.name]: false
+	}), {}) : {};
+	let deleteSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({
+		...acc,
+		[curr.env.name]: false
+	}), {}) : {};
 </script>
 
-{#if update}
-	<div class="grid">
-		{#each update as secrets, i}
-			<Card columns={12}>
-				<div class="heading">
-					<h3>{secrets.env.name}</h3>
-					<Button
-						class="add-secret"
-						variant="primary"
-						size="small"
-						on:click={() => {
+{#if $Secrets.errors}
+	{$Secrets.errors[0].message}
+{:else}
+	{#if $Secrets.fetching}
+		<Loader></Loader>
+	{:else }
+		{#if update}
+			<div class="grid">
+				{#each update as secrets, i}
+					<Card columns={12}>
+						<div class="heading">
+							<h3>{secrets.env.name}</h3>
+							<Button
+								class="add-secret"
+								variant="primary"
+								size="small"
+								on:click={() => {
 							addSecretOpen[secrets.env.name] =  true;
 						}}
-					>
-						Add secret
-					</Button>
-				</div>
+							>
+								Add secret
+							</Button>
+						</div>
 
 				<AddSecret
 					refetch={() => Secrets.fetch({})}
@@ -125,30 +136,30 @@
 					env={secrets.env.name}
 				/>
 
-				<Table size="small">
-					<Thead>
-					<Th style="width: 50px"></Th>
-					<Th>Name</Th>
-					</Thead>
-					<Tbody>
-					{#each secrets.secrets as secret, j}
-						<TrExpander>
-							<svelte:fragment slot="row-content">
-								{secret.name}
-							</svelte:fragment>
-							<div slot="expander-content">
-								<div>
-									<div class="secrets-edit">
-										{#each secret.data as data, k}
-											<SecretField {i} {j} {k} bind:key={data.key} bind:value={data.value} bind:update />
-										{/each}
-										<NewSecretEntry {i} {j} bind:update></NewSecretEntry>
-									</div>
-									<div class="secrets-edit-buttons">
-										<Button
-											variant="primary"
-											size="small"
-											on:click={async () => {
+						<Table size="small">
+							<Thead>
+							<Th style="width: 50px"></Th>
+							<Th>Name</Th>
+							</Thead>
+							<Tbody>
+							{#each secrets.secrets as secret, j}
+								<TrExpander>
+									<svelte:fragment slot="row-content">
+										{secret.name}
+									</svelte:fragment>
+									<div slot="expander-content">
+										<div>
+											<div class="secrets-edit">
+												{#each secret.data as data, k}
+													<SecretField {i} {j} {k} bind:key={data.key} bind:value={data.value} bind:update />
+												{/each}
+												<NewSecretEntry {i} {j} bind:update></NewSecretEntry>
+											</div>
+											<div class="secrets-edit-buttons">
+												<Button
+													variant="primary"
+													size="small"
+													on:click={async () => {
 												if (update) {
 												update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
 												}
@@ -167,33 +178,33 @@
 												if (update) update[i].secrets[j].data = []
 												Secrets.fetch();
 											}}
-										>
-											Update
-										</Button>
-										<Button
-											variant="secondary"
-											size="small"
-											on:click={async () => {
+												>
+													Update
+												</Button>
+												<Button
+													variant="secondary"
+													size="small"
+													on:click={async () => {
 												if (update) update[i].secrets[j].data = [];
 												Secrets.fetch();
 											}}
-										>
-											Cancel
-										</Button>
-										<Button
-											variant="danger"
-											size="small"
-											on:click={() => {
+												>
+													Cancel
+												</Button>
+												<Button
+													variant="danger"
+													size="small"
+													on:click={() => {
 												deleteSecretOpen[secrets.env.name] = true;
 											}}
-										>
-											Delete
-										</Button>
-										<Confirm
-											bind:open={deleteSecretOpen[secrets.env.name]}
-											confirmText="Delete"
-											variant="danger"
-											on:confirm={async () => {
+												>
+													Delete
+												</Button>
+												<Confirm
+													bind:open={deleteSecretOpen[secrets.env.name]}
+													confirmText="Delete"
+													variant="danger"
+													on:confirm={async () => {
 												await deleteSecret.mutate({
 													name: secret.name,
 													team: team,
@@ -201,35 +212,37 @@
 												});
 												Secrets.fetch();
 											}}
-										>
-											<svelte:fragment slot="header">
-												<Heading>Delete secret</Heading>
-											</svelte:fragment>
-											Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{secrets.env.name}</b>?
-										</Confirm>
+												>
+													<svelte:fragment slot="header">
+														<Heading>Delete secret</Heading>
+													</svelte:fragment>
+													Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{secrets.env.name}</b>?
+												</Confirm>
+											</div>
+										</div>
+										<div class="apps">
+											{#if secret.apps.length}<h4>Used in</h4>
+											{:else}
+												<Alert size="small" variant="info">Unused secret</Alert>
+											{/if}
+
+											<ul>
+												{#each secret.apps as app}
+													<li><a href="/team/{team}/{secrets.env.name}/app/{app}">{app}</a></li>
+												{/each}
+											</ul>
+										</div>
 									</div>
-								</div>
-								<div class="apps">
-									{#if secret.apps.length}<h4>Used in</h4>
-										{:else} <Alert size="small" variant="info">Unused secret</Alert>
-									{/if}
-
-									<ul>
-										{#each secret.apps as app}
-											<li><a href="/team/{team}/{secrets.env.name}/app/{app}">{app}</a></li>
-										{/each}
-									</ul>
-								</div>
-							</div>
-						</TrExpander>
-					{/each}
-					</Tbody>
-				</Table>
-			</Card>
-		{/each}
-	</div>
+								</TrExpander>
+							{/each}
+							</Tbody>
+						</Table>
+					</Card>
+				{/each}
+			</div>
+		{/if}
+	{/if}
 {/if}
-
 <style>
     .grid {
         display: grid;
@@ -249,6 +262,11 @@
 
     .secrets-edit-buttons {
         margin: 16px 0 0 16px;
+        padding: 32px 0;
+    }
+
+    .secrets-edit-buttons > :global(button) {
+        margin-right: 32px;
     }
 
     div[slot="expander-content"] {
@@ -257,18 +275,18 @@
     }
 
     .apps {
-				padding: 16px;
+        padding: 16px;
         width: 400px;
     }
 
     .apps ul {
         list-style: none;
-				margin-block-start: 0;
+        margin-block-start: 0;
     }
 
-		.apps h4 {
-				margin: 0 0 8px;
-		}
+    .apps h4 {
+        margin: 0 0 8px;
+    }
 
 
 </style>
