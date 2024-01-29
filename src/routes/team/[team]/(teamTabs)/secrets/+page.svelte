@@ -1,32 +1,3 @@
-<script context="module" lang="ts">
-
-	export type updateState =
-		| {
-		env: {
-			name: string;
-		};
-		secrets: {
-			name: string;
-			id: string;
-			apps: [string];
-			data: {
-				key: string;
-				value: string;
-				editState: editState;
-			}[];
-		}[];
-	}[]
-		| undefined;
-
-	export enum editState {
-		Deleted, Added, Unchanged, Editing
-		// This should also track state for individual edits for keys and values
-		// e.g Modified with styles for changed keys and or values.
-	}
-
-
-</script>
-
 <script lang="ts">
 	/**
 	 * TODOS:
@@ -52,7 +23,7 @@
 	import NewSecretEntry from './NewSecretEntry.svelte';
 	import SecretField from './SecretField.svelte';
 	import TrExpander from './TrExpander.svelte';
-
+  import type { updateState } from './state-machinery';
 	export let data: PageData;
 
 	$: ({ Secrets } = data);
@@ -114,7 +85,7 @@
 	{:else }
 		{#if update}
 			<div class="grid">
-				{#each update as secrets, i}
+				{#each update as secrets, envIndex}
 					<Card columns={12}>
 						<div class="heading">
 							<h3>{secrets.env.name}</h3>
@@ -143,7 +114,7 @@
 							<Th>Name</Th>
 							</Thead>
 							<Tbody>
-							{#each secrets.secrets as secret, j}
+							{#each secrets.secrets as secret, secretIndex}
 								<TrExpander>
 									<svelte:fragment slot="row-content">
 										{secret.name}
@@ -151,10 +122,10 @@
 									<div slot="expander-content">
 										<div>
 											<div class="secrets-edit">
-												{#each secret.data as data, k}
-													<SecretField {i} {j} {k} bind:key={data.key} bind:value={data.value} bind:update />
+												{#each secret.data as data, kvIndex}
+													<SecretField {envIndex} {secretIndex} {kvIndex} bind:key={data.key} bind:value={data.value} bind:update />
 												{/each}
-												<NewSecretEntry {i} {j} bind:update></NewSecretEntry>
+												<NewSecretEntry {envIndex} {secretIndex} bind:update></NewSecretEntry>
 											</div>
 											<div class="secrets-edit-buttons">
 												<Button
@@ -163,14 +134,14 @@
 													on:click={ async () => {
 														if (update) {
 															// do not send deleted keys to the update mutation since we only want the response to contain non-deleted keys
-															update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
+															update[envIndex].secrets[secretIndex].data = update[envIndex].secrets[secretIndex].data.filter((kv) => kv.editState !== editState.Deleted)
 														}
 														if (update) {
 															 	await updateSecret.mutate({
 																	name: secret.name,
 																	team: team,
 																	env: secrets.env.name,
-																	data: update[i].secrets[j].data.map((kv) => ({
+																	data: update[envIndex].secrets[secretIndex].data.map((kv) => ({
 																		key: kv.key,
 																		value: kv.value
 																	}))

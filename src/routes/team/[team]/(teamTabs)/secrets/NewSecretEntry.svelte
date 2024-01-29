@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, TextField } from '@nais/ds-svelte-community';
-	import type { updateState } from "./+page.svelte"
-	import {editState}  from "./+page.svelte"
+	import type { updateState } from "./state-machinery"
+	import {editState}  from "./state-machinery"
 
 	export let i: number; 
 	export let j: number;
