@@ -4,7 +4,6 @@
 	import type { updateState } from "./+page.svelte"
 	import {editState}  from "./+page.svelte"
 
-	let show = false;
 	export let key: string;
 	export let value: string;
 	export let i: number, j: number, k: number;
@@ -12,33 +11,35 @@
 
 	export let update : updateState
 
-	function toggle() {
-		show = !show;
+	let edit = false;
+	$: edit = update[i].secrets[j].data[k].editState != undefined
+		function toggle() {
+		$: edit = !edit;
 	}
 
 	let deleteKv = () => {
 		if (update) {
-			deleted = true;
+			$: deleted = true;
 			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], editState: editState.Deleted }
 		}
 	};
 
 	let unDeleteKv = () => {
 		if (update) {
-			deleted = false
+			$: deleted = false
 			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], editState: editState.Unchanged }
+			$: edit = false
 		}
 	}
+  let deleted = false
+		$: deleted = update[i].secrets[j].data[k].editState == editState.Deleted;
+	let added = false
+		$: added = update[i].secrets[j].data[k].editState == editState.Added;
 
-	let deleted = false;
-	let added: boolean | undefined = false;
-	if (update) {
-		added = update[i].secrets[j].data[k].editState == editState.Added;
-	}
 </script>
 
 
-{#if show}
+{#if edit}
 	<div class="entry" class:deleted class:added>
 		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
 		<TextField hideLabel size="small" htmlSize={30} bind:value />

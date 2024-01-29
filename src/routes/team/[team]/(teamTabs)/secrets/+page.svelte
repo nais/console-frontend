@@ -159,25 +159,23 @@
 												<Button
 													variant="primary"
 													size="small"
-													on:click={async () => {
-												if (update) {
-												update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
-												}
-												update
-													? await updateSecret.mutate({
-															name: secret.name,
-															team: team,
-															env: secrets.env.name,
-															data: update[i].secrets[j].data.map((kv) => ({
-																key: kv.key,
-																value: kv.value
-															}))
-													  })
-													: () => {};
-
-												if (update) update[i].secrets[j].data = []
-												Secrets.fetch();
-											}}
+													on:click={ async () => {
+														if (update) {
+															// do not send deleted keys to the update mutation since we only want the response to contain non-deleted keys
+															update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
+														}
+														if (update) {
+															 let res  = await updateSecret.mutate({
+																	name: secret.name,
+																	team: team,
+																	env: secrets.env.name,
+																	data: update[i].secrets[j].data.map((kv) => ({
+																		key: kv.key,
+																		value: kv.value
+																	}))
+																})
+														}
+													}}
 												>
 													Update
 												</Button>
