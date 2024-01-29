@@ -12,8 +12,26 @@
 	export let update : updateState
 
 	let edit = false;
-	$: edit = update[i].secrets[j].data[k].editState != undefined
+	$: edit = matchEditState(update[i].secrets[j].data[k].editState)
+
+	let matchEditState = (es) => {
+		switch (es) {
+		case (undefined):
+			return false
+
+		case (editState.Added):
+			return false
+
+		default:
+			return true;
+	}
+
+
+	}
 		function toggle() {
+		if (!edit) {
+			update[i].secrets[j].data[k].editState = editState.Editing
+		}
 		$: edit = !edit;
 	}
 
@@ -38,7 +56,7 @@
 
 </script>
 
-
+{update[i].secrets[j].data[k].editState}
 {#if edit}
 	<div class="entry" class:deleted class:added>
 		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />

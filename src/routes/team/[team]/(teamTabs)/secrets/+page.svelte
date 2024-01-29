@@ -19,7 +19,7 @@
 		| undefined;
 
 	export enum editState {
-		Deleted, Added, Unchanged
+		Deleted, Added, Unchanged, Editing
 		// This should also track state for individual edits for keys and values
 		// e.g Modified with styles for changed keys and or values.
 	}
@@ -36,6 +36,8 @@
 	 *    - Data is fetched per secret when the expander is opened
 	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
 	 * - Error handling: display error messages from the server
+	 * - Cancel and Add secret closes the expander because we have a top level loading state check that
+	 *   shows the loader component. It would be nice to disambiguate on refetch/initialfetch
 	 */
 
 	import Card from '$lib/Card.svelte';
@@ -165,7 +167,7 @@
 															update[i].secrets[j].data = update[i].secrets[j].data.filter((kv) => kv.editState !== editState.Deleted)
 														}
 														if (update) {
-															 let res  = await updateSecret.mutate({
+															 	await updateSecret.mutate({
 																	name: secret.name,
 																	team: team,
 																	env: secrets.env.name,
@@ -183,7 +185,6 @@
 													variant="secondary"
 													size="small"
 													on:click={async () => {
-												if (update) update[i].secrets[j].data = [];
 												Secrets.fetch();
 											}}
 												>
