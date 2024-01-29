@@ -14,7 +14,7 @@
 	let edit = false;
 	$: edit = matchEditState(update[i].secrets[j].data[k].editState)
 
-	let matchEditState = (es) => {
+	let matchEditState = (es: editState | undefined) => {
 		switch (es) {
 		case (undefined):
 			return false
@@ -30,29 +30,30 @@
 	}
 		function toggle() {
 		if (!edit) {
-			update[i].secrets[j].data[k].editState = editState.Editing
+			if (update) update[i].secrets[j].data[k].editState = editState.Editing
 		}
-		$: edit = !edit;
+		edit = !edit;
 	}
 
 	let deleteKv = () => {
 		if (update) {
-			$: deleted = true;
+			deleted = true;
 			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], editState: editState.Deleted }
 		}
 	};
 
 	let unDeleteKv = () => {
 		if (update) {
-			$: deleted = false
+			deleted = false
 			update[i].secrets[j].data[k] = { ...update[i].secrets[j].data[k], editState: editState.Unchanged }
-			$: edit = false
+			edit = false
 		}
 	}
   let deleted = false
-		$: deleted = update[i].secrets[j].data[k].editState == editState.Deleted;
+	$: deleted = update ? update[i].secrets[j].data[k].editState == editState.Deleted : false;
+
 	let added = false
-		$: added = update[i].secrets[j].data[k].editState == editState.Added;
+	$: added = update ? update[i].secrets[j].data[k].editState == editState.Added : false;
 
 </script>
 

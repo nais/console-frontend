@@ -41,8 +41,7 @@
 	 */
 
 	import Card from '$lib/Card.svelte';
-	import { Table, Thead, Td, Tbody, Th, Button, Heading, Alert, Loader } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Table, Thead, Tbody, Th, Button, Heading, Alert, Loader } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	import { graphql, type Secrets$result } from '$houdini';
@@ -131,12 +130,12 @@
 							</Button>
 						</div>
 
-				<AddSecret
-					refetch={() => Secrets.fetch({})}
-					bind:open={addSecretOpen[secrets.env.name]}
-					bind:team
-					env={secrets.env.name}
-				/>
+						<AddSecret
+							refetch={() => Secrets.fetch({})}
+							bind:open={addSecretOpen[secrets.env.name]}
+							bind:team
+							env={secrets.env.name}
+						/>
 
 						<Table size="small">
 							<Thead>
