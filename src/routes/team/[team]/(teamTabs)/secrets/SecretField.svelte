@@ -56,7 +56,6 @@
 
 </script>
 
-{update[i].secrets[j].data[k].editState}
 {#if edit}
 	<div class="entry" class:deleted class:added>
 		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
