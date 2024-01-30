@@ -40,7 +40,7 @@
 
 {#if edit}
 	<div class="entry" class:deleted class:added>
-		<TextField hideLabel size="small" htmlSize={30} bind:value={key} />
+		<h4>{key}</h4>
 		<TextField hideLabel size="small" htmlSize={30} bind:value />
 		<div class="buttons">
 			<Button size="small" on:click={deleted ? unDeleteKv : deleteKv} variant="danger">
@@ -50,14 +50,7 @@
 	</div>
 {:else}
 	<div class="entry" class:deleted class:added>
-		<TextField
-			hideLabel
-			size="small"
-			htmlSize={30}
-			bind:value={key}
-			disabled={true}
-			readonly={true}
-		/>
+		<h4>{key}</h4>
 		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
 		<div class="buttons">
 			<Button size="small" on:click={enableEdit}>
@@ -68,6 +61,10 @@
 {/if}
 
 <style>
+		h4 {
+				width: 17rem;
+		}
+
     .entry {
         display: flex;
     }

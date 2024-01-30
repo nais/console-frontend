@@ -132,55 +132,6 @@ test('deleted kv followed by undo deleted kv is a no-op', () => {
 	expect(ops.reduce(mergeChanges, initialState)).toEqual(initialState);
 });
 
-test('update key for secret', () => {
-	const initialState: updateState = [{
-		env: {
-			name: 'test-env'
-		},
-		secrets: [
-			{
-				name: 'static-secret',
-				apps: [],
-				data: [
-					{
-						key: 'some-key',
-						value: 'some-value',
-					}
-				]
-			}]
-	}];
-
-	const updateKey: operation = {
-		type: 'UpdateKey',
-		data: {
-			env: 'test-env',
-			secret: 'static-secret',
-			key: 'some-new-key',
-			oldKey: 'some-key',
-		}
-	};
-
-	expect(mergeChanges(initialState, updateKey)).toEqual([
-		{
-			env: {
-				name: 'test-env'
-			},
-			secrets: [
-				{
-					name: 'static-secret',
-					apps: [],
-					data: [
-						{
-							key: 'some-new-key',
-							value: 'some-value',
-						}
-					]
-				}
-			]
-		}
-	]);
-})
-
 test('update value for secret', () => {
 	const initialState: updateState = [{
 		env: {

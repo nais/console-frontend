@@ -34,9 +34,6 @@
 
 	let update: updateState;
 	$: changes = [];
-	$: {
-		console.log(changes)
-	}
 
 	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
 		if (!secret) {
@@ -148,7 +145,6 @@
 															// TODO: get rid of the indices and use state machine instead for updating key/values
 															//  also pass key/values down to child components instead of using 'update'
 															let mutation = changes.reduce(mergeChanges, update);
-															console.log('mutation', mutation)
 
 															await updateSecret.mutate({
 																name: secret.name,
