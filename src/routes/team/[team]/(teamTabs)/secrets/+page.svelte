@@ -23,7 +23,7 @@
 	import NewSecretEntry from './NewSecretEntry.svelte';
 	import SecretField from './SecretField.svelte';
 	import TrExpander from './TrExpander.svelte';
-  import type { updateState } from './state-machinery';
+	import { editState, type updateState } from './state-machinery';
 	export let data: PageData;
 
 	$: ({ Secrets } = data);

@@ -5,12 +5,12 @@ export type updateState =
 	};
 	secrets: {
 		name: string;
-		id: string;
-		apps: [string];
+		id?: string;
+		apps: string[];
 		data: {
 			key: string;
 			value: string;
-			editState: editState;
+			editState?: editState;
 		}[];
 	}[];
 }[]
@@ -23,7 +23,8 @@ export enum editState {
 }
 
 export type AddKv = {
-	type: 'AddKv'; data: {
+	type: 'AddKv';
+	data: {
 		env: string;
 		secret: string;
 		key: string;
@@ -43,7 +44,7 @@ export type DeleteKv = {
 	type: 'DeleteKv'; data: {
 		env: string;
 		secret: string;
-		name: string;
+		key: string;
 	}
 }
 
@@ -60,6 +61,7 @@ export type UpdateKey = {
 	data: {
 		env: string;
 		secret: string;
+		oldKey: string;
 		key: string;
 	}
 }
@@ -74,93 +76,98 @@ export type UpdateValue = {
 	}
 }
 
-export type edits = AddKv | AddSecret | DeleteKv | DeleteSecret | UpdateKey | UpdateValue
+export type operation = AddKv | AddSecret | DeleteKv | DeleteSecret | UpdateKey | UpdateValue
 
-export function mergeChanges(update:updateState, curr: edits): updateState {
-	let i = 0
-	let j = 0
-	let k = 0
+export function mergeChanges(update: updateState, curr: operation): updateState {
+	let i = 0;
+	let j = 0;
+	let k = 0;
 	if (update) {
 		switch (curr.type) {
-			// case 'AddKv':
-			// 	return {
-			// 		...update[i],
-			// 		secrets:
-			// 			update[i].secrets.map(secret => {
-			// 					if (secret.name == curr.data.secret) {
-			// 						return {
-			// 							...secret,
-			// 							data: [...secret.data, { key: curr.data.key, value: curr.data.value }]
-			// 						};
-			// 					} else {
-			// 						return secret;
-			// 					}
-			// 				}
-			// 			)
-			// 	};
+			case 'AddKv':
+				return {
+					...update[i],
+					secrets:
+						update[i].secrets.map(secret => {
+								if (secret.name == curr.data.secret) {
+									return {
+										...secret,
+										data: [...secret.data, { key: curr.data.key, value: curr.data.value }]
+									};
+								} else {
+									return secret;
+								}
+							}
+						)
+				};
 
 			case 'AddSecret':
 				return {
 					...update[i],
-					env: {name: curr.data.env},
+					env: { name: curr.data.env },
 					secrets: [
 						...update[i].secrets,
 						{ name: curr.data.secret, data: [], apps: [] }]
 				};
-			// 	case 'DeleteKv':
-			// 		return {
-			// 			...update[i],
-			// 			secrets:
-			// 				update[i].secrets.map(secret => {
-			// 						if (secret.name == curr.data.secret) {
-			// 							return {
-			// 								...secret,
-			// 								data: secret.data.filter(d => d.key == curr.data.key)
-			// 							};
-			// 						} else {
-			// 							return secret;
-			// 						}
-			// 					}
-			// 				)
-			// 		};
-			// 	case 'DeleteSecret':
-			// 		return {
-			// 			...update[i],
-			// 			secrets: update[i].secrets.filter(e => e.secrets.name == curr.secret)
-			// 		};
-			// 	case 'UpdateKey':
-			// 		return {
-			// 			...update[i],
-			// 			secrets:
-			// 				update[i].secrets.map(secret => {
-			// 						if (secret.name == curr.data.secret) {
-			// 							return {
-			// 								...secret,
-			// 								data: secret.data.map(d => d.key == curr.data.key ? { key: curr.data.key, value: d.value } : d)
-			// 							};
-			// 						} else {
-			// 							return secret;
-			// 						}
-			// 					}
-			// 				)
-			// 		};
-			// 	case 'UpdateValue':
-			// 		return {
-			// 			...update[i],
-			// 			secrets:
-			// 				update[i].secrets.map(secret => {
-			// 						if (secret.name == curr.data.secret) {
-			// 							return {
-			// 								...secret,
-			// 								data: secret.data.map(d => d.key == curr.data.key ? { key: d.value, value: curr.data.value } : d)
-			// 							};
-			// 						} else {
-			// 							return secret;
-			// 						}
-			// 					}
-			// 				)
-			// 		};
-			// }
+			case 'DeleteKv':
+				return {
+					...update[i],
+					secrets:
+						update[i].secrets.map(secret => {
+								if (secret.name == curr.data.secret) {
+									return {
+										...secret,
+										data: secret.data.filter(d => d.key != curr.data.key)
+									};
+								} else {
+									return secret;
+								}
+							}
+						)
+				};
+			case 'DeleteSecret':
+				return {
+					...update[i],
+					secrets: update[i].secrets.filter(e => e.name != curr.data.secret)
+				};
+			case 'UpdateKey':
+				return {
+					...update[i],
+					secrets:
+						update[i].secrets.map(secret => {
+								if (secret.name == curr.data.secret) {
+									return {
+										...secret,
+										data: secret.data.map(d => d.key == curr.data.oldKey
+											? { key: curr.data.key, value: d.value }
+											: d
+										)
+									};
+								} else {
+									return secret;
+								}
+							}
+						)
+				};
+			case 'UpdateValue':
+				return {
+					...update[i],
+					secrets:
+						update[i].secrets.map(secret => {
+								if (secret.name == curr.data.secret) {
+									return {
+										...secret,
+										data: secret.data.map(d => d.key == curr.data.key
+											? { key: d.key, value: curr.data.value }
+											: d
+										)
+									};
+								} else {
+									return secret;
+								}
+							}
+						)
+				};
 		}
 	}
-};
+}

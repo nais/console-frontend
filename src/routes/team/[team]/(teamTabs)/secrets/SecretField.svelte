@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { PencilIcon, TrashIcon, ArrowUndoIcon } from '@nais/ds-svelte-community/icons';
 	import { TextField, Button } from '@nais/ds-svelte-community';
-	import type { updateState } from "./+page.svelte"
-	import {editState}  from "./+page.svelte"
+	import type { updateState } from "./state-machinery"
+	import {editState}  from "./state-machinery"
 
 	export let key: string;
 	export let value: string;
