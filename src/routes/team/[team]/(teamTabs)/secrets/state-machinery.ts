@@ -34,15 +34,6 @@ export type DeleteKv = {
 	}
 }
 
-export type EditedKv = {
-	type: 'EditedKv';
-	data: {
-		env: string;
-		secret: string;
-		key: string;
-	}
-}
-
 export type UndoDeleteKv = {
 	type: 'UndoDeleteKv';
 	data: {
@@ -63,7 +54,7 @@ export type UpdateValue = {
 	}
 }
 
-export type operation = AddKv | DeleteKv | EditedKv | UndoDeleteKv  | UpdateValue
+export type operation = AddKv | DeleteKv | UndoDeleteKv  | UpdateValue
 
 export function mergeChanges(update: updateState, curr: operation): updateState {
 	if (update) {
@@ -106,8 +97,6 @@ export function mergeChanges(update: updateState, curr: operation): updateState 
 					}
 					: state
 				);
-			case 'EditedKv':
-				return update
 			case 'UndoDeleteKv':
 				// this isn't correct if the operation is called without a DeleteKv in the history
 				return update.map((state) => state.env.name === curr.data.env

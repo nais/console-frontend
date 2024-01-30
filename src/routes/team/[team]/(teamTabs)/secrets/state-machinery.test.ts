@@ -81,19 +81,6 @@ test('delete kv from secret', () => {
 	]);
 });
 
-test('edited kv is a no-op', () => {
-	const op: operation = {
-		type: 'EditedKv',
-		data: {
-			env: 'test-env',
-			secret: 'static-secret',
-			key: 'some-key'
-		}
-	};
-
-	expect(mergeChanges(initialState, op)).toEqual(initialState);
-});
-
 test('deleted kv followed by undo deleted kv is a no-op', () => {
 	const initialState: updateState = [{
 		env: {

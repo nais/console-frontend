@@ -10,15 +10,6 @@
 	
 	let matches = (c: operation) => c.data.key == key && c.data.secret == secret && c.data.env == env
 
-	$: edit = changes.filter(matches).length > 0;
-
-	let enableEdit = () => {
-		changes = [...changes, {
-			type: 'EditedKv',
-			data: { env, key, secret }
-		}];
-	};
-
 	let deleteKv = () => {
 		changes = [...changes, {
 			type: 'DeleteKv',
@@ -31,34 +22,21 @@
 			type: 'UndoDeleteKv',
 			data: { env, key, value, secret }
 		}];
-		edit = changes.filter(matches).length > 0;
 	};
 
 	$: deleted = changes.filter(matches).at(-1)?.type === 'DeleteKv';
 	$: added = changes.filter(matches).at(-1)?.type === 'AddKv';
 </script>
 
-{#if edit}
-	<div class="entry" class:deleted class:added>
-		<h4>{key}</h4>
-		<TextField hideLabel size="small" htmlSize={30} bind:value />
-		<div class="buttons">
-			<Button size="small" on:click={deleted ? unDeleteKv : deleteKv} variant="danger">
-				{#if deleted}Undo{:else}Delete{/if}
-			</Button>
-		</div>
+<div class="entry" class:deleted class:added>
+	<h4>{key}</h4>
+	<TextField hideLabel size="small" htmlSize={30} bind:value />
+	<div class="buttons">
+		<Button size="small" on:click={deleted ? unDeleteKv : deleteKv} variant="danger">
+			{#if deleted}Undo{:else}Delete{/if}
+		</Button>
 	</div>
-{:else}
-	<div class="entry" class:deleted class:added>
-		<h4>{key}</h4>
-		<TextField hideLabel size="small" htmlSize={30} bind:value disabled={true} readonly={true} />
-		<div class="buttons">
-			<Button size="small" on:click={enableEdit}>
-				Edit
-			</Button>
-		</div>
-	</div>
-{/if}
+</div>
 
 <style>
 		h4 {
