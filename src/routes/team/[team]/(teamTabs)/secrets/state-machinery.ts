@@ -10,17 +10,10 @@ export type updateState =
 		data: {
 			key: string;
 			value: string;
-			editState?: editState;
 		}[];
 	}[];
 }[]
 	| undefined;
-
-export enum editState {
-	Deleted, Added, Unchanged, Editing
-	// This should also track state for individual edits for keys and values
-	// e.g Modified with styles for changed keys and or values.
-}
 
 export type AddKv = {
 	type: 'AddKv';
@@ -32,27 +25,31 @@ export type AddKv = {
 	}
 }
 
-export type AddSecret = {
-	type: 'AddSecret';
-	data: {
-		env: string;
-		secret: string;
-	}
-}
-
 export type DeleteKv = {
-	type: 'DeleteKv'; data: {
+	type: 'DeleteKv';
+	data: {
 		env: string;
 		secret: string;
 		key: string;
 	}
 }
 
-export type DeleteSecret = {
-	type: 'DeleteSecret'
+export type EditedKv = {
+	type: 'EditedKv';
 	data: {
 		env: string;
 		secret: string;
+		key: string;
+	}
+}
+
+export type UndoDeleteKv = {
+	type: 'UndoDeleteKv';
+	data: {
+		env: string;
+		secret: string;
+		key: string;
+		value: string;
 	}
 }
 
@@ -76,7 +73,7 @@ export type UpdateValue = {
 	}
 }
 
-export type operation = AddKv | AddSecret | DeleteKv | DeleteSecret | UpdateKey | UpdateValue
+export type operation = AddKv | DeleteKv | EditedKv | UndoDeleteKv | UpdateKey | UpdateValue
 
 export function mergeChanges(update: updateState, curr: operation): updateState {
 	if (update) {
@@ -100,16 +97,6 @@ export function mergeChanges(update: updateState, curr: operation): updateState 
 					}
 					: state
 				);
-			case 'AddSecret':
-				return update.map((state) => state.env.name === curr.data.env
-					? {
-						...state,
-						secrets: [
-							...state.secrets,
-							{ name: curr.data.secret, data: [], apps: [] }]
-					}
-					: state
-				);
 			case 'DeleteKv':
 				return update.map((state) => state.env.name === curr.data.env
 					? {
@@ -129,12 +116,25 @@ export function mergeChanges(update: updateState, curr: operation): updateState 
 					}
 					: state
 				);
-			case 'DeleteSecret':
+			case 'EditedKv':
+				return update
+			case 'UndoDeleteKv':
+				// this isn't correct if the operation is called without a DeleteKv in the history
 				return update.map((state) => state.env.name === curr.data.env
 					? {
 						...state,
-						secrets: 
-							state.secrets.filter(e => e.name != curr.data.secret)
+						secrets:
+							state.secrets.map(secret => {
+									if (secret.name == curr.data.secret) {
+										return {
+											...secret,
+											data: [...secret.data, { key: curr.data.key, value: curr.data.value }]
+										};
+									} else {
+										return secret;
+									}
+								}
+							)
 					}
 					: state
 				);

@@ -9,6 +9,7 @@
 	 * - Error handling: display error messages from the server
 	 * - Cancel and Add secret closes the expander because we have a top level loading state check that
 	 *   shows the loader component. It would be nice to disambiguate on refetch/initialfetch
+	 * - Should key in the secret field be editable? Might be confusing for end-users
 	 */
 
 	import Card from '$lib/Card.svelte';
@@ -20,10 +21,11 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 
 	import AddSecret from './AddSecret.svelte';
-	import NewSecretEntry from './NewSecretEntry.svelte';
-	import SecretField from './SecretField.svelte';
+	import NewSecretKv from './NewSecretKv.svelte';
+	import SecretKv from './SecretKv.svelte';
 	import TrExpander from './TrExpander.svelte';
-	import { editState, type updateState } from './state-machinery';
+	import { mergeChanges, type updateState } from './state-machinery';
+
 	export let data: PageData;
 
 	$: ({ Secrets } = data);
@@ -31,6 +33,10 @@
 	$: mkUpdate($Secrets.data?.secrets);
 
 	let update: updateState;
+	$: changes = [];
+	$: {
+		console.log(changes)
+	}
 
 	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
 		if (!secret) {
@@ -86,15 +92,16 @@
 		{#if update}
 			<div class="grid">
 				{#each update as secrets, envIndex}
+					{@const env = secrets.env.name}
 					<Card columns={12}>
 						<div class="heading">
-							<h3>{secrets.env.name}</h3>
+							<h3>{env}</h3>
 							<Button
 								class="add-secret"
 								variant="primary"
 								size="small"
 								on:click={() => {
-							addSecretOpen[secrets.env.name] =  true;
+							addSecretOpen[env] =  true;
 						}}
 							>
 								Add secret
@@ -103,9 +110,9 @@
 
 						<AddSecret
 							refetch={() => Secrets.fetch({})}
-							bind:open={addSecretOpen[secrets.env.name]}
+							bind:open={addSecretOpen[env]}
 							bind:team
-							env={secrets.env.name}
+							env={env}
 						/>
 
 						<Table size="small">
@@ -122,10 +129,15 @@
 									<div slot="expander-content">
 										<div>
 											<div class="secrets-edit">
-												{#each secret.data as data, kvIndex}
-													<SecretField {envIndex} {secretIndex} {kvIndex} bind:key={data.key} bind:value={data.value} bind:update />
+												{#each secret.data as data}
+													<SecretKv {env} secret={secret.name} bind:key={data.key}
+																		bind:value={data.value} bind:changes />
 												{/each}
-												<NewSecretEntry {envIndex} {secretIndex} bind:update></NewSecretEntry>
+												{#each changes.filter((c) => c.type === 'AddKv' && c.data.env === env && c.data.secret === secret.name) as change}
+													<SecretKv {env} secret={change.data.secret} bind:key={change.data.key}
+																		bind:value={change.data.value} bind:changes />
+												{/each}
+												<NewSecretKv {env} secret={secret.name} bind:changes></NewSecretKv>
 											</div>
 											<div class="secrets-edit-buttons">
 												<Button
@@ -133,19 +145,19 @@
 													size="small"
 													on:click={ async () => {
 														if (update) {
-															// do not send deleted keys to the update mutation since we only want the response to contain non-deleted keys
-															update[envIndex].secrets[secretIndex].data = update[envIndex].secrets[secretIndex].data.filter((kv) => kv.editState !== editState.Deleted)
-														}
-														if (update) {
-															 	await updateSecret.mutate({
-																	name: secret.name,
-																	team: team,
-																	env: secrets.env.name,
-																	data: update[envIndex].secrets[secretIndex].data.map((kv) => ({
-																		key: kv.key,
-																		value: kv.value
-																	}))
-																})
+															// TODO: get rid of the indices and use state machine instead for updating key/values
+															//  also pass key/values down to child components instead of using 'update'
+															let mutation = changes.reduce(mergeChanges, update);
+															console.log('mutation', mutation)
+
+															await updateSecret.mutate({
+																name: secret.name,
+																team: team,
+																env: env,
+																data: mutation[envIndex].secrets[secretIndex].data
+															})
+
+															changes = changes.filter((c) => c.data.env + c.data.secret !== env + secret.name);
 														}
 													}}
 												>
@@ -154,9 +166,9 @@
 												<Button
 													variant="secondary"
 													size="small"
-													on:click={async () => {
-												Secrets.fetch();
-											}}
+													on:click={() => {
+														 changes = changes.filter((c) => c.data.env + c.data.secret !== env + secret.name);
+													}}
 												>
 													Cancel
 												</Button>
@@ -164,20 +176,20 @@
 													variant="danger"
 													size="small"
 													on:click={() => {
-												deleteSecretOpen[secrets.env.name] = true;
+												deleteSecretOpen[env] = true;
 											}}
 												>
 													Delete
 												</Button>
 												<Confirm
-													bind:open={deleteSecretOpen[secrets.env.name]}
+													bind:open={deleteSecretOpen[env]}
 													confirmText="Delete"
 													variant="danger"
 													on:confirm={async () => {
 												await deleteSecret.mutate({
 													name: secret.name,
 													team: team,
-													env: secrets.env.name
+													env: env
 												});
 												Secrets.fetch();
 											}}
@@ -185,7 +197,7 @@
 													<svelte:fragment slot="header">
 														<Heading>Delete secret</Heading>
 													</svelte:fragment>
-													Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{secrets.env.name}</b>?
+													Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{env}</b>?
 												</Confirm>
 											</div>
 										</div>
@@ -197,7 +209,7 @@
 
 											<ul>
 												{#each secret.apps as app}
-													<li><a href="/team/{team}/{secrets.env.name}/app/{app}">{app}</a></li>
+													<li><a href="/team/{team}/{env}/app/{app}">{app}</a></li>
 												{/each}
 											</ul>
 										</div>
