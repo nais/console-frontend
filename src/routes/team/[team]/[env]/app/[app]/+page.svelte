@@ -11,6 +11,7 @@
 	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
+	import Secrets from './Secrets.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -72,11 +73,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Secrets</h4>
-			<ul>
-				{#each $App.data.app.secrets as secret}
-					<li><a href="/team/{team}/secrets">{secret}</a></li>
-				{/each}
-			</ul>
+			<Secrets app={$App.data.app} {team} />
 		</Card>
 	</div>
 {/if}
@@ -92,9 +89,5 @@
     h4 {
         font-weight: 400;
         margin-bottom: 0.5rem;
-    }
-
-    ul {
-        list-style: none;
     }
 </style>

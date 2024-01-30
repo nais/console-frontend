@@ -4,7 +4,6 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		ingresses
 
 		image
-		secrets
 		instances {
 			name
 			image
@@ -14,6 +13,7 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		...AppImage
 		...AppInstances
 		...AppInstancesStatus
+		...AppSecrets
 		...Authz
 		...AutoScaling
 		...Storage
