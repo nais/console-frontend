@@ -79,16 +79,14 @@ export type UpdateValue = {
 export type operation = AddKv | AddSecret | DeleteKv | DeleteSecret | UpdateKey | UpdateValue
 
 export function mergeChanges(update: updateState, curr: operation): updateState {
-	let i = 0;
-	let j = 0;
-	let k = 0;
 	if (update) {
 		switch (curr.type) {
 			case 'AddKv':
-				return {
-					...update[i],
+				return update.map((state) => state.env.name === curr.data.env
+					? {
+					...state,
 					secrets:
-						update[i].secrets.map(secret => {
+						state.secrets.map(secret => {
 								if (secret.name == curr.data.secret) {
 									return {
 										...secret,
@@ -99,75 +97,91 @@ export function mergeChanges(update: updateState, curr: operation): updateState 
 								}
 							}
 						)
-				};
-
+					}
+					: state
+				);
 			case 'AddSecret':
-				return {
-					...update[i],
-					env: { name: curr.data.env },
-					secrets: [
-						...update[i].secrets,
-						{ name: curr.data.secret, data: [], apps: [] }]
-				};
+				return update.map((state) => state.env.name === curr.data.env
+					? {
+						...state,
+						secrets: [
+							...state.secrets,
+							{ name: curr.data.secret, data: [], apps: [] }]
+					}
+					: state
+				);
 			case 'DeleteKv':
-				return {
-					...update[i],
-					secrets:
-						update[i].secrets.map(secret => {
-								if (secret.name == curr.data.secret) {
-									return {
-										...secret,
-										data: secret.data.filter(d => d.key != curr.data.key)
-									};
-								} else {
-									return secret;
+				return update.map((state) => state.env.name === curr.data.env
+					? {
+						...state,
+						secrets:
+							state.secrets.map(secret => {
+									if (secret.name == curr.data.secret) {
+										return {
+											...secret,
+											data: secret.data.filter(d => d.key != curr.data.key)
+										};
+									} else {
+										return secret;
+									}
 								}
-							}
-						)
-				};
+							)
+					}
+					: state
+				);
 			case 'DeleteSecret':
-				return {
-					...update[i],
-					secrets: update[i].secrets.filter(e => e.name != curr.data.secret)
-				};
+				return update.map((state) => state.env.name === curr.data.env
+					? {
+						...state,
+						secrets: 
+							state.secrets.filter(e => e.name != curr.data.secret)
+					}
+					: state
+				);
 			case 'UpdateKey':
-				return {
-					...update[i],
-					secrets:
-						update[i].secrets.map(secret => {
-								if (secret.name == curr.data.secret) {
-									return {
-										...secret,
-										data: secret.data.map(d => d.key == curr.data.oldKey
-											? { key: curr.data.key, value: d.value }
-											: d
-										)
-									};
-								} else {
-									return secret;
+				return update.map((state) => state.env.name === curr.data.env
+					? {
+						...state,
+						secrets:
+							state.secrets.map(secret => {
+									if (secret.name == curr.data.secret) {
+										return {
+											...secret,
+											data: secret.data.map(d => d.key == curr.data.oldKey
+												? { key: curr.data.key, value: d.value }
+												: d
+											)
+										};
+									} else {
+										return secret;
+									}
 								}
-							}
-						)
-				};
+							)
+					}
+					: state
+				);
 			case 'UpdateValue':
-				return {
-					...update[i],
-					secrets:
-						update[i].secrets.map(secret => {
-								if (secret.name == curr.data.secret) {
-									return {
-										...secret,
-										data: secret.data.map(d => d.key == curr.data.key
-											? { key: d.key, value: curr.data.value }
-											: d
-										)
-									};
-								} else {
-									return secret;
+				return update.map((state) => state.env.name === curr.data.env
+					? {
+						...state,
+						secrets:
+							state.secrets.map(secret => {
+									if (secret.name == curr.data.secret) {
+										return {
+											...secret,
+											data: secret.data.map(d => d.key == curr.data.key
+												? { key: d.key, value: curr.data.value }
+												: d
+											)
+										};
+									} else {
+										return secret;
+									}
 								}
-							}
-						)
-				};
+							)
+					}
+					: state
+				);
 		}
 	}
 }

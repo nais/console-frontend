@@ -18,14 +18,14 @@ test('we can call mergeChanges', () => {
 		}
 	};
 
-	expect(mergeChanges(initialState, add)).toEqual(
+	expect(mergeChanges(initialState, add)).toEqual([
 		{
 			env: {
 				name: 'test-env'
 			},
 			secrets: [staticSecret, { name: 'test-secret-secret', apps: [], data: [] }]
 		}
-	);
+	]);
 });
 
 test('add secret', () => {
@@ -37,7 +37,7 @@ test('add secret', () => {
 		}
 	}];
 
-	expect(changes.reduce(mergeChanges, initialState)).toEqual({
+	expect(changes.reduce(mergeChanges, initialState)).toEqual([{
 		env: {
 			name: 'test-env'
 		},
@@ -49,7 +49,7 @@ test('add secret', () => {
 				data: []
 			}
 		]
-	});
+	}]);
 });
 
 test('deleting a non-existent secret is a no-op', () => {
@@ -61,7 +61,7 @@ test('deleting a non-existent secret is a no-op', () => {
 		}
 	};
 
-	expect([mergeChanges(initialState, del)]).toEqual(initialState);
+	expect(mergeChanges(initialState, del)).toEqual(initialState);
 });
 
 test('delete secret that exists', () => {
@@ -73,12 +73,12 @@ test('delete secret that exists', () => {
 		}
 	};
 
-	expect(mergeChanges(initialState, del)).toEqual({
+	expect(mergeChanges(initialState, del)).toEqual([{
 		env: {
 			name: 'test-env'
 		},
 		secrets: []
-	});
+	}]);
 });
 
 test('add kv to secret', () => {
@@ -92,7 +92,7 @@ test('add kv to secret', () => {
 		}
 	};
 
-	expect(mergeChanges(initialState, add)).toEqual({
+	expect(mergeChanges(initialState, add)).toEqual([{
 		env: {
 			name: 'test-env'
 		},
@@ -107,7 +107,7 @@ test('add kv to secret', () => {
 					}
 				]
 			}]
-	});
+	}]);
 });
 
 test('delete kv from secret', () => {
@@ -137,7 +137,7 @@ test('delete kv from secret', () => {
 		}
 	};
 
-	expect(mergeChanges(initialState, del)).toEqual(
+	expect(mergeChanges(initialState, del)).toEqual([
 		{
 			env: {
 				name: 'test-env'
@@ -150,7 +150,7 @@ test('delete kv from secret', () => {
 				}
 			]
 		}
-	);
+	]);
 });
 
 test('update key for secret', () => {
@@ -181,7 +181,7 @@ test('update key for secret', () => {
 		}
 	};
 
-	expect(mergeChanges(initialState, updateKey)).toEqual(
+	expect(mergeChanges(initialState, updateKey)).toEqual([
 		{
 			env: {
 				name: 'test-env'
@@ -199,7 +199,7 @@ test('update key for secret', () => {
 				}
 			]
 		}
-	);
+	]);
 })
 
 test('update value for secret', () => {
@@ -230,7 +230,7 @@ test('update value for secret', () => {
 		}
 	};
 
-	expect(mergeChanges(initialState, updateValue)).toEqual(
+	expect(mergeChanges(initialState, updateValue)).toEqual([
 		{
 			env: {
 				name: 'test-env'
@@ -248,5 +248,5 @@ test('update value for secret', () => {
 				}
 			]
 		}
-	);
+	]);
 })
