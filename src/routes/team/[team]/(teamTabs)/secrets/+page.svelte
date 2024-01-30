@@ -165,6 +165,7 @@
 												<NewSecretKv {env} secret={secret.name} bind:changes></NewSecretKv>
 											</div>
 											<div class="secrets-edit-buttons">
+												{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
 												<Button
 													variant="primary"
 													size="small"
@@ -196,6 +197,7 @@
 												>
 													Cancel
 												</Button>
+												{/if}
 											</div>
 										</div>
 										<div class="apps">
