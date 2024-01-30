@@ -120,9 +120,37 @@
 							<Tbody>
 							{#each secrets.secrets as secret, secretIndex}
 								<TrExpander>
-									<svelte:fragment slot="row-content">
+									<div slot="row-content">
 										{secret.name}
-									</svelte:fragment>
+										<Button
+											class="delete-secret"
+											variant="danger"
+											size="small"
+											on:click={() => {
+												 deleteSecretOpen[env] = true;
+											}}
+										>
+											Delete
+										</Button>
+										<Confirm
+											bind:open={deleteSecretOpen[env]}
+											confirmText="Delete"
+											variant="danger"
+											on:confirm={async () => {
+												 await deleteSecret.mutate({
+													 name: secret.name,
+													 team: team,
+													 env: env
+												 });
+												 Secrets.fetch();
+											}}
+										>
+											<svelte:fragment slot="header">
+												<Heading>Delete secret</Heading>
+											</svelte:fragment>
+											Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{env}</b>?
+										</Confirm>
+									</div>
 									<div slot="expander-content">
 										<div>
 											<div class="secrets-edit">
@@ -168,33 +196,6 @@
 												>
 													Cancel
 												</Button>
-												<Button
-													variant="danger"
-													size="small"
-													on:click={() => {
-												deleteSecretOpen[env] = true;
-											}}
-												>
-													Delete
-												</Button>
-												<Confirm
-													bind:open={deleteSecretOpen[env]}
-													confirmText="Delete"
-													variant="danger"
-													on:confirm={async () => {
-												await deleteSecret.mutate({
-													name: secret.name,
-													team: team,
-													env: env
-												});
-												Secrets.fetch();
-											}}
-												>
-													<svelte:fragment slot="header">
-														<Heading>Delete secret</Heading>
-													</svelte:fragment>
-													Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{env}</b>?
-												</Confirm>
 											</div>
 										</div>
 										<div class="apps">
@@ -232,6 +233,10 @@
         display: inline-block;
     }
 
+    :global(.delete-secret) {
+				margin-left: 0 auto;
+		}
+
     .heading {
         display: flex;
         justify-content: space-between;
@@ -244,6 +249,11 @@
 
     .secrets-edit-buttons > :global(button) {
         margin-right: 32px;
+    }
+
+    div[slot="row-content"] {
+        display: flex;
+        justify-content: space-between;
     }
 
     div[slot="expander-content"] {
