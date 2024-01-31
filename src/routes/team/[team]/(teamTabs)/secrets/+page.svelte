@@ -33,7 +33,7 @@
 	$: mkUpdate($Secrets.data?.secrets);
 
 	let update: updateState = [];
-	let changes: operation[]
+	let changes: operation[];
 	$: changes = [];
 
 	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
@@ -51,7 +51,7 @@
 		}
 	`);
 
-	const updateSecret = graphql(`
+	$: updateSecret = graphql(`
 		mutation updateSecret(
 			$name: String!
 			$team: Slug!
@@ -80,7 +80,7 @@
 			(acc: Record<string, boolean>, currSecret) => ({
 				...acc,
 				[curr.env.name + '_' + currSecret.name]: false
-			}), {})
+			}), {});
 	}, {}) : {};
 </script>
 
@@ -127,6 +127,7 @@
 						</Thead>
 						<Tbody>
 						{#each secrets.secrets as secret}
+
 							<TrExpander>
 								<div slot="row-content">
 									{secret.name}
@@ -141,6 +142,7 @@
 										>
 											Delete
 										</Button>
+
 									</Tooltip>
 									<Confirm
 										bind:open={deleteSecretOpen[env + '_' + secret.name]}
@@ -171,7 +173,8 @@
 												<SecretKv {env} secret={change.data.secret} key={change.data.key} value={change.data.value}
 																	bind:changes />
 											{/each}
-											<AddSecretKv {env} secret={secret.name} bind:changes existingKeys={secret.data.map((d) => d.key)}></AddSecretKv>
+											<AddSecretKv {env} secret={secret.name} bind:changes
+																	 existingKeys={secret.data.map((d) => d.key)}></AddSecretKv>
 										</div>
 										<div class="secrets-edit-buttons">
 											{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
@@ -230,6 +233,9 @@
 											{/each}
 										</ul>
 									</div>
+									{#if $updateSecret.errors}
+										<Alert variant="error">{$updateSecret.errors[0]?.message}</Alert>
+									{/if}
 								</div>
 							</TrExpander>
 						{/each}
