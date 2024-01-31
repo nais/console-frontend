@@ -23,7 +23,7 @@
 	import AddSecretKv from './AddSecretKv.svelte';
 	import SecretKv from './SecretKv.svelte';
 	import TrExpander from './TrExpander.svelte';
-	import { mergeChanges, type updateState } from './state-machinery';
+	import { filterLocalAddKvs, mergeChanges, type operation, type updateState } from './state-machinery';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
@@ -32,7 +32,8 @@
 
 	$: mkUpdate($Secrets.data?.secrets);
 
-	let update: updateState;
+	let update: updateState = [];
+	let changes: operation[]
 	$: changes = [];
 
 	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
@@ -74,10 +75,13 @@
 		...acc,
 		[curr.env.name]: false
 	}), {}) : {};
-	let deleteSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({
-		...acc,
-		[curr.env.name]: false
-	}), {}) : {};
+	let deleteSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => {
+		return curr.secrets.reduce(
+			(acc: Record<string, boolean>, currSecret) => ({
+				...acc,
+				[curr.env.name + '_' + currSecret.name]: false
+			}), {})
+	}, {}) : {};
 </script>
 
 {#if $Secrets.errors}
@@ -87,7 +91,7 @@
 		<Loader></Loader>
 	{:else}
 		<div class="grid">
-			{#each $Secrets.data.secrets as secrets}
+			{#each update as secrets}
 				{@const env = secrets.env.name}
 				<Card columns={12}>
 					<div class="heading">
@@ -132,18 +136,17 @@
 											variant="danger"
 											size="small"
 											on:click={() => {
-														deleteSecretOpen[env] = true;
-												}}
+												deleteSecretOpen[env + '_' + secret.name] = true;
+											}}
 										>
 											Delete
 										</Button>
 									</Tooltip>
 									<Confirm
-										bind:open={deleteSecretOpen[env]}
+										bind:open={deleteSecretOpen[env + '_' + secret.name]}
 										confirmText="Delete"
 										variant="danger"
 										on:confirm={async () => {
-												 // TODO: this is broken if multiple secrets exist in the same env
 												 await deleteSecret.mutate({
 													 name: secret.name,
 													 team: team,
@@ -164,7 +167,7 @@
 											{#each secret.data as data (data.key)}
 												<SecretKv {env} secret={secret.name} key={data.key} value={data.value} bind:changes />
 											{/each}
-											{#each changes.filter((c) => c.type === 'AddKv' && c.data.env === env && c.data.secret === secret.name) as change (change.data.key)}
+											{#each filterLocalAddKvs(env, secret.name, changes) as change (change.data.key)}
 												<SecretKv {env} secret={change.data.secret} key={change.data.key} value={change.data.value}
 																	bind:changes />
 											{/each}
@@ -286,6 +289,4 @@
     .apps h4 {
         margin: 0 0 8px;
     }
-
-
 </style>

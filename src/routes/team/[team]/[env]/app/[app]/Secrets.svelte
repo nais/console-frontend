@@ -15,16 +15,11 @@
 		`)
 	);
 
-	$: loading = $data.secrets.includes(PendingValue);
 	$: secrets = $data.secrets;
 	$: count = secrets.length
 </script>
 
 <div>
-	{#if loading}
-		<Skeleton variant="text" width="300px" />
-	{/if}
-
 	{#if count > 0}
 		<ul>
 			{#each secrets as secret}
