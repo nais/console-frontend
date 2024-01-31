@@ -586,7 +586,7 @@ input MonthlyCostFilter {
 
 type Mutation {
   """
-  Add opt-out of a reconciler for a team member. Only reconcilers that uses team memberships can be opted out from.
+  Add opt-out of a reconciler for a team member. Only reconcilers that are member aware can be opted out from.
   """
   addReconcilerOptOut(
     """The name of the reconciler to opt the team member out of."""
@@ -1190,14 +1190,11 @@ type Reconciler {
   """Whether or not the reconciler is enabled."""
   enabled: Boolean!
 
+  """Whether or not the reconciler uses team memberships when syncing."""
+  memberAware: Boolean!
+
   """The name of the reconciler."""
   name: String!
-
-  """The run order of the reconciler."""
-  runOrder: Int!
-
-  """Whether or not the reconciler uses team memberships when syncing."""
-  usesTeamMemberships: Boolean!
 }
 
 """Reconciler configuration type."""
@@ -1596,17 +1593,10 @@ type Team {
     offset: Int
   ): DeploymentList!
 
-  """A list of GitHub repositories for the team."""
-  gitHubRepositories(
-    """Filter teams by GitHub repository permissions."""
-    filter: GitHubRepositoriesFilter
-
-    """Limit the number of repositories to return. Default is 20."""
-    limit: Int
-
-    """Offset to start listing repositories from. Default is 0."""
-    offset: Int
-  ): GitHubRepositoryList!
+  """
+  The email address of the Google Group for the team. This value is only available after the initial team synchronization.
+  """
+  googleGroupEmail: String
   id: ID!
 
   """Timestamp of the last successful synchronization of the team."""

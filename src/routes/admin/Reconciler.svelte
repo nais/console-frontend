@@ -30,8 +30,7 @@
 				displayName
 				enabled
 				name
-				runOrder
-				usesTeamMemberships
+				memberAware
 				config {
 					configured
 					description

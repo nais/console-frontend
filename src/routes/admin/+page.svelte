@@ -7,7 +7,7 @@
 	export let data: PageData;
 
 	$: ({ AdminReconcilers } = data);
-	$: reconcilers = $AdminReconcilers.data?.reconcilers;
+	$: reconcilers = $AdminReconcilers.data?.reconcilers.nodes;
 
 	const synchronize = graphql(`
 		mutation Synchronize {
@@ -47,6 +47,8 @@
 
 {#each reconcilers || [] as r}
 	<Reconciler reconciler={r} />
+{:else}
+	<p>No reconcilers registered</p>
 {/each}
 
 <style>

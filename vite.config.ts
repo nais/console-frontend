@@ -14,7 +14,7 @@ export default defineConfig({
 				headers: {
 					'X-User-Email': import.meta.env?.VITE_API_USER_EMAIL
 						? import.meta.env?.VITE_API_USER_EMAIL
-						: 'dev.usersen@example.com'
+						: 'admin.usersen@example.com'
 				}
 			}
 		}

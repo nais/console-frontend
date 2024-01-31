@@ -1,20 +1,31 @@
 query Repositories($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		gitHubRepositories(limit: 20) {
+		reconcilerResources(key: "repo", reconciler: "github:team", limit: 20) {
 			pageInfo {
 				totalCount
 				hasNextPage
 				hasPreviousPage
 			}
 			nodes {
-				name
-				authorizations
-				permissions {
-					name
-					granted
-				}
-				roleName
+				name: value
+				metadata
 			}
 		}
+		# gitHubRepositories(limit: 20) {
+		# 	pageInfo {
+		# 		totalCount
+		# 		hasNextPage
+		# 		hasPreviousPage
+		# 	}
+		# 	nodes {
+		# 		name
+		# 		authorizations
+		# 		permissions {
+		# 			name
+		# 			granted
+		# 		}
+		# 		roleName
+		# 	}
+		# }
 	}
 }

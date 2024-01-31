@@ -33,7 +33,7 @@
 					displayName
 					name
 					description
-					usesTeamMemberships
+					memberAware
 				}
 			}
 		}
@@ -57,7 +57,7 @@
 		return store.subscribe(async (v) => {
 			if (!v.data) return;
 
-			const recs = v.data.reconcilers.filter((r) => r.usesTeamMemberships);
+			const recs = v.data.reconcilers.nodes.filter((r) => r.memberAware);
 			reconcilers =
 				recs.map((r) => ({
 					name: r.displayName,

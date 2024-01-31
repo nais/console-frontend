@@ -2,11 +2,8 @@
 	import { page } from '$app/stores';
 	import { PendingValue, RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 	import { sortTable } from '$lib/pagination';
 	import {
-		Button,
-		HelpText,
 		Link,
 		Table,
 		Tbody,
@@ -127,18 +124,18 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each team.githubRepositories.edges as repo}
+				{#each team.reconcilerResources.nodes as repo}
 					<Tr>
-						<Td><Link href="https://github.com/{repo.node.name}">{repo.node.name}</Link></Td>
-						{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
-							{#if repo.node.authorizations !== null && repo.node.name !== null}
+						<Td><Link href="https://github.com/{repo.name}">{repo.name}</Link></Td>
+						<!-- {#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember} -->
+						<!-- {#if repo.authorizations !== null && repo.value !== null}
 								<Td>
-									{#if repo.node.authorizations.includes('DEPLOY')}
+									{#if repo.authorizations.includes('DEPLOY')}
 										<Button
 											size="xsmall"
 											variant="danger"
 											on:click={() => {
-												deauthorizeDeploy(teamName, repo.node.name);
+												deauthorizeDeploy(teamName, repo.value);
 											}}>Deauthorize</Button
 										>
 									{:else}
@@ -146,28 +143,28 @@
 											size="xsmall"
 											variant="primary-neutral"
 											on:click={() => {
-												authorizeDeploy(teamName, repo.node.name);
+												authorizeDeploy(teamName, repo.value);
 											}}>Authorize</Button
 										>
 									{/if}
 								</Td>
-							{/if}
-							<Td
+							{/if} -->
+						<!-- <Td
 								><div class="roleHelpText">
-									{repo.node.roleName}<HelpText placement={'left'} title="Role description"
-										>The team's role for the repository.<br />{repo.node.roleName.toUpperCase()}: {roleDesc(
-											repo.node.roleName.toUpperCase()
+									{repo.roleName}<HelpText placement={'left'} title="Role description"
+										>The team's role for the repository.<br />{repo.roleName.toUpperCase()}: {roleDesc(
+											repo.roleName.toUpperCase()
 										)}</HelpText
 									>
 								</div></Td
 							>
-						{/if}
+						{/if} -->
 					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
 
-		<Pagination
+		<!-- <Pagination
 			pageInfo={team.githubRepositories.pageInfo}
 			totalCount={team.githubRepositories.totalCount}
 			on:nextPage={() => {
@@ -178,7 +175,7 @@
 				if (!$Repositories.pageInfo.hasPreviousPage) return;
 				Repositories.loadPreviousPage();
 			}}
-		/>
+		/> -->
 	</Card>
 {/if}
 

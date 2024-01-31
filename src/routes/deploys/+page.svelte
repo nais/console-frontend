@@ -4,7 +4,7 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { limitOffset } from '$lib/pagination';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
