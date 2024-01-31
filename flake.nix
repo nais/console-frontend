@@ -2,9 +2,7 @@
   description = "Example JavaScript development environment for Zero to Nix";
 
   # Flake inputs
-  inputs = {
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2305.491812.tar.gz";
-  };
+  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; };
 
   # Flake outputs
   outputs = { self, nixpkgs }:
@@ -18,18 +16,16 @@
       ];
 
       # Helper to provide system-specific attributes
-      forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
-      });
-    in
-    {
+      forAllSystems = f:
+        nixpkgs.lib.genAttrs allSystems
+        (system: f { pkgs = import nixpkgs { inherit system; }; });
+    in {
       # Development environment output
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
           # The Nix packages provided in the environment
-          packages = with pkgs; [
-            nodejs_20
-          ];
+          packages = with pkgs; [ bun ];
+
         };
       });
     };
