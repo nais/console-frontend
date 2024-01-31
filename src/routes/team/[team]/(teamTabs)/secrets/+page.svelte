@@ -86,62 +86,64 @@
 {:else}
 	{#if $Secrets.fetching}
 		<Loader></Loader>
-	{:else }
-		{#if update}
-			<div class="grid">
-				{#each update as secrets, envIndex}
-					{@const env = secrets.env.name}
-					<Card columns={12}>
-						<div class="heading">
-							<h3>{env}</h3>
-							<Tooltip content="Create new secret in environment" arrow={false}>
-								<Button
-									class="add-secret"
-									variant="tertiary"
-									size="small"
-									on:click={() => {
+	{:else}
+		<div class="grid">
+			{#each $Secrets.data.secrets as secrets}
+				{@const env = secrets.env.name}
+				<Card columns={12}>
+					<div class="heading">
+						<h3>{env}</h3>
+						<Tooltip content="Create new secret in environment" arrow={false}>
+							<Button
+								class="add-secret"
+								variant="tertiary"
+								size="small"
+								on:click={() => {
 										createSecretOpen[env] =  true;
 									}}
-								>
-									Create Secret<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
-								</Button>
-							</Tooltip>
-						</div>
+							>
+								Create Secret
+								<svelte:fragment slot="icon-left">
+									<PlusIcon />
+								</svelte:fragment>
+							</Button>
+						</Tooltip>
+					</div>
 
-						<CreateSecret
-							refetch={() => Secrets.fetch({})}
-							bind:open={createSecretOpen[env]}
-							bind:team
-							env={env}
-						/>
+					<CreateSecret
+						refetch={() => Secrets.fetch({})}
+						bind:open={createSecretOpen[env]}
+						bind:team
+						env={env}
+					/>
 
-						<Table size="small">
-							<Thead>
-							<Th style="width: 50px"></Th>
-							<Th>Name</Th>
-							</Thead>
-							<Tbody>
-							{#each secrets.secrets as secret, secretIndex}
-								<TrExpander>
-									<div slot="row-content">
-										{secret.name}
-										<Tooltip content="Delete secret from environment" arrow={false}>
-											<Button
-												class="delete-secret"
-												variant="danger"
-												size="small"
-												on:click={() => {
+					<Table size="small">
+						<Thead>
+						<Th style="width: 50px"></Th>
+						<Th>Name</Th>
+						</Thead>
+						<Tbody>
+						{#each secrets.secrets as secret}
+							<TrExpander>
+								<div slot="row-content">
+									{secret.name}
+									<Tooltip content="Delete secret from environment" arrow={false}>
+										<Button
+											class="delete-secret"
+											variant="danger"
+											size="small"
+											on:click={() => {
 														deleteSecretOpen[env] = true;
 												}}
-											>
-												Delete
-											</Button>
-										</Tooltip>
-										<Confirm
-											bind:open={deleteSecretOpen[env]}
-											confirmText="Delete"
-											variant="danger"
-											on:confirm={async () => {
+										>
+											Delete
+										</Button>
+									</Tooltip>
+									<Confirm
+										bind:open={deleteSecretOpen[env]}
+										confirmText="Delete"
+										variant="danger"
+										on:confirm={async () => {
 												 // TODO: this is broken if multiple secrets exist in the same env
 												 await deleteSecret.mutate({
 													 name: secret.name,
@@ -150,90 +152,91 @@
 												 });
 												 Secrets.fetch();
 											}}
-										>
-											<svelte:fragment slot="header">
-												<Heading>Delete secret</Heading>
-											</svelte:fragment>
-											Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{env}</b>?
-										</Confirm>
-									</div>
-									<div slot="expander-content">
-										<div>
-											<div class="secrets-edit">
-												{#each secret.data as data (data.key)}
-													<SecretKv {env} secret={secret.name} bind:key={data.key}
-																		bind:value={data.value} bind:changes />
-												{/each}
-												{#each changes.filter((c) => c.type === 'AddKv' && c.data.env === env && c.data.secret === secret.name) as change (change.data.key)}
-													<SecretKv {env} secret={change.data.secret} bind:key={change.data.key}
-																		bind:value={change.data.value} bind:changes />
-												{/each}
-												<AddSecretKv {env} secret={secret.name} bind:changes></AddSecretKv>
-											</div>
-											<div class="secrets-edit-buttons">
-												{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
+									>
+										<svelte:fragment slot="header">
+											<Heading>Delete secret</Heading>
+										</svelte:fragment>
+										Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{env}</b>?
+									</Confirm>
+								</div>
+								<div slot="expander-content">
+									<div>
+										<div class="secrets-edit">
+											{#each secret.data as data (data.key)}
+												<SecretKv {env} secret={secret.name} key={data.key} value={data.value} bind:changes />
+											{/each}
+											{#each changes.filter((c) => c.type === 'AddKv' && c.data.env === env && c.data.secret === secret.name) as change (change.data.key)}
+												<SecretKv {env} secret={change.data.secret} key={change.data.key} value={change.data.value}
+																	bind:changes />
+											{/each}
+											<AddSecretKv {env} secret={secret.name} bind:changes></AddSecretKv>
+										</div>
+										<div class="secrets-edit-buttons">
+											{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
 												<Tooltip content="Save changes" arrow={false}>
-												<Button
-													variant="primary"
-													size="small"
-													on:click={ async () => {
+													<Button
+														variant="primary"
+														size="small"
+														on:click={ async () => {
 														if (update) {
-															// TODO: get rid of the indices and use state machine instead for updating key/values
-															//  also pass key/values down to child components instead of using 'update'
-															//  - undo button for KV should appear if value has actually changed
+															// TODO:
 															//  - adding a new KV and undoing should remove the KV from the list right away?
 															//  - adding a new duplicate key should be disallowed
 															let mutation = changes.reduce(mergeChanges, update);
+
+															let data = mutation
+																.filter((m) => m.env.name === env)[0].secrets
+																.filter((s) => s.name === secret.name)[0].data;
 
 															await updateSecret.mutate({
 																name: secret.name,
 																team: team,
 																env: env,
-																data: mutation[envIndex].secrets[secretIndex].data
+																data: data,
 															})
 
 															changes = changes.filter((c) => c.data.env + c.data.secret !== env + secret.name);
 														}
 													}}
-												>
-													Save
-												</Button>
+													>
+														Save
+													</Button>
 												</Tooltip>
 												<Tooltip content="Discard all changes" arrow={false}>
-												<Button
-													variant="secondary"
-													size="small"
-													on:click={() => {
+													<Button
+														variant="secondary"
+														size="small"
+														on:click={() => {
 														 changes = changes.filter((c) => c.data.env + c.data.secret !== env + secret.name);
+														 Secrets.fetch();
 													}}
-												>
-													Cancel
-												</Button>
+													>
+														Cancel
+													</Button>
 												</Tooltip>
-												{/if}
-											</div>
-										</div>
-										<div class="apps">
-											{#if secret.apps.length}<h4>Applications using this secret</h4>
-											{:else}
-												<Alert size="small" variant="info">Secret is not in use by any applications.</Alert>
 											{/if}
-
-											<ul>
-												{#each secret.apps as app}
-													<li><a href="/team/{team}/{env}/app/{app}">{app}</a></li>
-												{/each}
-											</ul>
 										</div>
 									</div>
-								</TrExpander>
-							{/each}
-							</Tbody>
-						</Table>
-					</Card>
-				{/each}
-			</div>
-		{/if}
+									<div class="apps">
+										{#if secret.apps.length}<h4>Applications using this secret</h4>
+										{:else}
+											<Alert size="small" variant="info">Secret is not in use by any applications.</Alert>
+										{/if}
+
+										<ul>
+											{#each secret.apps as app}
+												<li><a href="/team/{team}/{env}/app/{app}">{app}</a></li>
+											{/each}
+										</ul>
+									</div>
+								</div>
+							</TrExpander>
+						{/each}
+						</Tbody>
+					</Table>
+				</Card>
+			{/each}
+		</div>
 	{/if}
 {/if}
 <style>
@@ -245,7 +248,7 @@
     }
 
     :global(.add-secret) {
-				height: 2.5rem;
+        height: 2.5rem;
     }
 
     .heading {

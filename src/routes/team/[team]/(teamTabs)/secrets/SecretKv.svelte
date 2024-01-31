@@ -40,7 +40,12 @@
 		{/if}
 	</h4>
 	{#if showValue}
-		<TextField hideLabel size="small" htmlSize={30} bind:value />
+		<TextField hideLabel size="small" htmlSize={30} bind:value on:change={() => {
+			changes = [...changes, {
+				type: 'UpdateValue',
+				data: { env, key, value, secret }
+			}];
+		}}/>
 		<Button
 			size="xsmall"
 			variant="tertiary"
@@ -53,8 +58,7 @@
 					<EyeObfuscatedIcon />
 				</Tooltip>
 			</svelte:fragment>
-		</Button
-		>
+		</Button>
 	{:else}
 		<TextField
 			hideLabel

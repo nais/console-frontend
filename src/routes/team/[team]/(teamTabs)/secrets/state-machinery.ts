@@ -12,8 +12,7 @@ export type updateState =
 			value: string;
 		}[];
 	}[];
-}[]
-	| undefined;
+}[];
 
 export type AddKv = {
 	type: 'AddKv';
