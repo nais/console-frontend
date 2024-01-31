@@ -8,29 +8,45 @@ query TeamSettings($team: Slug!) {
 			channelName
 			environment
 		}
-		reconcilerState {
-			gcpProjects {
-				projectId
-				environment
-			}
-			azureADGroupId
-			garRepositoryName
-			gitHubTeamSlug
-			googleWorkspaceGroupEmail
-			naisNamespaces {
-				environment
-				namespace
-			}
-		}
-		gitHubRepositories(limit: 10) {
+		# Default limit is 20, should be enough
+		gcpProjects: reconcilerResources(reconciler: "google:gcp:project", key: "project") {
 			nodes {
-				name
-			}
-			pageInfo {
-				totalCount
-				hasNextPage
-				hasPreviousPage
+				value
 			}
 		}
+		azureADGroupId: reconcilerResources(reconciler: "azure:group", key: "groupID", limit: 1) {
+			nodes {
+				value
+			}
+		}
+		garRepositoryName: reconcilerResources(
+			reconciler: "google:gcp:gar"
+			key: "repository_name"
+			limit: 1
+		) {
+			nodes {
+				value
+			}
+		}
+		gitHubTeamSlug: reconcilerResources(reconciler: "github:team", key: "slug", limit: 1) {
+			nodes {
+				value
+			}
+		}
+		naisNamespaces: reconcilerResources(reconciler: "nais:namespace", key: "namespace") {
+			nodes {
+				value
+			}
+		}
+		# gitHubRepositories(limit: 10) {
+		# 	nodes {
+		# 		name
+		# 	}
+		# 	pageInfo {
+		# 		totalCount
+		# 		hasNextPage
+		# 		hasPreviousPage
+		# 	}
+		# }
 	}
 }

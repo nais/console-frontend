@@ -792,57 +792,6 @@ type Mutation {
     name: String!
   ): Reconciler!
 
-  """Set the Azure AD group ID for a NAIS team."""
-  setAzureADGroupId(
-    """The ID for the connected Azure AD group."""
-    azureADGroupId: ID!
-
-    """The slug for the NAIS team."""
-    teamSlug: Slug!
-  ): Team!
-
-  """Set the GCP project ID for a NAIS team in a specific environment."""
-  setGcpProjectId(
-    """The environment for the GCP project."""
-    gcpEnvironment: String!
-
-    """The project ID for the connected GCP project."""
-    gcpProjectId: String!
-
-    """The slug for the NAIS team."""
-    teamSlug: Slug!
-  ): Team!
-
-  """Set the GitHub team slug for a NAIS team."""
-  setGitHubTeamSlug(
-    """The slug for the connected GitHub team."""
-    gitHubTeamSlug: Slug!
-
-    """The slug for the NAIS team."""
-    teamSlug: Slug!
-  ): Team!
-
-  """Set the Google Workspace group email for a NAIS team."""
-  setGoogleWorkspaceGroupEmail(
-    """The email for the connected Google workspace group."""
-    googleWorkspaceGroupEmail: String!
-
-    """The slug for the NAIS team."""
-    teamSlug: Slug!
-  ): Team!
-
-  """Set the NAIS namespace for a NAIS team in a specific environment."""
-  setNaisNamespace(
-    """The environment for the namespace."""
-    gcpEnvironment: String!
-
-    """The namespace."""
-    naisNamespace: Slug!
-
-    """The slug for the NAIS team."""
-    teamSlug: Slug!
-  ): Team!
-
   """
   Set the member role of a user in a team
   
@@ -1111,7 +1060,7 @@ type Query {
   ): NaisJob!
 
   """Get a collection of reconcilers."""
-  reconcilers: [Reconciler!]!
+  reconcilers(limit: Int, offset: Int): ReconcilerList!
 
   """Get the date range for resource utilization for an app."""
   resourceUtilizationDateRangeForApp(
@@ -1285,28 +1234,39 @@ input ReconcilerConfigInput {
   value: String!
 }
 
-"""Reconciler state type."""
-type ReconcilerState {
-  """The Azure AD group ID."""
-  azureADGroupId: ID
+"""Paginated reconcilers type."""
+type ReconcilerList {
+  """The list of reconcilers."""
+  nodes: [Reconciler!]!
 
-  """Name of the GAR repository for the team."""
-  garRepositoryName: String
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
 
-  """A list of GCP projects."""
-  gcpProjects: [GcpProject!]!
+type ReconcilerResource {
+  """ID of the resource."""
+  id: ID!
 
-  """The GitHub team slug."""
-  gitHubTeamSlug: Slug
+  """Key of the reconciler resource."""
+  key: String!
 
-  """The Google Workspace group email."""
-  googleWorkspaceGroupEmail: String
+  """Metadata if any. JSON formatted."""
+  metadata: String
 
-  """Timestamp of when the NAIS deploy key was provisioned."""
-  naisDeployKeyProvisioned: Time
+  """The name of the reconciler."""
+  reconciler: String!
 
-  """A list of NAIS namespaces."""
-  naisNamespaces: [NaisNamespace!]!
+  """Value of the reconciler resource."""
+  value: String!
+}
+
+"""Paginated GitHub repository type."""
+type ReconcilerResourceList {
+  """The list of GitHub repositories."""
+  nodes: [ReconcilerResource!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
 }
 
 type Redis implements Storage {
@@ -1682,8 +1642,16 @@ type Team {
   """Purpose of the team."""
   purpose: String!
 
-  """Current reconciler state for the team."""
-  reconcilerState: ReconcilerState!
+  """Get the state of the team as it is represented by the reconciler."""
+  reconcilerResources(
+    """Key to read"""
+    key: String!
+    limit: Int
+    offset: Int
+
+    """The name of the reconciler."""
+    reconciler: String!
+  ): ReconcilerResourceList!
 
   """
   A list of Slack channels for NAIS alerts. If no channel is specified for a given environment, NAIS will fallback to the slackChannel value.

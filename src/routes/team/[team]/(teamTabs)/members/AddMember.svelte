@@ -29,10 +29,12 @@
 			}
 
 			reconcilers {
-				displayName
-				name
-				description
-				usesTeamMemberships
+				nodes {
+					displayName
+					name
+					description
+					usesTeamMemberships
+				}
 			}
 		}
 	`);
