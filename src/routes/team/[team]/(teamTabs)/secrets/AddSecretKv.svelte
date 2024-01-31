@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Button, TextField } from '@nais/ds-svelte-community';
+	import { Button, TextField, Tooltip } from '@nais/ds-svelte-community';
 	import type { operation } from './state-machinery';
+	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 
 	export let env: string;
 	export let secret: string;
-
 	export let changes: operation[];
 
 	let addKv = () => {
@@ -26,7 +26,11 @@
 	<TextField size="small" htmlSize={30} bind:value={key} placeholder="New key" />
 	<TextField size="small" htmlSize={30} bind:value placeholder="New value" />
 	<div class="buttons">
-		<Button size="small" on:click={addKv}>Add</Button>
+		<Tooltip content="Add new key-value pair" arrow={false}>
+			<Button type="submit" variant="tertiary" size="small" on:click={addKv}>
+				 <svelte:fragment slot="icon-left"><PlusCircleFillIcon /></svelte:fragment>
+			</Button>
+		</Tooltip>
 	</div>
 </div>
 

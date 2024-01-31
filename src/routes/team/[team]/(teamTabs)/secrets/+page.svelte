@@ -13,18 +13,19 @@
 	 */
 
 	import Card from '$lib/Card.svelte';
-	import { Table, Thead, Tbody, Th, Button, Heading, Alert, Loader } from '@nais/ds-svelte-community';
+	import { Table, Thead, Tbody, Th, Button, Heading, Alert, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	import { graphql, type Secrets$result } from '$houdini';
 	import { page } from '$app/stores';
 	import Confirm from '$lib/components/Confirm.svelte';
 
-	import AddSecret from './AddSecret.svelte';
-	import NewSecretKv from './NewSecretKv.svelte';
+	import CreateSecret from './CreateSecret.svelte';
+	import AddSecretKv from './AddSecretKv.svelte';
 	import SecretKv from './SecretKv.svelte';
 	import TrExpander from './TrExpander.svelte';
 	import { mergeChanges, type updateState } from './state-machinery';
+	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
 
@@ -70,7 +71,7 @@
 	let team = $page.params.team;
 
 	// (obj: Record<string, any>) => obj[key];
-	let addSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({
+	let createSecretOpen = (update) ? update.reduce((acc: Record<string, boolean>, curr) => ({
 		...acc,
 		[curr.env.name]: false
 	}), {}) : {};
@@ -93,21 +94,23 @@
 					<Card columns={12}>
 						<div class="heading">
 							<h3>{env}</h3>
-							<Button
-								class="add-secret"
-								variant="primary"
-								size="small"
-								on:click={() => {
-							addSecretOpen[env] =  true;
-						}}
-							>
-								Add secret
-							</Button>
+							<Tooltip content="Create new secret in environment" arrow={false}>
+								<Button
+									class="add-secret"
+									variant="tertiary"
+									size="small"
+									on:click={() => {
+										createSecretOpen[env] =  true;
+									}}
+								>
+									Create Secret<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
+								</Button>
+							</Tooltip>
 						</div>
 
-						<AddSecret
+						<CreateSecret
 							refetch={() => Secrets.fetch({})}
-							bind:open={addSecretOpen[env]}
+							bind:open={createSecretOpen[env]}
 							bind:team
 							env={env}
 						/>
@@ -122,21 +125,24 @@
 								<TrExpander>
 									<div slot="row-content">
 										{secret.name}
-										<Button
-											class="delete-secret"
-											variant="danger"
-											size="small"
-											on:click={() => {
-												 deleteSecretOpen[env] = true;
-											}}
-										>
-											Delete
-										</Button>
+										<Tooltip content="Delete secret from environment" arrow={false}>
+											<Button
+												class="delete-secret"
+												variant="danger"
+												size="small"
+												on:click={() => {
+														deleteSecretOpen[env] = true;
+												}}
+											>
+												Delete
+											</Button>
+										</Tooltip>
 										<Confirm
 											bind:open={deleteSecretOpen[env]}
 											confirmText="Delete"
 											variant="danger"
 											on:confirm={async () => {
+												 // TODO: this is broken if multiple secrets exist in the same env
 												 await deleteSecret.mutate({
 													 name: secret.name,
 													 team: team,
@@ -154,18 +160,19 @@
 									<div slot="expander-content">
 										<div>
 											<div class="secrets-edit">
-												{#each secret.data as data}
+												{#each secret.data as data (data.key)}
 													<SecretKv {env} secret={secret.name} bind:key={data.key}
 																		bind:value={data.value} bind:changes />
 												{/each}
-												{#each changes.filter((c) => c.type === 'AddKv' && c.data.env === env && c.data.secret === secret.name) as change}
+												{#each changes.filter((c) => c.type === 'AddKv' && c.data.env === env && c.data.secret === secret.name) as change (change.data.key)}
 													<SecretKv {env} secret={change.data.secret} bind:key={change.data.key}
 																		bind:value={change.data.value} bind:changes />
 												{/each}
-												<NewSecretKv {env} secret={secret.name} bind:changes></NewSecretKv>
+												<AddSecretKv {env} secret={secret.name} bind:changes></AddSecretKv>
 											</div>
 											<div class="secrets-edit-buttons">
 												{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
+												<Tooltip content="Save changes" arrow={false}>
 												<Button
 													variant="primary"
 													size="small"
@@ -173,6 +180,9 @@
 														if (update) {
 															// TODO: get rid of the indices and use state machine instead for updating key/values
 															//  also pass key/values down to child components instead of using 'update'
+															//  - undo button for KV should appear if value has actually changed
+															//  - adding a new KV and undoing should remove the KV from the list right away?
+															//  - adding a new duplicate key should be disallowed
 															let mutation = changes.reduce(mergeChanges, update);
 
 															await updateSecret.mutate({
@@ -186,8 +196,10 @@
 														}
 													}}
 												>
-													Update
+													Save
 												</Button>
+												</Tooltip>
+												<Tooltip content="Discard all changes" arrow={false}>
 												<Button
 													variant="secondary"
 													size="small"
@@ -197,13 +209,14 @@
 												>
 													Cancel
 												</Button>
+												</Tooltip>
 												{/if}
 											</div>
 										</div>
 										<div class="apps">
-											{#if secret.apps.length}<h4>Used in</h4>
+											{#if secret.apps.length}<h4>Applications using this secret</h4>
 											{:else}
-												<Alert size="small" variant="info">Unused secret</Alert>
+												<Alert size="small" variant="info">Secret is not in use by any applications.</Alert>
 											{/if}
 
 											<ul>
@@ -232,12 +245,8 @@
     }
 
     :global(.add-secret) {
-        display: inline-block;
+				height: 2.5rem;
     }
-
-    :global(.delete-secret) {
-				margin-left: 0 auto;
-		}
 
     .heading {
         display: flex;
@@ -249,8 +258,8 @@
         padding: 32px 0;
     }
 
-    .secrets-edit-buttons > :global(button) {
-        margin-right: 32px;
+    .secrets-edit-buttons > :global(*) {
+        margin-right: 8px;
     }
 
     div[slot="row-content"] {

@@ -7,7 +7,7 @@
 		Modal,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
+
 	export let open: boolean;
 	export let team: string;
 	export let env: string;
@@ -48,25 +48,19 @@
 
 <Modal bind:open width="small">
 	<svelte:fragment slot="header">
-		<Heading>Add new secret to <b>{env}</b></Heading>
+		<Heading>Create new secret in <b>{env}</b></Heading>
 	</svelte:fragment>
 	<div>
-	<TextField size="small" htmlSize={30} bind:value={name} placeholder="New secret name" />
+		<TextField size="small" htmlSize={30} bind:value={name} placeholder="New secret name" />
 		{#if $createSecret.errors }
 			<Alert variant="error">{$createSecret.errors[0].message}</Alert>
 		{/if}
-
 	</div>
 	<svelte:fragment slot="footer">
-		<Button
-			type="submit"
-			variant="primary"
-			size="small"
-			on:click={submit}>
-			<FloppydiskIcon />
-			Save
+		<Button type="submit" variant="primary" size="small" on:click={submit}>
+			Create
 		</Button>
-			</svelte:fragment>
+	</svelte:fragment>
 </Modal>
 
 <style>
