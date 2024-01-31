@@ -12,7 +12,18 @@
 	 */
 
 	import Card from '$lib/Card.svelte';
-	import { Table, Thead, Tbody, Th, Button, Heading, Alert, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		Table,
+		Thead,
+		Tbody,
+		Th,
+		Button,
+		Heading,
+		Alert,
+		Loader,
+		Tooltip,
+		CopyButton
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	import { graphql, type Secrets$result } from '$houdini';
@@ -130,7 +141,15 @@
 
 							<TrExpander>
 								<div slot="row-content">
-									{secret.name}
+									<div>
+										{secret.name}
+										<Tooltip content="Copy yaml to clipboard">
+											<CopyButton copyText={`spec:
+  envFrom:
+    - secret: ${secret.name}`
+    }></CopyButton>
+										</Tooltip>
+									</div>
 									<Tooltip content="Delete secret from environment" arrow={false}>
 										<Button
 											class="delete-secret"
