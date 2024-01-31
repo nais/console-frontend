@@ -2,8 +2,11 @@
 	import { page } from '$app/stores';
 	import { PendingValue, RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { sortTable } from '$lib/pagination';
+	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams, limitOffset, sortTable } from '$lib/pagination';
 	import {
+		Button,
+		HelpText,
 		Link,
 		Table,
 		Tbody,
@@ -28,6 +31,8 @@
 
 	$: teamName = $page.params.team;
 
+	$: ({ limit, offset } = limitOffset($Repositories.variables));
+
 	let sortState: TableSortState = {
 		orderBy: 'NAME',
 		direction: 'ascending'
@@ -46,18 +51,10 @@
 			case 'ADMIN':
 				return 'Can read, clone, and push to this repository. Can also manage issues, pull requests, and repository settings, including adding collaborators.';
 			case 'ISOC_TRIAGE_FOLLOWUP':
-				return 'Gir ISOC mulighet til å følge opp';
+				return 'Give ISOC the opportunity to follow up';
 			default:
-				return 'Ukjent rolle';
+				return 'Unknown role';
 		}
-	};
-
-	const refetch = () => {
-		Repositories.fetch({
-			variables: {
-				team: teamName
-			}
-		});
 	};
 
 	const authorizeRepositoryForDeploy = graphql(`
@@ -67,8 +64,7 @@
 			$team: Slug!
 		) {
 			authorizeRepository(authorization: $authorization, repoName: $repository, teamSlug: $team) {
-				slug
-				# authorizations
+				authorizations
 			}
 		}
 	`);
@@ -80,8 +76,7 @@
 			$team: Slug!
 		) {
 			deauthorizeRepository(authorization: $authorization, repoName: $repository, teamSlug: $team) {
-				slug
-				# authorizations
+				authorizations
 			}
 		}
 	`);
@@ -100,9 +95,16 @@
 			team
 		});
 	};
+
+	const parseRoleName = (metadata: string | null) => {
+		if (metadata === null) return 'UNKNOWN';
+
+		const resp = JSON.parse(metadata) as { roleName: string };
+		return resp.roleName || 'UNKNOWN';
+	};
 </script>
 
-{#if team && team !== undefined}
+{#if team}
 	<Card>
 		<h3>Repositories</h3>
 
@@ -127,55 +129,57 @@
 				{#each team.reconcilerResources.nodes as repo}
 					<Tr>
 						<Td><Link href="https://github.com/{repo.name}">{repo.name}</Link></Td>
-						<!-- {#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember} -->
-						<!-- {#if repo.authorizations !== null && repo.value !== null}
+						{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
+							{#if repo.authorizations !== null && repo.name !== null}
 								<Td>
 									{#if repo.authorizations.includes('DEPLOY')}
 										<Button
 											size="xsmall"
 											variant="danger"
 											on:click={() => {
-												deauthorizeDeploy(teamName, repo.value);
-											}}>Deauthorize</Button
+												deauthorizeDeploy(teamName, repo.name);
+											}}
 										>
+											Deauthorize
+										</Button>
 									{:else}
 										<Button
 											size="xsmall"
 											variant="primary-neutral"
 											on:click={() => {
-												authorizeDeploy(teamName, repo.value);
-											}}>Authorize</Button
+												authorizeDeploy(teamName, repo.name);
+											}}
 										>
+											Authorize
+										</Button>
 									{/if}
 								</Td>
-							{/if} -->
-						<!-- <Td
-								><div class="roleHelpText">
-									{repo.roleName}<HelpText placement={'left'} title="Role description"
-										>The team's role for the repository.<br />{repo.roleName.toUpperCase()}: {roleDesc(
-											repo.roleName.toUpperCase()
-										)}</HelpText
-									>
-								</div></Td
-							>
-						{/if} -->
+							{/if}
+							<Td>
+								{@const roleName = parseRoleName(repo.metadata)}
+								<div class="roleHelpText">
+									{roleName}
+									<HelpText placement={'left'} title="Role description">
+										The team's role for the repository.<br />{roleName.toUpperCase()}:
+										{roleDesc(roleName.toUpperCase())}
+									</HelpText>
+								</div>
+							</Td>
+						{/if}
 					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
 
-		<!-- <Pagination
-			pageInfo={team.githubRepositories.pageInfo}
-			totalCount={team.githubRepositories.totalCount}
-			on:nextPage={() => {
-				if (!$Repositories.pageInfo.hasNextPage) return;
-				Repositories.loadNextPage();
+		<Pagination
+			pageInfo={team.reconcilerResources.pageInfo}
+			{limit}
+			{offset}
+			changePage={(page) => {
+				console.log('Change page', page, limit, offset);
+				changeParams({ page: page.toString() });
 			}}
-			on:previousPage={() => {
-				if (!$Repositories.pageInfo.hasPreviousPage) return;
-				Repositories.loadPreviousPage();
-			}}
-		/> -->
+		/>
 	</Card>
 {/if}
 

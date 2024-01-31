@@ -202,33 +202,32 @@
 			{#if teamSettings.id === PendingValue}
 				<Loader />
 			{:else}
-				{@const state = teamSettings.reconcilerState}
-				{#each state.gcpProjects as project}
-					{#if project.environment !== 'ci-gcp'}
+				{#each teamSettings.gcpProjects.nodes as project}
+					{#if project.value.indexOf('ci-gcp') >= 0}
 						<dl>
-							<dt>GCP project ID ({project.environment}):</dt>
-							<dd>{project.projectId}</dd>
+							<dt>GCP project ID ({project.value}):</dt>
+							<dd>{project.value}</dd>
 						</dl>
 					{/if}
-					{#if state.azureADGroupId}
+					{#if teamSettings.azureADGroupId}
 						<dl>
 							<dt>Azure AD group ID:</dt>
-							<dd>{state.azureADGroupId}</dd>
+							<dd>{teamSettings.azureADGroupId}</dd>
 						</dl>
 					{/if}
-					{#if state.garRepositoryName}
+					<!-- {#if teamSettings.garRepositoryName}
 						<dl>
 							<dt>Artifact Registry repository</dt>
-							<dd>{formatGARRepo(state.garRepositoryName)}</dd>
+							<dd>{formatGARRepo(teamSettings.garRepositoryName)}</dd>
 						</dl>
 					{/if}
-					{#if state.gitHubTeamSlug}
+					{#if teamSettings.gitHubTeamSlug}
 						<dl>
 							<dt>GitHub team:</dt>
-							<dd>{state.gitHubTeamSlug}</dd>
+							<dd>{teamSettings.gitHubTeamSlug}</dd>
 						</dl>
 					{/if}
-					{#if state.googleWorkspaceGroupEmail}
+					{#if teamSettings.googleWorkspaceGroupEmail}
 						<dl>
 							<dt>Google group email:</dt>
 							<dd>{state.googleWorkspaceGroupEmail}</dd>
@@ -241,7 +240,7 @@
 								<dd>{ns.namespace}</dd>
 							</dl>
 						{/if}
-					{/each}
+					{/each} -->
 				{:else}
 					<p>No managed resources</p>
 				{/each}

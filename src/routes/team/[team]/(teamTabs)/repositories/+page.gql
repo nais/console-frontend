@@ -1,6 +1,6 @@
-query Repositories($team: Slug!) @cache(policy: NetworkOnly) {
+query Repositories($team: Slug!, $limit: Int = 50, $offset: Int) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		reconcilerResources(key: "repo", reconciler: "github:team", limit: 20) {
+		reconcilerResources(key: "repo", reconciler: "github:team", limit: $limit, offset: $offset) {
 			pageInfo {
 				totalCount
 				hasNextPage
@@ -8,6 +8,7 @@ query Repositories($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 			nodes {
 				name: value
+				authorizations
 				metadata
 			}
 		}

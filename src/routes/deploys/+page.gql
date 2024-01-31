@@ -1,4 +1,4 @@
-query Deploys($limit: Int, $offset: Int) {
+query Deploys($limit: Int = 20, $offset: Int) {
 	deployments(limit: $limit, offset: $offset) @loading(cascade: true) {
 		pageInfo {
 			totalCount

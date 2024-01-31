@@ -656,7 +656,7 @@ type Mutation {
 
     """The slug of the team to authorize the action for."""
     teamSlug: Slug!
-  ): Team!
+  ): ReconcilerResource!
 
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
@@ -711,7 +711,7 @@ type Mutation {
 
     """The slug of the team to deauthorize the action for."""
     teamSlug: Slug!
-  ): Team!
+  ): ReconcilerResource!
 
   """
   Disable a reconciler
@@ -1241,6 +1241,11 @@ type ReconcilerList {
 }
 
 type ReconcilerResource {
+  """
+  Temporary workaround until repository is a first class citizen. Will only be populated for GitHub repos.
+  """
+  authorizations: [RepositoryAuthorization!] @deprecated(reason: "Just a temporary workaround")
+
   """ID of the resource."""
   id: ID!
 

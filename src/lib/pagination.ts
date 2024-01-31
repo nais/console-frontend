@@ -30,8 +30,11 @@ export const limitOffset = (
 		offset?: number | null;
 	} | null
 ) => {
+	if (!variables?.limit) {
+		console.warn('limit is not set in graphql query, defaulting to 20');
+	}
 	return {
-		limit: variables?.limit || 0,
+		limit: variables?.limit || 20,
 		offset: variables?.offset || 0
 	};
 };
