@@ -9,7 +9,6 @@
 	 * - Error handling: display error messages from the server
 	 * - Cancel and Add secret closes the expander because we have a top level loading state check that
 	 *   shows the loader component. It would be nice to disambiguate on refetch/initialfetch
-	 * - Should key in the secret field be editable? Might be confusing for end-users
 	 */
 
 	import Card from '$lib/Card.svelte';
@@ -169,7 +168,7 @@
 												<SecretKv {env} secret={change.data.secret} key={change.data.key} value={change.data.value}
 																	bind:changes />
 											{/each}
-											<AddSecretKv {env} secret={secret.name} bind:changes></AddSecretKv>
+											<AddSecretKv {env} secret={secret.name} bind:changes existingKeys={secret.data.map((d) => d.key)}></AddSecretKv>
 										</div>
 										<div class="secrets-edit-buttons">
 											{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
@@ -181,7 +180,6 @@
 														if (update) {
 															// TODO:
 															//  - adding a new KV and undoing should remove the KV from the list right away?
-															//  - adding a new duplicate key should be disallowed
 															let mutation = changes.reduce(mergeChanges, update);
 
 															let data = mutation

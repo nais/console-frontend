@@ -87,7 +87,7 @@
 	{/if}
 
 	{#if deleted}
-		<Button type="submit" variant="tertiary" size="small" on:click={unDeleteKv}>
+		<Button variant="tertiary" size="small" on:click={unDeleteKv}>
 			<svelte:fragment slot="icon-left">
 				<Tooltip content="Undo delete" arrow={false}>
 					<ArrowUndoIcon />
@@ -95,7 +95,7 @@
 			</svelte:fragment>
 		</Button>
 	{:else}
-		<Button type="submit" variant="tertiary" size="small" on:click={deleteKv}>
+		<Button variant="tertiary" size="small" on:click={deleteKv}>
 			<svelte:fragment slot="icon-left">
 				<Tooltip content="Delete key-value pair" arrow={false}>
 					<TrashIcon />

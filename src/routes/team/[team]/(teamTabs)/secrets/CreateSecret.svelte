@@ -57,7 +57,7 @@
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		<Button type="submit" variant="primary" size="small" on:click={submit}>
+		<Button variant="primary" size="small" on:click={submit}>
 			Create
 		</Button>
 	</svelte:fragment>
