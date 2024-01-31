@@ -44,7 +44,7 @@
 </script>
 
 <div class="entry">
-	<TextField size="small" htmlSize={30} bind:value={key} placeholder="New key" error={validate()}/>
+	<TextField size="small" htmlSize={35} bind:value={key} placeholder="New key" error={validate()}/>
 	<TextField size="small" htmlSize={30} bind:value placeholder="New value" />
 	{#if validate().length === 0}
 	<div class="buttons">

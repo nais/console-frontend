@@ -141,15 +141,16 @@
 
 							<TrExpander>
 								<div slot="row-content">
-									<div>
-										{secret.name}
+									<span>
+
+										<span>{secret.name}</span>
 										<Tooltip content="Copy yaml to clipboard">
 											<CopyButton copyText={`spec:
   envFrom:
     - secret: ${secret.name}`
     }></CopyButton>
 										</Tooltip>
-									</div>
+									</span>
 									<Tooltip content="Delete secret from environment" arrow={false}>
 										<Button
 											class="delete-secret"
@@ -197,7 +198,7 @@
 										</div>
 										<div class="secrets-edit-buttons">
 											{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
-												<Tooltip content="Save changes" arrow={false}>
+												<Tooltip content="Persists changes" arrow={false}>
 													<Button
 														variant="primary"
 														size="small"
@@ -222,7 +223,7 @@
 														}
 													}}
 													>
-														Save
+														Confirm
 													</Button>
 												</Tooltip>
 												<Tooltip content="Discard all changes" arrow={false}>
@@ -295,6 +296,14 @@
         display: flex;
         justify-content: space-between;
     }
+
+    div[slot="row-content"] > span{
+        display: flex;
+    }
+    div[slot="row-content"] > span > span{
+        align-self: center;
+    }
+
 
     div[slot="expander-content"] {
         display: flex;
