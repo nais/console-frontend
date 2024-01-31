@@ -32,10 +32,13 @@
 			return 'Key too long'
 		}
 
-		if (/^[-._a-zA-Z0-9]+$/.test(key) === false) {
-			return 'Only alphanumeric, \'-\', \'_\' or \'.\''
+		if (/^[_a-zA-Z0-9]+$/.test(key) === false) {
+			return 'Only letters, numbers, or _'
 		}
 
+		if (/^[a-zA-Z_]+/.test(key) === false) {
+			return 'Must start with a letter or _'
+		}
 		return '';
 	};
 

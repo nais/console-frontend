@@ -204,8 +204,6 @@
 														size="small"
 														on:click={ async () => {
 														if (update) {
-															// TODO:
-															//  - adding a new KV and undoing should remove the KV from the list right away?
 															let mutation = changes.reduce(mergeChanges, update);
 
 															let data = mutation
