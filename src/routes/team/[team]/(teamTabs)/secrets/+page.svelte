@@ -1,14 +1,11 @@
 <script lang="ts">
 	/**
-	 * TODOS:
+	 * TODO:
 	 * - Refactor data model - we don't need to deepcopy(??????)
 	 * - Push fetching down to the leaves;
 	 *    - Initial fetch should only list envs and secret names per env (no data)
-	 *    - Data is fetched per secret when the expander is opened
-	 * - Refactor away the i,j,k madness, replace it with manipulating objects by ID
-	 * - Error handling: display error messages from the server
-	 * - Cancel and Add secret closes the expander because we have a top level loading state check that
-	 *   shows the loader component. It would be nice to disambiguate on refetch/initialfetch
+	 *    - Data is fetched per secret when the expander is opened etc
+	 *    	Separate Queries for AddKv, DeleteKv etc. operations per component. This would simplify things, probably
 	 */
 
 	import Card from '$lib/Card.svelte';
@@ -52,7 +49,6 @@
 			return;
 		}
 
-		// TOdo: I cant even, surely we can avoid a deepcopy here by mappy-reducy
 		update = JSON.parse(JSON.stringify(secret));
 	};
 
