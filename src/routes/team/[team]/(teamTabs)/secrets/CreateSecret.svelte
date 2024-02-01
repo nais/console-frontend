@@ -28,7 +28,7 @@
 		}
 	`);
 
-	const submit = async () => {
+	const create = async () => {
 		await createSecret.mutate({
 			name: name,
 			team: team,
@@ -77,7 +77,7 @@
 <Modal bind:open width="small">
 	<svelte:fragment slot="header">
 		<Heading>Create new secret</Heading>
-		<p>The secret will be created in <i>{env}</i></p>
+		<p>The secret will be created in <b>{env}</b></p>
 	</svelte:fragment>
 	<div>
 		<TextField size="small" htmlSize={30} bind:value={name} error={validationError()}>
@@ -89,7 +89,7 @@
 	</div>
 	<svelte:fragment slot="footer">
 		{#if validationError().length === 0}
-			<Button variant="primary" size="small" on:click={submit}>
+			<Button variant="primary" size="small" on:click={create}>
 				Create
 		  </Button>
 		{/if}
