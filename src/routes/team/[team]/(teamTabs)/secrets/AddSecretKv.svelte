@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Alert, Button, TextField, Tooltip } from '@nais/ds-svelte-community';
-	import type { operation } from './state-machinery';
+	import { Button, TextField, Tooltip } from '@nais/ds-svelte-community';
+	import { includesOperation, type operation } from './state-machinery';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 
 	export let env: string;
@@ -19,21 +19,21 @@
 		}
 	};
 
-	$: validate = () => {
+	$: validationError = () => {
 		if (!key) {
 			return ''
 		}
 
-		if (existingKeys.includes(key)) {
-			return 'Duplicate key'
+		if (existingKeys.includes(key) || includesOperation(env, secret, key, changes, 'AddKv')) {
+			return 'Key already exists'
 		}
 
 		if (key.length > 253) {
-			return 'Key too long'
+			return 'Must be less than 253 characters'
 		}
 
 		if (/^[_a-zA-Z0-9]+$/.test(key) === false) {
-			return 'Only letters, numbers, or _'
+			return 'Can only contain letters, numbers, or _'
 		}
 
 		if (/^[a-zA-Z_]+/.test(key) === false) {
@@ -47,9 +47,9 @@
 </script>
 
 <div class="entry">
-	<TextField size="small" htmlSize={35} bind:value={key} placeholder="New key" error={validate()}/>
+	<TextField size="small" htmlSize={30} bind:value={key} placeholder="New key" error={validationError()}/>
 	<TextField size="small" htmlSize={30} bind:value placeholder="New value" />
-	{#if validate().length === 0}
+	{#if validationError().length === 0}
 	<div class="buttons">
 		<Tooltip content="Add new key-value pair" arrow={false}>
 			<Button variant="tertiary" size="small" on:click={addKv}>
@@ -68,11 +68,11 @@
     }
 
     .entry > :global(*) {
-        margin: 16px 0 0 16px;
+        margin: 16px 0 0 17px;
     }
 
     .buttons {
-        margin-left: 14px;
+        margin-left: 13px;
 				margin-top: 24px;
     }
 </style>

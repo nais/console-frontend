@@ -31,7 +31,7 @@
 	import AddSecretKv from './AddSecretKv.svelte';
 	import SecretKv from './SecretKv.svelte';
 	import TrExpander from './TrExpander.svelte';
-	import { filterLocalAddKvs, mergeChanges, type operation, type updateState } from './state-machinery';
+	import { filterAddKvs, mergeChanges, type operation, type updateState } from './state-machinery';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
@@ -190,7 +190,7 @@
 											{#each secret.data as data (data.key)}
 												<SecretKv {env} secret={secret.name} key={data.key} value={data.value} bind:changes />
 											{/each}
-											{#each filterLocalAddKvs(env, secret.name, changes) as change (change.data.key)}
+											{#each filterAddKvs(env, secret.name, changes) as change (change.data.key)}
 												<SecretKv {env} secret={change.data.secret} key={change.data.key} value={change.data.value}
 																	bind:changes />
 											{/each}
@@ -199,7 +199,7 @@
 										</div>
 										<div class="secrets-edit-buttons">
 											{#if changes.filter((c) => c.data.env + c.data.secret === env + secret.name).length > 0}
-												<Tooltip content="Persists changes" arrow={false}>
+												<Tooltip content="Persist all changes" arrow={false}>
 													<Button
 														variant="primary"
 														size="small"

@@ -142,8 +142,20 @@ export function mergeChanges(update: updateState, curr: operation): updateState 
 	}
 }
 
-export function filterLocalAddKvs(env: string, secretName: string, changes: operation[]): AddKv[] {
-	return changes
+export function filterAddKvs(env: string, secretName: string, ops: operation[]): AddKv[] {
+	return ops
 		.filter(op => op.type === 'AddKv' && op.data.env === env && op.data.secret === secretName)
 		.map((c) => c as AddKv);
+}
+
+function filterByKey(env: string, secretName: string, key: string, ops: operation[]): operation[] {
+	return ops.filter(c => c.data.env === env && c.data.secret === secretName && c.data.key === key);
+}
+
+export function lastOperation(env: string, secretName: string, key: string, ops: operation[]): operation | undefined {
+	return filterByKey(env, secretName, key, ops).at(-1);
+}
+
+export function includesOperation(env: string, secretName: string, key: string, ops: operation[], type: string): boolean {
+	return filterByKey(env, secretName, key, ops).some(c => c.type === type);
 }
