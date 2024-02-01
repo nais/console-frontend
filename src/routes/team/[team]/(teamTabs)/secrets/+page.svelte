@@ -177,7 +177,11 @@
 										<svelte:fragment slot="header">
 											<Heading>Delete secret</Heading>
 										</svelte:fragment>
-										Are you sure you want to delete the secret <b>{secret.name}</b> from <b>{env}</b>?
+										<p>
+											This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
+										</p>
+
+										Are you sure you want to delete this secret?
 									</Confirm>
 								</div>
 								<div slot="expander-content">
