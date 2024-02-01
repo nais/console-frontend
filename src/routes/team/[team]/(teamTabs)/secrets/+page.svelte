@@ -122,6 +122,7 @@
 
 					<CreateSecret
 						refetch={() => Secrets.fetch({})}
+						existingNames={secrets.secrets.map((s) => s.name)}
 						bind:open={createSecretOpen[env]}
 						bind:team
 						env={env}

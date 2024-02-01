@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { graphql, type SecretTupleInput } from '$houdini';
 	import {
-		Alert,
-		Button,
+		Alert, Button,
 		Heading,
 		Modal,
 		TextField
@@ -12,6 +11,7 @@
 	export let team: string;
 	export let env: string;
 	export let refetch: () => void;
+	export let existingNames: string[];
 
 	let name: string;
 	let data: SecretTupleInput[] = [];
@@ -44,22 +44,55 @@
 		}
 	};
 
+	$: validationError = () => {
+		if (!name) {
+			return 'Required'
+		}
+
+		if (existingNames.includes(name)) {
+			return 'Name already exists'
+		}
+
+		if (name.length > 253) {
+			return 'Must be less than 253 characters'
+		}
+
+		if (/[A-Z]+/.test(name) === true) {
+			return 'Must be lowercase'
+		}
+
+		if (/^[a-z0-9]/.test(name) === false) {
+			return 'Must start with a letter or number'
+		}
+
+		if (/^[-a-z0-9]+$/.test(name) === false) {
+			return 'Can only contain letters, numbers, or -'
+		}
+
+		return '';
+	};
+
 </script>
 
 <Modal bind:open width="small">
 	<svelte:fragment slot="header">
-		<Heading>Create new secret in <b>{env}</b></Heading>
+		<Heading>Create new secret</Heading>
+		<p>The secret will be created in <i>{env}</i></p>
 	</svelte:fragment>
 	<div>
-		<TextField size="small" htmlSize={30} bind:value={name} placeholder="New secret name" />
+		<TextField size="small" htmlSize={30} bind:value={name} error={validationError()}>
+			 <svelte:fragment slot="label">Name</svelte:fragment>
+		</TextField>
 		{#if $createSecret.errors }
-			<Alert variant="error">{$createSecret.errors[0].message}</Alert>
+			 <Alert variant="error">{$createSecret.errors[0].message}</Alert>
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={submit}>
-			Create
-		</Button>
+		{#if validationError().length === 0}
+			<Button variant="primary" size="small" on:click={submit}>
+				Create
+		  </Button>
+		{/if}
 	</svelte:fragment>
 </Modal>
 
