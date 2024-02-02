@@ -20,7 +20,7 @@
 		}
 	};
 
-	$: validationError = () => {
+	const validationError = () => {
 		if (!key) {
 			return '';
 		}
