@@ -40,7 +40,7 @@
 		update = JSON.parse(JSON.stringify(secret.data));
 	};
 
-	$: hasChanges = () => {
+	const hasChanges = () => {
 		return changes.length > 0;
 	};
 	let discardChanges = () => {
