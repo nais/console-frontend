@@ -68,18 +68,21 @@ test('delete exactly one kv', () => {
 });
 
 test('deleted kv followed by undo deleted kv is a no-op', () => {
-	const ops: operation[] = [{
-		type: 'DeleteKv',
-		data: {
-			key: 'some-key'
+	const ops: operation[] = [
+		{
+			type: 'DeleteKv',
+			data: {
+				key: 'some-key'
+			}
+		},
+		{
+			type: 'UndoDeleteKv',
+			data: {
+				key: 'some-key',
+				value: 'some-value'
+			}
 		}
-	}, {
-		type: 'UndoDeleteKv',
-		data: {
-			key: 'some-key',
-			value: 'some-value'
-		}
-	}];
+	];
 
 	expect(ops.reduce(mergeChanges, initialState)).toEqual(initialState);
 });

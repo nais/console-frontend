@@ -79,15 +79,15 @@
 {/if}
 
 <style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        column-gap: 1rem;
-        row-gap: 1rem;
-    }
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
 
-    h4 {
-        font-weight: 400;
-        margin-bottom: 0.5rem;
-    }
+	h4 {
+		font-weight: 400;
+		margin-bottom: 0.5rem;
+	}
 </style>

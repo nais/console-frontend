@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { graphql, type SecretTupleInput } from '$houdini';
-	import {
-		Alert, Button,
-		Heading,
-		Modal,
-		TextField
-	} from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 
 	export let open: boolean;
 	export let team: string;
@@ -17,7 +12,12 @@
 	let data: SecretTupleInput[] = [];
 
 	const createSecret = graphql(`
-		mutation createSecret($name: String!, $team: Slug!, $env: String!, $data: [SecretTupleInput!]!) {
+		mutation createSecret(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$data: [SecretTupleInput!]!
+		) {
 			createSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
 				data {
@@ -36,42 +36,40 @@
 			data: data
 		});
 		if ($createSecret.errors) {
-			open = true
-
+			open = true;
 		} else {
-			open = false
-			refetch()
+			open = false;
+			refetch();
 		}
 	};
 
 	$: validationError = () => {
 		if (!name) {
-			return ''
+			return '';
 		}
 
 		if (existingNames.includes(name)) {
-			return 'Name already exists'
+			return 'Name already exists';
 		}
 
 		if (name.length > 253) {
-			return 'Must be less than 253 characters'
+			return 'Must be less than 253 characters';
 		}
 
 		if (/[A-Z]+/.test(name) === true) {
-			return 'Must be lowercase'
+			return 'Must be lowercase';
 		}
 
 		if (/^[a-z0-9]/.test(name) === false) {
-			return 'Must start with a letter or number'
+			return 'Must start with a letter or number';
 		}
 
 		if (/^[-a-z0-9]+$/.test(name) === false) {
-			return 'Can only contain letters, numbers, or -'
+			return 'Can only contain letters, numbers, or -';
 		}
 
 		return '';
 	};
-
 </script>
 
 <Modal bind:open width="small">
@@ -81,27 +79,25 @@
 	</svelte:fragment>
 	<div>
 		<TextField size="small" htmlSize={30} bind:value={name} error={validationError()}>
-			 <svelte:fragment slot="label">Name</svelte:fragment>
+			<svelte:fragment slot="label">Name</svelte:fragment>
 		</TextField>
-		{#if $createSecret.errors }
-			 <Alert variant="error">{$createSecret.errors[0].message}</Alert>
+		{#if $createSecret.errors}
+			<Alert variant="error">{$createSecret.errors[0].message}</Alert>
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
 		{#if validationError().length === 0 && name.length > 0}
-			<Button variant="primary" size="small" on:click={create}>
-				Create
-		  </Button>
+			<Button variant="primary" size="small" on:click={create}>Create</Button>
 		{/if}
 	</svelte:fragment>
 </Modal>
 
 <style>
 	div {
-			padding: 16px;
+		padding: 16px;
 	}
 
 	div > :global(*) {
-			margin-bottom: 32px;
+		margin-bottom: 32px;
 	}
 </style>

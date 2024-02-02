@@ -4,19 +4,17 @@
 		Alert,
 		Button,
 		CopyButton,
-		Heading, HelpText,
+		Heading,
+		HelpText,
 		Loader,
-		Table, Tbody, Tooltip
+		Table,
+		Tbody,
+		Tooltip
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Card from '$lib/Card.svelte';
 	import { graphql, type Secret$result } from '$houdini';
-	import {
-		filterAddKvs,
-		mergeChanges,
-		type operation,
-		type updateState
-	} from './state-machinery';
+	import { filterAddKvs, mergeChanges, type operation, type updateState } from './state-machinery';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import SecretKv from './SecretKv.svelte';
 	import AddSecretKv from './AddSecretKv.svelte';
@@ -69,8 +67,8 @@
 	`);
 	let updateSecret = async () => {
 		if (update) {
-			let data = changes.reduce(mergeChanges, update)
-			console.log(data)
+			let data = changes.reduce(mergeChanges, update);
+			console.log(data);
 
 			await updateSecretMutation.mutate({
 				data: data,
@@ -136,15 +134,23 @@
 	<div class="grid">
 		<Card columns={8} rows={2}>
 			<div class="header">
-				<h4>
-					Secret
-				</h4>
+				<h4>Secret</h4>
 				<Tooltip content="Delete secret from environment" arrow={false}>
-					<Button class="delete-secret" variant="danger" size="small" on:click={toggleDeleteSecretOpen}>
+					<Button
+						class="delete-secret"
+						variant="danger"
+						size="small"
+						on:click={toggleDeleteSecretOpen}
+					>
 						Delete
 					</Button>
 				</Tooltip>
-				<Confirm confirmText="Delete" variant="danger" bind:open={deleteSecretOpen} on:confirm={deleteSecret}>
+				<Confirm
+					confirmText="Delete"
+					variant="danger"
+					bind:open={deleteSecretOpen}
+					on:confirm={deleteSecret}
+				>
 					<svelte:fragment slot="header">
 						<Heading>Delete secret</Heading>
 					</svelte:fragment>
@@ -157,34 +163,30 @@
 			</div>
 			<Table size="small" style="margin-top: 2rem">
 				<Tbody>
-					 <div class="secret-content">
-						 <div class="secret-edit">
-								{#each s.data as data (data.key)}
-									<SecretKv key={data.key} value={data.value} bind:changes/>
-								{/each}
-								{#each filterAddKvs(changes) as change (change.data.key)}
-									<SecretKv key={change.data.key} value={change.data.value} bind:changes/>
-								{/each}
-								<AddSecretKv bind:changes existingKeys={s.data.map((d) => d.key)}/>
-						 </div>
-						 <div class="secret-edit-buttons">
-								{#if hasChanges()}
-									<Tooltip content="Persist all changes" arrow={false}>
-										<Button variant="primary" size="small" on:click={updateSecret}>
-											Confirm
-										</Button>
-									</Tooltip>
-									<Tooltip content="Discard all changes" arrow={false}>
-										<Button variant="secondary" size="small" on:click={discardChanges}>
-											Cancel
-										</Button>
-									</Tooltip>
-								{/if}
-						 </div>
-						 {#if $updateSecretMutation.errors}
-								<Alert variant="error">{$updateSecretMutation.errors[0]?.message}</Alert>
-						 {/if}
-					 </div>
+					<div class="secret-content">
+						<div class="secret-edit">
+							{#each s.data as data (data.key)}
+								<SecretKv key={data.key} value={data.value} bind:changes />
+							{/each}
+							{#each filterAddKvs(changes) as change (change.data.key)}
+								<SecretKv key={change.data.key} value={change.data.value} bind:changes />
+							{/each}
+							<AddSecretKv bind:changes existingKeys={s.data.map((d) => d.key)} />
+						</div>
+						<div class="secret-edit-buttons">
+							{#if hasChanges()}
+								<Tooltip content="Persist all changes" arrow={false}>
+									<Button variant="primary" size="small" on:click={updateSecret}>Confirm</Button>
+								</Tooltip>
+								<Tooltip content="Discard all changes" arrow={false}>
+									<Button variant="secondary" size="small" on:click={discardChanges}>Cancel</Button>
+								</Tooltip>
+							{/if}
+						</div>
+						{#if $updateSecretMutation.errors}
+							<Alert variant="error">{$updateSecretMutation.errors[0]?.message}</Alert>
+						{/if}
+					</div>
 				</Tbody>
 			</Table>
 		</Card>
@@ -193,7 +195,8 @@
 			<h4>
 				Used by
 				<HelpText title="List of applications using this secret" placement="right">
-					The list below shows all applications that have a reference to this secret in their manifest.
+					The list below shows all applications that have a reference to this secret in their
+					manifest.
 				</HelpText>
 			</h4>
 			{#if s.apps.length}
@@ -211,7 +214,8 @@
 			<h4>
 				Use secret in application
 				<HelpText title="How to use this secret in an application" placement="right">
-					To use this secret in your application, you will need to reference it in your application's manifest.<br />
+					To use this secret in your application, you will need to reference it in your
+					application's manifest.<br />
 					<br />
 					The manifest below loads the secret into your application as environment variables.
 				</HelpText>
@@ -222,58 +226,59 @@
 					text="Copy manifest"
 					activeText="Manifest copied"
 					variant="action"
-					copyText={applicationManifest}></CopyButton>
+					copyText={applicationManifest}
+				></CopyButton>
 			</Tooltip>
 		</Card>
 	</div>
 {/if}
 
 <style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        column-gap: 1rem;
-        row-gap: 1rem;
-    }
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
 
-    h4 {
-        display: flex;
-        font-weight: 400;
-        margin-bottom: 0.5rem;
-        gap: 0.5rem;
-    }
+	h4 {
+		display: flex;
+		font-weight: 400;
+		margin-bottom: 0.5rem;
+		gap: 0.5rem;
+	}
 
-    ul {
-        list-style: none;
-        margin: 1rem 0 1rem 0;
-        padding: 0 1rem 0 1rem;
-    }
+	ul {
+		list-style: none;
+		margin: 1rem 0 1rem 0;
+		padding: 0 1rem 0 1rem;
+	}
 
-    .manifest {
-        display: block;
-        padding: 1rem 0;
-        word-break: break-word;
-        white-space: pre-wrap;
-        margin: 0 1rem;
-    }
+	.manifest {
+		display: block;
+		padding: 1rem 0;
+		word-break: break-word;
+		white-space: pre-wrap;
+		margin: 0 1rem;
+	}
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
 
-		.secret-content {
-				padding: 8px;
-		}
+	.secret-content {
+		padding: 8px;
+	}
 
-    .secret-edit-buttons {
-        margin: 16px 0 0 16px;
-        padding: 32px 0;
-    }
+	.secret-edit-buttons {
+		margin: 16px 0 0 16px;
+		padding: 32px 0;
+	}
 
-    .secret-edit-buttons > :global(*) {
-        margin-right: 8px;
-    }
+	.secret-edit-buttons > :global(*) {
+		margin-right: 8px;
+	}
 </style>

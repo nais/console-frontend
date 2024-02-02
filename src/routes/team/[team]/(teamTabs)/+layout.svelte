@@ -54,7 +54,6 @@
 <svelte:head><title>{team} - Console</title></svelte:head>
 
 <div class="header">
-
 	<h2>{team}</h2>
 </div>
 <Tabs>
@@ -64,9 +63,10 @@
 	{#if $TeamRoles.data}
 		{#if $TeamRoles.data.team !== PendingValue && ($TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsOwner)}
 			<Tab
-				href={replacer('/team/[team]/(teamTabs)/secrets', { team }) }
+				href={replacer('/team/[team]/(teamTabs)/secrets', { team })}
 				active={currentRoute == '/team/[team]/(teamTabs)/secrets'}
-				title="Secrets" />
+				title="Secrets"
+			/>
 			<Tab
 				href={replacer('/team/[team]/(teamTabs)/settings', { team })}
 				active={currentRoute == '/team/[team]/(teamTabs)/settings'}
@@ -80,14 +80,14 @@
 </div>
 
 <style>
-    .container {
-        margin: auto;
-        min-width: 1000px;
-        max-width: 1432px;
-    }
+	.container {
+		margin: auto;
+		min-width: 1000px;
+		max-width: 1432px;
+	}
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-    }
+	.header {
+		display: flex;
+		justify-content: space-between;
+	}
 </style>

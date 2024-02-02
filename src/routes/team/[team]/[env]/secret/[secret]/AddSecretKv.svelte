@@ -8,10 +8,13 @@
 
 	let addKv = () => {
 		if (key && value) {
-			changes = [...changes, {
-				type: 'AddKv',
-				data: { key, value }
-			}];
+			changes = [
+				...changes,
+				{
+					type: 'AddKv',
+					data: { key, value }
+				}
+			];
 			key = undefined;
 			value = undefined;
 		}
@@ -19,23 +22,23 @@
 
 	$: validationError = () => {
 		if (!key) {
-			return ''
+			return '';
 		}
 
 		if (existingKeys.includes(key) || includesOperation(key, changes, 'AddKv')) {
-			return 'Key already exists'
+			return 'Key already exists';
 		}
 
 		if (key.length > 253) {
-			return 'Must be less than 253 characters'
+			return 'Must be less than 253 characters';
 		}
 
 		if (/^[_a-zA-Z0-9]+$/.test(key) === false) {
-			return 'Can only contain letters, numbers, or _'
+			return 'Can only contain letters, numbers, or _';
 		}
 
 		if (/^[a-zA-Z_]+/.test(key) === false) {
-			return 'Must start with a letter or _'
+			return 'Must start with a letter or _';
 		}
 		return '';
 	};
@@ -45,32 +48,38 @@
 </script>
 
 <div class="entry">
-	<TextField size="small" htmlSize={30} bind:value={key} placeholder="New key" error={validationError()}/>
+	<TextField
+		size="small"
+		htmlSize={30}
+		bind:value={key}
+		placeholder="New key"
+		error={validationError()}
+	/>
 	<TextField size="small" htmlSize={30} bind:value placeholder="New value" />
 	{#if validationError().length === 0}
-	<div class="buttons">
-		<Tooltip content="Add new key-value pair" arrow={false}>
-			<Button variant="tertiary" size="small" on:click={addKv}>
-				 <svelte:fragment slot="icon-left"><PlusCircleFillIcon /></svelte:fragment>
-			</Button>
-		</Tooltip>
-	</div>
+		<div class="buttons">
+			<Tooltip content="Add new key-value pair" arrow={false}>
+				<Button variant="tertiary" size="small" on:click={addKv}>
+					<svelte:fragment slot="icon-left"><PlusCircleFillIcon /></svelte:fragment>
+				</Button>
+			</Tooltip>
+		</div>
 	{/if}
 </div>
 
 <style>
-		.entry {
-        display: flex;
-				height: 68px;
-				align-items: start;
-    }
+	.entry {
+		display: flex;
+		height: 68px;
+		align-items: start;
+	}
 
-    .entry > :global(*) {
-        margin: 16px 0 0 17px;
-    }
+	.entry > :global(*) {
+		margin: 16px 0 0 17px;
+	}
 
-    .buttons {
-        margin-left: 13px;
-				margin-top: 24px;
-    }
+	.buttons {
+		margin-left: 13px;
+		margin-top: 24px;
+	}
 </style>

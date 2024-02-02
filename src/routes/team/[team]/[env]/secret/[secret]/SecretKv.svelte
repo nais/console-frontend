@@ -1,31 +1,45 @@
 <script lang="ts">
 	import { TextField, Button, Tooltip, Tag } from '@nais/ds-svelte-community';
 	import { includesOperation, lastOperation, type operation } from './state-machinery';
-	import { ArrowUndoIcon, EyeIcon, EyeObfuscatedIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowUndoIcon,
+		EyeIcon,
+		EyeObfuscatedIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	export let key: string;
 	export let value: string;
 	export let changes: operation[];
 
 	let deleteKv = () => {
-		changes = [...changes, {
-			type: 'DeleteKv',
-			data: { key }
-		}];
+		changes = [
+			...changes,
+			{
+				type: 'DeleteKv',
+				data: { key }
+			}
+		];
 	};
 
 	let undoDeleteKv = () => {
-		changes = [...changes, {
-			type: 'UndoDeleteKv',
-			data: { key, value }
-		}];
+		changes = [
+			...changes,
+			{
+				type: 'UndoDeleteKv',
+				data: { key, value }
+			}
+		];
 	};
 
 	let updateKvValue = () => {
-		changes = [...changes, {
-			type: 'UpdateValue',
-			data: { key, value }
-		}];
+		changes = [
+			...changes,
+			{
+				type: 'UpdateValue',
+				data: { key, value }
+			}
+		];
 	};
 
 	let toggleShowValue = () => {
@@ -36,10 +50,10 @@
 
 	$: edited = includesOperation(key, changes, 'UpdateValue');
 	$: deleted = lastOperation(key, changes)?.type === 'DeleteKv';
-	$: added = lastOperation(key, changes)?.type === 'AddKv' || (
-		includesOperation(key, changes, 'AddKv') &&
-		lastOperation(key, changes)?.type === 'UndoDeleteKv'
-	);
+	$: added =
+		lastOperation(key, changes)?.type === 'AddKv' ||
+		(includesOperation(key, changes, 'AddKv') &&
+			lastOperation(key, changes)?.type === 'UndoDeleteKv');
 </script>
 
 <div class="entry">
@@ -65,7 +79,14 @@
 			</svelte:fragment>
 		</Button>
 	{:else}
-		<TextField hideLabel size="small" htmlSize={30} value="**********" readonly on:focus={toggleShowValue} />
+		<TextField
+			hideLabel
+			size="small"
+			htmlSize={30}
+			value="**********"
+			readonly
+			on:focus={toggleShowValue}
+		/>
 		<Button size="xsmall" variant="tertiary" on:click={toggleShowValue}>
 			<svelte:fragment slot="icon-left">
 				<Tooltip content="Show secret value" arrow={false}>
@@ -105,27 +126,27 @@
 </div>
 
 <style>
-    h4 {
-        font-weight: var(--a-font-weight-bold);
-        display: block;
-        width: 17rem;
-        word-wrap: break-word;
-        font-size: var(--a-font-size-medium);
-        padding: 0 var(--a-spacing-2);
-        min-height: 2rem;
-        line-height: 2rem;
-    }
+	h4 {
+		font-weight: var(--a-font-weight-bold);
+		display: block;
+		width: 17rem;
+		word-wrap: break-word;
+		font-size: var(--a-font-size-medium);
+		padding: 0 var(--a-spacing-2);
+		min-height: 2rem;
+		line-height: 2rem;
+	}
 
-    .entry {
-        display: flex;
-    }
+	.entry {
+		display: flex;
+	}
 
-    .entry > :global(*) {
-        margin: 16px 0 0 16px;
-    }
+	.entry > :global(*) {
+		margin: 16px 0 0 16px;
+	}
 
-    .status {
-        display: flex;
-        min-width: 70px;
-    }
+	.status {
+		display: flex;
+		min-width: 70px;
+	}
 </style>

@@ -18,7 +18,7 @@
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 	$: secrets = $data.secrets;
-	$: count = secrets.length
+	$: count = secrets.length;
 </script>
 
 <div>
@@ -33,12 +33,12 @@
 			{/each}
 		</ul>
 	{:else}
-	<p>No secrets</p>
+		<p>No secrets</p>
 	{/if}
 </div>
 
 <style>
-    ul {
-        list-style: none;
-    }
+	ul {
+		list-style: none;
+	}
 </style>
