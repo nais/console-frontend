@@ -8,7 +8,7 @@
 	export let refetch: () => void;
 	export let existingNames: string[];
 
-	$: name = '';
+	let name = '';
 	let data: SecretTupleInput[] = [];
 
 	const createSecret = graphql(`
