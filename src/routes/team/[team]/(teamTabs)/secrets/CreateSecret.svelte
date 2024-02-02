@@ -43,7 +43,7 @@
 		}
 	};
 
-	$: validationError = () => {
+	const validationError = () => {
 		if (!name) {
 			return '';
 		}
