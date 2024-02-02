@@ -114,7 +114,6 @@
 					<h3>{env}</h3>
 					<Tooltip content="Create new secret in environment" arrow={false}>
 						<Button
-							class="add-secret"
 							variant="tertiary"
 							size="small"
 							on:click={() => openCreateSecretModal(env)}
@@ -190,10 +189,6 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-
-	:global(.add-secret) {
-		height: 2.5rem;
 	}
 
 	.heading {
