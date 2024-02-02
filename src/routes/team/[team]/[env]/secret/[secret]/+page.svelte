@@ -27,8 +27,7 @@
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
-	let changes: operation[];
-	$: changes = [];
+	let changes: operation[] = [];
 
 	let update: updateState = [];
 
