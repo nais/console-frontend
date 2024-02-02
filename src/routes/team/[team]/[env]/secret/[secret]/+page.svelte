@@ -82,7 +82,7 @@
 	};
 
 	let deleteSecretMutation = graphql(`
-		mutation deleteSecretTODO($name: String!, $team: Slug!, $env: String!) {
+		mutation deleteSecretForSecret($name: String!, $team: Slug!, $env: String!) {
 			deleteSecret(name: $name, team: $team, env: $env)
 		}
 	`);

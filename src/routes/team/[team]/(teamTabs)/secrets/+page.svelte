@@ -1,13 +1,4 @@
 <script lang="ts">
-	/**
-	 * TODO:
-	 * - Refactor data model - we don't need to deepcopy(??????)
-	 * - Push fetching down to the leaves;
-	 *    - Initial fetch should only list envs and secret names per env (no data)
-	 *    - Data is fetched per secret when the expander is opened etc
-	 *    	Separate Queries for AddKv, DeleteKv etc. operations per component. This would simplify things, probably
-	 */
-
 	import Card from '$lib/Card.svelte';
 	import {
 		Table,
@@ -113,11 +104,7 @@
 				<div class="heading">
 					<h3>{env}</h3>
 					<Tooltip content="Create new secret in environment" arrow={false}>
-						<Button
-							variant="tertiary"
-							size="small"
-							on:click={() => openCreateSecretModal(env)}
-						>
+						<Button variant="tertiary" size="small" on:click={() => openCreateSecretModal(env)}>
 							Create Secret
 							<svelte:fragment slot="icon-left">
 								<PlusIcon />
