@@ -3,8 +3,6 @@
 	import { includesOperation, type operation } from './state-machinery';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 
-	export let env: string;
-	export let secret: string;
 	export let changes: operation[];
 	export let existingKeys: string[];
 
@@ -12,7 +10,7 @@
 		if (key && value) {
 			changes = [...changes, {
 				type: 'AddKv',
-				data: { env, key, value, secret }
+				data: { key, value }
 			}];
 			key = undefined;
 			value = undefined;
@@ -24,7 +22,7 @@
 			return ''
 		}
 
-		if (existingKeys.includes(key) || includesOperation(env, secret, key, changes, 'AddKv')) {
+		if (existingKeys.includes(key) || includesOperation(key, changes, 'AddKv')) {
 			return 'Key already exists'
 		}
 

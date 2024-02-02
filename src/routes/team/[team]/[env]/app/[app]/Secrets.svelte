@@ -2,9 +2,9 @@
 	import type { AppSecrets } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import { Skeleton } from '@nais/ds-svelte-community';
+	import { page } from '$app/stores';
 
 	export let app: AppSecrets;
-	export let team: string;
 
 	$: data = fragment(
 		app,
@@ -15,6 +15,8 @@
 		`)
 	);
 
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 	$: secrets = $data.secrets;
 	$: count = secrets.length
 </script>
@@ -23,7 +25,11 @@
 	{#if count > 0}
 		<ul>
 			{#each secrets as secret}
-				<li><a href="/team/{team}/secrets">{secret}</a></li>
+				{#if secret === PendingValue}
+					<Skeleton variant="text" />
+				{:else}
+					<li><a href="/team/{team}/{env}/secret/{secret}">{secret}</a></li>
+				{/if}
 			{/each}
 		</ul>
 	{:else}

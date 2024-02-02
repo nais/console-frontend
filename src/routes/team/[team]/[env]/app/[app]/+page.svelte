@@ -73,7 +73,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Secrets</h4>
-			<Secrets app={$App.data.app} {team} />
+			<Secrets app={$App.data.app} />
 		</Card>
 	</div>
 {/if}

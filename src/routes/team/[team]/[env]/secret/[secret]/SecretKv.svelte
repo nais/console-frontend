@@ -5,28 +5,26 @@
 
 	export let key: string;
 	export let value: string;
-	export let env: string;
-	export let secret: string;
 	export let changes: operation[];
 
 	let deleteKv = () => {
 		changes = [...changes, {
 			type: 'DeleteKv',
-			data: { env, key, secret }
+			data: { key }
 		}];
 	};
 
 	let undoDeleteKv = () => {
 		changes = [...changes, {
 			type: 'UndoDeleteKv',
-			data: { env, key, value, secret }
+			data: { key, value }
 		}];
 	};
 
 	let updateKvValue = () => {
 		changes = [...changes, {
 			type: 'UpdateValue',
-			data: { env, key, value, secret }
+			data: { key, value }
 		}];
 	};
 
@@ -36,11 +34,11 @@
 
 	let showValue = false;
 
-	$: edited = includesOperation(env, secret, key, changes, 'UpdateValue');
-	$: deleted = lastOperation(env, secret, key, changes)?.type === 'DeleteKv';
-	$: added = lastOperation(env, secret, key, changes)?.type === 'AddKv' || (
-		includesOperation(env, secret, key, changes, 'AddKv') &&
-		lastOperation(env, secret, key, changes)?.type === 'UndoDeleteKv'
+	$: edited = includesOperation(key, changes, 'UpdateValue');
+	$: deleted = lastOperation(key, changes)?.type === 'DeleteKv';
+	$: added = lastOperation(key, changes)?.type === 'AddKv' || (
+		includesOperation(key, changes, 'AddKv') &&
+		lastOperation(key, changes)?.type === 'UndoDeleteKv'
 	);
 </script>
 

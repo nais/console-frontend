@@ -13,7 +13,7 @@
 	export let refetch: () => void;
 	export let existingNames: string[];
 
-	let name: string;
+	$: name = '';
 	let data: SecretTupleInput[] = [];
 
 	const createSecret = graphql(`
@@ -46,7 +46,7 @@
 
 	$: validationError = () => {
 		if (!name) {
-			return 'Required'
+			return ''
 		}
 
 		if (existingNames.includes(name)) {
@@ -88,7 +88,7 @@
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		{#if validationError().length === 0}
+		{#if validationError().length === 0 && name.length > 0}
 			<Button variant="primary" size="small" on:click={create}>
 				Create
 		  </Button>

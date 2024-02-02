@@ -18,8 +18,7 @@
 		Heading,
 		Alert,
 		Loader,
-		Tooltip,
-		CopyButton
+		Tooltip, Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -28,18 +27,20 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 
 	import CreateSecret from './CreateSecret.svelte';
-	import AddSecretKv from './AddSecretKv.svelte';
-	import SecretKv from './SecretKv.svelte';
-	import TrExpander from './TrExpander.svelte';
-	import { filterAddKvs, mergeChanges, type operation, type updateState } from './state-machinery';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
 	let team = $page.params.team;
 
-	let update: updateState = [];
-	let changes: operation[];
-	$: changes = [];
+	let update: |
+		{
+			env: {
+				name: string
+			},
+			secrets: {
+				name: string
+			}[]
+		}[] = [];
 
 	$: ({ Secrets } = data);
 	$: mkUpdate($Secrets.data?.secrets);
@@ -49,49 +50,6 @@
 		}
 
 		update = JSON.parse(JSON.stringify(secret));
-	};
-
-	$: hasChanges = (name: string, env: string) => {
-		return changes.filter((c) => c.data.env + c.data.secret === env + name).length > 0;
-	};
-	let discardChanges = (name: string, env: string) => {
-		changes = changes.filter((c) => c.data.env + c.data.secret !== env + name);
-		Secrets.fetch();
-	};
-
-	$: updateSecretMutation = graphql(`
-		mutation updateSecret(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$data: [SecretTupleInput!]!
-		) {
-			updateSecret(name: $name, team: $team, env: $env, data: $data) {
-				id
-				data {
-					key
-					value
-				}
-			}
-		}
-	`);
-	let updateSecret = async (name: string, env: string) => {
-		if (update) {
-			let mutation = changes.reduce(mergeChanges, update);
-
-			let data = mutation
-				.filter((m) => m.env.name === env)[0].secrets
-				.filter((s) => s.name === name)[0].data;
-
-			await updateSecretMutation.mutate({
-				name: name,
-				team: team,
-				env: env,
-				data: data
-			});
-
-			changes = changes.filter((c) => c.data.env + c.data.secret !== env + name);
-		}
 	};
 
 	let deleteSecretMutation = graphql(`
@@ -131,7 +89,11 @@
 </script>
 
 {#if $Secrets.errors}
-	{$Secrets.errors[0].message}
+	<Alert variant="error">
+		{#each $Secrets.errors as error}
+			{error.message}
+		{/each}
+	</Alert>
 {:else}
 	{#if $Secrets.fetching}
 		<Loader></Loader>
@@ -162,27 +124,19 @@
 
 					<Table size="small">
 						<Thead>
-						<Th style="width: 50px"></Th>
 						<Th>Name</Th>
 						</Thead>
 						<Tbody>
 						{#each secrets.secrets as secret}
-							<TrExpander>
-								<div slot="row-content">
-									<span>
-										<span>{secret.name}</span>
-										<!-- TODO: This needs more explanation for end users - What does this do? Why do I need it? -->
-										<Tooltip content="Copy yaml to clipboard">
-											<CopyButton copyText={`spec:
-  envFrom:
-    - secret: ${secret.name}`
-    }></CopyButton>
-										</Tooltip>
-									</span>
+							<Tr>
+								<div class="row-content">
+								<span>
+									<span><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></span>
+								</span>
 									<Tooltip content="Delete secret from environment" arrow={false}>
 										<Button
 											class="delete-secret"
-											variant="danger"
+											variant="tertiary"
 											size="small"
 											on:click={() => openDeleteSecretModal(env, secret.name)}
 										>
@@ -205,70 +159,7 @@
 										Are you sure you want to delete this secret?
 									</Confirm>
 								</div>
-								<div slot="expander-content">
-									<div>
-										<div class="secrets-edit">
-											{#each secret.data as data (data.key)}
-												<SecretKv
-													{env}
-													secret={secret.name}
-													key={data.key}
-													value={data.value}
-													bind:changes
-												/>
-											{/each}
-											{#each filterAddKvs(env, secret.name, changes) as change (change.data.key)}
-												<SecretKv
-													{env}
-													secret={change.data.secret}
-													key={change.data.key}
-													value={change.data.value}
-													bind:changes
-												/>
-											{/each}
-											<AddSecretKv
-												{env}
-												secret={secret.name}
-												bind:changes
-												existingKeys={secret.data.map((d) => d.key)}
-											/>
-										</div>
-										<div class="secrets-edit-buttons">
-											{#if hasChanges(secret.name, env)}
-												<Tooltip content="Persist all changes" arrow={false}>
-													<Button
-														variant="primary"
-														size="small"
-														on:click={async () => await updateSecret(secret.name, env)}
-													>
-														Confirm
-													</Button>
-												</Tooltip>
-												<Tooltip content="Discard all changes" arrow={false}>
-													<Button variant="secondary" size="small" on:click={() => discardChanges(secret.name, env)}>
-														Cancel
-													</Button>
-												</Tooltip>
-											{/if}
-										</div>
-									</div>
-									<div class="apps">
-										{#if secret.apps.length}<h4>Applications using this secret</h4>
-										{:else}
-											<Alert size="small" variant="info">Secret is not in use by any applications.</Alert>
-										{/if}
-
-										<ul>
-											{#each secret.apps as app}
-												<li><a href="/team/{team}/{env}/app/{app}">{app}</a></li>
-											{/each}
-										</ul>
-									</div>
-									{#if $updateSecretMutation.errors}
-										<Alert variant="error">{$updateSecretMutation.errors[0]?.message}</Alert>
-									{/if}
-								</div>
-							</TrExpander>
+							</Tr>
 						{/each}
 						</Tbody>
 					</Table>
@@ -294,44 +185,9 @@
         justify-content: space-between;
     }
 
-    .secrets-edit-buttons {
-        margin: 16px 0 0 16px;
-        padding: 32px 0;
-    }
-
-    .secrets-edit-buttons > :global(*) {
-        margin-right: 8px;
-    }
-
-    div[slot="row-content"] {
+    .row-content {
         display: flex;
         justify-content: space-between;
-    }
-
-    div[slot="row-content"] > span {
-        display: flex;
-    }
-
-    div[slot="row-content"] > span > span {
-        align-self: center;
-    }
-
-    div[slot="expander-content"] {
-        display: flex;
-        justify-content: space-evenly;
-    }
-
-    .apps {
-        padding: 16px;
-        width: 400px;
-    }
-
-    .apps ul {
-        list-style: none;
-        margin-block-start: 0;
-    }
-
-    .apps h4 {
-        margin: 0 0 8px;
+				margin: 1rem;
     }
 </style>
