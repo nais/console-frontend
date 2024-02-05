@@ -14,11 +14,16 @@ export default defineConfig((mode) => {
 					rewrite: (path) => {
 						return path;
 					},
-					headers: {
-						'X-User-Email': env?.VITE_API_USER_EMAIL
+					headers: (() => {
+						const email = env?.VITE_API_USER_EMAIL
 							? env?.VITE_API_USER_EMAIL
-							: 'admin.usersen@example.com'
-					}
+							: 'admin.usersen@example.com';
+
+						console.log('Using email for proxy:', email);
+						return {
+							'X-User-Email': email
+						};
+					})()
 				}
 			}
 		},

@@ -415,6 +415,9 @@ type GitHubRepository {
   """A list of authorizations granted to the repository by the team."""
   authorizations: [RepositoryAuthorization!]!
 
+  """ID of the repository."""
+  id: ID!
+
   """Name of the repository, with the org prefix."""
   name: String!
 
@@ -656,7 +659,7 @@ type Mutation {
 
     """The slug of the team to authorize the action for."""
     teamSlug: Slug!
-  ): ReconcilerResource!
+  ): GitHubRepository!
 
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
@@ -711,7 +714,7 @@ type Mutation {
 
     """The slug of the team to deauthorize the action for."""
     teamSlug: Slug!
-  ): ReconcilerResource!
+  ): GitHubRepository!
 
   """
   Disable a reconciler
@@ -1240,37 +1243,6 @@ type ReconcilerList {
   pageInfo: PageInfo!
 }
 
-type ReconcilerResource {
-  """
-  Temporary workaround until repository is a first class citizen. Will only be populated for GitHub repos.
-  """
-  authorizations: [RepositoryAuthorization!] @deprecated(reason: "Just a temporary workaround")
-
-  """ID of the resource."""
-  id: ID!
-
-  """Key of the reconciler resource."""
-  key: String!
-
-  """Metadata if any. JSON formatted."""
-  metadata: String
-
-  """The name of the reconciler."""
-  reconciler: String!
-
-  """Value of the reconciler resource."""
-  value: String!
-}
-
-"""Paginated GitHub repository type."""
-type ReconcilerResourceList {
-  """The list of GitHub repositories."""
-  nodes: [ReconcilerResource!]!
-
-  """Pagination information."""
-  pageInfo: PageInfo!
-}
-
 type Redis implements Storage {
   access: String!
   name: String!
@@ -1583,6 +1555,11 @@ type Team {
     offset: Int
   ): AuditLogList!
 
+  """
+  The ID of the Azure AD group for the team. This value is managed by the Azure AD reconciler.
+  """
+  azureGroupID: ID
+
   """Whether or not the team is currently being deleted."""
   deletionInProgress: Boolean!
 
@@ -1599,7 +1576,21 @@ type Team {
   ): DeploymentList!
 
   """
-  The email address of the Google Group for the team. This value is only available after the initial team synchronization.
+  The slug of the GitHub team. This value is managed by the GitHub reconciler.
+  """
+  gitHubTeamSlug: String
+
+  """The GitHub repositories that the team has access to."""
+  githubRepositories(
+    """Limit the number of repositories to return. Default is 20."""
+    limit: Int
+
+    """Offset to start listing repositories from. Default is 0."""
+    offset: Int
+  ): GitHubRepositoryList!
+
+  """
+  The email address of the Google group for the team. This value is managed by the Google Workspace reconciler.
   """
   googleGroupEmail: String
   id: ID!
@@ -1636,17 +1627,6 @@ type Team {
 
   """Purpose of the team."""
   purpose: String!
-
-  """Get the state of the team as it is represented by the reconciler."""
-  reconcilerResources(
-    """Key to read"""
-    key: String!
-    limit: Int
-    offset: Int
-
-    """The name of the reconciler."""
-    reconciler: String!
-  ): ReconcilerResourceList!
 
   """
   A list of Slack channels for NAIS alerts. If no channel is specified for a given environment, NAIS will fallback to the slackChannel value.

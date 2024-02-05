@@ -95,13 +95,6 @@
 			team
 		});
 	};
-
-	const parseRoleName = (metadata: string | null) => {
-		if (metadata === null) return 'UNKNOWN';
-
-		const resp = JSON.parse(metadata) as { roleName: string };
-		return resp.roleName || 'UNKNOWN';
-	};
 </script>
 
 {#if team}
@@ -126,7 +119,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each team.reconcilerResources.nodes as repo}
+				{#each team.githubRepositories.nodes as repo}
 					<Tr>
 						<Td><Link href="https://github.com/{repo.name}">{repo.name}</Link></Td>
 						{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
@@ -156,23 +149,29 @@
 								</Td>
 							{/if}
 							<Td>
-								{@const roleName = parseRoleName(repo.metadata)}
 								<div class="roleHelpText">
-									{roleName}
+									{repo.roleName}
 									<HelpText placement={'left'} title="Role description">
-										The team's role for the repository.<br />{roleName.toUpperCase()}:
-										{roleDesc(roleName.toUpperCase())}
+										The team's role for the repository.<br />{repo.roleName.toUpperCase()}:
+										{roleDesc(repo.roleName.toUpperCase())}
 									</HelpText>
 								</div>
 							</Td>
 						{/if}
+					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={99} style="background:var(--a-surface-info-subtle)">
+							No GitHub repositories for this team. You can link a repository to this team by giving
+							the team permissions on the repository on GitHub.
+						</Td>
 					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
 
 		<Pagination
-			pageInfo={team.reconcilerResources.pageInfo}
+			pageInfo={team.githubRepositories.pageInfo}
 			{limit}
 			{offset}
 			changePage={(page) => {
