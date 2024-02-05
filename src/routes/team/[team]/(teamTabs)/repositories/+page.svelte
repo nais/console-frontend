@@ -175,7 +175,6 @@
 			{limit}
 			{offset}
 			changePage={(page) => {
-				console.log('Change page', page, limit, offset);
 				changeParams({ page: page.toString() });
 			}}
 		/>

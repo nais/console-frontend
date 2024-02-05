@@ -325,8 +325,10 @@ type DeprecatedRegistryError implements StateError {
 }
 
 type Env {
+  gcpProjectID: String
   id: ID!
   name: String!
+  namespace: String
 }
 
 """Env cost type."""
@@ -1575,6 +1577,9 @@ type Team {
     offset: Int
   ): DeploymentList!
 
+  """The environments available for the team."""
+  environments: [Env!]!
+
   """
   The slug of the GitHub team. This value is managed by the GitHub reconciler.
   """
@@ -1588,6 +1593,9 @@ type Team {
     """Offset to start listing repositories from. Default is 0."""
     offset: Int
   ): GitHubRepositoryList!
+
+  """The Google artifact registry for the team."""
+  googleArtifactRegistry: String
 
   """
   The email address of the Google group for the team. This value is managed by the Google Workspace reconciler.

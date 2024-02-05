@@ -65,6 +65,47 @@
 	let defaultSlackChannelError = false;
 	let slackChannelsError = false;
 
+	const globalAttributes = (obj: {
+		readonly azureGroupID: string | null;
+		readonly gitHubTeamSlug: string | null;
+		readonly googleGroupEmail: string | null;
+		readonly googleArtifactRegistry: string | null;
+	}) => {
+		const lines: { key: string; value: string }[] = [];
+
+		if (obj.googleArtifactRegistry) {
+			lines.push({
+				key: 'Artifact Registry repository',
+				value: formatGARRepo(obj.googleArtifactRegistry)
+			});
+		}
+		if (obj.gitHubTeamSlug) {
+			lines.push({ key: 'GitHub team', value: obj.gitHubTeamSlug });
+		}
+		if (obj.googleGroupEmail) {
+			lines.push({ key: 'Google group email', value: obj.googleGroupEmail });
+		}
+		if (obj.azureGroupID) {
+			lines.push({ key: 'Azure AD group ID', value: obj.azureGroupID });
+		}
+		return lines;
+	};
+
+	const envResources = (obj: {
+		readonly namespace: string | null;
+		readonly gcpProjectID: string | null;
+	}) => {
+		const lines: { key: string; value: string }[] = [];
+
+		if (obj.namespace) {
+			lines.push({ key: 'Namespace', value: obj.namespace });
+		}
+		if (obj.gcpProjectID) {
+			lines.push({ key: 'GCP project ID', value: obj.gcpProjectID });
+		}
+		return lines;
+	};
+
 	const formatGARRepo = (repo: string) => {
 		const [, projectId, , location, , repository] = repo.split('/');
 		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
@@ -202,47 +243,26 @@
 			{#if teamSettings.id === PendingValue}
 				<Loader />
 			{:else}
-				{#each teamSettings.gcpProjects.nodes as project}
-					{#if project.value.indexOf('ci-gcp') >= 0}
-						<dl>
-							<dt>GCP project ID ({project.value}):</dt>
-							<dd>{project.value}</dd>
-						</dl>
-					{/if}
-					{#if teamSettings.azureADGroupId}
-						<dl>
-							<dt>Azure AD group ID:</dt>
-							<dd>{teamSettings.azureADGroupId}</dd>
-						</dl>
-					{/if}
-					<!-- {#if teamSettings.garRepositoryName}
-						<dl>
-							<dt>Artifact Registry repository</dt>
-							<dd>{formatGARRepo(teamSettings.garRepositoryName)}</dd>
-						</dl>
-					{/if}
-					{#if teamSettings.gitHubTeamSlug}
-						<dl>
-							<dt>GitHub team:</dt>
-							<dd>{teamSettings.gitHubTeamSlug}</dd>
-						</dl>
-					{/if}
-					{#if teamSettings.googleWorkspaceGroupEmail}
-						<dl>
-							<dt>Google group email:</dt>
-							<dd>{state.googleWorkspaceGroupEmail}</dd>
-						</dl>
-					{/if}
-					{#each state.naisNamespaces as ns}
-						{#if project.environment !== 'ci-gcp'}
-							<dl>
-								<dt>NAIS namespace ({ns.environment}):</dt>
-								<dd>{ns.namespace}</dd>
-							</dl>
-						{/if}
-					{/each} -->
-				{:else}
-					<p>No managed resources</p>
+				<h4>Global</h4>
+				<dl>
+					{#each globalAttributes(teamSettings) as { key, value }}
+						<dt>{key}:</dt>
+						<dd>{value}</dd>
+					{:else}
+						<Alert variant="info" size="small">No managed resources</Alert>
+					{/each}
+				</dl>
+
+				{#each teamSettings.environments as env}
+					<h4>{env.name}</h4>
+					<dl>
+						{#each envResources(env) as { key, value }}
+							<dt>{key}:</dt>
+							<dd>{value}</dd>
+						{:else}
+							<Alert variant="info" size="small">No managed resources</Alert>
+						{/each}
+					</dl>
 				{/each}
 			{/if}
 		</Card>
@@ -353,7 +373,7 @@
 <style>
 	dl {
 		display: block;
-		margin-block-start: 1em;
+		margin-block-start: 0.2em;
 		margin-block-end: 1em;
 		margin-inline-start: 0px;
 		margin-inline-end: 0px;
@@ -374,7 +394,7 @@
 		margin-bottom: 0.5rem;
 	}
 	h4 {
-		margin: 0.8rem 0rem;
+		margin: 0.8rem 0rem 0.2rem 0;
 	}
 	i {
 		margin-bottom: 0.5rem;
