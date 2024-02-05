@@ -20,7 +20,7 @@
 		}
 	};
 
-	const validationError = () => {
+	const validationError = (key: string | undefined) => {
 		if (!key) {
 			return '';
 		}
@@ -53,10 +53,10 @@
 		htmlSize={30}
 		bind:value={key}
 		placeholder="New key"
-		error={validationError()}
+		error={validationError(key)}
 	/>
 	<TextField size="small" htmlSize={30} bind:value placeholder="New value" />
-	{#if validationError().length === 0}
+	{#if validationError(key).length === 0}
 		<div class="buttons">
 			<Tooltip content="Add new key-value pair" arrow={false}>
 				<Button variant="tertiary" size="small" on:click={addKv}>

@@ -43,7 +43,7 @@
 		}
 	};
 
-	const validationError = () => {
+	const validationError = (name: string) => {
 		if (!name) {
 			return '';
 		}
@@ -78,7 +78,7 @@
 		<p>The secret will be created in <b>{env}</b></p>
 	</svelte:fragment>
 	<div>
-		<TextField size="small" htmlSize={30} bind:value={name} error={validationError()}>
+		<TextField size="small" htmlSize={30} bind:value={name} error={validationError(name)}>
 			<svelte:fragment slot="label">Name</svelte:fragment>
 		</TextField>
 		{#if $createSecret.errors}
@@ -86,7 +86,7 @@
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		{#if validationError().length === 0 && name.length > 0}
+		{#if validationError(name).length === 0 && name.length > 0}
 			<Button variant="primary" size="small" on:click={create}>Create</Button>
 		{/if}
 	</svelte:fragment>

@@ -40,9 +40,6 @@
 		update = JSON.parse(JSON.stringify(secret.data));
 	};
 
-	const hasChanges = () => {
-		return changes.length > 0;
-	};
 	let discardChanges = () => {
 		changes = [];
 		Secret.fetch();
@@ -173,7 +170,7 @@
 							<AddSecretKv bind:changes existingKeys={s.data.map((d) => d.key)} />
 						</div>
 						<div class="secret-edit-buttons">
-							{#if hasChanges()}
+							{#if changes.length > 0}
 								<Tooltip content="Persist all changes" arrow={false}>
 									<Button variant="primary" size="small" on:click={updateSecret}>Confirm</Button>
 								</Tooltip>
