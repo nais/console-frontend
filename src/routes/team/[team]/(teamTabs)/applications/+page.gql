@@ -6,7 +6,7 @@ query Workloads(
 ) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
-		apps(limit: $limit, offset: $offset, orderBy: $orderBy)  {
+		apps(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {
 				totalCount
 				hasNextPage

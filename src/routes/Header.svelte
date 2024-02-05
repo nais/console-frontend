@@ -192,7 +192,10 @@
 				{/if}
 			</ul>
 		</nav>
-		<div class="cap">{user ? user.name : 'unauthorized'}</div>
+		<div class="cap">
+			{user ? user.name : 'unauthorized'}
+			- <a href="/oauth2/logout">Logout</a>
+		</div>
 	</div>
 </div>
 
@@ -297,5 +300,9 @@
 	}
 	li > a:hover {
 		background-color: var(--a-surface-inverted-hover);
+	}
+
+	.cap a {
+		color: var(--a-text-on-inverted);
 	}
 </style>
