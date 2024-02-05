@@ -6,9 +6,7 @@
 	import '../styles/vars_light.css';
 	import Header from './Header.svelte';
 	//import '../styles/vars_dark.css';
-	import { page } from '$app/stores';
 	import '$lib/font.css';
-	import { Alert } from '@nais/ds-svelte-community';
 	import '../styles/app.css';
 	import type { PageData } from './$houdini';
 	import Login from './Login.svelte';
@@ -34,10 +32,6 @@
 	{/if}
 
 	<div class="container">
-		{#if $page.url.searchParams?.get('error') == 'unknown-user'}
-			<Alert variant="error">Error during login. The user is not known in the system.</Alert>
-		{/if}
-
 		<slot />
 	</div>
 {/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Button } from '@nais/ds-svelte-community';
+	import { page } from '$app/stores';
+	import { Alert, Button } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 </script>
 
@@ -23,6 +24,19 @@
 			<Logo height=".8em" />
 			Console
 		</h1>
+
+		{#if $page.url.searchParams?.get('error')}
+			{@const error = $page.url.searchParams.get('error')}
+			<Alert variant="error">
+				{#if error == 'unknown-user'}
+					Error during login. The user is not known in the system.<br />
+					Please contact the system administrator.
+				{:else}
+					<!-- "unable-to-create-session", "invalid-state", and "unauthenticated" are known. -->
+					Error during login, please try again.
+				{/if}
+			</Alert>
+		{/if}
 
 		<p>To access this page you need to log in with your Google account.</p>
 
