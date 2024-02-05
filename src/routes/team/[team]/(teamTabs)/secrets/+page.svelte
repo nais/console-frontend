@@ -34,8 +34,8 @@
 	}[] = [];
 
 	$: ({ Secrets } = data);
-	$: mkUpdate($Secrets.data?.secrets);
-	let mkUpdate = (secret: Secrets$result['secrets'] | undefined | null) => {
+	$: mkUpdate($Secrets.data?.team.secrets);
+	let mkUpdate = (secret: Secrets$result['team']['secrets'] | undefined | null) => {
 		if (!secret) {
 			return;
 		}

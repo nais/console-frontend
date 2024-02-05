@@ -50,7 +50,7 @@
 <div class="entry">
 	<TextField
 		size="small"
-		htmlSize={30}
+		htmlSize={32}
 		bind:value={key}
 		placeholder="New key"
 		error={validationError(key)}

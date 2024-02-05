@@ -8,6 +8,7 @@
   outputs = { self, nixpkgs }:
     let
       # Systems supported
+
       allSystems = [
         "x86_64-linux" # 64-bit Intel/AMD Linux
         "aarch64-linux" # 64-bit ARM Linux
@@ -24,7 +25,7 @@
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
           # The Nix packages provided in the environment
-          packages = with pkgs; [ bun ];
+          packages = with pkgs; [ bun nodejs_20];
 
         };
       });

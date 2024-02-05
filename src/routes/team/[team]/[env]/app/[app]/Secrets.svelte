@@ -19,7 +19,7 @@
 
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: secrets = $data.secrets;
+	$: secrets = $data.secrets
 	$: count = secrets.length;
 </script>
 
@@ -27,11 +27,7 @@
 	{#if count > 0}
 		<ul>
 			{#each secrets as secret}
-				{#if secret === PendingValue}
-					<Skeleton variant="text" />
-				{:else}
-					<li><a href="/team/{team}/{env}/secret/{secret}">{secret}</a></li>
-				{/if}
+					<li><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></li>
 			{/each}
 		</ul>
 	{:else}

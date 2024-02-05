@@ -198,7 +198,7 @@
 			{#if secret.apps.length > 0 }
 				<ul>
 					{#each secret.apps as app}
-						<li><a href="/team/{team}/{env}/app/{app}">{app}</a></li>
+						<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
 					{/each}
 				</ul>
 			{:else}
