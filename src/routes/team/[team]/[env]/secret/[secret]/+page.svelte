@@ -31,8 +31,8 @@
 
 	let update: updateState = [];
 
-	$: mkUpdate($Secret.data?.secret);
-	let mkUpdate = (secret: Secret$result['secret'] | undefined | null) => {
+	$: mkUpdate($Secret.data?.team.secret);
+	let mkUpdate = (secret: Secret$result['team']['secret'] | undefined | null) => {
 		if (!secret) {
 			return;
 		}
@@ -126,7 +126,7 @@
 {:else if $Secret.fetching}
 	<Loader />
 {:else if $Secret.data}
-	{@const s = $Secret.data.secret}
+	{@const secret = $Secret.data.team.secret}
 	<div class="grid">
 		<Card columns={8} rows={2}>
 			<div class="header">
@@ -151,7 +151,7 @@
 						<Heading>Delete secret</Heading>
 					</svelte:fragment>
 					<p>
-						This will permanently delete the secret named <b>{s.name}</b> from <b>{env}</b>.
+						This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 					</p>
 
 					Are you sure you want to delete this secret?
@@ -161,13 +161,13 @@
 				<Tbody>
 					<div class="secret-content">
 						<div class="secret-edit">
-							{#each s.data as data (data.key)}
-								<SecretKv key={data.key} value={data.value} bind:changes />
+							{#each secret.data as data (data.name)}
+								<SecretKv key={data.name} value={data.value} bind:changes />
 							{/each}
 							{#each filterAddKvs(changes) as change (change.data.key)}
 								<SecretKv key={change.data.key} value={change.data.value} bind:changes />
 							{/each}
-							<AddSecretKv bind:changes existingKeys={s.data.map((d) => d.key)} />
+							<AddSecretKv bind:changes existingKeys={secret.data.map((d) => d.name)} />
 						</div>
 						<div class="secret-edit-buttons">
 							{#if changes.length > 0}
@@ -195,9 +195,9 @@
 					manifest.
 				</HelpText>
 			</h4>
-			{#if s.apps.length}
+			{#if secret.apps.length > 0 }
 				<ul>
-					{#each s.apps as app}
+					{#each secret.apps as app}
 						<li><a href="/team/{team}/{env}/app/{app}">{app}</a></li>
 					{/each}
 				</ul>
