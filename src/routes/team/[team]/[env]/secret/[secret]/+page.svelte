@@ -46,7 +46,7 @@
 	};
 
 	$: updateSecretMutation = graphql(`
-		mutation updateSecretTODO(
+		mutation updateSecretForSecret(
 			$name: String!
 			$team: Slug!
 			$env: String!
