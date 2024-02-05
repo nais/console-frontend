@@ -10,7 +10,9 @@
 		app,
 		graphql(`
 			fragment AppSecrets on App {
-				secrets @loading
+				secrets {
+					name
+				}
 			}
 		`)
 	);

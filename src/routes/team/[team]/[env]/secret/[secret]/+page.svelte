@@ -55,7 +55,7 @@
 			updateSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
 				data {
-					key
+					name
 					value
 				}
 			}

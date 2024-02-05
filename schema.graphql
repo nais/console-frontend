@@ -36,7 +36,7 @@ type App {
   manifest: String!
   name: String!
   resources: Resources!
-  secrets: [String!]!
+  secrets: [Secret!]!
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
@@ -1182,24 +1182,6 @@ type Query {
   ): ResourceUtilizationTrend!
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
 
-  """Get a secret by name, team and env."""
-  secret(
-    """The environment the secret is deployed to."""
-    env: String!
-
-    """The name of the secret."""
-    name: String!
-
-    """The name of the team who owns the secret."""
-    team: Slug!
-  ): Secret!
-
-  """Get all secrets for a team."""
-  secrets(
-    """The name of the team who owns the secrets."""
-    team: Slug!
-  ): [EnvSecret!]!
-
   """Get a specific team."""
   team(
     """Slug of the team."""
@@ -1487,16 +1469,11 @@ enum SearchType {
 }
 
 type Secret {
-  apps: [String!]!
-  data: [SecretTuple!]!
+  apps: [App!]!
+  data: [Variable!]!
   env: Env!
   id: ID!
   name: String!
-}
-
-type SecretTuple {
-  key: String!
-  value: String!
 }
 
 input SecretTupleInput {
@@ -1723,6 +1700,23 @@ type Team {
 
   """Purpose of the team."""
   purpose: String!
+
+  """Get the team's secret by name, and env."""
+  secret(
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+  ): Secret!
+
+  """Get all secrets for the team."""
+  secrets: [EnvSecret!]!
+
+  """
+  A list of Slack channels for NAIS alerts. If no channel is specified for a given environment, NAIS will fallback to the slackChannel value.
+  """
+  slackAlertsChannels: [SlackAlertsChannel!]!
 
   """Slack channel for the team."""
   slackChannel: String!
