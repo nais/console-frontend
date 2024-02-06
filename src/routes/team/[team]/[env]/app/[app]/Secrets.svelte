@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { AppSecrets } from '$houdini';
-	import { PendingValue, fragment, graphql } from '$houdini';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { fragment, graphql } from '$houdini';
 	import { page } from '$app/stores';
 
 	export let app: AppSecrets;

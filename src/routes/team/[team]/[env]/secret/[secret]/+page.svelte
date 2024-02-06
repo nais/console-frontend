@@ -64,7 +64,6 @@
 	let updateSecret = async () => {
 		if (update) {
 			let data = changes.reduce(mergeChanges, update);
-			console.log(data);
 
 			await updateSecretMutation.mutate({
 				data: data,
