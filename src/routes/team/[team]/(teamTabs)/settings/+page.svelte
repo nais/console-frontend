@@ -90,15 +90,9 @@
 		return lines;
 	};
 
-	const envResources = (obj: {
-		readonly namespace: string | null;
-		readonly gcpProjectID: string | null;
-	}) => {
+	const envResources = (obj: { readonly gcpProjectID: string | null }) => {
 		const lines: { key: string; value: string }[] = [];
 
-		if (obj.namespace) {
-			lines.push({ key: 'Namespace', value: obj.namespace });
-		}
 		if (obj.gcpProjectID) {
 			lines.push({ key: 'GCP project ID', value: obj.gcpProjectID });
 		}

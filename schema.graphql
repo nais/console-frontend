@@ -328,7 +328,6 @@ type Env {
   gcpProjectID: String
   id: ID!
   name: String!
-  namespace: String
   slackAlertsChannel: String!
 }
 
