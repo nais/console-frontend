@@ -329,6 +329,7 @@ type Env {
   id: ID!
   name: String!
   namespace: String
+  slackAlertsChannel: String!
 }
 
 """Env cost type."""
@@ -1635,11 +1636,6 @@ type Team {
 
   """Purpose of the team."""
   purpose: String!
-
-  """
-  A list of Slack channels for NAIS alerts. If no channel is specified for a given environment, NAIS will fallback to the slackChannel value.
-  """
-  slackAlertsChannels: [SlackAlertsChannel!]!
 
   """Slack channel for the team."""
   slackChannel: String!

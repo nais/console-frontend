@@ -8,14 +8,11 @@ query TeamSettings($team: Slug!) {
 		azureGroupID
 		googleGroupEmail
 		googleArtifactRegistry
-		slackAlertsChannels @loading(count: 2) {
-			channelName
-			environment
-		}
-		environments {
+		environments @loading(count: 2) {
 			name
 			namespace
 			gcpProjectID
+			slackAlertsChannel
 		}
 		# Default limit is 20, should be enough
 		# gcpProjects: reconcilerResources(reconciler: "google:gcp:project", key: "project") {

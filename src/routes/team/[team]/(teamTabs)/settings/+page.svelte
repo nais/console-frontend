@@ -31,9 +31,8 @@
 			updateTeam(slug: $slug, input: $input) {
 				purpose
 				slackChannel
-				slackAlertsChannels {
-					channelName
-					environment
+				environments {
+					slackAlertsChannel
 				}
 			}
 		}
@@ -178,15 +177,15 @@
 					</Alert>
 				{/if}
 			{/if}
-			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0}
+			{#if teamSettings.environments && teamSettings.environments.length > 0}
 				<p>
 					Per-environment slack-channels to be used for alerts sent by the platform.
-					{#each teamSettings.slackAlertsChannels as channel}
-						{#if channel !== PendingValue}
+					{#each teamSettings.environments as env}
+						{#if env !== PendingValue}
 							<div class="channel">
-								<b>{channel.environment}:</b>
+								<b>{env.name}:</b>
 								<EditText
-									text={channel.channelName}
+									text={env.slackAlertsChannel}
 									variant="textfield"
 									on:save={async (e) => {
 										slackChannelsError = false;
@@ -194,24 +193,24 @@
 											return;
 										}
 
-										const updates = teamSettings.slackAlertsChannels.map((c) => {
-											if (c === PendingValue || channel === PendingValue) {
+										const updates = teamSettings.environments.map((c) => {
+											if (c === PendingValue || env === PendingValue) {
 												return {
 													environment: '',
 													channelName: ''
 												};
 											}
 
-											if (c.environment === channel.environment) {
+											if (c.name === env.name) {
 												return {
-													environment: c.environment,
+													environment: c.name,
 													channelName: e.detail
 												};
 											}
 
 											return {
-												environment: c.environment,
-												channelName: c.channelName
+												environment: c.name,
+												channelName: c.slackAlertsChannel
 											};
 										});
 
