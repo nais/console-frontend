@@ -17,7 +17,7 @@
 			...changes,
 			{
 				type: 'DeleteKv',
-				data: { key }
+				data: { name: key }
 			}
 		];
 	};
@@ -27,7 +27,7 @@
 			...changes,
 			{
 				type: 'UndoDeleteKv',
-				data: { key, value }
+				data: { name: key, value }
 			}
 		];
 	};
@@ -37,7 +37,7 @@
 			...changes,
 			{
 				type: 'UpdateValue',
-				data: { key, value }
+				data: { name: key, value }
 			}
 		];
 	};

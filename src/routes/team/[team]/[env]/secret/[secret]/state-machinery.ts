@@ -1,12 +1,12 @@
 export type updateState = {
-	key: string;
+	name: string;
 	value: string;
 }[];
 
 export type AddKv = {
 	type: 'AddKv';
 	data: {
-		key: string;
+		name: string;
 		value: string;
 	};
 };
@@ -14,14 +14,14 @@ export type AddKv = {
 export type DeleteKv = {
 	type: 'DeleteKv';
 	data: {
-		key: string;
+		name: string;
 	};
 };
 
 export type UndoDeleteKv = {
 	type: 'UndoDeleteKv';
 	data: {
-		key: string;
+		name: string;
 		value: string;
 	};
 };
@@ -29,7 +29,7 @@ export type UndoDeleteKv = {
 export type UpdateValue = {
 	type: 'UpdateValue';
 	data: {
-		key: string;
+		name: string;
 		value: string;
 	};
 };
@@ -39,14 +39,14 @@ export type operation = AddKv | DeleteKv | UndoDeleteKv | UpdateValue;
 export function mergeChanges(update: updateState, curr: operation): updateState {
 	switch (curr.type) {
 		case 'AddKv':
-			return [...update, { key: curr.data.key, value: curr.data.value }];
+			return [...update, { name: curr.data.name, value: curr.data.value }];
 		case 'DeleteKv':
-			return update.filter((state) => state.key !== curr.data.key);
+			return update.filter((state) => state.name !== curr.data.name);
 		case 'UndoDeleteKv':
-			return [...update, { key: curr.data.key, value: curr.data.value }];
+			return [...update, { name: curr.data.name, value: curr.data.value }];
 		case 'UpdateValue':
 			return update.map((state) =>
-				state.key === curr.data.key ? { key: state.key, value: curr.data.value } : state
+				state.name === curr.data.name ? { name: state.name, value: curr.data.value } : state
 			);
 		default:
 			return update;
@@ -57,14 +57,14 @@ export function filterAddKvs(ops: operation[]): AddKv[] {
 	return ops.filter((op) => op.type === 'AddKv').map((c) => c as AddKv);
 }
 
-function filterByKey(key: string, ops: operation[]): operation[] {
-	return ops.filter((c) => c.data.key === key);
+function filterByKey(name: string, ops: operation[]): operation[] {
+	return ops.filter((c) => c.data.name === name);
 }
 
-export function lastOperation(key: string, ops: operation[]): operation | undefined {
-	return filterByKey(key, ops).at(-1);
+export function lastOperation(name: string, ops: operation[]): operation | undefined {
+	return filterByKey(name, ops).at(-1);
 }
 
-export function includesOperation(key: string, ops: operation[], type: string): boolean {
-	return filterByKey(key, ops).some((c) => c.type === type);
+export function includesOperation(name: string, ops: operation[], type: string): boolean {
+	return filterByKey(name, ops).some((c) => c.type === type);
 }

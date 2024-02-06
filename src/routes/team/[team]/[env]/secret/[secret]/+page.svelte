@@ -46,7 +46,7 @@
 	};
 
 	$: updateSecretMutation = graphql(`
-		mutation updateSecretForSecret(
+		mutation updateSecret(
 			$name: String!
 			$team: Slug!
 			$env: String!
@@ -163,8 +163,8 @@
 							{#each secret.data as data (data.name)}
 								<SecretKv key={data.name} value={data.value} bind:changes />
 							{/each}
-							{#each filterAddKvs(changes) as change (change.data.key)}
-								<SecretKv key={change.data.key} value={change.data.value} bind:changes />
+							{#each filterAddKvs(changes) as change (change.data.name)}
+								<SecretKv key={change.data.name} value={change.data.value} bind:changes />
 							{/each}
 							<AddSecretKv bind:changes existingKeys={secret.data.map((d) => d.name)} />
 						</div>

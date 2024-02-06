@@ -1477,7 +1477,7 @@ type Secret {
 }
 
 input SecretTupleInput {
-  key: String!
+  name: String!
   value: String!
 }
 

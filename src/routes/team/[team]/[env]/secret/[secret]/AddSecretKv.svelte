@@ -12,7 +12,7 @@
 				...changes,
 				{
 					type: 'AddKv',
-					data: { key, value }
+					data: { name: key, value }
 				}
 			];
 			key = undefined;
