@@ -5,6 +5,7 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
+	import VulnerabilitiesGraph from '$lib/components/VulnerabilitiesGraph.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import {
 		changeParams,
@@ -54,6 +55,19 @@
 	</Alert>
 {:else}
 	<div class="grid">
+		<Card columns={4}>
+			<label for="from">From:</label>
+			<input type="date" id="from" />
+			<label for="to">To:</label>
+			<input type="date" id="to" />
+		</Card>
+		<Card columns={12}
+			><VulnerabilitiesGraph
+				from={new Date('2024-01-29')}
+				to={new Date('2024-02-07')}
+				team={teamName}
+			/>
+		</Card>
 		<Card columns={12}>
 			<Table
 				size="small"

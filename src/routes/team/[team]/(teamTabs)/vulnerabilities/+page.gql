@@ -6,6 +6,7 @@ query TeamVulnerabilities(
 ) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
+		slug
 		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy) @loading {
 			pageInfo {
 				totalCount

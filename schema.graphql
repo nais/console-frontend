@@ -1674,6 +1674,9 @@ type Team {
     orderBy: OrderBy
   ): VulnerabilityList!
   vulnerabilitiesSummary: VulnerabilitySummary!
+
+  """The vulnerabilities for the team's applications over time."""
+  vulnerabilityMetrics(from: Date!, to: Date!): [VulnerabilityMetric!]!
 }
 
 """Team deletion key type."""
@@ -1883,6 +1886,36 @@ type Vulnerability {
 type VulnerabilityList {
   nodes: [Vulnerability!]!
   pageInfo: PageInfo!
+}
+
+type VulnerabilityMetric {
+  """The number of critical vulnerabilities."""
+  critical: Int!
+
+  """The date of the metric."""
+  date: Time!
+
+  """The number of high vulnerabilities."""
+  high: Int!
+
+  """The number of low vulnerabilities."""
+  low: Int!
+
+  """The number of medium vulnerabilities."""
+  medium: Int!
+
+  """
+  The weighted severity score calculated from the number of vulnerabilities.
+  """
+  riskScore: Int!
+
+  """The number of unassigned vulnerabilities."""
+  unassigned: Int!
+}
+
+type VulnerabilityMetrics {
+  projectId: ID!
+  vulnerabilitySummary: VulnerabilitySummary
 }
 
 type VulnerabilitySummary {
