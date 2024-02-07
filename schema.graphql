@@ -1534,6 +1534,12 @@ type SyncError {
   reconciler: String!
 }
 
+type SynchronizationFailingError implements StateError {
+  detail: String!
+  level: ErrorLevel!
+  revision: String!
+}
+
 """Team type."""
 type Team {
   """The NAIS applications owned by the team."""
