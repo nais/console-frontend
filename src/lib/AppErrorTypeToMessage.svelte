@@ -101,14 +101,14 @@
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
 		<div class="wrapper">
 			<Alert variant="error">
-					The nais.yaml spec is invalid for application <strong>{app}</strong>.
+					The <em>nais.yaml</em> configuration is invalid for application <strong>{app}</strong>:
 					<br>{$data.detail}
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'SynchronizationFailingError'}
 		<div class="wrapper">
 			<Alert variant="error">
-				Application <strong>{app}</strong> failed to synchronize properly. The operation will be retried.
+				Application <strong>{app}</strong> failed to synchronize properly.
 				<br>{$data.detail}
 			</Alert>
 		</div>
