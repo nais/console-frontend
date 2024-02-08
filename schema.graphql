@@ -1924,11 +1924,6 @@ type VulnerabilityMetrics {
   minDate: Time!
 }
 
-type VulnerabilityMetricsWithProjectId {
-  projectId: ID!
-  vulnerabilitySummary: VulnerabilitySummary
-}
-
 type VulnerabilitySummary {
   critical: Int!
   high: Int!
