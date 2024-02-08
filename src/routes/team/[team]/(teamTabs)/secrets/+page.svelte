@@ -4,22 +4,21 @@
 		Table,
 		Thead,
 		Tbody,
+		Td,
 		Th,
 		Button,
-		Heading,
 		Alert,
 		Loader,
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-
-	import { graphql, type Secrets$result } from '$houdini';
+	import type { Secrets$result } from '$houdini';
 	import { page } from '$app/stores';
-	import Confirm from '$lib/components/Confirm.svelte';
-
 	import CreateSecret from './CreateSecret.svelte';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import HumanTime from '$lib/HumanTime.svelte';
+	import { parseISO } from 'date-fns';
 
 	export let data: PageData;
 	let team = $page.params.team;
@@ -30,6 +29,7 @@
 		};
 		secrets: {
 			name: string;
+			lastModifiedAt?: string;
 		}[];
 	}[] = [];
 
@@ -41,20 +41,6 @@
 		}
 
 		update = JSON.parse(JSON.stringify(secret));
-	};
-
-	let deleteSecretMutation = graphql(`
-		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
-			deleteSecret(name: $name, team: $team, env: $env)
-		}
-	`);
-	let deleteSecret = async (name: string, env: string) => {
-		await deleteSecretMutation.mutate({
-			name: name,
-			team: team,
-			env: env
-		});
-		await Secrets.fetch();
 	};
 
 	// (obj: Record<string, any>) => obj[key];
@@ -69,22 +55,6 @@
 		: {};
 	let openCreateSecretModal = (env: string) => {
 		createSecretOpen[env] = true;
-	};
-
-	let deleteSecretOpen = update
-		? update.reduce((acc: Record<string, boolean>, curr) => {
-				return curr.secrets.reduce(
-					(acc: Record<string, boolean>, currSecret) => ({
-						...acc,
-						[curr.env.name + '_' + currSecret.name]: false
-					}),
-					{}
-				);
-		  }, {})
-		: {};
-	let deleteSecretModalKey = (env: string, secret: string) => env + '_' + secret;
-	let openDeleteSecretModal = (env: string, secret: string) => {
-		deleteSecretOpen[deleteSecretModalKey(env, secret)] = true;
 	};
 </script>
 
@@ -124,43 +94,21 @@
 				<Table size="small">
 					<Thead>
 						<Th>Name</Th>
+						<Th align="right">Last Modified</Th>
 					</Thead>
 					<Tbody>
 						{#each secrets.secrets as secret}
 							<Tr>
-								<div class="row-content">
-									<span>
-										<span><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></span>
-									</span>
-									<Tooltip content="Delete secret from environment" arrow={false}>
-										<Button
-											class="delete-secret"
-											variant="tertiary"
-											size="small"
-											on:click={() => openDeleteSecretModal(env, secret.name)}
-										>
-											Delete
-										</Button>
-									</Tooltip>
-									<Confirm
-										confirmText="Delete"
-										variant="danger"
-										bind:open={deleteSecretOpen[deleteSecretModalKey(env, secret.name)]}
-										on:confirm={async () => {
-											await deleteSecret(secret.name, env);
-										}}
-									>
-										<svelte:fragment slot="header">
-											<Heading>Delete secret</Heading>
-										</svelte:fragment>
-										<p>
-											This will permanently delete the secret named <b>{secret.name}</b> from
-											<b>{env}</b>.
-										</p>
-
-										Are you sure you want to delete this secret?
-									</Confirm>
-								</div>
+								<Td>
+									<a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a>
+								</Td>
+								<Td align="right">
+									{#if secret.lastModifiedAt}
+										<HumanTime time={parseISO(secret.lastModifiedAt)} distance />
+									{:else}
+										<code>n/a</code>
+									{/if}
+								</Td>
 							</Tr>
 						{/each}
 					</Tbody>
@@ -181,11 +129,5 @@
 	.heading {
 		display: flex;
 		justify-content: space-between;
-	}
-
-	.row-content {
-		display: flex;
-		justify-content: space-between;
-		margin: 1rem;
 	}
 </style>

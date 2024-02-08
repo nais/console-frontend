@@ -19,6 +19,7 @@
 	import SecretKv from './SecretKv.svelte';
 	import AddSecretKv from './AddSecretKv.svelte';
 	import { goto } from '$app/navigation';
+	import HumanTime from '$lib/HumanTime.svelte';
 
 	export let data: PageData;
 	$: ({ Secret } = data);
@@ -28,7 +29,6 @@
 	$: team = $page.params.team;
 
 	let changes: operation[] = [];
-
 	let update: updateState = [];
 
 	$: mkUpdate($Secret.data?.team.secret);
@@ -58,6 +58,11 @@
 					name
 					value
 				}
+				lastModifiedBy {
+					name
+					email
+				}
+				lastModifiedAt
 			}
 		}
 	`);
@@ -78,7 +83,7 @@
 	};
 
 	let deleteSecretMutation = graphql(`
-		mutation deleteSecretForSecret($name: String!, $team: Slug!, $env: String!) {
+		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
 			deleteSecret(name: $name, team: $team, env: $env)
 		}
 	`);
@@ -127,9 +132,18 @@
 {:else if $Secret.data}
 	{@const secret = $Secret.data.team.secret}
 	<div class="grid">
-		<Card columns={8} rows={2}>
+		<Card columns={8} rows={3}>
 			<div class="header">
-				<h4>Secret</h4>
+				<h4>
+					Secret Data
+					<HelpText title="Secret data" placement="right">
+						A secret contains a set of key-value pairs.<br />
+						<br />
+						Changes are not persisted until the "Confirm" button is clicked.<br />
+						Applications using the secret will automatically restart to pick up any changes.
+						<br />
+					</HelpText>
+				</h4>
 				<Tooltip content="Delete secret from environment" arrow={false}>
 					<Button
 						class="delete-secret"
@@ -187,14 +201,34 @@
 		</Card>
 
 		<Card columns={4} rows={1}>
+			<h5>Last modified</h5>
+			<div class="metadata-value">
+				{#if secret.lastModifiedAt}
+					<HumanTime time={secret.lastModifiedAt} distance />
+				{:else}
+					<code>n/a</code>
+				{/if}
+			</div>
+			<h5>Last modified by</h5>
+			<div class="metadata-value">
+				{#if secret.lastModifiedBy}
+					{secret.lastModifiedBy.name} ({secret.lastModifiedBy.email})
+				{:else}
+					<code>n/a</code>
+				{/if}
+			</div>
+		</Card>
+
+		<Card columns={4} rows={1}>
 			<h4>
 				Used by
-				<HelpText title="List of applications using this secret" placement="right">
-					The list below shows all applications that have a reference to this secret in their
-					manifest.
+				<HelpText title="List of applications using this secret" placement="bottom">
+					A secret can be used by multiple applications.<br />
+					<br />
+					This section lists all applications that use this secret.
 				</HelpText>
 			</h4>
-			{#if secret.apps.length > 0 }
+			{#if secret.apps.length > 0}
 				<ul>
 					{#each secret.apps as app}
 						<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
@@ -208,11 +242,12 @@
 		<Card columns={4} rows={1}>
 			<h4>
 				Use secret in application
-				<HelpText title="How to use this secret in an application" placement="right">
+				<HelpText title="How to use this secret in an application" placement="bottom">
 					To use this secret in your application, you will need to reference it in your
 					application's manifest.<br />
 					<br />
-					The manifest below loads the secret into your application as environment variables.
+					The snippet below injects the secret into your application. Each key-value pair is then available
+					as environment variables.
 				</HelpText>
 			</h4>
 			<pre class="manifest">{applicationManifest}</pre>
@@ -240,6 +275,11 @@
 		display: flex;
 		font-weight: 400;
 		margin-bottom: 0.5rem;
+		gap: 0.5rem;
+	}
+
+	h5 {
+		margin-top: 0.5rem;
 		gap: 0.5rem;
 	}
 
@@ -275,5 +315,13 @@
 
 	.secret-edit-buttons > :global(*) {
 		margin-right: 8px;
+	}
+
+	.metadata-value {
+		margin-left: 1rem;
+	}
+
+	code {
+		font-size: 1rem;
 	}
 </style>

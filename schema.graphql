@@ -1473,6 +1473,8 @@ type Secret {
   data: [Variable!]!
   env: Env!
   id: ID!
+  lastModifiedAt: Time
+  lastModifiedBy: User
   name: String!
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, TextField, Tooltip } from '@nais/ds-svelte-community';
+	import { Button, Heading, Modal, TextField, Tooltip } from '@nais/ds-svelte-community';
 	import { includesOperation, type operation } from './state-machinery';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 
@@ -17,6 +17,7 @@
 			];
 			key = undefined;
 			value = undefined;
+			open = false;
 		}
 	};
 
@@ -45,41 +46,50 @@
 
 	let key: string | undefined;
 	let value: string | undefined;
+	let open: boolean = false;
+
+	const toggleOpen = () => {
+		open = !open;
+	};
 </script>
 
-<div class="entry">
-	<TextField
-		size="small"
-		htmlSize={32}
-		bind:value={key}
-		placeholder="New key"
-		error={validationError(key)}
-	/>
-	<TextField size="small" htmlSize={30} bind:value placeholder="New value" />
-	{#if validationError(key).length === 0}
-		<div class="buttons">
-			<Tooltip content="Add new key-value pair" arrow={false}>
-				<Button variant="tertiary" size="small" on:click={addKv}>
-					<svelte:fragment slot="icon-left"><PlusCircleFillIcon /></svelte:fragment>
-				</Button>
-			</Tooltip>
-		</div>
-	{/if}
+<Modal bind:open width="small">
+	<svelte:fragment slot="header">
+		<Heading>New row</Heading>
+	</svelte:fragment>
+	<div class="entry">
+		<TextField size="small" htmlSize={30} bind:value={key} error={validationError(key)}>
+			<svelte:fragment slot="label">Key</svelte:fragment>
+		</TextField>
+		<TextField size="small" htmlSize={30} bind:value>
+			<svelte:fragment slot="label">Value</svelte:fragment>
+		</TextField>
+	</div>
+	<svelte:fragment slot="footer">
+		{#if validationError(key).length === 0 && key && key.length > 0}
+			<Button variant="primary" size="small" on:click={addKv}>Add</Button>
+		{/if}
+	</svelte:fragment>
+</Modal>
+
+<div class="buttons">
+	<Tooltip content="Add new key and value">
+		<Button variant="tertiary" size="small" on:click={toggleOpen}>
+			<svelte:fragment slot="icon-left">
+				<PlusCircleFillIcon />
+			</svelte:fragment>
+			Add row
+		</Button>
+	</Tooltip>
 </div>
 
 <style>
-	.entry {
-		display: flex;
-		height: 68px;
-		align-items: start;
-	}
-
 	.entry > :global(*) {
-		margin: 16px 0 0 17px;
+		margin: 16px 0 0 16px;
 	}
 
 	.buttons {
-		margin-left: 13px;
-		margin-top: 24px;
+		margin-top: 20px;
+		margin-left: 10px;
 	}
 </style>

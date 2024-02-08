@@ -19,7 +19,7 @@
 
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: secrets = $data.secrets
+	$: secrets = $data.secrets;
 	$: count = secrets.length;
 </script>
 
