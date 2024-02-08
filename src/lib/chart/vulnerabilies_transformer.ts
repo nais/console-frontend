@@ -7,8 +7,8 @@ export function vulnerabilitiesTeamTransformLineChart(
 	console.log(metrics);
 	const dates = new Array<Date>();
 
-	for (let i = 0; i < metrics.team.vulnerabilityMetrics.length; i++) {
-		dates.push(metrics.team.vulnerabilityMetrics[i].date);
+	for (let i = 0; i < metrics.team.vulnerabilityMetrics.data.length; i++) {
+		dates.push(metrics.team.vulnerabilityMetrics.data[i].date);
 	}
 
 	const numberOfDays = dates.length;
@@ -21,12 +21,12 @@ export function vulnerabilitiesTeamTransformLineChart(
 	const riskScoreSeries = new Array<number>();
 
 	for (let i = 0; i < numberOfDays; i++) {
-		highSeries.push(metrics.team.vulnerabilityMetrics[i].high);
-		mediumSeries.push(metrics.team.vulnerabilityMetrics[i].medium);
-		lowSeries.push(metrics.team.vulnerabilityMetrics[i].low);
-		unassignedSeries.push(metrics.team.vulnerabilityMetrics[i].unassigned);
-		criticalSeries.push(metrics.team.vulnerabilityMetrics[i].critical);
-		riskScoreSeries.push(metrics.team.vulnerabilityMetrics[i].riskScore);
+		highSeries.push(metrics.team.vulnerabilityMetrics.data[i].high);
+		mediumSeries.push(metrics.team.vulnerabilityMetrics.data[i].medium);
+		lowSeries.push(metrics.team.vulnerabilityMetrics.data[i].low);
+		unassignedSeries.push(metrics.team.vulnerabilityMetrics.data[i].unassigned);
+		criticalSeries.push(metrics.team.vulnerabilityMetrics.data[i].critical);
+		riskScoreSeries.push(metrics.team.vulnerabilityMetrics.data[i].riskScore);
 	}
 
 	return {
