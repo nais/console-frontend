@@ -27,10 +27,11 @@
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
 	$: team = $TeamVulnerabilities.data?.team;
+
+	$: teamName = $page.params.team;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables(
 		$TeamVulnerabilities.variables,
@@ -55,18 +56,8 @@
 	</Alert>
 {:else}
 	<div class="grid">
-		<Card columns={4}>
-			<label for="from">From:</label>
-			<input type="date" id="from" />
-			<label for="to">To:</label>
-			<input type="date" id="to" />
-		</Card>
-		<Card columns={12}
-			><VulnerabilitiesGraph
-				from={new Date('2024-01-29')}
-				to={new Date('2024-02-07')}
-				team={teamName}
-			/>
+		<Card columns={12}>
+			<VulnerabilitiesGraph team={teamName} />
 		</Card>
 		<Card columns={12}>
 			<Table
@@ -204,15 +195,16 @@
 					{/if}
 				</Tbody>
 			</Table>
-
-			<Pagination
-				pageInfo={team?.vulnerabilities.pageInfo}
-				{limit}
-				{offset}
-				changePage={(e) => {
-					changeParams({ page: e.toString() });
-				}}
-			/>
+			{#if team?.vulnerabilities.pageInfo !== PendingValue}
+				<Pagination
+					pageInfo={team?.vulnerabilities.pageInfo}
+					{limit}
+					{offset}
+					changePage={(e) => {
+						changeParams({ page: e.toString() });
+					}}
+				/>
+			{/if}
 		</Card>
 	</div>
 {/if}

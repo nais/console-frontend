@@ -1676,7 +1676,7 @@ type Team {
   vulnerabilitiesSummary: VulnerabilitySummary!
 
   """The vulnerabilities for the team's applications over time."""
-  vulnerabilityMetrics(from: Date!, to: Date!): [VulnerabilityMetric!]!
+  vulnerabilityMetrics(from: Date, to: Date): VulnerabilityMetrics!
 }
 
 """Team deletion key type."""
@@ -1914,6 +1914,17 @@ type VulnerabilityMetric {
 }
 
 type VulnerabilityMetrics {
+  """The metrics for the team's applications."""
+  data: [VulnerabilityMetric!]!
+
+  """The maximum date for the metrics available in the database."""
+  maxDate: Time!
+
+  """The minimum date for the metrics available in the database."""
+  minDate: Time!
+}
+
+type VulnerabilityMetricsWithProjectId {
   projectId: ID!
   vulnerabilitySummary: VulnerabilitySummary
 }
