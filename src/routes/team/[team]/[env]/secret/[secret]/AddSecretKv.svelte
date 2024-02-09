@@ -55,7 +55,7 @@
 
 <Modal bind:open width="small">
 	<svelte:fragment slot="header">
-		<Heading>New row</Heading>
+		<Heading>Add new key and value</Heading>
 	</svelte:fragment>
 	<div class="entry">
 		<TextField size="small" htmlSize={30} bind:value={key} error={validationError(key)}>

@@ -127,14 +127,14 @@
 
 <style>
 	h4 {
-		font-weight: var(--a-font-weight-bold);
 		display: block;
+		font-family: monospace;
+		font-size: var(--a-font-size-medium);
+		line-height: 2rem;
+		min-height: 2rem;
+		padding: 0 var(--a-spacing-2);
 		width: 17rem;
 		word-wrap: break-word;
-		font-size: var(--a-font-size-medium);
-		padding: 0 var(--a-spacing-2);
-		min-height: 2rem;
-		line-height: 2rem;
 	}
 
 	.entry {

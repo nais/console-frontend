@@ -212,7 +212,7 @@
 			<h5>Last modified by</h5>
 			<div class="metadata-value">
 				{#if secret.lastModifiedBy}
-					{secret.lastModifiedBy.name} ({secret.lastModifiedBy.email})
+					<span class="cap">{secret.lastModifiedBy.name}</span> ({secret.lastModifiedBy.email})
 				{:else}
 					<code>n/a</code>
 				{/if}
@@ -324,4 +324,8 @@
 	code {
 		font-size: 1rem;
 	}
+
+  .cap {
+      text-transform: capitalize;
+  }
 </style>
