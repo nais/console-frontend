@@ -187,8 +187,9 @@
 			{:else if appVulnerabilities.app.vulnerabilities.summary === null}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				No data found in dependencytrack.
-				<a href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais" on:click={onClick}
-					>How to fix</a
+				<a
+					href="https://doc.nav.cloud.nais.io/security/salsa/salsa/#slsa-in-nais"
+					on:click={onClick}>How to fix</a
 				>
 			{:else if appVulnerabilities.app.vulnerabilities.hasBom && isFindings(appVulnerabilities.app.vulnerabilities.summary)}
 				<Tooltip placement="right" content="severity: CRITICAL">
@@ -234,8 +235,9 @@
 					{#if !appVulnerabilities.app.vulnerabilities.hasBom}
 						<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 						Data was discovered, but the SBOM was not rendered. Please refer to the
-						<a href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais" on:click={onClick}
-							>NAIS documentation</a
+						<a
+							href="https://doc.nav.cloud.nais.io/security/salsa/salsa/#slsa-in-nais"
+							on:click={onClick}>NAIS documentation</a
 						>
 						for further assistance.
 					{/if}
