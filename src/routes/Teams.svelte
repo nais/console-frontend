@@ -80,6 +80,8 @@
 						<LinkPanelTitle>{team.slug}</LinkPanelTitle>
 						<LinkPanelDescription>{team.purpose}</LinkPanelDescription>
 					</LinkPanel>
+				{:else}
+					<p>You are not a member of any teams.</p>
 				{/each}
 				<Pagination pageInfo={$store.data.me.teams.pageInfo} {limit} {offset} {changePage} />
 			{/if}
