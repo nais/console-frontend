@@ -1476,6 +1476,7 @@ type Secret {
   lastModifiedAt: Time
   lastModifiedBy: User
   name: String!
+  team: Team!
 }
 
 input SecretTupleInput {

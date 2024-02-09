@@ -13,10 +13,14 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		...AppImage
 		...AppInstances
 		...AppInstancesStatus
-		...AppSecrets
 		...Authz
 		...AutoScaling
 		...Storage
 		...AppStatus
+	}
+
+	team(slug: $team) {
+		viewerIsOwner
+		viewerIsMember
 	}
 }

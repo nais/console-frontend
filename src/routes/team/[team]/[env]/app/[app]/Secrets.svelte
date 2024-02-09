@@ -1,32 +1,40 @@
 <script lang="ts">
-	import type { AppSecrets } from '$houdini';
-	import { fragment, graphql, PendingValue } from '$houdini';
+	import { graphql, PendingValue } from '$houdini';
 	import { page } from '$app/stores';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, Loader, Skeleton } from '@nais/ds-svelte-community';
+	import type { AppSecretsVariables } from './$houdini';
 
-	export let app: AppSecrets;
+	export const _AppSecretsVariables: AppSecretsVariables = () => {
+		return { app: $page.params.app, team: $page.params.team, env: $page.params.env };
+	};
 
-	$: data = fragment(
-		app,
-		graphql(`
-			fragment AppSecrets on App {
-				secrets @loading {
-					name
-				}
+	const appSecrets = graphql(`
+		query AppSecrets($app: String!, $team: Slug!, $env: String!) @load {
+			app(name: $app, team: $team, env: $env) @loading {
+				 secrets @loading {
+					 name
+				 }
 			}
-		`)
-	);
+		}
+	`);
 
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: secrets = $data.secrets;
-	$: count = secrets.length;
 </script>
 
+{#if $appSecrets.fetching}
+	<Loader />
+{:else if $appSecrets.errors}
+	<Alert variant="error">
+		{#each $appSecrets.errors as error}
+			{error.message}
+		{/each}
+	</Alert>
+{:else if $appSecrets.data}
 <div>
-	{#if count > 0}
+	{#if $appSecrets.data.app.secrets.length > 0}
 		<ul>
-			{#each secrets as secret}
+			{#each $appSecrets.data.app.secrets as secret}
 				{#if secret === PendingValue}
 					<Skeleton variant="text" width="300px" />
 				{:else}
@@ -38,6 +46,7 @@
 		<p>No secrets</p>
 	{/if}
 </div>
+{/if}
 
 <style>
 	ul {
