@@ -99,7 +99,7 @@ export function vulnerabilitiesTeamTransformLineChart(
 				name: 'Risk score',
 				data: riskScoreSeries,
 				showSymbol: false,
-				color: '#777777',
+				color: '#ff0000',
 				yAxisIndex: 1
 			}
 		]
