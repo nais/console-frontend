@@ -5,7 +5,7 @@
 	import { graphql } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { vulnerabilitiesTeamTransformLineChart } from '$lib/chart/vulnerabilies_transformer';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Select } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamVulnerabilityMetricsVariables } from './$houdini';
 
@@ -20,9 +20,6 @@
 			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60);
 		const toDate = toParam ? new Date(toParam) : new Date(Date.now());
 
-		console.log(fromDate);
-		console.log(toDate);
-
 		from = fromDate.toISOString().split('T')[0];
 		to = toDate.toISOString().split('T')[0];
 
@@ -33,11 +30,14 @@
 	let to = '';
 
 	const vulnerabilities = graphql(`
-		query TeamVulnerabilityMetrics($slug: Slug!, $from: Date!, $to: Date!)
+		query TeamVulnerabilityMetrics($slug: Slug!, $from: Date!, $to: Date!, $environment: String)
 		@load
 		@cache(policy: NetworkOnly) {
 			team(slug: $slug) {
-				vulnerabilityMetrics(from: $from, to: $to) {
+				environments {
+					name
+				}
+				vulnerabilityMetrics(from: $from, to: $to, environment: $environment) {
 					minDate
 					maxDate
 					data {
@@ -54,7 +54,10 @@
 		}
 	`);
 
+	$: console.log('HEI', $vulnerabilities.data?.team.environments);
+
 	export let team: string;
+	let selectedEnvironment = '';
 
 	function echartOptionsUsageChart(metrics: TeamVulnerabilityMetrics$result) {
 		const opts = vulnerabilitiesTeamTransformLineChart(metrics);
@@ -66,7 +69,28 @@
 	function update() {
 		const params = new URLSearchParams({ from, to });
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
-		vulnerabilities.fetch({ variables: { slug: team, from: new Date(from), to: new Date(to) } });
+
+		if (selectedEnvironment === '') {
+			vulnerabilities.fetch({
+				variables: {
+					slug: team,
+					from: new Date(from),
+					to: new Date(to),
+					environment: null
+				}
+			});
+			return;
+		}
+
+		vulnerabilities.fetch({
+			variables: {
+				slug: team,
+				from: new Date(from),
+				to: new Date(to),
+				environment: selectedEnvironment
+			}
+		});
+		return;
 	}
 
 	$: min = $vulnerabilities.data?.team.vulnerabilityMetrics.minDate.toISOString().split('T')[0];
@@ -81,12 +105,35 @@
 		{/each}
 	</Alert>
 {:else if $vulnerabilities.data}
-	<label for="from">From:</label>
-	<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
-	<label for="to">To:</label>
-	<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
+	<div class="select">
+		<label for="from">From:</label>
+		<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
+		<label for="to">To:</label>
+		<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
+		<Select
+			size="small"
+			hideLabel={true}
+			bind:value={selectedEnvironment}
+			on:change={update}
+			label="Environment"
+		>
+			<option value="">All environments</option>
+			{#each $vulnerabilities.data?.team.environments as env}
+				<option value={env.name}>{env.name}</option>
+			{/each}
+		</Select>
+	</div>
 	<EChart
 		options={echartOptionsUsageChart($vulnerabilities.data)}
 		style="height: 500px; width: 100%;"
 	/>
 {/if}
+
+<style>
+	.select {
+		display: flex;
+		gap: 1rem;
+		margin: 1rem 0;
+		height: 28px;
+	}
+</style>

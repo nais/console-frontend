@@ -1374,14 +1374,12 @@ type Role {
   name: String!
 
   """
-  Optional service account ID if the role binding targets a service account. TODO: Make these resolvers returning service account and team, not IDs
+  Optional service account if the role binding targets a service account.
   """
-  targetServiceAccountID: ID
+  targetServiceAccount: ServiceAccount
 
-  """
-  Optional team slug if the role binding targets a team. TODO: Make these resolvers returning service account and team, not IDs
-  """
-  targetTeamSlug: Slug
+  """Optional team if the role binding targets a team."""
+  targetTeam: Team
 }
 
 type Rule {
@@ -1676,7 +1674,7 @@ type Team {
   vulnerabilitiesSummary: VulnerabilitySummary!
 
   """The vulnerabilities for the team's applications over time."""
-  vulnerabilityMetrics(from: Date, to: Date): VulnerabilityMetrics!
+  vulnerabilityMetrics(environment: String, from: Date, to: Date): VulnerabilityMetrics!
 }
 
 """Team deletion key type."""
