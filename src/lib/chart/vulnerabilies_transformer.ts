@@ -4,7 +4,6 @@ import type { EChartsOption } from 'echarts';
 export function vulnerabilitiesTeamTransformLineChart(
 	metrics: TeamVulnerabilityMetrics$result
 ): EChartsOption {
-	console.log(metrics);
 	const dates = new Array<Date>();
 
 	for (let i = 0; i < metrics.team.vulnerabilityMetrics.data.length; i++) {

@@ -54,8 +54,6 @@
 		}
 	`);
 
-	$: console.log('HEI', $vulnerabilities.data?.team.environments);
-
 	export let team: string;
 	let selectedEnvironment = '';
 
