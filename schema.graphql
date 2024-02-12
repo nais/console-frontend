@@ -356,11 +356,6 @@ input EnvCostFilter {
   to: Date!
 }
 
-type EnvSecret {
-  env: Env!
-  secrets: [Secret!]!
-}
-
 type Error {
   message: String!
 }
@@ -1714,12 +1709,7 @@ type Team {
   ): Secret!
 
   """Get all secrets for the team."""
-  secrets: [EnvSecret!]!
-
-  """
-  A list of Slack channels for NAIS alerts. If no channel is specified for a given environment, NAIS will fallback to the slackChannel value.
-  """
-  slackAlertsChannels: [SlackAlertsChannel!]!
+  secrets: [Secret!]!
 
   """Slack channel for the team."""
   slackChannel: String!

@@ -13,47 +13,23 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import type { Secrets$result } from '$houdini';
 	import { page } from '$app/stores';
 	import CreateSecret from './CreateSecret.svelte';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import HumanTime from '$lib/HumanTime.svelte';
-	import { parseISO } from 'date-fns';
 
 	export let data: PageData;
-	let team = $page.params.team;
-
-	let update: {
-		env: {
-			name: string;
-		};
-		secrets: {
-			name: string;
-			lastModifiedAt?: string;
-		}[];
-	}[] = [];
 
 	$: ({ Secrets } = data);
-	$: mkUpdate($Secrets.data?.team.secrets);
-	let mkUpdate = (secret: Secrets$result['team']['secrets'] | undefined | null) => {
-		if (!secret) {
-			return;
-		}
-
-		update = JSON.parse(JSON.stringify(secret));
-	};
+	$: allSecrets = $Secrets.data?.team.secrets;
+	$: environments = $Secrets.data?.team.environments;
+	$: team = $page.params.team;
 
 	// (obj: Record<string, any>) => obj[key];
-	let createSecretOpen = update
-		? update.reduce(
-				(acc: Record<string, boolean>, curr) => ({
-					...acc,
-					[curr.env.name]: false
-				}),
-				{}
-		  )
+	const createSecretOpen: Record<string, boolean> = environments
+		? environments.reduce((acc, curr) => ({ ...acc, [curr.name]: false }), {})
 		: {};
-	let openCreateSecretModal = (env: string) => {
+	const openCreateSecretModal = (env: string) => {
 		createSecretOpen[env] = true;
 	};
 </script>
@@ -66,15 +42,19 @@
 	</Alert>
 {:else if $Secrets.fetching}
 	<Loader></Loader>
-{:else}
+{:else if allSecrets && environments}
 	<div class="grid">
-		{#each update as secrets}
-			{@const env = secrets.env.name}
+		{#each environments as environment}
+			{@const secrets = allSecrets.filter((s) => s.env.name === environment.name)}
 			<Card columns={12}>
 				<div class="heading">
-					<h3>{env}</h3>
+					<h3>{environment.name}</h3>
 					<Tooltip content="Create new secret in environment" arrow={false}>
-						<Button variant="tertiary" size="small" on:click={() => openCreateSecretModal(env)}>
+						<Button
+							variant="primary"
+							size="small"
+							on:click={() => openCreateSecretModal(environment.name)}
+						>
 							Create Secret
 							<svelte:fragment slot="icon-left">
 								<PlusIcon />
@@ -85,26 +65,26 @@
 
 				<CreateSecret
 					refetch={() => Secrets.fetch({})}
-					existingNames={secrets.secrets.map((s) => s.name)}
-					bind:open={createSecretOpen[env]}
-					bind:team
-					{env}
+					existingNames={secrets.map((s) => s.name)}
+					bind:open={createSecretOpen[environment.name]}
+					env={environment.name}
+					{team}
 				/>
 
-				<Table size="small">
+				<Table size="small" zebraStripes>
 					<Thead>
 						<Th>Name</Th>
 						<Th align="right">Last Modified</Th>
 					</Thead>
 					<Tbody>
-						{#each secrets.secrets as secret}
+						{#each secrets as secret}
 							<Tr>
 								<Td>
-									<a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a>
+									<a href="/team/{team}/{environment.name}/secret/{secret.name}">{secret.name}</a>
 								</Td>
 								<Td align="right">
 									{#if secret.lastModifiedAt}
-										<HumanTime time={parseISO(secret.lastModifiedAt)} distance />
+										<HumanTime time={secret.lastModifiedAt} distance />
 									{:else}
 										<code>n/a</code>
 									{/if}

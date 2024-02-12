@@ -1,7 +1,4 @@
-export type updateState = {
-	name: string;
-	value: string;
-}[];
+import type { SecretTupleInput } from '$houdini';
 
 export type AddKv = {
 	type: 'AddKv';
@@ -36,20 +33,20 @@ export type UpdateValue = {
 
 export type operation = AddKv | DeleteKv | UndoDeleteKv | UpdateValue;
 
-export function mergeChanges(update: updateState, curr: operation): updateState {
+export function mergeChanges(tuples: SecretTupleInput[], curr: operation): SecretTupleInput[] {
 	switch (curr.type) {
 		case 'AddKv':
-			return [...update, { name: curr.data.name, value: curr.data.value }];
+			return [...tuples, { name: curr.data.name, value: curr.data.value }];
 		case 'DeleteKv':
-			return update.filter((state) => state.name !== curr.data.name);
+			return tuples.filter((state) => state.name !== curr.data.name);
 		case 'UndoDeleteKv':
-			return [...update, { name: curr.data.name, value: curr.data.value }];
+			return [...tuples, { name: curr.data.name, value: curr.data.value }];
 		case 'UpdateValue':
-			return update.map((state) =>
+			return tuples.map((state) =>
 				state.name === curr.data.name ? { name: state.name, value: curr.data.value } : state
 			);
 		default:
-			return update;
+			return tuples;
 	}
 }
 

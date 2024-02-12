@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { graphql, type SecretTupleInput } from '$houdini';
 	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { goto } from '$app/navigation';
 
 	export let open: boolean;
 	export let team: string;
@@ -38,8 +39,11 @@
 		if ($createSecret.errors) {
 			open = true;
 		} else {
+			const secretPage = '/team/' + team + '/' + env + '/secret/' + name
+			name = '';
 			open = false;
 			refetch();
+			await goto(secretPage);
 		}
 	};
 

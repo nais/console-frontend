@@ -13,8 +13,8 @@
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Card from '$lib/Card.svelte';
-	import { graphql, type Secret$result } from '$houdini';
-	import { filterAddKvs, mergeChanges, type operation, type updateState } from './state-machinery';
+	import { graphql, type SecretTupleInput } from '$houdini';
+	import { filterAddKvs, mergeChanges, type operation } from './state-machinery';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import SecretKv from './SecretKv.svelte';
 	import AddSecretKv from './AddSecretKv.svelte';
@@ -22,30 +22,27 @@
 	import HumanTime from '$lib/HumanTime.svelte';
 
 	export let data: PageData;
-	$: ({ Secret } = data);
 
-	$: secret = $page.params.secret;
+	$: ({ Secret } = data);
+	$: secret = $Secret.data?.team.secret;
+
+	$: secretName = $page.params.secret;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
+	$: applicationManifest = `spec:
+  envFrom:
+    - secret: ${secretName}`;
+
 	let changes: operation[] = [];
-	let update: updateState = [];
+	let deleteSecretOpen = false;
 
-	$: mkUpdate($Secret.data?.team.secret);
-	let mkUpdate = (secret: Secret$result['team']['secret'] | undefined | null) => {
-		if (!secret) {
-			return;
-		}
-
-		update = JSON.parse(JSON.stringify(secret.data));
-	};
-
-	let discardChanges = () => {
+	const discardChanges = () => {
 		changes = [];
 		Secret.fetch();
 	};
 
-	$: updateSecretMutation = graphql(`
+	const updateSecretMutation = graphql(`
 		mutation updateSecret(
 			$name: String!
 			$team: Slug!
@@ -66,54 +63,50 @@
 			}
 		}
 	`);
-	let updateSecret = async () => {
-		if (update) {
-			let data = changes.reduce(mergeChanges, update);
+	const updateSecret = async () => {
+		if (!secret) return;
 
-			await updateSecretMutation.mutate({
-				data: data,
-				env: env,
-				name: secret,
-				team: team
-			});
+		let data: SecretTupleInput[] = changes.reduce(mergeChanges, secret.data);
 
-			changes = [];
-			await Secret.fetch();
-		}
+		await updateSecretMutation.mutate({
+			data: data,
+			env: env,
+			name: secretName,
+			team: team
+		});
+
+		changes = [];
+		await Secret.fetch();
 	};
 
-	let deleteSecretMutation = graphql(`
+	const deleteSecretMutation = graphql(`
 		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
 			deleteSecret(name: $name, team: $team, env: $env)
 		}
 	`);
-	let deleteSecret = async () => {
+
+	const deleteSecret = async () => {
 		await deleteSecretMutation.mutate({
-			name: secret,
+			name: secretName,
 			team: team,
 			env: env
 		});
 		await goto('/team/' + team + '/secrets');
 	};
 
-	let deleteSecretOpen = false;
-	let toggleDeleteSecretOpen = () => {
+	const toggleDeleteSecretOpen = () => {
 		deleteSecretOpen = !deleteSecretOpen;
 	};
-
-	$: applicationManifest = `spec:
-  envFrom:
-    - secret: ${secret}`;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
-{#if secret !== undefined}
+{#if secretName}
 	<h3>
 		<a href="/team/{team}">{team}</a> /
 		<a href="/team/{team}/secrets">secrets</a> /
 		{env} /
-		<i><a href="/team/{team}/{env}/secret/{secret}">{secret}</a></i>
+		<i><a href="/team/{team}/{env}/secret/{secretName}">{secretName}</a></i>
 	</h3>
 {:else}
 	<h3>
@@ -129,8 +122,7 @@
 	</Alert>
 {:else if $Secret.fetching}
 	<Loader />
-{:else if $Secret.data}
-	{@const secret = $Secret.data.team.secret}
+{:else if secret}
 	<div class="grid">
 		<Card columns={8} rows={3}>
 			<div class="header">
@@ -325,7 +317,7 @@
 		font-size: 1rem;
 	}
 
-  .cap {
-      text-transform: capitalize;
-  }
+	.cap {
+		text-transform: capitalize;
+	}
 </style>

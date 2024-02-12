@@ -11,9 +11,9 @@
 	const appSecrets = graphql(`
 		query AppSecrets($app: String!, $team: Slug!, $env: String!) @load {
 			app(name: $app, team: $team, env: $env) @loading {
-				 secrets @loading {
-					 name
-				 }
+				secrets @loading {
+					name
+				}
 			}
 		}
 	`);
@@ -31,21 +31,21 @@
 		{/each}
 	</Alert>
 {:else if $appSecrets.data}
-<div>
-	{#if $appSecrets.data.app.secrets.length > 0}
-		<ul>
-			{#each $appSecrets.data.app.secrets as secret}
-				{#if secret === PendingValue}
-					<Skeleton variant="text" width="300px" />
-				{:else}
-					<li><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></li>
-				{/if}
-			{/each}
-		</ul>
-	{:else}
-		<p>No secrets</p>
-	{/if}
-</div>
+	<div>
+		{#if $appSecrets.data.app.secrets.length > 0}
+			<ul>
+				{#each $appSecrets.data.app.secrets as secret}
+					{#if secret === PendingValue}
+						<Skeleton variant="text" width="300px" />
+					{:else}
+						<li><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></li>
+					{/if}
+				{/each}
+			</ul>
+		{:else}
+			<p>No secrets</p>
+		{/if}
+	</div>
 {/if}
 
 <style>

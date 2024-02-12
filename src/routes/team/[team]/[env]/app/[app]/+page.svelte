@@ -71,11 +71,11 @@
 			<h4>Authentications</h4>
 			<Authentications app={$App.data.app} />
 		</Card>
-		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner }
-		<Card columns={4}>
-			<h4>Secrets</h4>
-			<Secrets />
-		</Card>
+		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+			<Card columns={4}>
+				<h4>Secrets</h4>
+				<Secrets />
+			</Card>
 		{/if}
 	</div>
 {/if}
