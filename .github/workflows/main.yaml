@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - rollback
 env:
   NAME: console-frontend
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
@@ -42,6 +43,8 @@ jobs:
   rollout:
     needs:
       - build_push
+    # Only do this if on main
+    if: endsWith(github.ref, '/main')
     runs-on: fasit-deploy
     permissions:
       id-token: write
@@ -50,4 +53,3 @@ jobs:
         with:
           chart: ${{ env.IMAGE_REPOSITORY }}/${{ env.NAME }}
           version: ${{ needs.build_push.outputs.version }}
-          feature_name: ${{ env.NAME }}
