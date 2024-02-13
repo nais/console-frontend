@@ -1,8 +1,9 @@
 import type { HandleFetch } from '@sveltejs/kit';
 
 export const handle: HandleFetch = async ({ event, request, fetch }) => {
-	if (request.url.startsWith('http://nais-api/') && event.request.headers.has('cookie')) {
-		request.headers.set('cookie', event.request.headers.get('cookie')!);
+	const cookies = event.request.headers.get('cookie');
+	if (request.url.startsWith('http://nais-api/') && cookies) {
+		request.headers.set('cookie', cookies);
 	}
 
 	return fetch(request);
