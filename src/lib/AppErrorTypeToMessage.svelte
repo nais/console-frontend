@@ -101,15 +101,26 @@
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
 		<div class="wrapper">
 			<Alert variant="error">
+<<<<<<< HEAD
 					The <em>nais.yaml</em> configuration is invalid for application <strong>{app}</strong>:
 					<br>{$data.detail}
+=======
+				The nais.yaml spec is invalid for application <strong>{app}</strong>.
+				<br />{$data.detail}
+>>>>>>> 93ea60d (Forward cookies to api)
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'SynchronizationFailingError'}
 		<div class="wrapper">
 			<Alert variant="error">
+<<<<<<< HEAD
 				Application <strong>{app}</strong> failed to synchronize properly.
 				<br>{$data.detail}
+=======
+				Application <strong>{app}</strong> failed to synchronize properly. The operation will be
+				retried.
+				<br />{$data.detail}
+>>>>>>> 93ea60d (Forward cookies to api)
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'NewInstancesFailingError'}

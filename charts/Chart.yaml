@@ -2,6 +2,6 @@ apiVersion: v2
 name: console-frontend
 description: Frontend for NAIS console
 type: application
-version: 1.0.0
+version: 2024-02-13-104003-46227aa
 sources:
   - https://github.com/nais/console-frontend/tree/main/charts
