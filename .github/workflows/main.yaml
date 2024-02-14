@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - rollback
+      - refactor_migration
 env:
   NAME: console-frontend
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
