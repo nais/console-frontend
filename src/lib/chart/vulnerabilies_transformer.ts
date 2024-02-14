@@ -63,42 +63,42 @@ export function vulnerabilitiesTeamTransformLineChart(
 				type: 'line',
 				name: 'Critical',
 				data: criticalSeries,
-				showSymbol: false,
+				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#f86c6b'
 			},
 			{
 				type: 'line',
 				name: 'High',
 				data: highSeries,
-				showSymbol: false,
+				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#fd8b00'
 			},
 			{
 				type: 'line',
 				name: 'Medium',
 				data: mediumSeries,
-				showSymbol: false,
+				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#ffc107'
 			},
 			{
 				type: 'line',
 				name: 'Low',
 				data: lowSeries,
-				showSymbol: false,
+				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#4dbd74'
 			},
 			{
 				type: 'line',
 				name: 'Unassigned',
 				data: unassignedSeries,
-				showSymbol: false,
+				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#777777'
 			},
 			{
 				type: 'line',
 				name: 'Risk score',
 				data: riskScoreSeries,
-				showSymbol: false,
+				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#ff0000',
 				yAxisIndex: 1
 			}
