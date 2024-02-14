@@ -91,8 +91,8 @@
 		return;
 	}
 
-	$: min = $vulnerabilities.data?.team.vulnerabilityMetrics.minDate.toISOString().split('T')[0];
-	$: max = $vulnerabilities.data?.team.vulnerabilityMetrics.maxDate.toISOString().split('T')[0];
+	$: min = $vulnerabilities.data?.team.vulnerabilityMetrics.minDate?.toISOString().split('T')[0];
+	$: max = $vulnerabilities.data?.team.vulnerabilityMetrics.maxDate?.toISOString().split('T')[0];
 </script>
 
 <h3>Vulnerabilities over time for team</h3>
@@ -102,6 +102,8 @@
 			{error.message}
 		{/each}
 	</Alert>
+{:else if $vulnerabilities.data?.team.vulnerabilityMetrics.data.length === 0}
+	<p>No vulnerability metrics available for team.</p>
 {:else if $vulnerabilities.data}
 	<div class="select">
 		<label for="from">From:</label>
