@@ -190,6 +190,10 @@
 										</Td>
 									{/if}
 								</Tr>
+							{:else}
+								<Tr>
+									<Td colspan={9}>No applications with vulnerability data found</Td>
+								</Tr>
 							{/each}
 						{/if}
 					{/if}
