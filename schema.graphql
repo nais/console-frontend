@@ -1674,7 +1674,7 @@ type Team {
   vulnerabilitiesSummary: VulnerabilitySummary!
 
   """The vulnerabilities for the team's applications over time."""
-  vulnerabilityMetrics(environment: String, from: Date, to: Date): VulnerabilityMetrics!
+  vulnerabilityMetrics(environment: String, from: Date!, to: Date!): VulnerabilityMetrics!
 }
 
 """Team deletion key type."""
@@ -1916,10 +1916,10 @@ type VulnerabilityMetrics {
   data: [VulnerabilityMetric!]!
 
   """The maximum date for the metrics available in the database."""
-  maxDate: Time!
+  maxDate: Date
 
   """The minimum date for the metrics available in the database."""
-  minDate: Time!
+  minDate: Date
 }
 
 type VulnerabilitySummary {
