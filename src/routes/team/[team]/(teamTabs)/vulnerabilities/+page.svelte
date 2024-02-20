@@ -166,7 +166,7 @@
 										<Td>
 											No data found in dependencytrack.
 											<a
-												href="https://doc.nais.io/security/salsa/salsa/#slsa-in-nais"
+												href="https://doc.nav.cloud.nais.io/security/salsa/salsa/#slsa-in-nais"
 												on:click={onClick}>How to fix</a
 											>
 										</Td>
