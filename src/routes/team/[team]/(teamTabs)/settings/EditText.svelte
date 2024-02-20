@@ -54,7 +54,7 @@
 	<!--
 		some weird problems when doing server side rendering. Reduce jumping by rendering with less components
 	-->
-	<span bind:clientHeight={height}>{text} {height}</span>
+	<span bind:clientHeight={height}>{text}</span>
 {/if}
 
 <style>
