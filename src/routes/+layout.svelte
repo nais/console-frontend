@@ -9,18 +9,32 @@
 	import '$lib/font.css';
 	import '../styles/app.css';
 	import type { PageData } from './$houdini';
+	import Login from './Login.svelte';
 
 	export let data: PageData;
 	$: ({ UserInfo } = data);
 
-	$: user = $UserInfo.data?.user;
+	$: user = UserInfo.data?.me as
+		| {
+				readonly name: string;
+				readonly isAdmin: boolean;
+				readonly __typename: 'User';
+		  }
+		| undefined;
 </script>
 
-<Header {user} />
+{#if user == undefined}
+	<!-- logged out -->
+	<Login />
+{:else}
+	{#if user?.__typename === 'User'}
+		<Header {user} />
+	{/if}
 
-<div class="container">
-	<slot />
-</div>
+	<div class="container">
+		<slot />
+	</div>
+{/if}
 
 <style>
 	.container {

@@ -1,22 +1,17 @@
-query TeamSettings($team: String!) @loading(cascade: true) {
-	team(name: $team) {
-		id
-		name
-		deployKey {
-			key
-			created
-			expires
-		}
-		slackAlertsChannels {
-			env
+query TeamSettings($team: Slug!) {
+	team(slug: $team) @loading {
+		id @loading
+		slug
+		purpose
+		slackChannel @loading
+		gitHubTeamSlug
+		azureGroupID
+		googleGroupEmail
+		googleArtifactRegistry
+		environments @loading(count: 2) {
 			name
+			gcpProjectID
+			slackAlertsChannel
 		}
-		gcpProjects {
-			id
-			environment
-		}
-
-		slackChannel
-		description
 	}
 }

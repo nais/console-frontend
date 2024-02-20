@@ -1,4 +1,4 @@
-query AppManifest($app: String!, $team: String!, $env: String!) @loading(cascade: true) {
+query AppManifest($app: String!, $team: Slug!, $env: String!) @loading(cascade: true) {
 	app(name: $app, team: $team, env: $env) {
 		name
 		manifest

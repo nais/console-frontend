@@ -25,6 +25,9 @@
 				... on InvalidNaisYamlError {
 					detail
 				}
+				... on SynchronizationFailingError {
+					detail
+				}
 				... on NewInstancesFailingError {
 					failingInstances
 				}
@@ -98,7 +101,15 @@
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
 		<div class="wrapper">
 			<Alert variant="error">
-				Nais-yaml might be invalid for application <strong>{app}</strong>.
+				The <em>nais.yaml</em> configuration is invalid for application <strong>{app}</strong>:
+				<br />{$data.detail}
+			</Alert>
+		</div>
+	{:else if $data.__typename === 'SynchronizationFailingError'}
+		<div class="wrapper">
+			<Alert variant="error">
+				Application <strong>{app}</strong> failed to synchronize properly.
+				<br />{$data.detail}
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'NewInstancesFailingError'}

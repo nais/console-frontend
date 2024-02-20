@@ -21,7 +21,7 @@
 		};
 
 	const utilization = graphql(`
-		query CurrentResourceUtilizationForApp($app: String!, $team: String!, $env: String!) @load {
+		query CurrentResourceUtilizationForApp($app: String!, $team: Slug!, $env: String!) @load {
 			currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
 				cpu {
 					utilization

@@ -1,37 +1,34 @@
-query TeamVulnerabilities($team: String!, $orderBy: OrderBy = {
-    field: SEVERITY_CRITICAL
-    direction: DESC
-}) @loading(count: 5, cascade: true) {
-    team(name: $team) {
-        id
-        vulnerabilities(first: 30, orderBy: $orderBy) @loading @paginate(mode: SinglePage) {
-            totalCount
-            pageInfo {
-                hasNextPage
-                hasPreviousPage
-                startCursor
-                endCursor
-                from
-                to
-            }
+query TeamVulnerabilities(
+	$limit: Int
+	$offset: Int
+	$team: Slug!
+	$orderBy: OrderBy = { field: SEVERITY_CRITICAL, direction: DESC }
+) {
+	team(slug: $team) @loading {
+		id @loading
+		slug
+		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy) @loading {
+			pageInfo @loading {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+			}
 
-            edges {
-                node {
-                    appName
-                    env
-                    findingsLink
-                    hasBom
-                    summary{
-                        riskScore
-                        unassigned
-                        total
-                        critical
-                        high
-                        medium
-                        low
-                    }
-                }
-            }
-        }
-    }
+			nodes {
+				appName
+				env
+				findingsLink
+				hasBom
+				summary {
+					riskScore
+					unassigned
+					total
+					critical
+					high
+					medium
+					low
+				}
+			}
+		}
+	}
 }

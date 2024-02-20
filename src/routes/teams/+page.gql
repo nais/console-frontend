@@ -1,19 +1,13 @@
-query Teams {
-	teams(first: 50) @paginate(mode: SinglePage) {
-		totalCount
+query Teams($limit: Int, $offset: Int) {
+	teams(limit: $limit, offset: $offset) {
+		nodes {
+			slug
+			purpose
+		}
 		pageInfo {
+			totalCount
 			hasNextPage
 			hasPreviousPage
-			startCursor
-			endCursor
-			from
-			to
-		}
-		edges {
-			node {
-				description
-				name
-			}
 		}
 	}
 }

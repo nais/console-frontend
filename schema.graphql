@@ -1,9 +1,15 @@
 """
+Require an authenticated user with the admin role for all requests with this directive.
+"""
+directive @admin on FIELD_DEFINITION
+
+"""Require an authenticated user for all requests with this directive."""
+directive @auth on FIELD_DEFINITION
+
+"""
 The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer.
 """
 directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
-
-directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 type AccessPolicy {
   inbound: Inbound!
@@ -13,10 +19,10 @@ type AccessPolicy {
 type Acl {
   access: String!
   application: String!
-  team: String!
+  team: Slug!
 }
 
-type App implements Node {
+type App {
   accessPolicy: AccessPolicy!
   appState: AppState!
   authz: [Authz!]!
@@ -33,13 +39,7 @@ type App implements Node {
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
-  vulnerabilities: VulnerabilitiesNode
-}
-
-type AppConnection implements Connection {
-  edges: [AppEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
+  vulnerabilities: Vulnerability
 }
 
 """App cost type."""
@@ -54,9 +54,9 @@ type AppCost {
   sum: Float!
 }
 
-type AppEdge implements Edge {
-  cursor: Cursor!
-  node: App!
+type AppList {
+  nodes: [App!]!
+  pageInfo: PageInfo!
 }
 
 type AppState {
@@ -82,7 +82,7 @@ type AppWithResourceUtilizationOverage {
   overageCost: Float!
 
   """The name of the team who owns the app."""
-  team: String!
+  team: Slug!
 
   """The utilization in percent."""
   utilization: Float!
@@ -93,6 +93,46 @@ type AppsStatus {
   failing: Int!
   total: Int!
 }
+
+"""Audit log type."""
+type AuditLog {
+  """String representation of the action performed."""
+  action: String!
+
+  """
+  The identity of the actor who performed the action. When this field is empty it means that some backend process performed the action. The value, when present, is either the name of a service account, or the email address of a user.
+  """
+  actor: String
+
+  """The related component."""
+  componentName: String!
+
+  """The related correlation ID."""
+  correlationID: String!
+
+  """Creation time of the log entry."""
+  createdAt: Time!
+
+  """ID of the log entry."""
+  id: ID!
+
+  """Log entry message."""
+  message: String!
+
+  """The identifier of the target."""
+  targetIdentifier: String!
+
+  """The type of the audit log target."""
+  targetType: String!
+}
+
+type AuditLogList {
+  nodes: [AuditLog!]!
+  pageInfo: PageInfo!
+}
+
+"""Authenticated user type. Can be a user or a service account."""
+union AuthenticatedUser = ServiceAccount | User
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
@@ -137,18 +177,6 @@ type Claims {
   groups: [Group!]!
 }
 
-"""Connection interface."""
-interface Connection {
-  """A list of edges."""
-  edges: [Edge]!
-
-  """Pagination information."""
-  pageInfo: PageInfo!
-
-  """The total count of items in the connection."""
-  totalCount: Int!
-}
-
 type Consume {
   name: String!
 }
@@ -179,6 +207,18 @@ type CostSeries {
   sum: Float!
 }
 
+"""Input for creating a new team."""
+input CreateTeamInput {
+  """Team purpose."""
+  purpose: String!
+
+  """Specify the Slack channel for the team."""
+  slackChannel: String!
+
+  """Team slug. After creation, this value can not be changed."""
+  slug: Slug!
+}
+
 """Current resource utilization type."""
 type CurrentResourceUtilization {
   """The CPU utilization."""
@@ -190,11 +230,6 @@ type CurrentResourceUtilization {
   """The timestamp used for the calculated values."""
   timestamp: Time!
 }
-
-"""
-Cursor is a string that can be used to paginate through a list of objects. It is opaque to the client and may change at any time.
-"""
-scalar Cursor
 
 """Daily cost type."""
 type DailyCost {
@@ -221,7 +256,7 @@ scalar Date
 type DeployInfo {
   commitSha: String!
   deployer: String!
-  history(after: Cursor, before: Cursor, first: Int, last: Int): DeploymentResponse!
+  history(limit: Int, offset: Int): DeploymentResponse!
   timestamp: Time
   url: String!
 }
@@ -236,19 +271,8 @@ type Deployment {
   team: Team!
 }
 
-type DeploymentConnection implements Connection {
-  edges: [DeploymentEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type DeploymentEdge implements Edge {
-  cursor: Cursor!
-  node: Deployment!
-}
-
 """Deployment key type."""
-type DeploymentKey implements Node {
+type DeploymentKey {
   """The date the deployment key was created."""
   created: Time!
 
@@ -262,6 +286,11 @@ type DeploymentKey implements Node {
   key: String!
 }
 
+type DeploymentList {
+  nodes: [Deployment!]!
+  pageInfo: PageInfo!
+}
+
 type DeploymentResource {
   group: String!
   id: ID!
@@ -271,7 +300,7 @@ type DeploymentResource {
   version: String!
 }
 
-union DeploymentResponse = DeploymentConnection | Error
+union DeploymentResponse = DeploymentList | Error
 
 type DeploymentStatus {
   created: Time!
@@ -295,15 +324,11 @@ type DeprecatedRegistryError implements StateError {
   tag: String!
 }
 
-"""Edge interface."""
-interface Edge {
-  """A cursor for use in pagination."""
-  cursor: Cursor!
-}
-
-type Env implements Node {
+type Env {
+  gcpProjectID: String
   id: ID!
   name: String!
+  slackAlertsChannel: String!
 }
 
 """Env cost type."""
@@ -324,7 +349,7 @@ input EnvCostFilter {
   from: Date!
 
   """The name of the team to get costs for."""
-  team: String!
+  team: Slug!
 
   """End date for cost series, inclusive."""
   to: Date!
@@ -368,54 +393,59 @@ type Flag {
 
 """GCP project type."""
 type GcpProject {
-  """The environment for the GCP project."""
+  """The environment for the project."""
   environment: String!
 
-  """The unique identifier of the GCP project."""
-  id: String!
+  """The GCP project ID."""
+  projectId: String!
 
-  """The name of the GCP project."""
-  name: String!
+  """The display name of the project."""
+  projectName: String!
+}
+
+"""Input for filtering GitHub repositories."""
+input GitHubRepositoriesFilter {
+  """Include archived repositories or not. Default is false."""
+  includeArchivedRepositories: Boolean!
 }
 
 """GitHub repository type."""
-type GithubRepository {
+type GitHubRepository {
   """Whether or not the repository is archived."""
   archived: Boolean!
 
-  """The authorizations for the GitHub repository."""
-  authorizations: [RepositoryAuthorization!]
+  """A list of authorizations granted to the repository by the team."""
+  authorizations: [RepositoryAuthorization!]!
+
+  """ID of the repository."""
   id: ID!
 
-  """The name of the GitHub repository."""
+  """Name of the repository, with the org prefix."""
   name: String!
 
-  """The permissions the team has for the GitHub repository."""
-  permissions: [String!]
+  """A list of permissions given to the team for this repository."""
+  permissions: [GitHubRepositoryPermission!]!
 
   """The name of the role the team has been granted in the repository."""
   roleName: String!
 }
 
-"""GitHub repository connection type."""
-type GithubRepositoryConnection implements Connection {
-  """A list of GitHub repository edges."""
-  edges: [GithubRepositoryEdge!]!
+"""Paginated GitHub repository type."""
+type GitHubRepositoryList {
+  """The list of GitHub repositories."""
+  nodes: [GitHubRepository!]!
 
   """Pagination information."""
   pageInfo: PageInfo!
-
-  """The total count of available GitHub repositories."""
-  totalCount: Int!
 }
 
-"""GitHub repository edge type."""
-type GithubRepositoryEdge implements Edge {
-  """A cursor for use in pagination."""
-  cursor: Cursor!
+"""GitHub repository permission type."""
+type GitHubRepositoryPermission {
+  """Whether or not the permission is granted for the repository."""
+  granted: Boolean!
 
-  """The GitHub repository at the end of the edge."""
-  node: GithubRepository!
+  """Name of the permission."""
+  name: String!
 }
 
 type Group {
@@ -464,7 +494,7 @@ type Insights {
   recordClientAddress: Boolean!
 }
 
-type Instance implements Node {
+type Instance {
   created: Time!
   id: ID!
   image: String!
@@ -520,7 +550,7 @@ input LogSubscriptionInput {
   env: String!
   instances: [String!]
   job: String
-  team: String!
+  team: Slug!
 }
 
 type Maintenance {
@@ -556,28 +586,125 @@ input MonthlyCostFilter {
   env: String!
 
   """The name of the team to get costs for."""
-  team: String!
+  team: Slug!
 }
 
-"""The root query for implementing GraphQL mutations."""
 type Mutation {
+  """
+  Add opt-out of a reconciler for a team member. Only reconcilers that are member aware can be opted out from.
+  """
+  addReconcilerOptOut(
+    """The name of the reconciler to opt the team member out of."""
+    reconciler: String!
+
+    """The team slug."""
+    teamSlug: Slug!
+
+    """The user ID of the team member."""
+    userId: ID!
+  ): TeamMember!
+
+  """
+  Add a user to a team
+  
+  If the user is already a member or an owner of the team, the mutation will fail.
+  
+  The updated team will be returned on success.
+  """
+  addTeamMember(
+    """The new team member."""
+    member: TeamMemberInput!
+
+    """Slug of the team that should receive a new member."""
+    slug: Slug!
+  ): Team!
+
+  """
+  Add users to a team as regular team members
+  
+  If one or more users are already added to the team they will not be updated. If a user is already an owner of the
+  team the user will not lose ownership. Regular team members will get read-only access to the team.
+  
+  The updated team will be returned on success.
+  """
+  addTeamMembers(
+    """Slug of the team that should receive new members."""
+    slug: Slug!
+
+    """List of user IDs that should be added to the team as members."""
+    userIds: [ID!]!
+  ): Team!
+
+  """
+  Add users to a team as team owners
+  
+  If one or more users are already added to the team, they will be granted ownership of the team. If one or more users
+  are already owners of the team, they will not be updated. Team owners will get read/write access to the team.
+  
+  The updated team will be returned on success.
+  """
+  addTeamOwners(
+    """Slug of the team that should receive new owners."""
+    slug: Slug!
+
+    """List of user IDs that should be added to the team as owners."""
+    userIds: [ID!]!
+  ): Team!
+
   """Authorize a team to perform an action from a GitHub repository."""
   authorizeRepository(
     """The action to authorize."""
     authorization: RepositoryAuthorization!
 
     """Name of the repository, with the org prefix, for instance 'org/repo'."""
-    repository: String!
+    repoName: String!
 
-    """The team to authorize the action for."""
-    team: String!
-  ): GithubRepository!
+    """The slug of the team to authorize the action for."""
+    teamSlug: Slug!
+  ): GitHubRepository!
 
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
     """The name of the team to update the deploy key for."""
-    team: String!
+    team: Slug!
   ): DeploymentKey!
+
+  """Configure a reconciler."""
+  configureReconciler(
+    """List of reconciler config inputs."""
+    config: [ReconcilerConfigInput!]!
+
+    """The name of the reconciler to configure."""
+    name: String!
+  ): Reconciler!
+
+  """
+  Confirm a team deletion
+  
+  This will start the actual team deletion process, which will be done in an asynchronous manner. All external
+  entities controlled by NAIS will also be deleted.
+  
+  WARNING: There is no going back after starting this process.
+  
+  Note: Service accounts are not allowed to confirm a team deletion.
+  """
+  confirmTeamDeletion(
+    """Deletion key, acquired using the requestTeamDeletion mutation."""
+    key: String!
+  ): Boolean!
+
+  """
+  Create a new team
+  
+  The user creating the team will be granted team ownership, unless the user is a service account, in which case the
+  team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
+  
+  The new team will be returned on success.
+  """
+  createTeam(
+    """Input for creation of the new team."""
+    input: CreateTeamInput!
+  ): Team!
 
   """Deauthorize an action from a team."""
   deauthorizeRepository(
@@ -585,14 +712,155 @@ type Mutation {
     authorization: RepositoryAuthorization!
 
     """Name of the repository, with the org prefix, for instance 'org/repo'."""
-    repository: String!
+    repoName: String!
 
-    """The team to deauthorize the action for."""
-    team: String!
-  ): GithubRepository!
+    """The slug of the team to deauthorize the action for."""
+    teamSlug: Slug!
+  ): GitHubRepository!
+
+  """
+  Disable a reconciler
+  
+  The reconciler configuration will be left intact.
+  """
+  disableReconciler(
+    """The name of the reconciler to disable."""
+    name: String!
+  ): Reconciler!
+
+  """
+  Enable a reconciler
+  
+  A reconciler must be fully configured before it can be enabled.
+  """
+  enableReconciler(
+    """The name of the reconciler to enable."""
+    name: String!
+  ): Reconciler!
+
+  """Remove opt-out of a reconciler for a team member."""
+  removeReconcilerOptOut(
+    """The name of the reconciler to clear the opt-out from."""
+    reconciler: String!
+
+    """The team slug."""
+    teamSlug: Slug!
+
+    """The user ID of the team member."""
+    userId: ID!
+  ): TeamMember!
+
+  """
+  Remove a user from a team
+  
+  The updated team will be returned on success.
+  """
+  removeUserFromTeam(
+    """Team slug that the user should be removed from."""
+    slug: Slug!
+
+    """ID of the user that will be removed from the team."""
+    userId: ID!
+  ): Team!
+
+  """
+  Remove one or more users from a team
+  
+  The updated team will be returned on success.
+  """
+  removeUsersFromTeam(
+    """Team slug that users should be removed from."""
+    slug: Slug!
+
+    """List of user IDs that should be removed from the team."""
+    userIds: [ID!]!
+  ): Team!
+
+  """
+  Request a key that can be used to trigger a team deletion process
+  
+  Deleting a team is a two step process. First an owner of the team (or an admin) must request a team deletion key, and
+  then a second owner of the team (or an admin) must confirm the deletion using the confirmTeamDeletion mutation.
+  
+  Note: Service accounts are not allowed to request team delete keys.
+  """
+  requestTeamDeletion(
+    """The slug of the team that the deletion key will be assigned to."""
+    slug: Slug!
+  ): TeamDeleteKey!
+
+  """
+  Reset all reconciler configuration options to their initial state and disable the reconciler if it is currently enabled.
+  """
+  resetReconciler(
+    """The name of the reconciler to reset."""
+    name: String!
+  ): Reconciler!
+
+  """
+  Set the member role of a user in a team
+  
+  The user must already exist in the team for this mutation to succeed.
+  
+  The team will be returned on success.
+  """
+  setTeamMemberRole(
+    """The team role to set."""
+    role: TeamRole!
+
+    """The slug of the team."""
+    slug: Slug!
+
+    """The ID of the user."""
+    userId: ID!
+  ): Team!
+
+  """
+  Manually synchronize all teams
+  
+  This action will trigger a full synchronization of all teams against the configured third party systems. The action
+  is asynchronous. The operation can take a while, depending on the amount of teams currently managed.
+  """
+  synchronizeAllTeams: TeamSync!
+
+  """
+  Manually synchronize a team
+  
+  This action will trigger a full synchronization of the team against the configured third party systems. The action
+  is asynchronous.
+  
+  The team will be returned.
+  """
+  synchronizeTeam(
+    """The slug of the team to synchronize."""
+    slug: Slug!
+  ): TeamSync!
+
+  """
+  Trigger a user synchronization
+  
+  This mutation will trigger a full user synchronization with the connected Google Workspace, and return a correlation
+  ID that can later be matched to the log entries. The user synchronization itself is asynchronous.
+  """
+  synchronizeUsers: String!
+
+  """
+  Update an existing team
+  
+  This mutation can be used to update the team purpose. It is not possible to update the team slug.
+  
+  The updated team will be returned on success.
+  """
+  updateTeam(
+    """Input for updating the team."""
+    input: UpdateTeamInput!
+
+    """Slug of the team to update."""
+    slug: Slug!
+  ): Team!
 }
 
-type NaisJob implements Node {
+type NaisJob {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
   completions: Int!
@@ -612,15 +880,18 @@ type NaisJob implements Node {
   team: Team!
 }
 
-type NaisJobConnection implements Connection {
-  edges: [NaisJobEdge!]!
+type NaisJobList {
+  nodes: [NaisJob!]!
   pageInfo: PageInfo!
-  totalCount: Int!
 }
 
-type NaisJobEdge implements Edge {
-  cursor: Cursor!
-  node: NaisJob!
+"""NAIS namespace type."""
+type NaisNamespace {
+  """The environment for the namespace."""
+  environment: String!
+
+  """The namespace."""
+  namespace: Slug!
 }
 
 type NewInstancesFailingError implements StateError {
@@ -632,12 +903,6 @@ type NewInstancesFailingError implements StateError {
 type NoRunningInstancesError implements StateError {
   level: ErrorLevel!
   revision: String!
-}
-
-"""Node interface."""
-interface Node {
-  """The unique ID of an object."""
-  id: ID!
 }
 
 type OpenSearch implements Storage {
@@ -672,9 +937,6 @@ enum OrderByField {
   """Order by risk score"""
   RISK_SCORE
 
-  """Order by authorizations"""
-  ROLE
-
   """Order apps by vulnerability severity critical"""
   SEVERITY_CRITICAL
 
@@ -705,30 +967,16 @@ type OutboundAccessError implements StateError {
   rule: Rule!
 }
 
-"""
-PageInfo is a type that contains pagination information in a Relay style.
-"""
 type PageInfo {
-  """A cursor corresponding to the last node in the connection."""
-  endCursor: Cursor
-  from: Int!
-
-  """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
-
-  """When paginating backwards, are there more items?"""
   hasPreviousPage: Boolean!
-
-  """A cursor corresponding to the first node in the connection."""
-  startCursor: Cursor
-  to: Int!
+  totalCount: Int!
 }
 
 type Port {
   port: Int!
 }
 
-"""The query root for the console-backend GraphQL API."""
 type Query {
   """Get an app by name, team and env."""
   app(
@@ -739,7 +987,7 @@ type Query {
     name: String!
 
     """The name of the team who owns the application."""
-    team: String!
+    team: Slug!
   ): App!
 
   """Get the current resource utilization values for a specific app."""
@@ -751,7 +999,7 @@ type Query {
     env: String!
 
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): CurrentResourceUtilization!
 
   """
@@ -759,7 +1007,7 @@ type Query {
   """
   currentResourceUtilizationForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): CurrentResourceUtilization!
 
   """Get the daily cost for a team application in a specific environment."""
@@ -774,7 +1022,7 @@ type Query {
     from: Date!
 
     """The name of the team that owns the application."""
-    team: String!
+    team: Slug!
 
     """End date for cost series, inclusive."""
     to: Date!
@@ -786,17 +1034,20 @@ type Query {
     from: Date!
 
     """The name of the team that owns the application."""
-    team: String!
+    team: Slug!
 
     """End date for cost series, inclusive."""
     to: Date!
   ): DailyCost!
 
   """Get a list of deployments."""
-  deployments(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int): DeploymentConnection!
+  deployments(limit: Int, offset: Int): DeploymentList!
 
   """Get env cost for a team."""
   envCost(filter: EnvCostFilter!): [EnvCost!]!
+
+  """The currently authenticated user."""
+  me: AuthenticatedUser!
 
   """Get monthly costs."""
   monthlyCost(filter: MonthlyCostFilter!): MonthlyCost!
@@ -810,14 +1061,11 @@ type Query {
     name: String!
 
     """The name of the team who owns the naisjob."""
-    team: String!
+    team: Slug!
   ): NaisJob!
 
-  """Fetches an object given its ID."""
-  node(
-    """The ID of an object."""
-    id: ID!
-  ): Node
+  """Get a collection of reconcilers."""
+  reconcilers(limit: Int, offset: Int): ReconcilerList!
 
   """Get the date range for resource utilization for an app."""
   resourceUtilizationDateRangeForApp(
@@ -828,7 +1076,7 @@ type Query {
     env: String!
 
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationDateRange!
 
   """
@@ -836,7 +1084,7 @@ type Query {
   """
   resourceUtilizationDateRangeForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationDateRange!
 
   """Get the resource utilization for an app."""
@@ -853,7 +1101,7 @@ type Query {
     from: Date
 
     """The name of the team."""
-    team: String!
+    team: Slug!
 
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
@@ -867,7 +1115,7 @@ type Query {
     from: Date
 
     """The team to fetch data for."""
-    team: String!
+    team: Slug!
 
     """Fetch resource utilization until this date. Defaults to today."""
     to: Date
@@ -876,39 +1124,125 @@ type Query {
   """Get resource utilization overage data for a team."""
   resourceUtilizationOverageForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationOverageForTeam!
 
   """Get the resource utilization trend for a team."""
   resourceUtilizationTrendForTeam(
     """The name of the team."""
-    team: String!
+    team: Slug!
   ): ResourceUtilizationTrend!
-  search(after: Cursor, before: Cursor, filter: SearchFilter, first: Int, last: Int, query: String!): SearchConnection!
+  search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
 
-  """Get a specific NAIS-team by the team name."""
+  """Get a specific team."""
   team(
-    """The name of the NAIS-team to get."""
-    name: String!
+    """Slug of the team."""
+    slug: Slug!
   ): Team!
 
-  """Get a list of NAIS-teams, in alphabetical order."""
+  """Get a team delete key."""
+  teamDeleteKey(
+    """The key to get."""
+    key: String!
+  ): TeamDeleteKey!
+
+  """Get a collection of teams. Default limit is 20"""
   teams(
-    """Get entries after the cursor."""
-    after: Cursor
+    """Filter teams by GitHub repository permissions."""
+    filter: TeamsFilter
 
-    """Get entries before the cursor."""
-    before: Cursor
+    """Limit the number of teams to return. Default is 20."""
+    limit: Int
 
-    """Returns the first n entries from the list."""
-    first: Int
+    """Offset to start listing teams from. Default is 0."""
+    offset: Int
+  ): TeamList!
 
-    """Returns the last n entries from the list."""
-    last: Int
-  ): TeamConnection!
+  """Get a specific user."""
+  user(
+    email: String
 
-  """Get the currently logged in user."""
-  user: User!
+    """ID of the user."""
+    id: ID
+  ): User!
+
+  """Get user sync status and logs."""
+  userSync: [UserSyncRun!]!
+
+  """Get a collection of users, sorted by name."""
+  users(limit: Int, offset: Int): UserList!
+}
+
+"""Reconciler type."""
+type Reconciler {
+  """Audit logs for this reconciler."""
+  auditLogs(limit: Int, offset: Int): AuditLogList!
+
+  """Reconciler configuration keys and descriptions."""
+  config: [ReconcilerConfig!]!
+
+  """
+  Whether or not the reconciler is fully configured and ready to be enabled.
+  """
+  configured: Boolean!
+
+  """Description of what the reconciler is responsible for."""
+  description: String!
+
+  """The human-friendly name of the reconciler."""
+  displayName: String!
+
+  """Whether or not the reconciler is enabled."""
+  enabled: Boolean!
+
+  """Whether or not the reconciler uses team memberships when syncing."""
+  memberAware: Boolean!
+
+  """The name of the reconciler."""
+  name: String!
+}
+
+"""Reconciler configuration type."""
+type ReconcilerConfig {
+  """Whether or not the configuration key has a value."""
+  configured: Boolean!
+
+  """Configuration description."""
+  description: String!
+
+  """The human-friendly name of the configuration key."""
+  displayName: String!
+
+  """Configuration key."""
+  key: String!
+
+  """
+  Whether or not the configuration value is considered a secret. Secret values will not be exposed through the API.
+  """
+  secret: Boolean!
+
+  """
+  Configuration value. This will be set to null if the value is considered a secret.
+  """
+  value: String
+}
+
+"""Reconciler configuration input."""
+input ReconcilerConfigInput {
+  """Configuration key."""
+  key: String!
+
+  """Configuration value."""
+  value: String!
+}
+
+"""Paginated reconcilers type."""
+type ReconcilerList {
+  """The list of reconcilers."""
+  nodes: [Reconciler!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
 }
 
 type Redis implements Storage {
@@ -916,9 +1250,9 @@ type Redis implements Storage {
   name: String!
 }
 
-"""Repo authorizations."""
+"""Repository authorizations."""
 enum RepositoryAuthorization {
-  """Authorized for NAIS deployment."""
+  """Authorize for NAIS deployment."""
   DEPLOY
 }
 
@@ -1031,6 +1365,23 @@ type Resources {
   requests: Requests!
 }
 
+"""Role binding type."""
+type Role {
+  """Whether or not the role is global."""
+  isGlobal: Boolean!
+
+  """Name of the role."""
+  name: String!
+
+  """
+  Optional service account if the role binding targets a service account.
+  """
+  targetServiceAccount: ServiceAccount
+
+  """Optional team if the role binding targets a team."""
+  targetTeam: Team
+}
+
 type Rule {
   application: String!
   cluster: String!
@@ -1040,7 +1391,7 @@ type Rule {
   namespace: String!
 }
 
-type Run implements Node {
+type Run {
   completionTime: Time
   duration: String!
   failed: Boolean!
@@ -1052,19 +1403,13 @@ type Run implements Node {
   startTime: Time
 }
 
-type SearchConnection implements Connection {
-  edges: [SearchEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type SearchEdge implements Edge {
-  cursor: Cursor!
-  node: SearchNode!
-}
-
 input SearchFilter {
   type: SearchType
+}
+
+type SearchList {
+  nodes: [SearchNode!]!
+  pageInfo: PageInfo!
 }
 
 union SearchNode = App | NaisJob | Team
@@ -1075,6 +1420,18 @@ enum SearchType {
   TEAM
 }
 
+"""Service account type."""
+type ServiceAccount {
+  """Unique ID of the service account."""
+  id: ID!
+
+  """The name of the service account."""
+  name: String!
+
+  """Roles attached to the service account."""
+  roles: [Role!]!
+}
+
 type Sidecar {
   autoLogin: Boolean!
   autoLoginIgnorePaths: [String!]!
@@ -1083,12 +1440,38 @@ type Sidecar {
 
 """Slack alerts channel type."""
 type SlackAlertsChannel {
-  """The environment for the Slack alerts channel."""
-  env: String!
+  """The name of the Slack channel."""
+  channelName: String!
 
-  """The name of the Slack alerts channel."""
-  name: String!
+  """The environment for the alerts sent to the channel."""
+  environment: String!
 }
+
+"""Slack alerts channel input."""
+input SlackAlertsChannelInput {
+  """The name of the Slack channel."""
+  channelName: String
+
+  """The environment for the alerts sent to the channel."""
+  environment: String!
+}
+
+"""
+The slug must:
+
+- contain only lowercase alphanumeric characters or hyphens
+- contain at least 3 characters and at most 30 characters
+- start with an alphabetic character
+- end with an alphanumeric character
+- not contain two hyphens in a row
+
+Examples of valid slugs:
+
+- `some-value`
+- `someothervalue`
+- `my-team-123`
+"""
+scalar Slug
 
 enum SortOrder {
   """Ascending sort order."""
@@ -1133,211 +1516,241 @@ interface Storage {
   name: String!
 }
 
-"""The root subscription type for implementing GraphQL subscriptions."""
 type Subscription {
   log(input: LogSubscriptionInput): LogLine!
 }
 
+"""Sync error type."""
+type SyncError {
+  """Creation time of the error."""
+  createdAt: Time!
+
+  """Error message."""
+  error: String!
+
+  """The name of the reconciler."""
+  reconciler: String!
+}
+
+type SynchronizationFailingError implements StateError {
+  detail: String!
+  level: ErrorLevel!
+  revision: String!
+}
+
 """Team type."""
-type Team implements Node {
+type Team {
   """The NAIS applications owned by the team."""
   apps(
-    """Get entries after the cursor."""
-    after: Cursor
-
-    """Get entries before the cursor."""
-    before: Cursor
+    """Returns the last n entries from the list."""
+    limit: Int
 
     """Returns the first n entries from the list."""
-    first: Int
-
-    """Returns the last n entries from the list."""
-    last: Int
+    offset: Int
 
     """Order apps by"""
     orderBy: OrderBy
-  ): AppConnection!
+  ): AppList!
+
+  """Audit logs for this team."""
+  auditLogs(
+    """Limit the number of audit log entries to return. Default is 20."""
+    limit: Int
+
+    """Offset to start listing audit log entries from. Default is 0."""
+    offset: Int
+  ): AuditLogList!
+
+  """
+  The ID of the Azure AD group for the team. This value is managed by the Azure AD reconciler.
+  """
+  azureGroupID: ID
+
+  """Whether or not the team is currently being deleted."""
+  deletionInProgress: Boolean!
 
   """The deploy key of the team."""
   deployKey: DeploymentKey!
 
   """The deployments of the team's applications."""
   deployments(
-    """Get entries after the cursor."""
-    after: Cursor
-
-    """Get entries before the cursor."""
-    before: Cursor
-
-    """Returns the first n entries from the list."""
-    first: Int
-
-    """Returns the last n entries from the list."""
-    last: Int
-
     """Limit the number of entries returned."""
     limit: Int
-  ): DeploymentConnection!
 
-  """The description of the team."""
-  description: String!
-  gcpProjects: [GcpProject!]!
+    """Returns the first n entries from the list."""
+    offset: Int
+  ): DeploymentList!
+
+  """The environments available for the team."""
+  environments: [Env!]!
+
+  """
+  The slug of the GitHub team. This value is managed by the GitHub reconciler.
+  """
+  gitHubTeamSlug: String
 
   """The GitHub repositories that the team has access to."""
   githubRepositories(
-    """Get entries after the cursor."""
-    after: Cursor
+    """Limit the number of repositories to return. Default is 20."""
+    limit: Int
 
-    """Get entries before the cursor."""
-    before: Cursor
+    """Offset to start listing repositories from. Default is 0."""
+    offset: Int
+  ): GitHubRepositoryList!
 
-    """Returns the first n entries from the list."""
-    first: Int
+  """The Google artifact registry for the team."""
+  googleArtifactRegistry: String
 
-    """Returns the last n entries from the list."""
-    last: Int
-
-    """Order apps by"""
-    orderBy: OrderBy
-  ): GithubRepositoryConnection!
-
-  """The unique identifier of the team."""
+  """
+  The email address of the Google group for the team. This value is managed by the Google Workspace reconciler.
+  """
+  googleGroupEmail: String
   id: ID!
+
+  """Timestamp of the last successful synchronization of the team."""
+  lastSuccessfulSync: Time
+
+  """Single team member"""
+  member(
+    """The ID of the user."""
+    userId: ID!
+  ): TeamMember!
 
   """Team members."""
   members(
-    """Get entries after the cursor."""
-    after: Cursor
+    """Limit the number of team members to return. Default is 20."""
+    limit: Int
 
-    """Get entries before the cursor."""
-    before: Cursor
-
-    """Returns the first n entries from the list."""
-    first: Int
-
-    """Returns the last n entries from the list."""
-    last: Int
-  ): TeamMemberConnection!
+    """Offset to start listing team members from. Default is 0."""
+    offset: Int
+  ): TeamMemberList!
 
   """The NAIS jobs owned by the team."""
   naisjobs(
-    """Get entries after the cursor."""
-    after: Cursor
-
-    """Get entries before the cursor."""
-    before: Cursor
+    """Returns the last n entries from the list."""
+    limit: Int
 
     """Returns the first n entries from the list."""
-    first: Int
-
-    """Returns the last n entries from the list."""
-    last: Int
+    offset: Int
 
     """Order naisjobs by"""
     orderBy: OrderBy
-  ): NaisJobConnection!
+  ): NaisJobList!
 
-  """The name of the team."""
-  name: String!
+  """Purpose of the team."""
+  purpose: String!
 
-  """Slack alerts channels for the team."""
-  slackAlertsChannels: [SlackAlertsChannel!]!
-
-  """The main Slack channel for the team."""
+  """Slack channel for the team."""
   slackChannel: String!
+
+  """Unique slug of the team."""
+  slug: Slug!
 
   """The status of the team."""
   status: TeamStatus!
 
-  """Whether or not the viewer is an administrator of the team."""
-  viewerIsAdmin: Boolean!
+  """
+  Possible issues related to synchronization of the team to configured external systems. If there are no entries the team can be considered fully synchronized.
+  """
+  syncErrors: [SyncError!]!
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
 
+  """Whether or not the viewer is an owner of the team."""
+  viewerIsOwner: Boolean!
+
   """The vulnerabilities for the team's applications."""
   vulnerabilities(
-    """Get entries after the cursor."""
-    after: Cursor
-
-    """Get entries before the cursor."""
-    before: Cursor
+    """Returns the last n entries from the list."""
+    limit: Int
 
     """Returns the first n entries from the list."""
-    first: Int
-
-    """Returns the last n entries from the list."""
-    last: Int
+    offset: Int
 
     """Order apps by"""
     orderBy: OrderBy
-  ): VulnerabilitiesConnection!
+  ): VulnerabilityList!
   vulnerabilitiesSummary: VulnerabilitySummary!
+
+  """The vulnerabilities for the team's applications over time."""
+  vulnerabilityMetrics(environment: String, from: Date!, to: Date!): VulnerabilityMetrics!
 }
 
-"""Team connection type."""
-type TeamConnection implements Connection {
-  """A list of team edges."""
-  edges: [TeamEdge!]!
+"""Team deletion key type."""
+type TeamDeleteKey {
+  """The creation timestamp of the key."""
+  createdAt: Time!
+
+  """The user who created the key."""
+  createdBy: User!
+
+  """Expiration timestamp of the key."""
+  expires: Time!
+
+  """The unique key used to confirm the deletion of a team."""
+  key: String!
+
+  """The team the delete key is for."""
+  team: Team!
+}
+
+"""Paginated teams type."""
+type TeamList {
+  """The list of teams."""
+  nodes: [Team!]!
 
   """Pagination information."""
   pageInfo: PageInfo!
-
-  """The total count of available teams."""
-  totalCount: Int!
 }
 
-"""Team edge type."""
-type TeamEdge implements Edge {
-  """A cursor for use in pagination."""
-  cursor: Cursor!
+"""Team member."""
+type TeamMember {
+  """Reconcilers for this member in this team."""
+  reconcilers: [TeamMemberReconciler!]!
 
-  """The team at the end of the edge."""
-  node: Team!
-}
-
-"""Team member type."""
-type TeamMember implements Node {
-  """The email of the team member."""
-  email: String!
-
-  """The unique identifier of the team member."""
-  id: ID!
-
-  """The name of the team member."""
-  name: String!
-
-  """The role of the team member."""
+  """The role that the user has in the team."""
   role: TeamRole!
+
+  """Team instance."""
+  team: Team!
+
+  """User instance."""
+  user: User!
 }
 
-"""Team member connection type."""
-type TeamMemberConnection implements Connection {
-  """A list of team member edges."""
-  edges: [TeamMemberEdge!]!
+"""Team member input."""
+input TeamMemberInput {
+  """Reconcilers to opt the team member out of."""
+  reconcilerOptOuts: [String!]
 
-  """Pagination information."""
+  """The role that the user will receive."""
+  role: TeamRole!
+
+  """The ID of user."""
+  userId: ID!
+}
+
+type TeamMemberList {
+  nodes: [TeamMember!]!
   pageInfo: PageInfo!
-
-  """The total count of available team members."""
-  totalCount: Int!
 }
 
-"""Team member edge type."""
-type TeamMemberEdge implements Edge {
-  """A cursor for use in pagination."""
-  cursor: Cursor!
+"""Team member reconcilers."""
+type TeamMemberReconciler {
+  """Whether or not the reconciler is enabled for the team member."""
+  enabled: Boolean!
 
-  """The team member at the end of the edge."""
-  node: TeamMember!
+  """The reconciler."""
+  reconciler: Reconciler!
 }
 
-"""Team member roles."""
+"""Available team roles."""
 enum TeamRole {
-  """A regular team member."""
+  """Regular member, read only access."""
   MEMBER
 
-  """A team owner/administrator."""
+  """Team owner, full access to the team."""
   OWNER
 }
 
@@ -1345,6 +1758,25 @@ enum TeamRole {
 type TeamStatus {
   apps: AppsStatus!
   jobs: JobsStatus!
+}
+
+"""Team sync type."""
+type TeamSync {
+  """The correlation ID for the sync."""
+  correlationID: ID!
+}
+
+"""Input for filtering teams."""
+input TeamsFilter {
+  github: TeamsFilterGitHub
+}
+
+input TeamsFilterGitHub {
+  """Filter repostiories by permission name"""
+  permissionName: String!
+
+  """Filter repostiories by repo name"""
+  repoName: String!
 }
 
 """
@@ -1361,18 +1793,78 @@ type Topic {
   name: String!
 }
 
-type User implements Node {
-  """The user's email address."""
+"""Input for updating an existing team."""
+input UpdateTeamInput {
+  """Specify team purpose to update the existing value."""
+  purpose: String
+
+  """A list of Slack channels for NAIS alerts."""
+  slackAlertsChannels: [SlackAlertsChannelInput!]
+
+  """Specify the Slack channel to update the existing value."""
+  slackChannel: String
+}
+
+"""User type."""
+type User {
+  """The email address of the user."""
   email: String!
 
-  """The unique identifier for the user."""
+  """The external ID of the user."""
+  externalId: String!
+
+  """Unique ID of the user."""
   id: ID!
 
-  """The user's full name."""
+  """This field will only be populated via the me query"""
+  isAdmin: Boolean
+
+  """The name of the user."""
   name: String!
 
-  """Teams that the user is a member and/or owner of."""
-  teams(after: Cursor, before: Cursor, first: Int, last: Int): TeamConnection!
+  """Roles attached to the user."""
+  roles: [Role!]!
+
+  """List of team memberships."""
+  teams(limit: Int, offset: Int): TeamMemberList!
+}
+
+type UserList {
+  nodes: [User!]!
+  pageInfo: PageInfo!
+}
+
+"""User sync run type."""
+type UserSyncRun {
+  """Log entries for the sync run."""
+  auditLogs(limit: Int, offset: Int): AuditLogList!
+
+  """The correlation ID of the sync run."""
+  correlationID: ID!
+
+  """Optional error."""
+  error: String
+
+  """Timestamp of when the run finished."""
+  finishedAt: Time
+
+  """Timestamp of when the run started."""
+  startedAt: Time!
+
+  """The status of the sync run."""
+  status: UserSyncRunStatus!
+}
+
+"""User sync run status."""
+enum UserSyncRunStatus {
+  """Failed user sync run."""
+  FAILURE
+
+  """User sync run in progress."""
+  IN_PROGRESS
+
+  """Successful user sync run."""
+  SUCCESS
 }
 
 type Variable {
@@ -1380,24 +1872,54 @@ type Variable {
   value: String!
 }
 
-type VulnerabilitiesConnection implements Connection {
-  edges: [VulnerabilitiesEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type VulnerabilitiesEdge implements Edge {
-  cursor: Cursor!
-  node: VulnerabilitiesNode!
-}
-
-type VulnerabilitiesNode implements Node {
+type Vulnerability {
   appName: String!
   env: String!
   findingsLink: String!
   hasBom: Boolean!
   id: ID!
   summary: VulnerabilitySummary
+}
+
+type VulnerabilityList {
+  nodes: [Vulnerability!]!
+  pageInfo: PageInfo!
+}
+
+type VulnerabilityMetric {
+  """The number of critical vulnerabilities."""
+  critical: Int!
+
+  """The date of the metric."""
+  date: Time!
+
+  """The number of high vulnerabilities."""
+  high: Int!
+
+  """The number of low vulnerabilities."""
+  low: Int!
+
+  """The number of medium vulnerabilities."""
+  medium: Int!
+
+  """
+  The weighted severity score calculated from the number of vulnerabilities.
+  """
+  riskScore: Int!
+
+  """The number of unassigned vulnerabilities."""
+  unassigned: Int!
+}
+
+type VulnerabilityMetrics {
+  """The metrics for the team's applications."""
+  data: [VulnerabilityMetric!]!
+
+  """The maximum date for the metrics available in the database."""
+  maxDate: Date
+
+  """The minimum date for the metrics available in the database."""
+  minDate: Date
 }
 
 type VulnerabilitySummary {

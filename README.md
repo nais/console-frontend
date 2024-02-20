@@ -1,38 +1,39 @@
-# create-svelte
+# Console frontend
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Development
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+The following snippet contains the most important commands for development.
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
+npm install
+cp .env.example .env # Copy the example environment file
+npm run dev # Starts a development server on port 5173
 
-# create a new project in my-app
-npm create svelte@latest my-app
+npm run check # Check for various issues
+npm run lint # Lint the code
+npm run format # Format the code (Or use a Prettier extension in  your editor)
 ```
 
-## Developing
+## User
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+In production `api` uses oauth2 to authenticate users.
+In developmen
 
-```bash
-npm run dev
+### Local user override
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+When running locally, the frontend will proxy requests to the backend through a Vite Proxy.
+This proxy will add a special header for local development to specify which user to run as.
 
-## Building
+There's two well known users:
 
-To create a production version of your app:
+| User                        | Description                                          |
+| --------------------------- | ---------------------------------------------------- |
+| `dev.usersen@example.com`   | A user with tenant wide permissions, but owns a team |
+| `admin.usersen@example.com` | A user with all permissions                          |
 
-```bash
-npm run build
-```
+You can specify which user to run as through `.env`.
+See `.env.example` for an example.
 
-You can preview the production build with `npm run preview`.
+### Using OAUTH
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+To use the oauth flow, you need to configure `api` with correct credentials, and the user has to exist in the database.

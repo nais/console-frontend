@@ -1,38 +1,27 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
-	import type { TableSortState } from '@nais/ds-svelte-community';
+	import {
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { sortTable } from '../../../../../helpers';
 	import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
 
-	$: teamName = $page.params.team;
 	export let data: PageData;
+
+	$: teamName = $page.params.team;
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
 
-	let sortState: TableSortState = {
-		orderBy: 'STATUS',
-		direction: 'ascending'
-	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		Workloads.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'STATUS',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
-	};
+	$: ({ sortState, limit, offset } = tableStateFromVariables($Workloads.variables));
 </script>
 
 {#if $Workloads.errors}
@@ -49,7 +38,8 @@
 				sort={sortState}
 				on:sortChange={(e) => {
 					const { key } = e.detail;
-					sortState = sortTable(key, sortState, refetch);
+					const ss = sortTable(key, sortState);
+					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 				}}
 			>
 				<Thead>
@@ -63,36 +53,34 @@
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(team.apps.edges.length).fill('text') as variant}
+								{#each new Array(team.apps.nodes.length).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.apps.edges as edge}
+							{#each team.apps.nodes as node}
 								<Tr>
 									<Td>
 										<div class="status">
 											<a
-												href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}/status"
+												href="/team/{teamName}/{node.env.name}/app/{node.name}/status"
 												data-sveltekit-preload-data="off"
 											>
-												<Status size="1.5rem" state={edge.node.appState.state} />
+												<Status size="1.5rem" state={node.appState.state} />
 											</a>
 										</div>
 									</Td>
 									<Td>
-										<a href="/team/{teamName}/{edge.node.env.name}/app/{edge.node.name}"
-											>{edge.node.name}</a
-										>
+										<a href="/team/{teamName}/{node.env.name}/app/{node.name}">{node.name}</a>
 									</Td>
-									<Td>{edge.node.env.name}</Td>
+									<Td>{node.env.name}</Td>
 
 									<Td>
-										<InstanceStatus app={edge.node} />
+										<InstanceStatus app={node} />
 									</Td>
 									<Td>
-										{#if edge.node.deployInfo.timestamp}
-											<Time time={edge.node.deployInfo.timestamp} distance={true} />
+										{#if node.deployInfo.timestamp}
+											<Time time={node.deployInfo.timestamp} distance={true} />
 										{/if}
 									</Td>
 								</Tr>
@@ -105,22 +93,14 @@
 					{/if}
 				</Tbody>
 			</Table>
-			{#if team !== undefined}
-				{#if team.id !== PendingValue}
-					<Pagination
-						totalCount={team.apps.totalCount}
-						pageInfo={team.apps.pageInfo}
-						on:nextPage={() => {
-							if (!$Workloads.pageInfo.hasNextPage) return;
-							Workloads.loadNextPage();
-						}}
-						on:previousPage={() => {
-							if (!$Workloads.pageInfo.hasPreviousPage) return;
-							Workloads.loadPreviousPage();
-						}}
-					/>
-				{/if}
-			{/if}
+			<Pagination
+				pageInfo={team?.apps.pageInfo}
+				{limit}
+				{offset}
+				changePage={(e) => {
+					changeParams({ page: e.toString() });
+				}}
+			/>
 		</Card>
 	</div>
 {/if}

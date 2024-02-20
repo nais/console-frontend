@@ -12,12 +12,12 @@
 </script>
 
 <ul>
-	{#if data.search.edges.length === 0}
+	{#if data.search.nodes.length === 0}
 		<li class="nomatch">
 			No results matching "{query}"
 		</li>
 	{/if}
-	{#each data.search.edges as { node }, i}
+	{#each data.search.nodes as node, i}
 		{#if node.__typename === PendingValue}
 			<li>
 				<Skeleton variant="rounded" width="350px" height="2.5rem" />
@@ -27,7 +27,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.name}/{node.env.name}/app/{node.name}"
+					href="/team/{node.team.slug}/{node.env.name}/app/{node.name}"
 					on:click={() => {
 						query = '';
 						showSearch = false;
@@ -44,7 +44,7 @@
 
 						<div class="searchInfo">
 							{node.env.name} /
-							{node.team.name}
+							{node.team.slug}
 						</div>
 					</div>
 				</a>
@@ -53,7 +53,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.name}/{node.env.name}/job/{node.name}"
+					href="/team/{node.team.slug}/{node.env.name}/job/{node.name}"
 					on:click={() => {
 						query = '';
 						showSearch = false;
@@ -70,7 +70,7 @@
 
 						<div class="searchInfo">
 							{node.env.name} /
-							{node.team.name}
+							{node.team.slug}
 						</div>
 					</div>
 				</a>
@@ -79,7 +79,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.name}"
+					href="/team/{node.slug}"
 					on:click={() => {
 						query = '';
 						showSearch = false;
@@ -89,7 +89,7 @@
 						<PersonGroupIcon height="1.5rem" />
 						<div>Team</div>
 					</div>
-					{node.name}</a
+					{node.slug}</a
 				>
 			</li>
 		{/if}

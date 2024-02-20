@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Tag } from '@nais/ds-svelte-community';
+
 	export let status: string;
-	let asdf = (
+
+	const asdf = (
 		status: string
 	): { variant: 'success' | 'error' | 'neutral' | 'warning' | 'info'; title: string } => {
 		switch (status) {
@@ -17,6 +19,7 @@
 				return { variant: 'neutral', title: 'Unknown' };
 		}
 	};
+
 	$: statusType = asdf(status);
 </script>
 

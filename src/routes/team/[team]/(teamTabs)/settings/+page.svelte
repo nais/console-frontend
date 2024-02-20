@@ -4,11 +4,20 @@
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, CopyButton, Modal, Skeleton } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepathIcon, EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, CopyButton, Loader, Modal, Skeleton } from '@nais/ds-svelte-community';
+	import {
+		ArrowsCirclepathIcon,
+		ChatExclamationmarkIcon,
+		EyeIcon,
+		EyeSlashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import EditText from './EditText.svelte';
+
+	export let data: PageData;
+
 	const rotateKey = graphql(`
-		mutation RotateDeployKey($team: String!) {
+		mutation RotateDeployKey($team: Slug!) {
 			changeDeployKey(team: $team) {
 				key
 				created
@@ -17,7 +26,30 @@
 		}
 	`);
 
-	export let data: PageData;
+	const updateTeam = graphql(`
+		mutation UpdateTeam($slug: Slug!, $input: UpdateTeamInput!) {
+			updateTeam(slug: $slug, input: $input) {
+				purpose
+				slackChannel
+				environments {
+					slackAlertsChannel
+				}
+			}
+		}
+	`);
+
+	$: hookdResponse = graphql(`
+		query HookdDeployKey($team: Slug!) @load {
+			team(slug: $team) @loading(cascade: true) {
+				id
+				deployKey {
+					key
+					created
+					expires
+				}
+			}
+		}
+	`);
 
 	$: ({ TeamSettings } = data);
 
@@ -27,6 +59,50 @@
 
 	let showKey = false;
 	let showRotateKey = false;
+
+	let descriptionError = false;
+	let defaultSlackChannelError = false;
+	let slackChannelsError = false;
+
+	const globalAttributes = (obj: {
+		readonly azureGroupID: string | null;
+		readonly gitHubTeamSlug: string | null;
+		readonly googleGroupEmail: string | null;
+		readonly googleArtifactRegistry: string | null;
+	}) => {
+		const lines: { key: string; value: string }[] = [];
+
+		if (obj.googleArtifactRegistry) {
+			lines.push({
+				key: 'Artifact Registry repository',
+				value: formatGARRepo(obj.googleArtifactRegistry)
+			});
+		}
+		if (obj.gitHubTeamSlug) {
+			lines.push({ key: 'GitHub team', value: obj.gitHubTeamSlug });
+		}
+		if (obj.googleGroupEmail) {
+			lines.push({ key: 'Google group email', value: obj.googleGroupEmail });
+		}
+		if (obj.azureGroupID) {
+			lines.push({ key: 'Azure AD group ID', value: obj.azureGroupID });
+		}
+		return lines;
+	};
+
+	const envResources = (obj: { readonly gcpProjectID: string | null }) => {
+		const lines: { key: string; value: string }[] = [];
+
+		if (obj.gcpProjectID) {
+			lines.push({ key: 'GCP project ID', value: obj.gcpProjectID });
+		}
+		return lines;
+	};
+
+	const formatGARRepo = (repo: string) => {
+		const [, projectId, , location, , repository] = repo.split('/');
+		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
+	};
 </script>
 
 {#if $TeamSettings.errors}
@@ -36,108 +112,212 @@
 		{/each}
 	</Alert>
 {:else if teamSettings}
-	<div style="margin-bottom: 1rem;">
-		<Alert variant="info">
-			Team settings currently managed by <a href="https://teams.nav.cloud.nais.io">Teams</a>
-			<br />
-			This functionality will be incorporated into this app eventually
-		</Alert>
-	</div>
 	<div class="grid">
 		<Card columns={6}>
 			<h3>{team}</h3>
 			{#if teamSettings.id === PendingValue}
 				<Skeleton variant="text" width="400px" />
 			{:else}
-				<i>{teamSettings.description}</i>
+				<i>
+					<EditText
+						text={teamSettings.purpose}
+						on:save={async (e) => {
+							descriptionError = false;
+							const data = await updateTeam.mutate({
+								slug: team,
+								input: {
+									purpose: e.detail
+								}
+							});
+
+							if (data.errors) {
+								descriptionError = true;
+							}
+						}}
+					/>
+				</i>
+
+				{#if descriptionError}
+					<Alert variant="error" size="small">
+						Error updating description. Please try again later.
+					</Alert>
+				{/if}
 			{/if}
-			<h4>Slack channels</h4>
+			<h4><ChatExclamationmarkIcon /> Slack channels</h4>
 			{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
-				<dl>
-					<dt>Default slack-channel:</dt>
-					<dd>{teamSettings.slackChannel}</dd>
-				</dl>
+				<p>
+					<b>Default slack-channel:</b>
+					<EditText
+						text={teamSettings.slackChannel}
+						variant="textfield"
+						on:save={async (e) => {
+							defaultSlackChannelError = false;
+							const data = await updateTeam.mutate({
+								slug: team,
+								input: {
+									slackChannel: e.detail
+								}
+							});
+
+							if (data.errors) {
+								defaultSlackChannelError = true;
+							}
+						}}
+					/>
+				</p>
+				{#if defaultSlackChannelError}
+					<Alert variant="error" size="small">
+						Error updating default slack-channel. Please try again later.
+					</Alert>
+				{/if}
 			{/if}
-			{#if teamSettings.slackAlertsChannels && teamSettings.slackAlertsChannels.length > 0 && teamSettings.slackAlertsChannels[0].env !== PendingValue}
-				<dl>
-					<dh>Per-environment slack-channels to be used for alerts sent by the platform.</dh>
-					{#each teamSettings.slackAlertsChannels as channel}
-						<dt>{channel.env}:</dt>
-						<dd>{channel.name}</dd>
+			{#if teamSettings.environments && teamSettings.environments.length > 0}
+				<p>
+					Per-environment slack-channels to be used for alerts sent by the platform.
+					{#each teamSettings.environments as env}
+						{#if env !== PendingValue}
+							<div class="channel">
+								<b>{env.name}:</b>
+								<EditText
+									text={env.slackAlertsChannel}
+									variant="textfield"
+									on:save={async (e) => {
+										slackChannelsError = false;
+										if (!teamSettings) {
+											return;
+										}
+
+										const updates = teamSettings.environments.map((c) => {
+											if (c === PendingValue || env === PendingValue) {
+												return {
+													environment: '',
+													channelName: ''
+												};
+											}
+
+											if (c.name === env.name) {
+												return {
+													environment: c.name,
+													channelName: e.detail
+												};
+											}
+
+											return {
+												environment: c.name,
+												channelName: c.slackAlertsChannel
+											};
+										});
+
+										const data = await updateTeam.mutate({
+											slug: team,
+											input: {
+												slackAlertsChannels: updates
+											}
+										});
+
+										if (data.errors) {
+											slackChannelsError = true;
+										}
+									}}
+								/>
+							</div>
+						{/if}
 					{/each}
-				</dl>
+				</p>
+				{#if slackChannelsError}
+					<Alert variant="error" size="small">
+						Error updating slack-channels. Please try again later.
+					</Alert>
+				{/if}
 			{/if}
 		</Card>
 		<Card columns={6}>
 			<h3>Managed resources</h3>
-			{#if teamSettings.gcpProjects.length > 0 && teamSettings.gcpProjects[0].environment !== PendingValue}
-				{#each teamSettings.gcpProjects as project}
-					{#if project.environment !== 'ci-gcp'}
-						<dl>
-							<dt>GCP project ID ({project.environment}):</dt>
-							<dd>{project.id}</dd>
-						</dl>
-					{/if}
+			{#if teamSettings.id === PendingValue}
+				<Loader />
+			{:else}
+				<h4>Global</h4>
+				<dl>
+					{#each globalAttributes(teamSettings) as { key, value }}
+						<dt>{key}:</dt>
+						<dd>{value}</dd>
+					{:else}
+						<Alert variant="info" size="small">No managed resources</Alert>
+					{/each}
+				</dl>
+
+				{#each teamSettings.environments as env}
+					<h4>{env.name}</h4>
+					<dl>
+						{#each envResources(env) as { key, value }}
+							<dt>{key}:</dt>
+							<dd>{value}</dd>
+						{:else}
+							<Alert variant="info" size="small">No managed resources</Alert>
+						{/each}
+					</dl>
 				{/each}
 			{/if}
 		</Card>
 
 		<Card columns={12}>
 			<h3>Deploy key</h3>
-			<dl>
-				<dt>Created:</dt>
-				{#if teamSettings.deployKey.key === PendingValue}
-					<dd><Skeleton variant="text" /></dd>
-				{:else}
-					<dd><Time time={teamSettings.deployKey.created} distance={true} /></dd>
-				{/if}
-				<dt>Expires:</dt>
-				{#if teamSettings.deployKey.expires === PendingValue}
-					<dd><Skeleton variant="text" /></dd>
-				{:else}
-					<dd><Time time={teamSettings?.deployKey?.expires} distance={true} /></dd>
-				{/if}
-				<dt>Key:</dt>
-				<dd>
-					<div class="deployKey">
-						{#if showKey}
-							{teamSettings?.deployKey?.key}
-							<Button
-								size="xsmall"
-								variant="tertiary"
-								on:click={() => {
-									showKey = !showKey;
-								}}
-							>
-								<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
-							>
-						{:else}
-							{#if teamSettings.deployKey.key === PendingValue}
-								<dd><Skeleton variant="text" /></dd>
+
+			{#if $hookdResponse.data?.team}
+				{@const deployKey = $hookdResponse.data.team.deployKey}
+				<dl>
+					<dt>Created:</dt>
+					{#if deployKey.key === PendingValue}
+						<dd><Skeleton variant="text" /></dd>
+					{:else}
+						<dd><Time time={deployKey.created} distance={true} /></dd>
+					{/if}
+					<dt>Expires:</dt>
+					{#if deployKey.expires === PendingValue}
+						<dd><Skeleton variant="text" /></dd>
+					{:else}
+						<dd><Time time={deployKey.expires} distance={true} /></dd>
+					{/if}
+					<dt>Key:</dt>
+					<dd>
+						<div class="deployKey">
+							{#if showKey}
+								{deployKey.key}
+								<Button
+									size="xsmall"
+									variant="tertiary"
+									on:click={() => {
+										showKey = !showKey;
+									}}
+								>
+									<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
+								>
 							{:else}
-								{teamSettings?.deployKey?.key.replaceAll(/./g, '*')}
+								{#if deployKey.key === PendingValue}
+									<dd><Skeleton variant="text" /></dd>
+								{:else}
+									{deployKey.key.replaceAll(/./g, '*')}
+								{/if}
+								<Button
+									size="xsmall"
+									variant="tertiary"
+									on:click={() => {
+										showKey = !showKey;
+									}}
+								>
+									<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
+								>
 							{/if}
-							<Button
-								size="xsmall"
-								variant="tertiary"
-								on:click={() => {
-									showKey = !showKey;
-								}}
-							>
-								<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
-							>
-						{/if}
-					</div>
-				</dd>
-			</dl>
-			<div class="buttons">
-				{#if teamSettings?.deployKey?.key !== PendingValue}
+						</div>
+					</dd>
+				</dl>
+				<div class="buttons">
 					<div class="button">
 						<CopyButton
 							text="Copy key"
 							activeText="Key copied"
 							variant="action"
-							copyText={teamSettings?.deployKey?.key || ''}
+							copyText={deployKey.key === PendingValue ? '' : deployKey.key}
 							size="small"
 						/>
 					</div>
@@ -153,8 +333,10 @@
 							Rotate key</Button
 						>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{:else}
+				<Alert variant="error">Error getting deploy key. Please try again later.</Alert>
+			{/if}
 		</Card>
 		{#if browser}
 			<Modal bind:open={showRotateKey} closeButton={false}>
@@ -184,7 +366,7 @@
 <style>
 	dl {
 		display: block;
-		margin-block-start: 1em;
+		margin-block-start: 0.2em;
 		margin-block-end: 1em;
 		margin-inline-start: 0px;
 		margin-inline-end: 0px;
@@ -205,7 +387,7 @@
 		margin-bottom: 0.5rem;
 	}
 	h4 {
-		margin: 0.8rem 0rem;
+		margin: 0.8rem 0rem 0.2rem 0;
 	}
 	i {
 		margin-bottom: 0.5rem;
@@ -223,5 +405,11 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+
+	.channel {
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
 	}
 </style>

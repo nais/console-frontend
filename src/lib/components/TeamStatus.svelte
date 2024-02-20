@@ -11,8 +11,8 @@
 	};
 
 	const status = graphql(`
-		query TeamStatus($team: String!) @cache(policy: NetworkOnly) @load {
-			team(name: $team) @loading(cascade: true) {
+		query TeamStatus($team: Slug!) @cache(policy: NetworkOnly) @load {
+			team(slug: $team) @loading(cascade: true) {
 				status {
 					apps {
 						failing

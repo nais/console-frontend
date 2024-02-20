@@ -1,36 +1,30 @@
-query Deploys {
-	deployments(first: 100, limit: 100) @paginate(mode: SinglePage) @loading(cascade: true) {
-		totalCount
+query Deploys($limit: Int = 20, $offset: Int) {
+	deployments(limit: $limit, offset: $offset) @loading(cascade: true) {
 		pageInfo {
+			totalCount
 			hasNextPage
 			hasPreviousPage
-			startCursor
-			endCursor
-			from
-			to
 		}
-		edges @loading(count: 10) {
-			node {
-				id
-				team {
-					name
-				}
-				repository
-				resources {
-					group
-					kind
-					name
-					version
-					namespace
-				}
-				env
-				statuses {
-					status
-					message
-					created
-				}
+		nodes @loading(count: 10) {
+			id
+			team {
+				slug
+			}
+			repository
+			resources {
+				group
+				kind
+				name
+				version
+				namespace
+			}
+			env
+			statuses {
+				status
+				message
 				created
 			}
+			created
 		}
 	}
 }

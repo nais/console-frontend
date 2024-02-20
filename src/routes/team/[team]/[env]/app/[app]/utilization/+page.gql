@@ -1,6 +1,6 @@
 query ResourceUtilizationForApp(
 	$app: String!
-	$team: String!
+	$team: Slug!
 	$env: String!
 	$from: Date
 	$to: Date!

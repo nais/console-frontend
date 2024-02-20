@@ -3,13 +3,13 @@
 /** @type {import('houdini').ConfigFile} */
 const config = {
 	watchSchema: {
-		url: 'http://127.0.0.1:4242/query'
+		url: 'http://127.0.0.1:3000/query'
 	},
 	plugins: {
 		'houdini-svelte': {}
 	},
 	scalars: {
-		Cursor: { type: 'string' },
+		Slug: { type: 'string' },
 		Date: {
 			type: 'Date',
 			unmarshal(val) {
@@ -38,6 +38,11 @@ const config = {
 			marshal(date) {
 				return date.toString();
 			}
+		}
+	},
+	types: {
+		Reconciler: {
+			keys: ['name']
 		}
 	}
 };

@@ -12,28 +12,25 @@
 	};
 
 	const store = graphql(`
-		query TeamDeploys($team: String!) @load {
-			team(name: $team) {
-				deployments(first: 20, limit: 20) {
-					totalCount
-					edges {
-						node {
-							resources {
-								group
-								kind
-								name
-								version
-								namespace
-							}
-							env
-							created
-							statuses {
-								status
-								message
-								created
-							}
-							repository
+		query TeamDeploys($team: Slug!) @load {
+			team(slug: $team) {
+				deployments(limit: 20) {
+					pageInfo {
+						totalCount
+					}
+					nodes {
+						resources {
+							name
+							kind
+							version
 						}
+						statuses {
+							status
+							message
+							created
+						}
+						env
+						created
 					}
 				}
 			}
@@ -58,34 +55,30 @@
 			<!--Th>Link</Th-->
 		</Thead>
 		<Tbody>
-			{#each $store.data.team.deployments.edges as { node: deployment }}
+			{#each $store.data.team.deployments.nodes as { resources, env, created, statuses }}
 				<Tr>
 					<Td
-						>{#each deployment.resources as resource}
+						>{#each resources as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
-								<a href="/team/{teamName}/{deployment.env}/app/{resource.name}/deploys"
-									>{resource.name}</a
-								>
+								<a href="/team/{teamName}/{env}/app/{resource.name}/deploys">{resource.name}</a>
 							{:else if resource.kind === 'Naisjob'}
-								<a href="/team/{teamName}/{deployment.env}/job/{resource.name}/deploys"
-									>{resource.name}</a
-								>
+								<a href="/team/{teamName}/{env}/job/{resource.name}/deploys">{resource.name}</a>
 							{:else}
 								{resource.name}
 							{/if}
 							<br />
 						{/each}</Td
 					>
-					<Td><Time time={deployment.created} distance={true} /></Td>
+					<Td><Time time={created} distance={true} /></Td>
 					<Td>
-						{deployment.env}
+						{env}
 					</Td>
 
 					<Td
-						>{#if deployment.statuses.length === 0}<DeploymentStatus
+						>{#if statuses.length === 0}<DeploymentStatus
 								status={'unknown'}
-							/>{:else}<DeploymentStatus status={deployment.statuses[0].status} />{/if}</Td
+							/>{:else}<DeploymentStatus status={statuses[0].status} />{/if}</Td
 					>
 					<!--Td>
 						{#if deployment.repository}

@@ -1,4 +1,4 @@
-query JobStatusDetailed($job: String!, $team: String!, $env: String!) {
+query JobStatusDetailed($job: String!, $team: Slug!, $env: String!) {
 	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name @loading
 

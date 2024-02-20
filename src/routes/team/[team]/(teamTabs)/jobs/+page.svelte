@@ -1,22 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
 	import {
-		Alert,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr,
-		type TableSortState
-	} from '@nais/ds-svelte-community';
-	import { sortTable } from '../../../../../helpers';
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
@@ -24,23 +19,7 @@
 	$: ({ Jobs } = data);
 	$: team = $Jobs.data?.team;
 
-	let sortState: TableSortState = {
-		orderBy: 'STATUS',
-		direction: 'ascending'
-	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		Jobs.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'STATUS',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
-	};
+	$: ({ sortState, limit, offset } = tableStateFromVariables($Jobs.variables));
 </script>
 
 {#if $Jobs.errors}
@@ -57,7 +36,8 @@
 			sort={sortState}
 			on:sortChange={(e) => {
 				const { key } = e.detail;
-				sortState = sortTable(key, sortState, refetch);
+				const ss = sortTable(key, sortState);
+				changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 			}}
 		>
 			<Thead>
@@ -70,32 +50,30 @@
 				{#if team !== undefined}
 					{#if team.id === PendingValue}
 						<Tr>
-							{#each new Array(team.naisjobs.edges.length).fill('text') as variant}
+							{#each new Array(team.naisjobs.nodes.length).fill('text') as variant}
 								<Td><Skeleton {variant} /></Td>
 							{/each}
 						</Tr>
 					{:else}
-						{#each team.naisjobs.edges as edge}
+						{#each team.naisjobs.nodes as node}
 							<Tr>
 								<Td>
 									<div class="status">
 										<a
-											href="/team/{teamName}/{edge.node.env.name}/job/{edge.node.name}/status"
+											href="/team/{teamName}/{node.env.name}/job/{node.name}/status"
 											data-sveltekit-preload-data="off"
 										>
-											<Status size="1.5rem" state={edge.node.jobState.state} />
+											<Status size="1.5rem" state={node.jobState.state} />
 										</a>
 									</div>
 								</Td>
 								<Td>
-									<a href="/team/{teamName}/{edge.node.env.name}/job/{edge.node.name}"
-										>{edge.node.name}</a
-									>
+									<a href="/team/{teamName}/{node.env.name}/job/{node.name}">{node.name}</a>
 								</Td>
-								<Td>{edge.node.env.name}</Td>
+								<Td>{node.env.name}</Td>
 								<Td>
-									{#if edge.node.deployInfo.timestamp}
-										<Time time={edge.node.deployInfo.timestamp} distance={true} />
+									{#if node.deployInfo.timestamp}
+										<Time time={node.deployInfo.timestamp} distance={true} />
 									{/if}
 								</Td>
 							</Tr>
@@ -108,22 +86,15 @@
 				{/if}
 			</Tbody>
 		</Table>
-		{#if team !== undefined}
-			{#if team.id !== PendingValue}
-				<Pagination
-					totalCount={team.naisjobs.totalCount}
-					pageInfo={team.naisjobs.pageInfo}
-					on:nextPage={() => {
-						if (!$Jobs.pageInfo.hasNextPage) return;
-						Jobs.loadNextPage();
-					}}
-					on:previousPage={() => {
-						if (!$Jobs.pageInfo.hasPreviousPage) return;
-						Jobs.loadPreviousPage();
-					}}
-				/>
-			{/if}
-		{/if}
+
+		<Pagination
+			pageInfo={team?.naisjobs.pageInfo}
+			{limit}
+			{offset}
+			changePage={(e) => {
+				changeParams({ page: e.toString() });
+			}}
+		/>
 	</Card>
 {/if}
 

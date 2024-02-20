@@ -1,6 +1,6 @@
-query TeamRoles($team: String!) {
-	team(name: $team) @loading {
-		viewerIsAdmin
+query TeamRoles($team: Slug!) {
+	team(slug: $team) @loading {
+		viewerIsOwner
 		viewerIsMember
 	}
 }

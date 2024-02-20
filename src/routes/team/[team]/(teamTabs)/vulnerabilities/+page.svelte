@@ -5,8 +5,14 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
+	import VulnerabilitiesGraph from '$lib/components/VulnerabilitiesGraph.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
-	import type { TableSortState } from '@nais/ds-svelte-community';
+	import {
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
 	import {
 		Alert,
 		Skeleton,
@@ -19,18 +25,19 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
-	import { sortTable } from '../../../../../helpers';
 	import type { PageData } from './$houdini';
 
-	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
 	$: team = $TeamVulnerabilities.data?.team;
 
-	let sortState: TableSortState = {
-		orderBy: 'SEVERITY_CRITICAL',
-		direction: 'descending'
-	};
+	$: teamName = $page.params.team;
+
+	$: ({ sortState, limit, offset } = tableStateFromVariables(
+		$TeamVulnerabilities.variables,
+		OrderByField.SEVERITY_CRITICAL,
+		'descending'
+	));
 
 	const onClick = () => {
 		let props = {};
@@ -38,19 +45,6 @@
 			routeID: '/dependencytrack/team/findings'
 		};
 		logEvent('pageview', props);
-	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		TeamVulnerabilities.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'SEVERITY_CRITICAL',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
 	};
 </script>
 
@@ -63,12 +57,16 @@
 {:else}
 	<div class="grid">
 		<Card columns={12}>
+			<VulnerabilitiesGraph team={teamName} />
+		</Card>
+		<Card columns={12}>
 			<Table
 				size="small"
 				sort={sortState}
 				on:sortChange={(e) => {
 					const { key } = e.detail;
-					sortState = sortTable(key, sortState, refetch);
+					const ss = sortTable(key, sortState);
+					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 				}}
 			>
 				<Thead>
@@ -93,20 +91,18 @@
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.vulnerabilities.edges as edge}
+							{#each team.vulnerabilities.nodes as node}
 								<Tr>
 									<Td>
-										<a href="/team/{teamName}/{edge.node.env}/app/{edge.node.appName}"
-											>{edge.node.appName}</a
-										>
+										<a href="/team/{teamName}/{node.env}/app/{node.appName}">{node.appName}</a>
 									</Td>
-									<Td>{edge.node.env}</Td>
-									{#if edge.node.summary !== null}
-										{#if !edge.node.hasBom}
+									<Td>{node.env}</Td>
+									{#if node.summary !== null}
+										{#if !node.hasBom}
 											<Td colspan={8}>
 												<div style="display: flex; align-items: center">
 													<span style="color:lightslategray; font-size:16px">
-														<a href={edge.node.findingsLink}>View</a>
+														<a href={node.findingsLink}>View</a>
 													</span>
 													<div class="sbom">
 														<Tooltip
@@ -123,47 +119,44 @@
 										{:else}
 											<Td>
 												<span style="color:lightslategray; font-size:16px">
-													<a href={edge.node.findingsLink} on:click={onClick}>View</a>
+													<a href={node.findingsLink} on:click={onClick}>View</a>
 												</span>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="critical" count={edge.node.summary.critical} />
+													<Vulnerability severity="critical" count={node.summary.critical} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="high" count={edge.node.summary.high} />
+													<Vulnerability severity="high" count={node.summary.high} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="medium" count={edge.node.summary.medium} />
+													<Vulnerability severity="medium" count={node.summary.medium} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="low" count={edge.node.summary.low} />
+													<Vulnerability severity="low" count={node.summary.low} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability
-														severity="unassigned"
-														count={edge.node.summary.unassigned}
-													/>
+													<Vulnerability severity="unassigned" count={node.summary.unassigned} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													{#if edge.node.summary.riskScore === -1}
-														<Vulnerability severity="low" count={edge.node.summary.riskScore} />
+													{#if node.summary.riskScore === -1}
+														<Vulnerability severity="low" count={node.summary.riskScore} />
 													{:else}
 														<Tooltip
 															placement="left"
 															content="Calculated based on the number of vulnerabilities, includes unassigned"
 														>
-															<span class="na">{edge.node.summary.riskScore}</span>
+															<span class="na">{node.summary.riskScore}</span>
 														</Tooltip>
 													{/if}
 												</div>
@@ -197,26 +190,24 @@
 										</Td>
 									{/if}
 								</Tr>
+							{:else}
+								<Tr>
+									<Td colspan={9}>No applications with vulnerability data found</Td>
+								</Tr>
 							{/each}
 						{/if}
 					{/if}
 				</Tbody>
 			</Table>
-			{#if team !== undefined}
-				{#if team.id !== PendingValue}
-					<Pagination
-						totalCount={team.vulnerabilities.totalCount}
-						pageInfo={team.vulnerabilities.pageInfo}
-						on:nextPage={() => {
-							if (!$TeamVulnerabilities.pageInfo.hasNextPage) return;
-							TeamVulnerabilities.loadNextPage();
-						}}
-						on:previousPage={() => {
-							if (!$TeamVulnerabilities.pageInfo.hasPreviousPage) return;
-							TeamVulnerabilities.loadPreviousPage();
-						}}
-					/>
-				{/if}
+			{#if team?.vulnerabilities.pageInfo !== PendingValue}
+				<Pagination
+					pageInfo={team?.vulnerabilities.pageInfo}
+					{limit}
+					{offset}
+					changePage={(e) => {
+						changeParams({ page: e.toString() });
+					}}
+				/>
 			{/if}
 		</Card>
 	</div>

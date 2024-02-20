@@ -5,6 +5,7 @@
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -13,6 +14,7 @@
 	$: team = $page.params.team;
 	$: ({ TeamDeployments } = data);
 	$: teamData = $TeamDeployments.data?.team;
+	$: ({ limit, offset } = limitOffset($TeamDeployments.variables));
 </script>
 
 {#if $TeamDeployments.errors}
@@ -34,23 +36,21 @@
 				<!--Th>Link</Th-->
 			</Thead>
 			<Tbody>
-				{#each teamData.deployments.edges as edge}
+				{#each teamData.deployments.nodes as node}
 					<Tr>
-						{#if edge.node.id === PendingValue}
+						{#if node.id === PendingValue}
 							{#each new Array(4).fill('text') as variant}
 								<Td><Skeleton {variant} /></Td>
 							{/each}
 						{:else}
 							<Td>
-								{#each edge.node.resources as resource}
+								{#each node.resources as resource}
 									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{#if resource.kind === 'Application'}
-										<a href="/team/{team}/{edge.node.env}/app/{resource.name}/deploys"
-											>{resource.name}</a
+										<a href="/team/{team}/{node.env}/app/{resource.name}/deploys">{resource.name}</a
 										>
 									{:else if resource.kind === 'Naisjob'}
-										<a href="/team/{team}/{edge.node.env}/job/{resource.name}/deploys"
-											>{resource.name}</a
+										<a href="/team/{team}/{node.env}/job/{resource.name}/deploys">{resource.name}</a
 										>
 									{:else}
 										{resource.name}
@@ -59,20 +59,20 @@
 								{/each}
 							</Td>
 							<Td>
-								<Time time={new Date(edge.node.created)} distance={true} />
+								<Time time={new Date(node.created)} distance={true} />
 							</Td>
-							<Td>{edge.node.env}</Td>
-							{#if edge.node.statuses.length === 0}
+							<Td>{node.env}</Td>
+							{#if node.statuses.length === 0}
 								<Td><Status status={'unknown'} /></Td>
 							{:else}
-								<Td><Status status={edge.node.statuses[0].status} /></Td>
+								<Td><Status status={node.statuses[0].status} /></Td>
 							{/if}
 							<!--Td>
 								{#if edge.node.repository}
 									<Button
 										size="xsmall"
 										variant="secondary"
-										href="https://github.com/{edge.node.repository}"
+										href="https://github.com/{node.repository}"
 										as="a"
 									>
 										<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment
@@ -85,21 +85,14 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if teamData !== undefined}
-			{#if teamData.id !== PendingValue}
-				<Pagination
-					pageInfo={teamData.deployments.pageInfo}
-					totalCount={teamData.deployments.totalCount}
-					on:nextPage={() => {
-						if (!teamData?.deployments.pageInfo.hasNextPage) return;
-						TeamDeployments.loadNextPage();
-					}}
-					on:previousPage={() => {
-						if (!teamData?.deployments.pageInfo.hasPreviousPage) return;
-						TeamDeployments.loadPreviousPage();
-					}}
-				/>
-			{/if}
-		{/if}
+
+		<Pagination
+			pageInfo={teamData.deployments.pageInfo}
+			{limit}
+			{offset}
+			changePage={(page) => {
+				changeParams({ page: page.toString() });
+			}}
+		/>
 	</Card>
 {/if}

@@ -1,37 +1,35 @@
-query Workloads($team: String!, $orderBy: OrderBy = { field: STATUS, direction: ASC })
-@loading(count: 5, cascade: true) {
-	team(name: $team) {
+query Workloads(
+	$team: Slug!
+	$orderBy: OrderBy = { field: STATUS, direction: ASC }
+	$limit: Int
+	$offset: Int
+) @loading(count: 5, cascade: true) {
+	team(slug: $team) {
 		id
-		apps(first: 50, orderBy: $orderBy) @paginate(mode: SinglePage) {
-			totalCount
+		apps(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {
+				totalCount
 				hasNextPage
 				hasPreviousPage
-				startCursor
-				endCursor
-				from
-				to
 			}
 
-			edges {
-				node {
-					deployInfo {
-						timestamp
-					}
+			nodes {
+				deployInfo {
+					timestamp
+				}
+				name
+				image
+				...AppInstancesStatus
+				env {
 					name
-					image
-					...AppInstancesStatus
-					env {
-						name
-					}
+				}
 
-					appState {
-						state
-					}
+				appState {
+					state
+				}
 
-					instances {
-						state
-					}
+				instances {
+					state
 				}
 			}
 		}

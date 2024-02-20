@@ -1,22 +1,29 @@
-query Members($team: String!) @loading(cascade: true) {
-	team(name: $team) {
-		name
-		members(first: 50) @paginate(mode: SinglePage) {
-			totalCount
+query Members($limit: Int, $offset: Int, $team: Slug!) @loading(cascade: true) {
+	team(slug: $team) {
+		slug
+		viewerIsOwner
+		members(limit: $limit, offset: $offset) {
 			pageInfo {
+				totalCount
 				hasNextPage
 				hasPreviousPage
-				startCursor
-				endCursor
-				from
-				to
 			}
-			edges @loading(count: 10) {
-				node {
+			nodes @loading(count: 10) {
+				user {
+					id
 					email
 					name
-					role
 				}
+
+				reconcilers {
+					enabled
+					reconciler {
+						displayName
+						description
+						name
+					}
+				}
+				role
 			}
 		}
 	}

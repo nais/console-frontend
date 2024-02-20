@@ -35,7 +35,7 @@
 	};
 
 	const vulnerabilities = graphql(`
-		query VulnerabilitiesForApp($app: String!, $team: String!, $env: String!) @load {
+		query VulnerabilitiesForApp($app: String!, $team: Slug!, $env: String!) @load {
 			app(name: $app, team: $team, env: $env) @loading {
 				vulnerabilities @loading {
 					findingsLink

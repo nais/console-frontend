@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OrderByField, PendingValue, RepositoryAuthorization, graphql } from '$houdini';
+	import { PendingValue, RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams, limitOffset, sortTable } from '$lib/pagination';
 	import {
 		Button,
 		HelpText,
@@ -15,8 +16,11 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community';
-	import { sortTable } from '../../../../../helpers';
 	import type { PageData } from './$houdini';
+
+	/*
+	TODO: FIX THIS
+	*/
 
 	export let data: PageData;
 
@@ -26,6 +30,8 @@
 	$: teamRoles = $TeamRoles.data?.team;
 
 	$: teamName = $page.params.team;
+
+	$: ({ limit, offset } = limitOffset($Repositories.variables));
 
 	let sortState: TableSortState = {
 		orderBy: 'NAME',
@@ -45,33 +51,19 @@
 			case 'ADMIN':
 				return 'Can read, clone, and push to this repository. Can also manage issues, pull requests, and repository settings, including adding collaborators.';
 			case 'ISOC_TRIAGE_FOLLOWUP':
-				return 'Gir ISOC mulighet til å følge opp';
+				return 'Give ISOC the opportunity to follow up';
 			default:
-				return 'Ukjent rolle';
+				return 'Unknown role';
 		}
-	};
-
-	const refetch = (key: string) => {
-		const field = Object.values(OrderByField).find((value) => value === key);
-		Repositories.fetch({
-			variables: {
-				team: teamName,
-				orderBy: {
-					field: field !== undefined ? field : 'NAME',
-					direction: sortState.direction === 'descending' ? 'DESC' : 'ASC'
-				}
-			}
-		});
 	};
 
 	const authorizeRepositoryForDeploy = graphql(`
 		mutation AuthorizeRepository(
 			$authorization: RepositoryAuthorization!
 			$repository: String!
-			$team: String!
+			$team: Slug!
 		) {
-			authorizeRepository(authorization: $authorization, repository: $repository, team: $team) {
-				name
+			authorizeRepository(authorization: $authorization, repoName: $repository, teamSlug: $team) {
 				authorizations
 			}
 		}
@@ -81,10 +73,9 @@
 		mutation DeauthorizeRepository(
 			$authorization: RepositoryAuthorization!
 			$repository: String!
-			$team: String!
+			$team: Slug!
 		) {
-			deauthorizeRepository(authorization: $authorization, repository: $repository, team: $team) {
-				name
+			deauthorizeRepository(authorization: $authorization, repoName: $repository, teamSlug: $team) {
 				authorizations
 			}
 		}
@@ -106,7 +97,7 @@
 	};
 </script>
 
-{#if team && team !== undefined}
+{#if team}
 	<Card>
 		<h3>Repositories</h3>
 
@@ -115,7 +106,7 @@
 			sort={sortState}
 			on:sortChange={(e) => {
 				const { key } = e.detail;
-				sortState = sortTable(key, sortState, refetch);
+				sortState = sortTable(key, sortState);
 			}}
 		>
 			<Thead>
@@ -128,41 +119,52 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each team.githubRepositories.edges as repo}
+				{#each team.githubRepositories.nodes as repo}
 					<Tr>
-						<Td><Link href="https://github.com/{repo.node.name}">{repo.node.name}</Link></Td>
+						<Td><Link href="https://github.com/{repo.name}">{repo.name}</Link></Td>
 						{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
-							{#if repo.node.authorizations !== null && repo.node.name !== null}
+							{#if repo.authorizations !== null && repo.name !== null}
 								<Td>
-									{#if repo.node.authorizations.includes('DEPLOY')}
+									{#if repo.authorizations.includes('DEPLOY')}
 										<Button
 											size="xsmall"
 											variant="danger"
 											on:click={() => {
-												deauthorizeDeploy(teamName, repo.node.name);
-											}}>Deauthorize</Button
+												deauthorizeDeploy(teamName, repo.name);
+											}}
 										>
+											Deauthorize
+										</Button>
 									{:else}
 										<Button
 											size="xsmall"
 											variant="primary-neutral"
 											on:click={() => {
-												authorizeDeploy(teamName, repo.node.name);
-											}}>Authorize</Button
+												authorizeDeploy(teamName, repo.name);
+											}}
 										>
+											Authorize
+										</Button>
 									{/if}
 								</Td>
 							{/if}
-							<Td
-								><div class="roleHelpText">
-									{repo.node.roleName}<HelpText placement={'left'} title="Role description"
-										>The team's role for the repository.<br />{repo.node.roleName.toUpperCase()}: {roleDesc(
-											repo.node.roleName.toUpperCase()
-										)}</HelpText
-									>
-								</div></Td
-							>
+							<Td>
+								<div class="roleHelpText">
+									{repo.roleName}
+									<HelpText placement={'left'} title="Role description">
+										The team's role for the repository.<br />{repo.roleName.toUpperCase()}:
+										{roleDesc(repo.roleName.toUpperCase())}
+									</HelpText>
+								</div>
+							</Td>
 						{/if}
+					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={99} style="background:var(--a-surface-info-subtle)">
+							No GitHub repositories for this team. You can link a repository to this team by giving
+							the team permissions on the repository on GitHub.
+						</Td>
 					</Tr>
 				{/each}
 			</Tbody>
@@ -170,14 +172,10 @@
 
 		<Pagination
 			pageInfo={team.githubRepositories.pageInfo}
-			totalCount={team.githubRepositories.totalCount}
-			on:nextPage={() => {
-				if (!$Repositories.pageInfo.hasNextPage) return;
-				Repositories.loadNextPage();
-			}}
-			on:previousPage={() => {
-				if (!$Repositories.pageInfo.hasPreviousPage) return;
-				Repositories.loadPreviousPage();
+			{limit}
+			{offset}
+			changePage={(page) => {
+				changeParams({ page: page.toString() });
 			}}
 		/>
 	</Card>
