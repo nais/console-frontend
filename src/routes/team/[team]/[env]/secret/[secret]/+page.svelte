@@ -13,7 +13,7 @@
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Card from '$lib/Card.svelte';
-	import { graphql, type SecretTupleInput } from '$houdini';
+	import { graphql, type VariableInput } from '$houdini';
 	import { filterAddKvs, mergeChanges, type operation } from './state-machinery';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import SecretKv from './SecretKv.svelte';
@@ -47,7 +47,7 @@
 			$name: String!
 			$team: Slug!
 			$env: String!
-			$data: [SecretTupleInput!]!
+			$data: [VariableInput!]!
 		) {
 			updateSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
@@ -66,7 +66,7 @@
 	const updateSecret = async () => {
 		if (!secret) return;
 
-		let data: SecretTupleInput[] = changes.reduce(mergeChanges, secret.data);
+		let data: VariableInput[] = changes.reduce(mergeChanges, secret.data);
 
 		await updateSecretMutation.mutate({
 			data: data,

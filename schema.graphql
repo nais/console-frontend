@@ -697,7 +697,7 @@ type Mutation {
   """Create a new secret for a team and env."""
   createSecret(
     """The secret data."""
-    data: [SecretTupleInput!]!
+    data: [VariableInput!]!
 
     """The environment the secret is deployed to."""
     env: String!
@@ -875,7 +875,7 @@ type Mutation {
   """Update an existing secret for a team and env."""
   updateSecret(
     """The secret data."""
-    data: [SecretTupleInput!]!
+    data: [VariableInput!]!
 
     """The environment the secret is deployed to."""
     env: String!
@@ -1474,11 +1474,6 @@ type Secret {
   team: Team!
 }
 
-input SecretTupleInput {
-  name: String!
-  value: String!
-}
-
 """Service account type."""
 type ServiceAccount {
   """Unique ID of the service account."""
@@ -1939,6 +1934,11 @@ enum UserSyncRunStatus {
 }
 
 type Variable {
+  name: String!
+  value: String!
+}
+
+input VariableInput {
   name: String!
   value: String!
 }

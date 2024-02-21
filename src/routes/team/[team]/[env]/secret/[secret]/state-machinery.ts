@@ -1,4 +1,4 @@
-import type { SecretTupleInput } from '$houdini';
+import type { VariableInput } from '$houdini';
 
 export type AddKv = {
 	type: 'AddKv';
@@ -33,7 +33,7 @@ export type UpdateValue = {
 
 export type operation = AddKv | DeleteKv | UndoDeleteKv | UpdateValue;
 
-export function mergeChanges(tuples: SecretTupleInput[], curr: operation): SecretTupleInput[] {
+export function mergeChanges(tuples: VariableInput[], curr: operation): VariableInput[] {
 	switch (curr.type) {
 		case 'AddKv':
 			return [...tuples, { name: curr.data.name, value: curr.data.value }];

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, type SecretTupleInput } from '$houdini';
+	import { graphql, type VariableInput } from '$houdini';
 	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { goto } from '$app/navigation';
 
@@ -10,14 +10,14 @@
 	export let existingNames: string[];
 
 	let name = '';
-	let data: SecretTupleInput[] = [];
+	let data: VariableInput[] = [];
 
 	const createSecret = graphql(`
 		mutation createSecret(
 			$name: String!
 			$team: Slug!
 			$env: String!
-			$data: [SecretTupleInput!]!
+			$data: [VariableInput!]!
 		) {
 			createSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
