@@ -33,7 +33,7 @@
 	let changes: operation[] = [];
 	let deleteSecretOpen = false;
 
-	const applicationManifest = (secretName: string) => `spec:
+	const workloadManifest = (secretName: string) => `spec:
   envFrom:
     - secret: ${secretName}`;
 
@@ -230,12 +230,13 @@
 		<Card columns={4} rows={1}>
 			<h4>
 				Used by
-				<HelpText title="List of applications using this secret" placement="bottom">
-					A secret can be used by multiple applications.<br />
+				<HelpText title="List of workloads using this secret" placement="bottom">
+					A secret can be used by multiple workloads.<br />
 					<br />
-					This section lists all applications that use this secret.
+					This section lists all workloads that use this secret.
 				</HelpText>
 			</h4>
+			<h5>Applications</h5>
 			{#if secret.apps.length > 0}
 				<ul>
 					{#each secret.apps as app}
@@ -243,28 +244,28 @@
 					{/each}
 				</ul>
 			{:else}
-				<Alert size="small" variant="info">Secret is not in use by any applications.</Alert>
+				<Alert size="small" variant="info">Secret is not in use by any workloads.</Alert>
 			{/if}
 		</Card>
 
 		<Card columns={4} rows={1}>
 			<h4>
-				Use secret in application
-				<HelpText title="How to use this secret in an application" placement="bottom">
-					To use this secret in your application, you will need to reference it in your
-					application's manifest.<br />
+				Use secret in workload
+				<HelpText title="How to use this secret in a workload" placement="bottom">
+					To use this secret in your workload, you will need to reference it in your
+					workload's manifest.<br />
 					<br />
-					The snippet below injects the secret into your application. Each key-value pair is then available
+					The snippet below injects the secret into your workload. Each key-value pair is then available
 					as environment variables.
 				</HelpText>
 			</h4>
-			<pre class="manifest">{applicationManifest(secretName)}</pre>
+			<pre class="manifest">{workloadManifest(secretName)}</pre>
 			<Tooltip content="Copy manifest to clipboard">
 				<CopyButton
 					text="Copy manifest"
 					activeText="Manifest copied"
 					variant="action"
-					copyText={applicationManifest(secretName)}
+					copyText={workloadManifest(secretName)}
 				></CopyButton>
 			</Tooltip>
 		</Card>
