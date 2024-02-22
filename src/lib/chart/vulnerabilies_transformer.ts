@@ -1,6 +1,37 @@
 import type { TeamVulnerabilityMetrics$result } from '$houdini';
 import type { EChartsOption } from 'echarts';
 
+// not currently in use, but could be used to transform the data for https://github.com/nais/system/issues/35
+export function vulnerabilitiesPieChart(withSBOM: number, withOutSBOM: number): EChartsOption {
+	const total = withSBOM + withOutSBOM;
+	const withSBOMPercentage = Math.round((withSBOM / total) * 100);
+
+	return {
+		title: {
+			text: withSBOMPercentage + '%',
+			left: 'center',
+			top: 'center'
+		},
+		color: ['#00ff00', '#ff0000'],
+		series: [
+			{
+				type: 'pie',
+				data: [
+					{
+						value: withSBOM,
+						name: 'With SBOM'
+					},
+					{
+						value: withOutSBOM,
+						name: 'Without SBOM'
+					}
+				],
+				radius: ['40%', '70%']
+			}
+		]
+	} as EChartsOption;
+}
+
 export function vulnerabilitiesTeamTransformLineChart(
 	metrics: TeamVulnerabilityMetrics$result
 ): EChartsOption {
