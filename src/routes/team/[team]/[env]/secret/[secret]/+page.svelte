@@ -182,11 +182,11 @@
 							<AddSecretKv bind:changes existingKeys={secret.data.map((d) => d.name)} />
 						</div>
 						<div class="secret-edit-buttons">
-							<Tooltip content="Persist all changes" arrow={false}>
-								<Button variant="primary" size="small" on:click={updateSecret}>Save</Button>
-							</Tooltip>
 							<Tooltip content="Discard all changes" arrow={false}>
 								<Button variant="secondary" size="small" on:click={discardChanges}>Cancel</Button>
+							</Tooltip>
+							<Tooltip content="Persist all changes" arrow={false}>
+								<Button variant="primary" size="small" on:click={updateSecret}>Save</Button>
 							</Tooltip>
 						</div>
 						{#if $updateSecretMutation.errors}

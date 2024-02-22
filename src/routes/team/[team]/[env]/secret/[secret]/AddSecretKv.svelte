@@ -76,8 +76,8 @@
 		</TextField>
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
 		<Button variant="primary" size="small" on:click={addKv}>Add</Button>
+		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
 	</svelte:fragment>
 </Modal>
 
