@@ -236,8 +236,8 @@
 					This section lists all workloads that use this secret.
 				</HelpText>
 			</h4>
-			<h5>Applications</h5>
 			{#if secret.apps.length > 0}
+				<h5>Applications</h5>
 				<ul>
 					{#each secret.apps as app}
 						<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
