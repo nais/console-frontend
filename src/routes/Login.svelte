@@ -38,9 +38,9 @@
 			</Alert>
 		{/if}
 
-		<p>To access this page you need to log in with your Google account.</p>
+		<p>To access this page you need to log in with your Google Workspace account.</p>
 
-		<Button as="a" href="/oauth2/login" variant="primary">Log in with Google</Button>
+		<Button as="a" href="/oauth2/login" variant="primary">Log in to NAIS Console</Button>
 	</div>
 </div>
 
