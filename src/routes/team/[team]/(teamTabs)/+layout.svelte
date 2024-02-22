@@ -63,6 +63,11 @@
 	{#if $TeamRoles.data}
 		{#if $TeamRoles.data.team !== PendingValue && ($TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsOwner)}
 			<Tab
+				href={replacer('/team/[team]/(teamTabs)/secrets', { team })}
+				active={currentRoute == '/team/[team]/(teamTabs)/secrets'}
+				title="Secrets"
+			/>
+			<Tab
 				href={replacer('/team/[team]/(teamTabs)/settings', { team })}
 				active={currentRoute == '/team/[team]/(teamTabs)/settings'}
 				title="Settings"
@@ -80,6 +85,7 @@
 		min-width: 1000px;
 		max-width: 1432px;
 	}
+
 	.header {
 		display: flex;
 		justify-content: space-between;

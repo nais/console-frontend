@@ -18,4 +18,9 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		...Storage
 		...AppStatus
 	}
+
+	team(slug: $team) {
+		viewerIsOwner
+		viewerIsMember
+	}
 }

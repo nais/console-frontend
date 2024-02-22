@@ -36,6 +36,7 @@ type App {
   manifest: String!
   name: String!
   resources: Resources!
+  secrets: [Secret!]!
   storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
@@ -589,6 +590,7 @@ input MonthlyCostFilter {
   team: Slug!
 }
 
+"""The root query for implementing GraphQL mutations."""
 type Mutation {
   """
   Add opt-out of a reconciler for a team member. Only reconcilers that are member aware can be opted out from.
@@ -693,6 +695,21 @@ type Mutation {
     key: String!
   ): Boolean!
 
+  """Create a new secret for a team and env."""
+  createSecret(
+    """The secret data."""
+    data: [VariableInput!]!
+
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Secret!
+
   """
   Create a new team
   
@@ -717,6 +734,18 @@ type Mutation {
     """The slug of the team to deauthorize the action for."""
     teamSlug: Slug!
   ): GitHubRepository!
+
+  """Delete an existing secret for a team and env."""
+  deleteSecret(
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Boolean!
 
   """
   Disable a reconciler
@@ -844,6 +873,21 @@ type Mutation {
   """
   synchronizeUsers: String!
 
+  """Update an existing secret for a team and env."""
+  updateSecret(
+    """The secret data."""
+    data: [VariableInput!]!
+
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+
+    """The name of the team who owns the secret."""
+    team: Slug!
+  ): Secret!
+
   """
   Update an existing team
   
@@ -913,8 +957,10 @@ type OpenSearch implements Storage {
 }
 
 input OrderBy {
-  """Order direction"""
+  """Order direction."""
   direction: SortOrder!
+
+  """The field to order by."""
   field: OrderByField!
 }
 
@@ -967,9 +1013,15 @@ type OutboundAccessError implements StateError {
   rule: Rule!
 }
 
+"""Pagination information."""
 type PageInfo {
+  """Whether or not there exists a next page in the data set."""
   hasNextPage: Boolean!
+
+  """Whether or not there exists a previous page in the data set."""
   hasPreviousPage: Boolean!
+
+  """The total amount if items accessible."""
   totalCount: Int!
 }
 
@@ -977,6 +1029,7 @@ type Port {
   port: Int!
 }
 
+"""The query root for the NAIS GraphQL API."""
 type Query {
   """Get an app by name, team and env."""
   app(
@@ -1420,6 +1473,17 @@ enum SearchType {
   TEAM
 }
 
+type Secret {
+  apps: [App!]!
+  data: [Variable!]!
+  env: Env!
+  id: ID!
+  lastModifiedAt: Time
+  lastModifiedBy: User
+  name: String!
+  team: Team!
+}
+
 """Service account type."""
 type ServiceAccount {
   """Unique ID of the service account."""
@@ -1639,6 +1703,18 @@ type Team {
 
   """Purpose of the team."""
   purpose: String!
+
+  """Get the team's secret by name, and env."""
+  secret(
+    """The environment the secret is deployed to."""
+    env: String!
+
+    """The name of the secret."""
+    name: String!
+  ): Secret!
+
+  """Get all secrets for the team."""
+  secrets: [Secret!]!
 
   """Slack channel for the team."""
   slackChannel: String!
@@ -1868,6 +1944,11 @@ enum UserSyncRunStatus {
 }
 
 type Variable {
+  name: String!
+  value: String!
+}
+
+input VariableInput {
   name: String!
   value: String!
 }

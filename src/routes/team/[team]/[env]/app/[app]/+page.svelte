@@ -11,6 +11,7 @@
 	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
+	import Secrets from './Secrets.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -70,6 +71,12 @@
 			<h4>Authentications</h4>
 			<Authentications app={$App.data.app} />
 		</Card>
+		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+			<Card columns={4}>
+				<h4>Secrets</h4>
+				<Secrets />
+			</Card>
+		{/if}
 	</div>
 {/if}
 
@@ -80,6 +87,7 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
