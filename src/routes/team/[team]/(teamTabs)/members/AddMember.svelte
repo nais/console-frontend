@@ -64,6 +64,8 @@
 					value: r.name,
 					description: r.description
 				})) ?? [];
+
+			selectedRecs = recs.map((r) => r.name);
 		});
 	});
 
@@ -127,7 +129,7 @@
 
 		<CheckboxGroup legend="Enabled features" bind:value={selectedRecs}>
 			{#each reconcilers as reconciler}
-				<Checkbox value={reconciler.value} checked>
+				<Checkbox value={reconciler.value} checked={true}>
 					<span class="option">
 						{reconciler.name}
 						<HelpText title="" wrapperClass="tooltipAddMemberWrapper">

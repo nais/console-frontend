@@ -86,7 +86,7 @@
 								</Tr>
 							{:else}
 								<Tr>
-									<Td colspan={4}>No apps found</Td>
+									<Td colspan={999}>No apps found</Td>
 								</Tr>
 							{/each}
 						{/if}
