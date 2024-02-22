@@ -30,12 +30,12 @@
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
-	$: applicationManifest = `spec:
-  envFrom:
-    - secret: ${secretName}`;
-
 	let changes: operation[] = [];
 	let deleteSecretOpen = false;
+
+	const applicationManifest = (secretName: string) => `spec:
+  envFrom:
+    - secret: ${secretName}`;
 
 	const discardChanges = () => {
 		changes = [];
@@ -64,7 +64,7 @@
 		}
 	`);
 	const updateSecret = async () => {
-		if (!secret) return;
+		if (!secret || changes.length == 0) return;
 
 		let data: VariableInput[] = changes.reduce(mergeChanges, secret.data);
 
@@ -75,8 +75,11 @@
 			team: team
 		});
 
+		if ($updateSecretMutation.errors) {
+			return;
+		}
+
 		changes = [];
-		await Secret.fetch();
 	};
 
 	const deleteSecretMutation = graphql(`
@@ -91,28 +94,27 @@
 			team: team,
 			env: env
 		});
+
+		if ($deleteSecretMutation.errors) {
+			return;
+		}
+
 		await goto('/team/' + team + '/secrets');
 	};
 
-	const toggleDeleteSecretOpen = () => {
-		deleteSecretOpen = !deleteSecretOpen;
+	const openDeleteSecretModal = () => {
+		deleteSecretOpen = true;
 	};
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
-{#if secretName}
-	<h3>
-		<a href="/team/{team}">{team}</a> /
-		<a href="/team/{team}/secrets">secrets</a> /
-		{env} /
-		<i><a href="/team/{team}/{env}/secret/{secretName}">{secretName}</a></i>
-	</h3>
-{:else}
-	<h3>
-		<a href="/team/{team}">{team}</a> / <a href="/team/{team}/secrets">secrets</a> / {env}
-	</h3>
-{/if}
+<h3>
+	<a href="/team/{team}">{team}</a> /
+	<a href="/team/{team}/secrets">secrets</a> /
+	{env} /
+	<i><a href="/team/{team}/{env}/secret/{secretName}">{secretName}</a></i>
+</h3>
 
 {#if $Secret.errors}
 	<Alert variant="error">
@@ -131,7 +133,7 @@
 					<HelpText title="Secret data" placement="right">
 						A secret contains a set of key-value pairs.<br />
 						<br />
-						Changes are not persisted until the "Confirm" button is clicked.<br />
+						Changes are not persisted until the "Save" button is clicked.<br />
 						Applications using the secret will automatically restart to pick up any changes.
 						<br />
 					</HelpText>
@@ -141,7 +143,7 @@
 						class="delete-secret"
 						variant="danger"
 						size="small"
-						on:click={toggleDeleteSecretOpen}
+						on:click={openDeleteSecretModal}
 					>
 						Delete
 					</Button>
@@ -166,6 +168,11 @@
 				<Tbody>
 					<div class="secret-content">
 						<div class="secret-edit">
+							{#if secret.data.length === 0 && filterAddKvs(changes).length === 0}
+								<Alert variant="info" size="small">
+									No data found. Add a new row to get started.
+								</Alert>
+							{/if}
 							{#each secret.data as data (data.name)}
 								<SecretKv key={data.name} value={data.value} bind:changes />
 							{/each}
@@ -175,17 +182,26 @@
 							<AddSecretKv bind:changes existingKeys={secret.data.map((d) => d.name)} />
 						</div>
 						<div class="secret-edit-buttons">
-							{#if changes.length > 0}
-								<Tooltip content="Persist all changes" arrow={false}>
-									<Button variant="primary" size="small" on:click={updateSecret}>Confirm</Button>
-								</Tooltip>
-								<Tooltip content="Discard all changes" arrow={false}>
-									<Button variant="secondary" size="small" on:click={discardChanges}>Cancel</Button>
-								</Tooltip>
-							{/if}
+							<Tooltip content="Persist all changes" arrow={false}>
+								<Button variant="primary" size="small" on:click={updateSecret}>Save</Button>
+							</Tooltip>
+							<Tooltip content="Discard all changes" arrow={false}>
+								<Button variant="secondary" size="small" on:click={discardChanges}>Cancel</Button>
+							</Tooltip>
 						</div>
 						{#if $updateSecretMutation.errors}
-							<Alert variant="error">{$updateSecretMutation.errors[0]?.message}</Alert>
+							<Alert variant="error">
+								{#each $updateSecretMutation.errors as error}
+									{error.message}
+								{/each}
+							</Alert>
+						{/if}
+						{#if $deleteSecretMutation.errors}
+							<Alert variant="error">
+								{#each $deleteSecretMutation.errors as error}
+									{error.message}
+								{/each}
+							</Alert>
 						{/if}
 					</div>
 				</Tbody>
@@ -242,13 +258,13 @@
 					as environment variables.
 				</HelpText>
 			</h4>
-			<pre class="manifest">{applicationManifest}</pre>
+			<pre class="manifest">{applicationManifest(secretName)}</pre>
 			<Tooltip content="Copy manifest to clipboard">
 				<CopyButton
 					text="Copy manifest"
 					activeText="Manifest copied"
 					variant="action"
-					copyText={applicationManifest}
+					copyText={applicationManifest(secretName)}
 				></CopyButton>
 			</Tooltip>
 		</Card>
@@ -301,7 +317,7 @@
 	}
 
 	.secret-edit-buttons {
-		margin: 16px 0 0 16px;
+		margin: 32px 0 0 16px;
 		padding: 32px 0;
 	}
 

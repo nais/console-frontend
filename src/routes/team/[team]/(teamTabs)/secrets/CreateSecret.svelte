@@ -6,7 +6,6 @@
 	export let open: boolean;
 	export let team: string;
 	export let env: string;
-	export let refetch: () => void;
 	export let existingNames: string[];
 
 	let name = '';
@@ -30,6 +29,10 @@
 	`);
 
 	const create = async () => {
+		if (validationError(name).length > 0 && name.length > 0) {
+			return;
+		}
+
 		await createSecret.mutate({
 			name: name,
 			team: team,
@@ -42,9 +45,13 @@
 			const secretPage = '/team/' + team + '/' + env + '/secret/' + name
 			name = '';
 			open = false;
-			refetch();
 			await goto(secretPage);
 		}
+	};
+
+	const cancel = () => {
+		name = '';
+		open = false;
 	};
 
 	const validationError = (name: string) => {
@@ -76,7 +83,7 @@
 	};
 </script>
 
-<Modal bind:open width="small">
+<Modal bind:open width="small" on:close={cancel}>
 	<svelte:fragment slot="header">
 		<Heading>Create new secret</Heading>
 		<p>The secret will be created in <b>{env}</b></p>
@@ -86,13 +93,16 @@
 			<svelte:fragment slot="label">Name</svelte:fragment>
 		</TextField>
 		{#if $createSecret.errors}
-			<Alert variant="error">{$createSecret.errors[0].message}</Alert>
+			<Alert variant="error">
+			{#each $createSecret.errors as error}
+				{error.message}
+			{/each}
+			</Alert>
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		{#if validationError(name).length === 0 && name.length > 0}
-			<Button variant="primary" size="small" on:click={create}>Create</Button>
-		{/if}
+		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
+		<Button variant="primary" size="small" on:click={create}>Create</Button>
 	</svelte:fragment>
 </Modal>
 

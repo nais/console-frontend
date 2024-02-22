@@ -64,7 +64,6 @@
 				</div>
 
 				<CreateSecret
-					refetch={() => Secrets.fetch({})}
 					existingNames={secrets.map((s) => s.name)}
 					bind:open={createSecretOpen[environment.name]}
 					env={environment.name}

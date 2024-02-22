@@ -8,6 +8,10 @@
 
 	let addKv = () => {
 		if (key && value) {
+			if (validationError(key).length > 0) {
+				return
+			}
+
 			changes = [
 				...changes,
 				{
@@ -48,8 +52,14 @@
 	let value: string | undefined;
 	let open: boolean = false;
 
-	const toggleOpen = () => {
-		open = !open;
+	const openAddKvModal = () => {
+		open = true;
+	};
+
+	const cancel = () => {
+		open = false;
+		key = undefined;
+		value = undefined;
 	};
 </script>
 
@@ -66,15 +76,14 @@
 		</TextField>
 	</div>
 	<svelte:fragment slot="footer">
-		{#if validationError(key).length === 0 && key && key.length > 0}
-			<Button variant="primary" size="small" on:click={addKv}>Add</Button>
-		{/if}
+		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
+		<Button variant="primary" size="small" on:click={addKv}>Add</Button>
 	</svelte:fragment>
 </Modal>
 
 <div class="buttons">
 	<Tooltip content="Add new key and value">
-		<Button variant="tertiary" size="small" on:click={toggleOpen}>
+		<Button variant="tertiary" size="small" on:click={openAddKvModal}>
 			<svelte:fragment slot="icon-left">
 				<PlusCircleFillIcon />
 			</svelte:fragment>
