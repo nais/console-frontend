@@ -31,24 +31,22 @@
 	$: team = $page.params.team;
 
 	let changes: operation[] = [];
+	let saved = false;
 	let deleteSecretOpen = false;
+	let discardChangesOpen = false;
 
 	const workloadManifest = (secretName: string) => `spec:
   envFrom:
     - secret: ${secretName}`;
 
 	const discardChanges = () => {
+		saved = false;
 		changes = [];
 		Secret.fetch();
 	};
 
 	const updateSecretMutation = graphql(`
-		mutation updateSecret(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$data: [VariableInput!]!
-		) {
+		mutation updateSecret($name: String!, $team: Slug!, $env: String!, $data: [VariableInput!]!) {
 			updateSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
 				data {
@@ -64,6 +62,7 @@
 		}
 	`);
 	const updateSecret = async () => {
+		saved = false;
 		if (!secret || changes.length == 0) return;
 
 		let data: VariableInput[] = changes.reduce(mergeChanges, secret.data);
@@ -80,6 +79,7 @@
 		}
 
 		changes = [];
+		saved = true;
 	};
 
 	const deleteSecretMutation = graphql(`
@@ -105,6 +105,12 @@
 	const openDeleteSecretModal = () => {
 		deleteSecretOpen = true;
 	};
+
+	const openDiscardChangesModal = () => {
+		saved = false;
+		if (changes.length === 0) return;
+		discardChangesOpen = true;
+	};
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
@@ -125,17 +131,59 @@
 {:else if $Secret.fetching}
 	<Loader />
 {:else if secret}
+	<div class="alerts">
+		{#if saved && changes.length === 0}
+			<Alert variant="success" size="small">Changes saved!</Alert>
+		{/if}
+		{#if $updateSecretMutation.errors}
+			<Alert variant="error">
+				{#each $updateSecretMutation.errors as error}
+					{error.message}
+				{/each}
+			</Alert>
+		{:else if $deleteSecretMutation.errors}
+			<Alert variant="error">
+				{#each $deleteSecretMutation.errors as error}
+					{error.message}
+				{/each}
+			</Alert>
+		{/if}
+	</div>
+	<Confirm
+		confirmText="Delete"
+		variant="danger"
+		bind:open={deleteSecretOpen}
+		on:confirm={deleteSecret}
+	>
+		<svelte:fragment slot="header">
+			<Heading>Delete secret</Heading>
+		</svelte:fragment>
+		<p>
+			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
+		</p>
+
+		Are you sure you want to delete this secret?
+	</Confirm>
+	<Confirm
+		confirmText="Reset"
+		variant="danger"
+		bind:open={discardChangesOpen}
+		on:confirm={discardChanges}
+	>
+		<svelte:fragment slot="header">
+			<Heading>Reset all changes</Heading>
+		</svelte:fragment>
+		<p>You have unsaved changes which will be lost on reset.</p>
+
+		Are you sure you want to reset?
+	</Confirm>
 	<div class="grid">
 		<Card columns={8} rows={3}>
 			<div class="header">
 				<h4>
 					Secret Data
 					<HelpText title="Secret data" placement="right">
-						A secret contains a set of key-value pairs.<br />
-						<br />
-						Changes are not persisted until the "Save" button is clicked.<br />
-						Applications using the secret will automatically restart to pick up any changes.
-						<br />
+						A secret contains a set of key-value pairs.
 					</HelpText>
 				</h4>
 				<Tooltip content="Delete secret from environment" arrow={false}>
@@ -148,21 +196,6 @@
 						Delete
 					</Button>
 				</Tooltip>
-				<Confirm
-					confirmText="Delete"
-					variant="danger"
-					bind:open={deleteSecretOpen}
-					on:confirm={deleteSecret}
-				>
-					<svelte:fragment slot="header">
-						<Heading>Delete secret</Heading>
-					</svelte:fragment>
-					<p>
-						This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
-					</p>
-
-					Are you sure you want to delete this secret?
-				</Confirm>
 			</div>
 			<Table size="small" style="margin-top: 2rem">
 				<Tbody>
@@ -183,26 +216,22 @@
 						</div>
 						<div class="secret-edit-buttons">
 							<Tooltip content="Discard all changes" arrow={false}>
-								<Button variant="secondary" size="small" on:click={discardChanges}>Cancel</Button>
+								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}
+									>Reset</Button
+								>
 							</Tooltip>
 							<Tooltip content="Persist all changes" arrow={false}>
-								<Button variant="primary" size="small" on:click={updateSecret}>Save</Button>
+								<Button
+									variant="primary"
+									size="small"
+									on:click={updateSecret}
+									loading={$updateSecretMutation.fetching}>Save</Button
+								>
 							</Tooltip>
+							<HelpText title="Save changes" placement="top">
+								Changes are not persisted until the "Save" button is clicked.
+							</HelpText>
 						</div>
-						{#if $updateSecretMutation.errors}
-							<Alert variant="error">
-								{#each $updateSecretMutation.errors as error}
-									{error.message}
-								{/each}
-							</Alert>
-						{/if}
-						{#if $deleteSecretMutation.errors}
-							<Alert variant="error">
-								{#each $deleteSecretMutation.errors as error}
-									{error.message}
-								{/each}
-							</Alert>
-						{/if}
 					</div>
 				</Tbody>
 			</Table>
@@ -252,11 +281,7 @@
 			<h4>
 				Use secret in workload
 				<HelpText title="How to use this secret in a workload" placement="bottom">
-					To use this secret in your workload, you will need to reference it in your
-					workload's manifest.<br />
-					<br />
-					The snippet below injects the secret into your workload. Each key-value pair is then available
-					as environment variables.
+					Reference the secret in your workload manifest with the snippet below.
 				</HelpText>
 			</h4>
 			<pre class="manifest">{workloadManifest(secretName)}</pre>
@@ -313,11 +338,16 @@
 		margin-bottom: 1rem;
 	}
 
+	.alerts {
+		margin-bottom: 1rem;
+	}
+
 	.secret-content {
 		padding: 8px;
 	}
 
 	.secret-edit-buttons {
+		display: flex;
 		margin: 32px 0 0 16px;
 		padding: 32px 0;
 	}

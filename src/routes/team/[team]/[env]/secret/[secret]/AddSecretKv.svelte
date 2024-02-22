@@ -9,7 +9,7 @@
 	let addKv = () => {
 		if (key && value) {
 			if (validationError(key).length > 0) {
-				return
+				return;
 			}
 
 			changes = [
@@ -70,9 +70,11 @@
 	<div class="entry">
 		<TextField size="small" htmlSize={30} bind:value={key} error={validationError(key)}>
 			<svelte:fragment slot="label">Key</svelte:fragment>
+			<svelte:fragment slot="description">Example: SOME_KEY</svelte:fragment>
 		</TextField>
 		<TextField size="small" htmlSize={30} bind:value>
 			<svelte:fragment slot="label">Value</svelte:fragment>
+			<svelte:fragment slot="description">Example: some-value</svelte:fragment>
 		</TextField>
 	</div>
 	<svelte:fragment slot="footer">

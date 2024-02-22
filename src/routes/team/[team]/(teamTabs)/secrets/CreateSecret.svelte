@@ -12,12 +12,7 @@
 	let data: VariableInput[] = [];
 
 	const createSecret = graphql(`
-		mutation createSecret(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$data: [VariableInput!]!
-		) {
+		mutation createSecret($name: String!, $team: Slug!, $env: String!, $data: [VariableInput!]!) {
 			createSecret(name: $name, team: $team, env: $env, data: $data) {
 				id
 				data {
@@ -42,7 +37,7 @@
 		if ($createSecret.errors) {
 			open = true;
 		} else {
-			const secretPage = '/team/' + team + '/' + env + '/secret/' + name
+			const secretPage = '/team/' + team + '/' + env + '/secret/' + name;
 			name = '';
 			open = false;
 			await goto(secretPage);
@@ -94,15 +89,15 @@
 		</TextField>
 		{#if $createSecret.errors}
 			<Alert variant="error">
-			{#each $createSecret.errors as error}
-				{error.message}
-			{/each}
+				{#each $createSecret.errors as error}
+					{error.message}
+				{/each}
 			</Alert>
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
 		<Button variant="primary" size="small" on:click={create}>Create</Button>
+		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
 	</svelte:fragment>
 </Modal>
 
