@@ -590,6 +590,7 @@ input MonthlyCostFilter {
   team: Slug!
 }
 
+"""The root query for implementing GraphQL mutations."""
 type Mutation {
   """
   Add opt-out of a reconciler for a team member. Only reconcilers that are member aware can be opted out from.
@@ -956,8 +957,10 @@ type OpenSearch implements Storage {
 }
 
 input OrderBy {
-  """Order direction"""
+  """Order direction."""
   direction: SortOrder!
+
+  """The field to order by."""
   field: OrderByField!
 }
 
@@ -1010,9 +1013,15 @@ type OutboundAccessError implements StateError {
   rule: Rule!
 }
 
+"""Pagination information."""
 type PageInfo {
+  """Whether or not there exists a next page in the data set."""
   hasNextPage: Boolean!
+
+  """Whether or not there exists a previous page in the data set."""
   hasPreviousPage: Boolean!
+
+  """The total amount if items accessible."""
   totalCount: Int!
 }
 
@@ -1020,6 +1029,7 @@ type Port {
   port: Int!
 }
 
+"""The query root for the NAIS GraphQL API."""
 type Query {
   """Get an app by name, team and env."""
   app(
