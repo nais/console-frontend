@@ -161,6 +161,15 @@
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 		</p>
+		{#if secret.apps.length > 0}
+			<p>These workloads still reference the secret:</p>
+			<ul>
+				{#each secret.apps as app}
+					<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
+				{/each}
+			</ul>
+			<br />
+		{/if}
 
 		Are you sure you want to delete this secret?
 	</Confirm>
@@ -216,17 +225,19 @@
 						</div>
 						<div class="secret-edit-buttons">
 							<Tooltip content="Discard all changes" arrow={false}>
-								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}
-									>Reset</Button
-								>
+								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}>
+									Reset
+								</Button>
 							</Tooltip>
 							<Tooltip content="Persist all changes" arrow={false}>
 								<Button
 									variant="primary"
 									size="small"
 									on:click={updateSecret}
-									loading={$updateSecretMutation.fetching}>Save</Button
+									loading={$updateSecretMutation.fetching}
 								>
+									Save
+								</Button>
 							</Tooltip>
 							<HelpText title="Save changes" placement="top">
 								Changes are not persisted until the "Save" button is clicked.
@@ -238,6 +249,7 @@
 		</Card>
 
 		<Card columns={4} rows={1}>
+			<h4>Metadata</h4>
 			<h5>Last modified</h5>
 			<div class="metadata-value">
 				{#if secret.lastModifiedAt}
@@ -249,7 +261,7 @@
 			<h5>Last modified by</h5>
 			<div class="metadata-value">
 				{#if secret.lastModifiedBy}
-					<span class="cap">{secret.lastModifiedBy.name}</span> ({secret.lastModifiedBy.email})
+					<span class="cap" title={secret.lastModifiedBy.email}>{secret.lastModifiedBy.name}</span>
 				{:else}
 					<code>n/a</code>
 				{/if}
@@ -313,13 +325,13 @@
 	}
 
 	h5 {
-		margin-top: 0.5rem;
+		margin-top: 1rem;
 		gap: 0.5rem;
 	}
 
 	ul {
 		list-style: none;
-		margin: 1rem 0 1rem 0;
+		margin: 0rem 0 1rem 0;
 		padding: 0 1rem 0 1rem;
 	}
 
