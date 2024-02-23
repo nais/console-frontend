@@ -20,6 +20,17 @@
 	import AddSecretKv from './AddSecretKv.svelte';
 	import { goto } from '$app/navigation';
 	import HumanTime from '$lib/HumanTime.svelte';
+	import { beforeNavigate } from '$app/navigation';
+	import type { NavigationTarget } from '@sveltejs/kit';
+
+	let navigateTo: NavigationTarget | null;
+	beforeNavigate(({ to, cancel }) => {
+		if (changes.length > 0) {
+			cancel()
+			navigateTo = to;
+			openDiscardChangesModal();
+		}
+	});
 
 	export let data: PageData;
 
@@ -43,6 +54,10 @@
 		saved = false;
 		changes = [];
 		Secret.fetch();
+		if (navigateTo) {
+			goto(navigateTo.url);
+			navigateTo = null;
+		}
 	};
 
 	const updateSecretMutation = graphql(`
@@ -174,17 +189,18 @@
 		Are you sure you want to delete this secret?
 	</Confirm>
 	<Confirm
-		confirmText="Reset"
+		confirmText="Discard"
 		variant="danger"
 		bind:open={discardChangesOpen}
 		on:confirm={discardChanges}
+		on:cancel={() => {navigateTo = null}}
 	>
 		<svelte:fragment slot="header">
-			<Heading>Reset all changes</Heading>
+			<Heading>Discard all changes</Heading>
 		</svelte:fragment>
-		<p>You have unsaved changes which will be lost on reset.</p>
+		<p>You have unsaved changes. The changes will be lost if you continue.</p>
 
-		Are you sure you want to reset?
+		Are you sure you want to discard all changes?
 	</Confirm>
 	<div class="grid">
 		<Card columns={8} rows={3}>
@@ -226,7 +242,7 @@
 						<div class="secret-edit-buttons">
 							<Tooltip content="Discard all changes" arrow={false}>
 								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}>
-									Reset
+									Cancel
 								</Button>
 							</Tooltip>
 							<Tooltip content="Persist all changes" arrow={false}>
@@ -239,9 +255,6 @@
 									Save
 								</Button>
 							</Tooltip>
-							<HelpText title="Save changes" placement="top">
-								Changes are not persisted until the "Save" button is clicked.
-							</HelpText>
 						</div>
 					</div>
 				</Tbody>
