@@ -33,9 +33,11 @@
 
 	$: teamName = $page.params.team;
 
+	$: console.log($TeamVulnerabilities.variables);
+
 	$: ({ sortState, limit, offset } = tableStateFromVariables(
 		$TeamVulnerabilities.variables,
-		OrderByField.SEVERITY_CRITICAL,
+		OrderByField.RISK_SCORE,
 		'descending'
 	));
 
