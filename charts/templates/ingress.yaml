@@ -22,10 +22,10 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: '{{ .Release.Name }}'-teams-redirect
+  name: '{{ .Release.Name }}-teams-redirect'
   namespace: nais-system
   annotations:
-    nginx.ingress.kubernetes.io/temporal-redirect: "https://{{ .Values.host }}"
+    nginx.ingress.kubernetes.io/temporal-redirect: 'https://{{ .Values.host }}'
 spec:
   ingressClassName: nais-ingress
   rules:
