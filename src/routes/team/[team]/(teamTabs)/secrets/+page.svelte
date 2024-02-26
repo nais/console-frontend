@@ -1,21 +1,21 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
 	import {
+		Alert,
+		Button,
+		Loader,
 		Table,
-		Thead,
 		Tbody,
 		Td,
 		Th,
-		Alert,
-		Loader,
-		Tr,
-		Button
+		Thead,
+		Tr
 	} from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
-	import { page } from '$app/stores';
-	import CreateSecret from './CreateSecret.svelte';
-	import HumanTime from '$lib/HumanTime.svelte';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
+	import CreateSecret from './CreateSecret.svelte';
 
 	export let data: PageData;
 
@@ -69,7 +69,7 @@
 								</Td>
 								<Td align="right">
 									{#if secret.lastModifiedAt}
-										<HumanTime time={secret.lastModifiedAt} distance />
+										<Time time={secret.lastModifiedAt} distance />
 									{:else}
 										<code>n/a</code>
 									{/if}

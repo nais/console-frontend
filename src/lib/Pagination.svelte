@@ -20,9 +20,9 @@
 </script>
 
 {#if !pageInfo || pageInfo.totalCount == PendingValue}
-	<div />
+	<!-- nothing -->
 {:else if pageInfo.totalCount <= limit}
-	<div />
+	<!-- nothing -->
 {:else}
 	<Pagination
 		count={count(pageInfo.totalCount)}

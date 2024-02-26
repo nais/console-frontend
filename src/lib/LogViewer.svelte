@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { graphql } from '$houdini';
-	import HumanTime from '$lib/HumanTime.svelte';
+	import Time from '$lib/Time.svelte';
 	import { createEventDispatcher, onDestroy, tick } from 'svelte';
 	import { get } from 'svelte/store';
 
@@ -182,7 +182,7 @@
 			<div class="logline {getLogLevel(log.message)}">
 				{#if showTime}
 					<span class="timestamp">
-						<HumanTime time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
+						<Time time={log.time} dateFormat="yyyy-MM-dd HH:mm:ss" />
 					</span>
 				{/if}
 				{#if showLevel}

@@ -15,6 +15,7 @@
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
+	import LogLine from './LogLine.svelte';
 
 	export let data: PageData;
 
@@ -397,6 +398,28 @@
 				>
 			</Modal>
 		{/if}
+
+		<Card columns={12}>
+			<h3>Logs</h3>
+
+			{#each teamSettings.auditLogs.nodes as log}
+				{#if log !== PendingValue}
+					<LogLine {log} />
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			{:else}
+				<p>No audit logs</p>
+			{/each}
+
+			{#if teamSettings.auditLogs.pageInfo.hasNextPage !== PendingValue && teamSettings.auditLogs.pageInfo.hasNextPage}
+				<div class="center">
+					<Button variant="secondary" size="medium" as="a" href="/team/{team}/settings/audit_logs">
+						Show more logs
+					</Button>
+				</div>
+			{/if}
+		</Card>
 	</div>
 {/if}
 
@@ -454,5 +477,9 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+	}
+
+	.center {
+		text-align: center;
 	}
 </style>

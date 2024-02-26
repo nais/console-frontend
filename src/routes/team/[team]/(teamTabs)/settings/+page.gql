@@ -13,5 +13,15 @@ query TeamSettings($team: Slug!) {
 			gcpProjectID
 			slackAlertsChannel
 		}
+		auditLogs(limit: 5) @loading {
+			nodes @loading(count: 5) {
+				actor
+				message
+				createdAt
+			}
+			pageInfo @loading {
+				hasNextPage @loading
+			}
+		}
 	}
 }

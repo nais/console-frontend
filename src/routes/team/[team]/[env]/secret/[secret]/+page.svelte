@@ -1,5 +1,10 @@
 <script lang="ts">
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { graphql, type VariableInput } from '$houdini';
+	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Alert,
 		Button,
@@ -11,17 +16,11 @@
 		Tbody,
 		Tooltip
 	} from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
-	import Card from '$lib/Card.svelte';
-	import { graphql, type VariableInput } from '$houdini';
-	import { filterAddKvs, mergeChanges, type operation } from './state-machinery';
-	import Confirm from '$lib/components/Confirm.svelte';
-	import SecretKv from './SecretKv.svelte';
-	import AddSecretKv from './AddSecretKv.svelte';
-	import { goto } from '$app/navigation';
-	import HumanTime from '$lib/HumanTime.svelte';
-	import { beforeNavigate } from '$app/navigation';
 	import type { NavigationTarget } from '@sveltejs/kit';
+	import type { PageData } from './$houdini';
+	import AddSecretKv from './AddSecretKv.svelte';
+	import SecretKv from './SecretKv.svelte';
+	import { filterAddKvs, mergeChanges, type operation } from './state-machinery';
 
 	let navigateTo: NavigationTarget | null;
 	beforeNavigate(({ to, cancel }) => {
@@ -271,7 +270,7 @@
 			<h5>Last modified</h5>
 			<div class="metadata-value">
 				{#if secret.lastModifiedAt}
-					<HumanTime time={secret.lastModifiedAt} distance />
+					<Time time={secret.lastModifiedAt} distance />
 				{:else}
 					<code>n/a</code>
 				{/if}
