@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
+	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
+	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import Reconciler from './Reconciler.svelte';
 
 	export let data: PageData;
 
-	$: ({ AdminReconcilers } = data);
-	$: reconcilers = $AdminReconcilers.data?.reconcilers.nodes;
+	$: ({ AdminUsers } = data);
+	$: ({ limit, offset } = limitOffset($AdminUsers.variables));
 
 	const synchronize = graphql(`
-		mutation Synchronize {
-			synchronizeAllTeams {
-				correlationID
-			}
+		mutation SynchronizeUsers {
+			synchronizeUsers
 		}
 	`);
 
@@ -24,37 +24,67 @@
 		loading = true;
 		const resp = await synchronize.mutate(null);
 		loading = false;
-
 		if (resp.errors) {
 			errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
 		}
 	};
 </script>
 
-<Heading size="large">
-	<div class="h">
-		Admin
-		<Button disabled={loading} {loading} on:click={triggerSynchronize} size="small">
-			Synchronize all teams
-		</Button>
-	</div>
-</Heading>
+<div class="h">
+	<Button disabled={loading} {loading} on:click={triggerSynchronize} size="small">
+		Synchronize users
+	</Button>
+</div>
+
 <br />
 
 {#each errors as e}
-	<Alert variant="error">{e}</Alert>
+	<p>{e}</p>
 {/each}
 
-{#each reconcilers || [] as r}
-	<Reconciler reconciler={r} />
-{:else}
-	<p>No reconcilers registered</p>
-{/each}
+<Card>
+	{#if $AdminUsers.data}
+		<Table zebraStripes>
+			<Thead>
+				<Tr>
+					<Th>Name</Th>
+					<Th>Email</Th>
+					<Th>External ID</Th>
+					<Th>Nais admin</Th>
+				</Tr>
+			</Thead>
+			<Tbody>
+				{#each $AdminUsers.data.users.nodes || [] as user}
+					<Tr>
+						<Td>{user.name}</Td>
+						<Td>{user.email}</Td>
+						<Td>{user.externalId}</Td>
+						<Td>{user.isAdmin ? 'Yes' : ''}</Td>
+					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={99}>No users found</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+
+		<Pagination
+			style="margin-top: 1rem;"
+			pageInfo={$AdminUsers.data.users.pageInfo}
+			{limit}
+			{offset}
+			changePage={(page) => {
+				changeParams({ page: page.toString() });
+			}}
+		/>
+	{/if}
+</Card>
 
 <style>
 	.h {
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-end;
 		align-items: center;
 	}
 </style>

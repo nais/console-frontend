@@ -1,0 +1,7 @@
+query AdminReconcilers {
+	reconcilers(limit: 100) {
+		nodes {
+			...ReconcilerFragment
+		}
+	}
+}

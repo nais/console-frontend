@@ -22,7 +22,7 @@
 
 {#if !pageInfo || pageInfo.totalCount == PendingValue}
 	<!-- nothing -->
-{:else if pageInfo.totalCount <= limit}
+{:else if pageInfo.totalCount <= limit && offset == 0}
 	<!-- nothing -->
 {:else}
 	<Pagination

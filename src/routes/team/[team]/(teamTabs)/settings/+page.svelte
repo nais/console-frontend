@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import { PendingValue, graphql } from '$houdini';
+	import LogLine from '$lib/AuditLogLine.svelte';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -15,7 +16,6 @@
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
-	import LogLine from './LogLine.svelte';
 
 	export let data: PageData;
 

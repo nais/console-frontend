@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
+	import LogLine from '$lib/AuditLogLine.svelte';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Skeleton } from '@nais/ds-svelte-community';
-	import LogLine from '../LogLine.svelte';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
