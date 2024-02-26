@@ -65,7 +65,10 @@
 	}
 
 	function update() {
-		const params = new URLSearchParams({ from, to });
+		const params = $page.url.searchParams;
+		params.set('from', from);
+		params.set('to', to);
+
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 
 		if (selectedEnvironment === '') {

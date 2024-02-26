@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
-	import { OrderByField } from '$houdini/graphql';
+	import { OrderByField, type OrderByField$options } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -33,10 +33,13 @@
 
 	$: teamName = $page.params.team;
 
+	let defaultSortCol: OrderByField$options = OrderByField.RISK_SCORE;
+	let defaultSortDir: 'descending' | 'ascending' = 'descending';
+
 	$: ({ sortState, limit, offset } = tableStateFromVariables(
 		$TeamVulnerabilities.variables,
-		OrderByField.RISK_SCORE,
-		'descending'
+		defaultSortCol,
+		defaultSortDir
 	));
 
 	const onClick = () => {
@@ -45,6 +48,14 @@
 			routeID: '/dependencytrack/team/findings'
 		};
 		logEvent('pageview', props);
+	};
+
+	const sortChange = (e: CustomEvent<{ key: string }>) => {
+		const { key } = e.detail;
+		const ss = sortTable(key, sortState);
+		defaultSortCol = ss.orderBy as OrderByField$options;
+		defaultSortDir = ss.direction;
+		changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 	};
 </script>
 
@@ -58,15 +69,7 @@
 	<div class="grid">
 		<Card columns={12}>
 			<h3>Current vulnerabilities for each application</h3>
-			<Table
-				size="small"
-				sort={sortState}
-				on:sortChange={(e) => {
-					const { key } = e.detail;
-					const ss = sortTable(key, sortState);
-					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
-				}}
-			>
+			<Table size="small" sort={sortState} on:sortChange={sortChange}>
 				<Thead>
 					<Th sortable={true} sortKey={OrderByField.NAME}>Name</Th>
 					<Th sortable={true} sortKey={OrderByField.ENV}>Env</Th>
