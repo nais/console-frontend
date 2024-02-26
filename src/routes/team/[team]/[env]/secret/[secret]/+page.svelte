@@ -26,7 +26,7 @@
 	let navigateTo: NavigationTarget | null;
 	beforeNavigate(({ to, cancel }) => {
 		if (changes.length > 0) {
-			cancel()
+			cancel();
 			navigateTo = to;
 			openDiscardChangesModal();
 		}
@@ -176,11 +176,14 @@
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 		</p>
-		{#if secret.apps.length > 0}
+		{#if secret.apps.length > 0 || secret.jobs.length > 0}
 			<p>These workloads still reference the secret:</p>
 			<ul>
 				{#each secret.apps as app}
 					<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
+				{/each}
+				{#each secret.jobs as job}
+					<li><a href="/team/{team}/{env}/job/{job.name}">{job.name}</a></li>
 				{/each}
 			</ul>
 			<br />
@@ -193,7 +196,9 @@
 		variant="danger"
 		bind:open={discardChangesOpen}
 		on:confirm={discardChanges}
-		on:cancel={() => {navigateTo = null}}
+		on:cancel={() => {
+			navigateTo = null;
+		}}
 	>
 		<svelte:fragment slot="header">
 			<Heading>Discard all changes</Heading>
@@ -297,7 +302,16 @@
 						<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
 					{/each}
 				</ul>
-			{:else}
+			{/if}
+			{#if secret.jobs.length > 0}
+				<h5>Jobs</h5>
+				<ul>
+					{#each secret.jobs as job}
+						<li><a href="/team/{team}/{env}/job/{job.name}">{job.name}</a></li>
+					{/each}
+				</ul>
+			{/if}
+			{#if secret.apps.length === 0 && secret.jobs.length === 0}
 				<Alert size="small" variant="info">Secret is not in use by any workloads.</Alert>
 			{/if}
 		</Card>

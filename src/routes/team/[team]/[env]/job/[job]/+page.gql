@@ -19,4 +19,9 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		...JobImage
 		...JobStatus
 	}
+
+	team(slug: $team) {
+		viewerIsOwner
+		viewerIsMember
+	}
 }
