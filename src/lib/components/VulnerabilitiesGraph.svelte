@@ -125,8 +125,8 @@
 		<p>No vulnerability metrics available for {team}.</p>
 	{:else}
 		<EChart
-				options={echartOptionsUsageChart($vulnerabilities.data)}
-				style="height: 500px; width: 100%;"
+			options={echartOptionsUsageChart($vulnerabilities.data)}
+			style="height: 500px; width: 100%;"
 		/>
 	{/if}
 {/if}
