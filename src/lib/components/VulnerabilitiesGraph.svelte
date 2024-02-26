@@ -5,7 +5,7 @@
 	import { graphql } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { vulnerabilitiesTeamTransformLineChart } from '$lib/chart/vulnerabilies_transformer';
-	import { Alert, Button, Select } from '@nais/ds-svelte-community';
+	import {Alert, Button, Select, Tooltip} from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamVulnerabilityMetricsVariables } from './$houdini';
 	import { EyeIcon } from '@nais/ds-svelte-community/icons';
@@ -126,6 +126,7 @@
 	{#if $vulnerabilities.data?.team.vulnerabilityMetrics.data.length === 0}
 		<p>No vulnerability metrics available for {team}.</p>
 	{:else}
+		<Tooltip placement="right" content="show/hide metrics">
 		<div class="button">
 			<Button
 				size="xsmall"
@@ -137,6 +138,7 @@
 				<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
 			>
 		</div>
+		</Tooltip>
 		{#if toggleMetrics}
 			<EChart
 				options={echartOptionsUsageChart($vulnerabilities.data)}
