@@ -5,9 +5,10 @@
 	import { graphql } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { vulnerabilitiesTeamTransformLineChart } from '$lib/chart/vulnerabilies_transformer';
-	import { Alert, Select } from '@nais/ds-svelte-community';
+	import {Alert, Button, Select, Tooltip} from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamVulnerabilityMetricsVariables } from './$houdini';
+	import { EyeIcon } from '@nais/ds-svelte-community/icons';
 
 	export const _TeamVulnerabilityMetricsVariables: TeamVulnerabilityMetricsVariables = () => {
 		const url = get(page).url;
@@ -16,8 +17,8 @@
 		const toParam = url.searchParams.get('to');
 
 		const fromDate = fromParam
-			? new Date(fromParam)
-			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60);
+				? new Date(fromParam)
+				: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60);
 		const toDate = toParam ? new Date(toParam) : new Date(Date.now());
 
 		from = fromDate.toISOString().split('T')[0];
@@ -28,6 +29,7 @@
 
 	let from = '';
 	let to = '';
+	let toggleMetrics = true;
 
 	const vulnerabilities = graphql(`
 		query TeamVulnerabilityMetrics($slug: Slug!, $from: Date!, $to: Date!, $environment: String)
@@ -109,11 +111,11 @@
 		<label for="to">To:</label>
 		<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 		<Select
-			size="small"
-			hideLabel={true}
-			bind:value={selectedEnvironment}
-			on:change={update}
-			label="Environment"
+				size="small"
+				hideLabel={true}
+				bind:value={selectedEnvironment}
+				on:change={update}
+				label="Environment"
 		>
 			<option value="">All environments</option>
 			{#each $vulnerabilities.data?.team.environments as env}
@@ -124,10 +126,25 @@
 	{#if $vulnerabilities.data?.team.vulnerabilityMetrics.data.length === 0}
 		<p>No vulnerability metrics available for {team}.</p>
 	{:else}
-		<EChart
-			options={echartOptionsUsageChart($vulnerabilities.data)}
-			style="height: 500px; width: 100%;"
-		/>
+		<Tooltip placement="right" content="show/hide metrics">
+			<div class="button">
+				<Button
+						size="xsmall"
+						variant="tertiary"
+						on:click={() => {
+					toggleMetrics = !toggleMetrics;
+				}}
+				>
+					<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
+				>
+			</div>
+		</Tooltip>
+		{#if toggleMetrics}
+			<EChart
+					options={echartOptionsUsageChart($vulnerabilities.data)}
+					style="height: 500px; width: 100%;"
+			/>
+		{/if}
 	{/if}
 {/if}
 
@@ -137,5 +154,10 @@
 		gap: 1rem;
 		margin: 1rem 0;
 		height: 28px;
+	}
+	.button {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
 	}
 </style>
