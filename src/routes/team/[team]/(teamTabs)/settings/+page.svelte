@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button, CopyButton, Loader, Modal, Skeleton } from '@nais/ds-svelte-community';
 	import {
@@ -11,6 +12,7 @@
 		EyeIcon,
 		EyeSlashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
 
@@ -103,6 +105,16 @@
 		const [, projectId, , location, , repository] = repo.split('/');
 		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
 	};
+
+	const synchronizeTeam = graphql(`
+		mutation SynchronizeTeam($slug: Slug!) {
+			synchronizeTeam(slug: $slug) {
+				correlationID
+			}
+		}
+	`);
+
+	let synchronizeClicked = false;
 </script>
 
 {#if $TeamSettings.errors}
@@ -232,7 +244,32 @@
 			{/if}
 		</Card>
 		<Card columns={6}>
-			<h3>Managed resources</h3>
+			<h3 class="with_button">
+				Managed resources
+				<Button
+					size="xsmall"
+					variant="secondary"
+					loading={$synchronizeTeam.fetching}
+					on:click={async () => {
+						await synchronizeTeam.mutate({ slug: team });
+						synchronizeClicked = true;
+					}}
+				>
+					Synchronize team
+				</Button>
+			</h3>
+			{#if $synchronizeTeam.errors}
+				<GraphErrors errors={$synchronizeTeam.errors} dismissable={true} />
+			{:else if synchronizeClicked}
+				<div transition:slide={{ duration: 200 }}>
+					<Alert variant="success" size="small">
+						Synchronization started, team resources will soon be updated.
+						<Button size="xsmall" variant="tertiary" on:click={() => (synchronizeClicked = false)}>
+							Dismiss
+						</Button>
+					</Alert>
+				</div>
+			{/if}
 			{#if teamSettings.id === PendingValue}
 				<Loader />
 			{:else}
@@ -411,5 +448,11 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.5rem;
+	}
+
+	h3.with_button {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 </style>
