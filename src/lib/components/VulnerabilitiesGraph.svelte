@@ -5,10 +5,9 @@
 	import { graphql } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { vulnerabilitiesTeamTransformLineChart } from '$lib/chart/vulnerabilies_transformer';
-	import { Alert, Button, Select, Tooltip } from '@nais/ds-svelte-community';
+	import { Alert, Select } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamVulnerabilityMetricsVariables } from './$houdini';
-	import { EyeIcon } from '@nais/ds-svelte-community/icons';
 
 	export const _TeamVulnerabilityMetricsVariables: TeamVulnerabilityMetricsVariables = () => {
 		const url = get(page).url;
@@ -29,7 +28,6 @@
 
 	let from = '';
 	let to = '';
-	let toggleMetrics = true;
 
 	const vulnerabilities = graphql(`
 		query TeamVulnerabilityMetrics($slug: Slug!, $from: Date!, $to: Date!, $environment: String)
@@ -126,25 +124,10 @@
 	{#if $vulnerabilities.data?.team.vulnerabilityMetrics.data.length === 0}
 		<p>No vulnerability metrics available for {team}.</p>
 	{:else}
-		<Tooltip placement="right" content="show/hide metrics">
-			<div class="button">
-				<Button
-					size="xsmall"
-					variant="tertiary"
-					on:click={() => {
-						toggleMetrics = !toggleMetrics;
-					}}
-				>
-					<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
-				>
-			</div>
-		</Tooltip>
-		{#if toggleMetrics}
-			<EChart
-				options={echartOptionsUsageChart($vulnerabilities.data)}
-				style="height: 500px; width: 100%;"
-			/>
-		{/if}
+		<EChart
+			options={echartOptionsUsageChart($vulnerabilities.data)}
+			style="height: 500px; width: 100%;"
+		/>
 	{/if}
 {/if}
 
@@ -154,10 +137,5 @@
 		gap: 1rem;
 		margin: 1rem 0;
 		height: 28px;
-	}
-	.button {
-		display: flex;
-		flex-direction: row;
-		gap: 1rem;
 	}
 </style>
