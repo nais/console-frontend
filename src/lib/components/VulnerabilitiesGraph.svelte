@@ -102,8 +102,6 @@
 			{error.message}
 		{/each}
 	</Alert>
-{:else if $vulnerabilities.data?.team.vulnerabilityMetrics.data.length === 0}
-	<p>No vulnerability metrics available for team.</p>
 {:else if $vulnerabilities.data}
 	<div class="select">
 		<label for="from">From:</label>
@@ -123,10 +121,14 @@
 			{/each}
 		</Select>
 	</div>
-	<EChart
-		options={echartOptionsUsageChart($vulnerabilities.data)}
-		style="height: 500px; width: 100%;"
-	/>
+	{#if $vulnerabilities.data?.team.vulnerabilityMetrics.data.length === 0}
+		<p>No vulnerability metrics available for {team}.</p>
+	{:else}
+		<EChart
+				options={echartOptionsUsageChart($vulnerabilities.data)}
+				style="height: 500px; width: 100%;"
+		/>
+	{/if}
 {/if}
 
 <style>
