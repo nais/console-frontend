@@ -12,6 +12,7 @@
 	import Status from './Status.svelte';
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
+	import Secrets from './Secrets.svelte';
 
 	export let data: PageData;
 	$: ({ Job } = data);
@@ -65,6 +66,12 @@
 			<h4>Authentications</h4>
 			<Authentications {job} />
 		</Card>
+		{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
+			<Card columns={4}>
+				<h4>Secrets</h4>
+				<Secrets />
+			</Card>
+		{/if}
 	</div>
 {/if}
 

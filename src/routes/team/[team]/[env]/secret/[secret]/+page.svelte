@@ -20,6 +20,17 @@
 	import AddSecretKv from './AddSecretKv.svelte';
 	import { goto } from '$app/navigation';
 	import HumanTime from '$lib/HumanTime.svelte';
+	import { beforeNavigate } from '$app/navigation';
+	import type { NavigationTarget } from '@sveltejs/kit';
+
+	let navigateTo: NavigationTarget | null;
+	beforeNavigate(({ to, cancel }) => {
+		if (changes.length > 0) {
+			cancel();
+			navigateTo = to;
+			openDiscardChangesModal();
+		}
+	});
 
 	export let data: PageData;
 
@@ -43,6 +54,10 @@
 		saved = false;
 		changes = [];
 		Secret.fetch();
+		if (navigateTo) {
+			goto(navigateTo.url);
+			navigateTo = null;
+		}
 	};
 
 	const updateSecretMutation = graphql(`
@@ -161,21 +176,36 @@
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 		</p>
+		{#if secret.apps.length > 0 || secret.jobs.length > 0}
+			<p>These workloads still reference the secret:</p>
+			<ul>
+				{#each secret.apps as app}
+					<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
+				{/each}
+				{#each secret.jobs as job}
+					<li><a href="/team/{team}/{env}/job/{job.name}">{job.name}</a></li>
+				{/each}
+			</ul>
+			<br />
+		{/if}
 
 		Are you sure you want to delete this secret?
 	</Confirm>
 	<Confirm
-		confirmText="Reset"
+		confirmText="Discard"
 		variant="danger"
 		bind:open={discardChangesOpen}
 		on:confirm={discardChanges}
+		on:cancel={() => {
+			navigateTo = null;
+		}}
 	>
 		<svelte:fragment slot="header">
-			<Heading>Reset all changes</Heading>
+			<Heading>Discard all changes</Heading>
 		</svelte:fragment>
-		<p>You have unsaved changes which will be lost on reset.</p>
+		<p>You have unsaved changes. The changes will be lost if you continue.</p>
 
-		Are you sure you want to reset?
+		Are you sure you want to discard all changes?
 	</Confirm>
 	<div class="grid">
 		<Card columns={8} rows={3}>
@@ -216,21 +246,20 @@
 						</div>
 						<div class="secret-edit-buttons">
 							<Tooltip content="Discard all changes" arrow={false}>
-								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}
-									>Reset</Button
-								>
+								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}>
+									Cancel
+								</Button>
 							</Tooltip>
 							<Tooltip content="Persist all changes" arrow={false}>
 								<Button
 									variant="primary"
 									size="small"
 									on:click={updateSecret}
-									loading={$updateSecretMutation.fetching}>Save</Button
+									loading={$updateSecretMutation.fetching}
 								>
+									Save
+								</Button>
 							</Tooltip>
-							<HelpText title="Save changes" placement="top">
-								Changes are not persisted until the "Save" button is clicked.
-							</HelpText>
 						</div>
 					</div>
 				</Tbody>
@@ -238,6 +267,7 @@
 		</Card>
 
 		<Card columns={4} rows={1}>
+			<h4>Metadata</h4>
 			<h5>Last modified</h5>
 			<div class="metadata-value">
 				{#if secret.lastModifiedAt}
@@ -249,7 +279,7 @@
 			<h5>Last modified by</h5>
 			<div class="metadata-value">
 				{#if secret.lastModifiedBy}
-					<span class="cap">{secret.lastModifiedBy.name}</span> ({secret.lastModifiedBy.email})
+					<span class="cap" title={secret.lastModifiedBy.email}>{secret.lastModifiedBy.name}</span>
 				{:else}
 					<code>n/a</code>
 				{/if}
@@ -272,7 +302,16 @@
 						<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
 					{/each}
 				</ul>
-			{:else}
+			{/if}
+			{#if secret.jobs.length > 0}
+				<h5>Jobs</h5>
+				<ul>
+					{#each secret.jobs as job}
+						<li><a href="/team/{team}/{env}/job/{job.name}">{job.name}</a></li>
+					{/each}
+				</ul>
+			{/if}
+			{#if secret.apps.length === 0 && secret.jobs.length === 0}
 				<Alert size="small" variant="info">Secret is not in use by any workloads.</Alert>
 			{/if}
 		</Card>
@@ -313,13 +352,13 @@
 	}
 
 	h5 {
-		margin-top: 0.5rem;
+		margin-top: 1rem;
 		gap: 0.5rem;
 	}
 
 	ul {
 		list-style: none;
-		margin: 1rem 0 1rem 0;
+		margin: 0rem 0 1rem 0;
 		padding: 0 1rem 0 1rem;
 	}
 

@@ -6,17 +6,16 @@
 		Tbody,
 		Td,
 		Th,
-		Button,
 		Alert,
 		Loader,
-		Tooltip,
-		Tr
+		Tr,
+		Button
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import { page } from '$app/stores';
 	import CreateSecret from './CreateSecret.svelte';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import HumanTime from '$lib/HumanTime.svelte';
+	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
 
@@ -25,12 +24,10 @@
 	$: environments = $Secrets.data?.team.environments;
 	$: team = $page.params.team;
 
-	// (obj: Record<string, any>) => obj[key];
-	const createSecretOpen: Record<string, boolean> = environments
-		? environments.reduce((acc, curr) => ({ ...acc, [curr.name]: false }), {})
-		: {};
-	const openCreateSecretModal = (env: string) => {
-		createSecretOpen[env] = true;
+	let createSecretOpen = false;
+
+	const open = () => {
+		createSecretOpen = true;
 	};
 </script>
 
@@ -43,33 +40,22 @@
 {:else if $Secrets.fetching}
 	<Loader></Loader>
 {:else if allSecrets && environments}
+	<div class="heading">
+		<Button variant="primary" size="small" on:click={open}>
+			Create Secret
+			<svelte:fragment slot="icon-left">
+				<PlusIcon />
+			</svelte:fragment>
+		</Button>
+		<CreateSecret secrets={allSecrets} {environments} {team} bind:open={createSecretOpen} />
+	</div>
 	<div class="grid">
 		{#each environments as environment}
 			{@const secrets = allSecrets.filter((s) => s.env.name === environment.name)}
 			<Card columns={12}>
-				<div class="heading">
-					<h3>{environment.name}</h3>
-					<Tooltip content="Create new secret in environment" arrow={false}>
-						<Button
-							variant="primary"
-							size="small"
-							on:click={() => openCreateSecretModal(environment.name)}
-						>
-							Create Secret
-							<svelte:fragment slot="icon-left">
-								<PlusIcon />
-							</svelte:fragment>
-						</Button>
-					</Tooltip>
+				<div class="card-heading">
+					<h4>{environment.name}</h4>
 				</div>
-
-				<CreateSecret
-					existingNames={secrets.map((s) => s.name)}
-					bind:open={createSecretOpen[environment.name]}
-					env={environment.name}
-					{team}
-				/>
-
 				<Table size="small" zebraStripes>
 					<Thead>
 						<Th>Name</Th>
@@ -105,8 +91,14 @@
 		row-gap: 1rem;
 	}
 
-	.heading {
+	.card-heading {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.heading {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
 	}
 </style>

@@ -920,6 +920,7 @@ type NaisJob {
   retries: Int!
   runs: [Run!]!
   schedule: String!
+  secrets: [Secret!]!
   storage: [Storage!]!
   team: Team!
 }
@@ -1478,6 +1479,7 @@ type Secret {
   data: [Variable!]!
   env: Env!
   id: ID!
+  jobs: [NaisJob!]!
   lastModifiedAt: Time
   lastModifiedBy: User
   name: String!
