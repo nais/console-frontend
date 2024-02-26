@@ -14,7 +14,7 @@ query TeamVulnerabilities(
 				hasPreviousPage
 			}
 
-			nodes {
+			nodes @loading(count: 10) {
 				appName
 				env
 				findingsLink

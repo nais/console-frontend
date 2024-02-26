@@ -80,16 +80,16 @@
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
-						{#if team.id === PendingValue}
-							<Tr>
-								{#each new Array(9).fill('text') as variant}
-									<Td>
-										<Skeleton {variant} />
-									</Td>
-								{/each}
-							</Tr>
-						{:else}
-							{#each team.vulnerabilities.nodes as node}
+						{#each team.vulnerabilities.nodes as node}
+							{#if node === PendingValue}
+								<Tr>
+									{#each new Array(9).fill('text') as variant}
+										<Td>
+											<Skeleton height="32px" {variant} />
+										</Td>
+									{/each}
+								</Tr>
+							{:else}
 								<Tr>
 									<Td>
 										<a href="/team/{teamName}/{node.env}/app/{node.appName}">{node.appName}</a>
@@ -188,17 +188,18 @@
 										</Td>
 									{/if}
 								</Tr>
-							{:else}
-								<Tr>
-									<Td colspan={9}>No applications with vulnerability data found</Td>
-								</Tr>
-							{/each}
-						{/if}
+							{/if}
+						{:else}
+							<Tr>
+								<Td colspan={9}>No applications with vulnerability data found</Td>
+							</Tr>
+						{/each}
 					{/if}
 				</Tbody>
 			</Table>
 			{#if team?.vulnerabilities.pageInfo !== PendingValue}
 				<Pagination
+					style="padding-top: 1rem;"
 					pageInfo={team?.vulnerabilities.pageInfo}
 					{limit}
 					{offset}
