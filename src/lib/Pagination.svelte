@@ -4,6 +4,7 @@
 	export let limit: number;
 	export let offset: number;
 	export let changePage: (page: number) => void;
+	export let style: string | undefined = undefined;
 
 	export let pageInfo:
 		| {
@@ -28,6 +29,7 @@
 		count={count(pageInfo.totalCount)}
 		page={page(offset, limit)}
 		size="small"
+		{style}
 		on:change={(e) => changePage(e.detail.page)}
 	/>
 {/if}
