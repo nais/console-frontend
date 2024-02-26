@@ -5,7 +5,7 @@
 	import { graphql } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { vulnerabilitiesTeamTransformLineChart } from '$lib/chart/vulnerabilies_transformer';
-	import {Alert, Button, Select, Tooltip} from '@nais/ds-svelte-community';
+	import { Alert, Button, Select, Tooltip } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamVulnerabilityMetricsVariables } from './$houdini';
 	import { EyeIcon } from '@nais/ds-svelte-community/icons';
@@ -17,8 +17,8 @@
 		const toParam = url.searchParams.get('to');
 
 		const fromDate = fromParam
-				? new Date(fromParam)
-				: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60);
+			? new Date(fromParam)
+			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60);
 		const toDate = toParam ? new Date(toParam) : new Date(Date.now());
 
 		from = fromDate.toISOString().split('T')[0];
@@ -111,11 +111,11 @@
 		<label for="to">To:</label>
 		<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
 		<Select
-				size="small"
-				hideLabel={true}
-				bind:value={selectedEnvironment}
-				on:change={update}
-				label="Environment"
+			size="small"
+			hideLabel={true}
+			bind:value={selectedEnvironment}
+			on:change={update}
+			label="Environment"
 		>
 			<option value="">All environments</option>
 			{#each $vulnerabilities.data?.team.environments as env}
@@ -129,11 +129,11 @@
 		<Tooltip placement="right" content="show/hide metrics">
 			<div class="button">
 				<Button
-						size="xsmall"
-						variant="tertiary"
-						on:click={() => {
-					toggleMetrics = !toggleMetrics;
-				}}
+					size="xsmall"
+					variant="tertiary"
+					on:click={() => {
+						toggleMetrics = !toggleMetrics;
+					}}
 				>
 					<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
 				>
@@ -141,8 +141,8 @@
 		</Tooltip>
 		{#if toggleMetrics}
 			<EChart
-					options={echartOptionsUsageChart($vulnerabilities.data)}
-					style="height: 500px; width: 100%;"
+				options={echartOptionsUsageChart($vulnerabilities.data)}
+				style="height: 500px; width: 100%;"
 			/>
 		{/if}
 	{/if}
