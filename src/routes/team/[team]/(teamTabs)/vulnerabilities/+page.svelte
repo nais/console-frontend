@@ -59,7 +59,7 @@
 		<Card columns={12}>
 			<VulnerabilitiesGraph team={teamName} />
 		</Card>
-		<Card columns={12}> <h3>Highlighting vulnerabilities for each application</h3>
+		<Card columns={12}> <h3>Current vulnerabilities for each application</h3>
 			<Table
 				size="small"
 				sort={sortState}
