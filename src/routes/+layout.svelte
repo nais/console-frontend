@@ -21,9 +21,21 @@
 				readonly __typename: 'User';
 		  }
 		| undefined;
+
+	const isUnauthenticated = (errors: { message: string }[] | null) => {
+		const unauthenticatedError = 'Valid user required. You are not logged in.';
+		if (
+			errors &&
+			errors.length > 0 &&
+			errors.filter((error) => error.message === unauthenticatedError).length > 0
+		) {
+			return true;
+		}
+		return false;
+	};
 </script>
 
-{#if user == undefined}
+{#if isUnauthenticated(UserInfo.errors)}
 	<!-- logged out -->
 	<Login />
 {:else}

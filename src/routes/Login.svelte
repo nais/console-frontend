@@ -2,6 +2,10 @@
 	import { page } from '$app/stores';
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
+
+	const redirectPath = (url: URL) => {
+		return encodeURIComponent(url.pathname + url.search + url.hash);
+	};
 </script>
 
 <svelte:head>
@@ -40,7 +44,9 @@
 
 		<p>To access this page you need to log in with your Google Workspace account.</p>
 
-		<Button as="a" href="/oauth2/login" variant="primary">Log in to NAIS Console</Button>
+		<Button as="a" href="/oauth2/login?redirect_uri={redirectPath($page.url)}" variant="primary"
+			>Log in to NAIS Console</Button
+		>
 	</div>
 </div>
 
