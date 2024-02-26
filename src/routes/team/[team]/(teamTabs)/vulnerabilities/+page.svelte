@@ -57,10 +57,10 @@
 {:else}
 	<div class="grid">
 		<Card columns={12}>
-			<h3>Current vulnerabilities for each application</h3>
 			<VulnerabilitiesGraph team={teamName} />
 		</Card>
 		<Card columns={12}>
+			<h3>Current vulnerabilities for each application</h3>
 			<Table
 				size="small"
 				sort={sortState}
