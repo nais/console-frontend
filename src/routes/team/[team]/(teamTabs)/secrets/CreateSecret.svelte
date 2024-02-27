@@ -9,14 +9,6 @@
 	export let open: boolean;
 
 	const environmentNames = environments.map((env) => env.name);
-	const secretNamesByEnv: Record<string, string[]> = environments.reduce((acc, env) => {
-		return {
-			...acc,
-			[env.name]: secrets
-				.filter((secret) => secret.env.name === env.name)
-				.map((secret) => secret.name)
-		};
-	}, {});
 
 	let name = '';
 	let selectedEnvironment = environmentNames[0];
@@ -66,7 +58,14 @@
 			return '';
 		}
 
-		if (secretNamesByEnv[env].includes(name)) {
+		const names = secrets.reduce((acc: string[], secret) => {
+			if (secret.env.name === env) {
+				acc.push(secret.name);
+			}
+			return acc;
+		}, []);
+
+		if (names.includes(name)) {
 			return 'Already exists in environment';
 		}
 
@@ -122,11 +121,11 @@
 </Modal>
 
 <style>
-	.wrapper {
-		margin: 2rem 1rem;
-	}
+    .wrapper {
+        margin: 2rem 1rem;
+    }
 
-	.row {
-		margin-bottom: 32px;
-	}
+    .row {
+        margin-bottom: 32px;
+    }
 </style>
