@@ -1,15 +1,4 @@
 query AdminUsers($limit: Int, $offset: Int) {
-	userSync {
-		startedAt
-		finishedAt
-		auditLogs(limit: 15) {
-			nodes {
-				actor
-				message
-				createdAt
-			}
-		}
-	}
 	users(limit: $limit, offset: $offset) {
 		nodes {
 			name

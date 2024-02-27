@@ -5,6 +5,7 @@
 	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import SyncRuns from './SyncRuns.svelte';
 
 	export let data: PageData;
 
@@ -43,6 +44,12 @@
 {/each}
 
 <Card>
+	<h2>User sync logs</h2>
+	<SyncRuns />
+</Card>
+<br />
+<Card>
+	<h2>Users</h2>
 	{#if $AdminUsers.data}
 		<Table zebraStripes>
 			<Thead>
