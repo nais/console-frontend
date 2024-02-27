@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { Button, Heading, Modal, TextField, Tooltip } from '@nais/ds-svelte-community';
-	import { includesOperation, type operation } from './state-machinery';
-	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { addedKey, type operation } from './state-machinery';
+	import type { VariableInput } from '$houdini';
 
+	export let initial: VariableInput[];
 	export let changes: operation[];
-	export let existingKeys: string[];
+	export let open: boolean;
 
 	let addKv = () => {
 		if (key && value) {
-			if (validationError(key).length > 0) {
+			if (validKey(key).length > 0) {
 				return;
 			}
 
@@ -19,18 +20,18 @@
 					data: { name: key, value }
 				}
 			];
-			key = undefined;
-			value = undefined;
-			open = false;
+
+			reset();
 		}
 	};
 
-	const validationError = (key: string | undefined) => {
+	const validKey = (key: string | undefined) => {
 		if (!key) {
 			return '';
 		}
 
-		if (existingKeys.includes(key) || includesOperation(key, changes, 'AddKv')) {
+		const existingKeys = initial.map((kv) => kv.name);
+		if (existingKeys.includes(key) || addedKey(key, initial, changes)) {
 			return 'Key already exists';
 		}
 
@@ -50,13 +51,8 @@
 
 	let key: string | undefined;
 	let value: string | undefined;
-	let open: boolean = false;
 
-	const openAddKvModal = () => {
-		open = true;
-	};
-
-	const cancel = () => {
+	const reset = () => {
 		open = false;
 		key = undefined;
 		value = undefined;
@@ -68,39 +64,25 @@
 		<Heading>Add new key and value</Heading>
 	</svelte:fragment>
 	<div class="entry">
-		<TextField size="small" htmlSize={30} bind:value={key} error={validationError(key)}>
-			<svelte:fragment slot="label">Key</svelte:fragment>
-			<svelte:fragment slot="description">Example: SOME_KEY</svelte:fragment>
+		<TextField size="small" bind:value={key} error={validKey(key)}>
+			<svelte:fragment slot="label">Key (required)</svelte:fragment>
+			<svelte:fragment slot="description"><i>Example: SOME_KEY</i></svelte:fragment>
 		</TextField>
-		<TextField size="small" htmlSize={30} bind:value>
-			<svelte:fragment slot="label">Value</svelte:fragment>
-			<svelte:fragment slot="description">Example: some-value</svelte:fragment>
+	</div>
+	<div class="entry">
+		<TextField size="small" bind:value>
+			<svelte:fragment slot="label">Value (required)</svelte:fragment>
+			<svelte:fragment slot="description"><i>Example: some-value</i></svelte:fragment>
 		</TextField>
 	</div>
 	<svelte:fragment slot="footer">
 		<Button variant="primary" size="small" on:click={addKv}>Add</Button>
-		<Button variant="secondary" size="small" on:click={cancel}>Cancel</Button>
+		<Button variant="secondary" size="small" on:click={reset}>Cancel</Button>
 	</svelte:fragment>
 </Modal>
 
-<div class="buttons">
-	<Tooltip content="Add new key and value">
-		<Button variant="tertiary" size="small" on:click={openAddKvModal}>
-			<svelte:fragment slot="icon-left">
-				<PlusCircleFillIcon />
-			</svelte:fragment>
-			Add row
-		</Button>
-	</Tooltip>
-</div>
-
 <style>
-	.entry > :global(*) {
-		margin: 16px 0 0 16px;
-	}
-
-	.buttons {
-		margin-top: 20px;
-		margin-left: 10px;
+	.entry {
+		margin: 32px 32px 16px 16px;
 	}
 </style>

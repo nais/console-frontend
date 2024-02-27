@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { graphql, type VariableInput } from '$houdini';
+	import { graphql, type Secret$result, type VariableInput } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -16,18 +16,17 @@
 		Tbody,
 		Tooltip
 	} from '@nais/ds-svelte-community';
-	import type { NavigationTarget } from '@sveltejs/kit';
 	import type { PageData } from './$houdini';
 	import AddSecretKv from './AddSecretKv.svelte';
 	import SecretKv from './SecretKv.svelte';
-	import { filterAddKvs, mergeChanges, type operation } from './state-machinery';
+	import { added, deleted, mergeChanges, type operation, updated } from './state-machinery';
+	import { ArrowUndoIcon, FloppydiskIcon, PlusCircleFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 
-	let navigateTo: NavigationTarget | null;
-	beforeNavigate(({ to, cancel }) => {
-		if (changes.length > 0) {
-			cancel();
-			navigateTo = to;
-			openDiscardChangesModal();
+	beforeNavigate(({ cancel }) => {
+		if (dirty(changes)) {
+			if (!confirm('You have unsaved changes. Are you sure you want to leave this page?')) {
+				cancel();
+			}
 		}
 	});
 
@@ -42,21 +41,34 @@
 
 	let changes: operation[] = [];
 	let saved = false;
-	let deleteSecretOpen = false;
-	let discardChangesOpen = false;
+	let addOpen = false;
+	let deleteOpen = false;
+	let discardOpen = false;
+
+	const dirty = (changes: operation[]) => {
+		if (!secret) {
+			return false;
+		}
+
+		const mutated = changes.reduce(mergeChanges, secret.data);
+		return mutated.length !== secret.data.length ||
+			added(secret.data, changes).length > 0 ||
+			deleted(secret.data, changes).length > 0 ||
+			updated(secret.data, changes).length > 0;
+	};
+
+	const calculateChanges = (secret: Secret$result['team']['secret']) => {
+		return changes.reduce(mergeChanges, secret.data);
+	};
 
 	const workloadManifest = (secretName: string) => `spec:
   envFrom:
     - secret: ${secretName}`;
 
-	const discardChanges = () => {
+	const discard = () => {
 		saved = false;
 		changes = [];
 		Secret.fetch();
-		if (navigateTo) {
-			goto(navigateTo.url);
-			navigateTo = null;
-		}
 	};
 
 	const updateSecretMutation = graphql(`
@@ -77,7 +89,7 @@
 	`);
 	const updateSecret = async () => {
 		saved = false;
-		if (!secret || changes.length == 0) return;
+		if (!secret || !dirty(changes)) return;
 
 		let data: VariableInput[] = changes.reduce(mergeChanges, secret.data);
 
@@ -94,6 +106,9 @@
 
 		changes = [];
 		saved = true;
+		setTimeout(() => {
+			saved = false;
+		}, 3000);
 	};
 
 	const deleteSecretMutation = graphql(`
@@ -116,14 +131,17 @@
 		await goto('/team/' + team + '/secrets');
 	};
 
-	const openDeleteSecretModal = () => {
-		deleteSecretOpen = true;
+	const openAddModal = () => {
+		addOpen = true;
 	};
 
-	const openDiscardChangesModal = () => {
-		saved = false;
-		if (changes.length === 0) return;
-		discardChangesOpen = true;
+	const openDeleteSecretModal = () => {
+		deleteOpen = true;
+	};
+
+	const openDiscardModal = () => {
+		if (!dirty(changes)) return;
+		discardOpen = true;
 	};
 </script>
 
@@ -145,30 +163,7 @@
 {:else if $Secret.fetching}
 	<Loader />
 {:else if secret}
-	<div class="alerts">
-		{#if saved && changes.length === 0}
-			<Alert variant="success" size="small">Changes saved!</Alert>
-		{/if}
-		{#if $updateSecretMutation.errors}
-			<Alert variant="error">
-				{#each $updateSecretMutation.errors as error}
-					{error.message}
-				{/each}
-			</Alert>
-		{:else if $deleteSecretMutation.errors}
-			<Alert variant="error">
-				{#each $deleteSecretMutation.errors as error}
-					{error.message}
-				{/each}
-			</Alert>
-		{/if}
-	</div>
-	<Confirm
-		confirmText="Delete"
-		variant="danger"
-		bind:open={deleteSecretOpen}
-		on:confirm={deleteSecret}
-	>
+	<Confirm confirmText="Delete" variant="danger" bind:open={deleteOpen} on:confirm={deleteSecret}>
 		<svelte:fragment slot="header">
 			<Heading>Delete secret</Heading>
 		</svelte:fragment>
@@ -190,75 +185,101 @@
 
 		Are you sure you want to delete this secret?
 	</Confirm>
-	<Confirm
-		confirmText="Discard"
-		variant="danger"
-		bind:open={discardChangesOpen}
-		on:confirm={discardChanges}
-		on:cancel={() => {
-			navigateTo = null;
-		}}
-	>
+	<Confirm confirmText="Discard" variant="danger" bind:open={discardOpen} on:confirm={discard}>
 		<svelte:fragment slot="header">
 			<Heading>Discard all changes</Heading>
 		</svelte:fragment>
-		<p>You have unsaved changes. The changes will be lost if you continue.</p>
+		<p>All unsaved changes will be lost if you continue.</p>
 
 		Are you sure you want to discard all changes?
 	</Confirm>
+	<div class="heading">
+		<span />
+		<Tooltip content="Delete secret from environment" arrow={false}>
+			<Button class="delete-secret" variant="danger" size="small" on:click={openDeleteSecretModal}>
+				<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>Delete
+			</Button>
+		</Tooltip>
+	</div>
+	<div class="alerts">
+		{#if saved && !dirty(changes)}
+			<Alert variant="success" size="small">All changes saved!</Alert>
+		{/if}
+		{#if !saved && dirty(changes)}
+			<Alert variant="warning" size="small">
+				You have unsaved changes. Remember to save your changes!
+			</Alert>
+		{/if}
+		{#if $updateSecretMutation.errors}
+			<Alert variant="error">
+				{#each $updateSecretMutation.errors as error}
+					{error.message}
+				{/each}
+			</Alert>
+		{:else if $deleteSecretMutation.errors}
+			<Alert variant="error">
+				{#each $deleteSecretMutation.errors as error}
+					{error.message}
+				{/each}
+			</Alert>
+		{/if}
+	</div>
 	<div class="grid">
 		<Card columns={8} rows={3}>
-			<div class="header">
+			<div class="data-heading">
 				<h4>
-					Secret Data
+					Secret data
 					<HelpText title="Secret data" placement="right">
 						A secret contains a set of key-value pairs.
 					</HelpText>
 				</h4>
-				<Tooltip content="Delete secret from environment" arrow={false}>
-					<Button
-						class="delete-secret"
-						variant="danger"
-						size="small"
-						on:click={openDeleteSecretModal}
-					>
-						Delete
-					</Button>
-				</Tooltip>
+				<div class="secret-edit-buttons">
+					<Tooltip content="Discard all changes" arrow={false}>
+						<Button
+							variant="tertiary"
+							size="small"
+							on:click={openDiscardModal}
+							disabled={!dirty(changes)}
+						>
+							<svelte:fragment slot="icon-left"><ArrowUndoIcon /></svelte:fragment>Reset
+						</Button>
+					</Tooltip>
+					<Tooltip content="Persist all changes" arrow={false}>
+						<Button
+							variant="primary"
+							size="small"
+							on:click={updateSecret}
+							loading={$updateSecretMutation.fetching}
+							disabled={!dirty(changes)}
+						>
+							<svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>Save
+						</Button>
+					</Tooltip>
+				</div>
 			</div>
 			<Table size="small" style="margin-top: 2rem">
 				<Tbody>
 					<div class="secret-content">
+						{#if secret.data.length === 0 && added(secret.data, changes).length === 0}
+							<Alert variant="info" size="small">
+								No data found. Add a new key to get started.
+							</Alert>
+						{/if}
 						<div class="secret-edit">
-							{#if secret.data.length === 0 && filterAddKvs(changes).length === 0}
-								<Alert variant="info" size="small">
-									No data found. Add a new row to get started.
-								</Alert>
-							{/if}
-							{#each secret.data as data (data.name)}
-								<SecretKv key={data.name} value={data.value} bind:changes />
+							{#each calculateChanges(secret) as data (data.name)}
+								<SecretKv key={data.name} value={data.value} bind:changes initial={secret.data} />
 							{/each}
-							{#each filterAddKvs(changes) as change (change.data.name)}
-								<SecretKv key={change.data.name} value={change.data.value} bind:changes />
-							{/each}
-							<AddSecretKv bind:changes existingKeys={secret.data.map((d) => d.name)} />
-						</div>
-						<div class="secret-edit-buttons">
-							<Tooltip content="Discard all changes" arrow={false}>
-								<Button variant="secondary" size="small" on:click={openDiscardChangesModal}>
-									Cancel
-								</Button>
-							</Tooltip>
-							<Tooltip content="Persist all changes" arrow={false}>
-								<Button
-									variant="primary"
-									size="small"
-									on:click={updateSecret}
-									loading={$updateSecretMutation.fetching}
-								>
-									Save
-								</Button>
-							</Tooltip>
+							<div class="add-kv-buttons">
+								<Tooltip content="Add new key and value">
+									<Button variant="tertiary" size="small" on:click={openAddModal}>
+										<svelte:fragment slot="icon-left">
+											<PlusCircleFillIcon />
+										</svelte:fragment>
+										Add key
+									</Button>
+								</Tooltip>
+							</div>
+							<AddSecretKv bind:changes bind:open={addOpen} initial={secret.data} />
 						</div>
 					</div>
 				</Tbody>
@@ -357,7 +378,7 @@
 
 	ul {
 		list-style: none;
-		margin: 0rem 0 1rem 0;
+		margin: 0 0 1rem 0;
 		padding: 0 1rem 0 1rem;
 	}
 
@@ -369,10 +390,9 @@
 		margin: 0 1rem;
 	}
 
-	.header {
+	.heading {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		justify-content: flex-end;
 		margin-bottom: 1rem;
 	}
 
@@ -380,14 +400,10 @@
 		margin-bottom: 1rem;
 	}
 
-	.secret-content {
-		padding: 8px;
-	}
-
-	.secret-edit-buttons {
+	.data-heading {
 		display: flex;
-		margin: 32px 0 0 16px;
-		padding: 32px 0;
+		justify-content: space-between;
+		margin-top: 0.5rem;
 	}
 
 	.secret-edit-buttons > :global(*) {
@@ -404,5 +420,9 @@
 
 	.cap {
 		text-transform: capitalize;
+	}
+
+	.add-kv-buttons {
+		margin: 32px 0 16px 10px;
 	}
 </style>

@@ -34,34 +34,54 @@ export type UpdateValue = {
 export type operation = AddKv | DeleteKv | UndoDeleteKv | UpdateValue;
 
 export function mergeChanges(tuples: VariableInput[], curr: operation): VariableInput[] {
+	const exists = tuples.some((state) => state.name === curr.data.name);
+	const updateValue = (value: string) => {
+		return tuples.map((state) =>
+			state.name === curr.data.name ? { name: state.name, value } : state
+		);
+	};
+	const append = (value: string) => {
+		return [...tuples, { name: curr.data.name, value }];
+	};
+
 	switch (curr.type) {
 		case 'AddKv':
-			return [...tuples, { name: curr.data.name, value: curr.data.value }];
+			return exists ? updateValue(curr.data.value) : append(curr.data.value);
 		case 'DeleteKv':
 			return tuples.filter((state) => state.name !== curr.data.name);
 		case 'UndoDeleteKv':
-			return [...tuples, { name: curr.data.name, value: curr.data.value }];
+			return exists ? updateValue(curr.data.value) : append(curr.data.value);
 		case 'UpdateValue':
-			return tuples.map((state) =>
-				state.name === curr.data.name ? { name: state.name, value: curr.data.value } : state
-			);
+			return updateValue(curr.data.value);
 		default:
 			return tuples;
 	}
 }
 
-export function filterAddKvs(ops: operation[]): AddKv[] {
-	return ops.filter((op) => op.type === 'AddKv').map((c) => c as AddKv);
+export function added(initial: VariableInput[], changes: operation[]): VariableInput[] {
+	const mutated = changes.reduce(mergeChanges, initial);
+	const keys = initial.map(i => i.name);
+	return mutated.filter(m => !keys.includes(m.name));
 }
 
-function filterByKey(name: string, ops: operation[]): operation[] {
-	return ops.filter((c) => c.data.name === name);
+export function deleted(initial: VariableInput[], changes: operation[]): VariableInput[] {
+	const mutated = changes.reduce(mergeChanges, initial);
+	const keys = mutated.map(m => m.name);
+	return initial.filter(i => !keys.includes(i.name));
 }
 
-export function lastOperation(name: string, ops: operation[]): operation | undefined {
-	return filterByKey(name, ops).at(-1);
+export function updated(initial: VariableInput[], changes: operation[]): VariableInput[] {
+	const mutated = changes.reduce(mergeChanges, initial);
+	return initial.filter((i) => {
+		const m = mutated.find(m => m.name === i.name);
+		return m && m.value !== i.value;
+	});
 }
 
-export function includesOperation(name: string, ops: operation[], type: string): boolean {
-	return filterByKey(name, ops).some((c) => c.type === type);
+export function addedKey(key: string, initial: VariableInput[], changes: operation[]): boolean {
+	return added(initial, changes).some(m => m.name === key);
+}
+
+export function updatedKey(key: string, initial: VariableInput[], changes: operation[]): boolean {
+	return updated(initial, changes).some(m => m.name === key);
 }

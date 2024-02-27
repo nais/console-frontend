@@ -30,6 +30,23 @@ test('add kv', () => {
 	]);
 });
 
+test('add duplicate kv', () => {
+	const add: operation = {
+		type: 'AddKv',
+		data: {
+			name: 'some-key',
+			value: 'some-new-value'
+		}
+	};
+
+	expect(mergeChanges(initialState, add)).toEqual([
+		{
+			name: 'some-key',
+			value: 'some-new-value'
+		}
+	]);
+});
+
 test('delete kv', () => {
 	const del: operation = {
 		type: 'DeleteKv',
@@ -74,6 +91,33 @@ test('deleted kv followed by undo deleted kv is a no-op', () => {
 			type: 'DeleteKv',
 			data: {
 				name: 'some-key'
+			}
+		},
+		{
+			type: 'UndoDeleteKv',
+			data: {
+				name: 'some-key',
+				value: 'some-value'
+			}
+		}
+	];
+
+	expect(ops.reduce(mergeChanges, initialState)).toEqual(initialState);
+});
+
+test('deleted kv followed by multiple undo deleted kv is a no-op', () => {
+	const ops: operation[] = [
+		{
+			type: 'DeleteKv',
+			data: {
+				name: 'some-key'
+			}
+		},
+		{
+			type: 'UndoDeleteKv',
+			data: {
+				name: 'some-key',
+				value: 'some-value'
 			}
 		},
 		{

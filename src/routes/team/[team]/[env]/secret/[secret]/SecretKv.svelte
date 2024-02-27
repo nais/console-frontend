@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { TextField, Button, Tooltip, Tag } from '@nais/ds-svelte-community';
-	import { includesOperation, lastOperation, type operation } from './state-machinery';
-	import {
-		ArrowUndoIcon,
-		EyeIcon,
-		EyeObfuscatedIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { addedKey, type operation, updatedKey } from './state-machinery';
+	import { EyeIcon, EyeObfuscatedIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import type { VariableInput } from '$houdini';
 
+	export let initial: VariableInput[];
 	export let key: string;
 	export let value: string;
 	export let changes: operation[];
@@ -18,16 +15,6 @@
 			{
 				type: 'DeleteKv',
 				data: { name: key }
-			}
-		];
-	};
-
-	let undoDeleteKv = () => {
-		changes = [
-			...changes,
-			{
-				type: 'UndoDeleteKv',
-				data: { name: key, value }
 			}
 		];
 	};
@@ -47,30 +34,14 @@
 	};
 
 	let showValue = false;
-
-	$: edited = includesOperation(key, changes, 'UpdateValue');
-	$: deleted = lastOperation(key, changes)?.type === 'DeleteKv';
-	$: added =
-		lastOperation(key, changes)?.type === 'AddKv' ||
-		(includesOperation(key, changes, 'AddKv') &&
-			lastOperation(key, changes)?.type === 'UndoDeleteKv');
 </script>
 
 <div class="entry">
 	<h4>
-		{#if deleted}
-			<s>{key}</s>
-		{:else}
-			{key}
-		{/if}
+		{key}
 	</h4>
 	{#if showValue}
-		<!-- TODO: hack to work around edits on local-only KV being overriden by value set in `AddKv`; should fix -->
-		{#if added || deleted}
-			<TextField hideLabel size="small" htmlSize={30} {value} readonly />
-		{:else}
-			<TextField hideLabel size="small" htmlSize={30} bind:value on:change={updateKvValue} />
-		{/if}
+		<TextField hideLabel size="small" htmlSize={30} bind:value on:change={updateKvValue} />
 		<Button size="xsmall" variant="tertiary" on:click={toggleShowValue}>
 			<svelte:fragment slot="icon-left">
 				<Tooltip content="Hide secret value" arrow={false}>
@@ -96,30 +67,18 @@
 		</Button>
 	{/if}
 
-	{#if deleted}
-		<Button variant="tertiary" size="small" on:click={undoDeleteKv}>
-			<svelte:fragment slot="icon-left">
-				<Tooltip content="Undo delete" arrow={false}>
-					<ArrowUndoIcon />
-				</Tooltip>
-			</svelte:fragment>
-		</Button>
-	{:else}
-		<Button variant="tertiary" size="small" on:click={deleteKv}>
-			<svelte:fragment slot="icon-left">
-				<Tooltip content="Delete key and value" arrow={false}>
-					<TrashIcon />
-				</Tooltip>
-			</svelte:fragment>
-		</Button>
-	{/if}
+	<Button variant="tertiary" size="small" on:click={deleteKv}>
+		<svelte:fragment slot="icon-left">
+			<Tooltip content="Delete key and value" arrow={false}>
+				<TrashIcon />
+			</Tooltip>
+		</svelte:fragment>
+	</Button>
 
 	<div class="status">
-		{#if added}
+		{#if addedKey(key, initial, changes)}
 			<Tag size="small" variant="success">Added</Tag>
-		{:else if deleted}
-			<Tag size="small" variant="error">Removed</Tag>
-		{:else if edited}
+		{:else if updatedKey(key, initial, changes)}
 			<Tag size="small" variant="warning">Changed</Tag>
 		{/if}
 	</div>
