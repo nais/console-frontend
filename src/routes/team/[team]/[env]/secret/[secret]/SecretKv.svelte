@@ -99,7 +99,7 @@
 			<TextField
 				style="font-family: monospace; font-size: var(--a-font-size-small);"
 				size="small"
-				bind:value={key}
+				value={key}
 				readonly
 			>
 				<svelte:fragment slot="label">Key</svelte:fragment>
