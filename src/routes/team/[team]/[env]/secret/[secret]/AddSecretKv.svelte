@@ -2,6 +2,7 @@
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { addedKey, type operation } from './state-machinery';
 	import type { VariableInput } from '$houdini';
+	import Textarea from './Textarea.svelte';
 
 	export let initial: VariableInput[];
 	export let changes: operation[];
@@ -59,21 +60,23 @@
 	};
 </script>
 
-<Modal bind:open width="small">
+<Modal bind:open width="medium">
 	<svelte:fragment slot="header">
 		<Heading>Add new key and value</Heading>
 	</svelte:fragment>
 	<div class="entry">
-		<TextField size="small" bind:value={key} error={validKey(key)}>
-			<svelte:fragment slot="label">Key (required)</svelte:fragment>
+		<TextField
+			style="font-family: monospace; font-size: var(--a-font-size-small);"
+			size="small"
+			bind:value={key}
+			error={validKey(key)}
+		>
+			<svelte:fragment slot="label">Key</svelte:fragment>
 			<svelte:fragment slot="description"><i>Example: SOME_KEY</i></svelte:fragment>
 		</TextField>
 	</div>
 	<div class="entry">
-		<TextField size="small" bind:value>
-			<svelte:fragment slot="label">Value (required)</svelte:fragment>
-			<svelte:fragment slot="description"><i>Example: some-value</i></svelte:fragment>
-		</TextField>
+		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 	<svelte:fragment slot="footer">
 		<Button variant="primary" size="small" on:click={addKv}>Add</Button>
@@ -83,6 +86,6 @@
 
 <style>
 	.entry {
-		margin: 32px 32px 16px 16px;
+		margin: 2rem 0;
 	}
 </style>

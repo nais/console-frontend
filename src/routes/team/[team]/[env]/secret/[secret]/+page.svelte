@@ -14,13 +14,21 @@
 		Loader,
 		Table,
 		Tbody,
-		Tooltip
+		Th,
+		Thead,
+		Tooltip,
+		Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import AddSecretKv from './AddSecretKv.svelte';
 	import SecretKv from './SecretKv.svelte';
 	import { added, deleted, mergeChanges, type operation, updated } from './state-machinery';
-	import { ArrowUndoIcon, FloppydiskIcon, PlusCircleFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowUndoIcon,
+		FloppydiskIcon,
+		PlusCircleFillIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	beforeNavigate(({ cancel }) => {
 		if (dirty(changes)) {
@@ -58,7 +66,7 @@
 	};
 
 	const calculateChanges = (secret: Secret$result['team']['secret']) => {
-		return changes.reduce(mergeChanges, secret.data);
+		return changes.reduce(mergeChanges, secret.data).sort((a, b) => a.name.localeCompare(b.name));
 	};
 
 	const workloadManifest = (secretName: string) => `spec:
@@ -89,7 +97,9 @@
 	`);
 	const updateSecret = async () => {
 		saved = false;
-		if (!secret || !dirty(changes)) return;
+		if (!secret || !dirty(changes)) {
+			return;
+		}
 
 		let data: VariableInput[] = changes.reduce(mergeChanges, secret.data);
 
@@ -140,7 +150,9 @@
 	};
 
 	const openDiscardModal = () => {
-		if (!dirty(changes)) return;
+		if (!dirty(changes)) {
+			return;
+		}
 		discardOpen = true;
 	};
 </script>
@@ -185,6 +197,7 @@
 
 		Are you sure you want to delete this secret?
 	</Confirm>
+
 	<Confirm confirmText="Discard" variant="danger" bind:open={discardOpen} on:confirm={discard}>
 		<svelte:fragment slot="header">
 			<Heading>Discard all changes</Heading>
@@ -193,22 +206,25 @@
 
 		Are you sure you want to discard all changes?
 	</Confirm>
+
 	<div class="heading">
 		<span />
-		<Tooltip content="Delete secret from environment" arrow={false}>
-			<Button class="delete-secret" variant="danger" size="small" on:click={openDeleteSecretModal}>
-				<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>Delete
-			</Button>
-		</Tooltip>
+		<Button
+			class="delete-secret"
+			title="Delete secret from environment"
+			variant="danger"
+			size="small"
+			on:click={openDeleteSecretModal}
+		>
+			<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>Delete
+		</Button>
 	</div>
 	<div class="alerts">
 		{#if saved && !dirty(changes)}
 			<Alert variant="success" size="small">All changes saved!</Alert>
 		{/if}
 		{#if !saved && dirty(changes)}
-			<Alert variant="warning" size="small">
-				You have unsaved changes. Remember to save your changes!
-			</Alert>
+			<Alert variant="warning" size="small">You have unsaved changes.</Alert>
 		{/if}
 		{#if $updateSecretMutation.errors}
 			<Alert variant="error">
@@ -234,56 +250,64 @@
 					</HelpText>
 				</h4>
 				<div class="secret-edit-buttons">
-					<Tooltip content="Discard all changes" arrow={false}>
-						<Button
-							variant="tertiary"
-							size="small"
-							on:click={openDiscardModal}
-							disabled={!dirty(changes)}
-						>
-							<svelte:fragment slot="icon-left"><ArrowUndoIcon /></svelte:fragment>Reset
-						</Button>
-					</Tooltip>
-					<Tooltip content="Persist all changes" arrow={false}>
-						<Button
-							variant="primary"
-							size="small"
-							on:click={updateSecret}
-							loading={$updateSecretMutation.fetching}
-							disabled={!dirty(changes)}
-						>
-							<svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>Save
-						</Button>
-					</Tooltip>
+					<Button
+						variant="tertiary"
+						size="small"
+						title="Discard all changes"
+						on:click={openDiscardModal}
+						disabled={!dirty(changes)}
+					>
+						<svelte:fragment slot="icon-left"><ArrowUndoIcon /></svelte:fragment>Reset
+					</Button>
+					<Button
+						variant="primary"
+						size="small"
+						title="Persist all changes"
+						on:click={updateSecret}
+						loading={$updateSecretMutation.fetching}
+						disabled={!dirty(changes)}
+					>
+						<svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>Save
+					</Button>
 				</div>
 			</div>
-			<Table size="small" style="margin-top: 2rem">
-				<Tbody>
-					<div class="secret-content">
-						{#if secret.data.length === 0 && added(secret.data, changes).length === 0}
-							<Alert variant="info" size="small">
-								No data found. Add a new key to get started.
-							</Alert>
-						{/if}
-						<div class="secret-edit">
-							{#each calculateChanges(secret) as data (data.name)}
-								<SecretKv key={data.name} value={data.value} bind:changes initial={secret.data} />
-							{/each}
-							<div class="add-kv-buttons">
-								<Tooltip content="Add new key and value">
-									<Button variant="tertiary" size="small" on:click={openAddModal}>
-										<svelte:fragment slot="icon-left">
-											<PlusCircleFillIcon />
-										</svelte:fragment>
-										Add key
-									</Button>
-								</Tooltip>
-							</div>
-							<AddSecretKv bind:changes bind:open={addOpen} initial={secret.data} />
-						</div>
-					</div>
-				</Tbody>
-			</Table>
+			{#if secret.data.length === 0 && added(secret.data, changes).length === 0}
+				<Alert variant="info" size="small">No data found. Add a new key to get started.</Alert>
+			{:else}
+				<Table size="small" style="margin-top: 2rem" zebraStripes={true}>
+					<Thead>
+						<Tr>
+							<Th>Key</Th>
+							<Th align="right">Actions</Th>
+							<Th />
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each calculateChanges(secret) as data (data.name)}
+							<SecretKv
+								key={data.name}
+								initialValue={data.value}
+								bind:changes
+								initial={secret.data}
+							/>
+						{/each}
+					</Tbody>
+				</Table>
+			{/if}
+			<div class="add-kv-buttons">
+				<Button
+					title="Add new key and value"
+					variant="tertiary"
+					size="small"
+					on:click={openAddModal}
+				>
+					<svelte:fragment slot="icon-left">
+						<PlusCircleFillIcon />
+					</svelte:fragment>
+					Add key and value
+				</Button>
+			</div>
+			<AddSecretKv bind:changes bind:open={addOpen} initial={secret.data} />
 		</Card>
 
 		<Card columns={4} rows={1}>
@@ -403,7 +427,7 @@
 	.data-heading {
 		display: flex;
 		justify-content: space-between;
-		margin-top: 0.5rem;
+		margin: 1rem 0;
 	}
 
 	.secret-edit-buttons > :global(*) {
@@ -423,6 +447,6 @@
 	}
 
 	.add-kv-buttons {
-		margin: 32px 0 16px 10px;
+		margin-top: 2rem;
 	}
 </style>

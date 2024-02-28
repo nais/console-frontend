@@ -60,28 +60,28 @@ export function mergeChanges(tuples: VariableInput[], curr: operation): Variable
 
 export function added(initial: VariableInput[], changes: operation[]): VariableInput[] {
 	const mutated = changes.reduce(mergeChanges, initial);
-	const keys = initial.map(i => i.name);
-	return mutated.filter(m => !keys.includes(m.name));
+	const keys = initial.map((i) => i.name);
+	return mutated.filter((m) => !keys.includes(m.name));
 }
 
 export function deleted(initial: VariableInput[], changes: operation[]): VariableInput[] {
 	const mutated = changes.reduce(mergeChanges, initial);
-	const keys = mutated.map(m => m.name);
-	return initial.filter(i => !keys.includes(i.name));
+	const keys = mutated.map((m) => m.name);
+	return initial.filter((i) => !keys.includes(i.name));
 }
 
 export function updated(initial: VariableInput[], changes: operation[]): VariableInput[] {
 	const mutated = changes.reduce(mergeChanges, initial);
 	return initial.filter((i) => {
-		const m = mutated.find(m => m.name === i.name);
+		const m = mutated.find((m) => m.name === i.name);
 		return m && m.value !== i.value;
 	});
 }
 
 export function addedKey(key: string, initial: VariableInput[], changes: operation[]): boolean {
-	return added(initial, changes).some(m => m.name === key);
+	return added(initial, changes).some((m) => m.name === key);
 }
 
 export function updatedKey(key: string, initial: VariableInput[], changes: operation[]): boolean {
-	return updated(initial, changes).some(m => m.name === key);
+	return updated(initial, changes).some((m) => m.name === key);
 }

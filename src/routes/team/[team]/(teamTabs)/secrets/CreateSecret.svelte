@@ -121,11 +121,11 @@
 </Modal>
 
 <style>
-    .wrapper {
-        margin: 2rem 1rem;
-    }
+	.wrapper {
+		margin: 2rem 1rem;
+	}
 
-    .row {
-        margin-bottom: 32px;
-    }
+	.row {
+		margin-bottom: 32px;
+	}
 </style>

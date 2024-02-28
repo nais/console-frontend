@@ -1,15 +1,19 @@
 <script lang="ts">
-	import { TextField, Button, Tooltip, Tag } from '@nais/ds-svelte-community';
+	import { Button, Heading, Modal, Tag, Td, TextField, Tr } from '@nais/ds-svelte-community';
 	import { addedKey, type operation, updatedKey } from './state-machinery';
-	import { EyeIcon, EyeObfuscatedIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { VariableInput } from '$houdini';
+	import Textarea from './Textarea.svelte';
 
 	export let initial: VariableInput[];
 	export let key: string;
-	export let value: string;
+	export let initialValue: string;
 	export let changes: operation[];
 
-	let deleteKv = () => {
+	let editKvOpen = false;
+	let value: string | undefined = initialValue;
+
+	const deleteKv = () => {
 		changes = [
 			...changes,
 			{
@@ -19,7 +23,11 @@
 		];
 	};
 
-	let updateKvValue = () => {
+	const updateKv = () => {
+		if (!value) {
+			return;
+		}
+
 		changes = [
 			...changes,
 			{
@@ -27,85 +35,96 @@
 				data: { name: key, value }
 			}
 		];
+
+		editKvOpen = false;
 	};
 
-	let toggleShowValue = () => {
-		showValue = !showValue;
+	const reset = () => {
+		editKvOpen = false;
+		value = initialValue;
 	};
 
-	let showValue = false;
+	const openEditKvModal = () => {
+		editKvOpen = true;
+	};
 </script>
 
-<div class="entry">
-	<h4>
-		{key}
-	</h4>
-	{#if showValue}
-		<TextField hideLabel size="small" htmlSize={30} bind:value on:change={updateKvValue} />
-		<Button size="xsmall" variant="tertiary" on:click={toggleShowValue}>
-			<svelte:fragment slot="icon-left">
-				<Tooltip content="Hide secret value" arrow={false}>
-					<EyeObfuscatedIcon />
-				</Tooltip>
-			</svelte:fragment>
-		</Button>
-	{:else}
-		<TextField
-			hideLabel
+<Tr>
+	<Td>
+		<p class="key">
+			{key}
+		</p>
+	</Td>
+	<Td style="width:100px;" align="right">
+		<Button
+			iconOnly
 			size="small"
-			htmlSize={30}
-			value="**********"
-			readonly
-			on:focus={toggleShowValue}
-		/>
-		<Button size="xsmall" variant="tertiary" on:click={toggleShowValue}>
+			variant="tertiary"
+			title="Show or edit secret value"
+			on:click={openEditKvModal}
+		>
 			<svelte:fragment slot="icon-left">
-				<Tooltip content="Show secret value" arrow={false}>
-					<EyeIcon />
-				</Tooltip>
+				<DocPencilIcon />
 			</svelte:fragment>
 		</Button>
-	{/if}
 
-	<Button variant="tertiary" size="small" on:click={deleteKv}>
-		<svelte:fragment slot="icon-left">
-			<Tooltip content="Delete key and value" arrow={false}>
-				<TrashIcon />
-			</Tooltip>
-		</svelte:fragment>
-	</Button>
+		<Button
+			iconOnly
+			size="small"
+			variant="tertiary-neutral"
+			title="Delete key and value"
+			on:click={deleteKv}
+		>
+			<svelte:fragment slot="icon-left">
+				<TrashIcon style="color:var(--a-icon-danger)!important" />
+			</svelte:fragment>
+		</Button>
+	</Td>
 
-	<div class="status">
+	<Td style="width:100px;">
 		{#if addedKey(key, initial, changes)}
 			<Tag size="small" variant="success">Added</Tag>
 		{:else if updatedKey(key, initial, changes)}
 			<Tag size="small" variant="warning">Changed</Tag>
 		{/if}
-	</div>
-</div>
+	</Td>
+</Tr>
+
+{#if editKvOpen}
+	<Modal bind:open={editKvOpen} width="medium" on:close={reset}>
+		<svelte:fragment slot="header">
+			<Heading>Edit value</Heading>
+		</svelte:fragment>
+		<div class="entry">
+			<TextField
+				style="font-family: monospace; font-size: var(--a-font-size-small);"
+				size="small"
+				bind:value={key}
+				readonly
+			>
+				<svelte:fragment slot="label">Key</svelte:fragment>
+			</TextField>
+		</div>
+		<div class="entry">
+			<Textarea bind:text={value} label="Value" description="Example: some-value" />
+		</div>
+		<svelte:fragment slot="footer">
+			<Button variant="primary" size="small" on:click={updateKv}>Save</Button>
+			<Button variant="secondary" size="small" on:click={reset}>Cancel</Button>
+		</svelte:fragment>
+	</Modal>
+{/if}
 
 <style>
-	h4 {
-		display: block;
+	.key {
 		font-family: monospace;
-		font-size: var(--a-font-size-medium);
-		line-height: 2rem;
-		min-height: 2rem;
-		padding: 0 var(--a-spacing-2);
-		width: 17rem;
+		font-size: var(--a-font-size-small);
 		word-wrap: break-word;
+		margin: 0;
+		max-width: 36rem;
 	}
 
 	.entry {
-		display: flex;
-	}
-
-	.entry > :global(*) {
-		margin: 16px 0 0 16px;
-	}
-
-	.status {
-		display: flex;
-		min-width: 70px;
+		margin: 2rem 0;
 	}
 </style>
