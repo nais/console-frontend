@@ -3,6 +3,7 @@ query TeamAuditLogs($team: Slug!, $limit: Int, $offset: Int) {
 		auditLogs(limit: $limit, offset: $offset) @loading {
 			nodes @loading(count: 15) {
 				actor
+				action
 				message
 				createdAt
 			}

@@ -16,6 +16,7 @@ query TeamSettings($team: Slug!) {
 		auditLogs(limit: 5) @loading {
 			nodes @loading(count: 5) {
 				actor
+				action
 				message
 				createdAt
 			}

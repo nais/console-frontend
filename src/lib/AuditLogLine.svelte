@@ -6,6 +6,7 @@
 		message: string;
 		createdAt: Date;
 		actor: string | null;
+		action: string;
 	};
 </script>
 
@@ -15,7 +16,7 @@
 	</p>
 	<BodyShort size="small" style="color: var(--a-text-subtle)">
 		<Time time={log.createdAt} dateFormat="dd. MMM yyyy HH:mm:ss" /> -
-		{log.actor || 'Unknown'}
+		{log.actor || log.action}
 	</BodyShort>
 </div>
 

@@ -17,6 +17,7 @@
 				auditLogs(limit: 15) {
 					nodes {
 						actor
+						action
 						message
 						createdAt
 					}
