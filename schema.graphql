@@ -105,9 +105,6 @@ type AuditLog {
   """
   actor: String
 
-  """The related component."""
-  componentName: String!
-
   """The related correlation ID."""
   correlationID: String!
 
