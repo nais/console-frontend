@@ -59,10 +59,12 @@
 		}
 
 		const mutated = changes.reduce(mergeChanges, secret.data);
-		return mutated.length !== secret.data.length ||
+		return (
+			mutated.length !== secret.data.length ||
 			added(secret.data, changes).length > 0 ||
 			deleted(secret.data, changes).length > 0 ||
-			updated(secret.data, changes).length > 0;
+			updated(secret.data, changes).length > 0
+		);
 	};
 
 	const calculateChanges = (secret: Secret$result['team']['secret']) => {
