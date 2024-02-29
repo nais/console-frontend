@@ -166,9 +166,7 @@
 	{#each $updates.errors as error}
 		<div class="line"><code>{error.message}</code></div>
 	{/each}
-{/if}
-
-{#if instances.size === 0 && job !== undefined}
+{:else if instances.size === 0 && job !== undefined}
 	<div id="log" bind:this={logview}>
 		<div class="logline"><p>No runs found</p></div>
 	</div>
