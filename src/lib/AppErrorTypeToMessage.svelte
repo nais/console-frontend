@@ -71,7 +71,9 @@
 	{:else if $data.__typename === 'DeprecatedRegistryError'}
 		<div class="wrapper">
 			<Alert variant="info">
-				Deprecated image registry <strong>{$data.registry}</strong> for image
+				<h4>Todo</h4>
+				Deprecated image registry
+				<strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
 				<a href="https://doc.nais.io/guides/oci-migration/">docker-build-push</a> on how to migrate to
 				Google Artifact Registry.
@@ -86,7 +88,8 @@
 	{:else if $data.__typename === 'DeprecatedIngressError'}
 		<div class="wrapper">
 			<Alert variant="info">
-				Deprecated ingress <strong>{$data.ingress}</strong>. See
+				<h4>Todo</h4>
+				Deprecated ingress<strong>{$data.ingress}</strong>. See
 				{#if env === 'dev-gcp'}
 					<a href="https://doc.nais.io/reference/environments/?h=#dev-gcp">
 						ingress documentation</a
@@ -226,5 +229,8 @@
 	}
 	.wrapper {
 		padding-bottom: 1rem;
+	}
+	.wrapper h4 {
+		margin-bottom: 0.5rem;
 	}
 </style>

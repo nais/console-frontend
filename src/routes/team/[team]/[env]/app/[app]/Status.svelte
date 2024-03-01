@@ -20,6 +20,7 @@
 					state @loading
 					errors {
 						__typename
+						level
 					}
 				}
 			}
@@ -41,6 +42,13 @@
 				aria-label="Application is nais"
 				role="image"
 			/>
+			{#if $data.appState?.errors.length > 0}
+				<p>
+					<a href="/team/{teamName}/{envName}/app/{appName}/status"
+						>{$data.appState.errors.length} todo{$data.appState.errors.length > 1 ? 's' : ''}</a
+					>
+				</p>
+			{/if}
 		</div>
 	{:else if $data.appState.state === 'FAILING'}
 		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
