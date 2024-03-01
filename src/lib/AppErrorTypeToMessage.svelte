@@ -70,11 +70,11 @@
 		</div>
 	{:else if $data.__typename === 'DeprecatedRegistryError'}
 		<div class="wrapper">
-			<Alert variant="warning">
+			<Alert variant="info">
 				Deprecated image registry <strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
-				<a href="https://doc.nais.io/guides/oci-migration/"> docker-build-push</a> on how to migrate
-				to Google Artifact Registry.
+				<a href="https://doc.nais.io/guides/oci-migration/">docker-build-push</a> on how to migrate to
+				Google Artifact Registry.
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'NoRunningInstancesError'}
@@ -85,16 +85,24 @@
 		</div>
 	{:else if $data.__typename === 'DeprecatedIngressError'}
 		<div class="wrapper">
-			<Alert variant="warning">
+			<Alert variant="info">
 				Deprecated ingress <strong>{$data.ingress}</strong>. See
 				{#if env === 'dev-gcp'}
-					<a href="https://doc.nais.io/clusters/gcp/#dev-gcp-ingresses"> ingress documentation</a>
+					<a href="https://doc.nais.io/reference/environments/?h=#dev-gcp">
+						ingress documentation</a
+					>
 				{:else if env === 'prod-gcp'}
-					<a href="https://doc.nais.io/clusters/gcp/#prod-gcp-ingresses"> ingress documentation</a>
+					<a href="https://doc.nais.io/reference/environments/?h=#prod-gcp">
+						ingress documentation</a
+					>
 				{:else if env === 'dev-fss'}
-					<a href="https://doc.nais.io/clusters/on-premises/#dev-fss"> ingress documentation</a>
+					<a href="https://doc.nais.io/reference/environments/?h=#dev-fss">
+						ingress documentation</a
+					>
 				{:else if env === 'prod-fss'}
-					<a href="https://doc.nais.io/clusters/on-premises/#prod-fss"> ingress documentation</a>
+					<a href="https://doc.nais.io/reference/environments/?h=#prod-fss">
+						ingress documentation</a
+					>
 				{/if} for available ingress domains.
 			</Alert>
 		</div>
