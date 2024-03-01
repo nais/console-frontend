@@ -359,7 +359,7 @@ type Error {
 
 enum ErrorLevel {
   ERROR
-  INFO
+  TODO
   WARNING
 }
 
