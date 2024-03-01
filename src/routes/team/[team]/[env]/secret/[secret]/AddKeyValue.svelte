@@ -3,12 +3,14 @@
 	import { addedKey, type operation } from './state-machinery';
 	import type { VariableInput } from '$houdini';
 	import Textarea from './Textarea.svelte';
+	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 
 	export let initial: VariableInput[];
 	export let changes: operation[];
-	export let open: boolean;
 
-	let addKv = () => {
+	let open: boolean = false;
+
+	const addKv = () => {
 		if (key && value) {
 			if (validKey(key).length > 0) {
 				return;
@@ -53,12 +55,25 @@
 	let key: string | undefined;
 	let value: string | undefined;
 
+	const openModal = () => {
+		open = true;
+	};
+
 	const reset = () => {
 		open = false;
 		key = undefined;
 		value = undefined;
 	};
 </script>
+
+<div class="buttons">
+	<Button title="Add new key and value" variant="tertiary" size="small" on:click={openModal}>
+		<svelte:fragment slot="icon-left">
+			<PlusCircleFillIcon />
+		</svelte:fragment>
+		Add key and value
+	</Button>
+</div>
 
 <Modal bind:open width="medium">
 	<svelte:fragment slot="header">
@@ -85,6 +100,10 @@
 </Modal>
 
 <style>
+	.buttons {
+		margin-top: 1rem;
+	}
+
 	.entry {
 		margin: 2rem 0;
 	}

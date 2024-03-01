@@ -45,6 +45,10 @@
 	};
 
 	const openEditKvModal = () => {
+		// bug: Modal currently doesn't dispatch a 'close' event
+		// initialValue is updated after updateKv is invoked, so we reset to initialValue in case it
+		// was closed outside the cancel button with uncommitted updates
+		value = initialValue;
 		editKvOpen = true;
 	};
 </script>
