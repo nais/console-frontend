@@ -128,9 +128,9 @@
 						updates.unlisten();
 						return;
 					}
-					console.log('before append: ' + logs.length);
+					console.log(new Date().toUTCString() + ' before append: ' + logs.length);
 					logs = [...logs.slice(-maxLines), result.data.log];
-					console.log('after append: ' + logs.length);
+					console.log(new Date().toUTCString() + ' after append: ' + logs.length);
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
 				scrollToBottom();
