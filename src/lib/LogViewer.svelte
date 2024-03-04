@@ -93,6 +93,7 @@
 		instances: string[],
 		running: boolean
 	) => {
+		console.log('start log viewer', app, job, env, team, instances, running);
 		if (!browser) {
 			return;
 		}
