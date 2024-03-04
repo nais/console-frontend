@@ -129,15 +129,7 @@
 						updates.unlisten();
 						return;
 					}
-					if (
-						(logs.length > 1 &&
-							result.data.log.instance !== logs[-1].instance &&
-							result.data.log.time !== logs[-1].time &&
-							result.data.log.message !== logs[-1].message) ||
-						logs.length === 0
-					) {
-						logs = [...logs.slice(-maxLines), result.data.log];
-					}
+					logs = [...logs.slice(-maxLines), result.data.log];
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
 				scrollToBottom();
