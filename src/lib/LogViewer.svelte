@@ -107,6 +107,7 @@
 			return;
 		}
 		logs = [];
+
 		updates.listen({
 			input: { app: app, job: job, env: env, team: team, instances: instances }
 		});
@@ -128,8 +129,14 @@
 						updates.unlisten();
 						return;
 					}
+					console.log(new Date().toUTCString() + ' result: ' + JSON.stringify(result.data.log));
 					console.log(new Date().toUTCString() + ' before append: ' + logs.length);
-					logs = [...logs.slice(-maxLines), result.data.log];
+					if (logs.length < maxLines) {
+						logs = [...logs.slice(), result.data.log];
+					} else {
+						logs = [...logs.slice(-maxLines), result.data.log];
+					}
+
 					console.log(new Date().toUTCString() + ' after append: ' + logs.length);
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
