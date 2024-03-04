@@ -129,16 +129,6 @@
 						updates.unlisten();
 						return;
 					}
-					if (logs.length > 0) {
-						const lastLog = logs[logs.length - 1];
-						if (
-							lastLog.time.getTime() === result.data.log.time.getTime() &&
-							lastLog.message === result.data.log.message &&
-							lastLog.instance === result.data.log.instance
-						) {
-							return;
-						}
-					}
 					logs = [...logs.slice(-maxLines), result.data.log];
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
