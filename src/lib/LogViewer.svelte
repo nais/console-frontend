@@ -129,15 +129,15 @@
 						updates.unlisten();
 						return;
 					}
-					console.log(new Date().toUTCString() + ' result: ' + JSON.stringify(result.data.log));
-					console.log(new Date().toUTCString() + ' before append: ' + logs.length);
-					if (logs.length < maxLines) {
-						logs = [...logs.slice(), result.data.log];
-					} else {
+					if (
+						(logs.length > 1 &&
+							result.data.log.instance !== logs[-1].instance &&
+							result.data.log.time !== logs[-1].time &&
+							result.data.log.message !== logs[-1].message) ||
+						logs.length === 0
+					) {
 						logs = [...logs.slice(-maxLines), result.data.log];
 					}
-
-					console.log(new Date().toUTCString() + ' after append: ' + logs.length);
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
 				scrollToBottom();
