@@ -125,7 +125,7 @@
 			updates.subscribe((result) => {
 				publishEvent(result.fetching);
 				if (result.data) {
-					if (result.data.log.instance === 'console-backend') {
+					if (result.data.log.instance === 'api') {
 						updates.unlisten();
 						return;
 					}
