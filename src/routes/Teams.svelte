@@ -17,7 +17,7 @@
 		store.fetch({ variables: { offset } });
 	};
 
-	const limit = 3;
+	const limit = 6;
 	let offset = 0;
 	export const _UserTeamsVariables: UserTeamsVariables = () => {
 		return { limit, offset };
