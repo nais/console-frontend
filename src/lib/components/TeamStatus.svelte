@@ -34,7 +34,8 @@
 		<p>
 			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
 			<a href="/team/{teamName}/applications">
-				{$status.data.team.status.apps.failing} app{$status.data.team.status.apps.failing > 1
+				{$status.data.team.status.apps.failing}/{$status.data.team.status.apps.total} app{$status
+					.data.team.status.apps.failing > 1
 					? 's'
 					: ''}</a
 			>
@@ -54,7 +55,8 @@
 		<p>
 			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
 			<a href="/team/{teamName}/jobs">
-				{$status.data.team.status.jobs.failing} job{$status.data.team.status.jobs.failing > 1
+				{$status.data.team.status.jobs.failing}/{$status.data.team.status.jobs.total} job{$status
+					.data.team.status.jobs.failing > 1
 					? 's'
 					: ''}</a
 			> failing
