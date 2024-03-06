@@ -81,6 +81,7 @@
 			userId: userID,
 			role: e.target?.value as TeamRole$options
 		});
+		store.fetch({ policy: 'NetworkOnly' });
 		dispatcher('updated', null);
 	};
 
