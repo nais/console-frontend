@@ -115,6 +115,9 @@
 		instances={instanceNames}
 		on:fetching={(e) => {
 			fetching = e.detail;
+			if (!fetching) {
+				running = false;
+			}
 		}}
 		on:scrolledUp={() => (running = false)}
 	/>
