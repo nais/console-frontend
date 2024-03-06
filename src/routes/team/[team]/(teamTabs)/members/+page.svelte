@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import { PendingValue } from '$houdini';
+	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -23,7 +22,7 @@
 	import EditMember from './EditMember.svelte';
 
 	export let data: PageData;
-	$: ({ Members } = data);
+	$: ({ Members, UserInfo } = data);
 	$: team = $Members.data?.team;
 
 	$: ({ limit, offset } = limitOffset($Members.variables));
@@ -51,6 +50,10 @@
 	let editUserOpen = false;
 	let deleteUser: { id: string; name: string } | null = null;
 	let deleteUserOpen = false;
+
+	$: canEdit =
+		team?.viewerIsOwner === true ||
+		(UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin);
 </script>
 
 {#if $Members.errors}
@@ -63,7 +66,7 @@
 	<Card>
 		<div class="header">
 			<h3>Members</h3>
-			{#if team.viewerIsOwner}
+			{#if canEdit}
 				<Button
 					size="small"
 					on:click={() => {
@@ -92,7 +95,7 @@
 							<Td>{node.user.email}</Td>
 							<Td>{node.role.toString().toLowerCase()}</Td>
 							<Td>
-								{#if team.viewerIsOwner}
+								{#if canEdit}
 									<Button
 										iconOnly
 										title="Edit member"
