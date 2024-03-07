@@ -58,7 +58,7 @@ export const tableStateFromVariables = (
 			? ({
 					orderBy: variables.orderBy.field,
 					direction: tableGraphDirection[variables.orderBy.direction]
-			  } as TableSortState)
+				} as TableSortState)
 			: ({ orderBy: defaultOrderBy, direction: defaultDirection } as TableSortState)
 	};
 };

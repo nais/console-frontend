@@ -82,7 +82,7 @@
 		: $r.config.map((c) => {
 				const r = { key: c.key, value: c.value || '', secret: c.secret };
 				return r;
-		  });
+			});
 
 	const saveConfigMutation = graphql(`
 		mutation SaveReconcilerConfig($name: String!, $config: [ReconcilerConfigInput!]!) {

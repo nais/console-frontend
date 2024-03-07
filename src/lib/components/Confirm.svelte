@@ -1,11 +1,17 @@
 <script lang="ts">
 	import { Button, Modal } from '@nais/ds-svelte-community';
-	import type { ButtonProps } from '@nais/ds-svelte-community/dist/components/Button/Button.svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	export let confirmText = 'Confirm';
 	export let open = false;
-	export let variant: ButtonProps['variant'] = 'primary';
+	export let variant:
+		| 'primary'
+		| 'primary-neutral'
+		| 'secondary'
+		| 'secondary-neutral'
+		| 'tertiary'
+		| 'tertiary-neutral'
+		| 'danger' = 'primary';
 
 	const dispatch = createEventDispatcher();
 
