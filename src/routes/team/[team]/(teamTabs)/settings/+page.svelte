@@ -115,6 +115,47 @@
 		}
 	`);
 
+	const save = (env: { name: string }) => {
+		return async (e: { detail: string }) => {
+			slackChannelsError = false;
+			if (!teamSettings) {
+				return;
+			}
+
+			const updates = teamSettings.environments.map((c) => {
+				if (c === PendingValue) {
+					return {
+						environment: '',
+						channelName: ''
+					};
+				}
+
+				if (c.name === env.name) {
+					return {
+						environment: c.name,
+						channelName: e.detail
+					};
+				}
+
+				return {
+					environment: c.name,
+					channelName: c.slackAlertsChannel
+				};
+			});
+
+			const data = await updateTeam.mutate({
+				slug: team,
+				input: {
+					slackAlertsChannels: updates
+				}
+			});
+
+			if (data.errors) {
+				slackChannelsError = true;
+			}
+		};
+	};
+
 	let synchronizeClicked = false;
 </script>
 
@@ -191,48 +232,7 @@
 						{#if env !== PendingValue}
 							<div class="channel">
 								<b>{env.name}:</b>
-								<EditText
-									text={env.slackAlertsChannel}
-									variant="textfield"
-									on:save={async (e) => {
-										slackChannelsError = false;
-										if (!teamSettings) {
-											return;
-										}
-
-										const updates = teamSettings.environments.map((c) => {
-											if (c === PendingValue || env === PendingValue) {
-												return {
-													environment: '',
-													channelName: ''
-												};
-											}
-
-											if (c.name === env.name) {
-												return {
-													environment: c.name,
-													channelName: e.detail
-												};
-											}
-
-											return {
-												environment: c.name,
-												channelName: c.slackAlertsChannel
-											};
-										});
-
-										const data = await updateTeam.mutate({
-											slug: team,
-											input: {
-												slackAlertsChannels: updates
-											}
-										});
-
-										if (data.errors) {
-											slackChannelsError = true;
-										}
-									}}
-								/>
+								<EditText text={env.slackAlertsChannel} variant="textfield" on:save={save(env)} />
 							</div>
 						{/if}
 					{/each}
