@@ -20,6 +20,7 @@
 		"@sveltejs/adapter-auto": "^3.1.1",
 		"@sveltejs/adapter-node": "^4.0.1",
 		"@sveltejs/kit": "^2.5.2",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/amplitude-js": "^8.16.5",
 		"@typescript-eslint/eslint-plugin": "^7.1.1",
 		"@typescript-eslint/parser": "^7.1.1",

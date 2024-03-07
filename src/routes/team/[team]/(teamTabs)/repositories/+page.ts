@@ -3,7 +3,7 @@ import type { RepositoriesVariables } from './$houdini';
 export const _RepositoriesVariables: RepositoriesVariables = ({ url }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	if (!page || page < 1) {
-		throw error(400, 'Bad pagenumber');
+		error(400, 'Bad pagenumber');
 	}
 	const limit = 50;
 	const offset = (page - 1) * limit;
