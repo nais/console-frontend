@@ -27,7 +27,7 @@ export const actions = {
 			return { errors: resp.errors };
 		}
 		if (resp.data?.createTeam.slug) {
-			throw redirect(303, `/team/${resp.data.createTeam.slug}`);
+			redirect(303, `/team/${resp.data.createTeam.slug}`);
 		}
 	}
 } satisfies Actions;

@@ -225,7 +225,7 @@
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2
 										}
-								  )
+									)
 								: '0.00'}
 						{:else}
 							<Skeleton variant="text" />
@@ -261,7 +261,7 @@
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2
 										}
-								  )
+									)
 								: '0.00'}
 						{:else}
 							<Skeleton variant="text" />
@@ -353,7 +353,7 @@
 														? overage.cpu.toLocaleString('en-GB', {
 																minimumFractionDigits: 2,
 																maximumFractionDigits: 2
-														  })
+															})
 														: '-'}</Td
 												>
 												<Td>{overage.memory > 0.0 ? prettyBytes(overage.memory) : '-'}</Td>

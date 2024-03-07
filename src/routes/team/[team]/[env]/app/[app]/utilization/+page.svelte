@@ -160,7 +160,7 @@
 								? currentUtilization.cpu.estimatedAnnualOverageCost.toLocaleString('en-GB', {
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2
-								  })
+									})
 								: '0.00'}
 						{:else}
 							<Skeleton variant="text" width="200px" />
@@ -190,7 +190,7 @@
 								? currentUtilization.memory.estimatedAnnualOverageCost.toLocaleString('en-GB', {
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2
-								  })
+									})
 								: '0.00'}
 						{:else}
 							<Skeleton variant="text" width="200px" />

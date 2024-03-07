@@ -3,9 +3,9 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Accordion, AccordionItem, Loader } from '@nais/ds-svelte-community';
-	import format from 'date-fns/format';
-	import formatDistance from 'date-fns/formatDistance';
-	import enGB from 'date-fns/locale/en-GB';
+	import { format } from 'date-fns/format';
+	import { formatDistance } from 'date-fns/formatDistance';
+	import { enGB } from 'date-fns/locale/en-GB';
 
 	const runs = graphql(`
 		query UserSyncRuns @load {
