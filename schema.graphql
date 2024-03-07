@@ -2003,6 +2003,7 @@ type VulnerabilityMetrics {
 }
 
 type VulnerabilitySummary {
+  bomCount: Int!
   critical: Int!
   high: Int!
   low: Int!
