@@ -403,8 +403,8 @@ type GcpProject {
 
 """Input for filtering GitHub repositories."""
 input GitHubRepositoriesFilter {
-  """Include archived repositories or not. Default is false."""
-  includeArchivedRepositories: Boolean!
+  """Whether or not to include archived repositories. Defaults to false."""
+  includeArchivedRepositories: Boolean
 }
 
 """GitHub repository type."""
@@ -1199,7 +1199,7 @@ type Query {
 
   """Get a collection of teams. Default limit is 20"""
   teams(
-    """Filter teams by GitHub repository permissions."""
+    """Filter teams."""
     filter: TeamsFilter
 
     """Limit the number of teams to return. Default is 20."""
@@ -1654,6 +1654,9 @@ type Team {
 
   """The GitHub repositories that the team has access to."""
   githubRepositories(
+    """Filter the repositories."""
+    filter: GitHubRepositoriesFilter
+
     """Limit the number of repositories to return. Default is 20."""
     limit: Int
 
