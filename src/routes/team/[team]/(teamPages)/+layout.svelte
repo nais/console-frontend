@@ -3,7 +3,6 @@
 	import { PendingValue } from '$houdini';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { replacer } from '$lib/replacer';
-	import type { PageData } from './$houdini';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
@@ -16,6 +15,7 @@
 		SandboxIcon,
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	type menuItem = {
@@ -157,9 +157,6 @@
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
-<div class="header">
-	<h2>{team}</h2>
-</div>
 <div class="main">
 	<div class="sidemenu">
 		<ul>
@@ -192,10 +189,6 @@
 		flex-grow: 1;
 	}
 
-	.header {
-		display: flex;
-		justify-content: space-between;
-	}
 	.sidemenu {
 		width: 200px;
 	}
@@ -208,8 +201,7 @@
 	}
 	li.active a {
 		color: #000;
-		background-color: var(--a-surface-alt-1-subtle);
-		border-radius: 0.25rem;
+		background-color: var(--active-color-strong);
 	}
 	ul {
 		margin: 0;
@@ -220,12 +212,14 @@
 		gap: 0.5rem;
 		padding: 0.25rem 0.5rem;
 		margin-left: -0.5rem;
+		border-radius: 0.25rem;
 	}
 	li.active a:hover {
 		color: var(--a-text-default);
 	}
 	ul a:hover {
-		background-color: var(--a-surface-alt-1-moderate);
+		background-color: var(--active-color-strong);
+		text-decoration: underline;
 	}
 	.main {
 		gap: 1rem;

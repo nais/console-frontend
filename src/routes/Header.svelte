@@ -253,7 +253,6 @@
 		height: 3rem;
 		display: flex;
 		padding: 0 2rem;
-		margin-bottom: 2rem;
 		min-width: 1000px;
 	}
 	.header-content {
