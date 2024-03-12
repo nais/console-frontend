@@ -1,9 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { replacer } from '$lib/replacer';
 	import type { PageData } from './$houdini';
-	import { HearingLoopIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowCirclepathIcon,
+		ArrowsSquarepathIcon,
+		BranchingIcon,
+		CogIcon,
+		HouseIcon,
+		LineGraphStackedIcon,
+		PersonGroupIcon,
+		QuietZoneIcon,
+		SandboxIcon,
+		VirusIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	export let data: PageData;
 	type menuItem = {
@@ -15,7 +27,6 @@
 		memberOnly?: boolean;
 	};
 	type menuGroup = {
-		name: string;
 		items: menuItem[];
 	};
 	$: ({ TeamRoles } = data);
@@ -24,101 +35,110 @@
 	$: currentRoute = $page.route.id;
 	const nav: menuGroup[] = [
 		{
-			name: '',
 			items: [
 				{
 					name: 'Overview',
 					routeId: '/team/[team]/(teamPages)',
 					withSubRoutes: false,
-					icon: HearingLoopIcon
+					icon: HouseIcon
 				}
 			]
 		},
 		{
-			name: 'Inventory',
 			items: [
 				{
 					name: 'Apps',
 					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
-					icon: HearingLoopIcon
+					icon: SandboxIcon
 				},
 				{
 					name: 'Jobs',
 					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
-					icon: HearingLoopIcon
+					icon: ArrowCirclepathIcon
 				},
 				{
-					name: 'Postgres',
-					routeId: '/team/[team]/(teamPages)/jobs',
+					name: 'Secrets',
+					routeId: '/team/[team]/(teamPages)/secrets',
 					withSubRoutes: true,
-					icon: HearingLoopIcon
-				},
-				{
-					name: 'Buckets',
-					routeId: '/team/[team]/(teamPages)/jobs',
-					withSubRoutes: true,
-					icon: HearingLoopIcon
-				},
-				{
-					name: 'BigQuery',
-					routeId: '/team/[team]/(teamPages)/jobs',
-					withSubRoutes: true,
-					icon: HearingLoopIcon
-				},
-				{
-					name: 'Secret',
-					routeId: '/team/[team]/(teamPages)/jobs',
-					withSubRoutes: true,
-					icon: HearingLoopIcon,
+					icon: QuietZoneIcon,
 					memberOnly: true
-				},
-				{
-					name: 'Kafka',
-					routeId: '/team/[team]/(teamPages)/jobs',
-					withSubRoutes: true,
-					icon: HearingLoopIcon
 				}
+				// {
+				// 	name: 'Postgres',
+				// 	routeId: '/team/[team]/(teamPages)/jobs',
+				// 	withSubRoutes: true,
+				// 	icon: PostgresStroke
+				// },
+				// {
+				// 	name: 'Buckets',
+				// 	routeId: '/team/[team]/(teamPages)/jobs',
+				// 	withSubRoutes: true,
+				// 	icon: BucketIcon
+				// },
+				// {
+				// 	name: 'BigQuery',
+				// 	routeId: '/team/[team]/(teamPages)/jobs',
+				// 	withSubRoutes: true,
+				// 	icon: Bigquery
+				// },
+				// {
+				// 	name: 'Kafka',
+				// 	routeId: '/team/[team]/(teamPages)/jobs',
+				// 	withSubRoutes: true,
+				// 	icon: Kafka
+				// }
 			]
 		},
 		{
-			name: 'Insight',
 			items: [
 				{
 					name: 'Deploys',
 					routeId: '/team/[team]/(teamPages)/deploy',
-					withSubRoutes: true
+					withSubRoutes: true,
+					icon: ArrowsSquarepathIcon
 				},
 				{
 					name: 'Cost',
 					routeId: '/team/[team]/(teamPages)/cost',
-					withSubRoutes: true
+					withSubRoutes: true,
+					icon: CostIcon
 				},
 				{
 					name: 'Utilization',
 					routeId: '/team/[team]/(teamPages)/utilization',
-					withSubRoutes: true
+					withSubRoutes: true,
+					icon: LineGraphStackedIcon
 				},
 				{
 					name: 'Vulnerabilities',
 					routeId: '/team/[team]/(teamPages)/vulnerabilities',
-					withSubRoutes: true
+					withSubRoutes: true,
+					icon: VirusIcon
 				}
 			]
 		},
 		{
-			name: 'Team',
 			items: [
 				{
 					name: 'Members',
 					routeId: '/team/[team]/(teamPages)/members',
-					withSubRoutes: true
+					withSubRoutes: true,
+					icon: PersonGroupIcon
 				},
 				{
 					name: 'Repositories',
 					routeId: '/team/[team]/(teamPages)/repositories',
-					withSubRoutes: true
+					withSubRoutes: true,
+					icon: BranchingIcon
+				},
+				{
+					name: 'Settings',
+					routeId: '/team/[team]/(teamPages)/settings',
+					withSubRoutes: true,
+					memberOnly: true,
+					icon: CogIcon
 				}
 			]
 		}
@@ -143,36 +163,23 @@
 <div class="main">
 	<div class="sidemenu">
 		<ul>
-			{#each nav as { name, items }}
-				{#if name}
-					<hr />
+			{#each nav as { items }, i}
+				{#if i > 0}
+					<hr style="opacity: 50%;" />
 				{/if}
-				{#each items as { name, routeId, withSubRoutes, icon, iconColor }}
-					<li class:active={isActive(currentRoute, routeId, withSubRoutes)}>
-						<a class="unstyled" href={replacer(routeId, { team })}>
-							{#if icon}
-								<svelte:component this={icon} />
-							{/if}
-
-							{name}</a
-						>
-					</li>
+				{#each items as { name, routeId, withSubRoutes, icon, memberOnly }}
+					{#if !memberOnly || ($TeamRoles.data?.team !== PendingValue && ($TeamRoles.data?.team.viewerIsMember || $TeamRoles.data?.team.viewerIsOwner))}
+						<li class:active={isActive(currentRoute, routeId, withSubRoutes)}>
+							<a class="unstyled" href={replacer(routeId, { team })}>
+								{#if icon}
+									<svelte:component this={icon} />
+								{/if}
+								{name}</a
+							>
+						</li>
+					{/if}
 				{/each}
 			{/each}
-			{#if $TeamRoles.data}
-				{#if $TeamRoles.data.team !== PendingValue && ($TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsOwner)}
-					<li class:active={isActive(currentRoute, '/team/[team]/(teamPages)/secrets', true)}>
-						<a class="unstyled" href={replacer('/team/[team]/(teamPages)/secrets', { team })}
-							>Secrets</a
-						>
-					</li>
-					<li class:active={isActive(currentRoute, '/team/[team]/(teamPages)/settings', true)}>
-						<a class="unstyled" href={replacer('/team/[team]/(teamPages)/settings', { team })}
-							>Settings</a
-						>
-					</li>
-				{/if}
-			{/if}
 		</ul>
 	</div>
 	<div class="container">
@@ -182,9 +189,7 @@
 
 <style>
 	.container {
-		margin: auto;
-		min-width: 1000px;
-		max-width: 1432px;
+		flex-grow: 1;
 	}
 
 	.header {
@@ -206,6 +211,9 @@
 		background-color: var(--a-surface-alt-1-subtle);
 		border-radius: 0.25rem;
 	}
+	ul {
+		margin: 0;
+	}
 	ul a {
 		display: flex;
 		align-items: center;
@@ -219,15 +227,11 @@
 	ul a:hover {
 		background-color: var(--a-surface-alt-1-moderate);
 	}
-
-	b {
-		display: block;
-		color: grey;
-		margin-top: 0.4rem;
-	}
-
 	.main {
+		gap: 1rem;
 		display: flex;
+		justify-content: flex-start;
+		align-items: flex-start;
 		direction: row;
 	}
 	.unstyled {

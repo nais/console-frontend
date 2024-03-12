@@ -11,7 +11,7 @@
 	><defs
 		><style>
 			.cls-1 {
-				fill: #aecbfa;
+				fill: currentColor;
 			}
 			.cls-1,
 			.cls-2,
@@ -19,10 +19,10 @@
 				fill-rule: evenodd;
 			}
 			.cls-2 {
-				fill: #669df6;
+				fill: currentColor;
 			}
 			.cls-3 {
-				fill: #4285f4;
+				fill: currentColor;
 			}
 		</style></defs
 	><title>Icon_24px_BigQuery_Color</title><g data-name="Product Icons"
