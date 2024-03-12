@@ -17,6 +17,14 @@
 		settings: 'settings'
 	};
 
+	const simpleJobPages: { [key: string]: string } = {
+		'': '', // overview
+		status: 'status',
+		deploys: 'deploys',
+		cost: 'cost',
+		logs: 'logs',
+		manifest: 'manifest'
+	};
 	const simpleAppPages: { [key: string]: string } = {
 		'': '', // overview
 		status: 'status',
@@ -41,6 +49,30 @@
 			];
 		}
 	};
+
+	for (const key in simpleJobPages) {
+		pages[`/team/[team]/[env]/job/[job]${key ? '/' + key : ''}`] = (params: Data) => {
+			const ret = [
+				{
+					name: params.env
+				},
+				{
+					name: params.job,
+					path: replacer('/team/[team]/[env]/job/[job]', params)
+				},
+				{
+					name: simpleJobPages[key],
+					path: replacer(`/team/[team]/[env]/job/[job]/${key}`, params)
+				}
+			];
+
+			if (key === '') {
+				ret.pop();
+			}
+
+			return ret;
+		};
+	}
 
 	for (const key in simpleAppPages) {
 		pages[`/team/[team]/[env]/app/[app]${key ? '/' + key : ''}`] = (params: Data) => {
