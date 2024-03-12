@@ -1,9 +1,10 @@
 <script lang="ts" context="module">
+	import type { ComponentType } from 'svelte';
 	export type menuItem = {
 		name: string;
 		routeId: string;
 		withSubRoutes?: boolean;
-		icon?: ConstructorOfATypedSvelteComponent;
+		icon?: ComponentType;
 		iconColor?: string;
 	};
 	export type menuGroup = {

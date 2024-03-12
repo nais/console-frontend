@@ -26,7 +26,6 @@
 	$: ({ TeamRoles } = data);
 
 	$: team = $page.params.team;
-	$: currentRoute = $page.route.id;
 	const nav: menuGroup[] = [
 		{
 			items: [
