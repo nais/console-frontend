@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { replacer } from '$lib/replacer';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
@@ -16,19 +14,15 @@
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import type { menuItem } from '$lib/components/SideMenu.svelte';
+	import SideMenu from '$lib/components/SideMenu.svelte';
+	import { PendingValue, type TeamRoles$result } from '$houdini';
+
+	type menuGroup = {
+		items: (menuItem & { memberOnly?: boolean })[];
+	};
 
 	export let data: PageData;
-	type menuItem = {
-		name: string;
-		routeId: string;
-		withSubRoutes: boolean;
-		icon?: ConstructorOfATypedSvelteComponent;
-		iconColor?: string;
-		memberOnly?: boolean;
-	};
-	type menuGroup = {
-		items: menuItem[];
-	};
 	$: ({ TeamRoles } = data);
 
 	$: team = $page.params.team;
@@ -144,41 +138,24 @@
 		}
 	];
 
-	const isActive = (current: string | null, routeID: string, allWithPrefix = false) => {
-		if (current === routeID) {
-			return true;
-		}
-		if (current && allWithPrefix) {
-			return current.startsWith(routeID);
-		}
-		return false;
-	};
+	function memberOnly(nav: menuGroup[], data: TeamRoles$result | null) {
+		return nav.map((group) => {
+			return {
+				items: group.items.filter((item) => {
+					return (
+						!item.memberOnly ||
+						(data?.team !== PendingValue && (data?.team.viewerIsOwner || data?.team.viewerIsMember))
+					);
+				})
+			};
+		});
+	}
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
 <div class="main">
-	<div class="sidemenu">
-		<ul>
-			{#each nav as { items }, i}
-				{#if i > 0}
-					<hr />
-				{/if}
-				{#each items as { name, routeId, withSubRoutes, icon, memberOnly }}
-					{#if !memberOnly || ($TeamRoles.data?.team !== PendingValue && ($TeamRoles.data?.team.viewerIsMember || $TeamRoles.data?.team.viewerIsOwner))}
-						<li class:active={isActive(currentRoute, routeId, withSubRoutes)}>
-							<a class="unstyled" href={replacer(routeId, { team })}>
-								{#if icon}
-									<svelte:component this={icon} />
-								{/if}
-								{name}</a
-							>
-						</li>
-					{/if}
-				{/each}
-			{/each}
-		</ul>
-	</div>
+	<SideMenu nav={memberOnly(nav, $TeamRoles.data)} />
 	<div class="container">
 		<slot />
 	</div>
@@ -189,59 +166,11 @@
 		flex-grow: 1;
 	}
 
-	.sidemenu {
-		width: 200px;
-	}
-	.sidemenu ul {
-		list-style: none;
-		padding: 0;
-	}
-	li {
-		margin: 0;
-	}
-	li.active a {
-		color: #000;
-		background-color: var(--active-color-strong);
-	}
-	ul {
-		margin: 0;
-	}
-	ul a {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.25rem 0.5rem;
-		margin-left: -0.5rem;
-		border-radius: 0.25rem;
-		margin-bottom: 2px;
-	}
-	li.active a:hover {
-		color: var(--a-text-default);
-	}
-	ul a:hover {
-		background-color: var(--active-color-strong);
-		text-decoration: underline;
-	}
 	.main {
 		gap: 1rem;
 		display: flex;
 		justify-content: flex-start;
 		align-items: flex-start;
 		direction: row;
-	}
-	.unstyled {
-		text-decoration: none;
-		color: inherit;
-	}
-
-	hr {
-		border: 0;
-		height: 1px;
-		background: linear-gradient(
-			90deg,
-			var(--active-color-strong) 0%,
-			var(--active-color-strong) 20%,
-			var(--active-color) 100%
-		);
 	}
 </style>
