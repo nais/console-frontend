@@ -28,7 +28,7 @@
 			items: [
 				{
 					name: 'Overview',
-					routeId: '/team/[team]/(teamTabs)',
+					routeId: '/team/[team]/(teamPages)',
 					withSubRoutes: false,
 					icon: HearingLoopIcon
 				}
@@ -39,44 +39,44 @@
 			items: [
 				{
 					name: 'Apps',
-					routeId: '/team/[team]/(teamTabs)/applications',
+					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
 					icon: HearingLoopIcon
 				},
 				{
 					name: 'Jobs',
-					routeId: '/team/[team]/(teamTabs)/jobs',
+					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: HearingLoopIcon
 				},
 				{
 					name: 'Postgres',
-					routeId: '/team/[team]/(teamTabs)/jobs',
+					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: HearingLoopIcon
 				},
 				{
 					name: 'Buckets',
-					routeId: '/team/[team]/(teamTabs)/jobs',
+					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: HearingLoopIcon
 				},
 				{
 					name: 'BigQuery',
-					routeId: '/team/[team]/(teamTabs)/jobs',
+					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: HearingLoopIcon
 				},
 				{
 					name: 'Secret',
-					routeId: '/team/[team]/(teamTabs)/jobs',
+					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: HearingLoopIcon,
 					memberOnly: true
 				},
 				{
 					name: 'Kafka',
-					routeId: '/team/[team]/(teamTabs)/jobs',
+					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: HearingLoopIcon
 				}
@@ -87,22 +87,22 @@
 			items: [
 				{
 					name: 'Deploys',
-					routeId: '/team/[team]/(teamTabs)/deploy',
+					routeId: '/team/[team]/(teamPages)/deploy',
 					withSubRoutes: true
 				},
 				{
 					name: 'Cost',
-					routeId: '/team/[team]/(teamTabs)/cost',
+					routeId: '/team/[team]/(teamPages)/cost',
 					withSubRoutes: true
 				},
 				{
 					name: 'Utilization',
-					routeId: '/team/[team]/(teamTabs)/utilization',
+					routeId: '/team/[team]/(teamPages)/utilization',
 					withSubRoutes: true
 				},
 				{
 					name: 'Vulnerabilities',
-					routeId: '/team/[team]/(teamTabs)/vulnerabilities',
+					routeId: '/team/[team]/(teamPages)/vulnerabilities',
 					withSubRoutes: true
 				}
 			]
@@ -112,12 +112,12 @@
 			items: [
 				{
 					name: 'Members',
-					routeId: '/team/[team]/(teamTabs)/members',
+					routeId: '/team/[team]/(teamPages)/members',
 					withSubRoutes: true
 				},
 				{
 					name: 'Repositories',
-					routeId: '/team/[team]/(teamTabs)/repositories',
+					routeId: '/team/[team]/(teamPages)/repositories',
 					withSubRoutes: true
 				}
 			]
@@ -161,13 +161,13 @@
 			{/each}
 			{#if $TeamRoles.data}
 				{#if $TeamRoles.data.team !== PendingValue && ($TeamRoles.data.team.viewerIsMember || $TeamRoles.data.team.viewerIsOwner)}
-					<li class:active={isActive(currentRoute, '/team/[team]/(teamTabs)/secrets', true)}>
-						<a class="unstyled" href={replacer('/team/[team]/(teamTabs)/secrets', { team })}
+					<li class:active={isActive(currentRoute, '/team/[team]/(teamPages)/secrets', true)}>
+						<a class="unstyled" href={replacer('/team/[team]/(teamPages)/secrets', { team })}
 							>Secrets</a
 						>
 					</li>
-					<li class:active={isActive(currentRoute, '/team/[team]/(teamTabs)/settings', true)}>
-						<a class="unstyled" href={replacer('/team/[team]/(teamTabs)/settings', { team })}
+					<li class:active={isActive(currentRoute, '/team/[team]/(teamPages)/settings', true)}>
+						<a class="unstyled" href={replacer('/team/[team]/(teamPages)/settings', { team })}
 							>Settings</a
 						>
 					</li>
