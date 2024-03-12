@@ -1,0 +1,12 @@
+query TeamDeleteKey($key: String!) {
+	teamDeleteKey(key: $key) {
+		key
+		createdAt
+		expires
+		createdBy {
+			id
+			name
+			email
+		}
+	}
+}
