@@ -1,6 +1,7 @@
 query UserInfo {
 	me {
 		... on User {
+			id
 			name
 			isAdmin
 		}
