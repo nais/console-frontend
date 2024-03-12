@@ -66,7 +66,6 @@
 	</Alert>
 {/if}
 {#if $store.data !== null}
-	<Card height="100%">
 		<h2>
 			<DeploysIcon size="1.5rem" />
 			My teams latest deploys
@@ -115,7 +114,6 @@
 				{/each}
 			</Tbody>
 		</Table>
-	</Card>
 {/if}
 
 <style>

@@ -54,6 +54,7 @@
 				{
 					name: 'Secrets',
 					routeId: '/team/[team]/(teamPages)/secrets',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
 					withSubRoutes: true,
 					icon: QuietZoneIcon,
 					memberOnly: true

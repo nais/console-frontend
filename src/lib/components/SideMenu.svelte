@@ -6,6 +6,7 @@
 		withSubRoutes?: boolean;
 		icon?: ComponentType;
 		iconColor?: string;
+		extraRoutes?: string[];
 	};
 	export type menuGroup = {
 		items: menuItem[];
@@ -17,13 +18,17 @@
 	import { page } from '$app/stores';
 	export let nav: menuGroup[];
 
-	const isActive = (current: string | null, routeID: string, allWithPrefix = false) => {
-		if (current === routeID) {
+	const isActive = (menuItem: menuItem, current: string | null) => {
+		if (current === menuItem.routeId) {
 			return true;
 		}
-		if (current && allWithPrefix) {
-			return current.startsWith(routeID);
+		if (current && menuItem.withSubRoutes && current.startsWith(menuItem.routeId)) {
+			return true;
 		}
+		if (current && menuItem.extraRoutes) {
+			return menuItem.extraRoutes.includes(current);
+		}
+
 		return false;
 	};
 </script>
@@ -34,13 +39,13 @@
 			{#if i > 0}
 				<hr />
 			{/if}
-			{#each items as { name, routeId, withSubRoutes, icon }}
-				<li class:active={isActive($page.route.id, routeId, withSubRoutes)}>
-					<a class="unstyled" href={replacer(routeId, $page.params)}>
-						{#if icon}
-							<svelte:component this={icon} />
+			{#each items as item}
+				<li class:active={isActive(item, $page.route.id)}>
+					<a class="unstyled" href={replacer(item.routeId, $page.params)}>
+						{#if item.icon}
+							<svelte:component this={item.icon} />
 						{/if}
-						{name}</a
+						{item.name}</a
 					>
 				</li>
 			{/each}

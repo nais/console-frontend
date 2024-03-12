@@ -7,14 +7,14 @@
 	const simpleTeamPages: { [key: string]: string } = {
 		applications: 'apps',
 		jobs: 'jobs',
-		secrets: 'secrets',
 		deploy: 'deploys',
 		cost: 'cost',
 		utilization: 'utilization',
 		vulnerabilities: 'vulnerabilities',
 		members: 'members',
 		repositories: 'repositories',
-		settings: 'settings'
+		settings: 'settings',
+		secrets: 'secrets'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -45,6 +45,21 @@
 				{
 					name: 'audit logs',
 					path: replacer('/team/[team]/(teamPages)/settings/audit_logs', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/secret/[secret]': (params: Data) => {
+			return [
+				{
+					name: 'secrets',
+					path: replacer('/team/[team]/(teamPages)/secrets', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.secret,
+					path: replacer('/team/[team]/(teamPages)/[env]/secret/[secret]', params)
 				}
 			];
 		}
@@ -119,6 +134,7 @@
 		}
 		return [];
 	}
+	$: console.log($page.route.id)
 </script>
 
 <div class="breadcrumbs">
