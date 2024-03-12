@@ -31,20 +31,22 @@
 
 <svelte:head><title>Admin - Console</title></svelte:head>
 
-<div class="header">
-	<h2>Admin</h2>
-</div>
-<Tabs>
-	{#each nav as { tab, routeId, withSubRoutes }}
-		<Tab
-			href={replacer(routeId, {})}
-			active={isActive(currentRoute, routeId, withSubRoutes)}
-			title={tab}
-		/>
-	{/each}
-</Tabs>
-<div class="container">
-	<slot />
+<div class="page">
+	<div class="header">
+		<h2>Admin</h2>
+	</div>
+	<Tabs>
+		{#each nav as { tab, routeId, withSubRoutes }}
+			<Tab
+				href={replacer(routeId, {})}
+				active={isActive(currentRoute, routeId, withSubRoutes)}
+				title={tab}
+			/>
+		{/each}
+	</Tabs>
+	<div class="container">
+		<slot />
+	</div>
 </div>
 
 <style>

@@ -5,7 +5,7 @@
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import { Alert, Button, Heading, HelpText, Loader } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { PageData } from '../../../../[env]/secret/[secret]/$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import { added, deleted, mergeChanges, type operation, updated } from './state-machinery';
 	import { ArrowUndoIcon, FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';

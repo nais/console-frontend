@@ -5,14 +5,17 @@
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
-<div class="grid">
-	<Card columns={4} rows={1}>
-		<Teams />
-	</Card>
 
-	<Card columns={8} rows={2}>
-		<Deploys />
-	</Card>
+<div class="page">
+	<div class="grid">
+		<Card columns={4} rows={1}>
+			<Teams />
+		</Card>
+
+		<Card columns={8} rows={2}>
+			<Deploys />
+		</Card>
+	</div>
 </div>
 
 <style>

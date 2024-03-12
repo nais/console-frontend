@@ -1,89 +1,77 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
-	import { State } from '$houdini/graphql/enums';
-	import Tab from '$lib/Tab.svelte';
-	import Tabs from '$lib/Tabs.svelte';
-	import NotificationBadge from '$lib/icons/NotificationBadge.svelte';
-	import { replacer } from '$lib/replacer';
-	import type { LayoutData } from './$houdini';
+	import type { menuGroup } from '$lib/components/SideMenu.svelte';
+	import SideMenu from '$lib/components/SideMenu.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import { ArrowsSquarepathIcon, BellIcon, Density3Icon, FileTextIcon, HouseIcon } from '@nais/ds-svelte-community/icons';
 
 	$: team = $page.params.team;
-	$: env = $page.params.env;
-	$: job = $page.params.job;
-	$: currentRoute = $page.route.id;
 
-	$: nav = [
+	const nav: menuGroup[] = [
 		{
-			tab: 'Overview',
-			routeId: '/team/[team]/[env]/job/[job]'
+			items: [
+				{
+					name: 'Overview',
+					routeId: '/team/[team]/[env]/job/[job]',
+					icon: HouseIcon
+				},
+				{
+					name: 'Status',
+					routeId: '/team/[team]/[env]/job/[job]/status',
+					icon: BellIcon
+				}
+			]
 		},
 		{
-			tab: 'Status',
-			routeId: '/team/[team]/[env]/job/[job]/status'
+			items: [
+				{
+					name: 'Deploys',
+					routeId: '/team/[team]/[env]/job/[job]/deploys',
+					icon: ArrowsSquarepathIcon
+				},
+				{
+					name: 'Cost',
+					routeId: '/team/[team]/[env]/job/[job]/cost',
+					icon: CostIcon
+				},
+				{
+					name: 'Logs',
+					routeId: '/team/[team]/[env]/job/[job]/logs',
+					icon: Density3Icon
+				}
+			]
 		},
 		{
-			tab: 'Deploys',
-			routeId: '/team/[team]/[env]/job/[job]/deploys'
-		},
-		{
-			tab: 'Logs',
-			routeId: '/team/[team]/[env]/job/[job]/logs'
-		},
-		{
-			tab: 'Manifest',
-			routeId: '/team/[team]/[env]/job/[job]/manifest'
-		},
-		{
-			tab: 'Cost',
-			routeId: '/team/[team]/[env]/job/[job]/cost'
+			items: [
+				{
+					name: 'Manifest',
+					routeId: '/team/[team]/[env]/job/[job]/manifest',
+					icon: FileTextIcon
+				}
+			]
 		}
 	];
-	export let data: LayoutData;
-	$: ({ JobNotificationState } = data);
-
-	$: state = $JobNotificationState.data?.naisjob.jobState.state;
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
-{#if job !== undefined}
-	<h3>
-		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/job/{job}">{job}</a>
-	</h3>
-{:else}
-	<h3><a href="/team/{team}"> {team}</a> / {env}</h3>
-{/if}
-<Tabs>
-	{#each nav as { tab, routeId }}
-		{#if tab !== 'Cost'}
-			<Tab
-				href={replacer(routeId, { team, env, job })}
-				active={currentRoute == routeId}
-				title={tab}
-			/>
-		{:else if env.indexOf('fss') === -1}
-			<Tab
-				href={replacer(routeId, { team, env, job })}
-				active={currentRoute == routeId}
-				title={tab}
-			/>
-		{/if}
-		{#if tab === 'Status' && state !== undefined && state !== PendingValue}
-			{#if state === State.NOTNAIS || state === State.FAILING}
-				<div class="notification">
-					<NotificationBadge color={'var(--a-border-action)'} size={'8px'} />
-				</div>
-			{/if}
-		{/if}
-	{/each}
-</Tabs>
-<slot />
+<div class="main">
+	<SideMenu {nav} />
+	<div class="container">
+		<slot />
+	</div>
+</div>
 
 <style>
-	.notification {
-		position: relative;
-		left: -14px;
-		top: 4px;
+	.container {
+		flex-grow: 1;
+	}
+
+	.main {
+		gap: 1rem;
+		display: flex;
+		justify-content: flex-start;
+		align-items: flex-start;
+		direction: row;
 	}
 </style>

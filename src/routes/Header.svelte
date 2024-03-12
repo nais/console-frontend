@@ -183,23 +183,28 @@
 				{/if}
 			</div>
 		</div>
-		<nav>
-			<ul>
-				<li><a href="/deploys">Deploys</a></li>
-				<li><a href="https://docs.nais.io">Docs</a></li>
-				{#if user?.isAdmin}
-					<li><a href="/admin">Admin</a></li>
-				{/if}
-			</ul>
-		</nav>
-		<div class="cap">
-			{user ? user.name : 'unauthorized'}
-			- <a href="/oauth2/logout">Logout</a>
+		<div class="right">
+			<nav>
+				<ul>
+					<li><a href="https://docs.nais.io">Documentation</a></li>
+					{#if user?.isAdmin}
+						<li><a href="/admin">Admin</a></li>
+					{/if}
+				</ul>
+			</nav>
+			<div class="cap">
+				{user ? user.name : 'unauthorized'}
+				- <a href="/oauth2/logout">Logout</a>
+			</div>
 		</div>
 	</div>
 </div>
 
 <style>
+	.right {
+		display: flex;
+		gap: 2rem;
+	}
 	.helpText {
 		z-index: 1000;
 		position: absolute;
@@ -253,7 +258,6 @@
 		height: 3rem;
 		display: flex;
 		padding: 0 2rem;
-		margin-bottom: 2rem;
 		min-width: 1000px;
 	}
 	.header-content {

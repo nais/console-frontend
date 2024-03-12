@@ -1,13 +1,10 @@
 <script lang="ts">
-	import '@navikt/ds-css/chips.css';
-	import '@navikt/ds-css/index.css';
-	import '@navikt/ds-tokens/dist/tokens.css';
-	import '../styles/reset.css';
-	import '../styles/vars_light.css';
+	import '@nais/ds-svelte-community/css';
 	import Header from './Header.svelte';
 	//import '../styles/vars_dark.css';
 	import '$lib/font.css';
 	import '../styles/app.css';
+	import '../styles/colors.css';
 	import type { PageData } from './$houdini';
 	import Login from './Login.svelte';
 
@@ -33,25 +30,52 @@
 		}
 		return false;
 	};
+
+	let activeColor = () => {
+		const now = new Date();
+		// Winter
+		if (now.getMonth() === 11 || now.getMonth() < 2) {
+			return 'winter';
+		}
+		// Spring
+		if (now.getMonth() > 1 && now.getMonth() < 5) {
+			return 'spring';
+		}
+		// Summer
+		if (now.getMonth() > 4 && now.getMonth() < 8) {
+			return 'summer';
+		}
+		// Autumn
+		if (now.getMonth() > 7 && now.getMonth() < 11) {
+			return 'autumn';
+		}
+	};
 </script>
 
-{#if isUnauthenticated(UserInfo.errors)}
-	<!-- logged out -->
-	<Login />
-{:else}
-	{#if user?.__typename === 'User'}
-		<Header {user} />
-	{/if}
+<div class="full-wrapper {activeColor()}">
+	{#if isUnauthenticated(UserInfo.errors)}
+		<!-- logged out -->
+		<Login />
+	{:else}
+		{#if user?.__typename === 'User'}
+			<Header {user} />
+		{/if}
 
-	<div class="container">
 		<slot />
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style>
-	.container {
-		margin: auto;
+	:global(.page) {
+		margin: 2rem auto 0 auto;
 		min-width: 1000px;
 		max-width: 1432px;
+	}
+
+	.full-wrapper {
+		min-height: 100vh;
+		background: var(--a-bg-default);
+		background: linear-gradient(135deg, var(--a-bg-default) 0%, var(--active-color) 100%);
+		padding-bottom: 1rem;
 	}
 </style>
