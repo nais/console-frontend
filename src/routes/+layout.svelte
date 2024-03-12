@@ -50,18 +50,9 @@
 			return 'autumn';
 		}
 	};
-
-	let seasons = ['winter', 'spring', 'summer', 'autumn'];
-	let curr = 'winter';
-	let i = 0;
-
-	const click = () => {
-		i++;
-		curr = seasons[i % 4];
-	};
 </script>
 
-<div class="full-wrapper {curr}">
+<div class="full-wrapper {activeColor()}">
 	{#if isUnauthenticated(UserInfo.errors)}
 		<!-- logged out -->
 		<Login />
@@ -72,7 +63,6 @@
 
 		<slot />
 	{/if}
-	<button on:click={click}>Click</button>
 </div>
 
 <style>

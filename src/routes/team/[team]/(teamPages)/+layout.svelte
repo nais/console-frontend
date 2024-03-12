@@ -162,7 +162,7 @@
 		<ul>
 			{#each nav as { items }, i}
 				{#if i > 0}
-					<hr style="opacity: 50%;" />
+					<hr />
 				{/if}
 				{#each items as { name, routeId, withSubRoutes, icon, memberOnly }}
 					{#if !memberOnly || ($TeamRoles.data?.team !== PendingValue && ($TeamRoles.data?.team.viewerIsMember || $TeamRoles.data?.team.viewerIsOwner))}
@@ -213,6 +213,7 @@
 		padding: 0.25rem 0.5rem;
 		margin-left: -0.5rem;
 		border-radius: 0.25rem;
+		margin-bottom: 2px;
 	}
 	li.active a:hover {
 		color: var(--a-text-default);
@@ -231,5 +232,16 @@
 	.unstyled {
 		text-decoration: none;
 		color: inherit;
+	}
+
+	hr {
+		border: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			var(--active-color-strong) 0%,
+			var(--active-color-strong) 20%,
+			var(--active-color) 100%
+		);
 	}
 </style>
