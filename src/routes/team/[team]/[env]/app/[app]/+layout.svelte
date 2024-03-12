@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { State } from '$houdini/graphql/enums';
-	import Tab from '$lib/Tab.svelte';
-	import Tabs from '$lib/Tabs.svelte';
-	import NotificationBadge from '$lib/icons/NotificationBadge.svelte';
-	import { replacer } from '$lib/replacer';
+	import SideMenu, { type menuGroup } from '$lib/components/SideMenu.svelte';
+	import { ArrowsSquarepathIcon, BellIcon, Density3Icon, FileTextIcon, HouseIcon, LineGraphStackedIcon, PassportIcon } from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$houdini';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
@@ -13,34 +11,53 @@
 	$: instance = $page.params.instance;
 	$: currentRoute = $page.route.id;
 
-	$: nav = [
+	const nav: menuGroup[] = [
 		{
-			tab: 'Overview',
-			routeId: '/team/[team]/[env]/app/[app]'
+			items: [
+				{
+					name: 'Overview',
+					routeId: '/team/[team]/[env]/app/[app]',
+					icon: HouseIcon
+				},
+				{
+					name: 'Status',
+					routeId: '/team/[team]/[env]/app/[app]/status',
+					icon: BellIcon
+				},
+			]
 		},
 		{
-			tab: 'Status',
-			routeId: '/team/[team]/[env]/app/[app]/status'
+			items: [
+				{
+					name: 'Deploys',
+					routeId: '/team/[team]/[env]/app/[app]/deploys',
+					icon: ArrowsSquarepathIcon
+				},
+				{
+					name: 'Cost',
+					routeId: '/team/[team]/[env]/app/[app]/cost',
+					icon: CostIcon
+				},
+				{
+					name: 'Utilization',
+					routeId: '/team/[team]/[env]/app/[app]/utilization',
+					icon: LineGraphStackedIcon
+				},
+				{
+					name: 'Logs',
+					routeId: '/team/[team]/[env]/app/[app]/logs',
+					icon: Density3Icon
+				},
+			]
 		},
 		{
-			tab: 'Logs',
-			routeId: '/team/[team]/[env]/app/[app]/logs'
-		},
-		{
-			tab: 'Deploys',
-			routeId: '/team/[team]/[env]/app/[app]/deploys'
-		},
-		{
-			tab: 'Manifest',
-			routeId: '/team/[team]/[env]/app/[app]/manifest'
-		},
-		{
-			tab: 'Cost',
-			routeId: '/team/[team]/[env]/app/[app]/cost'
-		},
-		{
-			tab: 'Utilization',
-			routeId: '/team/[team]/[env]/app/[app]/utilization'
+			items: [
+				{
+					name: 'Manifest',
+					routeId: '/team/[team]/[env]/app/[app]/manifest',
+					icon: FileTextIcon
+				}
+			]
 		}
 	];
 	export let data: LayoutData;
@@ -50,18 +67,15 @@
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
-{#if instance !== undefined}
-	<h3>
-		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/app/{app}">{app}</a> / {instance}
-	</h3>
-{:else if app !== undefined}
-	<h3>
-		<a href="/team/{team}"> {team}</a> / {env} / <a href="/team/{team}/{env}/app/{app}">{app}</a>
-	</h3>
-{:else}
-	<h3><a href="/team/{team}"> {team}</a> / {env}</h3>
-{/if}
-<Tabs>
+
+<div class="main">
+	<SideMenu {nav} />
+	<div class="container">
+		<slot />
+	</div>
+</div>
+
+<!-- <Tabs>
 	{#each nav as { tab, routeId }}
 		{#if tab !== 'Cost'}
 			<Tab
@@ -84,10 +98,20 @@
 			{/if}
 		{/if}
 	{/each}
-</Tabs>
-<slot />
+</Tabs> -->
 
 <style>
+	.container {
+		flex-grow: 1;
+	}
+
+	.main {
+		gap: 1rem;
+		display: flex;
+		justify-content: flex-start;
+		align-items: flex-start;
+		direction: row;
+	}
 	.notification {
 		position: relative;
 		left: -14px;

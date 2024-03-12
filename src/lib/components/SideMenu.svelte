@@ -2,7 +2,7 @@
 	export type menuItem = {
 		name: string;
 		routeId: string;
-		withSubRoutes: boolean;
+		withSubRoutes?: boolean;
 		icon?: ConstructorOfATypedSvelteComponent;
 		iconColor?: string;
 	};
