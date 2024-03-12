@@ -17,7 +17,17 @@
 		settings: 'settings'
 	};
 
-	const pages: { [key: string]: (params: Data) => { name: string; path: string }[] } = {
+	const simpleAppPages: { [key: string]: string } = {
+		'': '', // overview
+		status: 'status',
+		deploys: 'deploys',
+		cost: 'cost',
+		utilization: 'utilization',
+		logs: 'logs',
+		manifest: 'manifest'
+	};
+
+	const pages: { [key: string]: (params: Data) => { name: string; path?: string }[] } = {
 		'/team/[team]/(teamPages)/settings/audit_logs': (params: Data) => {
 			return [
 				{
@@ -31,6 +41,30 @@
 			];
 		}
 	};
+
+	for (const key in simpleAppPages) {
+		pages[`/team/[team]/[env]/app/[app]${key ? '/' + key : ''}`] = (params: Data) => {
+			const ret = [
+				{
+					name: params.env
+				},
+				{
+					name: params.app,
+					path: replacer('/team/[team]/[env]/app/[app]', params)
+				},
+				{
+					name: simpleAppPages[key],
+					path: replacer(`/team/[team]/[env]/app/[app]/${key}`, params)
+				}
+			];
+
+			if (key === '') {
+				ret.pop();
+			}
+
+			return ret;
+		};
+	}
 
 	for (const key in simpleTeamPages) {
 		pages[`/team/[team]/(teamPages)/${key}`] = (params: Data) => {
@@ -58,10 +92,16 @@
 <div class="breadcrumbs">
 	<div class="page">
 		<nav>
+			<!-- {$page.route.id} -->
 			<a href="/team/{$page.params.team}">{$page.params.team}</a>
 
 			{#each crumbs($page.route.id, $page.params) as { name, path }}
-				<ChevronRightIcon style="font-size: 1.5rem" /> <a href={path}>{name}</a>
+				<ChevronRightIcon style="font-size: 1.5rem" />
+				{#if path}
+					<a href={path}>{name}</a>
+				{:else}
+					<span>{name}</span>
+				{/if}
 			{/each}
 		</nav>
 	</div>
@@ -80,6 +120,10 @@
 		background: var(--active-color);
 		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--active-color-strong);
+	}
+
+	span {
+		color: var(--a-text-subtle);
 	}
 
 	a {

@@ -30,7 +30,6 @@
 	</Alert>
 {:else}
 	<Card>
-		<h3>Naisjobs</h3>
 		<Table
 			size="small"
 			sort={sortState}
