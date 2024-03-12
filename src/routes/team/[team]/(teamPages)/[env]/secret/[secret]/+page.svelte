@@ -5,14 +5,14 @@
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import { Alert, Button, Heading, HelpText, Loader } from '@nais/ds-svelte-community';
-	import type { PageData } from '../../../../[env]/secret/[secret]/$houdini';
-	import AddKeyValue from './AddKeyValue.svelte';
-	import { added, deleted, mergeChanges, type operation, updated } from './state-machinery';
 	import { ArrowUndoIcon, FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import Manifest from './Manifest.svelte';
-	import Workloads from './Workloads.svelte';
-	import Metadata from './Metadata.svelte';
+	import type { PageData } from './$houdini';
+	import AddKeyValue from './AddKeyValue.svelte';
 	import Data from './Data.svelte';
+	import Manifest from './Manifest.svelte';
+	import Metadata from './Metadata.svelte';
+	import Workloads from './Workloads.svelte';
+	import { added, deleted, mergeChanges, updated, type operation } from './state-machinery';
 
 	beforeNavigate(({ cancel }) => {
 		if (dirty(changes)) {
