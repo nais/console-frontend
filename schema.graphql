@@ -1740,6 +1740,8 @@ type Team {
 
   """The vulnerabilities for the team's applications."""
   vulnerabilities(
+    filter: VulnerabilityFilter
+
     """Returns the last n entries from the list."""
     limit: Int
 
@@ -1962,6 +1964,16 @@ type Vulnerability {
   hasBom: Boolean!
   id: ID!
   summary: VulnerabilitySummary
+}
+
+input VulnerabilityFilter {
+  """Filter by environment"""
+  envs: [String!]
+
+  """
+  Require the presence of a Software Bill of Materials (SBOM) in the vulnerability report.
+  """
+  requireSbom: Boolean
 }
 
 type VulnerabilityList {
