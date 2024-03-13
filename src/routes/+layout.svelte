@@ -71,6 +71,11 @@
 		min-width: 1000px;
 		max-width: 1432px;
 	}
+	@media (max-width: 1464px) {
+		:global(.page) {
+			padding: 0 2rem;
+		}
+	}
 
 	.full-wrapper {
 		min-height: 100vh;
