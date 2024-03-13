@@ -13,11 +13,7 @@
 	<style>
 		body {
 			background: var(--a-bg-default);
-			background: linear-gradient(
-				135deg,
-				var(--a-bg-default) 0%,
-				var(--a-surface-alt-1-moderate) 100%
-			);
+			background: linear-gradient(135deg, var(--a-bg-default) 0%, var(--active-color) 100%);
 		}
 	</style>
 </svelte:head>

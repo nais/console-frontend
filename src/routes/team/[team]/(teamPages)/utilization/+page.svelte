@@ -160,7 +160,7 @@
 							})}% of {currentResourceUtilizationForTeam.cpu.request.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})} CPUs
+							})} 
 						{:else}
 							<Skeleton variant="text" />
 						{/if}
@@ -205,7 +205,7 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Cost of unused CPU<HelpText title="Annual cost of unused CPU"
+						Unused CPU cost<HelpText title="Annual cost of unused CPU"
 							>Estimate of annual cost of unused CPU for team {team} calculated from utilization data
 							for the last elapsed hour.
 							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
@@ -241,7 +241,7 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Cost of unused memory<HelpText placement={'left'} title="Annual cost of unused memory"
+						Unused mem cost<HelpText placement={'left'} title="Annual cost of unused memory"
 							>Estimate of annual cost of unused memory for team {team} calculated from utilization data
 							for the last elapsed hour.
 							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
