@@ -8,7 +8,17 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import Deploys from '$lib/overview/Deploys.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
-	import { HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		HelpText,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { TrendDownIcon, TrendUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -23,6 +33,13 @@
 
 {#if $Overview.errors}
 	<GraphErrors errors={$Overview.errors} />
+{/if}
+{#if $page.url.searchParams.has('deleted')}
+	{@const msgParts = ($page.url.searchParams.get('deleted') || '').split('/')}
+	<Alert variant="success" size="small">
+		Successfully deleted {msgParts[0]}
+		{msgParts[1]}.
+	</Alert>
 {/if}
 
 <div class="grid">
@@ -157,6 +174,9 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.grid:not(:first-child) {
+		margin-top: 1rem;
 	}
 	.tableHeader {
 		display: flex;

@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import SideMenu, { type menuGroup } from '$lib/components/SideMenu.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		ArrowsSquarepathIcon,
 		BellIcon,
 		Density3Icon,
 		FileTextIcon,
 		HouseIcon,
-		LineGraphStackedIcon
+		LineGraphStackedIcon,
+		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 
 	$: team = $page.params.team;
 
@@ -58,6 +59,15 @@
 					name: 'Manifest',
 					routeId: '/team/[team]/[env]/app/[app]/manifest',
 					icon: FileTextIcon
+				}
+			]
+		},
+		{
+			items: [
+				{
+					name: 'Delete',
+					routeId: '/team/[team]/[env]/app/[app]/delete',
+					icon: TrashIcon
 				}
 			]
 		}
