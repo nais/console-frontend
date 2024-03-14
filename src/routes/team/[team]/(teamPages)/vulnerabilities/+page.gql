@@ -3,11 +3,15 @@ query TeamVulnerabilities(
 	$offset: Int
 	$team: Slug!
 	$orderBy: OrderBy = { field: SEVERITY_CRITICAL, direction: DESC }
+	$filter: VulnerabilityFilter
 ) {
 	team(slug: $team) @loading {
 		id @loading
 		slug
-		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy) @loading {
+		environments {
+			name
+		}
+		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy, filter: $filter) @loading {
 			pageInfo @loading {
 				totalCount
 				hasNextPage

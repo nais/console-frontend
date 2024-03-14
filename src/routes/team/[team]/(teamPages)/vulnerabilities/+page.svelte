@@ -15,6 +15,7 @@
 	} from '$lib/pagination';
 	import {
 		Alert,
+		Select,
 		Skeleton,
 		Table,
 		Tbody,
@@ -57,6 +58,8 @@
 		defaultSortDir = ss.direction;
 		changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 	};
+
+	let selectedEnvironment: string = '';
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -69,6 +72,26 @@
 	<div class="grid">
 		<Card columns={12}>
 			<h3>Current vulnerabilities for each application</h3>
+
+			{#if team !== undefined && team.id !== PendingValue}
+				<div class="env-filter">
+					<Select
+						size="small"
+						hideLabel={true}
+						bind:value={selectedEnvironment}
+						on:change={() => {
+							changeParams({ env: selectedEnvironment });
+						}}
+						label="Environment"
+					>
+						<option value="">All environments</option>
+						{#each team.environments as env}
+							<option value={env.name}>{env.name}</option>
+						{/each}
+					</Select>
+				</div>
+			{/if}
+
 			<Table size="small" sort={sortState} on:sortChange={sortChange}>
 				<Thead>
 					<Th sortable={true} sortKey={OrderByField.NAME}>Name</Th>
@@ -239,5 +262,10 @@
 
 	.sbom {
 		margin-left: 0.5rem;
+	}
+
+	.env-filter {
+		display: flex;
+		margin-bottom: 1rem;
 	}
 </style>
