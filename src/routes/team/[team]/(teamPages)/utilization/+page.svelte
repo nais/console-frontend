@@ -160,7 +160,7 @@
 							})}% of {currentResourceUtilizationForTeam.cpu.request.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})} 
+							})}
 						{:else}
 							<Skeleton variant="text" />
 						{/if}
