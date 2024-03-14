@@ -131,7 +131,7 @@
 													<div class="sbom">
 														<Tooltip
 															placement="right"
-															content="Data was discovered, but the SBOM was not rendered. Please refer to the NAIS documentation for further assistance"
+															content="SBOM could not be parsed. Check NAIS Salsa documentation"
 														>
 															<ExclamationmarkTriangleFillIcon
 																style="color: var(--a-icon-warning)"
