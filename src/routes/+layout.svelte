@@ -1,8 +1,11 @@
 <script lang="ts">
 	import '@nais/ds-svelte-community/css';
 	import Header from './Header.svelte';
-	//import '../styles/vars_dark.css';
+//import '../styles/vars_dark.css';
+	import { graphql } from '$houdini';
+	import { isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
+	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { PageData } from './$houdini';
@@ -18,18 +21,6 @@
 				readonly __typename: 'User';
 		  }
 		| undefined;
-
-	const isUnauthenticated = (errors: { message: string }[] | null) => {
-		const unauthenticatedError = 'Valid user required. You are not logged in.';
-		if (
-			errors &&
-			errors.length > 0 &&
-			errors.filter((error) => error.message === unauthenticatedError).length > 0
-		) {
-			return true;
-		}
-		return false;
-	};
 
 	let activeColor = () => {
 		const now = new Date();
@@ -50,6 +41,24 @@
 			return 'autumn';
 		}
 	};
+
+	const refreshCookie = graphql(`
+		query RefreshCookie {
+			me {
+				__typename
+			}
+		}
+	`);
+
+	onMount(() => {
+		setInterval(
+			async () => {
+				if (user?.__typename !== 'User') return;
+				refreshCookie.fetch({ policy: 'NoCache' });
+			},
+			1000 * 60 * 10
+		);
+	});
 </script>
 
 <div class="full-wrapper {activeColor()}">

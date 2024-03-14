@@ -1,13 +1,14 @@
 import { browser, dev } from '$app/environment';
 import { HoudiniClient } from '$houdini';
 import { subscription, type SubscriptionClient } from '$houdini/plugins';
+import { handleMissingLogin } from '$lib/authentication';
 import { updatesConnectionClosed } from '$lib/stores/update_complete';
 import { createClient } from 'graphql-sse';
 
 const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 export default new HoudiniClient({
 	url: browser || !graphqlEndpoint ? '/query' : graphqlEndpoint,
-	plugins: [subscription(sseSockets)]
+	plugins: [subscription(sseSockets), handleMissingLogin('UserInfo')]
 });
 
 function sseSockets() {
