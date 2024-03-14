@@ -66,54 +66,54 @@
 	</Alert>
 {/if}
 {#if $store.data !== null}
-		<h2>
-			<DeploysIcon size="1.5rem" />
-			My teams latest deploys
-		</h2>
-		<Table size="small">
-			<Thead>
-				<Th>Team</Th>
-				<Th>App</Th>
-				<Th>Env</Th>
-				<Th>When</Th>
-			</Thead>
-			<Tbody>
-				{#each sortTeamDeploys($store.data.me) as deploy}
-					{#if deploy == PendingValue}
-						<Tr>
-							{#each new Array(4).fill('text') as variant}
-								<Td>
-									<Skeleton {variant} />
-								</Td>
-							{/each}
-						</Tr>
-					{:else}
-						<Tr>
+	<h2>
+		<DeploysIcon size="1.5rem" />
+		My teams latest deploys
+	</h2>
+	<Table size="small">
+		<Thead>
+			<Th>Team</Th>
+			<Th>App</Th>
+			<Th>Env</Th>
+			<Th>When</Th>
+		</Thead>
+		<Tbody>
+			{#each sortTeamDeploys($store.data.me) as deploy}
+				{#if deploy == PendingValue}
+					<Tr>
+						{#each new Array(4).fill('text') as variant}
 							<Td>
-								<a href="/team/{deploy.team.slug}">{deploy.team.slug}</a>
+								<Skeleton {variant} />
 							</Td>
-							<Td>
-								{#if deploy.resources[0].kind === 'Naisjob'}
-									<a href="/team/{deploy.team.slug}/{deploy.env}/job/{deploy.resources[0].name}">
-										{deploy.resources[0].name}</a
-									>
-								{:else}
-									<a href="/team/{deploy.team.slug}/{deploy.env}/app/{deploy.resources[0].name}">
-										{deploy.resources[0].name}</a
-									>
-								{/if}
-							</Td>
-							<Td>
-								{deploy.env}
-							</Td>
-							<Td>
-								<Time time={deploy.created} distance={true} />
-							</Td>
-						</Tr>
-					{/if}
-				{/each}
-			</Tbody>
-		</Table>
+						{/each}
+					</Tr>
+				{:else}
+					<Tr>
+						<Td>
+							<a href="/team/{deploy.team.slug}">{deploy.team.slug}</a>
+						</Td>
+						<Td>
+							{#if deploy.resources[0].kind === 'Naisjob'}
+								<a href="/team/{deploy.team.slug}/{deploy.env}/job/{deploy.resources[0].name}">
+									{deploy.resources[0].name}</a
+								>
+							{:else}
+								<a href="/team/{deploy.team.slug}/{deploy.env}/app/{deploy.resources[0].name}">
+									{deploy.resources[0].name}</a
+								>
+							{/if}
+						</Td>
+						<Td>
+							{deploy.env}
+						</Td>
+						<Td>
+							<Time time={deploy.created} distance={true} />
+						</Td>
+					</Tr>
+				{/if}
+			{/each}
+		</Tbody>
+	</Table>
 {/if}
 
 <style>

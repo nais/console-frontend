@@ -3,7 +3,13 @@
 	import type { menuGroup } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { ArrowsSquarepathIcon, BellIcon, Density3Icon, FileTextIcon, HouseIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowsSquarepathIcon,
+		BellIcon,
+		Density3Icon,
+		FileTextIcon,
+		HouseIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	$: team = $page.params.team;
 
