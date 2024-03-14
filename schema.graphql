@@ -251,6 +251,12 @@ type DatabaseUser {
 """Date type in YYYY-MM-DD format."""
 scalar Date
 
+type DeleteAppResult {
+  """Whether the app was deleted or not."""
+  deleted: Boolean!
+  error: String
+}
+
 type DeployInfo {
   commitSha: String!
   deployer: String!
@@ -731,6 +737,16 @@ type Mutation {
     """The slug of the team to deauthorize the action for."""
     teamSlug: Slug!
   ): GitHubRepository!
+  deleteApp(
+    """The environment the application is deployed to."""
+    env: String!
+
+    """The name of the application."""
+    name: String!
+
+    """The name of the team who owns the application."""
+    team: Slug!
+  ): DeleteAppResult!
 
   """Delete an existing secret for a team and env."""
   deleteSecret(

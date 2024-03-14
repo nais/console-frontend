@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import TeamStatus from '$lib/components/TeamStatus.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
@@ -19,6 +20,10 @@
 
 	$: teamName = $page.params.team;
 </script>
+
+{#if $Overview.errors}
+	<GraphErrors errors={$Overview.errors} />
+{/if}
 
 <div class="grid">
 	<Card rows={1} columns={2}>

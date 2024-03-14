@@ -134,7 +134,6 @@
 		}
 		return [];
 	}
-	$: console.log($page.route.id)
 </script>
 
 <div class="breadcrumbs">
