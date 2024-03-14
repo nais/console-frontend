@@ -21,23 +21,17 @@
 </script>
 
 <div class="grid">
-	<Card rows={1} columns={2}>
+	<Card rows={2} columns={3}>
 		<TeamStatus {teamName} />
 	</Card>
-	<Card rows={1} columns={3}>
+	<Card rows={2} columns={3}>
 		<VulnerabilitySummary {teamName} /></Card
 	>
-	<Card rows={6} columns={7}>
-		<h4>Deployments</h4>
-		<Deploys {teamName} />
-	</Card>
-
-	<Card rows={1} columns={5}>
+	<Card rows={1} columns={6}>
 		<Cost app="" env="" team={teamName} />
 		<a href="/team/{teamName}/cost">View team costs</a>
 	</Card>
-
-	<Card rows={1} columns={5}>
+	<Card rows={1} columns={6}>
 		<h4>Utilization</h4>
 		{#if utilization}
 			<Table>
@@ -143,6 +137,10 @@
 				</Tbody>
 			</Table>
 		{/if}
+	</Card>
+	<Card rows={1} columns={12}>
+		<h4>Deployments</h4>
+		<Deploys {teamName} />
 	</Card>
 </div>
 
