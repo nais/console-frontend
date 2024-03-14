@@ -8,6 +8,9 @@ query TeamVulnerabilities(
 	team(slug: $team) @loading {
 		id @loading
 		slug
+		environments {
+			name
+		}
 		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy, filter: $filter) @loading {
 			pageInfo @loading {
 				totalCount

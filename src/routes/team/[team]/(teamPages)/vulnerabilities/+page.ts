@@ -11,6 +11,10 @@ export const _TeamVulnerabilitiesVariables: TeamVulnerabilitiesVariables = ({ ur
 	const offset = (page - 1) * limit;
 	const field = (url.searchParams.get('col') || OrderByField.RISK_SCORE) as never;
 	const direction = (url.searchParams.get('dir') || SortOrder.DESC) as never;
+	const env = url.searchParams.get('env');
+	const filter = {
+		envs: env ? [env] : []
+	};
 
-	return { limit, offset, orderBy: { field, direction } };
+	return { filter, limit, offset, orderBy: { field, direction } };
 };
