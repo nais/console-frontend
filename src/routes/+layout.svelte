@@ -1,9 +1,9 @@
 <script lang="ts">
 	import '@nais/ds-svelte-community/css';
 	import Header from './Header.svelte';
-//import '../styles/vars_dark.css';
+	//import '../styles/vars_dark.css';
 	import { graphql } from '$houdini';
-	import { isUnauthenticated } from '$lib/authentication';
+	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
@@ -62,8 +62,8 @@
 </script>
 
 <div class="full-wrapper {activeColor()}">
-	{#if isUnauthenticated(UserInfo.errors)}
-		<!-- logged out -->
+	{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
+		<!-- logged out. We check both to support both  -->
 		<Login />
 	{:else}
 		{#if user?.__typename === 'User'}
