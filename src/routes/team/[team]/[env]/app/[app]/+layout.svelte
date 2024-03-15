@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import SideMenu, { type menuGroup } from '$lib/components/SideMenu.svelte';
+	import SideMenu, { type menuItem } from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		ArrowsSquarepathIcon,
@@ -11,8 +11,17 @@
 		LineGraphStackedIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
+	import { PendingValue, type TeamRoles$result } from '$houdini';
 
 	$: team = $page.params.team;
+
+	export let data: PageData;
+	$: ({ TeamRoles } = data);
+
+	type menuGroup = {
+		items: (menuItem & { memberOnly?: boolean })[];
+	};
 
 	const nav: menuGroup[] = [
 		{
@@ -67,17 +76,31 @@
 				{
 					name: 'Delete',
 					routeId: '/team/[team]/[env]/app/[app]/delete',
-					icon: TrashIcon
+					icon: TrashIcon,
+					memberOnly: true
 				}
 			]
 		}
 	];
+
+	function memberOnly(nav: menuGroup[], data: TeamRoles$result | null) {
+		return nav.map((group) => {
+			return {
+				items: group.items.filter((item) => {
+					return (
+						!item.memberOnly ||
+						(data?.team !== PendingValue && (data?.team.viewerIsOwner || data?.team.viewerIsMember))
+					);
+				})
+			};
+		}).filter((group) => group.items.length > 0);
+	}
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
 <div class="main">
-	<SideMenu {nav} />
+	<SideMenu nav={memberOnly(nav, $TeamRoles.data)} />
 	<div class="container">
 		<slot />
 	</div>
