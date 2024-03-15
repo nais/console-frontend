@@ -130,7 +130,7 @@
 	</div>
 	<Confirm bind:open={restart} on:confirm={submit}>
 		<h3 slot="header">Restart {app}</h3>
-		This will restart all instances of<strong>{app}</strong> in <strong>{env}</strong>.
+		This will restart all instances of <strong>{app}</strong> in <strong>{env}</strong>.
 		<br />
 		Are you sure?
 	</Confirm>
