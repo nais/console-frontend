@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import type { CurrentResourceUtilizationForAppVariables, PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
@@ -12,6 +13,9 @@
 	import Storage from './Storage.svelte';
 	import Traffic from './Traffic.svelte';
 	import Secrets from './Secrets.svelte';
+	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import {onNavigate} from '$app/navigation';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -20,6 +24,19 @@
 		() => {
 			return { app: app, env: env, team: team };
 		};
+	const restartAppMutation = () => graphql(`
+		mutation RestartApp($team: Slug!, $env: String!, $app: String!) {
+			restartApp(team: $team, env: $env, name: $app) {
+				error
+			}
+		}
+	`);
+	let restartApp = restartAppMutation()
+	onNavigate(() => {
+		restartApp = restartAppMutation()
+	});
+
+
 
 	const utilization = graphql(`
 		query CurrentResourceUtilizationForApp($app: String!, $team: Slug!, $env: String!) @load {
@@ -42,6 +59,15 @@
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 	$: appUtilization = $utilization.data?.currentResourceUtilizationForApp;
+	let restart = false;
+
+	const submit = () => {
+		restartApp.mutate({
+			app,
+			env,
+			team
+		});
+	};
 </script>
 
 {#if $App.data}
@@ -55,7 +81,31 @@
 			<Cost {app} {env} {team} />
 		</Card>
 		<Card columns={12}>
-			<h4>Instances</h4>
+			<div class="heading">
+				<h4>Instances</h4>
+				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+					<Button
+						variant="secondary"
+						size="small"
+						on:click={() => {
+							restart = true;
+						}}
+					>
+						<svelte:fragment slot="icon-left"><ArrowCirclepathIcon /></svelte:fragment>
+						Restart
+					</Button>
+				{/if}
+			</div>
+			{#if $restartApp.data}
+				<div class="marginbox">
+					{#if !$restartApp.data.restartApp.error}
+						<Alert size="small" variant="success">All instances restarting</Alert>
+					{:else}
+						<Alert size="small" variant="error">{$restartApp.data.restartApp.error}</Alert>
+					{/if}
+				</div>
+			{/if}
+
 			<AutoScaling app={$App.data.app} />
 			<Instances app={$App.data.app} utilization={appUtilization} />
 		</Card>
@@ -78,6 +128,12 @@
 			</Card>
 		{/if}
 	</div>
+	<Confirm bind:open={restart} on:confirm={submit}>
+		<h3 slot="header">Restart {app}</h3>
+		This will restart all instances of<strong>{app}</strong> in <strong>{env}</strong>.
+		<br />
+		Are you sure?
+	</Confirm>
 {/if}
 
 <style>
@@ -91,5 +147,12 @@
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
+	}
+	.heading {
+		display: flex;
+		justify-content: space-between;
+	}
+	.marginbox {
+		margin: 0.5rem 0;
 	}
 </style>

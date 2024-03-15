@@ -838,6 +838,16 @@ type Mutation {
     """The name of the reconciler to reset."""
     name: String!
   ): Reconciler!
+  restartApp(
+    """The environment the application is deployed to."""
+    env: String!
+
+    """The name of the application."""
+    name: String!
+
+    """The name of the team who owns the application."""
+    team: Slug!
+  ): RestartAppResult!
 
   """
   Set the member role of a user in a team
@@ -1430,6 +1440,10 @@ type ResourceUtilizationTrend {
 type Resources {
   limits: Limits!
   requests: Requests!
+}
+
+type RestartAppResult {
+  error: String
 }
 
 """Role binding type."""
