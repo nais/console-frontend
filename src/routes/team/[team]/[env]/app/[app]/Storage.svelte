@@ -2,11 +2,11 @@
 	import type { Storage } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
-	import Bucket from '$lib/icons/Bucket.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
 	import { Skeleton } from '@nais/ds-svelte-community';
+	import { BucketIcon } from '@nais/ds-svelte-community/icons';
 
 	export let app: Storage;
 	$: data = fragment(
@@ -54,13 +54,13 @@
 </script>
 
 <div class="storage">
-	{#if $data.storage.map((s) => s.__typename).includes(PendingValue)}
+	{#if $data?.storage.map((s) => s.__typename).includes(PendingValue)}
 		<Skeleton variant="text" width="300px" />
 	{/if}
-	{#each $data.storage as storage}
+	{#each $data?.storage || [] as storage}
 		{#if storage.__typename === 'Bucket'}
 			<div class="storageContent">
-				<h5><Bucket />{storage.__typename}</h5>
+				<h5><BucketIcon />{storage.__typename}</h5>
 				{storage.name}
 			</div>
 		{:else if storage.__typename === 'BigQueryDataset'}

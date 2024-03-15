@@ -32,7 +32,8 @@
 		cost: 'cost',
 		utilization: 'utilization',
 		logs: 'logs',
-		manifest: 'manifest'
+		manifest: 'manifest',
+		delete: 'delete'
 	};
 
 	const pages: { [key: string]: (params: Data) => { name: string; path?: string }[] } = {
@@ -176,6 +177,9 @@
 	a {
 		color: var(--a-text-default);
 		text-decoration: none;
+		--ac-link-active-bg: var(--active-color-strong);
+		--ac-link-active-border: var(--active-color-strong);
+		--ac-link-active-text: var(--a-text-default);
 	}
 
 	a:hover {
