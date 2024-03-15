@@ -93,6 +93,7 @@
 		{/if}
 
 		{#if notPerm.length > 0}
+			<br />
 			<div>
 				In addition to the application the following resources <strong>may be orphaned</strong>:
 				<HelpText title="Why orphaned?">
