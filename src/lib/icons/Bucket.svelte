@@ -23,7 +23,7 @@
 				fill: #fff;
 			}
 		</style></defs
-	><title>Icon_24px_CloudStorage_Color</title><g data-name="Product Icons"
+	><g data-name="Product Icons"
 		><rect class="cls-1" x="2" y="4" width="20" height="7" /><rect
 			class="cls-2"
 			x="20"
