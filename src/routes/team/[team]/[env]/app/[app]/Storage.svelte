@@ -54,10 +54,10 @@
 </script>
 
 <div class="storage">
-	{#if $data.storage.map((s) => s.__typename).includes(PendingValue)}
+	{#if $data?.storage.map((s) => s.__typename).includes(PendingValue)}
 		<Skeleton variant="text" width="300px" />
 	{/if}
-	{#each $data.storage as storage}
+	{#each $data?.storage || [] as storage}
 		{#if storage.__typename === 'Bucket'}
 			<div class="storageContent">
 				<h5><BucketIcon />{storage.__typename}</h5>
