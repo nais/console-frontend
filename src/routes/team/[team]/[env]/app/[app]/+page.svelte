@@ -15,7 +15,7 @@
 	import Secrets from './Secrets.svelte';
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
-	import {onNavigate} from '$app/navigation';
+	import { onNavigate } from '$app/navigation';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -24,19 +24,18 @@
 		() => {
 			return { app: app, env: env, team: team };
 		};
-	const restartAppMutation = () => graphql(`
-		mutation RestartApp($team: Slug!, $env: String!, $app: String!) {
-			restartApp(team: $team, env: $env, name: $app) {
-				error
+	const restartAppMutation = () =>
+		graphql(`
+			mutation RestartApp($team: Slug!, $env: String!, $app: String!) {
+				restartApp(team: $team, env: $env, name: $app) {
+					error
+				}
 			}
-		}
-	`);
-	let restartApp = restartAppMutation()
+		`);
+	let restartApp = restartAppMutation();
 	onNavigate(() => {
-		restartApp = restartAppMutation()
+		restartApp = restartAppMutation();
 	});
-
-
 
 	const utilization = graphql(`
 		query CurrentResourceUtilizationForApp($app: String!, $team: Slug!, $env: String!) @load {
@@ -130,7 +129,7 @@
 	</div>
 	<Confirm bind:open={restart} on:confirm={submit}>
 		<h3 slot="header">Restart {app}</h3>
-		This will restart all instances of <strong>{app}</strong> in <strong>{env}</strong>.
+		This will restart all instances of<strong>{app}</strong> in <strong>{env}</strong>.
 		<br />
 		Are you sure?
 	</Confirm>

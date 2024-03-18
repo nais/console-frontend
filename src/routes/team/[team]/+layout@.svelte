@@ -23,7 +23,8 @@
 		deploys: 'deploys',
 		cost: 'cost',
 		logs: 'logs',
-		manifest: 'manifest'
+		manifest: 'manifest',
+		delete: 'delete'
 	};
 	const simpleAppPages: { [key: string]: string } = {
 		'': '', // overview

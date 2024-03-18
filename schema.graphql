@@ -257,6 +257,12 @@ type DeleteAppResult {
   error: String
 }
 
+type DeleteJobResult {
+  """Whether the job was deleted or not."""
+  deleted: Boolean!
+  error: String
+}
+
 type DeployInfo {
   commitSha: String!
   deployer: String!
@@ -747,6 +753,16 @@ type Mutation {
     """The name of the team who owns the application."""
     team: Slug!
   ): DeleteAppResult!
+  deleteJob(
+    """The environment the naisjob is deployed to."""
+    env: String!
+
+    """The name of the naisjob."""
+    name: String!
+
+    """The name of the team who owns the naisjob."""
+    team: Slug!
+  ): DeleteJobResult!
 
   """Delete an existing secret for a team and env."""
   deleteSecret(

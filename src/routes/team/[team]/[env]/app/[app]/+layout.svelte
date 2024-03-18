@@ -84,16 +84,19 @@
 	];
 
 	function memberOnly(nav: menuGroup[], data: TeamRoles$result | null) {
-		return nav.map((group) => {
-			return {
-				items: group.items.filter((item) => {
-					return (
-						!item.memberOnly ||
-						(data?.team !== PendingValue && (data?.team.viewerIsOwner || data?.team.viewerIsMember))
-					);
-				})
-			};
-		}).filter((group) => group.items.length > 0);
+		return nav
+			.map((group) => {
+				return {
+					items: group.items.filter((item) => {
+						return (
+							!item.memberOnly ||
+							(data?.team !== PendingValue &&
+								(data?.team.viewerIsOwner || data?.team.viewerIsMember))
+						);
+					})
+				};
+			})
+			.filter((group) => group.items.length > 0);
 	}
 </script>
 

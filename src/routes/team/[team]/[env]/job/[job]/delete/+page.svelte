@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { graphql, type DeleteAppPage$result } from '$houdini';
+	import { graphql, type DeleteJobPage$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert, Button, HelpText, TextField } from '@nais/ds-svelte-community';
@@ -10,9 +10,9 @@
 
 	export let data: PageData;
 
-	$: ({ DeleteAppPage } = data);
+	$: ({ DeleteJobPage } = data);
 
-	const isPermanentDeletion = (s: DeleteAppPage$result['app']['storage'][0]) => {
+	const isPermanentDeletion = (s: DeleteJobPage$result['naisjob']['storage'][0]) => {
 		switch (s.__typename) {
 			case 'BigQueryDataset':
 				return s.cascadingDelete;
@@ -29,48 +29,48 @@
 		}
 	};
 
-	const deleteApp = graphql(`
-		mutation DeleteApp($team: Slug!, $env: String!, $app: String!) {
-			deleteApp(team: $team, env: $env, name: $app) {
+	const deleteJob = graphql(`
+		mutation DeleteJob($team: Slug!, $env: String!, $job: String!) {
+			deleteJob(team: $team, env: $env, name: $job) {
 				deleted
 				error
 			}
 		}
 	`);
 
-	const permanentDeletion = (storage: DeleteAppPage$result['app']['storage']) => {
+	const permanentDeletion = (storage: DeleteJobPage$result['naisjob']['storage']) => {
 		return storage.filter((s) => isPermanentDeletion(s));
 	};
-	const notPermanentDeletion = (storage: DeleteAppPage$result['app']['storage']) => {
+	const notPermanentDeletion = (storage: DeleteJobPage$result['naisjob']['storage']) => {
 		return storage.filter((s) => !isPermanentDeletion(s));
 	};
 
 	let confirmation = '';
 
 	const submit = async () => {
-		const app = get(DeleteAppPage).data?.app;
-		if (!app) {
+		const job = get(DeleteJobPage).data?.naisjob;
+		if (!job) {
 			return;
 		}
 
-		const resp = await deleteApp.mutate({
-			app: app.name,
-			env: app.env.name,
-			team: app.team.slug
+		const resp = await deleteJob.mutate({
+			job: job.name,
+			env: job.env.name,
+			team: job.team.slug
 		});
 
-		if (resp.data?.deleteApp.deleted) {
-			goto(`/team/${app.team.slug}?deleted=app/${app.name}`);
+		if (resp.data?.deleteJob.deleted) {
+			goto(`/team/${job.team.slug}?deleted=job/${job.name}`);
 		}
 	};
 </script>
 
-{#if $DeleteAppPage?.data?.app}
-	{@const app = $DeleteAppPage?.data?.app}
-	{@const perm = permanentDeletion(app.storage)}
-	{@const notPerm = notPermanentDeletion(app.storage)}
+{#if $DeleteJobPage?.data?.naisjob}
+	{@const naisjob = $DeleteJobPage?.data?.naisjob}
+	{@const perm = permanentDeletion(naisjob.storage)}
+	{@const notPerm = notPermanentDeletion(naisjob.storage)}
 	<Card borderColor="var(--a-border-danger)">
-		<h3>Delete {app.name}</h3>
+		<h3>Delete {naisjob.name}</h3>
 
 		{#if perm.length > 0}
 			<p>
@@ -108,23 +108,23 @@
 			</div>
 		{/if}
 
-		{@const expected = app.env.name + '/' + app.name}
+		{@const expected = naisjob.env.name + '/' + naisjob.name}
 		<p>
 			Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 			<em>Delete</em>
 		</p>
-		{#if $deleteApp.errors}
-			<GraphErrors errors={$deleteApp.errors} />
+		{#if $deleteJob.errors}
+			<GraphErrors errors={$deleteJob.errors} />
 		{/if}
-		{#if $deleteApp.data?.deleteApp?.error}
+		{#if $deleteJob.data?.deleteJob.error}
 			<Alert variant="error">
 				Error occured while deleting app:<br />
-				{$deleteApp.data.deleteApp.error}
+				{$deleteJob.data.deleteJob.error}
 			</Alert>
 		{/if}
 		<form on:submit|preventDefault={submit}>
 			<TextField hideLabel bind:value={confirmation} style="width: 300px;" />
-			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteApp.fetching}>
+			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteJob.fetching}>
 				Delete
 			</Button>
 		</form>

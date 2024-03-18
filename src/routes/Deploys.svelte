@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { PendingValue, graphql, type UserDeploys$result } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';

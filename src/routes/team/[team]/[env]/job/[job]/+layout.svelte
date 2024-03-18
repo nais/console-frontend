@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { menuGroup } from '$lib/components/SideMenu.svelte';
+	import { PendingValue, type TeamRoles$result } from '$houdini';
+	import type { menuGroup, menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
@@ -8,10 +9,19 @@
 		BellIcon,
 		Density3Icon,
 		FileTextIcon,
-		HouseIcon
+		HouseIcon,
+		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { LayoutData } from './$houdini';
 
 	$: team = $page.params.team;
+
+	export let data: LayoutData;
+	$: ({ TeamRoles } = data);
+
+	type menuGroup = {
+		items: (menuItem & { memberOnly?: boolean })[];
+	};
 
 	const nav: menuGroup[] = [
 		{
@@ -55,14 +65,39 @@
 					icon: FileTextIcon
 				}
 			]
+		},
+		{
+			items: [
+				{
+					name: 'Delete',
+					routeId: '/team/[team]/[env]/job/[job]/delete',
+					icon: TrashIcon,
+					memberOnly: true
+				}
+			]
 		}
 	];
+	function memberOnly(nav: menuGroup[], data: TeamRoles$result | null) {
+		return nav
+			.map((group) => {
+				return {
+					items: group.items.filter((item) => {
+						return (
+							!item.memberOnly ||
+							(data?.team !== PendingValue &&
+								(data?.team.viewerIsOwner || data?.team.viewerIsMember))
+						);
+					})
+				};
+			})
+			.filter((group) => group.items.length > 0);
+	}
 </script>
 
 <svelte:head><title>{team} - Console</title></svelte:head>
 
 <div class="main">
-	<SideMenu {nav} />
+	<SideMenu nav={memberOnly(nav, $TeamRoles.data)} />
 	<div class="container">
 		<slot />
 	</div>
