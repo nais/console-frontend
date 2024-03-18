@@ -9,8 +9,18 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { CheckmarkIcon, XMarkIcon } from "@nais/ds-svelte-community/icons";
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		CopyButton,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -42,7 +52,8 @@
 			>
 				<Thead>
 					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th>Version</Th>
+					<Th sortable={true} sortKey="VERSION">Version</Th>
+					<Th>App</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Connection Name</Th>
 					<Th sortable={true} sortKey="STATUS">Status</Th>
@@ -51,7 +62,7 @@
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(5).fill('text') as variant}
+								{#each new Array(6).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
@@ -59,22 +70,34 @@
 							{#each team.sqlInstances.nodes as node}
 								<Tr>
 									<Td>
-										{node.name}
+										<a href="/team/{teamName}/{node.env.name}/postgres/{node.name}">{node.name}</a>
 									</Td>
 									<Td>
 										{node.type}
 									</Td>
 									<Td>
-										{node.env.name}
+										{#if node.app?.name}
+											<a href="/team/{teamName}/{node.env.name}/app/{node.app.name}"
+												>{node.app.name}</a
+											>
+										{:else}
+											No application
+										{/if}
 									</Td>
 									<Td>
-										{node.connectionName}
+										{node.env.name}
+									</Td>
+									<Td style="display: flex; align-items: center;">
+										{#if node.connectionName}
+											{node.connectionName}
+											<CopyButton variant="action" copyText={node.connectionName} />
+										{/if}
 									</Td>
 									<Td>
 										{#if node.isHealthy}
 											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 										{:else}
-											<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem"/>
+											<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 										{/if}
 									</Td>
 								</Tr>

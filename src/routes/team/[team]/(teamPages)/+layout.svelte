@@ -53,20 +53,21 @@
 					icon: ArrowCirclepathIcon
 				},
 				{
+					name: 'Postgres',
+					routeId: '/team/[team]/(teamPages)/postgres',
+					withSubRoutes: true,
+					icon: DatabaseIcon,
+					memberOnly: true
+				},
+				{
 					name: 'Secrets',
 					routeId: '/team/[team]/(teamPages)/secrets',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
 					withSubRoutes: true,
 					icon: QuietZoneIcon,
 					memberOnly: true
-				},
-				{
-					name: 'Postgres',
-					routeId: '/team/[team]/(teamPages)/postgres',
-					withSubRoutes: true,
-					icon: DatabaseIcon,
-					memberOnly: true
 				}
+
 				// {
 				// 	name: 'Buckets',
 				// 	routeId: '/team/[team]/(teamPages)/jobs',

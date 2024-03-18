@@ -1024,6 +1024,9 @@ enum OrderByField {
 
   """Order by status"""
   STATUS
+
+  """Order by PostgreSQL version"""
+  VERSION
 }
 
 type Outbound {
@@ -1575,6 +1578,7 @@ enum SortOrder {
 }
 
 type SqlInstance implements Storage {
+  app: App
   autoBackupHour: Int!
   cascadingDelete: Boolean!
   collation: String!
@@ -1594,6 +1598,7 @@ type SqlInstance implements Storage {
   pointInTimeRecovery: Boolean!
   retainedBackups: Int!
   status: SqlInstanceStatus!
+  team: Team!
   tier: String!
   type: String!
 }

@@ -16,12 +16,15 @@ query SqlInstances(
 			nodes {
 				id
 				name
-				env{
+				env {
 					name
 				}
 				isHealthy
 				type
 				connectionName
+				app {
+					name
+				}
 			}
 		}
 	}
