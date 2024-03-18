@@ -35,7 +35,7 @@
 	$: team = $status.data?.team;
 </script>
 
-<h4>Workloads</h4>
+<h4>Inventory</h4>
 {#if team && team.id !== PendingValue}
 	{#if team.status.apps.failing > 0}
 		<p>
@@ -85,6 +85,7 @@
 			<a href="/team/{teamName}/postgres">{team.status.sqlInstances.total} postgres</a>
 		</p>
 	{/if}
+	<!-- TODO: Team status NAIS icon -->
 {/if}
 
 <style>

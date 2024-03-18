@@ -1585,6 +1585,7 @@ type SqlInstance implements Storage {
   environment: String!
   flags: [Flag!]!
   highAvailability: Boolean!
+  id: ID!
   insights: Insights!
   maintenance: Maintenance!
   name: String!
@@ -1604,6 +1605,11 @@ type SqlInstanceCondition {
 
 type SqlInstanceStatus {
   conditions: [SqlInstanceCondition!]!
+}
+
+type SqlInstancesList {
+  nodes: [SqlInstance!]!
+  pageInfo: PageInfo!
 }
 
 type SqlInstancesStatus {
@@ -1771,6 +1777,16 @@ type Team {
 
   """Unique slug of the team."""
   slug: Slug!
+  sqlInstances(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order SQL instances by"""
+    orderBy: OrderBy
+  ): SqlInstancesList!
 
   """The status of the team."""
   status: TeamStatus!
