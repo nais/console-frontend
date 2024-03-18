@@ -1578,6 +1578,7 @@ type SqlInstance implements Storage {
   autoBackupHour: Int!
   cascadingDelete: Boolean!
   collation: String!
+  connectionName: String!
   databases: [Database!]!
   diskAutoresize: Boolean!
   diskSize: Int!
@@ -1587,6 +1588,7 @@ type SqlInstance implements Storage {
   highAvailability: Boolean!
   id: ID!
   insights: Insights!
+  isHealthy: Boolean!
   maintenance: Maintenance!
   name: String!
   pointInTimeRecovery: Boolean!

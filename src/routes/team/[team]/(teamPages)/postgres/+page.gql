@@ -19,6 +19,9 @@ query SqlInstances(
 				env{
 					name
 				}
+				isHealthy
+				type
+				connectionName
 			}
 		}
 	}

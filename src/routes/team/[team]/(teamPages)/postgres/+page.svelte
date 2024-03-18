@@ -9,6 +9,7 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
+	import { CheckmarkIcon, XMarkIcon } from "@nais/ds-svelte-community/icons";
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -41,13 +42,16 @@
 			>
 				<Thead>
 					<Th sortable={true} sortKey="NAME">Name</Th>
+					<Th>Version</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
+					<Th>Connection Name</Th>
+					<Th sortable={true} sortKey="STATUS">Status</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(team.sqlInstances.nodes.length).fill('text') as variant}
+								{#each new Array(5).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
@@ -58,7 +62,20 @@
 										{node.name}
 									</Td>
 									<Td>
+										{node.type}
+									</Td>
+									<Td>
 										{node.env.name}
+									</Td>
+									<Td>
+										{node.connectionName}
+									</Td>
+									<Td>
+										{#if node.isHealthy}
+											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+										{:else}
+											<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem"/>
+										{/if}
 									</Td>
 								</Tr>
 							{:else}
