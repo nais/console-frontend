@@ -16,7 +16,9 @@ query SqlInstances(
 			nodes {
 				id
 				name
-				environment
+				env{
+					name
+				}
 			}
 		}
 	}

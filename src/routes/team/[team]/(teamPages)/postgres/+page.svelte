@@ -58,7 +58,7 @@
 										{node.name}
 									</Td>
 									<Td>
-										{node.environment}
+										{node.env.name}
 									</Td>
 								</Tr>
 							{:else}
