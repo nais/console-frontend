@@ -572,6 +572,10 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
+type Metrics {
+  cpuUtilization: Float!
+}
+
 """Montly cost type."""
 type MonthlyCost {
   """A list of monthly cost entries."""
@@ -1595,6 +1599,7 @@ type SqlInstance implements Storage {
   insights: Insights!
   isHealthy: Boolean!
   maintenance: Maintenance!
+  metrics: Metrics!
   name: String!
   pointInTimeRecovery: Boolean!
   retainedBackups: Int!

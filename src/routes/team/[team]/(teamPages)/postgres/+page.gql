@@ -28,6 +28,9 @@ query SqlInstances(
 					name
 				}
 				cost(from: $from, to: $to)
+				metrics {
+					cpuUtilization
+				}
 			}
 		}
 	}

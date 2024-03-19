@@ -1,28 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { PendingValue, type SqlInstances$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import {
-		changeParams,
-		sortTable,
-		tableGraphDirection,
-		tableStateFromVariables
-	} from '$lib/pagination';
-	import {
-		Alert,
-		CopyButton,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr,
-		HelpText
-	} from '@nais/ds-svelte-community';
+	import { changeParams, sortTable, tableGraphDirection, tableStateFromVariables } from '$lib/pagination';
+	import { Alert, CopyButton, HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 
 	export let data: PageData;
 
@@ -31,6 +16,17 @@
 	$: team = $SqlInstances.data?.team;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($SqlInstances.variables));
+	const totalCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
+		const sum = instances.reduce((acc, r) => {
+			if (r.metrics.cpuUtilization !== PendingValue) {
+				return acc + r.metrics.cpuUtilization
+			}
+			return acc
+		}, 0);
+
+		return sum / instances.length;
+	};
+
 </script>
 
 {#if $SqlInstances.errors}
@@ -41,6 +37,27 @@
 	</Alert>
 {:else}
 	<div class="grid">
+		<Card columns={3} borderColor="#83bff6">
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #83bff6">
+					<CpuIcon size="32" color="#83bff6" />
+				</div>
+				<div class="summary">
+					<h4>
+						CPU utilization
+						<HelpText title="Current CPU utilization"
+						>CPU utilization for the last elapsed hour for team {teamName}.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team}
+							{totalCpuUtilization(team.sqlInstances.nodes).toFixed(2)}%
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card
+		>
 		<Card columns={12}>
 			<Table
 				size="small"
@@ -136,15 +153,41 @@
 {/if}
 
 <style>
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        column-gap: 1rem;
+        row-gap: 1rem;
+    }
 
-	.tableHeader {
-		display: flex;
-		gap: 0.5rem;
-	}
+    .tableHeader {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .summaryIcon {
+        display: flex;
+        background-color: color-mix(in srgb, var(--bg-color) 10%, white);
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        border: 2px solid var(--bg-color);
+        border-radius: 5px;
+    }
+    .summary > h4 {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0;
+        font-size: 1rem;
+        color: var(--color-text-secondary);
+    }
+    .metric {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+    .summaryCard {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
 </style>
