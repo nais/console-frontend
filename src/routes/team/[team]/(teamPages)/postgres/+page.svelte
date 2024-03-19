@@ -18,7 +18,8 @@
 		Td,
 		Th,
 		Thead,
-		Tr
+		Tr,
+		HelpText
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -56,6 +57,11 @@
 					<Th>App</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Connection Name</Th>
+					<Th>
+						<div class="tableHeader">
+							Cost<HelpText title="Cost per SQL Instance">The cost of the SQL instance over the last 30 days</HelpText>
+						</div>
+					</Th>
 					<Th sortable={true} sortKey="STATUS">Status</Th>
 				</Thead>
 				<Tbody>
@@ -94,6 +100,13 @@
 										{/if}
 									</Td>
 									<Td>
+										{#if node.cost >= 0}
+											€{node.cost}
+										{:else}
+											-
+										{/if}
+									</Td>
+									<Td>
 										{#if node.isHealthy}
 											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 										{:else}
@@ -128,5 +141,10 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+
+	.tableHeader {
+		display: flex;
+		gap: 0.5rem;
 	}
 </style>

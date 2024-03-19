@@ -3,6 +3,8 @@ query SqlInstances(
 	$orderBy: OrderBy = { field: NAME, direction: ASC }
 	$limit: Int
 	$offset: Int
+	$from: Date!
+	$to: Date!
 ) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
@@ -25,6 +27,7 @@ query SqlInstances(
 				app {
 					name
 				}
+				cost(from: $from, to: $to)
 			}
 		}
 	}

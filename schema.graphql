@@ -1583,6 +1583,7 @@ type SqlInstance implements Storage {
   cascadingDelete: Boolean!
   collation: String!
   connectionName: String!
+  cost(from: Date!, to: Date!): Float!
   databases: [Database!]!
   diskAutoresize: Boolean!
   diskSize: Int!

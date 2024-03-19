@@ -9,6 +9,8 @@ export const _SqlInstancesVariables: SqlInstancesVariables = ({ url }) => {
 	const offset = (page - 1) * limit;
 	const field = (url.searchParams.get('col') || 'NAME') as never;
 	const direction = (url.searchParams.get('dir') || 'ASC') as never;
+	const from = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
+	const to = new Date(Date.now());
 
-	return { limit, offset, orderBy: { field, direction } };
+	return { limit, offset, orderBy: { field, direction }, from, to };
 };
