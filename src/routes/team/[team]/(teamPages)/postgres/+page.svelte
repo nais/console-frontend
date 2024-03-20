@@ -194,6 +194,8 @@
 					<Th sortable={true} sortKey="VERSION">Version</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Connection Name</Th>
+					<Th sortable={true} sortKey="STATUS">Status</Th>
+					<Th><Tooltip content="High availability">HA</Tooltip></Th>
 					<Th>
 						<div class="tableHeader">
 							Cost<HelpText title="Cost per SQL Instance"
@@ -201,8 +203,6 @@
 							>
 						</div>
 					</Th>
-					<Th sortable={true} sortKey="STATUS">Status</Th>
-					<Th><Tooltip content="High availability">HA</Tooltip></Th>
 					<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
 					<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
 					<Th><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th>
@@ -244,13 +244,6 @@
 										{/if}
 									</Td>
 									<Td>
-										{#if node.cost > 0}
-											€{Math.round(node.cost)}
-										{:else}
-											-
-										{/if}
-									</Td>
-									<Td>
 										{#if node.isHealthy}
 											<CheckmarkCircleFillIcon
 												style="color: var(--a-surface-success); font-size: 1.2rem"
@@ -262,6 +255,13 @@
 									<Td>
 										{#if node.highAvailability}
 											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+										{/if}
+									</Td>
+									<Td>
+										{#if node.cost > 0}
+											€{Math.round(node.cost)}
+										{:else}
+											-
 										{/if}
 									</Td>
 									<Td>
