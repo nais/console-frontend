@@ -3,11 +3,34 @@
 	import { PendingValue, type SqlInstances$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams, sortTable, tableGraphDirection, tableStateFromVariables } from '$lib/pagination';
-	import { Alert, CopyButton, HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
+	import {
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
+	import { percentageFormatter } from '$lib/utils/formatters';
+	import {
+		Alert,
+		CopyButton,
+		HelpText,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import {
+		CheckmarkCircleFillIcon,
+		CheckmarkIcon,
+		CircleSlashFillIcon,
+		ExclamationmarkTriangleFillIcon
+	} from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
@@ -17,16 +40,17 @@
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($SqlInstances.variables));
 	const totalCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
+		let numWithMetrics = 0;
 		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.cpuUtilization !== PendingValue) {
-				return acc + r.metrics.cpuUtilization
+			if (r.metrics.cpuUtilization !== PendingValue && r.metrics.cpuUtilization > 0) {
+				numWithMetrics++;
+				return acc + r.metrics.cpuUtilization;
 			}
-			return acc
+			return acc;
 		}, 0);
 
-		return sum / instances.length;
+		return sum / numWithMetrics;
 	};
-
 </script>
 
 {#if $SqlInstances.errors}
@@ -46,7 +70,7 @@
 					<h4>
 						CPU utilization
 						<HelpText title="Current CPU utilization"
-						>CPU utilization for the last elapsed hour for team {teamName}.
+							>CPU utilization for the last elapsed hour for team {teamName}.
 						</HelpText>
 					</h4>
 					<p class="metric">
@@ -56,8 +80,7 @@
 					</p>
 				</div>
 			</div>
-		</Card
-		>
+		</Card>
 		<Card columns={12}>
 			<Table
 				size="small"
@@ -69,23 +92,27 @@
 				}}
 			>
 				<Thead>
+					<Th style="width: 2rem"></Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>
 					<Th sortable={true} sortKey="VERSION">Version</Th>
-					<Th>App</Th>
 					<Th sortable={true} sortKey="ENV">Env</Th>
 					<Th>Connection Name</Th>
 					<Th>
 						<div class="tableHeader">
-							Cost<HelpText title="Cost per SQL Instance">The cost of the SQL instance over the last 30 days</HelpText>
+							Cost<HelpText title="Cost per SQL Instance"
+								>The cost of the SQL instance over the last 30 days</HelpText
+							>
 						</div>
 					</Th>
 					<Th sortable={true} sortKey="STATUS">Status</Th>
+					<Th><Tooltip content="High availability">HA</Tooltip></Th>
+					<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(6).fill('text') as variant}
+								{#each new Array(9).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
@@ -93,41 +120,54 @@
 							{#each team.sqlInstances.nodes as node}
 								<Tr>
 									<Td>
+										{#if !node.app?.name}
+											<ExclamationmarkTriangleFillIcon
+												style="color: var(--a-icon-warning)"
+												title="The SQL instance does not belong to any application resource"
+											/>
+										{/if}
+									</Td>
+									<Td>
 										<a href="/team/{teamName}/{node.env.name}/postgres/{node.name}">{node.name}</a>
 									</Td>
 									<Td>
 										{node.type}
 									</Td>
 									<Td>
-										{#if node.app?.name}
-											<a href="/team/{teamName}/{node.env.name}/app/{node.app.name}"
-												>{node.app.name}</a
-											>
-										{:else}
-											No application
-										{/if}
-									</Td>
-									<Td>
 										{node.env.name}
 									</Td>
 									<Td style="display: flex; align-items: center;">
 										{#if node.connectionName}
-											{node.connectionName}
-											<CopyButton variant="action" copyText={node.connectionName} />
+											<Tooltip content={node.connectionName}
+												>...{node.connectionName.split(':').pop()}</Tooltip
+											>
+											<CopyButton size="small" variant="action" copyText={node.connectionName} />
 										{/if}
 									</Td>
 									<Td>
-										{#if node.cost >= 0}
-											€{node.cost}
+										{#if node.cost > 0}
+											€{Math.round(node.cost)}
 										{:else}
 											-
 										{/if}
 									</Td>
 									<Td>
 										{#if node.isHealthy}
-											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+											<CheckmarkCircleFillIcon
+												style="color: var(--a-surface-success); font-size: 1.2rem"
+											/>
 										{:else}
-											<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+											<CircleSlashFillIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+										{/if}
+									</Td>
+									<Td>
+										{#if node.highAvailability}
+											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+										{/if}
+									</Td>
+									<Td>
+										{#if node.metrics.cpuUtilization}
+											{percentageFormatter(node.metrics.cpuUtilization)}
 										{/if}
 									</Td>
 								</Tr>
@@ -153,41 +193,41 @@
 {/if}
 
 <style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        column-gap: 1rem;
-        row-gap: 1rem;
-    }
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
 
-    .tableHeader {
-        display: flex;
-        gap: 0.5rem;
-    }
-    .summaryIcon {
-        display: flex;
-        background-color: color-mix(in srgb, var(--bg-color) 10%, white);
-        justify-content: center;
-        align-items: center;
-        width: 50px;
-        height: 50px;
-        border: 2px solid var(--bg-color);
-        border-radius: 5px;
-    }
-    .summary > h4 {
-        display: flex;
-        gap: 0.5rem;
-        margin: 0;
-        font-size: 1rem;
-        color: var(--color-text-secondary);
-    }
-    .metric {
-        font-size: 1.5rem;
-        margin: 0;
-    }
-    .summaryCard {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
+	.tableHeader {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.summaryIcon {
+		display: flex;
+		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
+		justify-content: center;
+		align-items: center;
+		width: 50px;
+		height: 50px;
+		border: 2px solid var(--bg-color);
+		border-radius: 5px;
+	}
+	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
+	}
+	.metric {
+		font-size: 1.5rem;
+		margin: 0;
+	}
+	.summaryCard {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
 </style>
