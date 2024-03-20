@@ -34,6 +34,7 @@
 	<div class="grid">
 		<Card columns={12}>
 			<Table
+				zebraStripes
 				size="small"
 				sort={sortState}
 				on:sortChange={(e) => {
@@ -45,18 +46,22 @@
 				<Thead>
 					<Th sortable={true} sortKey="STATUS" style="width: 2rem"></Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th sortable={true} sortKey="ENV">Env</Th>
-					<Th>Instances</Th>
-					<Th sortable={true} sortKey="DEPLOYED">Deployed</Th>
+					<Th style="width: 150px" sortable={true} sortKey="ENV">Env</Th>
+					<Th style="width: 200px">Instances</Th>
+					<Th style="width: 150px" sortable={true} sortKey="DEPLOYED">Deployed</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
-							<Tr>
-								{#each new Array(team.apps.nodes.length).fill('text') as variant}
+							{#each new Array(team.apps.nodes.length).fill('text') as variant}
+								<Tr>
+									<Td />
 									<Td><Skeleton {variant} /></Td>
-								{/each}
-							</Tr>
+									<Td><Skeleton {variant} /></Td>
+									<Td><Skeleton {variant} /></Td>
+									<Td><Skeleton {variant} /></Td>
+								</Tr>
+							{/each}
 						{:else}
 							{#each team.apps.nodes as node}
 								<Tr>

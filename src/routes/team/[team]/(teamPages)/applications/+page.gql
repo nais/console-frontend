@@ -13,7 +13,7 @@ query Workloads(
 				hasPreviousPage
 			}
 
-			nodes {
+			nodes @loading(count: 14) {
 				deployInfo {
 					timestamp
 				}

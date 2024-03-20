@@ -42,17 +42,20 @@
 			<Thead>
 				<Th style="width: 2rem;" sortable={true} sortKey="STATUS"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENV">Env</Th>
-				<Th sortable={true} sortKey="DEPLOYED">Deployed</Th>
+				<Th style="width: 150px" sortable={true} sortKey="ENV">Env</Th>
+				<Th style="width: 150px" sortable={true} sortKey="DEPLOYED">Deployed</Th>
 			</Thead>
 			<Tbody>
 				{#if team !== undefined}
 					{#if team.id === PendingValue}
-						<Tr>
-							{#each new Array(team.naisjobs.nodes.length).fill('text') as variant}
+						{#each new Array(team.naisjobs.nodes.length).fill('text') as variant}
+							<Tr>
+								<Td />
 								<Td><Skeleton {variant} /></Td>
-							{/each}
-						</Tr>
+								<Td><Skeleton {variant} /></Td>
+								<Td><Skeleton {variant} /></Td>
+							</Tr>
+						{/each}
 					{:else}
 						{#each team.naisjobs.nodes as node}
 							<Tr>
