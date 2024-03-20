@@ -5,6 +5,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
+	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -60,6 +61,21 @@
 
 		return sum / numWithMetrics;
 	};
+
+	const teamMemoryUtilization = (
+		instances: SqlInstances$result['team']['sqlInstances']['nodes']
+	) => {
+		let numWithMetrics = 0;
+		const sum = instances.reduce((acc, r) => {
+			if (r.metrics.memoryUtilization !== PendingValue && r.metrics.memoryUtilization > 0) {
+				numWithMetrics++;
+				return acc + r.metrics.memoryUtilization;
+			}
+			return acc;
+		}, 0);
+
+		return sum / numWithMetrics;
+	};
 </script>
 
 {#if $SqlInstances.errors}
@@ -108,6 +124,26 @@
 				</div>
 			</div>
 		</Card>
+		<Card columns={3} borderColor="#91dc75">
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<MemoryIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Memory utilization
+						<HelpText title="Current memory utilization"
+							>Memory utilization for the last elapsed hour for team {teamName}.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team}
+							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(2)}%
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
 		<Card columns={12}>
 			<Table
 				size="small"
@@ -134,12 +170,13 @@
 					<Th sortable={true} sortKey="STATUS">Status</Th>
 					<Th><Tooltip content="High availability">HA</Tooltip></Th>
 					<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
+					<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(9).fill('text') as variant}
+								{#each new Array(10).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
@@ -195,6 +232,11 @@
 									<Td>
 										{#if node.metrics.cpuUtilization}
 											{percentageFormatter(node.metrics.cpuUtilization)}
+										{/if}
+									</Td>
+									<Td>
+										{#if node.metrics.memoryUtilization}
+											{percentageFormatter(node.metrics.memoryUtilization)}
 										{/if}
 									</Td>
 								</Tr>
