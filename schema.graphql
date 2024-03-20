@@ -1614,6 +1614,7 @@ type SqlInstanceCondition {
 
 type SqlInstanceMetrics {
   cpuUtilization: Float!
+  diskUtilization: Float!
   memoryUtilization: Float!
 }
 

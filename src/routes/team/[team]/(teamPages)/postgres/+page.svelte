@@ -30,7 +30,8 @@
 		CheckmarkCircleFillIcon,
 		CheckmarkIcon,
 		CircleSlashFillIcon,
-		ExclamationmarkTriangleFillIcon
+		ExclamationmarkTriangleFillIcon,
+		FloppydiskIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -70,6 +71,19 @@
 			if (r.metrics.memoryUtilization !== PendingValue && r.metrics.memoryUtilization > 0) {
 				numWithMetrics++;
 				return acc + r.metrics.memoryUtilization;
+			}
+			return acc;
+		}, 0);
+
+		return sum / numWithMetrics;
+	};
+
+	const teamDiskUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
+		let numWithMetrics = 0;
+		const sum = instances.reduce((acc, r) => {
+			if (r.metrics.diskUtilization !== PendingValue && r.metrics.diskUtilization > 0) {
+				numWithMetrics++;
+				return acc + r.metrics.diskUtilization;
 			}
 			return acc;
 		}, 0);
@@ -144,6 +158,26 @@
 				</div>
 			</div>
 		</Card>
+		<Card columns={3} borderColor="#83bff6">
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #83bff6">
+					<FloppydiskIcon font-size="2rem" color="#83bff6" />
+				</div>
+				<div class="summary">
+					<h4>
+						Disk utilization
+						<HelpText title="Current disk utilization"
+							>Disk utilization for the last elapsed hour for team {teamName}.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team}
+							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(2)}%
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
 		<Card columns={12}>
 			<Table
 				size="small"
@@ -171,12 +205,13 @@
 					<Th><Tooltip content="High availability">HA</Tooltip></Th>
 					<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
 					<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
+					<Th><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
 						{#if team.id === PendingValue}
 							<Tr>
-								{#each new Array(10).fill('text') as variant}
+								{#each new Array(11).fill('text') as variant}
 									<Td><Skeleton {variant} /></Td>
 								{/each}
 							</Tr>
@@ -237,6 +272,11 @@
 									<Td>
 										{#if node.metrics.memoryUtilization}
 											{percentageFormatter(node.metrics.memoryUtilization)}
+										{/if}
+									</Td>
+									<Td>
+										{#if node.metrics.diskUtilization}
+											{percentageFormatter(node.metrics.diskUtilization)}
 										{/if}
 									</Td>
 								</Tr>
