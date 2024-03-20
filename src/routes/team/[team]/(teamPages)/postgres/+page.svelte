@@ -3,6 +3,7 @@
 	import { PendingValue, type SqlInstances$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import {
 		changeParams,
@@ -39,7 +40,15 @@
 	$: team = $SqlInstances.data?.team;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($SqlInstances.variables));
-	const totalCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
+	const teamCost = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) =>
+		instances.reduce((acc, r) => {
+			if (r.cost !== PendingValue) {
+				return acc + r.cost;
+			}
+			return acc;
+		}, 0);
+
+	const teamCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
 		let numWithMetrics = 0;
 		const sum = instances.reduce((acc, r) => {
 			if (r.metrics.cpuUtilization !== PendingValue && r.metrics.cpuUtilization > 0) {
@@ -61,6 +70,24 @@
 	</Alert>
 {:else}
 	<div class="grid">
+		<Card columns={3} borderColor="#91dc75">
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost
+						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team}
+							€{teamCost(team.sqlInstances.nodes).toFixed(0)}
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
 		<Card columns={3} borderColor="#83bff6">
 			<div class="summaryCard">
 				<div class="summaryIcon" style="--bg-color: #83bff6">
@@ -75,7 +102,7 @@
 					</h4>
 					<p class="metric">
 						{#if team}
-							{totalCpuUtilization(team.sqlInstances.nodes).toFixed(2)}%
+							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(2)}%
 						{/if}
 					</p>
 				</div>
