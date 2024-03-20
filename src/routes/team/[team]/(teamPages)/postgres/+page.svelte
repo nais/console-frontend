@@ -34,6 +34,7 @@
 		FloppydiskIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import prettyBytes from 'pretty-bytes';
 
 	export let data: PageData;
 
@@ -53,9 +54,9 @@
 	const teamCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
 		let numWithMetrics = 0;
 		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.cpuUtilization !== PendingValue && r.metrics.cpuUtilization > 0) {
+			if (r.metrics.cpu.utilization !== PendingValue && r.metrics.cpu.utilization > 0) {
 				numWithMetrics++;
-				return acc + r.metrics.cpuUtilization;
+				return acc + r.metrics.cpu.utilization;
 			}
 			return acc;
 		}, 0);
@@ -68,9 +69,9 @@
 	) => {
 		let numWithMetrics = 0;
 		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.memoryUtilization !== PendingValue && r.metrics.memoryUtilization > 0) {
+			if (r.metrics.memory.utilization !== PendingValue && r.metrics.memory.utilization > 0) {
 				numWithMetrics++;
-				return acc + r.metrics.memoryUtilization;
+				return acc + r.metrics.memory.utilization;
 			}
 			return acc;
 		}, 0);
@@ -81,9 +82,9 @@
 	const teamDiskUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
 		let numWithMetrics = 0;
 		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.diskUtilization !== PendingValue && r.metrics.diskUtilization > 0) {
+			if (r.metrics.disk.utilization !== PendingValue && r.metrics.disk.utilization > 0) {
 				numWithMetrics++;
-				return acc + r.metrics.diskUtilization;
+				return acc + r.metrics.disk.utilization;
 			}
 			return acc;
 		}, 0);
@@ -132,7 +133,15 @@
 					</h4>
 					<p class="metric">
 						{#if team}
-							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(2)}%
+							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(2)}% of {team.sqlInstances.nodes.reduce(
+								(acc, r) => {
+									if (r.metrics.cpu.cores !== PendingValue) {
+										return acc + r.metrics.cpu.cores;
+									}
+									return acc;
+								},
+								0
+							)}
 						{/if}
 					</p>
 				</div>
@@ -152,7 +161,14 @@
 					</h4>
 					<p class="metric">
 						{#if team}
-							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(2)}%
+							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(2)}% of {prettyBytes(
+								team.sqlInstances.nodes.reduce((acc, r) => {
+									if (r.metrics.memory.quotaBytes !== PendingValue) {
+										return acc + r.metrics.memory.quotaBytes;
+									}
+									return acc;
+								}, 0)
+							)}
 						{/if}
 					</p>
 				</div>
@@ -172,7 +188,14 @@
 					</h4>
 					<p class="metric">
 						{#if team}
-							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(2)}%
+							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(2)}% of {prettyBytes(
+								team.sqlInstances.nodes.reduce((acc, r) => {
+									if (r.metrics.disk.quotaBytes !== PendingValue) {
+										return acc + r.metrics.disk.quotaBytes;
+									}
+									return acc;
+								}, 0)
+							)}
 						{/if}
 					</p>
 				</div>
@@ -220,10 +243,14 @@
 								<Tr>
 									<Td>
 										{#if !node.app?.name}
-											<ExclamationmarkTriangleFillIcon
-												style="color: var(--a-icon-warning)"
-												title="The SQL instance does not belong to any application resource"
-											/>
+											<Tooltip
+												content="The SQL instance does not belong to any application resource"
+											>
+												<ExclamationmarkTriangleFillIcon
+													style="color: var(--a-icon-warning)"
+													title="The SQL instance does not belong to any application resource"
+												/>
+											</Tooltip>
 										{/if}
 									</Td>
 									<Td>
@@ -265,18 +292,18 @@
 										{/if}
 									</Td>
 									<Td>
-										{#if node.metrics.cpuUtilization}
-											{percentageFormatter(node.metrics.cpuUtilization)}
+										{#if node.metrics.cpu.utilization}
+											{percentageFormatter(node.metrics.cpu.utilization)}
 										{/if}
 									</Td>
 									<Td>
-										{#if node.metrics.memoryUtilization}
-											{percentageFormatter(node.metrics.memoryUtilization)}
+										{#if node.metrics.memory.utilization}
+											{percentageFormatter(node.metrics.memory.utilization)}
 										{/if}
 									</Td>
 									<Td>
-										{#if node.metrics.diskUtilization}
-											{percentageFormatter(node.metrics.diskUtilization)}
+										{#if node.metrics.disk.utilization}
+											{percentageFormatter(node.metrics.disk.utilization)}
 										{/if}
 									</Td>
 								</Tr>

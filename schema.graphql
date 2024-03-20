@@ -1612,10 +1612,28 @@ type SqlInstanceCondition {
   type: String!
 }
 
+type SqlInstanceCpu {
+  cores: Float!
+  usage: Float!
+  utilization: Float!
+}
+
+type SqlInstanceDisk {
+  quotaBytes: Int!
+  usage: Float!
+  utilization: Float!
+}
+
+type SqlInstanceMemory {
+  quotaBytes: Float!
+  usage: Float!
+  utilization: Float!
+}
+
 type SqlInstanceMetrics {
-  cpuUtilization: Float!
-  diskUtilization: Float!
-  memoryUtilization: Float!
+  cpu: SqlInstanceCpu!
+  disk: SqlInstanceDisk!
+  memory: SqlInstanceMemory!
 }
 
 type SqlInstanceStatus {

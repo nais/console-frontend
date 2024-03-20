@@ -29,9 +29,18 @@ query SqlInstances(
 				}
 				cost(from: $from, to: $to)
 				metrics {
-					cpuUtilization
-					memoryUtilization
-					diskUtilization
+					cpu {
+						cores
+						utilization
+					}
+					memory {
+						quotaBytes
+						utilization
+					}
+					disk {
+						quotaBytes
+						utilization
+					}
 				}
 				highAvailability
 			}
