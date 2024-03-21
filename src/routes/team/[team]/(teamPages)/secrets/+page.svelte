@@ -2,10 +2,12 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
 		Alert,
 		Button,
 		Loader,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -16,11 +18,11 @@
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CreateSecret from './CreateSecret.svelte';
+	import { PendingValue } from '$houdini';
 
 	export let data: PageData;
 
 	$: ({ Secrets } = data);
-	$: allSecrets = $Secrets.data?.team.secrets;
 	$: environments = $Secrets.data?.team.environments;
 	$: team = $page.params.team;
 
@@ -32,14 +34,8 @@
 </script>
 
 {#if $Secrets.errors}
-	<Alert variant="error">
-		{#each $Secrets.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $Secrets.fetching}
-	<Loader></Loader>
-{:else if allSecrets && environments}
+	<GraphErrors errors={$Secrets.errors} />
+{:else}
 	<div class="heading">
 		<Button variant="primary" size="small" on:click={open}>
 			Create Secret
@@ -47,39 +43,58 @@
 				<PlusIcon />
 			</svelte:fragment>
 		</Button>
-		<CreateSecret secrets={allSecrets} {environments} {team} bind:open={createSecretOpen} />
 	</div>
 	<div class="grid">
-		{#each environments as environment}
-			{@const secrets = allSecrets.filter((s) => s.env.name === environment.name)}
-			<Card columns={12}>
-				<div class="card-heading">
-					<h4>{environment.name}</h4>
-				</div>
-				<Table size="small" zebraStripes>
-					<Thead>
-						<Th>Name</Th>
-						<Th align="right">Last Modified</Th>
-					</Thead>
-					<Tbody>
-						{#each secrets as secret}
-							<Tr>
-								<Td>
-									<a href="/team/{team}/{environment.name}/secret/{secret.name}">{secret.name}</a>
-								</Td>
-								<Td align="right">
-									{#if secret.lastModifiedAt}
-										<Time time={secret.lastModifiedAt} distance />
-									{:else}
-										<code>n/a</code>
-									{/if}
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</Card>
-		{/each}
+		{#if environments !== undefined}
+			{#each environments as environment}
+				<Card columns={12}>
+					<div class="card-heading">
+						<h4>
+							{#if environment.name === PendingValue}
+								<Skeleton variant="text" />
+							{:else}
+								{environment.name}
+							{/if}
+						</h4>
+					</div>
+					<Table size="small" zebraStripes>
+						<Thead>
+							<Th>Name</Th>
+							<Th align="right">Last Modified</Th>
+						</Thead>
+						<Tbody>
+							{#each environment.secrets as secret}
+								<Tr>
+									<Td>
+										{#if secret === PendingValue || environment.name === PendingValue}
+											<Skeleton variant="text" />
+										{:else}
+											<a href="/team/{team}/{environment.name}/secret/{secret.name}"
+												>{secret.name}</a
+											>
+										{/if}
+									</Td>
+									<Td align="right">
+										{#if secret === PendingValue}
+											<Skeleton variant="text" />
+										{:else if secret.lastModifiedAt}
+											<Time time={secret.lastModifiedAt} distance />
+										{:else}
+											<code>n/a</code>
+										{/if}
+									</Td>
+								</Tr>
+							{:else}
+								<Tr><Td colspan={99}>No secrets in this environment</Td></Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</Card>
+				<!-- {#if allSecrets && environments && allSecrets[0].name !== PendingValue && environments[0].name !== PendingValue}
+					<CreateSecret secrets={allSecrets} {environments} {team} bind:open={createSecretOpen} />
+				{/if} -->
+			{/each}
+		{/if}
 	</div>
 {/if}
 

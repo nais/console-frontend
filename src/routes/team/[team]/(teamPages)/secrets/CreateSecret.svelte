@@ -3,7 +3,6 @@
 	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { goto } from '$app/navigation';
 
-	export let secrets: Secrets$result['team']['secrets'];
 	export let environments: Secrets$result['team']['environments'];
 	export let team: string;
 	export let open: boolean;
