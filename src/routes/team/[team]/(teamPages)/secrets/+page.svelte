@@ -1,24 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue, type Secrets$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Time from '$lib/Time.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import {
-		Alert,
-		Button,
-		Loader,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import Time from '$lib/Time.svelte';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
-	import { PendingValue, type Secrets$result } from '$houdini';
 
 	export let data: PageData;
 
@@ -46,13 +35,13 @@
 					<div class="card-heading">
 						<h4>
 							{#if environment.name === PendingValue}
-								<Skeleton variant="text" style="width: 100px"/>
+								<Skeleton variant="text" style="width: 100px" />
 							{:else}
 								{environment.name}
 							{/if}
 						</h4>
 						<Button
-							variant="primary"
+							variant="secondary"
 							size="small"
 							on:click={() => open(environment)}
 							disabled={environment.name === PendingValue}
