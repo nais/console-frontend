@@ -17,8 +17,8 @@
 	} from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import CreateSecret from './CreateSecret.svelte';
-	import { PendingValue } from '$houdini';
+	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
+	import { PendingValue, type Secrets$result } from '$houdini';
 
 	export let data: PageData;
 
@@ -27,8 +27,11 @@
 	$: team = $page.params.team;
 
 	let createSecretOpen = false;
+	let selectedEnvironment: EnvironmentType;
 
-	const open = () => {
+	const open = (env: Secrets$result['team']['environments'][0]) => {
+		if (env.name === PendingValue) return;
+		selectedEnvironment = env;
 		createSecretOpen = true;
 	};
 </script>
@@ -36,14 +39,6 @@
 {#if $Secrets.errors}
 	<GraphErrors errors={$Secrets.errors} />
 {:else}
-	<div class="heading">
-		<Button variant="primary" size="small" on:click={open}>
-			Create Secret
-			<svelte:fragment slot="icon-left">
-				<PlusIcon />
-			</svelte:fragment>
-		</Button>
-	</div>
 	<div class="grid">
 		{#if environments !== undefined}
 			{#each environments as environment}
@@ -51,11 +46,22 @@
 					<div class="card-heading">
 						<h4>
 							{#if environment.name === PendingValue}
-								<Skeleton variant="text" />
+								<Skeleton variant="text" style="width: 100px"/>
 							{:else}
 								{environment.name}
 							{/if}
 						</h4>
+						<Button
+							variant="primary"
+							size="small"
+							on:click={() => open(environment)}
+							disabled={environment.name === PendingValue}
+						>
+							Create Secret
+							<svelte:fragment slot="icon-left">
+								<PlusIcon />
+							</svelte:fragment>
+						</Button>
 					</div>
 					<Table size="small" zebraStripes>
 						<Thead>
@@ -90,9 +96,9 @@
 						</Tbody>
 					</Table>
 				</Card>
-				<!-- {#if allSecrets && environments && allSecrets[0].name !== PendingValue && environments[0].name !== PendingValue}
-					<CreateSecret secrets={allSecrets} {environments} {team} bind:open={createSecretOpen} />
-				{/if} -->
+				{#if createSecretOpen}
+					<CreateSecret environment={selectedEnvironment} {team} bind:open={createSecretOpen} />
+				{/if}
 			{/each}
 		{/if}
 	</div>
@@ -105,15 +111,14 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+	h4 {
+		margin: 0;
+	}
 
 	.card-heading {
 		display: flex;
 		justify-content: space-between;
-	}
-
-	.heading {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
+		align-items: center;
+		margin-bottom: 0.75rem;
 	}
 </style>

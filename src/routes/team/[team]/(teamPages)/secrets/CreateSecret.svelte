@@ -1,21 +1,28 @@
+<script lang="ts" context="module">
+	export type EnvironmentType = {
+		readonly name: string;
+		readonly secrets: {
+			readonly name: string;
+			readonly lastModifiedAt: Date | null;
+		}[];
+	};
+</script>
+
 <script lang="ts">
-	import { graphql, type Secrets$result } from '$houdini';
+	import { graphql } from '$houdini';
 	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { goto } from '$app/navigation';
 
-	export let environments: Secrets$result['team']['environments'];
+	export let environment: EnvironmentType;
+
 	export let team: string;
 	export let open: boolean;
 
-	const environmentNames = environments.map((env) => env.name);
-
 	let name = '';
-	let selectedEnvironment = environmentNames[0];
 
 	const close = () => {
 		open = false;
 		name = '';
-		selectedEnvironment = environmentNames[0];
 	};
 
 	const createSecret = graphql(`
@@ -31,14 +38,14 @@
 	`);
 
 	const create = async () => {
-		if (validate(name, selectedEnvironment).length > 0 && name.length > 0) {
+		if (validate(name, environment.name).length > 0 && name.length > 0) {
 			return;
 		}
 
 		await createSecret.mutate({
 			name: name,
 			team: team,
-			env: selectedEnvironment,
+			env: environment.name,
 			data: []
 		});
 
@@ -47,7 +54,7 @@
 			return;
 		}
 
-		const secretPage = '/team/' + team + '/' + selectedEnvironment + '/secret/' + name;
+		const secretPage = '/team/' + team + '/' + environment.name + '/secret/' + name;
 		close();
 		await goto(secretPage);
 	};
@@ -57,12 +64,7 @@
 			return '';
 		}
 
-		const names = secrets.reduce((acc: string[], secret) => {
-			if (secret.env.name === env) {
-				acc.push(secret.name);
-			}
-			return acc;
-		}, []);
+		const names = environment.secrets.map((s) => s.name) || [];
 
 		if (names.includes(name)) {
 			return 'Already exists in environment';
@@ -90,18 +92,11 @@
 
 <Modal bind:open width="small" on:close={close}>
 	<svelte:fragment slot="header">
-		<Heading>Create new secret</Heading>
+		<Heading>Create new secret in {environment.name}</Heading>
 	</svelte:fragment>
 	<div class="wrapper">
 		<div class="row">
-			<Select label="Environment" size="small" bind:value={selectedEnvironment}>
-				{#each environmentNames as env}
-					<option value={env} selected={selectedEnvironment === env}>{env}</option>
-				{/each}
-			</Select>
-		</div>
-		<div class="row">
-			<TextField size="small" bind:value={name} error={validate(name, selectedEnvironment)}>
+			<TextField size="small" bind:value={name} error={validate(name, environment.name)}>
 				<svelte:fragment slot="label">Name</svelte:fragment>
 			</TextField>
 		</div>
