@@ -33,8 +33,8 @@
 		ExclamationmarkTriangleFillIcon,
 		FloppydiskIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
 	import prettyBytes from 'pretty-bytes';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
@@ -141,7 +141,7 @@
 									return acc;
 								},
 								0
-							)}
+							)} core
 						{/if}
 					</p>
 				</div>

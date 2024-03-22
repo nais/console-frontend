@@ -1,11 +1,11 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import Card from '$lib/Card.svelte';
+	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
+	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { Alert, CopyButton, HelpText, Skeleton } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkCircleFillIcon,
 		CircleSlashFillIcon,
@@ -13,15 +13,15 @@
 		FloppydiskIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import { page } from '$app/stores';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ SqlInstance } = data);
-	$: nodes = $SqlInstance.data?.team.sqlInstances.nodes;
+	$: instance = $SqlInstance.data?.sqlInstance;
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
-
 </script>
+
 {#if $SqlInstance.errors}
 	<Alert variant="error">
 		{#each $SqlInstance.errors as error}
@@ -30,8 +30,7 @@
 	</Alert>
 {:else}
 	<div class="grid">
-		{#if nodes != null && nodes.length > 0}
-			{@const postgres = nodes[0]}
+		{#if instance && instance.id !== PendingValue}
 			<Card columns={3} borderColor="#91dc75">
 				<div class="summaryCard">
 					<div class="summaryIcon" style="--bg-color: #91dc75">
@@ -43,11 +42,7 @@
 							<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 						</h4>
 						<p class="metric">
-							{#if postgres.cost !== PendingValue}
-								€{Math.round(postgres.cost)}
-							{:else}
-								<Skeleton variant="text" />
-							{/if}
+							€{Math.round(instance.cost)}
 						</p>
 					</div>
 				</div>
@@ -61,16 +56,11 @@
 						<h4>
 							CPU utilization
 							<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour for team.
+								>CPU utilization for the last elapsed hour for team.
 							</HelpText>
 						</h4>
 						<p class="metric">
-							{#if postgres.metrics.cpu.utilization !== PendingValue}
-								{Math.round(postgres.metrics.cpu.utilization).toFixed(1)}%
-								of {postgres.metrics.cpu.cores.toLocaleString()}
-							{:else}
-								<Skeleton variant="text" />
-							{/if}
+							{Math.round(instance.metrics.cpu.utilization).toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
 						</p>
 					</div>
 				</div>
@@ -84,16 +74,13 @@
 						<h4>
 							Memory utilization
 							<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
+								>Memory utilization for the last elapsed hour.
 							</HelpText>
 						</h4>
 						<p class="metric">
-							{#if postgres.metrics.memory.utilization !== PendingValue}
-								{Math.round(postgres.metrics.memory.utilization).toFixed(1)}%
-								of {prettyBytes(postgres.metrics.memory.quotaBytes)}
-							{:else}
-								<Skeleton variant="text" />
-							{/if}
+							{Math.round(instance.metrics.memory.utilization).toFixed(1)}% of {prettyBytes(
+								instance.metrics.memory.quotaBytes
+							)}
 						</p>
 					</div>
 				</div>
@@ -108,16 +95,13 @@
 						<h4>
 							Disk utilization
 							<HelpText title="Current memory utilization"
-							>Disk utilization for the last elapsed hour.
+								>Disk utilization for the last elapsed hour.
 							</HelpText>
 						</h4>
 						<p class="metric">
-							{#if postgres.metrics.disk.utilization !== PendingValue}
-								{Math.round(postgres.metrics.disk.utilization).toFixed(1)}%
-								of {prettyBytes(postgres.metrics.disk.quotaBytes)}
-							{:else}
-								<Skeleton variant="text" />
-							{/if}
+							{Math.round(instance.metrics.disk.utilization).toFixed(1)}% of {prettyBytes(
+								instance.metrics.disk.quotaBytes
+							)}
 						</p>
 					</div>
 				</div>
@@ -127,7 +111,7 @@
 					<div class="summary">
 						<h4>
 							Health status
-							{#if postgres.isHealthy}
+							{#if instance.isHealthy}
 								<CheckmarkCircleFillIcon
 									style="color: var(--a-surface-success); font-size: 1.2rem"
 								/>
@@ -143,7 +127,7 @@
 					<div class="summary">
 						<h4>
 							High availability enabled
-							{#if postgres.highAvailability}
+							{#if instance.highAvailability}
 								<CheckmarkCircleFillIcon
 									style="color: var(--a-surface-success); font-size: 1.2rem"
 								/>
@@ -157,28 +141,24 @@
 			<Card columns={3} borderColor="#91dc75">
 				<div class="summaryCard">
 					<div class="summary">
-						<h4>
-							Connections 2 av 10
-						</h4>
+						<h4>Connections 2 av 10</h4>
 					</div>
 				</div>
 			</Card>
 			<Card columns={3} borderColor="#91dc75">
 				<div class="summaryCard">
 					<div class="summary">
-						<h4>
-							Databases: 1,2
-						</h4>
+						<h4>Databases: 1,2</h4>
 					</div>
 				</div>
 			</Card>
 			<Card columns={8} borderColor="#91dc75">
-				<h4>
-					Information
-				</h4>
-				{#if postgres.app}
+				<h4>Information</h4>
+				{#if instance.app}
 					Used by application: <a
-					href="/team/{teamName}/{envName}/app/{postgres.app.name.toString()}">{postgres.app.name}</a>
+						href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
+						>{instance.app.name}</a
+					>
 				{:else}
 					<ExclamationmarkTriangleFillIcon
 						style="color: var(--a-icon-warning)"
@@ -186,35 +166,36 @@
 					/>
 					The SQL instance does not belong to any application resource
 				{/if}
-				{#if postgres.type}
-					<p>Database version: {postgres.type} </p>
+				{#if instance.type}
+					<p>Database version: {instance.type}</p>
 				{:else}
 					<p>Database type: None</p>
 				{/if}
-				{#if postgres.connectionName}
-					<p style="display: flex; align-items: center;"> Connection name: {postgres.connectionName}
-						<CopyButton size="small" variant="action" copyText={postgres.connectionName.toString()} />
+				{#if instance.connectionName}
+					<p style="display: flex; align-items: center;">
+						Connection name: {instance.connectionName}
+						<CopyButton
+							size="small"
+							variant="action"
+							copyText={instance.connectionName.toString()}
+						/>
 					</p>
 				{/if}
-				{#if postgres.tier}
-					<p>Tier: {postgres.tier}</p>
+				{#if instance.tier}
+					<p>Tier: {instance.tier}</p>
 				{/if}
-				<p> Last backup: {new Date(2024).toLocaleString()}</p>
+				<p>Last backup: {new Date(2024).toLocaleString()}</p>
 			</Card>
 			<Card columns={4} borderColor="#91dc75">
-				<h4>
-					Backup settings
-				</h4>
-				<p>Automatic backups: {postgres.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}</p>
-				<p>Backup start time: {postgres.backupConfiguration.startTime} </p>
-				{#if postgres.backupConfiguration.retainedBackups}
-					<p>Retained backups: {postgres.backupConfiguration.retainedBackups}</p>
+				<h4>Backup settings</h4>
+				<p>Automatic backups: {instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}</p>
+				<p>Backup start time: {instance.backupConfiguration.startTime}</p>
+				{#if instance.backupConfiguration.retainedBackups}
+					<p>Retained backups: {instance.backupConfiguration.retainedBackups}</p>
 				{/if}
 			</Card>
 			<Card columns={12} borderColor="#91dc75">
-				<h4>
-					Links
-				</h4>
+				<h4>Links</h4>
 				<p>link 1</p>
 				<p>link 2</p>
 			</Card>
@@ -223,40 +204,40 @@
 {/if}
 
 <style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        column-gap: 1rem;
-        row-gap: 1rem;
-    }
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
 
-    .summaryIcon {
-        display: flex;
-        background-color: color-mix(in srgb, var(--bg-color) 10%, white);
-        justify-content: center;
-        align-items: center;
-        width: 50px;
-        height: 50px;
-        border: 2px solid var(--bg-color);
-        border-radius: 5px;
-    }
+	.summaryIcon {
+		display: flex;
+		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
+		justify-content: center;
+		align-items: center;
+		width: 50px;
+		height: 50px;
+		border: 2px solid var(--bg-color);
+		border-radius: 5px;
+	}
 
-    .summary > h4 {
-        display: flex;
-        gap: 0.5rem;
-        margin: 0;
-        font-size: 1rem;
-        color: var(--color-text-secondary);
-    }
+	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
+	}
 
-    .metric {
-        font-size: 1.5rem;
-        margin: 0;
-    }
+	.metric {
+		font-size: 1.5rem;
+		margin: 0;
+	}
 
-    .summaryCard {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
+	.summaryCard {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
 </style>

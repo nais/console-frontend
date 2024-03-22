@@ -1,17 +1,17 @@
-import { error } from '@sveltejs/kit';
-import type { SqlInstanceVariables } from './$houdini';
-export const _SqlInstanceVariables: SqlInstanceVariables = ({ url }) => {
-	const page = parseInt(url.searchParams.get('page') || '1');
-	if (!page || page < 1) {
-		error(400, 'Bad pagenumber');
-	}
-	const limit = 25;
-	const offset = (page - 1) * limit;
-	const field = (url.searchParams.get('col') || 'NAME') as never;
-	const direction = (url.searchParams.get('dir') || 'ASC') as never;
-	const from = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
-	const to = new Date(Date.now());
-	const name = url.toString().split('/').pop();
+import { load_SqlInstance } from '$houdini';
+import type { PageLoad } from './$houdini';
 
-	return { limit, offset, name, orderBy: { field, direction }, from, to };
+export const load: PageLoad = async (event) => {
+	return {
+		...(await load_SqlInstance({
+			event,
+			variables: {
+				env: event.params.env,
+				team: event.params.team,
+				name: event.params.postgres,
+				from: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+				to: new Date(Date.now())
+			}
+		}))
+	};
 };

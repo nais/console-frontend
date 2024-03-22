@@ -1220,6 +1220,18 @@ type Query {
   ): ResourceUtilizationTrend!
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
 
+  """Get an SQL instance by name, team and env."""
+  sqlInstance(
+    """The environment the instance runs in."""
+    env: String!
+
+    """The name of the instance."""
+    name: String!
+
+    """The name of the team who owns the instance."""
+    team: Slug!
+  ): SqlInstance!
+
   """Get a specific team."""
   team(
     """Slug of the team."""
@@ -1820,9 +1832,6 @@ type Team {
   sqlInstances(
     """Returns the last n entries from the list."""
     limit: Int
-
-    """Returns a specific sql instance by name."""
-    name: String
 
     """Returns the first n entries from the list."""
     offset: Int
