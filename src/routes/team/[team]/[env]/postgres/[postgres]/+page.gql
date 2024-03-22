@@ -1,0 +1,56 @@
+query SqlInstance(
+	$team: Slug!
+	$orderBy: OrderBy = { field: NAME, direction: ASC }
+	$name: String!
+	$limit: Int
+	$offset: Int
+	$from: Date!
+	$to: Date!
+) @loading(count: 5, cascade: true) {
+	team(slug: $team) {
+		id
+		sqlInstances(limit: $limit, offset: $offset, name: $name, orderBy: $orderBy) {
+			pageInfo {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+			}
+
+			nodes {
+				id
+				name
+				env {
+					name
+				}
+				isHealthy
+				type
+				connectionName
+				app {
+					name
+				}
+				tier
+				cost(from: $from, to: $to)
+				metrics {
+					cpu {
+						cores
+						utilization
+					}
+					memory {
+						quotaBytes
+						utilization
+					}
+					disk {
+						quotaBytes
+						utilization
+					}
+				}
+				highAvailability
+				backupConfiguration {
+					enabled
+					startTime
+					retainedBackups
+				}
+			}
+		}
+	}
+}
