@@ -27,11 +27,12 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
-		CheckmarkCircleFillIcon,
 		CheckmarkIcon,
-		CircleSlashFillIcon,
 		ExclamationmarkTriangleFillIcon,
-		FloppydiskIcon
+		FloppydiskIcon,
+
+		XMarkIcon
+
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -272,11 +273,9 @@
 									</Td>
 									<Td>
 										{#if node.isHealthy}
-											<CheckmarkCircleFillIcon
-												style="color: var(--a-surface-success); font-size: 1.2rem"
-											/>
+											<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 										{:else}
-											<CircleSlashFillIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+											<XMarkIcon style="color: var(--a-icon-danger)" />
 										{/if}
 									</Td>
 									<Td>

@@ -3,10 +3,11 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, HelpText, Link } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkCircleFillIcon,
-		CircleSlashFillIcon,
+		CheckmarkIcon,
+		XMarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -44,15 +45,17 @@
 		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
 			<span> Status: </span>
 			{#if instance.isHealthy}
-				<CheckmarkCircleFillIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+				<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 			{:else}
-				<CircleSlashFillIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+				<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 			{/if}
 		</div>
 		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
+			<span>HA:</span>
 			{#if instance.highAvailability}
-				<span>HA:</span>
-				<CheckmarkCircleFillIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+				<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+			{:else}
+				<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 			{/if}
 		</div>
 	</div>
@@ -133,36 +136,40 @@
 			</div>
 		</Card>
 		<Card columns={8}>
-			<h4>Information</h4>
-			{#if instance.app}
-				Used by application: <a href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
-					>{instance.app.name}</a
-				>
-			{:else}
-				<ExclamationmarkTriangleFillIcon
-					style="color: var(--a-icon-warning)"
-					title="The SQL instance does not belong to any application resource"
-				/>
-				The SQL instance does not belong to any application resource
-			{/if}
-			{#if instance.type}
-				<p>Database version: {instance.type}</p>
-			{:else}
-				<p>Database type: None</p>
-			{/if}
-			{#if instance.connectionName}
-				<p style="display: flex; align-items: center;">
-					Connection name: {instance.connectionName}
+			<h3>Information</h3>
+			<div class="wrapper">
+				<p class="title">Application:</p>
+				<p class="content">
+					{#if instance.app}
+						Used by application: <a
+							href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
+							>{instance.app.name}</a
+						>
+					{:else}
+						<ExclamationmarkTriangleFillIcon
+							style="color: var(--a-icon-warning)"
+							title="The SQL instance does not belong to any application resource"
+						/>
+						The SQL instance does not belong to any application resource
+					{/if}
+				</p>
+				<p class="title">Database version:</p>
+				<p class="content">{instance.type}</p>
+				<p class="title">Connection name:</p>
+				<p class="content" style="display: flex; align-items: center;">
+					{instance.connectionName}
 					<CopyButton size="small" variant="action" copyText={instance.connectionName.toString()} />
 				</p>
-			{/if}
-			{#if instance.tier}
-				<p>Tier: {instance.tier}</p>
-			{/if}
-			<p>Last backup: {new Date(2024).toLocaleString()}</p>
+				<p class="title">Tier:</p>
+				<p class="content">{instance.tier}</p>
+			</div>
+			<h4 style="margin-top: 1.5rem;">Documentation</h4>
+			<ul>
+				<li><Link href="https://doc.nais.io/how-to-guides/persistence/postgres/?h=sql+in#upgrading-major-version">Upgrading major version</Link></li>
+			</ul>
 		</Card>
 		<Card columns={4}>
-			<h4>Databases</h4>
+			<h4 style="margin-bottom: 0.5rem;">Databases</h4>
 			{#if !instance.databases.length}
 				<p>The SQL instance does not have any databases.</p>
 			{:else}
@@ -172,24 +179,23 @@
 					{/each}
 				</ul>
 			{/if}
-			<h4>Backup settings</h4>
-			<p>Automatic backups: {instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}</p>
-			<p>Backup start time: {instance.backupConfiguration.startTime}</p>
-			{#if instance.backupConfiguration.retainedBackups}
-				<p>Retained backups: {instance.backupConfiguration.retainedBackups}</p>
-			{/if}
-		</Card>
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summary">
-					<h4>Connections 2 av 10</h4>
-				</div>
+			<h4 style="margin-bottom: 0.5rem">Backup settings</h4>
+			<div class="wrapper">
+				<p style="flex: 50%">Automatic backups:</p>
+				<p style="flex: 50%">
+					{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
+				</p>
+				{#if instance.backupConfiguration.enabled}
+					<p style="flex: 50%">Backup start time:</p>
+					<p style="flex: 50%">
+						{instance.backupConfiguration.startTime}
+					</p>
+					{#if instance.backupConfiguration.retainedBackups}
+						<p style="flex: 50%">Retained backups:</p>
+						<p style="flex: 50%">{instance.backupConfiguration.retainedBackups}</p>
+					{/if}
+				{/if}
 			</div>
-		</Card>
-		<Card columns={12}>
-			<h4>Links</h4>
-			<p>link 1</p>
-			<p>link 2</p>
 		</Card>
 	</div>
 {/if}
@@ -200,6 +206,21 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+
+	.wrapper {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+	.wrapper p {
+		margin: 0.4rem 0;
+	}
+	.title {
+		flex: 20%;
+	}
+	.content {
+		flex: 80%;
 	}
 
 	.summaryIcon {
