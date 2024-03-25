@@ -55,6 +55,7 @@
 				{
 					name: 'Postgres',
 					routeId: '/team/[team]/(teamPages)/postgres',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
 					withSubRoutes: true,
 					icon: DatabaseIcon,
 					memberOnly: true

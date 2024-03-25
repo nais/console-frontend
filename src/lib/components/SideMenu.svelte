@@ -14,8 +14,8 @@
 </script>
 
 <script lang="ts">
-	import { replacer } from '$lib/replacer';
 	import { page } from '$app/stores';
+	import { replacer } from '$lib/replacer';
 	export let nav: menuGroup[];
 
 	const isActive = (menuItem: menuItem, current: string | null) => {

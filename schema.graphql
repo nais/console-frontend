@@ -244,16 +244,6 @@ type DailyCost {
   sum: Float!
 }
 
-type Database {
-  envVarPrefix: String!
-  name: String!
-  users: [DatabaseUser!]!
-}
-
-type DatabaseUser {
-  name: String!
-}
-
 """Date type in YYYY-MM-DD format."""
 scalar Date
 
@@ -1595,6 +1585,10 @@ enum SortOrder {
   DESC
 }
 
+type SqlDatabase {
+  name: String!
+}
+
 type SqlInstance implements Storage {
   app: App
   autoBackupHour: Int!
@@ -1603,7 +1597,7 @@ type SqlInstance implements Storage {
   collation: String!
   connectionName: String!
   cost(from: Date!, to: Date!): Float!
-  databases: [Database!]!
+  databases: [SqlDatabase!]!
   diskAutoresize: Boolean!
   diskSize: Int!
   diskType: String!

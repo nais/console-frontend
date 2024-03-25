@@ -3,19 +3,16 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import {
 		CheckmarkCircleFillIcon,
 		CircleSlashFillIcon,
 		ExclamationmarkTriangleFillIcon,
-		FloppydiskIcon
+		ExternalLinkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageData } from './$houdini';
 	import CircleProgressBar from '../CircleProgressBar.svelte';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ SqlInstance } = data);
@@ -33,18 +30,18 @@
 	</Alert>
 {:else if instance && instance.id !== PendingValue}
 	<div style="display: flex; align-items: center; column-gap: 1rem; margin-bottom: 1rem;">
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;" >
+		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
 			SQL Instance:
 			<a
 				href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectId}&supportedpurview=project"
 				>{postgres}<ExternalLinkIcon title="Google Cloud Console" font-size="1.5rem" /></a
 			>
 		</div>
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;" >
+		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
 			<span>Version:</span>
 			<span style="font-weight: bold">{instance.type}</span>
 		</div>
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;" >
+		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
 			<span> Status: </span>
 			{#if instance.isHealthy}
 				<CheckmarkCircleFillIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
@@ -52,7 +49,7 @@
 				<CircleSlashFillIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 			{/if}
 		</div>
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;" >
+		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
 			{#if instance.highAvailability}
 				<span>HA:</span>
 				<CheckmarkCircleFillIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
@@ -165,6 +162,16 @@
 			<p>Last backup: {new Date(2024).toLocaleString()}</p>
 		</Card>
 		<Card columns={4}>
+			<h4>Databases</h4>
+			{#if !instance.databases.length}
+				<p>The SQL instance does not have any databases.</p>
+			{:else}
+				<ul>
+					{#each instance.databases as database}
+						<li>{database.name}</li>
+					{/each}
+				</ul>
+			{/if}
 			<h4>Backup settings</h4>
 			<p>Automatic backups: {instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}</p>
 			<p>Backup start time: {instance.backupConfiguration.startTime}</p>
@@ -176,13 +183,6 @@
 			<div class="summaryCard">
 				<div class="summary">
 					<h4>Connections 2 av 10</h4>
-				</div>
-			</div>
-		</Card>
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summary">
-					<h4>Databases: 1,2</h4>
 				</div>
 			</div>
 		</Card>

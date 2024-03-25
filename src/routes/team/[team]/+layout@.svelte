@@ -15,7 +15,7 @@
 		repositories: 'repositories',
 		settings: 'settings',
 		secrets: 'secrets',
-		postgres: 'postgres',
+		postgres: 'postgres'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -35,9 +35,6 @@
 		logs: 'logs',
 		manifest: 'manifest',
 		delete: 'delete'
-	};
-	const simplePostgresPages: { [key: string]: string } = {
-		'': '', // overview
 	};
 
 	const pages: { [key: string]: (params: Data) => { name: string; path?: string }[] } = {
@@ -65,6 +62,21 @@
 				{
 					name: params.secret,
 					path: replacer('/team/[team]/(teamPages)/[env]/secret/[secret]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/postgres/[postgres]': (params: Data) => {
+			return [
+				{
+					name: 'postgres',
+					path: replacer('/team/[team]/(teamPages)/postgres', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.postgres,
+					path: replacer('/team/[team]/(teamPages)/[env]/postgres/[postgres]', params)
 				}
 			];
 		}
@@ -107,30 +119,6 @@
 				{
 					name: simpleAppPages[key],
 					path: replacer(`/team/[team]/[env]/app/[app]/${key}`, params)
-				}
-			];
-
-			if (key === '') {
-				ret.pop();
-			}
-
-			return ret;
-		};
-	}
-
-	for (const key in simplePostgresPages) {
-		pages[`/team/[team]/[env]/postgres/[postgres]${key ? '/' + key : ''}`] = (params: Data) => {
-			const ret = [
-				{
-					name: params.env
-				},
-				{
-					name: params.postgres,
-					path: replacer('/team/[team]/[env]/postgres/[postgres]', params)
-				},
-				{
-					name: simplePostgresPages[key],
-					path: replacer(`/team/[team]/[env]/postgres/[postgres]/${key}`, params)
 				}
 			];
 

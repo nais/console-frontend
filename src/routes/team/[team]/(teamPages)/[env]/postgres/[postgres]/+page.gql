@@ -35,5 +35,8 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 			retainedBackups
 		}
 		projectId
+		databases {
+			name
+		}
 	}
 }
