@@ -48,6 +48,7 @@
 						low
 						unassigned
 						riskScore
+						count
 					}
 				}
 			}
