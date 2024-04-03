@@ -34,9 +34,27 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 			startTime
 			retainedBackups
 		}
+		pointInTimeRecovery
+		maintenance{
+			day
+			hour
+		}
 		projectId
 		databases {
 			name
+		}
+		flags {
+			name
+			value
+		}
+		status {
+			conditions {
+				type
+				status
+				reason
+				message
+			}
+			publicIpAddress
 		}
 	}
 }

@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { Alert, CopyButton, Link } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, Link, Tooltip, Table, Th, Tr, Td } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -20,6 +20,7 @@
 	$: postgres = $page.params.postgres;
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
+	const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 </script>
 
 {#if $SqlInstance.errors}
@@ -29,35 +30,6 @@
 		</Alert>
 	{/each}
 {:else if instance && instance.id !== PendingValue}
-	<div style="display: flex; align-items: center; column-gap: 1rem; margin-bottom: 1rem;">
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
-			SQL Instance:
-			<a
-				href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectId}&supportedpurview=project"
-				>{postgres}<ExternalLinkIcon title="Google Cloud Console" font-size="1.5rem" /></a
-			>
-		</div>
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
-			<span>Version:</span>
-			<span style="font-weight: bold">{instance.type}</span>
-		</div>
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
-			<span> Status: </span>
-			{#if instance.isHealthy}
-				<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-			{:else}
-				<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-			{/if}
-		</div>
-		<div style="display: flex; align-items: center; column-gap: 0.5rem;">
-			<span>HA:</span>
-			{#if instance.highAvailability}
-				<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-			{:else}
-				<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-			{/if}
-		</div>
-	</div>
 	<SqlInstanceMetrics
 		style="margin-bottom: 1rem;"
 		cost={instance.cost}
@@ -69,9 +41,9 @@
 		diskQuota={instance.metrics.disk.quotaBytes}
 	/>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
-		<Card columns={8}>
+		<Card columns={7}>
 			<h3>Information</h3>
-			<div class="grid" style="grid-template-columns: 20% 80%;">
+			<div class="grid" style="grid-template-columns: 30% 70%;">
 				<p>Application:</p>
 				<p>
 					{#if instance.app}
@@ -82,13 +54,46 @@
 					{:else}
 						<ExclamationmarkTriangleFillIcon
 							style="color: var(--a-icon-warning)"
-							title="The SQL instance does not belong to any application resource"
+							title="The SQL instance does not belong to any app"
 						/>
-						The SQL instance does not belong to any application resource
+						The SQL instance does not belong to any app
 					{/if}
 				</p>
-				<p>Database version:</p>
-				<p>{instance.type}</p>
+				<p>SQL Instance:</p>
+				<p>
+					<a
+						href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectId}&supportedpurview=project"
+						>{postgres}<ExternalLinkIcon title="Google Cloud Console" font-size="1.5rem" /></a
+					>
+				</p>
+				<p>Version:</p>
+				<p style="font-weight: bold">{instance.type}</p>
+				<p>Status:</p>
+				<p>
+					<Tooltip content="SQL instance is ready or not" placement="right">
+						{#if instance.isHealthy}
+							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
+						{:else}
+							{#each instance.status.conditions as condition}
+								{#if condition.status !== 'True'}
+									<Alert variant="error">
+										{condition.message}
+									</Alert>
+								{/if}
+							{/each}
+						{/if}
+					</Tooltip>
+				</p>
+				<p>HA:</p>
+				<p>
+					{#if instance.highAvailability}
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+					{:else}
+						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
+					{/if}
+				</p>
+				<p>IP address:</p>
+				<p>{instance.status.publicIpAddress}</p>
 				<p>Connection name:</p>
 				<p style="display: flex; align-items: center;">
 					{instance.connectionName}
@@ -107,7 +112,48 @@
 				</li>
 			</ul>
 		</Card>
-		<Card columns={4}>
+		<Card columns={5}>
+			<h4 style="margin-bottom: 0.5rem">Backup & Maintenance</h4>
+			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+				<Table>
+					<Th>Name</Th>
+					<Th>Value</Th>
+					<Tr>
+						<Td>Automatic backups:</Td>
+						<Td>
+							{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
+						</Td>
+					</Tr>
+					{#if instance.backupConfiguration.enabled}
+						<Tr>
+							<Td>Backup start time:</Td>
+							<Td>{instance.backupConfiguration.startTime}</Td>
+						</Tr>
+						{#if instance.backupConfiguration.retainedBackups}
+							<Tr>
+								<Td>Retained backups:</Td>
+								<Td>{instance.backupConfiguration.retainedBackups}</Td>
+							</Tr>
+						{/if}
+					{/if}
+					<Tr>
+						<Td>Point in time recovery:</Td>
+						<Td>{instance.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
+					</Tr>
+					<Tr>
+						<Td>Maintenance window:</Td>
+						{#if instance.maintenance && instance.maintenance.day > 0}
+							<Td>
+								Every {dayOfWeek[instance.maintenance.day - 1]} at {String(
+									instance.maintenance.hour
+								).padStart(2, '0')}:00
+							</Td>
+						{:else}
+							<Td>Not specified</Td>
+						{/if}
+					</Tr>
+				</Table>
+			</div>
 			<h4 style="margin-bottom: 0.5rem;">Databases</h4>
 			{#if !instance.databases.length}
 				<p>The SQL instance does not have any databases.</p>
@@ -118,19 +164,21 @@
 					{/each}
 				</ul>
 			{/if}
-			<h4 style="margin-bottom: 0.5rem">Backup settings</h4>
-			<div class="grid" style="grid-template-columns: 1fr 1fr;">
-				<p>Automatic backups:</p>
-				<p>
-					{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
-				</p>
-				{#if instance.backupConfiguration.enabled}
-					<p>Backup start time:</p>
-					<p>{instance.backupConfiguration.startTime}</p>
-					{#if instance.backupConfiguration.retainedBackups}
-						<p>Retained backups:</p>
-						<p>{instance.backupConfiguration.retainedBackups}</p>
-					{/if}
+			<h4 style="margin-bottom: 0.5rem;">Database flags</h4>
+			<div style="margin-bottom: 1.5rem;">
+				{#if instance.flags.length}
+					{#each instance.flags as flag}
+						<Table>
+							<Th>Name</Th>
+							<Th>Value</Th>
+							<Tr>
+								<Td>{flag.name}</Td>
+								<Td>{flag.value}</Td>
+							</Tr>
+						</Table>
+					{/each}
+				{:else}
+					<p>No flags set</p>
 				{/if}
 			</div>
 		</Card>
