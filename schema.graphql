@@ -155,6 +155,12 @@ type AzureApplication {
   tenant: String!
 }
 
+type BackupConfiguration {
+  enabled: Boolean!
+  retainedBackups: Int!
+  startTime: String!
+}
+
 type BigQueryDataset implements Storage {
   cascadingDelete: Boolean!
   description: String!
@@ -236,16 +242,6 @@ type DailyCost {
 
   """The sum of all costs in the cost series in euros."""
   sum: Float!
-}
-
-type Database {
-  envVarPrefix: String!
-  name: String!
-  users: [DatabaseUser!]!
-}
-
-type DatabaseUser {
-  name: String!
 }
 
 """Date type in YYYY-MM-DD format."""
@@ -1041,6 +1037,9 @@ enum OrderByField {
 
   """Order by status"""
   STATUS
+
+  """Order by PostgreSQL version"""
+  VERSION
 }
 
 type Outbound {
@@ -1227,6 +1226,18 @@ type Query {
     team: Slug!
   ): ResourceUtilizationTrend!
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
+
+  """Get an SQL instance by name, team and env."""
+  sqlInstance(
+    """The environment the instance runs in."""
+    env: String!
+
+    """The name of the instance."""
+    name: String!
+
+    """The name of the team who owns the instance."""
+    team: Slug!
+  ): SqlInstance!
 
   """Get a specific team."""
   team(
@@ -1591,23 +1602,82 @@ enum SortOrder {
   DESC
 }
 
+type SqlDatabase {
+  name: String!
+}
+
 type SqlInstance implements Storage {
+  app: App
   autoBackupHour: Int!
+  backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   collation: String!
-  databases: [Database!]!
+  connectionName: String!
+  cost(from: Date!, to: Date!): Float!
+  databases: [SqlDatabase!]!
   diskAutoresize: Boolean!
-  diskSize: Int!
   diskType: String!
+  env: Env!
   flags: [Flag!]!
   highAvailability: Boolean!
+  id: ID!
   insights: Insights!
+  isHealthy: Boolean!
   maintenance: Maintenance!
+  metrics: SqlInstanceMetrics!
   name: String!
   pointInTimeRecovery: Boolean!
+  projectId: String!
   retainedBackups: Int!
+  status: SqlInstanceStatus!
+  team: Team!
   tier: String!
   type: String!
+}
+
+type SqlInstanceCondition {
+  message: String!
+  reason: String!
+  status: String!
+  type: String!
+}
+
+type SqlInstanceCpu {
+  cores: Float!
+  usage: Float!
+  utilization: Float!
+}
+
+type SqlInstanceDisk {
+  quotaBytes: Int!
+  usage: Float!
+  utilization: Float!
+}
+
+type SqlInstanceMemory {
+  quotaBytes: Float!
+  usage: Float!
+  utilization: Float!
+}
+
+type SqlInstanceMetrics {
+  cpu: SqlInstanceCpu!
+  disk: SqlInstanceDisk!
+  memory: SqlInstanceMemory!
+}
+
+type SqlInstanceStatus {
+  conditions: [SqlInstanceCondition!]!
+}
+
+type SqlInstancesList {
+  nodes: [SqlInstance!]!
+  pageInfo: PageInfo!
+}
+
+type SqlInstancesStatus {
+  failing: Int!
+  total: Int!
 }
 
 enum State {
@@ -1770,6 +1840,16 @@ type Team {
 
   """Unique slug of the team."""
   slug: Slug!
+  sqlInstances(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order SQL instances by"""
+    orderBy: OrderBy
+  ): SqlInstancesList!
 
   """The status of the team."""
   status: TeamStatus!
@@ -1885,6 +1965,7 @@ enum TeamRole {
 type TeamStatus {
   apps: AppsStatus!
   jobs: JobsStatus!
+  sqlInstances: SqlInstancesStatus!
 }
 
 """Team sync type."""

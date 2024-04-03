@@ -13,6 +13,7 @@
 	const status = graphql(`
 		query TeamStatus($team: Slug!) @cache(policy: NetworkOnly) @load {
 			team(slug: $team) @loading(cascade: true) {
+				id @loading
 				status {
 					apps {
 						failing
@@ -22,55 +23,69 @@
 						failing
 						total
 					}
+					sqlInstances {
+						failing
+						total
+					}
 				}
 			}
 		}
 	`);
+
+	$: team = $status.data?.team;
 </script>
 
-<h4>Workloads</h4>
-{#if $status.data}
-	{#if $status.data.team.status.apps.failing !== PendingValue && $status.data.team.status.apps.failing > 0}
+<h4>Inventory</h4>
+{#if team && team.id !== PendingValue}
+	{#if team.status.apps.failing > 0}
 		<p>
 			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
 			<a href="/team/{teamName}/applications">
-				{$status.data.team.status.apps.failing}/{$status.data.team.status.apps.total} app{$status
-					.data.team.status.apps.failing > 1
+				{team.status.apps.failing}/{team.status.apps.total} app{team.status.apps.failing > 1
 					? 's'
 					: ''}</a
 			>
 			failing
 		</p>
-	{:else if $status.data.team.status.apps.total !== PendingValue && $status.data.team.status.apps.total > 0}
+	{:else if team.status.apps.total > 0}
 		<p>
 			<Nais size="1rem" style="color: var(--a-icon-success)" role="image" />
 			<a href="/team/{teamName}/applications">
-				{$status.data.team.status.apps.total} app{$status.data.team.status.apps.total > 1
-					? 's'
-					: ''}</a
+				{team.status.apps.total} app{team.status.apps.total > 1 ? 's' : ''}</a
 			>
 		</p>
 	{/if}
-	{#if $status.data.team.status.jobs.failing !== PendingValue && $status.data.team.status.jobs.failing > 0}
+	{#if team.status.jobs.failing > 0}
 		<p>
 			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
 			<a href="/team/{teamName}/jobs">
-				{$status.data.team.status.jobs.failing}/{$status.data.team.status.jobs.total} job{$status
-					.data.team.status.jobs.failing > 1
+				{team.status.jobs.failing}/{team.status.jobs.total} job{team.status.jobs.failing > 1
 					? 's'
 					: ''}</a
 			> failing
 		</p>
-	{:else if $status.data.team.status.jobs.total !== PendingValue && $status.data.team.status.jobs.total > 0}
+	{:else if team.status.jobs.total > 0}
 		<p>
 			<Nais size="1rem" style="color: var(--a-icon-success)" role="image" />
 			<a href="/team/{teamName}/jobs"
-				>{$status.data.team.status.jobs.total} job{$status.data.team.status.jobs.total > 1
-					? 's'
-					: ''}</a
+				>{team.status.jobs.total} job{team.status.jobs.total > 1 ? 's' : ''}</a
 			>
 		</p>
 	{/if}
+	{#if team.status.sqlInstances.failing > 0}
+		<p>
+			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
+			<a href="/team/{teamName}/postgres">
+				{team.status.sqlInstances.failing}/{team.status.sqlInstances.total} postgres</a
+			> failing
+		</p>
+	{:else if team.status.sqlInstances.total > 0}
+		<p>
+			<Nais size="1rem" style="color: var(--a-icon-success)" role="image" />
+			<a href="/team/{teamName}/postgres">{team.status.sqlInstances.total} postgres</a>
+		</p>
+	{/if}
+	<!-- TODO: Team status NAIS icon -->
 {/if}
 
 <style>
