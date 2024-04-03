@@ -1624,6 +1624,7 @@ type SqlInstance implements Storage {
   insights: Insights!
   isHealthy: Boolean!
   maintenance: Maintenance
+  maintenanceVersion: String
   metrics: SqlInstanceMetrics!
   name: String!
   pointInTimeRecovery: Boolean!

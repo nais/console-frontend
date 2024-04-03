@@ -39,6 +39,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 			day
 			hour
 		}
+		maintenanceVersion
 		projectId
 		databases {
 			name

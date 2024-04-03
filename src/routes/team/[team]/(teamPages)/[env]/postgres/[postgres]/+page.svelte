@@ -106,8 +106,19 @@
 			<ul>
 				<li>
 					<Link
+						href="https://docs.nais.io/how-to-guides/persistence/postgres"
+						>How to guide</Link
+					>
+				<li>
+					<Link
 						href="https://doc.nais.io/how-to-guides/persistence/postgres/?h=sql+in#upgrading-major-version"
 						>Upgrading major version</Link
+					>
+				</li>
+				<li>
+					<Link
+						href="https://cloud.google.com/products/calculator?hl=en&dl=CiRjYmFlZDQ1MS0yMDQwLTRiNzEtYjUxYi1mNmFlYmJjZTdmNDUQBxokNTQxRjU0QTktN0E1NS00ODVGLUI2RDUtOUFFOUI1QzZCNTNG"
+						>Google cost calculator</Link
 					>
 				</li>
 			</ul>
@@ -152,6 +163,16 @@
 							<Td>Not specified</Td>
 						{/if}
 					</Tr>
+					<Tr>
+						<Td>Maintenance version:</Td>
+						{#if instance.maintenanceVersion}
+							<Td>
+								{instance.maintenanceVersion}
+							</Td>
+						{:else}
+							<Td>Not specified</Td>
+						{/if}
+					</Tr>
 				</Table>
 			</div>
 			<h4 style="margin-bottom: 0.5rem;">Databases</h4>
@@ -167,16 +188,16 @@
 			<h4 style="margin-bottom: 0.5rem;">Database flags</h4>
 			<div style="margin-bottom: 1.5rem;">
 				{#if instance.flags.length}
+					<Table>
+						<Th>Name</Th>
+						<Th>Value</Th>
 					{#each instance.flags as flag}
-						<Table>
-							<Th>Name</Th>
-							<Th>Value</Th>
 							<Tr>
 								<Td>{flag.name}</Td>
 								<Td>{flag.value}</Td>
 							</Tr>
-						</Table>
 					{/each}
+					</Table>
 				{:else}
 					<p>No flags set</p>
 				{/if}

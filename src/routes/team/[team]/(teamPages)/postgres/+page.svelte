@@ -181,13 +181,15 @@
 								<Td>
 									{node.env.name}
 								</Td>
-								<Td style="display: flex; align-items: center;">
-									{#if node.connectionName}
-										<Tooltip content={node.connectionName}
+								<Td>
+									<div style="display: flex; align-items: center;">
+										{#if node.connectionName}
+											<Tooltip content={node.connectionName}
 											>...{node.connectionName.split(':').pop()}</Tooltip
-										>
-										<CopyButton size="small" variant="action" copyText={node.connectionName} />
-									{/if}
+											>
+											<CopyButton size="small" variant="action" copyText={node.connectionName} />
+										{/if}
+									</div>
 								</Td>
 								<Td>
 									{#if node.isHealthy}
