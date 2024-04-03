@@ -111,7 +111,7 @@
 					>
 				<li>
 					<Link
-						href="https://doc.nais.io/how-to-guides/persistence/postgres/?h=sql+in#upgrading-major-version"
+						href="https://doc.nais.io/how-to-guides/persistence/postgres/#upgrading-major-version"
 						>Upgrading major version</Link
 					>
 				</li>
