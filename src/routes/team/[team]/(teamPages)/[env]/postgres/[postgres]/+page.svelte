@@ -2,16 +2,14 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { Alert, CopyButton, HelpText, Link } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, Link } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import prettyBytes from 'pretty-bytes';
+	import SqlInstanceMetrics from '../../../postgres/SqlInstanceMetrics.svelte';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -60,88 +58,22 @@
 			{/if}
 		</div>
 	</div>
-	<div class="grid">
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost
-						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
-					</h4>
-					<p class="metric">
-						€{Math.round(instance.cost)}
-					</p>
-				</div>
-			</div>
-		</Card>
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
-					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization
-						<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour for team.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-						core(s)
-					</p>
-				</div>
-			</div>
-		</Card>
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
-					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-							instance.metrics.memory.quotaBytes
-						)}
-					</p>
-				</div>
-			</div>
-		</Card>
-
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
-					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						Disk utilization
-						<HelpText title="Current memory utilization"
-							>Disk utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-							instance.metrics.disk.quotaBytes
-						)}
-					</p>
-				</div>
-			</div>
-		</Card>
+	<SqlInstanceMetrics
+		style="margin-bottom: 1rem;"
+		cost={instance.cost}
+		cpuUtilization={instance.metrics.cpu.utilization}
+		cpuCores={instance.metrics.cpu.cores}
+		memoryUtilization={instance.metrics.memory.utilization}
+		memoryQuota={instance.metrics.memory.quotaBytes}
+		diskUtilization={instance.metrics.disk.utilization}
+		diskQuota={instance.metrics.disk.quotaBytes}
+	/>
+	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={8}>
 			<h3>Information</h3>
-			<div class="wrapper">
-				<p class="title">Application:</p>
-				<p class="content">
+			<div class="grid" style="grid-template-columns: 20% 80%;">
+				<p>Application:</p>
+				<p>
 					{#if instance.app}
 						Used by application: <a
 							href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
@@ -155,15 +87,15 @@
 						The SQL instance does not belong to any application resource
 					{/if}
 				</p>
-				<p class="title">Database version:</p>
-				<p class="content">{instance.type}</p>
-				<p class="title">Connection name:</p>
-				<p class="content" style="display: flex; align-items: center;">
+				<p>Database version:</p>
+				<p>{instance.type}</p>
+				<p>Connection name:</p>
+				<p style="display: flex; align-items: center;">
 					{instance.connectionName}
 					<CopyButton size="small" variant="action" copyText={instance.connectionName.toString()} />
 				</p>
-				<p class="title">Tier:</p>
-				<p class="content">{instance.tier}</p>
+				<p>Tier:</p>
+				<p>{instance.tier}</p>
 			</div>
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>
@@ -187,19 +119,17 @@
 				</ul>
 			{/if}
 			<h4 style="margin-bottom: 0.5rem">Backup settings</h4>
-			<div class="wrapper">
-				<p style="flex: 50%">Automatic backups:</p>
-				<p style="flex: 50%">
+			<div class="grid" style="grid-template-columns: 1fr 1fr;">
+				<p>Automatic backups:</p>
+				<p>
 					{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
 				</p>
 				{#if instance.backupConfiguration.enabled}
-					<p style="flex: 50%">Backup start time:</p>
-					<p style="flex: 50%">
-						{instance.backupConfiguration.startTime}
-					</p>
+					<p>Backup start time:</p>
+					<p>{instance.backupConfiguration.startTime}</p>
 					{#if instance.backupConfiguration.retainedBackups}
-						<p style="flex: 50%">Retained backups:</p>
-						<p style="flex: 50%">{instance.backupConfiguration.retainedBackups}</p>
+						<p>Retained backups:</p>
+						<p>{instance.backupConfiguration.retainedBackups}</p>
 					{/if}
 				{/if}
 			</div>
@@ -210,52 +140,12 @@
 <style>
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-
-	.wrapper {
-		display: flex;
-		flex-wrap: wrap;
+		column-gap: 0.5rem;
+		row-gap: 0.5rem;
 		align-items: center;
 	}
-	.wrapper p {
-		margin: 0.4rem 0;
-	}
-	.title {
-		flex: 20%;
-	}
-	.content {
-		flex: 80%;
-	}
 
-	.summaryIcon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 1px solid var(--bg-color);
-		border-radius: 5px;
-	}
-
-	.summary > h4 {
-		display: flex;
-		gap: 0.5rem;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
-	}
-
-	.summaryCard {
-		display: flex;
-		align-items: center;
-		gap: 20px;
+	.grid p {
+		margin: 0.2rem 0;
 	}
 </style>
