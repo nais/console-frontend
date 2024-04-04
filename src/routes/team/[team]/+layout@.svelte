@@ -14,7 +14,8 @@
 		members: 'members',
 		repositories: 'repositories',
 		settings: 'settings',
-		secrets: 'secrets'
+		secrets: 'secrets',
+		postgres: 'postgres'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -62,6 +63,21 @@
 				{
 					name: params.secret,
 					path: replacer('/team/[team]/(teamPages)/[env]/secret/[secret]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/postgres/[postgres]': (params: Data) => {
+			return [
+				{
+					name: 'postgres',
+					path: replacer('/team/[team]/(teamPages)/postgres', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.postgres,
+					path: replacer('/team/[team]/(teamPages)/[env]/postgres/[postgres]', params)
 				}
 			];
 		}

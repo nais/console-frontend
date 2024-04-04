@@ -13,3 +13,5 @@ vite.config.ts.timestamp-*
 $houdini
 /.idea/
 /.direnv/
+
+values.json
