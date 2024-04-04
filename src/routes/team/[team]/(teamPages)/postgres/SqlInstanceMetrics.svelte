@@ -42,7 +42,7 @@
 				<h4>
 					CPU utilization
 					<HelpText title="Current CPU utilization"
-						>CPU utilization for the last elapsed hour for team.
+						>CPU utilization for the last elapsed hour.
 					</HelpText>
 				</h4>
 				<p class="metric">

@@ -139,7 +139,6 @@
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Connection Name</Th>
 				<Th sortable={true} sortKey="STATUS">Status</Th>
-				<Th><Tooltip content="High availability">HA</Tooltip></Th>
 				<Th>
 					<div class="tableHeader">
 						Cost<HelpText title="Cost per SQL Instance"
@@ -196,11 +195,6 @@
 										<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 									{:else}
 										<XMarkIcon style="color: var(--a-icon-danger)" />
-									{/if}
-								</Td>
-								<Td>
-									{#if node.highAvailability}
-										<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 									{/if}
 								</Td>
 								<Td>
