@@ -6,6 +6,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 		env {
 			name
 		}
+		cascadingDelete
 		isHealthy
 		type
 		connectionName
@@ -33,9 +34,9 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 			enabled
 			startTime
 			retainedBackups
+			pointInTimeRecovery
 		}
-		pointInTimeRecovery
-		maintenance{
+		maintenanceWindow {
 			day
 			hour
 		}

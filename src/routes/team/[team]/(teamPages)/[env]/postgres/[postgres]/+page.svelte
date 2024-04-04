@@ -90,6 +90,14 @@
 						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
 					{/if}
 				</p>
+				<p>Deletion protection:</p>
+				<p>
+					{#if instance.cascadingDelete}
+						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
+					{:else}
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+					{/if}
+				</p>
 				<p>IP address:</p>
 				<p>{instance.status.publicIpAddress}</p>
 				<p>Connection name:</p>
@@ -147,14 +155,14 @@
 					{/if}
 					<Tr>
 						<Td>Point in time recovery:</Td>
-						<Td>{instance.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
+						<Td>{instance.backupConfiguration.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
 					</Tr>
 					<Tr>
 						<Td>Maintenance window:</Td>
-						{#if instance.maintenance && instance.maintenance.day > 0}
+						{#if instance.maintenanceWindow && instance.maintenanceWindow.day > 0}
 							<Td>
-								Every {dayOfWeek[instance.maintenance.day - 1]} at {String(
-									instance.maintenance.hour
+								Every {dayOfWeek[instance.maintenanceWindow.day - 1]} at {String(
+									instance.maintenanceWindow.hour
 								).padStart(2, '0')}:00
 							</Td>
 						{:else}

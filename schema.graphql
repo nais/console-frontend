@@ -157,6 +157,7 @@ type AzureApplication {
 
 type BackupConfiguration {
   enabled: Boolean!
+  pointInTimeRecovery: Boolean!
   retainedBackups: Int!
   startTime: String!
 }
@@ -560,7 +561,7 @@ input LogSubscriptionInput {
   team: Slug!
 }
 
-type Maintenance {
+type MaintenanceWindow {
   day: Int!
   hour: Int!
 }
@@ -1608,28 +1609,21 @@ type SqlDatabase {
 
 type SqlInstance implements Storage {
   app: App
-  autoBackupHour: Int!
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
-  collation: String!
   connectionName: String!
   cost(from: Date!, to: Date!): Float!
   databases: [SqlDatabase!]!
-  diskAutoresize: Boolean!
-  diskType: String!
   env: Env!
   flags: [Flag!]!
   highAvailability: Boolean!
   id: ID!
-  insights: Insights!
   isHealthy: Boolean!
-  maintenance: Maintenance
   maintenanceVersion: String
+  maintenanceWindow: MaintenanceWindow
   metrics: SqlInstanceMetrics!
   name: String!
-  pointInTimeRecovery: Boolean!
   projectId: String!
-  retainedBackups: Int!
   status: SqlInstanceStatus!
   team: Team!
   tier: String!
