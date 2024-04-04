@@ -41,13 +41,13 @@
 		diskQuota={instance.metrics.disk.quotaBytes}
 	/>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
-		<Card columns={7}>
+		<Card columns={6}>
 			<h3>Information</h3>
 			<div class="grid" style="grid-template-columns: 30% 70%;">
 				<p>Application:</p>
 				<p>
 					{#if instance.app}
-						Used by application: <a
+						<a
 							href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
 							>{instance.app.name}</a
 						>
@@ -75,11 +75,9 @@
 							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
 						{:else}
 							{#each instance.status.conditions as condition}
-								{#if condition.status !== 'True'}
-									<Alert variant="error">
-										{condition.message}
-									</Alert>
-								{/if}
+								<Alert variant="warning">
+									{condition.reason}: {condition.message}
+								</Alert>
 							{/each}
 						{/if}
 					</Tooltip>
@@ -123,7 +121,7 @@
 				</li>
 			</ul>
 		</Card>
-		<Card columns={5}>
+		<Card columns={6}>
 			<h4 style="margin-bottom: 0.5rem">Backup & Maintenance</h4>
 			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
 				<Table>
