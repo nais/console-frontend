@@ -75,7 +75,6 @@
 		{:else if storage.__typename === 'SqlInstance'}
 			<div class="storageContent">
 				<h5><Postgres />{storage.__typename}</h5>
-				{storage.name} ({storage.type})
 				<span
 					><b>Instance:</b>
 					<Link href="/team/{team}/{env}/postgres/{storage.name}">{storage.name}</Link></span
