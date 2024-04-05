@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { JobStorage } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
@@ -6,7 +7,7 @@
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { Link, Skeleton } from '@nais/ds-svelte-community';
 
 	export let job: JobStorage;
 	$: data = fragment(
@@ -51,6 +52,9 @@
 			}
 		`)
 	);
+
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 <div class="storage">
@@ -72,6 +76,11 @@
 			<div class="storageContent">
 				<h5><Postgres />{storage.__typename}</h5>
 				{storage.name} ({storage.type})
+				<span
+					><b>Instance:</b>
+					<Link href="/team/{team}/{env}/postgres/{storage.name}">{storage.name}</Link></span
+				>
+				<span><b>Type:</b> ({storage.type}) </span>
 			</div>
 		{:else if storage.__typename === 'Kafka'}
 			<div class="storageContent">

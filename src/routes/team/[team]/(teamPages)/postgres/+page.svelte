@@ -246,11 +246,11 @@
 						{#each team.sqlInstances.nodes as node}
 							<Tr>
 								<Td>
-									{#if !node.app?.name}
-										<Tooltip content="The SQL instance does not belong to any application resource">
+									{#if !node.workload?.name}
+										<Tooltip content="The SQL instance does not belong to any workload">
 											<ExclamationmarkTriangleFillIcon
 												style="color: var(--a-icon-warning)"
-												title="The SQL instance does not belong to any application resource"
+												title="The SQL instance does not belong to any workload"
 											/>
 										</Tooltip>
 									{/if}

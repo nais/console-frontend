@@ -24,8 +24,13 @@ query SqlInstances(
 				isHealthy
 				type
 				connectionName
-				app {
-					name
+				workload {
+					... on App {
+						name
+					}
+					... on NaisJob {
+						name
+					}
 				}
 				cost(from: $from, to: $to)
 				metrics {

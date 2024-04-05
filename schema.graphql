@@ -1608,7 +1608,6 @@ type SqlDatabase {
 }
 
 type SqlInstance implements Storage {
-  app: App
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   connectionName: String!
@@ -1628,6 +1627,7 @@ type SqlInstance implements Storage {
   team: Team!
   tier: String!
   type: String!
+  workload: Workload
 }
 
 type SqlInstanceCondition {
@@ -2154,3 +2154,5 @@ type VulnerabilitySummary {
   total: Int!
   unassigned: Int!
 }
+
+union Workload = App | NaisJob

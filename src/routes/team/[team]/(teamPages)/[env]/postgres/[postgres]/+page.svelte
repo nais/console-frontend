@@ -123,18 +123,26 @@
 		<Card columns={6}>
 			<h3>Information</h3>
 			<div class="grid" style="grid-template-columns: 30% 70%;">
-				<p>Application:</p>
 				<p>
-					{#if instance.app}
-						<a href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
-							>{instance.app.name}</a
+					{instance.workload
+						? instance.workload.__typename === 'App'
+							? 'Application'
+							: 'Job'
+						: 'Workload'}:
+				</p>
+				<p>
+					{#if instance.workload}
+						<a
+							href="/team/{teamName}/{envName}/{instance.workload.__typename === 'App'
+								? 'app'
+								: 'job'}/{instance.workload.name}">{instance.workload.name}</a
 						>
 					{:else}
 						<ExclamationmarkTriangleFillIcon
 							style="color: var(--a-icon-warning)"
-							title="The SQL instance does not belong to any app"
+							title="The SQL instance does not belong to any workload"
 						/>
-						The SQL instance does not belong to any app
+						The SQL instance does not belong to any workload
 					{/if}
 				</p>
 				<p>SQL Instance:</p>

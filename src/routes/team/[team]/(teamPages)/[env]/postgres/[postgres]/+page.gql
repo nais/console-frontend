@@ -10,8 +10,13 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 		isHealthy
 		type
 		connectionName
-		app {
-			name
+		workload {
+			... on App {
+				name
+			}
+			... on NaisJob {
+				name
+			}
 		}
 		tier
 		cost(from: $from, to: $to)
