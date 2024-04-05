@@ -5,8 +5,9 @@
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { Link, Skeleton } from '@nais/ds-svelte-community';
 	import { BucketIcon } from '@nais/ds-svelte-community/icons';
+	import { page } from '$app/stores';
 
 	export let app: Storage;
 	$: data = fragment(
@@ -51,6 +52,9 @@
 			}
 		`)
 	);
+
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 <div class="storage">
@@ -71,7 +75,8 @@
 		{:else if storage.__typename === 'SqlInstance'}
 			<div class="storageContent">
 				<h5><Postgres />Postgres</h5>
-				{storage.name} ({storage.type})
+				<span><b>Instance:</b> <Link href="/team/{team}/{env}/postgres/{storage.name}">{storage.name}</Link></span>
+				<span><b>Type:</b>  ({storage.type}) </span>
 			</div>
 		{:else if storage.__typename === 'Kafka'}
 			<div class="storageContent">
