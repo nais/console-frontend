@@ -1,0 +1,62 @@
+query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to: Date!)
+@loading(cascade: true) {
+	sqlInstance(env: $env, team: $team, name: $name) {
+		id
+		name
+		env {
+			name
+		}
+		cascadingDelete
+		isHealthy
+		type
+		connectionName
+		app {
+			name
+		}
+		tier
+		cost(from: $from, to: $to)
+		metrics {
+			cpu {
+				cores
+				utilization
+			}
+			memory {
+				quotaBytes
+				utilization
+			}
+			disk {
+				quotaBytes
+				utilization
+			}
+		}
+		highAvailability
+		backupConfiguration {
+			enabled
+			startTime
+			retainedBackups
+			pointInTimeRecovery
+		}
+		maintenanceWindow {
+			day
+			hour
+		}
+		maintenanceVersion
+		projectId
+		databases {
+			name
+		}
+		flags {
+			name
+			value
+		}
+		status {
+			conditions {
+				type
+				status
+				reason
+				message
+			}
+			publicIpAddress
+		}
+	}
+}

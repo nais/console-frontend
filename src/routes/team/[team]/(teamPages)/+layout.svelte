@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue, type TeamRoles$result } from '$houdini';
+	import type { menuItem } from '$lib/components/SideMenu.svelte';
+	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
 		BranchingIcon,
 		CogIcon,
+		DatabaseIcon,
 		HouseIcon,
 		LineGraphStackedIcon,
 		PersonGroupIcon,
@@ -14,9 +18,6 @@
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import type { menuItem } from '$lib/components/SideMenu.svelte';
-	import SideMenu from '$lib/components/SideMenu.svelte';
-	import { PendingValue, type TeamRoles$result } from '$houdini';
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
@@ -52,6 +53,13 @@
 					icon: ArrowCirclepathIcon
 				},
 				{
+					name: 'Postgres',
+					routeId: '/team/[team]/(teamPages)/postgres',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
+					withSubRoutes: true,
+					icon: DatabaseIcon
+				},
+				{
 					name: 'Secrets',
 					routeId: '/team/[team]/(teamPages)/secrets',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
@@ -59,12 +67,7 @@
 					icon: QuietZoneIcon,
 					memberOnly: true
 				}
-				// {
-				// 	name: 'Postgres',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: PostgresStroke
-				// },
+
 				// {
 				// 	name: 'Buckets',
 				// 	routeId: '/team/[team]/(teamPages)/jobs',
