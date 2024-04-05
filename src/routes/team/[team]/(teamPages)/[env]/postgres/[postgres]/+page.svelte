@@ -2,14 +2,26 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { Alert, CopyButton, Link, Tooltip, Table, Th, Tr, Td } from '@nais/ds-svelte-community';
+	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import {
+		Alert,
+		CopyButton,
+		HelpText,
+		Link,
+		Table,
+		Td,
+		Th,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import SqlInstanceMetrics from '../../../postgres/SqlInstanceMetrics.svelte';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -30,16 +42,83 @@
 		</Alert>
 	{/each}
 {:else if instance && instance.id !== PendingValue}
-	<SqlInstanceMetrics
-		style="margin-bottom: 1rem;"
-		cost={instance.cost}
-		cpuUtilization={instance.metrics.cpu.utilization}
-		cpuCores={instance.metrics.cpu.cores}
-		memoryUtilization={instance.metrics.memory.utilization}
-		memoryQuota={instance.metrics.memory.quotaBytes}
-		diskUtilization={instance.metrics.disk.utilization}
-		diskQuota={instance.metrics.disk.quotaBytes}
-	/>
+	<div class="summary-grid">
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost
+						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
+					</h4>
+					<p class="metric">
+						€{Math.round(instance.cost)}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div>
+					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
+				</div>
+				<div class="summary">
+					<h4>
+						CPU utilization
+						<HelpText title="Current CPU utilization"
+							>CPU utilization for the last elapsed hour.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
+						core(s)
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div>
+					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
+				</div>
+				<div class="summary">
+					<h4>
+						Memory utilization
+						<HelpText title="Current memory utilization"
+							>Memory utilization for the last elapsed hour.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+							instance.metrics.memory.quotaBytes
+						)}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div>
+					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
+				</div>
+				<div class="summary">
+					<h4>
+						Disk utilization
+						<HelpText title="Current memory utilization"
+							>Disk utilization for the last elapsed hour.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+							instance.metrics.disk.quotaBytes
+						)}
+					</p>
+				</div>
+			</div>
+		</Card>
+	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={6}>
 			<h3>Information</h3>
@@ -47,8 +126,7 @@
 				<p>Application:</p>
 				<p>
 					{#if instance.app}
-						<a
-							href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
+						<a href="/team/{teamName}/{envName}/app/{instance.app.name.toString()}"
 							>{instance.app.name}</a
 						>
 					{:else}
@@ -111,10 +189,8 @@
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>
 				<li>
-					<Link
-						href="https://docs.nais.io/how-to-guides/persistence/postgres"
-						>How to guide</Link
-					>
+					<Link href="https://docs.nais.io/how-to-guides/persistence/postgres">How to guide</Link>
+				</li>
 				<li>
 					<Link
 						href="https://doc.nais.io/how-to-guides/persistence/postgres/#upgrading-major-version"
@@ -197,12 +273,12 @@
 					<Table>
 						<Th>Name</Th>
 						<Th>Value</Th>
-					{#each instance.flags as flag}
+						{#each instance.flags as flag}
 							<Tr>
 								<Td>{flag.name}</Td>
 								<Td>{flag.value}</Td>
 							</Tr>
-					{/each}
+						{/each}
 					</Table>
 				{:else}
 					<p>No flags set</p>
@@ -222,5 +298,42 @@
 
 	.grid p {
 		margin: 0.2rem 0;
+	}
+
+	.summary-grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.summaryIcon {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 50px;
+		height: 50px;
+		border: 1px solid var(--bg-color);
+		border-radius: 5px;
+	}
+
+	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
+	}
+
+	.metric {
+		font-size: 1.5rem;
+		margin: 0;
+	}
+
+	.summaryCard {
+		display: flex;
+		align-items: center;
+		gap: 20px;
 	}
 </style>

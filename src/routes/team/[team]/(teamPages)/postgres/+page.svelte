@@ -3,6 +3,8 @@
 	import { PendingValue, type SqlInstances$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -28,8 +30,8 @@
 		ExclamationmarkTriangleFillIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
-	import SqlInstanceMetrics from './SqlInstanceMetrics.svelte';
 
 	export let data: PageData;
 
@@ -97,31 +99,113 @@
 		</Alert>
 	{/each}
 {:else if team}
-	<SqlInstanceMetrics
-		style="margin-bottom: 1rem;"
-		cost={teamCost(team.sqlInstances.nodes)}
-		cpuUtilization={teamCpuUtilization(team.sqlInstances.nodes)}
-		cpuCores={team.sqlInstances.nodes.reduce((acc, r) => {
-			if (r.metrics.cpu.cores !== PendingValue) {
-				return acc + r.metrics.cpu.cores;
-			}
-			return acc;
-		}, 0)}
-		memoryUtilization={teamMemoryUtilization(team.sqlInstances.nodes)}
-		memoryQuota={team.sqlInstances.nodes.reduce((acc, r) => {
-			if (r.metrics.memory.quotaBytes !== PendingValue) {
-				return acc + r.metrics.memory.quotaBytes;
-			}
-			return acc;
-		}, 0)}
-		diskUtilization={teamDiskUtilization(team.sqlInstances.nodes)}
-		diskQuota={team.sqlInstances.nodes.reduce((acc, r) => {
-			if (r.metrics.disk.quotaBytes !== PendingValue) {
-				return acc + r.metrics.disk.quotaBytes;
-			}
-			return acc;
-		}, 0)}
-	/>
+	<div class="summary-grid">
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost
+						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team.id == PendingValue}
+							<Skeleton variant="text" />
+						{:else}
+							€{Math.round(teamCost(team.sqlInstances.nodes))}
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div>
+					{#if team.id == PendingValue}
+						<Skeleton height={'50px'} width={'50px'} variant="circle" />
+					{:else}
+						<CircleProgressBar progress={teamCpuUtilization(team.sqlInstances.nodes) / 100} />
+					{/if}
+				</div>
+				<div class="summary">
+					<h4>
+						CPU utilization
+						<HelpText title="Current CPU utilization"
+							>CPU utilization for the last elapsed hour.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team.id == PendingValue}
+							<Skeleton variant="text" />
+						{:else}
+							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(1)}% of {team.sqlInstances.nodes
+								.reduce((acc, r) => acc + r.metrics.cpu.cores, 0)
+								.toLocaleString()}
+							core(s)
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div>
+					{#if team.id == PendingValue}
+						<Skeleton height={'50px'} width={'50px'} variant="circle" />
+					{:else}
+						<CircleProgressBar progress={teamMemoryUtilization(team.sqlInstances.nodes) / 100} />
+					{/if}
+				</div>
+				<div class="summary">
+					<h4>
+						Memory utilization
+						<HelpText title="Current memory utilization"
+							>Memory utilization for the last elapsed hour.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team.id == PendingValue}
+							<Skeleton variant="text" />
+						{:else}
+							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
+								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.memory.quotaBytes, 0)
+							)}
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div>
+					{#if team.id == PendingValue}
+						<Skeleton height={'50px'} width={'50px'} variant="circle" />
+					{:else}
+						<CircleProgressBar progress={teamDiskUtilization(team.sqlInstances.nodes) / 100} />
+					{/if}
+				</div>
+				<div class="summary">
+					<h4>
+						Disk utilization
+						<HelpText title="Current memory utilization"
+							>Disk utilization for the last elapsed hour.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team.id == PendingValue}
+							<Skeleton variant="text" />
+						{:else}
+							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
+								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.disk.quotaBytes, 0)
+							)}
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+	</div>
 	<Card columns={12}>
 		<Table
 			size="small"
@@ -184,7 +268,7 @@
 									<div style="display: flex; align-items: center;">
 										{#if node.connectionName}
 											<Tooltip content={node.connectionName}
-											>...{node.connectionName.split(':').pop()}</Tooltip
+												>...{node.connectionName.split(':').pop()}</Tooltip
 											>
 											<CopyButton size="small" variant="action" copyText={node.connectionName} />
 										{/if}
@@ -244,5 +328,42 @@
 	.tableHeader {
 		display: flex;
 		gap: 0.5rem;
+	}
+
+	.summary-grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.summaryIcon {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 50px;
+		height: 50px;
+		border: 1px solid var(--bg-color);
+		border-radius: 5px;
+	}
+
+	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
+	}
+
+	.metric {
+		font-size: 1.5rem;
+		margin: 0;
+	}
+
+	.summaryCard {
+		display: flex;
+		align-items: center;
+		gap: 20px;
 	}
 </style>
