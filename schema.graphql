@@ -2106,6 +2106,9 @@ type VulnerabilityList {
 }
 
 type VulnerabilityMetric {
+  """The number of applications with vulnerabilities."""
+  count: Int!
+
   """The number of critical vulnerabilities."""
   critical: Int!
 

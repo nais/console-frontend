@@ -18,6 +18,7 @@ export function vulnerabilitiesTeamTransformLineChart(
 	const unassignedSeries = new Array<number>();
 	const criticalSeries = new Array<number>();
 	const riskScoreSeries = new Array<number>();
+	const countSeries = new Array<number>();
 
 	for (let i = 0; i < numberOfDays; i++) {
 		highSeries.push(metrics.team.vulnerabilityMetrics.data[i].high);
@@ -26,6 +27,7 @@ export function vulnerabilitiesTeamTransformLineChart(
 		unassignedSeries.push(metrics.team.vulnerabilityMetrics.data[i].unassigned);
 		criticalSeries.push(metrics.team.vulnerabilityMetrics.data[i].critical);
 		riskScoreSeries.push(metrics.team.vulnerabilityMetrics.data[i].riskScore);
+		countSeries.push(metrics.team.vulnerabilityMetrics.data[i].count);
 	}
 
 	return {
@@ -93,6 +95,13 @@ export function vulnerabilitiesTeamTransformLineChart(
 				data: unassignedSeries,
 				showSymbol: numberOfDays === 1 ? true : false,
 				color: '#777777'
+			},
+			{
+				type: 'line',
+				name: 'Sbom count',
+				data: countSeries,
+				showSymbol: numberOfDays === 1 ? true : false,
+				color: '#007bff'
 			},
 			{
 				type: 'line',
