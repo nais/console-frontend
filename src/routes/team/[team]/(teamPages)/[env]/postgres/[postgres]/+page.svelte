@@ -4,17 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import {
-		Alert,
-		CopyButton,
-		HelpText,
-		Link,
-		Table,
-		Td,
-		Th,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, HelpText, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -156,25 +146,25 @@
 				<p style="font-weight: bold">{instance.type}</p>
 				<p>Status:</p>
 				<p style="display: flex; align-items: center;">
-						{#if instance.isHealthy}
-							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
-							<HelpText title="Status of the sql instance">
-								Status indicates the health of the instance. If the instance is healthy and running,
-								the checkmark will be displayed.
-								If the instance is unhealthy, the reason and message will be displayed.
-							</HelpText>
-						{:else}
-							{#each instance.status.conditions as condition}
-								<Alert variant="warning">
-									<HelpText title="Status of the sql instance">
-										Status indicates the health of the instance. If the instance is healthy and running,
-										the checkmark will be displayed.
-										If the instance is unhealthy, the reason and message will be displayed.
-									</HelpText>
-									{condition.reason}: {condition.message}
-								</Alert>
-							{/each}
-						{/if}
+					{#if instance.isHealthy}
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
+						<HelpText title="Status of the sql instance">
+							Status indicates the health of the instance. If the instance is healthy and running,
+							the checkmark will be displayed. If the instance is unhealthy, the reason and message
+							will be displayed.
+						</HelpText>
+					{:else}
+						{#each instance.status.conditions as condition}
+							<Alert variant="warning">
+								<HelpText title="Status of the sql instance">
+									Status indicates the health of the instance. If the instance is healthy and
+									running, the checkmark will be displayed. If the instance is unhealthy, the reason
+									and message will be displayed.
+								</HelpText>
+								{condition.reason}: {condition.message}
+							</Alert>
+						{/each}
+					{/if}
 				</p>
 				<p>HA:</p>
 				<p style="display: flex; align-items: center;">
@@ -184,9 +174,10 @@
 						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
 					{/if}
 					<HelpText title="High availability">
-						A SQL instance configured for HA is also called a regional instance and has a primary and secondary
-						zone within the configured region. Shared CPU machine types are not supported for regional instances.
-						If the instance is configured for HA, the checkmark will be displayed.
+						A SQL instance configured for HA is also called a regional instance and has a primary
+						and secondary zone within the configured region. Shared CPU machine types are not
+						supported for regional instances. If the instance is configured for HA, the checkmark
+						will be displayed.
 					</HelpText>
 				</p>
 				<p>Deletion protection:</p>
@@ -214,33 +205,31 @@
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>
 				<li>
-					<Link href="https://docs.nais.io/how-to-guides/persistence/postgres">How to guide
+					<Link href="https://docs.nais.io/how-to-guides/persistence/postgres"
+						>How to guide
 						<ExternalLinkIcon title="How to guide" font-size="1.5rem" />
 					</Link>
 				</li>
 				<li>
 					<Link
 						href="https://doc.nais.io/how-to-guides/persistence/postgres/#upgrading-major-version"
-					>Upgrading major version
+						>Upgrading major version
 						<ExternalLinkIcon title="Upgrading major version" font-size="1.5rem" />
-					</Link
-					>
+					</Link>
 				</li>
 				<li>
 					<Link
 						href="https://cloud.google.com/products/calculator?hl=en&dl=CiRjYmFlZDQ1MS0yMDQwLTRiNzEtYjUxYi1mNmFlYmJjZTdmNDUQBxokNTQxRjU0QTktN0E1NS00ODVGLUI2RDUtOUFFOUI1QzZCNTNG"
-					>Google cost calculator
+						>Google cost calculator
 						<ExternalLinkIcon title="Google cost calculator" font-size="1.5rem" />
-					</Link
-					>
+					</Link>
 				</li>
 				<li>
 					<Link
 						href="https://docs.nais.io/how-to-guides/persistence/postgres/#deleting-the-database"
-					>Deletion Protection
+						>Deletion Protection
 						<ExternalLinkIcon title="Deletion Protection" font-size="1.5rem" />
-					</Link
-					>
+					</Link>
 				</li>
 			</ul>
 		</Card>
