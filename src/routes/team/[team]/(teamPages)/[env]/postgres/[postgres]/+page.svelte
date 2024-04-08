@@ -197,7 +197,7 @@
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 					{/if}
 					<HelpText title="Deletion protection for sql instance">
-						Deletion protection is a feature that prevents accidental deletion of the application instance.
+						Deletion protection is a feature that prevents accidental deletion of the sql instance.
 						If the deletion protection is enabled, the checkmark will be displayed.
 					</HelpText>
 				</p>
