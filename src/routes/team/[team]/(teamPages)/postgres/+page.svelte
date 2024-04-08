@@ -111,7 +111,7 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if team.id === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
 							€{Math.round(teamCost(team.sqlInstances.nodes))}
@@ -123,7 +123,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if team.id === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
 						<CircleProgressBar progress={teamCpuUtilization(team.sqlInstances.nodes) / 100} />
@@ -137,12 +137,14 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if team.id === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(1)}% of {team.sqlInstances.nodes
-								.reduce((acc, r) => acc + r.metrics.cpu.cores, 0)
-								.toLocaleString()}
+							{team.sqlInstances.nodes.length === 0
+								? '0' :
+								teamCpuUtilization(team.sqlInstances.nodes).toFixed(1)}% of {team.sqlInstances.nodes
+							.reduce((acc, r) => acc + r.metrics.cpu.cores, 0)
+							.toLocaleString()}
 							core(s)
 						{/if}
 					</p>
@@ -152,7 +154,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if team.id === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
 						<CircleProgressBar progress={teamMemoryUtilization(team.sqlInstances.nodes) / 100} />
@@ -166,12 +168,14 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if team.id === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
-								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.memory.quotaBytes, 0)
-							)}
+							{team.sqlInstances.nodes.length === 0
+								? '0' :
+								teamMemoryUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
+							team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.memory.quotaBytes, 0)
+						)}
 						{/if}
 					</p>
 				</div>
@@ -180,7 +184,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if team.id === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
 						<CircleProgressBar progress={teamDiskUtilization(team.sqlInstances.nodes) / 100} />
@@ -194,12 +198,14 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if team.id === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
-								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.disk.quotaBytes, 0)
-							)}
+							{team.sqlInstances.nodes.length === 0
+								? '0'
+								: teamDiskUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
+							team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.disk.quotaBytes, 0)
+						)}
 						{/if}
 					</p>
 				</div>
