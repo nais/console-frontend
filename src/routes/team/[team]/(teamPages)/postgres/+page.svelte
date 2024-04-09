@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, type SqlInstances$result } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
@@ -38,57 +38,9 @@
 	$: teamName = $page.params.team;
 	$: ({ SqlInstances } = data);
 	$: team = $SqlInstances.data?.team;
+	$: current = $SqlInstances.data?.currentSqlInstancesMetrics;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($SqlInstances.variables));
-	const teamCost = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) =>
-		instances.reduce((acc, r) => {
-			if (r.cost !== PendingValue) {
-				return acc + r.cost;
-			}
-			return acc;
-		}, 0);
-
-	const teamCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
-		let numWithMetrics = 0;
-		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.cpu.utilization !== PendingValue && r.metrics.cpu.utilization > 0) {
-				numWithMetrics++;
-				return acc + r.metrics.cpu.utilization;
-			}
-			return acc;
-		}, 0);
-
-		return sum / numWithMetrics;
-	};
-
-	const teamMemoryUtilization = (
-		instances: SqlInstances$result['team']['sqlInstances']['nodes']
-	) => {
-		let numWithMetrics = 0;
-		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.memory.utilization !== PendingValue && r.metrics.memory.utilization > 0) {
-				numWithMetrics++;
-				return acc + r.metrics.memory.utilization;
-			}
-			return acc;
-		}, 0);
-
-		return sum / numWithMetrics;
-	};
-
-	const teamDiskUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
-		let numWithMetrics = 0;
-		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.disk.utilization !== PendingValue && r.metrics.disk.utilization > 0) {
-				numWithMetrics++;
-				return acc + r.metrics.disk.utilization;
-			}
-			return acc;
-		}, 0);
-
-		return sum / numWithMetrics;
-	};
-
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
@@ -98,7 +50,7 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if team}
+{:else if team && current}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -111,10 +63,10 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if current.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							€{Math.round(teamCost(team.sqlInstances.nodes))}
+							€{Math.round(current.cost)}
 						{/if}
 					</p>
 				</div>
@@ -123,10 +75,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if current.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={teamCpuUtilization(team.sqlInstances.nodes) / 100} />
+						<CircleProgressBar progress={current.cpu.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -137,13 +89,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if current.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(1)}% of {team.sqlInstances.nodes
-								.reduce((acc, r) => acc + r.metrics.cpu.cores, 0)
-								.toLocaleString()}
-							core(s)
+							{current.cpu.utilization.toFixed(1)}% of {current.cpu.cores.toLocaleString()} core(s)
 						{/if}
 					</p>
 				</div>
@@ -152,10 +101,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if current.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={teamMemoryUtilization(team.sqlInstances.nodes) / 100} />
+						<CircleProgressBar progress={current.memory.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -166,12 +115,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if current.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
-								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.memory.quotaBytes, 0)
-							)}
+							{current.memory.utilization.toFixed(1)}% of {prettyBytes(current.memory.quotaBytes)}
 						{/if}
 					</p>
 				</div>
@@ -180,10 +127,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if current.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={teamDiskUtilization(team.sqlInstances.nodes) / 100} />
+						<CircleProgressBar progress={current.disk.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -194,12 +141,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if current.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
-								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.disk.quotaBytes, 0)
-							)}
+							{current.disk.utilization.toFixed(1)}% of {prettyBytes(current.disk.quotaBytes)}
 						{/if}
 					</p>
 				</div>

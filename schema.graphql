@@ -236,6 +236,13 @@ type CurrentResourceUtilization {
   timestamp: Time!
 }
 
+type CurrentSqlInstancesMetrics {
+  cost: Float!
+  cpu: SqlInstanceCpu!
+  disk: SqlInstanceDisk!
+  memory: SqlInstanceMemory!
+}
+
 """Daily cost type."""
 type DailyCost {
   """The cost series."""
@@ -1103,6 +1110,14 @@ type Query {
     """The name of the team."""
     team: Slug!
   ): CurrentResourceUtilization!
+
+  """
+  Get the current SQL instances metrics for a team across all environments.
+  """
+  currentSqlInstancesMetrics(
+    """The name of the team."""
+    team: Slug!
+  ): CurrentSqlInstancesMetrics!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(

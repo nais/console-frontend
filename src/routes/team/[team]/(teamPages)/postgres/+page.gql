@@ -51,4 +51,19 @@ query SqlInstances(
 			}
 		}
 	}
+	currentSqlInstancesMetrics(team: $team) {
+		cost
+		cpu {
+			cores
+			utilization
+		}
+		memory {
+			quotaBytes
+			utilization
+		}
+		disk {
+			quotaBytes
+			utilization
+		}
+	}
 }
