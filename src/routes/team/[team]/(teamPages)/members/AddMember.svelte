@@ -34,6 +34,7 @@
 					name
 					description
 					memberAware
+					enabled
 				}
 			}
 		}
@@ -53,11 +54,12 @@
 	let selectedRecs: string[] = [];
 	let reconcilers: Reconciler[] = [];
 
+	let loaded = false;
 	onMount(() => {
 		return store.subscribe(async (v) => {
 			if (!v.data) return;
 
-			const recs = v.data.reconcilers.nodes.filter((r) => r.memberAware);
+			const recs = v.data.reconcilers.nodes.filter((r) => r.memberAware && r.enabled);
 			reconcilers =
 				recs.map((r) => ({
 					name: r.displayName,
@@ -66,6 +68,7 @@
 				})) ?? [];
 
 			selectedRecs = recs.map((r) => r.name);
+			loaded = true;
 		});
 	});
 
@@ -127,18 +130,20 @@
 			<option value="MEMBER">Member</option>
 		</Select>
 
-		<CheckboxGroup legend="Enabled features" bind:value={selectedRecs}>
-			{#each reconcilers as reconciler}
-				<Checkbox value={reconciler.value} checked={true}>
-					<span class="option">
-						{reconciler.name}
-						<HelpText title="" wrapperClass="tooltipAddMemberWrapper">
-							{reconciler.description}
-						</HelpText>
-					</span>
-				</Checkbox>
-			{/each}
-		</CheckboxGroup>
+		{#if loaded}
+			<CheckboxGroup legend="Enabled features" bind:value={selectedRecs}>
+				{#each reconcilers as reconciler}
+					<Checkbox value={reconciler.value} checked={true}>
+						<span class="option">
+							{reconciler.name}
+							<HelpText title="" wrapperClass="tooltipAddMemberWrapper">
+								{reconciler.description}
+							</HelpText>
+						</span>
+					</Checkbox>
+				{/each}
+			</CheckboxGroup>
+		{/if}
 	</form>
 
 	<svelte:fragment slot="footer">
