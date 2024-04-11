@@ -9,9 +9,9 @@
 </script>
 
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { goto } from '$app/navigation';
+	import { graphql } from '$houdini';
+	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 
 	export let environment: EnvironmentType;
 
@@ -38,7 +38,7 @@
 	`);
 
 	const create = async () => {
-		if (validate(name, environment.name).length > 0 && name.length > 0) {
+		if (validate(name).length > 0 && name.length > 0) {
 			return;
 		}
 
@@ -59,7 +59,7 @@
 		await goto(secretPage);
 	};
 
-	const validate = (name: string, env: string) => {
+	const validate = (name: string) => {
 		if (!name) {
 			return '';
 		}
@@ -96,7 +96,7 @@
 	</svelte:fragment>
 	<div class="wrapper">
 		<div class="row">
-			<TextField size="small" bind:value={name} error={validate(name, environment.name)}>
+			<TextField size="small" bind:value={name} error={validate(name)}>
 				<svelte:fragment slot="label">Name</svelte:fragment>
 			</TextField>
 		</div>
