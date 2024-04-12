@@ -278,7 +278,7 @@
 						Last updated: <Time time={overageCostForTeam.timestamp} distance={true} />
 					</p>
 				{:else}
-					<p>Laste updated: <Skeleton variant="text" /></p>
+					<p>Last updated: <Skeleton variant="text" /></p>
 				{/if}
 			</div>
 
