@@ -210,10 +210,11 @@
 									{node.env.name}
 								</Td>
 								<Td>
-									<div style="display: flex; align-items: center;">
+									<div style="display: flex; align-items: center; width: 15rem">
 										{#if node.connectionName}
-											<Tooltip content={node.connectionName}
-												>...{node.connectionName.split(':').pop()}</Tooltip
+											<span
+												style="width: 100%; direction: rtl; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+												title={node.connectionName}>{node.connectionName}</span
 											>
 											<CopyButton size="small" variant="action" copyText={node.connectionName} />
 										{/if}
@@ -235,17 +236,17 @@
 								</Td>
 								<Td>
 									{#if node.metrics.cpu.utilization}
-										{percentageFormatter(node.metrics.cpu.utilization)}
+										{node.metrics.cpu.utilization.toFixed(1)}%
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.memory.utilization}
-										{percentageFormatter(node.metrics.memory.utilization)}
+										{node.metrics.memory.utilization.toFixed(1)}%
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.disk.utilization}
-										{percentageFormatter(node.metrics.disk.utilization)}
+										{node.metrics.disk.utilization.toFixed(1)}%
 									{/if}
 								</Td>
 							</Tr>

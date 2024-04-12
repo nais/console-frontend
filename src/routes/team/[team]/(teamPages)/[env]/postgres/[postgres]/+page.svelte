@@ -122,13 +122,13 @@
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={6}>
 			<h3>Information</h3>
-			<div class="grid" style="grid-template-columns: 30% 70%;">
+			<div class="grid" style="grid-template-columns: 40% 60%;">
 				<p>
 					{instance.workload
 						? instance.workload.__typename === 'App'
 							? 'Application'
 							: 'Job'
-						: 'Workload'}:
+						: 'Workload'}
 				</p>
 				<p>
 					{#if instance.workload}
@@ -145,42 +145,34 @@
 						The SQL instance does not belong to any workload
 					{/if}
 				</p>
-				<p>SQL Instance:</p>
+				<p>SQL Instance</p>
 				<p>
 					<a
 						href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectId}&supportedpurview=project"
 						>{postgres}<ExternalLinkIcon title="Google Cloud Console" font-size="1.5rem" /></a
 					>
 				</p>
-				<p>Version:</p>
+				<p style="display: flex; align-items: center; gap: 0 1rem">
+					Status
+					<HelpText title="Status of the sql instance">
+						Status indicates the health of the instance. If the instance is healthy and running, the
+						checkmark will be displayed. If the instance is unhealthy, the reason and message will
+						be displayed.
+					</HelpText>
+				</p>
 				<p style="display: flex; align-items: center;">
 					{#if instance.isHealthy}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
-						<HelpText title="Status of the sql instance">
-							Status indicates the health of the instance. If the instance is healthy and running,
-							the checkmark will be displayed. If the instance is unhealthy, the reason and message
-							will be displayed.
-						</HelpText>
 					{:else}
 						{#each instance.status.conditions as condition}
 							<Alert variant="warning">
-								<HelpText title="Status of the sql instance">
-									Status indicates the health of the instance. If the instance is healthy and
-									running, the checkmark will be displayed. If the instance is unhealthy, the reason
-									and message will be displayed.
-								</HelpText>
 								{condition.reason}: {condition.message}
 							</Alert>
 						{/each}
 					{/if}
 				</p>
-				<p>HA:</p>
-				<p style="display: flex; align-items: center;">
-					{#if instance.highAvailability}
-						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
-					{:else}
-						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
-					{/if}
+				<p style="display: flex; align-items: center; gap: 0 1rem">
+					HA
 					<HelpText title="High availability">
 						A SQL instance configured for HA is also called a regional instance and has a primary
 						and secondary zone within the configured region. Shared CPU machine types are not
@@ -188,26 +180,38 @@
 						will be displayed.
 					</HelpText>
 				</p>
-				<p>Deletion protection:</p>
-				<p style="display: flex; align-items: center;">
-					{#if instance.cascadingDelete}
-						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
-					{:else}
+				<p>
+					{#if instance.highAvailability}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+					{:else}
+						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
 					{/if}
+				</p>
+				<p style="display: flex; align-items: center; gap: 0 1rem">
+					Deletion protection
 					<HelpText title="Deletion protection for sql instance">
 						Deletion protection is a feature that prevents accidental deletion of the sql instance.
 						If the deletion protection is enabled, the checkmark will be displayed.
 					</HelpText>
 				</p>
-				<p>IP address:</p>
+				<p>
+					{#if instance.cascadingDelete}
+						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" />
+					{:else}
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+					{/if}
+				</p>
+				<p>IP address</p>
 				<p>{instance.status.publicIpAddress}</p>
-				<p>Connection name:</p>
+				<p>Connection name</p>
 				<p style="display: flex; align-items: center;">
-					{instance.connectionName}
+					<span
+						style="width: 90%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+						title={instance.connectionName}>{instance.connectionName}</span
+					>
 					<CopyButton size="small" variant="action" copyText={instance.connectionName.toString()} />
 				</p>
-				<p>Tier:</p>
+				<p>Tier</p>
 				<p>{instance.tier}</p>
 			</div>
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
