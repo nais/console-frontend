@@ -1537,11 +1537,12 @@ type SearchList {
   pageInfo: PageInfo!
 }
 
-union SearchNode = App | NaisJob | Team
+union SearchNode = App | NaisJob | SqlInstance | Team
 
 enum SearchType {
   APP
   NAISJOB
+  SQLINSTANCE
   TEAM
 }
 

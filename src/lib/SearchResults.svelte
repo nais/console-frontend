@@ -2,7 +2,7 @@
 	import type { SearchQuery$result } from '$houdini';
 	import { PendingValue } from '$houdini';
 	import { Skeleton } from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { DatabaseIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
 	export let data: SearchQuery$result;
@@ -90,6 +90,23 @@
 						<div>Team</div>
 					</div>
 					{node.slug}</a
+				>
+			</li>
+		{:else if node.__typename === 'SqlInstance'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.env.name}/postgres/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<DatabaseIcon height="1.5rem" />
+						<div>SQL</div>
+					</div>
+					{node.name} ({node.team.slug}/{node.env.name})</a
 				>
 			</li>
 		{/if}

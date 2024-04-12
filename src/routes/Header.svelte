@@ -33,6 +33,15 @@
 							name
 						}
 					}
+					... on SqlInstance {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
 				}
 			}
 		}
@@ -68,6 +77,9 @@
 					unsupportedFilter = false;
 				} else if (query.startsWith('job:')) {
 					store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('sql:')) {
+					store.fetch({ variables: { query: query.slice(4), type: 'SQLINSTANCE' } });
 					unsupportedFilter = false;
 				} else if (query.lastIndexOf(':') >= 0) {
 					unsupportedFilter = true;
@@ -111,6 +123,10 @@
 						query = '';
 						showSearch = false;
 						goto(`/team/${node.team.slug}/${node.env.name}/job/${node.name}`);
+					} else if (node.__typename === 'SqlInstance') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.env.name}/postgres/${node.name}`);
 					}
 				}
 				break;
@@ -139,7 +155,7 @@
 			</a>
 			<div class="search">
 				<Search
-					placeholder="Search for apps, jobs or teams..."
+					placeholder="Search for apps, jobs, teams and more..."
 					bind:value={query}
 					label="search"
 					variant="simple"
@@ -176,7 +192,8 @@
 								You can filter your searches with prefixes. Try one of the following:<br />
 								<code>app:myapp</code><br />
 								<code>job:myjob</code><br />
-								<code>team:myteam</code>
+								<code>team:myteam</code><br />
+								<code>sql:mysqlinstance</code>
 							</div>
 						</li>
 					</ul>
@@ -222,7 +239,7 @@
 		color: var(--a-text-default);
 		overflow: auto;
 		box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-		min-height: 150px;
+		min-height: 200px;
 		width: 350px;
 	}
 
