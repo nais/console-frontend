@@ -11,7 +11,6 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { percentageFormatter } from '$lib/utils/formatters';
 	import {
 		Alert,
 		CopyButton,
@@ -38,7 +37,7 @@
 	$: teamName = $page.params.team;
 	$: ({ SqlInstances } = data);
 	$: team = $SqlInstances.data?.team;
-	$: current = $SqlInstances.data?.currentSqlInstancesMetrics;
+	$: metrics = $SqlInstances.data?.team.sqlInstances.metrics;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($SqlInstances.variables));
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
@@ -50,7 +49,7 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if team && current}
+{:else if team && metrics}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -63,10 +62,10 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{#if current.cost === PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							€{Math.round(current.cost)}
+							€{Math.round(metrics.cost)}
 						{/if}
 					</p>
 				</div>
@@ -75,10 +74,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if current.cost === PendingValue}
+					{#if metrics.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={current.cpu.utilization / 100} />
+						<CircleProgressBar progress={metrics.cpu.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -89,10 +88,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if current.cost === PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{current.cpu.utilization.toFixed(1)}% of {current.cpu.cores.toLocaleString()} core(s)
+							{metrics.cpu.utilization.toFixed(1)}% of {metrics.cpu.cores.toLocaleString()} core(s)
 						{/if}
 					</p>
 				</div>
@@ -101,10 +100,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if current.cost === PendingValue}
+					{#if metrics.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={current.memory.utilization / 100} />
+						<CircleProgressBar progress={metrics.memory.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -115,10 +114,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if current.cost === PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{current.memory.utilization.toFixed(1)}% of {prettyBytes(current.memory.quotaBytes)}
+							{metrics.memory.utilization.toFixed(1)}% of {prettyBytes(metrics.memory.quotaBytes)}
 						{/if}
 					</p>
 				</div>
@@ -127,10 +126,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if current.cost === PendingValue}
+					{#if metrics.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={current.disk.utilization / 100} />
+						<CircleProgressBar progress={metrics.disk.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -141,10 +140,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if current.cost === PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{current.disk.utilization.toFixed(1)}% of {prettyBytes(current.disk.quotaBytes)}
+							{metrics.disk.utilization.toFixed(1)}% of {prettyBytes(metrics.disk.quotaBytes)}
 						{/if}
 					</p>
 				</div>
@@ -168,16 +167,22 @@
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Connection Name</Th>
 				<Th sortable={true} sortKey="STATUS">Status</Th>
-				<Th>
+				<Th sortable={true} sortKey="COST">
 					<div class="tableHeader">
 						Cost<HelpText title="Cost per SQL Instance"
 							>The cost of the SQL instance over the last 30 days</HelpText
 						>
 					</div>
 				</Th>
-				<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
-				<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
-				<Th><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th>
+				<Th sortable={true} sortKey="CPU"
+					><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
+				>
+				<Th sortable={true} sortKey="MEMORY"
+					><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
+				>
+				<Th sortable={true} sortKey="DISK"
+					><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
+				>
 			</Thead>
 			<Tbody>
 				{#if team !== undefined}
@@ -228,25 +233,36 @@
 									{/if}
 								</Td>
 								<Td>
-									{#if node.cost > 0}
-										€{Math.round(node.cost)}
+									{#if node.metrics.cost > 0}
+										€{Math.round(node.metrics.cost)}
 									{:else}
 										-
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.cpu.utilization}
-										{node.metrics.cpu.utilization.toFixed(1)}%
+										<span
+											title="{node.metrics.cpu.utilization.toFixed(1)}% of {node.metrics.cpu
+												.cores} core(s)">{node.metrics.cpu.utilization.toFixed(1)}%</span
+										>
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.memory.utilization}
-										{node.metrics.memory.utilization.toFixed(1)}%
+										<span
+											title="{node.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+												node.metrics.memory.quotaBytes
+											)}">{node.metrics.memory.utilization.toFixed(1)}%</span
+										>
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.disk.utilization}
-										{node.metrics.disk.utilization.toFixed(1)}%
+										<span
+											title="{node.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+												node.metrics.disk.quotaBytes
+											)}">{node.metrics.disk.utilization.toFixed(1)}%</span
+										>
 									{/if}
 								</Td>
 							</Tr>
