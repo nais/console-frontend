@@ -106,8 +106,16 @@
 						<DatabaseIcon height="1.5rem" />
 						<div>SQL</div>
 					</div>
-					{node.name} ({node.team.slug}/{node.env.name})</a
-				>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.slug}
+						</div>
+					</div>
+				</a>
 			</li>
 		{/if}
 	{/each}
