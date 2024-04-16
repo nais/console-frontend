@@ -142,7 +142,7 @@
 							style="color: var(--a-icon-warning)"
 							title="The SQL instance does not belong to any workload"
 						/>
-						The SQL instance does not belong to any workload
+						Instance does not belong to any workload
 					{/if}
 				</p>
 				<p>SQL Instance</p>
@@ -156,19 +156,19 @@
 					Status
 					<HelpText title="Status of the sql instance">
 						Status indicates the health of the instance. If the instance is healthy and running, the
-						checkmark will be displayed. If the instance is unhealthy, the reason and message will
-						be displayed.
+						checkmark will be displayed. If the instance is unhealthy or have some conditions that
+						need to be addressed, the exclamation mark will be displayed. Check the conditions
+						section for more details.
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">
 					{#if instance.isHealthy}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
-					{:else}
-						{#each instance.status.conditions as condition}
-							<Alert variant="warning">
-								{condition.reason}: {condition.message}
-							</Alert>
-						{/each}
+					{:else if instance.status.conditions.length > 0}
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
+						<a href="/team/{teamName}/{envName}/postgres/{instance.name}#conditions">
+							Investigate instance conditions report</a
+						>
 					{/if}
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem">
@@ -299,7 +299,7 @@
 			</div>
 			<h4 style="margin-bottom: 0.5rem;">Databases</h4>
 			{#if !instance.databases.length}
-				<p>The SQL instance does not have any databases.</p>
+				<p>The Instance does not have any databases.</p>
 			{:else}
 				<ul>
 					{#each instance.databases as database}
@@ -325,6 +325,43 @@
 				{/if}
 			</div>
 		</Card>
+
+		{#if !instance.isHealthy && instance.status.conditions.length > 0}
+			<Card columns={12}>
+				<h4 id="conditions" style="margin-bottom: 0.5rem">
+					Conditions
+					<Link
+						style="float: right"
+						href="https://doc.nais.io/how-to-guides/persistence/postgres/#faq"
+					>
+						FAQ
+						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
+					</Link>
+				</h4>
+				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+					<Table>
+						<Th>Reason</Th>
+						<Th style="width:12rem">Last transition</Th>
+						<Th style="width:10rem">Current condition</Th>
+						<Th>Message</Th>
+						{#each instance.status.conditions as condition}
+							<Tr>
+								<Td>{condition.reason}</Td>
+								<Td>{condition.lastTransitionTime}</Td>
+								<Td>{condition.status}</Td>
+								<Td>
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-info)"
+										title="Conditions that need to be addressed"
+									></ExclamationmarkTriangleFillIcon>
+									{condition.message}
+								</Td>
+							</Tr>
+						{/each}
+					</Table>
+				</div>
+			</Card>
+		{/if}
 	</div>
 {/if}
 

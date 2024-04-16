@@ -1647,6 +1647,7 @@ type SqlInstance implements Storage {
 }
 
 type SqlInstanceCondition {
+  lastTransitionTime: String!
   message: String!
   reason: String!
   status: String!

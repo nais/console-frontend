@@ -60,6 +60,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 				status
 				reason
 				message
+				lastTransitionTime
 			}
 			publicIpAddress
 		}
