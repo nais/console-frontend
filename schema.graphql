@@ -1625,6 +1625,7 @@ type SqlInstance implements Storage {
   cascadingDelete: Boolean!
   connectionName: String!
   database: SqlDatabase
+  diskAutoresize: Boolean!
   env: Env!
   flags: [Flag!]!
   highAvailability: Boolean!

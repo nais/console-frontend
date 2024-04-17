@@ -204,6 +204,16 @@
 				</p>
 				<p>Tier</p>
 				<p>{instance.tier}</p>
+				<p style="display: flex; align-items: center; gap: 0 1rem">
+					Disk auto resize
+					<HelpText title="Automatic allocation of disk space for sql instance">
+						Disk autoresize is a feature that automatically increases the disk size when the disk
+						utilization reaches its limit. If the disk autoresize is enabled, the disk will
+						automatically increase in size regardless of the instance's tier or predefined disk
+						size.
+					</HelpText>
+				</p>
+				<p>{instance.diskAutoresize}</p>
 			</div>
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>

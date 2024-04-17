@@ -9,6 +9,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 		isHealthy
 		type
 		connectionName
+		diskAutoresize
 		workload {
 			... on App {
 				name
