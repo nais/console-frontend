@@ -46,7 +46,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 		}
 		maintenanceVersion
 		projectId
-		databases {
+		database {
 			name
 		}
 		flags {

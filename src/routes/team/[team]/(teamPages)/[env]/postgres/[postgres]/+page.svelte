@@ -287,15 +287,11 @@
 					</Tr>
 				</Table>
 			</div>
-			<h4 style="margin-bottom: 0.5rem;">Databases</h4>
-			{#if !instance.databases.length}
-				<p>The Instance does not have any databases.</p>
+			<h4 style="margin-bottom: 0.5rem;">Database</h4>
+			{#if instance.database}
+				<p>{instance.database.name}</p>
 			{:else}
-				<ul>
-					{#each instance.databases as database}
-						<li>{database.name}</li>
-					{/each}
-				</ul>
+				<p>The Instance does not have any databases.</p>
 			{/if}
 			<h4 style="margin-bottom: 0.5rem;">Database flags</h4>
 			<div style="margin-bottom: 1.5rem;">

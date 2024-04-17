@@ -1624,7 +1624,7 @@ type SqlInstance implements Storage {
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   connectionName: String!
-  databases: [SqlDatabase!]!
+  database: SqlDatabase
   env: Env!
   flags: [Flag!]!
   highAvailability: Boolean!
