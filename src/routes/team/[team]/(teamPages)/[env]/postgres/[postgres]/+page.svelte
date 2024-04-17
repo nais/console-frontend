@@ -146,9 +146,9 @@
 					Status
 					<HelpText title="Status of the sql instance">
 						Status indicates the health of the instance. If the instance is healthy and running, the
-						checkmark will be displayed. If the instance is unhealthy or have some conditions that
-						need to be addressed, the exclamation mark will be displayed. Check the conditions
-						section for more details.
+						checkmark will be displayed. If the instance is experiencing issues or has conditions
+						that require attention the message will be displayed in the bottom, please refer to the
+						conditions section.
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">
@@ -164,10 +164,10 @@
 				<p style="display: flex; align-items: center; gap: 0 1rem">
 					HA
 					<HelpText title="High availability">
-						A SQL instance configured for HA is also called a regional instance and has a primary
-						and secondary zone within the configured region. Shared CPU machine types are not
-						supported for regional instances. If the instance is configured for HA, the checkmark
-						will be displayed.
+						A SQL instance set up for high availability (HA) is also referred to as a regional
+						instance. It consist of primary and secondary zones within the configured region to
+						handle database failover. Regional instances do not support shared CPU machine types. If
+						the instance is configured for HA, it will display a checkmark.
 					</HelpText>
 				</p>
 				<p>
@@ -180,8 +180,9 @@
 				<p style="display: flex; align-items: center; gap: 0 1rem">
 					Deletion protection
 					<HelpText title="Deletion protection for sql instance">
-						Deletion protection is a feature that prevents accidental deletion of the sql instance.
-						If the deletion protection is enabled, the checkmark will be displayed.
+						Deletion protection is a feature used to prevent the accidental deletion of the SQL
+						instance. If the Kubernetes resource is deleted, the SQL instance remains unaffected.
+						Enabling deletion protection will display a checkmark.
 					</HelpText>
 				</p>
 				<p>
