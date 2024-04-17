@@ -2,7 +2,7 @@
 	import { graphql, UserSyncRunStatus } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Accordion, AccordionItem, Loader } from '@nais/ds-svelte-community';
+	import { Accordion, AccordionItem, Loader, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns/format';
 	import { formatDistance } from 'date-fns/formatDistance';
 	import { enGB } from 'date-fns/locale/en-GB';
@@ -14,7 +14,10 @@
 				finishedAt
 				status
 				error
-				auditLogs(limit: 15) {
+				auditLogs(limit: 100) {
+					pageInfo {
+						totalCount
+					}
 					nodes {
 						actor
 						action
@@ -65,9 +68,27 @@
 							<svelte:fragment slot="heading">
 								<h2>View logs</h2>
 							</svelte:fragment>
-							{#each us.auditLogs.nodes as log}
-								<p>{log.actor} - {log.message} - {log.createdAt}</p>
-							{/each}
+							{#if us.auditLogs.pageInfo.totalCount > us.auditLogs.nodes.length}
+								<p>
+									Showing {us.auditLogs.nodes.length} of {us.auditLogs.pageInfo.totalCount} entries.
+								</p>
+							{/if}
+							<Table>
+								<Tr>
+									<Th>Time</Th>
+									<Th>Action</Th>
+									<Th>Message</Th>
+								</Tr>
+								{#each us.auditLogs.nodes as log}
+									<Tr>
+										<Td>
+											<Time time={log.createdAt} distance={true} />
+										</Td>
+										<Td>{log.action}</Td>
+										<Td>{log.message}</Td>
+									</Tr>
+								{/each}
+							</Table>
 						</AccordionItem>
 					</Accordion>
 				{/if}
