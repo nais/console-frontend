@@ -236,13 +236,6 @@ type CurrentResourceUtilization {
   timestamp: Time!
 }
 
-type CurrentSqlInstancesMetrics {
-  cost: Float!
-  cpu: SqlInstanceCpu!
-  disk: SqlInstanceDisk!
-  memory: SqlInstanceMemory!
-}
-
 """Daily cost type."""
 type DailyCost {
   """The cost series."""
@@ -1013,14 +1006,26 @@ enum OrderByField {
   """Order by appName."""
   APP_NAME
 
+  """Order by cost"""
+  COST
+
+  """Order by CPU utilization"""
+  CPU
+
   """Order by deployed time"""
   DEPLOYED
+
+  """Order by disk utilization"""
+  DISK
 
   """Order by env"""
   ENV
 
   """Order by env."""
   ENV_NAME
+
+  """Order by memory utilization"""
+  MEMORY
 
   """Order by name"""
   NAME
@@ -1110,14 +1115,6 @@ type Query {
     """The name of the team."""
     team: Slug!
   ): CurrentResourceUtilization!
-
-  """
-  Get the current SQL instances metrics for a team across all environments.
-  """
-  currentSqlInstancesMetrics(
-    """The name of the team."""
-    team: Slug!
-  ): CurrentSqlInstancesMetrics!
 
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
@@ -1627,7 +1624,6 @@ type SqlInstance implements Storage {
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   connectionName: String!
-  cost(from: Date!, to: Date!): Float!
   databases: [SqlDatabase!]!
   env: Env!
   flags: [Flag!]!
@@ -1665,11 +1661,12 @@ type SqlInstanceDisk {
 }
 
 type SqlInstanceMemory {
-  quotaBytes: Float!
+  quotaBytes: Int!
   utilization: Float!
 }
 
 type SqlInstanceMetrics {
+  cost: Float!
   cpu: SqlInstanceCpu!
   disk: SqlInstanceDisk!
   memory: SqlInstanceMemory!
@@ -1681,8 +1678,16 @@ type SqlInstanceStatus {
 }
 
 type SqlInstancesList {
+  metrics: SqlInstancesMetrics!
   nodes: [SqlInstance!]!
   pageInfo: PageInfo!
+}
+
+type SqlInstancesMetrics {
+  cost: Float!
+  cpu: SqlInstanceCpu!
+  disk: SqlInstanceDisk!
+  memory: SqlInstanceMemory!
 }
 
 type SqlInstancesStatus {

@@ -1,5 +1,4 @@
-query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to: Date!)
-@loading(cascade: true) {
+query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
 	sqlInstance(env: $env, team: $team, name: $name) {
 		id
 		name
@@ -19,8 +18,8 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 			}
 		}
 		tier
-		cost(from: $from, to: $to)
 		metrics {
+			cost
 			cpu {
 				cores
 				utilization

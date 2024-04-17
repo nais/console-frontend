@@ -4,17 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import {
-		Alert,
-		CopyButton,
-		HelpText,
-		Link,
-		Table,
-		Td,
-		Th,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, HelpText, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -54,7 +44,7 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						€{Math.round(instance.cost)}
+						€{Math.round(instance.metrics.cost)}
 					</p>
 				</div>
 			</div>
