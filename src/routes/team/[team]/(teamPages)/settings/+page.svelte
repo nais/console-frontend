@@ -67,31 +67,16 @@
 	let defaultSlackChannelError = false;
 	let slackChannelsError = false;
 
-	const globalAttributes = (obj: {
+	const hasGlobalAttributes = (obj: {
 		readonly azureGroupID: string | null;
 		readonly gitHubTeamSlug: string | null;
 		readonly googleGroupEmail: string | null;
 		readonly googleArtifactRegistry: string | null;
-	}) => {
-		const lines: { key: string; value: string }[] = [];
-
-		if (obj.googleArtifactRegistry) {
-			lines.push({
-				key: 'Artifact Registry repository',
-				value: formatGARRepo(obj.googleArtifactRegistry)
-			});
-		}
-		if (obj.gitHubTeamSlug) {
-			lines.push({ key: 'GitHub team', value: obj.gitHubTeamSlug });
-		}
-		if (obj.googleGroupEmail) {
-			lines.push({ key: 'Google group email', value: obj.googleGroupEmail });
-		}
-		if (obj.azureGroupID) {
-			lines.push({ key: 'Azure AD group ID', value: obj.azureGroupID });
-		}
-		return lines;
-	};
+	}) =>
+		obj.azureGroupID !== null ||
+		obj.gitHubTeamSlug !== null ||
+		obj.googleGroupEmail !== null ||
+		obj.googleArtifactRegistry !== null;
 
 	const envResources = (obj: { readonly gcpProjectID: string | null }) => {
 		const lines: { key: string; value: string }[] = [];
@@ -276,12 +261,30 @@
 			{:else}
 				<h4>Global</h4>
 				<dl>
-					{#each globalAttributes(teamSettings) as { key, value }}
-						<dt>{key}:</dt>
-						<dd>{value}</dd>
+					{#if hasGlobalAttributes(teamSettings)}
+						{#if teamSettings.googleArtifactRegistry}
+							<dt>Artifact Registry repository</dt>
+							<dd>{formatGARRepo(teamSettings.googleArtifactRegistry)}</dd>
+						{/if}
+						{#if teamSettings.gitHubTeamSlug}
+							<dt>GitHub team</dt>
+							<dd>{teamSettings.gitHubTeamSlug}</dd>
+						{/if}
+						{#if teamSettings.googleGroupEmail}
+							<dt>Google group email</dt>
+							<dd>{teamSettings.googleGroupEmail}</dd>
+						{/if}
+						{#if teamSettings.azureGroupID}
+							<dt>Azure AD group ID</dt>
+							<dd>
+								<a href="https://myaccount.microsoft.com/groups/{teamSettings.azureGroupID}"
+									>{teamSettings.azureGroupID}</a
+								>
+							</dd>
+						{/if}
 					{:else}
 						<Alert variant="info" size="small">No managed resources</Alert>
-					{/each}
+					{/if}
 				</dl>
 
 				{#each teamSettings.environments as env}
