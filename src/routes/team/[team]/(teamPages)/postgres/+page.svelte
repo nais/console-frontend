@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, type SqlInstances$result } from '$houdini';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
@@ -11,7 +11,6 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { percentageFormatter } from '$lib/utils/formatters';
 	import {
 		Alert,
 		CopyButton,
@@ -38,57 +37,9 @@
 	$: teamName = $page.params.team;
 	$: ({ SqlInstances } = data);
 	$: team = $SqlInstances.data?.team;
+	$: metrics = $SqlInstances.data?.team.sqlInstances.metrics;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($SqlInstances.variables));
-	const teamCost = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) =>
-		instances.reduce((acc, r) => {
-			if (r.cost !== PendingValue) {
-				return acc + r.cost;
-			}
-			return acc;
-		}, 0);
-
-	const teamCpuUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
-		let numWithMetrics = 0;
-		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.cpu.utilization !== PendingValue && r.metrics.cpu.utilization > 0) {
-				numWithMetrics++;
-				return acc + r.metrics.cpu.utilization;
-			}
-			return acc;
-		}, 0);
-
-		return sum / numWithMetrics;
-	};
-
-	const teamMemoryUtilization = (
-		instances: SqlInstances$result['team']['sqlInstances']['nodes']
-	) => {
-		let numWithMetrics = 0;
-		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.memory.utilization !== PendingValue && r.metrics.memory.utilization > 0) {
-				numWithMetrics++;
-				return acc + r.metrics.memory.utilization;
-			}
-			return acc;
-		}, 0);
-
-		return sum / numWithMetrics;
-	};
-
-	const teamDiskUtilization = (instances: SqlInstances$result['team']['sqlInstances']['nodes']) => {
-		let numWithMetrics = 0;
-		const sum = instances.reduce((acc, r) => {
-			if (r.metrics.disk.utilization !== PendingValue && r.metrics.disk.utilization > 0) {
-				numWithMetrics++;
-				return acc + r.metrics.disk.utilization;
-			}
-			return acc;
-		}, 0);
-
-		return sum / numWithMetrics;
-	};
-
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
@@ -98,7 +49,7 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if team}
+{:else if team && metrics}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -111,10 +62,10 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							€{Math.round(teamCost(team.sqlInstances.nodes))}
+							€{Math.round(metrics.cost)}
 						{/if}
 					</p>
 				</div>
@@ -123,10 +74,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if metrics.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={teamCpuUtilization(team.sqlInstances.nodes) / 100} />
+						<CircleProgressBar progress={metrics.cpu.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -137,13 +88,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamCpuUtilization(team.sqlInstances.nodes).toFixed(1)}% of {team.sqlInstances.nodes
-								.reduce((acc, r) => acc + r.metrics.cpu.cores, 0)
-								.toLocaleString()}
-							core(s)
+							{metrics.cpu.utilization.toFixed(1)}% of {metrics.cpu.cores.toLocaleString()} core(s)
 						{/if}
 					</p>
 				</div>
@@ -152,10 +100,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if metrics.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={teamMemoryUtilization(team.sqlInstances.nodes) / 100} />
+						<CircleProgressBar progress={metrics.memory.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -166,12 +114,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamMemoryUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
-								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.memory.quotaBytes, 0)
-							)}
+							{metrics.memory.utilization.toFixed(1)}% of {prettyBytes(metrics.memory.quotaBytes)}
 						{/if}
 					</p>
 				</div>
@@ -180,10 +126,10 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if team.id == PendingValue}
+					{#if metrics.cost === PendingValue}
 						<Skeleton height={'50px'} width={'50px'} variant="circle" />
 					{:else}
-						<CircleProgressBar progress={teamDiskUtilization(team.sqlInstances.nodes) / 100} />
+						<CircleProgressBar progress={metrics.disk.utilization / 100} />
 					{/if}
 				</div>
 				<div class="summary">
@@ -194,12 +140,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if team.id == PendingValue}
+						{#if metrics.cost === PendingValue}
 							<Skeleton variant="text" />
 						{:else}
-							{teamDiskUtilization(team.sqlInstances.nodes).toFixed(1)}% of {prettyBytes(
-								team.sqlInstances.nodes.reduce((acc, r) => acc + r.metrics.disk.quotaBytes, 0)
-							)}
+							{metrics.disk.utilization.toFixed(1)}% of {prettyBytes(metrics.disk.quotaBytes)}
 						{/if}
 					</p>
 				</div>
@@ -223,16 +167,22 @@
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Connection Name</Th>
 				<Th sortable={true} sortKey="STATUS">Status</Th>
-				<Th>
+				<Th sortable={true} sortKey="COST">
 					<div class="tableHeader">
 						Cost<HelpText title="Cost per SQL Instance"
 							>The cost of the SQL instance over the last 30 days</HelpText
 						>
 					</div>
 				</Th>
-				<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
-				<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
-				<Th><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th>
+				<Th sortable={true} sortKey="CPU"
+					><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
+				>
+				<Th sortable={true} sortKey="MEMORY"
+					><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
+				>
+				<Th sortable={true} sortKey="DISK"
+					><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
+				>
 			</Thead>
 			<Tbody>
 				{#if team !== undefined}
@@ -246,11 +196,11 @@
 						{#each team.sqlInstances.nodes as node}
 							<Tr>
 								<Td>
-									{#if !node.app?.name}
-										<Tooltip content="The SQL instance does not belong to any application resource">
+									{#if !node.workload?.name}
+										<Tooltip content="The SQL instance does not belong to any workload">
 											<ExclamationmarkTriangleFillIcon
 												style="color: var(--a-icon-warning)"
-												title="The SQL instance does not belong to any application resource"
+												title="The SQL instance does not belong to any workload"
 											/>
 										</Tooltip>
 									{/if}
@@ -265,10 +215,11 @@
 									{node.env.name}
 								</Td>
 								<Td>
-									<div style="display: flex; align-items: center;">
+									<div style="display: flex; align-items: center; width: 15rem">
 										{#if node.connectionName}
-											<Tooltip content={node.connectionName}
-												>...{node.connectionName.split(':').pop()}</Tooltip
+											<span
+												style="width: 100%; direction: rtl; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+												title={node.connectionName}>{node.connectionName}</span
 											>
 											<CopyButton size="small" variant="action" copyText={node.connectionName} />
 										{/if}
@@ -282,25 +233,36 @@
 									{/if}
 								</Td>
 								<Td>
-									{#if node.cost > 0}
-										€{Math.round(node.cost)}
+									{#if node.metrics.cost > 0}
+										€{Math.round(node.metrics.cost)}
 									{:else}
 										-
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.cpu.utilization}
-										{percentageFormatter(node.metrics.cpu.utilization)}
+										<span
+											title="{node.metrics.cpu.utilization.toFixed(1)}% of {node.metrics.cpu
+												.cores} core(s)">{node.metrics.cpu.utilization.toFixed(1)}%</span
+										>
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.memory.utilization}
-										{percentageFormatter(node.metrics.memory.utilization)}
+										<span
+											title="{node.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+												node.metrics.memory.quotaBytes
+											)}">{node.metrics.memory.utilization.toFixed(1)}%</span
+										>
 									{/if}
 								</Td>
 								<Td>
 									{#if node.metrics.disk.utilization}
-										{percentageFormatter(node.metrics.disk.utilization)}
+										<span
+											title="{node.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+												node.metrics.disk.quotaBytes
+											)}">{node.metrics.disk.utilization.toFixed(1)}%</span
+										>
 									{/if}
 								</Td>
 							</Tr>

@@ -3,18 +3,30 @@ query SqlInstances(
 	$orderBy: OrderBy = { field: NAME, direction: ASC }
 	$limit: Int
 	$offset: Int
-	$from: Date!
-	$to: Date!
 ) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
 		sqlInstances(limit: $limit, offset: $offset, orderBy: $orderBy) {
+			metrics {
+				cost
+				cpu {
+					cores
+					utilization
+				}
+				memory {
+					quotaBytes
+					utilization
+				}
+				disk {
+					quotaBytes
+					utilization
+				}
+			}
 			pageInfo {
 				totalCount
 				hasNextPage
 				hasPreviousPage
 			}
-
 			nodes {
 				id
 				name
@@ -24,11 +36,16 @@ query SqlInstances(
 				isHealthy
 				type
 				connectionName
-				app {
-					name
+				workload {
+					... on App {
+						name
+					}
+					... on NaisJob {
+						name
+					}
 				}
-				cost(from: $from, to: $to)
 				metrics {
+					cost
 					cpu {
 						cores
 						utilization

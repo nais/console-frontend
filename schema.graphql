@@ -1006,14 +1006,26 @@ enum OrderByField {
   """Order by appName."""
   APP_NAME
 
+  """Order by cost"""
+  COST
+
+  """Order by CPU utilization"""
+  CPU
+
   """Order by deployed time"""
   DEPLOYED
+
+  """Order by disk utilization"""
+  DISK
 
   """Order by env"""
   ENV
 
   """Order by env."""
   ENV_NAME
+
+  """Order by memory utilization"""
+  MEMORY
 
   """Order by name"""
   NAME
@@ -1522,11 +1534,12 @@ type SearchList {
   pageInfo: PageInfo!
 }
 
-union SearchNode = App | NaisJob | Team
+union SearchNode = App | NaisJob | SqlInstance | Team
 
 enum SearchType {
   APP
   NAISJOB
+  SQLINSTANCE
   TEAM
 }
 
@@ -1608,12 +1621,11 @@ type SqlDatabase {
 }
 
 type SqlInstance implements Storage {
-  app: App
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   connectionName: String!
-  cost(from: Date!, to: Date!): Float!
-  databases: [SqlDatabase!]!
+  database: SqlDatabase
+  diskAutoresize: Boolean!
   env: Env!
   flags: [Flag!]!
   highAvailability: Boolean!
@@ -1628,9 +1640,11 @@ type SqlInstance implements Storage {
   team: Team!
   tier: String!
   type: String!
+  workload: Workload
 }
 
 type SqlInstanceCondition {
+  lastTransitionTime: String!
   message: String!
   reason: String!
   status: String!
@@ -1639,23 +1653,21 @@ type SqlInstanceCondition {
 
 type SqlInstanceCpu {
   cores: Float!
-  usage: Float!
   utilization: Float!
 }
 
 type SqlInstanceDisk {
   quotaBytes: Int!
-  usage: Float!
   utilization: Float!
 }
 
 type SqlInstanceMemory {
-  quotaBytes: Float!
-  usage: Float!
+  quotaBytes: Int!
   utilization: Float!
 }
 
 type SqlInstanceMetrics {
+  cost: Float!
   cpu: SqlInstanceCpu!
   disk: SqlInstanceDisk!
   memory: SqlInstanceMemory!
@@ -1667,8 +1679,16 @@ type SqlInstanceStatus {
 }
 
 type SqlInstancesList {
+  metrics: SqlInstancesMetrics!
   nodes: [SqlInstance!]!
   pageInfo: PageInfo!
+}
+
+type SqlInstancesMetrics {
+  cost: Float!
+  cpu: SqlInstanceCpu!
+  disk: SqlInstanceDisk!
+  memory: SqlInstanceMemory!
 }
 
 type SqlInstancesStatus {
@@ -2106,6 +2126,9 @@ type VulnerabilityList {
 }
 
 type VulnerabilityMetric {
+  """The number of applications with vulnerabilities."""
+  count: Int!
+
   """The number of critical vulnerabilities."""
   critical: Int!
 
@@ -2151,3 +2174,5 @@ type VulnerabilitySummary {
   total: Int!
   unassigned: Int!
 }
+
+union Workload = App | NaisJob

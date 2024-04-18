@@ -30,9 +30,11 @@
 					reconcilers {
 						enabled
 						reconciler {
+							enabled
 							name
 							displayName
 							description
+							memberAware
 						}
 					}
 				}
@@ -85,8 +87,12 @@
 		dispatcher('updated', null);
 	};
 
-	const updateReconciler = async (enabled: boolean, reconciler: string) => {
-		if (enabled) {
+	const updateReconciler = async (el: unknown | null, reconciler: string) => {
+		if (!el) return;
+		if (!(el instanceof HTMLInputElement)) return;
+
+		const enabled = el.checked;
+		if (!enabled) {
 			await addReconcilerOptOut.mutate({
 				team,
 				userId: userID,
@@ -125,12 +131,12 @@
 			<Fieldset class="navds-checkbox-group navds-checkbox-group--medium">
 				<legend class="navds-fieldset__legend navds-label">Enabled features</legend>
 
-				{#each member.reconcilers as { reconciler, enabled }}
+				{#each member.reconcilers.filter((r) => r.reconciler.memberAware && r.reconciler.enabled) as { reconciler, enabled }}
 					<Checkbox
 						value={reconciler.name}
 						checked={enabled}
-						on:change={() => {
-							updateReconciler(!enabled, reconciler.name);
+						on:change={(e) => {
+							updateReconciler(e.detail.target, reconciler.name);
 						}}
 					>
 						<span class="option">

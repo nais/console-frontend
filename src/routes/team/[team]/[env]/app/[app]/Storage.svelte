@@ -75,8 +75,11 @@
 		{:else if storage.__typename === 'SqlInstance'}
 			<div class="storageContent">
 				<h5><Postgres />Postgres</h5>
-				<span><b>Instance:</b> <Link href="/team/{team}/{env}/postgres/{storage.name}">{storage.name}</Link></span>
-				<span><b>Type:</b>  ({storage.type}) </span>
+				<span
+					><b>Instance:</b>
+					<Link href="/team/{team}/{env}/postgres/{storage.name}">{storage.name}</Link></span
+				>
+				<span><b>Type:</b> ({storage.type}) </span>
 			</div>
 		{:else if storage.__typename === 'Kafka'}
 			<div class="storageContent">

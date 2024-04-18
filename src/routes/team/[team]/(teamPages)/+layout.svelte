@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, type TeamRoles$result } from '$houdini';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -17,14 +16,13 @@
 		SandboxIcon,
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { LayoutData } from './$types';
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
 	};
 
-	export let data: PageData;
-	$: ({ TeamRoles } = data);
+	export let data: LayoutData;
 
 	$: team = $page.params.team;
 	const nav: menuGroup[] = [
@@ -141,14 +139,14 @@
 		}
 	];
 
-	function memberOnly(nav: menuGroup[], data: TeamRoles$result | null) {
+	function memberOnly(
+		nav: menuGroup[],
+		data: { viewerIsMember: boolean; viewerIsOwner: boolean } | null
+	) {
 		return nav.map((group) => {
 			return {
 				items: group.items.filter((item) => {
-					return (
-						!item.memberOnly ||
-						(data?.team !== PendingValue && (data?.team.viewerIsOwner || data?.team.viewerIsMember))
-					);
+					return !item.memberOnly || data?.viewerIsOwner || data?.viewerIsMember;
 				})
 			};
 		});
@@ -158,7 +156,7 @@
 <svelte:head><title>{team} - Console</title></svelte:head>
 
 <div class="main">
-	<SideMenu nav={memberOnly(nav, $TeamRoles.data)} />
+	<SideMenu nav={memberOnly(nav, data)} />
 	<div class="container">
 		<slot />
 	</div>

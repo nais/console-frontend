@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, RepositoryAuthorization, graphql } from '$houdini';
+	import { RepositoryAuthorization, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams, limitOffset, sortTable } from '$lib/pagination';
@@ -24,10 +24,8 @@
 
 	export let data: PageData;
 
-	$: ({ Repositories, TeamRoles } = data);
+	$: ({ Repositories } = data);
 	$: team = $Repositories.data?.team;
-
-	$: teamRoles = $TeamRoles.data?.team;
 
 	$: teamName = $page.params.team;
 
@@ -112,7 +110,7 @@
 			<Thead>
 				<Tr>
 					<Th sortable={true} sortKey="NAME">Repository</Th>
-					{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
+					{#if data.viewerIsMember}
 						<Th>Deploy</Th>
 						<Th sortable={true} sortKey="ROLE">Role</Th>
 					{/if}
@@ -122,7 +120,7 @@
 				{#each team.githubRepositories.nodes as repo}
 					<Tr>
 						<Td><Link href="https://github.com/{repo.name}">{repo.name}</Link></Td>
-						{#if teamRoles && teamRoles !== PendingValue && teamRoles.viewerIsMember}
+						{#if data.viewerIsMember}
 							{#if repo.authorizations !== null && repo.name !== null}
 								<Td>
 									{#if repo.authorizations.includes('DEPLOY')}

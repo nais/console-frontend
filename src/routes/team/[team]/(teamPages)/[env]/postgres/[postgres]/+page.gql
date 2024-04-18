@@ -1,5 +1,4 @@
-query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to: Date!)
-@loading(cascade: true) {
+query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
 	sqlInstance(env: $env, team: $team, name: $name) {
 		id
 		name
@@ -10,12 +9,18 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 		isHealthy
 		type
 		connectionName
-		app {
-			name
+		diskAutoresize
+		workload {
+			... on App {
+				name
+			}
+			... on NaisJob {
+				name
+			}
 		}
 		tier
-		cost(from: $from, to: $to)
 		metrics {
+			cost
 			cpu {
 				cores
 				utilization
@@ -42,7 +47,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 		}
 		maintenanceVersion
 		projectId
-		databases {
+		database {
 			name
 		}
 		flags {
@@ -55,6 +60,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!, $from: Date!, $to
 				status
 				reason
 				message
+				lastTransitionTime
 			}
 			publicIpAddress
 		}
