@@ -81,7 +81,7 @@
 	let deleteKeyLoading = false;
 	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
 
-	$: ({ TeamSettings, TeamRoles } = data);
+	$: ({ TeamSettings, viewerIsOwner } = data);
 
 	$: teamSettings = $TeamSettings.data?.team;
 
@@ -452,7 +452,7 @@
 			{/if}
 		</Card>
 
-		{#if $TeamRoles.data?.team !== PendingValue && $TeamRoles.data?.team.viewerIsOwner}
+		{#if viewerIsOwner}
 			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>
 				<h3>Danger Zone</h3>
 				<p>

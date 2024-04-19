@@ -1,5 +1,8 @@
 query TeamDeleteKey($key: String!) {
 	teamDeleteKey(key: $key) {
+		team {
+			slug
+		}
 		key
 		createdAt
 		expires
