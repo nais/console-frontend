@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { replacer, type Data } from '$lib/replacer';
+	import { Alert } from '@nais/ds-svelte-community';
 	import { ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import type { LayoutData } from './$houdini';
+
+	export let data: LayoutData;
+	$: ({ deletionInProgress } = data);
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
 	const simpleTeamPages: { [key: string]: string } = {
@@ -173,6 +178,11 @@
 </div>
 
 <div class="page">
+	{#if deletionInProgress}
+		<Alert variant="warning" style="margin-bottom: 1rem;"
+			>The team and all of its resources is currently being deleted.</Alert
+		>
+	{/if}
 	<slot />
 </div>
 

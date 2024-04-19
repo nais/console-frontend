@@ -1,17 +1,33 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { PendingValue, graphql } from '$houdini';
+	import {
+		PendingValue,
+		graphql,
+		type GetTeamDeleteKey$input,
+		type GetTeamDeleteKey$result,
+		type QueryResult
+	} from '$houdini';
 	import LogLine from '$lib/AuditLogLine.svelte';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, CopyButton, Loader, Modal, Skeleton } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		BodyLong,
+		Button,
+		CopyButton,
+		Loader,
+		Modal,
+		Skeleton,
+		TextField
+	} from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
 		ChatExclamationmarkIcon,
 		EyeIcon,
-		EyeSlashIcon
+		EyeSlashIcon,
+		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
@@ -41,7 +57,7 @@
 		}
 	`);
 
-	$: hookdResponse = graphql(`
+	const hookdResponse = graphql(`
 		query HookdDeployKey($team: Slug!) @load {
 			team(slug: $team) @loading(cascade: true) {
 				id
@@ -54,7 +70,18 @@
 		}
 	`);
 
-	$: ({ TeamSettings } = data);
+	const getTeamDeleteKey = graphql(`
+		mutation GetTeamDeleteKey($slug: Slug!) {
+			requestTeamDeletion(slug: $slug) {
+				key
+			}
+		}
+	`);
+
+	let deleteKeyLoading = false;
+	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
+
+	$: ({ TeamSettings, viewerIsOwner } = data);
 
 	$: teamSettings = $TeamSettings.data?.team;
 
@@ -62,6 +89,7 @@
 
 	let showKey = false;
 	let showRotateKey = false;
+	let showDeleteTeam = false;
 
 	let descriptionError = false;
 	let defaultSlackChannelError = false;
@@ -423,6 +451,94 @@
 				</div>
 			{/if}
 		</Card>
+
+		{#if viewerIsOwner}
+			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>
+				<h3>Danger Zone</h3>
+				<p>
+					Deleting the team will permanently delete all managed resources and all resources within
+					them. All applications, databases and jobs owned by the team will be irreversibly deleted.
+				</p>
+				<p>
+					When you request deletion a delete key will be generated for this team. It is valid for 1
+					hour. Another team-owner will have to confirm the deletion by using a generated link
+					before the team is irreversibly deleted.
+				</p>
+
+				<Button
+					variant="danger"
+					on:click={() => {
+						showDeleteTeam = !showDeleteTeam;
+						deleteKeyResp = null;
+					}}
+				>
+					<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
+					Request team deletion</Button
+				>
+			</Card>
+			{#if browser}
+				<Modal bind:open={showDeleteTeam}>
+					<h3 slot="header">Request team deletion</h3>
+
+					{#if !deleteKeyResp?.data}
+						<BodyLong>
+							Please confirm that you intend to delete <strong>{team}</strong> and all resources related
+							to it.
+						</BodyLong>
+					{/if}
+
+					{#if deleteKeyResp?.errors}
+						<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
+					{:else if deleteKeyResp?.data}
+						{@const key =
+							window.location + '/confirm_delete?key=' + deleteKeyResp.data.requestTeamDeletion.key}
+						<Alert>
+							Deletion of <strong>{team}</strong> has been requested. To finalize the deletion send
+							this link to another team owner and let them confirm the deletion.
+
+							<div class="deletewrapper">
+								<div><TextField readonly={true} size="small" value={key}></TextField></div>
+								<CopyButton
+									text="Copy URL"
+									activeText="URL copied"
+									variant="action"
+									copyText={key}
+									size="small"
+								/>
+							</div>
+						</Alert>
+					{/if}
+
+					<svelte:fragment slot="footer">
+						{#if !deleteKeyResp?.data}
+							<Button
+								type="submit"
+								loading={deleteKeyLoading}
+								on:click={async () => {
+									deleteKeyLoading = true;
+									deleteKeyResp = await getTeamDeleteKey.mutate({ slug: team });
+									deleteKeyLoading = false;
+								}}>Confirm</Button
+							>
+							<Button
+								variant="tertiary"
+								disabled={deleteKeyLoading}
+								type="reset"
+								on:click={() => {
+									showDeleteTeam = !showDeleteTeam;
+								}}>Cancel</Button
+							>
+						{:else}
+							<Button
+								on:click={() => {
+									showDeleteTeam = !showDeleteTeam;
+								}}>Close</Button
+							>
+						{/if}
+					</svelte:fragment>
+				</Modal>
+			{/if}
+		{/if}
 	</div>
 {/if}
 
@@ -484,5 +600,14 @@
 
 	.center {
 		text-align: center;
+	}
+
+	.deletewrapper {
+		display: flex;
+		gap: 0.2rem;
+	}
+
+	.deletewrapper div {
+		flex-grow: 1;
 	}
 </style>
