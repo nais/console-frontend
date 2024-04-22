@@ -19,6 +19,8 @@ spec:
           env:
             - name: 'TENANT_DOMAIN'
               value: '{{ .Values.tenantDomain }}'
+            - name: 'TENANT_NAME'
+              value: '{{ .Values.fasit.tenant.name }}'
           securityContext:
             capabilities:
               drop:
