@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type AppErrorFragment } from '$houdini';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { docURL } from './doc';
 
 	export let error: AppErrorFragment;
 
@@ -75,7 +76,7 @@
 				Deprecated image registry
 				<strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
-				<a href="https://doc.nais.io/guides/oci-migration/">docker-build-push</a> on how to migrate to
+				<a href={docURL('/how-to-guides/github-action/')}>docker-build-push</a> on how to migrate to
 				Google Artifact Registry.
 			</Alert>
 		</div>
@@ -90,23 +91,8 @@
 			<Alert variant="info">
 				<h4>Todo</h4>
 				Deprecated ingress<strong>{$data.ingress}</strong>. See
-				{#if env === 'dev-gcp'}
-					<a href="https://doc.nais.io/reference/environments/?h=#dev-gcp">
-						ingress documentation</a
-					>
-				{:else if env === 'prod-gcp'}
-					<a href="https://doc.nais.io/reference/environments/?h=#prod-gcp">
-						ingress documentation</a
-					>
-				{:else if env === 'dev-fss'}
-					<a href="https://doc.nais.io/reference/environments/?h=#dev-fss">
-						ingress documentation</a
-					>
-				{:else if env === 'prod-fss'}
-					<a href="https://doc.nais.io/reference/environments/?h=#prod-fss">
-						ingress documentation</a
-					>
-				{/if} for available ingress domains.
+				<a href={docURL('/reference/environments/?h=#' + env)}> ingress documentation</a>
+				for available ingress domains.
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'InvalidNaisYamlError'}
@@ -169,7 +155,7 @@
 					{/if}
 					<br />
 					Consult
-					<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
+					<a href={docURL('/how-to-guides/access-policies/')}
 						>Nais Application reference - accessPolicy</a
 					>.</Alert
 				>
@@ -211,7 +197,7 @@
 				{/if}
 				<br />
 				Consult
-				<a href="https://docs.nais.io/nais-application/application/?h=#accesspolicy"
+				<a href={docURL('/how-to-guides/access-policies/')}
 					>Nais Application reference - accessPolicy</a
 				>.</Alert
 			>

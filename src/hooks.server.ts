@@ -1,4 +1,5 @@
-import type { HandleFetch } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 	const cookies = event.request.headers.get('cookie');
@@ -7,4 +8,9 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 	}
 
 	return fetch(request);
+};
+
+export const handle: Handle = async ({ event, resolve }) => {
+	event.locals.tenantName = env.TENANT_NAME || '';
+	return await resolve(event);
 };

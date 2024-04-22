@@ -3,6 +3,7 @@
 	import { graphql } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
+	import { docURL } from '$lib/doc';
 	import { Search } from '@nais/ds-svelte-community';
 	import { InformationSquareIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
@@ -203,7 +204,9 @@
 		<div class="right">
 			<nav>
 				<ul>
-					<li><a href="https://docs.nais.io">Documentation</a></li>
+					<li>
+						<a href={docURL()}>Documentation</a>
+					</li>
 					{#if user?.isAdmin}
 						<li><a href="/admin">Admin</a></li>
 					{/if}

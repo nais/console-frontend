@@ -3,6 +3,7 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { Alert, CopyButton, HelpText, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
 	import {
@@ -218,14 +219,13 @@
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>
 				<li>
-					<Link href="https://docs.nais.io/how-to-guides/persistence/postgres"
+					<Link href={docURL('/how-to-guides/persistence/postgres')}
 						>How to guide
 						<ExternalLinkIcon title="How to guide" font-size="1.5rem" />
 					</Link>
 				</li>
 				<li>
-					<Link
-						href="https://doc.nais.io/how-to-guides/persistence/postgres/#upgrading-major-version"
+					<Link href={docURL('/how-to-guides/persistence/postgres/#upgrading-major-version')}
 						>Upgrading major version
 						<ExternalLinkIcon title="Upgrading major version" font-size="1.5rem" />
 					</Link>
@@ -238,8 +238,7 @@
 					</Link>
 				</li>
 				<li>
-					<Link
-						href="https://docs.nais.io/how-to-guides/persistence/postgres/#deleting-the-database"
+					<Link href={docURL('/how-to-guides/persistence/postgres/#deleting-the-database')}
 						>Deletion Protection
 						<ExternalLinkIcon title="Deletion Protection" font-size="1.5rem" />
 					</Link>
@@ -327,10 +326,7 @@
 			<Card columns={12}>
 				<h4 id="conditions" style="margin-bottom: 0.5rem">
 					Conditions
-					<Link
-						style="float: right"
-						href="https://doc.nais.io/how-to-guides/persistence/postgres/#faq"
-					>
+					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
 						FAQ
 						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
 					</Link>
