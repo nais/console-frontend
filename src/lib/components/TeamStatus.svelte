@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
+	import { Skeleton } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { TeamStatusVariables } from './$houdini';
 
@@ -86,6 +87,9 @@
 		</p>
 	{/if}
 	<!-- TODO: Team status NAIS icon -->
+{:else if team && team.id === PendingValue}
+	<Skeleton variant="text" width="100px" />
+	<Skeleton variant="text" width="120px" />
 {/if}
 
 <style>
