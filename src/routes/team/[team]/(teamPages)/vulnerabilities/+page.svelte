@@ -7,6 +7,7 @@
 	import { logEvent } from '$lib/amplitude';
 	import VulnerabilitiesGraph from '$lib/components/VulnerabilitiesGraph.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
+	import { docURL } from '$lib/doc';
 	import {
 		changeParams,
 		sortTable,
@@ -189,9 +190,8 @@
 									{:else}
 										<Td>
 											No data found in dependencytrack.
-											<a
-												href="https://doc.nav.cloud.nais.io/security/salsa/salsa/#slsa-in-nais"
-												on:click={onClick}>How to fix</a
+											<a href={docURL('/security/salsa/#slsa-in-nais')} on:click={onClick}
+												>How to fix</a
 											>
 										</Td>
 										<Td>
