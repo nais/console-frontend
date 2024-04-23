@@ -228,8 +228,20 @@
 								<Td>
 									{#if node.isHealthy}
 										<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-									{:else}
-										<XMarkIcon style="color: var(--a-icon-danger)" />
+									{:else if node.status.conditions.length > 0}
+										{#each node.status.conditions as condition}
+											{#if condition.type !== 'Ready'}
+												<ExclamationmarkTriangleFillIcon
+													style="color: var(--a-icon-danger)"
+													title="The SQL instance is not ready"
+												/>
+											{:else}
+												<ExclamationmarkTriangleFillIcon
+													style="color: var(--a-icon-info)"
+													title="The SQL instance has conditions reported"
+												/>
+											{/if}
+										{/each}
 									{/if}
 								</Td>
 								<Td>

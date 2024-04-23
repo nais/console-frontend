@@ -59,6 +59,11 @@ query SqlInstances(
 						utilization
 					}
 				}
+				status {
+					conditions {
+						type
+					}
+				}
 				highAvailability
 			}
 		}
