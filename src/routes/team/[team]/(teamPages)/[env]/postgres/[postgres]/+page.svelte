@@ -113,7 +113,7 @@
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		{#if !instance.isHealthy && instance.status.conditions.length > 0}
 			<Card columns={12}>
-				<h4 id="conditions" style="margin-bottom: 0.5rem">
+				<h4 id="conditions">
 					Instance conditions
 					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
 						FAQ

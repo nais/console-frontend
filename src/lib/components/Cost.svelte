@@ -79,9 +79,3 @@
 		{/if}
 	</div>
 {/if}
-
-<style>
-	h4 {
-		margin-bottom: 8px;
-	}
-</style>
