@@ -232,7 +232,7 @@
 										{#each node.status.conditions as condition}
 											{#if condition.type !== 'Ready'}
 												<ExclamationmarkTriangleFillIcon
-													style="color: var(--a-icon-danger)"
+													style="color: var(--a-icon-warning)"
 													title="The SQL instance is not ready"
 												/>
 											{:else}

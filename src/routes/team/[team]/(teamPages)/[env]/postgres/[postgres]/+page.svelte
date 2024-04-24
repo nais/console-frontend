@@ -114,24 +114,24 @@
 		{#if !instance.isHealthy && instance.status.conditions.length > 0}
 			<Card columns={12}>
 				<h4 id="conditions" style="margin-bottom: 0.5rem">
-					Conditions
+					Instance conditions
 					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
 						FAQ
 						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
 					</Link>
 				</h4>
-				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+				<div style="margin-bottom: 0.5rem;">
 					{#each instance.status.conditions as condition}
 						{#if condition.type !== 'Ready'}
-							<Alert variant="error">
+							<Alert variant="warning" size="small">
 								<h4>{condition.reason}</h4>
-								<strong>{condition.message}</strong> <br />
-								Last transaction time <strong>{condition.lastTransitionTime}</strong>
+								Message: <strong>{condition.message}</strong> <br />
+								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
 							</Alert>
 						{:else}
-							<Alert variant="info">
+							<Alert variant="info" size="small">
 								<h4>{condition.reason}</h4>
-								<strong>{condition.message}</strong> <br />
+								Message <strong>{condition.message}</strong> <br />
 								Last transaction time <strong>{condition.lastTransitionTime}</strong>
 							</Alert>
 						{/if}
@@ -185,9 +185,10 @@
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 					{:else if instance.status.conditions.length > 0}
 						{#each instance.status.conditions as condition}
+							<p>
 							{#if condition.type !== 'Ready'}
 								<ExclamationmarkTriangleFillIcon
-									style="color: var(--a-icon-danger)"
+									style="color: var(--a-icon-warning)"
 									title="The SQL instance is not ready"
 								/>
 							{:else}
@@ -196,7 +197,8 @@
 									title="The SQL instance has conditions reported"
 								/>
 							{/if}
-							Investigate conditions report
+							Investigate conditions report(s)
+							</p>
 						{/each}
 					{/if}
 				</p>
