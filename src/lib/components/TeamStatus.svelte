@@ -78,7 +78,8 @@
 		<p>
 			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
 			<a href="/team/{teamName}/postgres">
-				{team.status.sqlInstances.failing + team.status.sqlInstances.otherConditions}/{team.status.sqlInstances.total} postgres</a
+				{team.status.sqlInstances.failing + team.status.sqlInstances.otherConditions}/{team.status
+					.sqlInstances.total} postgres</a
 			> reporting issues
 		</p>
 	{:else if team.status.sqlInstances.total > 0}

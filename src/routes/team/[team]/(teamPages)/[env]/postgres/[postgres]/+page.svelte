@@ -125,13 +125,13 @@
 						{#if condition.type !== 'Ready'}
 							<Alert variant="warning" size="small">
 								<h4>{condition.reason}</h4>
-								Message: <strong>{condition.message}</strong> <br />
+								Message:<strong>{condition.message}</strong> <br />
 								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
 							</Alert>
 						{:else}
 							<Alert variant="info" size="small">
 								<h4>{condition.reason}</h4>
-								Message <strong>{condition.message}</strong> <br />
+								Message:<strong>{condition.message}</strong> <br />
 								Last transaction time <strong>{condition.lastTransitionTime}</strong>
 							</Alert>
 						{/if}
@@ -176,8 +176,8 @@
 					<HelpText title="Status of the sql instance">
 						Status indicates the health of the instance. If the instance is healthy and running, the
 						checkmark will be displayed. If the instance is experiencing issues or has conditions
-						that require attention the message will be displayed in the bottom, please refer to the
-						conditions section.
+						that require attention the message will be displayed, please refer to the `Instance
+						conditions`.
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">
@@ -186,18 +186,18 @@
 					{:else if instance.status.conditions.length > 0}
 						{#each instance.status.conditions as condition}
 							<p>
-							{#if condition.type !== 'Ready'}
-								<ExclamationmarkTriangleFillIcon
-									style="color: var(--a-icon-warning)"
-									title="The SQL instance is not ready"
-								/>
-							{:else}
-								<ExclamationmarkTriangleFillIcon
-									style="color: var(--a-icon-info)"
-									title="The SQL instance has conditions reported"
-								/>
-							{/if}
-							Investigate conditions report(s)
+								{#if condition.type !== 'Ready'}
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-warning)"
+										title="The SQL instance is not ready"
+									/>
+								{:else}
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-info)"
+										title="The SQL instance has conditions reported"
+									/>
+								{/if}
+								Investigate conditions report(s)
 							</p>
 						{/each}
 					{/if}
