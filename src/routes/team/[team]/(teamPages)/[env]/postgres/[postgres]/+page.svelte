@@ -111,6 +111,34 @@
 		</Card>
 	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
+		{#if !instance.isHealthy && instance.status.conditions.length > 0}
+			<Card columns={12}>
+				<h4 id="conditions" style="margin-bottom: 0.5rem">
+					Instance conditions
+					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
+						FAQ
+						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
+					</Link>
+				</h4>
+				<div style="margin-bottom: 0.5rem;">
+					{#each instance.status.conditions as condition}
+						{#if condition.type !== 'Ready'}
+							<Alert variant="warning" size="small">
+								<h4>{condition.reason}</h4>
+								Message: <strong>{condition.message}</strong> <br />
+								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{:else}
+							<Alert variant="info" size="small">
+								<h4>{condition.reason}</h4>
+								Message <strong>{condition.message}</strong> <br />
+								Last transaction time <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{/if}
+					{/each}
+				</div>
+			</Card>
+		{/if}
 		<Card columns={6}>
 			<h3>Information</h3>
 			<div class="grid" style="grid-template-columns: 40% 60%;">
@@ -154,12 +182,24 @@
 				</p>
 				<p style="display: flex; align-items: center;">
 					{#if instance.isHealthy}
-						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 					{:else if instance.status.conditions.length > 0}
-						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem;" />
-						<a href="/team/{teamName}/{envName}/postgres/{instance.name}#conditions">
-							Investigate instance conditions report</a
-						>
+						{#each instance.status.conditions as condition}
+							<p>
+							{#if condition.type !== 'Ready'}
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--a-icon-warning)"
+									title="The SQL instance is not ready"
+								/>
+							{:else}
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--a-icon-info)"
+									title="The SQL instance has conditions reported"
+								/>
+							{/if}
+							Investigate conditions report(s)
+							</p>
+						{/each}
 					{/if}
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem">
@@ -193,8 +233,14 @@
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 					{/if}
 				</p>
-				<p>IP address</p>
-				<p>{instance.status.publicIpAddress}</p>
+				{#if instance.status.publicIpAddress}
+					<p>Public IP</p>
+					<p>{instance.status.publicIpAddress}</p>
+				{/if}
+				{#if instance.status.privateIpAddress}
+					<p>Private IP</p>
+					<p>{instance.status.privateIpAddress}</p>
+				{/if}
 				<p>Connection name</p>
 				<p style="display: flex; align-items: center;">
 					<span
@@ -321,40 +367,6 @@
 				{/if}
 			</div>
 		</Card>
-
-		{#if !instance.isHealthy && instance.status.conditions.length > 0}
-			<Card columns={12}>
-				<h4 id="conditions" style="margin-bottom: 0.5rem">
-					Conditions
-					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
-						FAQ
-						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
-					</Link>
-				</h4>
-				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-					<Table>
-						<Th>Reason</Th>
-						<Th style="width:12rem">Last transition</Th>
-						<Th style="width:10rem">Current condition</Th>
-						<Th>Message</Th>
-						{#each instance.status.conditions as condition}
-							<Tr>
-								<Td>{condition.reason}</Td>
-								<Td>{condition.lastTransitionTime}</Td>
-								<Td>{condition.status}</Td>
-								<Td>
-									<ExclamationmarkTriangleFillIcon
-										style="color: var(--a-icon-info)"
-										title="Conditions that need to be addressed"
-									></ExclamationmarkTriangleFillIcon>
-									{condition.message}
-								</Td>
-							</Tr>
-						{/each}
-					</Table>
-				</div>
-			</Card>
-		{/if}
 	</div>
 {/if}
 

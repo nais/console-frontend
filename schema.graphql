@@ -1675,6 +1675,7 @@ type SqlInstanceMetrics {
 
 type SqlInstanceStatus {
   conditions: [SqlInstanceCondition!]!
+  privateIpAddress: String
   publicIpAddress: String
 }
 
@@ -1693,6 +1694,7 @@ type SqlInstancesMetrics {
 
 type SqlInstancesStatus {
   failing: Int!
+  otherConditions: Int!
   total: Int!
 }
 

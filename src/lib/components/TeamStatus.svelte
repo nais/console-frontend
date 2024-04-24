@@ -25,6 +25,7 @@
 						total
 					}
 					sqlInstances {
+						otherConditions
 						failing
 						total
 					}
@@ -73,12 +74,12 @@
 			>
 		</p>
 	{/if}
-	{#if team.status.sqlInstances.failing > 0}
+	{#if team.status.sqlInstances.failing > 0 || team.status.sqlInstances.otherConditions > 0}
 		<p>
-			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
+			<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
 			<a href="/team/{teamName}/postgres">
-				{team.status.sqlInstances.failing}/{team.status.sqlInstances.total} postgres</a
-			> failing
+				{team.status.sqlInstances.failing + team.status.sqlInstances.otherConditions}/{team.status.sqlInstances.total} postgres</a
+			> reporting issues
 		</p>
 	{:else if team.status.sqlInstances.total > 0}
 		<p>
