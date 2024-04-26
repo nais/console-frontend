@@ -182,7 +182,7 @@
 				</p>
 				<p style="display: flex; align-items: center;">
 					{#if instance.isHealthy}
-						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 					{:else if instance.status.conditions.length > 0}
 						{#each instance.status.conditions as condition}
 							<p>
@@ -261,6 +261,17 @@
 					</HelpText>
 				</p>
 				<p>{instance.diskAutoresize}</p>
+				{#if instance.diskAutoresize}
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						Limit of disk autoresize
+						<HelpText title="Limit of disk autoresize">
+							The disk autoresize limit is the maximum disk size that the disk can be increased to
+							when the disk utilization reaches its limit. The default value is 0, which specifies
+							that there is no limit.
+						</HelpText>
+					</p>
+					<p>{instance.diskAutoresizeLimit} GB</p>
+				{/if}
 			</div>
 			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>
@@ -312,6 +323,12 @@
 							<Tr>
 								<Td>Retained backups:</Td>
 								<Td>{instance.backupConfiguration.retainedBackups}</Td>
+							</Tr>
+						{/if}
+						{#if instance.backupConfiguration.transactionLogRetentionDays > instance.backupConfiguration.retainedBackups}
+							<Tr>
+								<Td>Transaction log retention:</Td>
+								<Td>{instance.backupConfiguration.transactionLogRetentionDays} days</Td>
 							</Tr>
 						{/if}
 					{/if}
