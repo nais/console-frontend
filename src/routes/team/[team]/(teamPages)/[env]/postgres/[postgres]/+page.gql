@@ -41,7 +41,6 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 			startTime
 			retainedBackups
 			pointInTimeRecovery
-			transactionLogRetentionDays
 		}
 		maintenanceWindow {
 			day

@@ -252,7 +252,7 @@
 				<p>Tier</p>
 				<p>{instance.tier}</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem">
-					Disk auto resize
+					Disk autoresize
 					<HelpText title="Automatic allocation of disk space for sql instance">
 						Disk autoresize is a feature that automatically increases the disk size when the disk
 						utilization reaches its limit. If the disk autoresize is enabled, the disk will
@@ -323,12 +323,6 @@
 							<Tr>
 								<Td>Retained backups:</Td>
 								<Td>{instance.backupConfiguration.retainedBackups}</Td>
-							</Tr>
-						{/if}
-						{#if instance.backupConfiguration.transactionLogRetentionDays > instance.backupConfiguration.retainedBackups}
-							<Tr>
-								<Td>Transaction log retention:</Td>
-								<Td>{instance.backupConfiguration.transactionLogRetentionDays} days</Td>
 							</Tr>
 						{/if}
 					{/if}
