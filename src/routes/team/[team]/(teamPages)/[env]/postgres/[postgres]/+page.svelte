@@ -182,7 +182,7 @@
 				</p>
 				<p style="display: flex; align-items: center;">
 					{#if instance.isHealthy}
-						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 					{:else if instance.status.conditions.length > 0}
 						{#each instance.status.conditions as condition}
 							<p>
