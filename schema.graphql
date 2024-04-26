@@ -160,6 +160,7 @@ type BackupConfiguration {
   pointInTimeRecovery: Boolean!
   retainedBackups: Int!
   startTime: String!
+  transactionLogRetentionDays: Int!
 }
 
 type BigQueryDataset implements Storage {
@@ -1626,6 +1627,7 @@ type SqlInstance implements Storage {
   connectionName: String!
   database: SqlDatabase
   diskAutoresize: Boolean!
+  diskAutoresizeLimit: Int!
   env: Env!
   flags: [Flag!]!
   highAvailability: Boolean!

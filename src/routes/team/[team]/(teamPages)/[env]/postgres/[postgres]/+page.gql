@@ -10,6 +10,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 		type
 		connectionName
 		diskAutoresize
+		diskAutoresizeLimit
 		workload {
 			... on App {
 				name
@@ -40,6 +41,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 			startTime
 			retainedBackups
 			pointInTimeRecovery
+			transactionLogRetentionDays
 		}
 		maintenanceWindow {
 			day
