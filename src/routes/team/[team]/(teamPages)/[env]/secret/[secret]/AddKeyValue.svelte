@@ -42,12 +42,12 @@
 			return 'Must be less than 253 characters';
 		}
 
-		if (/^[_a-zA-Z0-9]+$/.test(key) === false) {
-			return 'Can only contain letters, numbers, or _';
+		if (/^[-._a-zA-Z0-9]+$/.test(key) === false) {
+			return 'Must consist of letters, numbers, or certain special characters (underscores, hyphens, and periods)';
 		}
 
-		if (/^[a-zA-Z_]+/.test(key) === false) {
-			return 'Must start with a letter or _';
+		if (/^[a-zA-Z_.-]+/.test(key) === false) {
+			return 'Must start with a letter or one of the following special characters: (underscores, hyphens, and periods)';
 		}
 		return '';
 	};
@@ -87,7 +87,9 @@
 			error={validKey(key)}
 		>
 			<svelte:fragment slot="label">Key</svelte:fragment>
-			<svelte:fragment slot="description"><i>Example: SOME_KEY</i></svelte:fragment>
+			<svelte:fragment slot="description"
+				><i>Examples: SOME_KEY, some.key, or some-key</i></svelte:fragment
+			>
 		</TextField>
 	</div>
 	<div class="entry">
