@@ -46,8 +46,8 @@
 			return 'Must consist of letters, numbers, or certain special characters (underscores, hyphens, and periods)';
 		}
 
-		if (/^[a-zA-Z_]+/.test(key) === false) {
-			return 'Must start with a letter or _';
+		if (/^[a-zA-Z_.-]+/.test(key) === false) {
+			return 'Must start with a letter or one of the following special characters: (underscores, hyphens, and periods)';
 		}
 		return '';
 	};
