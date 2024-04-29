@@ -88,7 +88,7 @@
 		>
 			<svelte:fragment slot="label">Key</svelte:fragment>
 			<svelte:fragment slot="description"
-				><i>Example: SOME_KEY, SOME_ENV.KEY or some.env-key</i></svelte:fragment
+				><i>Examples: SOME_KEY, some.key, or some-key</i></svelte:fragment
 			>
 		</TextField>
 	</div>
