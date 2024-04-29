@@ -43,7 +43,7 @@
 		}
 
 		if (/^[-._a-zA-Z0-9]+$/.test(key) === false) {
-			return "Must consist of alphabetic characters, digits ' - ' ' _ ' and ' . '";
+			return 'Must consist of letters, numbers, or certain special characters (underscores, hyphens, and periods)';
 		}
 
 		if (/^[a-zA-Z_]+/.test(key) === false) {
