@@ -303,7 +303,7 @@
 			</ul>
 		</Card>
 		<Card columns={6}>
-			<h4 style="margin-bottom: 0.5rem">Backup & Maintenance</h4>
+			<h3 style="margin-bottom: 0.5rem">Backup & Maintenance</h3>
 			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
 				<Table>
 					<Th>Name</Th>
@@ -354,13 +354,7 @@
 					</Tr>
 				</Table>
 			</div>
-			<h4 style="margin-bottom: 0.5rem;">Database</h4>
-			{#if instance.database}
-				<p>{instance.database.name}</p>
-			{:else}
-				<p>The Instance does not have any databases.</p>
-			{/if}
-			<h4 style="margin-bottom: 0.5rem;">Database flags</h4>
+			<h4 style="margin-bottom: 0.5rem;">Instance flags</h4>
 			<div style="margin-bottom: 1.5rem;">
 				{#if instance.flags.length}
 					<Table>
@@ -377,6 +371,61 @@
 					<p>No flags set</p>
 				{/if}
 			</div>
+		</Card>
+		<Card columns={6}>
+			<h3 style="margin-bottom: 0.5rem;">Database</h3>
+			{#if instance.database}
+				<div class="grid" style="grid-template-columns: 40% 60%;">
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						{instance.database.name}
+					</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						{#if instance.database.healthy}
+							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+						{:else}
+							<ExclamationmarkTriangleFillIcon
+								style="color: var(--a-icon-warning)"
+								title="The database is not healthy"
+							/>
+						{/if}
+					</p>
+				</div>
+				<h4 style="margin-bottom: 0.5rem; margin-top: 0.5rem">Settings</h4>
+				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+					<Table>
+						<Th>Name</Th>
+						<Th>Value</Th>
+						{#if instance.database.charset}
+							<Tr>
+								<Td>Charset:</Td>
+								<Td>{instance.database.charset}</Td>
+							</Tr>
+						{/if}
+						{#if instance.database.collation}
+							<Tr>
+								<Td>Collation:</Td>
+								<Td>{instance.database.collation}</Td>
+							</Tr>
+						{/if}
+						{#if !instance.database.healthy && instance.database.conditions.length > 0}
+							<Tr>
+								<Td>Condition:</Td>
+								{#each instance.database.conditions as condition}
+									<Td>
+										<Alert variant="warning" size="small">
+											<h4>{condition.reason}</h4>
+											Message:<strong>{condition.message}</strong> <br />
+											Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+										</Alert>
+									</Td>
+								{/each}
+							</Tr>
+						{/if}
+					</Table>
+				</div>
+			{:else}
+				<p>Instance does not have a database</p>
+			{/if}
 		</Card>
 	</div>
 {/if}
