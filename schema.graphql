@@ -183,6 +183,14 @@ type Claims {
   groups: [Group!]!
 }
 
+type Condition {
+  lastTransitionTime: String!
+  message: String!
+  reason: String!
+  status: String!
+  type: String!
+}
+
 type Consume {
   name: String!
 }
@@ -1617,7 +1625,12 @@ enum SortOrder {
   DESC
 }
 
-type SqlDatabase {
+type SqlDatabase implements Storage {
+  charset: String!
+  collation: String!
+  conditions: [Condition!]!
+  deletionPolicy: String!
+  healthy: Boolean!
   name: String!
 }
 
@@ -1645,14 +1658,6 @@ type SqlInstance implements Storage {
   workload: Workload
 }
 
-type SqlInstanceCondition {
-  lastTransitionTime: String!
-  message: String!
-  reason: String!
-  status: String!
-  type: String!
-}
-
 type SqlInstanceCpu {
   cores: Float!
   utilization: Float!
@@ -1676,7 +1681,7 @@ type SqlInstanceMetrics {
 }
 
 type SqlInstanceStatus {
-  conditions: [SqlInstanceCondition!]!
+  conditions: [Condition!]!
   privateIpAddress: String
   publicIpAddress: String
 }

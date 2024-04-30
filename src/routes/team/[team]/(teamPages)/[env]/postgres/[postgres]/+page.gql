@@ -50,6 +50,16 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 		projectId
 		database {
 			name
+			charset
+			collation
+			healthy
+			conditions {
+				type
+				status
+				reason
+				message
+				lastTransitionTime
+			}
 		}
 		flags {
 			name
