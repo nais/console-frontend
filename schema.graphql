@@ -1655,6 +1655,7 @@ type SqlInstance implements Storage {
   team: Team!
   tier: String!
   type: String!
+  users: [SqlUser!]!
   workload: Workload
 }
 
@@ -1703,6 +1704,11 @@ type SqlInstancesStatus {
   failing: Int!
   otherConditions: Int!
   total: Int!
+}
+
+type SqlUser {
+  authentication: String!
+  name: String!
 }
 
 enum State {
