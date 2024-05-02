@@ -113,14 +113,15 @@
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		{#if !instance.isHealthy && instance.status.conditions.length > 0}
 			<Card columns={12}>
-				<h4 id="conditions">
-					Instance conditions
+				<h3 id="conditions">
+					Conditions
 					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
 						FAQ
 						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
 					</Link>
-				</h4>
+				</h3>
 				<div style="margin-bottom: 0.5rem;">
+					<h4>Instance</h4>
 					{#each instance.status.conditions as condition}
 						{#if condition.type !== 'Ready'}
 							<Alert variant="warning" size="small">
@@ -136,6 +137,18 @@
 							</Alert>
 						{/if}
 					{/each}
+				</div>
+				<div style="margin-bottom: 0.5rem;">
+					<h4>Database</h4>
+					{#if instance.database && !instance.database.healthy}
+						{#each instance.database.conditions as condition}
+							<Alert variant="info" size="small">
+								<h4>{condition.reason}</h4>
+								Message:<strong>{condition.message}</strong> <br />
+								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{/each}
+					{/if}
 				</div>
 			</Card>
 		{/if}
@@ -286,7 +299,7 @@
 							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 						{:else}
 							<ExclamationmarkTriangleFillIcon
-								style="color: var(--a-icon-warning)"
+								style="color: var(--a-icon-info)"
 								title="The database is not healthy"
 							/>
 						{/if}
@@ -299,26 +312,6 @@
 					<p style="display: flex; align-items: center; gap: 0 1rem">
 						{instance.database.collation}
 					</p>
-				</div>
-				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-					{#if !instance.database.healthy && instance.database.conditions.length > 0}
-						<Table>
-							<Th>Name</Th>
-							<Th>Value</Th>
-							<Tr>
-								<Td>Condition:</Td>
-								{#each instance.database.conditions as condition}
-									<Td>
-										<Alert variant="warning" size="small">
-											<h4>{condition.reason}</h4>
-											Message:<strong>{condition.message}</strong> <br />
-											Last transaction time: <strong>{condition.lastTransitionTime}</strong>
-										</Alert>
-									</Td>
-								{/each}
-							</Tr>
-						</Table>
-					{/if}
 				</div>
 			{:else}
 				<p>Instance does not have a database</p>
