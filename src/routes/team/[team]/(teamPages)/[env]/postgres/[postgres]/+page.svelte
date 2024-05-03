@@ -187,10 +187,10 @@
 				<p style="display: flex; align-items: center; gap: 0 1rem">
 					Status
 					<HelpText title="Status of the sql instance">
-						Status indicates the health of the instance. If the instance is healthy and running, the
-						checkmark will be displayed. If the instance is experiencing issues or has conditions
-						that require attention the message will be displayed, please refer to the `Instance
-						conditions`.
+						The status reflects the health of the instance and its configuration. If the instance is
+						healthy and running with the correct configuration, a checkmark will be displayed. Most
+						common issues are misconfigurations. Please consult the 'Conditions' for further
+						details.
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">
@@ -293,7 +293,13 @@
 					<p style="display: flex; align-items: center; gap: 0 1rem">
 						{instance.database.name}
 					</p>
-					<p style="display: flex; align-items: center; gap: 0 1rem">Status</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						Status
+						<HelpText title="Limit of disk autoresize">
+							The status of the database is heavily dependent on the health of the instance. Most
+							common issue is a misconfiguration of the instance or the database itself.
+						</HelpText>
+					</p>
 					<p style="display: flex; align-items: center; gap: 0 1rem">
 						{#if instance.database.healthy}
 							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
