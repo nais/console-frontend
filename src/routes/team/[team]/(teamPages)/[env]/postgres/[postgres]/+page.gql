@@ -76,5 +76,9 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade:
 			publicIpAddress
 			privateIpAddress
 		}
+		users {
+			name
+			authentication
+		}
 	}
 }

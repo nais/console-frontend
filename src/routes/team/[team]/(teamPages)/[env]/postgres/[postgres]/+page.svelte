@@ -113,14 +113,15 @@
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		{#if !instance.isHealthy && instance.status.conditions.length > 0}
 			<Card columns={12}>
-				<h4 id="conditions">
-					Instance conditions
+				<h3 id="conditions">
+					Conditions
 					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
 						FAQ
 						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
 					</Link>
-				</h4>
+				</h3>
 				<div style="margin-bottom: 0.5rem;">
+					<h4>Instance</h4>
 					{#each instance.status.conditions as condition}
 						{#if condition.type !== 'Ready'}
 							<Alert variant="warning" size="small">
@@ -136,6 +137,18 @@
 							</Alert>
 						{/if}
 					{/each}
+				</div>
+				<div style="margin-bottom: 0.5rem;">
+					<h4>Database</h4>
+					{#if instance.database && !instance.database.healthy}
+						{#each instance.database.conditions as condition}
+							<Alert variant="info" size="small">
+								<h4>{condition.reason}</h4>
+								Message:<strong>{condition.message}</strong> <br />
+								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{/each}
+					{/if}
 				</div>
 			</Card>
 		{/if}
@@ -174,10 +187,10 @@
 				<p style="display: flex; align-items: center; gap: 0 1rem">
 					Status
 					<HelpText title="Status of the sql instance">
-						Status indicates the health of the instance. If the instance is healthy and running, the
-						checkmark will be displayed. If the instance is experiencing issues or has conditions
-						that require attention the message will be displayed, please refer to the `Instance
-						conditions`.
+						The status reflects the health of the instance and its configuration. If the instance is
+						healthy and running with the correct configuration, a checkmark will be displayed. Most
+						common issues are misconfigurations. Please consult the 'Conditions' for further
+						details.
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">
@@ -273,7 +286,43 @@
 					<p>{instance.diskAutoresizeLimit} GB</p>
 				{/if}
 			</div>
-			<h4 style="margin-top: 1.5rem;">Documentation</h4>
+			<h3 style="margin-top: 1.5rem;">Database</h3>
+			{#if instance.database}
+				<div class="grid" style="grid-template-columns: 40% 60%;">
+					<p style="display: flex; align-items: center; gap: 0 1rem">Name</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						{instance.database.name}
+					</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						Status
+						<HelpText title="Limit of disk autoresize">
+							The status of the database is heavily dependent on the health of the instance. Most
+							common issue is a misconfiguration of the instance or the database itself.
+						</HelpText>
+					</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						{#if instance.database.healthy}
+							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+						{:else}
+							<ExclamationmarkTriangleFillIcon
+								style="color: var(--a-icon-info)"
+								title="The database is not healthy"
+							/>
+						{/if}
+					</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">Charset</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						{instance.database.charset}
+					</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">Collation</p>
+					<p style="display: flex; align-items: center; gap: 0 1rem">
+						{instance.database.collation}
+					</p>
+				</div>
+			{:else}
+				<p>Instance does not have a database</p>
+			{/if}
+			<h3 style="margin-top: 1.5rem;">Documentation</h3>
 			<ul>
 				<li>
 					<Link href={docURL('/how-to-guides/persistence/postgres')}
@@ -354,7 +403,7 @@
 					</Tr>
 				</Table>
 			</div>
-			<h4 style="margin-bottom: 0.5rem;">Instance flags</h4>
+			<h3 style="margin-bottom: 0.5rem;">Instance flags</h3>
 			<div style="margin-bottom: 1.5rem;">
 				{#if instance.flags.length}
 					<Table>
@@ -371,60 +420,28 @@
 					<p>No flags set</p>
 				{/if}
 			</div>
-		</Card>
-		<Card columns={6}>
-			<h3 style="margin-bottom: 0.5rem;">Database</h3>
-			{#if instance.database}
-				<div class="grid" style="grid-template-columns: 40% 60%;">
-					<p style="display: flex; align-items: center; gap: 0 1rem">
-						{instance.database.name}
-					</p>
-					<p style="display: flex; align-items: center; gap: 0 1rem">
-						{#if instance.database.healthy}
-							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
-						{:else}
-							<ExclamationmarkTriangleFillIcon
-								style="color: var(--a-icon-warning)"
-								title="The database is not healthy"
-							/>
-						{/if}
-					</p>
-				</div>
-				<h4 style="margin-bottom: 0.5rem; margin-top: 0.5rem">Settings</h4>
+			<h3 style="margin-bottom: 0.5rem;">Users</h3>
+			{#if instance.users}
 				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
 					<Table>
 						<Th>Name</Th>
-						<Th>Value</Th>
-						{#if instance.database.charset}
-							<Tr>
-								<Td>Charset:</Td>
-								<Td>{instance.database.charset}</Td>
-							</Tr>
-						{/if}
-						{#if instance.database.collation}
-							<Tr>
-								<Td>Collation:</Td>
-								<Td>{instance.database.collation}</Td>
-							</Tr>
-						{/if}
-						{#if !instance.database.healthy && instance.database.conditions.length > 0}
-							<Tr>
-								<Td>Condition:</Td>
-								{#each instance.database.conditions as condition}
-									<Td>
-										<Alert variant="warning" size="small">
-											<h4>{condition.reason}</h4>
-											Message:<strong>{condition.message}</strong> <br />
-											Last transaction time: <strong>{condition.lastTransitionTime}</strong>
-										</Alert>
-									</Td>
-								{/each}
-							</Tr>
+						<Th>
+							<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
+								Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
+							</Link>
+						</Th>
+						{#if instance.users.length > 0}
+							{#each instance.users as user}
+								<Tr>
+									<Td>{user.name}</Td>
+									<Td>{user.authentication}</Td>
+								</Tr>
+							{/each}
 						{/if}
 					</Table>
 				</div>
 			{:else}
-				<p>Instance does not have a database</p>
+				<p>Instance does not have any users</p>
 			{/if}
 		</Card>
 	</div>
