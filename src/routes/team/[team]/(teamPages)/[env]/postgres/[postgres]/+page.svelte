@@ -426,9 +426,8 @@
 					<Table>
 						<Th>Name</Th>
 						<Th>
-							Authentication
 							<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
-								<ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
+								Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
 							</Link>
 						</Th>
 						{#if instance.users.length > 0}
