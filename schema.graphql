@@ -1651,6 +1651,7 @@ type SqlInstance implements Storage {
   metrics: SqlInstanceMetrics!
   name: String!
   projectId: String!
+  state: SqlInstanceState!
   status: SqlInstanceStatus!
   team: Team!
   tier: String!
@@ -1679,6 +1680,16 @@ type SqlInstanceMetrics {
   cpu: SqlInstanceCpu!
   disk: SqlInstanceDisk!
   memory: SqlInstanceMemory!
+}
+
+enum SqlInstanceState {
+  FAILED
+  MAINTENANCE
+  PENDING_CREATE
+  PENDING_DELETE
+  RUNNABLE
+  SQL_INSTANCE_STATE_UNSPECIFIED
+  SUSPENDED
 }
 
 type SqlInstanceStatus {

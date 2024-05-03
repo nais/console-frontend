@@ -64,6 +64,7 @@ query SqlInstances(
 						type
 					}
 				}
+				state
 				highAvailability
 			}
 		}

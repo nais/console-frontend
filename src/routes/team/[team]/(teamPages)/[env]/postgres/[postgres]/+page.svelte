@@ -111,50 +111,25 @@
 		</Card>
 	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
-		{#if !instance.isHealthy && instance.status.conditions.length > 0}
-			<Card columns={12}>
-				<h3 id="conditions">
-					Conditions
-					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
-						FAQ
-						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
-					</Link>
-				</h3>
-				<div style="margin-bottom: 0.5rem;">
-					<h4>Instance</h4>
-					{#each instance.status.conditions as condition}
-						{#if condition.type !== 'Ready'}
-							<Alert variant="warning" size="small">
-								<h4>{condition.reason}</h4>
-								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
-							</Alert>
-						{:else}
-							<Alert variant="info" size="small">
-								<h4>{condition.reason}</h4>
-								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time <strong>{condition.lastTransitionTime}</strong>
-							</Alert>
-						{/if}
-					{/each}
-				</div>
-				<div style="margin-bottom: 0.5rem;">
-					<h4>Database</h4>
-					{#if instance.database && !instance.database.healthy}
-						{#each instance.database.conditions as condition}
-							<Alert variant="info" size="small">
-								<h4>{condition.reason}</h4>
-								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
-							</Alert>
-						{/each}
-					{/if}
-				</div>
-			</Card>
-		{/if}
 		<Card columns={6}>
 			<h3>Information</h3>
 			<div class="grid" style="grid-template-columns: 40% 60%;">
+				<p style="display: flex; align-items: center; gap: 0 1rem;">
+					State
+					<HelpText title="State of the sql instance">
+						The state of the SQL instance reflects the current status of the instance. If state is
+						RUNNABLE, the instance is healthy and running.
+					</HelpText>
+				</p>
+				<p style="display: flex; align-items: center; gap: 0 0.5rem">
+					{#if instance.state === 'RUNNABLE'}
+						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+					{:else}
+						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" title="yolo" /><span
+							style="font-size: small;">Unhealthy state: {instance.state}</span
+						>
+					{/if}
+				</p>
 				<p>
 					{instance.workload
 						? instance.workload.__typename === 'App'
@@ -185,7 +160,7 @@
 					>
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem">
-					Status
+					Config status
 					<HelpText title="Status of the sql instance">
 						The status reflects the health of the instance and its configuration. If the instance is
 						healthy and running with the correct configuration, a checkmark will be displayed. Most
@@ -444,6 +419,47 @@
 				<p>Unable to fetch users at the moment</p>
 			{/if}
 		</Card>
+		{#if !instance.isHealthy && instance.status.conditions.length > 0}
+			<Card columns={12}>
+				<h3 id="conditions">
+					Config status
+					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
+						FAQ
+						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
+					</Link>
+				</h3>
+				<div style="margin-bottom: 0.5rem;">
+					<h4>Instance</h4>
+					{#each instance.status.conditions as condition}
+						{#if condition.type !== 'Ready'}
+							<Alert variant="warning" size="small">
+								<h4>{condition.reason}</h4>
+								Message:<strong>{condition.message}</strong> <br />
+								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{:else}
+							<Alert variant="info" size="small">
+								<h4>{condition.reason}</h4>
+								Message:<strong>{condition.message}</strong> <br />
+								Last transaction time <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{/if}
+					{/each}
+				</div>
+				<div style="margin-bottom: 0.5rem;">
+					<h4>Database</h4>
+					{#if instance.database && !instance.database.healthy}
+						{#each instance.database.conditions as condition}
+							<Alert variant="info" size="small">
+								<h4>{condition.reason}</h4>
+								Message:<strong>{condition.message}</strong> <br />
+								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+							</Alert>
+						{/each}
+					{/if}
+				</div>
+			</Card>
+		{/if}
 	</div>
 {/if}
 
