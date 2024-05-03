@@ -421,7 +421,7 @@
 				{/if}
 			</div>
 			<h3 style="margin-bottom: 0.5rem;">Users</h3>
-			{#if instance.users}
+			{#if instance.users && instance.users.length > 0}
 				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
 					<Table>
 						<Th>Name</Th>
@@ -441,7 +441,7 @@
 					</Table>
 				</div>
 			{:else}
-				<p>Instance does not have any users</p>
+				<p>Unable to fetch users at the moment</p>
 			{/if}
 		</Card>
 	</div>
