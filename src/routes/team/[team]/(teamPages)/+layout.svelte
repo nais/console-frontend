@@ -6,8 +6,7 @@
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
-		BranchingIcon,
-		BulletListIcon,
+		BranchingIcon, BucketIcon, BulletListIcon,
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
@@ -52,13 +51,6 @@
 					icon: ArrowCirclepathIcon
 				},
 				{
-					name: 'Postgres',
-					routeId: '/team/[team]/(teamPages)/postgres',
-					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
-					withSubRoutes: true,
-					icon: DatabaseIcon
-				},
-				{
 					name: 'Secrets',
 					routeId: '/team/[team]/(teamPages)/secrets',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
@@ -92,6 +84,24 @@
 				// 	withSubRoutes: true,
 				// 	icon: Kafka
 				// }
+			]
+		},
+		{
+			items: [
+				{
+					name: 'Postgres',
+					routeId: '/team/[team]/(teamPages)/postgres',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
+					withSubRoutes: true,
+					icon: DatabaseIcon
+				},
+				{
+					name: 'Buckets',
+					routeId: '/team/[team]/(teamPages)/buckets',
+					// extraRoutes: [],
+					withSubRoutes: false,
+					icon: BucketIcon
+				}
 			]
 		},
 		{

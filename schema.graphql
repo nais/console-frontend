@@ -172,10 +172,17 @@ type BigQueryDataset implements Persistence {
 
 type Bucket implements Persistence {
   cascadingDelete: Boolean!
+  env: Env!
+  id: ID!
   name: String!
-  publicAccessPrevention: Boolean!
-  retentionPeriodDays: Int!
-  uniformBucketLevelAccess: Boolean!
+  projectId: String!
+  team: Team!
+  workload: Workload
+}
+
+type BucketsList {
+  nodes: [Bucket!]!
+  pageInfo: PageInfo!
 }
 
 type Claims {
@@ -1795,6 +1802,16 @@ type Team {
   The ID of the Azure AD group for the team. This value is managed by the Azure AD reconciler.
   """
   azureGroupID: ID
+  buckets(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order buckets by"""
+    orderBy: OrderBy
+  ): BucketsList!
 
   """Whether or not the team is currently being deleted."""
   deletionInProgress: Boolean!
