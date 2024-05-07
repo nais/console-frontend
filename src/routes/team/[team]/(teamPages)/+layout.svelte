@@ -64,7 +64,14 @@
 					withSubRoutes: true,
 					icon: QuietZoneIcon,
 					memberOnly: true
-				}
+				},
+				{
+					name: 'Unleash',
+					routeId: '/team/[team]/(teamPages)/unleash',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
+					withSubRoutes: true,
+					icon: DatabaseIcon
+				},
 
 				// {
 				// 	name: 'Buckets',
