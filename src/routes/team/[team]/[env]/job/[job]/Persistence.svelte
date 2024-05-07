@@ -1,19 +1,19 @@
 <script lang="ts">
-	import type { Storage } from '$houdini';
+	import { page } from '$app/stores';
+	import type { JobPersistence } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
+	import Bucket from '$lib/icons/Bucket.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
 	import { Link, Skeleton } from '@nais/ds-svelte-community';
-	import { BucketIcon } from '@nais/ds-svelte-community/icons';
-	import { page } from '$app/stores';
 
-	export let app: Storage;
+	export let job: JobPersistence;
 	$: data = fragment(
-		app,
+		job,
 		graphql(`
-			fragment Storage on App @loading {
+			fragment JobPersistence on NaisJob @loading {
 				persistence {
 					... on Bucket {
 						name
@@ -57,32 +57,33 @@
 	$: team = $page.params.team;
 </script>
 
-<div class="storage">
-	{#if $data?.persistence.map((s) => s.__typename).includes(PendingValue)}
+<div class="persistence">
+	{#if $data.persistence.map((s) => s.__typename).includes(PendingValue)}
 		<Skeleton variant="text" width="300px" />
 	{/if}
-	{#each $data?.persistence || [] as persistence}
+	{#each $data.persistence as persistence}
 		{#if persistence.__typename === 'Bucket'}
-			<div class="storageContent">
-				<h5><BucketIcon />{persistence.__typename}</h5>
+			<div class="persistenceContent">
+				<h5><Bucket />{persistence.__typename}</h5>
 				{persistence.name}
 			</div>
 		{:else if persistence.__typename === 'BigQueryDataset'}
-			<div class="storageContent">
+			<div class="persistenceContent">
 				<h5><Bigquery />{persistence.__typename}</h5>
 				{persistence.name}
 			</div>
 		{:else if persistence.__typename === 'SqlInstance'}
-			<div class="storageContent">
-				<h5><Postgres />Postgres</h5>
+			<div class="persistenceContent">
+				<h5><Postgres />{persistence.__typename}</h5>
 				<span
 					><b>Instance:</b>
-					<Link href="/team/{team}/{env}/postgres/{persistence.name}">{persistence.name}</Link></span
+					<Link href="/team/{team}/{env}/postgres/{persistence.name}">{persistence.name}</Link
+					></span
 				>
 				<span><b>Type:</b> ({persistence.type}) </span>
 			</div>
 		{:else if persistence.__typename === 'Kafka'}
-			<div class="storageContent">
+			<div class="persistenceContent">
 				<h5><Kafka />{persistence.__typename}</h5>
 				<span
 					><b>Pool:</b>
@@ -104,34 +105,34 @@
 				{/if}
 			</div>
 		{:else if persistence.__typename === 'OpenSearch'}
-			<div class="storageContent">
+			<div class="persistenceContent">
 				<h5><Opensearch />{persistence.__typename}</h5>
 				<span><b>Instance:</b> {persistence.name}</span>
-				<span><b>Access:</b> {persistence.access}</span>
+				<span><b>Access:</b> ({persistence.access})</span>
 			</div>
 		{:else if persistence.__typename === 'Redis'}
-			<div class="storageContent">
+			<div class="persistenceContent">
 				<h5><!--Opensearch /-->{persistence.__typename}</h5>
 
 				<span><b>Instance:</b> {persistence.name}</span>
 				<span><b>Access:</b> {persistence.access}</span>
 			</div>
 		{:else if persistence.__typename === 'InfluxDb'}
-			<div class="storageContent">
+			<div class="persistenceContent">
 				<h5><!--Opensearch /-->{persistence.__typename}</h5>
 				<span><b>Instance:</b> {persistence.name}</span>
 			</div>
 		{/if}
 	{:else}
-		<p>No storage</p>
+		<p>No persistence</p>
 	{/each}
 </div>
 
 <style>
-	.storage {
+	.persistence {
 		display: block;
 	}
-	.storageContent {
+	.persistenceContent {
 		display: flex;
 		flex-direction: column;
 		padding: 1rem 0;

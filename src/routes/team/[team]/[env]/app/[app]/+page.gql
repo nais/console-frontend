@@ -15,7 +15,7 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		...AppInstancesStatus
 		...Authz
 		...AutoScaling
-		...Storage
+		...Persistence
 		...AppStatus
 	}
 

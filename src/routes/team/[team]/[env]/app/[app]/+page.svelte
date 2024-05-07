@@ -10,7 +10,7 @@
 	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
 	import Status from './Status.svelte';
-	import Storage from './Storage.svelte';
+	import Persistence from './Persistence.svelte';
 	import Traffic from './Traffic.svelte';
 	import Secrets from './Secrets.svelte';
 	import { Alert, Button } from '@nais/ds-svelte-community';
@@ -113,8 +113,8 @@
 			<Traffic app={$App.data.app} />
 		</Card>
 		<Card columns={4}>
-			<h4>Storage</h4>
-			<Storage app={$App.data.app} />
+			<h4>Persistence</h4>
+			<Persistence app={$App.data.app} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
