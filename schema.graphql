@@ -1900,7 +1900,7 @@ type Team {
   Possible issues related to synchronization of the team to configured external systems. If there are no entries the team can be considered fully synchronized.
   """
   syncErrors: [SyncError!]!
-  unleash: Unleash!
+  unleash: Unleash
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
@@ -2047,9 +2047,16 @@ type Topic {
 type Unleash {
   allowedTeams: [String!]!
   apiIngress: String!
+  metrics: UnleashMetrics!
   name: String!
   version: String!
   webIngress: String!
+}
+
+type UnleashMetrics {
+  apiTokens: Int!
+  numToggles: Int!
+  users: Int!
 }
 
 """Input for updating an existing team."""
