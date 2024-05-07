@@ -7,6 +7,7 @@
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
 		BranchingIcon,
+		BulletListIcon,
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
@@ -70,7 +71,7 @@
 					routeId: '/team/[team]/(teamPages)/unleash',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
 					withSubRoutes: true,
-					icon: DatabaseIcon
+					icon: BulletListIcon
 				},
 
 				// {

@@ -1,28 +1,24 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { Alert, CopyButton, HelpText, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkIcon,
-		ExclamationmarkTriangleFillIcon,
-		ExternalLinkIcon,
-		XMarkIcon
-	} from '@nais/ds-svelte-community/icons';
-	import prettyBytes from 'pretty-bytes';
+	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
 	$: team = $Unleash.data?.team;
-
+	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
+{#if $Unleash.errors}
+	{#each distinctErrors($Unleash.errors) as error}
+		<Alert style="margin-bottom: 1rem;" variant="error">
+			{error}
+		</Alert>
+	{/each}
+{:else if team}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -32,17 +28,16 @@
 				<div class="summary">
 					<h4>
 						Cost
-						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
+						<HelpText title=""></HelpText>
 					</h4>
-					<p class="metric">
-					</p>
+					<p class="metric"></p>
 				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={100 / 100} />
+					<CircleProgressBar progress={50 / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -51,15 +46,14 @@
 							>CPU utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
-					<p class="metric">
-					</p>
+					<p class="metric"></p>
 				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={100 / 100} />
+					<CircleProgressBar progress={60 / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -68,25 +62,23 @@
 							>Memory utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
-					<p class="metric">
-					</p>
+					<p class="metric"></p>
 				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={100 / 100} />
+					<CircleProgressBar progress={80 / 100} />
 				</div>
 				<div class="summary">
 					<h4>
-						Disk utilization
+						Something else
 						<HelpText title="Current memory utilization"
-							>Disk utilization for the last elapsed hour.
+							>
 						</HelpText>
 					</h4>
-					<p class="metric">
-					</p>
+					<p class="metric"></p>
 				</div>
 			</div>
 		</Card>
@@ -94,43 +86,35 @@
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={8}>
 			<h3>Information</h3>
-			<div class="grid" style="grid-template-columns: 40% 60%;">
-				<p style="display: flex; align-items: center; gap: 0 1rem;">
-					Name
-				</p>
-				<p style="display: flex; align-items: center; gap: 0 0.5rem">
-					{team?.unleash?.name}
-				</p>
+			<div class="grid" style="grid-template-columns: 20% 80%;">
+				<p>Name</p>
 				<p>
-					Version
+					{team.unleash.name}
 				</p>
+				<p>Version</p>
 				<p>
-					{team?.unleash?.version}
+					{team.unleash.version}
 				</p>
+				<p>Web UI</p>
 				<p>
-					Allowed teams
+					<a href={team.unleash.webIngress}
+						>{team.unleash.webIngress}<ExternalLinkIcon title="Unleash UI" font-size="1.5rem" /></a
+					>
 				</p>
+				<p>API</p>
 				<p>
-					{team?.unleash?.allowedTeams}
+					<span>{team.unleash.apiIngress}</span>
+					<CopyButton size="small" variant="action" copyText={team.unleash.apiIngress} />
 				</p>
+				<p>Teams</p>
 				<p>
-					 Web ingress
-				</p>
-				<p>
-					{team?.unleash?.webIngress}
-				</p>
-				<p>
-					 API ingress
-				</p>
-				<p>
-					{team?.unleash?.apiIngress}
+					{team.unleash.allowedTeams}
 				</p>
 			</div>
 		</Card>
-		<Card columns={4}>
-			
-		</Card>
+		<Card columns={4}></Card>
 	</div>
+{/if}
 
 <style>
 	.grid {
@@ -142,6 +126,9 @@
 
 	.grid p {
 		margin: 0.2rem 0;
+		display: flex;
+		align-items: center;
+		gap: 0 0.5rem;
 	}
 
 	.summary-grid {
