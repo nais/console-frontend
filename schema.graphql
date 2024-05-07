@@ -35,9 +35,9 @@ type App {
   instances: [Instance!]!
   manifest: String!
   name: String!
+  persistence: [Persistence!]!
   resources: Resources!
   secrets: [Secret!]!
-  storage: [Storage!]!
   team: Team!
   variables: [Variable!]!
   vulnerabilities: Vulnerability
@@ -163,14 +163,14 @@ type BackupConfiguration {
   transactionLogRetentionDays: Int!
 }
 
-type BigQueryDataset implements Storage {
+type BigQueryDataset implements Persistence {
   cascadingDelete: Boolean!
   description: String!
   name: String!
   permission: String!
 }
 
-type Bucket implements Storage {
+type Bucket implements Persistence {
   cascadingDelete: Boolean!
   name: String!
   publicAccessPrevention: Boolean!
@@ -500,7 +500,7 @@ type InboundAccessError implements StateError {
   rule: Rule!
 }
 
-type InfluxDb implements Storage {
+type InfluxDb implements Persistence {
   name: String!
 }
 
@@ -544,7 +544,7 @@ type JobsStatus {
   total: Int!
 }
 
-type Kafka implements Storage {
+type Kafka implements Persistence {
   """The kafka pool name"""
   name: String!
   streams: Boolean!
@@ -970,12 +970,12 @@ type NaisJob {
   manifest: String!
   name: String!
   parallelism: Int!
+  persistence: [Persistence!]!
   resources: Resources!
   retries: Int!
   runs: [Run!]!
   schedule: String!
   secrets: [Secret!]!
-  storage: [Storage!]!
   team: Team!
 }
 
@@ -1004,7 +1004,7 @@ type NoRunningInstancesError implements StateError {
   revision: String!
 }
 
-type OpenSearch implements Storage {
+type OpenSearch implements Persistence {
   access: String!
 
   """The opensearch instance name"""
@@ -1093,6 +1093,10 @@ type PageInfo {
 
   """The total amount if items accessible."""
   totalCount: Int!
+}
+
+interface Persistence {
+  name: String!
 }
 
 type Port {
@@ -1380,7 +1384,7 @@ type ReconcilerList {
   pageInfo: PageInfo!
 }
 
-type Redis implements Storage {
+type Redis implements Persistence {
   access: String!
   name: String!
 }
@@ -1633,7 +1637,7 @@ enum SortOrder {
   DESC
 }
 
-type SqlDatabase implements Storage {
+type SqlDatabase implements Persistence {
   charset: String!
   collation: String!
   conditions: [Condition!]!
@@ -1642,7 +1646,7 @@ type SqlDatabase implements Storage {
   name: String!
 }
 
-type SqlInstance implements Storage {
+type SqlInstance implements Persistence {
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   connectionName: String!
@@ -1740,10 +1744,6 @@ enum State {
 interface StateError {
   level: ErrorLevel!
   revision: String!
-}
-
-interface Storage {
-  name: String!
 }
 
 type Subscription {

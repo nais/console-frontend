@@ -14,7 +14,7 @@
 		app,
 		graphql(`
 			fragment Storage on App @loading {
-				storage {
+				persistence {
 					... on Bucket {
 						name
 					}
@@ -58,41 +58,41 @@
 </script>
 
 <div class="storage">
-	{#if $data?.storage.map((s) => s.__typename).includes(PendingValue)}
+	{#if $data?.persistence.map((s) => s.__typename).includes(PendingValue)}
 		<Skeleton variant="text" width="300px" />
 	{/if}
-	{#each $data?.storage || [] as storage}
-		{#if storage.__typename === 'Bucket'}
+	{#each $data?.persistence || [] as persistence}
+		{#if persistence.__typename === 'Bucket'}
 			<div class="storageContent">
-				<h5><BucketIcon />{storage.__typename}</h5>
-				{storage.name}
+				<h5><BucketIcon />{persistence.__typename}</h5>
+				{persistence.name}
 			</div>
-		{:else if storage.__typename === 'BigQueryDataset'}
+		{:else if persistence.__typename === 'BigQueryDataset'}
 			<div class="storageContent">
-				<h5><Bigquery />{storage.__typename}</h5>
-				{storage.name}
+				<h5><Bigquery />{persistence.__typename}</h5>
+				{persistence.name}
 			</div>
-		{:else if storage.__typename === 'SqlInstance'}
+		{:else if persistence.__typename === 'SqlInstance'}
 			<div class="storageContent">
 				<h5><Postgres />Postgres</h5>
 				<span
 					><b>Instance:</b>
-					<Link href="/team/{team}/{env}/postgres/{storage.name}">{storage.name}</Link></span
+					<Link href="/team/{team}/{env}/postgres/{persistence.name}">{persistence.name}</Link></span
 				>
-				<span><b>Type:</b> ({storage.type}) </span>
+				<span><b>Type:</b> ({persistence.type}) </span>
 			</div>
-		{:else if storage.__typename === 'Kafka'}
+		{:else if persistence.__typename === 'Kafka'}
 			<div class="storageContent">
-				<h5><Kafka />{storage.__typename}</h5>
+				<h5><Kafka />{persistence.__typename}</h5>
 				<span
 					><b>Pool:</b>
-					{storage.name}</span
+					{persistence.name}</span
 				>
-				<span><b>Streams:</b> ({storage.streams})</span>
-				{#if storage.topics.length !== 0}
+				<span><b>Streams:</b> ({persistence.streams})</span>
+				{#if persistence.topics.length !== 0}
 					<h6>Topics:</h6>
 					<ul>
-						{#each storage.topics as topic}
+						{#each persistence.topics as topic}
 							<li>
 								<code style="font-size: 1rem"
 									>{topic.name} -
@@ -103,23 +103,23 @@
 					</ul>
 				{/if}
 			</div>
-		{:else if storage.__typename === 'OpenSearch'}
+		{:else if persistence.__typename === 'OpenSearch'}
 			<div class="storageContent">
-				<h5><Opensearch />{storage.__typename}</h5>
-				<span><b>Instance:</b> {storage.name}</span>
-				<span><b>Access:</b> {storage.access}</span>
+				<h5><Opensearch />{persistence.__typename}</h5>
+				<span><b>Instance:</b> {persistence.name}</span>
+				<span><b>Access:</b> {persistence.access}</span>
 			</div>
-		{:else if storage.__typename === 'Redis'}
+		{:else if persistence.__typename === 'Redis'}
 			<div class="storageContent">
-				<h5><!--Opensearch /-->{storage.__typename}</h5>
+				<h5><!--Opensearch /-->{persistence.__typename}</h5>
 
-				<span><b>Instance:</b> {storage.name}</span>
-				<span><b>Access:</b> {storage.access}</span>
+				<span><b>Instance:</b> {persistence.name}</span>
+				<span><b>Access:</b> {persistence.access}</span>
 			</div>
-		{:else if storage.__typename === 'InfluxDb'}
+		{:else if persistence.__typename === 'InfluxDb'}
 			<div class="storageContent">
-				<h5><!--Opensearch /-->{storage.__typename}</h5>
-				<span><b>Instance:</b> {storage.name}</span>
+				<h5><!--Opensearch /-->{persistence.__typename}</h5>
+				<span><b>Instance:</b> {persistence.name}</span>
 			</div>
 		{/if}
 	{:else}
