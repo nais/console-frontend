@@ -1,5 +1,6 @@
 query Unleash($team: Slug!) {
 	team(slug: $team) {
+		slug
 		unleash {
 			name
 			version

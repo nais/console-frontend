@@ -1,23 +1,46 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
+	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { Alert, Button, CopyButton, HelpText } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import { graphql } from '$houdini';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
+	$: team = $page.params.team;
 	$: unleash = $Unleash.data?.team?.unleash;
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 
-	const createNewUnleash = () => {
-		console.log('Create new unleash');
+	const createUnleashForTeam = graphql(`
+		mutation createUnleashForTeam($team: Slug!) {
+			createUnleashForTeam(team: $team) {
+				name
+			}
+		}
+	`);
+
+	const createNewUnleash = async () => {
+		await createUnleashForTeam.mutate({
+			team: team
+		});
+
+		if ($createUnleashForTeam.errors) {
+			console.log($createUnleashForTeam.errors);
+		}
 	};
 </script>
 
 {#if $Unleash.errors}
 	{#each distinctErrors($Unleash.errors) as error}
+		<Alert style="margin-bottom: 1rem;" variant="error">
+			{error}
+		</Alert>
+	{/each}
+{:else if $createUnleashForTeam.errors}
+	{#each distinctErrors($createUnleashForTeam.errors) as error}
 		<Alert style="margin-bottom: 1rem;" variant="error">
 			{error}
 		</Alert>
