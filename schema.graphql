@@ -739,6 +739,14 @@ type Mutation {
     input: CreateTeamInput!
   ): Team!
 
+  """
+  Create a new Unleash instance.
+  
+  This mutation will create a new Unleash instance for the given team. The team
+  will be set as owner of the Unleash instance and will be able to manage it.
+  """
+  createUnleashForTeam(team: Slug!): Unleash!
+
   """Deauthorize an action from a team."""
   deauthorizeRepository(
     """The action to deauthorize."""
