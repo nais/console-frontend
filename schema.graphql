@@ -1192,6 +1192,9 @@ type Query {
     to: Date!
   ): DailyCost!
 
+  """Get image by dependency track project id."""
+  dependencyTrackProject(projectId: String!): Image!
+
   """Get a list of deployments."""
   deployments(limit: Int, offset: Int): DeploymentList!
 

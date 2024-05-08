@@ -1,0 +1,21 @@
+query Image($dependencyTrackProjectId: String!) {
+	dependencyTrackProject(projectId: $dependencyTrackProjectId) {
+		id @loading
+		name
+		digest
+		rekorId
+		critical
+		riskScore
+		findings {
+			id
+			componentId
+			cveId
+			ghsaId
+			osvId
+			description
+			severity
+			packageUrl
+			vulnerabilityId
+		}
+	}
+}
