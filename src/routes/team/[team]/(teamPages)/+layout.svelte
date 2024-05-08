@@ -10,6 +10,7 @@
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
+		ImageIcon,
 		LineGraphStackedIcon,
 		PersonGroupIcon,
 		QuietZoneIcon,
@@ -111,6 +112,12 @@
 					routeId: '/team/[team]/(teamPages)/vulnerabilities',
 					withSubRoutes: true,
 					icon: VirusIcon
+				},
+				{
+					name: 'Images',
+					routeId: '/team/[team]/(teamPages)/images',
+					withSubRoutes: true,
+					icon: ImageIcon
 				}
 			]
 		},

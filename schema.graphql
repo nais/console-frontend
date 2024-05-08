@@ -403,6 +403,18 @@ type FailedRunError implements StateError {
   runName: String!
 }
 
+type Finding {
+  componentId: String!
+  cveId: String!
+  description: String!
+  ghsaId: String!
+  id: ID!
+  osvId: String!
+  packageUrl: String!
+  severity: String!
+  vulnerabilityId: String!
+}
+
 type Flag {
   name: String!
   value: String!
@@ -488,6 +500,23 @@ type IDPortenSidecar {
   level: String
   locale: String
   resources: Resources
+}
+
+type Image {
+  critical: Int!
+  digest: String!
+  findings: [Finding!]!
+  id: ID!
+  latestProjectId: String!
+  name: String!
+  projects: [Project!]!
+  rekorId: String!
+  riskScore: Int!
+}
+
+type ImageList {
+  nodes: [Image!]!
+  pageInfo: PageInfo!
 }
 
 type Inbound {
@@ -1089,6 +1118,14 @@ type PageInfo {
 
 type Port {
   port: Int!
+}
+
+type Project {
+  application: String!
+  environment: String!
+  id: ID!
+  projectId: String!
+  team: String!
 }
 
 """The query root for the NAIS GraphQL API."""
@@ -1831,6 +1868,18 @@ type Team {
   """
   googleGroupEmail: String
   id: ID!
+
+  """The images for the team's applications."""
+  images(
+    """Limit the number of entries returned."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order images by"""
+    orderBy: OrderBy
+  ): ImageList!
 
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time
