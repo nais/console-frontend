@@ -2,14 +2,18 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, CopyButton, HelpText } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
-	$: team = $Unleash.data?.team;
+	$: unleash = $Unleash.data?.team?.unleash;
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
+
+	const createNewUnleash = () => {
+		console.log('Create new unleash');
+	};
 </script>
 
 {#if $Unleash.errors}
@@ -18,7 +22,7 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if team}
+{:else if unleash}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -74,9 +78,7 @@
 				<div class="summary">
 					<h4>
 						Something else
-						<HelpText title="Current memory utilization"
-							>
-						</HelpText>
+						<HelpText title="Current memory utilization"></HelpText>
 					</h4>
 					<p class="metric"></p>
 				</div>
@@ -89,30 +91,44 @@
 			<div class="grid" style="grid-template-columns: 20% 80%;">
 				<p>Name</p>
 				<p>
-					{team.unleash.name}
+					{unleash.name}
 				</p>
 				<p>Version</p>
 				<p>
-					{team.unleash.version}
+					{unleash.version}
 				</p>
 				<p>Web UI</p>
 				<p>
-					<a href={team.unleash.webIngress}
-						>{team.unleash.webIngress}<ExternalLinkIcon title="Unleash UI" font-size="1.5rem" /></a
+					<a href={unleash.webIngress}
+						>{unleash.webIngress}<ExternalLinkIcon title="Unleash UI" font-size="1.5rem" /></a
 					>
 				</p>
 				<p>API</p>
 				<p>
-					<span>{team.unleash.apiIngress}</span>
-					<CopyButton size="small" variant="action" copyText={team.unleash.apiIngress} />
+					<span>{unleash.apiIngress}</span>
+					<CopyButton size="small" variant="action" copyText={unleash.apiIngress} />
 				</p>
 				<p>Teams</p>
 				<p>
-					{team.unleash.allowedTeams}
+					{unleash.allowedTeams}
 				</p>
 			</div>
 		</Card>
 		<Card columns={4}></Card>
+	</div>
+{:else}
+	<div style="">
+		<h2>Unleash Feature Toggles</h2>
+		<p>
+			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
+			to your team.
+		</p>
+		<Button variant="secondary" size="medium" on:click={createNewUnleash}>
+			Enable Unleash
+			<svelte:fragment slot="icon-left">
+				<PlusIcon />
+			</svelte:fragment>
+		</Button>
 	</div>
 {/if}
 
