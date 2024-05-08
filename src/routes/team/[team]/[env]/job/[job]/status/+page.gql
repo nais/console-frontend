@@ -2,7 +2,7 @@ query JobStatusDetailed($job: String!, $team: Slug!, $env: String!) {
 	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name @loading
 
-		jobState @loading {
+		status @loading {
 			state
 			errors {
 				...JobErrorFragment

@@ -16,7 +16,7 @@
 		app,
 		graphql(`
 			fragment AppStatus on App {
-				appState @loading {
+				status @loading {
 					state @loading
 					errors {
 						__typename
@@ -26,14 +26,14 @@
 			}
 		`)
 	);
-	$: state = $data.appState?.state;
+	$: state = $data.status?.state;
 </script>
 
 <div class="card {state.toString()}">
-	{#if $data.appState.state == PendingValue}
+	{#if $data.status.state == PendingValue}
 		<h4>Status</h4>
 		<Skeleton variant="rectangle" />
-	{:else if $data.appState.state === 'NAIS'}
+	{:else if $data.status.state === 'NAIS'}
 		<h4>Status</h4>
 		<div class="iconWrapper">
 			<Nais
@@ -42,34 +42,34 @@
 				aria-label="Application is nais"
 				role="image"
 			/>
-			{#if $data.appState?.errors.length > 0}
+			{#if $data.status?.errors.length > 0}
 				<p>
 					<a href="/team/{teamName}/{envName}/app/{appName}/status"
-						>{$data.appState.errors.length} todo{$data.appState.errors.length > 1 ? 's' : ''}</a
+						>{$data.status.errors.length} todo{$data.status.errors.length > 1 ? 's' : ''}</a
 					>
 				</p>
 			{/if}
 		</div>
-	{:else if $data.appState.state === 'FAILING'}
+	{:else if $data.status.state === 'FAILING'}
 		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 		<div>
 			Application is failing.<br />
 			<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
-				{$data.appState.errors.length}
-				{$data.appState.errors.length > 1 ? 'issues' : 'issue'}
+				{$data.status.errors.length}
+				{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 			</a> detected.
 		</div>
-	{:else if $data.appState.state === 'NOTNAIS'}
+	{:else if $data.status.state === 'NOTNAIS'}
 		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 		<div>
 			Application is not nais.<br />
 			<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
-				{$data.appState.errors.length}
-				{$data.appState.errors.length > 1 ? 'issues' : 'issue'}
+				{$data.status.errors.length}
+				{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 			</a>
 			detected.
 		</div>
-	{:else if $data.appState.state === 'UNKNOWN'}
+	{:else if $data.status.state === 'UNKNOWN'}
 		<h4>Status <QuestionmarkDiamondFillIcon /></h4>
 		<div>Application status is unknown.</div>
 	{/if}

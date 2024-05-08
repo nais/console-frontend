@@ -17,7 +17,7 @@
 		job,
 		graphql(`
 			fragment JobStatus on NaisJob {
-				jobState @loading {
+				status @loading {
 					state @loading
 					errors {
 						__typename
@@ -26,15 +26,15 @@
 			}
 		`)
 	);
-	$: state = $data.jobState?.state;
+	$: state = $data.status?.state;
 </script>
 
 <div class="card {state.toString()}">
-	{#if $data.jobState.state == PendingValue}
+	{#if $data.status.state == PendingValue}
 		<h4>Status</h4>
 		<Skeleton variant="text" />
-	{:else if $data.jobState.state === 'NAIS'}
-		<h4>Status {$data.jobState.state}</h4>
+	{:else if $data.status.state === 'NAIS'}
+		<h4>Status {$data.status.state}</h4>
 		<div class="iconWrapper">
 			<Nais
 				size="5rem"
@@ -43,26 +43,26 @@
 				role="image"
 			/>
 		</div>
-	{:else if $data.jobState.state === 'FAILING'}
+	{:else if $data.status.state === 'FAILING'}
 		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 		<div>
 			Job is failing.<br />
 			<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
-				{$data.jobState.errors.length}
-				{$data.jobState.errors.length > 1 ? 'issues' : 'issue'}
+				{$data.status.errors.length}
+				{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 			</a> detected.
 		</div>
-	{:else if $data.jobState.state === 'NOTNAIS'}
+	{:else if $data.status.state === 'NOTNAIS'}
 		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 		<div>
 			Job is not nais.<br />
 			<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
-				{$data.jobState.errors.length}
-				{$data.jobState.errors.length > 1 ? 'issues' : 'issue'}
+				{$data.status.errors.length}
+				{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 			</a>
 			detected.
 		</div>
-	{:else if $data.jobState.state === 'UNKNOWN'}
+	{:else if $data.status.state === 'UNKNOWN'}
 		<h4>Status <QuestionmarkDiamondFillIcon /></h4>
 		<div>Job status is unknown.</div>
 	{/if}

@@ -24,7 +24,6 @@ type Acl {
 
 type App {
   accessPolicy: AccessPolicy!
-  appState: AppState!
   authz: [Authz!]!
   autoScaling: AutoScaling!
   deployInfo: DeployInfo!
@@ -38,6 +37,7 @@ type App {
   persistence: [Persistence!]!
   resources: Resources!
   secrets: [Secret!]!
+  status: WorkloadStatus!
   team: Team!
   variables: [Variable!]!
   vulnerabilities: Vulnerability
@@ -58,11 +58,6 @@ type AppCost {
 type AppList {
   nodes: [App!]!
   pageInfo: PageInfo!
-}
-
-type AppState {
-  errors: [StateError!]!
-  state: State!
 }
 
 """Resource utilization overage cost for an app."""
@@ -540,11 +535,6 @@ type InvalidNaisYamlError implements StateError {
   revision: String!
 }
 
-type JobState {
-  errors: [StateError!]!
-  state: State!
-}
-
 """Team status for jobs."""
 type JobsStatus {
   failing: Int!
@@ -973,7 +963,6 @@ type NaisJob {
   env: Env!
   id: ID!
   image: String!
-  jobState: JobState!
   manifest: String!
   name: String!
   parallelism: Int!
@@ -983,6 +972,7 @@ type NaisJob {
   runs: [Run!]!
   schedule: String!
   secrets: [Secret!]!
+  status: WorkloadStatus!
   team: Team!
 }
 
@@ -2246,3 +2236,8 @@ type VulnerabilitySummary {
 }
 
 union Workload = App | NaisJob
+
+type WorkloadStatus {
+  errors: [StateError!]!
+  state: State!
+}
