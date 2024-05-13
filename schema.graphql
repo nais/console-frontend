@@ -1383,7 +1383,16 @@ type ReconcilerList {
 
 type Redis implements Persistence {
   access: String!
+  env: Env!
+  id: ID!
   name: String!
+  team: Team!
+  workload: Workload
+}
+
+type RedisList {
+  nodes: [Redis!]!
+  pageInfo: PageInfo!
 }
 
 """Repository authorizations."""
@@ -1879,6 +1888,16 @@ type Team {
 
   """Purpose of the team."""
   purpose: String!
+  redis(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order buckets by"""
+    orderBy: OrderBy
+  ): RedisList!
 
   """Get the team's secret by name, and env."""
   secret(

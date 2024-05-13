@@ -98,10 +98,27 @@
 				{
 					name: 'Buckets',
 					routeId: '/team/[team]/(teamPages)/buckets',
-					// extraRoutes: [],
 					withSubRoutes: false,
 					icon: BucketIcon
+				},
+				{
+					name: 'Redis',
+					routeId: '/team/[team]/(teamPages)/redis',
+					withSubRoutes: false,
+					icon: DatabaseIcon
 				}
+				// {
+				// 	name: 'BigQuery',
+				// 	routeId: '/team/[team]/(teamPages)/jobs',
+				// 	withSubRoutes: true,
+				// 	icon: Bigquery
+				// },
+				// {
+				// 	name: 'Kafka',
+				// 	routeId: '/team/[team]/(teamPages)/jobs',
+				// 	withSubRoutes: true,
+				// 	icon: Kafka
+				// }
 			]
 		},
 		{
