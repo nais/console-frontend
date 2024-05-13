@@ -1,5 +1,5 @@
 query Image($dependencyTrackProjectId: String!) {
-	dependencyTrackProject(projectId: $dependencyTrackProjectId) {
+	dependencyTrackProject(projectId: $dependencyTrackProjectId) @loading {
 		id @loading
 		name
 		digest
