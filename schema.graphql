@@ -2063,8 +2063,11 @@ type Unleash {
 
 type UnleashMetrics {
   apiTokens: Int!
-  numToggles: Int!
-  users: Int!
+  cpuRequests: Float!
+  cpuUtilization: Float!
+  memoryRequests: Float!
+  memoryUtilization: Float!
+  toggles: Int!
 }
 
 """Input for updating an existing team."""

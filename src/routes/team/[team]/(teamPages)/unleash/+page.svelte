@@ -2,11 +2,16 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { Alert, Button, CopyButton, HelpText } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ExternalLinkIcon,
+		PlusIcon,
+		BulletListIcon,
+		TokenIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import { graphql } from '$houdini';
+	import prettyBytes from 'pretty-bytes';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
@@ -49,22 +54,42 @@
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
+				<div class="summaryIcon" style="--bg-color: #C8C8C8">
+					<BulletListIcon font-size="32" />
 				</div>
 				<div class="summary">
 					<h4>
-						Cost
-						<HelpText title=""></HelpText>
+						Toggles
+						<HelpText title="">Number of feature toggles in the Unleash server.</HelpText>
 					</h4>
-					<p class="metric"></p>
+					<p class="metric">
+						{unleash.metrics.toggles}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #C8C8C8">
+					<TokenIcon font-size="32" />
+				</div>
+				<div class="summary">
+					<h4>
+						API clients
+						<HelpText title="API clients">
+							Number of API clients that are using the Unleash server.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{unleash.metrics.apiTokens}
+					</p>
 				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={50 / 100} />
+					<CircleProgressBar progress={unleash.metrics.cpuUtilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -73,14 +98,16 @@
 							>CPU utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
-					<p class="metric"></p>
+					<p class="metric">
+						{unleash.metrics.cpuUtilization.toFixed(1)}% of {unleash.metrics.cpuRequests} CPUs
+					</p>
 				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={60 / 100} />
+					<CircleProgressBar progress={unleash.metrics.memoryUtilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -89,21 +116,11 @@
 							>Memory utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
-					<p class="metric"></p>
-				</div>
-			</div>
-		</Card>
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
-					<CircleProgressBar progress={80 / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						Something else
-						<HelpText title="Current memory utilization"></HelpText>
-					</h4>
-					<p class="metric"></p>
+					<p class="metric">
+						{unleash.metrics.memoryUtilization.toFixed(1)}% of {prettyBytes(
+							unleash.metrics.memoryRequests
+						)}
+					</p>
 				</div>
 			</div>
 		</Card>
@@ -122,22 +139,36 @@
 				</p>
 				<p>Web UI</p>
 				<p>
-					<a href={unleash.webIngress}
-						>{unleash.webIngress}<ExternalLinkIcon title="Unleash UI" font-size="1.5rem" /></a
+					<a href="https://{unleash.webIngress}"
+						>https://{unleash.webIngress}<ExternalLinkIcon
+							title="Unleash UI"
+							font-size="1.5rem"
+						/></a
 					>
 				</p>
 				<p>API</p>
 				<p>
-					<span>{unleash.apiIngress}</span>
-					<CopyButton size="small" variant="action" copyText={unleash.apiIngress} />
+					<span>https://{unleash.apiIngress}</span>
+					<CopyButton size="small" variant="action" copyText="https://{unleash.apiIngress}" />
 				</p>
 				<p>Teams</p>
 				<p>
-					{unleash.allowedTeams}
+					{#each unleash.allowedTeams as team}
+						<a href="/team/{team}">{team}</a>
+					{/each}
 				</p>
 			</div>
 		</Card>
-		<Card columns={4}></Card>
+		<Card columns={4}>
+			<h3>Team access</h3>
+			<ul>
+				{#each unleash.allowedTeams as team}
+					<li>
+						<a href="/team/{team}">{team}</a>
+					</li>
+				{/each}
+			</ul>
+		</Card>
 	</div>
 {:else}
 	<div style="">

@@ -7,6 +7,14 @@ query Unleash($team: Slug!) {
 			allowedTeams
 			webIngress
 			apiIngress
+			metrics{
+				apiTokens
+				cpuUtilization
+				cpuRequests
+				memoryUtilization
+				memoryRequests
+				toggles
+			}
 		}
 	}
 }
