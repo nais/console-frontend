@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import { Alert, Button, CopyButton, HelpText } from '@nais/ds-svelte-community';
+	import { Alert, Button, CopyButton, HelpText, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		ExternalLinkIcon,
 		PlusIcon,
@@ -151,6 +151,15 @@
 					<span>https://{unleash.apiIngress}</span>
 					<CopyButton size="small" variant="action" copyText="https://{unleash.apiIngress}" />
 				</p>
+				<p>Documentation</p>
+				<p>
+					<a href="https://docs.nais.io/explanation/feature-toggling/"
+						>https://docs.nais.io/explanation/feature-toggling <ExternalLinkIcon
+							title="Unleash documentation"
+							font-size="1.5rem"
+						/></a
+					>
+				</p>
 			</div>
 		</Card>
 		<Card columns={4}>
@@ -171,12 +180,14 @@
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
 		</p>
-		<Button variant="secondary" size="medium" on:click={createNewUnleash}>
-			Enable Unleash
-			<svelte:fragment slot="icon-left">
-				<PlusIcon />
-			</svelte:fragment>
-		</Button>
+		<Tooltip content="Coming soon...">
+			<Button variant="secondary" size="medium" on:click={createNewUnleash} disabled>
+				Enable Unleash
+				<svelte:fragment slot="icon-left">
+					<PlusIcon />
+				</svelte:fragment>
+			</Button>
+		</Tooltip>
 	</div>
 {/if}
 
