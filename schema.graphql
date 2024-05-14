@@ -159,10 +159,24 @@ type BackupConfiguration {
 }
 
 type BigQueryDataset implements Persistence {
+  Access: [BigQueryDatasetAccess!]!
   cascadingDelete: Boolean!
   description: String!
+  env: Env!
+  id: ID!
   name: String!
-  permission: String!
+  team: Team!
+  workload: Workload
+}
+
+type BigQueryDatasetAccess {
+  email: String!
+  role: String!
+}
+
+type BigQueryDatasetList {
+  nodes: [BigQueryDataset!]!
+  pageInfo: PageInfo!
 }
 
 type Bucket implements Persistence {
@@ -503,6 +517,7 @@ type InboundAccessError implements StateError {
 }
 
 type InfluxDb implements Persistence {
+  id: ID!
   name: String!
 }
 
@@ -542,6 +557,8 @@ type JobsStatus {
 }
 
 type Kafka implements Persistence {
+  id: ID!
+
   """The kafka pool name"""
   name: String!
   streams: Boolean!
@@ -1003,9 +1020,18 @@ type NoRunningInstancesError implements StateError {
 
 type OpenSearch implements Persistence {
   access: String!
+  env: Env!
+  id: ID!
 
   """The opensearch instance name"""
   name: String!
+  team: Team!
+  workload: Workload
+}
+
+type OpenSearchList {
+  nodes: [OpenSearch!]!
+  pageInfo: PageInfo!
 }
 
 input OrderBy {
@@ -1093,6 +1119,7 @@ type PageInfo {
 }
 
 interface Persistence {
+  id: ID!
   name: String!
 }
 
@@ -1649,6 +1676,7 @@ type SqlDatabase implements Persistence {
   conditions: [Condition!]!
   deletionPolicy: String!
   healthy: Boolean!
+  id: ID!
   name: String!
 }
 
@@ -1784,7 +1812,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order apps by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): AppList!
 
@@ -1801,6 +1829,16 @@ type Team {
   The ID of the Azure AD group for the team. This value is managed by the Azure AD reconciler.
   """
   azureGroupID: ID
+  bigQuery(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): BigQueryDatasetList!
   buckets(
     """Returns the last n entries from the list."""
     limit: Int
@@ -1808,7 +1846,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order buckets by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): BucketsList!
 
@@ -1882,9 +1920,19 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order naisjobs by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): NaisJobList!
+  openSearch(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): OpenSearchList!
 
   """Purpose of the team."""
   purpose: String!
@@ -1895,7 +1943,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order buckets by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): RedisList!
 
@@ -1923,7 +1971,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order SQL instances by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): SqlInstancesList!
 
@@ -1952,7 +2000,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order apps by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): VulnerabilityList!
   vulnerabilitiesSummary: VulnerabilitySummary!

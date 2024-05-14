@@ -3,6 +3,7 @@
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
@@ -105,7 +106,7 @@
 					name: 'Redis',
 					routeId: '/team/[team]/(teamPages)/redis',
 					withSubRoutes: false,
-					icon: DatabaseIcon
+					icon: Redis
 				}
 				// {
 				// 	name: 'BigQuery',
