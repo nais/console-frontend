@@ -151,12 +151,6 @@
 					<span>https://{unleash.apiIngress}</span>
 					<CopyButton size="small" variant="action" copyText="https://{unleash.apiIngress}" />
 				</p>
-				<p>Teams</p>
-				<p>
-					{#each unleash.allowedTeams as team}
-						<a href="/team/{team}">{team}</a>
-					{/each}
-				</p>
 			</div>
 		</Card>
 		<Card columns={4}>
