@@ -739,6 +739,14 @@ type Mutation {
     input: CreateTeamInput!
   ): Team!
 
+  """
+  Create a new Unleash instance.
+  
+  This mutation will create a new Unleash instance for the given team. The team
+  will be set as owner of the Unleash instance and will be able to manage it.
+  """
+  createUnleashForTeam(team: Slug!): Unleash!
+
   """Deauthorize an action from a team."""
   deauthorizeRepository(
     """The action to deauthorize."""
@@ -1900,6 +1908,7 @@ type Team {
   Possible issues related to synchronization of the team to configured external systems. If there are no entries the team can be considered fully synchronized.
   """
   syncErrors: [SyncError!]!
+  unleash: Unleash
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
@@ -2041,6 +2050,24 @@ type TokenX {
 type Topic {
   acl: [Acl!]!
   name: String!
+}
+
+type Unleash {
+  allowedTeams: [String!]!
+  apiIngress: String!
+  metrics: UnleashMetrics!
+  name: String!
+  version: String!
+  webIngress: String!
+}
+
+type UnleashMetrics {
+  apiTokens: Int!
+  cpuRequests: Float!
+  cpuUtilization: Float!
+  memoryRequests: Float!
+  memoryUtilization: Float!
+  toggles: Int!
 }
 
 """Input for updating an existing team."""
