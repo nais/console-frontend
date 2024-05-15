@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import type { Persistence } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import Bigquery from '$lib/icons/Bigquery.svelte';
+	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
@@ -57,7 +57,7 @@
 			</div>
 		{:else if persistence.__typename === 'BigQueryDataset'}
 			<div class="persistenceContent">
-				<h5><Bigquery />{persistence.__typename}</h5>
+				<h5><BigQuery />{persistence.__typename}</h5>
 				{persistence.name}
 			</div>
 		{:else if persistence.__typename === 'SqlInstance'}
@@ -70,27 +70,13 @@
 				>
 				<span><b>Type:</b> ({persistence.type}) </span>
 			</div>
-		{:else if persistence.__typename === 'Kafka'}
+		{:else if persistence.__typename === 'KafkaTopic'}
 			<div class="persistenceContent">
 				<h5><Kafka />{persistence.__typename}</h5>
 				<span
 					><b>Pool:</b>
 					{persistence.name}</span
 				>
-				<span><b>Streams:</b> ({persistence.streams})</span>
-				{#if persistence.topics.length !== 0}
-					<h6>Topics:</h6>
-					<ul>
-						{#each persistence.topics as topic}
-							<li>
-								<code style="font-size: 1rem"
-									>{topic.name} -
-									{#each topic.acl as acl}{acl.access}{/each}
-								</code>
-							</li>
-						{/each}
-					</ul>
-				{/if}
 			</div>
 		{:else if persistence.__typename === 'OpenSearch'}
 			<div class="persistenceContent">
@@ -104,13 +90,8 @@
 
 				<span><b>Instance:</b> {persistence.name}</span>
 				<span><b>Access:</b> {persistence.access}</span>
-			</div>
-		{:else if persistence.__typename === 'InfluxDb'}
-			<div class="persistenceContent">
-				<h5><!--Opensearch /-->{persistence.__typename}</h5>
-				<span><b>Instance:</b> {persistence.name}</span>
-			</div>
-		{/if}
+			</div>{/if}
+
 	{:else}
 		<p>No persistence</p>
 	{/each}
@@ -133,14 +114,6 @@
 		align-self: start;
 		gap: 0.5rem;
 		font-size: 1.2rem;
-	}
-	h6 {
-		margin-bottom: 0;
-		margin-top: 0.5rem;
-		gap: 0.5rem;
-		font-size: 1.1rem;
-	}
-	ul {
-		margin-top: 0;
+
 	}
 </style>

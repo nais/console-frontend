@@ -20,7 +20,6 @@
 	import type { LayoutData } from './$types';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
-	import Bigquery from '$lib/icons/Bigquery.svelte';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Unleash from '$lib/icons/Unleash.svelte';
 

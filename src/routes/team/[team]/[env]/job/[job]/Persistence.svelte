@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import type { JobPersistence } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import Bigquery from '$lib/icons/Bigquery.svelte';
+	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Bucket from '$lib/icons/Bucket.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
@@ -63,7 +63,7 @@
 			</div>
 		{:else if persistence.__typename === 'BigQueryDataset'}
 			<div class="persistenceContent">
-				<h5><Bigquery />{persistence.__typename}</h5>
+				<h5><BigQuery />{persistence.__typename}</h5>
 				{persistence.name}
 			</div>
 		{:else if persistence.__typename === 'SqlInstance'}
