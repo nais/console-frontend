@@ -107,19 +107,20 @@
 					routeId: '/team/[team]/(teamPages)/redis',
 					withSubRoutes: false,
 					icon: Redis
+				},
+				{
+					name: 'Kafka',
+					routeId: '/team/[team]/(teamPages)/kafka',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
+					withSubRoutes: true,
+					icon: DatabaseIcon
+				},
+				{
+					name: 'BigQuery',
+					routeId: '/team/[team]/(teamPages)/bigquery',
+					withSubRoutes: false,
+					icon: DatabaseIcon
 				}
-				// {
-				// 	name: 'BigQuery',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: Bigquery
-				// },
-				// {
-				// 	name: 'Kafka',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: Kafka
-				// }
 			]
 		},
 		{

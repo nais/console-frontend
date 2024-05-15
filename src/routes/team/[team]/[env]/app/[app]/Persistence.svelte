@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { Persistence } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import Bigquery from '$lib/icons/Bigquery.svelte';
@@ -7,7 +8,6 @@
 	import Postgres from '$lib/icons/Postgres.svelte';
 	import { Link, Skeleton } from '@nais/ds-svelte-community';
 	import { BucketIcon } from '@nais/ds-svelte-community/icons';
-	import { page } from '$app/stores';
 
 	export let app: Persistence;
 	$: data = fragment(
@@ -25,17 +25,8 @@
 						name
 						type
 					}
-					... on Kafka {
+					... on KafkaTopic {
 						name
-						streams
-						topics {
-							name
-							acl {
-								access
-								application
-								team
-							}
-						}
 					}
 					... on OpenSearch {
 						name
@@ -44,9 +35,6 @@
 					... on Redis {
 						name
 						access
-					}
-					... on InfluxDb {
-						name
 					}
 				}
 			}

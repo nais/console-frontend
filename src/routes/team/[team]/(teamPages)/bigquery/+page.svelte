@@ -20,21 +20,21 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
 	$: teamName = $page.params.team;
-	$: ({ Buckets } = data);
-	$: team = $Buckets.data?.team;
+	$: ({ BigQuery } = data);
+	$: team = $BigQuery.data?.team;
 
-	$: ({ sortState, limit, offset } = tableStateFromVariables($Buckets.variables));
+	$: ({ sortState, limit, offset } = tableStateFromVariables($BigQuery.variables));
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $Buckets.errors}
-	{#each distinctErrors($Buckets.errors) as error}
+{#if $BigQuery.errors}
+	{#each distinctErrors($BigQuery.errors) as error}
 		<Alert variant="error">
 			{error}
 		</Alert>
@@ -54,7 +54,7 @@
 				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
-				<Th>Owner</Th>
+				<Th>Workload</Th>
 			</Thead>
 			<Tbody>
 				{#if team.id === PendingValue}
@@ -64,14 +64,14 @@
 						{/each}
 					</Tr>
 				{:else}
-					{#each team.buckets.nodes as node}
+					{#each team.bigQuery.nodes as node}
 						<Tr>
 							<Td>
 								{#if !node.workload?.name}
-									<Tooltip content="The bucket does not belong to any workload">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The bucket does not belong to any workload"
+									<Tooltip content="The BigQuery instance does not belong to any workload">
+										<InformationSquareFillIcon
+											style="color: var(--a-icon-info)"
+											title="The BigQuery instance does not belong to any workload"
 										/>
 									</Tooltip>
 								{/if}
@@ -94,14 +94,14 @@
 						</Tr>
 					{:else}
 						<Tr>
-							<Td colspan={999}>No buckets found</Td>
+							<Td colspan={999}>No BigQuery instances found</Td>
 						</Tr>
 					{/each}
 				{/if}
 			</Tbody>
 		</Table>
 		<Pagination
-			pageInfo={team?.buckets.pageInfo}
+			pageInfo={team?.bigQuery.pageInfo}
 			{limit}
 			{offset}
 			changePage={(e) => {

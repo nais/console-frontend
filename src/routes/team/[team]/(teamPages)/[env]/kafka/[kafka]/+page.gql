@@ -1,0 +1,17 @@
+query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+	kafkaTopic(env: $env, team: $team, name: $name) {
+		id
+		name
+		env {
+			name
+		}
+		workload {
+			... on App {
+				name
+			}
+			... on NaisJob {
+				name
+			}
+		}
+	}
+}

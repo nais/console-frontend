@@ -20,21 +20,21 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
 	$: teamName = $page.params.team;
-	$: ({ Buckets } = data);
-	$: team = $Buckets.data?.team;
+	$: ({ KafkaTopics } = data);
+	$: team = $KafkaTopics.data?.team;
 
-	$: ({ sortState, limit, offset } = tableStateFromVariables($Buckets.variables));
+	$: ({ sortState, limit, offset } = tableStateFromVariables($KafkaTopics.variables));
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $Buckets.errors}
-	{#each distinctErrors($Buckets.errors) as error}
+{#if $KafkaTopics.errors}
+	{#each distinctErrors($KafkaTopics.errors) as error}
 		<Alert variant="error">
 			{error}
 		</Alert>
@@ -64,20 +64,20 @@
 						{/each}
 					</Tr>
 				{:else}
-					{#each team.buckets.nodes as node}
+					{#each team.kafkaTopics.nodes as node}
 						<Tr>
 							<Td>
 								{#if !node.workload?.name}
-									<Tooltip content="The bucket does not belong to any workload">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The bucket does not belong to any workload"
+									<Tooltip content="The Kafka topic does not belong to any workload">
+										<InformationSquareFillIcon
+											style="color: var(--a-icon-info)"
+											title="The Kafka topic does not belong to any workload"
 										/>
 									</Tooltip>
 								{/if}
 							</Td>
 							<Td>
-								{node.name}
+								<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>
 							</Td>
 							<Td>
 								{node.env.name}
@@ -94,14 +94,14 @@
 						</Tr>
 					{:else}
 						<Tr>
-							<Td colspan={999}>No buckets found</Td>
+							<Td colspan={999}>No Kafka topics found</Td>
 						</Tr>
 					{/each}
 				{/if}
 			</Tbody>
 		</Table>
 		<Pagination
-			pageInfo={team?.buckets.pageInfo}
+			pageInfo={team?.kafkaTopics.pageInfo}
 			{limit}
 			{offset}
 			changePage={(e) => {

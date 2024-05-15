@@ -25,16 +25,13 @@
 						name
 						type
 					}
-					... on Kafka {
+					... on KafkaTopic {
 						name
-						streams
-						topics {
-							name
-							acl {
-								access
-								application
-								team
-							}
+						pool
+						acl {
+							access
+							application
+							team
 						}
 					}
 					... on OpenSearch {
@@ -44,9 +41,6 @@
 					... on Redis {
 						name
 						access
-					}
-					... on InfluxDb {
-						name
 					}
 				}
 			}
@@ -82,24 +76,20 @@
 				>
 				<span><b>Type:</b> ({persistence.type}) </span>
 			</div>
-		{:else if persistence.__typename === 'Kafka'}
+		{:else if persistence.__typename === 'KafkaTopic'}
 			<div class="persistenceContent">
 				<h5><Kafka />{persistence.__typename}</h5>
 				<span
 					><b>Pool:</b>
-					{persistence.name}</span
+					{persistence.pool}</span
 				>
-				<span><b>Streams:</b> ({persistence.streams})</span>
-				{#if persistence.topics.length !== 0}
-					<h6>Topics:</h6>
+				<h6>Topic:</h6>
+				{persistence.name}
+				{#if persistence.acl.length}
+					<h6>ACL</h6>
 					<ul>
-						{#each persistence.topics as topic}
-							<li>
-								<code style="font-size: 1rem"
-									>{topic.name} -
-									{#each topic.acl as acl}{acl.access}{/each}
-								</code>
-							</li>
+						{#each persistence.acl as acl}
+							<li>{acl.access} / {acl.application} / {acl.team}</li>
 						{/each}
 					</ul>
 				{/if}
@@ -116,11 +106,6 @@
 
 				<span><b>Instance:</b> {persistence.name}</span>
 				<span><b>Access:</b> {persistence.access}</span>
-			</div>
-		{:else if persistence.__typename === 'InfluxDb'}
-			<div class="persistenceContent">
-				<h5><!--Opensearch /-->{persistence.__typename}</h5>
-				<span><b>Instance:</b> {persistence.name}</span>
 			</div>
 		{/if}
 	{:else}

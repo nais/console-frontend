@@ -16,12 +16,6 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
-type Acl {
-  access: String!
-  application: String!
-  team: Slug!
-}
-
 type App {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
@@ -556,13 +550,37 @@ type JobsStatus {
   total: Int!
 }
 
-type Kafka implements Persistence {
+type KafkaTopic implements Persistence {
+  acl: [KafkaTopicAcl!]!
+  config: KafkaTopicConfig
+  env: Env!
   id: ID!
-
-  """The kafka pool name"""
   name: String!
-  streams: Boolean!
-  topics: [Topic!]!
+  pool: String!
+  team: Team!
+  workload: Workload
+}
+
+type KafkaTopicAcl {
+  access: String!
+  application: String!
+  team: Slug!
+}
+
+type KafkaTopicConfig {
+  cleanupPolicy: String
+  maxMessageBytes: Int
+  minimumInSyncReplicas: Int
+  partitions: Int
+  replication: Int
+  retentionBytes: Int
+  retentionHours: Int
+  segmentHours: Int
+}
+
+type KafkaTopicList {
+  nodes: [KafkaTopic!]!
+  pageInfo: PageInfo!
 }
 
 type Limits {
@@ -755,7 +773,7 @@ type Mutation {
 
   """
   Create a new Unleash instance.
-  
+
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
   """
@@ -1196,6 +1214,18 @@ type Query {
 
   """Get env cost for a team."""
   envCost(filter: EnvCostFilter!): [EnvCost!]!
+
+  """Get a Kafka topic by name, team and env."""
+  kafkaTopic(
+    """The environment the topic exists in."""
+    env: String!
+
+    """The name of the topic."""
+    name: String!
+
+    """The name of the team who owns the topic."""
+    team: Slug!
+  ): KafkaTopic!
 
   """The currently authenticated user."""
   me: AuthenticatedUser!
@@ -1893,6 +1923,16 @@ type Team {
   """
   googleGroupEmail: String
   id: ID!
+  kafkaTopics(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): KafkaTopicList!
 
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time

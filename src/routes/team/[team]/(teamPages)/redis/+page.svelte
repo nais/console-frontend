@@ -9,18 +9,7 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import {
-		Alert,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -51,31 +40,21 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
-				<Th>Workload</Th>
+				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
 				{#if team.id === PendingValue}
 					<Tr>
-						{#each new Array(4).fill('text') as variant}
+						{#each new Array(3).fill('text') as variant}
 							<Td><Skeleton {variant} /></Td>
 						{/each}
 					</Tr>
 				{:else}
 					{#each team.redis.nodes as node}
 						<Tr>
-							<Td>
-								{#if !node.workload?.name}
-									<Tooltip content="The Redis instance does not belong to any workload">
-										<InformationSquareFillIcon
-											style="color: var(--a-icon-info)"
-											title="The Redis instance does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
+							<!-- TODO: show warning if no workload uses this instance -->
 							<Td>
 								{node.name}
 							</Td>
@@ -89,6 +68,8 @@
 											? 'app'
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>
+								{:else}
+									<em title="The Redis instance is owned by the team">Team</em>
 								{/if}
 							</Td>
 						</Tr>
