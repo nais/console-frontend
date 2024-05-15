@@ -773,7 +773,7 @@ type Mutation {
 
   """
   Create a new Unleash instance.
-
+  
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
   """
@@ -2159,11 +2159,6 @@ scalar Time
 
 type TokenX {
   mountSecretsAsFilesOnly: Boolean!
-}
-
-type Topic {
-  acl: [Acl!]!
-  name: String!
 }
 
 type Unleash {

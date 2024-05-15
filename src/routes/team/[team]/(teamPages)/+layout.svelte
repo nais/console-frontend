@@ -18,6 +18,11 @@
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
+	import Kafka from '$lib/icons/Kafka.svelte';
+	import Opensearch from '$lib/icons/Opensearch.svelte';
+	import Bigquery from '$lib/icons/Bigquery.svelte';
+	import BigQuery from '$lib/icons/BigQuery.svelte';
+	import Unleash from '$lib/icons/Unleash.svelte';
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
@@ -59,32 +64,6 @@
 					icon: QuietZoneIcon,
 					memberOnly: true
 				},
-				{
-					name: 'Unleash',
-					routeId: '/team/[team]/(teamPages)/unleash',
-					extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
-					withSubRoutes: true,
-					icon: BulletListIcon
-				},
-
-				// {
-				// 	name: 'Buckets',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: BucketIcon
-				// },
-				// {
-				// 	name: 'BigQuery',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: Bigquery
-				// },
-				// {
-				// 	name: 'Kafka',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: Kafka
-				// }
 			]
 		},
 		{
@@ -109,18 +88,31 @@
 					icon: Redis
 				},
 				{
+					name: 'OpenSearch',
+					routeId: '/team/[team]/(teamPages)/opensearch',
+					withSubRoutes: false,
+					icon: Opensearch
+				},
+				{
 					name: 'Kafka',
 					routeId: '/team/[team]/(teamPages)/kafka',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
 					withSubRoutes: true,
-					icon: DatabaseIcon
+					icon: Kafka
 				},
 				{
 					name: 'BigQuery',
 					routeId: '/team/[team]/(teamPages)/bigquery',
 					withSubRoutes: false,
-					icon: DatabaseIcon
-				}
+					icon: BigQuery
+				},
+				{
+					name: 'Unleash',
+					routeId: '/team/[team]/(teamPages)/unleash',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
+					withSubRoutes: true,
+					icon: Unleash
+				},
 			]
 		},
 		{
