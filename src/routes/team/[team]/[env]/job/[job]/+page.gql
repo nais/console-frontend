@@ -14,7 +14,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		}
 		...JobAccessPolicy
 		...JobInstances
-		...JobStorage
+		...JobPersistence
 		...JobAuthz
 		...JobImage
 		...JobStatus

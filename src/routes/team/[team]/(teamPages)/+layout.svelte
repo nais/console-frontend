@@ -3,11 +3,11 @@
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
-		BranchingIcon,
-		BulletListIcon,
+		BranchingIcon, BucketIcon, BulletListIcon,
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
@@ -18,6 +18,11 @@
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
+	import Kafka from '$lib/icons/Kafka.svelte';
+	import Opensearch from '$lib/icons/Opensearch.svelte';
+	import Bigquery from '$lib/icons/Bigquery.svelte';
+	import BigQuery from '$lib/icons/BigQuery.svelte';
+	import Unleash from '$lib/icons/Unleash.svelte';
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
@@ -52,13 +57,6 @@
 					icon: ArrowCirclepathIcon
 				},
 				{
-					name: 'Postgres',
-					routeId: '/team/[team]/(teamPages)/postgres',
-					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
-					withSubRoutes: true,
-					icon: DatabaseIcon
-				},
-				{
 					name: 'Secrets',
 					routeId: '/team/[team]/(teamPages)/secrets',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
@@ -66,32 +64,55 @@
 					icon: QuietZoneIcon,
 					memberOnly: true
 				},
+			]
+		},
+		{
+			items: [
+				{
+					name: 'Postgres',
+					routeId: '/team/[team]/(teamPages)/postgres',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
+					withSubRoutes: true,
+					icon: DatabaseIcon
+				},
+				{
+					name: 'Buckets',
+					routeId: '/team/[team]/(teamPages)/buckets',
+					withSubRoutes: false,
+					icon: BucketIcon
+				},
+				{
+					name: 'Redis',
+					routeId: '/team/[team]/(teamPages)/redis',
+					withSubRoutes: false,
+					icon: Redis
+				},
+				{
+					name: 'OpenSearch',
+					routeId: '/team/[team]/(teamPages)/opensearch',
+					withSubRoutes: false,
+					icon: Opensearch
+				},
+				{
+					name: 'Kafka',
+					routeId: '/team/[team]/(teamPages)/kafka',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
+					withSubRoutes: true,
+					icon: Kafka
+				},
+				{
+					name: 'BigQuery',
+					routeId: '/team/[team]/(teamPages)/bigquery',
+					withSubRoutes: false,
+					icon: BigQuery
+				},
 				{
 					name: 'Unleash',
 					routeId: '/team/[team]/(teamPages)/unleash',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
 					withSubRoutes: true,
-					icon: BulletListIcon
+					icon: Unleash
 				},
-
-				// {
-				// 	name: 'Buckets',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: BucketIcon
-				// },
-				// {
-				// 	name: 'BigQuery',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: Bigquery
-				// },
-				// {
-				// 	name: 'Kafka',
-				// 	routeId: '/team/[team]/(teamPages)/jobs',
-				// 	withSubRoutes: true,
-				// 	icon: Kafka
-				// }
 			]
 		},
 		{

@@ -10,7 +10,7 @@
 	import NaisjobInstances from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Status from './Status.svelte';
-	import Storage from './Storage.svelte';
+	import Persistence from './Persistence.svelte';
 	import Traffic from './Traffic.svelte';
 	import Secrets from './Secrets.svelte';
 
@@ -59,8 +59,8 @@
 		</Card>
 
 		<Card columns={4}>
-			<h4>Storage</h4>
-			<Storage {job} />
+			<h4>Persistence</h4>
+			<Persistence {job} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>

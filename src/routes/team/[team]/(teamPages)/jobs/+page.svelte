@@ -65,7 +65,7 @@
 											href="/team/{teamName}/{node.env.name}/job/{node.name}/status"
 											data-sveltekit-preload-data="off"
 										>
-											<Status size="1.5rem" state={node.jobState.state} />
+											<Status size="1.5rem" state={node.status.state} />
 										</a>
 									</div>
 								</Td>

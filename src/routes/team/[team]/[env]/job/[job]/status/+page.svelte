@@ -26,16 +26,16 @@
 		{#if status.naisjob.name === PendingValue}
 			<Skeleton variant="rectangle" />
 		{:else}
-			{#if status.naisjob.jobState.state}
+			{#if status.naisjob.status.state}
 				<div class="header">
 					<div class="icon">
-						{#if status.naisjob.jobState.state === State.NAIS}
+						{#if status.naisjob.status.state === State.NAIS}
 							<Nais alt="nais" size="2rem" style="color: var(--a-icon-success)" />
-						{:else if status.naisjob.jobState.state === State.FAILING}
+						{:else if status.naisjob.status.state === State.FAILING}
 							<WarningIcon size="2rem" style="color: var(--a-icon-danger)" />
-						{:else if status.naisjob.jobState.state === State.NOTNAIS}
+						{:else if status.naisjob.status.state === State.NOTNAIS}
 							<Nais alt="notnais" size="2rem" style="color: var(--a-icon-warning)" />
-						{:else if status.naisjob.jobState.state === State.UNKNOWN}
+						{:else if status.naisjob.status.state === State.UNKNOWN}
 							<UnknownIcon size="2rem" style="color: var(--a-icon-warning)" />
 						{/if}
 					</div>
@@ -43,8 +43,8 @@
 				</div>
 			{/if}
 			<div>
-				{#if status.naisjob.jobState.errors && status.naisjob.jobState.errors.length > 0}
-					{#each status.naisjob.jobState.errors as error}
+				{#if status.naisjob.status.errors && status.naisjob.status.errors.length > 0}
+					{#each status.naisjob.status.errors as error}
 						<JobErrorTypeToMessage {error} />
 					{/each}
 				{:else}

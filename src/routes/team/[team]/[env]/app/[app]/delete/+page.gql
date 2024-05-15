@@ -7,7 +7,7 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 		team {
 			slug
 		}
-		storage {
+		persistence {
 			type: __typename
 			name
 			... on SqlInstance {

@@ -16,15 +16,8 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
-type Acl {
-  access: String!
-  application: String!
-  team: Slug!
-}
-
 type App {
   accessPolicy: AccessPolicy!
-  appState: AppState!
   authz: [Authz!]!
   autoScaling: AutoScaling!
   deployInfo: DeployInfo!
@@ -35,9 +28,10 @@ type App {
   instances: [Instance!]!
   manifest: String!
   name: String!
+  persistence: [Persistence!]!
   resources: Resources!
   secrets: [Secret!]!
-  storage: [Storage!]!
+  status: WorkloadStatus!
   team: Team!
   variables: [Variable!]!
   vulnerabilities: Vulnerability
@@ -58,11 +52,6 @@ type AppCost {
 type AppList {
   nodes: [App!]!
   pageInfo: PageInfo!
-}
-
-type AppState {
-  errors: [StateError!]!
-  state: State!
 }
 
 """Resource utilization overage cost for an app."""
@@ -163,19 +152,40 @@ type BackupConfiguration {
   transactionLogRetentionDays: Int!
 }
 
-type BigQueryDataset implements Storage {
+type BigQueryDataset implements Persistence {
+  Access: [BigQueryDatasetAccess!]!
   cascadingDelete: Boolean!
   description: String!
+  env: Env!
+  id: ID!
   name: String!
-  permission: String!
+  team: Team!
+  workload: Workload
 }
 
-type Bucket implements Storage {
+type BigQueryDatasetAccess {
+  email: String!
+  role: String!
+}
+
+type BigQueryDatasetList {
+  nodes: [BigQueryDataset!]!
+  pageInfo: PageInfo!
+}
+
+type Bucket implements Persistence {
   cascadingDelete: Boolean!
+  env: Env!
+  id: ID!
   name: String!
-  publicAccessPrevention: Boolean!
-  retentionPeriodDays: Int!
-  uniformBucketLevelAccess: Boolean!
+  projectId: String!
+  team: Team!
+  workload: Workload
+}
+
+type BucketsList {
+  nodes: [Bucket!]!
+  pageInfo: PageInfo!
 }
 
 type Claims {
@@ -500,7 +510,8 @@ type InboundAccessError implements StateError {
   rule: Rule!
 }
 
-type InfluxDb implements Storage {
+type InfluxDb implements Persistence {
+  id: ID!
   name: String!
 }
 
@@ -533,22 +544,43 @@ type InvalidNaisYamlError implements StateError {
   revision: String!
 }
 
-type JobState {
-  errors: [StateError!]!
-  state: State!
-}
-
 """Team status for jobs."""
 type JobsStatus {
   failing: Int!
   total: Int!
 }
 
-type Kafka implements Storage {
-  """The kafka pool name"""
+type KafkaTopic implements Persistence {
+  acl: [KafkaTopicAcl!]!
+  config: KafkaTopicConfig
+  env: Env!
+  id: ID!
   name: String!
-  streams: Boolean!
-  topics: [Topic!]!
+  pool: String!
+  team: Team!
+  workload: Workload
+}
+
+type KafkaTopicAcl {
+  access: String!
+  application: String!
+  team: Slug!
+}
+
+type KafkaTopicConfig {
+  cleanupPolicy: String
+  maxMessageBytes: Int
+  minimumInSyncReplicas: Int
+  partitions: Int
+  replication: Int
+  retentionBytes: Int
+  retentionHours: Int
+  segmentHours: Int
+}
+
+type KafkaTopicList {
+  nodes: [KafkaTopic!]!
+  pageInfo: PageInfo!
 }
 
 type Limits {
@@ -966,16 +998,16 @@ type NaisJob {
   env: Env!
   id: ID!
   image: String!
-  jobState: JobState!
   manifest: String!
   name: String!
   parallelism: Int!
+  persistence: [Persistence!]!
   resources: Resources!
   retries: Int!
   runs: [Run!]!
   schedule: String!
   secrets: [Secret!]!
-  storage: [Storage!]!
+  status: WorkloadStatus!
   team: Team!
 }
 
@@ -1004,11 +1036,20 @@ type NoRunningInstancesError implements StateError {
   revision: String!
 }
 
-type OpenSearch implements Storage {
+type OpenSearch implements Persistence {
   access: String!
+  env: Env!
+  id: ID!
 
   """The opensearch instance name"""
   name: String!
+  team: Team!
+  workload: Workload
+}
+
+type OpenSearchList {
+  nodes: [OpenSearch!]!
+  pageInfo: PageInfo!
 }
 
 input OrderBy {
@@ -1095,6 +1136,11 @@ type PageInfo {
   totalCount: Int!
 }
 
+interface Persistence {
+  id: ID!
+  name: String!
+}
+
 type Port {
   port: Int!
 }
@@ -1168,6 +1214,18 @@ type Query {
 
   """Get env cost for a team."""
   envCost(filter: EnvCostFilter!): [EnvCost!]!
+
+  """Get a Kafka topic by name, team and env."""
+  kafkaTopic(
+    """The environment the topic exists in."""
+    env: String!
+
+    """The name of the topic."""
+    name: String!
+
+    """The name of the team who owns the topic."""
+    team: Slug!
+  ): KafkaTopic!
 
   """The currently authenticated user."""
   me: AuthenticatedUser!
@@ -1380,9 +1438,18 @@ type ReconcilerList {
   pageInfo: PageInfo!
 }
 
-type Redis implements Storage {
+type Redis implements Persistence {
   access: String!
+  env: Env!
+  id: ID!
   name: String!
+  team: Team!
+  workload: Workload
+}
+
+type RedisList {
+  nodes: [Redis!]!
+  pageInfo: PageInfo!
 }
 
 """Repository authorizations."""
@@ -1633,16 +1700,17 @@ enum SortOrder {
   DESC
 }
 
-type SqlDatabase implements Storage {
+type SqlDatabase implements Persistence {
   charset: String!
   collation: String!
   conditions: [Condition!]!
   deletionPolicy: String!
   healthy: Boolean!
+  id: ID!
   name: String!
 }
 
-type SqlInstance implements Storage {
+type SqlInstance implements Persistence {
   backupConfiguration: BackupConfiguration!
   cascadingDelete: Boolean!
   connectionName: String!
@@ -1742,10 +1810,6 @@ interface StateError {
   revision: String!
 }
 
-interface Storage {
-  name: String!
-}
-
 type Subscription {
   log(input: LogSubscriptionInput): LogLine!
 }
@@ -1778,7 +1842,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order apps by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): AppList!
 
@@ -1795,6 +1859,26 @@ type Team {
   The ID of the Azure AD group for the team. This value is managed by the Azure AD reconciler.
   """
   azureGroupID: ID
+  bigQuery(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): BigQueryDatasetList!
+  buckets(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): BucketsList!
 
   """Whether or not the team is currently being deleted."""
   deletionInProgress: Boolean!
@@ -1839,6 +1923,16 @@ type Team {
   """
   googleGroupEmail: String
   id: ID!
+  kafkaTopics(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): KafkaTopicList!
 
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time
@@ -1866,12 +1960,32 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order naisjobs by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): NaisJobList!
+  openSearch(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): OpenSearchList!
 
   """Purpose of the team."""
   purpose: String!
+  redis(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): RedisList!
 
   """Get the team's secret by name, and env."""
   secret(
@@ -1897,7 +2011,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order SQL instances by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): SqlInstancesList!
 
@@ -1926,7 +2040,7 @@ type Team {
     """Returns the first n entries from the list."""
     offset: Int
 
-    """Order apps by"""
+    """Order entries by"""
     orderBy: OrderBy
   ): VulnerabilityList!
   vulnerabilitiesSummary: VulnerabilitySummary!
@@ -2045,11 +2159,6 @@ scalar Time
 
 type TokenX {
   mountSecretsAsFilesOnly: Boolean!
-}
-
-type Topic {
-  acl: [Acl!]!
-  name: String!
 }
 
 type Unleash {
@@ -2229,3 +2338,8 @@ type VulnerabilitySummary {
 }
 
 union Workload = App | NaisJob
+
+type WorkloadStatus {
+  errors: [StateError!]!
+  state: State!
+}

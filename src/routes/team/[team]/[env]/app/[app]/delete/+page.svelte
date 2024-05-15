@@ -6,13 +6,13 @@
 	import { Alert, Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
-	import StorageList from '$lib/components/StorageList.svelte';
+	import PersistenceList from '$lib/components/PersistenceList.svelte';
 
 	export let data: PageData;
 
 	$: ({ DeleteAppPage } = data);
 
-	const isPermanentDeletion = (s: DeleteAppPage$result['app']['storage'][0]) => {
+	const isPermanentDeletion = (s: DeleteAppPage$result['app']['persistence'][0]) => {
 		switch (s.__typename) {
 			case 'BigQueryDataset':
 				return s.cascadingDelete;
@@ -38,11 +38,11 @@
 		}
 	`);
 
-	const permanentDeletion = (storage: DeleteAppPage$result['app']['storage']) => {
-		return storage.filter((s) => isPermanentDeletion(s));
+	const permanentDeletion = (persistence: DeleteAppPage$result['app']['persistence']) => {
+		return persistence.filter((s) => isPermanentDeletion(s));
 	};
-	const notPermanentDeletion = (storage: DeleteAppPage$result['app']['storage']) => {
-		return storage.filter((s) => !isPermanentDeletion(s));
+	const notPermanentDeletion = (persistence: DeleteAppPage$result['app']['persistence']) => {
+		return persistence.filter((s) => !isPermanentDeletion(s));
 	};
 
 	let confirmation = '';
@@ -67,8 +67,8 @@
 
 {#if $DeleteAppPage?.data?.app}
 	{@const app = $DeleteAppPage?.data?.app}
-	{@const perm = permanentDeletion(app.storage)}
-	{@const notPerm = notPermanentDeletion(app.storage)}
+	{@const perm = permanentDeletion(app.persistence)}
+	{@const notPerm = notPermanentDeletion(app.persistence)}
 	<Card borderColor="var(--a-border-danger)">
 		<h3>Delete {app.name}</h3>
 
@@ -78,16 +78,16 @@
 				<strong>will be permanently deleted</strong>:
 			</p>
 			<div>
-				{#each perm as storage}
-					<StorageList {storage}>
-						{#if storage.type == 'Redis'}
+				{#each perm as persistence}
+					<PersistenceList {persistence}>
+						{#if persistence.type == 'Redis'}
 							If this Redis instance is defined on team level, it won't be deleted. If it's created
 							by the app, it will be permanently deleted.
 						{:else}
 							This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
 							the manifest.
 						{/if}
-					</StorageList>
+					</PersistenceList>
 				{/each}
 			</div>
 		{/if}
@@ -102,8 +102,8 @@
 				</HelpText>
 			</div>
 			<div>
-				{#each notPerm as storage}
-					<StorageList {storage}></StorageList>
+				{#each notPerm as persistence}
+					<PersistenceList {persistence}></PersistenceList>
 				{/each}
 			</div>
 		{/if}

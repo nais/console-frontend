@@ -22,7 +22,7 @@ query Jobs(
 				env {
 					name
 				}
-				jobState {
+				status {
 					state
 				}
 			}
