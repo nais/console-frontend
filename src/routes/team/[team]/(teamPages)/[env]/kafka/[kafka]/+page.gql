@@ -13,5 +13,10 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 				name
 			}
 		}
+		acl @loading(count: 15) {
+				application
+				access
+				team
+			}
+		}
 	}
-}

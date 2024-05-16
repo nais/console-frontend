@@ -51,7 +51,6 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Owner</Th>
@@ -67,18 +66,17 @@
 					{#each team.kafkaTopics.nodes as node}
 						<Tr>
 							<Td>
-								{#if !node.workload?.name}
-									<Tooltip content="The Kafka topic does not belong to any workload">
-										<InformationSquareFillIcon
-											style="color: var(--a-icon-info)"
-											title="The Kafka topic does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
-<!--								<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>-->
-								{node.name}
+								<span style="display: inline-flex; "
+									>{#if !node.workload?.name}
+										<Tooltip content="The Kafka topic does not belong to any workload">
+											<InformationSquareFillIcon
+												style="color: var(--a-icon-info); top: 0.125em; position: relative; margin-right: 1em"
+												title="The Kafka topic does not belong to any workload"
+											/>
+										</Tooltip>
+									{/if}
+									<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>
+								</span>
 							</Td>
 							<Td>
 								{node.env.name}

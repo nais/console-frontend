@@ -7,7 +7,9 @@
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
-		BranchingIcon, BucketIcon, BulletListIcon,
+		BranchingIcon,
+		BucketIcon,
+		BulletListIcon,
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
@@ -62,7 +64,7 @@
 					withSubRoutes: true,
 					icon: QuietZoneIcon,
 					memberOnly: true
-				},
+				}
 			]
 		},
 		{
@@ -93,7 +95,7 @@
 					icon: Opensearch
 				},
 				{
-					name: 'Kafka',
+					name: 'Kafka topics',
 					routeId: '/team/[team]/(teamPages)/kafka',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
 					withSubRoutes: true,
@@ -111,7 +113,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
 					withSubRoutes: true,
 					icon: Unleash
-				},
+				}
 			]
 		},
 		{
