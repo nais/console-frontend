@@ -20,7 +20,6 @@
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);
 	$: topic = $KafkaTopic.data?.kafkaTopic;
-
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
 </script>
@@ -53,7 +52,7 @@
 									<a href="/team/{ac.team}">{ac.team}</a>
 								</Td>
 								<Td>
-									<a href="/team/{ac.team}/{topic.env.name}/app/{ac.application}"
+									<a href="/team/{ac.team}/{String(topic.env.name)}/app/{ac.application}"
 										>{ac.application}</a
 									>
 								</Td>
