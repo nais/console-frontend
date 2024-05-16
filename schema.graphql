@@ -519,9 +519,9 @@ type Image {
   id: ID!
   latestProjectId: String!
   name: String!
-  projects: [Project!]!
   rekorId: String!
   riskScore: Int!
+  version: String!
 }
 
 type ImageList {
@@ -1963,16 +1963,6 @@ type Team {
   """
   googleGroupEmail: String
   id: ID!
-  kafkaTopics(
-    """Returns the last n entries from the list."""
-    limit: Int
-
-    """Returns the first n entries from the list."""
-    offset: Int
-
-    """Order entries by"""
-    orderBy: OrderBy
-  ): KafkaTopicList!
 
   """The images for the team's applications."""
   images(
@@ -1985,6 +1975,16 @@ type Team {
     """Order images by"""
     orderBy: OrderBy
   ): ImageList!
+  kafkaTopics(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): KafkaTopicList!
 
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time
