@@ -1,12 +1,12 @@
 <script lang="ts">
-	import StorageIcon from '$lib/StorageIcon.svelte';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 
-	export let storage: {
+	export let persistence: {
 		type: string | null;
 		name: string;
 	};
 
-	const storageTypeToName = (typ: string | null) => {
+	const persistenceTypeToName = (typ: string | null) => {
 		switch (typ) {
 			case 'BigQueryDataset':
 				return 'BigQuery';
@@ -18,13 +18,13 @@
 	};
 </script>
 
-<div class="storage permanent">
+<div class="persistence permanent">
 	<div class="icon">
-		<StorageIcon type={storage.type || ''} style="height: 2rem" />
+		<PersistenceIcon type={persistence.type || ''} style="height: 2rem" />
 	</div>
 	<div class="name">
-		<span>{storageTypeToName(storage.type)}</span>
-		<strong>{storage.name}</strong>
+		<span>{persistenceTypeToName(persistence.type)}</span>
+		<strong>{persistence.name}</strong>
 	</div>
 	<div class="content">
 		<slot />
@@ -38,7 +38,7 @@
 		height: 2rem;
 	}
 
-	.storage {
+	.persistence {
 		display: flex;
 		flex-direction: row;
 		border-bottom: 1px solid var(--a-border-subtle);
@@ -47,7 +47,7 @@
 		padding: 0.2rem;
 	}
 
-	.storage:last-child {
+	.persistence:last-child {
 		border-bottom: 0;
 	}
 

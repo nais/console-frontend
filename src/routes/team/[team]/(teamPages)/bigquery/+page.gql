@@ -1,0 +1,32 @@
+query BigQuery(
+	$team: Slug!
+	$orderBy: OrderBy = { field: NAME, direction: ASC }
+	$limit: Int
+	$offset: Int
+) @loading(count: 5, cascade: true) {
+	team(slug: $team) {
+		id
+		bigQuery(limit: $limit, offset: $offset, orderBy: $orderBy) {
+			pageInfo {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+			}
+			nodes {
+				id
+				name
+				env {
+					name
+				}
+				workload {
+					... on App {
+						name
+					}
+					... on NaisJob {
+						name
+					}
+				}
+			}
+		}
+	}
+}

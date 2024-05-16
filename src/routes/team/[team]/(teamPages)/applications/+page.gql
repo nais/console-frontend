@@ -24,7 +24,7 @@ query Workloads(
 					name
 				}
 
-				appState {
+				status {
 					state
 				}
 

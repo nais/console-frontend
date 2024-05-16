@@ -1,0 +1,19 @@
+query Unleash($team: Slug!) {
+	team(slug: $team) {
+		unleash {
+			name
+			version
+			allowedTeams
+			webIngress
+			apiIngress
+			metrics{
+				apiTokens
+				cpuUtilization
+				cpuRequests
+				memoryUtilization
+				memoryRequests
+				toggles
+			}
+		}
+	}
+}

@@ -24,8 +24,8 @@
 			<Skeleton variant="text" />
 		{:else}
 			<div>
-				{#if $AppNotificationState.data.app.appState.errors && $AppNotificationState.data.app.appState.errors.length > 0}
-					{#each $AppNotificationState.data.app.appState.errors as error}
+				{#if $AppNotificationState.data.app.status.errors && $AppNotificationState.data.app.status.errors.length > 0}
+					{#each $AppNotificationState.data.app.status.errors as error}
 						<ErrorTypeToMessage {error} />
 					{/each}
 				{:else}
