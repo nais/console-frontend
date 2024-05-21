@@ -1918,6 +1918,15 @@ type Team {
   """
   googleGroupEmail: String
   id: ID!
+
+  """Get a Kafka topic by name and env."""
+  kafkaTopic(
+    """The environment the topic exists in."""
+    env: String!
+
+    """The name of the topic."""
+    name: String!
+  ): KafkaTopic!
   kafkaTopics(
     """Returns the last n entries from the list."""
     limit: Int
@@ -1999,6 +2008,15 @@ type Team {
 
   """Unique slug of the team."""
   slug: Slug!
+
+  """Get an SQL instance by name and env."""
+  sqlInstance(
+    """The environment the instance runs in."""
+    env: String!
+
+    """The name of the instance."""
+    name: String!
+  ): SqlInstance!
   sqlInstances(
     """Returns the last n entries from the list."""
     limit: Int

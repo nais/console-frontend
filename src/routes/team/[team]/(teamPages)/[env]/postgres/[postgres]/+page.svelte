@@ -17,7 +17,7 @@
 
 	export let data: PageData;
 	$: ({ SqlInstance } = data);
-	$: instance = $SqlInstance.data?.sqlInstance;
+	$: instance = $SqlInstance.data?.team.sqlInstance;
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
 	$: postgres = $page.params.postgres;
