@@ -169,6 +169,7 @@ type BackupConfiguration {
 type BigQueryDataset implements Persistence {
   access: [BigQueryDatasetAccess!]!
   cascadingDelete: Boolean!
+  cost: Float!
   description: String!
   env: Env!
   id: ID!
@@ -1118,6 +1119,9 @@ type Mutation {
     """Slug of the team to update."""
     slug: Slug!
   ): Team!
+
+  """Update Unleash instance with allowed teams."""
+  updateUnleashForTeam(allowedTeams: [String!], name: String!, team: Slug!): Unleash!
 }
 
 type NaisJob implements Workload {
@@ -1171,7 +1175,7 @@ type NoRunningInstancesError implements StateError {
 
 type OpenSearch implements Persistence {
   access: [OpenSearchInstanceAccess!]!
-  cost: String!
+  cost: Float!
   env: Env!
   id: ID!
 
@@ -1573,7 +1577,7 @@ type ReconcilerList {
 
 type Redis implements Persistence {
   access: [RedisInstanceAccess!]!
-  cost: String!
+  cost: Float!
   env: Env!
   id: ID!
   name: String!
@@ -2107,18 +2111,6 @@ type Team {
   googleGroupEmail: String
   id: ID!
 
-  """The images for the team's applications."""
-  images(
-    """Limit the number of entries returned."""
-    limit: Int
-
-    """Returns the first n entries from the list."""
-    offset: Int
-
-    """Order images by"""
-    orderBy: OrderBy
-  ): ImageDetailsList!
-
   """Get a Kafka topic by name and env."""
   kafkaTopic(
     """The environment the topic exists in."""
@@ -2253,7 +2245,7 @@ type Team {
   Possible issues related to synchronization of the team to configured external systems. If there are no entries the team can be considered fully synchronized.
   """
   syncErrors: [SyncError!]!
-  unleash: Unleash
+  unleash: Unleash!
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
@@ -2393,10 +2385,17 @@ type TokenX {
 }
 
 type Unleash {
+  """If Unleash feature is enabled for this tenant"""
+  enabled: Boolean!
+  instance: UnleashInstance
+}
+
+type UnleashInstance {
   allowedTeams: [String!]!
   apiIngress: String!
   metrics: UnleashMetrics!
   name: String!
+  ready: Boolean!
   version: String!
   webIngress: String!
 }
