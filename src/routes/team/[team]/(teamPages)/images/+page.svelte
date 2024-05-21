@@ -20,8 +20,6 @@
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($Images.variables));
 
-	$: console.log(images);
-
 	function getTag(name: string) {
 		const split = name.split('/');
 		return split[split.length - 1];

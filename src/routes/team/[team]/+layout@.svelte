@@ -20,7 +20,8 @@
 		repositories: 'repositories',
 		settings: 'settings',
 		secrets: 'secrets',
-		postgres: 'postgres'
+		postgres: 'postgres',
+		images: 'images'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -53,6 +54,19 @@
 				{
 					name: 'audit logs',
 					path: replacer('/team/[team]/(teamPages)/settings/audit_logs', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/images/[dependencyTrackProjectId]': (params: Data) => {
+			console.log(params);
+			return [
+				{
+					name: 'images',
+					path: replacer('/team/[team]/(teamPages)/images', params)
+				},
+				{
+					name: params.dependencyTrackProjectId,
+					path: replacer('/team/[team]/(teamPages)/images/[dependencyTrackProjectId]', params)
 				}
 			];
 		},
