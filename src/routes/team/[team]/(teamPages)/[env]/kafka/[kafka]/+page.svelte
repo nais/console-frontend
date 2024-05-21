@@ -31,7 +31,12 @@
 		</Alert>
 	{/each}
 {:else}
-	<Card columns={12}>
+<div class="grid">
+	<Card columns={6}>
+		<h3>Topic details</h3>
+		</Card>
+
+	<Card columns={6}>
 		<h3>Topic ACLs</h3>
 		<Table size="small">
 			<Thead>
@@ -68,4 +73,15 @@
 			</Tbody>
 		</Table>
 	</Card>
+	</div>
 {/if}
+
+
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
+</style>

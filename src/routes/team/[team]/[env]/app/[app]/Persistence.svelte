@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { Persistence } from '$houdini';
+	import type { Persistence, Persistence$data } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Postgres from '$lib/icons/Postgres.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
 	import { Link, Skeleton } from '@nais/ds-svelte-community';
 	import { BucketIcon } from '@nais/ds-svelte-community/icons';
 
@@ -40,58 +41,57 @@
 			}
 		`)
 	);
+	type PersistenceTypes = 'Bucket' | 'BigQueryDataset' | 'SqlInstance' | 'KafkaTopic' | 'OpenSearch' | 'Redis' | 'unknown';
 
 	$: env = $page.params.env;
 	$: team = $page.params.team;
+	$: typedData = toTypedData($data?.persistence || []);
+	const toTypedData: Partial<Record<PersistenceTypes, Persistence$data>> = (data: [Persistence$data]) => {
+		if (data) {
+			return Object.groupBy(data, (p) => (p ? p.__typename : 'unknown'));
+		}
+		return {};
+	};
 </script>
 
 <div class="persistence">
 	{#if $data?.persistence.map((s) => s.__typename).includes(PendingValue)}
 		<Skeleton variant="text" width="300px" />
 	{/if}
-	{#each $data?.persistence || [] as persistence}
-		{#if persistence.__typename === 'Bucket'}
-			<div class="persistenceContent">
-				<h5><BucketIcon />{persistence.__typename}</h5>
-				{persistence.name}
-			</div>
-		{:else if persistence.__typename === 'BigQueryDataset'}
-			<div class="persistenceContent">
-				<h5><BigQuery />{persistence.__typename}</h5>
-				{persistence.name}
-			</div>
-		{:else if persistence.__typename === 'SqlInstance'}
-			<div class="persistenceContent">
+	{#each Object.keys(typedData) as key}
+		<div class="persistenceContent">
+			{#if key === 'Bucket'}
+				<h5><BucketIcon />{key}</h5>
+				{#each typedData[key] as item}
+					<span>{item.name}</span>
+				{/each}
+			{:else if key === 'BigQueryDataset'}
+				<h5><BigQuery />{key}</h5>
+				{#each typedData[key] as item}
+					<span>{item.name}</span>
+				{/each}
+			{:else if key === 'SqlInstance'}
 				<h5><Postgres />Postgres</h5>
-				<span
-					><b>Instance:</b>
-					<Link href="/team/{team}/{env}/postgres/{persistence.name}">{persistence.name}</Link
-					></span
-				>
-				<span><b>Type:</b> ({persistence.type}) </span>
-			</div>
-		{:else if persistence.__typename === 'KafkaTopic'}
-			<div class="persistenceContent">
-				<h5><Kafka />{persistence.__typename}</h5>
-				<span
-					><b>Pool:</b>
-					{persistence.name}</span
-				>
-			</div>
-		{:else if persistence.__typename === 'OpenSearch'}
-			<div class="persistenceContent">
-				<h5><Opensearch />{persistence.__typename}</h5>
-				<span><b>Instance:</b> {persistence.name}</span>
-				<span><b>Access:</b> {persistence.access}</span>
-			</div>
-		{:else if persistence.__typename === 'Redis'}
-			<div class="persistenceContent">
-				<h5><!--Opensearch /-->{persistence.__typename}</h5>
-
-				<span><b>Instance:</b> {persistence.name}</span>
-				<span><b>Access:</b> {persistence.access}</span>
-			</div>{/if}
-
+				{#each typedData[key] as item}
+					<span>{item.name}</span>
+				{/each}
+			{:else if key === 'KafkaTopic'}
+				<h5><Kafka />{key}</h5>
+				{#each typedData[key] as item}
+					<span>{item.name}</span>
+				{/each}
+			{:else if key === 'OpenSearch'}
+				<h5><Opensearch />{key}</h5>
+				{#each typedData[key] as item}
+					<span>{item.name}</span>
+				{/each}
+			{:else if key === 'Redis'}
+				<h5><Redis />{key}</h5>
+				{#each typedData[key] as item}
+					<span>{item.name}</span>
+				{/each}
+			{/if}
+		</div>
 	{:else}
 		<p>No persistence</p>
 	{/each}
@@ -114,6 +114,5 @@
 		align-self: start;
 		gap: 0.5rem;
 		font-size: 1.2rem;
-
 	}
 </style>

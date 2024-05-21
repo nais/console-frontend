@@ -5,6 +5,15 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 		env {
 			name
 		}
+		config {
+			cleanupPolicy
+			maxMessageBytes
+			minimumInSyncReplicas
+			partitions
+			retentionBytes
+			retentionHours
+			segmentHours
+		}
 		workload {
 			... on App {
 				name
@@ -14,9 +23,9 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 			}
 		}
 		acl @loading(count: 15) {
-				application
-				access
-				team
-			}
+			application
+			access
+			team
 		}
 	}
+}
