@@ -1154,6 +1154,18 @@ type Query {
     team: Slug!
   ): App!
 
+  """Get a Bucket by name, team and env."""
+  bucket(
+    """The environment the bucket exists in."""
+    env: String!
+
+    """The name of the bucket."""
+    name: String!
+
+    """The name of the team who owns the bucket."""
+    team: Slug!
+  ): Bucket!
+
   """Get the current resource utilization values for a specific app."""
   currentResourceUtilizationForApp(
     """The name of the app."""

@@ -9,13 +9,13 @@
 	import Redis from '$lib/icons/Redis.svelte';
 	import { Link, Skeleton } from '@nais/ds-svelte-community';
 	import { BucketIcon } from '@nais/ds-svelte-community/icons';
-	import persistence from '$houdini/artifacts/Persistence';
 
 	export let app: Persistence;
 	$: data = fragment(
 		app,
 		graphql(`
 			fragment Persistence on App @loading {
+				type: __typename
 				persistence {
 					... on Bucket {
 						name
@@ -42,24 +42,12 @@
 			}
 		`)
 	);
-	type PersistenceTypes =
-		| 'Bucket'
-		| 'BigQueryDataset'
-		| 'SqlInstance'
-		| 'KafkaTopic'
-		| 'OpenSearch'
-		| 'Redis'
-		| 'unknown'
-		| "non-exhaustive; don't match this";
 
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
-	const toTypedData = (data): Persistence$data | Record<string, never> => {
-		if (data) {
-			return Object.groupBy(data, (p: Persistence$data) => (p ? p.__typename : 'unknown'));
-		}
-		return {};
+	const toTypedData = (data: Persistence$data['persistence']) => {
+		return Object.groupBy(data, (p: Persistence$data) => (p ? p.type : 'unknown'));
 	};
 </script>
 
