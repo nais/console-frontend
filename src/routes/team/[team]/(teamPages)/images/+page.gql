@@ -14,9 +14,31 @@ query Images(
 			}
 			nodes {
 				id
+				projectId
 				name
+				version
+				digest
+				rekorId
 				critical
 				riskScore
+				findings {
+					id
+					description
+					componentId
+					cveId
+					ghsaId
+					osvId
+					severity
+					packageUrl
+					vulnerabilityId
+				}
+				workloadReferences {
+					id
+					name
+					team
+					workloadType
+					environment
+				}
 			}
 		}
 	}

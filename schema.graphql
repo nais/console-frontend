@@ -517,11 +517,12 @@ type Image {
   digest: String!
   findings: [Finding!]!
   id: ID!
-  latestProjectId: String!
   name: String!
+  projectId: String!
   rekorId: String!
   riskScore: Int!
   version: String!
+  workloadReferences: [WorkloadReference!]!
 }
 
 type ImageList {
@@ -1172,14 +1173,6 @@ interface Persistence {
 
 type Port {
   port: Int!
-}
-
-type Project {
-  application: String!
-  environment: String!
-  id: ID!
-  projectId: String!
-  team: String!
 }
 
 """The query root for the NAIS GraphQL API."""
@@ -2390,6 +2383,14 @@ type VulnerabilitySummary {
 }
 
 union Workload = App | NaisJob
+
+type WorkloadReference {
+  environment: String!
+  id: ID!
+  name: String!
+  team: String!
+  workloadType: String!
+}
 
 type WorkloadStatus {
   errors: [StateError!]!
