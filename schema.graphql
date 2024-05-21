@@ -1255,6 +1255,18 @@ type Query {
   """Get a collection of reconcilers."""
   reconcilers(limit: Int, offset: Int): ReconcilerList!
 
+  """Get a Bucket by name, team and env."""
+  redis(
+    """The environment the redis exists in."""
+    env: String!
+
+    """The name of the redis."""
+    name: String!
+
+    """The name of the team who owns the redis."""
+    team: Slug!
+  ): Redis!
+
   """Get the date range for resource utilization for an app."""
   resourceUtilizationDateRangeForApp(
     """The name of the app."""

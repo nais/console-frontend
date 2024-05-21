@@ -15,27 +15,18 @@
 		app,
 		graphql(`
 			fragment Persistence on App @loading {
-				type: __typename
 				persistence {
-					... on Bucket {
-						name
-					}
-					... on BigQueryDataset {
-						name
-					}
+					name
+					typename: __typename
+
 					... on SqlInstance {
-						name
 						type
 					}
-					... on KafkaTopic {
-						name
-					}
+
 					... on OpenSearch {
-						name
 						access
 					}
 					... on Redis {
-						name
 						access
 					}
 				}
@@ -47,7 +38,7 @@
 	$: team = $page.params.team;
 
 	const toTypedData = (data: Persistence$data['persistence']) => {
-		return Object.groupBy(data, (p: Persistence$data) => (p ? p.type : 'unknown'));
+		return Object.groupBy(data, (p) => (p ? p.typename : 'unknown'));
 	};
 </script>
 
@@ -57,12 +48,11 @@
 	{:else}
 		{#each Object.keys(toTypedData($data.persistence)) as key}
 			{@const resourceMap = toTypedData($data.persistence)}
-
 			<div class="persistenceContent">
 				{#if key === 'Bucket'}
 					<h5><BucketIcon />{key}</h5>
 					{#each resourceMap[key] as item}
-						<Link href={`/team/${team}/${env}/bucket/${item.name}`}>{item.name}</Link>
+						<span>{item.name}</span>
 					{/each}
 				{:else if key === 'BigQueryDataset'}
 					<h5><BigQuery />{key}</h5>
