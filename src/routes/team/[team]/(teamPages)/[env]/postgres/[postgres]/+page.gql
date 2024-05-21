@@ -1,85 +1,87 @@
 query SqlInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
-	sqlInstance(env: $env, team: $team, name: $name) {
-		id
-		name
-		env {
+	team(slug: $team) {
+		sqlInstance(env: $env, name: $name) {
+			id
 			name
-		}
-		cascadingDelete
-		isHealthy
-		type
-		connectionName
-		diskAutoresize
-		diskAutoresizeLimit
-		workload {
-			... on App {
+			env {
 				name
 			}
-			... on NaisJob {
+			cascadingDelete
+			isHealthy
+			type
+			connectionName
+			diskAutoresize
+			diskAutoresizeLimit
+			workload {
+				... on App {
+					name
+				}
+				... on NaisJob {
+					name
+				}
+			}
+			tier
+			metrics {
+				cost
+				cpu {
+					cores
+					utilization
+				}
+				memory {
+					quotaBytes
+					utilization
+				}
+				disk {
+					quotaBytes
+					utilization
+				}
+			}
+			highAvailability
+			backupConfiguration {
+				enabled
+				startTime
+				retainedBackups
+				pointInTimeRecovery
+			}
+			maintenanceWindow {
+				day
+				hour
+			}
+			maintenanceVersion
+			projectId
+			database {
 				name
+				charset
+				collation
+				healthy
+				conditions {
+					type
+					status
+					reason
+					message
+					lastTransitionTime
+				}
 			}
-		}
-		tier
-		metrics {
-			cost
-			cpu {
-				cores
-				utilization
+			flags {
+				name
+				value
 			}
-			memory {
-				quotaBytes
-				utilization
+			status {
+				conditions {
+					type
+					status
+					reason
+					message
+					lastTransitionTime
+				}
+				publicIpAddress
+				privateIpAddress
 			}
-			disk {
-				quotaBytes
-				utilization
+			state
+			users {
+				name
+				authentication
 			}
-		}
-		highAvailability
-		backupConfiguration {
-			enabled
-			startTime
-			retainedBackups
-			pointInTimeRecovery
-		}
-		maintenanceWindow {
-			day
-			hour
-		}
-		maintenanceVersion
-		projectId
-		database {
-			name
-			charset
-			collation
-			healthy
-			conditions {
-				type
-				status
-				reason
-				message
-				lastTransitionTime
-			}
-		}
-		flags {
-			name
-			value
-		}
-		status {
-			conditions {
-				type
-				status
-				reason
-				message
-				lastTransitionTime
-			}
-			publicIpAddress
-			privateIpAddress
-		}
-		state
-		users {
-			name
-			authentication
 		}
 	}
 }

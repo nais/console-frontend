@@ -556,7 +556,7 @@ type Image {
   name: String!
   projectId: String!
   rekorId: String!
-  summary: VulnerabilitySummary!
+  summary: ImageVulnerabilitySummary!
   version: String!
   workloadReferences: [WorkloadReference!]!
 }
@@ -564,6 +564,18 @@ type Image {
 type ImageList {
   nodes: [Image!]!
   pageInfo: PageInfo!
+}
+
+type ImageVulnerabilitySummary {
+  bomCount: Int!
+  critical: Int!
+  high: Int!
+  id: ID!
+  low: Int!
+  medium: Int!
+  riskScore: Int!
+  total: Int!
+  unassigned: Int!
 }
 
 type Inbound {
@@ -1310,18 +1322,6 @@ type Query {
   """Get env cost for a team."""
   envCost(filter: EnvCostFilter!): [EnvCost!]!
 
-  """Get a Kafka topic by name, team and env."""
-  kafkaTopic(
-    """The environment the topic exists in."""
-    env: String!
-
-    """The name of the topic."""
-    name: String!
-
-    """The name of the team who owns the topic."""
-    team: Slug!
-  ): KafkaTopic!
-
   """The currently authenticated user."""
   me: AuthenticatedUser!
 
@@ -1409,18 +1409,6 @@ type Query {
     team: Slug!
   ): ResourceUtilizationTrend!
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
-
-  """Get an SQL instance by name, team and env."""
-  sqlInstance(
-    """The environment the instance runs in."""
-    env: String!
-
-    """The name of the instance."""
-    name: String!
-
-    """The name of the team who owns the instance."""
-    team: Slug!
-  ): SqlInstance!
 
   """Get a specific team."""
   team(
@@ -2030,6 +2018,15 @@ type Team {
     """Order images by"""
     orderBy: OrderBy
   ): ImageList!
+
+  """Get a Kafka topic by name and env."""
+  kafkaTopic(
+    """The environment the topic exists in."""
+    env: String!
+
+    """The name of the topic."""
+    name: String!
+  ): KafkaTopic!
   kafkaTopics(
     """Returns the last n entries from the list."""
     limit: Int
@@ -2111,6 +2108,15 @@ type Team {
 
   """Unique slug of the team."""
   slug: Slug!
+
+  """Get an SQL instance by name and env."""
+  sqlInstance(
+    """The environment the instance runs in."""
+    env: String!
+
+    """The name of the instance."""
+    name: String!
+  ): SqlInstance!
   sqlInstances(
     """Returns the last n entries from the list."""
     limit: Int
@@ -2437,7 +2443,6 @@ type VulnerabilitySummary {
   bomCount: Int!
   critical: Int!
   high: Int!
-  id: ID!
   low: Int!
   medium: Int!
   riskScore: Int!
