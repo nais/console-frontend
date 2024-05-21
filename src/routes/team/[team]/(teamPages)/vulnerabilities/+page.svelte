@@ -190,7 +190,7 @@
 									{:else}
 										<Td>
 											No data found in dependencytrack.
-											<a href={docURL('/security/salsa/#slsa-in-nais')} on:click={onClick}
+											<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}
 												>How to fix</a
 											>
 										</Td>

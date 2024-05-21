@@ -540,11 +540,6 @@ type InboundAccessError implements StateError {
   rule: Rule!
 }
 
-type InfluxDb implements Persistence {
-  id: ID!
-  name: String!
-}
-
 type Insights {
   enabled: Boolean!
   queryStringLength: Int!
