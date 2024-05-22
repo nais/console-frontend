@@ -8,8 +8,6 @@
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
 		BranchingIcon,
-		BucketIcon,
-		BulletListIcon,
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
@@ -19,6 +17,8 @@
 		SandboxIcon,
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
+	import BucketIcon from '$lib/icons/Bucket.svelte';
+
 	import type { LayoutData } from './$types';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';

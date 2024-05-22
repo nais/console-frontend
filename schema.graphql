@@ -175,11 +175,16 @@ type BigQueryDatasetList {
 
 type Bucket implements Persistence {
   cascadingDelete: Boolean!
+  cors: String!
   env: Env!
   id: ID!
   name: String!
   projectId: String!
+  publicAccessPrevention: String!
+  retentionPeriodDays: Int!
+  selfLink: String!
   team: Team!
+  uniformBucketLevelAccess: Boolean!
   workload: Workload
 }
 

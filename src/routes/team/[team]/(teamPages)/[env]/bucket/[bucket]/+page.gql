@@ -2,6 +2,10 @@ query Bucket($env: String!, $team: Slug!, $name: String!) @loading(cascade: true
 	team(slug: $team) {
 		bucket(env: $env, name: $name) {
 			id
+			cors
+			publicAccessPrevention
+			uniformBucketLevelAccess
+			selfLink
 			name
 			env {
 				name

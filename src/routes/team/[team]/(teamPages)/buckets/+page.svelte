@@ -11,6 +11,7 @@
 	} from '$lib/pagination';
 	import {
 		Alert,
+		Link,
 		Skeleton,
 		Table,
 		Tbody,
@@ -77,7 +78,7 @@
 								{/if}
 							</Td>
 							<Td>
-								{node.name}
+								<Link href="/team/{teamName}/{node.env.name}/bucket/{node.name}">{node.name}</Link>
 							</Td>
 							<Td>
 								{node.env.name}

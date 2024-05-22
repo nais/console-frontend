@@ -45,7 +45,7 @@
 					{/each}
 				</ul>
 			{:else}
-				<p>no access</p>
+				<p>no workloads with configured access</p>
 			{/if}
 		</Card>
 	</div>
