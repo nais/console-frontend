@@ -20,6 +20,4 @@
 	<Opensearch {...$$restProps} />
 {:else if type === 'Redis'}
 	<SandboxIcon {...$$restProps} />
-{:else if type === 'InfluxDb'}
-	<SandboxIcon {...$$restProps} />
 {/if}

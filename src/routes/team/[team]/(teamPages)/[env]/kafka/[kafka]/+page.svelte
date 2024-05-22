@@ -1,27 +1,12 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import Card from '$lib/Card.svelte';
-	import type { PageData } from './$houdini';
-	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
-	import {
-		Alert,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { changeParams, sortTable, tableGraphDirection } from '$lib/pagination';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
+	import Card from '$lib/Card.svelte';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);
-	$: topic = $KafkaTopic.data?.kafkaTopic;
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
+	$: topic = $KafkaTopic.data?.team.kafkaTopic;
 </script>
 
 {#if $KafkaTopic.errors}

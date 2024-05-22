@@ -1,31 +1,33 @@
 query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
-	kafkaTopic(env: $env, team: $team, name: $name) {
-		id
-		name
-		env {
+	team(slug: $team) {
+		kafkaTopic(env: $env, name: $name) {
+			id
 			name
-		}
-		config {
-			cleanupPolicy
-			maxMessageBytes
-			minimumInSyncReplicas
-			partitions
-			retentionBytes
-			retentionHours
-			segmentHours
-		}
-		workload {
-			... on App {
+			env {
 				name
 			}
-			... on NaisJob {
-				name
+			config {
+				cleanupPolicy
+				maxMessageBytes
+				minimumInSyncReplicas
+				partitions
+				retentionBytes
+				retentionHours
+				segmentHours
 			}
-		}
-		acl @loading(count: 15) {
-			application
-			access
-			team
+			workload {
+				... on App {
+					name
+				}
+				... on NaisJob {
+					name
+				}
+			}
+			acl @loading(count: 15) {
+				application
+				access
+				team
+			}
 		}
 	}
 }
