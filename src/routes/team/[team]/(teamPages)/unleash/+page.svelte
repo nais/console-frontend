@@ -23,6 +23,18 @@
 		mutation createUnleashForTeam($team: Slug!) {
 			createUnleashForTeam(team: $team) {
 				name
+				version
+				allowedTeams
+				webIngress
+				apiIngress
+				metrics{
+					apiTokens
+					cpuUtilization
+					cpuRequests
+					memoryUtilization
+					memoryRequests
+					toggles
+				}
 			}
 		}
 	`);
@@ -32,9 +44,13 @@
 			team: team
 		});
 
+		// @TODO handle errors
 		if ($createUnleashForTeam.errors) {
 			console.log($createUnleashForTeam.errors);
+			return
 		}
+
+		unleash = $createUnleashForTeam.data?.createUnleashForTeam
 	};
 </script>
 
@@ -181,7 +197,7 @@
 			to your team.
 		</p>
 		<Tooltip content="Coming soon...">
-			<Button variant="secondary" size="medium" on:click={createNewUnleash} disabled>
+			<Button variant="secondary" size="medium" on:click={createNewUnleash}>
 				Enable Unleash
 				<svelte:fragment slot="icon-left">
 					<PlusIcon />

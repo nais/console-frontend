@@ -1,3 +1,4 @@
+# If you update this query, remember to update the corresponding mutation when creating a new Unleash instance
 query Unleash($team: Slug!) {
 	team(slug: $team) {
 		unleash {
@@ -6,7 +7,7 @@ query Unleash($team: Slug!) {
 			allowedTeams
 			webIngress
 			apiIngress
-			metrics{
+			metrics {
 				apiTokens
 				cpuUtilization
 				cpuRequests
