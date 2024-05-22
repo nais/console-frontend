@@ -16,24 +16,28 @@
 	export let data: PageData;
 	$: ({ Unleash } = data);
 	$: team = $page.params.team;
-	$: unleash = $Unleash.data?.team?.unleash;
+	$: unleash = $Unleash.data?.team?.unleash.instance;
+	$: enabled = $Unleash.data?.team?.unleash.enabled;
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
 			createUnleashForTeam(team: $team) {
-				name
-				version
-				allowedTeams
-				webIngress
-				apiIngress
-				metrics{
-					apiTokens
-					cpuUtilization
-					cpuRequests
-					memoryUtilization
-					memoryRequests
-					toggles
+				enabled
+				instance {
+					name
+					version
+					allowedTeams
+					webIngress
+					apiIngress
+					metrics{
+						apiTokens
+						cpuUtilization
+						cpuRequests
+						memoryUtilization
+						memoryRequests
+						toggles
+					}
 				}
 			}
 		}
@@ -50,7 +54,7 @@
 			return
 		}
 
-		unleash = $createUnleashForTeam.data?.createUnleashForTeam
+		unleash = $createUnleashForTeam.data?.createUnleashForTeam.instance
 	};
 </script>
 
@@ -66,6 +70,10 @@
 			{error}
 		</Alert>
 	{/each}
+{:else if !enabled}
+		<Alert style="margin-bottom: 1rem;" variant="info">
+			Unleash is not enabled for this tenant. Please contact your administrator.
+		</Alert>
 {:else if unleash}
 	<div class="summary-grid">
 		<Card columns={3}>
