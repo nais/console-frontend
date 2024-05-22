@@ -11,7 +11,17 @@
 	} from '$lib/pagination';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Link, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import {
+		CopyButton,
+		Link,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -37,169 +47,188 @@
 	$: ({ sortState, limit, offset } = tableStateFromVariables($Image.variables));
 </script>
 
-<div class="grid">
-	<Card columns={8}>
-		<h4 class="imageHeader">
-			Image details
-			<!--CopyButton
-				size="xsmall"
-				variant="action"
-				text="Copy image name"
-				activeText="Image name copied"
-				copyText={image?.name}
-			/-->
-		</h4>
-		<p class="lastActivity">
-			<a href={'https://github.com'}>Deployed</a>
-			<Time time={new Date()} distance={true} />
-			by
-			<a href="https://github.com/deployer">deployer</a>.
-		</p>
-		<div class="imageGrid">
-			<div class="registry">
-				<h5>Registry</h5>
-				<code>{registry}</code>
-			</div>
-			<div class="repository">
-				<h5>Repository</h5>
-				<code>{repository}</code>
-			</div>
-			<div class="imageName">
-				<h5>Name</h5>
-				<code>{name}</code>
-			</div>
-			<div class="tag">
-				<h5>Tag</h5>
-				<code>{tag}</code>
-			</div>
-			<div class="digest">
-				<h5>Digest</h5>
-				<code>{image?.digest}</code>
-			</div>
-		</div>
-	</Card>
-	<Card columns={4}>
-		<h4>Vulnerabilities summary</h4>
-		<div class="circles">
-			<Tooltip placement="right" content="severity: CRITICAL">
-				<VulnerabilityBadge
-					text={String(image?.summary.critical)}
-					color={severityToColor('critical')}
-					size={notificationBadgeSize}
+{#if image}
+	<div class="grid">
+		<Card columns={8}>
+			<h4 class="imageHeader">
+				Image details
+				<CopyButton
+					size="xsmall"
+					variant="action"
+					text="Copy image name"
+					activeText="Image name copied"
+					copyText={image?.name}
 				/>
-			</Tooltip>
-			<Tooltip placement="right" content="severity: HIGH">
-				<VulnerabilityBadge
-					text={String(image?.summary.high)}
-					color={severityToColor('high')}
-					size={notificationBadgeSize}
-				/>
-			</Tooltip>
-			<Tooltip placement="right" content="severity: MEDIUM">
-				<VulnerabilityBadge
-					text={String(image?.summary.medium)}
-					color={severityToColor('medium')}
-					size={notificationBadgeSize}
-				/>
-			</Tooltip>
-			<Tooltip placement="right" content="severity: LOW">
-				<VulnerabilityBadge
-					text={String(image?.summary.low)}
-					color={severityToColor('low')}
-					size={notificationBadgeSize}
-				/>
-			</Tooltip>
-			<Tooltip placement="right" content="severity: UNASSIGNED">
-				<VulnerabilityBadge
-					text={String(image?.summary.unassigned)}
-					color={severityToColor('unassigned')}
-					size={notificationBadgeSize}
-				/>
-			</Tooltip>
-		</div>
-		<p>Risk score: {image?.summary.riskScore}</p>
-		<p>
-			View in <Link
-				href="https://salsa.nav.cloud.nais.io/projects/{image?.projectId}"
-				target="_blank"
-				>Dependency track<ExternalLinkIcon
-					title="Upgrading major version"
-					font-size="1.5rem"
-				/></Link
-			>
-		</p>
-		<p>
-			Attestation URL:
-			<Link href="https://search.sigstore.dev/?logIndex={image?.rekorId}" target="_blank"
-				>Rekor<ExternalLinkIcon title="Upgrading major version" font-size="1.5rem" /></Link
-			>
-		</p>
-		<p>
-			{#if image?.workloadReferences}
-				Workloads:
-				<dl style="margin-top: 0">
-					{#each image?.workloadReferences as workload}
-						<dd>
-							<a href={`/team/${workload.team}/${workload.environment}/app/${workload.name}`}
-								>{workload.team}:{workload.environment}:{workload.name}</a
-							>
-						</dd>
-					{/each}
-				</dl>
-			{:else}
-				No workloads
-			{/if}
-		</p>
-	</Card>
-	<Card columns={12}>
-		<h4>Findings</h4>
-		{#if image?.findings}
-			<Table
-				zebraStripes
-				size="small"
-				sort={sortState}
-				on:sortChange={(e) => {
-					const { key } = e.detail;
-					const ss = sortTable(key, sortState);
-					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
-				}}
-			>
-				<Thead>
-					<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
-					<Th sortable={true} sortKey="SEVERITY">Severity</Th>
-					<Th style="width: 8rem;">CVE</Th>
-					<Th style="width: 11rem;">GHSA</Th>
-					<Th>OSV</Th>
-					<Th style="width: 20rem;">Description</Th>
-				</Thead>
-				<Tbody>
-					{#each image.findings.nodes as finding}
-						<Tr>
-							<Td>{finding.packageUrl}</Td>
-							<Td>{finding.severity}</Td>
-							<Td><code>{finding.cveId}</code></Td>
-							<Td><code>{finding.ghsaId}</code></Td>
-							<Td><code>{finding.osvId}</code></Td>
-							<Td>{finding.description}</Td>
-						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
-			<div class="pagination">
-				<Pagination
-					pageInfo={image?.findings.pageInfo}
-					{limit}
-					{offset}
-					changePage={(e) => {
-						changeParams({ page: e.toString() });
+			</h4>
+			<p class="lastActivity">
+				<a href={'https://github.com'}>Deployed</a>
+				<Time time={new Date()} distance={true} />
+				by
+				<a href="https://github.com/deployer">deployer</a>.
+			</p>
+			<div class="imageGrid">
+				<div class="registry">
+					<h5>Registry</h5>
+					<code>{registry}</code>
+				</div>
+				<div class="repository">
+					<h5>Repository</h5>
+					<code>{repository}</code>
+				</div>
+				<div class="imageName">
+					<h5>Name</h5>
+					<code>{name}</code>
+				</div>
+				<div class="tag">
+					<h5>Tag</h5>
+					<code>{tag}</code>
+				</div>
+				<div class="digest">
+					<h5>Digest</h5>
+					<code>{image?.digest}</code>
+				</div>
+
+				<div class="workloads">
+					<h5>Workloads</h5>
+					{#if image?.workloadReferences}
+						<dl style="margin-top: 0">
+							{#each image?.workloadReferences as workload}
+								<dt>
+									<a href={`/team/${workload.team}/${workload.environment}/app/${workload.name}`}
+										>{workload.team}:{workload.environment}:{workload.name}</a
+									>
+								</dt>
+								<dd>
+									{#if workload.deployInfo.url === ''}
+										deployed
+									{:else}
+										<a href={workload.deployInfo.url}>deployed</a>
+									{/if}
+									{#if workload.deployInfo.timestamp}
+										<Time time={workload.deployInfo.timestamp} distance={true} />
+									{/if}
+									{#if workload.deployInfo.deployer !== ''}
+										by
+										<a href="https://github.com/{workload.deployInfo.deployer}"
+											>{workload.deployInfo.deployer}</a
+										>.
+									{/if}
+								</dd>
+							{/each}
+						</dl>
+					{:else}
+						No workloads
+					{/if}
+				</div>
+			</div>
+		</Card>
+		<Card columns={4}>
+			<h4>Vulnerabilities summary</h4>
+			<div class="circles">
+				<Tooltip placement="right" content="severity: CRITICAL">
+					<VulnerabilityBadge
+						text={String(image?.summary.critical)}
+						color={severityToColor('critical')}
+						size={notificationBadgeSize}
+					/>
+				</Tooltip>
+				<Tooltip placement="right" content="severity: HIGH">
+					<VulnerabilityBadge
+						text={String(image?.summary.high)}
+						color={severityToColor('high')}
+						size={notificationBadgeSize}
+					/>
+				</Tooltip>
+				<Tooltip placement="right" content="severity: MEDIUM">
+					<VulnerabilityBadge
+						text={String(image?.summary.medium)}
+						color={severityToColor('medium')}
+						size={notificationBadgeSize}
+					/>
+				</Tooltip>
+				<Tooltip placement="right" content="severity: LOW">
+					<VulnerabilityBadge
+						text={String(image?.summary.low)}
+						color={severityToColor('low')}
+						size={notificationBadgeSize}
+					/>
+				</Tooltip>
+				<Tooltip placement="right" content="severity: UNASSIGNED">
+					<VulnerabilityBadge
+						text={String(image?.summary.unassigned)}
+						color={severityToColor('unassigned')}
+						size={notificationBadgeSize}
+					/>
+				</Tooltip>
+			</div>
+			<p>Risk score: {image?.summary.riskScore}</p>
+			<p>
+				View in <Link
+					href="https://salsa.nav.cloud.nais.io/projects/{image?.projectId}"
+					target="_blank"
+					>Dependency track<ExternalLinkIcon
+						title="Upgrading major version"
+						font-size="1.5rem"
+					/></Link
+				>
+			</p>
+			<p>
+				Attestation URL:
+				<Link href="https://search.sigstore.dev/?logIndex={image?.rekorId}" target="_blank"
+					>Rekor<ExternalLinkIcon title="Upgrading major version" font-size="1.5rem" /></Link
+				>
+			</p>
+		</Card>
+		<Card columns={12}>
+			<h4>Findings</h4>
+			{#if image?.findings}
+				<Table
+					zebraStripes
+					size="small"
+					sort={sortState}
+					on:sortChange={(e) => {
+						const { key } = e.detail;
+						const ss = sortTable(key, sortState);
+						changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
 					}}
-				/>
-			</div>
-		{:else}
-			<p>No findings found.</p>
-		{/if}
-	</Card>
-</div>
+				>
+					<Thead>
+						<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
+						<Th sortable={true} sortKey="SEVERITY">Severity</Th>
+						<Th style="width: 8rem;">CVE</Th>
+						<Th style="width: 11rem;">GHSA</Th>
+						<Th>OSV</Th>
+						<Th style="width: 20rem;">Description</Th>
+					</Thead>
+					<Tbody>
+						{#each image.findings.nodes as finding}
+							<Tr>
+								<Td>{finding.packageUrl}</Td>
+								<Td>{finding.severity}</Td>
+								<Td><code>{finding.cveId}</code></Td>
+								<Td><code>{finding.ghsaId}</code></Td>
+								<Td><code>{finding.osvId}</code></Td>
+								<Td>{finding.description}</Td>
+							</Tr>
+						{/each}
+					</Tbody>
+				</Table>
+				<div class="pagination">
+					<Pagination
+						pageInfo={image?.findings.pageInfo}
+						{limit}
+						{offset}
+						changePage={(e) => {
+							changeParams({ page: e.toString() });
+						}}
+					/>
+				</div>
+			{:else}
+				<p>No findings found.</p>
+			{/if}
+		</Card>
+	</div>
+{/if}
 
 <style>
 	.circles {
@@ -249,6 +278,11 @@
 		grid-column-start: 1;
 		grid-column-end: span 2;
 		grid-row: 3;
+	}
+	.workloads {
+		grid-column-start: 1;
+		grid-column-end: span 2;
+		grid-row: 4;
 	}
 
 	code {

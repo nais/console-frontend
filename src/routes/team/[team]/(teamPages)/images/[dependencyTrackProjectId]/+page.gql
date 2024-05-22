@@ -25,6 +25,12 @@ query Image(
 			team
 			workloadType
 			environment
+			deployInfo {
+				deployer
+				timestamp
+				commitSha
+				url
+			}
 		}
 		findings(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {

@@ -2399,6 +2399,7 @@ type VulnerabilitySummary {
 union Workload = App | NaisJob
 
 type WorkloadReference {
+  deployInfo: DeployInfo!
   environment: String!
   id: ID!
   name: String!
