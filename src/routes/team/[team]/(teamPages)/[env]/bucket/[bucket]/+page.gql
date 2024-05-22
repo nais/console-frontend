@@ -1,16 +1,18 @@
 query Bucket($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
-	bucket(env: $env, team: $team, name: $name) {
-		id
-		name
-		env {
+	team(slug: $team) {
+		bucket(env: $env, name: $name) {
+			id
 			name
-		}
-		workload {
-			... on App {
+			env {
 				name
 			}
-			... on NaisJob {
-				name
+			workload {
+				... on App {
+					name
+				}
+				... on NaisJob {
+					name
+				}
 			}
 		}
 	}

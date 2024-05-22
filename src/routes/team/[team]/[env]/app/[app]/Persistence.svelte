@@ -27,7 +27,9 @@
 						access
 					}
 					... on Redis {
-						access
+						redisInstanceAccess: access {
+							role
+						}
 					}
 				}
 			}

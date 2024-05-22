@@ -1,18 +1,28 @@
-query Redis($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
-	redis(env: $env, team: $team, name: $name) {
-		id
-		name
-		env {
+query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+	team(slug: $team) {
+		redisInstance(env: $env, name: $name) {
+			id
 			name
-		}
-		workload {
-			... on App {
+			access {
+				workload {
+					type: __typename
+					... on App {
+						name
+					}
+				}
+				role
+			}
+			env {
 				name
 			}
-			... on NaisJob {
-				name
+			workload {
+				... on App {
+					name
+				}
+				... on NaisJob {
+					name
+				}
 			}
 		}
-
 	}
 }

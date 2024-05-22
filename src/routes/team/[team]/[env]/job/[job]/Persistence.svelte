@@ -40,7 +40,9 @@
 					}
 					... on Redis {
 						name
-						access
+						redisInstanceAccess: access {
+							role
+						}
 					}
 				}
 			}

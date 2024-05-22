@@ -1154,18 +1154,6 @@ type Query {
     team: Slug!
   ): App!
 
-  """Get a Bucket by name, team and env."""
-  bucket(
-    """The environment the bucket exists in."""
-    env: String!
-
-    """The name of the bucket."""
-    name: String!
-
-    """The name of the team who owns the bucket."""
-    team: Slug!
-  ): Bucket!
-
   """Get the current resource utilization values for a specific app."""
   currentResourceUtilizationForApp(
     """The name of the app."""
@@ -1242,18 +1230,6 @@ type Query {
 
   """Get a collection of reconcilers."""
   reconcilers(limit: Int, offset: Int): ReconcilerList!
-
-  """Get a Bucket by name, team and env."""
-  redis(
-    """The environment the redis exists in."""
-    env: String!
-
-    """The name of the redis."""
-    name: String!
-
-    """The name of the team who owns the redis."""
-    team: Slug!
-  ): Redis!
 
   """Get the date range for resource utilization for an app."""
   resourceUtilizationDateRangeForApp(
@@ -1434,12 +1410,17 @@ type ReconcilerList {
 }
 
 type Redis implements Persistence {
-  access: String!
+  access: [RedisInstanceAccess!]!
   env: Env!
   id: ID!
   name: String!
   team: Team!
   workload: Workload
+}
+
+type RedisInstanceAccess {
+  role: String!
+  workload: Workload!
 }
 
 type RedisList {
@@ -1864,6 +1845,15 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): BigQueryDatasetList!
+
+  """Get a Bucket by name and env."""
+  bucket(
+    """The environment the bucket exists in."""
+    env: String!
+
+    """The name of the bucket."""
+    name: String!
+  ): Bucket!
   buckets(
     """Returns the last n entries from the list."""
     limit: Int
@@ -1990,6 +1980,15 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): RedisList!
+
+  """Get a Redis instance by name and env."""
+  redisInstance(
+    """The environment the instance exists in."""
+    env: String!
+
+    """The name of the Redis instance."""
+    name: String!
+  ): Redis!
 
   """Get the team's secret by name, and env."""
   secret(
