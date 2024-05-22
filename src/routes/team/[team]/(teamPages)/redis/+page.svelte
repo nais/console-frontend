@@ -9,7 +9,17 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Link,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -56,17 +66,19 @@
 						<Tr>
 							<!-- TODO: show warning if no workload uses this instance -->
 							<Td>
-								{node.name}
+								<Link href="/team/{teamName}/{node.env.name}/redis/{node.name}">
+									{node.name}
+								</Link>
 							</Td>
 							<Td>
 								{node.env.name}
 							</Td>
 							<Td>
 								{#if node.workload}
-									<a
+									<Link
 										href="/team/{teamName}/{node.env.name}/{node.workload?.__typename === 'App'
 											? 'app'
-											: 'job'}/{node.workload.name}">{node.workload.name}</a
+											: 'job'}/{node.workload.name}">{node.workload.name}</Link
 									>
 								{:else}
 									<em title="The Redis instance is owned by the team">Team</em>

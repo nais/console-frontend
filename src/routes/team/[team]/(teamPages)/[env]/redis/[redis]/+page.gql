@@ -3,25 +3,29 @@ query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascad
 		redisInstance(env: $env, name: $name) {
 			id
 			name
-			access {
-				workload {
-					type: __typename
-					... on App {
-						name
-					}
-				}
-				role
-			}
 			env {
 				name
 			}
 			workload {
+				type: __typename
 				... on App {
 					name
 				}
 				... on NaisJob {
 					name
 				}
+			}
+			access {
+				workload {
+					type: __typename
+					... on App {
+						name
+					}
+					... on Job {
+						name
+					}
+				}
+				role
 			}
 		}
 	}
