@@ -21,7 +21,7 @@ query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascad
 					... on App {
 						name
 					}
-					... on Job {
+					... on NaisJob {
 						name
 					}
 				}
