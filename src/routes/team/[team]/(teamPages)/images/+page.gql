@@ -3,17 +3,17 @@ query Images(
 	$orderBy: OrderBy = { field: NAME, direction: ASC }
 	$limit: Int
 	$offset: Int
-) {
+) @loading(cascade: false) {
 	team(slug: $team) {
-		id
+		id @loading
 		images(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {
 				totalCount
 				hasNextPage
 				hasPreviousPage
 			}
-			nodes {
-				id
+			nodes @loading(count: 18, cascade: false) {
+				id @loading
 				projectId
 				name
 				version

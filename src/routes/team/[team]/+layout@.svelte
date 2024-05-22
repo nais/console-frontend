@@ -65,7 +65,7 @@
 					path: replacer('/team/[team]/(teamPages)/images', params)
 				},
 				{
-					name: params.dependencyTrackProjectId,
+					name: 'image details',
 					path: replacer('/team/[team]/(teamPages)/images/[dependencyTrackProjectId]', params)
 				}
 			];
