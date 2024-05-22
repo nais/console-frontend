@@ -19,12 +19,8 @@ query KafkaTopics(
 					name
 				}
 				workload {
-					... on App {
-						name
-					}
-					... on NaisJob {
-						name
-					}
+					type: __typename
+					name
 				}
 			}
 		}

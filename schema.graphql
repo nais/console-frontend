@@ -16,7 +16,7 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
-type App {
+type App implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
   autoScaling: AutoScaling!
@@ -990,7 +990,7 @@ type Mutation {
   ): Team!
 }
 
-type NaisJob {
+type NaisJob implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
   completions: Int!
@@ -1009,6 +1009,7 @@ type NaisJob {
   secrets: [Secret!]!
   status: WorkloadStatus!
   team: Team!
+  variables: [Variable!]!
 }
 
 type NaisJobList {
@@ -2354,7 +2355,18 @@ type VulnerabilitySummary {
   unassigned: Int!
 }
 
-union Workload = App | NaisJob
+interface Workload {
+  accessPolicy: AccessPolicy!
+  authz: [Authz!]!
+  deployInfo: DeployInfo!
+  env: Env!
+  id: ID!
+  image: String!
+  name: String!
+  resources: Resources!
+  status: WorkloadStatus!
+  variables: [Variable!]!
+}
 
 type WorkloadStatus {
   errors: [StateError!]!

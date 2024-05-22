@@ -107,7 +107,7 @@
 				<h5><!--Opensearch /-->{persistence.__typename}</h5>
 
 				<span><b>Instance:</b> {persistence.name}</span>
-				<span><b>Access:</b> {persistence.access}</span>
+				<span><b>Access:</b> {persistence.redisInstanceAccess}</span>
 			</div>
 		{/if}
 	{:else}

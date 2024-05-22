@@ -1,10 +1,10 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, Link, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, Link } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import { PendingValue } from '$houdini';
 
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
@@ -19,16 +19,12 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if redisInstance}
+{:else if redisInstance && redisInstance.name !== PendingValue}
 	<div class="grid">
 		<Card columns={12}>
 			<h3 class="heading">
 				<Redis />
-				{#if redisInstance.name === PendingValue}
-					<Skeleton variant="text" />
-				{:else}
-					{redisInstance.name}
-				{/if}
+				{redisInstance.name}
 			</h3>
 			<h4>Access</h4>
 

@@ -86,7 +86,7 @@
 							<Td>
 								{#if node.workload}
 									<a
-										href="/team/{teamName}/{node.env.name}/{node.workload?.__typename === 'App'
+										href="/team/{teamName}/{node.env.name}/{node.workload?.type === 'App'
 											? 'app'
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>

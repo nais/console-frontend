@@ -7,23 +7,13 @@ query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascad
 				name
 			}
 			workload {
+				name
 				type: __typename
-				... on App {
-					name
-				}
-				... on NaisJob {
-					name
-				}
 			}
 			access {
 				workload {
 					type: __typename
-					... on App {
-						name
-					}
-					... on NaisJob {
-						name
-					}
+					name
 				}
 				role
 			}
