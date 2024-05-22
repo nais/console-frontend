@@ -1,21 +1,48 @@
-query Image($dependencyTrackProjectId: String!) {
-	dependencyTrackProject(projectId: $dependencyTrackProjectId) @loading {
-		id @loading
+query Image(
+	$dependencyTrackProjectId: String!
+	$orderBy: OrderBy = { field: SEVERITY, direction: DESC }
+	$limit: Int
+	$offset: Int
+) {
+	dependencyTrackProject(projectId: $dependencyTrackProjectId) {
+		id
+		projectId
+		version
 		name
 		digest
 		rekorId
-		critical
-		riskScore
-		findings {
+		summary {
+			critical
+			high
+			medium
+			low
+			unassigned
+			riskScore
+		}
+		workloadReferences {
 			id
-			componentId
-			cveId
-			ghsaId
-			osvId
-			description
-			severity
-			packageUrl
-			vulnerabilityId
+			name
+			team
+			workloadType
+			environment
+		}
+		findings(limit: $limit, offset: $offset, orderBy: $orderBy) {
+			pageInfo {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+			}
+			nodes {
+				componentId
+				cveId
+				description
+				ghsaId
+				id
+				osvId
+				packageUrl
+				severity
+				vulnerabilityId
+			}
 		}
 	}
 }

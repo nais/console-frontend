@@ -32,6 +32,7 @@
 <Card columns={12}>
 	<h2>Images - {teamName}</h2>
 	<Table
+		zebraStripes
 		size="small"
 		sort={sortState}
 		on:sortChange={(e) => {
@@ -62,13 +63,14 @@
 						</Td>
 						<Td style="text-align: center">
 							<div class="badge">
-								{#if image.critical > 0}
+								{#if image.summary.critical > 0}
 									<Tooltip
 										placement="right"
-										content="{image.critical} vulnerabilities found. Please update your dependencies!"
+										content="{image.summary
+											.critical} vulnerabilities found. Please update your dependencies!"
 									>
 										<VulnerabilityBadge
-											text={String(image.critical)}
+											text={String(image.summary.critical)}
 											color={severityToColor('critical')}
 											size={'32px'}
 										/>
@@ -83,7 +85,7 @@
 								{/if}
 							</div>
 						</Td>
-						<Td style="text-align: center">{image.riskScore}</Td>
+						<Td style="text-align: center">{image.summary.riskScore}</Td>
 						<Td>
 							{#if image.workloadReferences.length > 0}
 								{#each image.workloadReferences as workload}

@@ -425,6 +425,11 @@ type Finding {
   vulnerabilityId: String!
 }
 
+type FindingList {
+  nodes: [Finding!]!
+  pageInfo: PageInfo!
+}
+
 type Flag {
   name: String!
   value: String!
@@ -513,14 +518,22 @@ type IDPortenSidecar {
 }
 
 type Image {
-  critical: Int!
   digest: String!
-  findings: [Finding!]!
+  findings(
+    """Limit the number of entries returned."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order findings by"""
+    orderBy: OrderBy
+  ): FindingList!
   id: ID!
   name: String!
   projectId: String!
   rekorId: String!
-  riskScore: Int!
+  summary: VulnerabilitySummary!
   version: String!
   workloadReferences: [WorkloadReference!]!
 }
@@ -1113,8 +1126,14 @@ enum OrderByField {
   """Order by name"""
   NAME
 
+  """Order by packageUrl"""
+  PACKAGE_URL
+
   """Order by risk score"""
   RISK_SCORE
+
+  """Order by severity."""
+  SEVERITY
 
   """Order apps by vulnerability severity critical"""
   SEVERITY_CRITICAL
