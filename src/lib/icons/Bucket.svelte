@@ -11,13 +11,13 @@
 	><defs
 		><style>
 			.cls-1 {
-				fill: #aecbfa;
+				fill: #222;
 			}
 			.cls-2 {
-				fill: #669df6;
+				fill: #222;
 			}
 			.cls-3 {
-				fill: #4285f4;
+				fill: #222;
 			}
 			.cls-4 {
 				fill: #fff;
