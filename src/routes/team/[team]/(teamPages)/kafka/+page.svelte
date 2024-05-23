@@ -67,7 +67,8 @@
 						<Tr>
 							<Td>
 								<span style="display: inline-flex; "
-									>{#if !node.workload?.name}
+									>
+									{#if !node.workload?.name}
 										<Tooltip content="The Kafka topic does not belong to any workload">
 											<InformationSquareFillIcon
 												style="color: var(--a-icon-info); top: 0.125em; position: relative; margin-right: 1em"

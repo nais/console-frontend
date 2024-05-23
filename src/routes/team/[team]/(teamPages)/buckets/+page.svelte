@@ -52,7 +52,6 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Owner</Th>
@@ -68,16 +67,6 @@
 					{#each team.buckets.nodes as node}
 						<Tr>
 							<Td>
-								{#if !node.workload?.name}
-									<Tooltip content="The bucket does not belong to any workload">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The bucket does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
 								<Link href="/team/{teamName}/{node.env.name}/bucket/{node.name}">{node.name}</Link>
 							</Td>
 							<Td>
@@ -90,6 +79,14 @@
 											? 'app'
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>
+								{:else}
+									<div class="inline">
+										<i>No owner</i>
+										<ExclamationmarkTriangleFillIcon
+											style="color: var(--a-icon-warning)"
+											title="The bucket does not belong to any workload"
+										/> 
+									</div>
 								{/if}
 							</Td>
 						</Tr>
@@ -111,3 +108,11 @@
 		/>
 	</Card>
 {/if}
+
+<style>
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+</style>
