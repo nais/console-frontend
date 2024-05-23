@@ -66,18 +66,7 @@
 					{#each team.kafkaTopics.nodes as node}
 						<Tr>
 							<Td>
-								<span style="display: inline-flex; "
-									>
-									{#if !node.workload?.name}
-										<Tooltip content="The Kafka topic does not belong to any workload">
-											<InformationSquareFillIcon
-												style="color: var(--a-icon-info); top: 0.125em; position: relative; margin-right: 1em"
-												title="The Kafka topic does not belong to any workload"
-											/>
-										</Tooltip>
-									{/if}
-									<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>
-								</span>
+								<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>
 							</Td>
 							<Td>
 								{node.env.name}
@@ -89,6 +78,16 @@
 											? 'app'
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>
+								{:else}
+									<span class="inline">
+										<em>No owner</em>
+										<Tooltip content="The Kafka topic does not belong to any workload">
+											<InformationSquareFillIcon
+												style="color: var(--a-icon-info); top: 0.125em; position: relative; margin-right: 1em"
+												title="The Kafka topic does not belong to any workload"
+											/>
+										</Tooltip>
+									</span>
 								{/if}
 							</Td>
 						</Tr>
@@ -110,3 +109,11 @@
 		/>
 	</Card>
 {/if}
+
+<style>
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+</style>
