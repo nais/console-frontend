@@ -3,8 +3,9 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, Link } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Link, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
@@ -21,7 +22,23 @@
 	{/each}
 {:else if redisInstance && redisInstance.name !== PendingValue}
 	<div class="grid">
-		<Card columns={12}>
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost
+						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
+					</h4>
+					<p class="metric">
+						€{redisInstance.cost}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={6}>
 			<h3 class="heading">
 				<Redis />
 				{redisInstance.name}

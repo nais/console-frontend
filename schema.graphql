@@ -629,7 +629,7 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
-"""Montly cost type."""
+"""Monthly cost type."""
 type MonthlyCost {
   """A list of monthly cost entries."""
   cost: [CostEntry!]!
@@ -1429,6 +1429,7 @@ type ReconcilerList {
 
 type Redis implements Persistence {
   access: [RedisInstanceAccess!]!
+  cost: String!
   env: Env!
   id: ID!
   name: String!

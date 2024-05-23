@@ -3,9 +3,23 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import BucketIcon from '$lib/icons/Bucket.svelte';
-	import { Alert, Link } from '@nais/ds-svelte-community';
+	import {
+		Accordion,
+		AccordionItem,
+		Alert,
+		Link,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import prettyBytes from 'pretty-bytes';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 
 	export let data: PageData;
 	$: ({ Bucket } = data);
@@ -42,7 +56,26 @@
 					<dd>{bucket.uniformBucketLevelAccess}</dd>
 					{#if bucket.cors}
 						<dt>Cors</dt>
-						<dd>{bucket.cors}</dd>
+						<dd>
+							<dl>
+								{#each bucket.cors as c}
+									<dt>methods</dt>
+									<dd>
+										{#each c.methods as m}
+											<span style="margin-right: .5em;">{m}</span>
+										{/each}
+									</dd>
+									<dt>origins</dt>
+									<dd>
+										<ul>
+											{#each c.origins as o}
+												<li>{o}</li>
+											{/each}
+										</ul>
+									</dd>
+								{/each}
+							</dl>
+						</dd>
 					{/if}
 					{#if bucket.status.selfLink}
 						<dt>SelfLink</dt>
@@ -57,13 +90,16 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Status</h3>
-			<h4>Conditions</h4>
 			{#each bucket.status.conditions as cond}
-				<p>Message: {cond.message}</p>
 				<p>Reason: {cond.reason}</p>
 				<p>Status: {cond.status}</p>
 				<p>Type: {cond.type}</p>
 				<p>Last transition time: <Time time={cond.lastTransitionTime} /></p>
+				<Accordion>
+					<AccordionItem heading="Status message" open={false}>
+						<p>{cond.message}</p>
+					</AccordionItem>
+				</Accordion>
 			{:else}
 				<p>No conditions</p>
 			{/each}
