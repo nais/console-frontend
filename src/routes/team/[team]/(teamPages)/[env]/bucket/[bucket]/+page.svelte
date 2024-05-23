@@ -1,10 +1,11 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { page } from '$app/stores';
-	import Card from '$lib/Card.svelte';
-	import BucketIcon from '$lib/icons/Bucket.svelte';
-	import { Alert, Link, Skeleton } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
 	import { PendingValue } from '$houdini';
+	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
+	import BucketIcon from '$lib/icons/Bucket.svelte';
+	import { Alert, Link } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ Bucket } = data);
@@ -19,14 +20,23 @@
 	{/each}
 {:else if bucket && bucket.name !== PendingValue}
 	<div class="grid">
-		<Card columns={12}>
+		<Card columns={6}>
 			<h3 class="heading">
 				<BucketIcon />
 				{bucket.name}
 			</h3>
 			<div>
 				<dl>
-					<dt>PublicAccessPrevention</dt>
+					<dt>Bucket</dt>
+					<dd>
+						<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
+							>Google Cloud Console<ExternalLinkIcon
+								title="Google Cloud Console"
+								font-size="1.5rem"
+							/></a
+						>
+					</dd>
+					<dt>Public access prevention</dt>
 					<dd>{bucket.publicAccessPrevention}</dd>
 					<dt>UniformBucketLevelAccess</dt>
 					<dd>{bucket.uniformBucketLevelAccess}</dd>
@@ -34,12 +44,29 @@
 						<dt>Cors</dt>
 						<dd>{bucket.cors}</dd>
 					{/if}
-					{#if bucket.selfLink}
+					{#if bucket.status.selfLink}
 						<dt>SelfLink</dt>
-						<dd><Link href={bucket.selfLink}>{bucket.selfLink}</Link></dd>
+						<dd>
+							<Link href="https://storage.googleapis.com/{bucket.name}"
+								>https://storage.googleapis.com/{bucket.name}</Link
+							>
+						</dd>
 					{/if}
 				</dl>
 			</div>
+		</Card>
+		<Card columns={6}>
+			<h3>Status</h3>
+			<h4>Conditions</h4>
+			{#each bucket.status.conditions as cond}
+				<p>Message: {cond.message}</p>
+				<p>Reason: {cond.reason}</p>
+				<p>Status: {cond.status}</p>
+				<p>Type: {cond.type}</p>
+				<p>Last transition time: <Time time={cond.lastTransitionTime} /></p>
+			{:else}
+				<p>No conditions</p>
+			{/each}
 		</Card>
 	</div>
 {/if}
