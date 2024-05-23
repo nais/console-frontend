@@ -16,6 +16,11 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
+type Alias {
+  name: String!
+  source: String!
+}
+
 type App {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
@@ -23,7 +28,7 @@ type App {
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
-  image: String!
+  image: Image!
   ingresses: [String!]!
   instances: [Instance!]!
   manifest: String!
@@ -414,14 +419,13 @@ type FailedRunError implements StateError {
 }
 
 type Finding {
+  aliases: [Alias!]!
   componentId: String!
-  cveId: String!
   description: String!
-  ghsaId: String!
   id: ID!
-  osvId: String!
   packageUrl: String!
   severity: String!
+  source: String!
   vulnerabilityId: String!
 }
 

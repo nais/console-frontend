@@ -94,7 +94,7 @@
 	.card {
 		border-radius: 0.5rem;
 		padding: 1rem;
-		grid-column: span 3;
+		grid-column: span 4;
 		grid-row: span 1;
 		border: 1px solid var(--a-gray-200);
 		background-color: var(--a-bg-default);

@@ -18,7 +18,7 @@ query Workloads(
 					timestamp
 				}
 				name
-				image
+
 				...AppInstancesStatus
 				env {
 					name

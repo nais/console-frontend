@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -12,8 +13,10 @@
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
+		Button,
 		CopyButton,
 		Link,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -24,12 +27,16 @@
 	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 
 	export let data: PageData;
 
-	$: ({ Image } = data);
+	$: ({ Image, UserInfo } = data);
 
 	$: image = $Image.data?.dependencyTrackProject;
+	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
+
+	$: console.log(user);
 
 	const notificationBadgeSize = '48px';
 
@@ -37,151 +44,229 @@
 	let repository: string;
 	let name: string;
 	let tag: string;
+	let findingToSuppress: FindingType | undefined;
 
 	$: {
-		if (image) {
-			({ registry, repository, name, tag } = parseImage(image?.name));
+		if (image && image.id !== PendingValue) {
+			({ registry, repository, name, tag } = parseImage(image.name));
 		}
 	}
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($Image.variables));
 </script>
 
-{#if image}
-	<div class="grid">
-		<Card columns={8}>
+<div class="grid">
+	{#if image}
+		<Card columns={7}>
 			<h4 class="imageHeader">
 				Image details
-				<CopyButton
-					size="xsmall"
-					variant="action"
-					text="Copy image name"
-					activeText="Image name copied"
-					copyText={image?.name}
-				/>
+				{#if image.id !== PendingValue}
+					<CopyButton
+						size="xsmall"
+						variant="action"
+						text="Copy image name"
+						activeText="Image name copied"
+						copyText={image.name}
+					/>
+				{/if}
 			</h4>
-			<p class="lastActivity">
-				<a href={'https://github.com'}>Deployed</a>
-				<Time time={new Date()} distance={true} />
-				by
-				<a href="https://github.com/deployer">deployer</a>.
-			</p>
-			<div class="imageGrid">
-				<div class="registry">
-					<h5>Registry</h5>
-					<code>{registry}</code>
-				</div>
-				<div class="repository">
-					<h5>Repository</h5>
-					<code>{repository}</code>
-				</div>
-				<div class="imageName">
-					<h5>Name</h5>
-					<code>{name}</code>
-				</div>
-				<div class="tag">
-					<h5>Tag</h5>
-					<code>{tag}</code>
-				</div>
-				<div class="digest">
-					<h5>Digest</h5>
-					<code>{image?.digest}</code>
-				</div>
 
-				<div class="workloads">
-					<h5>Workloads</h5>
-					{#if image?.workloadReferences}
-						<dl style="margin-top: 0">
-							{#each image?.workloadReferences as workload}
-								<dt>
-									<a href={`/team/${workload.team}/${workload.environment}/app/${workload.name}`}
-										>{workload.team}:{workload.environment}:{workload.name}</a
-									>
-								</dt>
-								<dd>
-									{#if workload.deployInfo.url === ''}
-										deployed
-									{:else}
-										<a href={workload.deployInfo.url}>deployed</a>
-									{/if}
-									{#if workload.deployInfo.timestamp}
-										<Time time={workload.deployInfo.timestamp} distance={true} />
-									{/if}
-									{#if workload.deployInfo.deployer !== ''}
-										by
-										<a href="https://github.com/{workload.deployInfo.deployer}"
-											>{workload.deployInfo.deployer}</a
-										>.
-									{/if}
-								</dd>
-							{/each}
-						</dl>
+			<dl>
+				<dt>Registry</dt>
+				<dd>
+					{#if image.id !== PendingValue}
+						<code>{registry}</code>
 					{:else}
-						No workloads
+						<Skeleton variant="text" />
 					{/if}
-				</div>
+				</dd>
+				<dt>Repository</dt>
+				<dd>
+					{#if image.id !== PendingValue}
+						<code>{repository}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
+				</dd>
+
+				<dt>Name</dt>
+				<dd>
+					{#if image.id !== PendingValue}
+						<code>{name}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
+				</dd>
+				<dt>Tag</dt>
+				<dd>
+					{#if image.id !== PendingValue}
+						<code>{tag}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
+				</dd>
+				<dt>Digest</dt>
+				<dd>
+					{#if image.id !== PendingValue}
+						<code>{image.digest}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
+				</dd>
+			</dl>
+
+			<div class="workloads">
+				{#if image.workloadReferences}
+					<h5>Workloads</h5>
+					<Table size="small" zebraStripes>
+						<Thead>
+							<Th>Team</Th>
+							<Th>Environment</Th>
+							<Th>Workload</Th>
+							<Th>Deploy ref</Th>
+							<Th>Age</Th>
+						</Thead>
+						<Tbody>
+							{#each image.workloadReferences as workload}
+								{#if workload.id !== PendingValue}
+									<Tr>
+										<Td>
+											<a href={`/team/${workload.team}`}>{workload.team}</a>
+										</Td>
+										<Td>
+											{workload.environment}
+										</Td>
+										<Td>
+											{#if workload.workloadType === 'app'}
+												<a
+													href={`/team/${workload.team}/${workload.environment}/app/${workload.name}`}
+													>{workload.name}</a
+												>
+											{:else if workload.workloadType === 'job'}
+												<a
+													href={`/team/${workload.team}/${workload.environment}/job/${workload.name}`}
+													>{workload.name}</a
+												>
+											{/if}
+										</Td>
+										<Td>
+											{#if workload.deployInfo.url}
+												<a href={workload.deployInfo.url} target="_blank">Run</a>
+											{/if}
+										</Td>
+										<Td>
+											{#if workload.deployInfo.timestamp !== null}
+												<Time time={workload.deployInfo.timestamp} distance={true} />
+											{/if}
+										</Td>
+									</Tr>
+								{:else}
+									<Tr>
+										{#each Array(5).fill('text') as variant}
+											<Td>
+												<Skeleton {variant} />
+											</Td>
+										{/each}
+									</Tr>
+								{/if}
+							{/each}
+						</Tbody>
+					</Table>
+				{:else}
+					No workloads
+				{/if}
 			</div>
 		</Card>
-		<Card columns={4}>
-			<h4>Vulnerabilities summary</h4>
-			<div class="circles">
-				<Tooltip placement="right" content="severity: CRITICAL">
-					<VulnerabilityBadge
-						text={String(image?.summary.critical)}
-						color={severityToColor('critical')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: HIGH">
-					<VulnerabilityBadge
-						text={String(image?.summary.high)}
-						color={severityToColor('high')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: MEDIUM">
-					<VulnerabilityBadge
-						text={String(image?.summary.medium)}
-						color={severityToColor('medium')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: LOW">
-					<VulnerabilityBadge
-						text={String(image?.summary.low)}
-						color={severityToColor('low')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: UNASSIGNED">
-					<VulnerabilityBadge
-						text={String(image?.summary.unassigned)}
-						color={severityToColor('unassigned')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-			</div>
-			<p>Risk score: {image?.summary.riskScore}</p>
+	{/if}
+
+	<Card columns={5}>
+		<h4>Vulnerabilities summary</h4>
+		<div class="circles">
+			{#if image}
+				{#if image.summary.critical === PendingValue}
+					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
+				{:else}
+					<Tooltip placement="right" content="severity: CRITICAL">
+						<VulnerabilityBadge
+							text={String(image.summary.critical)}
+							color={severityToColor('critical')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+				{/if}
+				{#if image.summary.high === PendingValue}
+					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
+				{:else}
+					<Tooltip placement="right" content="severity: HIGH">
+						<VulnerabilityBadge
+							text={String(image.summary.high)}
+							color={severityToColor('high')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+				{/if}
+				{#if image.summary.medium === PendingValue}
+					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
+				{:else}
+					<Tooltip placement="right" content="severity: MEDIUM">
+						<VulnerabilityBadge
+							text={String(image.summary.medium)}
+							color={severityToColor('medium')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+				{/if}
+				{#if image.summary.low === PendingValue}
+					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
+				{:else}
+					<Tooltip placement="right" content="severity: LOW">
+						<VulnerabilityBadge
+							text={String(image.summary.low)}
+							color={severityToColor('low')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+				{/if}
+				{#if image.summary.unassigned === PendingValue}
+					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
+				{:else}
+					<Tooltip placement="right" content="severity: UNASSIGNED">
+						<VulnerabilityBadge
+							text={String(image.summary.unassigned)}
+							color={severityToColor('unassigned')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+				{/if}
+			{/if}
+		</div>
+		{#if image}
+			<p>Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''}</p>
 			<p>
-				View in <Link
-					href="https://salsa.nav.cloud.nais.io/projects/{image?.projectId}"
-					target="_blank"
-					>Dependency track<ExternalLinkIcon
-						title="Upgrading major version"
-						font-size="1.5rem"
-					/></Link
-				>
+				Explore in
+				{#if image.projectId !== PendingValue}
+					<Link href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
+						>Dependency track<ExternalLinkIcon
+							title="Open project in Dependency track"
+							font-size="1.5rem"
+						/></Link
+					>
+				{/if}
 			</p>
 			<p>
 				Attestation URL:
-				<Link href="https://search.sigstore.dev/?logIndex={image?.rekorId}" target="_blank"
-					>Rekor<ExternalLinkIcon title="Upgrading major version" font-size="1.5rem" /></Link
-				>
+				{#if image.rekorId !== PendingValue}
+					<Link href="https://search.sigstore.dev/?logIndex={image.rekorId}" target="_blank"
+						>Rekor<ExternalLinkIcon title="Open attestation in Sigstore" font-size="1.5rem" /></Link
+					>
+				{/if}
 			</p>
-		</Card>
-		<Card columns={12}>
-			<h4>Findings</h4>
-			{#if image?.findings}
+		{/if}
+	</Card>
+	<Card columns={12}>
+		<h4>Findings</h4>
+		{#if image && image.findings}
+			{#if image.findings.nodes.length > 0}
 				<Table
 					zebraStripes
 					size="small"
@@ -193,50 +278,89 @@
 					}}
 				>
 					<Thead>
+						<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
 						<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
-						<Th sortable={true} sortKey="SEVERITY">Severity</Th>
-						<Th style="width: 8rem;">CVE</Th>
-						<Th style="width: 11rem;">GHSA</Th>
-						<Th>OSV</Th>
-						<Th style="width: 20rem;">Description</Th>
+						<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
+						<!--Th>Aliases</Th-->
+						<Th>Description</Th>
 					</Thead>
 					<Tbody>
 						{#each image.findings.nodes as finding}
-							<Tr>
-								<Td>{finding.packageUrl}</Td>
-								<Td>{finding.severity}</Td>
-								<Td><code>{finding.cveId}</code></Td>
-								<Td><code>{finding.ghsaId}</code></Td>
-								<Td><code>{finding.osvId}</code></Td>
-								<Td>{finding.description}</Td>
-							</Tr>
+							{#if finding.id === PendingValue}
+								<Tr>
+									<Td>
+										<Skeleton variant="text" />
+									</Td>
+									<Td>
+										<Skeleton variant="text" />
+									</Td>
+									<Td>
+										<Skeleton variant="text" />
+									</Td>
+									<!--Td>
+										<Skeleton variant="text" />
+									</Td-->
+									<Td>
+										<Skeleton variant="text" />
+									</Td>
+								</Tr>
+							{:else}
+								<Tr>
+									<Td
+										><Button
+											variant="secondary"
+											size="small"
+											on:click={() => (findingToSuppress = finding)}
+										>
+											<code>{finding.vulnerabilityId}</code>
+										</Button>
+									</Td>
+									<Td><code>{finding.packageUrl}</code></Td>
+									<Td
+										><span style="color: {severityToColor(finding.severity.toLocaleLowerCase())}"
+											>{finding.severity}</span
+										></Td
+									>
+									<!--Td><code>{joinAliases(finding.aliases, finding.vulnerabilityId)}</code></Td-->
+									<Td>{finding.description}</Td>
+								</Tr>
+							{/if}
 						{/each}
 					</Tbody>
 				</Table>
-				<div class="pagination">
-					<Pagination
-						pageInfo={image?.findings.pageInfo}
-						{limit}
-						{offset}
-						changePage={(e) => {
-							changeParams({ page: e.toString() });
-						}}
-					/>
-				</div>
 			{:else}
 				<p>No findings found.</p>
 			{/if}
-		</Card>
-	</div>
+			<div class="pagination">
+				<Pagination
+					pageInfo={image.findings.pageInfo}
+					{limit}
+					{offset}
+					changePage={(e) => {
+						changeParams({ page: e.toString() });
+					}}
+				/>
+			</div>
+		{:else}
+			<p>No findings found.</p>
+		{/if}
+	</Card>
+</div>
+{#if findingToSuppress}
+	<SuppressFinding
+		open={true}
+		finding={findingToSuppress}
+		{user}
+		on:close={() => {
+			findingToSuppress = undefined;
+		}}
+	/>
 {/if}
 
 <style>
 	.circles {
 		display: flex;
 		gap: 1rem;
-	}
-	.lastActivity {
-		margin-top: 0px;
 	}
 
 	.imageHeader {
@@ -247,38 +371,6 @@
 		gap: 0.5rem;
 	}
 
-	.imageGrid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		column-gap: 0rem;
-		row-gap: 0rem;
-	}
-
-	.registry {
-		grid-column: 1;
-		grid-row: 1;
-	}
-
-	.repository {
-		grid-column: 2;
-		grid-row: 1;
-	}
-
-	.imageName {
-		grid-column: 1;
-		grid-row: 2;
-	}
-
-	.tag {
-		grid-column: 2;
-		grid-row: 2;
-	}
-
-	.digest {
-		grid-column-start: 1;
-		grid-column-end: span 2;
-		grid-row: 3;
-	}
 	.workloads {
 		grid-column-start: 1;
 		grid-column-end: span 2;
@@ -286,6 +378,10 @@
 	}
 
 	code {
+		font-size: 1rem;
+	}
+
+	dt {
 		font-size: 1rem;
 	}
 

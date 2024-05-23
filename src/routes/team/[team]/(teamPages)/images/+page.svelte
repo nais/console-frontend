@@ -30,7 +30,7 @@
 </script>
 
 <Card columns={12}>
-	<h2>Images - {teamName}</h2>
+	<h2>Workload images</h2>
 	<Table
 		zebraStripes
 		size="small"
@@ -45,7 +45,6 @@
 			<Th sortable={true} sortKey="NAME">Image</Th>
 			<Th sortable={true} sortKey="SEVERITY_CRITICAL">Critical</Th>
 			<Th sortable={true} sortKey="RISK_SCORE" style="width: 8rem;">Risk score</Th>
-			<Th>Workloads</Th>
 		</Thead>
 		<Tbody>
 			{#if team !== undefined && team.id !== PendingValue}
@@ -86,17 +85,6 @@
 							</div>
 						</Td>
 						<Td style="text-align: center">{image.summary.riskScore}</Td>
-						<Td>
-							{#if image.workloadReferences.length > 0}
-								{#each image.workloadReferences as workload}
-									<a href={`/team/${teamName}/${workload.environment}/app/${workload.name}`}
-										>{workload.team}:{workload.environment}:{workload.name}</a
-									><br />
-								{/each}
-							{:else}
-								<span>No workloads</span>
-							{/if}
-						</Td>
 					</Tr>
 				{/each}
 			{:else}

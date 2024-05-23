@@ -3,7 +3,9 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		name
 		ingresses
 
-		image
+		image {
+			name
+		}
 		instances {
 			name
 			image

@@ -3,15 +3,15 @@ query Image(
 	$orderBy: OrderBy = { field: SEVERITY, direction: DESC }
 	$limit: Int
 	$offset: Int
-) {
+) @loading(cascade: false) {
 	dependencyTrackProject(projectId: $dependencyTrackProjectId) {
-		id
+		id @loading
 		projectId
 		version
 		name
 		digest
 		rekorId
-		summary {
+		summary @loading {
 			critical
 			high
 			medium
@@ -19,7 +19,7 @@ query Image(
 			unassigned
 			riskScore
 		}
-		workloadReferences {
+		workloadReferences @loading {
 			id
 			name
 			team
@@ -38,16 +38,17 @@ query Image(
 				hasNextPage
 				hasPreviousPage
 			}
-			nodes {
+			nodes @loading(count: 18, cascade: false) {
+				id @loading
 				componentId
-				cveId
 				description
-				ghsaId
-				id
-				osvId
 				packageUrl
 				severity
 				vulnerabilityId
+				aliases {
+					name
+					source
+				}
 			}
 		}
 	}
