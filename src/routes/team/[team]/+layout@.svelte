@@ -58,7 +58,6 @@
 			];
 		},
 		'/team/[team]/(teamPages)/images/[dependencyTrackProjectId]': (params: Data) => {
-			console.log(params);
 			return [
 				{
 					name: 'images',
