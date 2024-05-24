@@ -3,7 +3,7 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, HelpText, Link, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Link } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
@@ -32,9 +32,9 @@
 						Cost
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
-					<p class="metric">
+					<span class="metric">
 						€{redisInstance.cost}
-					</p>
+					</span>
 				</div>
 			</div>
 		</Card>

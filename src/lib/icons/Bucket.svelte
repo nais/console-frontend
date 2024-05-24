@@ -11,16 +11,11 @@
 	><defs
 		><style>
 			.cls-1 {
-				fill: #222;
+				fill: #fff;
+				stroke: #000;
 			}
 			.cls-2 {
-				fill: #222;
-			}
-			.cls-3 {
-				fill: #222;
-			}
-			.cls-4 {
-				fill: #fff;
+				fill: 000;
 			}
 		</style></defs
 	><g data-name="Product Icons"
@@ -30,38 +25,28 @@
 			y="4"
 			width="2"
 			height="7"
-		/><polygon class="cls-3" points="22 4 20 4 20 11 22 4" /><rect
-			class="cls-2"
-			x="2"
-			y="4"
-			width="2"
-			height="7"
-		/><rect class="cls-4" x="6" y="7" width="6" height="1" /><rect
+		/>
+
+		<rect class="cls-2" x="2" y="4" width="2" height="7" /><rect
 			class="cls-4"
-			x="15"
-			y="6"
-			width="3"
-			height="3"
-			rx="1.5"
-		/><rect class="cls-1" x="2" y="13" width="20" height="7" /><rect
-			class="cls-2"
-			x="20"
-			y="13"
-			width="2"
-			height="7"
-		/><polygon class="cls-3" points="22 13 20 13 20 20 22 13" /><rect
-			class="cls-2"
+			x="6"
+			y="7"
+			width="6"
+			height="1"
+		/><rect class="cls-4" x="15" y="6" width="3" height="3" rx="1.5" /><rect
+			class="cls-1"
 			x="2"
 			y="13"
-			width="2"
+			width="20"
 			height="7"
-		/><rect class="cls-4" x="6" y="16" width="6" height="1" /><rect
+		/><rect class="cls-2" x="20" y="13" width="2" height="7" />
+
+		<rect class="cls-2" x="2" y="13" width="2" height="7" /><rect
 			class="cls-4"
-			x="15"
-			y="15"
-			width="3"
-			height="3"
-			rx="1.5"
-		/></g
+			x="6"
+			y="16"
+			width="6"
+			height="1"
+		/><rect class="cls-4" x="15" y="15" width="3" height="3" rx="1.5" /></g
 	></svg
 >
