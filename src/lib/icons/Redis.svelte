@@ -6,7 +6,8 @@
 	{...$$restProps}
 	width={size}
 	height={size}
-	fill="#000000"
+	fill="#fff"
+	stroke="#000"
 	viewBox="0 0 32 32"
 	xmlns="http://www.w3.org/2000/svg"
 >
