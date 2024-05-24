@@ -22,8 +22,8 @@
 	{/each}
 {:else if redisInstance && redisInstance.name !== PendingValue}
 	<div class="grid">
-		<Card columns={3}>
-			<div class="summaryCard">
+		<Card columns={2}>
+			<div class="cost">
 				<div class="summaryIcon" style="--bg-color: #91dc75">
 					<CostIcon size="32" color="#91dc75" />
 				</div>
@@ -75,5 +75,19 @@
 		display: flex;
 		gap: 1rem;
 		align-items: center;
+	}
+
+	.cost {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+
+	.summary > h4 {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
 	}
 </style>

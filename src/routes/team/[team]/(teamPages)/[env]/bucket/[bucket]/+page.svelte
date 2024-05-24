@@ -119,4 +119,16 @@
 		gap: 1rem;
 		align-items: center;
 	}
+
+	dt {
+		font-weight: bold;
+		margin-top: 20px;
+		display: flex;
+		align-items: center;
+	}
+
+	dd {
+		margin: 0 0 20px 30px;
+		line-height: 1.6;
+	}
 </style>
