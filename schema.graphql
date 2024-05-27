@@ -21,6 +21,12 @@ type Alias {
   source: String!
 }
 
+type AnalysisTrail {
+  comments: [Comment]!
+  isSuppressed: Boolean!
+  state: String!
+}
+
 type App {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
@@ -196,6 +202,13 @@ type BucketsList {
 type Claims {
   extra: [String!]!
   groups: [Group!]!
+}
+
+type Comment {
+  comment: String!
+  commenter: String!
+  onBehalfOf: String
+  timestamp: Time!
 }
 
 type Condition {
@@ -423,9 +436,12 @@ type Finding {
   componentId: String!
   description: String!
   id: ID!
+  isSuppressed: Boolean!
   packageUrl: String!
   severity: String!
   source: String!
+  state: String!
+  vulnId: String!
   vulnerabilityId: String!
 }
 
@@ -971,6 +987,28 @@ type Mutation {
     """The ID of the user."""
     userId: ID!
   ): Team!
+  suppressFinding(
+    """The analysis state of the finding."""
+    analysisState: String!
+
+    """The a comment for suppressing the finding."""
+    comment: String!
+
+    """The component id of the finding to suppress."""
+    componentId: String!
+
+    """The project id of the image."""
+    projectId: String!
+
+    """Should the finding be suppressed."""
+    suppress: Boolean!
+
+    """Suppressed by user."""
+    suppressedBy: String!
+
+    """The id of the finding to suppress."""
+    vulnerabilityId: String!
+  ): SuppressFindingResult!
 
   """
   Manually synchronize all teams
@@ -1154,6 +1192,9 @@ enum OrderByField {
   """Order apps by vulnerability severity unassigned"""
   SEVERITY_UNASSIGNED
 
+  """Order by state."""
+  STATE
+
   """Order by status"""
   STATUS
 
@@ -1195,6 +1236,18 @@ type Port {
 
 """The query root for the NAIS GraphQL API."""
 type Query {
+  """Get analysis trail for a finding."""
+  analysisTrail(
+    """The component id of the finding."""
+    componentId: String!
+
+    """The project id of the image."""
+    projectId: String!
+
+    """The id of the finding."""
+    vulnerabilityId: String!
+  ): [AnalysisTrail]!
+
   """Get an app by name, team and env."""
   app(
     """The environment the application is deployed to."""
@@ -1863,6 +1916,13 @@ interface StateError {
 
 type Subscription {
   log(input: LogSubscriptionInput): LogLine!
+}
+
+type SuppressFindingResult {
+  error: String
+
+  """Whether the finding was suppressed or not."""
+  isSuppressed: Boolean!
 }
 
 """Sync error type."""

@@ -28,6 +28,7 @@
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
+	import TrailFinding, { type AnalysisTrailType } from './TrailFinding.svelte';
 
 	export let data: PageData;
 
@@ -36,8 +37,6 @@
 	$: image = $Image.data?.dependencyTrackProject;
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
 
-	$: console.log(user);
-
 	const notificationBadgeSize = '48px';
 
 	let registry: string;
@@ -45,6 +44,7 @@
 	let name: string;
 	let tag: string;
 	let findingToSuppress: FindingType | undefined;
+	let analysisTrail: AnalysisTrailType | undefined;
 
 	$: {
 		if (image && image.id !== PendingValue) {
@@ -281,8 +281,8 @@
 						<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
 						<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
 						<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-						<!--Th>Aliases</Th-->
 						<Th>Description</Th>
+						<Th sortable={true} sortKey="STATE">State</Th>
 					</Thead>
 					<Tbody>
 						{#each image.findings.nodes as finding}
@@ -312,7 +312,7 @@
 											size="small"
 											on:click={() => (findingToSuppress = finding)}
 										>
-											<code>{finding.vulnerabilityId}</code>
+											<code>{finding.vulnId}</code>
 										</Button>
 									</Td>
 									<Td><code>{finding.packageUrl}</code></Td>
@@ -321,8 +321,18 @@
 											>{finding.severity}</span
 										></Td
 									>
-									<!--Td><code>{joinAliases(finding.aliases, finding.vulnerabilityId)}</code></Td-->
+									<!--Td><code>{joinAliases(finding.aliases, finding.vulnId)}</code></Td-->
 									<Td>{finding.description}</Td>
+									<Td>
+										<Button
+											variant="secondary"
+											size="small"
+											disabled={true}
+											on:click={() => (findingToSuppress = finding)}
+										>
+											<code>{finding.isSuppressed ? finding.state : 'N/A'} </code>
+										</Button>
+									</Td>
 								</Tr>
 							{/if}
 						{/each}
@@ -351,6 +361,17 @@
 		open={true}
 		finding={findingToSuppress}
 		{user}
+		on:close={() => {
+			findingToSuppress = undefined;
+		}}
+	/>
+{/if}
+
+{#if findingToSuppress && findingToSuppress.isSuppressed}
+	<TrailFinding
+		open={true}
+		finding={findingToSuppress}
+		{analysisTrail}
 		on:close={() => {
 			findingToSuppress = undefined;
 		}}
