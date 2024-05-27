@@ -22,22 +22,6 @@
 	{/each}
 {:else if redisInstance && redisInstance.name !== PendingValue}
 	<div class="grid">
-		<Card columns={2}>
-			<div class="cost">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost
-						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
-					</h4>
-					<span class="metric">
-						€{redisInstance.cost}
-					</span>
-				</div>
-			</div>
-		</Card>
 		<Card columns={6}>
 			<h3 class="heading">
 				<Redis />
@@ -60,6 +44,22 @@
 			{:else}
 				<p>no workloads with configured access</p>
 			{/if}
+
+			<h4>Cost</h4>
+			<div class="cost">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost
+						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
+					</h4>
+					<span class="metric">
+						€{redisInstance.cost}
+					</span>
+				</div>
+			</div>
 		</Card>
 	</div>
 {/if}

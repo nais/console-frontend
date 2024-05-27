@@ -88,24 +88,18 @@
 						<dl class="conditions">
 							<dt>Reason</dt>
 							<dd>{cond.reason} (<Time time={cond.lastTransitionTime} />)</dd>
-
-							<dt>
-								Status
-								<HelpText title="TODO">TODO</HelpText>
-							</dt>
+							<dt>Status</dt>
 							<dd>
 								{#if cond.status === 'True'}
-									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+									<CheckmarkIcon
+										style="color: var(--a-surface-success); font-size: 1.5rem"
+										title={cond.type}
+									/>
 								{:else}
-									<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-info)" title="TODO" />
-								{/if}
-							</dd>
-							<dt>Type</dt>
-							<dd>
-								{#if cond.type === 'Ready'}
-									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
-								{:else}
-									<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-info)" title="TODO" />
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-info)"
+										title={cond.type}
+									/>
 								{/if}
 							</dd>
 						</dl>
