@@ -3,23 +3,13 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import BucketIcon from '$lib/icons/Bucket.svelte';
+	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
 	import {
-		Accordion,
-		AccordionItem,
-		Alert,
-		Link,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+		CheckmarkIcon,
+		ExclamationmarkTriangleFillIcon,
+		ExternalLinkIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import prettyBytes from 'pretty-bytes';
-	import { euroValueFormatter } from '$lib/utils/formatters';
 
 	export let data: PageData;
 	$: ({ Bucket } = data);
@@ -52,37 +42,39 @@
 					</dd>
 					<dt>Public access prevention</dt>
 					<dd>{bucket.publicAccessPrevention}</dd>
-					<dt>UniformBucketLevelAccess</dt>
+					<dt>Uniform bucket level access</dt>
 					<dd>{bucket.uniformBucketLevelAccess}</dd>
 					{#if bucket.cors}
-						<dt>Cors</dt>
+						<dt>CORS</dt>
 						<dd>
 							<dl>
 								{#each bucket.cors as c}
-									<dt>methods</dt>
-									<dd>
-										{#each c.methods as m}
-											<span style="margin-right: .5em;">{m}</span>
-										{/each}
-									</dd>
-									<dt>origins</dt>
-									<dd>
-										<ul>
-											{#each c.origins as o}
-												<li>{o}</li>
-											{/each}
-										</ul>
-									</dd>
+									{#each c.origins as o}
+										<li>
+											{o === '*' ? 'any host' : o}: {c.methods
+												.map((m) => (m === '*' ? 'any method' : m))
+												.join(', ')}
+										</li>
+									{/each}
 								{/each}
 							</dl>
 						</dd>
 					{/if}
 					{#if bucket.status.selfLink}
-						<dt>SelfLink</dt>
+						<dt>Self link</dt>
 						<dd>
-							<Link href="https://storage.googleapis.com/{bucket.name}"
-								>https://storage.googleapis.com/{bucket.name}</Link
-							>
+							<p style="display: flex; align-items: center;">
+								<span
+									style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+									title="https://storage.googleapis.com/{bucket.name}"
+									>https://storage.googleapis.com/{bucket.name}</span
+								>
+								<CopyButton
+									size="small"
+									variant="action"
+									copyText="https://storage.googleapis.com/{bucket.name}"
+								/>
+							</p>
 						</dd>
 					{/if}
 				</dl>
@@ -90,19 +82,42 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Status</h3>
-			{#each bucket.status.conditions as cond}
-				<p>Reason: {cond.reason}</p>
-				<p>Status: {cond.status}</p>
-				<p>Type: {cond.type}</p>
-				<p>Last transition time: <Time time={cond.lastTransitionTime} /></p>
-				<Accordion>
-					<AccordionItem heading="Status message" open={false}>
-						<p>{cond.message}</p>
-					</AccordionItem>
-				</Accordion>
-			{:else}
-				<p>No conditions</p>
-			{/each}
+			<div>
+				{#if bucket.status.conditions.length}
+					{#each bucket.status.conditions as cond}
+						<dl class="conditions">
+							<dt>Reason</dt>
+							<dd>{cond.reason} (<Time time={cond.lastTransitionTime} />)</dd>
+
+							<dt>
+								Status
+								<HelpText title="TODO">TODO</HelpText>
+							</dt>
+							<dd>
+								{#if cond.status === 'True'}
+									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+								{:else}
+									<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-info)" title="TODO" />
+								{/if}
+							</dd>
+							<dt>Type</dt>
+							<dd>
+								{#if cond.type === 'Ready'}
+									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
+								{:else}
+									<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-info)" title="TODO" />
+								{/if}
+							</dd>
+						</dl>
+						<details>
+							<summary>Status message</summary>
+							<p style="width: 30em;">{cond.message}</p>
+						</details>
+					{/each}
+				{:else}
+					<p>No conditions</p>
+				{/if}
+			</div>
 		</Card>
 	</div>
 {/if}
@@ -120,15 +135,20 @@
 		align-items: center;
 	}
 
-	dt {
-		font-weight: bold;
-		margin-top: 20px;
-		display: flex;
+	dl.conditions {
+		display: grid;
 		align-items: center;
+		grid-template-columns: 20% 80%;
 	}
 
-	dd {
-		margin: 0 0 20px 30px;
-		line-height: 1.6;
+	div dl.conditions:not(:first-child) {
+		margin-top: 3em;
+	}
+
+	dt {
+		font-weight: bold;
+		display: flex;
+		gap: 1em;
+		align-items: center;
 	}
 </style>
