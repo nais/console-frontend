@@ -12,15 +12,24 @@
 			readonly name: string;
 			readonly source: string;
 		}[];
+		readonly analysisTrail: {
+			readonly comments: ({
+				readonly comment: string;
+				readonly onBehalfOf: string | null;
+				readonly timestamp: Date;
+			} | null)[];
+			readonly isSuppressed: boolean;
+			readonly state: string;
+		} | null;
 	};
 </script>
 
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
 	import { Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
-	import { graphql } from '$houdini';
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 
 	export let open: boolean;
 	export let finding: FindingType;
@@ -36,11 +45,13 @@
 
 	const close = () => {
 		open = false;
+		console.log('open', open);
 		dispatcher('close');
 	};
 
 	const triggerSuppress = async () => {
 		if (hasSelectedReason().length > 0 && selectedReason.length > 0) {
+			console.log('no reason');
 			return;
 		}
 
@@ -54,7 +65,11 @@
 			suppress: true
 		});
 
+		console.log('mutated');
+
 		if ($suppress.errors) {
+			console.log('errors');
+			console.log($suppress.errors);
 			open = true;
 			return;
 		}
@@ -81,8 +96,14 @@
 				suppressedBy: $suppressedBy
 				suppress: $suppress
 			) {
+				id
 				isSuppressed
-				error
+				state
+				comments {
+					comment
+					timestamp
+					onBehalfOf
+				}
 			}
 		}
 	`);

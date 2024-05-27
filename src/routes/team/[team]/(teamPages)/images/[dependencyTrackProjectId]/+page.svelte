@@ -28,7 +28,6 @@
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
-	import TrailFinding, { type AnalysisTrailType } from './TrailFinding.svelte';
 
 	export let data: PageData;
 
@@ -44,7 +43,7 @@
 	let name: string;
 	let tag: string;
 	let findingToSuppress: FindingType | undefined;
-	let analysisTrail: AnalysisTrailType | undefined;
+	//let analysisTrail: AnalysisTrailType | undefined;
 
 	$: {
 		if (image && image.id !== PendingValue) {
@@ -330,7 +329,9 @@
 											disabled={true}
 											on:click={() => (findingToSuppress = finding)}
 										>
-											<code>{finding.isSuppressed ? finding.state : 'N/A'} </code>
+											<code
+												>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
+											</code>
 										</Button>
 									</Td>
 								</Tr>
@@ -367,7 +368,8 @@
 	/>
 {/if}
 
-{#if findingToSuppress && findingToSuppress.isSuppressed}
+<!--
+{#if findingToSuppress}
 	<TrailFinding
 		open={true}
 		finding={findingToSuppress}
@@ -376,7 +378,7 @@
 			findingToSuppress = undefined;
 		}}
 	/>
-{/if}
+{/if}-->
 
 <style>
 	.circles {

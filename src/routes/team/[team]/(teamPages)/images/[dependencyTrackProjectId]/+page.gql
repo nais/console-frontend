@@ -52,6 +52,16 @@ query Image(
 				}
 				isSuppressed
 				state
+				analysisTrail(projectId: $dependencyTrackProjectId) {
+					id
+					comments {
+						comment
+						onBehalfOf
+						timestamp
+					}
+					isSuppressed
+					state
+				}
 			}
 		}
 	}
