@@ -62,7 +62,7 @@
 					{/if}
 					{#if bucket.status.selfLink}
 						<dt>Self link</dt>
-						<dd>
+						<dd >
 							<p style="display: flex; align-items: center;">
 								<span
 									style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
@@ -86,22 +86,24 @@
 				{#if bucket.status.conditions.length}
 					{#each bucket.status.conditions as cond}
 						<dl class="conditions">
-							<dt>Reason</dt>
-							<dd>{cond.reason} (<Time time={cond.lastTransitionTime} />)</dd>
 							<dt>Status</dt>
-							<dd>
+							<dd class="status">
 								{#if cond.status === 'True'}
+									{cond.type}
 									<CheckmarkIcon
 										style="color: var(--a-surface-success); font-size: 1.5rem"
 										title={cond.type}
 									/>
 								{:else}
+									{cond.type}
 									<ExclamationmarkTriangleFillIcon
 										style="color: var(--a-icon-info)"
 										title={cond.type}
 									/>
 								{/if}
 							</dd>
+							<dt>Reason</dt>
+							<dd>{cond.reason} (<Time time={cond.lastTransitionTime} />)</dd>
 						</dl>
 						<details>
 							<summary>Status message</summary>
@@ -133,6 +135,11 @@
 		display: grid;
 		align-items: center;
 		grid-template-columns: 20% 80%;
+	}
+	.status {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
 	}
 
 	div dl.conditions:not(:first-child) {
