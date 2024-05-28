@@ -18,18 +18,6 @@
 {:else}
 	<div class="grid">
 		<Card columns={6}>
-			<h3>Topic details</h3>
-			{#if topic?.config}
-				<dl>
-					{#each Object.entries(topic?.config) as [key, value]}
-						<dt>{key}</dt>
-						<dd>{value}</dd>
-					{/each}
-				</dl>
-			{/if}
-		</Card>
-
-		<Card columns={6}>
 			<h3>Topic ACLs</h3>
 			<Table size="small">
 				<Thead>
@@ -66,6 +54,30 @@
 				</Tbody>
 			</Table>
 		</Card>
+		<Card rows={2} columns={6}>
+			<h3>Status</h3>
+			<dl>
+				<dt>fullyQualifiedName</dt>
+				<dd>asd</dd>
+
+				<dt>message</dt>
+				<dd>asd</dd>
+
+				<dt>synchronizationState</dt>
+				<dd>asd</dd>
+			</dl>
+		</Card>
+		<Card columns={6}>
+			<h3>Topic configuration</h3>
+			{#if topic?.config}
+				<dl>
+					{#each Object.entries(topic?.config) as [key, value]}
+						<dt>{key}</dt>
+						<dd>{value}</dd>
+					{/each}
+				</dl>
+			{/if}</Card
+		>
 	</div>
 {/if}
 
@@ -77,15 +89,15 @@
 		row-gap: 1rem;
 	}
 
-	dt {
-		font-weight: bold;
-		margin-top: 20px;
-		display: flex;
+	dl {
+		display: grid;
 		align-items: center;
+		grid-template-columns: 30% 70%;
 	}
 
-	dd {
-		margin: 0 0 20px 30px;
-		line-height: 1.6;
+	dt {
+		font-weight: bold;
+		display: flex;
+		align-items: center;
 	}
 </style>

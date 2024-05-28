@@ -28,6 +28,11 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 				access
 				team
 			}
+			status {
+				fullyQualifiedName
+				message
+				synchronizationState
+			}
 		}
 	}
 }

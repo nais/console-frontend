@@ -569,6 +569,7 @@ type KafkaTopic implements Persistence {
   id: ID!
   name: String!
   pool: String!
+  status: KafkaTopicStatus
   team: Team!
   workload: Workload
 }
@@ -593,6 +594,12 @@ type KafkaTopicConfig {
 type KafkaTopicList {
   nodes: [KafkaTopic!]!
   pageInfo: PageInfo!
+}
+
+type KafkaTopicStatus {
+  fullyQualifiedName: String!
+  message: String!
+  synchronizationState: State!
 }
 
 type Limits {
