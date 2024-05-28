@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -13,6 +14,7 @@
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
+		Alert,
 		Button,
 		CopyButton,
 		Link,
@@ -25,7 +27,7 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
@@ -34,25 +36,32 @@
 
 	$: ({ Image, UserInfo } = data);
 
-	$: image = $Image.data?.dependencyTrackProject;
+	$: image = $Image.data?.app.image;
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
 
 	const summary = graphql(`
-		query Summary($dependencyTrackProjectId: String!) {
-			dependencyTrackProject(projectId: $dependencyTrackProjectId) {
-				summary {
-					riskScore
-					critical
-					high
-					medium
-					low
-					unassigned
+		query Summary($env: String!, $team: Slug!, $app: String!) {
+			app(env: $env, team: $team, name: $app) {
+				image {
+					projectId
+					summary {
+						riskScore
+						critical
+						high
+						medium
+						low
+						unassigned
+					}
 				}
 			}
 		}
 	`);
 
 	const notificationBadgeSize = '48px';
+
+	let appName = $page.params.app;
+	let env = $page.params.env;
+	let team = $page.params.team;
 
 	let registry: string;
 	let repository: string;
@@ -69,6 +78,12 @@
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($Image.variables));
 </script>
+
+{#if $Image.errors}
+	<Alert variant="error">
+		<p>{$Image.errors[0].message}</p>
+	</Alert>
+{/if}
 
 <div class="grid">
 	{#if image}
@@ -297,6 +312,7 @@
 						<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
 						<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
 						<Th>Description</Th>
+						<Th>Suppressed</Th>
 						<Th sortable={true} sortKey="STATE">State</Th>
 					</Thead>
 					<Tbody>
@@ -312,9 +328,9 @@
 									<Td>
 										<Skeleton variant="text" />
 									</Td>
-									<!--Td>
+									<Td>
 										<Skeleton variant="text" />
-									</Td-->
+									</Td>
 									<Td>
 										<Skeleton variant="text" />
 									</Td>
@@ -336,8 +352,13 @@
 											>{finding.severity}</span
 										></Td
 									>
-									<!--Td><code>{joinAliases(finding.aliases, finding.vulnId)}</code></Td-->
 									<Td>{finding.description}</Td>
+									<Td
+										>{#if finding.analysisTrail.isSuppressed}<CheckmarkIcon
+												width={'18px'}
+												height={'18px'}
+											/>{/if}</Td
+									>
 									<Td>
 										<Button
 											variant="tertiary-neutral"
@@ -358,23 +379,27 @@
 			{:else}
 				<p>No findings found.</p>
 			{/if}
-			<div class="pagination">
-				<Pagination
-					pageInfo={image.findings.pageInfo}
-					{limit}
-					{offset}
-					changePage={(e) => {
-						changeParams({ page: e.toString() });
-					}}
-				/>
-			</div>
+			{#if image.findings.pageInfo}
+				<div class="pagination">
+					<Pagination
+						pageInfo={image.findings.pageInfo}
+						{limit}
+						{offset}
+						changePage={(e) => {
+							changeParams({ page: e.toString() });
+						}}
+					/>
+				</div>
+			{/if}
 		{:else}
 			<p>No findings found.</p>
 		{/if}
 	</Card>
 </div>
-{#if findingToSuppress}
+
+{#if findingToSuppress && image && image.projectId !== PendingValue}
 	<SuppressFinding
+		projectId={image?.projectId}
 		open={true}
 		finding={findingToSuppress}
 		{user}
@@ -382,17 +407,14 @@
 			findingToSuppress = undefined;
 			setTimeout(() => {
 				// refetch the image to update the findings
-				if (image && image.projectId !== PendingValue) {
-					summary.fetch({
-						variables: { dependencyTrackProjectId: image.projectId },
-						policy: 'NetworkOnly'
-					});
-				}
+				summary.fetch({
+					variables: { env: env, team: team, app: appName },
+					policy: 'NetworkOnly'
+				});
 			}, 2000);
 		}}
 	/>
 {/if}
-
 {#if analysisTrail}
 	<TrailFinding
 		open={true}

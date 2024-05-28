@@ -99,11 +99,8 @@
 <h4 class="imageHeader">
 	Image
 	{#if $data?.image !== PendingValue}
-		<Button
-			as="a"
-			variant="secondary"
-			size="small"
-			href="/team/{team}/images/{$data?.image?.projectId}">Details</Button
+		<Button as="a" variant="secondary" size="small" href="/team/{team}/{env}/app/{appName}/image"
+			>Details</Button
 		>
 	{/if}
 </h4>

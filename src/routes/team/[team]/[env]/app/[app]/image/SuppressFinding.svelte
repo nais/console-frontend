@@ -8,6 +8,7 @@
 		readonly vulnerabilityId: string;
 		readonly isSuppressed: boolean;
 		readonly vulnId: string;
+		readonly state: string;
 		readonly aliases: {
 			readonly name: string;
 			readonly source: string;
@@ -28,18 +29,37 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
-	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Checkbox,
+		Heading,
+		Modal,
+		Select,
+		TextField
+	} from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 
 	export let open: boolean;
 	export let finding: FindingType;
 	export let user: string;
 
+	export let projectId: string;
+
 	let selectedReason = '';
 	let inputText = '';
+	let suppressed: boolean = false;
 
-	$: projectId = $page.params.dependencyTrackProjectId;
-	$: team = $page.params.team;
+	let team = $page.params.team;
+	let env = $page.params.env;
+	let workload = $page.params.app;
+
+	// check if route contains app or job
+	if ($page.route.id && $page.route.id.includes('app')) {
+		workload = 'app/' + $page.params.app;
+	} else {
+		workload = 'job/' + $page.params.job;
+	}
 
 	const dispatcher = createEventDispatcher<{ close: void }>();
 
@@ -61,7 +81,7 @@
 			projectId: projectId,
 			vulnerabilityId: finding.vulnerabilityId,
 			suppressedBy: user,
-			suppress: true
+			suppress: suppressed
 		});
 
 		if ($suppress.errors) {
@@ -70,7 +90,7 @@
 			return;
 		}
 
-		const imagePage = '/team/' + team + '/images/' + projectId;
+		const imagePage = '/team/' + team + '/' + env + '/' + workload + '/image';
 		close();
 		await goto(imagePage, { replaceState: true });
 	};
@@ -115,10 +135,10 @@
 
 	const SUPPRESS_OPTIONS = [
 		{ value: '', text: 'Suppress reason' },
-		{ value: 'in_triage', text: 'In triage' },
-		{ value: 'resolved', text: 'Resolved' },
-		{ value: 'false_positive', text: 'False positive' },
-		{ value: 'not_affected', text: 'Not affected' }
+		{ value: 'IN_TRIAGE', text: 'In triage' },
+		{ value: 'RESOLVED', text: 'Resolved' },
+		{ value: 'FALSE_POSITIVE', text: 'False positive' },
+		{ value: 'NOT_AFFECTED', text: 'Not affected' }
 	];
 
 	const hasSelectedReason = () => {
@@ -128,6 +148,10 @@
 		}
 		return '';
 	};
+	inputText =
+		finding.analysisTrail?.comments?.[finding.analysisTrail?.comments?.length - 1]?.comment ?? '';
+	selectedReason = finding.analysisTrail?.state ?? '';
+	suppressed = finding.analysisTrail?.isSuppressed ?? false;
 
 	// on click should send a request to analysis endpoint for dependency track
 </script>
@@ -143,11 +167,16 @@
 
 		<Select size="small" label="Analysis" bind:value={selectedReason}>
 			{#each SUPPRESS_OPTIONS as option}
-				<option value={option.value}>{option.text} </option>
+				{#if option.value === finding.state}
+					<option value={option.value} selected={true}>{option.text} </option>
+				{:else}
+					<option value={option.value}>{option.text}</option>
+				{/if}
 			{/each}
 		</Select>
 		<TextField type="text" bind:value={inputText} />
-		<p>Suppressing user: {user}</p>
+		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
+		<p>Updated by: {user}</p>
 		{#if $suppress.errors}
 			<Alert variant="error">
 				{#each $suppress.errors as error}
@@ -157,7 +186,7 @@
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={triggerSuppress}>Suppress</Button>
+		<Button variant="primary" size="small" on:click={triggerSuppress}>Update</Button>
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
 	</svelte:fragment>
 </Modal>
