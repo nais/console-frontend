@@ -160,12 +160,20 @@
 	<svelte:fragment slot="header">
 		<Heading>Suppress finding for {finding.vulnId}</Heading>
 	</svelte:fragment>
+	<dl>
+		<dt>Package:</dt>
+		<dd><code>{finding.packageUrl}</code></dd>
+		{#if finding.aliases.length > 0}
+			<dt>Alias(es):</dt>
+			<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
+		{/if}
+		<dt>Description:</dt>
+		<dd>
+			{finding.description !== '' ? finding.description : 'No description'}
+		</dd>
+	</dl>
 	<div class="wrapper">
-		<p>Package: {finding.packageUrl}</p>
-		<p>Alias(es): {joinAliases(finding.aliases, finding.vulnId)}</p>
-		<p>Description: {finding.description}</p>
-
-		<Select size="small" label="Analysis" bind:value={selectedReason}>
+		<Select size="medium" label="Analysis" bind:value={selectedReason}>
 			{#each SUPPRESS_OPTIONS as option}
 				{#if option.value === finding.state}
 					<option value={option.value} selected={true}>{option.text} </option>
@@ -174,7 +182,10 @@
 				{/if}
 			{/each}
 		</Select>
-		<TextField type="text" bind:value={inputText} />
+
+		<TextField type="text" bind:value={inputText}>
+			<svelte:fragment slot="label">Comment</svelte:fragment>
+		</TextField>
 		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
 		<p>Updated by: {user}</p>
 		{#if $suppress.errors}
@@ -190,3 +201,16 @@
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
 	</svelte:fragment>
 </Modal>
+
+<style>
+	.wrapper {
+		border: 1px solid #d6d8db;
+		display: flex;
+		flex-direction: column;
+		padding: 1rem;
+		gap: 1rem;
+	}
+	code {
+		font-size: 1rem;
+	}
+</style>

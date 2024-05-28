@@ -47,3 +47,9 @@
 		<Button variant="secondary" size="small" on:click={close}>Close</Button>
 	</svelte:fragment>
 </Modal>
+
+<style>
+	.wrapper {
+		padding: 1rem;
+	}
+</style>

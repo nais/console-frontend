@@ -3,9 +3,9 @@
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
-	import SuppressFinding, { type FindingType } from '$lib/components/SuppressFinding.svelte';
-	import TrailFinding from '$lib/components/TrailFinding.svelte';
+	import SuppressFinding, { type FindingType } from '$lib/components/image/SuppressFinding.svelte';
+	import TrailFinding from '$lib/components/image/TrailFinding.svelte';
+	import Workloads from '$lib/components/image/Workloads.svelte';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import {
 		changeParams,
@@ -84,9 +84,8 @@
 		<p>{$Image.errors[0].message}</p>
 	</Alert>
 {/if}
-
-<div class="grid">
-	{#if image}
+{#if image}
+	<div class="grid">
 		<Card columns={7}>
 			<h4 class="imageHeader">
 				Image details
@@ -144,75 +143,11 @@
 					{/if}
 				</dd>
 			</dl>
-
-			<div class="workloads">
-				{#if image.workloadReferences}
-					<h5>Workloads</h5>
-					<Table size="small" zebraStripes>
-						<Thead>
-							<Th>Team</Th>
-							<Th>Environment</Th>
-							<Th>Workload</Th>
-							<Th>Deploy ref</Th>
-							<Th>Age</Th>
-						</Thead>
-						<Tbody>
-							{#each image.workloadReferences as workload}
-								{#if workload.id !== PendingValue}
-									<Tr>
-										<Td>
-											<a href={`/team/${workload.team}`}>{workload.team}</a>
-										</Td>
-										<Td>
-											{workload.environment}
-										</Td>
-										<Td>
-											{#if workload.workloadType === 'app'}
-												<a
-													href={`/team/${workload.team}/${workload.environment}/app/${workload.name}`}
-													>{workload.name}</a
-												>
-											{:else if workload.workloadType === 'job'}
-												<a
-													href={`/team/${workload.team}/${workload.environment}/job/${workload.name}`}
-													>{workload.name}</a
-												>
-											{/if}
-										</Td>
-										<Td>
-											{#if workload.deployInfo.url}
-												<a href={workload.deployInfo.url} target="_blank">Run</a>
-											{/if}
-										</Td>
-										<Td>
-											{#if workload.deployInfo.timestamp !== null}
-												<Time time={workload.deployInfo.timestamp} distance={true} />
-											{/if}
-										</Td>
-									</Tr>
-								{:else}
-									<Tr>
-										{#each Array(5).fill('text') as variant}
-											<Td>
-												<Skeleton {variant} />
-											</Td>
-										{/each}
-									</Tr>
-								{/if}
-							{/each}
-						</Tbody>
-					</Table>
-				{:else}
-					No workloads
-				{/if}
-			</div>
 		</Card>
-	{/if}
 
-	<Card columns={5}>
-		<h4>Vulnerabilities summary</h4>
-		<div class="circles">
-			{#if image}
+		<Card columns={5}>
+			<h4>Vulnerabilities summary</h4>
+			<div class="circles">
 				{#if image.summary.critical === PendingValue}
 					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
 				{:else}
@@ -268,9 +203,7 @@
 						/>
 					</Tooltip>
 				{/if}
-			{/if}
-		</div>
-		{#if image}
+			</div>
 			<p>Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''}</p>
 			<p>
 				Explore in
@@ -291,111 +224,117 @@
 					>
 				{/if}
 			</p>
-		{/if}
-	</Card>
-	<Card columns={12}>
-		<h4>Findings</h4>
-		{#if image && image.findings}
-			{#if image.findings.nodes.length > 0}
-				<Table
-					zebraStripes
-					size="small"
-					sort={sortState}
-					on:sortChange={(e) => {
-						const { key } = e.detail;
-						const ss = sortTable(key, sortState);
-						changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
-					}}
-				>
-					<Thead>
-						<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
-						<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
-						<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-						<Th>Description</Th>
-						<Th>Suppressed</Th>
-						<Th sortable={true} sortKey="STATE">State</Th>
-					</Thead>
-					<Tbody>
-						{#each image.findings.nodes as finding}
-							{#if finding.id === PendingValue}
-								<Tr>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-								</Tr>
-							{:else}
-								<Tr>
-									<Td
-										><Button
-											variant="tertiary"
-											size="small"
-											on:click={() => (findingToSuppress = finding)}
+		</Card>
+
+		<Card columns={12}>
+			<h4>Findings</h4>
+			{#if image.findings}
+				{#if image.findings.nodes.length > 0}
+					<Table
+						zebraStripes
+						size="small"
+						sort={sortState}
+						on:sortChange={(e) => {
+							const { key } = e.detail;
+							const ss = sortTable(key, sortState);
+							changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
+						}}
+					>
+						<Thead>
+							<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
+							<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
+							<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
+							<Th>Description</Th>
+							<Th>Suppressed</Th>
+							<Th sortable={true} sortKey="STATE">State</Th>
+						</Thead>
+						<Tbody>
+							{#each image.findings.nodes as finding}
+								{#if finding.id === PendingValue}
+									<Tr>
+										<Td>
+											<Skeleton variant="text" />
+										</Td>
+										<Td>
+											<Skeleton variant="text" />
+										</Td>
+										<Td>
+											<Skeleton variant="text" />
+										</Td>
+										<Td>
+											<Skeleton variant="text" />
+										</Td>
+										<Td>
+											<Skeleton variant="text" />
+										</Td>
+									</Tr>
+								{:else}
+									<Tr>
+										<Td
+											><Button
+												variant="tertiary"
+												size="small"
+												on:click={() => (findingToSuppress = finding)}
+											>
+												<code>{finding.vulnId}</code>
+											</Button>
+										</Td>
+										<Td><code>{finding.packageUrl}</code></Td>
+										<Td
+											><code style="color: {severityToColor(finding.severity.toLocaleLowerCase())}"
+												>{finding.severity}</code
+											></Td
 										>
-											<code>{finding.vulnId}</code>
-										</Button>
-									</Td>
-									<Td><code>{finding.packageUrl}</code></Td>
-									<Td
-										><span style="color: {severityToColor(finding.severity.toLocaleLowerCase())}"
-											>{finding.severity}</span
-										></Td
-									>
-									<Td>{finding.description}</Td>
-									<Td
-										>{#if finding.analysisTrail.isSuppressed}<CheckmarkIcon
-												width={'18px'}
-												height={'18px'}
-											/>{/if}</Td
-									>
-									<Td>
-										<Button
-											variant="tertiary-neutral"
-											size="small"
-											disabled={finding.analysisTrail?.state !== '' ? false : true}
-											on:click={() => (analysisTrail = finding)}
+										<Td>{finding.description}</Td>
+										<Td
+											>{#if finding.analysisTrail.isSuppressed}<CheckmarkIcon
+													width={'18px'}
+													height={'18px'}
+												/>{/if}</Td
 										>
-											<code
-												>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
-											</code>
-										</Button>
-									</Td>
-								</Tr>
-							{/if}
-						{/each}
-					</Tbody>
-				</Table>
+										<Td>
+											<Button
+												variant="tertiary-neutral"
+												size="small"
+												disabled={finding.analysisTrail?.state !== '' ? false : true}
+												on:click={() => (analysisTrail = finding)}
+											>
+												<code
+													>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
+												</code>
+											</Button>
+										</Td>
+									</Tr>
+								{/if}
+							{/each}
+						</Tbody>
+					</Table>
+				{:else}
+					<p>No findings found.</p>
+				{/if}
+				{#if image.findings.pageInfo}
+					<div class="pagination">
+						<Pagination
+							pageInfo={image.findings.pageInfo}
+							{limit}
+							{offset}
+							changePage={(e) => {
+								changeParams({ page: e.toString() });
+							}}
+						/>
+					</div>
+				{/if}
 			{:else}
 				<p>No findings found.</p>
 			{/if}
-			{#if image.findings.pageInfo}
-				<div class="pagination">
-					<Pagination
-						pageInfo={image.findings.pageInfo}
-						{limit}
-						{offset}
-						changePage={(e) => {
-							changeParams({ page: e.toString() });
-						}}
-					/>
-				</div>
+		</Card>
+		<Card columns={12}>
+			{#if image.id !== PendingValue}
+				<Workloads workloads={image.workloadReferences} />
 			{/if}
-		{:else}
-			<p>No findings found.</p>
-		{/if}
-	</Card>
-</div>
+		</Card>
+	</div>
+{/if}
 
 {#if findingToSuppress && image && image.projectId !== PendingValue}
 	<SuppressFinding
@@ -437,12 +376,6 @@
 		justify-content: space-between;
 		margin-bottom: 8px;
 		gap: 0.5rem;
-	}
-
-	.workloads {
-		grid-column-start: 1;
-		grid-column-end: span 2;
-		grid-row: 4;
 	}
 
 	code {
