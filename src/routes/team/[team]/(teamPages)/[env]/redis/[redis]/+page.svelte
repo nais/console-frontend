@@ -3,7 +3,7 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, HelpText, Link } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Link, Table, Tr, Td, Th } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
@@ -27,39 +27,43 @@
 				<Redis />
 				{redisInstance.name}
 			</h3>
-			<h4>Access</h4>
+			
+			<dl class="cost">
+				<dt>
+					Cost
+					<CostIcon size="16" />
+				</dt>
+				<dd>
+					€{redisInstance.cost}
+					sum of cost last 30 days
+				</dd>
+			</dl>
 
 			{#if redisInstance.access.length}
-				<ul>
+				<Table>
+					<Tr>
+						<Th>Access</Th>
+						<Th>Workload</Th>
+						<Th>Type</Th>
+					</Tr>
 					{#each redisInstance.access as access}
-						<li>
-							<Link
-								href="/team/{teamName}/{envName}/{access.workload.type === 'App'
-									? 'app'
-									: 'job'}/{access.workload.name}">{access.workload.name}</Link
-							> - {access.role}
-						</li>
+						<Tr>
+							<Td>{access.role}</Td>
+							<Td>
+								<Link
+									href="/team/{teamName}/{envName}/{access.workload.type === 'App'
+										? 'app'
+										: 'job'}/{access.workload.name}">{access.workload.name}</Link
+								>
+							</Td>
+							<Td>{access.workload.type}</Td>
+						</Tr>
 					{/each}
-				</ul>
+				</Table>
 			{:else}
 				<p>no workloads with configured access</p>
 			{/if}
 
-			<h4>Cost</h4>
-			<div class="cost">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost
-						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
-					</h4>
-					<span class="metric">
-						€{redisInstance.cost}
-					</span>
-				</div>
-			</div>
 		</Card>
 	</div>
 {/if}
@@ -77,17 +81,9 @@
 		align-items: center;
 	}
 
-	.cost {
+	.cost dt {
 		display: flex;
 		align-items: center;
-		gap: 20px;
-	}
-
-	.summary > h4 {
-		display: flex;
-		gap: 0.5rem;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
+		gap: 0.5em;
 	}
 </style>
