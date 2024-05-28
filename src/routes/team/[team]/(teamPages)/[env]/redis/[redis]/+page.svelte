@@ -6,6 +6,8 @@
 	import { Alert, HelpText, Link, Table, Tr, Td, Th } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import Time from '$lib/Time.svelte';
 
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
@@ -27,17 +29,13 @@
 				<Redis />
 				{redisInstance.name}
 			</h3>
-			
-			<dl class="cost">
-				<dt>
-					Cost
-					<CostIcon size="16" />
-				</dt>
-				<dd>
-					€{redisInstance.cost}
-					sum of cost last 30 days
-				</dd>
-			</dl>
+
+			<div class="cost">
+				<h4>Cost</h4>
+				<CostIcon size="16" />
+				€{redisInstance.cost}
+				sum of cost last 30 days
+			</div>
 
 			{#if redisInstance.access.length}
 				<Table>
@@ -63,7 +61,41 @@
 			{:else}
 				<p>no workloads with configured access</p>
 			{/if}
-
+		</Card>
+		<Card columns={6}>
+			<h3>Status</h3>
+			<div>
+				{#if redisInstance.status.conditions.length}
+					{#each redisInstance.status.conditions as cond}
+						<dl class="conditions">
+							<dt>Status</dt>
+							<dd class="status">
+								{#if cond.status === 'True'}
+									{cond.type}
+									<CheckmarkIcon
+										style="color: var(--a-surface-success); font-size: 1.5rem"
+										title={cond.type}
+									/>
+								{:else}
+									{cond.type}
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-info)"
+										title={cond.type}
+									/>
+								{/if}
+							</dd>
+							<dt>Reason</dt>
+							<dd>{cond.reason} (<Time time={cond.lastTransitionTime} />)</dd>
+						</dl>
+						<details>
+							<summary>Status message</summary>
+							<p style="width: 30em;">{cond.message}</p>
+						</details>
+					{/each}
+				{:else}
+					<p>No conditions</p>
+				{/if}
+			</div>
 		</Card>
 	</div>
 {/if}
@@ -81,9 +113,25 @@
 		align-items: center;
 	}
 
-	.cost dt {
+	dl.conditions {
+		display: grid;
+		align-items: center;
+		grid-template-columns: 20% 80%;
+	}
+	.status {
 		display: flex;
 		align-items: center;
 		gap: 0.5em;
+	}
+
+	div dl.conditions:not(:first-child) {
+		margin-top: 3em;
+	}
+
+	dt {
+		font-weight: bold;
+		display: flex;
+		gap: 1em;
+		align-items: center;
 	}
 </style>

@@ -7,6 +7,16 @@ query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascad
 			env {
 				name
 			}
+			status {
+				conditions {
+					reason
+					type
+					status
+					message
+					lastTransitionTime
+				}
+				state
+			}
 			workload {
 				name
 				type: __typename

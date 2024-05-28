@@ -1433,6 +1433,7 @@ type Redis implements Persistence {
   env: Env!
   id: ID!
   name: String!
+  status: RedisStatus!
   team: Team!
   workload: Workload
 }
@@ -1445,6 +1446,11 @@ type RedisInstanceAccess {
 type RedisList {
   nodes: [Redis!]!
   pageInfo: PageInfo!
+}
+
+type RedisStatus {
+  conditions: [Condition!]!
+  state: String!
 }
 
 """Repository authorizations."""
