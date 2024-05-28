@@ -4,6 +4,8 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import SuppressFinding, { type FindingType } from '$lib/components/SuppressFinding.svelte';
+	import TrailFinding from '$lib/components/TrailFinding.svelte';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import {
 		changeParams,
@@ -29,8 +31,6 @@
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
-	import TrailFinding from './TrailFinding.svelte';
 
 	export let data: PageData;
 

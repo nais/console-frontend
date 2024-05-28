@@ -31,7 +31,8 @@
 		cost: 'cost',
 		logs: 'logs',
 		manifest: 'manifest',
-		delete: 'delete'
+		delete: 'delete',
+		image: 'image details'
 	};
 	const simpleAppPages: { [key: string]: string } = {
 		'': '', // overview
@@ -41,7 +42,8 @@
 		utilization: 'utilization',
 		logs: 'logs',
 		manifest: 'manifest',
-		delete: 'delete'
+		delete: 'delete',
+		image: 'image details'
 	};
 
 	const pages: { [key: string]: (params: Data) => { name: string; path?: string }[] } = {
@@ -57,15 +59,11 @@
 				}
 			];
 		},
-		'/team/[team]/(teamPages)/images/[dependencyTrackProjectId]': (params: Data) => {
+		'/team/[team]/(teamPages)/images': (params: Data) => {
 			return [
 				{
 					name: 'images',
 					path: replacer('/team/[team]/(teamPages)/images', params)
-				},
-				{
-					name: 'image details',
-					path: replacer('/team/[team]/(teamPages)/images/[dependencyTrackProjectId]', params)
 				}
 			];
 		},

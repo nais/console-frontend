@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type JobImage } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { CopyButton, Skeleton } from '@nais/ds-svelte-community';
+	import { Button, Skeleton } from '@nais/ds-svelte-community';
 
 	export let job: JobImage;
 	$: data = fragment(
@@ -24,6 +25,10 @@
 	let name: string;
 	let tag: string;
 
+	$: jobName = $page.params.job;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
+
 	$: {
 		if (image !== PendingValue) {
 			({ registry, repository, name, tag } = parseImage(image));
@@ -35,14 +40,11 @@
 </script>
 
 <h4 class="imageHeader">
-	Image {#if image !== PendingValue}
-		<CopyButton
-			size="xsmall"
-			variant="action"
-			text="Copy image name"
-			activeText="Image name copied"
-			copyText={image}
-		/>
+	Image
+	{#if $data?.image !== PendingValue}
+		<Button as="a" variant="secondary" size="small" href="/team/{team}/{env}/job/{jobName}/image"
+			>Details</Button
+		>
 	{/if}
 </h4>
 <p class="lastActivity">
