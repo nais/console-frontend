@@ -12,7 +12,7 @@
 	<Card columns={12}>
 		<Alert variant="info">
 			<p>
-				Image details for <code>{team}/{env}/{job}</code> are coming soon.
+				Image details for {team}/{env}/{job} are coming soon.
 			</p>
 		</Alert>
 	</Card>
@@ -24,9 +24,5 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-
-	code {
-		font-size: 0.8rem;
 	}
 </style>
