@@ -2435,6 +2435,7 @@ type VulnerabilitySummary {
   bomCount: Int!
   critical: Int!
   high: Int!
+  id: ID!
   low: Int!
   medium: Int!
   riskScore: Int!

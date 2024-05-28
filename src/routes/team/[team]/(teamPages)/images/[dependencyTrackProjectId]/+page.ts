@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import type { AnalysisTrailVariables, ImageVariables } from './$houdini';
+import type { ImageVariables } from './$houdini';
 
 export const _ImageVariables: ImageVariables = ({ url }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');

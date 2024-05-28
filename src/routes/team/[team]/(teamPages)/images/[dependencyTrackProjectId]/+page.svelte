@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PendingValue } from '$houdini';
+	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -28,6 +28,7 @@
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
+	import TrailFinding from './TrailFinding.svelte';
 
 	export let data: PageData;
 
@@ -36,6 +37,21 @@
 	$: image = $Image.data?.dependencyTrackProject;
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
 
+	const summary = graphql(`
+		query Summary($dependencyTrackProjectId: String!) {
+			dependencyTrackProject(projectId: $dependencyTrackProjectId) {
+				summary {
+					riskScore
+					critical
+					high
+					medium
+					low
+					unassigned
+				}
+			}
+		}
+	`);
+
 	const notificationBadgeSize = '48px';
 
 	let registry: string;
@@ -43,7 +59,7 @@
 	let name: string;
 	let tag: string;
 	let findingToSuppress: FindingType | undefined;
-	//let analysisTrail: AnalysisTrailType | undefined;
+	let analysisTrail: FindingType | undefined;
 
 	$: {
 		if (image && image.id !== PendingValue) {
@@ -307,7 +323,7 @@
 								<Tr>
 									<Td
 										><Button
-											variant="secondary"
+											variant="tertiary"
 											size="small"
 											on:click={() => (findingToSuppress = finding)}
 										>
@@ -324,10 +340,10 @@
 									<Td>{finding.description}</Td>
 									<Td>
 										<Button
-											variant="secondary"
+											variant="tertiary-neutral"
 											size="small"
-											disabled={true}
-											on:click={() => (findingToSuppress = finding)}
+											disabled={finding.analysisTrail?.state !== '' ? false : true}
+											on:click={() => (analysisTrail = finding)}
 										>
 											<code
 												>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
@@ -364,21 +380,28 @@
 		{user}
 		on:close={() => {
 			findingToSuppress = undefined;
+			setTimeout(() => {
+				// refetch the image to update the findings
+				if (image && image.projectId !== PendingValue) {
+					summary.fetch({
+						variables: { dependencyTrackProjectId: image.projectId },
+						policy: 'NetworkOnly'
+					});
+				}
+			}, 2000);
 		}}
 	/>
 {/if}
 
-<!--
-{#if findingToSuppress}
+{#if analysisTrail}
 	<TrailFinding
 		open={true}
-		finding={findingToSuppress}
-		{analysisTrail}
+		finding={analysisTrail}
 		on:close={() => {
-			findingToSuppress = undefined;
+			analysisTrail = undefined;
 		}}
 	/>
-{/if}-->
+{/if}
 
 <style>
 	.circles {

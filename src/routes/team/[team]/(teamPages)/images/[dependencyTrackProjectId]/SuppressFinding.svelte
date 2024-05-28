@@ -28,7 +28,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
-	import { Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 
 	export let open: boolean;
@@ -45,7 +45,6 @@
 
 	const close = () => {
 		open = false;
-		console.log('open', open);
 		dispatcher('close');
 	};
 
@@ -65,16 +64,15 @@
 			suppress: true
 		});
 
-		console.log('mutated');
-
 		if ($suppress.errors) {
-			console.log('errors');
 			console.log($suppress.errors);
 			open = true;
 			return;
 		}
+
+		const imagePage = '/team/' + team + '/images/' + projectId;
 		close();
-		await goto(`/team/${team}/images/${projectId}`);
+		await goto(imagePage, { replaceState: true });
 	};
 
 	const suppress = graphql(`
@@ -150,6 +148,13 @@
 		</Select>
 		<TextField type="text" bind:value={inputText} />
 		<p>Suppressing user: {user}</p>
+		{#if $suppress.errors}
+			<Alert variant="error">
+				{#each $suppress.errors as error}
+					{error.message}
+				{/each}
+			</Alert>
+		{/if}
 	</div>
 	<svelte:fragment slot="footer">
 		<Button variant="primary" size="small" on:click={triggerSuppress}>Suppress</Button>

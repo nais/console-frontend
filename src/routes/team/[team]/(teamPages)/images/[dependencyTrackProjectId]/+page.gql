@@ -12,6 +12,7 @@ query Image(
 		digest
 		rekorId
 		summary @loading {
+			id
 			critical
 			high
 			medium
