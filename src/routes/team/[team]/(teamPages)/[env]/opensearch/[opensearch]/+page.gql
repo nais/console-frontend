@@ -7,16 +7,16 @@ query OpenSearchInstance($env: String!, $team: Slug!, $name: String!) @loading(c
 				name
 			}
 			cost
-#			status {
-#				conditions {
-#					reason
-#					type
-#					status
-#					message
-#					lastTransitionTime
-#				}
-#				state
-#			}
+			status {
+				conditions {
+					reason
+					type
+					status
+					message
+					lastTransitionTime
+				}
+				state
+			}
 			workload {
 				name
 				type: __typename

@@ -2,10 +2,12 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, Link, Table, Tr, Td, Th } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import Time from '$lib/Time.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
+	import { Alert, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ OpenSearchInstance: OpenSearch } = data);
@@ -60,7 +62,7 @@
 				<p>no workloads with configured access</p>
 			{/if}
 		</Card>
-		<!--		<Card columns={6}>
+		<Card columns={6}>
 			<h3>Status</h3>
 			<div>
 				{#if openSearch.status.conditions.length}
@@ -94,7 +96,7 @@
 					<p>No conditions</p>
 				{/if}
 			</div>
-		</Card>-->
+		</Card>
 	</div>
 {/if}
 
@@ -108,6 +110,28 @@
 	.heading {
 		display: flex;
 		gap: 1rem;
+		align-items: center;
+	}
+
+	dl.conditions {
+		display: grid;
+		align-items: center;
+		grid-template-columns: 20% 80%;
+	}
+	.status {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+
+	div dl.conditions:not(:first-child) {
+		margin-top: 3em;
+	}
+
+	dt {
+		font-weight: bold;
+		display: flex;
+		gap: 1em;
 		align-items: center;
 	}
 </style>
