@@ -24,7 +24,9 @@
 					}
 
 					... on OpenSearch {
-						access
+						openSearchInstanceAccess: access {
+							role
+						}
 					}
 					... on Redis {
 						redisInstanceAccess: access {
@@ -41,7 +43,7 @@
 
 	const toTypedData = (data: Persistence$data) => {
 		if (data && data.id !== PendingValue) {
-			return Object.groupBy(data.persistence, (p) => (p.__typename as string));
+			return Object.groupBy(data.persistence, (p) => p.__typename as string);
 		}
 		return {};
 	};

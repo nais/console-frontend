@@ -9,8 +9,19 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Link,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import { resourceLink } from '$lib/utils/links';
 
 	export let data: PageData;
 
@@ -56,7 +67,9 @@
 						<Tr>
 							<!-- TODO: show warning if no workload uses this instance -->
 							<Td>
-								{node.name}
+								<Link href={resourceLink(node.env.name, teamName, 'opensearch', node.name)}
+									>{node.name}</Link
+								>
 							</Td>
 							<Td>
 								{node.env.name}

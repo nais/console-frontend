@@ -1050,7 +1050,8 @@ type NoRunningInstancesError implements StateError {
 }
 
 type OpenSearch implements Persistence {
-  access: String!
+  access: [OpenSearchInstanceAccess!]!
+  cost: String!
   env: Env!
   id: ID!
 
@@ -1060,9 +1061,19 @@ type OpenSearch implements Persistence {
   workload: Workload
 }
 
+type OpenSearchInstanceAccess {
+  role: String!
+  workload: Workload!
+}
+
 type OpenSearchList {
   nodes: [OpenSearch!]!
   pageInfo: PageInfo!
+}
+
+type OpenSearchStatus {
+  conditions: [Condition!]!
+  state: String!
 }
 
 input OrderBy {
@@ -1992,6 +2003,15 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): OpenSearchList!
+
+  """Get a OpenSearch instance by name and env."""
+  openSearchInstance(
+    """The environment the instance exists in."""
+    env: String!
+
+    """The name of the OpenSearch instance."""
+    name: String!
+  ): OpenSearch!
 
   """Purpose of the team."""
   purpose: String!

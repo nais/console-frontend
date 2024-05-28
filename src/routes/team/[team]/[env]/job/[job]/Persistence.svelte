@@ -34,9 +34,12 @@
 							team
 						}
 					}
+
 					... on OpenSearch {
 						name
-						access
+						openSearchInstanceAccess: access {
+							role
+						}
 					}
 					... on Redis {
 						name

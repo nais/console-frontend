@@ -1,0 +1,33 @@
+query OpenSearchInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+	team(slug: $team) {
+		openSearchInstance(env: $env, name: $name) {
+			id
+			name
+			env {
+				name
+			}
+			cost
+#			status {
+#				conditions {
+#					reason
+#					type
+#					status
+#					message
+#					lastTransitionTime
+#				}
+#				state
+#			}
+			workload {
+				name
+				type: __typename
+			}
+			access {
+				workload {
+					type: __typename
+					name
+				}
+				role
+			}
+		}
+	}
+}
