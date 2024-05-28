@@ -29,9 +29,13 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 				team
 			}
 			status {
+				errors
 				fullyQualifiedName
 				message
 				synchronizationState
+				synchronizationTime
+				credentialsExpiryTime
+				latestAivenSyncFailure
 			}
 		}
 	}

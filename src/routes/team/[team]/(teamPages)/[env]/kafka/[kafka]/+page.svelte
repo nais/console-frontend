@@ -56,16 +56,15 @@
 		</Card>
 		<Card rows={2} columns={6}>
 			<h3>Status</h3>
-			<dl>
-				<dt>fullyQualifiedName</dt>
-				<dd>asd</dd>
-
-				<dt>message</dt>
-				<dd>asd</dd>
-
-				<dt>synchronizationState</dt>
-				<dd>asd</dd>
-			</dl>
+			{#if topic && topic.status}
+				{@const s = topic.status}
+				<dl>
+					{#each Object.entries(s) as [key, value]}
+							<dt>{key}</dt>
+							<dd>{value}</dd>
+					{/each}
+				</dl>
+			{/if}
 		</Card>
 		<Card columns={6}>
 			<h3>Topic configuration</h3>
@@ -87,12 +86,6 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-
-	dl {
-		display: grid;
-		align-items: center;
-		grid-template-columns: 30% 70%;
 	}
 
 	dt {

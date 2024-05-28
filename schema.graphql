@@ -597,7 +597,10 @@ type KafkaTopicList {
 }
 
 type KafkaTopicStatus {
+  credentialsExpiryTime: Time!
+  errors: [String!]
   fullyQualifiedName: String!
+  latestAivenSyncFailure: Time!
   message: String!
   synchronizationState: State!
   synchronizationTime: Time!
