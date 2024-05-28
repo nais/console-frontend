@@ -600,6 +600,7 @@ type KafkaTopicStatus {
   fullyQualifiedName: String!
   message: String!
   synchronizationState: State!
+  synchronizationTime: Time!
 }
 
 type Limits {
