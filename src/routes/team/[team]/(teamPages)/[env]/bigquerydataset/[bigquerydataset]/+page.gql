@@ -1,8 +1,22 @@
 query BigQueryDataset($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
 	team(slug: $team) {
 		bigQueryDataset(env: $env, name: $name) {
+			cascadingDelete
+			description
+
 			id
 			name
+			status {
+				conditions {
+					reason
+					type
+					status
+					message
+					lastTransitionTime
+				}
+				lastModifiedTime
+				creationTime
+			}
 			env {
 				name
 			}
