@@ -3,10 +3,9 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import kafkaTopic from '$houdini/artifacts/KafkaTopic';
 
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);

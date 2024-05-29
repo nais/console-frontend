@@ -2,25 +2,24 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
 	import {
-		CopyButton,
-		Tooltip,
 		Alert,
-		Link,
+		CopyButton,
+		HelpText,
 		Table,
-		Tr,
 		Td,
 		Th,
-		HelpText
+		Tooltip,
+		Tr
 	} from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
 	import {
-		XMarkIcon,
 		CheckmarkIcon,
-		ExclamationmarkTriangleFillIcon
+		ExclamationmarkTriangleFillIcon,
+		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import Time from '$lib/Time.svelte';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ BigQueryDataset: BigQueryDatasetInstance } = data);
