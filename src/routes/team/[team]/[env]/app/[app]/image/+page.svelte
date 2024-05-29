@@ -68,7 +68,9 @@
 	let name: string;
 	let tag: string;
 	let findingToSuppress: FindingType | undefined;
+	let suppressOpen = false;
 	let analysisTrail: FindingType | undefined;
+	let analysisOpen = false;
 
 	$: {
 		if (image && image.id !== PendingValue) {
@@ -274,7 +276,10 @@
 											><Button
 												variant="tertiary"
 												size="small"
-												on:click={() => (findingToSuppress = finding)}
+												on:click={() => {
+													findingToSuppress = finding;
+													suppressOpen = true;
+												}}
 											>
 												<code>{finding.vulnId}</code>
 											</Button>
@@ -297,7 +302,10 @@
 												variant="tertiary-neutral"
 												size="small"
 												disabled={finding.analysisTrail?.state !== '' ? false : true}
-												on:click={() => (analysisTrail = finding)}
+												on:click={() => {
+													analysisTrail = finding;
+													analysisOpen = true;
+												}}
 											>
 												<code
 													>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
@@ -339,11 +347,12 @@
 {#if findingToSuppress && image && image.projectId !== PendingValue}
 	<SuppressFinding
 		projectId={image?.projectId}
-		open={true}
+		bind:open={suppressOpen}
 		finding={findingToSuppress}
 		{user}
 		on:close={() => {
 			findingToSuppress = undefined;
+			console.log('closing now...');
 			setTimeout(() => {
 				// refetch the image to update the findings
 				summary.fetch({
@@ -356,7 +365,7 @@
 {/if}
 {#if analysisTrail}
 	<TrailFinding
-		open={true}
+		bind:open={analysisOpen}
 		finding={analysisTrail}
 		on:close={() => {
 			analysisTrail = undefined;
