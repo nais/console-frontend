@@ -39,15 +39,15 @@
 					</Tr>
 					{#each bigQueryDatasetInstance.access as access}
 						<Tr>
-							<!--							<Td>{access.role}</Td>-->
-							<!--							<Td>-->
+														<Td>{access.role}</Td>
+														<Td>
 							<!--								<Link-->
 							<!--									href="/team/{teamName}/{envName}/{access.workload.type === 'App'-->
 							<!--										? 'app'-->
 							<!--										: 'job'}/{access.workload.name}">{access.workload.name}</Link-->
 							<!--								>-->
 							<!--							</Td>-->
-							<!--							<Td>{access.workload.type}</Td>-->
+							<!--							<Td>{access.workload.type}</Td>
 						</Tr>
 					{/each}
 				</Table>

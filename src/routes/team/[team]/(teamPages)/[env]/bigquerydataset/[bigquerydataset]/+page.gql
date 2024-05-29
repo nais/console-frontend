@@ -13,6 +13,7 @@ query BigQueryDataset($env: String!, $team: Slug!, $name: String!) @loading(casc
 			}
 			access {
 				role
+				email
 			}
 		}
 	}
