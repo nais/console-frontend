@@ -3,7 +3,17 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
-	import { CopyButton, Tooltip, Alert, Link, Table, Tr, Td, Th, HelpText } from '@nais/ds-svelte-community';
+	import {
+		CopyButton,
+		Tooltip,
+		Alert,
+		Link,
+		Table,
+		Tr,
+		Td,
+		Th,
+		HelpText
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import {
 		XMarkIcon,
@@ -45,7 +55,7 @@
 					/>
 				</dd>
 				<dt>
-					CascadingDelete
+					Cascading delete
 					<HelpText title="Current memory utilization"
 						>if true, deleting the application will also delete the dataset and all its tables.
 					</HelpText>
@@ -73,13 +83,11 @@
 					{#each bigQueryDatasetInstance.access as access}
 						<Tr>
 							<Td>{access.role}</Td>
-							<Td><div class="email">
-								<span title={access.email}>{access.email}</span
-								>
-								<CopyButton size="small" variant="action" copyText={access.email} />
-
-							</div>
-
+							<Td
+								><div class="email">
+									<span title={access.email}>{access.email}</span>
+									<CopyButton size="small" variant="action" copyText={access.email} />
+								</div>
 							</Td>
 						</Tr>
 					{/each}
@@ -99,13 +107,13 @@
 								{#if cond.status === 'True'}
 									{cond.type}
 									<CheckmarkIcon
-										style="color: var(&#45;&#45;a-surface-success); font-size: 1.5rem"
+										style="color: var(--a-surface-success); font-size: 1.5rem"
 										title={cond.type}
 									/>
 								{:else}
 									{cond.type}
 									<ExclamationmarkTriangleFillIcon
-										style="color: var(&#45;&#45;a-icon-info)"
+										style="color: var(--a-icon-info)"
 										title={cond.type}
 									/>
 								{/if}
@@ -115,7 +123,7 @@
 						</dl>
 						<details>
 							<summary>Status message</summary>
-							<p style="width: 30em;">{cond.message}</p>
+							<p style="max-width: 30em;">{cond.message}</p>
 						</details>
 					{/each}
 				{:else}
@@ -128,14 +136,13 @@
 
 <style>
 	.email {
-		display: flex;
+		display: grid;
+		grid-template-columns: 120px 1fr 60px;
 	}
-	.email span{
+	.email span {
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		overflow: hidden;
-
-
 	}
 	.grid {
 		display: grid;
