@@ -1,7 +1,10 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
+	import Nais from '$lib/icons/Nais.svelte';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -58,12 +61,59 @@
 			<h3>Status</h3>
 			{#if topic && topic.status}
 				{@const s = topic.status}
-				<dl>
-					{#each Object.entries(s) as [key, value]}
-						<dt>{key}</dt>
-						<dd>{value}</dd>
-					{/each}
+				<dl class="status">
+					{#if s.fullyQualifiedName}
+						<dt>Fully qualified name</dt>
+						<dd><code>{s.fullyQualifiedName}</code></dd>
+					{/if}
+
+					{#if s.synchronizationState}
+						<dt>Synchronization state</dt>
+						<dd>
+							{#if s.synchronizationState === 'NAIS'}
+								<Nais style="color: var(--a-icon-success)" />
+							{:else if s.synchronizationState === 'NOTNAIS'}
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--a-icon-warning)"
+									title="Not NAIS!"
+								/>
+							{:else}
+								Unknown
+							{/if}
+						</dd>
+					{/if}
+
+					{#if s.synchronizationTime && s.synchronizationTime !== PendingValue}
+						<dt>Synchronization time</dt>
+						<dd><Time time={s.synchronizationTime} /></dd>
+					{/if}
+
+					{#if s.credentialsExpiryTime && s.credentialsExpiryTime !== PendingValue}
+						<dt>Credentials expiry time</dt>
+						<dd><Time time={s.credentialsExpiryTime} /></dd>
+					{/if}
+
+					{#if s.latestAivenSyncFailure && s.latestAivenSyncFailure !== PendingValue}
+						<dt>Latest Aiven sync failure</dt>
+						<dd><Time time={s.latestAivenSyncFailure} /></dd>
+					{/if}
 				</dl>
+
+				{#if s.message}
+					<details>
+						<summary>Status message</summary>
+						{s.message}
+					</details>
+				{/if}
+
+				{#if s.errors}
+					<h3>Errors</h3>
+					<ul>
+						{#each s.errors as err}
+							<li>{err}</li>
+						{/each}
+					</ul>
+				{/if}
 			{:else}
 				<p><em>Unable to find topic status</em></p>
 			{/if}
@@ -94,7 +144,16 @@
 
 	dt {
 		font-weight: bold;
-		display: flex;
-		align-items: center;
+	}
+
+	dl.status {
+		display: grid;
+		grid-template-columns: 35% 65%;
+		align-items: top;
+		row-gap: 0.5em;
+	}
+
+	details {
+		margin-bottom: 1em;
 	}
 </style>
