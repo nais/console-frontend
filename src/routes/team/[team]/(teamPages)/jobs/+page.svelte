@@ -89,9 +89,9 @@
 									<a href="/team/{teamName}/{node.env.name}/job/{node.name}">{node.name}</a>
 								</Td>
 								<Td>{node.env.name}</Td>
-								<Td style="text-align: center">
-									<div class="badge">
-										{#if node.image.summary.critical > 0}
+								<Td style="text-align: center;">
+									{#if node.image.summary.critical > 0}
+										<div class="badge">
 											<Tooltip
 												placement="right"
 												content="{node.image.summary
@@ -103,17 +103,26 @@
 													size={'32px'}
 												/>
 											</Tooltip>
-										{:else}
-											<Tooltip
-												placement="right"
-												content="No vulnerabilities found, keep up the good work!"
-											>
-												<code class="check">&check;</code>
-											</Tooltip>
-										{/if}
-									</div>
+										</div>
+									{:else if node.image.summary.critical < 0}
+										<Tooltip placement="right" content="No data found in dependencytrack">
+											<code class="check fail">-</code>
+										</Tooltip>
+									{:else}
+										<Tooltip placement="right" content="No critical vulnerabilities found">
+											<code class="check success">&check;</code>
+										</Tooltip>
+									{/if}
 								</Td>
-								<Td style="text-align: center">{node.image.summary.riskScore}</Td>
+								<Td style="text-align: center">
+									{#if node.image.summary.riskScore < 0}
+										<Tooltip placement="right" content="No data found in dependencytrack">
+											<code class="check fail">-</code>
+										</Tooltip>
+									{:else}
+										{node.image.summary.riskScore}
+									{/if}
+								</Td>
 								<Td>
 									{#if node.deployInfo.timestamp}
 										<Time time={node.deployInfo.timestamp} distance={true} />
@@ -147,5 +156,32 @@
 		align-items: center;
 		justify-content: center;
 		line-height: 0.6;
+	}
+	.badge {
+		display: flex;
+		justify-content: center;
+		vertical-align: middle;
+		width: 100%;
+		height: 32px;
+	}
+	.badge {
+		display: flex;
+		justify-content: center;
+		vertical-align: middle;
+		width: 100%;
+		height: 32px;
+	}
+
+	.check {
+		font-size: 1.5rem;
+		text-align: center;
+		padding-left: 4px;
+	}
+	.success {
+		color: #4dbd74;
+	}
+
+	.fail {
+		color: #f86c6b;
 	}
 </style>
