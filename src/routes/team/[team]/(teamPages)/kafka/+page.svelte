@@ -9,18 +9,7 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import {
-		Alert,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -79,15 +68,7 @@
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>
 								{:else}
-									<span class="inline">
-										<em>No owner</em>
-										<Tooltip content="The Kafka topic does not belong to any workload">
-											<InformationSquareFillIcon
-												style="color: var(--a-icon-info); top: 0.125em; position: relative; margin-right: 1em"
-												title="The Kafka topic does not belong to any workload"
-											/>
-										</Tooltip>
-									</span>
+									<em>No owner</em>
 								{/if}
 							</Td>
 						</Tr>
@@ -109,11 +90,3 @@
 		/>
 	</Card>
 {/if}
-
-<style>
-	.inline {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-</style>

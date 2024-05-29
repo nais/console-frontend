@@ -9,6 +9,7 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
+	import { resourceLink } from '$lib/utils/links';
 	import {
 		Alert,
 		Link,
@@ -18,19 +19,15 @@
 		Td,
 		Th,
 		Thead,
-		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import { resourceLink } from '$lib/utils/links';
 
 	export let data: PageData;
 
 	$: teamName = $page.params.team;
 	$: ({ BigQuery } = data);
 	$: team = $BigQuery.data?.team;
-	$: env = $page.params.env;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($BigQuery.variables));
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
@@ -85,14 +82,8 @@
 											? 'app'
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>
-								{/if}
-								{#if !node.workload?.name}
-									<Tooltip content="The BigQuery  does not belong to any workload">
-										<InformationSquareFillIcon
-											style="color: var(--a-icon-info)"
-											title="The BigQuery  does not belong to any workload"
-										/>
-									</Tooltip>
+								{:else}
+									<em>No owner</em>
 								{/if}
 							</Td>
 						</Tr>
