@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import BucketIcon from '$lib/icons/Bucket.svelte';
-	import { Alert, CopyButton, HelpText } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -62,7 +62,7 @@
 					{/if}
 					{#if bucket.status.selfLink}
 						<dt>Self link</dt>
-						<dd >
+						<dd>
 							<p style="display: flex; align-items: center;">
 								<span
 									style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"

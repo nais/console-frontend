@@ -18,7 +18,6 @@
 		Td,
 		Th,
 		Thead,
-		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -85,7 +84,7 @@
 										<ExclamationmarkTriangleFillIcon
 											style="color: var(--a-icon-warning)"
 											title="The bucket does not belong to any workload"
-										/> 
+										/>
 									</div>
 								{/if}
 							</Td>
