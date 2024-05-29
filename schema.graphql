@@ -551,6 +551,7 @@ type Image {
     """Order findings by"""
     orderBy: OrderBy
   ): FindingList!
+  hasSbom: Boolean!
   id: ID!
   name: String!
   projectId: String!
