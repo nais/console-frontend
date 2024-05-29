@@ -54,7 +54,6 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Owner</Th>
@@ -63,22 +62,14 @@
 				{#if team.id === PendingValue}
 					<Tr>
 						{#each new Array(4).fill('text') as variant}
-							<Td><Skeleton {variant} /></Td>
+							<Td>
+								<Skeleton {variant} />
+							</Td>
 						{/each}
 					</Tr>
 				{:else}
 					{#each team.bigQuery.nodes as node}
 						<Tr>
-							<Td>
-								{#if !node.workload?.name}
-									<Tooltip content="The BigQuery  does not belong to any workload">
-										<InformationSquareFillIcon
-											style="color: var(--a-icon-info)"
-											title="The BigQuery  does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
 							<Td>
 								<Link href={resourceLink(node.env.name, teamName, 'bigquerydataset', node.name)}
 									>{node.name}</Link
@@ -94,6 +85,14 @@
 											? 'app'
 											: 'job'}/{node.workload.name}">{node.workload.name}</a
 									>
+								{/if}
+								{#if !node.workload?.name}
+									<Tooltip content="The BigQuery  does not belong to any workload">
+										<InformationSquareFillIcon
+											style="color: var(--a-icon-info)"
+											title="The BigQuery  does not belong to any workload"
+										/>
+									</Tooltip>
 								{/if}
 							</Td>
 						</Tr>
