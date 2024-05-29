@@ -190,11 +190,11 @@
 					>
 					for further assistance.
 				{/if}
-				<p>
+				<!--p>
 					<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
 						>View findings in DependencyTrack</a
 					>
-				</p>
+				</p-->
 			{/if}
 		{/if}
 	{/if}

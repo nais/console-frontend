@@ -8,6 +8,7 @@
 		Density3Icon,
 		FileTextIcon,
 		HouseIcon,
+		ImageIcon,
 		LineGraphStackedIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -66,6 +67,11 @@
 					name: 'Manifest',
 					routeId: '/team/[team]/[env]/app/[app]/manifest',
 					icon: FileTextIcon
+				},
+				{
+					name: 'Image details',
+					routeId: '/team/[team]/[env]/app/[app]/image',
+					icon: ImageIcon
 				}
 			]
 		},

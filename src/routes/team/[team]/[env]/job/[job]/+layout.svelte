@@ -9,6 +9,7 @@
 		Density3Icon,
 		FileTextIcon,
 		HouseIcon,
+		ImageIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
@@ -61,6 +62,11 @@
 					name: 'Manifest',
 					routeId: '/team/[team]/[env]/job/[job]/manifest',
 					icon: FileTextIcon
+				},
+				{
+					name: 'Image details',
+					routeId: '/team/[team]/[env]/job/[job]/image',
+					icon: ImageIcon
 				}
 			]
 		},

@@ -1,12 +1,12 @@
-query Image(
+query NaisJobImage(
 	$team: Slug!
 	$env: String!
-	$app: String!
+	$job: String!
 	$orderBy: OrderBy = { field: SEVERITY, direction: DESC }
 	$limit: Int
 	$offset: Int
 ) @loading(cascade: false) {
-	app(name: $app, team: $team, env: $env) {
+	naisjob(name: $job, team: $team, env: $env) {
 		image {
 			id @loading
 			projectId
