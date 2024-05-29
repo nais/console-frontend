@@ -2,12 +2,12 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, HelpText, Link, Table, Tr, Td, Th } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Time from '$lib/Time.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
+	import { Alert, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
@@ -30,17 +30,16 @@
 				{redisInstance.name}
 			</h3>
 
-			<div class="cost">
-				<h4>Cost</h4>
-				<CostIcon size="16" />
-				€{redisInstance.cost}
-				sum of cost last 30 days
-			</div>
+			<h4>Cost</h4>
+			<CostIcon size="16" />
+			€{redisInstance.cost}
+			sum of cost last 30 days
 
+			<h4 class="access">Access</h4>
 			{#if redisInstance.access.length}
 				<Table>
 					<Tr>
-						<Th>Access</Th>
+						<Th>Access level</Th>
 						<Th>Workload</Th>
 						<Th>Type</Th>
 					</Tr>
@@ -59,7 +58,7 @@
 					{/each}
 				</Table>
 			{:else}
-				<p>no workloads with configured access</p>
+				<p>No workloads with configured access</p>
 			{/if}
 		</Card>
 		<Card columns={6}>
@@ -133,5 +132,10 @@
 		display: flex;
 		gap: 1em;
 		align-items: center;
+	}
+
+	h4.access {
+		margin-top: 1em;
+		margin-bottom: 0;
 	}
 </style>

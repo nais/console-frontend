@@ -30,17 +30,16 @@
 				{openSearch.name}
 			</h3>
 
-			<div class="cost">
-				<h4>Cost</h4>
-				<CostIcon size="16" />
-				€{openSearch.cost}
-				sum of cost last 30 days
-			</div>
+			<h4>Cost</h4>
+			<CostIcon size="16" />
+			€{openSearch.cost}
+			sum of cost last 30 days
 
+			<h4 class="access">Access</h4>
 			{#if openSearch.access.length}
 				<Table>
 					<Tr>
-						<Th>Access</Th>
+						<Th>Access level</Th>
 						<Th>Workload</Th>
 						<Th>Type</Th>
 					</Tr>
@@ -59,7 +58,7 @@
 					{/each}
 				</Table>
 			{:else}
-				<p>no workloads with configured access</p>
+				<p>No workloads with configured access</p>
 			{/if}
 		</Card>
 		<Card columns={6}>
@@ -133,5 +132,10 @@
 		display: flex;
 		gap: 1em;
 		align-items: center;
+	}
+
+	h4.access {
+		margin-top: 1em;
+		margin-bottom: 0;
 	}
 </style>

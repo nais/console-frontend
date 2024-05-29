@@ -159,6 +159,7 @@ type BigQueryDataset implements Persistence {
   env: Env!
   id: ID!
   name: String!
+  status: BigQueryDatasetStatus!
   team: Team!
   workload: Workload
 }
@@ -171,6 +172,12 @@ type BigQueryDatasetAccess {
 type BigQueryDatasetList {
   nodes: [BigQueryDataset!]!
   pageInfo: PageInfo!
+}
+
+type BigQueryDatasetStatus {
+  conditions: [Condition!]!
+  creationTime: Time
+  lastModifiedTime: Time
 }
 
 type Bucket implements Persistence {
