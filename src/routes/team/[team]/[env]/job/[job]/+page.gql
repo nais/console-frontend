@@ -3,7 +3,14 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		name
 		schedule
 
-		image
+		image {
+			id
+			name
+			summary {
+				id
+			}
+		}
+
 		runs {
 			name
 			startTime

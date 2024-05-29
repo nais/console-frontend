@@ -7,12 +7,12 @@
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Image from './Image.svelte';
+	import Persistence from './Persistence.svelte';
 	import NaisjobInstances from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
-	import Status from './Status.svelte';
-	import Persistence from './Persistence.svelte';
-	import Traffic from './Traffic.svelte';
 	import Secrets from './Secrets.svelte';
+	import Status from './Status.svelte';
+	import Traffic from './Traffic.svelte';
 
 	export let data: PageData;
 	$: ({ Job } = data);

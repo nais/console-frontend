@@ -10,7 +10,9 @@
 		job,
 		graphql(`
 			fragment JobImage on NaisJob {
-				image @loading
+				image @loading {
+					name
+				}
 				deployInfo @loading {
 					timestamp @loading
 					deployer
@@ -31,7 +33,7 @@
 
 	$: {
 		if (image !== PendingValue) {
-			({ registry, repository, name, tag } = parseImage(image));
+			({ registry, repository, name, tag } = parseImage(image.name));
 		}
 	}
 

@@ -1079,7 +1079,7 @@ type NaisJob {
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
-  image: String!
+  image: Image!
   manifest: String!
   name: String!
   parallelism: Int!
