@@ -26,7 +26,7 @@
 					<Th>Access</Th>
 				</Thead>
 				<Tbody>
-					{#if topic}
+					{#if topic && topic.acl}
 						{#each topic.acl as ac}
 							<Tr>
 								{#if ac.access === PendingValue}
@@ -45,11 +45,11 @@
 									<Td>{ac.access}</Td>
 								{/if}
 							</Tr>
-						{:else}
-							<Tr>
-								<Td colspan={999}>No Kafka topics found</Td>
-							</Tr>
 						{/each}
+					{:else}
+						<Tr>
+							<Td colspan={999}><em>No ACLs found for the topic</em></Td>
+						</Tr>
 					{/if}
 				</Tbody>
 			</Table>
@@ -60,10 +60,12 @@
 				{@const s = topic.status}
 				<dl>
 					{#each Object.entries(s) as [key, value]}
-							<dt>{key}</dt>
-							<dd>{value}</dd>
+						<dt>{key}</dt>
+						<dd>{value}</dd>
 					{/each}
 				</dl>
+			{:else}
+				<p><em>Unable to find topic status</em></p>
 			{/if}
 		</Card>
 		<Card columns={6}>
@@ -75,6 +77,8 @@
 						<dd>{value}</dd>
 					{/each}
 				</dl>
+			{:else}
+				<p><em>Unable to find topic configuration</em></p>
 			{/if}</Card
 		>
 	</div>
