@@ -137,7 +137,7 @@
 <style>
 	.email {
 		display: grid;
-		grid-template-columns: 120px 1fr 60px;
+		grid-template-columns: 1fr 60px;
 	}
 	.email span {
 		text-overflow: ellipsis;
