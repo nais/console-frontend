@@ -1,11 +1,12 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { PendingValue } from '$houdini';
+	import { PendingValue, State } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import kafkaTopic from '$houdini/artifacts/KafkaTopic';
 
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);
@@ -41,9 +42,11 @@
 										<a href="/team/{ac.team}">{ac.team}</a>
 									</Td>
 									<Td>
-										<a href="/team/{ac.team}/{String(topic.env.name)}/app/{ac.application}"
-											>{ac.application}</a
-										>
+										{#if topic.env.name != PendingValue}
+											<a href="/team/{ac.team}/{topic.env.name}/app/{ac.application}"
+												>{ac.application}</a
+											>
+										{/if}
 									</Td>
 									<Td>{ac.access}</Td>
 								{/if}
@@ -59,6 +62,7 @@
 		</Card>
 		<Card rows={2} columns={6}>
 			<h3>Status</h3>
+
 			{#if topic && topic.status}
 				{@const s = topic.status}
 				<dl class="status">
@@ -70,11 +74,11 @@
 					{#if s.synchronizationState}
 						<dt>Synchronization state</dt>
 						<dd>
-							{#if s.synchronizationState === 'NAIS'}
-								<Nais style="color: var(--a-icon-success)" />
-							{:else if s.synchronizationState === 'NOTNAIS'}
+							{#if s.synchronizationState === State.NAIS}
+								<Nais style="color: var(&#45;&#45;a-icon-success)" />
+							{:else if s.synchronizationState === State.NOTNAIS}
 								<ExclamationmarkTriangleFillIcon
-									style="color: var(--a-icon-warning)"
+									style="color: var(&#45;&#45;a-icon-warning)"
 									title="Not NAIS!"
 								/>
 							{:else}
@@ -120,7 +124,7 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Topic configuration</h3>
-			{#if topic?.config}
+			{#if topic?.config && topic.config.cleanupPolicy != PendingValue}
 				<dl>
 					{#each Object.entries(topic?.config) as [key, value]}
 						<dt>{key}</dt>
@@ -149,7 +153,6 @@
 	dl.status {
 		display: grid;
 		grid-template-columns: 35% 65%;
-		align-items: top;
 		row-gap: 0.5em;
 	}
 
