@@ -30,7 +30,7 @@
 					allowedTeams
 					webIngress
 					apiIngress
-					metrics{
+					metrics {
 						apiTokens
 						cpuUtilization
 						cpuRequests
@@ -48,13 +48,12 @@
 			team: team
 		});
 
-		// @TODO handle errors
 		if ($createUnleashForTeam.errors) {
 			console.log($createUnleashForTeam.errors);
-			return
+			return;
 		}
 
-		unleash = $createUnleashForTeam.data?.createUnleashForTeam.instance
+		unleash = $createUnleashForTeam.data?.createUnleashForTeam.instance;
 	};
 </script>
 
@@ -71,9 +70,9 @@
 		</Alert>
 	{/each}
 {:else if !enabled}
-		<Alert style="margin-bottom: 1rem;" variant="info">
-			Unleash is not enabled for this tenant. Please contact your administrator.
-		</Alert>
+	<Alert style="margin-bottom: 1rem;" variant="info">
+		Unleash is not enabled for this tenant. Please contact your administrator.
+	</Alert>
 {:else if unleash}
 	<div class="summary-grid">
 		<Card columns={3}>
@@ -159,7 +158,11 @@
 				</p>
 				<p>Version</p>
 				<p>
-					{unleash.version}
+					{#if unleash.version === ''}
+						version not available yet.
+					{:else}
+						{unleash.version}
+					{/if}
 				</p>
 				<p>Web UI</p>
 				<p>
