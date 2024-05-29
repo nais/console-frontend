@@ -2,10 +2,11 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
-	import { Alert, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
+	import Opensearch from '$lib/icons/Opensearch.svelte';
+	import { Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -17,16 +18,12 @@
 </script>
 
 {#if $OpenSearch.errors}
-	{#each $OpenSearch.errors as error}
-		<Alert style="margin-bottom: 1rem;" variant="error">
-			{JSON.stringify(error)}
-		</Alert>
-	{/each}
+	<GraphErrors errors={$OpenSearch.errors} />
 {:else if openSearch && openSearch.name !== PendingValue}
 	<div class="grid">
 		<Card columns={6}>
 			<h3 class="heading">
-				<Redis />
+				<Opensearch />
 				{openSearch.name}
 			</h3>
 

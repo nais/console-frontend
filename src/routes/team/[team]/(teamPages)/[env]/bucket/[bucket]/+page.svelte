@@ -1,9 +1,10 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import BucketIcon from '$lib/icons/Bucket.svelte';
-	import { Alert, CopyButton } from '@nais/ds-svelte-community';
+	import { CopyButton } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -17,11 +18,7 @@
 </script>
 
 {#if $Bucket.errors}
-	{#each $Bucket.errors as error}
-		<Alert style="margin-bottom: 1rem;" variant="error">
-			{error}
-		</Alert>
-	{/each}
+	<GraphErrors errors={$Bucket.errors} />
 {:else if bucket && bucket.name !== PendingValue}
 	<div class="grid">
 		<Card columns={6}>

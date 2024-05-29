@@ -1,9 +1,10 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue, State } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -13,12 +14,8 @@
 </script>
 
 {#if $KafkaTopic.errors}
-	{#each $KafkaTopic.errors as error}
-		<Alert style="margin-bottom: 1rem;" variant="error">
-			{error}
-		</Alert>
-	{/each}
-{:else if topic?.id != PendingValue}
+	<GraphErrors errors={$KafkaTopic.errors} />
+{:else if topic && topic.id !== PendingValue}
 	<div class="grid">
 		<Card columns={6}>
 			<h3>Topic ACLs</h3>
@@ -29,7 +26,7 @@
 					<Th>Access</Th>
 				</Thead>
 				<Tbody>
-					{#if topic && topic.acl}
+					{#if topic.acl}
 						{#each topic.acl as ac}
 							<Tr>
 								<Td>

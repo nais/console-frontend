@@ -1,19 +1,10 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
-	import {
-		Alert,
-		CopyButton,
-		HelpText,
-		Table,
-		Td,
-		Th,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { CopyButton, HelpText, Table, Td, Th, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -24,16 +15,10 @@
 	export let data: PageData;
 	$: ({ BigQueryDataset: BigQueryDatasetInstance } = data);
 	$: bigQueryDatasetInstance = $BigQueryDatasetInstance.data?.team.bigQueryDataset;
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
 </script>
 
 {#if $BigQueryDatasetInstance.errors}
-	{#each $BigQueryDatasetInstance.errors as error}
-		<Alert style="margin-bottom: 1rem;" variant="error">
-			{JSON.stringify(error)}
-		</Alert>
-	{/each}
+	<GraphErrors errors={$BigQueryDatasetInstance.errors} />
 {:else if bigQueryDatasetInstance && bigQueryDatasetInstance.name !== PendingValue}
 	<div class="grid">
 		<Card columns={6} rows={2}>
