@@ -19,7 +19,7 @@
 			{error}
 		</Alert>
 	{/each}
-{:else}
+{:else if topic?.id != PendingValue}
 	<div class="grid">
 		<Card columns={6}>
 			<h3>Topic ACLs</h3>
@@ -33,23 +33,15 @@
 					{#if topic && topic.acl}
 						{#each topic.acl as ac}
 							<Tr>
-								{#if ac.access === PendingValue}
-									<Td><Skeleton variant="text" /></Td>
-									<Td><Skeleton variant="text" /></Td>
-									<Td><Skeleton variant="text" /></Td>
-								{:else}
-									<Td>
-										<a href="/team/{ac.team}">{ac.team}</a>
-									</Td>
-									<Td>
-										{#if topic.env.name != PendingValue}
-											<a href="/team/{ac.team}/{topic.env.name}/app/{ac.application}"
-												>{ac.application}</a
-											>
-										{/if}
-									</Td>
-									<Td>{ac.access}</Td>
-								{/if}
+								<Td>
+									<a href="/team/{ac.team}">{ac.team}</a>
+								</Td>
+								<Td>
+									<a href="/team/{ac.team}/{topic.env.name}/app/{ac.application}"
+										>{ac.application}</a
+									>
+								</Td>
+								<Td>{ac.access}</Td>
 							</Tr>
 						{/each}
 					{:else}
@@ -87,17 +79,17 @@
 						</dd>
 					{/if}
 
-					{#if s.synchronizationTime && s.synchronizationTime !== PendingValue}
+					{#if s.synchronizationTime}
 						<dt>Synchronization time</dt>
 						<dd><Time time={s.synchronizationTime} /></dd>
 					{/if}
 
-					{#if s.credentialsExpiryTime && s.credentialsExpiryTime !== PendingValue}
+					{#if s.credentialsExpiryTime}
 						<dt>Credentials expiry time</dt>
 						<dd><Time time={s.credentialsExpiryTime} /></dd>
 					{/if}
 
-					{#if s.latestAivenSyncFailure && s.latestAivenSyncFailure !== PendingValue}
+					{#if s.latestAivenSyncFailure}
 						<dt>Latest Aiven sync failure</dt>
 						<dd><Time time={s.latestAivenSyncFailure} /></dd>
 					{/if}
@@ -124,7 +116,7 @@
 		</Card>
 		<Card columns={6}>
 			<h3>Topic configuration</h3>
-			{#if topic?.config && topic.config.cleanupPolicy != PendingValue}
+			{#if topic?.config}
 				<dl>
 					{#each Object.entries(topic?.config) as [key, value]}
 						<dt>{key}</dt>
