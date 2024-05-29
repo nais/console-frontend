@@ -11,6 +11,7 @@
 	} from '$lib/pagination';
 	import {
 		Alert,
+		Link,
 		Skeleton,
 		Table,
 		Tbody,
@@ -22,12 +23,14 @@
 	} from '@nais/ds-svelte-community';
 	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import { resourceLink } from '$lib/utils/links';
 
 	export let data: PageData;
 
 	$: teamName = $page.params.team;
 	$: ({ BigQuery } = data);
 	$: team = $BigQuery.data?.team;
+	$: env = $page.params.env;
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($BigQuery.variables));
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
@@ -54,7 +57,7 @@
 				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
-				<Th>Workload</Th>
+				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
 				{#if team.id === PendingValue}
@@ -68,16 +71,18 @@
 						<Tr>
 							<Td>
 								{#if !node.workload?.name}
-									<Tooltip content="The BigQuery instance does not belong to any workload">
+									<Tooltip content="The BigQuery  does not belong to any workload">
 										<InformationSquareFillIcon
 											style="color: var(--a-icon-info)"
-											title="The BigQuery instance does not belong to any workload"
+											title="The BigQuery  does not belong to any workload"
 										/>
 									</Tooltip>
 								{/if}
 							</Td>
 							<Td>
-								{node.name}
+								<Link href={resourceLink(node.env.name, teamName, 'bigquerydataset', node.name)}
+									>{node.name}</Link
+								>
 							</Td>
 							<Td>
 								{node.env.name}
@@ -94,7 +99,7 @@
 						</Tr>
 					{:else}
 						<Tr>
-							<Td colspan={999}>No BigQuery instances found</Td>
+							<Td colspan={999}>No BigQuery s found</Td>
 						</Tr>
 					{/each}
 				{/if}

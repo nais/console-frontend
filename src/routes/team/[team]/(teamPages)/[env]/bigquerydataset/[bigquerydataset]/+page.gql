@@ -1,0 +1,19 @@
+query BigQueryDataset($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+	team(slug: $team) {
+		bigQueryDataset(env: $env, name: $name) {
+			id
+			name
+			env {
+				name
+			}
+
+			workload {
+				name
+				type: __typename
+			}
+			access {
+				role
+			}
+		}
+	}
+}
