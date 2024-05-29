@@ -164,7 +164,7 @@
 					<HelpText title="Status of the sql instance">
 						The status reflects the health of the instance and its configuration. If the instance is
 						healthy and running with the correct configuration, a checkmark will be displayed. Most
-						common issues are misconfigurations. Please consult the 'Conditions' for further
+						common issues are misconfigurations. Please consult the 'Config status' for further
 						details.
 					</HelpText>
 				</p>
@@ -422,7 +422,7 @@
 		{#if !instance.isHealthy && instance.status.conditions.length > 0}
 			<Card columns={12}>
 				<h3 id="conditions">
-					Config status
+					Instance config status
 					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
 						FAQ
 						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
@@ -446,17 +446,26 @@
 						{/if}
 					{/each}
 				</div>
+			</Card>
+		{/if}
+		{#if instance.database && !instance.database.healthy}
+			<Card columns={12}>
+				<h3 id="conditions">
+					Database config status
+					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
+						FAQ
+						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
+					</Link>
+				</h3>
 				<div style="margin-bottom: 0.5rem;">
 					<h4>Database</h4>
-					{#if instance.database && !instance.database.healthy}
-						{#each instance.database.conditions as condition}
-							<Alert variant="info" size="small">
-								<h4>{condition.reason}</h4>
-								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
-							</Alert>
-						{/each}
-					{/if}
+					{#each instance.database.conditions as condition}
+						<Alert variant="info" size="small">
+							<h4>{condition.reason}</h4>
+							Message:<strong>{condition.message}</strong> <br />
+							Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+						</Alert>
+					{/each}
 				</div>
 			</Card>
 		{/if}
