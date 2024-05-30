@@ -1020,6 +1020,9 @@ type Mutation {
     """Slug of the team to update."""
     slug: Slug!
   ): Team!
+
+  """Update Unleash instance with allowed teams."""
+  updateUnleashForTeam(allowedTeams: [String!], name: String!, team: Slug!): Unleash!
 }
 
 type NaisJob implements Workload {

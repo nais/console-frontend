@@ -2,12 +2,26 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import { Alert, Button, CopyButton, HelpText, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		CopyButton,
+		HelpText,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import {
 		ExternalLinkIcon,
 		PlusIcon,
 		BulletListIcon,
-		TokenIcon
+		TokenIcon,
+		TrashIcon,
+		PlusCircleFillIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import { graphql } from '$houdini';
@@ -54,6 +68,55 @@
 		}
 
 		unleash = $createUnleashForTeam.data?.createUnleashForTeam.instance;
+	};
+
+	const updateUnleashForTeam = graphql(`
+		mutation updateUnleashForTeam($team: Slug!, $name: String!, $allowedTeams: [String!]) {
+			updateUnleashForTeam(team: $team, name: $name, allowedTeams: $allowedTeams) {
+				enabled
+				instance {
+					name
+					version
+					allowedTeams
+					webIngress
+					apiIngress
+					metrics {
+						apiTokens
+						cpuUtilization
+						cpuRequests
+						memoryUtilization
+						memoryRequests
+						toggles
+					}
+				}
+			}
+		}
+	`);
+
+	const updateUnleash = async (instanceName: string, allowedTeams: string[]) => {
+		console.log('update unleash');
+		await updateUnleashForTeam.mutate({
+			team: team,
+			name: instanceName,
+			allowedTeams: allowedTeams
+		});
+
+		if ($updateUnleashForTeam.errors) {
+			console.log($updateUnleashForTeam.errors);
+			return;
+		}
+
+		unleash = $updateUnleashForTeam.data?.updateUnleashForTeam.instance;
+	};
+
+	const deleteTeam = async (teamName: string) => {
+		const instanceName = unleash?.name || '';
+		const allowedTeams = unleash?.allowedTeams.filter((team) => team !== teamName) || [];
+		await updateUnleash(instanceName, allowedTeams);
+	};
+
+	const addTeam = async (teamName: string) => {
+		console.log('add team', teamName);
 	};
 </script>
 
@@ -191,13 +254,51 @@
 		</Card>
 		<Card columns={4}>
 			<h3>Team access</h3>
-			<ul>
-				{#each unleash.allowedTeams as team}
-					<li>
-						<a href="/team/{team}">{team}</a>
-					</li>
+			<Table size="small" style="margin-top: 2rem" zebraStripes={true}>
+				<Thead>
+					<Tr>
+						<Th>Team</Th>
+						<Th align="right"></Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#each unleash.allowedTeams as team}
+						<Tr>
+							<Td>
+								<a href="/team/{team}">{team}</a>
+							</Td>
+							<Td style="width:100px;" align="right">
+								<Button
+									iconOnly
+									size="small"
+									variant="tertiary-neutral"
+									title="Delete key and value"
+									on:click={() => deleteTeam(team)}
+								>
+									<svelte:fragment slot="icon-left">
+										<TrashIcon style="color:var(--a-icon-danger)!important" />
+									</svelte:fragment>
+								</Button>
+							</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
+			<p>
+				<Button title="Add team" variant="tertiary" size="small" on:click={()=>addTeam("test")}>
+					<svelte:fragment slot="icon-left">
+						<PlusCircleFillIcon />
+					</svelte:fragment>
+					Add team
+				</Button>
+			</p>
+			{#if $updateUnleashForTeam.errors}
+				{#each distinctErrors($updateUnleashForTeam.errors) as error}
+					<Alert style="margin-bottom: 1rem;" variant="error">
+						{error}
+					</Alert>
 				{/each}
-			</ul>
+			{/if}
 		</Card>
 	</div>
 {:else}
