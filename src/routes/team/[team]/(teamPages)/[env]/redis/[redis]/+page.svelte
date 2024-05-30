@@ -21,7 +21,7 @@
 	<GraphErrors errors={$RedisInstance.errors} />
 {:else if redisInstance && redisInstance.name !== PendingValue}
 	<div class="grid">
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3 class="heading">
 				<Redis />
 				{redisInstance.name}
@@ -62,7 +62,7 @@
 				<p>No workloads with configured access</p>
 			{/if}
 		</Card>
-		<Card columns={6}>
+		<Card columns={5}>
 			<h3>Status</h3>
 			<div>
 				{#if redisInstance.status.conditions.length}

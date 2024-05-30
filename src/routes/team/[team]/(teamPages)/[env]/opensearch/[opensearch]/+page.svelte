@@ -21,7 +21,7 @@
 	<GraphErrors errors={$OpenSearch.errors} />
 {:else if openSearch && openSearch.name !== PendingValue}
 	<div class="grid">
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3 class="heading">
 				<Opensearch />
 				{openSearch.name}
@@ -62,7 +62,7 @@
 				<p>No workloads with configured access</p>
 			{/if}
 		</Card>
-		<Card columns={6}>
+		<Card columns={5}>
 			<h3>Status</h3>
 			<div>
 				{#if openSearch.status.conditions.length}

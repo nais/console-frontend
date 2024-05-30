@@ -31,7 +31,7 @@
 	<GraphErrors errors={$BigQueryDatasetInstance.errors} />
 {:else if bigQueryDatasetInstance && bigQueryDatasetInstance.name !== PendingValue}
 	<div class="grid">
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3 class="heading">
 				<BigQueryDataset />
 				{bigQueryDatasetInstance.name}
@@ -66,7 +66,7 @@
 				</dd>
 			</dl>
 		</Card>
-		<Card columns={6} rows={2}>
+		<Card columns={5} rows={2}>
 			<h3>Status</h3>
 			<div>
 				{#if bigQueryDatasetInstance.status.conditions.length}
@@ -101,7 +101,7 @@
 				{/if}
 			</div>
 		</Card>
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3>Access</h3>
 
 			{#if bigQueryDatasetInstance.access.length}

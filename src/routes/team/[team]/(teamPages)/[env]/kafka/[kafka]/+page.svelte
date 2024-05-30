@@ -18,7 +18,7 @@
 	<GraphErrors errors={$KafkaTopic.errors} />
 {:else if topic && topic.id !== PendingValue}
 	<div class="grid">
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3 class="heading">
 				<Kafka />
 				{topic.name}
@@ -54,7 +54,7 @@
 				</Tbody>
 			</Table>
 		</Card>
-		<Card rows={2} columns={6}>
+		<Card rows={2} columns={5}>
 			<h3>Status</h3>
 
 			{#if topic && topic.status}
@@ -116,7 +116,7 @@
 				<p><em>Unable to find topic status</em></p>
 			{/if}
 		</Card>
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3>Topic configuration</h3>
 			{#if topic?.config}
 				<dl>
