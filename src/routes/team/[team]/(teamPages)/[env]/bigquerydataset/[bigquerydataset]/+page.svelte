@@ -31,7 +31,7 @@
 	<GraphErrors errors={$BigQueryDatasetInstance.errors} />
 {:else if bigQueryDatasetInstance && bigQueryDatasetInstance.name !== PendingValue}
 	<div class="grid">
-		<Card columns={6} rows={2}>
+		<Card columns={6}>
 			<h3 class="heading">
 				<BigQueryDataset />
 				{bigQueryDatasetInstance.name}
@@ -66,36 +66,7 @@
 				</dd>
 			</dl>
 		</Card>
-		<Card columns={6}>
-			<h3>Access</h3>
-
-			{#if bigQueryDatasetInstance.access.length}
-				<Table size="small">
-					<Thead>
-						<Tr>
-							<Th>Access</Th>
-							<Th>ServiceAccount</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each bigQueryDatasetInstance.access as access}
-							<Tr>
-								<Td>{access.role}</Td>
-								<Td
-									><div class="email">
-										<span title={access.email}>{access.email}</span>
-										<CopyButton size="xsmall" variant="action" copyText={access.email} />
-									</div>
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			{:else}
-				<p>no workloads with configured access</p>
-			{/if}
-		</Card>
-		<Card columns={6}>
+		<Card columns={6} rows={2}>
 			<h3>Status</h3>
 			<div>
 				{#if bigQueryDatasetInstance.status.conditions.length}
@@ -129,6 +100,35 @@
 					<p>No conditions</p>
 				{/if}
 			</div>
+		</Card>
+		<Card columns={6}>
+			<h3>Access</h3>
+
+			{#if bigQueryDatasetInstance.access.length}
+				<Table size="small">
+					<Thead>
+						<Tr>
+							<Th>Access</Th>
+							<Th>ServiceAccount</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each bigQueryDatasetInstance.access as access}
+							<Tr>
+								<Td>{access.role}</Td>
+								<Td
+									><div class="email">
+										<span title={access.email}>{access.email}</span>
+										<CopyButton size="xsmall" variant="action" copyText={access.email} />
+									</div>
+								</Td>
+							</Tr>
+						{/each}
+					</Tbody>
+				</Table>
+			{:else}
+				<p>no workloads with configured access</p>
+			{/if}
 		</Card>
 	</div>
 {/if}

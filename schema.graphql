@@ -33,6 +33,7 @@ type App implements Workload {
   secrets: [Secret!]!
   status: WorkloadStatus!
   team: Team!
+  type: WorkloadType!
   variables: [Variable!]!
   vulnerabilities: Vulnerability
 }
@@ -1039,6 +1040,7 @@ type NaisJob implements Workload {
   secrets: [Secret!]!
   status: WorkloadStatus!
   team: Team!
+  type: WorkloadType!
   variables: [Variable!]!
 }
 
@@ -2432,10 +2434,16 @@ interface Workload {
   name: String!
   resources: Resources!
   status: WorkloadStatus!
+  type: WorkloadType!
   variables: [Variable!]!
 }
 
 type WorkloadStatus {
   errors: [StateError!]!
   state: State!
+}
+
+enum WorkloadType {
+  APP
+  NAISJOB
 }

@@ -3,6 +3,7 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -75,11 +76,7 @@
 							</Td>
 							<Td>
 								{#if node.workload}
-									<Link
-										href="/team/{teamName}/{node.env.name}/{node.workload?.type === 'App'
-											? 'app'
-											: 'job'}/{node.workload.name}">{node.workload.name}</Link
-									>
+									<WorkloadLink workload={node.workload} env={node.env.name} team={teamName} />
 								{:else}
 									<em title="The Redis instance is owned by the team">Team</em>
 								{/if}

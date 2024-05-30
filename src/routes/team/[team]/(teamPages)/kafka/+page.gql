@@ -19,7 +19,7 @@ query KafkaTopics(
 					name
 				}
 				workload {
-					type: __typename
+					type
 					name
 				}
 			}

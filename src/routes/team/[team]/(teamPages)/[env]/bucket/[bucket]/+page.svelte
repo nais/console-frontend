@@ -69,8 +69,8 @@
 							{#each bucket.cors as rule}
 								{#each rule.origins as origin}
 									<Tr>
-										<Td>{origin === '*' ? 'any host' : origin}</Td>
-										<Td>{rule.methods.map((m) => (m === '*' ? 'any method' : m)).join(', ')}</Td>
+										<Td>{origin === '*' ? 'Any host' : origin}</Td>
+										<Td>{rule.methods.map((m) => (m === '*' ? 'Any method' : m)).join(', ')}</Td>
 									</Tr>
 								{/each}
 							{/each}

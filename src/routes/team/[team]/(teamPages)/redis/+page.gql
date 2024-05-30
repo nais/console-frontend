@@ -19,7 +19,7 @@ query Redis(
 					name
 				}
 				workload {
-					type: __typename
+					type
 					name
 				}
 			}

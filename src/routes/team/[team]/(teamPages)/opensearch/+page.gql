@@ -19,7 +19,7 @@ query OpenSearch(
 					name
 				}
 				workload {
-					type: __typename
+					type
 					name
 				}
 			}

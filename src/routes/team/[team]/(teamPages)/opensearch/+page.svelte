@@ -3,12 +3,14 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		changeParams,
 		sortTable,
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
+	import { resourceLink } from '$lib/utils/links';
 	import {
 		Alert,
 		Link,
@@ -21,7 +23,6 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import { resourceLink } from '$lib/utils/links';
 
 	export let data: PageData;
 
@@ -76,11 +77,7 @@
 							</Td>
 							<Td>
 								{#if node.workload}
-									<a
-										href="/team/{teamName}/{node.env.name}/{node.workload?.type === 'App'
-											? 'app'
-											: 'job'}/{node.workload.name}">{node.workload.name}</a
-									>
+									<WorkloadLink workload={node.workload} env={node.env.name} team={teamName} />
 								{:else}
 									<em title="The OpenSearch instance is owned by the team">Team</em>
 								{/if}

@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import Kafka from '$lib/icons/Kafka.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -18,6 +19,11 @@
 {:else if topic && topic.id !== PendingValue}
 	<div class="grid">
 		<Card columns={6}>
+			<h3 class="heading">
+				<Kafka />
+				{topic.name}
+			</h3>
+
 			<h3>Topic ACLs</h3>
 			<Table size="small">
 				<Thead>
@@ -127,6 +133,12 @@
 {/if}
 
 <style>
+	.heading {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
