@@ -6,10 +6,13 @@
 		Alert,
 		Button,
 		CopyButton,
+		Heading,
 		HelpText,
+		Modal,
 		Table,
 		Tbody,
 		Td,
+		TextField,
 		Th,
 		Thead,
 		Tooltip,
@@ -26,6 +29,8 @@
 	import type { PageData } from './$houdini';
 	import { graphql } from '$houdini';
 	import prettyBytes from 'pretty-bytes';
+	import Confirm from '$lib/components/Confirm.svelte';
+	import { validate } from 'graphql';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
@@ -109,14 +114,51 @@
 		unleash = $updateUnleashForTeam.data?.updateUnleashForTeam.instance;
 	};
 
-	const deleteTeam = async (teamName: string) => {
+	let removeTeamName = '';
+	let removeTeamConfirmOpen = false;
+
+	const removeTeam = async () => {
 		const instanceName = unleash?.name || '';
-		const allowedTeams = unleash?.allowedTeams.filter((team) => team !== teamName) || [];
+		const allowedTeams = unleash?.allowedTeams.filter((team) => team !== removeTeamName) || [];
 		await updateUnleash(instanceName, allowedTeams);
 	};
 
-	const addTeam = async (teamName: string) => {
-		console.log('add team', teamName);
+	const removeTeamClickHandler = async (teamName: string) => {
+		removeTeamName = teamName;
+		removeTeamConfirmOpen = true;
+	};
+
+	let addTeamModalOpen = false;
+	let addTeamInput = '';
+
+	const validateTeam = (team: string) => {
+		if (team.length === 0) {
+			return 'Team name cannot be empty';
+		}
+		return '';
+	};
+
+	const addTeamClickHandler = async () => {
+		addTeamModalOpen = true;
+	};
+
+	const addTeam = async () => {
+		if (validateTeam(addTeamInput).length > 0) {
+			return;
+		}
+
+		const instanceName = unleash?.name || '';
+		const allowedTeams = [...(unleash?.allowedTeams || []), addTeamInput];
+
+		addTeamModalOpen = false;
+		addTeamInput = '';
+
+		await updateUnleash(instanceName, allowedTeams);
+	};
+
+	const addTeamClose = () => {
+		addTeamModalOpen = false;
+		addTeamInput = '';
 	};
 </script>
 
@@ -137,6 +179,43 @@
 		Unleash is not enabled for this tenant. Please contact your administrator.
 	</Alert>
 {:else if unleash}
+	<Confirm
+		confirmText="Delete"
+		variant="danger"
+		bind:open={removeTeamConfirmOpen}
+		on:confirm={removeTeam}
+	>
+		<svelte:fragment slot="header">
+			<Heading>Remove team</Heading>
+		</svelte:fragment>
+		<p>
+			This will permanently remove the team named <b>{removeTeamName}</b> from
+			<b>{unleash.name}</b>.
+		</p>
+
+		Are you sure you want to remove this team?
+	</Confirm>
+
+	<Modal bind:open={addTeamModalOpen} width="medium">
+		<svelte:fragment slot="header">
+			<Heading>Give team access to this Unleash</Heading>
+		</svelte:fragment>
+		<div class="entry">
+			<TextField
+				style="font-family: monospace; font-size: var(--a-font-size-small);"
+				size="small"
+				bind:value={addTeamInput}
+			>
+				<svelte:fragment slot="label">Team name</svelte:fragment>
+				<svelte:fragment slot="description"><i>Valid nais team slug</i></svelte:fragment>
+			</TextField>
+		</div>
+		<svelte:fragment slot="footer">
+			<Button variant="primary" size="small" on:click={addTeam}>Add</Button>
+			<Button variant="secondary" size="small" on:click={addTeamClose}>Cancel</Button>
+		</svelte:fragment>
+	</Modal>
+
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -273,7 +352,7 @@
 									size="small"
 									variant="tertiary-neutral"
 									title="Delete key and value"
-									on:click={() => deleteTeam(team)}
+									on:click={() => removeTeamClickHandler(team)}
 								>
 									<svelte:fragment slot="icon-left">
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
@@ -285,7 +364,7 @@
 				</Tbody>
 			</Table>
 			<p>
-				<Button title="Add team" variant="tertiary" size="small" on:click={()=>addTeam("test")}>
+				<Button title="Add team" variant="tertiary" size="small" on:click={addTeamClickHandler}>
 					<svelte:fragment slot="icon-left">
 						<PlusCircleFillIcon />
 					</svelte:fragment>
