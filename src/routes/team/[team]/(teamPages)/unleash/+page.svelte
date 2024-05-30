@@ -151,13 +151,10 @@
 		addTeamModalOpen = true;
 	};
 
-	let addTeamSearchQuery = '';
-
 	const onClickHandler = (node: SearchQuery$result['search']['nodes'][0], event: MouseEvent) => {
 		event.preventDefault();
 		switch (node.__typename) {
 			case 'Team':
-				addTeamSearchQuery = node.slug;
 				addTeamInput = node.slug;
 				break;
 		}
@@ -168,11 +165,16 @@
 			return;
 		}
 
-		const instanceName = unleash?.name || '';
-		const allowedTeams = [...(unleash?.allowedTeams || []), addTeamInput];
-
-		addTeamModalOpen = false;
+		const teamName = addTeamInput;
 		addTeamInput = '';
+		addTeamModalOpen = false;
+
+		if (unleash?.allowedTeams.includes(teamName)) {
+			return;
+		}
+
+		const instanceName = unleash?.name || '';
+		const allowedTeams = [...(unleash?.allowedTeams || []), teamName];
 
 		await updateUnleash(instanceName, allowedTeams);
 	};
@@ -223,7 +225,7 @@
 				<Heading>Give team access to this Unleash</Heading>
 			</svelte:fragment>
 			<div class="search-container">
-				<SearchTeam bind:query={addTeamSearchQuery} onClick={onClickHandler} />
+				<SearchTeam bind:query={addTeamInput} onClick={onClickHandler} />
 				<Button variant="primary" size="small" on:click={addTeam}>Add</Button>
 				<Button variant="secondary" size="small" on:click={addTeamClose}>Cancel</Button>
 			</div>
