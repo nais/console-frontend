@@ -3,9 +3,9 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import BucketIcon from '$lib/icons/Bucket.svelte';
 	import { CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
+		BucketIcon,
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon
