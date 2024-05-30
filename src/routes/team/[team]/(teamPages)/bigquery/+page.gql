@@ -19,12 +19,8 @@ query BigQuery(
 					name
 				}
 				workload {
-					... on App {
-						name
-					}
-					... on NaisJob {
-						name
-					}
+					type
+					name
 				}
 			}
 		}

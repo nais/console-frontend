@@ -215,13 +215,13 @@
 									{node.env.name}
 								</Td>
 								<Td>
-									<div style="display: flex; align-items: center; width: 15rem">
+									<div style="display: flex; column-gap: .5em; align-items: center; width: 15rem">
 										{#if node.connectionName}
 											<span
 												style="width: 100%; direction: rtl; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
 												title={node.connectionName}>{node.connectionName}</span
 											>
-											<CopyButton size="small" variant="action" copyText={node.connectionName} />
+											<CopyButton size="xsmall" variant="action" copyText={node.connectionName} />
 										{/if}
 									</div>
 								</Td>
@@ -230,15 +230,14 @@
 										<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 									{:else if node.state !== 'RUNNABLE'}
 										<Tooltip content="Unhealthy state: {node.state}" placement="right">
-											<XMarkIcon
-												style="color: var(--a-icon-danger); font-size: 1.2rem"
-											/>
+											<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 										</Tooltip>
 									{:else}
-										<Tooltip content="The SQL instance has config errors. Check conditions on instance page." placement="right">
-											<ExclamationmarkTriangleFillIcon
-												style="color: var(--a-icon-warning)"
-											/>
+										<Tooltip
+											content="The SQL instance has config errors. Check conditions on instance page."
+											placement="right"
+										>
+											<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
 										</Tooltip>
 									{/if}
 								</Td>

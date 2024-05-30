@@ -1,0 +1,33 @@
+query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+	team(slug: $team) {
+		redisInstance(env: $env, name: $name) {
+			id
+			name
+			cost
+			env {
+				name
+			}
+			status {
+				conditions {
+					reason
+					type
+					status
+					message
+					lastTransitionTime
+				}
+				state
+			}
+			workload {
+				name
+				type: __typename
+			}
+			access {
+				workload {
+					type: __typename
+					name
+				}
+				role
+			}
+		}
+	}
+}

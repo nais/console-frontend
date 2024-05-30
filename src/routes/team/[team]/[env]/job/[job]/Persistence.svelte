@@ -34,13 +34,18 @@
 							team
 						}
 					}
+
 					... on OpenSearch {
 						name
-						access
+						openSearchInstanceAccess: access {
+							role
+						}
 					}
 					... on Redis {
 						name
-						access
+						redisInstanceAccess: access {
+							role
+						}
 					}
 				}
 			}
@@ -98,14 +103,14 @@
 			<div class="persistenceContent">
 				<h5><Opensearch />{persistence.__typename}</h5>
 				<span><b>Instance:</b> {persistence.name}</span>
-				<span><b>Access:</b> ({persistence.access})</span>
+				<span><b>Access:</b> ({persistence.openSearchInstanceAccess})</span>
 			</div>
 		{:else if persistence.__typename === 'Redis'}
 			<div class="persistenceContent">
-				<h5><!--Opensearch /-->{persistence.__typename}</h5>
+				<h5>{persistence.__typename}</h5>
 
 				<span><b>Instance:</b> {persistence.name}</span>
-				<span><b>Access:</b> {persistence.access}</span>
+				<span><b>Access:</b> {persistence.redisInstanceAccess}</span>
 			</div>
 		{/if}
 	{:else}

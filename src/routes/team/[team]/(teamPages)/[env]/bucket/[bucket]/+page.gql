@@ -1,0 +1,33 @@
+query Bucket($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+	team(slug: $team) {
+		bucket(env: $env, name: $name) {
+			id
+			cors {
+				maxAgeSeconds
+				methods
+				origins
+				responseHeaders
+			}
+			publicAccessPrevention
+			uniformBucketLevelAccess
+			status {
+				conditions {
+					message
+					reason
+					status
+					type
+					lastTransitionTime
+				}
+				selfLink
+			}
+			name
+			projectId
+			env {
+				name
+			}
+			workload {
+				name
+			}
+		}
+	}
+}

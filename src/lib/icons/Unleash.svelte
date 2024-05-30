@@ -6,19 +6,23 @@
 	xmlns="http://www.w3.org/2000/svg"
 	width={size}
 	height={size}
-	viewBox="0 0 24 24"
+	viewBox="0 0 70 70"
 	fill="none"
 	{...$$restProps}
 >
-	<path
-		fill="currentColor"
-		fill-rule="evenodd"
-		d="M3.75 12a8.25 8.25 0 1 1 16.5-.003A8.25 8.25 0 0 1 3.75 12ZM12 2.25A9.75 9.75 0 0 0 2.25 12 9.75 9.75 0 0 0 12 21.75 9.75 9.75 0 0 0 21.75 12 9.75 9.75 0 0 0 12 2.25z"
-		clip-rule="evenodd"
-	/><path
-		fill="currentColor"
-		d="M-14.295-20.81a1.517 1.517 0 0 0-1.516 1.515V-2.799a1.517 1.517 0 0 0 1.516 1.518h11l5.498.002a1.517 1.517 0 0 0 1.518-1.518l-.002-5.498v-11A1.517 1.517 0 0 0 2.2-20.81h-5.496a1.517 1.517 0 0 0-1.518 1.516v9.483h-2.466v-9.483a1.517 1.517 0 0 0-1.516-1.516zm1.516 3.03h2.468v9.485a1.517 1.517 0 0 0 1.516 1.516h5.5a1.517 1.517 0 0 0 1.516-1.516v-9.484H.686v3.984l.001 5.5v3.982h-3.982l-5.5-.001h-3.984v-9.48z"
-		color="currentColor"
-		transform="translate(14.99 17.463) scale(.4946)"
-	/>
+	<g clip-path="url(#clip0)">
+		<circle stroke="#222" cx="35" cy="35" r="30" stroke-width="4"></circle>
+		<path d="M34.3043 17.2658V25.785V34.3043H42.8198V25.785V17.2658H34.3043Z" fill="#000"
+			transform="translate(5 5)"
+		 />
+		<path
+			d="M25.7851 25.785V17.2658H17.2659V25.785V34.3043V42.8198H25.7851H34.3044V34.3043H25.7851V25.785Z"
+			fill="#000"
+			transform="translate(5 5)"
+		/>
+		<path d="M42.8236 34.3045H34.3043V42.8237H42.8236V34.3045Z" stroke="#000" fill="#fff"
+		
+			transform="translate(5 5)"
+		/>
+	</g>
 </svg>

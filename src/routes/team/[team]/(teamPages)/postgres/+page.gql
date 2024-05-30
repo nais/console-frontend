@@ -37,12 +37,8 @@ query SqlInstances(
 				type
 				connectionName
 				workload {
-					... on App {
-						name
-					}
-					... on NaisJob {
-						name
-					}
+					type: __typename
+					name
 				}
 				metrics {
 					cost
