@@ -15,6 +15,7 @@
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
+		Button,
 		Skeleton,
 		Table,
 		Tbody,
@@ -96,38 +97,52 @@
 									</Td>
 									<Td>{node.env.name}</Td>
 									<Td style="text-align: center;">
-										{#if node.image.summary.critical > 0}
-											<div class="badge">
-												<Tooltip
-													placement="right"
-													content="{node.image.summary
-														.critical} vulnerabilities found. Please update your dependencies!"
-												>
-													<VulnerabilityBadge
-														text={String(node.image.summary.critical)}
-														color={severityToColor('critical')}
-														size={'32px'}
-													/>
+										<Button
+											as="a"
+											variant="tertiary-neutral"
+											size="small"
+											href="/team/{teamName}/{node.env.name}/app/{node.name}/image"
+										>
+											{#if node.image.summary.critical > 0}
+												<div class="badge">
+													<Tooltip
+														placement="right"
+														content="{node.image.summary
+															.critical} vulnerabilities found. Please update your dependencies!"
+													>
+														<VulnerabilityBadge
+															text={String(node.image.summary.critical)}
+															color={severityToColor('critical')}
+															size={'32px'}
+														/>
+													</Tooltip>
+												</div>
+											{:else if node.image.summary.critical < 0}
+												<Tooltip placement="right" content="No data found in dependencytrack">
+													NA
 												</Tooltip>
-											</div>
-										{:else if node.image.summary.critical < 0}
-											<Tooltip placement="right" content="No data found in dependencytrack">
-												<code class="check fail">-</code>
-											</Tooltip>
-										{:else}
-											<Tooltip placement="right" content="No critical vulnerabilities found">
-												<code class="check success">&check;</code>
-											</Tooltip>
-										{/if}
+											{:else}
+												<Tooltip placement="right" content="No critical vulnerabilities found">
+													<code class="check success">&check;</code>
+												</Tooltip>
+											{/if}
+										</Button>
 									</Td>
 									<Td style="text-align: center">
-										{#if node.image.summary.riskScore < 0}
-											<Tooltip placement="right" content="No data found in dependencytrack">
-												<code class="check fail">-</code>
-											</Tooltip>
-										{:else}
-											{node.image.summary.riskScore}
-										{/if}
+										<Button
+											as="a"
+											variant="tertiary"
+											size="small"
+											href="/team/{teamName}/{node.env.name}/app/{node.name}/image"
+										>
+											{#if node.image.summary.riskScore < 0}
+												<Tooltip placement="right" content="No data found in dependencytrack">
+													NA
+												</Tooltip>
+											{:else}
+												{node.image.summary.riskScore}
+											{/if}
+										</Button>
 									</Td>
 
 									<Td>
@@ -188,9 +203,5 @@
 	}
 	.success {
 		color: #4dbd74;
-	}
-
-	.fail {
-		color: #f86c6b;
 	}
 </style>

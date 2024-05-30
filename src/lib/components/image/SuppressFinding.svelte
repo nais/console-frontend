@@ -23,6 +23,20 @@
 			readonly state: string;
 		} | null;
 	};
+
+	export type WorkloadReferencesType = {
+		readonly id: string;
+		readonly name: string;
+		readonly team: string;
+		readonly workloadType: string;
+		readonly environment: string;
+		readonly deployInfo: {
+			readonly deployer: string;
+			readonly timestamp: Date | null;
+			readonly commitSha: string;
+			readonly url: string;
+		};
+	}[];
 </script>
 
 <script lang="ts">
@@ -36,12 +50,21 @@
 		Heading,
 		Modal,
 		Select,
-		TextField
+		Table,
+		Tbody,
+		Td,
+		TextField,
+		Th,
+		Thead,
+		Tr
 	} from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
+	import { joinAliases, parseComment } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
+	export let workloads: WorkloadReferencesType;
+
 	export let user: string;
 
 	export let projectId: string;
@@ -126,13 +149,6 @@
 		}
 	`);
 
-	function joinAliases(aliases: { name: string; source: string }[], vulnId: string) {
-		return aliases
-			.filter((a) => a.name !== vulnId)
-			.map((a) => a.name)
-			.join(', ');
-	}
-
 	const SUPPRESS_OPTIONS = [
 		{ value: '', text: 'Suppress reason' },
 		{ value: 'IN_TRIAGE', text: 'In triage' },
@@ -148,8 +164,9 @@
 		}
 		return '';
 	};
-	inputText =
-		finding.analysisTrail?.comments?.[finding.analysisTrail?.comments?.length - 1]?.comment ?? '';
+	inputText = parseComment(
+		finding.analysisTrail?.comments?.[finding.analysisTrail?.comments?.length - 1]?.comment ?? ''
+	).comment;
 	selectedReason = finding.analysisTrail?.state ?? '';
 	suppressed = finding.analysisTrail?.isSuppressed ?? false;
 
@@ -160,6 +177,10 @@
 	<svelte:fragment slot="header">
 		<Heading>Suppress finding for {finding.vulnId}</Heading>
 	</svelte:fragment>
+	<Alert variant="info">
+		Please provide a reason for suppressing this finding. This will be recorded in the analysis
+		trail. Suppression will be effective for all workloads using this image.
+	</Alert>
 	<dl>
 		<dt>Package:</dt>
 		<dd><code>{finding.packageUrl}</code></dd>
@@ -172,11 +193,31 @@
 			{finding.description !== '' ? finding.description : 'No description'}
 		</dd>
 	</dl>
+	<div class="workload">
+		<h5>Affected workloads</h5>
+		<Table size="small" zebraStripes>
+			<Thead>
+				<Th>Environment</Th>
+				<Th>Team</Th>
+				<Th>Workload</Th>
+			</Thead>
+			<Tbody>
+				{#each workloads as workload}
+					<Tr>
+						<Td>{workload.environment}</Td>
+						<Td>{workload.team}</Td>
+						<Td>{workload.name}</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+	</div>
+
 	<div class="wrapper">
 		<Select size="medium" label="Analysis" bind:value={selectedReason}>
 			{#each SUPPRESS_OPTIONS as option}
 				{#if option.value === finding.state}
-					<option value={option.value} selected={true}>{option.text} </option>
+					<option value={option.value}>{option.text} </option>
 				{:else}
 					<option value={option.value}>{option.text}</option>
 				{/if}
@@ -212,5 +253,8 @@
 	}
 	code {
 		font-size: 1rem;
+	}
+	.workload {
+		margin: 1rem 0;
 	}
 </style>

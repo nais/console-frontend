@@ -15,13 +15,11 @@
 		deploy: 'deploys',
 		cost: 'cost',
 		utilization: 'utilization',
-		vulnerabilities: 'vulnerabilities',
 		members: 'members',
 		repositories: 'repositories',
 		settings: 'settings',
 		secrets: 'secrets',
-		postgres: 'postgres',
-		images: 'images'
+		postgres: 'postgres'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -56,14 +54,6 @@
 				{
 					name: 'audit logs',
 					path: replacer('/team/[team]/(teamPages)/settings/audit_logs', params)
-				}
-			];
-		},
-		'/team/[team]/(teamPages)/images': (params: Data) => {
-			return [
-				{
-					name: 'images',
-					path: replacer('/team/[team]/(teamPages)/images', params)
 				}
 			];
 		},

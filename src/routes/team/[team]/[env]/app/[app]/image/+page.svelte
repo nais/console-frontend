@@ -349,6 +349,7 @@
 		projectId={image?.projectId}
 		bind:open={suppressOpen}
 		finding={findingToSuppress}
+		workloads={image.workloadReferences}
 		{user}
 		on:close={() => {
 			findingToSuppress = undefined;
@@ -363,10 +364,11 @@
 		}}
 	/>
 {/if}
-{#if analysisTrail}
+{#if analysisTrail && image && image.projectId !== PendingValue}
 	<TrailFinding
 		bind:open={analysisOpen}
 		finding={analysisTrail}
+		workloads={image.workloadReferences}
 		on:close={() => {
 			analysisTrail = undefined;
 		}}

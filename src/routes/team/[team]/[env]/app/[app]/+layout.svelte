@@ -40,6 +40,11 @@
 		{
 			items: [
 				{
+					name: 'Image details',
+					routeId: '/team/[team]/[env]/app/[app]/image',
+					icon: ImageIcon
+				},
+				{
 					name: 'Deploys',
 					routeId: '/team/[team]/[env]/app/[app]/deploys',
 					icon: ArrowsSquarepathIcon
@@ -67,11 +72,6 @@
 					name: 'Manifest',
 					routeId: '/team/[team]/[env]/app/[app]/manifest',
 					icon: FileTextIcon
-				},
-				{
-					name: 'Image details',
-					routeId: '/team/[team]/[env]/app/[app]/image',
-					icon: ImageIcon
 				}
 			]
 		},
