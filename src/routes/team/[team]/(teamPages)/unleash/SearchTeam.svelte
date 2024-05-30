@@ -49,10 +49,10 @@
 	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
-	export let onClick: (node: SearchQuery$result['search']['nodes'][0], e: MouseEvent) => void = (
-		node,
-		e
-	) => {
+	export let onClick: (
+		node: SearchQuery$result['search']['nodes'][0],
+		e: MouseEvent | KeyboardEvent
+	) => void = (node, e) => {
 		query = '';
 		showSearch = false;
 	};
@@ -87,14 +87,8 @@
 				if (selected >= 0) {
 					const node = $store.data?.search.nodes[selected];
 					if (!node) return;
-					query = '';
-					selected = -1;
 
-					if (node.__typename === 'Team') {
-						query = '';
-						showSearch = false;
-						//goto(`/team/${node.slug}`);
-					}
+					onClick(node, event);
 				}
 				break;
 			case 'Escape':

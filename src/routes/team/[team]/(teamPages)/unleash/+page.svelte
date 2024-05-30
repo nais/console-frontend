@@ -151,7 +151,10 @@
 		addTeamModalOpen = true;
 	};
 
-	const onClickHandler = (node: SearchQuery$result['search']['nodes'][0], event: MouseEvent) => {
+	const onClickHandler = (
+		node: SearchQuery$result['search']['nodes'][0],
+		event: MouseEvent | KeyboardEvent
+	) => {
 		event.preventDefault();
 		switch (node.__typename) {
 			case 'Team':
