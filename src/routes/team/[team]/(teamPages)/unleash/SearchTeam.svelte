@@ -3,12 +3,9 @@
 	import { graphql, type SearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
-	import { InformationSquareIcon } from '@nais/ds-svelte-community/icons';
-
-	export let team: string = '';
 
 	const store = graphql(`
-		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
+		query TeamSearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
 			search(limit: 10, query: $query, filter: { type: $type }) {
 				nodes @loading(count: 10) {
 					__typename
@@ -110,7 +107,7 @@
 
 <div class="search">
 	<Search
-		placeholder="Search for apps, jobs, teams and more..."
+		placeholder="Search for teams..."
 		bind:value={query}
 		label="search"
 		variant="simple"
