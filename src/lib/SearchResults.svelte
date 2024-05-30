@@ -2,8 +2,12 @@
 	import type { SearchQuery$result } from '$houdini';
 	import { PendingValue } from '$houdini';
 	import { Skeleton } from '@nais/ds-svelte-community';
-	import { DatabaseIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { BucketIcon, DatabaseIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
+	import Redis from './icons/Redis.svelte';
+	import BigQuery from './icons/BigQuery.svelte';
+	import Opensearch from './icons/Opensearch.svelte';
+	import Kafka from './icons/Kafka.svelte';
 
 	export let data: SearchQuery$result;
 	export let query: string;
@@ -112,7 +116,132 @@
 						</div>
 						<div class="searchInfo">
 							{node.env.name} /
-							{node.team.slug}
+							{node.team.slug} - {node.__typename}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'Bucket'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.env.name}/bucket/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<BucketIcon height="1.5rem" />
+						<div>Bucket</div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.slug} - {node.__typename}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'OpenSearch'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.env.name}/opensearch/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<Opensearch height="1.5rem" />
+						<div></div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.slug} - {node.__typename}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'Redis'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.env.name}/redis/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<Redis height="1.5rem" />
+						<div>Redis</div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.slug} - {node.__typename}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'KafkaTopic'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.env.name}/kafka/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<Kafka height="1.5rem" />
+						<div>Kafka</div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.slug} - {node.__typename}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'BigQueryDataset'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.env.name}/bigquery/{node.name}"
+					on:click={() => {
+						query = '';
+						showSearch = false;
+					}}
+				>
+					<div class="typeIcon">
+						<BigQuery height="1.5rem" />
+						<div>BQ</div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.env.name} /
+							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
 				</a>
