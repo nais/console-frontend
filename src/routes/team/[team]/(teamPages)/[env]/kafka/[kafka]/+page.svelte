@@ -119,7 +119,7 @@
 		<Card columns={7}>
 			<h3>Topic configuration</h3>
 			{#if topic?.config}
-				<dl>
+				<dl class="status">
 					{#each Object.entries(topic?.config) as [key, value]}
 						<dt>{key}</dt>
 						<dd>{value}</dd>
