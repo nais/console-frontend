@@ -27,10 +27,11 @@
 		PlusCircleFillIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import { graphql } from '$houdini';
+	import { graphql, type SearchQuery$result } from '$houdini';
 	import prettyBytes from 'pretty-bytes';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import { validate } from 'graphql';
+	import SearchTeam from './SearchTeam.svelte';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
@@ -142,6 +143,18 @@
 		addTeamModalOpen = true;
 	};
 
+	let addTeamSearchQuery = '';
+
+	const onClickHandler = (node: SearchQuery$result['search']['nodes'][0], event: MouseEvent) => {
+		event.preventDefault();
+		switch (node.__typename) {
+			case 'Team':
+				addTeamSearchQuery = node.slug;
+				addTeamInput = node.slug;
+				break;
+		}
+	};
+
 	const addTeam = async () => {
 		if (validateTeam(addTeamInput).length > 0) {
 			return;
@@ -196,25 +209,19 @@
 		Are you sure you want to remove this team?
 	</Confirm>
 
-	<Modal bind:open={addTeamModalOpen} width="medium">
-		<svelte:fragment slot="header">
-			<Heading>Give team access to this Unleash</Heading>
-		</svelte:fragment>
-		<div class="entry">
-			<TextField
-				style="font-family: monospace; font-size: var(--a-font-size-small);"
-				size="small"
-				bind:value={addTeamInput}
-			>
-				<svelte:fragment slot="label">Team name</svelte:fragment>
-				<svelte:fragment slot="description"><i>Valid nais team slug</i></svelte:fragment>
-			</TextField>
-		</div>
-		<svelte:fragment slot="footer">
-			<Button variant="primary" size="small" on:click={addTeam}>Add</Button>
-			<Button variant="secondary" size="small" on:click={addTeamClose}>Cancel</Button>
-		</svelte:fragment>
-	</Modal>
+	<div class="modal-overrider">
+		<Modal bind:open={addTeamModalOpen} width="small">
+			<svelte:fragment slot="header">
+				<Heading>Give team access to this Unleash</Heading>
+			</svelte:fragment>
+			<div class="search-container">
+				<SearchTeam bind:query={addTeamSearchQuery} onClick={onClickHandler} />
+				<Button variant="primary" size="small" on:click={addTeam}>Add</Button>
+				<Button variant="secondary" size="small" on:click={addTeamClose}>Cancel</Button>
+			</div>
+			<svelte:fragment slot="footer"></svelte:fragment>
+		</Modal>
+	</div>
 
 	<div class="summary-grid">
 		<Card columns={3}>
@@ -399,6 +406,19 @@
 {/if}
 
 <style>
+	.modal-overrider :global(.navds-modal) {
+		overflow: visible;
+	}
+
+	.modal-overrider :global(.navds-modal__body) {
+		overflow: visible;
+	}
+
+	.search-container {
+		display: flex;
+		gap: 0 0.5rem;
+	}
+
 	.grid {
 		display: grid;
 		column-gap: 0.5rem;
