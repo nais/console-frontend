@@ -13,7 +13,18 @@ query Image(
 			version
 			name
 			digest
-			rekorId
+			rekor @loading {
+				buildTrigger
+				buildConfigURI
+				gitHubWorkflowName
+				gitHubWorkflowRef
+				logIndex
+				oIDCIssuer
+				runInvocationURI
+				runnerEnvironment
+				sourceRepositoryOwnerURI
+				integratedTime
+			}
 			summary @loading {
 				id
 				critical

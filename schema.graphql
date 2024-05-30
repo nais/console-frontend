@@ -555,7 +555,7 @@ type Image {
   id: ID!
   name: String!
   projectId: String!
-  rekorId: String!
+  rekor: Rekor!
   summary: ImageVulnerabilitySummary!
   version: String!
   workloadReferences: [WorkloadReference!]!
@@ -1530,6 +1530,19 @@ type Redis implements Persistence {
 type RedisList {
   nodes: [Redis!]!
   pageInfo: PageInfo!
+}
+
+type Rekor {
+  buildConfigURI: String!
+  buildTrigger: String!
+  gitHubWorkflowName: String!
+  gitHubWorkflowRef: String!
+  integratedTime: Int!
+  logIndex: String!
+  oIDCIssuer: String!
+  runInvocationURI: String!
+  runnerEnvironment: String!
+  sourceRepositoryOwnerURI: String!
 }
 
 """Repository authorizations."""

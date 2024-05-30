@@ -19,7 +19,7 @@
 	export let finding: FindingType;
 	export let workloads: WorkloadReferencesType;
 
-	let sortedComments = finding.analysisTrail?.comments.sort((a, b) => {
+	$: sortedComments = finding.analysisTrail?.comments.sort((a, b) => {
 		if (a && b) {
 			return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
 		}
@@ -40,9 +40,12 @@
 	</svelte:fragment>
 	<div class="wrapper">
 		{#if finding.analysisTrail}
-			<p>Package: {finding.packageUrl}</p>
-			<p>Aliases: {joinAliases(finding.aliases, finding.vulnId)}</p>
-			<p>State: {finding.analysisTrail?.state}</p>
+			Package: <code>{finding.packageUrl}</code><br />
+			{#if finding.aliases.length > 0}
+				Alias(es): <code>{joinAliases(finding.aliases, finding.vulnId)}</code><br />
+			{/if}
+			Description: {finding.description !== '' ? finding.description : 'No description'}<br />
+
 			<div class="workload">
 				<h5>Affected workloads</h5>
 				<Table size="small" zebraStripes>
@@ -102,11 +105,16 @@
 	}
 	.workload {
 		margin: 1rem 0;
+
+		overflow: auto;
 	}
 	.trail {
 		display: block;
 
 		overflow: auto;
-		height: 15vw;
+	}
+
+	code {
+		font-size: 0.9rem;
 	}
 </style>

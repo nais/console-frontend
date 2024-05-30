@@ -59,7 +59,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
-	import { joinAliases, parseComment } from './imageUtils';
+	import { joinAliases } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
@@ -164,12 +164,16 @@
 		}
 		return '';
 	};
-	inputText = parseComment(
-		finding.analysisTrail?.comments?.[finding.analysisTrail?.comments?.length - 1]?.comment ?? ''
-	).comment;
-	selectedReason = finding.analysisTrail?.state ?? '';
-	suppressed = finding.analysisTrail?.isSuppressed ?? false;
 
+	// TODO: Trenger hjelp av Thomas...
+	/*inputText = parseComment(
+			finding.analysisTrail?.comments?.[finding.analysisTrail?.comments?.length - 1]?.comment ?? ''
+		).comment;*/
+	if (finding.analysisTrail) {
+		console.log('hei hei');
+		selectedReason = finding.analysisTrail.state;
+		suppressed = finding.analysisTrail.isSuppressed;
+	}
 	// on click should send a request to analysis endpoint for dependency track
 </script>
 
@@ -181,18 +185,13 @@
 		Please provide a reason for suppressing this finding. This will be recorded in the analysis
 		trail. Suppression will be effective for all workloads using this image.
 	</Alert>
-	<dl>
-		<dt>Package:</dt>
-		<dd><code>{finding.packageUrl}</code></dd>
+	<div class="info">
+		Package: <code>{finding.packageUrl}</code><br />
 		{#if finding.aliases.length > 0}
-			<dt>Alias(es):</dt>
-			<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
+			Alias(es): <code>{joinAliases(finding.aliases, finding.vulnId)}</code><br />
 		{/if}
-		<dt>Description:</dt>
-		<dd>
-			{finding.description !== '' ? finding.description : 'No description'}
-		</dd>
-	</dl>
+		Description: {finding.description !== '' ? finding.description : 'No description'}
+	</div>
 	<div class="workload">
 		<h5>Affected workloads</h5>
 		<Table size="small" zebraStripes>
@@ -214,7 +213,7 @@
 	</div>
 
 	<div class="wrapper">
-		<Select size="medium" label="Analysis" bind:value={selectedReason}>
+		<Select size="small" label="Analysis" bind:value={selectedReason}>
 			{#each SUPPRESS_OPTIONS as option}
 				{#if option.value === finding.state}
 					<option value={option.value}>{option.text} </option>
@@ -228,7 +227,7 @@
 			<svelte:fragment slot="label">Comment</svelte:fragment>
 		</TextField>
 		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
-		<p>Updated by: {user}</p>
+		Updated by: {user}<br />
 		{#if $suppress.errors}
 			<Alert variant="error">
 				{#each $suppress.errors as error}
@@ -252,9 +251,13 @@
 		gap: 1rem;
 	}
 	code {
-		font-size: 1rem;
+		font-size: 0.9rem;
 	}
+
 	.workload {
+		margin: 1rem 0;
+	}
+	.info {
 		margin: 1rem 0;
 	}
 </style>

@@ -59,7 +59,6 @@
 
 	const notificationBadgeSize = '48px';
 
-	let job = $page.params.job;
 	let env = $page.params.env;
 	let team = $page.params.team;
 
@@ -88,10 +87,10 @@
 {/if}
 {#if image}
 	<div class="grid">
-		<Card columns={7}>
-			<h4 class="imageHeader">
-				Image details
-				{#if image.id !== PendingValue}
+		{#if image.id !== PendingValue}
+			<Card columns={8}>
+				<h4 class="imageHeader">
+					Image details
 					<CopyButton
 						size="xsmall"
 						variant="action"
@@ -99,56 +98,56 @@
 						activeText="Image name copied"
 						copyText={image.name}
 					/>
-				{/if}
-			</h4>
-
-			<dl>
-				<dt>Registry</dt>
-				<dd>
-					{#if image.id !== PendingValue}
+				</h4>
+				<div class="imageGrid">
+					<div class="registry">
+						<h5>Registry</h5>
 						<code>{registry}</code>
-					{:else}
-						<Skeleton variant="text" />
-					{/if}
-				</dd>
-				<dt>Repository</dt>
-				<dd>
-					{#if image.id !== PendingValue}
+					</div>
+					<div class="repository">
+						<h5>Repository</h5>
 						<code>{repository}</code>
-					{:else}
-						<Skeleton variant="text" />
-					{/if}
-				</dd>
-
-				<dt>Name</dt>
-				<dd>
-					{#if image.id !== PendingValue}
+					</div>
+					<div class="imageName">
+						<h5>Name</h5>
 						<code>{name}</code>
-					{:else}
-						<Skeleton variant="text" />
-					{/if}
-				</dd>
-				<dt>Tag</dt>
-				<dd>
-					{#if image.id !== PendingValue}
+					</div>
+					<div class="tag">
+						<h5>Tag</h5>
 						<code>{tag}</code>
-					{:else}
-						<Skeleton variant="text" />
-					{/if}
-				</dd>
-				<dt>Digest</dt>
-				<dd>
-					{#if image.id !== PendingValue}
+					</div>
+					<div class="commitSha">
+						<h5>Commit SHA</h5>
 						<code>{image.digest}</code>
-					{:else}
-						<Skeleton variant="text" />
-					{/if}
-				</dd>
-			</dl>
-		</Card>
+					</div>
 
-		<Card columns={5}>
+					<div class="rekor">
+						<h5>Rekor</h5>
+						<code
+							><a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}"
+								>https://search.sigstore.dev/?logIndex={image.rekor.logIndex}</a
+							></code
+						>
+					</div>
+					<div class="oidc">
+						<h5>OIDC Issuer</h5>
+						<code>{image.rekor.oIDCIssuer}</code>
+					</div>
+					<!--div class="build">
+						<h5>Build Config URI</h5>
+						<code>{image.rekor.buildConfigURI}</code>
+					</div-->
+					<div class="run">
+						<h5>Run Invocation URI</h5>
+						<code><a href={image.rekor.runInvocationURI}>{image.rekor.runInvocationURI}</a></code>
+					</div>
+				</div>
+			</Card>
+		{/if}
+
+		<Card columns={4}>
 			<h4>Vulnerabilities summary</h4>
+
 			<div class="circles">
 				{#if image.summary.critical === PendingValue}
 					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
@@ -206,28 +205,18 @@
 					</Tooltip>
 				{/if}
 			</div>
-			<p>Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''}</p>
-			<p>
-				Explore in
-				{#if image.projectId !== PendingValue}
-					<Link href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
-						>Dependency track<ExternalLinkIcon
-							title="Open project in Dependency track"
-							font-size="1.5rem"
-						/></Link
-					>
-				{/if}
-			</p>
-			<p>
-				Attestation URL:
-				{#if image.rekorId !== PendingValue}
-					<Link href="https://search.sigstore.dev/?logIndex={image.rekorId}" target="_blank"
-						>Rekor<ExternalLinkIcon title="Open attestation in Sigstore" font-size="1.5rem" /></Link
-					>
-				{/if}
-			</p>
-		</Card>
+			Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''} <br />
 
+			Explore findings in
+			{#if image.projectId !== PendingValue}
+				<Link href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
+					>Dependency track<ExternalLinkIcon
+						title="Open project in Dependency track"
+						font-size="1.5rem"
+					/></Link
+				>
+			{/if}
+		</Card>
 		<Card columns={12}>
 			<h4>Findings</h4>
 			{#if image.findings}
@@ -349,6 +338,7 @@
 		projectId={image?.projectId}
 		bind:open={suppressOpen}
 		finding={findingToSuppress}
+		workloads={image.workloadReferences}
 		{user}
 		on:close={() => {
 			findingToSuppress = undefined;
@@ -356,17 +346,18 @@
 			setTimeout(() => {
 				// refetch the image to update the findings
 				summary.fetch({
-					variables: { env, team, job },
+					variables: { env: env, team: team, job: name },
 					policy: 'NetworkOnly'
 				});
 			}, 2000);
 		}}
 	/>
 {/if}
-{#if analysisTrail}
+{#if analysisTrail && image && image.projectId !== PendingValue}
 	<TrailFinding
 		bind:open={analysisOpen}
 		finding={analysisTrail}
+		workloads={image.workloadReferences}
 		on:close={() => {
 			analysisTrail = undefined;
 		}}
@@ -376,7 +367,9 @@
 <style>
 	.circles {
 		display: flex;
-		gap: 1rem;
+		align-items: center;
+		justify-content: space-between;
+		margin: 2rem;
 	}
 
 	.imageHeader {
@@ -391,21 +384,72 @@
 		font-size: 1rem;
 	}
 
-	dt {
-		font-size: 1rem;
-	}
-
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+	.imageGrid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		column-gap: 0.2rem;
+		row-gap: 0.2rem;
+	}
+
 	.pagination {
 		margin-top: 1rem;
 	}
 
 	code {
 		font-size: 0.8rem;
+	}
+
+	.registry {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.repository {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.imageName {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	.tag {
+		grid-column: 2;
+		grid-row: 2;
+	}
+
+	.commitSha {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		grid-row: 3;
+	}
+
+	.rekor {
+		grid-column: 1;
+		grid-row: 4;
+	}
+
+	.oidc {
+		grid-column: 2;
+		grid-row: 4;
+	}
+
+	/*.build {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		grid-row: 5;
+	}*/
+
+	.run {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		grid-row: 6;
 	}
 </style>
