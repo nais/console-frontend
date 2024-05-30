@@ -37,6 +37,14 @@
 	$: ({ Unleash } = data);
 	$: team = $page.params.team;
 	$: unleash = $Unleash.data?.team?.unleash.instance;
+	$: metrics = $Unleash.data?.team?.unleash.instance?.metrics || {
+		apiTokens: 0,
+		cpuUtilization: 0,
+		cpuRequests: 0,
+		memoryUtilization: 0,
+		memoryRequests: 0,
+		toggles: 0
+	};
 	$: enabled = $Unleash.data?.team?.unleash.enabled;
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 
@@ -235,7 +243,7 @@
 						<HelpText title="">Number of feature toggles in the Unleash server.</HelpText>
 					</h4>
 					<p class="metric">
-						{unleash.metrics.toggles}
+						{metrics.toggles}
 					</p>
 				</div>
 			</div>
@@ -253,7 +261,7 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{unleash.metrics.apiTokens}
+						{metrics.apiTokens}
 					</p>
 				</div>
 			</div>
@@ -261,7 +269,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={unleash.metrics.cpuUtilization / 100} />
+					<CircleProgressBar progress={metrics.cpuUtilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -271,7 +279,7 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{unleash.metrics.cpuUtilization.toFixed(1)}% of {unleash.metrics.cpuRequests} CPUs
+						{metrics.cpuUtilization.toFixed(1)}% of {metrics.cpuRequests} CPUs
 					</p>
 				</div>
 			</div>
@@ -279,7 +287,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={unleash.metrics.memoryUtilization / 100} />
+					<CircleProgressBar progress={metrics.memoryUtilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -289,9 +297,7 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{unleash.metrics.memoryUtilization.toFixed(1)}% of {prettyBytes(
-							unleash.metrics.memoryRequests
-						)}
+						{metrics.memoryUtilization.toFixed(1)}% of {prettyBytes(metrics.memoryRequests)}
 					</p>
 				</div>
 			</div>
