@@ -215,13 +215,13 @@
 									{node.env.name}
 								</Td>
 								<Td>
-									<div style="display: flex; align-items: center; width: 15rem">
+									<div style="display: flex; column-gap: .5em; align-items: center; width: 15rem">
 										{#if node.connectionName}
 											<span
 												style="width: 100%; direction: rtl; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
 												title={node.connectionName}>{node.connectionName}</span
 											>
-											<CopyButton size="small" variant="action" copyText={node.connectionName} />
+											<CopyButton size="xsmall" variant="action" copyText={node.connectionName} />
 										{/if}
 									</div>
 								</Td>
