@@ -1313,9 +1313,6 @@ type Query {
     to: Date!
   ): DailyCost!
 
-  """Get image by dependency track project id."""
-  dependencyTrackProject(projectId: String!): Image!
-
   """Get a list of deployments."""
   deployments(limit: Int, offset: Int): DeploymentList!
 
@@ -2156,7 +2153,7 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): VulnerabilityList!
-  vulnerabilitiesSummary: VulnerabilitySummary!
+  vulnerabilitiesSummary: VulnerabilitySummaryForTeam!
 
   """The vulnerabilities for the team's applications over time."""
   vulnerabilityMetrics(environment: String, from: Date!, to: Date!): VulnerabilityMetrics!
@@ -2382,7 +2379,7 @@ type Vulnerability {
   findingsLink: String!
   hasBom: Boolean!
   id: ID!
-  summary: VulnerabilitySummary
+  summary: VulnerabilitySummaryForTeam
 }
 
 input VulnerabilityFilter {
@@ -2439,7 +2436,7 @@ type VulnerabilityMetrics {
   minDate: Date
 }
 
-type VulnerabilitySummary {
+type VulnerabilitySummaryForTeam {
   bomCount: Int!
   critical: Int!
   high: Int!
