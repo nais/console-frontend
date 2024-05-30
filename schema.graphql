@@ -1651,11 +1651,17 @@ type SearchList {
   pageInfo: PageInfo!
 }
 
-union SearchNode = App | NaisJob | SqlInstance | Team
+union SearchNode = App | BigQueryDataset | Bucket | KafkaTopic | NaisJob | OpenSearch | Redis | Secret | SqlInstance | Team
 
 enum SearchType {
   APP
+  BIGQUERY
+  BUCKET
+  KAFKATOPIC
   NAISJOB
+  OPENSEARCH
+  REDIS
+  SECRET
   SQLINSTANCE
   TEAM
 }

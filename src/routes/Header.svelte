@@ -43,6 +43,51 @@
 							name
 						}
 					}
+					... on Redis {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on OpenSearch {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on BigQueryDataset {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on Bucket {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on KafkaTopic {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
 				}
 			}
 		}
@@ -81,6 +126,21 @@
 					unsupportedFilter = false;
 				} else if (query.startsWith('sql:')) {
 					store.fetch({ variables: { query: query.slice(4), type: 'SQLINSTANCE' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('redis:')) {
+					store.fetch({ variables: { query: query.slice(6), type: 'REDIS' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('bq:')) {
+					store.fetch({ variables: { query: query.slice(3), type: 'BIGQUERY' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('bucket:')) {
+					store.fetch({ variables: { query: query.slice(7), type: 'BUCKET' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('kafka:')) {
+					store.fetch({ variables: { query: query.slice(6), type: 'KAFKATOPIC' } });
+					unsupportedFilter = false;
+				} else if (query.startsWith('os:')) {
+					store.fetch({ variables: { query: query.slice(3), type: 'OPENSEARCH' } });
 					unsupportedFilter = false;
 				} else if (query.lastIndexOf(':') >= 0) {
 					unsupportedFilter = true;
@@ -128,6 +188,26 @@
 						query = '';
 						showSearch = false;
 						goto(`/team/${node.team.slug}/${node.env.name}/postgres/${node.name}`);
+					} else if (node.__typename === 'Redis') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.env.name}/redis/${node.name}`);
+					} else if (node.__typename === 'OpenSearch') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.env.name}/opensearch/${node.name}`);
+					} else if (node.__typename === 'KafkaTopic') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.env.name}/kafka/${node.name}`);
+					} else if (node.__typename === 'BigQueryDataset') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.env.name}/bigquery/${node.name}`);
+					} else if (node.__typename === 'Bucket') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.env.name}/bucket/${node.name}`);
 					}
 				}
 				break;
@@ -191,10 +271,14 @@
 							</div>
 							<div>
 								You can filter your searches with prefixes. Try one of the following:<br />
-								<code>app:myapp</code><br />
-								<code>job:myjob</code><br />
-								<code>team:myteam</code><br />
-								<code>sql:mysqlinstance</code>
+								<code>app:myApp</code><br />
+								<code>job:myJob</code><br />
+								<code>team:myTeam</code><br />
+								<code>sql:mySqlinstance</code>
+								<code>redis:myRedisinstance</code>
+								<code>os:myOpenSearchInstance</code>
+								<code>kafka:myKafkaTopic</code>
+								<code>bq:myBigQueryDataSet</code>
 							</div>
 						</li>
 					</ul>
@@ -242,7 +326,7 @@
 		color: var(--a-text-default);
 		overflow: auto;
 		box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-		min-height: 200px;
+		min-height: 250px;
 		width: 350px;
 	}
 
