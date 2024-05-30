@@ -3,6 +3,7 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -11,13 +12,13 @@
 	} from '$lib/pagination';
 	import {
 		Alert,
+		Link,
 		Skeleton,
 		Table,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -51,7 +52,6 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Owner</Th>
@@ -67,28 +67,22 @@
 					{#each team.buckets.nodes as node}
 						<Tr>
 							<Td>
-								{#if !node.workload?.name}
-									<Tooltip content="The bucket does not belong to any workload">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The bucket does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
-								{node.name}
+								<Link href="/team/{teamName}/{node.env.name}/bucket/{node.name}">{node.name}</Link>
 							</Td>
 							<Td>
 								{node.env.name}
 							</Td>
 							<Td>
 								{#if node.workload}
-									<a
-										href="/team/{teamName}/{node.env.name}/{node.workload?.__typename === 'App'
-											? 'app'
-											: 'job'}/{node.workload.name}">{node.workload.name}</a
-									>
+									<WorkloadLink workload={node.workload} env={node.env.name} team={teamName} />
+								{:else}
+									<div class="inline">
+										<i>No owner</i>
+										<ExclamationmarkTriangleFillIcon
+											style="color: var(--a-icon-warning)"
+											title="The bucket does not belong to any workload"
+										/>
+									</div>
 								{/if}
 							</Td>
 						</Tr>
@@ -110,3 +104,11 @@
 		/>
 	</Card>
 {/if}
+
+<style>
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+</style>

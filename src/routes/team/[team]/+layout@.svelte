@@ -19,7 +19,13 @@
 		repositories: 'repositories',
 		settings: 'settings',
 		secrets: 'secrets',
-		postgres: 'postgres'
+		postgres: 'Postgres',
+		buckets: 'Buckets',
+		redis: 'Redis',
+		opensearch: 'OpenSearch',
+		kafka: 'Kafka topics',
+		bigquery: 'BigQuery',
+		unleash: 'Unleash'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -75,7 +81,7 @@
 		'/team/[team]/(teamPages)/[env]/postgres/[postgres]': (params: Data) => {
 			return [
 				{
-					name: 'postgres',
+					name: 'Postgres',
 					path: replacer('/team/[team]/(teamPages)/postgres', params)
 				},
 				{
@@ -84,6 +90,81 @@
 				{
 					name: params.postgres,
 					path: replacer('/team/[team]/(teamPages)/[env]/postgres/[postgres]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/bucket/[bucket]': (params: Data) => {
+			return [
+				{
+					name: 'Buckets',
+					path: replacer('/team/[team]/(teamPages)/buckets', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.bucket,
+					path: replacer('/team/[team]/(teamPages)/[env]/bucket/[bucket]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/redis/[redis]': (params: Data) => {
+			return [
+				{
+					name: 'Redis',
+					path: replacer('/team/[team]/(teamPages)/redis', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.redis,
+					path: replacer('/team/[team]/(teamPages)/[env]/redis/[redis]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/opensearch/[opensearch]': (params: Data) => {
+			return [
+				{
+					name: 'OpenSearch',
+					path: replacer('/team/[team]/(teamPages)/opensearch', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.opensearch,
+					path: replacer('/team/[team]/(teamPages)/[env]/opensearch/[opensearch]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/kafka/[kafka]': (params: Data) => {
+			return [
+				{
+					name: 'Kafka topic',
+					path: replacer('/team/[team]/(teamPages)/kafka', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.kafka,
+					path: replacer('/team/[team]/(teamPages)/[env]/kafka/[kafka]', params)
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/bigquery/[bigquery]': (params: Data) => {
+			return [
+				{
+					name: 'BigQuery',
+					path: replacer('/team/[team]/(teamPages)/bigquery', params)
+				},
+				{
+					name: params.env
+				},
+				{
+					name: params.bigquery,
+					path: replacer('/team/[team]/(teamPages)/[env]/bigquery/[bigquery]', params)
 				}
 			];
 		}

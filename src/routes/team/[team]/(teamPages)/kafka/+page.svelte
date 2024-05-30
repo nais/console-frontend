@@ -3,24 +3,14 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		changeParams,
 		sortTable,
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import {
-		Alert,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -66,28 +56,16 @@
 					{#each team.kafkaTopics.nodes as node}
 						<Tr>
 							<Td>
-								<span style="display: inline-flex; "
-									>{#if !node.workload?.name}
-										<Tooltip content="The Kafka topic does not belong to any workload">
-											<InformationSquareFillIcon
-												style="color: var(--a-icon-info); top: 0.125em; position: relative; margin-right: 1em"
-												title="The Kafka topic does not belong to any workload"
-											/>
-										</Tooltip>
-									{/if}
-									<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>
-								</span>
+								<a href="/team/{teamName}/{node.env.name}/kafka/{node.name}">{node.name}</a>
 							</Td>
 							<Td>
 								{node.env.name}
 							</Td>
 							<Td>
 								{#if node.workload}
-									<a
-										href="/team/{teamName}/{node.env.name}/{node.workload?.__typename === 'App'
-											? 'app'
-											: 'job'}/{node.workload.name}">{node.workload.name}</a
-									>
+									<WorkloadLink workload={node.workload} env={node.env.name} team={teamName} />
+								{:else}
+									<em>No owner</em>
 								{/if}
 							</Td>
 						</Tr>

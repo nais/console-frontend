@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Time from '$lib/Time.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -435,13 +436,13 @@
 							<Alert variant="warning" size="small">
 								<h4>{condition.reason}</h4>
 								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+								Last transaction time: <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{:else}
 							<Alert variant="info" size="small">
 								<h4>{condition.reason}</h4>
 								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time <strong>{condition.lastTransitionTime}</strong>
+								Last transaction time <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{/if}
 					{/each}
@@ -453,7 +454,7 @@
 							<Alert variant="info" size="small">
 								<h4>{condition.reason}</h4>
 								Message:<strong>{condition.message}</strong> <br />
-								Last transaction time: <strong>{condition.lastTransitionTime}</strong>
+								Last transaction time: <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{/each}
 					{/if}

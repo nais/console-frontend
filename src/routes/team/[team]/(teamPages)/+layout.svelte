@@ -21,6 +21,7 @@
 		QuietZoneIcon,
 		SandboxIcon
 	} from '@nais/ds-svelte-community/icons';
+
 	import type { LayoutData } from './$types';
 
 	type menuGroup = {
@@ -77,19 +78,22 @@
 				{
 					name: 'Buckets',
 					routeId: '/team/[team]/(teamPages)/buckets',
-					withSubRoutes: false,
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/bucket/[bucket]'],
+					withSubRoutes: true,
 					icon: BucketIcon
 				},
 				{
 					name: 'Redis',
 					routeId: '/team/[team]/(teamPages)/redis',
-					withSubRoutes: false,
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/redis/[redis]'],
+					withSubRoutes: true,
 					icon: Redis
 				},
 				{
 					name: 'OpenSearch',
 					routeId: '/team/[team]/(teamPages)/opensearch',
-					withSubRoutes: false,
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
+					withSubRoutes: true,
 					icon: Opensearch
 				},
 				{
@@ -102,7 +106,8 @@
 				{
 					name: 'BigQuery',
 					routeId: '/team/[team]/(teamPages)/bigquery',
-					withSubRoutes: false,
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/bigquery/[bigquery]'],
+					withSubRoutes: true,
 					icon: BigQuery
 				},
 				{
@@ -194,6 +199,6 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: flex-start;
-		direction: row;
+		flex-direction: row;
 	}
 </style>

@@ -28,7 +28,19 @@ type AnalysisTrail {
   state: String!
 }
 
-type App {
+type Alias {
+  name: String!
+  source: String!
+}
+
+type AnalysisTrail {
+  comments: [Comment]!
+  id: ID!
+  isSuppressed: Boolean!
+  state: String!
+}
+
+type App implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
   autoScaling: AutoScaling!
@@ -45,6 +57,7 @@ type App {
   secrets: [Secret!]!
   status: WorkloadStatus!
   team: Team!
+  type: WorkloadType!
   variables: [Variable!]!
   vulnerabilities: Vulnerability
 }
@@ -165,12 +178,13 @@ type BackupConfiguration {
 }
 
 type BigQueryDataset implements Persistence {
-  Access: [BigQueryDatasetAccess!]!
+  access: [BigQueryDatasetAccess!]!
   cascadingDelete: Boolean!
   description: String!
   env: Env!
   id: ID!
   name: String!
+  status: BigQueryDatasetStatus!
   team: Team!
   workload: Workload
 }
@@ -185,14 +199,37 @@ type BigQueryDatasetList {
   pageInfo: PageInfo!
 }
 
+type BigQueryDatasetStatus {
+  conditions: [Condition!]!
+  creationTime: Time!
+  lastModifiedTime: Time
+}
+
 type Bucket implements Persistence {
   cascadingDelete: Boolean!
+  cors: [BucketCors!]
   env: Env!
   id: ID!
   name: String!
   projectId: String!
+  publicAccessPrevention: String!
+  retentionPeriodDays: Int!
+  status: BucketStatus!
   team: Team!
+  uniformBucketLevelAccess: Boolean!
   workload: Workload
+}
+
+type BucketCors {
+  maxAgeSeconds: Int
+  methods: [String!]!
+  origins: [String!]!
+  responseHeaders: [String!]!
+}
+
+type BucketStatus {
+  conditions: [Condition!]!
+  selfLink: String!
 }
 
 type BucketsList {
@@ -212,7 +249,7 @@ type Comment {
 }
 
 type Condition {
-  lastTransitionTime: String!
+  lastTransitionTime: Time!
   message: String!
   reason: String!
   status: String!
@@ -630,6 +667,7 @@ type KafkaTopic implements Persistence {
   id: ID!
   name: String!
   pool: String!
+  status: KafkaTopicStatus
   team: Team!
   workload: Workload
 }
@@ -654,6 +692,16 @@ type KafkaTopicConfig {
 type KafkaTopicList {
   nodes: [KafkaTopic!]!
   pageInfo: PageInfo!
+}
+
+type KafkaTopicStatus {
+  credentialsExpiryTime: Time
+  errors: [String!]
+  fullyQualifiedName: String!
+  latestAivenSyncFailure: Time
+  message: String!
+  synchronizationState: State!
+  synchronizationTime: Time
 }
 
 type Limits {
@@ -690,7 +738,7 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
-"""Montly cost type."""
+"""Monthly cost type."""
 type MonthlyCost {
   """A list of monthly cost entries."""
   cost: [CostEntry!]!
@@ -1085,7 +1133,7 @@ type Mutation {
   ): Team!
 }
 
-type NaisJob {
+type NaisJob implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
   completions: Int!
@@ -1104,6 +1152,8 @@ type NaisJob {
   secrets: [Secret!]!
   status: WorkloadStatus!
   team: Team!
+  type: WorkloadType!
+  variables: [Variable!]!
 }
 
 type NaisJobList {
@@ -1132,19 +1182,31 @@ type NoRunningInstancesError implements StateError {
 }
 
 type OpenSearch implements Persistence {
-  access: String!
+  access: [OpenSearchInstanceAccess!]!
+  cost: String!
   env: Env!
   id: ID!
 
   """The opensearch instance name"""
   name: String!
+  status: OpenSearchStatus!
   team: Team!
   workload: Workload
+}
+
+type OpenSearchInstanceAccess {
+  role: String!
+  workload: Workload!
 }
 
 type OpenSearchList {
   nodes: [OpenSearch!]!
   pageInfo: PageInfo!
+}
+
+type OpenSearchStatus {
+  conditions: [Condition!]!
+  state: String!
 }
 
 input OrderBy {
@@ -1519,17 +1581,29 @@ type ReconcilerList {
 }
 
 type Redis implements Persistence {
-  access: String!
+  access: [RedisInstanceAccess!]!
+  cost: String!
   env: Env!
   id: ID!
   name: String!
+  status: RedisStatus!
   team: Team!
   workload: Workload
+}
+
+type RedisInstanceAccess {
+  role: String!
+  workload: Workload!
 }
 
 type RedisList {
   nodes: [Redis!]!
   pageInfo: PageInfo!
+}
+
+type RedisStatus {
+  conditions: [Condition!]!
+  state: String!
 }
 
 type Rekor {
@@ -1962,6 +2036,24 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): BigQueryDatasetList!
+
+  """Get a BigQueryDataset by name and env."""
+  bigQueryDataset(
+    """The environment the dataset exists in."""
+    env: String!
+
+    """The name of the dataset."""
+    name: String!
+  ): BigQueryDataset!
+
+  """Get a Bucket by name and env."""
+  bucket(
+    """The environment the bucket exists in."""
+    env: String!
+
+    """The name of the bucket."""
+    name: String!
+  ): Bucket!
   buckets(
     """Returns the last n entries from the list."""
     limit: Int
@@ -2089,6 +2181,15 @@ type Team {
     orderBy: OrderBy
   ): OpenSearchList!
 
+  """Get a OpenSearch instance by name and env."""
+  openSearchInstance(
+    """The environment the instance exists in."""
+    env: String!
+
+    """The name of the OpenSearch instance."""
+    name: String!
+  ): OpenSearch!
+
   """Purpose of the team."""
   purpose: String!
   redis(
@@ -2101,6 +2202,15 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): RedisList!
+
+  """Get a Redis instance by name and env."""
+  redisInstance(
+    """The environment the instance exists in."""
+    env: String!
+
+    """The name of the Redis instance."""
+    name: String!
+  ): Redis!
 
   """Get the team's secret by name, and env."""
   secret(
@@ -2461,7 +2571,19 @@ type VulnerabilitySummaryForTeam {
   unassigned: Int!
 }
 
-union Workload = App | NaisJob
+interface Workload {
+  accessPolicy: AccessPolicy!
+  authz: [Authz!]!
+  deployInfo: DeployInfo!
+  env: Env!
+  id: ID!
+  image: String!
+  name: String!
+  resources: Resources!
+  status: WorkloadStatus!
+  type: WorkloadType!
+  variables: [Variable!]!
+}
 
 type WorkloadReference {
   deployInfo: DeployInfo!
@@ -2475,4 +2597,9 @@ type WorkloadReference {
 type WorkloadStatus {
   errors: [StateError!]!
   state: State!
+}
+
+enum WorkloadType {
+  APP
+  NAISJOB
 }

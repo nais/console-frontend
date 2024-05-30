@@ -3,24 +3,25 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		changeParams,
 		sortTable,
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
+	import { resourceLink } from '$lib/utils/links';
 	import {
 		Alert,
+		Link,
 		Skeleton,
 		Table,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -51,50 +52,41 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
-				<Th>Workload</Th>
+				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
 				{#if team.id === PendingValue}
 					<Tr>
 						{#each new Array(4).fill('text') as variant}
-							<Td><Skeleton {variant} /></Td>
+							<Td>
+								<Skeleton {variant} />
+							</Td>
 						{/each}
 					</Tr>
 				{:else}
 					{#each team.bigQuery.nodes as node}
 						<Tr>
 							<Td>
-								{#if !node.workload?.name}
-									<Tooltip content="The BigQuery instance does not belong to any workload">
-										<InformationSquareFillIcon
-											style="color: var(--a-icon-info)"
-											title="The BigQuery instance does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
-								{node.name}
+								<Link href={resourceLink(node.env.name, teamName, 'bigquery', node.name)}
+									>{node.name}</Link
+								>
 							</Td>
 							<Td>
 								{node.env.name}
 							</Td>
 							<Td>
 								{#if node.workload}
-									<a
-										href="/team/{teamName}/{node.env.name}/{node.workload?.__typename === 'App'
-											? 'app'
-											: 'job'}/{node.workload.name}">{node.workload.name}</a
-									>
+									<WorkloadLink workload={node.workload} env={node.env.name} team={teamName} />
+								{:else}
+									<em>No owner</em>
 								{/if}
 							</Td>
 						</Tr>
 					{:else}
 						<Tr>
-							<Td colspan={999}>No BigQuery instances found</Td>
+							<Td colspan={999}>No BigQuery s found</Td>
 						</Tr>
 					{/each}
 				{/if}
