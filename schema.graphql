@@ -176,7 +176,7 @@ type BigQueryDatasetList {
 
 type BigQueryDatasetStatus {
   conditions: [Condition!]!
-  creationTime: Time
+  creationTime: Time!
   lastModifiedTime: Time
 }
 

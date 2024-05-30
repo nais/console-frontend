@@ -4,7 +4,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import BucketIcon from '$lib/icons/Bucket.svelte';
-	import { CopyButton } from '@nais/ds-svelte-community';
+	import { CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -21,63 +21,65 @@
 	<GraphErrors errors={$Bucket.errors} />
 {:else if bucket && bucket.name !== PendingValue}
 	<div class="grid">
-		<Card columns={6}>
+		<Card columns={7}>
 			<h3 class="heading">
 				<BucketIcon />
 				{bucket.name}
 			</h3>
 			<div>
-				<dl>
+				<dl class="config">
 					<dt>Bucket</dt>
 					<dd>
 						<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
-							>Google Cloud Console<ExternalLinkIcon
-								title="Google Cloud Console"
-								font-size="1.5rem"
-							/></a
+							>Google Cloud Console<ExternalLinkIcon title="Google Cloud Console" /></a
 						>
 					</dd>
 					<dt>Public access prevention</dt>
 					<dd>{bucket.publicAccessPrevention}</dd>
 					<dt>Uniform bucket level access</dt>
 					<dd>{bucket.uniformBucketLevelAccess}</dd>
-					{#if bucket.cors}
-						<dt>CORS</dt>
-						<dd>
-							<dl>
-								{#each bucket.cors as c}
-									{#each c.origins as o}
-										<li>
-											{o === '*' ? 'any host' : o}: {c.methods
-												.map((m) => (m === '*' ? 'any method' : m))
-												.join(', ')}
-										</li>
-									{/each}
-								{/each}
-							</dl>
-						</dd>
-					{/if}
+
 					{#if bucket.status.selfLink}
 						<dt>Self link</dt>
-						<dd>
-							<p style="display: flex; align-items: center;">
-								<span
-									style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
-									title="https://storage.googleapis.com/{bucket.name}"
-									>https://storage.googleapis.com/{bucket.name}</span
-								>
-								<CopyButton
-									size="small"
-									variant="action"
-									copyText="https://storage.googleapis.com/{bucket.name}"
-								/>
-							</p>
+						<dd style="display: flex; align-items: center;">
+							<span
+								style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+								title="https://storage.googleapis.com/{bucket.name}"
+								>https://storage.googleapis.com/{bucket.name}</span
+							>
+							<CopyButton
+								size="xsmall"
+								variant="action"
+								copyText="https://storage.googleapis.com/{bucket.name}"
+							/>
 						</dd>
 					{/if}
 				</dl>
+
+				{#if bucket.cors && bucket.cors.length}
+					<h4>CORS</h4>
+					<Table size="small">
+						<Thead>
+							<Tr>
+								<Th>Host</Th>
+								<Th>Method(s)</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each bucket.cors as rule}
+								{#each rule.origins as origin}
+									<Tr>
+										<Td>{origin === '*' ? 'any host' : origin}</Td>
+										<Td>{rule.methods.map((m) => (m === '*' ? 'any method' : m)).join(', ')}</Td>
+									</Tr>
+								{/each}
+							{/each}
+						</Tbody>
+					</Table>
+				{/if}
 			</div>
 		</Card>
-		<Card columns={6}>
+		<Card columns={5}>
 			<h3>Status</h3>
 			<div>
 				{#if bucket.status.conditions.length}
@@ -104,7 +106,7 @@
 						</dl>
 						<details>
 							<summary>Status message</summary>
-							<p style="width: 30em;">{cond.message}</p>
+							<p style="width: 25em;">{cond.message}</p>
 						</details>
 					{/each}
 				{:else}
@@ -122,17 +124,30 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+
 	.heading {
 		display: flex;
 		gap: 1rem;
 		align-items: center;
 	}
 
-	dl.conditions {
+	dl {
 		display: grid;
 		align-items: center;
+	}
+
+	dl.config {
+		grid-template-columns: 35% 65%;
+	}
+
+	dl.conditions {
 		grid-template-columns: 20% 80%;
 	}
+
+	dt {
+		font-weight: bold;
+	}
+
 	.status {
 		display: flex;
 		align-items: center;
@@ -141,12 +156,5 @@
 
 	div dl.conditions:not(:first-child) {
 		margin-top: 3em;
-	}
-
-	dt {
-		font-weight: bold;
-		display: flex;
-		gap: 1em;
-		align-items: center;
 	}
 </style>

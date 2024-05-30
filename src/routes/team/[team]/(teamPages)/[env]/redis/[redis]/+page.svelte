@@ -6,7 +6,7 @@
 	import Time from '$lib/Time.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
+	import { Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -34,25 +34,29 @@
 
 			<h4 class="access">Access</h4>
 			{#if redisInstance.access.length}
-				<Table>
-					<Tr>
-						<Th>Access level</Th>
-						<Th>Workload</Th>
-						<Th>Type</Th>
-					</Tr>
-					{#each redisInstance.access as access}
+				<Table size="small">
+					<Thead>
 						<Tr>
-							<Td>{access.role}</Td>
-							<Td>
-								<Link
-									href="/team/{teamName}/{envName}/{access.workload.type === 'App'
-										? 'app'
-										: 'job'}/{access.workload.name}">{access.workload.name}</Link
-								>
-							</Td>
-							<Td>{access.workload.type}</Td>
+							<Th>Access level</Th>
+							<Th>Workload</Th>
+							<Th>Type</Th>
 						</Tr>
-					{/each}
+					</Thead>
+					<Tbody>
+						{#each redisInstance.access as access}
+							<Tr>
+								<Td>{access.role}</Td>
+								<Td>
+									<Link
+										href="/team/{teamName}/{envName}/{access.workload.type === 'App'
+											? 'app'
+											: 'job'}/{access.workload.name}">{access.workload.name}</Link
+									>
+								</Td>
+								<Td>{access.workload.type}</Td>
+							</Tr>
+						{/each}
+					</Tbody>
 				</Table>
 			{:else}
 				<p>No workloads with configured access</p>

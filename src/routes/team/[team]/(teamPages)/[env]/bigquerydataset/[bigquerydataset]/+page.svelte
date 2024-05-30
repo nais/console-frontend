@@ -4,7 +4,17 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
-	import { CopyButton, HelpText, Table, Td, Th, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import {
+		CopyButton,
+		HelpText,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -29,15 +39,16 @@
 			<em>{bigQueryDatasetInstance.description}</em>
 			<dl class="status">
 				<dt>Created</dt>
-				<dd><Time time={bigQueryDatasetInstance.status.creationTime || new Date()} /></dd>
+				<dd><Time time={bigQueryDatasetInstance.status.creationTime} /></dd>
+
 				<dt>Last modified</dt>
 				<dd>
 					<Time
 						time={bigQueryDatasetInstance.status.lastModifiedTime ||
-							bigQueryDatasetInstance.status.creationTime ||
-							new Date()}
+							bigQueryDatasetInstance.status.creationTime}
 					/>
 				</dd>
+
 				<dt>
 					Cascading delete
 					<HelpText title="Current memory utilization"
@@ -59,22 +70,26 @@
 			<h3>Access</h3>
 
 			{#if bigQueryDatasetInstance.access.length}
-				<Table>
-					<Tr>
-						<Th>Access</Th>
-						<Th>ServiceAccount</Th>
-					</Tr>
-					{#each bigQueryDatasetInstance.access as access}
+				<Table size="small">
+					<Thead>
 						<Tr>
-							<Td>{access.role}</Td>
-							<Td
-								><div class="email">
-									<span title={access.email}>{access.email}</span>
-									<CopyButton size="small" variant="action" copyText={access.email} />
-								</div>
-							</Td>
+							<Th>Access</Th>
+							<Th>ServiceAccount</Th>
 						</Tr>
-					{/each}
+					</Thead>
+					<Tbody>
+						{#each bigQueryDatasetInstance.access as access}
+							<Tr>
+								<Td>{access.role}</Td>
+								<Td
+									><div class="email">
+										<span title={access.email}>{access.email}</span>
+										<CopyButton size="xsmall" variant="action" copyText={access.email} />
+									</div>
+								</Td>
+							</Tr>
+						{/each}
+					</Tbody>
 				</Table>
 			{:else}
 				<p>no workloads with configured access</p>
