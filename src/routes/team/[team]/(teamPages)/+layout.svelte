@@ -2,10 +2,10 @@
 	import { page } from '$app/stores';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
-	import BucketIcon from '$lib/icons/Bucket.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
 	import {
+		BucketIcon,
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
 		BranchingIcon,
