@@ -152,7 +152,7 @@
 				}
 			];
 		},
-		'/team/[team]/(teamPages)/[env]/bigquerydataset/[bigquerydataset]': (params: Data) => {
+		'/team/[team]/(teamPages)/[env]/bigquery/[bigquery]': (params: Data) => {
 			return [
 				{
 					name: 'BigQuery',
@@ -162,8 +162,8 @@
 					name: params.env
 				},
 				{
-					name: params.bigquerydataset,
-					path: replacer('/team/[team]/(teamPages)/[env]/bigquerydataset/[bigquerydataset]', params)
+					name: params.bigquery,
+					path: replacer('/team/[team]/(teamPages)/[env]/bigquery/[bigquery]', params)
 				}
 			];
 		}

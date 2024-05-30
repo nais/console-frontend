@@ -69,7 +69,7 @@
 					{#each team.bigQuery.nodes as node}
 						<Tr>
 							<Td>
-								<Link href={resourceLink(node.env.name, teamName, 'bigquerydataset', node.name)}
+								<Link href={resourceLink(node.env.name, teamName, 'bigquery', node.name)}
 									>{node.name}</Link
 								>
 							</Td>
