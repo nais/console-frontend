@@ -12,7 +12,6 @@
 		Table,
 		Tbody,
 		Td,
-		TextField,
 		Th,
 		Thead,
 		Tooltip,
@@ -25,18 +24,13 @@
 		TokenIcon,
 		TrashIcon,
 		PlusCircleFillIcon,
-
 		CheckmarkIcon,
-
 		XMarkIcon
-
-
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import { graphql, type SearchQuery$result } from '$houdini';
 	import prettyBytes from 'pretty-bytes';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import { validate } from 'graphql';
 	import SearchTeam from './SearchTeam.svelte';
 
 	export let data: PageData;
@@ -159,7 +153,7 @@
 		addTeamModalOpen = true;
 	};
 
-	const onClickHandler = (
+	const onTeamSelected = (
 		node: SearchQuery$result['search']['nodes'][0],
 		event: MouseEvent | KeyboardEvent
 	) => {
@@ -236,7 +230,7 @@
 				<Heading>Give team access to this Unleash</Heading>
 			</svelte:fragment>
 			<div class="search-container">
-				<SearchTeam bind:query={addTeamInput} onClick={onClickHandler} />
+				<SearchTeam bind:query={addTeamInput} onSelected={onTeamSelected} />
 				<Button variant="primary" size="small" on:click={addTeam}>Add</Button>
 				<Button variant="secondary" size="small" on:click={addTeamClose}>Cancel</Button>
 			</div>

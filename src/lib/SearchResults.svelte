@@ -13,7 +13,7 @@
 	export let query: string;
 	export let selected: number;
 	export let showSearch: boolean;
-	export let onClick: (node: SearchQuery$result['search']['nodes'][0], e: MouseEvent) => void = (
+	export let onSelected: (node: SearchQuery$result['search']['nodes'][0], e: MouseEvent | KeyboardEvent) => void = (
 		node,
 		e
 	) => {
@@ -39,7 +39,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/app/{node.name}"
-					on:click={onClick.bind({}, node)}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Logo height="1.5rem" />
@@ -62,7 +62,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/job/{node.name}"
-					on:click={onClick.bind({}, node)}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Logo height="1.5rem" />
@@ -85,7 +85,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.slug}"
-					on:click={onClick.bind({}, node)}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<PersonGroupIcon height="1.5rem" />
@@ -99,7 +99,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/postgres/{node.name}"
-					on:click={onClick.bind({}, node)}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<DatabaseIcon height="1.5rem" />
@@ -121,10 +121,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/bucket/{node.name}"
-					on:click={() => {
-						query = '';
-						showSearch = false;
-					}}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<BucketIcon height="1.5rem" />
@@ -146,10 +143,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/opensearch/{node.name}"
-					on:click={() => {
-						query = '';
-						showSearch = false;
-					}}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Opensearch height="1.5rem" />
@@ -171,10 +165,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/redis/{node.name}"
-					on:click={() => {
-						query = '';
-						showSearch = false;
-					}}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Redis height="1.5rem" />
@@ -196,10 +187,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/kafka/{node.name}"
-					on:click={() => {
-						query = '';
-						showSearch = false;
-					}}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Kafka height="1.5rem" />
@@ -221,10 +209,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.env.name}/bigquery/{node.name}"
-					on:click={() => {
-						query = '';
-						showSearch = false;
-					}}
+					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<BigQuery height="1.5rem" />

@@ -4,6 +4,7 @@
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
 
+
 	const store = graphql(`
 		query TeamSearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
 			search(limit: 10, query: $query, filter: { type: $type }) {
@@ -39,6 +40,51 @@
 							name
 						}
 					}
+					... on Redis {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on OpenSearch {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on BigQueryDataset {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on Bucket {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
+					... on KafkaTopic {
+						name
+						team {
+							slug
+						}
+						env {
+							name
+						}
+					}
 				}
 			}
 		}
@@ -49,13 +95,13 @@
 	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
-	export let onClick: (
-		node: SearchQuery$result['search']['nodes'][0],
-		e: MouseEvent | KeyboardEvent
-	) => void = (node, e) => {
+	export let onSelected: (node: SearchQuery$result['search']['nodes'][0], e: MouseEvent | KeyboardEvent) => void = (
+		node,
+		e
+	) => {
 		query = '';
 		showSearch = false;
-	};
+	}
 
 	$: {
 		if (timeout) {
@@ -87,8 +133,12 @@
 				if (selected >= 0) {
 					const node = $store.data?.search.nodes[selected];
 					if (!node) return;
+					showSearch = false;
+					selected = -1;
 
-					onClick(node, event);
+					if (node.__typename === 'Team') {
+						onSelected(node, event);
+					}
 				}
 				break;
 			case 'Escape':
@@ -123,7 +173,7 @@
 		on:keyup={on_key_up}
 	/>
 	{#if $store.data && showSearch}
-		<SearchResults {showSearch} data={$store.data} {onClick} bind:query {selected} />
+		<SearchResults {showSearch} data={$store.data} onSelected={onSelected} bind:query {selected} />
 	{/if}
 </div>
 
