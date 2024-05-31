@@ -3,7 +3,7 @@ query BigQueryDataset($env: String!, $team: Slug!, $name: String!) @loading(casc
 		bigQueryDataset(env: $env, name: $name) {
 			cascadingDelete
 			description
-
+			cost
 			id
 			name
 			status {
