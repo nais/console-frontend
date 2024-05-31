@@ -24,7 +24,13 @@
 		BulletListIcon,
 		TokenIcon,
 		TrashIcon,
-		PlusCircleFillIcon
+		PlusCircleFillIcon,
+
+		CheckmarkIcon,
+
+		XMarkIcon
+
+
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import { graphql, type SearchQuery$result } from '$houdini';
@@ -66,6 +72,7 @@
 						memoryRequests
 						toggles
 					}
+					ready
 				}
 			}
 		}
@@ -102,6 +109,7 @@
 						memoryRequests
 						toggles
 					}
+					ready
 				}
 			}
 		}
@@ -313,8 +321,17 @@
 			<h3>Information</h3>
 			<div class="grid" style="grid-template-columns: 20% 80%;">
 				<p>Name</p>
-				<p>
-					{unleash.name}
+				<p>{unleash.name}</p>
+
+				<p style="display: flex; align-items: center; gap 0 1rem;">Status</p>
+				<p style="padding-top: 4px;">
+					{#if unleash.ready}
+						<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.2rem" />
+					{:else}
+						<Tooltip content="Unleash is not ready, new instances will be online after a minute." placement="right">
+							<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+						</Tooltip>
+					{/if}
 				</p>
 				<p>Version</p>
 				<p>
@@ -368,6 +385,7 @@
 								<Button
 									iconOnly
 									size="small"
+									disabled={unleash.ready === false}
 									variant="tertiary-neutral"
 									title="Delete key and value"
 									on:click={() => removeTeamClickHandler(team)}
@@ -382,7 +400,13 @@
 				</Tbody>
 			</Table>
 			<p>
-				<Button title="Add team" variant="tertiary" size="small" on:click={addTeamClickHandler}>
+				<Button
+					title="Add team"
+					variant="tertiary"
+					disabled={unleash.ready === false}
+					size="small"
+					on:click={addTeamClickHandler}
+				>
 					<svelte:fragment slot="icon-left">
 						<PlusCircleFillIcon />
 					</svelte:fragment>

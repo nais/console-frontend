@@ -17,6 +17,7 @@ query Unleash($team: Slug!) {
 					memoryRequests
 					toggles
 				}
+				ready
 			}
 		}
 	}

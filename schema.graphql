@@ -2269,6 +2269,7 @@ type UnleashInstance {
   apiIngress: String!
   metrics: UnleashMetrics!
   name: String!
+  ready: Boolean!
   version: String!
   webIngress: String!
 }
