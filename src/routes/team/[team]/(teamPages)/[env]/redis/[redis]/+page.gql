@@ -19,11 +19,11 @@ query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascad
 			}
 			workload {
 				name
-				type: __typename
+				type
 			}
 			access {
 				workload {
-					type: __typename
+					type
 					name
 				}
 				role
