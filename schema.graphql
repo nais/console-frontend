@@ -765,9 +765,9 @@ type Mutation {
 
   """
   Add a user to a team
-
+  
   If the user is already a member or an owner of the team, the mutation will fail.
-
+  
   The updated team will be returned on success.
   """
   addTeamMember(
@@ -780,10 +780,10 @@ type Mutation {
 
   """
   Add users to a team as regular team members
-
+  
   If one or more users are already added to the team they will not be updated. If a user is already an owner of the
   team the user will not lose ownership. Regular team members will get read-only access to the team.
-
+  
   The updated team will be returned on success.
   """
   addTeamMembers(
@@ -796,10 +796,10 @@ type Mutation {
 
   """
   Add users to a team as team owners
-
+  
   If one or more users are already added to the team, they will be granted ownership of the team. If one or more users
   are already owners of the team, they will not be updated. Team owners will get read/write access to the team.
-
+  
   The updated team will be returned on success.
   """
   addTeamOwners(
@@ -839,12 +839,12 @@ type Mutation {
 
   """
   Confirm a team deletion
-
+  
   This will start the actual team deletion process, which will be done in an asynchronous manner. All external
   entities controlled by NAIS will also be deleted.
-
+  
   WARNING: There is no going back after starting this process.
-
+  
   Note: Service accounts are not allowed to confirm a team deletion.
   """
   confirmTeamDeletion(
@@ -869,10 +869,10 @@ type Mutation {
 
   """
   Create a new team
-
+  
   The user creating the team will be granted team ownership, unless the user is a service account, in which case the
   team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
-
+  
   The new team will be returned on success.
   """
   createTeam(
@@ -882,7 +882,7 @@ type Mutation {
 
   """
   Create a new Unleash instance.
-
+  
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
   """
@@ -934,7 +934,7 @@ type Mutation {
 
   """
   Disable a reconciler
-
+  
   The reconciler configuration will be left intact.
   """
   disableReconciler(
@@ -944,7 +944,7 @@ type Mutation {
 
   """
   Enable a reconciler
-
+  
   A reconciler must be fully configured before it can be enabled.
   """
   enableReconciler(
@@ -966,7 +966,7 @@ type Mutation {
 
   """
   Remove a user from a team
-
+  
   The updated team will be returned on success.
   """
   removeUserFromTeam(
@@ -979,7 +979,7 @@ type Mutation {
 
   """
   Remove one or more users from a team
-
+  
   The updated team will be returned on success.
   """
   removeUsersFromTeam(
@@ -992,10 +992,10 @@ type Mutation {
 
   """
   Request a key that can be used to trigger a team deletion process
-
+  
   Deleting a team is a two step process. First an owner of the team (or an admin) must request a team deletion key, and
   then a second owner of the team (or an admin) must confirm the deletion using the confirmTeamDeletion mutation.
-
+  
   Note: Service accounts are not allowed to request team delete keys.
   """
   requestTeamDeletion(
@@ -1023,9 +1023,9 @@ type Mutation {
 
   """
   Set the member role of a user in a team
-
+  
   The user must already exist in the team for this mutation to succeed.
-
+  
   The team will be returned on success.
   """
   setTeamMemberRole(
@@ -1063,7 +1063,7 @@ type Mutation {
 
   """
   Manually synchronize all teams
-
+  
   This action will trigger a full synchronization of all teams against the configured third party systems. The action
   is asynchronous. The operation can take a while, depending on the amount of teams currently managed.
   """
@@ -1071,10 +1071,10 @@ type Mutation {
 
   """
   Manually synchronize a team
-
+  
   This action will trigger a full synchronization of the team against the configured third party systems. The action
   is asynchronous.
-
+  
   The team will be returned.
   """
   synchronizeTeam(
@@ -1084,7 +1084,7 @@ type Mutation {
 
   """
   Trigger a user synchronization
-
+  
   This mutation will trigger a full user synchronization with the connected Google Workspace, and return a correlation
   ID that can later be matched to the log entries. The user synchronization itself is asynchronous.
   """
@@ -1107,9 +1107,9 @@ type Mutation {
 
   """
   Update an existing team
-
+  
   This mutation can be used to update the team purpose. It is not possible to update the team slug.
-
+  
   The updated team will be returned on success.
   """
   updateTeam(
