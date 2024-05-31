@@ -19,7 +19,6 @@
 		Alert,
 		Button,
 		CopyButton,
-		Link,
 		Skeleton,
 		Table,
 		Tbody,
@@ -117,29 +116,20 @@
 						<code>{tag}</code>
 					</div>
 					<div class="commitSha">
-						<h5>Commit SHA</h5>
-						<code>{image.digest}</code>
+						<h5>Commit</h5>
+						<code>Kommer...</code>
 					</div>
 
 					<div class="rekor">
-						<h5>Rekor</h5>
-						<code
-							><a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}"
-								>https://search.sigstore.dev/?logIndex={image.rekor.logIndex}</a
-							></code
-						>
-					</div>
-					<div class="oidc">
-						<h5>OIDC Issuer</h5>
-						<code>{image.rekor.oIDCIssuer}</code>
-					</div>
-					<!--div class="build">
-						<h5>Build Config URI</h5>
-						<code>{image.rekor.buildConfigURI}</code>
-					</div-->
-					<div class="run">
-						<h5>Run Invocation URI</h5>
-						<code><a href={image.rekor.runInvocationURI}>{image.rekor.runInvocationURI}</a></code>
+						<a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}">
+							Attestation details
+							<ExternalLinkIcon title="Open attestation details" />
+						</a>
+						|
+						<a href={image.rekor.runInvocationURI}>
+							Run invocation
+							<ExternalLinkIcon title="Open attestation details" />
+						</a>
 					</div>
 				</div>
 			</Card>
@@ -147,7 +137,6 @@
 
 		<Card columns={4}>
 			<h4>Vulnerabilities summary</h4>
-
 			<div class="circles">
 				{#if image.summary.critical === PendingValue}
 					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
@@ -206,14 +195,13 @@
 				{/if}
 			</div>
 			Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''} <br />
-
 			Explore findings in
 			{#if image.projectId !== PendingValue}
-				<Link href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
+				<a href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
 					>Dependency track<ExternalLinkIcon
 						title="Open project in Dependency track"
 						font-size="1.5rem"
-					/></Link
+					/></a
 				>
 			{/if}
 		</Card>
@@ -233,10 +221,9 @@
 					>
 						<Thead>
 							<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
-							<Th sortable={true} sortKey="PACKAGE_URL">Package</Th>
+							<Th style="width: 38rem" sortable={true} sortKey="PACKAGE_URL">Package</Th>
 							<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-							<Th>Description</Th>
-							<Th>Suppressed</Th>
+							<Th style="width: 3rem" sortable={true} sortKey="SUPPRESSED">Suppressed</Th>
 							<Th sortable={true} sortKey="STATE">State</Th>
 						</Thead>
 						<Tbody>
@@ -279,8 +266,7 @@
 												>{finding.severity}</code
 											></Td
 										>
-										<Td>{finding.description}</Td>
-										<Td
+										<Td style="text-align: center"
 											>{#if finding.analysisTrail.isSuppressed}<CheckmarkIcon
 													width={'18px'}
 													height={'18px'}
@@ -434,22 +420,5 @@
 	.rekor {
 		grid-column: 1;
 		grid-row: 4;
-	}
-
-	.oidc {
-		grid-column: 2;
-		grid-row: 4;
-	}
-
-	/*.build {
-		grid-column-start: 1;
-		grid-column-end: 3;
-		grid-row: 5;
-	}*/
-
-	.run {
-		grid-column-start: 1;
-		grid-column-end: 3;
-		grid-row: 6;
 	}
 </style>

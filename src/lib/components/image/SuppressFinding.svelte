@@ -58,8 +58,9 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
-	import { joinAliases } from './imageUtils';
+	import { detailsUrl, joinAliases, parseComment } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
@@ -165,15 +166,12 @@
 		return '';
 	};
 
-	// TODO: Trenger hjelp av Thomas...
-	/*inputText = parseComment(
-			finding.analysisTrail?.comments?.[finding.analysisTrail?.comments?.length - 1]?.comment ?? ''
-		).comment;*/
-	if (finding.analysisTrail) {
-		console.log('hei hei');
-		selectedReason = finding.analysisTrail.state;
-		suppressed = finding.analysisTrail.isSuppressed;
-	}
+	const init = (finding: FindingType) => {
+		inputText = parseComment(finding.analysisTrail?.comments?.[0]?.comment ?? '').comment;
+		selectedReason = finding.analysisTrail?.state ?? '';
+		suppressed = finding.analysisTrail?.isSuppressed ?? false;
+	};
+	$: init(finding);
 	// on click should send a request to analysis endpoint for dependency track
 </script>
 
@@ -186,11 +184,26 @@
 		trail. Suppression will be effective for all workloads using this image.
 	</Alert>
 	<div class="info">
-		Package: <code>{finding.packageUrl}</code><br />
-		{#if finding.aliases.length > 0}
-			Alias(es): <code>{joinAliases(finding.aliases, finding.vulnId)}</code><br />
-		{/if}
-		Description: {finding.description !== '' ? finding.description : 'No description'}
+		<dl>
+			<dt>Package:</dt>
+			<dd><code>{finding.packageUrl}</code></dd>
+
+			{#if finding.aliases.length > 0}
+				<dt>Alias(es):</dt>
+				<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
+			{/if}
+			{#if finding.description !== ''}
+				<dt>Description:</dt>
+				<dd>{finding.description}</dd>
+			{/if}
+
+			<dt>Details:</dt>
+			<dd>
+				<a href={detailsUrl(finding.vulnId)} target="_blank"
+					>{detailsUrl(finding.vulnId)}<ExternalLinkIcon /></a
+				>
+			</dd>
+		</dl>
 	</div>
 	<div class="workload">
 		<h5>Affected workloads</h5>
@@ -259,5 +272,8 @@
 	}
 	.info {
 		margin: 1rem 0;
+	}
+	dt {
+		font-weight: bold;
 	}
 </style>
