@@ -8,7 +8,7 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		}
 		instances {
 			name
-			image
+			imageName
 		}
 
 		...AccessPolicy

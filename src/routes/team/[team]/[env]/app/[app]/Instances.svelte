@@ -33,7 +33,7 @@
 					message
 					restarts
 					created
-					image
+					imageName
 				}
 				resources @loading {
 					requests {

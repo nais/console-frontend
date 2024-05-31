@@ -28,18 +28,6 @@ type AnalysisTrail {
   state: String!
 }
 
-type Alias {
-  name: String!
-  source: String!
-}
-
-type AnalysisTrail {
-  comments: [Comment]!
-  id: ID!
-  isSuppressed: Boolean!
-  state: String!
-}
-
 type App implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
@@ -635,7 +623,7 @@ type Insights {
 type Instance {
   created: Time!
   id: ID!
-  image: String!
+  imageName: String!
   message: String!
   name: String!
   restarts: Int!
@@ -1769,7 +1757,7 @@ type Run {
   duration: String!
   failed: Boolean!
   id: ID!
-  image: String!
+  imageName: String!
   message: String!
   name: String!
   podNames: [String!]!
@@ -2135,7 +2123,6 @@ type Team {
     """The name of the topic."""
     name: String!
   ): KafkaTopic!
-
   kafkaTopics(
     """Returns the last n entries from the list."""
     limit: Int
@@ -2583,7 +2570,7 @@ interface Workload {
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
-  image: String!
+  image: Image!
   name: String!
   resources: Resources!
   status: WorkloadStatus!
