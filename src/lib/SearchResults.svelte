@@ -4,10 +4,10 @@
 	import { Skeleton } from '@nais/ds-svelte-community';
 	import { BucketIcon, DatabaseIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
-	import Redis from './icons/Redis.svelte';
 	import BigQuery from './icons/BigQuery.svelte';
-	import Opensearch from './icons/Opensearch.svelte';
 	import Kafka from './icons/Kafka.svelte';
+	import Opensearch from './icons/Opensearch.svelte';
+	import Redis from './icons/Redis.svelte';
 
 	export let data: SearchQuery$result;
 	export let query: string;

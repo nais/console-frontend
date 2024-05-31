@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
-	import { graphql } from '$houdini';
+	import { SearchType, graphql } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import { docURL } from '$lib/doc';
@@ -116,31 +116,33 @@
 			showSearch = true;
 			timeout = setTimeout(() => {
 				if (query.startsWith('app:')) {
-					store.fetch({ variables: { query: query.slice(4), type: 'APP' } });
+					store.fetch({ variables: { query: query.slice(4).trim(), type: SearchType.APP } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('team:')) {
-					store.fetch({ variables: { query: query.slice(5), type: 'TEAM' } });
+					store.fetch({ variables: { query: query.slice(5).trim(), type: SearchType.TEAM } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('job:')) {
-					store.fetch({ variables: { query: query.slice(4), type: 'NAISJOB' } });
+					store.fetch({ variables: { query: query.slice(4).trim(), type: SearchType.NAISJOB } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('sql:')) {
-					store.fetch({ variables: { query: query.slice(4), type: 'SQLINSTANCE' } });
+					store.fetch({
+						variables: { query: query.slice(4).trim(), type: SearchType.SQLINSTANCE }
+					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('redis:')) {
-					store.fetch({ variables: { query: query.slice(6), type: 'REDIS' } });
+					store.fetch({ variables: { query: query.slice(6).trim(), type: SearchType.REDIS } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('bq:')) {
-					store.fetch({ variables: { query: query.slice(3), type: 'BIGQUERY' } });
+					store.fetch({ variables: { query: query.slice(3).trim(), type: SearchType.BIGQUERY } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('bucket:')) {
-					store.fetch({ variables: { query: query.slice(7), type: 'BUCKET' } });
+					store.fetch({ variables: { query: query.slice(7).trim(), type: SearchType.BUCKET } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('kafka:')) {
-					store.fetch({ variables: { query: query.slice(6), type: 'KAFKATOPIC' } });
+					store.fetch({ variables: { query: query.slice(6).trim(), type: SearchType.KAFKATOPIC } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('os:')) {
-					store.fetch({ variables: { query: query.slice(3), type: 'OPENSEARCH' } });
+					store.fetch({ variables: { query: query.slice(3).trim(), type: SearchType.OPENSEARCH } });
 					unsupportedFilter = false;
 				} else if (query.lastIndexOf(':') >= 0) {
 					unsupportedFilter = true;
@@ -279,6 +281,7 @@
 								<code>os:myOpenSearchInstance</code>
 								<code>kafka:myKafkaTopic</code>
 								<code>bq:myBigQueryDataSet</code>
+								<code>bucket:myBucket</code>
 							</div>
 						</li>
 					</ul>
@@ -326,7 +329,7 @@
 		color: var(--a-text-default);
 		overflow: auto;
 		box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-		min-height: 250px;
+		min-height: 300px;
 		width: 350px;
 	}
 
