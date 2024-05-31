@@ -9,6 +9,7 @@
 	import { Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
@@ -26,10 +27,12 @@
 				<Redis />
 				{redisInstance.name}
 			</h3>
-
-			<h4 style="margin-bottom: 0;"><CostIcon size="16" /> Cost</h4>
-			<p style="margin-left: 1em; margin-top: 0;">€{Math.round(redisInstance.cost)} last 30 days</p>
-
+			{#if redisInstance.workload}
+				<h4 style="margin-bottom: 0;"><CostIcon size="16" /> Cost</h4>
+				<p style="margin-left: 1em; margin-top: 0;">
+					€{Math.round(redisInstance.cost)} last 30 days
+				</p>
+			{/if}
 			<h4 class="access">Access</h4>
 			{#if redisInstance.access.length}
 				<Table size="small">
@@ -45,11 +48,7 @@
 							<Tr>
 								<Td>{access.role}</Td>
 								<Td>
-									<Link
-										href="/team/{teamName}/{envName}/{access.workload.type === 'App'
-											? 'app'
-											: 'job'}/{access.workload.name}">{access.workload.name}</Link
-									>
+									<WorkloadLink workload={access.workload} env={envName} team={teamName} />
 								</Td>
 								<Td>{access.workload.type}</Td>
 							</Tr>

@@ -19,11 +19,11 @@ query OpenSearchInstance($env: String!, $team: Slug!, $name: String!) @loading(c
 			}
 			workload {
 				name
-				type: __typename
+				type
 			}
 			access {
 				workload {
-					type: __typename
+					type
 					name
 				}
 				role
