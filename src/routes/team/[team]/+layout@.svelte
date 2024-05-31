@@ -19,13 +19,13 @@
 		repositories: 'repositories',
 		settings: 'settings',
 		secrets: 'secrets',
-		postgres: 'Postgres',
-		buckets: 'Buckets',
-		redis: 'Redis',
-		opensearch: 'OpenSearch',
-		kafka: 'Kafka topics',
-		bigquery: 'BigQuery',
-		unleash: 'Unleash'
+		postgres: 'postgres',
+		buckets: 'buckets',
+		redis: 'redis',
+		opensearch: 'opensearch',
+		kafka: 'kafka topics',
+		bigquery: 'bigquery',
+		unleash: 'unleash'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
@@ -174,6 +174,10 @@
 		pages[`/team/[team]/[env]/job/[job]${key ? '/' + key : ''}`] = (params: Data) => {
 			const ret = [
 				{
+					name: 'jobs',
+					path: replacer('/team/[team]/jobs', params)
+				},
+				{
 					name: params.env
 				},
 				{
@@ -198,8 +202,13 @@
 		pages[`/team/[team]/[env]/app/[app]${key ? '/' + key : ''}`] = (params: Data) => {
 			const ret = [
 				{
+					name: 'apps',
+					path: replacer('/team/[team]/applications', params)
+				},
+				{
 					name: params.env
 				},
+
 				{
 					name: params.app,
 					path: replacer('/team/[team]/[env]/app/[app]', params)
