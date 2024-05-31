@@ -223,7 +223,7 @@
 							<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
 							<Th style="width: 38rem" sortable={true} sortKey="PACKAGE_URL">Package</Th>
 							<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-							<Th style="width: 3rem" sortable={true} sortKey="SUPPRESSED">Suppressed</Th>
+							<Th style="width: 3rem" sortable={true} sortKey="IS_SUPPRESSED">Suppressed</Th>
 							<Th sortable={true} sortKey="STATE">State</Th>
 						</Thead>
 						<Tbody>

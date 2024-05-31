@@ -1227,6 +1227,9 @@ enum OrderByField {
   """Order by env."""
   ENV_NAME
 
+  """Order by isSuppressed."""
+  IS_SUPPRESSED
+
   """Order by memory utilization"""
   MEMORY
 
