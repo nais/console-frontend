@@ -1,9 +1,7 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
-	import { graphql, type SearchQuery$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Alert,
 		Button,
@@ -20,17 +18,19 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
-		BulletListIcon,
-		CheckmarkIcon,
 		ExternalLinkIcon,
-		PlusCircleFillIcon,
 		PlusIcon,
+		BulletListIcon,
 		TokenIcon,
 		TrashIcon,
+		PlusCircleFillIcon,
+		CheckmarkIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
+	import { graphql, type SearchQuery$result } from '$houdini';
+	import prettyBytes from 'pretty-bytes';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import SearchTeam from './SearchTeam.svelte';
 
 	export let data: PageData;
