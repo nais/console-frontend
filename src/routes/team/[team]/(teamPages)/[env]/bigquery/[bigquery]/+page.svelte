@@ -4,6 +4,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		CopyButton,
 		HelpText,
@@ -36,7 +37,14 @@
 				<BigQueryDataset />
 				{bigQueryDatasetInstance.name}
 			</h3>
+
 			<em>{bigQueryDatasetInstance.description}</em>
+
+			<h4 style="margin: 1em 0 0 0;"><CostIcon size="16" /> Cost</h4>
+			<p style="margin-left: 1em; margin-top: 0;">
+				€{Math.round(bigQueryDatasetInstance.cost)} last 30 days
+			</p>
+
 			<dl class="status">
 				<dt>Created</dt>
 				<dd><Time time={bigQueryDatasetInstance.status.creationTime} /></dd>

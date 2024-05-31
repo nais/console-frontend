@@ -27,10 +27,8 @@
 				{openSearch.name}
 			</h3>
 
-			<h4>Cost</h4>
-			<CostIcon size="16" />
-			€{openSearch.cost}
-			sum of cost last 30 days
+			<h4 style="margin-bottom: 0;"><CostIcon size="16" /> Cost</h4>
+			<p style="margin-left: 1em; margin-top: 0;">€{Math.round(openSearch.cost)} last 30 days</p>
 
 			<h4 class="access">Access</h4>
 			{#if openSearch.access.length}

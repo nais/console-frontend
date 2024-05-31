@@ -156,6 +156,7 @@ type BackupConfiguration {
 type BigQueryDataset implements Persistence {
   access: [BigQueryDatasetAccess!]!
   cascadingDelete: Boolean!
+  cost: Float!
   description: String!
   env: Env!
   id: ID!
@@ -1071,7 +1072,7 @@ type NoRunningInstancesError implements StateError {
 
 type OpenSearch implements Persistence {
   access: [OpenSearchInstanceAccess!]!
-  cost: String!
+  cost: Float!
   env: Env!
   id: ID!
 
@@ -1461,7 +1462,7 @@ type ReconcilerList {
 
 type Redis implements Persistence {
   access: [RedisInstanceAccess!]!
-  cost: String!
+  cost: Float!
   env: Env!
   id: ID!
   name: String!
