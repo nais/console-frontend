@@ -16,7 +16,7 @@
 		app,
 		graphql(`
 			fragment AppImage on App {
-				image @loading {
+				imageDetails @loading {
 					name
 					projectId
 				}
@@ -98,7 +98,7 @@
 
 <h4 class="imageHeader">
 	Image
-	{#if $data?.image !== PendingValue}
+	{#if $data?.imageDetails !== PendingValue}
 		<Button as="a" variant="secondary" size="small" href="/team/{team}/{env}/app/{appName}/image"
 			>Details</Button
 		>

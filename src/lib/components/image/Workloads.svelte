@@ -58,6 +58,10 @@
 						{/if}
 					</Td>
 				</Tr>
+			{:else}
+				<Tr>
+					<Td colspan={5}>No workloads found</Td>
+				</Tr>
 			{/each}
 		</Tbody>
 	</Table>

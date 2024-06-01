@@ -1,6 +1,6 @@
 query Workloads(
 	$team: Slug!
-	$orderBy: OrderBy = { field: STATUS, direction: ASC }
+	$orderBy: OrderBy = { field: SEVERITY_CRITICAL, direction: DESC }
 	$limit: Int
 	$offset: Int
 ) @loading(count: 5, cascade: true) {
@@ -24,7 +24,7 @@ query Workloads(
 					name
 				}
 
-				image {
+				imageDetails {
 					summary {
 						critical
 						riskScore

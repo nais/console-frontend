@@ -34,6 +34,8 @@
 	$: ({ Workloads } = data);
 	$: team = $Workloads.data?.team;
 
+	$: console.log($Workloads.variables);
+
 	$: ({ sortState, limit, offset } = tableStateFromVariables($Workloads.variables));
 </script>
 
@@ -103,27 +105,29 @@
 											size="small"
 											href="/team/{teamName}/{node.env.name}/app/{node.name}/image"
 										>
-											{#if node.image.summary.critical > 0}
-												<div class="badge">
-													<Tooltip
-														placement="right"
-														content="{node.image.summary
-															.critical} vulnerabilities found. Please update your dependencies!"
-													>
-														<VulnerabilityBadge
-															text={String(node.image.summary.critical)}
-															color={severityToColor('critical')}
-															size={'32px'}
-														/>
+											{#if node.imageDetails.summary}
+												{#if node.imageDetails.summary.critical > 0}
+													<div class="badge">
+														<Tooltip
+															placement="right"
+															content="{node.imageDetails.summary
+																.critical} vulnerabilities found. Please update your dependencies!"
+														>
+															<VulnerabilityBadge
+																text={String(node.imageDetails.summary.critical)}
+																color={severityToColor('critical')}
+																size={'32px'}
+															/>
+														</Tooltip>
+													</div>
+												{:else}
+													<Tooltip placement="right" content="No critical vulnerabilities found">
+														<code class="check success">&check;</code>
 													</Tooltip>
-												</div>
-											{:else if node.image.summary.critical < 0}
+												{/if}
+											{:else}
 												<Tooltip placement="right" content="No data found in dependencytrack">
 													NA
-												</Tooltip>
-											{:else}
-												<Tooltip placement="right" content="No critical vulnerabilities found">
-													<code class="check success">&check;</code>
 												</Tooltip>
 											{/if}
 										</Button>
@@ -135,12 +139,12 @@
 											size="small"
 											href="/team/{teamName}/{node.env.name}/app/{node.name}/image"
 										>
-											{#if node.image.summary.riskScore < 0}
+											{#if node.imageDetails.summary}
+												{node.imageDetails.summary.riskScore}
+											{:else}
 												<Tooltip placement="right" content="No data found in dependencytrack">
 													NA
 												</Tooltip>
-											{:else}
-												{node.image.summary.riskScore}
 											{/if}
 										</Button>
 									</Td>

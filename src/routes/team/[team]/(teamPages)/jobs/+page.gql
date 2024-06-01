@@ -2,7 +2,7 @@ query Jobs(
 	$limit: Int
 	$offset: Int
 	$team: Slug!
-	$orderBy: OrderBy = { field: STATUS, direction: ASC }
+	$orderBy: OrderBy = { field: SEVERITY_CRITICAL, direction: DESC }
 ) @loading(count: 5, cascade: true) {
 	team(slug: $team) {
 		id
@@ -18,7 +18,7 @@ query Jobs(
 					timestamp
 				}
 				name
-				image {
+				imageDetails {
 					name
 					summary {
 						critical

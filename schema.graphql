@@ -35,7 +35,8 @@ type App implements Workload {
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
-  image: Image!
+  image: String!
+  imageDetails: ImageDetails!
   ingresses: [String!]!
   instances: [Instance!]!
   manifest: String!
@@ -564,8 +565,7 @@ type IDPortenSidecar {
   resources: Resources
 }
 
-type Image {
-  digest: String!
+type ImageDetails {
   findings(
     """Limit the number of entries returned."""
     limit: Int
@@ -581,18 +581,17 @@ type Image {
   name: String!
   projectId: String!
   rekor: Rekor!
-  summary: ImageVulnerabilitySummary!
+  summary: ImageVulnerabilitySummary
   version: String!
   workloadReferences: [WorkloadReference!]!
 }
 
-type ImageList {
-  nodes: [Image!]!
+type ImageDetailsList {
+  nodes: [ImageDetails!]!
   pageInfo: PageInfo!
 }
 
 type ImageVulnerabilitySummary {
-  bomCount: Int!
   critical: Int!
   high: Int!
   id: ID!
@@ -623,7 +622,7 @@ type Insights {
 type Instance {
   created: Time!
   id: ID!
-  imageName: String!
+  image: String!
   message: String!
   name: String!
   restarts: Int!
@@ -1128,7 +1127,8 @@ type NaisJob implements Workload {
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
-  image: Image!
+  image: String!
+  imageDetails: ImageDetails!
   manifest: String!
   name: String!
   parallelism: Int!
@@ -1602,6 +1602,7 @@ type Rekor {
   buildTrigger: String!
   gitHubWorkflowName: String!
   gitHubWorkflowRef: String!
+  gitHubWorkflowSHA: String!
   integratedTime: Int!
   logIndex: String!
   oIDCIssuer: String!
@@ -1760,7 +1761,7 @@ type Run {
   duration: String!
   failed: Boolean!
   id: ID!
-  imageName: String!
+  image: String!
   message: String!
   name: String!
   podNames: [String!]!
@@ -2116,7 +2117,7 @@ type Team {
 
     """Order images by"""
     orderBy: OrderBy
-  ): ImageList!
+  ): ImageDetailsList!
 
   """Get a Kafka topic by name and env."""
   kafkaTopic(
@@ -2573,7 +2574,8 @@ interface Workload {
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
-  image: Image!
+  image: String!
+  imageDetails: ImageDetails!
   name: String!
   resources: Resources!
   status: WorkloadStatus!

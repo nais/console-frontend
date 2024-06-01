@@ -7,12 +7,11 @@ query Image(
 	$offset: Int
 ) @loading(cascade: false) {
 	app(name: $app, team: $team, env: $env) {
-		image {
+		imageDetails {
 			id @loading
 			projectId
 			version
 			name
-			digest
 			rekor @loading {
 				buildTrigger
 				buildConfigURI

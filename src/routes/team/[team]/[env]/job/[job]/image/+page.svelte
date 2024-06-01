@@ -35,13 +35,13 @@
 
 	$: ({ NaisJobImage, UserInfo } = data);
 
-	$: image = $NaisJobImage.data?.naisjob.image;
+	$: image = $NaisJobImage.data?.naisjob.imageDetails;
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
 
 	const summary = graphql(`
 		query NaisJobSummary($env: String!, $team: Slug!, $job: String!) {
 			naisjob(env: $env, team: $team, name: $job) {
-				image {
+				imageDetails {
 					projectId
 					summary {
 						riskScore
@@ -114,10 +114,6 @@
 					<div class="tag">
 						<h5>Tag</h5>
 						<code>{tag}</code>
-					</div>
-					<div class="commitSha">
-						<h5>Commit</h5>
-						<code>Kommer...</code>
 					</div>
 
 					<div class="rekor">
@@ -409,12 +405,6 @@
 	.tag {
 		grid-column: 2;
 		grid-row: 2;
-	}
-
-	.commitSha {
-		grid-column-start: 1;
-		grid-column-end: 3;
-		grid-row: 3;
 	}
 
 	.rekor {

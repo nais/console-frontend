@@ -70,6 +70,8 @@
 
 	export let projectId: string;
 
+	let errormessage = '';
+
 	let selectedReason = '';
 	let inputText = '';
 	let suppressed: boolean = false;
@@ -89,12 +91,20 @@
 
 	const close = () => {
 		open = false;
+		errormessage = '';
 		dispatcher('close');
 	};
 
 	const triggerSuppress = async () => {
-		if (hasSelectedReason().length > 0 && selectedReason.length > 0) {
-			console.log('no reason');
+		errormessage = '';
+
+		if (selectedReason === 'Suppress reason' || selectedReason === '') {
+			errormessage += 'Please select a suppress reason from the Analysis dropdown.';
+			return;
+		}
+
+		if (inputText === '') {
+			errormessage += 'Please provide a comment before suppressing the finding. ';
 			return;
 		}
 
@@ -109,11 +119,13 @@
 		});
 
 		if ($suppress.errors) {
-			console.log($suppress.errors);
+			if (errormessage === '') {
+				errormessage = $suppress.errors[0].message;
+			}
 			open = true;
 			return;
 		}
-
+		errormessage = '';
 		const imagePage = '/team/' + team + '/' + env + '/' + workload + '/image';
 		close();
 		await goto(imagePage, { replaceState: true });
@@ -158,13 +170,13 @@
 		{ value: 'NOT_AFFECTED', text: 'Not affected' }
 	];
 
-	const hasSelectedReason = () => {
+	/*const hasSelectedReason = () => {
 		const reasons = SUPPRESS_OPTIONS.map((option) => option.value).includes(selectedReason);
 		if (!reasons) {
 			return 'Please select a suppress reason';
 		}
 		return '';
-	};
+	};*/
 
 	const init = (finding: FindingType) => {
 		inputText = parseComment(finding.analysisTrail?.comments?.[0]?.comment ?? '').comment;
@@ -179,10 +191,7 @@
 	<svelte:fragment slot="header">
 		<Heading>Suppress finding for {finding.vulnId}</Heading>
 	</svelte:fragment>
-	<Alert variant="info">
-		Please provide a reason for suppressing this finding. This will be recorded in the analysis
-		trail. Suppression will be effective for all workloads using this image.
-	</Alert>
+
 	<div class="info">
 		<dl>
 			<dt>Package:</dt>
@@ -226,6 +235,15 @@
 	</div>
 
 	<div class="wrapper">
+		{#if errormessage !== ''}
+			<Alert variant="error">
+				{errormessage}
+			</Alert>
+		{/if}
+		<p>
+			Please provide a reason for suppressing this finding. This will be recorded in the analysis
+			audit log. Suppression will be in effect for all workloads using this image.
+		</p>
 		<Select size="small" label="Analysis" bind:value={selectedReason}>
 			{#each SUPPRESS_OPTIONS as option}
 				{#if option.value === finding.state}
@@ -241,13 +259,6 @@
 		</TextField>
 		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
 		Updated by: {user}<br />
-		{#if $suppress.errors}
-			<Alert variant="error">
-				{#each $suppress.errors as error}
-					{error.message}
-				{/each}
-			</Alert>
-		{/if}
 	</div>
 	<svelte:fragment slot="footer">
 		<Button variant="primary" size="small" on:click={triggerSuppress}>Update</Button>

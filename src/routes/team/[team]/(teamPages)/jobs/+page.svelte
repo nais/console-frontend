@@ -90,37 +90,41 @@
 								</Td>
 								<Td>{node.env.name}</Td>
 								<Td style="text-align: center;">
-									{#if node.image.summary.critical > 0}
-										<div class="badge">
-											<Tooltip
-												placement="right"
-												content="{node.image.summary
-													.critical} vulnerabilities found. Please update your dependencies!"
-											>
-												<VulnerabilityBadge
-													text={String(node.image.summary.critical)}
-													color={severityToColor('critical')}
-													size={'32px'}
-												/>
+									{#if node.imageDetails.summary}
+										{#if node.imageDetails.summary.critical > 0}
+											<div class="badge">
+												<Tooltip
+													placement="right"
+													content="{node.imageDetails.summary
+														.critical} vulnerabilities found. Please update your dependencies!"
+												>
+													<VulnerabilityBadge
+														text={String(node.imageDetails.summary.critical)}
+														color={severityToColor('critical')}
+														size={'32px'}
+													/>
+												</Tooltip>
+											</div>
+										{:else if node.imageDetails.summary.critical < 0}
+											<Tooltip placement="right" content="No data found in dependencytrack">
+												<code class="check fail">-</code>
 											</Tooltip>
-										</div>
-									{:else if node.image.summary.critical < 0}
-										<Tooltip placement="right" content="No data found in dependencytrack">
-											<code class="check fail">-</code>
-										</Tooltip>
-									{:else}
-										<Tooltip placement="right" content="No critical vulnerabilities found">
-											<code class="check success">&check;</code>
-										</Tooltip>
+										{:else}
+											<Tooltip placement="right" content="No critical vulnerabilities found">
+												<code class="check success">&check;</code>
+											</Tooltip>
+										{/if}
 									{/if}
 								</Td>
 								<Td style="text-align: center">
-									{#if node.image.summary.riskScore < 0}
-										<Tooltip placement="right" content="No data found in dependencytrack">
-											<code class="check fail">-</code>
-										</Tooltip>
-									{:else}
-										{node.image.summary.riskScore}
+									{#if node.imageDetails.summary}
+										{#if node.imageDetails.summary.riskScore < 0}
+											<Tooltip placement="right" content="No data found in dependencytrack">
+												<code class="check fail">-</code>
+											</Tooltip>
+										{:else}
+											{node.imageDetails.summary.riskScore}
+										{/if}
 									{/if}
 								</Td>
 								<Td>

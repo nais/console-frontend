@@ -10,8 +10,9 @@
 		job,
 		graphql(`
 			fragment JobImage on NaisJob {
-				image @loading {
+				imageDetails @loading {
 					name
+					projectId
 				}
 				deployInfo @loading {
 					timestamp @loading
@@ -37,13 +38,13 @@
 		}
 	}
 
-	$: image = $data?.image;
+	$: image = $data?.imageDetails;
 	$: deployInfo = $data?.deployInfo;
 </script>
 
 <h4 class="imageHeader">
 	Image
-	{#if $data?.image !== PendingValue}
+	{#if $data?.imageDetails !== PendingValue}
 		<Button as="a" variant="secondary" size="small" href="/team/{team}/{env}/job/{jobName}/image"
 			>Details</Button
 		>
