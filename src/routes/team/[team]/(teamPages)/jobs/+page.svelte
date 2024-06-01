@@ -15,6 +15,7 @@
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
+		Button,
 		Skeleton,
 		Table,
 		Tbody,
@@ -41,8 +42,9 @@
 		{/each}
 	</Alert>
 {:else}
-	<Card>
+	<Card columns={12}>
 		<Table
+			zebraStripes
 			size="small"
 			sort={sortState}
 			on:sortChange={(e) => {
@@ -90,43 +92,56 @@
 								</Td>
 								<Td>{node.env.name}</Td>
 								<Td style="text-align: center;">
-									{#if node.imageDetails.summary}
-										{#if node.imageDetails.summary.critical > 0}
-											<div class="badge">
-												<Tooltip
-													placement="right"
-													content="{node.imageDetails.summary
-														.critical} vulnerabilities found. Please update your dependencies!"
-												>
-													<VulnerabilityBadge
-														text={String(node.imageDetails.summary.critical)}
-														color={severityToColor('critical')}
-														size={'32px'}
-													/>
+									<Button
+										as="a"
+										variant="tertiary-neutral"
+										size="small"
+										href="/team/{teamName}/{node.env.name}/job/{node.name}/image"
+									>
+										{#if node.imageDetails.summary}
+											{#if node.imageDetails.summary.critical > 0}
+												<div class="badge">
+													<Tooltip
+														placement="right"
+														content="{node.imageDetails.summary
+															.critical} vulnerabilities found. Please update your dependencies!"
+													>
+														<VulnerabilityBadge
+															text={String(node.imageDetails.summary.critical)}
+															color={severityToColor('critical')}
+															size={'32px'}
+														/>
+													</Tooltip>
+												</div>
+											{:else}
+												<Tooltip placement="right" content="No critical vulnerabilities found">
+													<code class="check success">&check;</code>
 												</Tooltip>
-											</div>
-										{:else if node.imageDetails.summary.critical < 0}
-											<Tooltip placement="right" content="No data found in dependencytrack">
-												<code class="check fail">-</code>
-											</Tooltip>
+											{/if}
 										{:else}
-											<Tooltip placement="right" content="No critical vulnerabilities found">
-												<code class="check success">&check;</code>
+											<Tooltip placement="right" content="No data found in dependencytrack">
+												NA
 											</Tooltip>
 										{/if}
-									{/if}
+									</Button>
 								</Td>
 								<Td style="text-align: center">
-									{#if node.imageDetails.summary}
-										{#if node.imageDetails.summary.riskScore < 0}
-											<Tooltip placement="right" content="No data found in dependencytrack">
-												<code class="check fail">-</code>
-											</Tooltip>
-										{:else}
+									<Button
+										as="a"
+										variant="tertiary"
+										size="small"
+										href="/team/{teamName}/{node.env.name}/job/{node.name}/image"
+									>
+										{#if node.imageDetails.summary}
 											{node.imageDetails.summary.riskScore}
+										{:else}
+											<Tooltip placement="right" content="No data found in dependencytrack">
+												NA
+											</Tooltip>
 										{/if}
-									{/if}
+									</Button>
 								</Td>
+
 								<Td>
 									{#if node.deployInfo.timestamp}
 										<Time time={node.deployInfo.timestamp} distance={true} />
@@ -135,14 +150,13 @@
 							</Tr>
 						{:else}
 							<Tr>
-								<Td colspan={4}>No jobs found</Td>
+								<Td colspan={999}>No jobs found</Td>
 							</Tr>
 						{/each}
 					{/if}
 				{/if}
 			</Tbody>
 		</Table>
-
 		<Pagination
 			pageInfo={team?.naisjobs.pageInfo}
 			{limit}
@@ -183,9 +197,5 @@
 	}
 	.success {
 		color: #4dbd74;
-	}
-
-	.fail {
-		color: #f86c6b;
 	}
 </style>
