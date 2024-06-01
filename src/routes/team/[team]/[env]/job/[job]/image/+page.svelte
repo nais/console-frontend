@@ -3,10 +3,13 @@
 	import { PendingValue, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import { logEvent } from '$lib/amplitude';
 	import SuppressFinding, { type FindingType } from '$lib/components/image/SuppressFinding.svelte';
 	import TrailFinding from '$lib/components/image/TrailFinding.svelte';
 	import Workloads from '$lib/components/image/Workloads.svelte';
+	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -58,6 +61,7 @@
 
 	const notificationBadgeSize = '48px';
 
+	let jobName = $page.params.job;
 	let env = $page.params.env;
 	let team = $page.params.team;
 
@@ -77,6 +81,14 @@
 	}
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($NaisJobImage.variables));
+
+	const onClick = () => {
+		let props = {};
+		props = {
+			routeID: '/dependencytrack/app/findings'
+		};
+		logEvent('pageview', props);
+	};
 </script>
 
 {#if $NaisJobImage.errors}
@@ -113,97 +125,128 @@
 					</div>
 					<div class="tag">
 						<h5>Tag</h5>
-						<code>{tag}</code>
+						<code>{tag ? tag : ''}</code>
 					</div>
-
-					<div class="rekor">
-						<a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}">
-							Attestation details
-							<ExternalLinkIcon title="Open attestation details" />
-						</a>
-						|
-						<a href={image.rekor.runInvocationURI}>
-							Run invocation
-							<ExternalLinkIcon title="Open attestation details" />
-						</a>
-					</div>
+					{#if image.projectId !== ''}
+						<div class="rekor">
+							<a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}">
+								Attestation details
+								<ExternalLinkIcon title="Open attestation details" />
+							</a>
+							|
+							<a href={image.rekor.runInvocationURI}>
+								Run invocation
+								<ExternalLinkIcon title="Open attestation details" />
+							</a>
+						</div>
+					{/if}
 				</div>
 			</Card>
 		{/if}
 
 		<Card columns={4}>
 			<h4>Vulnerabilities summary</h4>
-			<div class="circles">
-				{#if image.summary.critical === PendingValue}
-					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
-				{:else}
-					<Tooltip placement="right" content="severity: CRITICAL">
-						<VulnerabilityBadge
-							text={String(image.summary.critical)}
-							color={severityToColor('critical')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
+			{#if image.summary}
+				<div class="circles">
+					{#if image.summary}
+						{#if image.summary.critical === PendingValue}
+							<Skeleton
+								variant="circle"
+								width="notificationBadgeSize"
+								height="notificationBadgeSize"
+							/>
+						{:else}
+							<Tooltip placement="right" content="severity: CRITICAL">
+								<VulnerabilityBadge
+									text={String(image.summary.critical)}
+									color={severityToColor('critical')}
+									size={notificationBadgeSize}
+								/>
+							</Tooltip>
+						{/if}
+						{#if image.summary.high === PendingValue}
+							<Skeleton
+								variant="circle"
+								width="notificationBadgeSize"
+								height="notificationBadgeSize"
+							/>
+						{:else}
+							<Tooltip placement="right" content="severity: HIGH">
+								<VulnerabilityBadge
+									text={String(image.summary.high)}
+									color={severityToColor('high')}
+									size={notificationBadgeSize}
+								/>
+							</Tooltip>
+						{/if}
+						{#if image.summary.medium === PendingValue}
+							<Skeleton
+								variant="circle"
+								width="notificationBadgeSize"
+								height="notificationBadgeSize"
+							/>
+						{:else}
+							<Tooltip placement="right" content="severity: MEDIUM">
+								<VulnerabilityBadge
+									text={String(image.summary.medium)}
+									color={severityToColor('medium')}
+									size={notificationBadgeSize}
+								/>
+							</Tooltip>
+						{/if}
+						{#if image.summary.low === PendingValue}
+							<Skeleton
+								variant="circle"
+								width="notificationBadgeSize"
+								height="notificationBadgeSize"
+							/>
+						{:else}
+							<Tooltip placement="right" content="severity: LOW">
+								<VulnerabilityBadge
+									text={String(image.summary.low)}
+									color={severityToColor('low')}
+									size={notificationBadgeSize}
+								/>
+							</Tooltip>
+						{/if}
+						{#if image.summary.unassigned === PendingValue}
+							<Skeleton
+								variant="circle"
+								width="notificationBadgeSize"
+								height="notificationBadgeSize"
+							/>
+						{:else}
+							<Tooltip placement="right" content="severity: UNASSIGNED">
+								<VulnerabilityBadge
+									text={String(image.summary.unassigned)}
+									color={severityToColor('unassigned')}
+									size={notificationBadgeSize}
+								/>
+							</Tooltip>
+						{/if}
+					{:else}
+						<p>No summary found.</p>
+					{/if}
+				</div>
+				Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''} <br />
+				Explore findings in
+				{#if image.projectId !== PendingValue}
+					<a href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
+						>Dependency track<ExternalLinkIcon
+							title="Open project in Dependency track"
+							font-size="1.5rem"
+						/></a
+					>
 				{/if}
-				{#if image.summary.high === PendingValue}
-					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
-				{:else}
-					<Tooltip placement="right" content="severity: HIGH">
-						<VulnerabilityBadge
-							text={String(image.summary.high)}
-							color={severityToColor('high')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-				{/if}
-				{#if image.summary.medium === PendingValue}
-					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
-				{:else}
-					<Tooltip placement="right" content="severity: MEDIUM">
-						<VulnerabilityBadge
-							text={String(image.summary.medium)}
-							color={severityToColor('medium')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-				{/if}
-				{#if image.summary.low === PendingValue}
-					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
-				{:else}
-					<Tooltip placement="right" content="severity: LOW">
-						<VulnerabilityBadge
-							text={String(image.summary.low)}
-							color={severityToColor('low')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-				{/if}
-				{#if image.summary.unassigned === PendingValue}
-					<Skeleton variant="circle" width="notificationBadgeSize" height="notificationBadgeSize" />
-				{:else}
-					<Tooltip placement="right" content="severity: UNASSIGNED">
-						<VulnerabilityBadge
-							text={String(image.summary.unassigned)}
-							color={severityToColor('unassigned')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-				{/if}
-			</div>
-			Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''} <br />
-			Explore findings in
-			{#if image.projectId !== PendingValue}
-				<a href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
-					>Dependency track<ExternalLinkIcon
-						title="Open project in Dependency track"
-						font-size="1.5rem"
-					/></a
-				>
+			{:else}
+				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				No data found in dependencytrack.
+				<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>How to fix</a>
 			{/if}
 		</Card>
-		<Card columns={12}>
-			<h4>Findings</h4>
-			{#if image.findings}
+		{#if image.findings && image.projectId !== ''}
+			<Card columns={12}>
+				<h4>Findings</h4>
 				{#if image.findings.nodes.length > 0}
 					<Table
 						zebraStripes
@@ -288,30 +331,29 @@
 							{/each}
 						</Tbody>
 					</Table>
+
+					{#if image.findings.pageInfo}
+						<div class="pagination">
+							<Pagination
+								pageInfo={image.findings.pageInfo}
+								{limit}
+								{offset}
+								changePage={(e) => {
+									changeParams({ page: e.toString() });
+								}}
+							/>
+						</div>
+					{/if}
 				{:else}
 					<p>No findings found.</p>
 				{/if}
-				{#if image.findings.pageInfo}
-					<div class="pagination">
-						<Pagination
-							pageInfo={image.findings.pageInfo}
-							{limit}
-							{offset}
-							changePage={(e) => {
-								changeParams({ page: e.toString() });
-							}}
-						/>
-					</div>
-				{/if}
-			{:else}
-				<p>No findings found.</p>
-			{/if}
-		</Card>
-		<Card columns={12}>
-			{#if image.id !== PendingValue}
+			</Card>
+		{/if}
+		{#if image.id !== PendingValue && image.workloadReferences.length > 0}
+			<Card columns={12}>
 				<Workloads workloads={image.workloadReferences} />
-			{/if}
-		</Card>
+			</Card>
+		{/if}
 	</div>
 {/if}
 
@@ -328,7 +370,7 @@
 			setTimeout(() => {
 				// refetch the image to update the findings
 				summary.fetch({
-					variables: { env: env, team: team, job: name },
+					variables: { env: env, team: team, job: jobName },
 					policy: 'NetworkOnly'
 				});
 			}, 2000);
@@ -389,26 +431,28 @@
 
 	.registry {
 		grid-column: 1;
-		grid-row: 1;
+		grid-row: 2;
 	}
 
 	.repository {
 		grid-column: 2;
-		grid-row: 1;
+		grid-row: 2;
 	}
 
 	.imageName {
 		grid-column: 1;
-		grid-row: 2;
+		grid-row: 1;
 	}
 
 	.tag {
 		grid-column: 2;
-		grid-row: 2;
+		grid-row: 1;
 	}
 
 	.rekor {
-		grid-column: 1;
+		grid-column-start: 1;
+		grid-column-end: 3;
 		grid-row: 4;
+		margin-top: 1rem;
 	}
 </style>
