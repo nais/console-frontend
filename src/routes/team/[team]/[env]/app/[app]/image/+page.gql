@@ -2,7 +2,7 @@ query Image(
 	$team: Slug!
 	$env: String!
 	$app: String!
-	$orderBy: OrderBy = { field: SEVERITY, direction: DESC }
+	$orderBy: OrderBy = { field: NAME, direction: ASC }
 	$limit: Int
 	$offset: Int
 ) @loading(cascade: false) {
@@ -36,9 +36,13 @@ query Image(
 			workloadReferences @loading {
 				id
 				name
-				team
-				workloadType
-				environment
+				team {
+					slug
+				}
+				env {
+					name
+				}
+				type
 				deployInfo {
 					deployer
 					timestamp

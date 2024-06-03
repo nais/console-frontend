@@ -1,20 +1,9 @@
 <script lang="ts">
+	import { PendingValue, type NaisJobImage$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	export let workloads: {
-		readonly id: string;
-		readonly name: string;
-		readonly team: string;
-		readonly workloadType: string;
-		readonly environment: string;
-		readonly deployInfo: {
-			readonly deployer: string;
-			readonly timestamp: Date | null;
-			readonly commitSha: string;
-			readonly url: string;
-		};
-	}[];
+	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
 </script>
 
 <div class="workloads">
@@ -30,33 +19,47 @@
 		<Tbody>
 			{#each workloads as workload}
 				<Tr>
-					<Td>
-						<a href={`/team/${workload.team}`}>{workload.team}</a>
-					</Td>
-					<Td>
-						{workload.environment}
-					</Td>
-					<Td>
-						{#if workload.workloadType === 'app'}
-							<a href={`/team/${workload.team}/${workload.environment}/app/${workload.name}`}
-								>{workload.name}</a
-							>
-						{:else if workload.workloadType === 'job'}
-							<a href={`/team/${workload.team}/${workload.environment}/job/${workload.name}`}
-								>{workload.name}</a
-							>
-						{/if}
-					</Td>
-					<Td>
-						{#if workload.deployInfo.url}
+					{#if workload.team.slug !== PendingValue && workload.env.name !== PendingValue && workload.name !== PendingValue}
+						<Td>
+							<a href={`/team/${workload.team.slug}`}>{workload.team.slug}</a>
+						</Td>
+						<Td>
+							{workload.env.name}
+						</Td>
+						<Td>
+							{#if workload.type === 'APP'}
+								<a href={`/team/${workload.team}/${workload.env.name}/app/${workload.name}`}
+									>{workload.name}</a
+								>
+							{:else if workload.type === 'NAISJOB'}
+								<a href={`/team/${workload.team}/${workload.env.name}/job/${workload.name}`}
+									>{workload.name}</a
+								>
+							{/if}
+						</Td>
+					{:else}
+						<Td><Skeleton variant="text" /></Td>
+						<Td><Skeleton variant="text" /></Td>
+						<Td><Skeleton variant="text" /></Td>
+					{/if}
+					{#if workload.deployInfo.url !== PendingValue}
+						<Td>
 							<a href={workload.deployInfo.url} target="_blank">Run</a>
-						{/if}
-					</Td>
-					<Td>
-						{#if workload.deployInfo.timestamp !== null}
+						</Td>
+					{:else}
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+					{/if}
+					{#if workload.deployInfo.timestamp && workload.deployInfo.timestamp !== PendingValue}
+						<Td>
 							<Time time={workload.deployInfo.timestamp} distance={true} />
-						{/if}
-					</Td>
+						</Td>
+					{:else}
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+					{/if}
 				</Tr>
 			{:else}
 				<Tr>

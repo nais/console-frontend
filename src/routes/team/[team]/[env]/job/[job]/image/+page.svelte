@@ -349,33 +349,32 @@
 				{/if}
 			</Card>
 		{/if}
-		{#if image.id !== PendingValue && image.workloadReferences.length > 0}
-			<Card columns={12}>
-				<Workloads workloads={image.workloadReferences} />
-			</Card>
-		{/if}
+		<Card columns={12}>
+			<Workloads workloads={image.workloadReferences} />
+		</Card>
 	</div>
 {/if}
 
-{#if findingToSuppress && image && image.projectId !== PendingValue}
-	<SuppressFinding
-		projectId={image?.projectId}
-		bind:open={suppressOpen}
-		finding={findingToSuppress}
-		workloads={image.workloadReferences}
-		{user}
-		on:close={() => {
-			findingToSuppress = undefined;
-			console.log('closing now...');
-			setTimeout(() => {
-				// refetch the image to update the findings
-				summary.fetch({
-					variables: { env: env, team: team, job: jobName },
-					policy: 'NetworkOnly'
-				});
-			}, 2000);
-		}}
-	/>
+{#if findingToSuppress && image && image.projectId !== PendingValue && image.workloadReferences}
+	{#key findingToSuppress.id}
+		<SuppressFinding
+			projectId={image?.projectId}
+			bind:open={suppressOpen}
+			finding={findingToSuppress}
+			workloads={image.workloadReferences}
+			{user}
+			on:close={() => {
+				findingToSuppress = undefined;
+				setTimeout(() => {
+					// refetch the image to update the findings
+					summary.fetch({
+						variables: { env: env, team: team, job: jobName },
+						policy: 'NetworkOnly'
+					});
+				}, 2000);
+			}}
+		/>
+	{/key}
 {/if}
 {#if analysisTrail && image && image.projectId !== PendingValue}
 	<TrailFinding

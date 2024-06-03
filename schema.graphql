@@ -16,13 +16,14 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
-type Alias {
-  name: String!
-  source: String!
+type AnalysisComment {
+  comment: String!
+  onBehalfOf: String!
+  timestamp: Time!
 }
 
 type AnalysisTrail {
-  comments: [Comment]!
+  comments: [AnalysisComment]!
   id: ID!
   isSuppressed: Boolean!
   state: String!
@@ -230,12 +231,6 @@ type BucketsList {
 type Claims {
   extra: [String!]!
   groups: [Group!]!
-}
-
-type Comment {
-  comment: String!
-  onBehalfOf: String!
-  timestamp: Time!
 }
 
 type Condition {
@@ -459,7 +454,7 @@ type FailedRunError implements StateError {
 }
 
 type Finding {
-  aliases: [Alias!]!
+  aliases: [VulnIdAlias!]!
   analysisTrail: AnalysisTrail!
   componentId: String!
   description: String!
@@ -584,7 +579,7 @@ type ImageDetails {
   rekor: Rekor!
   summary: ImageVulnerabilitySummary
   version: String!
-  workloadReferences: [WorkloadReference!]!
+  workloadReferences: [Workload!]!
 }
 
 type ImageDetailsList {
@@ -2493,6 +2488,11 @@ input VariableInput {
   value: String!
 }
 
+type VulnIdAlias {
+  name: String!
+  source: String!
+}
+
 type Vulnerability {
   appName: String!
   env: String!
@@ -2574,10 +2574,10 @@ interface Workload {
   env: Env!
   id: ID!
   image: String!
-  imageDetails: ImageDetails!
   name: String!
   resources: Resources!
   status: WorkloadStatus!
+  team: Team!
   type: WorkloadType!
   variables: [Variable!]!
 }

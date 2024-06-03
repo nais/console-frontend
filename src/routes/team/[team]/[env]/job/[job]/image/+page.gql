@@ -2,17 +2,17 @@ query NaisJobImage(
 	$team: Slug!
 	$env: String!
 	$job: String!
-	$orderBy: OrderBy = { field: SEVERITY, direction: DESC }
+	$orderBy: OrderBy = { field: NAME, direction: DESC }
 	$limit: Int
 	$offset: Int
-) @loading(cascade: false) {
+) @loading {
 	naisjob(name: $job, team: $team, env: $env) {
 		imageDetails {
 			id @loading
 			projectId
 			version
 			name
-			rekor @loading {
+			rekor {
 				buildTrigger
 				buildConfigURI
 				gitHubWorkflowName
@@ -24,7 +24,7 @@ query NaisJobImage(
 				sourceRepositoryOwnerURI
 				integratedTime
 			}
-			summary @loading {
+			summary {
 				id
 				critical
 				high
@@ -33,12 +33,16 @@ query NaisJobImage(
 				unassigned
 				riskScore
 			}
-			workloadReferences @loading {
+			workloadReferences {
 				id
 				name
-				team
-				workloadType
-				environment
+				team {
+					slug
+				}
+				env {
+					name
+				}
+				type
 				deployInfo {
 					deployer
 					timestamp

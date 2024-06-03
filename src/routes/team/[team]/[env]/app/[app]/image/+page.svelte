@@ -349,11 +349,9 @@
 				{/if}
 			</Card>
 		{/if}
-		{#if image.id !== PendingValue && image.workloadReferences.length > 0}
-			<Card columns={12}>
-				<Workloads workloads={image.workloadReferences} />
-			</Card>
-		{/if}
+		<Card columns={12}>
+			<Workloads workloads={image.workloadReferences} />
+		</Card>
 	</div>
 {/if}
 

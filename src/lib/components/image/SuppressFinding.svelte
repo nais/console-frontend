@@ -23,26 +23,12 @@
 			readonly state: string;
 		} | null;
 	};
-
-	export type WorkloadReferencesType = {
-		readonly id: string;
-		readonly name: string;
-		readonly team: string;
-		readonly workloadType: string;
-		readonly environment: string;
-		readonly deployInfo: {
-			readonly deployer: string;
-			readonly timestamp: Date | null;
-			readonly commitSha: string;
-			readonly url: string;
-		};
-	}[];
 </script>
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
+	import { graphql, type NaisJobImage$result } from '$houdini';
 	import {
 		Alert,
 		Button,
@@ -64,7 +50,7 @@
 
 	export let open: boolean;
 	export let finding: FindingType;
-	export let workloads: WorkloadReferencesType;
+	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
 
 	export let user: string;
 
@@ -170,21 +156,12 @@
 		{ value: 'NOT_AFFECTED', text: 'Not affected' }
 	];
 
-	/*const hasSelectedReason = () => {
-		const reasons = SUPPRESS_OPTIONS.map((option) => option.value).includes(selectedReason);
-		if (!reasons) {
-			return 'Please select a suppress reason';
-		}
-		return '';
-	};*/
-
 	const init = (finding: FindingType) => {
 		inputText = parseComment(finding.analysisTrail?.comments?.[0]?.comment ?? '').comment;
 		selectedReason = finding.analysisTrail?.state ?? '';
 		suppressed = finding.analysisTrail?.isSuppressed ?? false;
 	};
 	$: init(finding);
-	// on click should send a request to analysis endpoint for dependency track
 </script>
 
 <Modal bind:open width="medium" on:close={close}>
@@ -225,8 +202,8 @@
 			<Tbody>
 				{#each workloads as workload}
 					<Tr>
-						<Td>{workload.environment}</Td>
-						<Td>{workload.team}</Td>
+						<Td>{workload.env.name}</Td>
+						<Td>{workload.team.slug}</Td>
 						<Td>{workload.name}</Td>
 					</Tr>
 				{/each}

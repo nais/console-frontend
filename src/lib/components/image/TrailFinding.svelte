@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { type NaisJobImage$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import {
 		Button,
@@ -13,12 +14,12 @@
 	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
-	import type { FindingType, WorkloadReferencesType } from './SuppressFinding.svelte';
+	import type { FindingType } from './SuppressFinding.svelte';
 	import { detailsUrl, joinAliases, parseComment } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
-	export let workloads: WorkloadReferencesType;
+	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
 
 	$: sortedComments = finding.analysisTrail?.comments.toSorted((a, b) => {
 		if (a && b) {
@@ -74,8 +75,8 @@
 				<Tbody>
 					{#each workloads as workload}
 						<Tr>
-							<Td>{workload.environment}</Td>
-							<Td>{workload.team}</Td>
+							<Td>{workload.env.name}</Td>
+							<Td>{workload.team.slug}</Td>
 							<Td>{workload.name}</Td>
 						</Tr>
 					{/each}
