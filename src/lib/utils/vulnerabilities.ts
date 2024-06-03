@@ -8,6 +8,8 @@ export function severityToColor(severity: string): string {
 			return '#ffc107';
 		case 'low':
 			return '#4dbd74';
+		case 'unnasigned':
+			return '#6e6e6e';
 		default:
 			return '#777777';
 	}

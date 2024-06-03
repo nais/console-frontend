@@ -8,6 +8,7 @@
 		Density3Icon,
 		FileTextIcon,
 		HouseIcon,
+		ImageIcon,
 		LineGraphStackedIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -38,6 +39,11 @@
 		},
 		{
 			items: [
+				{
+					name: 'Image details',
+					routeId: '/team/[team]/[env]/app/[app]/image',
+					icon: ImageIcon
+				},
 				{
 					name: 'Deploys',
 					routeId: '/team/[team]/[env]/app/[app]/deploys',

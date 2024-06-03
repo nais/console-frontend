@@ -2,7 +2,6 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 	naisjob(name: $job, team: $team, env: $env) @loading(cascade: true) {
 		name
 		schedule
-
 		image
 		runs {
 			name

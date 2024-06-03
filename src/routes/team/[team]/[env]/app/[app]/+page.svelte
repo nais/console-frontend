@@ -1,21 +1,21 @@
 <script lang="ts">
+	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { CurrentResourceUtilizationForAppVariables, PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import AutoScaling from './AutoScaling.svelte';
 	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
-	import Status from './Status.svelte';
 	import Persistence from './Persistence.svelte';
-	import Traffic from './Traffic.svelte';
 	import Secrets from './Secrets.svelte';
-	import { Alert, Button } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
-	import { onNavigate } from '$app/navigation';
+	import Status from './Status.svelte';
+	import Traffic from './Traffic.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
@@ -73,10 +73,10 @@
 	<div class="grid">
 		<Status app={$App.data.app} />
 
-		<Card columns={9} rows={2}>
+		<Card columns={4} rows={2}>
 			<Image app={$App.data.app} />
 		</Card>
-		<Card columns={3} rows={1}>
+		<Card columns={4} rows={1}>
 			<Cost {app} {env} {team} />
 		</Card>
 		<Card columns={12}>

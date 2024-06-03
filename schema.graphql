@@ -16,6 +16,18 @@ type AccessPolicy {
   outbound: Outbound!
 }
 
+type Alias {
+  name: String!
+  source: String!
+}
+
+type AnalysisTrail {
+  comments: [Comment]!
+  id: ID!
+  isSuppressed: Boolean!
+  state: String!
+}
+
 type App implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
@@ -24,6 +36,7 @@ type App implements Workload {
   env: Env!
   id: ID!
   image: String!
+  imageDetails: ImageDetails!
   ingresses: [String!]!
   instances: [Instance!]!
   manifest: String!
@@ -217,6 +230,12 @@ type BucketsList {
 type Claims {
   extra: [String!]!
   groups: [Group!]!
+}
+
+type Comment {
+  comment: String!
+  onBehalfOf: String!
+  timestamp: Time!
 }
 
 type Condition {
@@ -439,6 +458,27 @@ type FailedRunError implements StateError {
   runName: String!
 }
 
+type Finding {
+  aliases: [Alias!]!
+  analysisTrail: AnalysisTrail!
+  componentId: String!
+  description: String!
+  id: ID!
+  isSuppressed: Boolean!
+  packageUrl: String!
+  parentId: String!
+  severity: String!
+  source: String!
+  state: String!
+  vulnId: String!
+  vulnerabilityId: String!
+}
+
+type FindingList {
+  nodes: [Finding!]!
+  pageInfo: PageInfo!
+}
+
 type Flag {
   name: String!
   value: String!
@@ -524,6 +564,43 @@ type IDPortenSidecar {
   level: String
   locale: String
   resources: Resources
+}
+
+type ImageDetails {
+  findings(
+    """Limit the number of entries returned."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order findings by"""
+    orderBy: OrderBy
+  ): FindingList!
+  hasSbom: Boolean!
+  id: ID!
+  name: String!
+  projectId: String!
+  rekor: Rekor!
+  summary: ImageVulnerabilitySummary
+  version: String!
+  workloadReferences: [WorkloadReference!]!
+}
+
+type ImageDetailsList {
+  nodes: [ImageDetails!]!
+  pageInfo: PageInfo!
+}
+
+type ImageVulnerabilitySummary {
+  critical: Int!
+  high: Int!
+  id: ID!
+  low: Int!
+  medium: Int!
+  riskScore: Int!
+  total: Int!
+  unassigned: Int!
 }
 
 type Inbound {
@@ -961,6 +1038,28 @@ type Mutation {
     """The ID of the user."""
     userId: ID!
   ): Team!
+  suppressFinding(
+    """The analysis state of the finding."""
+    analysisState: String!
+
+    """The a comment for suppressing the finding."""
+    comment: String!
+
+    """The component id of the finding to suppress."""
+    componentId: String!
+
+    """The project id of the image."""
+    projectId: String!
+
+    """Should the finding be suppressed."""
+    suppress: Boolean!
+
+    """Suppressed by user."""
+    suppressedBy: String!
+
+    """The id of the finding to suppress."""
+    vulnerabilityId: String!
+  ): AnalysisTrail!
 
   """
   Manually synchronize all teams
@@ -1033,6 +1132,7 @@ type NaisJob implements Workload {
   env: Env!
   id: ID!
   image: String!
+  imageDetails: ImageDetails!
   manifest: String!
   name: String!
   parallelism: Int!
@@ -1131,14 +1231,23 @@ enum OrderByField {
   """Order by env."""
   ENV_NAME
 
+  """Order by isSuppressed."""
+  IS_SUPPRESSED
+
   """Order by memory utilization"""
   MEMORY
 
   """Order by name"""
   NAME
 
+  """Order by packageUrl"""
+  PACKAGE_URL
+
   """Order by risk score"""
   RISK_SCORE
+
+  """Order by severity."""
+  SEVERITY
 
   """Order apps by vulnerability severity critical"""
   SEVERITY_CRITICAL
@@ -1154,6 +1263,9 @@ enum OrderByField {
 
   """Order apps by vulnerability severity unassigned"""
   SEVERITY_UNASSIGNED
+
+  """Order by state."""
+  STATE
 
   """Order by status"""
   STATUS
@@ -1487,6 +1599,20 @@ type RedisList {
 type RedisStatus {
   conditions: [Condition!]!
   state: String!
+}
+
+type Rekor {
+  buildConfigURI: String!
+  buildTrigger: String!
+  gitHubWorkflowName: String!
+  gitHubWorkflowRef: String!
+  gitHubWorkflowSHA: String!
+  integratedTime: Int!
+  logIndex: String!
+  oIDCIssuer: String!
+  runInvocationURI: String!
+  runnerEnvironment: String!
+  sourceRepositoryOwnerURI: String!
 }
 
 """Repository authorizations."""
@@ -2140,7 +2266,7 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): VulnerabilityList!
-  vulnerabilitiesSummary: VulnerabilitySummary!
+  vulnerabilitiesSummary: VulnerabilitySummaryForTeam!
 
   """The vulnerabilities for the team's applications over time."""
   vulnerabilityMetrics(environment: String, from: Date!, to: Date!): VulnerabilityMetrics!
@@ -2373,7 +2499,7 @@ type Vulnerability {
   findingsLink: String!
   hasBom: Boolean!
   id: ID!
-  summary: VulnerabilitySummary
+  summary: VulnerabilitySummaryForTeam
 }
 
 input VulnerabilityFilter {
@@ -2430,7 +2556,7 @@ type VulnerabilityMetrics {
   minDate: Date
 }
 
-type VulnerabilitySummary {
+type VulnerabilitySummaryForTeam {
   bomCount: Int!
   critical: Int!
   high: Int!
@@ -2448,11 +2574,21 @@ interface Workload {
   env: Env!
   id: ID!
   image: String!
+  imageDetails: ImageDetails!
   name: String!
   resources: Resources!
   status: WorkloadStatus!
   type: WorkloadType!
   variables: [Variable!]!
+}
+
+type WorkloadReference {
+  deployInfo: DeployInfo!
+  environment: String!
+  id: ID!
+  name: String!
+  team: String!
+  workloadType: String!
 }
 
 type WorkloadStatus {
