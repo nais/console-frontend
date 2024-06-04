@@ -5,8 +5,6 @@ query Image(
 	$orderBy: OrderBy = { field: NAME, direction: ASC }
 	$limit: Int
 	$offset: Int
-	$commentsLimit: Int
-	$commentsOffset: Int
 ) @loading(cascade: false) {
 	app(name: $app, team: $team, env: $env) {
 		imageDetails {
@@ -74,7 +72,7 @@ query Image(
 					state
 					analysisTrail {
 						id
-						comments(limit: $commentsLimit, offset: $commentsOffset) {
+						comments(limit: 20, offset: 0) {
 							pageInfo {
 								totalCount
 								hasNextPage

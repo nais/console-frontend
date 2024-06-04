@@ -99,17 +99,6 @@
 								</Tr>
 							{/if}
 						{/each}
-						<!-- {#each sortedComments as comment}
-							{#if comment}
-								<Tr>
-									<Td>{comment.onBehalfOf}</Td>
-									<Td>{parseComment(comment.comment).state}</Td>
-									<Td>{parseComment(comment.comment).suppressed}</Td>
-									<Td>{parseComment(comment.comment).comment}</Td>
-									<Td><Time time={comment.timestamp} /></Td>
-								</Tr>
-							{/if}
-						{/each} -->
 					{/if}
 				</Tbody>
 			</Table>

@@ -172,7 +172,7 @@
 				id
 				isSuppressed
 				state
-				comments(limit: 10, offset: 0) {
+				comments(limit: 20, offset: 0) {
 					pageInfo {
 						hasNextPage
 						hasPreviousPage
