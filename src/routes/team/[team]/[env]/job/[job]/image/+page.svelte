@@ -290,7 +290,7 @@
 										<Td
 											><Button
 												variant="tertiary"
-												size="small"
+												size="xsmall"
 												on:click={() => {
 													findingToSuppress = finding;
 													suppressOpen = true;
@@ -314,7 +314,7 @@
 										<Td>
 											<Button
 												variant="tertiary-neutral"
-												size="small"
+												size="xsmall"
 												disabled={finding.analysisTrail?.state !== '' ? false : true}
 												on:click={() => {
 													analysisTrail = finding;
