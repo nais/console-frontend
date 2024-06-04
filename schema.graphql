@@ -22,8 +22,13 @@ type AnalysisComment {
   timestamp: Time!
 }
 
+type AnalysisCommentList {
+  nodes: [AnalysisComment]!
+  pageInfo: PageInfo!
+}
+
 type AnalysisTrail {
-  comments: [AnalysisComment]!
+  comments(limit: Int, offset: Int): AnalysisCommentList!
   id: ID!
   isSuppressed: Boolean!
   state: String!

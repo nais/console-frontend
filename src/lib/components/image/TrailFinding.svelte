@@ -21,13 +21,6 @@
 	export let finding: FindingType;
 	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
 
-	$: sortedComments = finding.analysisTrail?.comments.toSorted((a, b) => {
-		if (a && b) {
-			return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-		}
-		return 0;
-	});
-
 	const dispatcher = createEventDispatcher<{ close: void }>();
 
 	const close = () => {
@@ -94,8 +87,8 @@
 					<Th>Timestamp</Th>
 				</Thead>
 				<Tbody>
-					{#if sortedComments}
-						{#each sortedComments as comment}
+					{#if finding.analysisTrail.comments.nodes}
+						{#each finding.analysisTrail.comments.nodes as comment}
 							{#if comment}
 								<Tr>
 									<Td>{comment.onBehalfOf}</Td>
@@ -106,6 +99,17 @@
 								</Tr>
 							{/if}
 						{/each}
+						<!-- {#each sortedComments as comment}
+							{#if comment}
+								<Tr>
+									<Td>{comment.onBehalfOf}</Td>
+									<Td>{parseComment(comment.comment).state}</Td>
+									<Td>{parseComment(comment.comment).suppressed}</Td>
+									<Td>{parseComment(comment.comment).comment}</Td>
+									<Td><Time time={comment.timestamp} /></Td>
+								</Tr>
+							{/if}
+						{/each} -->
 					{/if}
 				</Tbody>
 			</Table>

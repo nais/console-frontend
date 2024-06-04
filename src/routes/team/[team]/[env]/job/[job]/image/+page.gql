@@ -5,6 +5,8 @@ query NaisJobImage(
 	$orderBy: OrderBy = { field: NAME, direction: DESC }
 	$limit: Int
 	$offset: Int
+	$commentsLimit: Int
+	$commentsOffset: Int
 ) @loading {
 	naisjob(name: $job, team: $team, env: $env) {
 		imageDetails {
@@ -72,10 +74,17 @@ query NaisJobImage(
 					state
 					analysisTrail {
 						id
-						comments {
-							comment
-							onBehalfOf
-							timestamp
+						comments(limit: $commentsLimit, offset: $commentsOffset) {
+							pageInfo {
+								totalCount
+								hasNextPage
+								hasPreviousPage
+							}
+							nodes {
+								comment
+								onBehalfOf
+								timestamp
+							}
 						}
 						isSuppressed
 						state

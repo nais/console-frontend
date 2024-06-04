@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	export type FindingType = {
+	/*export type FindingType = {
 		readonly id: string;
 		readonly componentId: string;
 		readonly description: string;
@@ -22,6 +22,39 @@
 			readonly isSuppressed: boolean;
 			readonly state: string;
 		} | null;
+	};*/
+
+	export type FindingType = {
+		readonly id: string;
+		readonly componentId: string;
+		readonly description: string;
+		readonly packageUrl: string;
+		readonly severity: string;
+		readonly vulnerabilityId: string;
+		readonly vulnId: string;
+		readonly aliases: {
+			readonly name: string;
+			readonly source: string;
+		}[];
+		readonly isSuppressed: boolean;
+		readonly state: string;
+		readonly analysisTrail: {
+			readonly id: string;
+			readonly comments: {
+				readonly pageInfo: {
+					readonly totalCount: number;
+					readonly hasNextPage: boolean;
+					readonly hasPreviousPage: boolean;
+				};
+				readonly nodes: ({
+					readonly comment: string;
+					readonly onBehalfOf: string;
+					readonly timestamp: Date;
+				} | null)[];
+			};
+			readonly isSuppressed: boolean;
+			readonly state: string;
+		};
 	};
 </script>
 
@@ -139,10 +172,17 @@
 				id
 				isSuppressed
 				state
-				comments {
-					comment
-					timestamp
-					onBehalfOf
+				comments(limit: 10, offset: 0) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						totalCount
+					}
+					nodes {
+						comment
+						timestamp
+						onBehalfOf
+					}
 				}
 			}
 		}
@@ -157,7 +197,7 @@
 	];
 
 	const init = (finding: FindingType) => {
-		inputText = parseComment(finding.analysisTrail?.comments?.[0]?.comment ?? '').comment;
+		inputText = parseComment(finding.analysisTrail?.comments?.nodes[0]?.comment ?? '').comment;
 		selectedReason = finding.analysisTrail?.state ?? '';
 		suppressed = finding.analysisTrail?.isSuppressed ?? false;
 	};
