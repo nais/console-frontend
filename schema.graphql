@@ -2587,15 +2587,6 @@ interface Workload {
   variables: [Variable!]!
 }
 
-type WorkloadReference {
-  deployInfo: DeployInfo!
-  environment: String!
-  id: ID!
-  name: String!
-  team: String!
-  workloadType: String!
-}
-
 type WorkloadStatus {
   errors: [StateError!]!
   state: State!
