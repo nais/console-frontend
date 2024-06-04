@@ -13,9 +13,7 @@
 <h4>
 	Used by
 	<HelpText title="List of workloads using this secret" placement="bottom">
-		A secret can be used by multiple workloads.<br />
-		<br />
-		This section lists all workloads that use this secret.
+		All workloads that use this secret.
 	</HelpText>
 </h4>
 {#if apps.length > 0}
