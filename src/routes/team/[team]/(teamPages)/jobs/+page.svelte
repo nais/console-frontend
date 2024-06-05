@@ -5,13 +5,26 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
+	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import {
 		changeParams,
 		sortTable,
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import {
+		Alert,
+		Button,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
@@ -29,8 +42,9 @@
 		{/each}
 	</Alert>
 {:else}
-	<Card>
+	<Card columns={12}>
 		<Table
+			zebraStripes
 			size="small"
 			sort={sortState}
 			on:sortChange={(e) => {
@@ -40,9 +54,11 @@
 			}}
 		>
 			<Thead>
-				<Th style="width: 2rem;" sortable={true} sortKey="STATUS"></Th>
+				<Th sortable={true} sortKey="STATUS" style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th style="width: 150px" sortable={true} sortKey="ENV">Env</Th>
+				<Th sortable={true} sortKey="ENV" style="width: 2rem">Env</Th>
+				<Th sortable={true} sortKey="SEVERITY_CRITICAL" style="width: 2rem">Critical</Th>
+				<Th sortable={true} sortKey="RISK_SCORE" style="width: 8rem;">Risk score</Th>
 				<Th style="width: 150px" sortable={true} sortKey="DEPLOYED">Deployed</Th>
 			</Thead>
 			<Tbody>
@@ -51,6 +67,8 @@
 						{#each new Array(team.naisjobs.nodes.length).fill('text') as variant}
 							<Tr>
 								<Td />
+								<Td><Skeleton {variant} /></Td>
+								<Td><Skeleton {variant} /></Td>
 								<Td><Skeleton {variant} /></Td>
 								<Td><Skeleton {variant} /></Td>
 								<Td><Skeleton {variant} /></Td>
@@ -73,6 +91,57 @@
 									<a href="/team/{teamName}/{node.env.name}/job/{node.name}">{node.name}</a>
 								</Td>
 								<Td>{node.env.name}</Td>
+								<Td style="text-align: center;">
+									<Button
+										as="a"
+										variant="tertiary-neutral"
+										size="small"
+										href="/team/{teamName}/{node.env.name}/job/{node.name}/image"
+									>
+										{#if node.imageDetails.summary}
+											{#if node.imageDetails.summary.critical > 0}
+												<div class="badge">
+													<Tooltip
+														placement="right"
+														content="{node.imageDetails.summary
+															.critical} vulnerabilities found. Please update your dependencies!"
+													>
+														<VulnerabilityBadge
+															text={String(node.imageDetails.summary.critical)}
+															color={severityToColor('critical')}
+															size={'32px'}
+														/>
+													</Tooltip>
+												</div>
+											{:else}
+												<Tooltip placement="right" content="No critical vulnerabilities found">
+													<code class="check success">&check;</code>
+												</Tooltip>
+											{/if}
+										{:else}
+											<Tooltip placement="right" content="No data found in dependencytrack">
+												NA
+											</Tooltip>
+										{/if}
+									</Button>
+								</Td>
+								<Td style="text-align: center">
+									<Button
+										as="a"
+										variant="tertiary"
+										size="small"
+										href="/team/{teamName}/{node.env.name}/job/{node.name}/image"
+									>
+										{#if node.imageDetails.summary}
+											{node.imageDetails.summary.riskScore}
+										{:else}
+											<Tooltip placement="right" content="No data found in dependencytrack">
+												NA
+											</Tooltip>
+										{/if}
+									</Button>
+								</Td>
+
 								<Td>
 									{#if node.deployInfo.timestamp}
 										<Time time={node.deployInfo.timestamp} distance={true} />
@@ -81,14 +150,13 @@
 							</Tr>
 						{:else}
 							<Tr>
-								<Td colspan={4}>No jobs found</Td>
+								<Td colspan={999}>No jobs found</Td>
 							</Tr>
 						{/each}
 					{/if}
 				{/if}
 			</Tbody>
 		</Table>
-
 		<Pagination
 			pageInfo={team?.naisjobs.pageInfo}
 			{limit}
@@ -106,5 +174,28 @@
 		align-items: center;
 		justify-content: center;
 		line-height: 0.6;
+	}
+	.badge {
+		display: flex;
+		justify-content: center;
+		vertical-align: middle;
+		width: 100%;
+		height: 32px;
+	}
+	.badge {
+		display: flex;
+		justify-content: center;
+		vertical-align: middle;
+		width: 100%;
+		height: 32px;
+	}
+
+	.check {
+		font-size: 1.5rem;
+		text-align: center;
+		padding-left: 4px;
+	}
+	.success {
+		color: #4dbd74;
 	}
 </style>

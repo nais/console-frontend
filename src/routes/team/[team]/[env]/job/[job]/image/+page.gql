@@ -1,0 +1,94 @@
+query NaisJobImage(
+	$team: Slug!
+	$env: String!
+	$job: String!
+	$orderBy: OrderBy = { field: NAME, direction: DESC }
+	$limit: Int
+	$offset: Int
+) @loading {
+	naisjob(name: $job, team: $team, env: $env) {
+		imageDetails {
+			id @loading
+			projectId
+			version
+			name
+			rekor {
+				buildTrigger
+				buildConfigURI
+				gitHubWorkflowName
+				gitHubWorkflowRef
+				logIndex
+				oIDCIssuer
+				runInvocationURI
+				runnerEnvironment
+				sourceRepositoryOwnerURI
+				integratedTime
+			}
+			summary {
+				id
+				critical
+				high
+				medium
+				low
+				unassigned
+				riskScore
+			}
+			workloadReferences {
+				id
+				name
+				team {
+					slug
+				}
+				env {
+					name
+				}
+				type
+				deployInfo {
+					deployer
+					timestamp
+					commitSha
+					url
+				}
+			}
+			findings(limit: $limit, offset: $offset, orderBy: $orderBy) {
+				pageInfo {
+					totalCount
+					hasNextPage
+					hasPreviousPage
+				}
+				nodes @loading(count: 10, cascade: false) {
+					id @loading
+					componentId
+					description
+					packageUrl
+					severity
+					vulnerabilityId
+					vulnId
+					aliases {
+						name
+						source
+					}
+					isSuppressed
+					state
+					analysisTrail {
+						id
+						comments(limit: 20, offset: 0) {
+							pageInfo {
+								totalCount
+								hasNextPage
+								hasPreviousPage
+							}
+							nodes {
+								comment
+								onBehalfOf
+								timestamp
+							}
+						}
+						isSuppressed
+						state
+					}
+				}
+			}
+		}
+	}
+}

@@ -2,27 +2,26 @@
 	import { page } from '$app/stores';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
+	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import Kafka from '$lib/icons/Kafka.svelte';
+	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
+	import Unleash from '$lib/icons/Unleash.svelte';
 	import {
-		BucketIcon,
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
 		BranchingIcon,
+		BucketIcon,
 		CogIcon,
 		DatabaseIcon,
 		HouseIcon,
 		LineGraphStackedIcon,
 		PersonGroupIcon,
 		QuietZoneIcon,
-		SandboxIcon,
-		VirusIcon
+		SandboxIcon
 	} from '@nais/ds-svelte-community/icons';
 
-	import BigQuery from '$lib/icons/BigQuery.svelte';
-	import Kafka from '$lib/icons/Kafka.svelte';
-	import Opensearch from '$lib/icons/Opensearch.svelte';
-	import Unleash from '$lib/icons/Unleash.svelte';
 	import type { LayoutData } from './$types';
 
 	type menuGroup = {
@@ -139,12 +138,6 @@
 					routeId: '/team/[team]/(teamPages)/utilization',
 					withSubRoutes: true,
 					icon: LineGraphStackedIcon
-				},
-				{
-					name: 'Vulnerabilities',
-					routeId: '/team/[team]/(teamPages)/vulnerabilities',
-					withSubRoutes: true,
-					icon: VirusIcon
 				}
 			]
 		},
