@@ -289,16 +289,19 @@
 								{:else}
 									<Tr>
 										<Td
-											><Button
-												variant="tertiary"
-												size="xsmall"
-												on:click={() => {
-													findingToSuppress = finding;
-													suppressOpen = true;
-												}}
-											>
+											>{#if auth}<Button
+													variant="tertiary"
+													size="xsmall"
+													on:click={() => {
+														findingToSuppress = finding;
+														suppressOpen = true;
+													}}
+												>
+													<code>{finding.vulnId}</code>
+												</Button>
+											{:else}
 												<code>{finding.vulnId}</code>
-											</Button>
+											{/if}
 										</Td>
 										<Td><code>{finding.packageUrl}</code></Td>
 										<Td
