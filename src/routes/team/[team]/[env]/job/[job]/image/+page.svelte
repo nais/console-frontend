@@ -40,6 +40,7 @@
 
 	$: image = $NaisJobImage.data?.naisjob.imageDetails;
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
+	$: auth = $NaisJobImage.data?.naisjob.team.viewerIsMember;
 
 	const summary = graphql(`
 		query NaisJobSummary($env: String!, $team: Slug!, $job: String!) {
@@ -229,9 +230,9 @@
 					{/if}
 				</div>
 				Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''} <br />
-				Explore findings in
-				{#if image.projectId !== PendingValue}
-					<a href="https://salsa.nav.cloud.nais.io/projects/{image.projectId}" target="_blank"
+				{#if image.projectId !== PendingValue && image.projectUrl !== ''}
+					Explore findings in
+					<a href={image.projectUrl} target="_blank"
 						>Dependency track<ExternalLinkIcon
 							title="Open project in Dependency track"
 							font-size="1.5rem"
@@ -355,7 +356,7 @@
 	</div>
 {/if}
 
-{#if findingToSuppress && image && image.projectId !== PendingValue && image.workloadReferences}
+{#if findingToSuppress && image && image.projectId !== PendingValue && image.workloadReferences && auth && auth !== PendingValue}
 	{#key findingToSuppress.id}
 		<SuppressFinding
 			projectId={image?.projectId}
@@ -363,6 +364,7 @@
 			finding={findingToSuppress}
 			workloads={image.workloadReferences}
 			{user}
+			{auth}
 			on:close={() => {
 				findingToSuppress = undefined;
 				setTimeout(() => {

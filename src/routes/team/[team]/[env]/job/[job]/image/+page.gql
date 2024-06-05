@@ -7,11 +7,15 @@ query NaisJobImage(
 	$offset: Int
 ) @loading {
 	naisjob(name: $job, team: $team, env: $env) {
+		team {
+			viewerIsMember
+		}
 		imageDetails {
 			id @loading
 			projectId
 			version
 			name
+			projectUrl
 			rekor {
 				buildTrigger
 				buildConfigURI

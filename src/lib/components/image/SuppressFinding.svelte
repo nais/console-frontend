@@ -1,29 +1,4 @@
 <script lang="ts" context="module">
-	/*export type FindingType = {
-		readonly id: string;
-		readonly componentId: string;
-		readonly description: string;
-		readonly packageUrl: string;
-		readonly severity: string;
-		readonly vulnerabilityId: string;
-		readonly isSuppressed: boolean;
-		readonly vulnId: string;
-		readonly state: string;
-		readonly aliases: {
-			readonly name: string;
-			readonly source: string;
-		}[];
-		readonly analysisTrail: {
-			readonly comments: ({
-				readonly comment: string;
-				readonly onBehalfOf: string | null;
-				readonly timestamp: Date;
-			} | null)[];
-			readonly isSuppressed: boolean;
-			readonly state: string;
-		} | null;
-	};*/
-
 	export type FindingType = {
 		readonly id: string;
 		readonly componentId: string;
@@ -86,6 +61,7 @@
 	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
 
 	export let user: string;
+	export let auth: boolean;
 
 	export let projectId: string;
 
@@ -134,7 +110,8 @@
 			projectId: projectId,
 			vulnerabilityId: finding.vulnerabilityId,
 			suppressedBy: user,
-			suppress: suppressed
+			suppress: suppressed,
+			team: team
 		});
 
 		if ($suppress.errors) {
@@ -159,6 +136,7 @@
 			$vulnerabilityId: String!
 			$suppressedBy: String!
 			$suppress: Boolean!
+			$team: Slug!
 		) {
 			suppressFinding(
 				analysisState: $analysisState
@@ -168,6 +146,7 @@
 				vulnerabilityId: $vulnerabilityId
 				suppressedBy: $suppressedBy
 				suppress: $suppress
+				team: $team
 			) {
 				id
 				isSuppressed
@@ -278,7 +257,9 @@
 		Updated by: {user}<br />
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={triggerSuppress}>Update</Button>
+		<Button variant="primary" size="small" on:click={triggerSuppress} disabled={!auth}
+			>Update</Button
+		>
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
 	</svelte:fragment>
 </Modal>

@@ -581,6 +581,7 @@ type ImageDetails {
   id: ID!
   name: String!
   projectId: String!
+  projectUrl: String!
   rekor: Rekor!
   summary: ImageVulnerabilitySummary
   version: String!
@@ -1056,6 +1057,9 @@ type Mutation {
 
     """Suppressed by user."""
     suppressedBy: String!
+
+    """The team slug."""
+    team: Slug!
 
     """The id of the finding to suppress."""
     vulnerabilityId: String!
