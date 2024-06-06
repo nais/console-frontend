@@ -28,11 +28,11 @@
 						</Td>
 						<Td>
 							{#if workload.type === 'APP'}
-								<a href={`/team/${workload.team}/${workload.env.name}/app/${workload.name}`}
+								<a href={`/team/${workload.team.slug}/${workload.env.name}/app/${workload.name}`}
 									>{workload.name}</a
 								>
 							{:else if workload.type === 'NAISJOB'}
-								<a href={`/team/${workload.team}/${workload.env.name}/job/${workload.name}`}
+								<a href={`/team/${workload.team.slug}/${workload.env.name}/job/${workload.name}`}
 									>{workload.name}</a
 								>
 							{/if}
