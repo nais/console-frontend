@@ -2558,12 +2558,6 @@ type VulnerabilityMetric {
 type VulnerabilityMetrics {
   """The metrics for the team's applications."""
   data: [VulnerabilityMetric!]!
-
-  """The maximum date for the metrics available in the database."""
-  maxDate: Date
-
-  """The minimum date for the metrics available in the database."""
-  minDate: Date
 }
 
 type VulnerabilitySummaryForTeam {
