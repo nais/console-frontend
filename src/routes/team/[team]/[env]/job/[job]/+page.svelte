@@ -33,7 +33,7 @@
 	<div class="grid">
 		<Status job={$Job.data.naisjob} />
 
-		<Card columns={9} rows={1}>
+		<Card columns={3}>
 			<Image {job} />
 		</Card>
 

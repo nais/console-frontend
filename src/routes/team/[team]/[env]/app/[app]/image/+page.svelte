@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, graphql } from '$houdini';
+	import { graphql, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -233,16 +233,15 @@
 				{#if image.projectId !== PendingValue && image.projectUrl !== ''}
 					Explore findings in
 					<a href={image.projectUrl} target="_blank"
-						>Dependency track<ExternalLinkIcon
-							title="Open project in Dependency track"
-							font-size="1.5rem"
-						/></a
-					>
+						>Dependency track
+						<ExternalLinkIcon title="Open project in Dependency track" font-size="1.5rem" />
+					</a>
 				{/if}
 			{:else}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-				No data found in dependencytrack.
-				<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>How to fix</a>
+				No data found.<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>
+					How to fix</a
+				>
 			{/if}
 		</Card>
 		{#if image.findings && image.projectId !== ''}
@@ -288,8 +287,9 @@
 									</Tr>
 								{:else}
 									<Tr>
-										<Td
-											>{#if auth}<Button
+										<Td>
+											{#if auth}
+												<Button
 													variant="tertiary"
 													size="xsmall"
 													on:click={() => {
@@ -309,12 +309,11 @@
 												>{finding.severity}</code
 											></Td
 										>
-										<Td style="text-align: center"
-											>{#if finding.analysisTrail.isSuppressed}<CheckmarkIcon
-													width={'18px'}
-													height={'18px'}
-												/>{/if}</Td
-										>
+										<Td style="text-align: center">
+											{#if finding.analysisTrail.isSuppressed}
+												<CheckmarkIcon width={'18px'} height={'18px'} />
+											{/if}
+										</Td>
 										<Td>
 											<Button
 												variant="tertiary-neutral"
@@ -419,6 +418,7 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
+
 	.imageGrid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);

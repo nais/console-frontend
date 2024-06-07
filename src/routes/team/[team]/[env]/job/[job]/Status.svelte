@@ -34,7 +34,7 @@
 		<h4>Status</h4>
 		<Skeleton variant="text" />
 	{:else if $data.status.state === 'NAIS'}
-		<h4>Status {$data.status.state}</h4>
+		<h4>Status</h4>
 		<div class="iconWrapper">
 			<Nais
 				size="5rem"
