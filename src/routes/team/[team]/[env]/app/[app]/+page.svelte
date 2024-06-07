@@ -73,7 +73,7 @@
 	<div class="grid">
 		<Status app={$App.data.app} />
 
-		<Card columns={4} rows={2}>
+		<Card columns={4}>
 			<Image app={$App.data.app} />
 		</Card>
 		<Card columns={4} rows={1}>
@@ -129,7 +129,7 @@
 	</div>
 	<Confirm bind:open={restart} on:confirm={submit}>
 		<h3 slot="header">Restart {app}</h3>
-		This will restart all instances of <strong> {app}</strong> in <strong>{env}</strong>.
+		This will restart all instances of<strong> {app}</strong> in <strong>{env}</strong>.
 		<br />
 		Are you sure?
 	</Confirm>

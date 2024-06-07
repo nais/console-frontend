@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, fragment, graphql, type AppImage } from '$houdini';
+	import { type AppImage, fragment, graphql, PendingValue } from '$houdini';
 
 	import Time from '$lib/Time.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -100,8 +100,8 @@
 	Image
 	{#if $data?.imageDetails !== PendingValue}
 		<Button as="a" variant="secondary" size="small" href="/team/{team}/{env}/app/{appName}/image"
-			>Details</Button
-		>
+			>Details
+		</Button>
 	{/if}
 </h4>
 
@@ -140,8 +140,8 @@
 			</div>
 		{:else if appVulnerabilities.app.vulnerabilities.summary === null}
 			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-			No data found in dependencytrack.
-			<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>How to fix</a>
+			No data found.
+			<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
 		{:else if appVulnerabilities.app.vulnerabilities.hasBom && isFindings(appVulnerabilities.app.vulnerabilities.summary)}
 			<Tooltip placement="right" content="severity: CRITICAL">
 				<VulnerabilityBadge
@@ -179,7 +179,7 @@
 				/>
 			</Tooltip>
 		{:else if appVulnerabilities.app.vulnerabilities.hasBom}
-			<code class="check">&check;</code> No vulnerabilities found. Keep up the good work!
+			<code class="check">&check;</code> No vulnerabilities found. Good work!
 		{/if}
 		{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.vulnerabilities !== null}
 			{#if appVulnerabilities.app.vulnerabilities !== PendingValue && appVulnerabilities.app.vulnerabilities.summary !== null}
@@ -190,11 +190,6 @@
 					>
 					for further assistance.
 				{/if}
-				<!--p>
-					<a href={appVulnerabilities.app.vulnerabilities.findingsLink} on:click={onClick}
-						>View findings in DependencyTrack</a
-					>
-				</p-->
 			{/if}
 		{/if}
 	{/if}
@@ -226,6 +221,7 @@
 	code {
 		font-size: 1rem;
 	}
+
 	.check {
 		font-size: 2rem;
 		color: #4dbd74;
