@@ -1495,17 +1495,18 @@ type Query {
 
   """Get a specific user."""
   user(
+    """Email of the user."""
     email: String
 
     """ID of the user."""
     id: ID
   ): User!
 
-  """Get user sync status and logs."""
-  userSync: [UserSyncRun!]!
-
   """Get a collection of users, sorted by name."""
   users(limit: Int, offset: Int): UserList!
+
+  """Get user sync status and logs."""
+  usersyncRuns(limit: Int, offset: Int): UsersyncRunList!
 }
 
 """Reconciler type."""
@@ -2456,33 +2457,35 @@ type UserList {
 }
 
 """User sync run type."""
-type UserSyncRun {
+type UsersyncRun {
   """Log entries for the sync run."""
   auditLogs(limit: Int, offset: Int): AuditLogList!
-
-  """The correlation ID of the sync run."""
-  correlationID: ID!
 
   """Optional error."""
   error: String
 
   """Timestamp of when the run finished."""
-  finishedAt: Time
+  finishedAt: Time!
+
+  """The ID of the sync run."""
+  id: ID!
 
   """Timestamp of when the run started."""
   startedAt: Time!
 
   """The status of the sync run."""
-  status: UserSyncRunStatus!
+  status: UsersyncRunStatus!
+}
+
+type UsersyncRunList {
+  nodes: [UsersyncRun!]!
+  pageInfo: PageInfo!
 }
 
 """User sync run status."""
-enum UserSyncRunStatus {
+enum UsersyncRunStatus {
   """Failed user sync run."""
   FAILURE
-
-  """User sync run in progress."""
-  IN_PROGRESS
 
   """Successful user sync run."""
   SUCCESS

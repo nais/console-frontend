@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, UserSyncRunStatus } from '$houdini';
+	import { graphql, UsersyncRunStatus } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Accordion, AccordionItem, Loader, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
@@ -8,21 +8,26 @@
 	import { enGB } from 'date-fns/locale/en-GB';
 
 	const runs = graphql(`
-		query UserSyncRuns @load {
-			userSync {
-				startedAt
-				finishedAt
-				status
-				error
-				auditLogs(limit: 100) {
-					pageInfo {
-						totalCount
-					}
-					nodes {
-						actor
-						action
-						message
-						createdAt
+		query UsersyncRuns @load {
+			usersyncRuns(limit: 5) {
+				pageInfo {
+					totalCount
+				}
+				nodes {
+					startedAt
+					finishedAt
+					status
+					error
+					auditLogs(limit: 100) {
+						pageInfo {
+							totalCount
+						}
+						nodes {
+							actor
+							action
+							message
+							createdAt
+						}
 					}
 				}
 			}
@@ -33,21 +38,22 @@
 <div class="wrapper">
 	{#if $runs.fetching}
 		<p><Loader size="xlarge" /></p>
-	{:else}
-		{#if $runs.errors}
-			<GraphErrors errors={$runs.errors} />
-		{/if}
-
-		{#each $runs.data?.userSync || [] as us}
+	{:else if $runs.errors}
+		<GraphErrors errors={$runs.errors} />
+	{:else if $runs.data?.usersyncRuns?.nodes && $runs.data.usersyncRuns.nodes.length > 0}
+		<p>
+			Showing {$runs.data.usersyncRuns.nodes.length} of {$runs.data.usersyncRuns.pageInfo
+				.totalCount} entries.
+		</p>
+		{#each $runs.data.usersyncRuns.nodes || [] as us}
 			<div
 				class="run"
-				class:ok={us.status == UserSyncRunStatus.SUCCESS}
-				class:pending={us.status == UserSyncRunStatus.IN_PROGRESS}
-				class:error={us.status == UserSyncRunStatus.FAILURE}
+				class:ok={us.status == UsersyncRunStatus.SUCCESS}
+				class:error={us.status == UsersyncRunStatus.FAILURE}
 			>
 				Started <Time time={us.startedAt} distance={true} />.
 				{#if us.finishedAt}
-					{#if us.status == UserSyncRunStatus.FAILURE}
+					{#if us.status == UsersyncRunStatus.FAILURE}
 						Failed after
 					{:else}
 						Finished after
@@ -94,6 +100,8 @@
 				{/if}
 			</div>
 		{/each}
+	{:else}
+		<p>No entries.</p>
 	{/if}
 </div>
 
@@ -112,10 +120,6 @@
 
 	.run.ok {
 		border-color: var(--a-surface-success);
-	}
-
-	.run.pending {
-		border-color: var(--a-surface-neutral);
 	}
 
 	.run.error {
