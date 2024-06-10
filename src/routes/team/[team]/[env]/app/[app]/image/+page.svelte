@@ -144,6 +144,9 @@
 				</div>
 			{:else}
 				<Skeleton variant="text" />
+				<Skeleton variant="text" />
+				<Skeleton variant="text" />
+				<Skeleton variant="text" />
 			{/if}
 		</Card>
 
