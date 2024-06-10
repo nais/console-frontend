@@ -99,8 +99,8 @@
 {/if}
 {#if image}
 	<div class="grid">
-		{#if image.id !== PendingValue}
-			<Card columns={8}>
+		<Card columns={8}>
+			{#if image.id !== PendingValue}
 				<h4 class="imageHeader">
 					Image details
 					<CopyButton
@@ -142,8 +142,10 @@
 						</div>
 					{/if}
 				</div>
-			</Card>
-		{/if}
+			{:else}
+				<Skeleton variant="text" />
+			{/if}
+		</Card>
 
 		<Card columns={4}>
 			<h4>Vulnerabilities summary</h4>
