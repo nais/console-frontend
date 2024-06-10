@@ -148,96 +148,66 @@
 		</Card>
 
 		<Card columns={4}>
-			<h4>Vulnerabilities summary</h4>
+			<h4>Vulnerabilities</h4>
 			{#if image.summary}
 				<div class="circles">
-					{#if image.summary}
-						{#if image.summary.critical === PendingValue}
-							<Skeleton
-								variant="circle"
-								width="notificationBadgeSize"
-								height="notificationBadgeSize"
-							/>
-						{:else}
-							<Tooltip placement="right" content="severity: CRITICAL">
-								<VulnerabilityBadge
-									text={String(image.summary.critical)}
-									color={severityToColor('critical')}
-									size={notificationBadgeSize}
-								/>
-							</Tooltip>
-						{/if}
-						{#if image.summary.high === PendingValue}
-							<Skeleton
-								variant="circle"
-								width="notificationBadgeSize"
-								height="notificationBadgeSize"
-							/>
-						{:else}
-							<Tooltip placement="right" content="severity: HIGH">
-								<VulnerabilityBadge
-									text={String(image.summary.high)}
-									color={severityToColor('high')}
-									size={notificationBadgeSize}
-								/>
-							</Tooltip>
-						{/if}
-						{#if image.summary.medium === PendingValue}
-							<Skeleton
-								variant="circle"
-								width="notificationBadgeSize"
-								height="notificationBadgeSize"
-							/>
-						{:else}
-							<Tooltip placement="right" content="severity: MEDIUM">
-								<VulnerabilityBadge
-									text={String(image.summary.medium)}
-									color={severityToColor('medium')}
-									size={notificationBadgeSize}
-								/>
-							</Tooltip>
-						{/if}
-						{#if image.summary.low === PendingValue}
-							<Skeleton
-								variant="circle"
-								width="notificationBadgeSize"
-								height="notificationBadgeSize"
-							/>
-						{:else}
-							<Tooltip placement="right" content="severity: LOW">
-								<VulnerabilityBadge
-									text={String(image.summary.low)}
-									color={severityToColor('low')}
-									size={notificationBadgeSize}
-								/>
-							</Tooltip>
-						{/if}
-						{#if image.summary.unassigned === PendingValue}
-							<Skeleton
-								variant="circle"
-								width="notificationBadgeSize"
-								height="notificationBadgeSize"
-							/>
-						{:else}
-							<Tooltip placement="right" content="severity: UNASSIGNED">
-								<VulnerabilityBadge
-									text={String(image.summary.unassigned)}
-									color={severityToColor('unassigned')}
-									size={notificationBadgeSize}
-								/>
-							</Tooltip>
-						{/if}
+					{#if image.summary.id === PendingValue}
+						<div style="display: flex;  gap: 0.5rem">
+							<Skeleton variant="circle" width="34px" height="34px" />
+							<Skeleton variant="circle" width="34px" height="34px" />
+							<Skeleton variant="circle" width="34px" height="34px" />
+							<Skeleton variant="circle" width="34px" height="34px" />
+							<Skeleton variant="circle" width="34px" height="34px" />
+						</div>
 					{:else}
-						<p>No summary found.</p>
+						<Tooltip placement="right" content="severity: CRITICAL">
+							<VulnerabilityBadge
+								text={String(image.summary.critical)}
+								color={severityToColor('critical')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+						<Tooltip placement="right" content="severity: HIGH">
+							<VulnerabilityBadge
+								text={String(image.summary.high)}
+								color={severityToColor('high')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+						<Tooltip placement="right" content="severity: MEDIUM">
+							<VulnerabilityBadge
+								text={String(image.summary.medium)}
+								color={severityToColor('medium')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+						<Tooltip placement="right" content="severity: LOW">
+							<VulnerabilityBadge
+								text={String(image.summary.low)}
+								color={severityToColor('low')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+						<Tooltip placement="right" content="severity: UNASSIGNED">
+							<VulnerabilityBadge
+								text={String(image.summary.unassigned)}
+								color={severityToColor('unassigned')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
 					{/if}
 				</div>
-				Risk score: {image.summary.riskScore !== PendingValue ? image.summary.riskScore : ''} <br />
-				{#if image.projectId !== PendingValue && image.projectUrl !== ''}
-					Explore findings in
-					<a href={image.projectUrl} target="_blank"
-						>Dependency track
-						<ExternalLinkIcon title="Open project in Dependency track" font-size="1.5rem" />
-					</a>
+				{#if image.summary.id !== PendingValue && image.projectId !== PendingValue}
+					Risk score: {image.summary.riskScore} <br />
+					{#if image.projectUrl !== ''}
+						Explore findings in
+						<a href={image.projectUrl} target="_blank"
+							>Dependency track
+							<ExternalLinkIcon title="Open project in Dependency track" font-size="1.5rem" />
+						</a>
+					{/if}
+				{:else}
+					<Skeleton variant="text" />
 				{/if}
 			{:else}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
