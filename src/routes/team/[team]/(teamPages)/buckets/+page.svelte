@@ -4,6 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import { slugHashPrefixTruncate } from './shortsha';
 	import {
 		changeParams,
 		sortTable,
@@ -32,6 +33,7 @@
 
 	$: ({ sortState, limit, offset } = tableStateFromVariables($Buckets.variables));
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
+	const buildTeamName = (tenant: string, team: string): string => `${tenant}-${team}`;
 </script>
 
 {#if $Buckets.errors}
@@ -102,6 +104,20 @@
 				changeParams({ page: e.toString() });
 			}}
 		/>
+	</Card>
+	<Card>
+		<h3>CDN buckets</h3>
+		<p>
+			All teams have their own team buckets, you can administer these with <em>gcloud storage</em>
+		</p>
+
+		{#await slugHashPrefixTruncate(buildTeamName(data.tenantName, teamName), 'nais-cdn', 63)}
+			making hash
+		{:then slughash}
+			gs://{slughash}
+		{:catch someError}
+			System error: {someError.message}.
+		{/await}
 	</Card>
 {/if}
 
