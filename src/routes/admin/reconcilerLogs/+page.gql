@@ -1,0 +1,22 @@
+query ReconcilerLogs {
+	reconcilers {
+		nodes {
+			enabled
+			displayName
+			name
+			description
+			memberAware
+			errors {
+				nodes {
+					id
+					correlationId
+					createdAt
+					message
+					team {
+						slug
+					}
+				}
+			}
+		}
+	}
+}
