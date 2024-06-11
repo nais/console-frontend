@@ -1531,6 +1531,9 @@ type Reconciler {
   """Whether or not the reconciler is enabled."""
   enabled: Boolean!
 
+  """Potential errors that have occurred during the reconciler's operation."""
+  errors(limit: Int, offset: Int): ReconcilerErrorList!
+
   """Whether or not the reconciler uses team memberships when syncing."""
   memberAware: Boolean!
 
@@ -1570,6 +1573,19 @@ input ReconcilerConfigInput {
 
   """Configuration value."""
   value: String!
+}
+
+type ReconcilerError {
+  correlationId: ID!
+  createdAt: Time!
+  id: ID!
+  message: String!
+  team: Team!
+}
+
+type ReconcilerErrorList {
+  nodes: [ReconcilerError!]!
+  pageInfo: PageInfo!
 }
 
 """Paginated reconcilers type."""

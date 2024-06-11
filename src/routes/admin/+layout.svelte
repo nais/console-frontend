@@ -15,6 +15,11 @@
 			tab: 'Reconcilers',
 			routeId: '/admin/reconcilers',
 			withSubRoutes: false
+		},
+		{
+			tab: 'Reconciler logs',
+			routeId: '/admin/reconcilerLogs',
+			withSubRoutes: false
 		}
 	];
 
