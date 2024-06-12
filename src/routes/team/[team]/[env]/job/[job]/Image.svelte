@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type JobImage } from '$houdini';
-	import Time from '$lib/Time.svelte';
-	import { Button, Skeleton, Tooltip } from '@nais/ds-svelte-community';
-	import { docURL } from '$lib/doc';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import type { VulnerabilitiesForAppVariables } from '$houdini/types/src/routes/team/[team]/[env]/app/[app]/$houdini';
+	import Time from '$lib/Time.svelte';
 	import { logEvent } from '$lib/amplitude';
+	import { docURL } from '$lib/doc';
+	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import { Button, Skeleton, Tooltip } from '@nais/ds-svelte-community';
 
 	export let job: JobImage;
 	$: data = fragment(
@@ -41,11 +41,9 @@
 	const vulnerabilities = graphql(`
 		query VulnerabilitiesForJob($job: String!, $team: Slug!, $env: String!) @load {
 			naisjob(name: $job, team: $team, env: $env) @loading {
-				vulnerabilities @loading {
-					findingsLink
-					hasBom
+				imageDetails @loading {
+					hasSbom
 					summary {
-						total
 						critical
 						high
 						medium
@@ -67,7 +65,6 @@
 	};
 
 	const isFindings = (summary: {
-		readonly total: number;
 		readonly critical: number;
 		readonly high: number;
 		readonly medium: number;
@@ -128,8 +125,8 @@
 		Could not fetch vulnerabilities. Please try again, and if the error persists, contact the NAIS team.
 	{/if}
 
-	{#if vulnz !== null && vulnz.naisjob !== null && vulnz.naisjob.vulnerabilities !== null}
-		{#if vulnz.naisjob.vulnerabilities === PendingValue}
+	{#if vulnz !== null && vulnz.naisjob !== null && vulnz.naisjob.imageDetails !== null}
+		{#if vulnz.naisjob.imageDetails === PendingValue}
 			<div style="display: flex;  gap: 0.5rem">
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
@@ -137,52 +134,52 @@
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
 			</div>
-		{:else if vulnz.naisjob.vulnerabilities.summary === null}
+		{:else if vulnz.naisjob.imageDetails.summary === null}
 			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 			No data found.
 			<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
-		{:else if vulnz.naisjob.vulnerabilities.hasBom && isFindings(vulnz.naisjob.vulnerabilities.summary)}
+		{:else if vulnz.naisjob.imageDetails.hasSbom && isFindings(vulnz.naisjob.imageDetails.summary)}
 			<Tooltip placement="right" content="severity: CRITICAL">
 				<VulnerabilityBadge
-					text={String(vulnz.naisjob.vulnerabilities.summary.critical)}
+					text={String(vulnz.naisjob.imageDetails.summary.critical)}
 					color={severityToColor('critical')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: HIGH">
 				<VulnerabilityBadge
-					text={String(vulnz.naisjob.vulnerabilities.summary.high)}
+					text={String(vulnz.naisjob.imageDetails.summary.high)}
 					color={severityToColor('high')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: MEDIUM">
 				<VulnerabilityBadge
-					text={String(vulnz.naisjob.vulnerabilities.summary.medium)}
+					text={String(vulnz.naisjob.imageDetails.summary.medium)}
 					color={severityToColor('medium')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: LOW">
 				<VulnerabilityBadge
-					text={String(vulnz.naisjob.vulnerabilities.summary.low)}
+					text={String(vulnz.naisjob.imageDetails.summary.low)}
 					color={severityToColor('low')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: UNASSIGNED">
 				<VulnerabilityBadge
-					text={String(vulnz.naisjob.vulnerabilities.summary.unassigned)}
+					text={String(vulnz.naisjob.imageDetails.summary.unassigned)}
 					color={'#6e6e6e'}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
-		{:else if vulnz.naisjob.vulnerabilities.hasBom}
+		{:else if vulnz.naisjob.imageDetails.hasSbom}
 			<code class="check">&check;</code> No vulnerabilities found. Good work!
 		{/if}
-		{#if vulnerabilities !== null && vulnz.naisjob !== null && vulnz.naisjob.vulnerabilities !== null}
-			{#if vulnz.naisjob.vulnerabilities !== PendingValue && vulnz.naisjob.vulnerabilities.summary !== null}
-				{#if !vulnz.naisjob.vulnerabilities.hasBom}
+		{#if vulnerabilities !== null && vulnz.naisjob !== null && vulnz.naisjob.imageDetails !== null}
+			{#if vulnz.naisjob.imageDetails !== PendingValue && vulnz.naisjob.imageDetails.summary !== null}
+				{#if !vulnz.naisjob.imageDetails.hasSbom}
 					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 					Data was discovered, but the SBOM was not rendered. Please refer to the
 					<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>NAIS documentation</a

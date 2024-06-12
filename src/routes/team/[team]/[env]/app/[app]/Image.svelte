@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { type AppImage, fragment, graphql, PendingValue } from '$houdini';
+	import { PendingValue, fragment, graphql, type AppImage } from '$houdini';
 
 	import Time from '$lib/Time.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -40,11 +40,9 @@
 	const vulnerabilities = graphql(`
 		query VulnerabilitiesForApp($app: String!, $team: Slug!, $env: String!) @load {
 			app(name: $app, team: $team, env: $env) @loading {
-				vulnerabilities @loading {
-					findingsLink
-					hasBom
+				imageDetails @loading {
+					hasSbom
 					summary {
-						total
 						critical
 						high
 						medium
@@ -69,7 +67,6 @@
 		logEvent('pageview', props);
 	};
 	const isFindings = (summary: {
-		readonly total: number;
 		readonly critical: number;
 		readonly high: number;
 		readonly medium: number;
@@ -129,8 +126,8 @@
 		Could not fetch vulnerabilities. Please try again, and if the error persists, contact the NAIS team.
 	{/if}
 
-	{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.vulnerabilities !== null}
-		{#if appVulnerabilities.app.vulnerabilities === PendingValue}
+	{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.imageDetails !== null}
+		{#if appVulnerabilities.app.imageDetails === PendingValue}
 			<div style="display: flex;  gap: 0.5rem">
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
@@ -138,52 +135,52 @@
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
 			</div>
-		{:else if appVulnerabilities.app.vulnerabilities.summary === null}
+		{:else if appVulnerabilities.app.imageDetails.summary === null}
 			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 			No data found.
 			<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
-		{:else if appVulnerabilities.app.vulnerabilities.hasBom && isFindings(appVulnerabilities.app.vulnerabilities.summary)}
+		{:else if appVulnerabilities.app.imageDetails.hasSbom && isFindings(appVulnerabilities.app.imageDetails.summary)}
 			<Tooltip placement="right" content="severity: CRITICAL">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.vulnerabilities.summary.critical)}
+					text={String(appVulnerabilities.app.imageDetails.summary.critical)}
 					color={severityToColor('critical')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: HIGH">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.vulnerabilities.summary.high)}
+					text={String(appVulnerabilities.app.imageDetails.summary.high)}
 					color={severityToColor('high')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: MEDIUM">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.vulnerabilities.summary.medium)}
+					text={String(appVulnerabilities.app.imageDetails.summary.medium)}
 					color={severityToColor('medium')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: LOW">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.vulnerabilities.summary.low)}
+					text={String(appVulnerabilities.app.imageDetails.summary.low)}
 					color={severityToColor('low')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: UNASSIGNED">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.vulnerabilities.summary.unassigned)}
+					text={String(appVulnerabilities.app.imageDetails.summary.unassigned)}
 					color={'#6e6e6e'}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
-		{:else if appVulnerabilities.app.vulnerabilities.hasBom}
+		{:else if appVulnerabilities.app.imageDetails.hasSbom}
 			<code class="check">&check;</code> No vulnerabilities found. Good work!
 		{/if}
-		{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.vulnerabilities !== null}
-			{#if appVulnerabilities.app.vulnerabilities !== PendingValue && appVulnerabilities.app.vulnerabilities.summary !== null}
-				{#if !appVulnerabilities.app.vulnerabilities.hasBom}
+		{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.imageDetails !== null}
+			{#if appVulnerabilities.app.imageDetails !== PendingValue && appVulnerabilities.app.imageDetails.summary !== null}
+				{#if !appVulnerabilities.app.imageDetails.hasSbom}
 					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 					Data was discovered, but the SBOM was not rendered. Please refer to the
 					<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>NAIS documentation</a

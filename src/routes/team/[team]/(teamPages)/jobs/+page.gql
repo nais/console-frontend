@@ -19,7 +19,6 @@ query Jobs(
 				}
 				name
 				imageDetails {
-					name
 					summary {
 						critical
 						riskScore

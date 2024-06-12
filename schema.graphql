@@ -54,7 +54,6 @@ type App implements Workload {
   team: Team!
   type: WorkloadType!
   variables: [Variable!]!
-  vulnerabilities: Vulnerability
 }
 
 """App cost type."""
@@ -1150,7 +1149,6 @@ type NaisJob implements Workload {
   team: Team!
   type: WorkloadType!
   variables: [Variable!]!
-  vulnerabilities: Vulnerability
 }
 
 type NaisJobList {
