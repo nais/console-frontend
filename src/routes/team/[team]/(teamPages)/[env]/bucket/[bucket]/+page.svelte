@@ -1,7 +1,9 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue } from '$houdini';
+	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Time from '$lib/Time.svelte';
 	import { CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
@@ -15,6 +17,7 @@
 	export let data: PageData;
 	$: ({ Bucket } = data);
 	$: bucket = $Bucket.data?.team.bucket;
+	$: teamName = $page.params.team;
 </script>
 
 {#if $Bucket.errors}
@@ -38,6 +41,20 @@
 					<dd>{bucket.publicAccessPrevention}</dd>
 					<dt>Uniform bucket level access</dt>
 					<dd>{bucket.uniformBucketLevelAccess}</dd>
+					<dt>Owner</dt>
+					<dd>
+								{#if bucket.workload}
+									<WorkloadLink workload={bucket.workload} env={bucket.env.name} team={teamName} />
+								{:else}
+									<div class="inline">
+										<i>No owner</i>
+										<ExclamationmarkTriangleFillIcon
+											style="color: var(--a-icon-warning)"
+											title="The bucket does not belong to any workload"
+										/>
+									</div>
+								{/if}
+					</dd>
 
 					{#if bucket.status.selfLink}
 						<dt>Self link</dt>
@@ -157,4 +174,10 @@
 	div dl.conditions:not(:first-child) {
 		margin-top: 3em;
 	}
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
 </style>
