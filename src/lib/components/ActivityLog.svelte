@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { type AuditEventResourceType$options, graphql, PendingValue } from '$houdini';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Skeleton } from '@nais/ds-svelte-community';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import LogLine from '$lib/AuditLogLine.svelte';
 	import type { TeamEventsVariables } from '$houdini/types/src/lib/components/$houdini';
+	import Time from '$lib/Time.svelte';
 
 	export let teamName: string;
 	export let resourceType: AuditEventResourceType$options;
@@ -21,7 +21,7 @@
 	};
 
 	const store = graphql(`
-		query TeamEvents($limit: Int, $offset: Int, $team: Slug!, $filter: AuditEventsFilter) @load {
+		query TeamEvents($limit: Int, $offset: Int, $team: Slug!, $filter: AuditEventsFilter) @load @cache(policy: NetworkOnly) {
 			team(slug: $team) @loading {
 				auditEvents(limit: $limit, offset: $offset, filter: $filter) @loading {
 					nodes @loading {
@@ -46,12 +46,22 @@
 </script>
 
 {#if team && team !== PendingValue}
-	<Card>
+	<Card style="margin-top: 1rem">
 		<h3>Activity</h3>
 
 		{#each team.auditEvents.nodes as event}
 			{#if event !== PendingValue}
-				<LogLine log={event} />
+				<div class="line">
+					<BodyLong size="medium">
+						{event.message}
+					</BodyLong>
+					<BodyShort size="small" style="color: var(--a-text-subtle)">
+						{event.actor}
+					</BodyShort>
+					<BodyShort size="small" style="color: var(--a-text-subtle)">
+						<Time time={event.createdAt} distance={true} />
+					</BodyShort>
+				</div>
 			{:else}
 				<Skeleton variant="text" />
 			{/if}
@@ -69,3 +79,11 @@
 		{/if}
 	</Card>
 {/if}
+
+<style>
+	.line:is(:not(:last-child)) {
+		border-bottom: 1px solid var(--a-border-divider);
+		padding-bottom: 1rem;
+		margin-bottom: 1rem;
+	}
+</style>

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { PendingValue, graphql, AuditEventResourceType } from '$houdini';
+	import { PendingValue, graphql } from '$houdini';
+	import { AuditEventResourceType } from '$houdini/graphql/enums';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -140,8 +141,9 @@
 		/>
 	</Card>
 	{#if team && team.slug != PendingValue}
-		<!-- TODO: should re-render data when adding/removing/changing members, somehow... -->
+		{#key team}
 		<ActivityLog teamName={team.slug} resourceType={AuditEventResourceType.TEAM_MEMBERS} />
+		{/key}
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
 
 		{#if editUser && editUserOpen}
