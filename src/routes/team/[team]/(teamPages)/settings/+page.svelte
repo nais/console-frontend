@@ -6,7 +6,7 @@
 		graphql,
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
-		type QueryResult
+		type QueryResult, AuditEventResourceType
 	} from '$houdini';
 	import LogLine from '$lib/AuditLogLine.svelte';
 	import Card from '$lib/Card.svelte';
@@ -32,6 +32,7 @@
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 
@@ -429,6 +430,11 @@
 				>
 			</Modal>
 		{/if}
+
+		<!-- TODO: need to refetch data whenever a mutation is triggered -->
+		{#key teamSettings}
+			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
+		{/key}
 
 		<Card columns={12}>
 			<h3>Logs</h3>

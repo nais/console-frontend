@@ -8,6 +8,9 @@
 
 	export let teamName: string;
 	export let resourceType: AuditEventResourceType$options;
+	export let style = '';
+	export let columns = 0;
+	export let rows = 0;
 
 	const changePage = (page: number) => {
 		offset = (page - 1) * limit;
@@ -46,7 +49,7 @@
 </script>
 
 {#if team && team !== PendingValue}
-	<Card style="margin-top: 1rem">
+	<Card {style} {columns} {rows}>
 		<h3>Recent activity</h3>
 
 		{#each team.auditEvents.nodes as event}
