@@ -47,18 +47,18 @@
 
 {#if team && team !== PendingValue}
 	<Card style="margin-top: 1rem">
-		<h3>Activity</h3>
+		<h3>Recent activity</h3>
 
 		{#each team.auditEvents.nodes as event}
 			{#if event !== PendingValue}
 				<div class="line">
-					<BodyLong size="medium">
+					<BodyShort size="medium" spacing>
 						{event.message}
-					</BodyLong>
+					</BodyShort>
 					<BodyShort size="small" style="color: var(--a-text-subtle)">
 						{event.actor}
 					</BodyShort>
-					<BodyShort size="small" style="color: var(--a-text-subtle)">
+					<BodyShort size="small" style="color: var(--a-text-subtle); position: absolute; top: 0; right: 0">
 						<Time time={event.createdAt} distance={true} />
 					</BodyShort>
 				</div>
@@ -81,6 +81,10 @@
 {/if}
 
 <style>
+	.line {
+		position: relative;
+	}
+
 	.line:is(:not(:last-child)) {
 		border-bottom: 1px solid var(--a-border-divider);
 		padding-bottom: 1rem;
