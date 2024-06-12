@@ -3,13 +3,11 @@
 	import { PendingValue, fragment, graphql, type AppImage } from '$houdini';
 
 	import Time from '$lib/Time.svelte';
-	import { logEvent } from '$lib/amplitude';
 	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Skeleton, Tooltip } from '@nais/ds-svelte-community';
-	import type { VulnerabilitiesForAppVariables } from './$houdini';
 
 	export let app: AppImage;
 	$: data = fragment(
@@ -18,7 +16,14 @@
 			fragment AppImage on App {
 				imageDetails @loading {
 					name
-					projectId
+					hasSbom
+					summary {
+						critical
+						high
+						medium
+						low
+						unassigned
+					}
 				}
 				deployInfo @loading {
 					timestamp @loading
@@ -33,39 +38,11 @@
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
-	export const _VulnerabilitiesForAppVariables: VulnerabilitiesForAppVariables = () => {
-		return { app: appName, env: env, team: team };
-	};
-
-	const vulnerabilities = graphql(`
-		query VulnerabilitiesForApp($app: String!, $team: Slug!, $env: String!) @load {
-			app(name: $app, team: $team, env: $env) @loading {
-				imageDetails @loading {
-					hasSbom
-					summary {
-						critical
-						high
-						medium
-						low
-						unassigned
-					}
-				}
-			}
-		}
-	`);
-
-	$: appVulnerabilities = $vulnerabilities.data;
-
+	$: imageDetails = $data.imageDetails;
 	$: deployInfo = $data?.deployInfo;
 
 	const notificationBadgeSize = '38px';
-	const onClick = () => {
-		let props = {};
-		props = {
-			routeID: '/dependencytrack/app/findings'
-		};
-		logEvent('pageview', props);
-	};
+
 	const isFindings = (summary: {
 		readonly critical: number;
 		readonly high: number;
@@ -114,20 +91,16 @@
 		<Time time={deployInfo.timestamp} distance={true} />
 		{#if deployInfo.deployer !== ''}
 			by
-			<a href="https://github.com/{deployInfo.deployer}">{deployInfo.deployer}</a>.
+			<a href="https://github.com/{deployInfo.deployer}" target="_blank">{deployInfo.deployer}</a>.
 		{/if}
 	{/if}
 </p>
 
 <div class="vulnerabilities">
 	<h5>Vulnerabilities</h5>
-	{#if $vulnerabilities.errors}
-		<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-		Could not fetch vulnerabilities. Please try again, and if the error persists, contact the NAIS team.
-	{/if}
 
-	{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.imageDetails !== null}
-		{#if appVulnerabilities.app.imageDetails === PendingValue}
+	{#if imageDetails !== null}
+		{#if imageDetails === PendingValue}
 			<div style="display: flex;  gap: 0.5rem">
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
@@ -135,55 +108,54 @@
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
 			</div>
-		{:else if appVulnerabilities.app.imageDetails.summary === null}
+		{:else if imageDetails.summary === null}
 			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-			No data found.
-			<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
-		{:else if appVulnerabilities.app.imageDetails.hasSbom && isFindings(appVulnerabilities.app.imageDetails.summary)}
+			No data found. <a href={docURL('/services/salsa/#slsa-in-nais')} target="_blank">How to fix</a>
+		{:else if imageDetails.hasSbom && isFindings(imageDetails.summary)}
 			<Tooltip placement="right" content="severity: CRITICAL">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.imageDetails.summary.critical)}
+					text={String(imageDetails.summary.critical)}
 					color={severityToColor('critical')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: HIGH">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.imageDetails.summary.high)}
+					text={String(imageDetails.summary.high)}
 					color={severityToColor('high')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: MEDIUM">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.imageDetails.summary.medium)}
+					text={String(imageDetails.summary.medium)}
 					color={severityToColor('medium')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: LOW">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.imageDetails.summary.low)}
+					text={String(imageDetails.summary.low)}
 					color={severityToColor('low')}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
 			<Tooltip placement="right" content="severity: UNASSIGNED">
 				<VulnerabilityBadge
-					text={String(appVulnerabilities.app.imageDetails.summary.unassigned)}
+					text={String(imageDetails.summary.unassigned)}
 					color={'#6e6e6e'}
 					size={notificationBadgeSize}
 				/>
 			</Tooltip>
-		{:else if appVulnerabilities.app.imageDetails.hasSbom}
+		{:else if imageDetails.hasSbom}
 			<code class="check">&check;</code> No vulnerabilities found. Good work!
 		{/if}
-		{#if appVulnerabilities !== null && appVulnerabilities.app !== null && appVulnerabilities.app.imageDetails !== null}
-			{#if appVulnerabilities.app.imageDetails !== PendingValue && appVulnerabilities.app.imageDetails.summary !== null}
-				{#if !appVulnerabilities.app.imageDetails.hasSbom}
+		{#if imageDetails !== null}
+			{#if imageDetails !== PendingValue && imageDetails.summary !== null}
+				{#if !imageDetails.hasSbom}
 					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 					Data was discovered, but the SBOM was not rendered. Please refer to the
-					<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>NAIS documentation</a
+					<a href={docURL('/services/salsa/#slsa-in-nais')} target="_blank">NAIS documentation</a
 					>
 					for further assistance.
 				{/if}
