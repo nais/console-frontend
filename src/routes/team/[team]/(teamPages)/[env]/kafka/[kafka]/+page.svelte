@@ -1,5 +1,6 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue, State } from '$houdini';
+	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -8,10 +9,12 @@
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);
 	$: topic = $KafkaTopic.data?.team.kafkaTopic;
+	$: teamName = $page.params.team;
 </script>
 
 {#if $KafkaTopic.errors}
@@ -23,6 +26,20 @@
 				<Kafka />
 				{topic.name}
 			</h3>
+				<h4 style="margin-bottom: 0;">Owner</h4>
+				<p style="margin-left: 1em; margin-top: 0;">
+					{#if topic.workload}
+						<WorkloadLink workload={topic.workload} env={topic.env.name} team={teamName} />
+					{:else}
+						<div class="inline">
+							<i>No owner</i>
+							<ExclamationmarkTriangleFillIcon
+								style="color: var(--a-icon-warning)"
+								title="The bucket does not belong to any workload"
+							/>
+						</div>
+					{/if}
+				</p>
 
 			<h3>Topic ACLs</h3>
 			<Table size="small">

@@ -1,10 +1,12 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue } from '$houdini';
+	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		CopyButton,
 		HelpText,
@@ -26,6 +28,7 @@
 	export let data: PageData;
 	$: ({ BigQueryDataset: BigQueryDatasetInstance } = data);
 	$: bigQueryDatasetInstance = $BigQueryDatasetInstance.data?.team.bigQueryDataset;
+	$: teamName = $page.params.team;
 </script>
 
 {#if $BigQueryDatasetInstance.errors}
@@ -44,6 +47,20 @@
 			<p style="margin-left: 1em; margin-top: 0;">
 				€{Math.round(bigQueryDatasetInstance.cost)} last 30 days
 			</p>
+				<h4 style="margin-bottom: 0;">Owner</h4>
+				<p style="margin-left: 1em; margin-top: 0;">
+					{#if bigQueryDatasetInstance.workload}
+						<WorkloadLink workload={bigQueryDatasetInstance.workload} env={bigQueryDatasetInstance.env.name} team={teamName} />
+					{:else}
+						<div class="inline">
+							<i>No owner</i>
+							<ExclamationmarkTriangleFillIcon
+								style="color: var(--a-icon-warning)"
+								title="The bucket does not belong to any workload"
+							/>
+						</div>
+					{/if}
+				</p>
 
 			<dl class="status">
 				<dt>Created</dt>

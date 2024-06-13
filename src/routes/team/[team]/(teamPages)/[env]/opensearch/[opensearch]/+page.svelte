@@ -33,6 +33,21 @@
 				<p style="margin-left: 1em; margin-top: 0;">€{Math.round(openSearch.cost)} last 30 days</p>
 			{/if}
 
+				<h4 style="margin-bottom: 0;">Owner</h4>
+				<p style="margin-left: 1em; margin-top: 0;">
+					{#if openSearch.workload}
+						<WorkloadLink workload={openSearch.workload} env={openSearch.env.name} team={teamName} />
+					{:else}
+						<div class="inline">
+							<i>No owner</i>
+							<ExclamationmarkTriangleFillIcon
+								style="color: var(--a-icon-warning)"
+								title="The bucket does not belong to any workload"
+							/>
+						</div>
+					{/if}
+				</p>
+
 			<h4 class="access">Access</h4>
 			{#if openSearch.access.length}
 				<Table size="small">

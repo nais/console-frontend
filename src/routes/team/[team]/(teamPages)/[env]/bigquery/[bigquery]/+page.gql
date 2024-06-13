@@ -23,7 +23,7 @@ query BigQueryDataset($env: String!, $team: Slug!, $name: String!) @loading(casc
 
 			workload {
 				name
-				type: __typename
+				type
 			}
 			access {
 				role
