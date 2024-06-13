@@ -16,6 +16,7 @@ query NaisJobImage(
 			version
 			name
 			projectUrl
+			hasSbom
 			rekor {
 				buildTrigger
 				buildConfigURI

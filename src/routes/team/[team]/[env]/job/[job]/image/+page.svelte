@@ -212,11 +212,15 @@
 				{:else}
 					<Skeleton variant="text" />
 				{/if}
+			{:else if !image.hasSbom && image.projectId !== ''}
+				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				Data was discovered, but the SBOM was not rendered. Please refer to the
+				<a href={docURL('/security/salsa/#slsa-in-nais')}>NAIS documentation</a>
+				for further assistance.
 			{:else}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-				No data found. <a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>
-					How to fix</a
-				>
+				No data found.
+				<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
 			{/if}
 		</Card>
 		{#if image.findings && image.projectId !== ''}

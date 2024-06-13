@@ -17,6 +17,7 @@
 				imageDetails @loading {
 					name
 					hasSbom
+					projectId
 					summary {
 						critical
 						high
@@ -108,9 +109,15 @@
 				<Skeleton variant="circle" width="34px" height="34px" />
 				<Skeleton variant="circle" width="34px" height="34px" />
 			</div>
+		{:else if !imageDetails.hasSbom && imageDetails.projectId !== ''}
+			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+			Data was discovered, but the SBOM was not rendered. Please refer to the
+			<a href={docURL('/security/salsa/#slsa-in-nais')}>NAIS documentation</a>
+			for further assistance.
 		{:else if imageDetails.summary === null}
 			<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-			No data found. <a href={docURL('/services/salsa/#slsa-in-nais')} target="_blank">How to fix</a>
+			No data found.
+			<a href={docURL('/services/salsa/#slsa-in-nais')} target="_blank">How to fix</a>
 		{:else if imageDetails.hasSbom && isFindings(imageDetails.summary)}
 			<Tooltip placement="right" content="severity: CRITICAL">
 				<VulnerabilityBadge
@@ -149,17 +156,6 @@
 			</Tooltip>
 		{:else if imageDetails.hasSbom}
 			<code class="check">&check;</code> No vulnerabilities found. Good work!
-		{/if}
-		{#if imageDetails !== null}
-			{#if imageDetails !== PendingValue && imageDetails.summary !== null}
-				{#if !imageDetails.hasSbom}
-					<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-					Data was discovered, but the SBOM was not rendered. Please refer to the
-					<a href={docURL('/services/salsa/#slsa-in-nais')} target="_blank">NAIS documentation</a
-					>
-					for further assistance.
-				{/if}
-			{/if}
 		{/if}
 	{/if}
 </div>
