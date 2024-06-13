@@ -28,12 +28,26 @@
 			team(slug: $team) @loading {
 				auditEvents(limit: $limit, offset: $offset, filter: $filter) @loading {
 					nodes @loading {
-						id
-						actor
-						action
-						message
-						createdAt
-						resourceType
+						__typename
+						... on AuditEvent {
+							id
+							actor
+							action
+							message
+							createdAt
+							resourceType
+						}
+						... on AuditEventMemberAdded {
+							memberEmail
+							role
+						}
+						... on AuditEventMemberRemoved {
+							memberEmail
+						}
+						... on AuditEventMemberSetRole {
+							memberEmail
+							role
+						}
 					}
 					pageInfo @loading {
 						hasPreviousPage
@@ -51,7 +65,6 @@
 {#if team && team !== PendingValue}
 	<Card {style} {columns} {rows}>
 		<h3>Recent activity</h3>
-
 		{#each team.auditEvents.nodes as event}
 			{#if event !== PendingValue}
 				<div class="line">

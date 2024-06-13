@@ -137,16 +137,16 @@ enum AuditEventAction {
   TEAM_CREATED
   TEAM_DELETION_CONFIRMED
   TEAM_DELETION_REQUESTED
+  TEAM_DEPLOY_KEY_ROTATED
   TEAM_MEMBER_ADDED
   TEAM_MEMBER_REMOVED
   TEAM_MEMBER_SET_ROLE
-  TEAM_ROTATED_DEPLOY_KEY
   TEAM_SYNCHRONIZED
   TEAM_UPDATED
 }
 
 type AuditEventList {
-  nodes: [AuditEvent!]!
+  nodes: [AuditEventNode!]!
   pageInfo: PageInfo!
 }
 
@@ -187,6 +187,8 @@ type AuditEventMemberSetRole implements AuditEvent {
   role: TeamRole!
   team: Slug!
 }
+
+union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | BaseAuditEvent
 
 enum AuditEventResourceType {
   TEAM
