@@ -151,4 +151,10 @@
 		margin-top: 1em;
 		margin-bottom: 0;
 	}
+	
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 </style>

@@ -206,4 +206,9 @@
 		gap: 0.5em;
 		align-items: center;
 	}
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 </style>
