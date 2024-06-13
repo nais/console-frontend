@@ -89,8 +89,8 @@
 		padding: 1rem;
 		grid-column: span 3;
 		grid-row: span 1;
-		border: 1px solid var(--a-gray-200);
 		background-color: var(--a-bg-default);
+		border: 1px solid var(--active-color-strong);
 	}
 
 	.NAIS {
