@@ -145,7 +145,12 @@ enum AuditEventAction {
   TEAM_UPDATED
 }
 
-type AuditEventAddMember implements AuditEvent {
+type AuditEventList {
+  nodes: [AuditEvent!]!
+  pageInfo: PageInfo!
+}
+
+type AuditEventMemberAdded implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
@@ -158,12 +163,7 @@ type AuditEventAddMember implements AuditEvent {
   team: Slug!
 }
 
-type AuditEventList {
-  nodes: [AuditEvent!]!
-  pageInfo: PageInfo!
-}
-
-type AuditEventRemoveMember implements AuditEvent {
+type AuditEventMemberRemoved implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
@@ -172,25 +172,25 @@ type AuditEventRemoveMember implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
+  team: Slug!
+}
+
+type AuditEventMemberSetRole implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  memberEmail: String!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  role: TeamRole!
   team: Slug!
 }
 
 enum AuditEventResourceType {
   TEAM
   TEAM_MEMBER
-}
-
-type AuditEventSetMemberRole implements AuditEvent {
-  action: AuditEventAction!
-  actor: String!
-  createdAt: Time!
-  id: ID!
-  memberEmail: String!
-  message: String!
-  resourceName: String!
-  resourceType: AuditEventResourceType!
-  role: TeamRole!
-  team: Slug!
 }
 
 input AuditEventsFilter {
