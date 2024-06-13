@@ -33,6 +33,20 @@
 					€{Math.round(redisInstance.cost)} last 30 days
 				</p>
 			{/if}
+				<h4 style="margin-bottom: 0;">Owner</h4>
+				<p style="margin-left: 1em; margin-top: 0;">
+					{#if redisInstance.workload}
+						<WorkloadLink workload={redisInstance.workload} env={redisInstance.env.name} team={teamName} />
+					{:else}
+						<div class="inline">
+							<i>No owner</i>
+							<ExclamationmarkTriangleFillIcon
+								style="color: var(--a-icon-warning)"
+								title="The bucket does not belong to any workload"
+							/>
+						</div>
+					{/if}
+				</p>
 			<h4 class="access">Access</h4>
 			{#if redisInstance.access.length}
 				<Table size="small">
@@ -135,5 +149,11 @@
 	h4.access {
 		margin-top: 1em;
 		margin-bottom: 0;
+	}
+	
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>

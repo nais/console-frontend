@@ -27,6 +27,7 @@ query Bucket($env: String!, $team: Slug!, $name: String!) @loading(cascade: true
 			}
 			workload {
 				name
+				type
 			}
 		}
 	}

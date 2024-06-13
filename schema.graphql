@@ -54,7 +54,6 @@ type App implements Workload {
   team: Team!
   type: WorkloadType!
   variables: [Variable!]!
-  vulnerabilities: Vulnerability
 }
 
 """App cost type."""
@@ -1212,7 +1211,6 @@ type NaisJob implements Workload {
   team: Team!
   type: WorkloadType!
   variables: [Variable!]!
-  vulnerabilities: Vulnerability
 }
 
 type NaisJobList {
@@ -2348,24 +2346,7 @@ type Team {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
-
-  """The vulnerabilities for the team's applications."""
-  vulnerabilities(
-    filter: VulnerabilityFilter
-
-    """Returns the last n entries from the list."""
-    limit: Int
-
-    """Returns the first n entries from the list."""
-    offset: Int
-
-    """Order entries by"""
-    orderBy: OrderBy
-  ): VulnerabilityList!
   vulnerabilitiesSummary: VulnerabilitySummaryForTeam!
-
-  """The vulnerabilities for the team's applications over time."""
-  vulnerabilityMetrics(environment: String, from: Date!, to: Date!): VulnerabilityMetrics!
 }
 
 """Team deletion key type."""
@@ -2605,62 +2586,14 @@ type Vulnerability {
   summary: VulnerabilitySummaryForTeam
 }
 
-input VulnerabilityFilter {
-  """Filter by environment"""
-  envs: [String!]
-
-  """
-  Require the presence of a Software Bill of Materials (SBOM) in the vulnerability report.
-  """
-  requireSbom: Boolean
-}
-
-type VulnerabilityList {
-  nodes: [Vulnerability!]!
-  pageInfo: PageInfo!
-}
-
-type VulnerabilityMetric {
-  """The number of applications with vulnerabilities."""
-  count: Int!
-
-  """The number of critical vulnerabilities."""
-  critical: Int!
-
-  """The date of the metric."""
-  date: Time!
-
-  """The number of high vulnerabilities."""
-  high: Int!
-
-  """The number of low vulnerabilities."""
-  low: Int!
-
-  """The number of medium vulnerabilities."""
-  medium: Int!
-
-  """
-  The weighted severity score calculated from the number of vulnerabilities.
-  """
-  riskScore: Int!
-
-  """The number of unassigned vulnerabilities."""
-  unassigned: Int!
-}
-
-type VulnerabilityMetrics {
-  """The metrics for the team's applications."""
-  data: [VulnerabilityMetric!]!
-}
-
 type VulnerabilitySummaryForTeam {
   bomCount: Int!
+  coverage: Float!
   critical: Int!
   high: Int!
   low: Int!
   medium: Int!
   riskScore: Int!
-  total: Int!
   unassigned: Int!
 }
 

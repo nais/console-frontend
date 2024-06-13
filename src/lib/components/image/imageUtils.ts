@@ -28,6 +28,9 @@ export const detailsUrl = (vulnId: string) => {
 	if (vulnId.startsWith('PYSEC')) {
 		return `https://osv.dev/vulnerability/${vulnId}`;
 	}
+	if (vulnId.startsWith('GO')) {
+		return `https://osv.dev/vulnerability/${vulnId}`;
+	}
 	if (vulnId.startsWith('SNYK')) {
 		return `https://snyk.io/vuln/${vulnId}`;
 	}

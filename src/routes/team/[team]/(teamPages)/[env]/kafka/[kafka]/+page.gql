@@ -18,9 +18,11 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 			workload {
 				... on App {
 					name
+					type
 				}
 				... on NaisJob {
 					name
+					type
 				}
 			}
 			acl @loading(count: 15) {

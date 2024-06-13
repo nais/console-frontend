@@ -16,6 +16,7 @@ query Image(
 			version
 			name
 			projectUrl
+			hasSbom
 			rekor @loading {
 				buildTrigger
 				buildConfigURI

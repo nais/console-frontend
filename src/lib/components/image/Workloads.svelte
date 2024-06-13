@@ -63,7 +63,7 @@
 				</Tr>
 			{:else}
 				<Tr>
-					<Td colspan={5}>No workloads found</Td>
+					<Td colspan={5}>No workloads found using this image in Dependency-Track</Td>
 				</Tr>
 			{/each}
 		</Tbody>

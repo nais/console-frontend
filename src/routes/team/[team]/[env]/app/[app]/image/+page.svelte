@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql, PendingValue } from '$houdini';
-	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 	import { logEvent } from '$lib/amplitude';
+	import Card from '$lib/Card.svelte';
 	import SuppressFinding, { type FindingType } from '$lib/components/image/SuppressFinding.svelte';
 	import TrailFinding from '$lib/components/image/TrailFinding.svelte';
 	import Workloads from '$lib/components/image/Workloads.svelte';
@@ -16,6 +15,7 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
+	import Pagination from '$lib/Pagination.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
@@ -136,7 +136,7 @@
 							</a>
 							|
 							<a href={image.rekor.runInvocationURI}>
-								Run invocation
+								Build reference
 								<ExternalLinkIcon title="Open attestation details" />
 							</a>
 						</div>
@@ -212,11 +212,15 @@
 				{:else}
 					<Skeleton variant="text" />
 				{/if}
+			{:else if !image.hasSbom && image.projectId !== ''}
+				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				Data was discovered, but the SBOM was not rendered. Please refer to the
+				<a href={docURL('/security/salsa/#slsa-in-nais')}>NAIS documentation</a>
+				for further assistance.
 			{:else}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-				No data found.<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}>
-					How to fix</a
-				>
+				No data found.
+				<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
 			{/if}
 		</Card>
 		{#if image.findings && image.projectId !== ''}
