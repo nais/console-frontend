@@ -136,7 +136,7 @@
 							</a>
 							|
 							<a href={image.rekor.runInvocationURI}>
-								Run invocation
+								Build reference
 								<ExternalLinkIcon title="Open attestation details" />
 							</a>
 						</div>
