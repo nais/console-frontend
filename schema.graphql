@@ -105,9 +105,9 @@ type AppsStatus {
 }
 
 """Audit event type."""
-type AuditEvent {
+interface AuditEvent {
   """String representation of the action performed."""
-  action: String!
+  action: AuditEventAction!
 
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -123,8 +123,39 @@ type AuditEvent {
   """Message that summarizes the event."""
   message: String!
 
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
   """Type of the resource that was affected by the action."""
   resourceType: AuditEventResourceType!
+
+  """The team that the event belongs to."""
+  team: Slug!
+}
+
+enum AuditEventAction {
+  TEAM_CREATED
+  TEAM_DELETION_CONFIRMED
+  TEAM_DELETION_REQUESTED
+  TEAM_MEMBER_ADDED
+  TEAM_MEMBER_REMOVED
+  TEAM_MEMBER_SET_ROLE
+  TEAM_ROTATED_DEPLOY_KEY
+  TEAM_SYNCHRONIZED
+  TEAM_UPDATED
+}
+
+type AuditEventAddMember implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  memberEmail: String!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  role: TeamRole!
+  team: Slug!
 }
 
 type AuditEventList {
@@ -132,9 +163,34 @@ type AuditEventList {
   pageInfo: PageInfo!
 }
 
+type AuditEventRemoveMember implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  memberEmail: String!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Slug!
+}
+
 enum AuditEventResourceType {
   TEAM
-  TEAM_MEMBERS
+  TEAM_MEMBER
+}
+
+type AuditEventSetMemberRole implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  memberEmail: String!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  role: TeamRole!
+  team: Slug!
 }
 
 input AuditEventsFilter {
@@ -208,6 +264,17 @@ type BackupConfiguration {
   retainedBackups: Int!
   startTime: String!
   transactionLogRetentionDays: Int!
+}
+
+type BaseAuditEvent implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Slug!
 }
 
 type BigQueryDataset implements Persistence {

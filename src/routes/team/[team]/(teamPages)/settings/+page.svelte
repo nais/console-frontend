@@ -431,8 +431,7 @@
 			</Modal>
 		{/if}
 
-		<!-- TODO: need to refetch data whenever a mutation is triggered -->
-		{#key teamSettings}
+		{#key teamSettings || synchronizeClicked }
 			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
 		{/key}
 
