@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type AuditEventResourceType$options, graphql, PendingValue } from '$houdini';
-	import { BodyLong, BodyShort, Skeleton } from '@nais/ds-svelte-community';
+	import { BodyShort, Skeleton } from '@nais/ds-svelte-community';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import type { TeamEventsVariables } from '$houdini/types/src/lib/components/$houdini';
@@ -36,17 +36,6 @@
 							message
 							createdAt
 							resourceType
-						}
-						... on AuditEventMemberAdded {
-							memberEmail
-							role
-						}
-						... on AuditEventMemberRemoved {
-							memberEmail
-						}
-						... on AuditEventMemberSetRole {
-							memberEmail
-							role
 						}
 					}
 					pageInfo @loading {
