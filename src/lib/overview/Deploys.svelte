@@ -46,13 +46,12 @@
 	</Alert>
 {/if}
 {#if $store.data !== null}
-	<Table size="small">
+	<Table size="small" zebraStripes>
 		<Thead>
 			<Th>Resource(s)</Th>
 			<Th>Created</Th>
 			<Th>Cluster</Th>
 			<Th>Status</Th>
-			<!--Th>Link</Th-->
 		</Thead>
 		<Tbody>
 			{#each $store.data.team.deployments.nodes as { resources, env, created, statuses }}
@@ -80,20 +79,6 @@
 								status={'unknown'}
 							/>{:else}<DeploymentStatus status={statuses[0].status} />{/if}</Td
 					>
-					<!--Td>
-						{#if deployment.repository}
-							<Button
-								size="xsmall"
-								variant="secondary"
-								href="https://github.com/{edge.node.repository}"
-								as="a"
-							>
-								<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment>Repo</Button
-							>
-						{:else}
-							No link
-						{/if}
-					</Td-->
 				</Tr>
 			{/each}
 		</Tbody>

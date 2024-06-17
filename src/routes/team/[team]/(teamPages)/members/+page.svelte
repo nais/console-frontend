@@ -76,7 +76,7 @@
 			{/if}
 		</div>
 
-		<Table size="small" zebraStripes={true}>
+		<Table size="small" zebraStripes>
 			<Thead>
 				<Th>Name</Th>
 				<Th>E-mail</Th>

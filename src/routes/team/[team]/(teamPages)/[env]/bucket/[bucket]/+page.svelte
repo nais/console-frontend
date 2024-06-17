@@ -75,7 +75,7 @@
 
 				{#if bucket.cors && bucket.cors.length}
 					<h4>CORS</h4>
-					<Table size="small">
+					<Table size="small" zebraStripes>
 						<Thead>
 							<Tr>
 								<Th>Host</Th>

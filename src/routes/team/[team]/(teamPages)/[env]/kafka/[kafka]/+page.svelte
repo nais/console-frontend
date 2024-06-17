@@ -25,7 +25,7 @@
 			</h3>
 
 			<h3>Topic ACLs</h3>
-			<Table size="small">
+			<Table size="small" zebraStripes>
 				<Thead>
 					<Th>Team</Th>
 					<Th>Consumer</Th>

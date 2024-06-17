@@ -27,7 +27,7 @@
 
 {#if teamData !== undefined}
 	<Card>
-		<Table size="small" zebraStripes={true}>
+		<Table size="small" zebraStripes>
 			<Thead>
 				<Th>Resource(s)</Th>
 				<Th>Created</Th>

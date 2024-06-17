@@ -32,7 +32,7 @@
 	$: team = $page.params.team;
 </script>
 
-<Table size="small">
+<Table size="small" zebraStripes>
 	<Thead>
 		<Th style="width: 4rem;">Status</Th>
 		<Th>Name</Th>

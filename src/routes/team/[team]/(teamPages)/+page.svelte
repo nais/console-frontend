@@ -54,7 +54,7 @@
 	<Card rows={2} columns={6}>
 		<h4>Utilization</h4>
 		{#if utilization}
-			<Table>
+			<Table size="small" zebraStripes>
 				<Thead>
 					<Tr>
 						<Th>Resource</Th>

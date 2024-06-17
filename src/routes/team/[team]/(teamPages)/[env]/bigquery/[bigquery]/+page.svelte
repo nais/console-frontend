@@ -130,7 +130,7 @@
 			<h3>Access</h3>
 
 			{#if bigQueryDatasetInstance.access.length}
-				<Table size="small">
+				<Table size="small" zebraStripes>
 					<Thead>
 						<Tr>
 							<Th>Access</Th>
