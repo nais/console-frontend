@@ -3,7 +3,6 @@
 	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -43,7 +42,6 @@
 			<Thead>
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="ENV">Env</Th>
-				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
 				{#if team.id === PendingValue}
@@ -60,13 +58,6 @@
 							</Td>
 							<Td>
 								{node.env.name}
-							</Td>
-							<Td>
-								{#if node.workload}
-									<WorkloadLink workload={node.workload} env={node.env.name} team={teamName} />
-								{:else}
-									<em>No owner</em>
-								{/if}
 							</Td>
 						</Tr>
 					{:else}

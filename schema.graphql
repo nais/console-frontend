@@ -657,7 +657,6 @@ type KafkaTopic implements Persistence {
   pool: String!
   status: KafkaTopicStatus
   team: Team!
-  workload: Workload
 }
 
 type KafkaTopicAcl {
