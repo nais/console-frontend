@@ -18,7 +18,7 @@
 	<GraphErrors errors={$KafkaTopic.errors} />
 {:else if topic && topic.id !== PendingValue}
 	<div class="grid">
-		<Card columns={7}>
+		<Card columns={6}>
 			<h3 class="heading">
 				<Kafka />
 				{topic.name}
@@ -54,7 +54,7 @@
 				</Tbody>
 			</Table>
 		</Card>
-		<Card rows={2} columns={5}>
+		<Card rows={2} columns={6}>
 			<h3>Status</h3>
 
 			{#if topic && topic.status}
@@ -69,10 +69,10 @@
 						<dt>Synchronization state</dt>
 						<dd>
 							{#if s.synchronizationState === State.NAIS}
-								<Nais style="color: var(&#45;&#45;a-icon-success)" />
+								<Nais style="color: var(--a-icon-success)" />
 							{:else if s.synchronizationState === State.NOTNAIS}
 								<ExclamationmarkTriangleFillIcon
-									style="color: var(&#45;&#45;a-icon-warning)"
+									style="color: var(--a-icon-warning)"
 									title="Not NAIS!"
 								/>
 							{:else}
@@ -116,7 +116,7 @@
 				<p><em>Unable to find topic status</em></p>
 			{/if}
 		</Card>
-		<Card columns={7}>
+		<Card columns={6}>
 			<h3>Topic configuration</h3>
 			{#if topic?.config}
 				<dl class="status">
@@ -152,12 +152,15 @@
 
 	dl.status {
 		display: grid;
-		grid-template-columns: 35% 65%;
+		grid-template-columns: 28% 72%;
 		row-gap: 0.5em;
 	}
 
 	details {
 		margin-bottom: 1em;
+	}
+	code {
+		font-size: 1rem;
 	}
 
 </style>

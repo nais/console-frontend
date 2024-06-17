@@ -85,13 +85,13 @@
 								{#if cond.status === 'True'}
 									{cond.type}
 									<CheckmarkIcon
-										style="color: var(&#45;&#45;a-surface-success); font-size: 1.5rem"
+										style="color: var(--a-surface-success); font-size: 1.5rem"
 										title={cond.type}
 									/>
 								{:else}
 									{cond.type}
 									<ExclamationmarkTriangleFillIcon
-										style="color: var(&#45;&#45;a-icon-info)"
+										style="color: var(--a-icon-info)"
 										title={cond.type}
 									/>
 								{/if}
