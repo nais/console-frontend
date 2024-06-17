@@ -27,7 +27,7 @@
 		);
 </script>
 
-<Table>
+<Table zebraStripes>
 	<Thead>
 		<Tr>
 			<Th>Message</Th>

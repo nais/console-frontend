@@ -33,7 +33,6 @@
 				<Th>Created</Th>
 				<Th>Environment</Th>
 				<Th>Status</Th>
-				<!--Th>Link</Th-->
 			</Thead>
 			<Tbody>
 				{#each teamData.deployments.nodes as node}
@@ -67,19 +66,6 @@
 							{:else}
 								<Td><Status status={node.statuses[0].status} /></Td>
 							{/if}
-							<!--Td>
-								{#if edge.node.repository}
-									<Button
-										size="xsmall"
-										variant="secondary"
-										href="https://github.com/{node.repository}"
-										as="a"
-									>
-										<svelte:fragment slot="icon-left"><BranchingIcon /></svelte:fragment
-										>Repo</Button
-									>
-								{/if}
-							</Td-->
 						{/if}
 					</Tr>
 				{/each}

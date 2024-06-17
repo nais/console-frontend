@@ -44,6 +44,7 @@
 	<Card columns={12}>
 		<Table
 			size="small"
+			zebraStripes
 			sort={sortState}
 			on:sortChange={(e) => {
 				const { key } = e.detail;

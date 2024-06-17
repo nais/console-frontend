@@ -31,6 +31,7 @@
 {:else if team}
 	<Card columns={12}>
 		<Table
+			zebraStripes
 			size="small"
 			sort={sortState}
 			on:sortChange={(e) => {
