@@ -2087,6 +2087,9 @@ type Team {
     orderBy: OrderBy
   ): BucketsList!
 
+  """The cdn bucket"""
+  cdnBucket: String
+
   """Whether or not the team is currently being deleted."""
   deletionInProgress: Boolean!
 
