@@ -43,7 +43,7 @@
 {/if}
 
 <div class="grid">
-	<Card rows={1} columns={3}>
+	<Card rows={1} columns={4}>
 		<TeamStatus {teamName} />
 	</Card>
 
@@ -51,7 +51,7 @@
 		<VulnerabilitySummary {teamName} /></Card
 	>
 
-	<Card rows={2} columns={6}>
+	<Card rows={2} columns={5}>
 		<h4>Utilization</h4>
 		{#if utilization}
 			<Table size="small" zebraStripes>
@@ -159,7 +159,7 @@
 					<a href="/team/{teamName}/utilization">View team utilization</a>
 		{/if}
 	</Card>
-	<Card rows={1} columns={3}>
+	<Card rows={1} columns={4}>
 		<Cost app="" env="" team={teamName} />
 		<a href="/team/{teamName}/cost">View team costs</a>
 	</Card>
