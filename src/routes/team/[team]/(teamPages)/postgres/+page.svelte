@@ -167,13 +167,7 @@
 				<Th sortable={true} sortKey="ENV">Env</Th>
 				<Th>Connection Name</Th>
 				<Th sortable={true} sortKey="STATUS">Status</Th>
-				<Th sortable={true} sortKey="COST">
-					<div class="tableHeader">
-						Cost<HelpText title="Cost per SQL Instance"
-							>The cost of the SQL instance over the last 30 days</HelpText
-						>
-					</div>
-				</Th>
+				<Th sortable={true} sortKey="COST">Cost</Th>
 				<Th sortable={true} sortKey="CPU"
 					><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
 				>
@@ -296,11 +290,6 @@
 {/if}
 
 <style>
-	.tableHeader {
-		display: flex;
-		gap: 0.5rem;
-	}
-
 	.summary-grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
