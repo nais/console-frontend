@@ -58,6 +58,16 @@
 		}
 	`);
 
+	const updateTeamSlackAlertsChannel = graphql(`
+		mutation UpdateTeamSlackAlertsChannel($slug: Slug!, $input: UpdateTeamSlackAlertsChannelInput!) {
+			updateTeamSlackAlertsChannel(slug: $slug, input: $input) {
+				environments {
+					slackAlertsChannel
+				}
+			}
+		}
+	`);
+
 	const hookdResponse = graphql(`
 		query HookdDeployKey($team: Slug!) @load {
 			team(slug: $team) @loading(cascade: true) {
@@ -128,47 +138,6 @@
 			}
 		}
 	`);
-
-	const save = (env: { name: string }) => {
-		return async (e: { detail: string }) => {
-			slackChannelsError = false;
-			if (!teamSettings) {
-				return;
-			}
-
-			const updates = teamSettings.environments.map((c) => {
-				if (c === PendingValue) {
-					return {
-						environment: '',
-						channelName: ''
-					};
-				}
-
-				if (c.name === env.name) {
-					return {
-						environment: c.name,
-						channelName: e.detail
-					};
-				}
-
-				return {
-					environment: c.name,
-					channelName: c.slackAlertsChannel
-				};
-			});
-
-			const data = await updateTeam.mutate({
-				slug: team,
-				input: {
-					slackAlertsChannels: updates
-				}
-			});
-
-			if (data.errors) {
-				slackChannelsError = true;
-			}
-		};
-	};
 
 	let synchronizeClicked = false;
 </script>
@@ -246,7 +215,27 @@
 						{#if env !== PendingValue}
 							<div class="channel">
 								<b>{env.name}:</b>
-								<EditText text={env.slackAlertsChannel} variant="textfield" on:save={save(env)} />
+								<EditText
+									text={env.slackAlertsChannel}
+									variant="textfield"
+									on:save={async (e) => {
+										slackChannelsError = false;
+										if (!teamSettings) {
+											return;
+										}
+
+										const data = await updateTeamSlackAlertsChannel.mutate({
+											slug: team,
+											input: {
+												environment: env.name,
+												channelName: e.detail
+											}
+										});
+
+										if (data.errors) {
+											slackChannelsError = true;
+										}
+									}} />
 							</div>
 						{/if}
 					{/each}

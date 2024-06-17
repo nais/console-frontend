@@ -1224,6 +1224,19 @@ type Mutation {
     slug: Slug!
   ): Team!
 
+  """
+  Update an existing team's Slack alerts channel
+  
+  The updated team will be returned on success.
+  """
+  updateTeamSlackAlertsChannel(
+    """Input for updating the team."""
+    input: UpdateTeamSlackAlertsChannelInput!
+
+    """Slug of the team to update."""
+    slug: Slug!
+  ): Team!
+
   """Update Unleash instance with allowed teams."""
   updateUnleashForTeam(allowedTeams: [String!], name: String!, team: Slug!): Unleash!
 }
@@ -1956,15 +1969,6 @@ type SlackAlertsChannel {
   environment: String!
 }
 
-"""Slack alerts channel input."""
-input SlackAlertsChannelInput {
-  """The name of the Slack channel."""
-  channelName: String
-
-  """The environment for the alerts sent to the channel."""
-  environment: String!
-}
-
 """
 The slug must:
 
@@ -2530,11 +2534,17 @@ input UpdateTeamInput {
   """Specify team purpose to update the existing value."""
   purpose: String
 
-  """A list of Slack channels for NAIS alerts."""
-  slackAlertsChannels: [SlackAlertsChannelInput!]
-
   """Specify the Slack channel to update the existing value."""
   slackChannel: String
+}
+
+"""Slack alerts channel input."""
+input UpdateTeamSlackAlertsChannelInput {
+  """The name of the Slack channel."""
+  channelName: String
+
+  """The environment for the alerts sent to the channel."""
+  environment: String!
 }
 
 """User type."""
