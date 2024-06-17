@@ -155,38 +155,50 @@ type AuditEventMemberAdded implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
+  data: AuditEventMemberAddedData!
   id: ID!
-  memberEmail: String!
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  role: TeamRole!
   team: Slug!
+}
+
+type AuditEventMemberAddedData {
+  memberEmail: String!
+  role: TeamRole!
 }
 
 type AuditEventMemberRemoved implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
+  data: AuditEventMemberRemovedData!
   id: ID!
-  memberEmail: String!
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
   team: Slug!
 }
 
+type AuditEventMemberRemovedData {
+  memberEmail: String!
+}
+
 type AuditEventMemberSetRole implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
+  data: AuditEventMemberSetRoleData!
   id: ID!
-  memberEmail: String!
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  role: TeamRole!
   team: Slug!
+}
+
+type AuditEventMemberSetRoleData {
+  memberEmail: String!
+  role: TeamRole!
 }
 
 union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent
@@ -199,21 +211,25 @@ enum AuditEventResourceType {
 type AuditEventTeamSetAlertsSlackChannel implements AuditEvent {
   action: AuditEventAction!
   actor: String!
-  channelName: String!
   createdAt: Time!
-  environment: String!
+  data: AuditEventTeamSetAlertsSlackChannelData!
   id: ID!
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
   team: Slug!
+}
+
+type AuditEventTeamSetAlertsSlackChannelData {
+  channelName: String!
+  environment: String!
 }
 
 type AuditEventTeamSetDefaultSlackChannel implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
-  defaultSlackChannel: String!
+  data: AuditEventTeamSetDefaultSlackChannelData!
   id: ID!
   message: String!
   resourceName: String!
@@ -221,16 +237,24 @@ type AuditEventTeamSetDefaultSlackChannel implements AuditEvent {
   team: Slug!
 }
 
+type AuditEventTeamSetDefaultSlackChannelData {
+  defaultSlackChannel: String!
+}
+
 type AuditEventTeamSetPurpose implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
+  data: AuditEventTeamSetPurposeData!
   id: ID!
   message: String!
-  purpose: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
   team: Slug!
+}
+
+type AuditEventTeamSetPurposeData {
+  purpose: String!
 }
 
 input AuditEventsFilter {

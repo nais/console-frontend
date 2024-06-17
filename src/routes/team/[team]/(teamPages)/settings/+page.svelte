@@ -140,6 +140,7 @@
 	`);
 
 	let synchronizeClicked = false;
+	let rotateClicked = false;
 </script>
 
 {#if $TeamSettings.errors}
@@ -255,6 +256,7 @@
 					variant="secondary"
 					loading={$synchronizeTeam.fetching}
 					on:click={async () => {
+						synchronizeClicked = false;
 						await synchronizeTeam.mutate({ slug: team });
 						synchronizeClicked = true;
 					}}
@@ -410,9 +412,11 @@
 				>
 				<Button
 					variant="danger"
-					on:click={() => {
+					on:click={async () => {
+						rotateClicked = false;
 						showRotateKey = !showRotateKey;
-						rotateKey.mutate({ team });
+						await rotateKey.mutate({ team });
+						rotateClicked = true;
 					}}
 				>
 					Rotate key</Button
@@ -420,7 +424,7 @@
 			</Modal>
 		{/if}
 
-		{#key teamSettings || synchronizeClicked }
+		{#key teamSettings || synchronizeClicked || rotateClicked }
 			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
 		{/key}
 
