@@ -8,6 +8,7 @@ query TeamSettings($team: Slug!) {
 		azureGroupID
 		googleGroupEmail
 		googleArtifactRegistry
+		cdnBucket
 		environments @loading(count: 2) {
 			name
 			gcpProjectID
