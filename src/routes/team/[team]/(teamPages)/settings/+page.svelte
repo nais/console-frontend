@@ -8,7 +8,6 @@
 		type GetTeamDeleteKey$result,
 		type QueryResult, AuditEventResourceType
 	} from '$houdini';
-	import LogLine from '$lib/AuditLogLine.svelte';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -428,28 +427,6 @@
 			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
 		{/key}
 
-		<Card columns={12}>
-			<h3>Logs</h3>
-
-			{#each teamSettings.auditLogs.nodes as log}
-				{#if log !== PendingValue}
-					<LogLine {log} />
-				{:else}
-					<Skeleton variant="text" />
-				{/if}
-			{:else}
-				<p>No audit logs</p>
-			{/each}
-
-			{#if teamSettings.auditLogs.pageInfo.hasNextPage !== PendingValue && teamSettings.auditLogs.pageInfo.hasNextPage}
-				<div class="center">
-					<Button variant="secondary" size="medium" as="a" href="/team/{team}/settings/audit_logs">
-						Show more logs
-					</Button>
-				</div>
-			{/if}
-		</Card>
-
 		{#if viewerIsOwner}
 			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>
 				<h3>Danger Zone</h3>
@@ -594,10 +571,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-	}
-
-	.center {
-		text-align: center;
 	}
 
 	.deletewrapper {
