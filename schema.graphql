@@ -827,7 +827,6 @@ type KafkaTopic implements Persistence {
   pool: String!
   status: KafkaTopicStatus
   team: Team!
-  workload: Workload
 }
 
 type KafkaTopicAcl {
@@ -2227,6 +2226,9 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): BucketsList!
+
+  """The CDN bucket for the team."""
+  cdnBucket: String
 
   """Whether or not the team is currently being deleted."""
   deletionInProgress: Boolean!

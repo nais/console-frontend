@@ -44,6 +44,7 @@
 		<Table
 			size="small"
 			sort={sortState}
+			zebraStripes
 			on:sortChange={(e) => {
 				const { key } = e.detail;
 				const ss = sortTable(key, sortState);

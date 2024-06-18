@@ -2,7 +2,7 @@
 	import { graphql, UsersyncRunStatus } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Accordion, AccordionItem, Loader, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
+	import { Accordion, AccordionItem, Loader, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns/format';
 	import { formatDistance } from 'date-fns/formatDistance';
 	import { enGB } from 'date-fns/locale/en-GB';
@@ -79,21 +79,25 @@
 									Showing {us.auditLogs.nodes.length} of {us.auditLogs.pageInfo.totalCount} entries.
 								</p>
 							{/if}
-							<Table>
-								<Tr>
-									<Th>Time</Th>
-									<Th>Action</Th>
-									<Th>Message</Th>
-								</Tr>
-								{#each us.auditLogs.nodes as log}
+							<Table zebraStripes>
+								<Thead>
 									<Tr>
-										<Td>
-											<Time time={log.createdAt} distance={true} />
-										</Td>
-										<Td>{log.action}</Td>
-										<Td>{log.message}</Td>
+										<Th>Time</Th>
+										<Th>Action</Th>
+										<Th>Message</Th>
 									</Tr>
-								{/each}
+								</Thead>
+								<Tbody>
+									{#each us.auditLogs.nodes as log}
+										<Tr>
+											<Td>
+												<Time time={log.createdAt} distance={true} />
+											</Td>
+											<Td>{log.action}</Td>
+											<Td>{log.message}</Td>
+										</Tr>
+									{/each}
+								</Tbody>
 							</Table>
 						</AccordionItem>
 					</Accordion>

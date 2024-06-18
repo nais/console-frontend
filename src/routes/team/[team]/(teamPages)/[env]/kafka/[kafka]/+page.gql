@@ -15,16 +15,6 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 				retentionHours
 				segmentHours
 			}
-			workload {
-				... on App {
-					name
-					type
-				}
-				... on NaisJob {
-					name
-					type
-				}
-			}
 			acl @loading(count: 15) {
 				application
 				access

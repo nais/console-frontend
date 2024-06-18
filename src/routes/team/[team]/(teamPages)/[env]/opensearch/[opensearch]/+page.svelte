@@ -4,12 +4,12 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
-	import { Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	export let data: PageData;
 	$: ({ OpenSearchInstance: OpenSearch } = data);
@@ -50,7 +50,7 @@
 
 			<h4 class="access">Access</h4>
 			{#if openSearch.access.length}
-				<Table size="small">
+				<Table size="small" zebraStripes>
 					<Thead>
 						<Tr>
 							<Th>Access level</Th>
@@ -85,13 +85,13 @@
 								{#if cond.status === 'True'}
 									{cond.type}
 									<CheckmarkIcon
-										style="color: var(&#45;&#45;a-surface-success); font-size: 1.5rem"
+										style="color: var(--a-surface-success); font-size: 1.5rem"
 										title={cond.type}
 									/>
 								{:else}
 									{cond.type}
 									<ExclamationmarkTriangleFillIcon
-										style="color: var(&#45;&#45;a-icon-info)"
+										style="color: var(--a-icon-info)"
 										title={cond.type}
 									/>
 								{/if}
@@ -151,7 +151,7 @@
 		margin-top: 1em;
 		margin-bottom: 0;
 	}
-	
+
 	.inline {
 		display: flex;
 		align-items: center;

@@ -6,7 +6,7 @@
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { Alert, CopyButton, HelpText, Link, Table, Td, Th, Tr } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, HelpText, Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -330,67 +330,79 @@
 		<Card columns={6}>
 			<h3 style="margin-bottom: 0.5rem">Backup & Maintenance</h3>
 			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-				<Table>
-					<Th>Name</Th>
-					<Th>Value</Th>
-					<Tr>
-						<Td>Automatic backups:</Td>
-						<Td>
-							{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
-						</Td>
-					</Tr>
-					{#if instance.backupConfiguration.enabled}
+				<Table zebraStripes size="small">
+					<Thead>
 						<Tr>
-							<Td>Backup start time:</Td>
-							<Td>{instance.backupConfiguration.startTime}</Td>
+							<Th>Name</Th>
+							<Th>Value</Th>
 						</Tr>
-						{#if instance.backupConfiguration.retainedBackups}
+					</Thead>
+					<Tbody>
+						<Tr>
+							<Td>Automatic backups:</Td>
+							<Td>
+								{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
+							</Td>
+						</Tr>
+						{#if instance.backupConfiguration.enabled}
 							<Tr>
-								<Td>Retained backups:</Td>
-								<Td>{instance.backupConfiguration.retainedBackups}</Td>
+								<Td>Backup start time:</Td>
+								<Td>{instance.backupConfiguration.startTime}</Td>
 							</Tr>
+							{#if instance.backupConfiguration.retainedBackups}
+								<Tr>
+									<Td>Retained backups:</Td>
+									<Td>{instance.backupConfiguration.retainedBackups}</Td>
+								</Tr>
+							{/if}
 						{/if}
-					{/if}
-					<Tr>
-						<Td>Point in time recovery:</Td>
-						<Td>{instance.backupConfiguration.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
-					</Tr>
-					<Tr>
-						<Td>Maintenance window:</Td>
-						{#if instance.maintenanceWindow && instance.maintenanceWindow.day > 0}
-							<Td>
-								Every {dayOfWeek[instance.maintenanceWindow.day - 1]} at {String(
-									instance.maintenanceWindow.hour
-								).padStart(2, '0')}:00
-							</Td>
-						{:else}
-							<Td>Not specified</Td>
-						{/if}
-					</Tr>
-					<Tr>
-						<Td>Maintenance version:</Td>
-						{#if instance.maintenanceVersion}
-							<Td>
-								{instance.maintenanceVersion}
-							</Td>
-						{:else}
-							<Td>Not specified</Td>
-						{/if}
-					</Tr>
+						<Tr>
+							<Td>Point in time recovery:</Td>
+							<Td>{instance.backupConfiguration.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
+						</Tr>
+						<Tr>
+							<Td>Maintenance window:</Td>
+							{#if instance.maintenanceWindow && instance.maintenanceWindow.day > 0}
+								<Td>
+									Every {dayOfWeek[instance.maintenanceWindow.day - 1]} at {String(
+										instance.maintenanceWindow.hour
+									).padStart(2, '0')}:00
+								</Td>
+							{:else}
+								<Td>Not specified</Td>
+							{/if}
+						</Tr>
+						<Tr>
+							<Td>Maintenance version:</Td>
+							{#if instance.maintenanceVersion}
+								<Td>
+									{instance.maintenanceVersion}
+								</Td>
+							{:else}
+								<Td>Not specified</Td>
+							{/if}
+						</Tr>
+					</Tbody>
 				</Table>
 			</div>
 			<h3 style="margin-bottom: 0.5rem;">Instance flags</h3>
 			<div style="margin-bottom: 1.5rem;">
 				{#if instance.flags.length}
-					<Table>
-						<Th>Name</Th>
-						<Th>Value</Th>
+					<Table zebraStripes size="small">
+						<Thead>
+							<Tr>
+								<Th>Name</Th>
+								<Th>Value</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
 						{#each instance.flags as flag}
 							<Tr>
 								<Td>{flag.name}</Td>
 								<Td>{flag.value}</Td>
 							</Tr>
 						{/each}
+						</Tbody>
 					</Table>
 				{:else}
 					<p>No flags set</p>
@@ -399,21 +411,23 @@
 			<h3 style="margin-bottom: 0.5rem;">Users</h3>
 			{#if instance.users && instance.users.length > 0}
 				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-					<Table>
-						<Th>Name</Th>
-						<Th>
-							<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
-								Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
-							</Link>
-						</Th>
-						{#if instance.users.length > 0}
+					<Table zebraStripes size="small">
+						<Thead>
+							<Th>Name</Th>
+							<Th>
+								<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
+									Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
+								</Link>
+							</Th>
+						</Thead>
+						<Tbody>
 							{#each instance.users as user}
 								<Tr>
 									<Td>{user.name}</Td>
 									<Td>{user.authentication}</Td>
 								</Tr>
 							{/each}
-						{/if}
+						</Tbody>
 					</Table>
 				</div>
 			{:else}

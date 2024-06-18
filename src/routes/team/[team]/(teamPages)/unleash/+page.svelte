@@ -1,7 +1,9 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
+	import { graphql, type SearchQuery$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Alert,
 		Button,
@@ -18,19 +20,17 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
-		ExternalLinkIcon,
-		PlusIcon,
 		BulletListIcon,
+		CheckmarkIcon,
+		ExternalLinkIcon,
+		PlusCircleFillIcon,
+		PlusIcon,
 		TokenIcon,
 		TrashIcon,
-		PlusCircleFillIcon,
-		CheckmarkIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
-	import { graphql, type SearchQuery$result } from '$houdini';
 	import prettyBytes from 'pretty-bytes';
-	import Confirm from '$lib/components/Confirm.svelte';
+	import type { PageData } from './$houdini';
 	import SearchTeam from './SearchTeam.svelte';
 
 	export let data: PageData;
@@ -362,7 +362,7 @@
 		</Card>
 		<Card columns={4}>
 			<h3>Team access</h3>
-			<Table size="small" style="margin-top: 2rem" zebraStripes={true}>
+			<Table size="small" style="margin-top: 2rem" zebraStripes>
 				<Thead>
 					<Tr>
 						<Th>Team</Th>

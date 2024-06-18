@@ -110,11 +110,13 @@
 		readonly gitHubTeamSlug: string | null;
 		readonly googleGroupEmail: string | null;
 		readonly googleArtifactRegistry: string | null;
+		readonly cdnBucket: string | null;
 	}) =>
 		obj.azureGroupID !== null ||
 		obj.gitHubTeamSlug !== null ||
 		obj.googleGroupEmail !== null ||
-		obj.googleArtifactRegistry !== null;
+		obj.googleArtifactRegistry !== null ||
+		obj.cdnBucket !== null;
 
 	const envResources = (obj: { readonly gcpProjectID: string | null }) => {
 		const lines: { key: string; value: string }[] = [];
@@ -292,6 +294,10 @@
 						{#if teamSettings.googleGroupEmail}
 							<dt>Google group email</dt>
 							<dd>{teamSettings.googleGroupEmail}</dd>
+						{/if}
+						{#if teamSettings.cdnBucket}
+							<dt>Team CDN bucket</dt>
+							<dd>{teamSettings.cdnBucket}</dd>
 						{/if}
 						{#if teamSettings.azureGroupID}
 							<dt>Azure AD group ID</dt>

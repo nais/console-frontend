@@ -52,7 +52,7 @@
 	$: team = $page.params.team;
 </script>
 
-<Table size="small" style="margin-bottom: 1rem">
+<Table size="small" style="margin-bottom: 1rem" zebraStripes>
 	<Thead>
 		<Th>Name</Th>
 		<Th>CPU request</Th>

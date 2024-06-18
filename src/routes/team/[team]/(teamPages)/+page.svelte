@@ -43,20 +43,18 @@
 {/if}
 
 <div class="grid">
-	<Card rows={2} columns={3}>
+	<Card rows={1} columns={4}>
 		<TeamStatus {teamName} />
 	</Card>
+
 	<Card rows={2} columns={3}>
 		<VulnerabilitySummary {teamName} /></Card
 	>
-	<Card rows={1} columns={6}>
-		<Cost app="" env="" team={teamName} />
-		<a href="/team/{teamName}/cost">View team costs</a>
-	</Card>
-	<Card rows={1} columns={6}>
+
+	<Card rows={2} columns={5}>
 		<h4>Utilization</h4>
 		{#if utilization}
-			<Table>
+			<Table size="small" zebraStripes>
 				<Thead>
 					<Tr>
 						<Th>Resource</Th>
@@ -144,7 +142,10 @@
 						{/if}
 					</Tr>
 
-					{#if utilization && utilization === PendingValue}
+
+				</Tbody>
+			</Table>
+			{#if utilization && utilization === PendingValue}
 						<p>Overage cost: <Skeleton variant="text" width="100px" /></p>
 					{:else}
 						<p>
@@ -156,14 +157,18 @@
 						</p>
 					{/if}
 					<a href="/team/{teamName}/utilization">View team utilization</a>
-				</Tbody>
-			</Table>
 		{/if}
 	</Card>
+	<Card rows={1} columns={4}>
+		<Cost app="" env="" team={teamName} />
+		<a href="/team/{teamName}/cost">View team costs</a>
+	</Card>
+
 	<Card rows={1} columns={12}>
 		<h4>Deployments</h4>
 		<Deploys {teamName} />
 	</Card>
+
 </div>
 
 <style>

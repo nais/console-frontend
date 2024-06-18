@@ -69,7 +69,7 @@
 		<DeploysIcon size="1.5rem" />
 		My teams latest deploys
 	</h2>
-	<Table size="small">
+	<Table size="small" zebraStripes>
 		<Thead>
 			<Th>Team</Th>
 			<Th>App</Th>

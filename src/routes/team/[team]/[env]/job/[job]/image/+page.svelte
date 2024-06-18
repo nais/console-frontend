@@ -137,7 +137,12 @@
 							|
 							<a href={image.rekor.runInvocationURI}>
 								Build reference
-								<ExternalLinkIcon title="Open attestation details" />
+								<ExternalLinkIcon title="Open  build reference" />
+							</a>
+							|
+							<a href="https://{registry}/{repository}/{name}">
+								Image registry
+								<ExternalLinkIcon title="Open images in registry" />
 							</a>
 						</div>
 					{/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { added, mergeChanges, type operation } from './state-machinery';
 	import type { VariableInput } from '$houdini';
 	import { Alert, Table, Tbody, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import KeyValue from './KeyValue.svelte';
+	import { added, mergeChanges, type operation } from './state-machinery';
 
 	export let changes: operation[];
 	export let initial: VariableInput[];
@@ -22,7 +22,7 @@
 {#if isEmpty(changes)}
 	<Alert variant="info" size="small">No data found. Add a new key to get started.</Alert>
 {:else}
-	<Table size="small" style="margin-top: 2rem" zebraStripes={true}>
+	<Table size="small" style="margin-top: 2rem" zebraStripes>
 		<Thead>
 			<Tr>
 				<Th>Key</Th>

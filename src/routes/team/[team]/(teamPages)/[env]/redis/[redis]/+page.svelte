@@ -4,12 +4,12 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
@@ -49,7 +49,7 @@
 				</p>
 			<h4 class="access">Access</h4>
 			{#if redisInstance.access.length}
-				<Table size="small">
+				<Table size="small" zebraStripes>
 					<Thead>
 						<Tr>
 							<Th>Access level</Th>
@@ -150,7 +150,7 @@
 		margin-top: 1em;
 		margin-bottom: 0;
 	}
-	
+
 	.inline {
 		display: flex;
 		align-items: center;

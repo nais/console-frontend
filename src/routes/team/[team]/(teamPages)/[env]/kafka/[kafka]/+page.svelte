@@ -1,6 +1,5 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { PendingValue, State } from '$houdini';
-	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -9,40 +8,24 @@
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	
+
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);
 	$: topic = $KafkaTopic.data?.team.kafkaTopic;
-	$: teamName = $page.params.team;
 </script>
 
 {#if $KafkaTopic.errors}
 	<GraphErrors errors={$KafkaTopic.errors} />
 {:else if topic && topic.id !== PendingValue}
 	<div class="grid">
-		<Card columns={7}>
+		<Card columns={6}>
 			<h3 class="heading">
 				<Kafka />
 				{topic.name}
 			</h3>
-				<h4 style="margin-bottom: 0;">Owner</h4>
-				<p style="margin-left: 1em; margin-top: 0;">
-					{#if topic.workload}
-						<WorkloadLink workload={topic.workload} env={topic.env.name} team={teamName} />
-					{:else}
-						<div class="inline">
-							<i>No owner</i>
-							<ExclamationmarkTriangleFillIcon
-								style="color: var(--a-icon-warning)"
-								title="The bucket does not belong to any workload"
-							/>
-						</div>
-					{/if}
-				</p>
 
 			<h3>Topic ACLs</h3>
-			<Table size="small">
+			<Table size="small" zebraStripes>
 				<Thead>
 					<Th>Team</Th>
 					<Th>Consumer</Th>
@@ -71,7 +54,7 @@
 				</Tbody>
 			</Table>
 		</Card>
-		<Card rows={2} columns={5}>
+		<Card rows={2} columns={6}>
 			<h3>Status</h3>
 
 			{#if topic && topic.status}
@@ -86,10 +69,10 @@
 						<dt>Synchronization state</dt>
 						<dd>
 							{#if s.synchronizationState === State.NAIS}
-								<Nais style="color: var(&#45;&#45;a-icon-success)" />
+								<Nais style="color: var(--a-icon-success)" />
 							{:else if s.synchronizationState === State.NOTNAIS}
 								<ExclamationmarkTriangleFillIcon
-									style="color: var(&#45;&#45;a-icon-warning)"
+									style="color: var(--a-icon-warning)"
 									title="Not NAIS!"
 								/>
 							{:else}
@@ -133,7 +116,7 @@
 				<p><em>Unable to find topic status</em></p>
 			{/if}
 		</Card>
-		<Card columns={7}>
+		<Card columns={6}>
 			<h3>Topic configuration</h3>
 			{#if topic?.config}
 				<dl class="status">
@@ -169,17 +152,15 @@
 
 	dl.status {
 		display: grid;
-		grid-template-columns: 35% 65%;
+		grid-template-columns: 28% 72%;
 		row-gap: 0.5em;
 	}
 
 	details {
 		margin-bottom: 1em;
 	}
-	
-	.inline {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
+	code {
+		font-size: 1rem;
 	}
+
 </style>

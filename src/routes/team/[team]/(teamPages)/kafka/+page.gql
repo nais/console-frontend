@@ -18,10 +18,6 @@ query KafkaTopics(
 				env {
 					name
 				}
-				workload {
-					type
-					name
-				}
 			}
 		}
 	}
