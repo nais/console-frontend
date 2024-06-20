@@ -6,9 +6,8 @@
 		graphql,
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
-		type QueryResult
+		type QueryResult, AuditEventResourceType
 	} from '$houdini';
-	import LogLine from '$lib/AuditLogLine.svelte';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -32,6 +31,7 @@
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 
@@ -50,6 +50,16 @@
 			updateTeam(slug: $slug, input: $input) {
 				purpose
 				slackChannel
+				environments {
+					slackAlertsChannel
+				}
+			}
+		}
+	`);
+
+	const updateTeamSlackAlertsChannel = graphql(`
+		mutation UpdateTeamSlackAlertsChannel($slug: Slug!, $input: UpdateTeamSlackAlertsChannelInput!) {
+			updateTeamSlackAlertsChannel(slug: $slug, input: $input) {
 				environments {
 					slackAlertsChannel
 				}
@@ -130,48 +140,8 @@
 		}
 	`);
 
-	const save = (env: { name: string }) => {
-		return async (e: { detail: string }) => {
-			slackChannelsError = false;
-			if (!teamSettings) {
-				return;
-			}
-
-			const updates = teamSettings.environments.map((c) => {
-				if (c === PendingValue) {
-					return {
-						environment: '',
-						channelName: ''
-					};
-				}
-
-				if (c.name === env.name) {
-					return {
-						environment: c.name,
-						channelName: e.detail
-					};
-				}
-
-				return {
-					environment: c.name,
-					channelName: c.slackAlertsChannel
-				};
-			});
-
-			const data = await updateTeam.mutate({
-				slug: team,
-				input: {
-					slackAlertsChannels: updates
-				}
-			});
-
-			if (data.errors) {
-				slackChannelsError = true;
-			}
-		};
-	};
-
 	let synchronizeClicked = false;
+	let rotateClicked = false;
 </script>
 
 {#if $TeamSettings.errors}
@@ -247,7 +217,27 @@
 						{#if env !== PendingValue}
 							<div class="channel">
 								<b>{env.name}:</b>
-								<EditText text={env.slackAlertsChannel} variant="textfield" on:save={save(env)} />
+								<EditText
+									text={env.slackAlertsChannel}
+									variant="textfield"
+									on:save={async (e) => {
+										slackChannelsError = false;
+										if (!teamSettings) {
+											return;
+										}
+
+										const data = await updateTeamSlackAlertsChannel.mutate({
+											slug: team,
+											input: {
+												environment: env.name,
+												channelName: e.detail
+											}
+										});
+
+										if (data.errors) {
+											slackChannelsError = true;
+										}
+									}} />
 							</div>
 						{/if}
 					{/each}
@@ -267,6 +257,7 @@
 					variant="secondary"
 					loading={$synchronizeTeam.fetching}
 					on:click={async () => {
+						synchronizeClicked = false;
 						await synchronizeTeam.mutate({ slug: team });
 						synchronizeClicked = true;
 					}}
@@ -426,9 +417,11 @@
 				>
 				<Button
 					variant="danger"
-					on:click={() => {
+					on:click={async () => {
+						rotateClicked = false;
 						showRotateKey = !showRotateKey;
-						rotateKey.mutate({ team });
+						await rotateKey.mutate({ team });
+						rotateClicked = true;
 					}}
 				>
 					Rotate key</Button
@@ -436,27 +429,9 @@
 			</Modal>
 		{/if}
 
-		<Card columns={12}>
-			<h3>Logs</h3>
-
-			{#each teamSettings.auditLogs.nodes as log}
-				{#if log !== PendingValue}
-					<LogLine {log} />
-				{:else}
-					<Skeleton variant="text" />
-				{/if}
-			{:else}
-				<p>No audit logs</p>
-			{/each}
-
-			{#if teamSettings.auditLogs.pageInfo.hasNextPage !== PendingValue && teamSettings.auditLogs.pageInfo.hasNextPage}
-				<div class="center">
-					<Button variant="secondary" size="medium" as="a" href="/team/{team}/settings/audit_logs">
-						Show more logs
-					</Button>
-				</div>
-			{/if}
-		</Card>
+		{#key teamSettings || synchronizeClicked || rotateClicked }
+			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
+		{/key}
 
 		{#if viewerIsOwner}
 			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>
@@ -602,10 +577,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-	}
-
-	.center {
-		text-align: center;
 	}
 
 	.deletewrapper {

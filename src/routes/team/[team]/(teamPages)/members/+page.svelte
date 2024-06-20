@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
+	import { AuditEventResourceType } from '$houdini/graphql/enums';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -20,6 +21,7 @@
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 	$: ({ Members, UserInfo } = data);
@@ -139,6 +141,9 @@
 		/>
 	</Card>
 	{#if team && team.slug != PendingValue}
+		{#key team}
+		<ActivityLog teamName={team.slug} resourceType={AuditEventResourceType.TEAM_MEMBER} style="margin-top: 1rem"/>
+		{/key}
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
 
 		{#if editUser && editUserOpen}

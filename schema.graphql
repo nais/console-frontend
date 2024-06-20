@@ -103,6 +103,165 @@ type AppsStatus {
   total: Int!
 }
 
+"""Audit event type."""
+interface AuditEvent {
+  """String representation of the action performed."""
+  action: AuditEventAction!
+
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the event."""
+  createdAt: Time!
+
+  """ID of the event."""
+  id: ID!
+
+  """Message that summarizes the event."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: AuditEventResourceType!
+
+  """The team that the event belongs to."""
+  team: Team
+}
+
+enum AuditEventAction {
+  TEAM_CREATED
+  TEAM_DELETION_CONFIRMED
+  TEAM_DELETION_REQUESTED
+  TEAM_DEPLOY_KEY_ROTATED
+  TEAM_MEMBER_ADDED
+  TEAM_MEMBER_REMOVED
+  TEAM_MEMBER_SET_ROLE
+  TEAM_SET_ALERTS_SLACK_CHANNEL
+  TEAM_SET_DEFAULT_SLACK_CHANNEL
+  TEAM_SET_PURPOSE
+  TEAM_SYNCHRONIZED
+}
+
+type AuditEventList {
+  nodes: [AuditEventNode!]!
+  pageInfo: PageInfo!
+}
+
+type AuditEventMemberAdded implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventMemberAddedData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventMemberAddedData {
+  memberEmail: String!
+  role: TeamRole!
+}
+
+type AuditEventMemberRemoved implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventMemberRemovedData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventMemberRemovedData {
+  memberEmail: String!
+}
+
+type AuditEventMemberSetRole implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventMemberSetRoleData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventMemberSetRoleData {
+  memberEmail: String!
+  role: TeamRole!
+}
+
+union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
+
+enum AuditEventResourceType {
+  TEAM
+  TEAM_MEMBER
+}
+
+type AuditEventTeamSetAlertsSlackChannel implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventTeamSetAlertsSlackChannelData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventTeamSetAlertsSlackChannelData {
+  channelName: String!
+  environment: String!
+}
+
+type AuditEventTeamSetDefaultSlackChannel implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventTeamSetDefaultSlackChannelData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventTeamSetDefaultSlackChannelData {
+  defaultSlackChannel: String!
+}
+
+type AuditEventTeamSetPurpose implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventTeamSetPurposeData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventTeamSetPurposeData {
+  purpose: String!
+}
+
+input AuditEventsFilter {
+  """Filter by the type of the resource that was affected by the action."""
+  resourceType: AuditEventResourceType
+}
+
 """Audit log type."""
 type AuditLog {
   """String representation of the action performed."""
@@ -169,6 +328,28 @@ type BackupConfiguration {
   retainedBackups: Int!
   startTime: String!
   transactionLogRetentionDays: Int!
+}
+
+type BaseAuditEvent implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team
+}
+
+type BaseTeamAuditEvent implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
 }
 
 type BigQueryDataset implements Persistence {
@@ -777,38 +958,6 @@ type Mutation {
     slug: Slug!
   ): Team!
 
-  """
-  Add users to a team as regular team members
-  
-  If one or more users are already added to the team they will not be updated. If a user is already an owner of the
-  team the user will not lose ownership. Regular team members will get read-only access to the team.
-  
-  The updated team will be returned on success.
-  """
-  addTeamMembers(
-    """Slug of the team that should receive new members."""
-    slug: Slug!
-
-    """List of user IDs that should be added to the team as members."""
-    userIds: [ID!]!
-  ): Team!
-
-  """
-  Add users to a team as team owners
-  
-  If one or more users are already added to the team, they will be granted ownership of the team. If one or more users
-  are already owners of the team, they will not be updated. Team owners will get read/write access to the team.
-  
-  The updated team will be returned on success.
-  """
-  addTeamOwners(
-    """Slug of the team that should receive new owners."""
-    slug: Slug!
-
-    """List of user IDs that should be added to the team as owners."""
-    userIds: [ID!]!
-  ): Team!
-
   """Authorize a team to perform an action from a GitHub repository."""
   authorizeRepository(
     """The action to authorize."""
@@ -977,19 +1126,6 @@ type Mutation {
   ): Team!
 
   """
-  Remove one or more users from a team
-  
-  The updated team will be returned on success.
-  """
-  removeUsersFromTeam(
-    """Team slug that users should be removed from."""
-    slug: Slug!
-
-    """List of user IDs that should be removed from the team."""
-    userIds: [ID!]!
-  ): Team!
-
-  """
   Request a key that can be used to trigger a team deletion process
   
   Deleting a team is a two step process. First an owner of the team (or an admin) must request a team deletion key, and
@@ -1117,6 +1253,19 @@ type Mutation {
   updateTeam(
     """Input for updating the team."""
     input: UpdateTeamInput!
+
+    """Slug of the team to update."""
+    slug: Slug!
+  ): Team!
+
+  """
+  Update an existing team's Slack alerts channel
+  
+  The updated team will be returned on success.
+  """
+  updateTeamSlackAlertsChannel(
+    """Input for updating the team."""
+    input: UpdateTeamSlackAlertsChannelInput!
 
     """Slug of the team to update."""
     slug: Slug!
@@ -1854,15 +2003,6 @@ type SlackAlertsChannel {
   environment: String!
 }
 
-"""Slack alerts channel input."""
-input SlackAlertsChannelInput {
-  """The name of the Slack channel."""
-  channelName: String
-
-  """The environment for the alerts sent to the channel."""
-  environment: String!
-}
-
 """
 The slug must:
 
@@ -2033,6 +2173,18 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): AppList!
+
+  """Audit events for this team."""
+  auditEvents(
+    """Filter audit events."""
+    filter: AuditEventsFilter
+
+    """Limit the number of audit events to return. Default is 20."""
+    limit: Int
+
+    """Offset to start listing audit events from. Default is 0."""
+    offset: Int
+  ): AuditEventList!
 
   """Audit logs for this team."""
   auditLogs(
@@ -2419,11 +2571,17 @@ input UpdateTeamInput {
   """Specify team purpose to update the existing value."""
   purpose: String
 
-  """A list of Slack channels for NAIS alerts."""
-  slackAlertsChannels: [SlackAlertsChannelInput!]
-
   """Specify the Slack channel to update the existing value."""
   slackChannel: String
+}
+
+"""Slack alerts channel input."""
+input UpdateTeamSlackAlertsChannelInput {
+  """The name of the Slack channel."""
+  channelName: String
+
+  """The environment for the alerts sent to the channel."""
+  environment: String!
 }
 
 """User type."""
