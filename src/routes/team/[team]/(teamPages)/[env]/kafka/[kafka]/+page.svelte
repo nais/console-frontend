@@ -100,7 +100,7 @@
 				{#if s.message}
 					<details>
 						<summary>Status message</summary>
-						{s.message}
+						<p style="max-width: 25em;">{s.message}</p>
 					</details>
 				{/if}
 

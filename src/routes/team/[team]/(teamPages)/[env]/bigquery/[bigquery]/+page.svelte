@@ -118,7 +118,7 @@
 						</dl>
 						<details>
 							<summary>Status message</summary>
-							<p style="max-width: 30em;">{cond.message}</p>
+							<p style="max-width: 25em;">{cond.message}</p>
 						</details>
 					{/each}
 				{:else}

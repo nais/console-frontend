@@ -1,10 +1,10 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { PendingValue } from '$houdini';
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Time from '$lib/Time.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		BucketIcon,
@@ -123,7 +123,7 @@
 						</dl>
 						<details>
 							<summary>Status message</summary>
-							<p style="width: 25em;">{cond.message}</p>
+							<p style="max-width: 25em;">{cond.message}</p>
 						</details>
 					{/each}
 				{:else}
