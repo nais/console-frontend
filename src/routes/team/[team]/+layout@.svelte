@@ -51,18 +51,6 @@
 	};
 
 	const pages: { [key: string]: (params: Data) => { name: string; path?: string }[] } = {
-		'/team/[team]/(teamPages)/settings/audit_logs': (params: Data) => {
-			return [
-				{
-					name: 'settings',
-					path: replacer('/team/[team]/(teamPages)/settings', params)
-				},
-				{
-					name: 'audit logs',
-					path: replacer('/team/[team]/(teamPages)/settings/audit_logs', params)
-				}
-			];
-		},
 		'/team/[team]/(teamPages)/[env]/secret/[secret]': (params: Data) => {
 			return [
 				{

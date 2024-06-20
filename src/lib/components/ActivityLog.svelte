@@ -14,7 +14,7 @@
 
 	const changePage = (page: number) => {
 		offset = (page - 1) * limit;
-		store.fetch({ variables: { offset } });
+		store.fetch({ variables: { offset, team: teamName } });
 	};
 
 	const limit = 5;
@@ -51,7 +51,7 @@
 	$: team = $store.data?.team;
 </script>
 
-{#if team && team !== PendingValue}
+{#if team}
 	<Card {style} {columns} {rows}>
 		<h3>Recent activity</h3>
 		{#each team.auditEvents.nodes as event}
