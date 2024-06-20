@@ -129,7 +129,7 @@ interface AuditEvent {
   resourceType: AuditEventResourceType!
 
   """The team that the event belongs to."""
-  team: Slug!
+  team: Team
 }
 
 enum AuditEventAction {
@@ -160,7 +160,7 @@ type AuditEventMemberAdded implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team!
 }
 
 type AuditEventMemberAddedData {
@@ -177,7 +177,7 @@ type AuditEventMemberRemoved implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team!
 }
 
 type AuditEventMemberRemovedData {
@@ -193,7 +193,7 @@ type AuditEventMemberSetRole implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team!
 }
 
 type AuditEventMemberSetRoleData {
@@ -201,7 +201,7 @@ type AuditEventMemberSetRoleData {
   role: TeamRole!
 }
 
-union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent
+union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
 
 enum AuditEventResourceType {
   TEAM
@@ -217,7 +217,7 @@ type AuditEventTeamSetAlertsSlackChannel implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team!
 }
 
 type AuditEventTeamSetAlertsSlackChannelData {
@@ -234,7 +234,7 @@ type AuditEventTeamSetDefaultSlackChannel implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team!
 }
 
 type AuditEventTeamSetDefaultSlackChannelData {
@@ -250,7 +250,7 @@ type AuditEventTeamSetPurpose implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team!
 }
 
 type AuditEventTeamSetPurposeData {
@@ -338,7 +338,18 @@ type BaseAuditEvent implements AuditEvent {
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
-  team: Slug!
+  team: Team
+}
+
+type BaseTeamAuditEvent implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
 }
 
 type BigQueryDataset implements Persistence {
