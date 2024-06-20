@@ -42,7 +42,7 @@
 							<i>No owner</i>
 							<ExclamationmarkTriangleFillIcon
 								style="color: var(--a-icon-warning)"
-								title="The bucket does not belong to any workload"
+								title="This OpenSearch instance does not belong to any workload"
 							/>
 						</div>
 					{/if}

@@ -12,7 +12,7 @@ const getApiKey = () => {
 
 const instance = amplitude.getInstance();
 
-type Events = 'pageview' | 'search';
+type Events = 'pageview' | 'search' | 'suppressFinding';
 
 export const logEvent = (event: Events, properties?: object) => {
 	if (!browser) return;

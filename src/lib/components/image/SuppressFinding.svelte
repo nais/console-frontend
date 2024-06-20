@@ -37,6 +37,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql, type NaisJobImage$result } from '$houdini';
+	import { logEvent } from '$lib/amplitude';
 	import {
 		Alert,
 		Button,
@@ -121,6 +122,8 @@
 			open = true;
 			return;
 		}
+
+		logEvent('suppressFinding')
 		errormessage = '';
 		const imagePage = '/team/' + team + '/' + env + '/' + workload + '/image';
 		close();

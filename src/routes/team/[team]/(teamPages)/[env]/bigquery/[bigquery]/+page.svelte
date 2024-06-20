@@ -1,12 +1,12 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { PendingValue } from '$houdini';
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		CopyButton,
 		HelpText,
@@ -56,7 +56,7 @@
 							<i>No owner</i>
 							<ExclamationmarkTriangleFillIcon
 								style="color: var(--a-icon-warning)"
-								title="The bucket does not belong to any workload"
+								title="This Big Query instance does not belong to any workload"
 							/>
 						</div>
 					{/if}
