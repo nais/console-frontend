@@ -830,7 +830,16 @@ type JobsStatus {
 }
 
 type KafkaTopic implements Persistence {
-  acl: [KafkaTopicAcl!]!
+  acl(
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): KafkaTopicAclList!
   config: KafkaTopicConfig
   env: Env!
   id: ID!
@@ -844,6 +853,11 @@ type KafkaTopicAcl {
   access: String!
   application: String!
   team: Slug!
+}
+
+type KafkaTopicAclList {
+  nodes: [KafkaTopicAcl!]!
+  pageInfo: PageInfo!
 }
 
 type KafkaTopicConfig {
@@ -1361,6 +1375,9 @@ input OrderBy {
 }
 
 enum OrderByField {
+  """Order by access"""
+  ACCESS
+
   """Order by appName."""
   APP_NAME
 

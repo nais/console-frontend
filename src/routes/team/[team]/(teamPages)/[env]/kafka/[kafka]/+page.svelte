@@ -2,9 +2,16 @@
 	import { PendingValue, State } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
+	import {
+		changeParams,
+		sortTable,
+		tableGraphDirection,
+		tableStateFromVariables
+	} from '$lib/pagination';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -12,6 +19,8 @@
 	export let data: PageData;
 	$: ({ KafkaTopic } = data);
 	$: topic = $KafkaTopic.data?.team.kafkaTopic;
+
+	$: ({ sortState, limit, offset } = tableStateFromVariables($KafkaTopic.variables));
 </script>
 
 {#if $KafkaTopic.errors}
@@ -25,15 +34,20 @@
 			</h3>
 
 			<h3>Topic ACLs</h3>
-			<Table size="small" zebraStripes>
+			<Table size="small" zebraStripes sort={sortState}
+			on:sortChange={(e) => {
+				const { key } = e.detail;
+				const ss = sortTable(key, sortState);
+				changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
+			}}>
 				<Thead>
-					<Th>Team</Th>
-					<Th>Consumer</Th>
-					<Th>Access</Th>
+					<Th sortable={true} sortKey="NAME">Team</Th>
+					<Th sortable={true} sortKey="APP_NAME">Consumer</Th>
+					<Th sortable={true} sortKey="ACCESS">Access</Th>
 				</Thead>
 				<Tbody>
-					{#if topic.acl}
-						{#each topic.acl as ac}
+					{#if topic.acl.pageInfo.totalCount > 0}
+						{#each topic.acl.nodes as ac}
 							<Tr>
 								<Td>
 									<a href="/team/{ac.team}">{ac.team}</a>
@@ -53,6 +67,16 @@
 					{/if}
 				</Tbody>
 			</Table>
+			<div class="pagination">
+				<Pagination
+					pageInfo={topic?.acl.pageInfo}
+					{limit}
+					{offset}
+					changePage={(e) => {
+						changeParams({ page: e.toString() });
+					}}
+				/>
+			</div>
 		</Card>
 		<Card rows={2} columns={6}>
 			<h3>Status</h3>
@@ -162,5 +186,9 @@
 	code {
 		font-size: 1rem;
 	}
+	.pagination {
+		margin-top: 1rem;
+	}
+
 
 </style>

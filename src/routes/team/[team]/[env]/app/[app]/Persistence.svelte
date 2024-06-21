@@ -33,6 +33,20 @@
 							role
 						}
 					}
+					... on KafkaTopic {
+						acl {
+							pageInfo {
+								hasNextPage
+								hasPreviousPage
+								totalCount
+							}
+							nodes {
+								team
+								application
+								access
+							}
+						}
+					}
 				}
 			}
 		`)

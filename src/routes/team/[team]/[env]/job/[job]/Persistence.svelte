@@ -29,9 +29,16 @@
 						name
 						pool
 						acl {
-							access
-							application
-							team
+							pageInfo {
+								hasNextPage
+								hasPreviousPage
+								totalCount
+							}
+							nodes {
+								team
+								application
+								access
+							}
 						}
 					}
 
@@ -90,10 +97,10 @@
 				>
 				<h6>Topic:</h6>
 				{persistence.name}
-				{#if persistence.acl.length}
+				{#if persistence.acl.pageInfo.totalCount > 0}
 					<h6>ACL</h6>
 					<ul>
-						{#each persistence.acl as acl}
+						{#each persistence.acl.nodes as acl}
 							<li>{acl.access} / {acl.application} / {acl.team}</li>
 						{/each}
 					</ul>

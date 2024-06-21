@@ -1,4 +1,11 @@
-query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+query KafkaTopic(
+	$env: String!
+	$team: Slug!
+	$name: String!
+	$orderBy: OrderBy = { field: APP_NAME, direction: ASC }
+	$limit: Int
+	$offset: Int
+) @loading(cascade: true) {
 	team(slug: $team) {
 		kafkaTopic(env: $env, name: $name) {
 			id
@@ -15,11 +22,19 @@ query KafkaTopic($env: String!, $team: Slug!, $name: String!) @loading(cascade: 
 				retentionHours
 				segmentHours
 			}
-			acl @loading(count: 15) {
-				application
-				access
-				team
+			acl(offset: $offset, limit: $limit, orderBy: $orderBy) {
+				pageInfo {
+					totalCount
+					hasNextPage
+					hasPreviousPage
+				}
+				nodes {
+					access
+					application
+					team
+				}
 			}
+
 			status {
 				errors
 				fullyQualifiedName
