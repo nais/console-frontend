@@ -32,11 +32,7 @@
 					<WorkloadLink workload={openSearch.workload} env={openSearch.env.name} team={teamName} />
 				{:else}
 					<div class="inline">
-						<i>No owner</i>
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="This OpenSearch instance does not belong to any workload"
-						/>
+						<i>This OpenSearch instance does not belong to any workload</i>
 					</div>
 				{/if}
 			</p>

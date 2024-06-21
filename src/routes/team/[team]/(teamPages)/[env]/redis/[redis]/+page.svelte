@@ -32,11 +32,7 @@
 					<WorkloadLink workload={redisInstance.workload} env={redisInstance.env.name} team={teamName} />
 				{:else}
 					<div class="inline">
-						<i>No owner</i>
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="This Redis instance does not belong to any workload"
-						/>
+						<i>This Redis instance does not belong to any workload</i>
 					</div>
 				{/if}
 			</p>
