@@ -320,16 +320,14 @@
 					</Table>
 
 					{#if image.findings.pageInfo}
-						<div class="pagination">
-							<Pagination
-								pageInfo={image.findings.pageInfo}
-								{limit}
-								{offset}
-								changePage={(e) => {
-									changeParams({ page: e.toString() });
-								}}
-							/>
-						</div>
+						<Pagination
+							pageInfo={image.findings.pageInfo}
+							{limit}
+							{offset}
+							changePage={(e) => {
+								changeParams({ page: e.toString() });
+							}}
+						/>
 					{/if}
 				{:else}
 					<p>No findings found.</p>
@@ -407,10 +405,6 @@
 		grid-template-columns: repeat(2, 1fr);
 		column-gap: 0.2rem;
 		row-gap: 0.2rem;
-	}
-
-	.pagination {
-		margin-top: 1rem;
 	}
 
 	code {

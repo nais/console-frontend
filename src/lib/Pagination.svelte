@@ -18,6 +18,9 @@
 	function page(offset: number, limit: number) {
 		return Math.ceil(offset / limit) + 1;
 	}
+	if (style === undefined) {
+		style = 'margin-top: 1rem;';
+	}
 </script>
 
 {#if !pageInfo || pageInfo.totalCount == PendingValue}

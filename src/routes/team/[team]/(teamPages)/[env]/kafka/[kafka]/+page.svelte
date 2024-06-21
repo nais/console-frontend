@@ -67,7 +67,6 @@
 					{/if}
 				</Tbody>
 			</Table>
-			<div class="pagination">
 				<Pagination
 					pageInfo={topic?.acl.pageInfo}
 					{limit}
@@ -76,7 +75,6 @@
 						changeParams({ page: e.toString() });
 					}}
 				/>
-			</div>
 		</Card>
 		<Card rows={2} columns={6}>
 			<h3>Status</h3>
@@ -186,9 +184,4 @@
 	code {
 		font-size: 1rem;
 	}
-	.pagination {
-		margin-top: 1rem;
-	}
-
-
 </style>

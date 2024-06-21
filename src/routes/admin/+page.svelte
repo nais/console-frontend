@@ -77,7 +77,6 @@
 		</Table>
 
 		<Pagination
-			style="margin-top: 1rem;"
 			pageInfo={$AdminUsers.data.users.pageInfo}
 			{limit}
 			{offset}
