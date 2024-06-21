@@ -852,6 +852,7 @@ type KafkaTopic implements Persistence {
 type KafkaTopicAcl {
   access: String!
   application: String!
+  environment: Env
   team: Slug!
 }
 

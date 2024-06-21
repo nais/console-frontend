@@ -53,9 +53,11 @@
 									<a href="/team/{ac.team}">{ac.team}</a>
 								</Td>
 								<Td>
-									<a href="/team/{ac.team}/{topic.env.name}/app/{ac.application}"
-										>{ac.application}</a
-									>
+									{#if ac.environment}
+										<a href="/team/{ac.team}/{ac.environment.name}/app/{ac.application}">{ac.application}</a>
+									{:else}
+										{ac.application}
+									{/if}
 								</Td>
 								<Td>{ac.access}</Td>
 							</Tr>

@@ -32,6 +32,9 @@ query KafkaTopic(
 					access
 					application
 					team
+					environment {
+						name
+					}
 				}
 			}
 
