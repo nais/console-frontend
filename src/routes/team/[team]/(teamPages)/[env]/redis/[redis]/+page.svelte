@@ -5,7 +5,6 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -27,26 +26,20 @@
 				<Redis />
 				{redisInstance.name}
 			</h3>
-			{#if redisInstance.workload}
-				<h4 style="margin-bottom: 0;"><CostIcon size="16" /> Cost</h4>
-				<p style="margin-left: 1em; margin-top: 0;">
-					€{Math.round(redisInstance.cost)} last 30 days
-				</p>
-			{/if}
-				<h4 style="margin-bottom: 0;">Owner</h4>
-				<p style="margin-left: 1em; margin-top: 0;">
-					{#if redisInstance.workload}
-						<WorkloadLink workload={redisInstance.workload} env={redisInstance.env.name} team={teamName} />
-					{:else}
-						<div class="inline">
-							<i>No owner</i>
-							<ExclamationmarkTriangleFillIcon
-								style="color: var(--a-icon-warning)"
-								title="This Redis instance does not belong to any workload"
-							/>
-						</div>
-					{/if}
-				</p>
+			<h4 style="margin-bottom: 0;">Owner</h4>
+			<p style="margin-left: 1em; margin-top: 0;">
+				{#if redisInstance.workload}
+					<WorkloadLink workload={redisInstance.workload} env={redisInstance.env.name} team={teamName} />
+				{:else}
+					<div class="inline">
+						<i>No owner</i>
+						<ExclamationmarkTriangleFillIcon
+							style="color: var(--a-icon-warning)"
+							title="This Redis instance does not belong to any workload"
+						/>
+					</div>
+				{/if}
+			</p>
 			<h4 class="access">Access</h4>
 			{#if redisInstance.access.length}
 				<Table size="small" zebraStripes>

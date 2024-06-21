@@ -6,7 +6,6 @@ query OpenSearchInstance($env: String!, $team: Slug!, $name: String!) @loading(c
 			env {
 				name
 			}
-			cost
 			status {
 				conditions {
 					reason

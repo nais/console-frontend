@@ -3,7 +3,6 @@ query RedisInstance($env: String!, $team: Slug!, $name: String!) @loading(cascad
 		redisInstance(env: $env, name: $name) {
 			id
 			name
-			cost
 			env {
 				name
 			}
