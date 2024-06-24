@@ -4,10 +4,10 @@
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import Persistence from '../../app/[app]/Persistence.svelte';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Image from './Image.svelte';
-	import Persistence from './Persistence.svelte';
 	import NaisjobInstances from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Secrets from './Secrets.svelte';
@@ -60,7 +60,7 @@
 
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<Persistence {job} />
+			<Persistence persistence={job.persistence} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>

@@ -50,13 +50,13 @@
 						{#each topic.acl.nodes as ac}
 							<Tr>
 								<Td>
-									<a href="/team/{ac.team}">{ac.team}</a>
+									<a href="/team/{ac.teamName}">{ac.teamName}</a>
 								</Td>
 								<Td>
-									{#if ac.environment}
-										<a href="/team/{ac.team}/{ac.environment.name}/app/{ac.application}">{ac.application}</a>
+									{#if ac.workload}
+										<a href="/team/{ac.teamName}/{ac.workload.env.name}/app/{ac.applicationName}">{ac.applicationName}</a>
 									{:else}
-										{ac.application}
+										{ac.applicationName}
 									{/if}
 								</Td>
 								<Td>{ac.access}</Td>

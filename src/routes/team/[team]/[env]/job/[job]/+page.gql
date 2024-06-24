@@ -13,7 +13,39 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		}
 		...JobAccessPolicy
 		...JobInstances
-		...JobPersistence
+		persistence {
+			name
+			__typename
+
+			... on SqlInstance {
+				type
+			}
+
+			... on OpenSearch {
+				openSearchInstanceAccess: access {
+					role
+				}
+			}
+			... on Redis {
+				redisInstanceAccess: access {
+					role
+				}
+			}
+			... on KafkaTopic {
+				acl(filter: { application: $job, team: $team }) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						totalCount
+					}
+					nodes {
+						teamName
+						applicationName
+						access
+					}
+				}
+			}
+		}
 		...JobAuthz
 		...JobImage
 		...JobStatus

@@ -14,7 +14,39 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 		...AppInstancesStatus
 		...Authz
 		...AutoScaling
-		...Persistence
+		persistence {
+			name
+			__typename
+
+			... on SqlInstance {
+				type
+			}
+
+			... on OpenSearch {
+				openSearchInstanceAccess: access {
+					role
+				}
+			}
+			... on Redis {
+				redisInstanceAccess: access {
+					role
+				}
+			}
+			... on KafkaTopic {
+				acl(filter: { application: $app, team: $team }) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						totalCount
+					}
+					nodes {
+						teamName
+						applicationName
+						access
+					}
+				}
+			}
+		}
 		...AppStatus
 	}
 

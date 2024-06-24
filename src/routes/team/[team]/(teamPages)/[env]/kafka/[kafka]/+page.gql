@@ -30,10 +30,12 @@ query KafkaTopic(
 				}
 				nodes {
 					access
-					application
-					team
-					environment {
-						name
+					applicationName
+					teamName
+					workload {
+						env {
+							name
+						}
 					}
 				}
 			}

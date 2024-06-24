@@ -114,7 +114,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<Persistence app={$App.data.app} />
+			<Persistence persistence={$App.data.app.persistence} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
@@ -129,7 +129,7 @@
 	</div>
 	<Confirm bind:open={restart} on:confirm={submit}>
 		<h3 slot="header">Restart {app}</h3>
-		This will restart all instances of <strong>{app}</strong> in <strong>{env}</strong>.
+		This will restart all instances of<strong>{app}</strong> in <strong>{env}</strong>.
 		<br />
 		Are you sure?
 	</Confirm>
