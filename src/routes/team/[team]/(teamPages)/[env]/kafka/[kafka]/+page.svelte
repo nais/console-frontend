@@ -55,10 +55,16 @@
 						{#each topic.acl.nodes as ac}
 							<Tr>
 								<Td>
-									<a href="/team/{ac.teamName}">{ac.teamName}</a>
+									{#if ac.teamName === '*'}
+										All teams
+									{:else}
+										<a href="/team/{ac.teamName}">{ac.teamName}</a>
+									{/if}
 								</Td>
 								<Td>
-									{#if ac.workload}
+									{#if ac.applicationName === '*'}
+										All workloads
+									{:else if ac.workload}
 										<WorkloadLink
 											workload={ac.workload}
 											team={ac.teamName}
