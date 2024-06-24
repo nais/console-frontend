@@ -4,6 +4,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
@@ -34,12 +35,16 @@
 			</h3>
 
 			<h3>Topic ACLs</h3>
-			<Table size="small" zebraStripes sort={sortState}
-			on:sortChange={(e) => {
-				const { key } = e.detail;
-				const ss = sortTable(key, sortState);
-				changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
-			}}>
+			<Table
+				size="small"
+				zebraStripes
+				sort={sortState}
+				on:sortChange={(e) => {
+					const { key } = e.detail;
+					const ss = sortTable(key, sortState);
+					changeParams({ col: ss.orderBy, dir: tableGraphDirection[ss.direction] });
+				}}
+			>
 				<Thead>
 					<Th sortable={true} sortKey="NAME">Team</Th>
 					<Th sortable={true} sortKey="APP_NAME">Consumer</Th>
@@ -54,9 +59,18 @@
 								</Td>
 								<Td>
 									{#if ac.workload}
-										<a href="/team/{ac.teamName}/{ac.workload.env.name}/app/{ac.applicationName}">{ac.applicationName}</a>
+										<WorkloadLink
+											workload={ac.workload}
+											team={ac.teamName}
+											env={ac.workload.env.name}
+										/>
 									{:else}
-										{ac.applicationName}
+										<div class="workloadNotFound">
+											<ExclamationmarkTriangleFillIcon
+												style="color: var(--a-icon-warning)"
+												title="Workload not found"
+											/>{ac.applicationName}
+										</div>
 									{/if}
 								</Td>
 								<Td>{ac.access}</Td>
@@ -69,14 +83,14 @@
 					{/if}
 				</Tbody>
 			</Table>
-				<Pagination
-					pageInfo={topic?.acl.pageInfo}
-					{limit}
-					{offset}
-					changePage={(e) => {
-						changeParams({ page: e.toString() });
-					}}
-				/>
+			<Pagination
+				pageInfo={topic?.acl.pageInfo}
+				{limit}
+				{offset}
+				changePage={(e) => {
+					changeParams({ page: e.toString() });
+				}}
+			/>
 		</Card>
 		<Card rows={2} columns={6}>
 			<h3>Status</h3>
@@ -185,5 +199,10 @@
 	}
 	code {
 		font-size: 1rem;
+	}
+	.workloadNotFound {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>

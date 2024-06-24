@@ -36,6 +36,8 @@ query KafkaTopic(
 						env {
 							name
 						}
+						type
+						name
 					}
 				}
 			}
