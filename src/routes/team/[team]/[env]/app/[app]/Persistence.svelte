@@ -72,7 +72,10 @@
 					{#each value || [] as item}
 						{#if item.__typename === 'KafkaTopic'}
 							<li>
-								<a href={`/team/${team}/${env}/kafka/${item.name}`}>{item.name}</a>
+								<a
+									href={`/team/${team}/${env === 'prod-fss' ? 'prod-gcp' : env === 'dev-fss' ? 'dev-gcp' : env}/kafka/${item.name}`}
+									>{item.name}</a
+								>
 								<code>({kafkaTopicAccess(item.acl.nodes)})</code>
 							</li>
 						{/if}
