@@ -73,7 +73,7 @@
 						{#if item.__typename === 'KafkaTopic'}
 							<li>
 								<a
-									href={`/team/${team}/${env === 'prod-fss' ? 'prod-gcp' : env === 'dev-fss' ? 'dev-gcp' : env}/kafka/${item.name}`}
+									href={`/team/${item.team.slug}/${item.env.name === 'prod-fss' ? 'prod-gcp' : item.env.name === 'dev-fss' ? 'dev-gcp' : item.env.name}/kafka/${item.name}`}
 									>{item.name}</a
 								>
 								<code>({kafkaTopicAccess(item.acl.nodes)})</code>

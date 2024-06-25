@@ -33,6 +33,12 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				}
 			}
 			... on KafkaTopic {
+				env {
+					name
+				}
+				team {
+					slug
+				}
 				acl(filter: { application: $app, team: $team }) {
 					pageInfo {
 						hasNextPage
