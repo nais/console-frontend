@@ -32,6 +32,12 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				}
 			}
 			... on KafkaTopic {
+				env {
+					name
+				}
+				team {
+					slug
+				}
 				acl(filter: { application: $job, team: $team }) {
 					pageInfo {
 						hasNextPage
