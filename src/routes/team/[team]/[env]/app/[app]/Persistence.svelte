@@ -78,7 +78,7 @@
 				<h5><Kafka />{key}</h5>
 				<ul>
 					{#each value || [] as item}
-						{#if item.__typename === 'KafkaTopic'}
+						{#if item.__typename === 'KafkaTopic' && item.team.slug !== 'nais-verification'}
 							<li>
 								<a
 									href={`/team/${item.team.slug}/${item.env.name === 'prod-fss' ? 'prod-gcp' : item.env.name === 'dev-fss' ? 'dev-gcp' : item.env.name}/kafka/${item.name}`}
