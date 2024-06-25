@@ -32,7 +32,15 @@
 			App$result['app']['persistence'][0],
 			{ readonly name: typeof PendingValue }
 		>[];
-		return Object.groupBy(hack, (p) => p.__typename as string);
+
+		let obj = Object.groupBy(hack, (p) => p.__typename as string);
+
+		Object.keys(obj).forEach((key) => {
+			if (obj && obj[key] !== undefined) {
+				obj[key]?.sort((a, b) => a.name.localeCompare(b.name));
+			}
+		});
+		return obj;
 	};
 </script>
 
