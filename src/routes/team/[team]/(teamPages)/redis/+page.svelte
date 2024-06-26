@@ -4,6 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		changeParams,
 		sortTable,
@@ -12,6 +13,7 @@
 	} from '$lib/pagination';
 	import {
 		Alert,
+		HelpText,
 		Link,
 		Skeleton,
 		Table,
@@ -40,6 +42,26 @@
 		</Alert>
 	{/each}
 {:else if team}
+	<div class="summary-grid">
+		<Card columns={3}>
+			<div class="summaryCard">
+				<div class="summaryIcon" style="--bg-color: #91dc75">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost
+						<HelpText title="">Total Redis cost for team for the last 30 days.</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team.redis.metrics.cost !== PendingValue}
+							€{Math.round(team.redis.metrics.cost)}
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+	</div>
 	<Card columns={12}>
 		<Table
 			size="small"
@@ -101,3 +123,45 @@
 		/>
 	</Card>
 {/if}
+
+<style>
+	.summary-grid {
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.summaryIcon {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 50px;
+		height: 50px;
+		border: 1px solid var(--bg-color);
+		border-radius: 5px;
+	}
+
+	.summary {
+		width: 100%;
+	}
+	.summary > h4 {
+		display: flex;
+		justify-content: space-between;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
+	}
+
+	.metric {
+		font-size: 1.5rem;
+		margin: 0;
+	}
+
+	.summaryCard {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+</style>

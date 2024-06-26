@@ -1786,8 +1786,13 @@ type RedisInstanceAccess {
 }
 
 type RedisList {
+  metrics: RedisMetrics!
   nodes: [Redis!]!
   pageInfo: PageInfo!
+}
+
+type RedisMetrics {
+  cost: Float!
 }
 
 type RedisStatus {

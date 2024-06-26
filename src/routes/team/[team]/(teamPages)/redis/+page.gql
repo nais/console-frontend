@@ -12,6 +12,9 @@ query Redis(
 				hasNextPage
 				hasPreviousPage
 			}
+			metrics {
+				cost
+			}
 			nodes {
 				id
 				name
