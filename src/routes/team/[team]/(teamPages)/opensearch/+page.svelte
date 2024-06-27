@@ -52,7 +52,7 @@
 				<div class="summary">
 					<h4>
 						Cost
-						<HelpText title="">Total Redis cost for team for the last 30 days.</HelpText>
+						<HelpText title="">Total OpenSearch cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
 						{#if team.openSearch.metrics.cost !== PendingValue}
