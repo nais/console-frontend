@@ -133,6 +133,8 @@ interface AuditEvent {
 }
 
 enum AuditEventAction {
+  ADDED
+  REMOVED
   TEAM_CREATED
   TEAM_DELETION_CONFIRMED
   TEAM_DELETION_REQUESTED
@@ -201,11 +203,44 @@ type AuditEventMemberSetRoleData {
   role: TeamRole!
 }
 
-union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
+union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
 
 enum AuditEventResourceType {
   TEAM
   TEAM_MEMBER
+  TEAM_REPOSITORY
+}
+
+type AuditEventTeamAddRepository implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventTeamAddRepositoryData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventTeamAddRepositoryData {
+  repositoryName: String!
+}
+
+type AuditEventTeamRemoveRepository implements AuditEvent {
+  action: AuditEventAction!
+  actor: String!
+  createdAt: Time!
+  data: AuditEventTeamRemoveRepositoryData!
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: AuditEventResourceType!
+  team: Team!
+}
+
+type AuditEventTeamRemoveRepositoryData {
+  repositoryName: String!
 }
 
 type AuditEventTeamSetAlertsSlackChannel implements AuditEvent {
@@ -687,9 +722,6 @@ type GitHubRepository {
   """Whether or not the repository is archived."""
   archived: Boolean!
 
-  """A list of authorizations granted to the repository by the team."""
-  authorizations: [RepositoryAuthorization!]!
-
   """ID of the repository."""
   id: ID!
 
@@ -966,6 +998,15 @@ type Mutation {
     userId: ID!
   ): TeamMember!
 
+  """Add a team repository."""
+  addRepository(
+    """Name of the repository, with the org prefix, for instance 'org/repo'."""
+    repoName: String!
+
+    """The slug of the team that adds the repository."""
+    teamSlug: Slug!
+  ): String!
+
   """
   Add a user to a team
   
@@ -980,18 +1021,6 @@ type Mutation {
     """Slug of the team that should receive a new member."""
     slug: Slug!
   ): Team!
-
-  """Authorize a team to perform an action from a GitHub repository."""
-  authorizeRepository(
-    """The action to authorize."""
-    authorization: RepositoryAuthorization!
-
-    """Name of the repository, with the org prefix, for instance 'org/repo'."""
-    repoName: String!
-
-    """The slug of the team to authorize the action for."""
-    teamSlug: Slug!
-  ): GitHubRepository!
 
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeployKey(
@@ -1058,18 +1087,6 @@ type Mutation {
   will be set as owner of the Unleash instance and will be able to manage it.
   """
   createUnleashForTeam(team: Slug!): Unleash!
-
-  """Deauthorize an action from a team."""
-  deauthorizeRepository(
-    """The action to deauthorize."""
-    authorization: RepositoryAuthorization!
-
-    """Name of the repository, with the org prefix, for instance 'org/repo'."""
-    repoName: String!
-
-    """The slug of the team to deauthorize the action for."""
-    teamSlug: Slug!
-  ): GitHubRepository!
   deleteApp(
     """The environment the application is deployed to."""
     env: String!
@@ -1134,6 +1151,15 @@ type Mutation {
     """The user ID of the team member."""
     userId: ID!
   ): TeamMember!
+
+  """Remove a team repository."""
+  removeRepository(
+    """Name of the repository, with the org prefix, for instance 'org/repo'."""
+    repoName: String!
+
+    """The slug of the team that removes the repository."""
+    teamSlug: Slug!
+  ): String!
 
   """
   Remove a user from a team
@@ -1819,10 +1845,12 @@ type Rekor {
   sourceRepositoryOwnerURI: String!
 }
 
-"""Repository authorizations."""
-enum RepositoryAuthorization {
-  """Authorize for NAIS deployment."""
-  DEPLOY
+type RepositoryList {
+  """The list of repositories."""
+  nodes: [String!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
 }
 
 type Requests {
@@ -2410,6 +2438,13 @@ type Team {
     """The name of the Redis instance."""
     name: String!
   ): Redis!
+  repositories(
+    """Limit the number of repositories to return. Default is 20."""
+    limit: Int
+
+    """Offset to start listing repositories from. Default is 0."""
+    offset: Int
+  ): RepositoryList!
 
   """Get the team's secret by name, and env."""
   secret(
