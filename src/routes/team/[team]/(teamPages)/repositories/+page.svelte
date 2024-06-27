@@ -47,6 +47,7 @@
 
 {#if team}
 	<div class="grid">
+		{#if team.viewerIsOwner || team.viewerIsMember}
 		<Card>
 			<div class="repository">
 				<h3>Add repository <HelpText title="Description">Adding a repository will grant it access to deployment actions on behalf of the team.</HelpText></h3>
@@ -71,6 +72,7 @@
 				</div>
 			</div>
 		</Card>
+		{/if}
 		<Card>
 			<h3>Repositories</h3>
 			<Table size="small" zebraStripes>
@@ -86,6 +88,7 @@
 								<Button
 									variant="secondary"
 									size="small"
+									disabled={!team.viewerIsOwner && !team.viewerIsMember}
 									on:click={() => removeRepository(teamName, repo)}
 								>
 									<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>

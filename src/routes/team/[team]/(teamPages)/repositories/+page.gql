@@ -8,5 +8,7 @@ query Repositories($team: Slug!, $limit: Int = 10, $offset: Int) @cache(policy: 
 			}
 			nodes 	
 		}
+		viewerIsOwner
+		viewerIsMember
 	}
 }
