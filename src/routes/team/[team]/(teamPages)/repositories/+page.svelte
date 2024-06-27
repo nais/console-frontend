@@ -56,7 +56,7 @@
 					<input
 						type="text"
 						id="repositoryName"
-						style="width: 450px"
+						style="width: 300px"
 						placeholder="e.g. `navikt/my-repo`"
 						bind:value={repoName}
 					/>
