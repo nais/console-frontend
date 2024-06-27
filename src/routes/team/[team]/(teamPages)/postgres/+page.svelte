@@ -309,9 +309,13 @@
 		border-radius: 5px;
 	}
 
+	.summary {
+		width: 100%;
+	}
+
 	.summary > h4 {
 		display: flex;
-		gap: 0.5rem;
+		justify-content: space-between;
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);
