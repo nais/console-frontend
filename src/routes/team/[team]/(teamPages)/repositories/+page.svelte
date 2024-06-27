@@ -43,6 +43,7 @@
 	};
 
 	let repoName = '';
+	let inputError = false;
 </script>
 
 {#if team}
@@ -55,15 +56,21 @@
 					<input
 						type="text"
 						id="repositoryName"
-						placeholder="Repository name"
+						style="width: 450px"
+						placeholder="e.g. `navikt/my-repo`"
 						bind:value={repoName}
 					/>
 					<Button
 						size="small"
 						variant="secondary"
 						on:click={() => {
+							if (!repoName.match(/^[a-z0-9-]+\/[a-z0-9-]+$/i)) {
+								inputError = true;
+								return;
+							}
 							addRepository(teamName, repoName);
 							repoName = '';
+							inputError = false;
 						}}
 					>
 						<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
@@ -71,6 +78,9 @@
 					</Button>
 				</div>
 			</div>
+			{#if inputError}
+				<p style="color: red">Invalid repository name, must be on format: 'org/reponame'</p>
+			{/if}
 		</Card>
 		{/if}
 		<Card>
