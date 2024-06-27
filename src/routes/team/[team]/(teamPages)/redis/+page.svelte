@@ -56,6 +56,8 @@
 					<p class="metric">
 						{#if team.redis.metrics.cost !== PendingValue}
 							€{Math.round(team.redis.metrics.cost)}
+						{:else}
+							<Skeleton variant="text" />
 						{/if}
 					</p>
 				</div>

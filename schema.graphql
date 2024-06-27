@@ -1366,8 +1366,13 @@ type OpenSearchInstanceAccess {
 }
 
 type OpenSearchList {
+  metrics: OpenSearchMetrics!
   nodes: [OpenSearch!]!
   pageInfo: PageInfo!
+}
+
+type OpenSearchMetrics {
+  cost: Float!
 }
 
 type OpenSearchStatus {

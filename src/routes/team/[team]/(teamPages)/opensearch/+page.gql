@@ -23,6 +23,9 @@ query OpenSearch(
 					name
 				}
 			}
+			metrics {
+				cost
+			}
 		}
 	}
 }
