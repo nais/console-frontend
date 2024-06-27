@@ -1,16 +1,12 @@
-query Repositories($team: Slug!, $limit: Int = 50, $offset: Int) @cache(policy: NetworkOnly) {
+query Repositories($team: Slug!, $limit: Int = 10, $offset: Int) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		githubRepositories(limit: $limit, offset: $offset) {
+		repositories(limit: $limit, offset: $offset) {
 			pageInfo {
 				totalCount
 				hasNextPage
 				hasPreviousPage
 			}
-			nodes {
-				name
-				authorizations
-				roleName
-			}
+			nodes 	
 		}
 	}
 }
