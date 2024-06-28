@@ -93,7 +93,7 @@
 				<Tbody>
 					{#each team.repositories.nodes as repo}
 						<Tr>
-							<Td>{repo}</Td>
+							<Td><a href="https://github.com/{repo}" target="_blank">{repo}</a></Td>
 							<Td>
 								<Button
 									variant="secondary"
