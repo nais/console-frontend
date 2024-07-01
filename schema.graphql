@@ -444,8 +444,13 @@ type BucketStatus {
 }
 
 type BucketsList {
+  metrics: BucketsMetrics!
   nodes: [Bucket!]!
   pageInfo: PageInfo!
+}
+
+type BucketsMetrics {
+  cost: Float!
 }
 
 type Claims {

@@ -23,6 +23,9 @@ query Buckets(
 					name
 				}
 			}
+			metrics {
+				cost
+			}
 		}
 	}
 }
