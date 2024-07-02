@@ -41,8 +41,6 @@
 				<svelte:fragment slot="label">Identifier / Name</svelte:fragment>
 				<svelte:fragment slot="description">
 					Example: my-team-name<br />
-					{form?.input.slug}
-
 					<WarningIcon style="color:var(--a-icon-warning)" /> It is not possible to change the identifier
 					after creation, so choose wisely. Also, the identifier can not start with "nais" or "team".
 				</svelte:fragment>
