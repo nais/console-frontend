@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Card from '$lib/Card.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Button, ErrorSummary, ErrorSummaryItem, TextField } from '@nais/ds-svelte-community';
+	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
-	import { enhance } from '$app/forms';
 
 	export let form: ActionData;
 	let saving = false;
@@ -16,7 +16,7 @@
 		{#if form?.errors && form.errors.length > 0}
 			<ErrorSummary heading="Error creating team">
 				{#each form.errors as error}
-					<ErrorSummaryItem href="">{error.message}</ErrorSummaryItem>
+					<li style="color:inherit!important">{error.message}</li>
 				{/each}
 			</ErrorSummary>
 		{/if}
@@ -27,32 +27,43 @@
 			identifier is the primary key, and will be used across systems so that they are easily
 			recognizable.
 		</p>
-		<form method="POST" use:enhance on:submit={() => (saving = !saving)}>
-			<TextField name="name">
+		<form
+			method="POST"
+			use:enhance={() => {
+				saving = true;
+				return async ({ update }) => {
+					saving = false;
+					update({ reset: false });
+				};
+			}}
+		>
+			<TextField name="name" value={form?.input.slug}>
 				<svelte:fragment slot="label">Identifier / Name</svelte:fragment>
-				<svelte:fragment slot="description"
-					>Example: my-team-name<br />
+				<svelte:fragment slot="description">
+					Example: my-team-name<br />
+					{form?.input.slug}
 
 					<WarningIcon style="color:var(--a-icon-warning)" /> It is not possible to change the identifier
 					after creation, so choose wisely. Also, the identifier can not start with "nais" or "team".
 				</svelte:fragment>
 			</TextField>
 			<br />
-			<TextField name="description"
-				><svelte:fragment slot="label">Purpose of the team</svelte:fragment>
-				<svelte:fragment slot="description"
-					>Example: Making sure users have a good experience</svelte:fragment
-				>
+			<TextField name="description" value={form?.input.purpose}>
+				<svelte:fragment slot="label">Purpose of the team</svelte:fragment>
+				<svelte:fragment slot="description">
+					Example: Making sure users have a good experience
+				</svelte:fragment>
 			</TextField>
 			<br />
-			<TextField name="slackChannel"
-				><svelte:fragment slot="label">Slack channel</svelte:fragment>
+			<TextField name="slackChannel" value={form?.input.slackChannel}>
+				<svelte:fragment slot="label">Slack channel</svelte:fragment>
 				<svelte:fragment slot="description">Example: #my-team-slack</svelte:fragment>
 			</TextField>
 			<br />
-			<Button loading={saving}
-				><svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>Create team</Button
-			>
+			<Button loading={saving}>
+				<svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>
+				Create team
+			</Button>
 		</form>
 	</Card>
 </div>

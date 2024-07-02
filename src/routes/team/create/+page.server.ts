@@ -12,19 +12,20 @@ export const actions = {
 			}
 		`);
 		const data = await event.request.formData();
+		const input = {
+			slug: (data.get('name') as string) || '',
+			purpose: (data.get('description') as string) || '',
+			slackChannel: (data.get('slackChannel') as string) || ''
+		};
 
 		const resp = await query.mutate(
 			{
-				input: {
-					slug: (data.get('name') as string) || '',
-					purpose: (data.get('description') as string) || '',
-					slackChannel: (data.get('slackChannel') as string) || ''
-				}
+				input
 			},
 			{ event }
 		);
 		if (resp.errors) {
-			return { errors: resp.errors };
+			return { input, errors: resp.errors };
 		}
 		if (resp.data?.createTeam.slug) {
 			redirect(303, `/team/${resp.data.createTeam.slug}`);
