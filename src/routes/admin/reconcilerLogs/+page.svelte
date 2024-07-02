@@ -24,7 +24,7 @@
 				createdAt: error.createdAt,
 				teamSlug: error.team.slug
 			}))
-		);
+		).toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 </script>
 
 <Table zebraStripes>
