@@ -64,7 +64,7 @@
 						size="small"
 						variant="secondary"
 						on:click={() => {
-							if (!repoName.match(/^[a-z0-9-]+\/[a-z0-9-]+$/i)) {
+							if (!repoName.match(/^[a-zA-Z0-9-_.]+\/[a-zA-Z0-9-_.]+$/i)) {
 								inputError = true;
 								return;
 							}
