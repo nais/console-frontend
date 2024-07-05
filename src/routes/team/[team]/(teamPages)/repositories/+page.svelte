@@ -2,12 +2,12 @@
 	import { page } from '$app/stores';
 	import { AuditEventResourceType, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams, limitOffset } from '$lib/pagination';
-	import { HelpText, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';
+	import { changeParams, limitOffset } from '$lib/pagination';
+	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
@@ -42,46 +42,62 @@
 		Repositories.fetch();
 	};
 
+	const validateRepo = (input: string) => {
+		const pattern = /^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/;
+		return pattern.test(input);
+	};
+
+	const handleSubmit = () => {
+		console.log(`Adding repository: ${repoName}`);
+		if (validateRepo(repoName)) {
+			console.log(`Valid GitHub repository: ${repoName}`);
+			addRepository(teamName, repoName);
+			inputError = false;
+			repoName = '';
+		} else {
+			inputError = true;
+		}
+	};
+
 	let repoName = '';
 	let inputError = false;
+	const errorMessage = `Invalid input`;
 </script>
 
 {#if team}
 	<div class="grid">
 		{#if team.viewerIsOwner || team.viewerIsMember}
-		<Card>
-			<div class="repository">
-				<h3>Add repository <HelpText title="Description">Adding a repository will grant it access to deployment actions on behalf of the team.</HelpText></h3>
-				<div class="roleHelpText">
-					<input
-						type="text"
-						id="repositoryName"
-						style="width: 300px"
-						placeholder="e.g. `navikt/my-repo`"
-						bind:value={repoName}
-					/>
-					<Button
-						size="small"
-						variant="secondary"
-						on:click={() => {
-							if (!repoName.match(/^[a-zA-Z0-9-_.]+\/[a-zA-Z0-9-_.]+$/i)) {
-								inputError = true;
-								return;
-							}
-							addRepository(teamName, repoName);
-							repoName = '';
-							inputError = false;
-						}}
+			<Card>
+				<div class="repository">
+					<h3>Add repository</h3>
+					<em
+						>Adding a repository will grant it access to deployment actions on behalf of the team.</em
 					>
-						<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
-						Add
-					</Button>
+					<form on:submit|preventDefault={handleSubmit} class="input">
+						<TextField
+							size="small"
+							type="text"
+							id="repositoryName"
+							style="width: 300px"
+							bind:value={repoName}
+							error={inputError ? errorMessage : undefined}
+						>
+							<svelte:fragment slot="label">Repository name</svelte:fragment>
+							<svelte:fragment slot="description"
+								>GitHub repository and organization names can include alphanumeric characters,
+								hyphens, and underscores, and must follow the format
+								&lt;organization&gt;/&lt;repository&gt;.
+							</svelte:fragment>
+						</TextField>
+						<div style="margin-top: 1rem;">
+							<Button size="small" variant="secondary" type="submit">
+								<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
+								Add
+							</Button>
+						</div>
+					</form>
 				</div>
-			</div>
-			{#if inputError}
-				<p style="color: red">Invalid repository name, must be on format: 'org/reponame'</p>
-			{/if}
-		</Card>
+			</Card>
 		{/if}
 		<Card>
 			<h3>Repositories</h3>
@@ -125,11 +141,10 @@
 {/if}
 
 <style>
-	.roleHelpText {
-		display: flex;
-		gap: 0.5rem;
+	.input {
 		font-family: monospace;
 		font-size: 1rem;
+		margin: 1rem 0;
 	}
 	.grid {
 		display: grid;
