@@ -116,6 +116,9 @@ interface AuditEvent {
   """Creation time of the event."""
   createdAt: Time!
 
+  """The environment that the event belongs to."""
+  env: Env
+
   """ID of the event."""
   id: ID!
 
@@ -138,17 +141,14 @@ enum AuditEventAction {
   DELETED
   REMOVED
   RESTARTED
-  TEAM_CREATED
+  SYNCHRONIZED
   TEAM_DELETION_CONFIRMED
   TEAM_DELETION_REQUESTED
   TEAM_DEPLOY_KEY_ROTATED
-  TEAM_MEMBER_ADDED
-  TEAM_MEMBER_REMOVED
   TEAM_MEMBER_SET_ROLE
   TEAM_SET_ALERTS_SLACK_CHANNEL
   TEAM_SET_DEFAULT_SLACK_CHANNEL
   TEAM_SET_PURPOSE
-  TEAM_SYNCHRONIZED
   UPDATED
 }
 
@@ -162,6 +162,7 @@ type AuditEventMemberAdded implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventMemberAddedData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -179,6 +180,7 @@ type AuditEventMemberRemoved implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventMemberRemovedData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -195,6 +197,7 @@ type AuditEventMemberSetRole implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventMemberSetRoleData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -207,7 +210,7 @@ type AuditEventMemberSetRoleData {
   role: TeamRole!
 }
 
-union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
+union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent
 
 enum AuditEventResourceType {
   APP
@@ -224,6 +227,7 @@ type AuditEventTeamAddRepository implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamAddRepositoryData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -240,6 +244,7 @@ type AuditEventTeamRemoveRepository implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamRemoveRepositoryData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -256,6 +261,7 @@ type AuditEventTeamSetAlertsSlackChannel implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamSetAlertsSlackChannelData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -273,6 +279,7 @@ type AuditEventTeamSetDefaultSlackChannel implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamSetDefaultSlackChannelData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -289,6 +296,7 @@ type AuditEventTeamSetPurpose implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamSetPurposeData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -377,22 +385,12 @@ type BaseAuditEvent implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
   team: Team
-}
-
-type BaseTeamAuditEvent implements AuditEvent {
-  action: AuditEventAction!
-  actor: String!
-  createdAt: Time!
-  id: ID!
-  message: String!
-  resourceName: String!
-  resourceType: AuditEventResourceType!
-  team: Team!
 }
 
 type BigQueryDataset implements Persistence {

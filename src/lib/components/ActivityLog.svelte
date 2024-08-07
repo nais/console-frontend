@@ -1,13 +1,19 @@
 <script lang="ts">
-	import { type AuditEventResourceType$options, graphql, PendingValue } from '$houdini';
+	import {
+		AuditEventResourceType,
+		type AuditEventResourceType$options,
+		graphql,
+		PendingValue
+	} from '$houdini';
 	import { BodyShort, Skeleton } from '@nais/ds-svelte-community';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import type { TeamEventsVariables } from '$houdini/types/src/lib/components/$houdini';
 	import Time from '$lib/Time.svelte';
+	import GitHubLink from '$lib/components/GitHubLink.svelte';
 
 	export let teamName: string;
-	export let resourceType: AuditEventResourceType$options;
+	export let resourceType: AuditEventResourceType$options | undefined = undefined;
 	export let style = '';
 	export let columns = 0;
 	export let rows = 0;
@@ -36,6 +42,20 @@
 							message
 							createdAt
 							resourceType
+							resourceName
+							env {
+								name
+							}
+						}
+						... on AuditEventTeamAddRepository {
+							data {
+								repositoryName
+							}
+						}
+						... on AuditEventTeamRemoveRepository {
+							data {
+								repositoryName
+							}
 						}
 					}
 					pageInfo @loading {
@@ -48,6 +68,23 @@
 		}
 	`);
 
+	const resourceLink = (env: {name: string} | null, resourceType: AuditEventResourceType$options, resourceName: string) => {
+		if (env === null || env.name.length == 0) {
+			return null;
+		}
+
+		switch (resourceType) {
+			case AuditEventResourceType.SECRET:
+				return `/team/${teamName}/${env.name}/secret/${resourceName}`;
+			case AuditEventResourceType.APP:
+				return `/team/${teamName}/${env.name}/app/${resourceName}`;
+			case AuditEventResourceType.NAISJOB:
+				return `/team/${teamName}/${env.name}/job/${resourceName}`;
+			default:
+				return null;
+		}
+	};
+
 	$: team = $store.data?.team;
 </script>
 
@@ -57,8 +94,21 @@
 		{#each team.auditEvents.nodes as event}
 			{#if event !== PendingValue}
 				<div class="line">
-					<BodyShort size="medium" spacing>
-						{event.message}
+					<BodyShort size="small" spacing>
+						{#if event.__typename === 'AuditEventTeamAddRepository'}
+							Added repository <GitHubLink repository={event.data.repositoryName} />
+						{:else if event.__typename === 'AuditEventTeamRemoveRepository'}
+							Removed repository <GitHubLink repository={event.data.repositoryName} />
+						{:else}
+							{event.message}
+							{@const link = resourceLink(event.env, event.resourceType, event.resourceName)}
+							{#if link}
+								<a href={link}>{event.resourceName}</a>
+							{/if}
+						{/if}
+						{#if event.env}
+							in {event.env.name}
+						{/if}
 					</BodyShort>
 					<BodyShort size="small" style="color: var(--a-text-subtle)">
 						{event.actor}
