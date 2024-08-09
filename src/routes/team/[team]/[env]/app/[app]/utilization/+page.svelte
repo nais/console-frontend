@@ -1,54 +1,26 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Time from '$lib/Time.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { resourceUsagePercentageTransformLineChart } from '$lib/chart/resource_usage_app_transformer';
-	import type { ResourceUtilizationApp } from '$lib/chart/types';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
-	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForApp } = data);
 	export const start = new Date()
 
-	$: cpuUtilization = $ResourceUtilizationForApp.data?.cpu;
-	$: memoryUtilization = $ResourceUtilizationForApp.data?.memory;
-	// $: dateRange = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam;
-	// $: currentUtilization = $ResourceUtilizationForApp.data?.currentResourceUtilizationForApp;
-
-	// $: minDate = dateRange?.from;
-	// $: maxDate = dateRange?.to;
-
-	// $: min =
-	// 	minDate && minDate !== PendingValue
-	// 		? minDate.toISOString().split('T')[0]
-	// 		: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-	// $: max =
-	// 	maxDate && maxDate !== PendingValue
-	// 		? maxDate.toISOString().split('T')[0]
-	// 		: new Date(Date.now()).toISOString().split('T')[0];
-
-	function echartOptionsUsagePercentage(data: ResourceUtilizationApp) {
-		const opts = resourceUsagePercentageTransformLineChart(data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
+	$: cpuUtilization = $ResourceUtilizationForApp.data?.app.utilization.cpu;
+	$: memoryUtilization = $ResourceUtilizationForApp.data?.app.utilization.memory;
 
 	type  resourceUtilizationForAppV2 = {
 		readonly timestamp: Date;
 		readonly value: number;
 	}[] | undefined
 
-	function massageData(cpuData: resourceUtilizationForAppV2, memoryData: resourceUtilizationForAppV2) {
-
+	function options(cpuData: resourceUtilizationForAppV2, memoryData: resourceUtilizationForAppV2) {
 		const dates = cpuData?.map((d) => d.timestamp) || [];
 		const xAxis =  {
 			type: 'category',
@@ -63,7 +35,6 @@
 						minute: '2-digit'
 					});
 				}
-				//
 			)
 		}
 
@@ -102,31 +73,6 @@
 		};
 
 
-	}
-
-	// function update() {
-	// 	const params = new URLSearchParams({ from, to });
-	// 	goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
-	// }
-
-	// let from = data.fromDate?.toISOString().split('T')[0];
-	// let to = data.toDate?.toISOString().split('T')[0];
-
-	// $: {
-	// 	if (maxDate && maxDate !== PendingValue) {
-	// 		if (data.toDate > maxDate) {
-	// 			from = new Date(maxDate.getTime() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-	// 			to = max;
-	// 			update();
-	// 		}
-	// 	}
-	// }
-
-	let tenant = $page.url.hostname;
-	if (tenant === 'localhost') {
-		tenant = 'nav';
-	} else {
-		tenant = tenant.split('.')[1];
 	}
 </script>
 
@@ -268,14 +214,14 @@
 				<h3 style={"margin-bottom: 0"}>Resource utilization</h3>
 				<span class="intervalPicker">
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
-						<a class:active={$page.url.searchParams.get('interval') == interval} href="?interval={interval}">{interval}</a> 
+						<a class:active={$page.url.searchParams.get('interval') || "7d" == interval} href="?interval={interval}">{interval}</a> 
 					{/each}
 				</span>
 
 			</span>
 			{#if cpuUtilization }
 			<EChart
-				options={massageData(cpuUtilization, memoryUtilization)}
+				options={options(cpuUtilization, memoryUtilization)}
 				style="height: 400px"
 				/>
 				<!-- {#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}

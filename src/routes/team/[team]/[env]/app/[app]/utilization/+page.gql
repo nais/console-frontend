@@ -1,34 +1,23 @@
-query ResourceUtilizationForApp( # $team: Slug! # $app: String!
-	# $env: String!
+query ResourceUtilizationForApp(
+	$team: Slug! 
+	$app: String!
+	$env: String!
 	$start: Time!
-	$end: Time! # $start: Time!
+	$end: Time!
 	$step: Int!
-) # $end: Time!
-# $step: Int!
-# $resourceType: ResourceTypeV2!
+) 
 {
-	memory: resourceUtilizationForAppV2(
-		env: "dev"
-		team: "etterlatte"
-		app: "etterlatte-api"
-		start: $start
-		end: $end
-		step: $step
-		resourceType: MEMORY
-	) {
-		timestamp
-		value
-	}
-	cpu: resourceUtilizationForAppV2(
-		env: "dev"
-		team: "etterlatte"
-		app: "etterlatte-api"
-		start: $start
-		end: $end
-		step: $step
-		resourceType: CPU
-	) {
-		timestamp
-		value
-	}
+  app(name:$app, env:$env, team:$team){
+    name
+    utilization{
+      memory: range(start:$start, end:$end, step:$step, resourceType:MEMORY){
+        timestamp
+        value
+      }
+      cpu: range(start:$start, end:$end, step:$step, resourceType:CPU){
+        timestamp
+        value
+      }
+    }
+  }
 }

@@ -31,6 +31,9 @@ export const load: PageLoad = async (event) => {
 		...(await load_ResourceUtilizationForApp({
 			event,
 			variables: {
+				app: event.params.app,
+				env: event.params.env,
+				team: event.params.team,
 				start,
 				end,
 				step
