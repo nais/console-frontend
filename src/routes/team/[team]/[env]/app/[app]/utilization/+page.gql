@@ -1,51 +1,34 @@
-query ResourceUtilizationForApp(
-	$app: String!
-	$team: Slug!
-	$env: String!
-	$from: Date
-	$to: Date!
-) {
-	resourceUtilizationForApp(app: $app, env: $env, from: $from, team: $team, to: $to) @loading {
-		cpu {
-			timestamp
-			request
-			usage
-			utilization
-		}
-		memory {
-			timestamp
-			request
-			usage
-			utilization
-		}
+query ResourceUtilizationForApp( # $team: Slug! # $app: String!
+	# $env: String!
+	$start: Time!
+	$end: Time! # $start: Time!
+	$step: Int!
+) # $end: Time!
+# $step: Int!
+# $resourceType: ResourceTypeV2!
+{
+	memory: resourceUtilizationForAppV2(
+		env: "dev"
+		team: "etterlatte"
+		app: "etterlatte-api"
+		start: $start
+		end: $end
+		step: $step
+		resourceType: MEMORY
+	) {
+		timestamp
+		value
 	}
-	resourceUtilizationDateRangeForTeam(team: $team) @loading {
-		from @loading
-		to @loading
-	}
-	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
-		cpu @loading {
-			utilization
-			estimatedAnnualOverageCost
-			request
-			timestamp
-		}
-		memory @loading {
-			utilization
-			estimatedAnnualOverageCost
-			timestamp
-			request
-		}
-	}
-	app(name: $app, team: $team, env: $env) @loading {
-		resources {
-			requests {
-				cpu
-				memory
-			}
-		}
-		instances {
-			name
-		}
+	cpu: resourceUtilizationForAppV2(
+		env: "dev"
+		team: "etterlatte"
+		app: "etterlatte-api"
+		start: $start
+		end: $end
+		step: $step
+		resourceType: CPU
+	) {
+		timestamp
+		value
 	}
 }

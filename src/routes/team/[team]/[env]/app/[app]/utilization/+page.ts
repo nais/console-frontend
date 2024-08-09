@@ -3,23 +3,37 @@ import type { PageLoad } from './$houdini';
 
 export const ssr = false;
 export const load: PageLoad = async (event) => {
-	const from = event.url.searchParams.get('from');
-	const to = event.url.searchParams.get('to');
-
-	const fromDate = from ? new Date(from) : new Date(Date.now() - 7 * 1000 * 24 * 60 * 60);
-	const toDate = to ? new Date(to) : new Date(Date.now());
+	const interval = event.url.searchParams.get('interval');
+	const end = new Date(Date.now());
+	let start = new Date(Date.now() - 7 * 24 * 1000 * 60 * 60);
+	let step = 3024;
+	switch (interval) {
+		case '1h':
+			start = new Date(Date.now() - 1000 * 60 * 60);
+			step = 18;
+			break;
+		case '6h':
+			start = new Date(Date.now() - 6 * 1000 * 60 * 60);
+			step = 108;
+			break;
+		case '1d':
+			start = new Date(Date.now() - 24 * 1000 * 60 * 60);
+			step = 432;
+			break;
+		case '30d':
+			start = new Date(Date.now() - 30 * 24 * 1000 * 60 * 60);
+			step = 12960;
+			break;
+	}
 
 	return {
-		fromDate,
-		toDate,
+		interval,
 		...(await load_ResourceUtilizationForApp({
 			event,
 			variables: {
-				app: event.params.app,
-				team: event.params.team,
-				env: event.params.env,
-				to: toDate,
-				from: fromDate
+				start,
+				end,
+				step
 			}
 		}))
 	};

@@ -1650,6 +1650,30 @@ type Query {
     to: Date
   ): ResourceUtilizationForApp!
 
+  """Get the resource utilization for an app."""
+  resourceUtilizationForAppV2(
+    """The name of the app."""
+    app: String!
+
+    """Fetch resource utilization until this timestamp."""
+    end: Time!
+
+    """The environment where the app is running."""
+    env: String!
+
+    """The type of resource to fetch."""
+    resourceType: ResourceTypeV2!
+
+    """Fetch resource utilization from this timestamp."""
+    start: Time!
+
+    """Step size in seconds for the data points."""
+    step: Int!
+
+    """The name of the team."""
+    team: Slug!
+  ): [ResourceUtilizationV2!]!
+
   """Get the resource utilization for a team across all environments."""
   resourceUtilizationForTeam(
     """
@@ -1869,6 +1893,12 @@ enum ResourceType {
   MEMORY
 }
 
+"""Resource type."""
+enum ResourceTypeV2 {
+  CPU
+  MEMORY
+}
+
 """Resource utilization type."""
 type ResourceUtilization {
   """Estimated annual cost of the request overage."""
@@ -1960,6 +1990,15 @@ type ResourceUtilizationTrend {
 
   """The memory utilization trend in percentage."""
   memoryUtilizationTrend: Float!
+}
+
+"""Resource utilization type."""
+type ResourceUtilizationV2 {
+  """Timestamp of the value."""
+  timestamp: Time!
+
+  """Utilization in percent, (used / requested) * 100"""
+  value: Float!
 }
 
 type Resources {
