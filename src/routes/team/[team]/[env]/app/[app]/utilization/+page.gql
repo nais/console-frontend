@@ -10,6 +10,10 @@ query ResourceUtilizationForApp(
   app(name:$app, env:$env, team:$team){
     name
     utilization{
+      curr_cpu: current(resourceType:CPU)
+      curr_memory: current(resourceType:MEMORY)
+      cpu_req: request(resourceType:CPU)
+      memory_req: request(resourceType:MEMORY)
       memory: range(start:$start, end:$end, step:$step, resourceType:MEMORY){
         timestamp
         value

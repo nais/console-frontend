@@ -95,7 +95,10 @@ type AppUtilization {
     step: Int!
   ): [UtilizationDataPoint!]!
 
-  """Get the requested resources for the specified resource type."""
+  """
+  Get the requested resources for the specified resource type.
+  memory: bytes, cpu: cores 
+  """
   request(resourceType: UtilizationResourceType!): Float!
 }
 

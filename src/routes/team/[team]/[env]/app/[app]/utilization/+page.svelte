@@ -7,6 +7,8 @@
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import prettyBytes from 'pretty-bytes';
+	import { ResourceType, type ResourceType$options } from '$houdini';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForApp } = data);
@@ -14,11 +16,33 @@
 
 	$: cpuUtilization = $ResourceUtilizationForApp.data?.app.utilization.cpu;
 	$: memoryUtilization = $ResourceUtilizationForApp.data?.app.utilization.memory;
+	$: memoryReq = $ResourceUtilizationForApp.data?.app.utilization.memory_req;
+	$: cpuReq = $ResourceUtilizationForApp.data?.app.utilization.cpu_req;
+	$: curr_cpu = $ResourceUtilizationForApp.data?.app.utilization.curr_cpu;
+	$: curr_mem = $ResourceUtilizationForApp.data?.app.utilization.curr_memory;
 
 	type  resourceUtilizationForAppV2 = {
 		readonly timestamp: Date;
 		readonly value: number;
 	}[] | undefined
+
+	// costPerHour calculates the cost for the given resource type
+function yearlyOverageCost(resourceType: ResourceType$options, request: number, utilization: number) {
+	const costPerCpuCorePerYear = 136.69
+	const costPerByteMemoryPerYear = 18.71 / 1024 / 1024 / 1024
+	let overage = request - (request * utilization)
+
+	let cost = 0.0
+
+	if (resourceType == ResourceType.CPU) {
+		cost = costPerCpuCorePerYear * overage
+	} else {
+		cost = costPerByteMemoryPerYear * overage
+	}
+
+	return cost > 0.0 ? cost : 0.0
+}
+
 
 	function options(cpuData: resourceUtilizationForAppV2, memoryData: resourceUtilizationForAppV2) {
 		const dates = cpuData?.map((d) => d.timestamp) || [];
@@ -91,25 +115,23 @@
 				</div>
 				<div class="summary">
 					<h4>
-						CPU utilization<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour.
-							<!-- {#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
-								<br />Last updated <Time distance={true} time={currentUtilization.cpu.timestamp} />
-							{/if} -->
+						CPU utilization
+						<HelpText title="Current CPU utilization" >
+							Current CPU utilization based on the total cores requested for all instances
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!-- {#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
+						{#if curr_cpu && cpuReq}
+							{curr_cpu.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
+							})}% of {cpuReq.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
 							})} CPUs
 						{:else}
 							<Skeleton variant="text" width="200px" />
-						{/if} -->
+						{/if}
 					</p>
 				</div>
 			</div></Card
@@ -122,29 +144,24 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Memory utilization<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
-							<!-- {#if currentUtilization !== undefined && currentUtilization.memory !== PendingValue}
-								<br />Last updated <Time
-									distance={true}
-									time={currentUtilization.memory.timestamp}
-								/>
-							{/if} -->
+						Memory utilization
+						<HelpText title="Current memory utilization" >
+							Current memory utilization based on the total memory requested for all instances
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!-- {#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{currentUtilization.memory.utilization.toLocaleString('en-GB', {
+						{#if curr_mem && memoryReq}
+							{curr_mem.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})}% of {prettyBytes(currentUtilization.memory.request, {
+							})}% of {prettyBytes(memoryReq, {
 								locale: 'en',
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
 							})}
 						{:else}
 							<Skeleton variant="text" width="200px" />
-						{/if} -->
+						{/if}
 					</p>
 				</div>
 			</div></Card
@@ -156,25 +173,19 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Cost of unused CPU<HelpText title="Annual cost of unused CPU"
-							>Estimate of annual cost of unused CPU calculated from utilization data for the last
-							elapsed hour.
-							<!-- {#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
-								<br />Last updated <Time distance={true} time={currentUtilization.cpu.timestamp} />
-							{/if} -->
+						Cost of unused CPU<HelpText title="Annual cost of unused CPU" >
+							Estimate of annual cost of unused CPU calculated based on current utilization.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!-- {#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							€{currentUtilization.cpu.estimatedAnnualOverageCost > 0.0
-								? currentUtilization.cpu.estimatedAnnualOverageCost.toLocaleString('en-GB', {
+						{#if curr_cpu && cpuReq}
+							€ {yearlyOverageCost(ResourceType.CPU, cpuReq, curr_cpu).toLocaleString('en-GB', {
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2
-									})
-								: '0.00'}
+									})}
 						{:else}
 							<Skeleton variant="text" width="200px" />
-						{/if} -->
+						{/if}
 					</p>
 				</div>
 			</div></Card
@@ -214,7 +225,7 @@
 				<h3 style={"margin-bottom: 0"}>Resource utilization</h3>
 				<span class="intervalPicker">
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
-						<a class:active={$page.url.searchParams.get('interval') || "7d" == interval} href="?interval={interval}">{interval}</a> 
+						<a class:active={($page.url.searchParams.get('interval') || "7d") == interval} href="?interval={interval}">{interval}</a> 
 					{/each}
 				</span>
 
