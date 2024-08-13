@@ -12,7 +12,7 @@
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForApp } = data);
-	export const start = new Date()
+	export const start = new Date();
 
 	$: cpuUtilization = $ResourceUtilizationForApp.data?.app.utilization.cpu;
 	$: memoryUtilization = $ResourceUtilizationForApp.data?.app.utilization.memory;
@@ -21,46 +21,49 @@
 	$: curr_cpu = $ResourceUtilizationForApp.data?.app.utilization.curr_cpu;
 	$: curr_mem = $ResourceUtilizationForApp.data?.app.utilization.curr_memory;
 
-	type  resourceUtilizationForAppV2 = {
-		readonly timestamp: Date;
-		readonly value: number;
-	}[] | undefined
+	type resourceUtilizationForAppV2 =
+		| {
+				readonly timestamp: Date;
+				readonly value: number;
+		  }[]
+		| undefined;
 
 	// costPerHour calculates the cost for the given resource type
-function yearlyOverageCost(resourceType: ResourceType$options, request: number, utilization: number) {
-	const costPerCpuCorePerYear = 136.69
-	const costPerByteMemoryPerYear = 18.71 / 1024 / 1024 / 1024
-	let overage = request - (request * utilization)
+	function yearlyOverageCost(
+		resourceType: ResourceType$options,
+		request: number,
+		utilization: number
+	) {
+		const costPerCpuCorePerYear = 136.69;
+		const costPerByteMemoryPerYear = 18.71 / 1024 / 1024 / 1024;
+		let overage = request - request * (utilization / 100);
 
-	let cost = 0.0
+		let cost = 0.0;
 
-	if (resourceType == ResourceType.CPU) {
-		cost = costPerCpuCorePerYear * overage
-	} else {
-		cost = costPerByteMemoryPerYear * overage
+		if (resourceType == ResourceType.CPU) {
+			cost = costPerCpuCorePerYear * overage;
+		} else {
+			cost = costPerByteMemoryPerYear * overage;
+		}
+
+		return cost > 0.0 ? cost : 0.0;
 	}
-
-	return cost > 0.0 ? cost : 0.0
-}
-
 
 	function options(cpuData: resourceUtilizationForAppV2, memoryData: resourceUtilizationForAppV2) {
 		const dates = cpuData?.map((d) => d.timestamp) || [];
-		const xAxis =  {
+		const xAxis = {
 			type: 'category',
 			boundaryGap: false,
-			data: dates.map(
-				(date) => {
-					return date.toLocaleDateString('en-GB', {
-						year: 'numeric',
-						month: 'short',
-						day: 'numeric',
-						hour: '2-digit',
-						minute: '2-digit'
-					});
-				}
-			)
-		}
+			data: dates.map((date) => {
+				return date.toLocaleDateString('en-GB', {
+					year: 'numeric',
+					month: 'short',
+					day: 'numeric',
+					hour: '2-digit',
+					minute: '2-digit'
+				});
+			})
+		};
 
 		return {
 			tooltip: {
@@ -92,11 +95,9 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 					formatter: (value: number) =>
 						value.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '%'
 				},
-				scale: false,
-			},
+				scale: false
+			}
 		};
-
-
 	}
 </script>
 
@@ -116,7 +117,7 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 				<div class="summary">
 					<h4>
 						CPU utilization
-						<HelpText title="Current CPU utilization" >
+						<HelpText title="Current CPU utilization">
 							Current CPU utilization based on the total cores requested for all instances
 						</HelpText>
 					</h4>
@@ -145,7 +146,7 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 				<div class="summary">
 					<h4>
 						Memory utilization
-						<HelpText title="Current memory utilization" >
+						<HelpText title="Current memory utilization">
 							Current memory utilization based on the total memory requested for all instances
 						</HelpText>
 					</h4>
@@ -173,16 +174,16 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 				</div>
 				<div class="summary">
 					<h4>
-						Cost of unused CPU<HelpText title="Annual cost of unused CPU" >
+						Cost of unused CPU<HelpText title="Annual cost of unused CPU">
 							Estimate of annual cost of unused CPU calculated based on current utilization.
 						</HelpText>
 					</h4>
 					<p class="metric">
 						{#if curr_cpu && cpuReq}
 							€ {yearlyOverageCost(ResourceType.CPU, cpuReq, curr_cpu).toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})}
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -197,87 +198,42 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 				</div>
 				<div class="summary">
 					<h4>
-						Cost of unused memory<HelpText placement={'left'} title="Annual cost of unused memory"
-							>Estimate of annual cost of unused memory calculated from utilization data for the
-							last elapsed hour.
-							<!-- {#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
-								<br />Last updated <Time distance={true} time={currentUtilization?.cpu.timestamp} />
-							{/if} -->
+						Cost of unused memory<HelpText title="Annual cost of unused memory">
+							Estimate of annual cost of unused memory calculated based on current utilization.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!-- {#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							€{currentUtilization.memory.estimatedAnnualOverageCost > 0.0
-								? currentUtilization.memory.estimatedAnnualOverageCost.toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})
-								: '0.00'}
+						{#if curr_mem && memoryReq}
+							€ {yearlyOverageCost(ResourceType.MEMORY, memoryReq, curr_mem).toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
 						{:else}
 							<Skeleton variant="text" width="200px" />
-						{/if} -->
+						{/if}
 					</p>
 				</div>
 			</div></Card
 		>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<span class="graphHeader">
-				<h3 style={"margin-bottom: 0"}>Resource utilization</h3>
+				<h3 style={'margin-bottom: 0'}>Resource utilization</h3>
 				<span class="intervalPicker">
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
-						<a class:active={($page.url.searchParams.get('interval') || "7d") == interval} href="?interval={interval}">{interval}</a> 
+						<a
+							class:active={($page.url.searchParams.get('interval') || '7d') == interval}
+							href="?interval={interval}">{interval}</a
+						>
 					{/each}
 				</span>
-
 			</span>
-			{#if cpuUtilization }
-			<EChart
-				options={options(cpuUtilization, memoryUtilization)}
-				style="height: 400px"
-				/>
-				<!-- {#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
-					<label for="from">From:</label>
-					<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
-					<label for="to">To:</label>
-					<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
-
-					{#if resourceUtilization.cpu.length > 0}
-						<p>This graph displays the percentage of requests used for memory and CPU.</p>
-						<EChart
-							options={echartOptionsUsagePercentage(resourceUtilization)}
-							style="height: 400px"
-						/>
-					{:else}
-						<Alert variant="warning">No data available</Alert>
-					{/if}
-				{/if} -->
+			{#if cpuUtilization}
+				<EChart options={options(cpuUtilization, memoryUtilization)} style="height: 400px" />
 			{:else}
 				<div class="loading">
 					<Skeleton variant={'rectangle'} height="450px" />
 				</div>
 			{/if}
-			<!-- {#if resourceUtilization && resourceUtilization !== PendingValue}
-				{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
-					<label for="from">From:</label>
-					<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
-					<label for="to">To:</label>
-					<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
-
-					{#if resourceUtilization.cpu.length > 0}
-						<p>This graph displays the percentage of requests used for memory and CPU.</p>
-						<EChart
-							options={echartOptionsUsagePercentage(resourceUtilization)}
-							style="height: 400px"
-						/>
-					{:else}
-						<Alert variant="warning">No data available</Alert>
-					{/if}
-				{/if}
-			{:else}
-				<div class="loading">
-					<Skeleton variant={'rectangle'} height="450px" />
-				</div>
-			{/if} -->
 		</Card>
 	</div>
 {/if}
@@ -323,7 +279,6 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 	.graphHeader {
 		display: flex;
 		justify-content: space-between;
-
 	}
 	a {
 		cursor: pointer;
@@ -341,5 +296,4 @@ function yearlyOverageCost(resourceType: ResourceType$options, request: number, 
 		display: flex;
 		gap: 1rem;
 	}
-
 </style>
