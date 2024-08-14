@@ -194,7 +194,7 @@
 					<CostIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
-					<h4>
+					<h4 style="font-size: 0.9rem">
 						Cost of unused memory<HelpText title="Annual cost of unused memory">
 							Estimate of annual cost of unused memory calculated based on current utilization.
 						</HelpText>
