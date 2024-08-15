@@ -134,7 +134,10 @@ interface AuditEvent {
 
 enum AuditEventAction {
   ADDED
+  CREATED
+  DELETED
   REMOVED
+  RESTARTED
   TEAM_CREATED
   TEAM_DELETION_CONFIRMED
   TEAM_DELETION_REQUESTED
@@ -146,6 +149,7 @@ enum AuditEventAction {
   TEAM_SET_DEFAULT_SLACK_CHANNEL
   TEAM_SET_PURPOSE
   TEAM_SYNCHRONIZED
+  UPDATED
 }
 
 type AuditEventList {
@@ -206,9 +210,13 @@ type AuditEventMemberSetRoleData {
 union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
 
 enum AuditEventResourceType {
+  APP
+  NAISJOB
+  SECRET
   TEAM
   TEAM_MEMBER
   TEAM_REPOSITORY
+  UNLEASH
 }
 
 type AuditEventTeamAddRepository implements AuditEvent {
@@ -496,6 +504,21 @@ type CostSeries {
   sum: Float!
 }
 
+input CreateFeedbackInput {
+  anonymous: Boolean!
+
+  """The feedback content."""
+  details: String!
+  type: FeedbackType!
+  uri: String!
+}
+
+type CreateFeedbackResult {
+  """Whether the feedback was created or not."""
+  created: Boolean!
+  error: String
+}
+
 """Input for creating a new team."""
 input CreateTeamInput {
   """Team purpose."""
@@ -676,6 +699,14 @@ type FailedRunError implements StateError {
   revision: String!
   runMessage: String!
   runName: String!
+}
+
+enum FeedbackType {
+  """Feedback type for the feedback."""
+  BUG
+  CHANGE_REQUEST
+  OTHER
+  QUESTION
 }
 
 type Finding {
@@ -1056,6 +1087,10 @@ type Mutation {
     """Deletion key, acquired using the requestTeamDeletion mutation."""
     key: String!
   ): Boolean!
+  createFeedback(
+    """The feedback content."""
+    input: CreateFeedbackInput!
+  ): CreateFeedbackResult!
 
   """Create a new secret for a team and env."""
   createSecret(
