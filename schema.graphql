@@ -134,7 +134,10 @@ interface AuditEvent {
 
 enum AuditEventAction {
   ADDED
+  CREATED
+  DELETED
   REMOVED
+  RESTARTED
   TEAM_CREATED
   TEAM_DELETION_CONFIRMED
   TEAM_DELETION_REQUESTED
@@ -146,6 +149,7 @@ enum AuditEventAction {
   TEAM_SET_DEFAULT_SLACK_CHANNEL
   TEAM_SET_PURPOSE
   TEAM_SYNCHRONIZED
+  UPDATED
 }
 
 type AuditEventList {
@@ -206,9 +210,13 @@ type AuditEventMemberSetRoleData {
 union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
 
 enum AuditEventResourceType {
+  APP
+  NAISJOB
+  SECRET
   TEAM
   TEAM_MEMBER
   TEAM_REPOSITORY
+  UNLEASH
 }
 
 type AuditEventTeamAddRepository implements AuditEvent {

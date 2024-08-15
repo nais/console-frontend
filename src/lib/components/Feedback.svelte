@@ -11,9 +11,9 @@
 	let type: ValueOf<typeof FeedbackType> | '' = '';
 	let details = '';
 	let anonymous: boolean = false;
-	let uri: string;
+	let uri = '';
 
-	let errormessage: string = '';
+	let errorMessage: string = '';
 	let errorType: boolean = false;
 	let errorDetails: boolean = false;
 
@@ -30,15 +30,9 @@
 	];
 
 	const submitFeedback = async () => {
-		console.log('type', typeof type);
-		console.log('details', details);
-		console.log('anon', anonymous);
-		console.log('uri', uri);
-
-		errormessage = '';
+		errorMessage = '';
 		errorType = false;
-
-		console.log('error', errormessage);
+		errorDetails = false;
 
 		// error handling
 		if (!type) {
@@ -51,12 +45,10 @@
 			return;
 		}
 
-		if (uri === null) {
-			errormessage = 'Not able to get uri';
+		if (uri === '') {
+			errorMessage = 'Not able to get uri';
 			return;
 		}
-
-		console.log('error after check', errormessage);
 
 		await feedback.mutate({
 			anonymous: anonymous,
@@ -66,32 +58,25 @@
 		});
 
 		if ($feedback.data?.createFeedback.created) {
+			logEvent('feedback');
+
 			close();
 			return;
 		}
 
 		if ($feedback.data?.createFeedback.error) {
-			errormessage = $feedback.data.createFeedback.error;
+			errorMessage = $feedback.data.createFeedback.error;
 			open = true;
 			return;
 		}
 
 		if ($feedback.errors) {
-			if (errormessage === '') {
-				errormessage = $feedback.errors[0].message;
+			if (errorMessage === '') {
+				errorMessage = $feedback.errors[0].message;
 			}
-			console.log($feedback.errors);
 			open = true;
 			return;
 		}
-
-		logEvent('feedback');
-		errormessage = '';
-		errorType = false;
-		errorDetails = false;
-
-		details = '';
-		anonymous = false;
 
 		close();
 	};
@@ -187,8 +172,8 @@
 				</p>
 			{/if}
 		</div>
-		{#if errormessage !== ''}
-			<p class="navds-error-message navds-label navds-label--small">{errormessage}</p>
+		{#if errorMessage !== ''}
+			<p class="navds-error-message navds-label navds-label--small">{errorMessage}</p>
 		{/if}
 	</div>
 	<Checkbox bind:checked={anonymous}>Anonymous feedback</Checkbox>
