@@ -21,6 +21,7 @@
 	} from '@nais/ds-svelte-community';
 	import { TrendDownIcon, TrendUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 	$: ({ Overview } = data);
@@ -141,8 +142,6 @@
 							{/if}
 						{/if}
 					</Tr>
-
-
 				</Tbody>
 			</Table>
 			{#if utilization && utilization === PendingValue}
@@ -169,6 +168,7 @@
 		<Deploys {teamName} />
 	</Card>
 
+	<ActivityLog {teamName} columns={12} />
 </div>
 
 <style>
