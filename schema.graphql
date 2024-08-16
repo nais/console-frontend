@@ -690,7 +690,8 @@ type Expose {
 }
 
 type External {
-  host: String!
+  IPv4: String
+  host: String
   ports: [Port!]!
 }
 
