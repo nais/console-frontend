@@ -283,8 +283,6 @@
 
 <style>
 	.page {
-		display: flex;
-		justify-content: space-between;
 		margin-top: 1rem;
 	}
 
@@ -292,6 +290,11 @@
 		background: var(--active-color);
 		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--active-color-strong);
+	}
+
+	.breadcrumbs .page {
+		display: flex;
+		justify-content: space-between;
 	}
 
 	span {
