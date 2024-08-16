@@ -36,7 +36,7 @@
 						}
 						external {
 							host @loading
-							IPv4
+							IPv4 @loading
 							ports {
 								port
 							}
@@ -163,7 +163,7 @@
 			<h5>Outbound</h5>
 			<h6>External hostnames</h6>
 			<ul>
-				{#each $data.accessPolicy.outbound.external as external}
+				{#each $data.accessPolicy.outbound.external.filter((e) => e.host) as external}
 					{#if external.host === PendingValue}
 						<Skeleton variant="text" width="300px" />
 					{:else if external.host}
@@ -181,7 +181,7 @@
 			</ul>
 			<h6>External IPs</h6>
 			<ul>
-				{#each $data.accessPolicy.outbound.external as external}
+				{#each $data.accessPolicy.outbound.external.filter((e) => e.IPv4) as external}
 					{#if external.IPv4 === PendingValue}
 						<Skeleton variant="text" width="300px" />
 					{:else if external.IPv4}
