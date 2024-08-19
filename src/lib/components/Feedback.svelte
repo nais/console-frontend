@@ -13,6 +13,8 @@
 	let anonymous: boolean = false;
 	let uri = '';
 
+	let feedbackSent: boolean = false;
+
 	let errorMessage: string = '';
 	let errorType: boolean = false;
 	let errorDetails: boolean = false;
@@ -59,8 +61,7 @@
 
 		if ($feedback.data?.createFeedback.created) {
 			logEvent('feedback');
-
-			close();
+			feedbackSent = true;
 			return;
 		}
 
@@ -84,6 +85,7 @@
 	const dispatcher = createEventDispatcher<{ close: void }>();
 
 	const close = () => {
+		feedbackSent = false;
 		open = false;
 		dispatcher('close');
 	};
@@ -123,63 +125,69 @@
 	<svelte:fragment slot="header">
 		<Heading>Console feedback</Heading>
 	</svelte:fragment>
-	<p>
-		Help us improve Console! We value your input. Feedback will be associated with your logged-in
-		email address. To provide feedback anonymously, please check the box below.
-	</p>
-	<div class="wrapper">
-		<Select size="small" label="Type" bind:value={type}>
-			{#each FEEDBACK_TYPE as option}
-				<option value={option.value}>{option.text}</option>
-			{/each}
-		</Select>
-		{#if errorType}
-			<p class="navds-error-message navds-label navds-label--small">
-				Please provide type of feedback
-			</p>
-		{/if}
 
-		<!--TextField size="small" readonly value={uri}>
-			<svelte:fragment slot="label">URI</svelte:fragment>
-		</TextField-->
-
-		<label class="navds-form-field__label navds-label navds-label--small" for="details">
-			Details
-		</label>
-		<div class="details">
-			<textarea
-				class="navds-textarea__input navds-body-short navds-body-short--small textarea"
-				id="details"
-				bind:value={details}
-				on:input={updateCharCount}
-				rows="5"
-				cols="40"
-				maxlength="3000"
-				style="resize: vertical; min-height: 16rem; "
-				placeholder="Enter your feedback here..."
-			/>
-			<span id="charCount">3000 characters remaining</span>
-		</div>
-		<div
-			class="navds-form-field__error"
-			id="tf-uid-43"
-			aria-relevant="additions removals"
-			aria-live="polite"
-		>
-			{#if errorDetails}
+	{#if feedbackSent}
+		<p>Thank you for your feedback!</p>
+	{:else}
+		<p>
+			Help us improve Console! We value your input. Feedback will be associated with your logged-in
+			email address. To provide feedback anonymously, please check the box below.
+		</p>
+		<div class="wrapper">
+			<Select size="small" label="Type" bind:value={type}>
+				{#each FEEDBACK_TYPE as option}
+					<option value={option.value}>{option.text}</option>
+				{/each}
+			</Select>
+			{#if errorType}
 				<p class="navds-error-message navds-label navds-label--small">
-					Please provide feedback details
+					Please provide type of feedback
 				</p>
 			{/if}
+
+			<label class="navds-form-field__label navds-label navds-label--small" for="details">
+				Details
+			</label>
+			<div class="details">
+				<textarea
+					class="navds-textarea__input navds-body-short navds-body-short--small textarea"
+					id="details"
+					bind:value={details}
+					on:input={updateCharCount}
+					rows="5"
+					cols="40"
+					maxlength="3000"
+					style="resize: vertical; min-height: 16rem; "
+					placeholder="Enter your feedback here..."
+					disabled={feedbackSent}
+				/>
+				<span id="charCount">3000 characters remaining</span>
+			</div>
+			<div
+				class="navds-form-field__error"
+				id="tf-uid-43"
+				aria-relevant="additions removals"
+				aria-live="polite"
+			>
+				{#if errorDetails}
+					<p class="navds-error-message navds-label navds-label--small">
+						Please provide feedback details
+					</p>
+				{/if}
+			</div>
+			{#if errorMessage !== ''}
+				<p class="navds-error-message navds-label navds-label--small">{errorMessage}</p>
+			{/if}
 		</div>
-		{#if errorMessage !== ''}
-			<p class="navds-error-message navds-label navds-label--small">{errorMessage}</p>
-		{/if}
-	</div>
-	<Checkbox bind:checked={anonymous}>Anonymous feedback</Checkbox>
+		<Checkbox bind:checked={anonymous}>Anonymous feedback</Checkbox>
+	{/if}
 	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={submitFeedback}>Submit</Button>
-		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
+		{#if feedbackSent}
+			<Button variant="primary" size="small" on:click={close}>Close</Button>
+		{:else}
+			<Button variant="primary" size="small" on:click={submitFeedback}>Submit</Button>
+			<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
+		{/if}
 	</svelte:fragment>
 </Modal>
 
