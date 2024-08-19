@@ -297,7 +297,11 @@
 						{/if}
 						{#if teamSettings.cdnBucket}
 							<dt>Team CDN bucket</dt>
-							<dd>{teamSettings.cdnBucket}</dd>
+							<dd>
+								<a href="https://console.cloud.google.com/storage/browser/{teamSettings.cdnBucket}">
+									{teamSettings.cdnBucket}
+								</a>
+							</dd>
 						{/if}
 						{#if teamSettings.azureGroupID}
 							<dt>Azure AD group ID</dt>
