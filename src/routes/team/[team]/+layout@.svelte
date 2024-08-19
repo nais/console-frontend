@@ -295,6 +295,7 @@
 	.breadcrumbs .page {
 		display: flex;
 		justify-content: space-between;
+		margin: 0 auto;
 	}
 
 	span {
@@ -311,10 +312,6 @@
 
 	a:hover {
 		text-decoration: underline;
-	}
-
-	.breadcrumbs .page {
-		margin: 0 auto;
 	}
 
 	nav {

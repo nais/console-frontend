@@ -76,7 +76,7 @@
 
 <style>
 	:global(.page) {
-		margin: 2rem auto 0 auto;
+		margin: 0 auto 0 auto;
 		min-width: 1000px;
 		max-width: 1432px;
 	}
