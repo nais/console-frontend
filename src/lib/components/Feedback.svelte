@@ -19,6 +19,9 @@
 	let errorType: boolean = false;
 	let errorDetails: boolean = false;
 
+	const maxlength = 3000;
+	let charCount = maxlength + ' characters remaining';
+
 	if ($page.route.id !== null) {
 		uri = replacer($page.route.id, $page.params);
 	}
@@ -104,20 +107,17 @@
 		}
 	`);
 
-	function updateCharCount() {
-		const textarea = document.getElementById('details') as HTMLTextAreaElement;
-		const charCount = document.getElementById('charCount') as HTMLParagraphElement;
+	function updateCharCount(event: Event) {
+		const target = event.target as HTMLTextAreaElement;
+		const remaining = maxlength - target.value.length;
 
-		const remaining = textarea.maxLength - textarea.value.length;
 		if (remaining < 0) {
-			charCount.textContent = '0 characters remaining';
-			return;
+			charCount = '0 characters remaining';
+		} else if (remaining === 1) {
+			charCount = '1 character remaining';
+		} else {
+			charCount = `${remaining} characters remaining`;
 		}
-		if (remaining === 1) {
-			charCount.textContent = '1 character remaining';
-			return;
-		}
-		charCount.textContent = `${remaining} characters remaining`;
 	}
 </script>
 
@@ -156,12 +156,12 @@
 					on:input={updateCharCount}
 					rows="5"
 					cols="40"
-					maxlength="3000"
+					{maxlength}
 					style="resize: vertical; min-height: 16rem; "
 					placeholder="Enter your feedback here..."
 					disabled={feedbackSent}
 				/>
-				<span id="charCount">3000 characters remaining</span>
+				<span id="charCount">{charCount}</span>
 			</div>
 			<div
 				class="navds-form-field__error"
