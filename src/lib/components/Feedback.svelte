@@ -20,7 +20,6 @@
 	let errorDetails: boolean = false;
 
 	const maxlength = 3000;
-	let charCount = maxlength + ' characters remaining';
 
 	if ($page.route.id !== null) {
 		uri = replacer($page.route.id, $page.params);
@@ -106,19 +105,6 @@
 			}
 		}
 	`);
-
-	function updateCharCount(event: Event) {
-		const target = event.target as HTMLTextAreaElement;
-		const remaining = maxlength - target.value.length;
-
-		if (remaining < 0) {
-			charCount = '0 characters remaining';
-		} else if (remaining === 1) {
-			charCount = '1 character remaining';
-		} else {
-			charCount = `${remaining} characters remaining`;
-		}
-	}
 </script>
 
 <Modal bind:open width="medium" on:close={close}>
@@ -153,7 +139,6 @@
 					class="navds-textarea__input navds-body-short navds-body-short--small textarea"
 					id="details"
 					bind:value={details}
-					on:input={updateCharCount}
 					rows="5"
 					cols="40"
 					{maxlength}
@@ -161,7 +146,9 @@
 					placeholder="Enter your feedback here..."
 					disabled={feedbackSent}
 				/>
-				<span id="charCount">{charCount}</span>
+				<span id="charCount"
+					>{maxlength - details.length} character{maxlength - details.length == 1 ? '' : 's'} remaining</span
+				>
 			</div>
 			<div
 				class="navds-form-field__error"
