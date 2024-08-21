@@ -37,7 +37,6 @@ type AnalysisTrail {
 type App implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
-  autoScaling: AutoScaling!
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
@@ -53,7 +52,6 @@ type App implements Workload {
   status: WorkloadStatus!
   team: Team!
   type: WorkloadType!
-  utilization: AppUtilization!
   variables: [Variable!]!
 }
 
@@ -72,34 +70,6 @@ type AppCost {
 type AppList {
   nodes: [App!]!
   pageInfo: PageInfo!
-}
-
-type AppUtilization {
-  """
-  Get the current utilization percentage for the requested resource type.
-  """
-  current(resourceType: UtilizationResourceType!): Float!
-
-  """Utilization within interval with step size for resource type."""
-  range(
-    """Fetch resource utilization until this timestamp."""
-    end: Time!
-
-    """Resource type."""
-    resourceType: UtilizationResourceType!
-
-    """Fetch resource utilization from this timestamp."""
-    start: Time!
-
-    """Step size in seconds for the data points."""
-    step: Int!
-  ): [UtilizationDataPoint!]!
-
-  """
-  Get the requested resources for the specified resource type.
-  memory: bytes, cpu: cores 
-  """
-  request(resourceType: UtilizationResourceType!): Float!
 }
 
 """Resource utilization overage cost for an app."""
@@ -365,14 +335,6 @@ union AuthenticatedUser = ServiceAccount | User
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
-type AutoScaling {
-  """CPU threshold in percent"""
-  cpuThreshold: Int!
-  disabled: Boolean!
-  max: Int!
-  min: Int!
-}
-
 type AzureAD {
   application: AzureApplication
   sidecar: Sidecar
@@ -480,6 +442,10 @@ type BucketsList {
 
 type BucketsMetrics {
   cost: Float!
+}
+
+type CPUScalingStrategy implements ScalingStrategy {
+  threshold: Int!
 }
 
 type Claims {
@@ -893,6 +859,12 @@ type InvalidNaisYamlError implements StateError {
 type JobsStatus {
   failing: Int!
   total: Int!
+}
+
+type KafkaLagScalingStrategy implements ScalingStrategy {
+  consumerGroup: String!
+  threshold: Int!
+  topic: String!
 }
 
 type KafkaTopic implements Persistence {
@@ -1992,8 +1964,30 @@ type ResourceUtilizationTrend {
 }
 
 type Resources {
+  """Instances using resources above this threshold will be killed"""
   limits: Limits!
+
+  """How many resources are allocated to each instance """
   requests: Requests!
+  scaling: Scaling!
+
+  """Get the current usage for the requested resource type."""
+  usage(resourceType: UsageResourceType!): Float!
+
+  """Usage between start and end with step size for given resource type."""
+  usageRange(
+    """Fetch resource usage until this timestamp."""
+    end: Time!
+
+    """Resource type."""
+    resourceType: UsageResourceType!
+
+    """Fetch resource usage from this timestamp."""
+    start: Time!
+
+    """Step size in seconds for the data points."""
+    step: Int!
+  ): [UsageDataPoint!]!
 }
 
 type RestartAppResult {
@@ -2036,6 +2030,16 @@ type Run {
   name: String!
   podNames: [String!]!
   startTime: Time
+}
+
+type Scaling {
+  max: Int!
+  min: Int!
+  strategies: [ScalingStrategy!]!
+}
+
+interface ScalingStrategy {
+  threshold: Int!
 }
 
 input SearchFilter {
@@ -2689,6 +2693,21 @@ input UpdateTeamSlackAlertsChannelInput {
   environment: String!
 }
 
+"""Resource utilization type."""
+type UsageDataPoint {
+  """Timestamp of the value."""
+  timestamp: Time!
+
+  """Value of the used resource at the given timestamp."""
+  value: Float!
+}
+
+"""Resource type."""
+enum UsageResourceType {
+  CPU
+  MEMORY
+}
+
 """User type."""
 type User {
   """The email address of the user."""
@@ -2751,21 +2770,6 @@ enum UsersyncRunStatus {
 
   """Successful user sync run."""
   SUCCESS
-}
-
-"""Resource utilization type."""
-type UtilizationDataPoint {
-  """Timestamp of the value."""
-  timestamp: Time!
-
-  """Utilization in percent, (used / requested) * 100"""
-  value: Float!
-}
-
-"""Resource type."""
-enum UtilizationResourceType {
-  CPU
-  MEMORY
 }
 
 type Variable {

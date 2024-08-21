@@ -14,12 +14,12 @@
 	$: ({ ResourceUtilizationForApp } = data);
 	export const start = new Date();
 
-	$: cpuUtilization = $ResourceUtilizationForApp.data?.app.utilization.cpu;
-	$: memoryUtilization = $ResourceUtilizationForApp.data?.app.utilization.memory;
-	$: memoryReq = $ResourceUtilizationForApp.data?.app.utilization.memory_req;
-	$: cpuReq = $ResourceUtilizationForApp.data?.app.utilization.cpu_req;
-	$: curr_cpu = $ResourceUtilizationForApp.data?.app.utilization.curr_cpu;
-	$: curr_mem = $ResourceUtilizationForApp.data?.app.utilization.curr_memory;
+	$: cpuUsageRange= $ResourceUtilizationForApp.data?.app.resources.cpu;
+	$: memoryUsage = $ResourceUtilizationForApp.data?.app.resources.mem;
+	$: memoryReq = $ResourceUtilizationForApp.data?.app.resources.requests.memory;
+	$: cpuReq = $ResourceUtilizationForApp.data?.app.resources.requests.cpu;
+	$: curr_cpu = $ResourceUtilizationForApp.data?.app.resources.curr_cpu;
+	$: curr_mem = $ResourceUtilizationForApp.data?.app.resources.curr_mem;
 
 	type resourceUtilizationForAppV2 =
 		| {
@@ -126,10 +126,7 @@
 							{curr_cpu.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})}% of {cpuReq.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})} CPUs
+							})}% of {cpuReq} CPUs
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -138,7 +135,7 @@
 			</div></Card
 		>
 
-		<Card columns={3} borderColor="#91dc75">
+		<!-- <Card columns={3} borderColor="#91dc75">
 			<div class="summaryCard" style="--bg-color: #91dc75">
 				<div class="summaryIcon">
 					<MemoryIcon size="32" color="#91dc75" />
@@ -234,7 +231,7 @@
 					<Skeleton variant={'rectangle'} height="450px" />
 				</div>
 			{/if}
-		</Card>
+		</Card> -->
 	</div>
 {/if}
 

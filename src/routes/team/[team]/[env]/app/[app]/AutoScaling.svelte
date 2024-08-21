@@ -9,17 +9,27 @@
 		app,
 		graphql(`
 			fragment AutoScaling on App {
-				autoScaling @loading {
-					disabled
-					cpuThreshold
-					max
-					min
+				resources @loading{
+					scaling{
+						max
+						min
+						strategies{
+							... on CPUScalingStrategy {
+								threshold
+							}
+							... on KafkaLagScalingStrategy {
+								consumerGroup
+								threshold
+								topic
+							}
+						}
+					}
 				}
 			}
 		`)
 	);
 
-	$: autoscaling = $data.autoScaling;
+	$: autoscaling = $data.resources?.scaling;
 </script>
 
 <div class="wrapper">
