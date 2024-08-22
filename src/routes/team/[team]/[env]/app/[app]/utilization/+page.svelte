@@ -1,59 +1,71 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Card from '$lib/Card.svelte';
-	import EChart from '$lib/chart/EChart.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
-	import prettyBytes from 'pretty-bytes';
-	import { ResourceType, type ResourceType$options } from '$houdini';
-	import { cpuCoresFromString, cpuUtilization, memoryFromString, memoryUtilization } from '$lib/utils/resources';
+import { page } from '$app/stores';
+import Card from '$lib/Card.svelte';
+import EChart from '$lib/chart/EChart.svelte';
+import CostIcon from '$lib/icons/CostIcon.svelte';
+import CpuIcon from '$lib/icons/CpuIcon.svelte';
+import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
+import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
+import type { PageData } from './$houdini';
+import prettyBytes from 'pretty-bytes';
+import { ResourceType, type ResourceType$options } from '$houdini';
+import { cpuCoresFromString, cpuUtilization, memoryFromString, memoryUtilization } from '$lib/utils/resources';
+import type { EChartsOption } from 'echarts';
 
-	export let data: PageData;
-	$: ({ ResourceUtilizationForApp } = data);
-	export const start = new Date();
+export let data: PageData;
+$: ({ ResourceUtilizationForApp } = data);
+export const start = new Date();
 
-	$: cpuUsageRange = $ResourceUtilizationForApp.data?.app.resources;
-	$: memoryUsage = $ResourceUtilizationForApp.data?.app.resources.mem;
-	$: memoryReq = $ResourceUtilizationForApp.data?.app.resources.requests.memory;
-	$: cpuReq = $ResourceUtilizationForApp.data?.app.resources.requests.cpu;
-	$: curr_cpu = $ResourceUtilizationForApp.data?.app.resources.curr_cpu;
-	$: curr_mem = $ResourceUtilizationForApp.data?.app.resources.curr_mem;
-	$: instanceCount = $ResourceUtilizationForApp.data?.app.instances.length || 2;
+$: usageRange = $ResourceUtilizationForApp.data?.app.resources;
+$: memoryReq = $ResourceUtilizationForApp.data?.app.resources.requests.memory;
+$: cpuReq = $ResourceUtilizationForApp.data?.app.resources.requests.cpu;
+$: curr_cpu = $ResourceUtilizationForApp.data?.app.resources.curr_cpu;
+$: curr_mem = $ResourceUtilizationForApp.data?.app.resources.curr_mem;
+$: instanceCount = $ResourceUtilizationForApp.data?.app.instances.length || 2;
 
-	type resourceUtilizationForAppV2 =
-		| {
-				readonly timestamp: Date;
-				readonly value: number;
-		  }[]
-		| undefined;
+type resourceUsage =
+	| {
+			readonly timestamp: Date;
+			readonly value: number;
+		}[]
+	;
 
-	// costPerHour calculates the cost for the given resource type
-	function yearlyOverageCost(
-		resourceType: ResourceType$options,
-		request: number,
-		utilization: number
-	) {
-		const costPerCpuCorePerYear = 136.69;
-		const costPerByteMemoryPerYear = 18.71 / 1024 / 1024 / 1024;
-		let overage = request - request * (utilization / 100);
+// costPerHour calculates the cost for the given resource type
 
-		let cost = 0.0;
+function yearlyOverageCost(
+	resourceType: ResourceType$options,
+	request: number,
+	utilization: number
+) {
+	const costPerCpuCorePerYear = 136.69;
+	const costPerMBPerYear = 18.71 / 1024;
 
-		if (resourceType == ResourceType.CPU) {
-			cost = costPerCpuCorePerYear * overage;
-		} else {
-			cost = costPerByteMemoryPerYear * overage;
-		}
+	let overage = request - request * (utilization / 100);
 
-		return cost > 0.0 ? cost : 0.0;
+	let cost = 0.0;
+
+	if (resourceType == ResourceType.CPU) {
+		cost = costPerCpuCorePerYear * overage;
+	} else {
+		cost = costPerMBPerYear * overage;
 	}
 
-	function options(cpuData: resourceUtilizationForAppV2, memoryData: resourceUtilizationForAppV2) {
-		const dates = cpuData?.map((d) => d.timestamp) || [];
-		const xAxis = {
+	return cost > 0.0 ? cost : 0.0;
+}
+
+function options(data: resourceUsage, request: number, color: string = "#000000"): EChartsOption {
+	const dates = data?.map((d) => d.timestamp) || [];
+	const maxValue = Math.max(...data.map((d) => d.value), request) * 1.1;
+	return {
+		tooltip: <EChartsOption["tooltip"]>{
+			trigger: 'axis',
+			axisPointer: {
+				type: 'line'
+			},
+			valueFormatter: (value: number) =>
+				value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+		},
+		xAxis: <EChartsOption["xAxis"]>{
 			type: 'category',
 			boundaryGap: false,
 			data: dates.map((date) => {
@@ -64,197 +76,172 @@
 					hour: '2-digit',
 					minute: '2-digit'
 				});
-			})
-		};
-
-		return {
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
-				},
-				valueFormatter: (value: number) =>
-					value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '%'
+			}),
+		},
+		series: <EChartsOption["series"]>[
+			{
+				name: 'Usage',
+				type: 'line',
+				data: data?.map((d) => d.value) || [],
+				color,
 			},
-			xAxis: xAxis,
-			series: [
-				{
-					name: 'CPU',
-					type: 'line',
-					data: cpuData?.map((d) => d.value) || []
-				},
-				{
-					name: 'MEMORY',
-					type: 'line',
-					data: memoryData?.map((d) => d.value) || []
-				}
-			],
-
-			yAxis: {
-				type: 'value',
-				name: 'Usage of requested resources',
-				axisLabel: {
-					formatter: (value: number) =>
-						value.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + '%'
-				},
-				scale: false
+			{
+				name: 'Requested',
+				type: 'line',
+				data: data?.map((d) => request) || [],
+				showSymbol: false,
+				color: '#C30000'
 			}
-		};
+		],
+
+		yAxis: <EChartsOption["yAxis"]>{
+			type: 'value',
+			max: maxValue > 10 ? Math.round(maxValue): maxValue,
+			name: 'Usage of requested resources',
+			axisLabel: {
+				formatter: (value: number) =>
+					value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+			},
+			scale: false
+		}
 	}
+}
+
 </script>
 
 {#if $ResourceUtilizationForApp.errors}
-	<Alert variant="error">
-		{#each $ResourceUtilizationForApp.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
+<Alert variant="error">
+	{#each $ResourceUtilizationForApp.errors as error}
+		{error.message}
+	{/each}
+</Alert>
 {:else}
-	<div class="grid">
-		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #83bff6">
-					<CpuIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization
-						<HelpText title="Current CPU utilization">
-							Current CPU utilization based on the total cores requested for all instances
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
-							{cpuUtilization(cpuReq, instanceCount, curr_cpu)}% of {cpuCoresFromString(cpuReq) *
-								instanceCount} CPUs
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
+<div class="grid">
+	<Card columns={3} borderColor="#83bff6">
+		<div class="summaryCard">
+			<div class="summaryIcon" style="--bg-color: #83bff6">
+				<CpuIcon size="32" color="#83bff6" />
 			</div>
-		</Card>
-
-		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard">
-				<div class="summaryIcon">
-					<MemoryIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current Memory utilization">
-							Current memory utilization based on the total memory requested for all instances
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}
-							{memoryUtilization(memoryReq, instanceCount, curr_mem)}% of {(memoryFromString(memoryReq) * instanceCount)} MB
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
+			<div class="summary">
+				<h4>
+					CPU utilization
+					<HelpText title="Current CPU utilization">
+						Current CPU utilization based on the total cores requested for all instances
+					</HelpText>
+				</h4>
+				<p class="metric">
+					{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
+						{cpuUtilization(cpuReq, instanceCount, curr_cpu)}% of {cpuCoresFromString(cpuReq) *
+							instanceCount} CPUs
+					{:else}
+						<Skeleton variant="text" width="200px" />
+					{/if}
+				</p>
 			</div>
-		</Card>
+		</div>
+	</Card>
 
-		<!-- <Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<MemoryIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current memory utilization">
-							Current memory utilization based on the total memory requested for all instances
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if curr_mem && memoryReq}
-							{curr_mem.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {prettyBytes(memoryReq, {
-								locale: 'en',
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
-		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard" style="--bg-color: #83bff6">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost of unused CPU<HelpText title="Annual cost of unused CPU">
-							Estimate of annual cost of unused CPU calculated based on current utilization.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if curr_cpu && cpuReq}
-							€ {yearlyOverageCost(ResourceType.CPU, cpuReq, curr_cpu).toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
-		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4 style="font-size: 0.9rem">
-						Cost of unused memory<HelpText title="Annual cost of unused memory">
-							Estimate of annual cost of unused memory calculated based on current utilization.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if curr_mem && memoryReq}
-							€ {yearlyOverageCost(ResourceType.MEMORY, memoryReq, curr_mem).toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
-		<Card columns={12} borderColor="var(--a-gray-200)">
-			<span class="graphHeader">
-				<h3 style={'margin-bottom: 0'}>Resource utilization</h3>
-				<span class="intervalPicker">
-					{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
-						<a
-							class:active={($page.url.searchParams.get('interval') || '7d') == interval}
-							href="?interval={interval}">{interval}</a
-						>
-					{/each}
-				</span>
+	<Card columns={3} borderColor="#91dc75">
+		<div class="summaryCard">
+			<div class="summaryIcon">
+				<MemoryIcon size="32" color="#91dc75" />
+			</div>
+			<div class="summary">
+				<h4>
+					Memory utilization
+					<HelpText title="Current Memory utilization">
+						Current memory utilization based on the total memory requested for all instances
+					</HelpText>
+				</h4>
+				<p class="metric">
+					{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}
+						{memoryUtilization(memoryReq, instanceCount, curr_mem)}% of {(memoryFromString(memoryReq) * instanceCount)} MB
+					{:else}
+						<Skeleton variant="text" width="200px" />
+					{/if}
+				</p>
+			</div>
+		</div>
+	</Card>
+
+	<Card columns={3} borderColor="#83bff6">
+		<div class="summaryCard" style="--bg-color: #83bff6">
+			<div class="summaryIcon">
+				<CostIcon size="32" color="#83bff6" />
+			</div>
+			<div class="summary">
+				<h4>
+					Cost of unused CPU<HelpText title="Annual cost of unused CPU">
+						Estimate of annual cost of unused CPU calculated based on current utilization.
+					</HelpText>
+				</h4>
+				<p class="metric">
+					{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
+						€ {yearlyOverageCost(ResourceType.CPU, (cpuCoresFromString(cpuReq) * instanceCount), cpuUtilization(cpuReq, instanceCount, curr_cpu)).toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}
+					{:else}
+						<Skeleton variant="text" width="200px" />
+					{/if}
+				</p>
+			</div>
+		</div></Card
+	>
+	<Card columns={3} borderColor="#91dc75">
+		<div class="summaryCard" style="--bg-color: #91dc75">
+			<div class="summaryIcon">
+				<CostIcon size="32" color="#91dc75" />
+			</div>
+			<div class="summary">
+				<h4 style="font-size: 0.9rem">
+					Cost of unused memory<HelpText title="Annual cost of unused memory">
+						Estimate of annual cost of unused memory calculated based on current utilization.
+					</HelpText>
+				</h4>
+				<p class="metric">
+					{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}	
+						€ {yearlyOverageCost(ResourceType.MEMORY, memoryFromString(memoryReq) * instanceCount, memoryUtilization(memoryReq, instanceCount, curr_mem)).toLocaleString('en-GB', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}
+					{:else}
+						<Skeleton variant="text" width="200px" />
+					{/if}
+				</p>
+			</div>
+		</div></Card
+	>
+	<Card columns={12} borderColor="var(--a-gray-200)">
+		<span class="graphHeader">
+			<h3 style={'margin-bottom: 0'}>Memory usage</h3>
+			<span class="intervalPicker">
+				{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
+					<a
+						class:active={($page.url.searchParams.get('interval') || '7d') == interval}
+						href="?interval={interval}">{interval}</a
+					>
+				{/each}
 			</span>
-			{#if cpuUtilization}
-				<EChart options={options(cpuUtilization, memoryUtilization)} style="height: 400px" />
+		</span>
+		{#if usageRange && memoryReq && instanceCount && instanceCount > 0}
+				<EChart options={options(usageRange.mem.map(d => { return {timestamp: d.timestamp, value: d.value/(1024*1024)}}), memoryFromString(memoryReq) * instanceCount, 'rgb(145, 220, 117)')} style="height: 400px" />
 			{:else}
 				<div class="loading">
 					<Skeleton variant={'rectangle'} height="450px" />
 				</div>
 			{/if}
-		</Card> -->
+		<span class="graphHeader">
+			<h3 style={'margin-bottom: 0'}>CPU usage</h3>
+		</span>
+		{#if usageRange && cpuReq && instanceCount && instanceCount > 0}
+			<EChart options={options(usageRange.cpu, cpuCoresFromString(cpuReq) * instanceCount, 'rgb(131, 191, 246)')} style="height: 400px" />
+		{:else}
+			<div class="loading">
+				<Skeleton variant={'rectangle'} height="450px" />
+			</div>
+		{/if}
+		</Card>
 	</div>
 {/if}
 

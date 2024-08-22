@@ -2,10 +2,10 @@ import type { ResourceUtilizationForTeam$result } from '$houdini';
 import { PendingValue } from '$houdini';
 import bytes from 'bytes-iec';
 
-export function cpuUtilization(cpuString: string, instanceCount: number, totalUsage: number): string {
+export function cpuUtilization(cpuString: string, instanceCount: number, totalUsage: number): number {
 	const totalCores = cpuCoresFromString(cpuString) * instanceCount;
 	const utilization = (totalUsage / totalCores) * 100;
-	return utilization.toFixed(2);
+	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
 export function cpuCoresFromString(cpu: string): number {
@@ -24,10 +24,10 @@ export function memoryFromString(memory: string): number {
 	return Math.round(parsed / (1000 * 1000));
 }
 
-export function memoryUtilization(memoryString: string, instanceCount: number, totalUsage: number): string {
+export function memoryUtilization(memoryString: string, instanceCount: number, totalUsage: number): number {
 	const totalMemory = memoryFromString(memoryString) * instanceCount;
 	const utilization = (totalUsage / (totalMemory * 1024 * 1024)) * 100;
-	return utilization.toFixed(2);
+	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
 export function sumCPURequests(numOfInstances: number, cpuRequest: string): string {
