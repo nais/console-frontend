@@ -9,6 +9,9 @@ query ResourceUtilizationForApp(
 {
   app(name:$app, env:$env, team:$team){
     name
+	instances {
+	  id
+	}
     resources{
       limits{
         cpu
@@ -28,9 +31,6 @@ query ResourceUtilizationForApp(
         timestamp
         value
       }
-
-
-
     }
   }
 }

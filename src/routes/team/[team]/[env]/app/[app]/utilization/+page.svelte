@@ -9,17 +9,19 @@
 	import type { PageData } from './$houdini';
 	import prettyBytes from 'pretty-bytes';
 	import { ResourceType, type ResourceType$options } from '$houdini';
+	import { cpuCoresFromString, cpuUtilization, memoryFromString, memoryUtilization } from '$lib/utils/resources';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForApp } = data);
 	export const start = new Date();
 
-	$: cpuUsageRange= $ResourceUtilizationForApp.data?.app.resources.cpu;
+	$: cpuUsageRange = $ResourceUtilizationForApp.data?.app.resources;
 	$: memoryUsage = $ResourceUtilizationForApp.data?.app.resources.mem;
 	$: memoryReq = $ResourceUtilizationForApp.data?.app.resources.requests.memory;
 	$: cpuReq = $ResourceUtilizationForApp.data?.app.resources.requests.cpu;
 	$: curr_cpu = $ResourceUtilizationForApp.data?.app.resources.curr_cpu;
 	$: curr_mem = $ResourceUtilizationForApp.data?.app.resources.curr_mem;
+	$: instanceCount = $ResourceUtilizationForApp.data?.app.instances.length || 2;
 
 	type resourceUtilizationForAppV2 =
 		| {
@@ -122,18 +124,39 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if curr_cpu && cpuReq}
-							{curr_cpu.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {cpuReq} CPUs
+						{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
+							{cpuUtilization(cpuReq, instanceCount, curr_cpu)}% of {cpuCoresFromString(cpuReq) *
+								instanceCount} CPUs
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
 					</p>
 				</div>
-			</div></Card
-		>
+			</div>
+		</Card>
+
+		<Card columns={3} borderColor="#91dc75">
+			<div class="summaryCard">
+				<div class="summaryIcon">
+					<MemoryIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4>
+						Memory utilization
+						<HelpText title="Current Memory utilization">
+							Current memory utilization based on the total memory requested for all instances
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}
+							{memoryUtilization(memoryReq, instanceCount, curr_mem)}% of {(memoryFromString(memoryReq) * instanceCount)} MB
+						{:else}
+							<Skeleton variant="text" width="200px" />
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
 
 		<!-- <Card columns={3} borderColor="#91dc75">
 			<div class="summaryCard" style="--bg-color: #91dc75">

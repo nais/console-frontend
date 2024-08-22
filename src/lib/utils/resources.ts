@@ -2,6 +2,34 @@ import type { ResourceUtilizationForTeam$result } from '$houdini';
 import { PendingValue } from '$houdini';
 import bytes from 'bytes-iec';
 
+export function cpuUtilization(cpuString: string, instanceCount: number, totalUsage: number): string {
+	const totalCores = cpuCoresFromString(cpuString) * instanceCount;
+	const utilization = (totalUsage / totalCores) * 100;
+	return utilization.toFixed(2);
+}
+
+export function cpuCoresFromString(cpu: string): number {
+	if (cpu.endsWith('m')) {
+		const milliCPU = parseInt(cpu.replace('m', ''));
+		const cpuCores = milliCPU / 1000;
+		return cpuCores;
+	}
+	return parseInt(cpu);
+}
+
+// returns the memory in MB
+export function memoryFromString(memory: string): number {
+	const mode = memory.includes('i') ? 'binary' : 'metric';
+	let parsed = bytes.parse(memory.concat('B'), { mode }) || 0;
+	return Math.round(parsed / (1000 * 1000));
+}
+
+export function memoryUtilization(memoryString: string, instanceCount: number, totalUsage: number): string {
+	const totalMemory = memoryFromString(memoryString) * instanceCount;
+	const utilization = (totalUsage / (totalMemory * 1024 * 1024)) * 100;
+	return utilization.toFixed(2);
+}
+
 export function sumCPURequests(numOfInstances: number, cpuRequest: string): string {
 	if (cpuRequest.includes('m')) {
 		const cpuRequestInMilliCPU = parseInt(cpuRequest.replace('m', ''));
