@@ -2,13 +2,15 @@ import type { ResourceUtilizationForTeam$result } from '$houdini';
 import { PendingValue } from '$houdini';
 import bytes from 'bytes-iec';
 
-export function cpuUtilization(cpuString: string, instanceCount: number, totalUsage: number): number {
+export function cpuUtilization(cpuString: string | undefined, instanceCount: number, totalUsage: number): number {
+	if (!cpuString || cpuString === '' || instanceCount == 0) return 0;
 	const totalCores = cpuCoresFromString(cpuString) * instanceCount;
 	const utilization = (totalUsage / totalCores) * 100;
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
 export function cpuCoresFromString(cpu: string): number {
+	if (cpu === '') return 0;
 	if (cpu.endsWith('m')) {
 		const milliCPU = parseInt(cpu.replace('m', ''));
 		const cpuCores = milliCPU / 1000;
@@ -19,12 +21,14 @@ export function cpuCoresFromString(cpu: string): number {
 
 // returns the memory in MB
 export function memoryFromString(memory: string): number {
+	if (memory === '') return 0;
 	const mode = memory.includes('i') ? 'binary' : 'metric';
 	let parsed = bytes.parse(memory.concat('B'), { mode }) || 0;
 	return Math.round(parsed / (1000 * 1000));
 }
 
 export function memoryUtilization(memoryString: string, instanceCount: number, totalUsage: number): number {
+	if (memoryString === '' || instanceCount == 0) return 0
 	const totalMemory = memoryFromString(memoryString) * instanceCount;
 	const utilization = (totalUsage / (totalMemory * 1024 * 1024)) * 100;
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;

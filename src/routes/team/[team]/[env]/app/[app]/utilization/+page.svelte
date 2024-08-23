@@ -88,10 +88,10 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 			{
 				name: 'Requested',
 				type: 'line',
-				data: data?.map((d) => request) || [],
+				data: data?.map(() => request) || [],
 				showSymbol: false,
-				color: '#C30000'
-			}
+				color: '#C30000',
+			},
 		],
 
 		yAxis: <EChartsOption["yAxis"]>{
@@ -131,8 +131,7 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 				</h4>
 				<p class="metric">
 					{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
-						{cpuUtilization(cpuReq, instanceCount, curr_cpu)}% of {cpuCoresFromString(cpuReq) *
-							instanceCount} CPUs
+						{cpuUtilization(cpuReq, instanceCount, curr_cpu)}% of {cpuCoresFromString(cpuReq) * instanceCount} CPUs
 					{:else}
 						<Skeleton variant="text" width="200px" />
 					{/if}
@@ -140,7 +139,6 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 			</div>
 		</div>
 	</Card>
-
 	<Card columns={3} borderColor="#91dc75">
 		<div class="summaryCard">
 			<div class="summaryIcon">
@@ -154,8 +152,8 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 					</HelpText>
 				</h4>
 				<p class="metric">
-					{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}
-						{memoryUtilization(memoryReq, instanceCount, curr_mem)}% of {(memoryFromString(memoryReq) * instanceCount)} MB
+					{#if curr_mem && memoryReq && instanceCount > 0}
+						{memoryUtilization(memoryReq, instanceCount, curr_mem)}% of {memoryFromString(memoryReq) * instanceCount} MB
 					{:else}
 						<Skeleton variant="text" width="200px" />
 					{/if}
@@ -163,7 +161,6 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 			</div>
 		</div>
 	</Card>
-
 	<Card columns={3} borderColor="#83bff6">
 		<div class="summaryCard" style="--bg-color: #83bff6">
 			<div class="summaryIcon">
@@ -177,7 +174,7 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 				</h4>
 				<p class="metric">
 					{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
-						€ {yearlyOverageCost(ResourceType.CPU, (cpuCoresFromString(cpuReq) * instanceCount), cpuUtilization(cpuReq, instanceCount, curr_cpu)).toLocaleString('en-GB', {
+						€ {yearlyOverageCost(ResourceType.CPU, cpuCoresFromString(cpuReq) * instanceCount, cpuUtilization(cpuReq, instanceCount, curr_cpu)).toLocaleString('en-GB', {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
 						})}
@@ -186,8 +183,8 @@ function options(data: resourceUsage, request: number, color: string = "#000000"
 					{/if}
 				</p>
 			</div>
-		</div></Card
-	>
+		</div>
+	</Card>
 	<Card columns={3} borderColor="#91dc75">
 		<div class="summaryCard" style="--bg-color: #91dc75">
 			<div class="summaryIcon">
