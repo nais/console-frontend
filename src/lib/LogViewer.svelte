@@ -123,11 +123,9 @@
 			};
 
 			updates.subscribe((result) => {
-				console.log('result ---> ', result);
 				publishEvent(result.fetching);
 				if (result.data) {
 					if (result.data.log.instance === 'api') {
-						console.log('Unsubscribing from logs', result.data.log.instance);
 						updates.unlisten();
 						return;
 					}
@@ -143,7 +141,6 @@
 	// Destroy handler is a bit hacky in case the user navigates from
 	// one log viewer to another, without first navigating to a different url.
 	const destroy = () => {
-		console.log('destroying log viewer');
 		updates.unlisten();
 	};
 
