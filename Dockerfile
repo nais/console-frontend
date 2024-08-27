@@ -1,4 +1,4 @@
-FROM node:21-alpine AS node-with-deps
+FROM cgr.dev/chainguard/node:latest-dev AS node-with-deps
 WORKDIR /usr/app
 
 COPY package*.json svelte.config.js ./
@@ -11,7 +11,7 @@ ENV VITE_GRAPHQL_ENDPOINT http://nais-api/query
 
 RUN npm run build
 
-FROM node:21-alpine
+FROM cgr.dev/chainguard/node
 WORKDIR /usr/app
 
 ENV NODE_ENV production
@@ -21,4 +21,4 @@ RUN npm ci --omit=dev --legacy-peer-deps
 
 COPY --from=node-with-deps /usr/app/build ./
 
-CMD node ./index.js
+ENTRYPOINT node ./index.js
