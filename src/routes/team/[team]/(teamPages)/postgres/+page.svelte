@@ -109,8 +109,8 @@
 				<div class="summary">
 					<h4>
 						Memory utilization
-						<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
+						<HelpText title="Current memory utilization">
+							Memory utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
 					<p class="metric">
@@ -135,8 +135,8 @@
 				<div class="summary">
 					<h4>
 						Disk utilization
-						<HelpText title="Current memory utilization"
-							>Disk utilization for the last elapsed hour.
+						<HelpText title="Current memory utilization">
+							Disk utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
 					<p class="metric">
