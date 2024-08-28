@@ -7,13 +7,12 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 			name
 			image
 		}
-
 		...AccessPolicy
 		...AppImage
 		...AppInstances
 		...AppInstancesStatus
 		...Authz
-		...AutoScaling
+		...Scaling
 		...Utilization
 		persistence {
 			name

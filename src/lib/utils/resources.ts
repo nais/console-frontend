@@ -2,9 +2,9 @@ import type { ResourceUtilizationForTeam$result } from '$houdini';
 import { PendingValue } from '$houdini';
 import bytes from 'bytes-iec';
 
-export function cpuUtilization(cpuString: string | undefined, instanceCount: number, totalUsage: number): number {
-	if (!cpuString || cpuString === '' || instanceCount == 0) return 0;
-	const totalCores = cpuCoresFromString(cpuString) * instanceCount;
+export function cpuUtilization(cpuRequest: string | undefined, instanceCount: number, totalUsage: number): number {
+	if (!cpuRequest || cpuRequest === '' || instanceCount == 0) return 0;
+	const totalCores = cpuCoresFromString(cpuRequest) * instanceCount;
 	const utilization = (totalUsage / totalCores) * 100;
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }

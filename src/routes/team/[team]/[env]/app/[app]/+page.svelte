@@ -9,7 +9,7 @@
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
-	import AutoScaling from './AutoScaling.svelte';
+	import Scaling from './Scaling.svelte';
 	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
 	import Persistence from './Persistence.svelte';
@@ -84,8 +84,8 @@
 				</div>
 			{/if}
 
-			<AutoScaling app={$App.data.app} />
-			<Utilization instanceCount={$App.data.app.instances.length} />
+			<Scaling app={$App.data.app} />
+			<Utilization app={$App.data.app} />
 			<Instances app={$App.data.app} />
 		</Card>
 		<Card columns={12}>
