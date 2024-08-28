@@ -145,17 +145,17 @@
 				</Tbody>
 			</Table>
 			{#if utilization && utilization === PendingValue}
-						<p>Overage cost: <Skeleton variant="text" width="100px" /></p>
-					{:else}
-						<p>
-							Overage cost:
-							{euroValueFormatter(
-								utilization.cpu.estimatedAnnualOverageCost +
-									utilization.memory.estimatedAnnualOverageCost
-							)}
-						</p>
-					{/if}
-					<a href="/team/{teamName}/utilization">View team utilization</a>
+				<p>Overage cost: <Skeleton variant="text" width="100px" /></p>
+			{:else}
+				<p>
+					Overage cost:
+					{euroValueFormatter(
+						utilization.cpu.estimatedAnnualOverageCost +
+							utilization.memory.estimatedAnnualOverageCost
+					)}
+				</p>
+			{/if}
+			<a href="/team/{teamName}/utilization">View team utilization</a>
 		{/if}
 	</Card>
 	<Card rows={1} columns={4}>

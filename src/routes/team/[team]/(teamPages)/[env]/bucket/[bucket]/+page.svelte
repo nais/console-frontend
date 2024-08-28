@@ -43,17 +43,17 @@
 					<dd>{bucket.uniformBucketLevelAccess}</dd>
 					<dt>Owner</dt>
 					<dd>
-								{#if bucket.workload}
-									<WorkloadLink workload={bucket.workload} env={bucket.env.name} team={teamName} />
-								{:else}
-									<div class="inline">
-										<i>No owner</i>
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The bucket does not belong to any workload"
-										/>
-									</div>
-								{/if}
+						{#if bucket.workload}
+							<WorkloadLink workload={bucket.workload} env={bucket.env.name} team={teamName} />
+						{:else}
+							<div class="inline">
+								<i>No owner</i>
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--a-icon-warning)"
+									title="The bucket does not belong to any workload"
+								/>
+							</div>
+						{/if}
 					</dd>
 
 					{#if bucket.status.selfLink}
@@ -179,5 +179,4 @@
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 </style>

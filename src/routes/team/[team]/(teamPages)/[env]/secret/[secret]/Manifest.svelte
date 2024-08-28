@@ -10,9 +10,7 @@
     - secret: ${secretName}`;
 </script>
 
-<h4>
-	Use this secret
-</h4>
+<h4>Use this secret</h4>
 
 <h5>Documentation</h5>
 <div class="value">

@@ -5,12 +5,12 @@
 		graphql,
 		PendingValue
 	} from '$houdini';
-	import { BodyShort, Skeleton } from '@nais/ds-svelte-community';
+	import type { TeamEventsVariables } from '$houdini/types/src/lib/components/$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import type { TeamEventsVariables } from '$houdini/types/src/lib/components/$houdini';
 	import Time from '$lib/Time.svelte';
 	import GitHubLink from '$lib/components/GitHubLink.svelte';
+	import { BodyShort, Skeleton } from '@nais/ds-svelte-community';
 
 	export let teamName: string;
 	export let resourceType: AuditEventResourceType$options | undefined = undefined;
@@ -30,7 +30,9 @@
 	};
 
 	const store = graphql(`
-		query TeamEvents($limit: Int, $offset: Int, $team: Slug!, $filter: AuditEventsFilter) @load @cache(policy: NetworkOnly) {
+		query TeamEvents($limit: Int, $offset: Int, $team: Slug!, $filter: AuditEventsFilter)
+		@load
+		@cache(policy: NetworkOnly) {
 			team(slug: $team) @loading {
 				auditEvents(limit: $limit, offset: $offset, filter: $filter) @loading {
 					nodes @loading {
@@ -68,7 +70,11 @@
 		}
 	`);
 
-	const resourceLink = (env: {name: string} | null, resourceType: AuditEventResourceType$options, resourceName: string) => {
+	const resourceLink = (
+		env: { name: string } | null,
+		resourceType: AuditEventResourceType$options,
+		resourceName: string
+	) => {
 		if (env === null || env.name.length == 0) {
 			return null;
 		}
@@ -113,7 +119,10 @@
 					<BodyShort size="small" style="color: var(--a-text-subtle)">
 						{event.actor}
 					</BodyShort>
-					<BodyShort size="small" style="color: var(--a-text-subtle); position: absolute; top: 0; right: 0">
+					<BodyShort
+						size="small"
+						style="color: var(--a-text-subtle); position: absolute; top: 0; right: 0"
+					>
 						<Time time={event.createdAt} distance={true} />
 					</BodyShort>
 				</div>
@@ -125,12 +134,7 @@
 		{/each}
 
 		{#if team.auditEvents.pageInfo && team.auditEvents.pageInfo !== PendingValue}
-			<Pagination
-				pageInfo={team.auditEvents.pageInfo}
-				{limit}
-				{offset}
-				{changePage}
-			/>
+			<Pagination pageInfo={team.auditEvents.pageInfo} {limit} {offset} {changePage} />
 		{/if}
 	</Card>
 {/if}

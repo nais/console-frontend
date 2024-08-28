@@ -2,7 +2,17 @@
 	import { graphql, UsersyncRunStatus } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Accordion, AccordionItem, Loader, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Accordion,
+		AccordionItem,
+		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { format } from 'date-fns/format';
 	import { formatDistance } from 'date-fns/formatDistance';
 	import { enGB } from 'date-fns/locale/en-GB';

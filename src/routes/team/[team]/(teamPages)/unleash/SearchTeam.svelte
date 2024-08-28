@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { Search } from '@nais/ds-svelte-community';
 	import { graphql, type SearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
-
+	import { Search } from '@nais/ds-svelte-community';
 
 	const store = graphql(`
 		query TeamSearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
@@ -95,13 +94,13 @@
 	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
-	export let onSelected: (node: SearchQuery$result['search']['nodes'][0], e: MouseEvent | KeyboardEvent) => void = (
-		node,
-		e
-	) => {
+	export let onSelected: (
+		node: SearchQuery$result['search']['nodes'][0],
+		e: MouseEvent | KeyboardEvent
+	) => void = () => {
 		query = '';
 		showSearch = false;
-	}
+	};
 
 	$: {
 		if (timeout) {
@@ -173,7 +172,7 @@
 		on:keyup={on_key_up}
 	/>
 	{#if $store.data && showSearch}
-		<SearchResults {showSearch} data={$store.data} onSelected={onSelected} bind:query {selected} />
+		<SearchResults {showSearch} data={$store.data} {onSelected} bind:query {selected} />
 	{/if}
 </div>
 

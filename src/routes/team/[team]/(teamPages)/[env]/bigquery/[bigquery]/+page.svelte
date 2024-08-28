@@ -47,20 +47,24 @@
 			<p style="margin-left: 1em; margin-top: 0;">
 				€{Math.round(bigQueryDatasetInstance.cost)} last 30 days
 			</p>
-				<h4 style="margin-bottom: 0;">Owner</h4>
-				<p style="margin-left: 1em; margin-top: 0;">
-					{#if bigQueryDatasetInstance.workload}
-						<WorkloadLink workload={bigQueryDatasetInstance.workload} env={bigQueryDatasetInstance.env.name} team={teamName} />
-					{:else}
-						<div class="inline">
-							<i>No owner</i>
-							<ExclamationmarkTriangleFillIcon
-								style="color: var(--a-icon-warning)"
-								title="This Big Query instance does not belong to any workload"
-							/>
-						</div>
-					{/if}
-				</p>
+			<h4 style="margin-bottom: 0;">Owner</h4>
+			<p style="margin-left: 1em; margin-top: 0;">
+				{#if bigQueryDatasetInstance.workload}
+					<WorkloadLink
+						workload={bigQueryDatasetInstance.workload}
+						env={bigQueryDatasetInstance.env.name}
+						team={teamName}
+					/>
+				{:else}
+					<div class="inline">
+						<i>No owner</i>
+						<ExclamationmarkTriangleFillIcon
+							style="color: var(--a-icon-warning)"
+							title="This Big Query instance does not belong to any workload"
+						/>
+					</div>
+				{/if}
+			</p>
 
 			<dl class="status">
 				<dt>Created</dt>

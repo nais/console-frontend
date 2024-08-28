@@ -123,7 +123,7 @@
 			return;
 		}
 
-		logEvent('suppressFinding')
+		logEvent('suppressFinding');
 		errormessage = '';
 		const imagePage = '/team/' + team + '/' + env + '/' + workload + '/image';
 		close();

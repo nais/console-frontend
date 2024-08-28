@@ -29,7 +29,11 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
 				{#if redisInstance.workload}
-					<WorkloadLink workload={redisInstance.workload} env={redisInstance.env.name} team={teamName} />
+					<WorkloadLink
+						workload={redisInstance.workload}
+						env={redisInstance.env.name}
+						team={teamName}
+					/>
 				{:else}
 					<div class="inline">
 						<i>This Redis instance does not belong to any workload</i>
