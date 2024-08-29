@@ -52,6 +52,7 @@ type App implements Workload {
   status: WorkloadStatus!
   team: Team!
   type: WorkloadType!
+  utilization: AppUtilization!
   variables: [Variable!]!
 }
 
@@ -70,6 +71,26 @@ type AppCost {
 type AppList {
   nodes: [App!]!
   pageInfo: PageInfo!
+}
+
+type AppUtilization {
+  """Get the current usage for the requested resource type."""
+  usage(resourceType: UsageResourceType!): Float!
+
+  """Usage between start and end with step size for given resource type."""
+  usageRange(
+    """Fetch resource usage until this timestamp."""
+    end: Time!
+
+    """Resource type."""
+    resourceType: UsageResourceType!
+
+    """Fetch resource usage from this timestamp."""
+    start: Time!
+
+    """Step size in seconds for the data points."""
+    step: Int!
+  ): [UsageDataPoint!]!
 }
 
 """Team status for apps."""
@@ -1786,24 +1807,6 @@ type Resources {
   """How many resources are allocated to each instance """
   requests: Requests!
   scaling: Scaling!
-
-  """Get the current usage for the requested resource type."""
-  usage(resourceType: UsageResourceType!): Float!
-
-  """Usage between start and end with step size for given resource type."""
-  usageRange(
-    """Fetch resource usage until this timestamp."""
-    end: Time!
-
-    """Resource type."""
-    resourceType: UsageResourceType!
-
-    """Fetch resource usage from this timestamp."""
-    start: Time!
-
-    """Step size in seconds for the data points."""
-    step: Int!
-  ): [UsageDataPoint!]!
 }
 
 type RestartAppResult {

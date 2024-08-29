@@ -19,6 +19,8 @@
 						cpu
 						memory
 					}
+				}
+				utilization @loading{
 					cpuUsage: usage(resourceType: CPU)
 					memoryUsage: usage(resourceType: MEMORY)
 				}
@@ -34,8 +36,8 @@
 	{:else}
 		{@const cpu = $data.resources.requests.cpu}
 		{@const mem = $data.resources.requests.memory}
-		{@const cpuUsage = $data.resources.cpuUsage}
-		{@const memUsage = $data.resources.memoryUsage}
+		{@const cpuUsage = $data.utilization.cpuUsage}
+		{@const memUsage = $data.utilization.memoryUsage}
 		{@const ic = $data.instances.length}
 		{@const cpuUtil = cpuUtilization(cpu, ic, cpuUsage)}
 		{@const memUtil = memoryUtilization(mem, ic, memUsage)}

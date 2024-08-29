@@ -20,11 +20,11 @@
 	$: ({ ResourceUtilizationForApp } = data);
 	export const start = new Date();
 
-	$: usageRange = $ResourceUtilizationForApp.data?.app.resources;
+	$: usageRange = $ResourceUtilizationForApp.data?.app.utilization;
 	$: memoryReq = $ResourceUtilizationForApp.data?.app.resources.requests.memory;
 	$: cpuReq = $ResourceUtilizationForApp.data?.app.resources.requests.cpu;
-	$: curr_cpu = $ResourceUtilizationForApp.data?.app.resources.curr_cpu;
-	$: curr_mem = $ResourceUtilizationForApp.data?.app.resources.curr_mem;
+	$: curr_cpu = $ResourceUtilizationForApp.data?.app.utilization.curr_cpu;
+	$: curr_mem = $ResourceUtilizationForApp.data?.app.utilization.curr_mem;
 	$: instanceCount = $ResourceUtilizationForApp.data?.app.instances.length || 2;
 
 	type resourceUsage = {

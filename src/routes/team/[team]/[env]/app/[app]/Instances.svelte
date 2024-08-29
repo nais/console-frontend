@@ -24,6 +24,8 @@
 						cpu
 						memory
 					}
+				}
+				utilization @loading {
 					cpuUsage: usage(resourceType: CPU)
 					memoryUsage: usage(resourceType: MEMORY)
 				}
