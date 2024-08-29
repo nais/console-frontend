@@ -1,19 +1,20 @@
 <script lang="ts">
 	import type { Utilization } from '$houdini';
 	import { PendingValue, fragment, graphql } from '$houdini';
-	import { Skeleton, Tooltip } from '@nais/ds-svelte-community';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import { cpuUtilization } from '$lib/utils/resources';
+	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
+	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
+	import { Skeleton } from '@nais/ds-svelte-community';
 
 	export let app: Utilization;
 	$: data = fragment(
 		app,
 		graphql(`
 			fragment Utilization on App {
-				instances @loading{
+				instances @loading {
 					id
 				}
-				resources @loading{
+				resources @loading {
 					requests {
 						cpu
 						memory
@@ -27,32 +28,28 @@
 </script>
 
 <div class="wrapper">
+	<h5>Utilization</h5>
 	{#if $data.resources === PendingValue}
 		<Skeleton variant="text" width="100px" />
-	{:else }
-	{ @const cpu = $data.resources.requests.cpu}
-	{ @const mem = $data.resources.requests.memory}
-	{ @const cpuUsage = $data.resources.cpuUsage}
-	{ @const memUsage = $data.resources.memoryUsage}
-	{ @const ic = $data.instances.length }
-	{ @const cpuUtil = cpuUtilization(cpu, ic, cpuUsage) }
+	{:else}
+		{@const cpu = $data.resources.requests.cpu}
+		{@const mem = $data.resources.requests.memory}
+		{@const cpuUsage = $data.resources.cpuUsage}
+		{@const memUsage = $data.resources.memoryUsage}
+		{@const ic = $data.instances.length}
+		{@const cpuUtil = cpuUtilization(cpu, ic, cpuUsage)}
+		{@const memUtil = memoryUtilization(mem, ic, memUsage)}
 
-	
-		<Tooltip content="utilization">
-			<CpuIcon /> {cpuUtil}% of </Tooltip
-		>
-		<Tooltip content="Maximum replicas">
-			max: {mem}
-		</Tooltip>
+		<CpuIcon />
+		{cpuUtil}% of {cpu} CPU<br />
+		<MemoryIcon />
+		{memUtil}% of {mem} memory
 	{/if}
 </div>
 
 <style>
 	.wrapper {
-		display: flex;
-		align-items: center;
-		flex-direction: row;
-		gap: 1rem;
 		color: var(--a-text-subtle);
+		width: 50%;
 	}
 </style>

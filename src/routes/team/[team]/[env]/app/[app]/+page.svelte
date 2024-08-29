@@ -9,10 +9,10 @@
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
-	import Scaling from './Scaling.svelte';
 	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
 	import Persistence from './Persistence.svelte';
+	import Scaling from './Scaling.svelte';
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 	import Traffic from './Traffic.svelte';
@@ -83,9 +83,12 @@
 					{/if}
 				</div>
 			{/if}
+			<div class="utilAndScaling">
+				<Utilization app={$App.data.app} />
 
-			<Scaling app={$App.data.app} />
-			<Utilization app={$App.data.app} />
+				<Scaling app={$App.data.app} />
+			</div>
+
 			<Instances app={$App.data.app} />
 		</Card>
 		<Card columns={12}>
@@ -133,5 +136,11 @@
 	}
 	.marginbox {
 		margin: 0.5rem 0;
+	}
+	.utilAndScaling {
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+		margin: 1rem 0;
 	}
 </style>
