@@ -1,36 +1,35 @@
 query ResourceUtilizationForApp(
-	$team: Slug! 
+	$team: Slug!
 	$app: String!
 	$env: String!
 	$start: Time!
 	$end: Time!
 	$step: Int!
-) 
-{
-  app(name:$app, env:$env, team:$team){
-    name
-	instances {
-	  id
+) {
+	app(name: $app, env: $env, team: $team) {
+		name
+		instances {
+			id
+		}
+		resources {
+			limits {
+				cpu
+				memory
+			}
+			requests {
+				cpu
+				memory
+			}
+			curr_cpu: usage(resourceType: CPU)
+			curr_mem: usage(resourceType: MEMORY)
+			cpu: usageRange(start: $start, end: $end, step: $step, resourceType: CPU) {
+				timestamp
+				value
+			}
+			mem: usageRange(start: $start, end: $end, step: $step, resourceType: MEMORY) {
+				timestamp
+				value
+			}
+		}
 	}
-    resources{
-      limits{
-        cpu
-        memory
-      }
-      requests{
-        cpu
-        memory
-      }
-      curr_cpu: usage(resourceType: CPU)
-      curr_mem: usage(resourceType: MEMORY)
-      cpu: usageRange(start:$start, end:$end, step:$step, resourceType: CPU){
-        timestamp
-        value
-      }
-      mem: usageRange(start:$start, end:$end, step:$step, resourceType: MEMORY){
-        timestamp
-        value
-      }
-    }
-  }
 }

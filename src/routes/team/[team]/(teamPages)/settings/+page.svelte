@@ -6,7 +6,8 @@
 		graphql,
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
-		type QueryResult, AuditEventResourceType
+		type QueryResult,
+		AuditEventResourceType
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -58,7 +59,10 @@
 	`);
 
 	const updateTeamSlackAlertsChannel = graphql(`
-		mutation UpdateTeamSlackAlertsChannel($slug: Slug!, $input: UpdateTeamSlackAlertsChannelInput!) {
+		mutation UpdateTeamSlackAlertsChannel(
+			$slug: Slug!
+			$input: UpdateTeamSlackAlertsChannelInput!
+		) {
 			updateTeamSlackAlertsChannel(slug: $slug, input: $input) {
 				environments {
 					slackAlertsChannel
@@ -237,7 +241,8 @@
 										if (data.errors) {
 											slackChannelsError = true;
 										}
-									}} />
+									}}
+								/>
 							</div>
 						{/if}
 					{/each}
@@ -429,7 +434,7 @@
 			</Modal>
 		{/if}
 
-		{#key teamSettings || synchronizeClicked || rotateClicked }
+		{#key teamSettings || synchronizeClicked || rotateClicked}
 			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
 		{/key}
 

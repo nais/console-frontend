@@ -24,7 +24,9 @@
 	};
 
 	const store = graphql(`
-		query TeamEvents($limit: Int, $offset: Int, $team: Slug!, $filter: AuditEventsFilter) @load @cache(policy: NetworkOnly) {
+		query TeamEvents($limit: Int, $offset: Int, $team: Slug!, $filter: AuditEventsFilter)
+		@load
+		@cache(policy: NetworkOnly) {
 			team(slug: $team) @loading {
 				auditEvents(limit: $limit, offset: $offset, filter: $filter) @loading {
 					nodes @loading {
@@ -63,7 +65,10 @@
 					<BodyShort size="small" style="color: var(--a-text-subtle)">
 						{event.actor}
 					</BodyShort>
-					<BodyShort size="small" style="color: var(--a-text-subtle); position: absolute; top: 0; right: 0">
+					<BodyShort
+						size="small"
+						style="color: var(--a-text-subtle); position: absolute; top: 0; right: 0"
+					>
 						<Time time={event.createdAt} distance={true} />
 					</BodyShort>
 				</div>
@@ -75,12 +80,7 @@
 		{/each}
 
 		{#if team.auditEvents.pageInfo && team.auditEvents.pageInfo !== PendingValue}
-			<Pagination
-				pageInfo={team.auditEvents.pageInfo}
-				{limit}
-				{offset}
-				{changePage}
-			/>
+			<Pagination pageInfo={team.auditEvents.pageInfo} {limit} {offset} {changePage} />
 		{/if}
 	</Card>
 {/if}

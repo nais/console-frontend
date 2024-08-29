@@ -17,14 +17,16 @@
 	};
 
 	const transformErrors = (reconcilers: ReconcilerLogs$result['reconcilers']['nodes']): Error[] =>
-		reconcilers.flatMap((reconciler) =>
-			reconciler.errors.nodes.map((error) => ({
-				reconcilerName: reconciler.displayName,
-				errorMessage: error.message,
-				createdAt: error.createdAt,
-				teamSlug: error.team.slug
-			}))
-		).toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+		reconcilers
+			.flatMap((reconciler) =>
+				reconciler.errors.nodes.map((error) => ({
+					reconcilerName: reconciler.displayName,
+					errorMessage: error.message,
+					createdAt: error.createdAt,
+					teamSlug: error.team.slug
+				}))
+			)
+			.toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 </script>
 
 <Table zebraStripes>

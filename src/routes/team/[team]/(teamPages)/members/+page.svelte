@@ -142,7 +142,11 @@
 	</Card>
 	{#if team && team.slug != PendingValue}
 		{#key team}
-		<ActivityLog teamName={team.slug} resourceType={AuditEventResourceType.TEAM_MEMBER} style="margin-top: 1rem"/>
+			<ActivityLog
+				teamName={team.slug}
+				resourceType={AuditEventResourceType.TEAM_MEMBER}
+				style="margin-top: 1rem"
+			/>
 		{/key}
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
 

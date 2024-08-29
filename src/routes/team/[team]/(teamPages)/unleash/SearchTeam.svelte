@@ -4,7 +4,6 @@
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
 
-
 	const store = graphql(`
 		query TeamSearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
 			search(limit: 10, query: $query, filter: { type: $type }) {
@@ -95,13 +94,13 @@
 	let showSearch = false;
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
-	export let onSelected: (node: SearchQuery$result['search']['nodes'][0], e: MouseEvent | KeyboardEvent) => void = (
-		node,
-		e
-	) => {
+	export let onSelected: (
+		node: SearchQuery$result['search']['nodes'][0],
+		e: MouseEvent | KeyboardEvent
+	) => void = (node, e) => {
 		query = '';
 		showSearch = false;
-	}
+	};
 
 	$: {
 		if (timeout) {
@@ -173,7 +172,7 @@
 		on:keyup={on_key_up}
 	/>
 	{#if $store.data && showSearch}
-		<SearchResults {showSearch} data={$store.data} onSelected={onSelected} bind:query {selected} />
+		<SearchResults {showSearch} data={$store.data} {onSelected} bind:query {selected} />
 	{/if}
 </div>
 

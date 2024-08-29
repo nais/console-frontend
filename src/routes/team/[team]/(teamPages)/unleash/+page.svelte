@@ -322,7 +322,10 @@
 					{#if unleash.ready}
 						<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.2rem" />
 					{:else}
-						<Tooltip content="Unleash is not ready, new instances will be online after a minute." placement="right">
+						<Tooltip
+							content="Unleash is not ready, new instances will be online after a minute."
+							placement="right"
+						>
 							<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 						</Tooltip>
 					{/if}

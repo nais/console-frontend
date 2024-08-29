@@ -6,7 +6,18 @@
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { Alert, CopyButton, HelpText, Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		CopyButton,
+		HelpText,
+		Link,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -396,12 +407,12 @@
 							</Tr>
 						</Thead>
 						<Tbody>
-						{#each instance.flags as flag}
-							<Tr>
-								<Td>{flag.name}</Td>
-								<Td>{flag.value}</Td>
-							</Tr>
-						{/each}
+							{#each instance.flags as flag}
+								<Tr>
+									<Td>{flag.name}</Td>
+									<Td>{flag.value}</Td>
+								</Tr>
+							{/each}
 						</Tbody>
 					</Table>
 				{:else}
@@ -416,7 +427,10 @@
 							<Th>Name</Th>
 							<Th>
 								<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
-									Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
+									Authentication <ExternalLinkIcon
+										title="Cloud SQL credentials"
+										font-size="1.5rem"
+									/>
 								</Link>
 							</Th>
 						</Thead>
