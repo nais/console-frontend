@@ -91,6 +91,9 @@ interface AuditEvent {
   """Creation time of the event."""
   createdAt: Time!
 
+  """The environment that the event belongs to."""
+  env: Env
+
   """ID of the event."""
   id: ID!
 
@@ -109,18 +112,19 @@ interface AuditEvent {
 
 enum AuditEventAction {
   ADDED
+  CREATED
+  DELETED
   REMOVED
-  TEAM_CREATED
+  RESTARTED
+  SYNCHRONIZED
   TEAM_DELETION_CONFIRMED
   TEAM_DELETION_REQUESTED
   TEAM_DEPLOY_KEY_ROTATED
-  TEAM_MEMBER_ADDED
-  TEAM_MEMBER_REMOVED
   TEAM_MEMBER_SET_ROLE
   TEAM_SET_ALERTS_SLACK_CHANNEL
   TEAM_SET_DEFAULT_SLACK_CHANNEL
   TEAM_SET_PURPOSE
-  TEAM_SYNCHRONIZED
+  UPDATED
 }
 
 type AuditEventList {
@@ -133,6 +137,7 @@ type AuditEventMemberAdded implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventMemberAddedData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -150,6 +155,7 @@ type AuditEventMemberRemoved implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventMemberRemovedData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -166,6 +172,7 @@ type AuditEventMemberSetRole implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventMemberSetRoleData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -178,12 +185,16 @@ type AuditEventMemberSetRoleData {
   role: TeamRole!
 }
 
-union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent | BaseTeamAuditEvent
+union AuditEventNode = AuditEventMemberAdded | AuditEventMemberRemoved | AuditEventMemberSetRole | AuditEventTeamAddRepository | AuditEventTeamRemoveRepository | AuditEventTeamSetAlertsSlackChannel | AuditEventTeamSetDefaultSlackChannel | AuditEventTeamSetPurpose | BaseAuditEvent
 
 enum AuditEventResourceType {
+  APP
+  NAISJOB
+  SECRET
   TEAM
   TEAM_MEMBER
   TEAM_REPOSITORY
+  UNLEASH
 }
 
 type AuditEventTeamAddRepository implements AuditEvent {
@@ -191,6 +202,7 @@ type AuditEventTeamAddRepository implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamAddRepositoryData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -207,6 +219,7 @@ type AuditEventTeamRemoveRepository implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamRemoveRepositoryData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -223,6 +236,7 @@ type AuditEventTeamSetAlertsSlackChannel implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamSetAlertsSlackChannelData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -240,6 +254,7 @@ type AuditEventTeamSetDefaultSlackChannel implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamSetDefaultSlackChannelData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -256,6 +271,7 @@ type AuditEventTeamSetPurpose implements AuditEvent {
   actor: String!
   createdAt: Time!
   data: AuditEventTeamSetPurposeData!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
@@ -336,22 +352,12 @@ type BaseAuditEvent implements AuditEvent {
   action: AuditEventAction!
   actor: String!
   createdAt: Time!
+  env: Env
   id: ID!
   message: String!
   resourceName: String!
   resourceType: AuditEventResourceType!
   team: Team
-}
-
-type BaseTeamAuditEvent implements AuditEvent {
-  action: AuditEventAction!
-  actor: String!
-  createdAt: Time!
-  id: ID!
-  message: String!
-  resourceName: String!
-  resourceType: AuditEventResourceType!
-  team: Team!
 }
 
 type BigQueryDataset implements Persistence {
@@ -465,6 +471,21 @@ type CostSeries {
 
   """The sum of all daily costs in the series for this cost type in euros."""
   sum: Float!
+}
+
+input CreateFeedbackInput {
+  anonymous: Boolean!
+
+  """The feedback content."""
+  details: String!
+  type: FeedbackType!
+  uri: String!
+}
+
+type CreateFeedbackResult {
+  """Whether the feedback was created or not."""
+  created: Boolean!
+  error: String
 }
 
 """Input for creating a new team."""
@@ -626,7 +647,8 @@ type Expose {
 }
 
 type External {
-  host: String!
+  IPv4: String
+  host: String
   ports: [Port!]!
 }
 
@@ -635,6 +657,14 @@ type FailedRunError implements StateError {
   revision: String!
   runMessage: String!
   runName: String!
+}
+
+enum FeedbackType {
+  """Feedback type for the feedback."""
+  BUG
+  CHANGE_REQUEST
+  OTHER
+  QUESTION
 }
 
 type Finding {
@@ -1021,6 +1051,10 @@ type Mutation {
     """Deletion key, acquired using the requestTeamDeletion mutation."""
     key: String!
   ): Boolean!
+  createFeedback(
+    """The feedback content."""
+    input: CreateFeedbackInput!
+  ): CreateFeedbackResult!
 
   """Create a new secret for a team and env."""
   createSecret(
@@ -1567,7 +1601,6 @@ type Query {
     """The key to get."""
     key: String!
   ): TeamDeleteKey!
-  teamUtilization(resourceType: UsageResourceType!): [TeamUtilizationData!]!
 
   """Get a collection of teams. Default limit is 20"""
   teams(
@@ -1580,6 +1613,9 @@ type Query {
     """Offset to start listing teams from. Default is 0."""
     offset: Int
   ): TeamList!
+
+  """Get the resource utilization of all teams"""
+  teamsUtilization(resourceType: UsageResourceType!): [TeamUtilizationData!]!
 
   """Get a specific user."""
   user(
@@ -2044,9 +2080,6 @@ type SynchronizationFailingError implements StateError {
 
 """Team type."""
 type Team {
-  """Current application utilization data"""
-  appUtilization(resourceType: UsageResourceType!): [UtilizationData!]!
-
   """The NAIS applications owned by the team."""
   apps(
     """Returns the last n entries from the list."""
@@ -2058,6 +2091,9 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): AppList!
+
+  """Gets the utilization data for all applications"""
+  appsUtilization(resourceType: UsageResourceType!): [UtilizationData!]!
 
   """Audit events for this team."""
   auditEvents(
