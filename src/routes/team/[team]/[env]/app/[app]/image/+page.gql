@@ -28,6 +28,7 @@ query Image(
 				runnerEnvironment
 				sourceRepositoryOwnerURI
 				integratedTime
+				imageDigestSHA
 			}
 			summary @loading {
 				id
