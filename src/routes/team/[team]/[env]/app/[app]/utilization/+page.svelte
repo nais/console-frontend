@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { ResourceType, type ResourceType$options } from '$houdini';
+	import { UsageResourceType, type UsageResourceType$options } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -32,21 +32,19 @@
 		readonly value: number;
 	}[];
 
-	// costPerHour calculates the cost for the given resource type
-
 	function yearlyOverageCost(
-		resourceType: ResourceType$options,
+		resourceType: UsageResourceType$options,
 		request: number,
 		utilization: number
 	) {
 		const costPerCpuCorePerYear = 136.69;
 		const costPerMBPerYear = 18.71 / 1024;
 
-		let overage = request - request * (utilization / 100);
+		const overage = request - request * (utilization / 100);
 
 		let cost = 0.0;
 
-		if (resourceType == ResourceType.CPU) {
+		if (resourceType == UsageResourceType.CPU) {
 			cost = costPerCpuCorePerYear * overage;
 		} else {
 			cost = costPerMBPerYear * overage;
@@ -54,7 +52,6 @@
 
 		return cost > 0.0 ? cost : 0.0;
 	}
-
 	function options(data: resourceUsage, request: number, color: string = '#000000'): EChartsOption {
 		const dates = data?.map((d) => d.timestamp) || [];
 		const maxValue = Math.max(...data.map((d) => d.value), request) * 1.1;
@@ -178,7 +175,7 @@
 					<p class="metric">
 						{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
 							€ {yearlyOverageCost(
-								ResourceType.CPU,
+								UsageResourceType.CPU,
 								cpuCoresFromString(cpuReq) * instanceCount,
 								cpuUtilization(cpuReq, instanceCount, curr_cpu)
 							).toLocaleString('en-GB', {
@@ -206,7 +203,7 @@
 					<p class="metric">
 						{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}
 							€ {yearlyOverageCost(
-								ResourceType.MEMORY,
+								UsageResourceType.MEMORY,
 								memoryFromString(memoryReq) * instanceCount,
 								memoryUtilization(memoryReq, instanceCount, curr_mem)
 							).toLocaleString('en-GB', {

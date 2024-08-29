@@ -1,6 +1,45 @@
-import type { ResourceUtilizationForTeam$result } from '$houdini';
-import { PendingValue } from '$houdini';
+import { UsageResourceType, type UsageResourceType$options } from '$houdini';
 import bytes from 'bytes-iec';
+
+// memory should be in Bytes
+export function yearlyOverageCost(
+	resourceType: UsageResourceType$options,
+	request: number,
+	utilization: number
+) {
+	const costPerCpuCorePerYear = 136.69;
+	const costPerBytePerYear = 18.71 / 1024 / 1024 / 1024;
+
+	const overage = request - request * (utilization / 100);
+
+	let cost = 0.0;
+
+	if (resourceType == UsageResourceType.CPU) {
+		cost = costPerCpuCorePerYear * overage;
+	} else {
+		cost = costPerBytePerYear * overage;
+	}
+
+	return cost > 0.0 ? cost : 0.0;
+}
+
+export type utilization = {
+	readonly name: string;
+	readonly env: string;
+	readonly requested: number;
+	readonly used: number;
+}[];
+
+export function teamUtilization(data: utilization | undefined) {
+	if (data === undefined) return 0;
+	let totalRequested = 0;
+	let totalUsed = 0;
+	data.forEach((d) => {
+		totalRequested += d.requested;
+		totalUsed += d.used;
+	});
+	return Math.round((totalUsed / totalRequested) * 100);
+}
 
 export function cpuUtilization(
 	cpuRequest: string | undefined,
@@ -80,16 +119,16 @@ export function sumMemoryRequests(numOfInstances: number, memoryRequest: string)
 	return '-';
 }
 
-export type ResourceUtilizationListDataType = {
+/*export type ResourceUtilizationListDataType = {
 	app: string;
 	env: string;
 	cpu: number;
 	memory: number;
 	team: string;
 	estimatedAnnualOverageCost: number;
-};
+};*/
 
-export function overageTableData(
+/*export function overageTableData(
 	data:
 		| ResourceUtilizationForTeam$result['resourceUtilizationOverageForTeam']
 		| typeof PendingValue
@@ -169,4 +208,4 @@ export function overageTableData(
 			}
 			return 0;
 		});
-}
+}*/

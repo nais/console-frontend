@@ -1,140 +1,152 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Time from '$lib/Time.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import {
-		resourceUsageTeamTransformLineChart,
-		resourceUtilizationCPUOverageTransformLineChart,
-		resourceUtilizationMemoryOverageTransformLineChart
-	} from '$lib/chart/resource_usage_team_transformers';
-	import type { Overage, Utilization } from '$lib/chart/types';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { overageTableData } from '$lib/utils/resources';
-	import type { TableSortState } from '@nais/ds-svelte-community';
-	import {
-		Accordion,
-		AccordionItem,
-		Alert,
-		HelpText,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import prettyBytes from 'pretty-bytes';
+	import { percentageFormatter } from '$lib/utils/formatters';
+	import { Alert, HelpText } from '@nais/ds-svelte-community';
+	import bytes from 'bytes-iec';
 	import type { PageData } from './$houdini';
 
+	import { goto } from '$app/navigation';
+	import { PendingValue, UsageResourceType } from '$houdini';
+	import { truncateString } from '$lib/chart/util';
+	import { yearlyOverageCost } from '$lib/utils/resources';
+	import type { EChartsOption } from 'echarts';
+
 	export let data: PageData;
-	$: ({ ResourceUtilizationForTeam } = data);
+	$: ({ TeamResourceUsage } = data);
 
-	$: overageCostForTeam = $ResourceUtilizationForTeam.data?.resourceUtilizationOverageForTeam;
-	$: resourceUtilization = $ResourceUtilizationForTeam.data?.resourceUtilizationForTeam;
-	$: currentResourceUtilizationForTeam =
-		$ResourceUtilizationForTeam.data?.currentResourceUtilizationForTeam;
-	$: overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
-
-	$: minDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.from;
-	$: maxDate = $ResourceUtilizationForTeam.data?.resourceUtilizationDateRangeForTeam.to;
-
-	$: min =
-		minDate && minDate !== PendingValue
-			? minDate.toISOString().split('T')[0]
-			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-	$: max =
-		maxDate && maxDate !== PendingValue
-			? maxDate.toISOString().split('T')[0]
-			: new Date(Date.now()).toISOString().split('T')[0];
+	$: resourceUtilization = $TeamResourceUsage.data?.team;
 
 	$: team = $page.params.team;
 
-	function echartOptionsUsageChart(data: Utilization) {
-		const opts = resourceUsageTeamTransformLineChart(data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
+	type OverageData = {
+		readonly name: string;
+		readonly env: string;
+		readonly requested: number;
+		readonly used: number;
+	};
 
-	function echartOptionsCPUOverageChart(data: Overage[]) {
-		const opts = resourceUtilizationCPUOverageTransformLineChart(data);
+	function echartOptionsCPUOverageChart(data: OverageData[]) {
+		const opts = optionsCPU(data);
 		opts.height = '150px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsMemoryOverageChart(data: Overage[]) {
-		const opts = resourceUtilizationMemoryOverageTransformLineChart(data);
+	function echartOptionsMemoryOverageChart(data: OverageData[]) {
+		const opts = optionsMem(data);
 		opts.height = '150px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function update() {
-		const params = new URLSearchParams({ from, to });
-		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
-	}
-
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
-
-	const sortTable = (key: string, sortState: TableSortState) => {
-		if (!sortState) {
-			sortState = {
-				orderBy: key,
-				direction: 'descending'
+	function optionsCPU(input: OverageData[]): EChartsOption {
+		const overage = input.map((s) => {
+			return {
+				name: s.name,
+				env: s.env,
+				overage: s.requested - s.used
 			};
-		} else if (sortState.orderBy === key) {
-			if (sortState.direction === 'ascending') {
-				sortState.direction = 'descending';
-			} else {
-				sortState.direction = 'ascending';
+		});
+		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
+		return {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'line'
+				},
+				valueFormatter: (value: number) => (value == null ? '0' : value)
+			},
+			xAxis: {
+				type: 'category',
+				data: sorted.map((s) => {
+					return s.env.concat(':').concat(s.name);
+				}),
+				axisLabel: {
+					rotate: 60,
+					formatter: (value: string) => {
+						return truncateString(value, 23);
+					}
+				}
+			},
+			legend: {
+				show: false
+			},
+			yAxis: {
+				type: 'value',
+				name: 'CPU'
+			},
+			series: {
+				name: 'Unutilized CPU',
+				data: sorted.map((s) => {
+					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+				}),
+				type: 'bar'
 			}
-		} else {
-			sortState.orderBy = key;
-			if (key === 'NAME') {
-				sortState.direction = 'ascending';
-			} else {
-				sortState.direction = 'descending';
-			}
-		}
-
-		overageTable = overageTableData(overageCostForTeam, sortState.orderBy, sortState.direction);
-		return sortState;
-	};
-
-	$: {
-		if (maxDate && maxDate !== PendingValue) {
-			if (data.toDate > maxDate) {
-				from = new Date(maxDate.getTime() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-				to = max;
-				update();
-			}
-		}
+		} as EChartsOption;
 	}
 
-	let sortState: TableSortState = {
-		orderBy: 'COST',
-		direction: 'descending'
-	};
+	function optionsMem(input: OverageData[]): EChartsOption {
+		const overage = input.map((s) => {
+			return {
+				name: s.name,
+				env: s.env,
+				overage: (s.requested - s.used) / 1024 / 1024 / 1024 // convert to GB
+			};
+		});
+		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
+		console.log(sorted);
+		return {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'line'
+				},
+				valueFormatter: (value: number) => (value == null ? '0' : value)
+			},
+			xAxis: {
+				type: 'category',
+				data: sorted.map((s) => {
+					return s.env.concat(':').concat(s.name);
+				}),
+				axisLabel: {
+					rotate: 60,
+					formatter: (value: string) => {
+						return truncateString(value, 23);
+					}
+				}
+			},
+			legend: {
+				show: false
+			},
+			yAxis: {
+				type: 'value',
+				name: 'Memory'
+			},
+			series: {
+				name: 'Unutilized memory',
+				data: sorted.map((s) => {
+					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + ' GB';
+				}),
+				type: 'bar'
+			}
+		} as EChartsOption;
+	}
 </script>
 
-{#if $ResourceUtilizationForTeam.errors}
+{#if $TeamResourceUsage.errors}
 	<Alert variant="error">
-		{#each $ResourceUtilizationForTeam.errors as error}
+		{#each $TeamResourceUsage.errors as error}
 			{error.message}
 		{/each}
 	</Alert>
 {/if}
 <div class="grid">
-	{#if overageCostForTeam && resourceUtilization && currentResourceUtilizationForTeam}
+	{#if resourceUtilization}
 		<Card columns={3} borderColor="#83bff6">
 			<div class="summaryCard">
 				<div class="summaryIcon" style="--bg-color: #83bff6">
@@ -143,26 +155,26 @@
 				<div class="summary">
 					<h4>
 						CPU utilization<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour for team {team}.
-							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
-								<br />Last updated <Time
-									distance={true}
-									time={currentResourceUtilizationForTeam.cpu.timestamp}
-								/>
-							{/if}
+							>Current CPU utilization for team {team}.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if currentResourceUtilizationForTeam.cpu !== PendingValue}
-							{currentResourceUtilizationForTeam.cpu.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {currentResourceUtilizationForTeam.cpu.request.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
-						{:else}
-							<Skeleton variant="text" />
+						{#if resourceUtilization !== PendingValue}
+							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
+								(acc, { requested }) => acc + requested,
+								0
+							)}
+							{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
+								(acc, { used }) => acc + used,
+								0
+							)}
+							{percentageFormatter(cpuUsage / cpuRequested)} of {cpuRequested.toLocaleString(
+								'en-GB',
+								{
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								}
+							)}
 						{/if}
 					</p>
 				</div>
@@ -176,23 +188,23 @@
 				<div class="summary">
 					<h4>
 						Memory utilization<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour for team {team}.
-							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
-								<br />Last updated <Time
-									distance={true}
-									time={currentResourceUtilizationForTeam.memory.timestamp}
-								/>
-							{/if}
+							>Current memory utilization for team {team}.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
-							{currentResourceUtilizationForTeam?.memory.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {prettyBytes(currentResourceUtilizationForTeam?.memory.request)}
-						{:else}
-							<Skeleton variant="text" />
+						{#if resourceUtilization !== PendingValue}
+							{@const memoryRequested = resourceUtilization.memUtil.reduce(
+								(acc, { requested }) => acc + requested,
+								0
+							)}
+							{@const memoryUsage = resourceUtilization.memUtil.reduce(
+								(acc, { used }) => acc + used,
+								0
+							)}
+							{percentageFormatter(memoryUsage / memoryRequested)} of {bytes.format(
+								memoryRequested,
+								{ decimalPlaces: 2 }
+							)}
 						{/if}
 					</p>
 				</div>
@@ -206,29 +218,28 @@
 				<div class="summary">
 					<h4>
 						Unused CPU cost<HelpText title="Annual cost of unused CPU"
-							>Estimate of annual cost of unused CPU for team {team} calculated from utilization data
-							for the last elapsed hour.
-							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.cpu !== PendingValue}
-								<br />Last updated <Time
-									distance={true}
-									time={currentResourceUtilizationForTeam.cpu.timestamp}
-								/>
-							{/if}
+							>Estimate of annual cost of unused CPU for team {team} calculated from current utilization
+							data.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
-							€{currentResourceUtilizationForTeam.cpu.estimatedAnnualOverageCost > 0.0
-								? currentResourceUtilizationForTeam.cpu.estimatedAnnualOverageCost.toLocaleString(
-										'en-GB',
-										{
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2
-										}
-									)
-								: '0.00'}
-						{:else}
-							<Skeleton variant="text" />
+						{#if resourceUtilization !== PendingValue}
+							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
+								(acc, { requested }) => acc + requested,
+								0
+							)}
+							{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
+								(acc, { used }) => acc + used,
+								0
+							)}
+							€{yearlyOverageCost(
+								UsageResourceType.CPU,
+								cpuRequested,
+								cpuUsage / cpuRequested
+							).toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
 						{/if}
 					</p>
 				</div>
@@ -242,29 +253,28 @@
 				<div class="summary">
 					<h4>
 						Unused mem cost<HelpText placement={'left'} title="Annual cost of unused memory"
-							>Estimate of annual cost of unused memory for team {team} calculated from utilization data
-							for the last elapsed hour.
-							{#if currentResourceUtilizationForTeam !== undefined && currentResourceUtilizationForTeam.memory !== PendingValue}
-								<br />Last updated <Time
-									distance={true}
-									time={currentResourceUtilizationForTeam.memory.timestamp}
-								/>
-							{/if}
+							>Estimate of annual cost of unused memory for team {team} calculated from current utilization
+							data.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if currentResourceUtilizationForTeam.memory !== PendingValue}
-							€{currentResourceUtilizationForTeam.memory.estimatedAnnualOverageCost > 0.0
-								? currentResourceUtilizationForTeam.memory.estimatedAnnualOverageCost.toLocaleString(
-										'en-GB',
-										{
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2
-										}
-									)
-								: '0.00'}
-						{:else}
-							<Skeleton variant="text" />
+						{#if resourceUtilization !== PendingValue}
+							{@const memoryRequested = resourceUtilization.memUtil.reduce(
+								(acc, { requested }) => acc + requested,
+								0
+							)}
+							{@const memoryUsage = resourceUtilization.memUtil.reduce(
+								(acc, { used }) => acc + used,
+								0
+							)}
+							€{yearlyOverageCost(
+								UsageResourceType.MEMORY,
+								memoryRequested,
+								memoryUsage / memoryRequested
+							).toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
 						{/if}
 					</p>
 				</div>
@@ -273,38 +283,20 @@
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<div style="display: flex; justify-content: space-between;">
 				<h3>Unused resources per application</h3>
-				{#if overageCostForTeam !== PendingValue && overageCostForTeam.timestamp !== null}
-					<p style="text-align: right; color: var(--a-text-subtle)">
-						Last updated: <Time time={overageCostForTeam.timestamp} distance={true} />
-					</p>
-				{:else}
-					<p>Last updated: <Skeleton variant="text" /></p>
-				{/if}
 			</div>
 
 			<div style="display: flex">
-				{#if overageCostForTeam === PendingValue}
-					<div class="loading">
-						<Skeleton variant="rectangle" />
-					</div>
-				{:else}
+				{#if resourceUtilization !== PendingValue}
 					<EChart
-						options={echartOptionsCPUOverageChart(overageCostForTeam.cpu)}
+						options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
 						style="height: 350px; width: 50%;"
 						on:click={(e) => {
 							const [env, app] = e.detail.name.split(':');
 							goto(`/team/${team}/${env}/app/${app}/utilization`);
 						}}
 					/>
-				{/if}
-
-				{#if overageCostForTeam === PendingValue}
-					<div class="loading" style="width: 50%;">
-						<Skeleton variant="rectangle" />
-					</div>
-				{:else}
 					<EChart
-						options={echartOptionsMemoryOverageChart(overageCostForTeam.memory)}
+						options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
 						style="height: 350px; width: 50%;"
 						on:click={(e) => {
 							const [env, app] = e.detail.name.split(':');
@@ -313,7 +305,7 @@
 					/>
 				{/if}
 			</div>
-			<div>
+			<!--div>
 				<Accordion>
 					<Accordion>
 						<AccordionItem heading="All applications" open={false}>
@@ -373,30 +365,7 @@
 						</AccordionItem>
 					</Accordion>
 				</Accordion>
-			</div>
-		</Card>
-		<Card columns={12}>
-			<h3>Resource utilization per environment</h3>
-			<div class="datepicker">
-				<label for="from">From:</label>
-				<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
-				<label for="to">To:</label>
-				<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
-			</div>
-			{#each resourceUtilization as env}
-				{#if env.env !== PendingValue}
-					<h4>Resource utilization in {env.env}</h4>
-				{/if}
-				{#if env.env === PendingValue}
-					<div class="loading" style="width: 100%;">
-						<Skeleton variant="rectangle" />
-					</div>
-				{:else if env.cpu.length === 0}
-					<p>No utilization data for team {team} in {env.env}</p>
-				{:else}
-					<EChart options={echartOptionsUsageChart(env)} style="height: 400px" />
-				{/if}
-			{/each}
+			</div-->
 		</Card>
 	{/if}
 </div>
@@ -409,16 +378,7 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-	.datepicker {
-		margin-top: 1rem;
-		margin-bottom: 1rem;
-	}
-	.loading {
-		height: 400px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+
 	.summaryIcon {
 		display: flex;
 		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
