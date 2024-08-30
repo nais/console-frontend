@@ -5,21 +5,40 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { percentageFormatter } from '$lib/utils/formatters';
-	import { Alert, HelpText } from '@nais/ds-svelte-community';
+	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
+	import {
+		Accordion,
+		AccordionItem,
+		Alert,
+		HelpText,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community';
 	import bytes from 'bytes-iec';
 	import type { PageData } from './$houdini';
 
 	import { goto } from '$app/navigation';
 	import { PendingValue, UsageResourceType } from '$houdini';
 	import { truncateString } from '$lib/chart/util';
-	import { yearlyOverageCost } from '$lib/utils/resources';
+	import { mergeCalculateAndSortOverageData, yearlyOverageCost } from '$lib/utils/resources';
 	import type { EChartsOption } from 'echarts';
+	import prettyBytes from 'pretty-bytes';
 
 	export let data: PageData;
 	$: ({ TeamResourceUsage } = data);
 
 	$: resourceUtilization = $TeamResourceUsage.data?.team;
+
+	$: overageTable = mergeCalculateAndSortOverageData(
+		resourceUtilization,
+		sortState.orderBy,
+		sortState.direction
+	);
 
 	$: team = $page.params.team;
 
@@ -92,11 +111,12 @@
 	}
 
 	function optionsMem(input: OverageData[]): EChartsOption {
+		console.log(input);
 		const overage = input.map((s) => {
 			return {
 				name: s.name,
 				env: s.env,
-				overage: s.requested - s.used
+				overage: (s.requested - s.used) / 1024 / 1024 / 1024 // convert to GB
 			};
 		});
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
@@ -107,7 +127,7 @@
 				axisPointer: {
 					type: 'line'
 				},
-				valueFormatter: (value: number) => (value == null ? '0' : value) + ' Bytes'
+				valueFormatter: (value: number) => (value == null ? '0' : value) + 'GB'
 			},
 			xAxis: {
 				type: 'category',
@@ -138,6 +158,40 @@
 			}
 		} as EChartsOption;
 	}
+
+	const sortTable = (key: string, sortState: TableSortState) => {
+		if (!sortState) {
+			sortState = {
+				orderBy: key,
+				direction: 'descending'
+			};
+		} else if (sortState.orderBy === key) {
+			if (sortState.direction === 'ascending') {
+				sortState.direction = 'descending';
+			} else {
+				sortState.direction = 'ascending';
+			}
+		} else {
+			sortState.orderBy = key;
+			if (key === 'NAME') {
+				sortState.direction = 'ascending';
+			} else {
+				sortState.direction = 'descending';
+			}
+		}
+
+		overageTable = mergeCalculateAndSortOverageData(
+			resourceUtilization,
+			sortState.orderBy,
+			sortState.direction
+		);
+		return sortState;
+	};
+
+	let sortState: TableSortState = {
+		orderBy: 'COST',
+		direction: 'descending'
+	};
 </script>
 
 {#if $TeamResourceUsage.errors}
@@ -298,7 +352,7 @@
 						}}
 					/>
 					<EChart
-						options={echartOptionsMemoryOverageChart(resourceUtilization.cpuUtil)}
+						options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
 						style="height: 350px; width: 50%;"
 						on:click={(e) => {
 							const [env, app] = e.detail.name.split(':');
@@ -307,67 +361,59 @@
 					/>
 				{/if}
 			</div>
-			<!--div>
+			<div>
 				<Accordion>
-					<Accordion>
-						<AccordionItem heading="All applications" open={false}>
-							<Table
-								size={'small'}
-								sort={sortState}
-								zebraStripes
-								on:sortChange={(e) => {
-									const { key } = e.detail;
-									sortState = sortTable(key, sortState);
-								}}
-							>
-								<Thead>
-									<Tr>
-										<Th sortable={true} sortKey="APPLICATION">Application</Th>
-										<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
-										<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-										<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
-										<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
-									</Tr>
-								</Thead>
-								<Tbody>
-									{#if overageCostForTeam === PendingValue}
-										<div class="loading">
-											<Skeleton variant="rectangle" />
-										</div>
+					<AccordionItem heading="All applications" open={false}>
+						<Table
+							size={'small'}
+							sort={sortState}
+							zebraStripes
+							on:sortChange={(e) => {
+								const { key } = e.detail;
+								sortState = sortTable(key, sortState);
+							}}
+						>
+							<Thead>
+								<Tr>
+									<Th sortable={true} sortKey="APPLICATION">Application</Th>
+									<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+									<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+									<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+									<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+								</Tr>
+							</Thead>
+							<Tbody>
+								{#if resourceUtilization !== PendingValue}
+									{#each overageTable as overage}
+										<Tr>
+											<Td>
+												<a href={`/team/${team}/${overage.env}/app/${overage.name}/utilization`}>
+													{overage.name}
+												</a>
+											</Td>
+											<Td>{overage.env}</Td>
+											<Td
+												>{overage.unusedCpu.toLocaleString('en-GB', {
+													minimumFractionDigits: 2,
+													maximumFractionDigits: 2
+												})}</Td
+											>
+											<Td>{prettyBytes(overage.unusedMem)}</Td>
+											<Td
+												>{overage.estimatedAnnualOverageCost > 0.0
+													? euroValueFormatter(overage.estimatedAnnualOverageCost)
+													: '€0.00'}</Td
+											>
+										</Tr>
 									{:else}
-										{#each overageTable as overage}
-											<Tr>
-												<Td>
-													<a href={`/team/${team}/${overage.env}/app/${overage.app}/utilization`}>
-														{overage.app}
-													</a>
-												</Td>
-												<Td>{overage.env}</Td>
-												<Td
-													>{overage.cpu > 0.0
-														? overage.cpu.toLocaleString('en-GB', {
-																minimumFractionDigits: 2,
-																maximumFractionDigits: 2
-															})
-														: '-'}</Td
-												>
-												<Td>{overage.memory > 0.0 ? prettyBytes(overage.memory) : '-'}</Td>
-												<Td
-													>{overage.estimatedAnnualOverageCost > 0.0
-														? euroValueFormatter(overage.estimatedAnnualOverageCost)
-														: '€0.00'}</Td
-												>
-											</Tr>
-										{:else}
-											<p>No overage data for team {team}</p>
-										{/each}
-									{/if}
-								</Tbody>
-							</Table>
-						</AccordionItem>
-					</Accordion>
+										<p>No overage data for team {team}</p>
+									{/each}
+								{/if}
+							</Tbody>
+						</Table>
+					</AccordionItem>
 				</Accordion>
-			</div-->
+			</div>
 		</Card>
 	{/if}
 </div>

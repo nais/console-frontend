@@ -1,0 +1,12 @@
+query Highscores {
+	cpuUtil: teamsUtilization(resourceType: CPU) {
+		name
+		requested
+		used
+	}
+	memUtil: teamsUtilization(resourceType: MEMORY) {
+		name
+		requested
+		used
+	}
+}
