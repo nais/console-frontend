@@ -85,7 +85,8 @@
 				data: sorted.map((s) => {
 					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
 				}),
-				type: 'bar'
+				type: 'bar',
+				color: '#83bff6'
 			}
 		} as EChartsOption;
 	}
@@ -95,7 +96,7 @@
 			return {
 				name: s.name,
 				env: s.env,
-				overage: (s.requested - s.used) / 1024 / 1024 / 1024 // convert to GB
+				overage: s.requested - s.used
 			};
 		});
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
@@ -106,7 +107,7 @@
 				axisPointer: {
 					type: 'line'
 				},
-				valueFormatter: (value: number) => (value == null ? '0' : value)
+				valueFormatter: (value: number) => (value == null ? '0' : value) + ' Bytes'
 			},
 			xAxis: {
 				type: 'category',
@@ -130,9 +131,10 @@
 			series: {
 				name: 'Unutilized memory',
 				data: sorted.map((s) => {
-					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 }) + ' GB';
+					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
 				}),
-				type: 'bar'
+				type: 'bar',
+				color: '#91dc75'
 			}
 		} as EChartsOption;
 	}
@@ -296,7 +298,7 @@
 						}}
 					/>
 					<EChart
-						options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+						options={echartOptionsMemoryOverageChart(resourceUtilization.cpuUtil)}
 						style="height: 350px; width: 50%;"
 						on:click={(e) => {
 							const [env, app] = e.detail.name.split(':');
