@@ -6,14 +6,10 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import {
-		cpuCoresFromString,
-		cpuUtilization,
-		memoryFromString,
-		memoryUtilization
-	} from '$lib/utils/resources';
+	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
 	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { EChartsOption } from 'echarts';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -21,11 +17,10 @@
 	export const start = new Date();
 
 	$: usageRange = $ResourceUtilizationForApp.data?.app.utilization;
-	$: memoryReq = $ResourceUtilizationForApp.data?.app.resources.requests.memory;
-	$: cpuReq = $ResourceUtilizationForApp.data?.app.resources.requests.cpu;
+	$: memoryReq = $ResourceUtilizationForApp.data?.app.utilization.req_mem;
+	$: cpuReq = $ResourceUtilizationForApp.data?.app.utilization.req_cpu;
 	$: curr_cpu = $ResourceUtilizationForApp.data?.app.utilization.curr_cpu;
 	$: curr_mem = $ResourceUtilizationForApp.data?.app.utilization.curr_mem;
-	$: instanceCount = $ResourceUtilizationForApp.data?.app.instances.length || 2;
 
 	type resourceUsage = {
 		readonly timestamp: Date;
@@ -52,9 +47,9 @@
 
 		return cost > 0.0 ? cost : 0.0;
 	}
+
 	function options(data: resourceUsage, request: number, color: string = '#000000'): EChartsOption {
 		const dates = data?.map((d) => d.timestamp) || [];
-		const maxValue = Math.max(...data.map((d) => d.value), request) * 1.1;
 		return {
 			tooltip: <EChartsOption['tooltip']>{
 				trigger: 'axis',
@@ -95,7 +90,6 @@
 
 			yAxis: <EChartsOption['yAxis']>{
 				type: 'value',
-				max: maxValue > 10 ? Math.round(maxValue) : maxValue,
 				name: 'Usage of requested resources',
 				axisLabel: {
 					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
@@ -127,9 +121,11 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
-							{cpuUtilization(cpuReq, instanceCount, curr_cpu)}% of {cpuCoresFromString(cpuReq) *
-								instanceCount} CPUs
+						{#if curr_cpu && cpuReq}
+							{cpuUtilization(cpuReq, curr_cpu)}% of {cpuReq.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})} CPUs
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -150,10 +146,12 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if curr_mem && memoryReq && instanceCount > 0}
-							{memoryUtilization(memoryReq, instanceCount, curr_mem)}% of {memoryFromString(
-								memoryReq
-							) * instanceCount} MB
+						{#if curr_mem && memoryReq}
+							{memoryUtilization(memoryReq, curr_mem)}% of {prettyBytes(memoryReq, {
+								locale: 'en',
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -173,11 +171,11 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if curr_cpu && cpuReq && instanceCount && instanceCount > 0}
+						{#if curr_cpu && cpuReq}
 							€ {yearlyOverageCost(
 								UsageResourceType.CPU,
-								cpuCoresFromString(cpuReq) * instanceCount,
-								cpuUtilization(cpuReq, instanceCount, curr_cpu)
+								cpuReq,
+								cpuUtilization(cpuReq, curr_cpu)
 							).toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
@@ -201,11 +199,11 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if curr_mem && memoryReq && instanceCount && instanceCount > 0}
+						{#if curr_mem && memoryReq}
 							€ {yearlyOverageCost(
 								UsageResourceType.MEMORY,
-								memoryFromString(memoryReq) * instanceCount,
-								memoryUtilization(memoryReq, instanceCount, curr_mem)
+								memoryReq,
+								memoryUtilization(memoryReq, curr_mem)
 							).toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
@@ -229,13 +227,13 @@
 					{/each}
 				</span>
 			</span>
-			{#if usageRange && memoryReq && instanceCount && instanceCount > 0}
+			{#if usageRange && memoryReq}
 				<EChart
 					options={options(
 						usageRange.mem.map((d) => {
-							return { timestamp: d.timestamp, value: d.value / (1024 * 1024) };
+							return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
 						}),
-						memoryFromString(memoryReq) * instanceCount,
+						memoryReq / 1024 / 1024 / 1024,
 						'rgb(145, 220, 117)'
 					)}
 					style="height: 400px"
@@ -248,13 +246,9 @@
 			<span class="graphHeader">
 				<h3 style={'margin-bottom: 0'}>CPU usage</h3>
 			</span>
-			{#if usageRange && cpuReq && instanceCount && instanceCount > 0}
+			{#if usageRange && cpuReq}
 				<EChart
-					options={options(
-						usageRange.cpu,
-						cpuCoresFromString(cpuReq) * instanceCount,
-						'rgb(131, 191, 246)'
-					)}
+					options={options(usageRange.cpu, cpuReq, 'rgb(131, 191, 246)')}
 					style="height: 400px"
 				/>
 			{:else}

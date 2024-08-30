@@ -43,8 +43,12 @@
 	$: team = $page.params.team;
 
 	type OverageData = {
-		readonly name: string;
-		readonly env: string;
+		readonly app: {
+			readonly name: string;
+			readonly env: {
+				readonly name: string;
+			};
+		};
 		readonly requested: number;
 		readonly used: number;
 	};
@@ -66,8 +70,8 @@
 	function optionsCPU(input: OverageData[]): EChartsOption {
 		const overage = input.map((s) => {
 			return {
-				name: s.name,
-				env: s.env,
+				name: s.app.name,
+				env: s.app.env.name,
 				overage: s.requested - s.used
 			};
 		});
@@ -113,9 +117,9 @@
 	function optionsMem(input: OverageData[]): EChartsOption {
 		const overage = input.map((s) => {
 			return {
-				name: s.name,
-				env: s.env,
-				overage: (s.requested - s.used) / 1024 / 1024 / 1024 // convert to GB
+				name: s.app.name,
+				env: s.app.env.name,
+				overage: (s.requested - s.used) / 1024 / 1024 / 1024
 			};
 		});
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
@@ -125,7 +129,7 @@
 				axisPointer: {
 					type: 'line'
 				},
-				valueFormatter: (value: number) => (value == null ? '0' : value) + 'GB'
+				valueFormatter: (value: number) => prettyBytes(value * 1024 * 1024 * 1024)
 			},
 			xAxis: {
 				type: 'category',
@@ -149,7 +153,7 @@
 			series: {
 				name: 'Unutilized memory',
 				data: sorted.map((s) => {
-					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+					return s.overage;
 				}),
 				type: 'bar',
 				color: '#91dc75'
@@ -222,7 +226,7 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							{percentageFormatter(cpuUsage / cpuRequested)} of {cpuRequested.toLocaleString(
+							{percentageFormatter((cpuUsage / cpuRequested) * 100)} of {cpuRequested.toLocaleString(
 								'en-GB',
 								{
 									minimumFractionDigits: 2,
@@ -255,7 +259,7 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							{percentageFormatter(memoryUsage / memoryRequested)} of {bytes.format(
+							{percentageFormatter((memoryUsage / memoryRequested) * 100)} of {bytes.format(
 								memoryRequested,
 								{ decimalPlaces: 2 }
 							)}

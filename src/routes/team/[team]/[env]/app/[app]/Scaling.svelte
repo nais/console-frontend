@@ -27,6 +27,7 @@
 			}
 		`)
 	);
+
 	const renameStrategy = (type: string) => {
 		if (type === 'CPUScalingStrategy') {
 			return 'CPU usage';
@@ -36,6 +37,8 @@
 			return 'Unknown';
 		}
 	};
+
+	$: console.log($data.resources);
 </script>
 
 <div class="wrapper">

@@ -12,25 +12,17 @@ query ResourceUtilizationForApp(
 			id
 		}
 		utilization {
-			curr_cpu: usage(resourceType: CPU)
-			curr_mem: usage(resourceType: MEMORY)
-			cpu: usageRange(start: $start, end: $end, step: $step, resourceType: CPU) {
+			curr_cpu: used(resourceType: CPU)
+			curr_mem: used(resourceType: MEMORY)
+			req_cpu: requested(resourceType: CPU)
+			req_mem: requested(resourceType: MEMORY)
+			cpu: usedRange(start: $start, end: $end, step: $step, resourceType: CPU) {
 				timestamp
 				value
 			}
-			mem: usageRange(start: $start, end: $end, step: $step, resourceType: MEMORY) {
+			mem: usedRange(start: $start, end: $end, step: $step, resourceType: MEMORY) {
 				timestamp
 				value
-			}
-		}
-		resources {
-			limits {
-				cpu
-				memory
-			}
-			requests {
-				cpu
-				memory
 			}
 		}
 	}

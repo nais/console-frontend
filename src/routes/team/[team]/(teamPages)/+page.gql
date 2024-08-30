@@ -1,15 +1,24 @@
 query Overview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		memUtil: appsUtilization(resourceType: MEMORY) {
-			name
-			env
+			app {
+				name
+				env {
+					name
+				}
+			}
+
 			requested
 			used
 		}
 
 		cpuUtil: appsUtilization(resourceType: CPU) {
-			name
-			env
+			app {
+				name
+				env {
+					name
+				}
+			}
 			requested
 			used
 		}

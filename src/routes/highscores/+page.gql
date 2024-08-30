@@ -1,11 +1,15 @@
-query Highscores {
+query TenantUtilization {
 	cpuUtil: teamsUtilization(resourceType: CPU) {
-		name
+		team {
+			slug
+		}
 		requested
 		used
 	}
 	memUtil: teamsUtilization(resourceType: MEMORY) {
-		name
+		team {
+			slug
+		}
 		requested
 		used
 	}

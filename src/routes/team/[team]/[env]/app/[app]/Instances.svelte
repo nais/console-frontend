@@ -3,8 +3,8 @@
 	import type { AppInstances } from '$houdini';
 	import { fragment, graphql, PendingValue } from '$houdini';
 	import Time from '$lib/Time.svelte';
-	import { cpuUtilization, sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
-	import { Skeleton, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import { sumCPURequests, sumMemoryRequests } from '$lib/utils/resources';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
 	export let app: AppInstances;
 	$: data = fragment(
@@ -26,8 +26,8 @@
 					}
 				}
 				utilization @loading {
-					cpuUsage: usage(resourceType: CPU)
-					memoryUsage: usage(resourceType: MEMORY)
+					cpuUsage: used(resourceType: CPU)
+					memoryUsage: used(resourceType: MEMORY)
 				}
 			}
 		`)
@@ -94,33 +94,8 @@
 				{/each}
 			{:else}
 				<Td><b>Total:</b></Td>
-				<Td
-					>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs
-					<!-- <Tooltip content="Current CPU utilization" -->
-					<!-- 	>{#if utilization !== undefined && utilization !== PendingValue} -->
-					<!-- 		{#if utilization.cpu.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()} -->
-					<!-- 			({utilization.cpu.utilization.toLocaleString('en-GB', { -->
-					<!-- 				minimumFractionDigits: 2, -->
-					<!-- 				maximumFractionDigits: 2 -->
-					<!-- 			})}%) -->
-					<!-- 		{/if} -->
-					<!-- 	{/if}</Tooltip -->
-					<!-- > -->
-				</Td>
-				<Td
-					>{sumMemoryRequests(instances.length, resources.requests.memory)}
-
-					<!-- <Tooltip content="Current memory utilization" -->
-					<!-- 	>{#if utilization !== undefined && utilization !== PendingValue} -->
-					<!-- 		{#if utilization.memory.timestamp.getTime() > new Date(+new Date() - 2 * 60 * 60 * 1000).getTime()} -->
-					<!-- 			({utilization.memory.utilization.toLocaleString('en-GB', { -->
-					<!-- 				minimumFractionDigits: 2, -->
-					<!-- 				maximumFractionDigits: 2 -->
-					<!-- 			})}%) -->
-					<!-- 		{/if} -->
-					<!-- 	{/if}</Tooltip -->
-					<!-- > -->
-				</Td>
+				<Td>{sumCPURequests(instances.length, resources.requests.cpu)} CPUs</Td>
+				<Td>{sumMemoryRequests(instances.length, resources.requests.memory)}</Td>
 				<Td></Td>
 				<Td></Td>
 				<Td></Td>

@@ -1,8 +1,8 @@
 import {
 	PendingValue,
 	UsageResourceType,
-	type Highscores$result,
 	type TeamResourceUsage$result,
+	type TenantUtilization$result,
 	type UsageResourceType$options
 } from '$houdini';
 import bytes from 'bytes-iec';
@@ -30,8 +30,12 @@ export function yearlyOverageCost(
 }
 
 export type utilization = {
-	readonly name: string;
-	readonly env: string;
+	readonly app: {
+		readonly name: string;
+		readonly env: {
+			readonly name: string;
+		};
+	};
 	readonly requested: number;
 	readonly used: number;
 }[];
@@ -47,43 +51,15 @@ export function teamUtilization(data: utilization | undefined) {
 	return Math.round((totalUsed / totalRequested) * 100);
 }
 
-export function cpuUtilization(
-	cpuRequest: string | undefined,
-	instanceCount: number,
-	totalUsage: number
-): number {
-	if (!cpuRequest || cpuRequest === '' || instanceCount == 0) return 0;
-	const totalCores = cpuCoresFromString(cpuRequest) * instanceCount;
+export function cpuUtilization(cpuRequest: number | undefined, totalUsage: number): number {
+	if (!cpuRequest) return 0;
+	const totalCores = cpuRequest;
 	const utilization = (totalUsage / totalCores) * 100;
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
-export function cpuCoresFromString(cpu: string): number {
-	if (cpu === '') return 0;
-	if (cpu.endsWith('m')) {
-		const milliCPU = parseInt(cpu.replace('m', ''));
-		const cpuCores = milliCPU / 1000;
-		return cpuCores;
-	}
-	return parseInt(cpu);
-}
-
-// returns the memory in MB
-export function memoryFromString(memory: string): number {
-	if (memory === '') return 0;
-	const mode = memory.includes('i') ? 'binary' : 'metric';
-	const parsed = bytes.parse(memory.concat('B'), { mode }) || 0;
-	return Math.round(parsed / (1000 * 1000));
-}
-
-export function memoryUtilization(
-	memoryString: string,
-	instanceCount: number,
-	totalUsage: number
-): number {
-	if (memoryString === '' || instanceCount == 0) return 0;
-	const totalMemory = memoryFromString(memoryString) * instanceCount;
-	const utilization = (totalUsage / (totalMemory * 1024 * 1024)) * 100;
+export function memoryUtilization(memory: number, totalUsage: number): number {
+	const utilization = (totalUsage / memory) * 100;
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
@@ -148,16 +124,16 @@ export function mergeCalculateAndSortOverageData(
 	return input.memUtil
 		.map((memItem) => {
 			// Find the corresponding CPU utilization item
-			const cpuItem = input.cpuUtil.find((cpu) => cpu.name === memItem.name);
+			const cpuItem = input.cpuUtil.find((cpu) => cpu.app.name === memItem.app.name);
 
 			if (!cpuItem) {
-				throw new Error(`No corresponding CPU data found for ${memItem.name}`);
+				throw new Error(`No corresponding CPU data found for ${memItem.app.name}`);
 			}
 
 			// Combine the memory and CPU data into one object
 			return {
-				name: memItem.name,
-				env: memItem.env,
+				name: memItem.app.name,
+				env: memItem.app.env.name,
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost:
@@ -237,7 +213,7 @@ export type TeamsOverageData = {
 };
 
 export function mergeCalculateAndSortOverageDataAllTeams(
-	input: Highscores$result | null,
+	input: TenantUtilization$result | null,
 	sortedBy: string = 'ENVIROMENT',
 	sortDirection: string = 'descending'
 ): TeamsOverageData[] {
@@ -248,15 +224,15 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 	return input.memUtil
 		.map((memItem) => {
 			// Find the corresponding CPU utilization item
-			const cpuItem = input.cpuUtil.find((cpu) => cpu.name === memItem.name);
+			const cpuItem = input.cpuUtil.find((cpu) => cpu.team.slug === memItem.team.slug);
 
 			if (!cpuItem) {
-				throw new Error(`No corresponding CPU data found for ${memItem.name}`);
+				throw new Error(`No corresponding CPU data found for ${memItem.team.slug}`);
 			}
 
 			// Combine the memory and CPU data into one object
 			return {
-				team: memItem.name,
+				team: memItem.team.slug,
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost:
@@ -315,6 +291,5 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 				}
 			}
 			return 0;
-		})
-		.slice(0, 10);
+		});
 }

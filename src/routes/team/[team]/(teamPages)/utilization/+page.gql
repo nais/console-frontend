@@ -1,15 +1,23 @@
 query TeamResourceUsage {
 	team(slug: "devteam") @loading {
 		memUtil: appsUtilization(resourceType: MEMORY) {
-			name
-			env
+			app {
+				name
+				env {
+					name
+				}
+			}
 			requested
 			used
 		}
 
 		cpuUtil: appsUtilization(resourceType: CPU) {
-			name
-			env
+			app {
+				name
+				env {
+					name
+				}
+			}
 			requested
 			used
 		}
