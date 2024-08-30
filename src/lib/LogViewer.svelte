@@ -123,7 +123,6 @@
 			};
 
 			updates.subscribe((result) => {
-				console.log('result ---> ', result);
 				publishEvent(result.fetching);
 				if (result.data) {
 					if (result.data.log.instance === 'api') {

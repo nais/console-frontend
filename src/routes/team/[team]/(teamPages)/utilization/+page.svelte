@@ -111,7 +111,6 @@
 	}
 
 	function optionsMem(input: OverageData[]): EChartsOption {
-		console.log(input);
 		const overage = input.map((s) => {
 			return {
 				name: s.name,
@@ -120,7 +119,6 @@
 			};
 		});
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
-		console.log(sorted);
 		return {
 			tooltip: {
 				trigger: 'axis',
