@@ -125,7 +125,7 @@ export function sumMemoryRequests(numOfInstances: number, memoryRequest: string)
 	return '-';
 }
 
-export type MergedData = {
+export type TeamOverageData = {
 	name: string;
 	env: string;
 	unusedMem: number;
@@ -137,7 +137,7 @@ export function mergeCalculateAndSortOverageData(
 	input: TeamResourceUsage$result['team'] | typeof PendingValue | undefined,
 	sortedBy: string = 'ENVIROMENT',
 	sortDirection: string = 'descending'
-): MergedData[] {
+): TeamOverageData[] {
 	if (!input) {
 		return [];
 	}
@@ -229,8 +229,8 @@ export function mergeCalculateAndSortOverageData(
 		});
 }
 
-export type MergedData2 = {
-	name: string;
+export type TeamsOverageData = {
+	team: string;
 	unusedMem: number;
 	unusedCpu: number;
 	estimatedAnnualOverageCost: number;
@@ -240,7 +240,7 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 	input: Highscores$result | null,
 	sortedBy: string = 'ENVIROMENT',
 	sortDirection: string = 'descending'
-): MergedData2[] {
+): TeamsOverageData[] {
 	if (!input) {
 		return [];
 	}
@@ -256,7 +256,7 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 
 			// Combine the memory and CPU data into one object
 			return {
-				name: memItem.name,
+				team: memItem.name,
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost:
@@ -273,14 +273,14 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 			};
 		})
 		.sort((a, b) => {
-			if (sortedBy === 'APPLICATION') {
+			if (sortedBy === 'TEAM') {
 				if (sortDirection === 'descending') {
-					if (a.name > b.name) return -1;
-					if (a.name < b.name) return 1;
+					if (a.team > b.team) return -1;
+					if (a.team < b.team) return 1;
 					return 0;
 				} else {
-					if (a.name > b.name) return 1;
-					if (a.name < b.name) return -1;
+					if (a.team > b.team) return 1;
+					if (a.team < b.team) return -1;
 					return 0;
 				}
 			} else if (sortedBy === 'CPU') {

@@ -26,7 +26,7 @@
 <div>
 	<h1>High scores</h1>
 	<Card>
-		<h2>Top 10 overage cost</h2>
+		<h2>Overage Cost - Top 10 Teams</h2>
 		<Table size={'small'} zebraStripes>
 			<Thead>
 				<Tr>
@@ -42,7 +42,7 @@
 					<Tr>
 						<Td>{i + 1}</Td>
 						<Td>
-							{overage.name}
+							{overage.team}
 						</Td>
 						<Td
 							>{overage.unusedCpu.toLocaleString('en-GB', {
@@ -62,3 +62,12 @@
 		</Table>
 	</Card>
 </div>
+
+<style>
+	h1 {
+		margin-bottom: 1rem;
+	}
+	h2 {
+		margin-bottom: 1rem;
+	}
+</style>
