@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Search } from '@nais/ds-svelte-community';
 	import { graphql, type SearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
+	import { Search } from '@nais/ds-svelte-community';
 
 	const store = graphql(`
 		query TeamSearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {

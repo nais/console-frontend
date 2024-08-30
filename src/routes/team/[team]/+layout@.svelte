@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import Feedback from '$lib/components/Feedback.svelte';
 	import { replacer, type Data } from '$lib/replacer';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Button } from '@nais/ds-svelte-community';
 	import { ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$houdini';
 
 	export let data: LayoutData;
 	$: ({ deletionInProgress } = data);
+
+	let feedbackOpen = false;
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
 	const simpleTeamPages: { [key: string]: string } = {
@@ -253,6 +256,15 @@
 				{/if}
 			{/each}
 		</nav>
+		<div>
+			<Button
+				variant="secondary"
+				size="xsmall"
+				on:click={() => {
+					feedbackOpen = true;
+				}}>Feedback</Button
+			>
+		</div>
 	</div>
 </div>
 
@@ -265,6 +277,10 @@
 	<slot />
 </div>
 
+{#if feedbackOpen}
+	<Feedback bind:open={feedbackOpen} />
+{/if}
+
 <style>
 	.page {
 		margin-top: 1rem;
@@ -274,6 +290,12 @@
 		background: var(--active-color);
 		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--active-color-strong);
+	}
+
+	.breadcrumbs .page {
+		display: flex;
+		justify-content: space-between;
+		margin: 0 auto;
 	}
 
 	span {
@@ -290,10 +312,6 @@
 
 	a:hover {
 		text-decoration: underline;
-	}
-
-	.breadcrumbs .page {
-		margin: 0 auto;
 	}
 
 	nav {

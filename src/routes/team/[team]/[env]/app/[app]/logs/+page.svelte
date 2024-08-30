@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import LogViewer from '$lib/LogViewer.svelte';
-	import { Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
+	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	let running = true;
@@ -47,26 +47,36 @@
 	<div class="topbar">
 		<div class="instances">
 			{#if $Instances.data}
-				{#each $Instances.data.app.instances as instance}
-					{@const name = instance.name}
-					<Button
-						size="small"
-						variant={instanceNames.has(name) ? 'primary' : 'secondary-neutral'}
-						on:click={() => toggleInstance(name)}>{renderInstanceName(name)}</Button
-					>
-				{/each}
-				<Button
-					size="small"
-					variant="primary"
-					disabled={instanceNames.size === $Instances.data?.app.instances.length}
-					on:click={() => {
-						if (instanceNames.size === $Instances.data?.app.instances.length) {
-							return;
-						}
-						$Instances.data?.app.instances.forEach((i) => instanceNames.add(i.name));
-						instanceNames = instanceNames;
-					}}>All</Button
-				>
+				<Fieldset style="flex-grow: 1;">
+					<svelte:fragment slot="legend">Instances</svelte:fragment>
+					<div class="instance-button">
+						<Chips>
+							{#each $Instances.data.app.instances as instance}
+								{@const name = instance.name}
+								<ToggleChip
+									value={renderInstanceName(name)}
+									selected={instanceNames.has(name)}
+									on:click={() => toggleInstance(name)}
+								/>
+							{/each}
+						</Chips>
+
+						<Button
+							size="small"
+							variant="primary"
+							disabled={instanceNames.size === $Instances.data?.app.instances.length}
+							on:click={() => {
+								if (instanceNames.size === $Instances.data?.app.instances.length) {
+									return;
+								}
+								$Instances.data?.app.instances.forEach((i) => instanceNames.add(i.name));
+								instanceNames = instanceNames;
+							}}
+						>
+							Select all
+						</Button>
+					</div>
+				</Fieldset>
 			{/if}
 		</div>
 		<div>
@@ -74,14 +84,18 @@
 				<Button
 					on:click={() => {
 						running = false;
-					}}>Pause</Button
+					}}
 				>
+					Pause
+				</Button>
 			{:else}
 				<Button
 					on:click={() => {
 						running = true;
-					}}>Restart</Button
+					}}
 				>
+					Restart
+				</Button>
 			{/if}
 		</div>
 	</div>
@@ -129,6 +143,7 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
+		gap: 1rem;
 	}
 	.instances {
 		display: flex;
@@ -136,11 +151,19 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
+		flex-grow: 1;
 	}
 	.chips {
 		display: flex;
 		flex-direction: row;
 		gap: 0.5rem;
 		padding-top: 0.8rem;
+	}
+
+	.instance-button {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>

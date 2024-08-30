@@ -36,6 +36,7 @@
 						}
 						external {
 							host @loading
+							IPv4 @loading
 							ports {
 								port
 							}
@@ -162,16 +163,34 @@
 			<h5>Outbound</h5>
 			<h6>External hostnames</h6>
 			<ul>
-				{#each $data.accessPolicy.outbound.external as external}
+				{#each $data.accessPolicy.outbound.external.filter((e) => e.host) as external}
 					{#if external.host === PendingValue}
 						<Skeleton variant="text" width="300px" />
-					{:else}
+					{:else if external.host}
 						{#each external.ports as port}
 							<li>
 								<Globe /><a href="{external.host}:{port.port}">{external.host}:{port.port}</a><br />
 							</li>
 						{:else}
 							<li><Globe /><a href="https://{external.host}">https://{external.host}</a><br /></li>
+						{/each}
+					{/if}
+				{:else}
+					<li>No outbound external access policy</li>
+				{/each}
+			</ul>
+			<h6>External IPs</h6>
+			<ul>
+				{#each $data.accessPolicy.outbound.external.filter((e) => e.IPv4) as external}
+					{#if external.IPv4 === PendingValue}
+						<Skeleton variant="text" width="300px" />
+					{:else if external.IPv4}
+						{#each external.ports as port}
+							<li>
+								<Globe />{external.IPv4}:{port.port}<br />
+							</li>
+						{:else}
+							<li><Globe />{external.IPv4}<br /></li>
 						{/each}
 					{/if}
 				{:else}

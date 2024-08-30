@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { AuditEventResourceType, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
@@ -27,6 +27,7 @@
 	} from '@nais/ds-svelte-community';
 	import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 
@@ -174,6 +175,7 @@
 				}}
 			/>
 		</Card>
+		<ActivityLog {teamName} resourceType={AuditEventResourceType.APP} columns={12} />
 	</div>
 {/if}
 

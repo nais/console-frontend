@@ -70,8 +70,8 @@
 				<div class="summary">
 					<h4>
 						CPU utilization
-						<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour.
+						<HelpText title="Current CPU utilization">
+							CPU utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
 					<p class="metric">
@@ -89,8 +89,8 @@
 				<div class="summary">
 					<h4>
 						Memory utilization
-						<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
+						<HelpText title="Current memory utilization">
+							Memory utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
 					<p class="metric">
@@ -126,6 +126,10 @@
 		<Card columns={6}>
 			<h3>Information</h3>
 			<div class="grid" style="grid-template-columns: 40% 60%;">
+				<p style="display: flex; align-items: center; gap: 0 1rem;">Version</p>
+				<p style="display: flex; align-items: center; gap: 0 0.5rem">
+					{instance.type}
+				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem;">
 					State
 					<HelpText title="State of the sql instance">

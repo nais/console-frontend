@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, type Secrets$result } from '$houdini';
+	import { AuditEventResourceType, PendingValue, type Secrets$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -8,6 +8,7 @@
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 
@@ -90,6 +91,7 @@
 				{/if}
 			{/each}
 		{/if}
+		<ActivityLog teamName={team} resourceType={AuditEventResourceType.SECRET} columns={12} />
 	</div>
 {/if}
 

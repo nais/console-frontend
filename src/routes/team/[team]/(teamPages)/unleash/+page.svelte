@@ -1,6 +1,6 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
-	import { graphql, type SearchQuery$result } from '$houdini';
+	import { AuditEventResourceType, graphql, type SearchQuery$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -32,6 +32,7 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 	import SearchTeam from './SearchTeam.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
@@ -418,6 +419,9 @@
 				{/each}
 			{/if}
 		</Card>
+		{#key unleash}
+			<ActivityLog teamName={team} resourceType={AuditEventResourceType.UNLEASH} columns={12} />
+		{/key}
 	</div>
 {:else}
 	<div style="">

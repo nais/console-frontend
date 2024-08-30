@@ -3,6 +3,7 @@
 	import { UsageResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import TeamStatus from '$lib/components/TeamStatus.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
@@ -99,6 +100,8 @@
 		<h4>Deployments</h4>
 		<Deploys {teamName} />
 	</Card>
+
+	<ActivityLog {teamName} columns={12} />
 </div>
 
 <style>
