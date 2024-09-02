@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { UsageResourceType, type UsageResourceType$options } from '$houdini';
+	import { UsageResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
+	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
@@ -26,27 +26,6 @@
 		readonly timestamp: Date;
 		readonly value: number;
 	}[];
-
-	function yearlyOverageCost(
-		resourceType: UsageResourceType$options,
-		request: number,
-		utilization: number
-	) {
-		const costPerCpuCorePerYear = 136.69;
-		const costPerMBPerYear = 18.71 / 1024;
-
-		const overage = request - request * (utilization / 100);
-
-		let cost = 0.0;
-
-		if (resourceType == UsageResourceType.CPU) {
-			cost = costPerCpuCorePerYear * overage;
-		} else {
-			cost = costPerMBPerYear * overage;
-		}
-
-		return cost > 0.0 ? cost : 0.0;
-	}
 
 	function options(data: resourceUsage, request: number, color: string = '#000000'): EChartsOption {
 		const dates = data?.map((d) => d.timestamp) || [];
