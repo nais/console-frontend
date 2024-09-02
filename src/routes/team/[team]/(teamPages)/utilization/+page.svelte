@@ -212,11 +212,11 @@
 				</div>
 				<div class="summary">
 					<h4>
-						CPU utilization<HelpText title="Current CPU utilization"
-							>Current CPU utilization for team {team}.
+						CPU utilization<HelpText title="Current CPU utilization">
+							Current CPU utilization for team {team}.
 						</HelpText>
 					</h4>
-					<p class="metric">
+					<p class="metric" style="font-size: 1.3rem;">
 						{#if resourceUtilization !== PendingValue}
 							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
 								(acc, { requested }) => acc + requested,
@@ -232,7 +232,7 @@
 									minimumFractionDigits: 2,
 									maximumFractionDigits: 2
 								}
-							)}
+							)} cores
 						{/if}
 					</p>
 				</div>
@@ -310,7 +310,7 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Unused mem cost<HelpText placement={'left'} title="Annual cost of unused memory"
+						Unused memory cost<HelpText placement={'left'} title="Annual cost of unused memory"
 							>Estimate of annual cost of unused memory for team {team} calculated from current utilization
 							data.
 						</HelpText>
@@ -364,57 +364,54 @@
 				{/if}
 			</div>
 			<div>
-				<Accordion>
-					<AccordionItem heading="All applications" open={false}>
-						<Table
-							size={'small'}
-							sort={sortState}
-							zebraStripes
-							on:sortChange={(e) => {
-								const { key } = e.detail;
-								sortState = sortTable(key, sortState);
-							}}
-						>
-							<Thead>
+				<h4>All applications</h4>
+				<Table
+					size={'small'}
+					sort={sortState}
+					zebraStripes
+					on:sortChange={(e) => {
+						const { key } = e.detail;
+						sortState = sortTable(key, sortState);
+					}}
+				>
+					<Thead>
+						<Tr>
+							<Th sortable={true} sortKey="APPLICATION">Application</Th>
+							<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+							<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+							<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+							<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#if resourceUtilization !== PendingValue}
+							{#each overageTable as overage}
 								<Tr>
-									<Th sortable={true} sortKey="APPLICATION">Application</Th>
-									<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
-									<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-									<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
-									<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+									<Td>
+										<a href={`/team/${team}/${overage.env}/app/${overage.name}/utilization`}>
+											{overage.name}
+										</a>
+									</Td>
+									<Td>{overage.env}</Td>
+									<Td
+										>{overage.unusedCpu.toLocaleString('en-GB', {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2
+										})}</Td
+									>
+									<Td>{prettyBytes(overage.unusedMem)}</Td>
+									<Td
+										>{overage.estimatedAnnualOverageCost > 0.0
+											? euroValueFormatter(overage.estimatedAnnualOverageCost)
+											: '€0.00'}</Td
+									>
 								</Tr>
-							</Thead>
-							<Tbody>
-								{#if resourceUtilization !== PendingValue}
-									{#each overageTable as overage}
-										<Tr>
-											<Td>
-												<a href={`/team/${team}/${overage.env}/app/${overage.name}/utilization`}>
-													{overage.name}
-												</a>
-											</Td>
-											<Td>{overage.env}</Td>
-											<Td
-												>{overage.unusedCpu.toLocaleString('en-GB', {
-													minimumFractionDigits: 2,
-													maximumFractionDigits: 2
-												})}</Td
-											>
-											<Td>{prettyBytes(overage.unusedMem)}</Td>
-											<Td
-												>{overage.estimatedAnnualOverageCost > 0.0
-													? euroValueFormatter(overage.estimatedAnnualOverageCost)
-													: '€0.00'}</Td
-											>
-										</Tr>
-									{:else}
-										<p>No overage data for team {team}</p>
-									{/each}
-								{/if}
-							</Tbody>
-						</Table>
-					</AccordionItem>
-				</Accordion>
+							{:else}
+								<p>No overage data for team {team}</p>
+							{/each}
+						{/if}
+					</Tbody>
+				</Table>
 			</div>
 		</Card>
 	{/if}

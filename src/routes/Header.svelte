@@ -292,6 +292,9 @@
 			<nav>
 				<ul>
 					<li>
+						<a href="/utilization">Utilization</a>
+					</li>
+					<li>
 						<a href={docURL()}>Documentation</a>
 					</li>
 					{#if user?.isAdmin}

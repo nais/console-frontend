@@ -47,14 +47,16 @@
 		used: number;
 	};
 
-	function mergeAll(data: TenantUtilization$result | null): { cpuUtil: TenantOverageData[]; memUtil: TenantOverageData[] } {
+	function mergeAll(data: TenantUtilization$result | null): {
+		cpuUtil: TenantOverageData[];
+		memUtil: TenantOverageData[];
+	} {
 		if (!data) {
 			return { cpuUtil: [], memUtil: [] };
 		}
 
-		return { memUtil: merge(data.memUtil), cpuUtil: merge(data.cpuUtil)};
+		return { memUtil: merge(data.memUtil), cpuUtil: merge(data.cpuUtil) };
 	}
-
 
 	function merge(data: TenantOverageData[]) {
 		const merged = data.reduce((acc, { team, requested, used }) => {
@@ -129,7 +131,7 @@
 			}
 		} as EChartsOption;
 	}
-	
+
 	function optionsMem(input: TenantOverageData[]): EChartsOption {
 		const overage = input.map((s) => {
 			return {
@@ -247,7 +249,7 @@
 									minimumFractionDigits: 2,
 									maximumFractionDigits: 2
 								}
-							)}
+							)} cores
 						{/if}
 					</p>
 				</div>
@@ -325,7 +327,7 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Unused mem cost<HelpText placement={'left'} title="Annual cost of unused memory"
+						Unused memory cost<HelpText placement={'left'} title="Annual cost of unused memory"
 							>Estimate of annual cost of unused memory for tenant calculated from current
 							utilization data.
 						</HelpText>
@@ -355,7 +357,7 @@
 		>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<div style="display: flex; justify-content: space-between;">
-				<h3>Unused resources per team</h3>
+				<h3>Unused resources per team (top 10)</h3>
 			</div>
 
 			<div style="display: flex">
@@ -377,53 +379,50 @@
 				/>
 			</div>
 			<div>
-				<Accordion>
-					<AccordionItem heading="All teams" open={false}>
-						<Table
-							size={'small'}
-							sort={sortState}
-							zebraStripes
-							on:sortChange={(e) => {
-								const { key } = e.detail;
-								sortState = sortTable(key, sortState);
-							}}
-						>
-							<Thead>
-								<Tr>
-									<Th sortable={true} sortKey="TEAM">Team</Th>
-									<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-									<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
-									<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
-								</Tr>
-							</Thead>
-							<Tbody>
-								{#each overageTable as overage}
-									<Tr>
-										<Td>
-											<a href={`/team/${overage.team}/utilization`}>
-												{overage.team}
-											</a>
-										</Td>
-										<Td
-											>{overage.unusedCpu.toLocaleString('en-GB', {
-												minimumFractionDigits: 2,
-												maximumFractionDigits: 2
-											})}</Td
-										>
-										<Td>{prettyBytes(overage.unusedMem)}</Td>
-										<Td
-											>{overage.estimatedAnnualOverageCost > 0.0
-												? euroValueFormatter(overage.estimatedAnnualOverageCost)
-												: '€0.00'}</Td
-										>
-									</Tr>
-								{:else}
-									<p>No overage data for tenant.</p>
-								{/each}
-							</Tbody>
-						</Table>
-					</AccordionItem>
-				</Accordion>
+				<h4>All teams</h4>
+				<Table
+					size={'small'}
+					sort={sortState}
+					zebraStripes
+					on:sortChange={(e) => {
+						const { key } = e.detail;
+						sortState = sortTable(key, sortState);
+					}}
+				>
+					<Thead>
+						<Tr>
+							<Th sortable={true} sortKey="TEAM">Team</Th>
+							<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+							<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+							<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each overageTable as overage}
+							<Tr>
+								<Td>
+									<a href={`/team/${overage.team}/utilization`}>
+										{overage.team}
+									</a>
+								</Td>
+								<Td
+									>{overage.unusedCpu.toLocaleString('en-GB', {
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+									})}</Td
+								>
+								<Td>{prettyBytes(overage.unusedMem)}</Td>
+								<Td
+									>{overage.estimatedAnnualOverageCost > 0.0
+										? euroValueFormatter(overage.estimatedAnnualOverageCost)
+										: '€0.00'}</Td
+								>
+							</Tr>
+						{:else}
+							<p>No overage data for tenant.</p>
+						{/each}
+					</Tbody>
+				</Table>
 			</div>
 		</Card>
 	{/if}

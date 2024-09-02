@@ -99,12 +99,12 @@
 							Current CPU utilization based on the total cores requested for all instances
 						</HelpText>
 					</h4>
-					<p class="metric">
+					<p class="metric" style="font-size: 1.3rem;">
 						{#if curr_cpu && cpuReq}
 							{cpuUtilization(cpuReq, curr_cpu)}% of {cpuReq.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})} CPUs
+							})} cores
 						{:else}
 							<Skeleton variant="text" width="200px" />
 						{/if}
@@ -145,7 +145,7 @@
 				</div>
 				<div class="summary">
 					<h4>
-						Cost of unused CPU<HelpText title="Annual cost of unused CPU">
+						Unused CPU cost<HelpText title="Annual cost of unused CPU">
 							Estimate of annual cost of unused CPU calculated based on current utilization.
 						</HelpText>
 					</h4>
@@ -173,7 +173,7 @@
 				</div>
 				<div class="summary">
 					<h4 style="font-size: 0.9rem">
-						Cost of unused memory<HelpText title="Annual cost of unused memory">
+						Unused memory cost<HelpText title="Annual cost of unused memory">
 							Estimate of annual cost of unused memory calculated based on current utilization.
 						</HelpText>
 					</h4>
