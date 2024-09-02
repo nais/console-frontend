@@ -7,23 +7,20 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
-	import type { CurrentResourceUtilizationForAppVariables, PageData } from './$houdini';
+	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
-	import AutoScaling from './AutoScaling.svelte';
 	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
 	import Persistence from './Persistence.svelte';
+	import Scaling from './Scaling.svelte';
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 	import Traffic from './Traffic.svelte';
+	import Utilization from './Utilization.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
 
-	export const _CurrentResourceUtilizationForAppVariables: CurrentResourceUtilizationForAppVariables =
-		() => {
-			return { app: app, env: env, team: team };
-		};
 	const restartAppMutation = () =>
 		graphql(`
 			mutation RestartApp($team: Slug!, $env: String!, $app: String!) {
@@ -37,27 +34,9 @@
 		restartApp = restartAppMutation();
 	});
 
-	const utilization = graphql(`
-		query CurrentResourceUtilizationForApp($app: String!, $team: Slug!, $env: String!) @load {
-			currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
-				cpu {
-					utilization
-					request
-					timestamp
-				}
-				memory {
-					utilization
-					request
-					timestamp
-				}
-			}
-		}
-	`);
-
 	$: app = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
-	$: appUtilization = $utilization.data?.currentResourceUtilizationForApp;
 	let restart = false;
 
 	const submit = () => {
@@ -104,9 +83,13 @@
 					{/if}
 				</div>
 			{/if}
+			<div class="utilAndScaling">
+				<Utilization app={$App.data.app} />
 
-			<AutoScaling app={$App.data.app} />
-			<Instances app={$App.data.app} utilization={appUtilization} />
+				<Scaling app={$App.data.app} />
+			</div>
+
+			<Instances app={$App.data.app} />
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
@@ -153,5 +136,11 @@
 	}
 	.marginbox {
 		margin: 0.5rem 0;
+	}
+	.utilAndScaling {
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+		margin: 1rem 0;
 	}
 </style>

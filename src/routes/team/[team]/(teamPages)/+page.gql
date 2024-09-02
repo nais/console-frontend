@@ -1,16 +1,26 @@
 query Overview($team: Slug!) @cache(policy: NetworkOnly) {
-	currentResourceUtilizationForTeam(team: $team) @loading {
-		cpu {
-			utilization
-			estimatedAnnualOverageCost
+	team(slug: $team) {
+		memUtil: appsUtilization(resourceType: MEMORY) {
+			app {
+				name
+				env {
+					name
+				}
+			}
+
+			requested
+			used
 		}
-		memory {
-			utilization
-			estimatedAnnualOverageCost
+
+		cpuUtil: appsUtilization(resourceType: CPU) {
+			app {
+				name
+				env {
+					name
+				}
+			}
+			requested
+			used
 		}
-	}
-	resourceUtilizationTrendForTeam(team: $team) @loading {
-		cpuUtilizationTrend
-		memoryUtilizationTrend
 	}
 }

@@ -1,51 +1,29 @@
 query ResourceUtilizationForApp(
-	$app: String!
 	$team: Slug!
+	$app: String!
 	$env: String!
-	$from: Date
-	$to: Date!
+	$start: Time!
+	$end: Time!
+	$step: Int!
 ) {
-	resourceUtilizationForApp(app: $app, env: $env, from: $from, team: $team, to: $to) @loading {
-		cpu {
-			timestamp
-			request
-			usage
-			utilization
-		}
-		memory {
-			timestamp
-			request
-			usage
-			utilization
-		}
-	}
-	resourceUtilizationDateRangeForTeam(team: $team) @loading {
-		from @loading
-		to @loading
-	}
-	currentResourceUtilizationForApp(app: $app, team: $team, env: $env) @loading {
-		cpu @loading {
-			utilization
-			estimatedAnnualOverageCost
-			request
-			timestamp
-		}
-		memory @loading {
-			utilization
-			estimatedAnnualOverageCost
-			timestamp
-			request
-		}
-	}
-	app(name: $app, team: $team, env: $env) @loading {
-		resources {
-			requests {
-				cpu
-				memory
-			}
-		}
+	app(name: $app, env: $env, team: $team) {
+		name
 		instances {
-			name
+			id
+		}
+		utilization {
+			curr_cpu: used(resourceType: CPU)
+			curr_mem: used(resourceType: MEMORY)
+			req_cpu: requested(resourceType: CPU)
+			req_mem: requested(resourceType: MEMORY)
+			cpu: usedRange(start: $start, end: $end, step: $step, resourceType: CPU) {
+				timestamp
+				value
+			}
+			mem: usedRange(start: $start, end: $end, step: $step, resourceType: MEMORY) {
+				timestamp
+				value
+			}
 		}
 	}
 }

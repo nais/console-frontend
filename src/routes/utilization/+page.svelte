@@ -1,11 +1,17 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { UsageResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
+	import { truncateString } from '$lib/chart/util';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
+	import {
+		mergeCalculateAndSortOverageDataAllTeams,
+		yearlyOverageCost
+	} from '$lib/utils/resources';
 	import {
 		Accordion,
 		AccordionItem,
@@ -20,58 +26,45 @@
 		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import bytes from 'bytes-iec';
-	import type { PageData } from './$houdini';
-
-	import { goto } from '$app/navigation';
-	import { PendingValue, UsageResourceType } from '$houdini';
-	import { truncateString } from '$lib/chart/util';
-	import { mergeCalculateAndSortOverageData, yearlyOverageCost } from '$lib/utils/resources';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
+	import type { PageData } from '../highscores/$houdini';
 
 	export let data: PageData;
-	$: ({ TeamResourceUsage } = data);
+	$: ({ TenantUtilization } = data);
 
-	$: resourceUtilization = $TeamResourceUsage.data?.team;
+	$: resourceUtilization = $TenantUtilization.data;
 
-	$: overageTable = mergeCalculateAndSortOverageData(
+	$: overageTable = mergeCalculateAndSortOverageDataAllTeams(
 		resourceUtilization,
 		sortState.orderBy,
 		sortState.direction
 	);
 
-	$: team = $page.params.team;
-
-	type OverageData = {
-		readonly app: {
-			readonly name: string;
-			readonly env: {
-				readonly name: string;
-			};
-		};
+	type TenantOverageData = {
+		readonly team: { readonly slug: string };
 		readonly requested: number;
 		readonly used: number;
 	};
 
-	function echartOptionsCPUOverageChart(data: OverageData[]) {
+	function echartOptionsCPUOverageChart(data: TenantOverageData[]) {
 		const opts = optionsCPU(data);
 		opts.height = '150px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function echartOptionsMemoryOverageChart(data: OverageData[]) {
+	function echartOptionsMemoryOverageChart(data: TenantOverageData[]) {
 		const opts = optionsMem(data);
 		opts.height = '150px';
 		opts.legend = { ...opts.legend, bottom: 20 };
 		return opts;
 	}
 
-	function optionsCPU(input: OverageData[]): EChartsOption {
+	function optionsCPU(input: TenantOverageData[]): EChartsOption {
 		const overage = input.map((s) => {
 			return {
-				name: s.app.name,
-				env: s.app.env.name,
+				team: s.team.slug,
 				overage: s.requested - s.used
 			};
 		});
@@ -87,7 +80,7 @@
 			xAxis: {
 				type: 'category',
 				data: sorted.map((s) => {
-					return s.env.concat(':').concat(s.name);
+					return s.team;
 				}),
 				axisLabel: {
 					rotate: 60,
@@ -114,11 +107,10 @@
 		} as EChartsOption;
 	}
 
-	function optionsMem(input: OverageData[]): EChartsOption {
+	function optionsMem(input: TenantOverageData[]): EChartsOption {
 		const overage = input.map((s) => {
 			return {
-				name: s.app.name,
-				env: s.app.env.name,
+				team: s.team.slug,
 				overage: (s.requested - s.used) / 1024 / 1024 / 1024
 			};
 		});
@@ -134,7 +126,7 @@
 			xAxis: {
 				type: 'category',
 				data: sorted.map((s) => {
-					return s.env.concat(':').concat(s.name);
+					return s.team;
 				}),
 				axisLabel: {
 					rotate: 60,
@@ -182,7 +174,7 @@
 			}
 		}
 
-		overageTable = mergeCalculateAndSortOverageData(
+		overageTable = mergeCalculateAndSortOverageDataAllTeams(
 			resourceUtilization,
 			sortState.orderBy,
 			sortState.direction
@@ -196,9 +188,9 @@
 	};
 </script>
 
-{#if $TeamResourceUsage.errors}
+{#if $TenantUtilization.errors}
 	<Alert variant="error">
-		{#each $TeamResourceUsage.errors as error}
+		{#each $TenantUtilization.errors as error}
 			{error.message}
 		{/each}
 	</Alert>
@@ -213,11 +205,11 @@
 				<div class="summary">
 					<h4>
 						CPU utilization<HelpText title="Current CPU utilization"
-							>Current CPU utilization for team {team}.
+							>Current CPU utilization for tenant.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
+						{#if resourceUtilization.cpuUtil.length > 0}
 							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
 								(acc, { requested }) => acc + requested,
 								0
@@ -246,11 +238,11 @@
 				<div class="summary">
 					<h4>
 						Memory utilization<HelpText title="Current memory utilization"
-							>Current memory utilization for team {team}.
+							>Current memory utilization for tenant.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
+						{#if resourceUtilization.memUtil.length > 0}
 							{@const memoryRequested = resourceUtilization.memUtil.reduce(
 								(acc, { requested }) => acc + requested,
 								0
@@ -276,12 +268,12 @@
 				<div class="summary">
 					<h4>
 						Unused CPU cost<HelpText title="Annual cost of unused CPU"
-							>Estimate of annual cost of unused CPU for team {team} calculated from current utilization
+							>Estimate of annual cost of unused CPU for tenant calculated from current utilization
 							data.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
+						{#if resourceUtilization.cpuUtil.length > 0}
 							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
 								(acc, { requested }) => acc + requested,
 								0
@@ -311,12 +303,12 @@
 				<div class="summary">
 					<h4>
 						Unused mem cost<HelpText placement={'left'} title="Annual cost of unused memory"
-							>Estimate of annual cost of unused memory for team {team} calculated from current utilization
-							data.
+							>Estimate of annual cost of unused memory for tenant calculated from current
+							utilization data.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
+						{#if resourceUtilization.memUtil.length > 0}
 							{@const memoryRequested = resourceUtilization.memUtil.reduce(
 								(acc, { requested }) => acc + requested,
 								0
@@ -340,32 +332,30 @@
 		>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<div style="display: flex; justify-content: space-between;">
-				<h3>Unused resources per application</h3>
+				<h3>Unused resources per team</h3>
 			</div>
 
 			<div style="display: flex">
-				{#if resourceUtilization !== PendingValue}
-					<EChart
-						options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
-						style="height: 350px; width: 50%;"
-						on:click={(e) => {
-							const [env, app] = e.detail.name.split(':');
-							goto(`/team/${team}/${env}/app/${app}/utilization`);
-						}}
-					/>
-					<EChart
-						options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
-						style="height: 350px; width: 50%;"
-						on:click={(e) => {
-							const [env, app] = e.detail.name.split(':');
-							goto(`/team/${team}/${env}/app/${app}/utilization`);
-						}}
-					/>
-				{/if}
+				<EChart
+					options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
+					style="height: 350px; width: 50%;"
+					on:click={(e) => {
+						const team = e.detail.name;
+						goto(`/team/${team}/utilization`);
+					}}
+				/>
+				<EChart
+					options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+					style="height: 350px; width: 50%;"
+					on:click={(e) => {
+						const team = e.detail.name;
+						goto(`/team/${team}/utilization`);
+					}}
+				/>
 			</div>
 			<div>
 				<Accordion>
-					<AccordionItem heading="All applications" open={false}>
+					<AccordionItem heading="All teams" open={false}>
 						<Table
 							size={'small'}
 							sort={sortState}
@@ -377,40 +367,36 @@
 						>
 							<Thead>
 								<Tr>
-									<Th sortable={true} sortKey="APPLICATION">Application</Th>
-									<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+									<Th sortable={true} sortKey="TEAM">Team</Th>
 									<Th sortable={true} sortKey="CPU">Unused CPU</Th>
 									<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
 									<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
 								</Tr>
 							</Thead>
 							<Tbody>
-								{#if resourceUtilization !== PendingValue}
-									{#each overageTable as overage}
-										<Tr>
-											<Td>
-												<a href={`/team/${team}/${overage.env}/app/${overage.name}/utilization`}>
-													{overage.name}
-												</a>
-											</Td>
-											<Td>{overage.env}</Td>
-											<Td
-												>{overage.unusedCpu.toLocaleString('en-GB', {
-													minimumFractionDigits: 2,
-													maximumFractionDigits: 2
-												})}</Td
-											>
-											<Td>{prettyBytes(overage.unusedMem)}</Td>
-											<Td
-												>{overage.estimatedAnnualOverageCost > 0.0
-													? euroValueFormatter(overage.estimatedAnnualOverageCost)
-													: '€0.00'}</Td
-											>
-										</Tr>
-									{:else}
-										<p>No overage data for team {team}</p>
-									{/each}
-								{/if}
+								{#each overageTable as overage}
+									<Tr>
+										<Td>
+											<a href={`/team/${overage.team}/utilization`}>
+												{overage.team}
+											</a>
+										</Td>
+										<Td
+											>{overage.unusedCpu.toLocaleString('en-GB', {
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2
+											})}</Td
+										>
+										<Td>{prettyBytes(overage.unusedMem)}</Td>
+										<Td
+											>{overage.estimatedAnnualOverageCost > 0.0
+												? euroValueFormatter(overage.estimatedAnnualOverageCost)
+												: '€0.00'}</Td
+										>
+									</Tr>
+								{:else}
+									<p>No overage data for tenant.</p>
+								{/each}
 							</Tbody>
 						</Table>
 					</AccordionItem>

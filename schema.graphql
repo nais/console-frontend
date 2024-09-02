@@ -37,7 +37,6 @@ type AnalysisTrail {
 type App implements Workload {
   accessPolicy: AccessPolicy!
   authz: [Authz!]!
-  autoScaling: AutoScaling!
   deployInfo: DeployInfo!
   env: Env!
   id: ID!
@@ -53,6 +52,7 @@ type App implements Workload {
   status: WorkloadStatus!
   team: Team!
   type: WorkloadType!
+  utilization: AppUtilization!
   variables: [Variable!]!
 }
 
@@ -73,28 +73,41 @@ type AppList {
   pageInfo: PageInfo!
 }
 
-"""Resource utilization overage cost for an app."""
-type AppWithResourceUtilizationOverage {
-  """The name of the app."""
-  app: String!
+type AppUtilization {
+  """
+  Gets the requested amount of resources for the requested resource type.
+  """
+  requested(resourceType: UsageResourceType!): Float!
 
-  """The environment where the app is running."""
-  env: String!
+  """Get the current usage for the requested resource type."""
+  used(resourceType: UsageResourceType!): Float!
 
-  """Estimated annual cost of the request overage."""
-  estimatedAnnualOverageCost: Float!
+  """Usage between start and end with step size for given resource type."""
+  usedRange(
+    """Fetch resource usage until this timestamp."""
+    end: Time!
 
-  """The overage for the app."""
-  overage: Float!
+    """Resource type."""
+    resourceType: UsageResourceType!
 
-  """The overage cost for the app."""
-  overageCost: Float!
+    """Fetch resource usage from this timestamp."""
+    start: Time!
 
-  """The name of the team who owns the app."""
-  team: Slug!
+    """Step size in seconds for the data points."""
+    step: Int!
+  ): [UsageDataPoint!]!
+}
 
-  """The utilization in percent."""
-  utilization: Float!
+"""Utilization data type."""
+type AppUtilizationData {
+  """The app."""
+  app: App!
+
+  """The requested amount of resources"""
+  requested: Float!
+
+  """The current resource usage."""
+  used: Float!
 }
 
 """Team status for apps."""
@@ -352,14 +365,6 @@ union AuthenticatedUser = ServiceAccount | User
 
 union Authz = AzureAD | IDPorten | Maskinporten | TokenX
 
-type AutoScaling {
-  """CPU threshold in percent"""
-  cpuThreshold: Int!
-  disabled: Boolean!
-  max: Int!
-  min: Int!
-}
-
 type AzureAD {
   application: AzureApplication
   sidecar: Sidecar
@@ -459,6 +464,10 @@ type BucketsMetrics {
   cost: Float!
 }
 
+type CPUScalingStrategy implements ScalingStrategy {
+  threshold: Int!
+}
+
 type Claims {
   extra: [String!]!
   groups: [Group!]!
@@ -527,18 +536,6 @@ input CreateTeamInput {
 
   """Team slug. After creation, this value can not be changed."""
   slug: Slug!
-}
-
-"""Current resource utilization type."""
-type CurrentResourceUtilization {
-  """The CPU utilization."""
-  cpu: ResourceUtilization!
-
-  """The memory utilization."""
-  memory: ResourceUtilization!
-
-  """The timestamp used for the calculated values."""
-  timestamp: Time!
 }
 
 """Daily cost type."""
@@ -894,6 +891,12 @@ type InvalidNaisYamlError implements StateError {
 type JobsStatus {
   failing: Int!
   total: Int!
+}
+
+type KafkaLagScalingStrategy implements ScalingStrategy {
+  consumerGroup: String!
+  threshold: Int!
+  topic: String!
 }
 
 type KafkaTopic implements Persistence {
@@ -1567,26 +1570,6 @@ type Query {
     team: Slug!
   ): App!
 
-  """Get the current resource utilization values for a specific app."""
-  currentResourceUtilizationForApp(
-    """The name of the app."""
-    app: String!
-
-    """The environment where the app is running."""
-    env: String!
-
-    """The name of the team."""
-    team: Slug!
-  ): CurrentResourceUtilization!
-
-  """
-  Get the current resource utilization for a team across all apps and environments.
-  """
-  currentResourceUtilizationForTeam(
-    """The name of the team."""
-    team: Slug!
-  ): CurrentResourceUtilization!
-
   """Get the daily cost for a team application in a specific environment."""
   dailyCostForApp(
     """The name of the application to get costs for."""
@@ -1643,72 +1626,6 @@ type Query {
 
   """Get a collection of reconcilers."""
   reconcilers(limit: Int, offset: Int): ReconcilerList!
-
-  """Get the date range for resource utilization for an app."""
-  resourceUtilizationDateRangeForApp(
-    """The name of the app."""
-    app: String!
-
-    """The environment where the app is running."""
-    env: String!
-
-    """The name of the team."""
-    team: Slug!
-  ): ResourceUtilizationDateRange!
-
-  """
-  Get the date range for resource utilization for a team across all environments.
-  """
-  resourceUtilizationDateRangeForTeam(
-    """The name of the team."""
-    team: Slug!
-  ): ResourceUtilizationDateRange!
-
-  """Get the resource utilization for an app."""
-  resourceUtilizationForApp(
-    """The name of the app."""
-    app: String!
-
-    """The environment where the app is running."""
-    env: String!
-
-    """
-    Fetch resource utilization from this date. Defaults to 7 days before the to date.
-    """
-    from: Date
-
-    """The name of the team."""
-    team: Slug!
-
-    """Fetch resource utilization until this date. Defaults to today."""
-    to: Date
-  ): ResourceUtilizationForApp!
-
-  """Get the resource utilization for a team across all environments."""
-  resourceUtilizationForTeam(
-    """
-    Fetch resource utilization from this date. Defaults to 7 days before the to date.
-    """
-    from: Date
-
-    """The team to fetch data for."""
-    team: Slug!
-
-    """Fetch resource utilization until this date. Defaults to today."""
-    to: Date
-  ): [ResourceUtilizationForEnv!]!
-
-  """Get resource utilization overage data for a team."""
-  resourceUtilizationOverageForTeam(
-    """The name of the team."""
-    team: Slug!
-  ): ResourceUtilizationOverageForTeam!
-
-  """Get the resource utilization trend for a team."""
-  resourceUtilizationTrendForTeam(
-    """The name of the team."""
-    team: Slug!
-  ): ResourceUtilizationTrend!
   search(filter: SearchFilter, limit: Int, offset: Int, query: String!): SearchList!
 
   """Get a specific team."""
@@ -1734,6 +1651,9 @@ type Query {
     """Offset to start listing teams from. Default is 0."""
     offset: Int
   ): TeamList!
+
+  """Get the resource utilization of all teams"""
+  teamsUtilization(resourceType: UsageResourceType!): [TeamUtilizationData!]!
 
   """Get a specific user."""
   user(
@@ -1897,108 +1817,13 @@ type Requests {
   memory: String!
 }
 
-"""Resource type."""
-enum ResourceType {
-  CPU
-  MEMORY
-}
-
-"""Resource utilization type."""
-type ResourceUtilization {
-  """Estimated annual cost of the request overage."""
-  estimatedAnnualOverageCost: Float!
-
-  """The requested resource amount per pod."""
-  request: Float!
-
-  """The cost associated with the requested resource amount."""
-  requestCost: Float!
-
-  """The overage of the requested resource amount."""
-  requestCostOverage: Float!
-
-  """Timestamp of the value."""
-  timestamp: Time!
-
-  """The actual resource usage."""
-  usage: Float!
-
-  """The cost associated with the actual resource usage."""
-  usageCost: Float!
-
-  """The utilization in percent."""
-  utilization: Float!
-}
-
-"""Date range type."""
-type ResourceUtilizationDateRange {
-  """The start of the range."""
-  from: Date
-
-  """The end of the range."""
-  to: Date
-}
-
-"""Resource utilization for app type."""
-type ResourceUtilizationForApp {
-  """CPU resource utilization data for the environment."""
-  cpu: [ResourceUtilization!]!
-
-  """Memory resource utilization data for the environment."""
-  memory: [ResourceUtilization!]!
-}
-
-"""Resource utilization for env type."""
-type ResourceUtilizationForEnv {
-  """CPU resource utilization data for the environment."""
-  cpu: [ResourceUtilization!]!
-
-  """Name of the environment."""
-  env: String!
-
-  """Memory resource utilization data for the environment."""
-  memory: [ResourceUtilization!]!
-}
-
-"""Resource utilization overage cost for team type."""
-type ResourceUtilizationOverageForTeam {
-  """List of CPU overage data for all apps."""
-  cpu: [AppWithResourceUtilizationOverage!]!
-
-  """List of memory overage data for all apps."""
-  memory: [AppWithResourceUtilizationOverage!]!
-
-  """The sum of the overage cost for all apps."""
-  overageCost: Float!
-
-  """Timestamp used for the calculated values."""
-  timestamp: Time!
-}
-
-"""Resource utilization trend type."""
-type ResourceUtilizationTrend {
-  """The average CPU utilization from the previous week."""
-  averageCpuUtilization: Float!
-
-  """The average memory utilization from the previous week."""
-  averageMemoryUtilization: Float!
-
-  """The CPU utilization trend in percentage."""
-  cpuUtilizationTrend: Float!
-
-  """The current CPU utilization."""
-  currentCpuUtilization: Float!
-
-  """The current memory utilization."""
-  currentMemoryUtilization: Float!
-
-  """The memory utilization trend in percentage."""
-  memoryUtilizationTrend: Float!
-}
-
 type Resources {
+  """Instances using resources above this threshold will be killed"""
   limits: Limits!
+
+  """How many resources are allocated to each instance """
   requests: Requests!
+  scaling: Scaling!
 }
 
 type RestartAppResult {
@@ -2041,6 +1866,16 @@ type Run {
   name: String!
   podNames: [String!]!
   startTime: Time
+}
+
+type Scaling {
+  max: Int!
+  min: Int!
+  strategies: [ScalingStrategy!]!
+}
+
+interface ScalingStrategy {
+  threshold: Int!
 }
 
 input SearchFilter {
@@ -2276,6 +2111,9 @@ type Team {
     """Order entries by"""
     orderBy: OrderBy
   ): AppList!
+
+  """Gets the utilization data for all applications"""
+  appsUtilization(resourceType: UsageResourceType!): [AppUtilizationData!]!
 
   """Audit events for this team."""
   auditEvents(
@@ -2629,6 +2467,17 @@ type TeamSync {
   correlationID: ID!
 }
 
+type TeamUtilizationData {
+  """The requested amount of resources"""
+  requested: Float!
+
+  """The team."""
+  team: Team!
+
+  """The current resource usage."""
+  used: Float!
+}
+
 """Input for filtering teams."""
 input TeamsFilter {
   github: TeamsFilterGitHub
@@ -2643,7 +2492,7 @@ input TeamsFilterGitHub {
 }
 
 """
-Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
+Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present. E.g. `2024-09-06T13:37:00Z`.
 """
 scalar Time
 
@@ -2692,6 +2541,21 @@ input UpdateTeamSlackAlertsChannelInput {
 
   """The environment for the alerts sent to the channel."""
   environment: String!
+}
+
+"""Resource utilization type."""
+type UsageDataPoint {
+  """Timestamp of the value."""
+  timestamp: Time!
+
+  """Value of the used resource at the given timestamp."""
+  value: Float!
+}
+
+"""Resource type."""
+enum UsageResourceType {
+  CPU
+  MEMORY
 }
 
 """User type."""

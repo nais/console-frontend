@@ -97,7 +97,7 @@
 	export let onSelected: (
 		node: SearchQuery$result['search']['nodes'][0],
 		e: MouseEvent | KeyboardEvent
-	) => void = () => {
+	) => void = (node, e) => {
 		query = '';
 		showSearch = false;
 	};

@@ -1,0 +1,16 @@
+query TenantUtilization {
+	cpuUtil: teamsUtilization(resourceType: CPU) {
+		team {
+			slug
+		}
+		requested
+		used
+	}
+	memUtil: teamsUtilization(resourceType: MEMORY) {
+		team {
+			slug
+		}
+		requested
+		used
+	}
+}

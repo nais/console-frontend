@@ -1,57 +1,25 @@
-query ResourceUtilizationForTeam($team: Slug!, $from: Date!, $to: Date!) {
-	resourceUtilizationForTeam(team: $team, from: $from, to: $to) @loading(count: 2) {
-		env @loading
-		cpu {
-			timestamp
-			request
-			usage
-			utilization
+query TeamResourceUsage {
+	team(slug: "devteam") @loading {
+		memUtil: appsUtilization(resourceType: MEMORY) {
+			app {
+				name
+				env {
+					name
+				}
+			}
+			requested
+			used
 		}
-		memory {
-			timestamp
-			request
-			usage
-			utilization
-		}
-	}
-	resourceUtilizationDateRangeForTeam(team: $team) @loading {
-		from @loading
-		to @loading
-	}
-	currentResourceUtilizationForTeam(team: $team) @loading {
-		cpu @loading {
-			estimatedAnnualOverageCost
-			timestamp
-			request
-			usage
-			utilization
-		}
-		memory @loading {
-			estimatedAnnualOverageCost
-			timestamp
-			request
-			usage
-			utilization
-		}
-	}
-	resourceUtilizationOverageForTeam(team: $team) @loading {
-		overageCost
-		timestamp
-		cpu {
-			app
-			env
-			overage
-			team
-			overageCost
-			estimatedAnnualOverageCost
-		}
-		memory {
-			app
-			env
-			overage
-			team
-			overageCost
-			estimatedAnnualOverageCost
+
+		cpuUtil: appsUtilization(resourceType: CPU) {
+			app {
+				name
+				env {
+					name
+				}
+			}
+			requested
+			used
 		}
 	}
 }

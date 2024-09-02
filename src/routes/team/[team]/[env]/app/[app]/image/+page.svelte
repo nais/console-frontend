@@ -351,7 +351,6 @@
 			{auth}
 			on:close={() => {
 				findingToSuppress = undefined;
-				console.log('closing now...');
 				setTimeout(() => {
 					// refetch the image to update the findings
 					summary.fetch({

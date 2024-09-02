@@ -1,68 +1,102 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { UsageResourceType, type UsageResourceType$options } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Time from '$lib/Time.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { resourceUsagePercentageTransformLineChart } from '$lib/chart/resource_usage_app_transformer';
-	import type { ResourceUtilizationApp } from '$lib/chart/types';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
+	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
 	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
+	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ ResourceUtilizationForApp } = data);
+	export const start = new Date();
 
-	$: resourceUtilization = $ResourceUtilizationForApp.data?.resourceUtilizationForApp;
-	$: dateRange = $ResourceUtilizationForApp.data?.resourceUtilizationDateRangeForTeam;
-	$: currentUtilization = $ResourceUtilizationForApp.data?.currentResourceUtilizationForApp;
+	$: usageRange = $ResourceUtilizationForApp.data?.app.utilization;
+	$: memoryReq = $ResourceUtilizationForApp.data?.app.utilization.req_mem;
+	$: cpuReq = $ResourceUtilizationForApp.data?.app.utilization.req_cpu;
+	$: curr_cpu = $ResourceUtilizationForApp.data?.app.utilization.curr_cpu;
+	$: curr_mem = $ResourceUtilizationForApp.data?.app.utilization.curr_mem;
 
-	$: minDate = dateRange?.from;
-	$: maxDate = dateRange?.to;
+	type resourceUsage = {
+		readonly timestamp: Date;
+		readonly value: number;
+	}[];
 
-	$: min =
-		minDate && minDate !== PendingValue
-			? minDate.toISOString().split('T')[0]
-			: new Date(Date.now() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-	$: max =
-		maxDate && maxDate !== PendingValue
-			? maxDate.toISOString().split('T')[0]
-			: new Date(Date.now()).toISOString().split('T')[0];
+	function yearlyOverageCost(
+		resourceType: UsageResourceType$options,
+		request: number,
+		utilization: number
+	) {
+		const costPerCpuCorePerYear = 136.69;
+		const costPerMBPerYear = 18.71 / 1024;
 
-	function echartOptionsUsagePercentage(data: ResourceUtilizationApp) {
-		const opts = resourceUsagePercentageTransformLineChart(data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
+		const overage = request - request * (utilization / 100);
 
-	function update() {
-		const params = new URLSearchParams({ from, to });
-		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
-	}
+		let cost = 0.0;
 
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
-
-	$: {
-		if (maxDate && maxDate !== PendingValue) {
-			if (data.toDate > maxDate) {
-				from = new Date(maxDate.getTime() - 7 * 1000 * 24 * 60 * 60).toISOString().split('T')[0];
-				to = max;
-				update();
-			}
+		if (resourceType == UsageResourceType.CPU) {
+			cost = costPerCpuCorePerYear * overage;
+		} else {
+			cost = costPerMBPerYear * overage;
 		}
+
+		return cost > 0.0 ? cost : 0.0;
 	}
 
-	let tenant = $page.url.hostname;
-	if (tenant === 'localhost') {
-		tenant = 'nav';
-	} else {
-		tenant = tenant.split('.')[1];
+	function options(data: resourceUsage, request: number, color: string = '#000000'): EChartsOption {
+		const dates = data?.map((d) => d.timestamp) || [];
+		return {
+			tooltip: <EChartsOption['tooltip']>{
+				trigger: 'axis',
+				axisPointer: {
+					type: 'line'
+				},
+				valueFormatter: (value: number) =>
+					value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+			},
+			xAxis: <EChartsOption['xAxis']>{
+				type: 'category',
+				boundaryGap: false,
+				data: dates.map((date) => {
+					return date.toLocaleDateString('en-GB', {
+						year: 'numeric',
+						month: 'short',
+						day: 'numeric',
+						hour: '2-digit',
+						minute: '2-digit'
+					});
+				})
+			},
+			series: <EChartsOption['series']>[
+				{
+					name: 'Usage',
+					type: 'line',
+					data: data?.map((d) => d.value) || [],
+					color
+				},
+				{
+					name: 'Requested',
+					type: 'line',
+					data: data?.map(() => request) || [],
+					showSymbol: false,
+					color: '#C30000'
+				}
+			],
+
+			yAxis: <EChartsOption['yAxis']>{
+				type: 'value',
+				name: 'Usage of requested resources',
+				axisLabel: {
+					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+				},
+				scale: false
+			}
+		};
 	}
 </script>
 
@@ -81,19 +115,14 @@
 				</div>
 				<div class="summary">
 					<h4>
-						CPU utilization<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour.
-							{#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
-								<br />Last updated <Time distance={true} time={currentUtilization.cpu.timestamp} />
-							{/if}
+						CPU utilization
+						<HelpText title="Current CPU utilization">
+							Current CPU utilization based on the total cores requested for all instances
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{currentUtilization.cpu.utilization.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}% of {currentUtilization.cpu.request.toLocaleString('en-GB', {
+						{#if curr_cpu && cpuReq}
+							{cpuUtilization(cpuReq, curr_cpu)}% of {cpuReq.toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
 							})} CPUs
@@ -102,33 +131,80 @@
 						{/if}
 					</p>
 				</div>
-			</div></Card
-		>
-
+			</div>
+		</Card>
 		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
+			<div class="summaryCard">
 				<div class="summaryIcon">
 					<MemoryIcon size="32" color="#91dc75" />
 				</div>
 				<div class="summary">
 					<h4>
-						Memory utilization<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
-							{#if currentUtilization !== undefined && currentUtilization.memory !== PendingValue}
-								<br />Last updated <Time
-									distance={true}
-									time={currentUtilization.memory.timestamp}
-								/>
-							{/if}
+						Memory utilization
+						<HelpText title="Current Memory utilization">
+							Current memory utilization based on the total memory requested for all instances
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							{currentUtilization.memory.utilization.toLocaleString('en-GB', {
+						{#if curr_mem && memoryReq}
+							{memoryUtilization(memoryReq, curr_mem)}% of {prettyBytes(memoryReq, {
+								locale: 'en',
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
-							})}% of {prettyBytes(currentUtilization.memory.request, {
-								locale: 'en',
+							})}
+						{:else}
+							<Skeleton variant="text" width="200px" />
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3} borderColor="#83bff6">
+			<div class="summaryCard" style="--bg-color: #83bff6">
+				<div class="summaryIcon">
+					<CostIcon size="32" color="#83bff6" />
+				</div>
+				<div class="summary">
+					<h4>
+						Cost of unused CPU<HelpText title="Annual cost of unused CPU">
+							Estimate of annual cost of unused CPU calculated based on current utilization.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if curr_cpu && cpuReq}
+							€ {yearlyOverageCost(
+								UsageResourceType.CPU,
+								cpuReq,
+								cpuUtilization(cpuReq, curr_cpu)
+							).toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}
+						{:else}
+							<Skeleton variant="text" width="200px" />
+						{/if}
+					</p>
+				</div>
+			</div>
+		</Card>
+		<Card columns={3} borderColor="#91dc75">
+			<div class="summaryCard" style="--bg-color: #91dc75">
+				<div class="summaryIcon">
+					<CostIcon size="32" color="#91dc75" />
+				</div>
+				<div class="summary">
+					<h4 style="font-size: 0.9rem">
+						Cost of unused memory<HelpText title="Annual cost of unused memory">
+							Estimate of annual cost of unused memory calculated based on current utilization.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{#if curr_mem && memoryReq}
+							€ {yearlyOverageCost(
+								UsageResourceType.MEMORY,
+								memoryReq,
+								memoryUtilization(memoryReq, curr_mem)
+							).toLocaleString('en-GB', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
 							})}
@@ -139,86 +215,42 @@
 				</div>
 			</div></Card
 		>
-		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard" style="--bg-color: #83bff6">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost of unused CPU<HelpText title="Annual cost of unused CPU"
-							>Estimate of annual cost of unused CPU calculated from utilization data for the last
-							elapsed hour.
-							{#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
-								<br />Last updated <Time distance={true} time={currentUtilization.cpu.timestamp} />
-							{/if}
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							€{currentUtilization.cpu.estimatedAnnualOverageCost > 0.0
-								? currentUtilization.cpu.estimatedAnnualOverageCost.toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})
-								: '0.00'}
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
-		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost of unused memory<HelpText placement={'left'} title="Annual cost of unused memory"
-							>Estimate of annual cost of unused memory calculated from utilization data for the
-							last elapsed hour.
-							{#if currentUtilization !== undefined && currentUtilization.cpu !== PendingValue}
-								<br />Last updated <Time distance={true} time={currentUtilization?.cpu.timestamp} />
-							{/if}
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if currentUtilization && currentUtilization.cpu !== PendingValue}
-							€{currentUtilization.memory.estimatedAnnualOverageCost > 0.0
-								? currentUtilization.memory.estimatedAnnualOverageCost.toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})
-								: '0.00'}
-						{:else}
-							<Skeleton variant="text" width="200px" />
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
-
 		<Card columns={12} borderColor="var(--a-gray-200)">
-			<h3>Resource utilization</h3>
-			{#if resourceUtilization && resourceUtilization !== PendingValue}
-				{#if minDate && maxDate && minDate !== PendingValue && maxDate !== PendingValue}
-					<label for="from">From:</label>
-					<input type="date" id="from" {min} max={to} bind:value={from} on:change={update} />
-					<label for="to">To:</label>
-					<input type="date" id="to" min={from} {max} bind:value={to} on:change={update} />
-
-					{#if resourceUtilization.cpu.length > 0}
-						<p>This graph displays the percentage of requests used for memory and CPU.</p>
-						<EChart
-							options={echartOptionsUsagePercentage(resourceUtilization)}
-							style="height: 400px"
-						/>
-					{:else}
-						<Alert variant="warning">No data available</Alert>
-					{/if}
-				{/if}
+			<span class="graphHeader">
+				<h3 style={'margin-bottom: 0'}>Memory usage</h3>
+				<span class="intervalPicker">
+					{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
+						<a
+							class:active={($page.url.searchParams.get('interval') || '7d') == interval}
+							href="?interval={interval}">{interval}</a
+						>
+					{/each}
+				</span>
+			</span>
+			{#if usageRange && memoryReq}
+				<EChart
+					options={options(
+						usageRange.mem.map((d) => {
+							return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
+						}),
+						memoryReq / 1024 / 1024 / 1024,
+						'rgb(145, 220, 117)'
+					)}
+					style="height: 400px"
+				/>
+			{:else}
+				<div class="loading">
+					<Skeleton variant={'rectangle'} height="450px" />
+				</div>
+			{/if}
+			<span class="graphHeader">
+				<h3 style={'margin-bottom: 0'}>CPU usage</h3>
+			</span>
+			{#if usageRange && cpuReq}
+				<EChart
+					options={options(usageRange.cpu, cpuReq, 'rgb(131, 191, 246)')}
+					style="height: 400px"
+				/>
 			{:else}
 				<div class="loading">
 					<Skeleton variant={'rectangle'} height="450px" />
@@ -265,5 +297,25 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
+	}
+	.graphHeader {
+		display: flex;
+		justify-content: space-between;
+	}
+	a {
+		cursor: pointer;
+		text-decoration: none;
+		color: var(--a-text-default);
+	}
+	a.active {
+		font-weight: 600;
+		text-decoration: underline;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+	.intervalPicker {
+		display: flex;
+		gap: 1rem;
 	}
 </style>
