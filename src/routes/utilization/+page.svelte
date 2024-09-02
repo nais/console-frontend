@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { UsageResourceType } from '$houdini';
+	import { UsageResourceType, type TenantUtilization$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
@@ -33,7 +33,7 @@
 	export let data: PageData;
 	$: ({ TenantUtilization } = data);
 
-	$: resourceUtilization = $TenantUtilization.data;
+	$: resourceUtilization = mergeAll($TenantUtilization.data);
 
 	$: overageTable = mergeCalculateAndSortOverageDataAllTeams(
 		resourceUtilization,
@@ -43,9 +43,32 @@
 
 	type TenantOverageData = {
 		readonly team: { readonly slug: string };
-		readonly requested: number;
-		readonly used: number;
+		requested: number;
+		used: number;
 	};
+
+	function mergeAll(data: TenantUtilization$result | null): { cpuUtil: TenantOverageData[]; memUtil: TenantOverageData[] } {
+		if (!data) {
+			return { cpuUtil: [], memUtil: [] };
+		}
+
+		return { memUtil: merge(data.memUtil), cpuUtil: merge(data.cpuUtil)};
+	}
+
+
+	function merge(data: TenantOverageData[]) {
+		const merged = data.reduce((acc, { team, requested, used }) => {
+			const existing = acc.get(team.slug);
+			if (existing) {
+				existing.requested += requested;
+				existing.used += used;
+			} else {
+				acc.set(team.slug, { team, requested, used });
+			}
+			return acc;
+		}, new Map<string, TenantOverageData>());
+		return Array.from(merged.values());
+	}
 
 	function echartOptionsCPUOverageChart(data: TenantOverageData[]) {
 		const opts = optionsCPU(data);
@@ -106,7 +129,7 @@
 			}
 		} as EChartsOption;
 	}
-
+	
 	function optionsMem(input: TenantOverageData[]): EChartsOption {
 		const overage = input.map((s) => {
 			return {

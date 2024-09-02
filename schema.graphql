@@ -2468,6 +2468,9 @@ type TeamSync {
 }
 
 type TeamUtilizationData {
+  """The environment for the utilization data."""
+  environment: String!
+
   """The requested amount of resources"""
   requested: Float!
 
