@@ -28,7 +28,7 @@
 	import bytes from 'bytes-iec';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageData } from '../highscores/$houdini';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ TenantUtilization } = data);
