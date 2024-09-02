@@ -4,6 +4,7 @@
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
+	import prettyBytes from 'pretty-bytes';
 
 	export let app: Utilization;
 	$: data = fragment(
@@ -32,9 +33,9 @@
 		{@const memUtil = memoryUtilization(mem, memUsage)}
 
 		<CpuIcon />
-		{cpuUtil}% of {cpu} CPU<br />
+		{cpuUtil}% of {cpu}CPUs<br />
 		<MemoryIcon />
-		{memUtil}% of {mem} memory
+		{memUtil}% of {prettyBytes(mem)} of memory
 	{/if}
 </div>
 
