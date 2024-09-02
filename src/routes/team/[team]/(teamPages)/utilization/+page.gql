@@ -1,5 +1,5 @@
-query TeamResourceUsage {
-	team(slug: "devteam") @loading {
+query TeamResourceUsage($team: Slug!) {
+	team(slug: $team) @loading {
 		memUtil: appsUtilization(resourceType: MEMORY) {
 			app {
 				name
