@@ -435,6 +435,11 @@
 		grid-row: 1;
 	}
 
+	.digest {
+		grid-column-start: 1;
+		grid-column-end: 3;
+	}
+
 	.rekor {
 		grid-column-start: 1;
 		grid-column-end: 3;
