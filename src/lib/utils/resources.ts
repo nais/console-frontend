@@ -124,7 +124,7 @@ export function mergeCalculateAndSortOverageData(
 	return input.memUtil
 		.map((memItem) => {
 			// Find the corresponding CPU utilization item
-			const cpuItem = input.cpuUtil.find((cpu) => cpu.app.name === memItem.app.name);
+			const cpuItem = input.cpuUtil.find((cpu) => cpu.app.name === memItem.app.name && cpu.app.env.name === memItem.app.env.name);
 
 			if (!cpuItem) {
 				throw new Error(`No corresponding CPU data found for ${memItem.app.name}`);
