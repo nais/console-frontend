@@ -28,6 +28,7 @@ query NaisJobImage(
 				runnerEnvironment
 				sourceRepositoryOwnerURI
 				integratedTime
+				imageDigestSHA
 			}
 			summary {
 				id

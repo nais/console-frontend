@@ -129,6 +129,10 @@
 						<code>{tag ? tag : ''}</code>
 					</div>
 					{#if image.projectId !== ''}
+						<div class="digest">
+							<h5>Digest</h5>
+							<code>{image.rekor.imageDigestSHA ? image.rekor.imageDigestSHA : ''}</code>
+						</div>
 						<div class="rekor">
 							<a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}">
 								Attestation details

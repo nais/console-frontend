@@ -1796,6 +1796,7 @@ type Rekor {
   gitHubWorkflowName: String!
   gitHubWorkflowRef: String!
   gitHubWorkflowSHA: String!
+  imageDigestSHA: String!
   integratedTime: Int!
   logIndex: String!
   oIDCIssuer: String!
