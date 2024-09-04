@@ -7,6 +7,11 @@ import {
 } from '$houdini';
 import bytes from 'bytes-iec';
 
+export function round(value: number, decimals: number = 0): number {
+    const factor = Math.pow(10, decimals);
+    return Math.round(value * factor) / factor;
+}
+
 // memory should be in Bytes
 export function yearlyOverageCost(
 	resourceType: UsageResourceType$options,

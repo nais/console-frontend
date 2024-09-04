@@ -7,8 +7,6 @@
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import {
-		Accordion,
-		AccordionItem,
 		Alert,
 		HelpText,
 		Table,
@@ -25,7 +23,7 @@
 	import { goto } from '$app/navigation';
 	import { PendingValue, UsageResourceType } from '$houdini';
 	import { truncateString } from '$lib/chart/util';
-	import { mergeCalculateAndSortOverageData, yearlyOverageCost } from '$lib/utils/resources';
+	import { mergeCalculateAndSortOverageData, round, yearlyOverageCost } from '$lib/utils/resources';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 
@@ -226,13 +224,7 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							{percentageFormatter((cpuUsage / cpuRequested) * 100)} of {cpuRequested.toLocaleString(
-								'en-GB',
-								{
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								}
-							)} cores
+							{percentageFormatter(round((cpuUsage / cpuRequested) * 100,0))} of {round(cpuRequested,0)} cores
 						{/if}
 					</p>
 				</div>
@@ -259,7 +251,7 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							{percentageFormatter((memoryUsage / memoryRequested) * 100)} of {bytes.format(
+							{percentageFormatter(round((memoryUsage / memoryRequested) * 100,0))} of {bytes.format(
 								memoryRequested,
 								{ decimalPlaces: 2 }
 							)}
@@ -290,14 +282,11 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							€{yearlyOverageCost(
+							€{round(yearlyOverageCost(
 								UsageResourceType.CPU,
 								cpuRequested,
 								cpuUsage / cpuRequested
-							).toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
+							),0)}
 						{/if}
 					</p>
 				</div>
@@ -325,14 +314,11 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							€{yearlyOverageCost(
+							€{round(yearlyOverageCost(
 								UsageResourceType.MEMORY,
 								memoryRequested,
 								memoryUsage / memoryRequested
-							).toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}
+							),0)}
 						{/if}
 					</p>
 				</div>
