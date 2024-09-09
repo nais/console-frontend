@@ -118,7 +118,7 @@
 							{:else}
 								<Tr>
 									<Td>
-										<a href="/team/{teamName}/{node.env}/app/{node.appName}">{node.appName}</a>
+										<a href="/team/{teamName}/{node.env}/app/{node.workloadName}">{node.workloadName}</a>
 									</Td>
 									<Td>{node.env}</Td>
 									{#if node.summary !== null}
