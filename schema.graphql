@@ -2385,6 +2385,22 @@ type Team {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
+
+  """The vulnerabilities for the team's applications."""
+  vulnerabilities(
+    filter: VulnerabilityFilter
+
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): VulnerabilityList!
+
+  """The vulnerabilities summary for the team's applications."""
   vulnerabilitiesSummary: VulnerabilitySummaryForTeam!
 }
 
@@ -2649,6 +2665,38 @@ input VariableInput {
 type VulnIdAlias {
   name: String!
   source: String!
+}
+
+input VulnerabilityFilter {
+  """Filter by environment"""
+  envs: [String!]
+
+  """
+  Require the presence of a Software Bill of Materials (SBOM) in the vulnerability report.
+  """
+  requireSbom: Boolean
+}
+
+type VulnerabilityList {
+  nodes: [VulnerabilityNode!]!
+  pageInfo: PageInfo!
+}
+
+type VulnerabilityNode {
+  env: String!
+  hasBom: Boolean!
+  id: ID!
+  summary: VulnerabilitySummary
+  workloadName: String!
+}
+
+type VulnerabilitySummary {
+  critical: Int!
+  high: Int!
+  low: Int!
+  medium: Int!
+  riskScore: Int!
+  unassigned: Int!
 }
 
 type VulnerabilitySummaryForTeam {

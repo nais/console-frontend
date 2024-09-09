@@ -19,14 +19,12 @@ query TeamVulnerabilities(
 			}
 
 			nodes @loading(count: 10) {
-				appName
+				workloadName
 				env
-				findingsLink
 				hasBom
 				summary {
 					riskScore
 					unassigned
-					total
 					critical
 					high
 					medium
