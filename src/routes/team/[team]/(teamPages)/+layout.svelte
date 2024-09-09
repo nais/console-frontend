@@ -19,7 +19,7 @@
 		LineGraphStackedIcon,
 		PersonGroupIcon,
 		QuietZoneIcon,
-		SandboxIcon
+		SandboxIcon, VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	import type { LayoutData } from './$types';
@@ -138,6 +138,12 @@
 					routeId: '/team/[team]/(teamPages)/utilization',
 					withSubRoutes: true,
 					icon: LineGraphStackedIcon
+				},
+				{
+					name: 'Vulnerabilities',
+					routeId: '/team/[team]/(teamPages)/vulnerabilities',
+					withSubRoutes: true,
+					icon: VirusIcon
 				}
 			]
 		},
