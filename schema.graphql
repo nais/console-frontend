@@ -999,6 +999,11 @@ type MaskinportenScope {
   exposes: [Expose!]!
 }
 
+type MissingSbomError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+}
+
 """Monthly cost type."""
 type MonthlyCost {
   """A list of monthly cost entries."""
@@ -1816,6 +1821,11 @@ type RepositoryList {
 type Requests {
   cpu: String!
   memory: String!
+}
+
+interface ResourceStatus {
+  errors: [StateError!]!
+  state: State!
 }
 
 type Resources {
@@ -2641,15 +2651,6 @@ type VulnIdAlias {
   source: String!
 }
 
-type Vulnerability {
-  appName: String!
-  env: String!
-  findingsLink: String!
-  hasBom: Boolean!
-  id: ID!
-  summary: VulnerabilitySummaryForTeam
-}
-
 type VulnerabilitySummaryForTeam {
   bomCount: Int!
   coverage: Float!
@@ -2659,6 +2660,12 @@ type VulnerabilitySummaryForTeam {
   medium: Int!
   riskScore: Int!
   unassigned: Int!
+}
+
+type VulnerableError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+  summary: ImageVulnerabilitySummary
 }
 
 interface Workload {
@@ -2677,7 +2684,7 @@ interface Workload {
   variables: [Variable!]!
 }
 
-type WorkloadStatus {
+type WorkloadStatus implements ResourceStatus {
   errors: [StateError!]!
   state: State!
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, fragment, graphql, type AppErrorFragment } from '$houdini';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
 
 	export let error: AppErrorFragment;
@@ -53,6 +53,14 @@
 						mutualExplanation
 						namespace
 						isJob
+					}
+				}
+				... on MissingSbomError {
+					level
+				}
+				... on VulnerableError {
+					summary {
+					 riskScore
 					}
 				}
 			}
@@ -201,6 +209,21 @@
 					>Nais Application reference - accessPolicy</a
 				>.</Alert
 			>
+		</div>
+	{:else if $data.__typename === 'MissingSbomError'}
+		<div class="wrapper">
+			<Alert variant="error">
+				<h4>Missing SBOM</h4>
+				Application does not have a Software Bill of Materials (SBOM) registered. See <a href="https://docs.nais.io/services/salsa/#slsa-in-nais">NAIS documentation</a> on how to fix.
+			</Alert>
+		</div>
+	{:else if $data.__typename === 'VulnerableError'}
+		<div class="wrapper">
+			<Alert variant="warning">
+				<h4>Application is vulnerable</h4>
+				Application is considered vulnerable with a risk score of {$data.summary?.riskScore} which is higher than the acceptable threshold of ?. Please keep your application's dependencies up to date.
+			    The threshold is based on ....
+			</Alert>
 		</div>
 	{:else}
 		<div class="wrapper">
