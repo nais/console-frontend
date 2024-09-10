@@ -32,5 +32,16 @@ query TeamVulnerabilities(
 				}
 			}
 		}
+		vulnerabilitiesSummary {
+			riskScore
+			critical
+			high
+			medium
+			low
+			bomCount
+			unassigned
+			coverage
+			totalWorkloads
+		}
 	}
 }

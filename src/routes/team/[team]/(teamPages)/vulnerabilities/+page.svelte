@@ -74,6 +74,24 @@
         <Card columns={3}>
             <div class="summaryCard">
                 <div>
+                    status
+                </div>
+                <div class="summary">
+                    <h4>
+                        Status
+                        <HelpText title="Current team vulnerability status"
+                        >The current status of the team's vulnerabilities.
+                        </HelpText>
+                    </h4>
+                    <p class="metric">
+                        > 100%
+                    </p>
+                </div>
+            </div>
+        </Card>
+        <Card columns={3}>
+            <div class="summaryCard">
+                <div>
                     <CircleProgressBar progress={70 / 100}/>
                 </div>
                 <div class="summary">
@@ -89,9 +107,43 @@
                 </div>
             </div>
         </Card>
+        <Card columns={3}>
+            <div class="summaryCard">
+                <div>
+                    Trend
+                </div>
+                <div class="summary">
+                    <h4>
+                        Risk trend
+                        <HelpText title="Current team risk trend"
+                        >The current risk trend for the team's vulnerabilities.
+                        </HelpText>
+                    </h4>
+                    <p class="metric">
+                        1000
+                    </p>
+                </div>
+            </div>
+        </Card>
+        <Card columns={3}>
+            <div class="summaryCard">
+                <div>
+                    Number of critical
+                </div>
+                <div class="summary">
+                    <h4>
+                        Critical
+                        <HelpText title="Current team vulnerability status"
+                        >The current status of the team's vulnerabilities.
+                        </HelpText>
+                    </h4>
+                    <p class="metric">
+                        12
+                    </p>
+                </div>
+            </div>
+        </Card>
         <Card columns={12}>
-            <h3>Current vulnerabilities for each application</h3>
-
             {#if team !== undefined && team.id !== PendingValue}
                 <div class="env-filter">
                     <Select
@@ -113,7 +165,7 @@
 
             <Table size="small" sort={sortState} on:sortChange={sortChange}>
                 <Thead>
-                <Th sortable={true} sortKey={OrderByField.NAME}>Name</Th>
+                <Th sortable={true} sortKey={OrderByField.NAME}>Workload</Th>
                 <Th sortable={true} sortKey={OrderByField.ENV}>Env</Th>
                 <Th sortable={true} sortKey={OrderByField.SEVERITY_CRITICAL}>Critical</Th>
                 <Th sortable={true} sortKey={OrderByField.SEVERITY_HIGH}>High</Th>

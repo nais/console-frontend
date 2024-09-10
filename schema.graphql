@@ -2707,6 +2707,8 @@ type VulnerabilitySummaryForTeam {
   low: Int!
   medium: Int!
   riskScore: Int!
+  riskScoreTrend: Float!
+  totalWorkloads: Int!
   unassigned: Int!
 }
 
