@@ -25,9 +25,12 @@
         Tooltip,
         Tr
     } from '@nais/ds-svelte-community';
-    import {ExclamationmarkTriangleFillIcon} from '@nais/ds-svelte-community/icons';
+    import {ExclamationmarkTriangleFillIcon, SealXMarkIcon, ShieldIcon, ShieldLockIcon} from '@nais/ds-svelte-community/icons';
     import type {PageData} from './$houdini';
     import CircleProgressBar from "$lib/components/CircleProgressBar.svelte";
+	import Nais from '$lib/icons/Nais.svelte';
+	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
+	import { severityToColor } from '$lib/utils/vulnerabilities';
 
     export let data: PageData;
     $: ({TeamVulnerabilities} = data);
@@ -74,25 +77,32 @@
         <Card columns={3}>
             <div class="summaryCard">
                 <div>
-                    status
+                    <SealXMarkIcon font-size="66px" style="color: var(--a-icon-danger)"/>
                 </div>
                 <div class="summary">
                     <h4>
-                        Status
+                        Vulnerability status
                         <HelpText title="Current team vulnerability status"
                         >The current status of the team's vulnerabilities.
                         </HelpText>
                     </h4>
-                    <p class="metric">
-                        > 100%
-                    </p>
                 </div>
             </div>
         </Card>
         <Card columns={3}>
             <div class="summaryCard">
+                {#if team !== undefined && team.id !== PendingValue}
                 <div>
-                    <CircleProgressBar progress={70 / 100}/>
+                    {#if team.vulnerabilitiesSummary.coverage >= 100}
+                        <Nais
+                            size="66px"
+                            style="color: var(--a-icon-success)"
+                            aria-label="Application is nais"
+                            role="image"
+                        />
+                    {:else}
+                        <CircleProgressBar size="66px" progress={team.vulnerabilitiesSummary.coverage/ 100} startColor="red" endColor="green"/>
+                    {/if}
                 </div>
                 <div class="summary">
                     <h4>
@@ -102,45 +112,52 @@
                         </HelpText>
                     </h4>
                     <p class="metric">
-                        7 of 10
+                        {team.vulnerabilitiesSummary.bomCount} of {team.vulnerabilitiesSummary.totalWorkloads} workload(s)
                     </p>
                 </div>
+                {/if}
             </div>
         </Card>
         <Card columns={3}>
             <div class="summaryCard">
-                <div>
-                    Trend
-                </div>
+                {#if team !== undefined && team.id !== PendingValue}
+                    <div>
+                    <Tooltip placement="right" content="severity: CRITICAL">
+                        <VulnerabilityBadge
+                            text={String(team.vulnerabilitiesSummary.critical)}
+                            color={severityToColor('critical')}
+                            size={'66px'}
+                        />
+                    </Tooltip>
+                    </div>
+                    <div class="summary">
+                        <h4>
+                           Critical vulnerabilities
+                        </h4>
+                        <p class="metric">
+                        </p>
+                    </div>
+                {/if}
+            </div>
+        </Card>
+        <Card columns={3}>
+            <div class="summaryCard">
+                {#if team !== undefined && team.id !== PendingValue}
+				<div class="summaryIcon" style="--bg-color: #C8C8C8">
+                    <ShieldLockIcon title="RiskScore" font-size="80" style={"color:lightgrey;"} />
+				</div>
                 <div class="summary">
                     <h4>
-                        Risk trend
+                        Total risk score
                         <HelpText title="Current team risk trend"
-                        >The current risk trend for the team's vulnerabilities.
+                        >The total risk score for the team's vulnerabilities.
                         </HelpText>
                     </h4>
                     <p class="metric">
-                        1000
+                        {team.vulnerabilitiesSummary.riskScore}
                     </p>
                 </div>
-            </div>
-        </Card>
-        <Card columns={3}>
-            <div class="summaryCard">
-                <div>
-                    Number of critical
-                </div>
-                <div class="summary">
-                    <h4>
-                        Critical
-                        <HelpText title="Current team vulnerability status"
-                        >The current status of the team's vulnerabilities.
-                        </HelpText>
-                    </h4>
-                    <p class="metric">
-                        12
-                    </p>
-                </div>
+                {/if}
             </div>
         </Card>
         <Card columns={12}>
@@ -342,10 +359,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 50px;
-        height: 50px;
-        border: 1px solid var(--bg-color);
-        border-radius: 5px;
+        /*width: 66px;
+        height: 66px;*/
+        /*border: 1px solid var(--bg-color);
+        border-radius: 5px;*/
     }
 
     .summary {
@@ -356,12 +373,12 @@
         display: flex;
         justify-content: space-between;
         margin: 0;
-        font-size: 1rem;
+        font-size: 1.0rem;
         color: var(--color-text-secondary);
     }
 
     .metric {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         margin: 0;
     }
 
