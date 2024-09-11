@@ -196,7 +196,7 @@
                     {#each team.vulnerabilities.nodes as node}
                         {#if node === PendingValue}
                             <Tr>
-                                {#each new Array(9).fill('text') as variant}
+                                {#each new Array(8).fill('text') as variant}
                                     <Td>
                                         <Skeleton height="32px" {variant}/>
                                     </Td>
@@ -205,16 +205,13 @@
                         {:else}
                             <Tr>
                                 <Td>
-                                    <a href="/team/{teamName}/{node.env}/app/{node.workloadName}">{node.workloadName}</a>
+                                    <a href="/team/{teamName}/{node.env}/app/{node.workloadName}/image">{node.workloadName}</a>
                                 </Td>
                                 <Td>{node.env}</Td>
                                 {#if node.summary !== null}
                                     {#if !node.hasBom}
                                         <Td colspan={8}>
                                             <div style="display: flex; align-items: center">
-													<span style="color:lightslategray; font-size:16px">
-														<a href={node.findingsLink}>View</a>
-													</span>
                                                 <div class="sbom">
                                                     <Tooltip
                                                             placement="right"
