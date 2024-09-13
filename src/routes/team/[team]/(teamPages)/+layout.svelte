@@ -19,7 +19,8 @@
 		LineGraphStackedIcon,
 		PersonGroupIcon,
 		QuietZoneIcon,
-		SandboxIcon, VirusIcon
+		SandboxIcon,
+		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	import type { LayoutData } from './$types';

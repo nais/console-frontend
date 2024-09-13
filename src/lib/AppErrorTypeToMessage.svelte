@@ -60,7 +60,7 @@
 				}
 				... on VulnerableError {
 					summary {
-					 riskScore
+						riskScore
 					}
 				}
 			}
@@ -212,17 +212,20 @@
 		</div>
 	{:else if $data.__typename === 'MissingSbomError'}
 		<div class="wrapper">
-			<Alert variant="error">
+			<Alert variant="warning">
 				<h4>Missing SBOM</h4>
-				Application does not have a Software Bill of Materials (SBOM) registered. See <a href="https://docs.nais.io/services/salsa/#slsa-in-nais">NAIS documentation</a> on how to fix.
+				Application does not have a Software Bill of Materials (SBOM) registered. See<a
+					href="https://docs.nais.io/services/salsa/#slsa-in-nais">NAIS documentation</a
+				> on how to fix.
 			</Alert>
 		</div>
 	{:else if $data.__typename === 'VulnerableError'}
 		<div class="wrapper">
 			<Alert variant="warning">
 				<h4>Application is vulnerable</h4>
-				Application is considered vulnerable with a risk score of {$data.summary?.riskScore} which is higher than the acceptable threshold of ?. Please keep your application's dependencies up to date.
-			    The threshold is based on ....
+				Application is considered vulnerable with a risk score of {$data.summary?.riskScore} which is
+				higher than the acceptable threshold of 100. Please keep your application's dependencies up to
+				date.
 			</Alert>
 		</div>
 	{:else}

@@ -6,9 +6,7 @@
 	import {
 		ExclamationmarkTriangleFillIcon,
 		QuestionmarkDiamondFillIcon,
-
 		XMarkOctagonFillIcon
-
 	} from '@nais/ds-svelte-community/icons';
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
@@ -63,7 +61,7 @@
 			</a> detected.
 		</div>
 	{:else if $data.status.state === 'NOTNAIS'}
-		{#if $data.status.errors.find(e => e.level === 'ERROR')}
+		{#if $data.status.errors.find((e) => e.level === 'ERROR')}
 			<h4>Status <XMarkOctagonFillIcon style="color: var(--a-icon-danger)" /></h4>
 		{:else}
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
