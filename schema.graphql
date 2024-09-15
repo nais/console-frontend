@@ -1823,6 +1823,20 @@ type Requests {
   memory: String!
 }
 
+"""A teams inventory of resources."""
+type ResourceInventory {
+  isEmpty: Boolean!
+  totalApps: Int!
+  totalBigQueryDatasets: Int!
+  totalBucket: Int!
+  totalBuckets: Int!
+  totalJobs: Int!
+  totalKafkaTopics: Int!
+  totalOpenSearchInstances: Int!
+  totalRedisInstances: Int!
+  totalSqlInstances: Int!
+}
+
 interface ResourceStatus {
   errors: [StateError!]!
   state: State!
@@ -2333,6 +2347,9 @@ type Team {
     """Offset to start listing repositories from. Default is 0."""
     offset: Int
   ): RepositoryList!
+
+  """The teams resources"""
+  resourceInventory: ResourceInventory!
 
   """Get the team's secret by name, and env."""
   secret(

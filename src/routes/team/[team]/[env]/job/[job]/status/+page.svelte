@@ -33,7 +33,7 @@
 						{:else if $JobStatusDetailed.data.naisjob.status.state === State.FAILING}
 							<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
 						{:else if $JobStatusDetailed.data.naisjob.status.state === State.NOTNAIS}
-							<Nais alt="notnais" size="1.5rem" style="color: var(--a-icon-warning)" />
+							<Nais alt="notnais	" size="1.5rem" style="color: var(--a-icon-warning)" />
 						{:else if $JobStatusDetailed.data.naisjob.status.state === State.UNKNOWN}
 							<UnknownIcon size="1.5rem" style="color: var(--a-icon-warning)" />
 						{/if}

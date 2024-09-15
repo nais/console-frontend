@@ -37,7 +37,7 @@
 	$: team = $status.data?.team;
 </script>
 
-<h4>Inventory</h4>
+<h4>Status</h4>
 {#if team && team.id !== PendingValue}
 	{#if team.status.apps.failing > 0}
 		<p>

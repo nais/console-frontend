@@ -12,6 +12,7 @@
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { Alert, HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import TeamInventory from '$lib/components/TeamInventory.svelte';
 
 	export let data: PageData;
 	$: ({ Overview } = data);
@@ -43,15 +44,20 @@
 {/if}
 
 <div class="grid">
-	<Card rows={1} columns={4}>
+	<Card rows={1} columns={3}>
 		<TeamStatus {teamName} />
 	</Card>
 
-	<Card rows={2} columns={3}>
+	<Card rows={1} columns={3}>
 		<VulnerabilitySummary {teamName} /></Card
 	>
 
-	<Card rows={2} columns={5}>
+	<Card rows={1} columns={3}>
+		<Cost app="" env="" team={teamName} />
+		<a href="/team/{teamName}/cost">View team costs</a>
+	</Card>
+
+	<Card rows={1} columns={3}>
 		<h4>Utilization</h4>
 		<Table size="small" zebraStripes>
 			<Thead>
@@ -91,16 +97,15 @@
 		</p>
 		<a href="/team/{teamName}/utilization">View team utilization</a>
 	</Card>
-	<Card rows={1} columns={4}>
-		<Cost app="" env="" team={teamName} />
-		<a href="/team/{teamName}/cost">View team costs</a>
+
+	<Card rows={2} columns={3}>
+		<TeamInventory {teamName} />
 	</Card>
 
-	<Card rows={1} columns={12}>
+	<Card rows={2} columns={9}>
 		<h4>Deployments</h4>
 		<Deploys {teamName} />
 	</Card>
-
 	<ActivityLog {teamName} columns={12} />
 </div>
 

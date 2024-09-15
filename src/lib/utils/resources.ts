@@ -46,7 +46,7 @@ export type utilization = {
 }[];
 
 export function teamUtilization(data: utilization | undefined) {
-	if (data === undefined) return 0;
+	if (data === undefined || data?.length === 0) return 0;
 	let totalRequested = 0;
 	let totalUsed = 0;
 	data.forEach((d) => {
