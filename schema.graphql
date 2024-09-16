@@ -113,7 +113,8 @@ type AppUtilizationData {
 """Team status for apps."""
 type AppsStatus {
   failing: Int!
-  total: Int!
+  notNais: Int!
+  vulnerabilities: Int!
 }
 
 """Audit event type."""
@@ -890,7 +891,8 @@ type InvalidNaisYamlError implements StateError {
 """Team status for jobs."""
 type JobsStatus {
   failing: Int!
-  total: Int!
+  notNais: Int!
+  vulnerabilities: Int!
 }
 
 type KafkaLagScalingStrategy implements ScalingStrategy {
@@ -2503,6 +2505,7 @@ type TeamStatus {
   apps: AppsStatus!
   jobs: JobsStatus!
   sqlInstances: SqlInstancesStatus!
+  state: State!
 }
 
 """Team sync type."""

@@ -44,9 +44,7 @@
 {/if}
 
 <div class="grid">
-	<Card rows={1} columns={3}>
-		<TeamStatus {teamName} />
-	</Card>
+	<TeamStatus {teamName} />
 
 	<Card rows={1} columns={3}>
 		<VulnerabilitySummary {teamName} /></Card
