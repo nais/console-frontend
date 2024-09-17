@@ -20,6 +20,7 @@ query TeamVulnerabilities(
 
 			nodes @loading(count: 10) {
 				workloadName
+				workloadType
 				env
 				hasBom
 				summary {
