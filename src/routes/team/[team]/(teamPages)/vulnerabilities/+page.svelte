@@ -190,6 +190,7 @@
 
             <Table size="small" sort={sortState} on:sortChange={sortChange}>
                 <Thead>
+                <Th></Th>
                 <Th sortable={true} sortKey={OrderByField.NAME}>Workload</Th>
                 <Th sortable={true} sortKey={OrderByField.ENV}>Env</Th>
                 <Th sortable={true} sortKey={OrderByField.SEVERITY_CRITICAL}>Critical</Th>
@@ -215,13 +216,18 @@
                                 <Td>
                                     {#if node.workloadType === 'app'}
                                         <span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps}/> </span>
+                                    {:else if node.workloadType === 'job'}
+                                        <span style="color:var(--a-gray-600)"
+                                        ><ArrowCirclepathIcon {...$$restProps}/>
+                                        </span>
+                                    {/if}
+                                </Td>
+                                <Td>
+                                    {#if node.workloadType === 'app'}
                                         <a href="/team/{teamName}/{node.env}/app/{node.workloadName}/image"
                                         >{node.workloadName}</a
                                         >
                                     {:else if node.workloadType === 'job'}
-								<span style="color:var(--a-gray-600)"
-                                ><ArrowCirclepathIcon {...$$restProps}/>
-								</span>
                                         <a href="/team/{teamName}/{node.env}/job/{node.workloadName}/image">{node.workloadName}</a>
                                     {/if}
                                 </Td>
