@@ -1,35 +1,36 @@
 query TeamVulnerabilities(
-	$limit: Int
-	$offset: Int
 	$team: Slug!
 	$orderBy: OrderBy = { field: SEVERITY_CRITICAL, direction: DESC }
-	$filter: VulnerabilityFilter
-) {
-	team(slug: $team) @loading {
-		id @loading
-		slug
+	$limit: Int
+	$offset: Int
+) @loading(count: 5, cascade: true) {
+	team(slug: $team) {
+		id
 		environments {
 			name
 		}
-		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy, filter: $filter) @loading {
-			pageInfo @loading {
+		apps(limit: $limit, offset: $offset, orderBy: $orderBy) {
+			pageInfo {
 				totalCount
 				hasNextPage
 				hasPreviousPage
 			}
 
 			nodes @loading(count: 10) {
-				workloadName
-				workloadType
-				env
-				hasBom
-				summary {
-					riskScore
-					unassigned
-					critical
-					high
-					medium
-					low
+				name
+				env {
+					name
+				}
+				imageDetails {
+					hasSbom
+					summary {
+						riskScore
+						unassigned
+						critical
+						high
+						medium
+						low
+					}
 				}
 			}
 		}
