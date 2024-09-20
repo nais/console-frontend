@@ -14,6 +14,8 @@
 		tableStateFromVariables
 	} from '$lib/pagination';
 	import {
+		Accordion,
+		AccordionItem,
 		Alert,
 		HelpText,
 		Select,
@@ -74,11 +76,13 @@
 
 	let selectedEnvironment: string = '';
 
-	const workloadLink = (node: TeamVulnerabilities$result['team']['workloads']['nodes'][number]) => {
-		if (node.type === WorkloadType.APP) {
-			return `/team/${teamName}/${node.env.name}/app/${node.name}/image`;
-		} else if (node.type === WorkloadType.NAISJOB) {
-			return `/team/${teamName}/${node.env.name}/job/${node.name}/image`;
+	const workloadLink = (
+		node: TeamVulnerabilities$result['team']['vulnerabilities']['nodes'][number]
+	) => {
+		if (node.workloadType === 'app') {
+			return `/team/${teamName}/${node.env}/app/${node.workloadName}/image`;
+		} else if (node.workloadType === 'job') {
+			return `/team/${teamName}/${node.env}/job/${node.workloadName}/image`;
 		}
 	};
 </script>
@@ -103,6 +107,7 @@
 							>The current status of the team's vulnerabilities.
 						</HelpText>
 					</h4>
+					<p class="metric"></p>
 				</div>
 			</div>
 		</Card>
@@ -223,23 +228,23 @@
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.workloads.nodes as node}
+							{#each team.vulnerabilities.nodes as node}
 								<Tr>
 									<Td>
-										{#if node.type === WorkloadType.APP}
+										{#if node.workloadType === 'app'}
 											<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
-										{:else if node.type === WorkloadType.NAISJOB}
+										{:else if node.workloadType === 'job'}
 											<span style="color:var(--a-gray-600)"
 												><ArrowCirclepathIcon {...$$restProps} />
 											</span>
 										{/if}
 									</Td>
 									<Td>
-										<a href={workloadLink(node)}> {node.name}</a>
+										<a href={workloadLink(node)}>{node.workloadName}</a>
 									</Td>
-									<Td>{node.env.name}</Td>
-									{#if node.imageDetails.summary !== null}
-										{#if !node.imageDetails.hasSbom}
+									<Td>{node.env}</Td>
+									{#if node.summary !== null}
+										{#if !node.hasSbom}
 											<Td colspan={8}>
 												<div style="display: flex; align-items: center">
 													<div class="sbom">
@@ -258,51 +263,39 @@
 											<Td>yolo</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability
-														severity="critical"
-														count={node.imageDetails.summary.critical}
-													/>
+													<Vulnerability severity="critical" count={node.summary.critical} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="high" count={node.imageDetails.summary.high} />
+													<Vulnerability severity="high" count={node.summary.high} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability
-														severity="medium"
-														count={node.imageDetails.summary.medium}
-													/>
+													<Vulnerability severity="medium" count={node.summary.medium} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability severity="low" count={node.imageDetails.summary.low} />
+													<Vulnerability severity="low" count={node.summary.low} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													<Vulnerability
-														severity="unassigned"
-														count={node.imageDetails.summary.unassigned}
-													/>
+													<Vulnerability severity="unassigned" count={node.summary.unassigned} />
 												</div>
 											</Td>
 											<Td>
 												<div class="vulnerability">
-													{#if node.imageDetails.summary.riskScore === -1}
-														<Vulnerability
-															severity="low"
-															count={node.imageDetails.summary.riskScore}
-														/>
+													{#if node.summary.riskScore === -1}
+														<Vulnerability severity="low" count={node.summary.riskScore} />
 													{:else}
 														<Tooltip
 															placement="left"
 															content="Calculated based on the number of vulnerabilities, includes unassigned"
 														>
-															<span class="na">{node.imageDetails.summary.riskScore}</span>
+															<span class="na">{node.summary.riskScore}</span>
 														</Tooltip>
 													{/if}
 												</div>
@@ -345,7 +338,7 @@
 				</Tbody>
 			</Table>
 			<Pagination
-				pageInfo={team?.workloads.pageInfo}
+				pageInfo={team?.vulnerabilities.pageInfo}
 				{limit}
 				{offset}
 				changePage={(e) => {
@@ -354,7 +347,58 @@
 			/>
 		</Card>
 		<Card columns={12}>
-			<h4>Workloads with SBOM</h4>
+			<Accordion>
+				<AccordionItem heading="Vulnerability status">
+					<Table size="small" sort={sortState} on:sortChange={sortChange}>
+						<Thead>
+							<Th></Th>
+							<Th>Workload</Th>
+							<Th>Env</Th>
+							<Th>State</Th>
+							<Th>Description</Th>
+						</Thead>
+						<Tbody>
+							{#if team !== undefined}
+								{#if team.id === PendingValue}
+									<Tr>
+										{#each new Array(5).fill('text') as variant}
+											<Td>
+												<Skeleton height="32px" {variant} />
+											</Td>
+										{/each}
+									</Tr>
+								{:else}
+									{#each team.vulnerabilitiesSummary.workloadStatus as status}
+										<Tr>
+											<Td>
+												{#if status.workloadType === 'app'}
+													<span style="color:var(--a-gray-600)"
+														><SandboxIcon {...$$restProps} />
+													</span>
+												{:else if status.workloadType === 'job'}
+													<span style="color:var(--a-gray-600)"
+														><ArrowCirclepathIcon {...$$restProps} />
+													</span>
+												{/if}
+											</Td>
+											<Td>
+												<a href={'yolo'}>{status.workload}</a>
+											</Td>
+											<Td>{status.env}</Td>
+											<Td>{status.state}</Td>
+											<Td>{status.description}</Td>
+										</Tr>
+									{/each}
+								{/if}
+							{:else}
+								<Tr>
+									<Td colspan={3}>No status found</Td>
+								</Tr>
+							{/if}
+						</Tbody>
+					</Table>
+				</AccordionItem>
+			</Accordion>
 		</Card>
 	</div>
 {/if}

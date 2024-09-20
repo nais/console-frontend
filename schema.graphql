@@ -2716,10 +2716,30 @@ type VulnerabilityList {
 
 type VulnerabilityNode {
   env: String!
-  hasBom: Boolean!
+  hasSbom: Boolean!
   id: ID!
+  status: WorkloadStatus!
   summary: ImageVulnerabilitySummary
   workloadName: String!
+  workloadType: String!
+}
+
+enum VulnerabilityState {
+  """The workload is missing a Software Bill of Materials (SBOM)."""
+  MISSING_SBOM
+
+  """The workload has no vulnerabilities."""
+  OK
+
+  """The workload has vulnerabilities above a threshold."""
+  VULNERABLE
+}
+
+type VulnerabilityStatus {
+  description: String!
+  env: String!
+  state: VulnerabilityState!
+  workload: String!
   workloadType: String!
 }
 
@@ -2734,6 +2754,7 @@ type VulnerabilitySummaryForTeam {
   riskScoreTrend: Float!
   totalWorkloads: Int!
   unassigned: Int!
+  workloadStatus: [VulnerabilityStatus!]!
 }
 
 type VulnerableError implements StateError {

@@ -9,7 +9,7 @@ query TeamVulnerabilities(
 		environments {
 			name
 		}
-		workloads(limit: $limit, offset: $offset, orderBy: $orderBy) {
+		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {
 				totalCount
 				hasNextPage
@@ -17,21 +17,17 @@ query TeamVulnerabilities(
 			}
 
 			nodes @loading(count: 10) {
-				name
-				env {
-					name
-				}
-				type
-				imageDetails {
-					hasSbom
-					summary {
-						riskScore
-						unassigned
-						critical
-						high
-						medium
-						low
-					}
+				workloadName
+				workloadType
+				env
+				hasSbom
+				summary {
+					riskScore
+					unassigned
+					critical
+					high
+					medium
+					low
 				}
 			}
 		}
@@ -45,6 +41,13 @@ query TeamVulnerabilities(
 			unassigned
 			coverage
 			totalWorkloads
+			workloadStatus{
+				workload
+				workloadType
+				env
+				state
+				description
+			}
 		}
 	}
 }
