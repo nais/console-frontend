@@ -7,7 +7,7 @@ RUN npm ci --quiet --legacy-peer-deps
 
 COPY . ./
 
-ENV VITE_GRAPHQL_ENDPOINT http://nais-api/query
+ENV VITE_GRAPHQL_ENDPOINT http://nais-api/graphql
 
 RUN npm run build
 

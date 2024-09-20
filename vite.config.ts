@@ -22,7 +22,7 @@ export default defineConfig((mode) => {
 		plugins: [houdini(), sveltekit()],
 		server: {
 			proxy: {
-				'/query': {
+				'/graphql': {
 					target: 'http://127.0.0.1:3000',
 					headers: headers()
 				},

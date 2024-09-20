@@ -7,13 +7,13 @@ import { createClient } from 'graphql-sse';
 
 const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 export default new HoudiniClient({
-	url: browser || !graphqlEndpoint ? '/query' : graphqlEndpoint,
+	url: browser || !graphqlEndpoint ? '/graphql' : graphqlEndpoint,
 	plugins: [subscription(sseSockets), handleMissingLogin('UserInfo')]
 });
 
 function sseSockets() {
 	const client = createClient({
-		url: '/query',
+		url: '/graphql',
 		onMessage: (data) => {
 			if (dev) {
 				console.debug('message', data);
