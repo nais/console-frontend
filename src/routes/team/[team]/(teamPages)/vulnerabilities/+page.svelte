@@ -74,7 +74,7 @@
 
 	let selectedEnvironment: string = '';
 
-	const workloadLink = (node: TeamVulnerabilities$result['team']['workloads']['nodes']) => {
+	const workloadLink = (node: TeamVulnerabilities$result['team']['workloads']['nodes'][number]) => {
 		if (node.type === WorkloadType.APP) {
 			return `/team/${teamName}/${node.env.name}/app/${node.name}/image`;
 		} else if (node.type === WorkloadType.NAISJOB) {
