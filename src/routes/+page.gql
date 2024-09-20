@@ -1,0 +1,25 @@
+query UserTeams {
+	me {
+		__typename
+		... on User {
+			teams(first: 2) @paginate(mode: SinglePage) {
+				pageInfo {
+					totalCount
+					hasNextPage
+					startCursor
+					endCursor
+					hasPreviousPage
+				}
+				edges {
+					node {
+						team {
+							id
+							slug
+							purpose
+						}
+					}
+				}
+			}
+		}
+	}
+}

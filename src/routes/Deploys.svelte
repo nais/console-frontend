@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { PendingValue, graphql, type UserDeploys$result } from '$houdini';
-	import Time from '$lib/Time.svelte';
+	import { graphql } from '$houdini';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	const sortTeamDeploys = (userDeploys: UserDeploys$result['me'], slice = 10) => {
+	/*const sortTeamDeploys = (userDeploys: UserDeploys$result['me'], slice = 10) => {
 		if (userDeploys === PendingValue)
 			return [PendingValue, PendingValue, PendingValue, PendingValue] as (typeof PendingValue)[];
 		if (userDeploys.__typename !== 'User') return [];
@@ -16,7 +15,7 @@
 				return b.created.getTime() - a.created.getTime();
 			})
 			.slice(0, slice);
-	};
+	};*/
 
 	const store = graphql(`
 		query UserDeploys @load {
@@ -29,25 +28,27 @@
 						}
 						nodes {
 							team {
-								deployments {
-									pageInfo {
-										totalCount
-									}
-									nodes {
-										created
-										env
-										team {
-											slug
-										}
-										resources {
-											kind
-											name
-										}
-										statuses {
-											status
-										}
-									}
-								}
+								slug
+
+								#deployments {
+								#	pageInfo {
+								#		totalCount
+								#	}
+								#	nodes {
+								#		created
+								#		env
+								#		team {
+								#			slug
+								#		}
+								#		resources {
+								#			kind
+								#			name
+								#		}
+								#		statuses {
+								#			status
+								#		}
+								#	}
+								#}
 							}
 						}
 					}
@@ -77,7 +78,7 @@
 			<Th>When</Th>
 		</Thead>
 		<Tbody>
-			{#each sortTeamDeploys($store.data.me) as deploy}
+			<!--{#each sortTeamDeploys($store.data.me) as deploy}
 				{#if deploy == PendingValue}
 					<Tr>
 						{#each new Array(4).fill('text') as variant}
@@ -110,7 +111,10 @@
 						</Td>
 					</Tr>
 				{/if}
-			{/each}
+			{/each}-->
+			<Tr>
+				<Td colspan={4}>Not implemented</Td>
+			</Tr>
 		</Tbody>
 	</Table>
 {/if}

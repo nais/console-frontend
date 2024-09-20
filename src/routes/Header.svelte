@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { afterNavigate, goto } from '$app/navigation';
-	import { SearchType, graphql } from '$houdini';
-	import SearchResults from '$lib/SearchResults.svelte';
+	import { afterNavigate } from '$app/navigation';
 	import { logEvent } from '$lib/amplitude';
 	import { docURL } from '$lib/doc';
 	import { Search } from '@nais/ds-svelte-community';
-	import { InformationSquareIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
-	const store = graphql(`
+	/*const store = graphql(`
 		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
 			search(limit: 10, query: $query, filter: { type: $type }) {
 				nodes @loading(count: 10) {
@@ -91,7 +88,7 @@
 				}
 			}
 		}
-	`);
+	`);*/
 
 	export let user:
 		| {
@@ -101,13 +98,13 @@
 		| undefined;
 
 	let query = '';
-	let selected = -1;
+	/*let selected = -1;
 	let showSearch = false;
 	let showHelpText = false;
 	let unsupportedFilter = false;
-	let timeout: ReturnType<typeof setTimeout> | null = null;
+	let timeout: ReturnType<typeof setTimeout> | null = null;*/
 
-	$: {
+	/*$: {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -153,10 +150,11 @@
 				logEvent('search');
 			}, 500);
 		}
-	}
+	}*/
 
 	function on_key_up(event: KeyboardEvent) {
-		switch (event.key) {
+		console.log(event);
+		/*switch (event.key) {
 			case 'ArrowDown':
 				selected += 1;
 				selected = Math.min(($store.data?.search.nodes.length || 0) - 1, Math.max(-1, selected));
@@ -218,8 +216,10 @@
 				showSearch = false;
 				query = '';
 				break;
-		}
+		}*/
+		console.log('on_key_up');
 	}
+
 	afterNavigate((nav) => {
 		let props = {};
 		if (nav.to?.route.id != null) {
@@ -245,47 +245,47 @@
 					size="small"
 					on:blur={() => {
 						setTimeout(() => {
-							showSearch = false;
-							showHelpText = false;
+							/*showSearch = false;
+							showHelpText = false;*/
 						}, 200);
 					}}
 					on:clear={() => {
 						query = '';
-						showSearch = false;
-						showHelpText = false;
+						/*showSearch = false;
+						showHelpText = false;*/
 					}}
 					on:focus={() => {
 						if (query.length > 0) {
-							showSearch = true;
+							/*showSearch = true;*/
 						} else {
-							showHelpText = true;
+							/*showHelpText = true;*/
 						}
 					}}
 					on:keyup={on_key_up}
 				/>
-				{#if $store.data && showSearch && !unsupportedFilter}
+				<!--{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
-				{:else if showHelpText || unsupportedFilter}
-					<ul class="helpText">
-						<li>
-							<div class="typeIcon">
-								<InformationSquareIcon height="1.5rem" />
-							</div>
-							<div>
-								You can filter your searches with prefixes. Try one of the following:<br />
-								<code>app:myApp</code><br />
-								<code>job:myJob</code><br />
-								<code>team:myTeam</code><br />
-								<code>sql:mySqlinstance</code>
-								<code>redis:myRedisinstance</code>
-								<code>os:myOpenSearchInstance</code>
-								<code>kafka:myKafkaTopic</code>
-								<code>bq:myBigQueryDataSet</code>
-								<code>bucket:myBucket</code>
-							</div>
-						</li>
-					</ul>
-				{/if}
+				{:else if showHelpText || unsupportedFilter}>
+				<ul class="helpText">
+					<li>
+						<div class="typeIcon">
+							<InformationSquareIcon height="1.5rem" />
+						</div>
+						<div>
+							You can filter your searches with prefixes. Try one of the following:<br />
+							<code>app:myApp</code><br />
+							<code>job:myJob</code><br />
+							<code>team:myTeam</code><br />
+							<code>sql:mySqlinstance</code>
+							<code>redis:myRedisinstance</code>
+							<code>os:myOpenSearchInstance</code>
+							<code>kafka:myKafkaTopic</code>
+							<code>bq:myBigQueryDataSet</code>
+							<code>bucket:myBucket</code>
+						</div>
+					</li>
+				</ul>
+				{/if}-->
 			</div>
 		</div>
 		<div class="right">

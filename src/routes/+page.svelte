@@ -1,11 +1,27 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import Feedback from '$lib/components/Feedback.svelte';
-	import { Button } from '@nais/ds-svelte-community';
-	import Deploys from './Deploys.svelte';
-	import Teams from './Teams.svelte';
+	//import Feedback from '$lib/components/Feedback.svelte';
+	import {
+		Button,
+		LinkPanel,
+		LinkPanelDescription,
+		LinkPanelTitle
+	} from '@nais/ds-svelte-community';
+	import {
+		ChevronLeftIcon,
+		ChevronRightIcon,
+		PersonGroupIcon,
+		PlusIcon
+	} from '@nais/ds-svelte-community/icons';
+	import type { PageData } from './$houdini';
 
-	let feedbackOpen = false;
+	//let feedbackOpen = false;
+
+	export let data: PageData;
+	$: page = 1;
+	$: limit = 2;
+
+	$: ({ UserTeams } = data);
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
@@ -16,24 +32,79 @@
 			variant="secondary"
 			size="xsmall"
 			on:click={() => {
-				feedbackOpen = true;
+				/*feedbackOpen = true;*/
+				console.log('Feedback');
 			}}>Feedback</Button
 		>
 	</div>
 	<div class="grid">
 		<Card columns={4} rows={1}>
-			<Teams />
+			<div class="header">
+				<h2>
+					<PersonGroupIcon />
+					My teams
+				</h2>
+				<Button as="a" size="small" href="/team/create" variant="primary"
+					><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Create team</Button
+				>
+			</div>
+			<div class="teams">
+				{#if $UserTeams.data}
+					{#if $UserTeams.data.me.__typename == 'User'}
+						{#each $UserTeams.data.me.teams.edges as edge}
+							<LinkPanel
+								about={edge.node.team.purpose}
+								href="/team/{edge.node.team.slug}"
+								border={true}
+								as="a"
+							>
+								<LinkPanelTitle>{edge.node.team.slug}</LinkPanelTitle>
+								<LinkPanelDescription>{edge.node.team.purpose}</LinkPanelDescription>
+							</LinkPanel>
+						{:else}
+							<p>You are not a member of any teams.</p>
+						{/each}
+
+						<div>
+							{(page - 1) * limit + 1}-{Math.min(
+								page * limit,
+								$UserTeams.data.me.teams.pageInfo.totalCount
+							)} of {$UserTeams.data.me.teams.pageInfo.totalCount}
+							{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage}
+								<button
+									on:click={async () => {
+										page--;
+										return await UserTeams.loadPreviousPage();
+									}}><ChevronLeftIcon /></button
+								>
+							{/if}
+							{#if $UserTeams.data.me.teams.pageInfo.hasNextPage}
+								<button
+									on:click={async () => {
+										page++;
+										return await UserTeams.loadNextPage();
+									}}
+								>
+									<ChevronRightIcon />
+								</button>
+							{/if}
+						</div>
+					{/if}
+				{/if}
+			</div>
 		</Card>
 
-		<Card columns={8} rows={2}>
+		<!--Card columns={8} rows={2}>
 			<Deploys />
-		</Card>
+		</Card-->
 	</div>
 </div>
 
+<!--
 {#if feedbackOpen}
 	<Feedback bind:open={feedbackOpen} />
 {/if}
+-->
 
 <style>
 	.grid {
@@ -46,5 +117,22 @@
 		display: flex;
 		justify-content: flex-end;
 		padding: 0.5rem 0;
+	}
+
+	h2 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.teams {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
 	}
 </style>

@@ -1,37 +1,25 @@
 <script lang="ts">
-	import { PendingValue, graphql } from '$houdini';
-	import Pagination from '$lib/Pagination.svelte';
+	import { graphql } from '$houdini';
 	import {
 		Alert,
 		Button,
 		LinkPanel,
 		LinkPanelDescription,
-		LinkPanelTitle,
-		Skeleton
+		LinkPanelTitle
 	} from '@nais/ds-svelte-community';
 	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
-	import type { UserTeamsVariables } from './$houdini';
-
-	const changePage = (page: number) => {
-		offset = (page - 1) * limit;
-		store.fetch({ variables: { offset } });
-	};
-
-	const limit = 6;
-	let offset = 0;
-	export const _UserTeamsVariables: UserTeamsVariables = () => {
-		return { limit, offset };
-	};
 
 	const store = graphql(`
-		query UserTeams($limit: Int, $offset: Int) @load {
-			me @loading {
+		query UserTeams123 @load {
+			me {
 				__typename
 				... on User {
-					teams(limit: $limit, offset: $offset) {
+					teams(first: 2) @paginate {
 						pageInfo {
 							totalCount
 							hasNextPage
+							startCursor
+							endCursor
 							hasPreviousPage
 						}
 						nodes {
@@ -65,15 +53,7 @@
 	</div>
 	<div class="teams">
 		{#if $store.data}
-			{#if $store.data.me == PendingValue}
-				<LinkPanel about="" href="" border={true} as="a">
-					<LinkPanelTitle
-						><Skeleton variant="rectangle" width="100px" height="32px" /></LinkPanelTitle
-					>
-					<LinkPanelDescription><Skeleton variant="rectangle" width="450px" /></LinkPanelDescription
-					>
-				</LinkPanel>
-			{:else if $store.data.me.__typename == 'User'}
+			{#if $store.data.me.__typename == 'User'}
 				{#each $store.data.me.teams.nodes as node}
 					{@const team = node.team}
 					<LinkPanel about={team.purpose} href="/team/{team.slug}" border={true} as="a">
@@ -83,7 +63,12 @@
 				{:else}
 					<p>You are not a member of any teams.</p>
 				{/each}
-				<Pagination pageInfo={$store.data.me.teams.pageInfo} {limit} {offset} {changePage} />
+				<code>
+					{JSON.stringify($store.data.me.teams.pageInfo)}
+				</code>
+				<button on:click={async () => await store.loadNextPage()}> load more </button>
+
+				<button on:click={async () => await store.loadPreviousPage()}> load less </button>
 			{/if}
 		{/if}
 	</div>
