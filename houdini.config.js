@@ -2,6 +2,7 @@
 
 /** @type {import('houdini').ConfigFile} */
 const config = {
+	paginationStrategy: 'cursor',
 	watchSchema: {
 		url: 'http://127.0.0.1:3000/graphql',
 		headers: {
@@ -13,6 +14,7 @@ const config = {
 	},
 	scalars: {
 		Slug: { type: 'string' },
+		Cursor: { type: 'string' },
 		Date: {
 			type: 'Date',
 			unmarshal(val) {
