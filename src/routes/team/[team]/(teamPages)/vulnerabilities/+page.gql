@@ -9,7 +9,7 @@ query TeamVulnerabilities(
 		environments {
 			name
 		}
-		apps(limit: $limit, offset: $offset, orderBy: $orderBy) {
+		workloads(limit: $limit, offset: $offset, orderBy: $orderBy) {
 			pageInfo {
 				totalCount
 				hasNextPage
@@ -21,6 +21,7 @@ query TeamVulnerabilities(
 				env {
 					name
 				}
+				type
 				imageDetails {
 					hasSbom
 					summary {

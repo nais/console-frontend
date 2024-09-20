@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { PendingValue, type TeamVulnerabilities$result, WorkloadType } from '$houdini';
 	import { OrderByField, type OrderByField$options } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -39,6 +39,7 @@
 	import Nais from '$lib/icons/Nais.svelte';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import workloads from '$houdini/artifacts/Workloads';
 
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
@@ -72,6 +73,14 @@
 	};
 
 	let selectedEnvironment: string = '';
+
+	const workloadLink = (node: TeamVulnerabilities$result['team']['workloads']['nodes']) => {
+		if (node.type === WorkloadType.APP) {
+			return `/team/${teamName}/${node.env.name}/app/${node.name}/image`;
+		} else if (node.type === WorkloadType.NAISJOB) {
+			return `/team/${teamName}/${node.env.name}/job/${node.name}/image`;
+		}
+	};
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -84,7 +93,7 @@
 	<div class="grid">
 		<Card columns={3}>
 			<div class="summaryCard">
-				<div>
+				<div class="critical">
 					<SealXMarkIcon font-size="66px" style="color: var(--a-icon-danger)" />
 				</div>
 				<div class="summary">
@@ -105,7 +114,7 @@
 							<Nais
 								size="66px"
 								style="color: var(--a-icon-success)"
-								aria-label="Application is nais"
+								aria-label="Workload is nais"
 								role="image"
 							/>
 						{:else}
@@ -133,7 +142,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
-					<div>
+					<div class="critical">
 						<Tooltip placement="right" content="severity: CRITICAL">
 							<VulnerabilityBadge
 								text={String(team.vulnerabilitiesSummary.critical)}
@@ -214,29 +223,19 @@
 								{/each}
 							</Tr>
 						{:else}
-							{#each team.apps.nodes as node}
+							{#each team.workloads.nodes as node}
 								<Tr>
 									<Td>
-										<!-- {#if node.workloadType === 'app'}
-                                        <span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps}/> </span>
-                                    {:else if node.workloadType === 'job'}
-                                        <span style="color:var(--a-gray-600)"
-                                        ><ArrowCirclepathIcon {...$$restProps}/>
-                                        </span>
-                                    {/if}
-                                -->
+										{#if node.type === WorkloadType.APP}
+											<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
+										{:else if node.type === WorkloadType.NAISJOB}
+											<span style="color:var(--a-gray-600)"
+												><ArrowCirclepathIcon {...$$restProps} />
+											</span>
+										{/if}
 									</Td>
 									<Td>
-										<!--
-                                    {#if node.workloadType === 'app'}
-                                        <a href="/team/{teamName}/{node.env}/app/{node.workloadName}/image"
-                                        >{node.workloadName}</a
-                                        >
-                                    {:else if node.workloadType === 'job'}
-                                        <a href="/team/{teamName}/{node.env}/job/{node.workloadName}/image">{node.workloadName}</a>
-                                    {/if}
--->
-										<a href="/team/{teamName}/{node.env.name}/app/{node.name}/image">{node.name}</a>
+										<a href={workloadLink(node)}> {node.name}</a>
 									</Td>
 									<Td>{node.env.name}</Td>
 									{#if node.imageDetails.summary !== null}
@@ -340,13 +339,13 @@
 						{/if}
 					{:else}
 						<Tr>
-							<Td colspan={9}>No applications with vulnerability data found</Td>
+							<Td colspan={9}>No workloads with vulnerability data found</Td>
 						</Tr>
 					{/if}
 				</Tbody>
 			</Table>
 			<Pagination
-				pageInfo={team?.apps.pageInfo}
+				pageInfo={team?.workloads.pageInfo}
 				{limit}
 				{offset}
 				changePage={(e) => {
@@ -388,22 +387,10 @@
 		margin-bottom: 1rem;
 	}
 
-	.summary-grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
-	}
-
 	.summaryIcon {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		/*width: 66px;
-        height: 66px;*/
-		/*border: 1px solid var(--bg-color);
-        border-radius: 5px;*/
 	}
 
 	.summary {
@@ -427,5 +414,11 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
+	}
+
+	.critical {
+		margin-top: 0.5rem;
+		display: flex;
+		align-items: center;
 	}
 </style>
