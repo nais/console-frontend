@@ -2420,7 +2420,7 @@ type Team {
   ): VulnerabilityList!
 
   """The vulnerabilities summary for the team's applications."""
-  vulnerabilitiesSummary: VulnerabilitySummaryForTeam!
+  vulnerabilitiesSummary(filter: VulnerabilityFilter): VulnerabilitySummaryForTeam!
 
   """The workloads owned by the team."""
   workloads(
@@ -2725,22 +2725,17 @@ type VulnerabilityNode {
 }
 
 enum VulnerabilityState {
-  """The workload is missing a Software Bill of Materials (SBOM)."""
+  COVERAGE_TOO_LOW
   MISSING_SBOM
-
-  """The workload has no vulnerabilities."""
   OK
-
-  """The workload has vulnerabilities above a threshold."""
+  TOO_MANY_VULNERABLE_WORKLOADS
   VULNERABLE
 }
 
 type VulnerabilityStatus {
   description: String!
-  env: String!
   state: VulnerabilityState!
-  workload: String!
-  workloadType: String!
+  title: String!
 }
 
 type VulnerabilitySummaryForTeam {
@@ -2752,9 +2747,9 @@ type VulnerabilitySummaryForTeam {
   medium: Int!
   riskScore: Int!
   riskScoreTrend: Float!
+  status: [VulnerabilityStatus!]!
   totalWorkloads: Int!
   unassigned: Int!
-  workloadStatus: [VulnerabilityStatus!]!
 }
 
 type VulnerableError implements StateError {

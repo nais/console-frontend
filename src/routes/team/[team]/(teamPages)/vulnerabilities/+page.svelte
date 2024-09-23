@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, type TeamVulnerabilities$result, WorkloadType } from '$houdini';
+	import { PendingValue, type TeamVulnerabilities$result, VulnerabilityState } from '$houdini';
 	import { OrderByField, type OrderByField$options } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { logEvent } from '$lib/amplitude';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
-	import { docURL } from '$lib/doc';
 	import {
 		changeParams,
 		sortTable,
@@ -14,8 +12,6 @@
 		tableStateFromVariables
 	} from '$lib/pagination';
 	import {
-		Accordion,
-		AccordionItem,
 		Alert,
 		HelpText,
 		Select,
@@ -30,10 +26,9 @@
 	} from '@nais/ds-svelte-community';
 	import {
 		ArrowCirclepathIcon,
-		ExclamationmarkTriangleFillIcon,
 		SandboxIcon,
+		SealCheckmarkIcon,
 		SealXMarkIcon,
-		ShieldIcon,
 		ShieldLockIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -41,7 +36,6 @@
 	import Nais from '$lib/icons/Nais.svelte';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import workloads from '$houdini/artifacts/Workloads';
 
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
@@ -57,14 +51,6 @@
 		defaultSortCol,
 		defaultSortDir
 	));
-
-	const onClick = () => {
-		let props = {};
-		props = {
-			routeID: '/dependencytrack/team/findings'
-		};
-		logEvent('pageview', props);
-	};
 
 	const sortChange = (e: CustomEvent<{ key: string }>) => {
 		const { key } = e.detail;
@@ -95,21 +81,41 @@
 	</Alert>
 {:else}
 	<div class="grid">
-		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="critical">
-					<SealXMarkIcon font-size="66px" style="color: var(--a-icon-danger)" />
+		<Card columns={12}>
+			{#if team !== undefined && team.id !== PendingValue}
+				<div class="summaryCard">
+					{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== 'OK').length > 0}
+						<div>
+							<SealXMarkIcon font-size="66px" style="color: var(--a-icon-danger)" />
+						</div>
+					{:else}
+						<div>
+							<SealCheckmarkIcon font-size="66px" style="color: var(--a-icon-success)" />
+						</div>
+					{/if}
+					<div class="summary">
+						<h4>
+							Vulnerability status
+							<HelpText title="Current team vulnerability status"
+								>The current status of the team's vulnerabilities.
+							</HelpText>
+						</h4>
+						<div class="metrics">
+							<details>
+								<summary>Show</summary>
+								{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
+									{#each team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK) as status}
+										<Alert variant="error" style="margin-bottom: 1rem">
+											<strong>{status.title}:</strong>
+											{status.description}
+										</Alert>
+									{/each}
+								{/if}
+							</details>
+						</div>
+					</div>
 				</div>
-				<div class="summary">
-					<h4>
-						Vulnerability status
-						<HelpText title="Current team vulnerability status"
-							>The current status of the team's vulnerabilities.
-						</HelpText>
-					</h4>
-					<p class="metric"></p>
-				</div>
-			</div>
+			{/if}
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -147,7 +153,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
-					<div class="critical">
+					<div>
 						<Tooltip placement="right" content="severity: CRITICAL">
 							<VulnerabilityBadge
 								text={String(team.vulnerabilitiesSummary.critical)}
@@ -209,7 +215,6 @@
 					<Th></Th>
 					<Th sortable={true} sortKey={OrderByField.NAME}>Workload</Th>
 					<Th sortable={true} sortKey={OrderByField.ENV}>Env</Th>
-					<Th sortable={true} sortKey={OrderByField.SEVERITY_CRITICAL}>Status</Th>
 					<Th sortable={true} sortKey={OrderByField.SEVERITY_CRITICAL}>Critical</Th>
 					<Th sortable={true} sortKey={OrderByField.SEVERITY_HIGH}>High</Th>
 					<Th sortable={true} sortKey={OrderByField.SEVERITY_MEDIUM}>Medium</Th>
@@ -244,70 +249,46 @@
 									</Td>
 									<Td>{node.env}</Td>
 									{#if node.summary !== null}
-										{#if !node.hasSbom}
-											<Td colspan={8}>
-												<div style="display: flex; align-items: center">
-													<div class="sbom">
-														<Tooltip
-															placement="right"
-															content="SBOM could not be parsed. Check NAIS Salsa documentation"
-														>
-															<ExclamationmarkTriangleFillIcon
-																style="color: var(--a-icon-warning)"
-															/>
-														</Tooltip>
-													</div>
-												</div>
-											</Td>
-										{:else}
-											<Td>yolo</Td>
-											<Td>
-												<div class="vulnerability">
-													<Vulnerability severity="critical" count={node.summary.critical} />
-												</div>
-											</Td>
-											<Td>
-												<div class="vulnerability">
-													<Vulnerability severity="high" count={node.summary.high} />
-												</div>
-											</Td>
-											<Td>
-												<div class="vulnerability">
-													<Vulnerability severity="medium" count={node.summary.medium} />
-												</div>
-											</Td>
-											<Td>
-												<div class="vulnerability">
-													<Vulnerability severity="low" count={node.summary.low} />
-												</div>
-											</Td>
-											<Td>
-												<div class="vulnerability">
-													<Vulnerability severity="unassigned" count={node.summary.unassigned} />
-												</div>
-											</Td>
-											<Td>
-												<div class="vulnerability">
-													{#if node.summary.riskScore === -1}
-														<Vulnerability severity="low" count={node.summary.riskScore} />
-													{:else}
-														<Tooltip
-															placement="left"
-															content="Calculated based on the number of vulnerabilities, includes unassigned"
-														>
-															<span class="na">{node.summary.riskScore}</span>
-														</Tooltip>
-													{/if}
-												</div>
-											</Td>
-										{/if}
-									{:else}
 										<Td>
-											No data found in dependencytrack.
-											<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}
-												>How to fix</a
-											>
+											<div class="vulnerability">
+												<Vulnerability severity="critical" count={node.summary.critical} />
+											</div>
 										</Td>
+										<Td>
+											<div class="vulnerability">
+												<Vulnerability severity="high" count={node.summary.high} />
+											</div>
+										</Td>
+										<Td>
+											<div class="vulnerability">
+												<Vulnerability severity="medium" count={node.summary.medium} />
+											</div>
+										</Td>
+										<Td>
+											<div class="vulnerability">
+												<Vulnerability severity="low" count={node.summary.low} />
+											</div>
+										</Td>
+										<Td>
+											<div class="vulnerability">
+												<Vulnerability severity="unassigned" count={node.summary.unassigned} />
+											</div>
+										</Td>
+										<Td>
+											<div class="vulnerability">
+												{#if node.summary.riskScore === -1}
+													<Vulnerability severity="low" count={node.summary.riskScore} />
+												{:else}
+													<Tooltip
+														placement="left"
+														content="Calculated based on the number of vulnerabilities, includes unassigned"
+													>
+														<span class="na">{node.summary.riskScore}</span>
+													</Tooltip>
+												{/if}
+											</div>
+										</Td>
+									{:else}
 										<Td>
 											<div class="na">-</div>
 										</Td>
@@ -345,60 +326,6 @@
 					changeParams({ page: e.toString() });
 				}}
 			/>
-		</Card>
-		<Card columns={12}>
-			<Accordion>
-				<AccordionItem heading="Vulnerability status">
-					<Table size="small" sort={sortState} on:sortChange={sortChange}>
-						<Thead>
-							<Th></Th>
-							<Th>Workload</Th>
-							<Th>Env</Th>
-							<Th>State</Th>
-							<Th>Description</Th>
-						</Thead>
-						<Tbody>
-							{#if team !== undefined}
-								{#if team.id === PendingValue}
-									<Tr>
-										{#each new Array(5).fill('text') as variant}
-											<Td>
-												<Skeleton height="32px" {variant} />
-											</Td>
-										{/each}
-									</Tr>
-								{:else}
-									{#each team.vulnerabilitiesSummary.workloadStatus as status}
-										<Tr>
-											<Td>
-												{#if status.workloadType === 'app'}
-													<span style="color:var(--a-gray-600)"
-														><SandboxIcon {...$$restProps} />
-													</span>
-												{:else if status.workloadType === 'job'}
-													<span style="color:var(--a-gray-600)"
-														><ArrowCirclepathIcon {...$$restProps} />
-													</span>
-												{/if}
-											</Td>
-											<Td>
-												<a href={'yolo'}>{status.workload}</a>
-											</Td>
-											<Td>{status.env}</Td>
-											<Td>{status.state}</Td>
-											<Td>{status.description}</Td>
-										</Tr>
-									{/each}
-								{/if}
-							{:else}
-								<Tr>
-									<Td colspan={3}>No status found</Td>
-								</Tr>
-							{/if}
-						</Tbody>
-					</Table>
-				</AccordionItem>
-			</Accordion>
 		</Card>
 	</div>
 {/if}
@@ -458,11 +385,5 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
-	}
-
-	.critical {
-		margin-top: 0.5rem;
-		display: flex;
-		align-items: center;
 	}
 </style>
