@@ -18,8 +18,6 @@
 	//let feedbackOpen = false;
 
 	export let data: PageData;
-	$: page = 1;
-	$: limit = 2;
 
 	$: ({ UserTeams } = data);
 </script>
@@ -64,31 +62,42 @@
 						{:else}
 							<p>You are not a member of any teams.</p>
 						{/each}
+						{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage || $UserTeams.data.me.teams.pageInfo.hasNextPage}
+							<div class="pagination">
+								<span>
+									{#if $UserTeams.data.me.teams.pageInfo.pageStart !== $UserTeams.data.me.teams.pageInfo.pageEnd}
+										{$UserTeams.data.me.teams.pageInfo.pageStart} - {$UserTeams.data.me.teams
+											.pageInfo.pageEnd}
+									{:else}
+										{$UserTeams.data.me.teams.pageInfo.pageStart}
+									{/if}
 
-						<div>
-							{(page - 1) * limit + 1}-{Math.min(
-								page * limit,
-								$UserTeams.data.me.teams.pageInfo.totalCount
-							)} of {$UserTeams.data.me.teams.pageInfo.totalCount}
-							{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage}
-								<button
-									on:click={async () => {
-										page--;
-										return await UserTeams.loadPreviousPage();
-									}}><ChevronLeftIcon /></button
-								>
-							{/if}
-							{#if $UserTeams.data.me.teams.pageInfo.hasNextPage}
-								<button
-									on:click={async () => {
-										page++;
-										return await UserTeams.loadNextPage();
-									}}
-								>
-									<ChevronRightIcon />
-								</button>
-							{/if}
-						</div>
+									of {$UserTeams.data.me.teams.pageInfo.totalCount}
+								</span>
+
+								<span style="padding-left: 1rem;">
+									<Button
+										size="small"
+										variant="secondary"
+										disabled={!$UserTeams.data.me.teams.pageInfo.hasPreviousPage}
+										on:click={async () => {
+											return await UserTeams.loadPreviousPage();
+										}}><ChevronLeftIcon /></Button
+									>
+									<Button
+										size="small"
+										variant="secondary"
+										disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
+										on:click={async () => {
+											console.log('Next page');
+											return await UserTeams.loadNextPage();
+										}}
+									>
+										<ChevronRightIcon /></Button
+									>
+								</span>
+							</div>
+						{/if}
 					{/if}
 				{/if}
 			</div>
@@ -107,6 +116,10 @@
 -->
 
 <style>
+	.pagination {
+		text-align: right;
+		padding: 0.5rem;
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

@@ -2,13 +2,15 @@ query UserTeams {
 	me {
 		__typename
 		... on User {
-			teams(first: 2) @paginate(mode: SinglePage) {
+			teams(first: 10) @paginate(mode: SinglePage) {
 				pageInfo {
-					totalCount
-					hasNextPage
-					startCursor
 					endCursor
+					hasNextPage
 					hasPreviousPage
+					pageEnd
+					pageStart
+					startCursor
+					totalCount
 				}
 				edges {
 					node {
