@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	/*import ActivityLog from '$lib/components/ActivityLog.svelte';*/
 	import { UtilizationResourceType } from '$houdini/graphql';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
@@ -104,7 +105,7 @@
 		<!--Deploys {teamName} /-->
 	</Card>
 
-	<!--ActivityLog {teamName} columns={12} /-->
+	<ActivityLog {teamName} columns={12} />
 </div>
 
 <style>
