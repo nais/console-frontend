@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Feedback from '$lib/components/Feedback.svelte';
+	/*import Feedback from '$lib/components/Feedback.svelte';*/
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import { ChevronRightIcon } from '@nais/ds-svelte-community/icons';
@@ -278,7 +278,7 @@
 </div>
 
 {#if feedbackOpen}
-	<Feedback bind:open={feedbackOpen} />
+	<!--Feedback bind:open={feedbackOpen} /-->
 {/if}
 
 <style>

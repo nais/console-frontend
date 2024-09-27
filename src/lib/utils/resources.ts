@@ -1,20 +1,14 @@
-/*import {
-	PendingValue,
-	UsageResourceType,
-	type TeamResourceUsage$result,
-	type TenantUtilization$result,
-	type UsageResourceType$options
-} from '$houdini';
-import bytes from 'bytes-iec';
-
+/*
 export function round(value: number, decimals: number = 0): number {
     const factor = Math.pow(10, decimals);
     return Math.round(value * factor) / factor;
-}
+}*/
+
+import { UtilizationResourceType, type UtilizationResourceType$options } from '$houdini';
 
 // memory should be in Bytes
 export function yearlyOverageCost(
-	resourceType: UsageResourceType$options,
+	resourceType: UtilizationResourceType$options,
 	request: number,
 	utilization: number
 ) {
@@ -25,7 +19,7 @@ export function yearlyOverageCost(
 
 	let cost = 0.0;
 
-	if (resourceType == UsageResourceType.CPU) {
+	if (resourceType == UtilizationResourceType.CPU) {
 		cost = costPerCpuCorePerYear * overage;
 	} else {
 		cost = costPerBytePerYear * overage;
@@ -35,9 +29,9 @@ export function yearlyOverageCost(
 }
 
 export type utilization = {
-	readonly app: {
+	readonly workload: {
 		readonly name: string;
-		readonly env: {
+		readonly environment: {
 			readonly name: string;
 		};
 	};
@@ -55,7 +49,7 @@ export function teamUtilization(data: utilization | undefined) {
 	});
 	return Math.round((totalUsed / totalRequested) * 100);
 }
-
+/*
 export function cpuUtilization(cpuRequest: number | undefined, totalUsage: number): number {
 	if (!cpuRequest) return 0;
 	const totalCores = cpuRequest;

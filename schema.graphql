@@ -76,6 +76,9 @@ type Application implements Node & Workload {
     orderBy: KafkaTopicAclOrder
   ): KafkaTopicAclConnection!
 
+  """The application manifest."""
+  manifest: ApplicationManifest!
+
   """The name of the application."""
   name: String!
 
@@ -106,6 +109,7 @@ type Application implements Node & Workload {
 
   """The team that owns the application."""
   team: Team!
+  utilization: WorkloadUtilization!
 }
 
 union ApplicationAuthIntegrations = EntraIDAuthIntegration | IDPortenAuthIntegration | MaskinportenAuthIntegration | TokenXAuthIntegration
@@ -127,6 +131,11 @@ type ApplicationEdge {
 
   """The application."""
   node: Application!
+}
+
+type ApplicationManifest implements WorkloadManifest {
+  """The manifest content, serialized as a YAML document."""
+  content: String!
 }
 
 """Ordering options when fetching applications."""
@@ -619,6 +628,9 @@ type Job implements Node & Workload {
     orderBy: KafkaTopicAclOrder
   ): KafkaTopicAclConnection!
 
+  """The job manifest."""
+  manifest: JobManifest!
+
   """The name of the job."""
   name: String!
 
@@ -692,6 +704,11 @@ type JobEdge {
 
   """The job."""
   node: Job!
+}
+
+type JobManifest implements WorkloadManifest {
+  """The manifest content, serialized as a YAML document."""
+  content: String!
 }
 
 input JobOrder {
@@ -1959,6 +1976,7 @@ type Team implements Node {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
+  workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
   """NAIS Workloads owned by the team."""
   workloads(
@@ -2415,6 +2433,14 @@ type TeamUpdatedAuditEntryDataUpdatedField {
   oldValue: String
 }
 
+type TeamUtilizationEnvironmentDataPoint {
+  """The team environment"""
+  environment: TeamEnvironment!
+
+  """Value of the used resource at the given timestamp."""
+  value: Float!
+}
+
 """
 Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
 """
@@ -2544,6 +2570,21 @@ enum UserTeamOrderField {
   TEAM_SLUG
 }
 
+"""Resource utilization type."""
+type UtilizationDataPoint {
+  """Timestamp of the value."""
+  timestamp: Time!
+
+  """Value of the used resource at the given timestamp."""
+  value: Float!
+}
+
+"""Resource type."""
+enum UtilizationResourceType {
+  CPU
+  MEMORY
+}
+
 interface Workload {
   """
   BigQuery datasets referenced by the workload. This does not currently support pagination, but will return all available datasets.
@@ -2580,6 +2621,9 @@ interface Workload {
     """Ordering options for items returned from the connection."""
     orderBy: KafkaTopicAclOrder
   ): KafkaTopicAclConnection!
+
+  """The workload manifest."""
+  manifest: WorkloadManifest!
 
   """The name of the workload."""
   name: String!
@@ -2654,6 +2698,11 @@ type WorkloadEdge {
   node: Workload!
 }
 
+interface WorkloadManifest {
+  """The manifest content, serialized as a YAML document."""
+  content: String!
+}
+
 """Ordering options when fetching workloads."""
 input WorkloadOrder {
   """The direction to order items by."""
@@ -2691,4 +2740,39 @@ interface WorkloadResources {
 
   """Resources requested by the workload."""
   requests: WorkloadResourceQuantity!
+}
+
+type WorkloadUtilization {
+  """Get the current usage for the requested resource type."""
+  current(resourceType: UtilizationResourceType!): Float!
+
+  """
+  Gets the requested amount of resources for the requested resource type.
+  """
+  requested(resourceType: UtilizationResourceType!): Float!
+
+  """Usage between start and end with step size for given resource type."""
+  series(input: WorkloadUtilizationSeriesInput!): [UtilizationDataPoint!]!
+}
+
+type WorkloadUtilizationData {
+  """The requested amount of resources"""
+  requested: Float!
+
+  """The current resource usage."""
+  used: Float!
+
+  """The workload."""
+  workload: Workload!
+}
+
+input WorkloadUtilizationSeriesInput {
+  """Fetch resource usage until this timestamp."""
+  end: Time!
+
+  """Resource type."""
+  resourceType: UtilizationResourceType!
+
+  """Fetch resource usage from this timestamp."""
+  start: Time!
 }
