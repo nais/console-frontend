@@ -1268,6 +1268,7 @@ type Query {
     """Ordering options for items returned from the connection."""
     orderBy: TeamOrder
   ): TeamConnection!
+  teamsUtilization(resourceType: UtilizationResourceType!): [TeamUtilizationData!]!
 
   """Get a user by its ID."""
   user(id: ID!): User!
@@ -2483,6 +2484,20 @@ type TeamUpdatedAuditEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+type TeamUtilizationData {
+  """The environment for the utilization data."""
+  environment: TeamEnvironment!
+
+  """The requested amount of resources"""
+  requested: Float!
+
+  """The team."""
+  team: Team!
+
+  """The current resource usage."""
+  used: Float!
 }
 
 type TeamUtilizationEnvironmentDataPoint {

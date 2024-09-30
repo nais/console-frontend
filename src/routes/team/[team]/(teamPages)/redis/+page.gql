@@ -1,0 +1,30 @@
+query Redis($team: Slug!) {
+	team(slug: $team) {
+		id
+		redisInstances(first: 12) {
+			pageInfo {
+				hasNextPage
+				endCursor
+				hasPreviousPage
+				startCursor
+				totalCount
+				pageStart
+				pageEnd
+			}
+
+			edges {
+				node {
+					id
+					name
+					environment {
+						name
+					}
+					workload {
+						name
+						__typename
+					}
+				}
+			}
+		}
+	}
+}
