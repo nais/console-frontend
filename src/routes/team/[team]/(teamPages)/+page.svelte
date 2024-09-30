@@ -5,12 +5,12 @@
 	import { UtilizationResourceType } from '$houdini/graphql';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { Alert, HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 
 	export let data: PageData;
 	$: ({ Overview } = data);
@@ -71,13 +71,21 @@
 				<Tr>
 					<Td>Memory</Td>
 					<Td>
-						{percentageFormatter(teamUtilization(memoryMetrics))}
+						{#if memoryMetrics.length > 0}
+							{percentageFormatter(teamUtilization(memoryMetrics))}
+						{:else}
+							-
+						{/if}
 					</Td>
 				</Tr>
 				<Tr>
 					<Td>CPU</Td>
 					<Td>
-						{percentageFormatter(teamUtilization(cpuMetrics))}
+						{#if cpuMetrics.length > 0}
+							{percentageFormatter(teamUtilization(cpuMetrics))}
+						{:else}
+							-
+						{/if}
 					</Td>
 				</Tr>
 			</Tbody>
