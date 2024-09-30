@@ -10,6 +10,7 @@
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { Alert, HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
+	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 
 	export let data: PageData;
 	$: ({ Overview } = data);
@@ -47,8 +48,7 @@
 	</Card>
 
 	<Card rows={2} columns={3}>
-		<!--VulnerabilitySummary {teamName} /-->
-		TODO: VulnerabilitySummary
+		<VulnerabilitySummary {teamName} />
 	</Card>
 
 	<Card rows={2} columns={5}>

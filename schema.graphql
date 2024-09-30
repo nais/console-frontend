@@ -2027,6 +2027,7 @@ type Team implements Node {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
+  vulnerabilitySummary: TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
   """NAIS Workloads owned by the team."""
@@ -2490,6 +2491,32 @@ type TeamUtilizationEnvironmentDataPoint {
 
   """Value of the used resource at the given timestamp."""
   value: Float!
+}
+
+type TeamVulnerabilitySummary {
+  """Number of workloads with a software bill of materials (SBOM) attached."""
+  bomCount: Int!
+
+  """Coverage of the team."""
+  coverage: Float!
+
+  """Number of vulnerabilities with severity CRITICAL."""
+  critical: Int!
+
+  """Number of vulnerabilities with severity HIGH."""
+  high: Int!
+
+  """Number of vulnerabilities with severity LOW."""
+  low: Int!
+
+  """Number of vulnerabilities with severity MEDIUM."""
+  medium: Int!
+
+  """Risk score of the team."""
+  riskScore: Int!
+
+  """Number of vulnerabilities with severity UNASSIGNED."""
+  unassigned: Int!
 }
 
 """
