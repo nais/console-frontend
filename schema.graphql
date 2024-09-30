@@ -2724,6 +2724,18 @@ type VulnerabilityNode {
   workloadType: String!
 }
 
+type VulnerabilityRanking {
+  rank: Int!
+  totalTeams: Int!
+  trend: VulnerabilityRankingTrend!
+}
+
+enum VulnerabilityRankingTrend {
+  DOWN
+  FLAT
+  UP
+}
+
 enum VulnerabilityState {
   COVERAGE_TOO_LOW
   MISSING_SBOM
@@ -2746,8 +2758,8 @@ type VulnerabilitySummaryForTeam {
   low: Int!
   medium: Int!
   riskScore: Int!
-  riskScoreTrend: Float!
   status: [VulnerabilityStatus!]!
+  teamRanking: VulnerabilityRanking!
   totalWorkloads: Int!
   unassigned: Int!
 }

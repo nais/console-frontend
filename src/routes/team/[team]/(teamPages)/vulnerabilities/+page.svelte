@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, type TeamVulnerabilities$result, VulnerabilityState } from '$houdini';
-	import { OrderByField, type OrderByField$options } from '$houdini/graphql';
+	import { OrderByField, VulnerabilityRankingTrend, type OrderByField$options } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
@@ -29,13 +29,17 @@
 		SandboxIcon,
 		SealCheckmarkIcon,
 		SealXMarkIcon,
-		ShieldLockIcon
+		ShieldLockIcon,
+		TrendUpIcon,
+		TrendDownIcon,
+		TrendFlatIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import { te } from 'date-fns/locale';
 
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
@@ -184,6 +188,35 @@
 						</h4>
 						<p class="metric">
 							{team.vulnerabilitiesSummary.riskScore}
+						</p>
+					</div>
+				{/if}
+			</div>
+		</Card>
+		<Card columns={3}>
+			<div class="summaryCard">
+				{#if team !== undefined && team.id !== PendingValue}
+					<div class="summaryIcon" style="--bg-color: #C8C8C8">
+						{#if team.vulnerabilitiesSummary.teamRanking.trend === VulnerabilityRankingTrend.DOWN}
+							<TrendDownIcon title="RiskScore" font-size="80" style={'color:green;'} />
+						{:else if team.vulnerabilitiesSummary.teamRanking.trend === VulnerabilityRankingTrend.UP}
+							<TrendUpIcon title="RiskScore" font-size="80" style={'color:red;'} />
+						{:else}
+							<TrendFlatIcon title="RiskScore" font-size="80" style={'color:lightblue;'} />
+						{/if}
+					</div>
+					<div class="summary">
+						<h4>
+							Riskscore ranking
+							<HelpText title="Current team ranking"
+								>Ranking of the team's risk score compared to other teams. 1st place means overall
+								highest riskscore. The icon will also show trend up or down since last month. Missing
+								SBOM will something something.
+							</HelpText>
+						</h4>
+						<p class="metric">
+							#{team.vulnerabilitiesSummary.teamRanking.rank} of {team.vulnerabilitiesSummary
+								.teamRanking.totalTeams} teams
 						</p>
 					</div>
 				{/if}

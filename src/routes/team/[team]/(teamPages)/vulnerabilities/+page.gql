@@ -47,6 +47,11 @@ query TeamVulnerabilities(
 				title
 				description
 			}
+			teamRanking {
+				totalTeams
+				rank
+				trend
+			}
 		}
 	}
 }
