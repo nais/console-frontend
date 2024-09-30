@@ -1,0 +1,44 @@
+query Workloads($team: Slug!, $orderBy: ApplicationOrder) {
+	team(slug: $team) {
+		id
+		applications(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				totalCount
+				endCursor
+				startCursor
+				hasNextPage
+				hasPreviousPage
+				pageEnd
+				pageStart
+			}
+			edges {
+				node {
+					id
+					name
+					environment {
+						name
+					}
+					image {
+						vulnerabilitySummary {
+							critical
+							riskScore
+						}
+					}
+					#deployInfo {
+					#	timestamp
+					#}
+
+					#...AppInstancesStatus
+
+					#status {
+					#	state
+					#}
+					#
+					#instances {
+					#	state
+					#}
+				}
+			}
+		}
+	}
+}

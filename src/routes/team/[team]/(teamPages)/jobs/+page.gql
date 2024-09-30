@@ -1,0 +1,39 @@
+query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC }) {
+	team(slug: $team) {
+		id
+		jobs(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				totalCount
+				endCursor
+				startCursor
+				hasNextPage
+				hasPreviousPage
+				pageEnd
+				pageStart
+			}
+			edges {
+				node {
+					id
+					name
+					environment {
+						name
+					}
+					image {
+						vulnerabilitySummary {
+							critical
+							riskScore
+						}
+					}
+					#deployInfo {
+					#	timestamp
+					#}
+
+					#status {
+					#	state
+					#}
+					#
+				}
+			}
+		}
+	}
+}
