@@ -1,4 +1,4 @@
-<script lang="ts">
+<!--script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 	import { Skeleton } from '@nais/ds-svelte-community';
@@ -88,11 +88,10 @@
 			<a href="/team/{teamName}/postgres">{team.status.sqlInstances.total} postgres</a>
 		</p>
 	{/if}
-	<!-- TODO: Team status NAIS icon -->
 {:else if team && team.id === PendingValue}
 	<Skeleton variant="text" width="100px" />
 	<Skeleton variant="text" width="120px" />
 {/if}
 
 <style>
-</style>
+</style-->

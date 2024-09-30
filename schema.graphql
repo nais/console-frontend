@@ -238,6 +238,11 @@ enum AuditResourceType {
   UNKNOWN
 }
 
+interface AuthIntegration {
+  """The name of the integration."""
+  name: String!
+}
+
 """Authenticated user type. Can be a user or a service account."""
 union AuthenticatedUser = User
 
@@ -425,6 +430,49 @@ type ContainerImage implements Node {
 
   """Get the summary of the vulnerabilities of the image."""
   vulnerabilitySummary: ImageVulnerabilitySummary
+
+  """Workloads using this container image."""
+  workloadReferences(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ContainerImageWorkloadReferenceConnection!
+}
+
+type ContainerImageWorkloadReference {
+  """The workload using the container image."""
+  workload: Workload!
+}
+
+type ContainerImageWorkloadReferenceConnection {
+  """List of edges."""
+  edges: [ContainerImageWorkloadReferenceEdge!]!
+
+  """List of nodes."""
+  nodes: [ContainerImageWorkloadReference!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type ContainerImageWorkloadReferenceEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The workload reference."""
+  node: ContainerImageWorkloadReference!
 }
 
 input CreateTeamInput {
@@ -467,8 +515,9 @@ scalar Cursor
 """Date type in YYYY-MM-DD format."""
 scalar Date
 
-type EntraIDAuthIntegration {
-  tmp: Boolean!
+type EntraIDAuthIntegration implements AuthIntegration {
+  """The name of the integration."""
+  name: String!
 }
 
 type ExternalNetworkPolicyHost implements ExternalNetworkPolicyTarget {
@@ -486,8 +535,9 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
-type IDPortenAuthIntegration {
-  tmp: Boolean!
+type IDPortenAuthIntegration implements AuthIntegration {
+  """The name of the integration."""
+  name: String!
 }
 
 type ImageVulnerability implements Node {
@@ -895,8 +945,9 @@ type KafkaTopicStatus {
   state: String!
 }
 
-type MaskinportenAuthIntegration {
-  tmp: Boolean!
+type MaskinportenAuthIntegration implements AuthIntegration {
+  """The name of the integration."""
+  name: String!
 }
 
 """The mutation root for the NAIS GraphQL API."""
@@ -2446,8 +2497,9 @@ Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, 
 """
 scalar Time
 
-type TokenXAuthIntegration {
-  tmp: Boolean!
+type TokenXAuthIntegration implements AuthIntegration {
+  """The name of the integration."""
+  name: String!
 }
 
 """Universally Unique Identifier."""

@@ -4,6 +4,7 @@
 	/*import ActivityLog from '$lib/components/ActivityLog.svelte';*/
 	import { UtilizationResourceType } from '$houdini/graphql';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
@@ -93,9 +94,10 @@
 		<a href="/team/{teamName}/utilization">View team utilization</a>
 	</Card>
 	<Card rows={1} columns={4}>
-		<!--Cost app="" env="" team={teamName} /-->
-		TODO: Cost
-		<a href="/team/{teamName}/cost">View team costs</a>
+		<h4>Cost</h4>
+		<Cost team={teamName} />
+
+		<p><a href="/team/{teamName}/cost">View team costs</a></p>
 	</Card>
 
 	<Card rows={1} columns={12}>

@@ -1,28 +1,32 @@
 <script lang="ts">
-	import { PendingValue, graphql } from '$houdini';
+	import { graphql } from '$houdini';
 	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert } from '@nais/ds-svelte-community';
 	import type { AggregatedCostAppVariables } from './$houdini';
 
 	export const _AggregatedCostAppVariables: AggregatedCostAppVariables = () => {
-		return { filter: { app: app, env: env, team: team } };
+		return { team: team };
 	};
 
 	const costQuery = graphql(`
-		query AggregatedCostApp($filter: MonthlyCostFilter!) @load {
-			monthlyCost(filter: $filter) @loading {
-				sum
+		query AggregatedCostApp($team: Slug!) @load {
+			team(slug: $team) {
 				cost {
-					date
-					cost
+					monthlySummary {
+						sum
+						series {
+							date
+							cost
+						}
+					}
 				}
 			}
 		}
 	`);
 
-	export let app: string;
-	export let env: string;
 	export let team: string;
+
+	$: monthlySummary = $costQuery.data?.team.cost.monthlySummary;
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();
@@ -31,28 +35,30 @@
 		return euroValueFormatter(costPerDay * daysInMonth);
 	}
 
-	function getFactor(cost: { date: Date; cost: number }[]) {
-		const daysKnown = cost[0].date.getDate();
-		const estCostPerDay = cost[0].cost / daysKnown;
-		return (estCostPerDay / (cost[1].cost / cost[1].date.getDate())) * 100 - 100;
+	function getFactor(series: { date: Date; cost: number }[]) {
+		if (series.length < 2) {
+			return 1.0;
+		}
+
+		const daysKnown = series[0].date.getDate();
+		const estCostPerDay = series[0].cost / daysKnown;
+
+		return (estCostPerDay / (series[1].cost / series[1].date.getDate())) * 100 - 100;
 	}
 </script>
 
-<h4>Cost</h4>
 {#if $costQuery.errors}
 	<Alert variant="error">
 		{#each $costQuery.errors as error}
 			{error.message}
 		{/each}
 	</Alert>
-{:else if $costQuery.data !== null}
+{/if}
+{#if monthlySummary}
 	<div>
-		{#if $costQuery.data.monthlyCost === PendingValue}
-			<Skeleton variant="text" />
-			<Skeleton variant="text" />
-		{:else if $costQuery.data.monthlyCost.cost.length > 1}
-			{@const factor = getFactor($costQuery.data.monthlyCost.cost)}
-			{#each $costQuery.data.monthlyCost.cost.slice(0, 2) as cost}
+		{#if monthlySummary.series.length > 1}
+			{@const factor = getFactor(monthlySummary.series)}
+			{#each monthlySummary.series.slice(0, 2) as cost}
 				{#if cost.date.getDate() === new Date(cost.date.getFullYear(), cost.date.getMonth() + 1, 0).getDate()}
 					{cost.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(cost.cost)}
 				{:else}
@@ -68,8 +74,8 @@
 				{/if}
 				<br />
 			{/each}
-		{:else if $costQuery.data.monthlyCost.cost.length == 1}
-			{@const cost = $costQuery.data.monthlyCost.cost[0]}
+		{:else if monthlySummary.series.length == 1}
+			{@const cost = monthlySummary.series[0]}
 			{cost.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
 				cost.cost,
 				cost.date
