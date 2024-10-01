@@ -40,6 +40,22 @@
 		}
 		goto(`?${query.toString()}`);
 	};
+
+	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
+		const { key } = e.detail;
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy = ApplicationOrderField[key as keyof typeof ApplicationOrderField];
+			tableSort.direction = 'ASC';
+		}
+
+		changeParams({
+			direction: tableSort.direction,
+			field: tableSort.orderBy || 'NAME'
+		});
+	};
 </script>
 
 {#if $Workloads.errors}
@@ -58,21 +74,7 @@
 					orderBy: tableSort.orderBy || 'NAME',
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 				}}
-				on:sortChange={(e) => {
-					const { key } = e.detail;
-					if (key === tableSort.orderBy) {
-						const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-						tableSort.direction = direction;
-					} else {
-						tableSort.orderBy = ApplicationOrderField[key];
-						tableSort.direction = 'ASC';
-					}
-
-					changeParams({
-						direction: tableSort.direction,
-						field: tableSort.orderBy || 'NAME'
-					});
-				}}
+				on:sortChange={tableSortChange}
 			>
 				<Thead>
 					<Th style="width: 2rem"></Th>

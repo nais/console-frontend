@@ -4,6 +4,7 @@
 	//import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		Alert,
 		HelpText,
@@ -80,12 +81,11 @@
 						</Td>
 						<Td>
 							{#if edge.node.workload}
-								<!--WorkloadLink
+								<WorkloadLink
 									workload={edge.node.workload}
-									env={edge.node.environment.name}
 									team={teamName}
-								/-->
-								Here be link
+									env={edge.node.environment.name}
+								/>
 							{:else}
 								<em title="The Redis instance is owned by the team">Team</em>
 							{/if}

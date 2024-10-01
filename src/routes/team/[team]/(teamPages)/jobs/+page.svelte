@@ -36,6 +36,22 @@
 		}
 		goto(`?${query.toString()}`);
 	};
+
+	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
+		const { key } = e.detail;
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy = JobOrderField[key as keyof typeof JobOrderField];
+			tableSort.direction = 'ASC';
+		}
+
+		changeParams({
+			direction: tableSort.direction,
+			field: tableSort.orderBy || 'NAME'
+		});
+	};
 </script>
 
 {#if $Jobs.errors}
@@ -53,21 +69,7 @@
 				orderBy: tableSort.orderBy || 'NAME',
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={(e) => {
-				const { key } = e.detail;
-				if (key === tableSort.orderBy) {
-					const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-					tableSort.direction = direction;
-				} else {
-					tableSort.orderBy = JobOrderField[key];
-					tableSort.direction = 'ASC';
-				}
-
-				changeParams({
-					direction: tableSort.direction,
-					field: tableSort.orderBy || 'NAME'
-				});
-			}}
+			on:sortChange={tableSortChange}
 		>
 			<Thead>
 				<Th style="width: 2rem"></Th>
