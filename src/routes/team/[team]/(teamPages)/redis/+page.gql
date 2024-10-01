@@ -1,7 +1,7 @@
 query Redis($team: Slug!) {
 	team(slug: $team) {
 		id
-		redisInstances(first: 12) {
+		redisInstances(first: 12) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				endCursor
