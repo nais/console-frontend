@@ -82,14 +82,14 @@
 			<p>
 				<a href="/team/{teamName}/vulnerabilities">
 					{team.status.apps.vulnerabilities} app{team.status.apps.vulnerabilities > 1 ? 's' : ''}</a
-				> with vulnerabilities
+				> with vulnerability issues
 			</p>
 		{/if}
 		{#if team.status.jobs.vulnerabilities > 0}
 			<p>
 				<a href="/team/{teamName}/vulnerabilities">
 					{team.status.jobs.vulnerabilities} job{team.status.jobs.vulnerabilities > 1 ? 's' : ''}</a
-				> with vulnerabilities
+				> with vulnerability issues
 			</p>
 		{/if}
 	{:else if team && team.id === PendingValue}

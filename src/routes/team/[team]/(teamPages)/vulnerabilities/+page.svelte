@@ -113,7 +113,7 @@
 					{/if}
 					<div class="summary">
 						<h4>
-							Vulnerability status
+							Vulnerability issues
 							<HelpText title="Current team vulnerability status"
 								>If any of the workloads have any vulnerability issues, the icon will show a warning
 								sign and a details link will show.
