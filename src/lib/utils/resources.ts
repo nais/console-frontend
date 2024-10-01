@@ -2,6 +2,7 @@ import {
 	PendingValue,
 	UtilizationResourceType,
 	type TeamResourceUsage$result,
+	type TenantUtilization$result,
 	type UtilizationResourceType$options
 } from '$houdini';
 
@@ -166,6 +167,96 @@ export function mergeCalculateAndSortOverageData(
 			return 0;
 		});
 }
+
+export type TeamsOverageData = {
+	team: string;
+	unusedMem: number;
+	unusedCpu: number;
+	estimatedAnnualOverageCost: number;
+};
+
+export function mergeCalculateAndSortOverageDataAllTeams(
+	input: TenantUtilization$result | null,
+	sortedBy: string = 'ENVIROMENT',
+	sortDirection: string = 'descending'
+): TeamsOverageData[] {
+	if (!input) {
+		return [];
+	}
+
+	return input.memUtil
+		.map((memItem) => {
+			// Find the corresponding CPU utilization item
+			const cpuItem = input.cpuUtil.find((cpu) => cpu.team.slug === memItem.team.slug);
+
+			if (!cpuItem) {
+				throw new Error(`No corresponding CPU data found for ${memItem.team.slug}`);
+			}
+
+			// Combine the memory and CPU data into one object
+			return {
+				team: memItem.team.slug,
+				unusedMem: memItem.requested - memItem.used,
+				unusedCpu: cpuItem.requested - cpuItem.used,
+				estimatedAnnualOverageCost:
+					yearlyOverageCost(
+						UtilizationResourceType.CPU,
+						cpuItem.requested,
+						cpuItem.used / cpuItem.requested
+					) +
+					yearlyOverageCost(
+						UtilizationResourceType.MEMORY,
+						memItem.requested,
+						memItem.used / memItem.requested
+					)
+			};
+		})
+		.sort((a, b) => {
+			if (sortedBy === 'TEAM') {
+				if (sortDirection === 'descending') {
+					if (a.team > b.team) return -1;
+					if (a.team < b.team) return 1;
+					return 0;
+				} else {
+					if (a.team > b.team) return 1;
+					if (a.team < b.team) return -1;
+					return 0;
+				}
+			} else if (sortedBy === 'CPU') {
+				if (sortDirection === 'descending') {
+					if (a.unusedCpu > b.unusedCpu) return -1;
+					if (a.unusedCpu < b.unusedCpu) return 1;
+					return 0;
+				} else {
+					if (a.unusedCpu > b.unusedCpu) return 1;
+					if (a.unusedCpu < b.unusedCpu) return -1;
+					return 0;
+				}
+			} else if (sortedBy === 'MEMORY') {
+				if (sortDirection === 'descending') {
+					if (a.unusedMem > b.unusedMem) return -1;
+					if (a.unusedMem < b.unusedMem) return 1;
+					return 0;
+				} else {
+					if (a.unusedMem > b.unusedMem) return 1;
+					if (a.unusedMem < b.unusedMem) return -1;
+					return 0;
+				}
+			} else if (sortedBy === 'COST') {
+				if (sortDirection === 'descending') {
+					if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return -1;
+					if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return 1;
+					return 0;
+				} else {
+					if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return 1;
+					if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return -1;
+					return 0;
+				}
+			}
+			return 0;
+		});
+}
+
 /*
 export function cpuUtilization(cpuRequest: number | undefined, totalUsage: number): number {
 	if (!cpuRequest) return 0;
@@ -219,92 +310,7 @@ export function sumMemoryRequests(numOfInstances: number, memoryRequest: string)
 
 
 
-export type TeamsOverageData = {
-	team: string;
-	unusedMem: number;
-	unusedCpu: number;
-	estimatedAnnualOverageCost: number;
-};
 
-export function mergeCalculateAndSortOverageDataAllTeams(
-	input: TenantUtilization$result | null,
-	sortedBy: string = 'ENVIROMENT',
-	sortDirection: string = 'descending'
-): TeamsOverageData[] {
-	if (!input) {
-		return [];
-	}
 
-	return input.memUtil
-		.map((memItem) => {
-			// Find the corresponding CPU utilization item
-			const cpuItem = input.cpuUtil.find((cpu) => cpu.team.slug === memItem.team.slug);
 
-			if (!cpuItem) {
-				throw new Error(`No corresponding CPU data found for ${memItem.team.slug}`);
-			}
-
-			// Combine the memory and CPU data into one object
-			return {
-				team: memItem.team.slug,
-				unusedMem: memItem.requested - memItem.used,
-				unusedCpu: cpuItem.requested - cpuItem.used,
-				estimatedAnnualOverageCost:
-					yearlyOverageCost(
-						UsageResourceType.CPU,
-						cpuItem.requested,
-						cpuItem.used / cpuItem.requested
-					) +
-					yearlyOverageCost(
-						UsageResourceType.MEMORY,
-						memItem.requested,
-						memItem.used / memItem.requested
-					)
-			};
-		})
-		.sort((a, b) => {
-			if (sortedBy === 'TEAM') {
-				if (sortDirection === 'descending') {
-					if (a.team > b.team) return -1;
-					if (a.team < b.team) return 1;
-					return 0;
-				} else {
-					if (a.team > b.team) return 1;
-					if (a.team < b.team) return -1;
-					return 0;
-				}
-			} else if (sortedBy === 'CPU') {
-				if (sortDirection === 'descending') {
-					if (a.unusedCpu > b.unusedCpu) return -1;
-					if (a.unusedCpu < b.unusedCpu) return 1;
-					return 0;
-				} else {
-					if (a.unusedCpu > b.unusedCpu) return 1;
-					if (a.unusedCpu < b.unusedCpu) return -1;
-					return 0;
-				}
-			} else if (sortedBy === 'MEMORY') {
-				if (sortDirection === 'descending') {
-					if (a.unusedMem > b.unusedMem) return -1;
-					if (a.unusedMem < b.unusedMem) return 1;
-					return 0;
-				} else {
-					if (a.unusedMem > b.unusedMem) return 1;
-					if (a.unusedMem < b.unusedMem) return -1;
-					return 0;
-				}
-			} else if (sortedBy === 'COST') {
-				if (sortDirection === 'descending') {
-					if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return -1;
-					if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return 1;
-					return 0;
-				} else {
-					if (a.estimatedAnnualOverageCost > b.estimatedAnnualOverageCost) return 1;
-					if (a.estimatedAnnualOverageCost < b.estimatedAnnualOverageCost) return -1;
-					return 0;
-				}
-			}
-			return 0;
-		});
-}
 */
