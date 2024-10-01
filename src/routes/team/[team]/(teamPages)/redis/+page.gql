@@ -1,12 +1,10 @@
-query Redis($team: Slug!) {
+query Redis($team: Slug!, $orderBy: RedisInstanceOrder) {
 	team(slug: $team) {
 		id
-		redisInstances(first: 12) @paginate(mode: SinglePage) {
+		redisInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
-				endCursor
 				hasPreviousPage
-				startCursor
 				totalCount
 				pageStart
 				pageEnd
