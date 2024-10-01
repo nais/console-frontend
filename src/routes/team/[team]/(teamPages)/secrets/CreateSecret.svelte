@@ -11,7 +11,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { graphql } from '$houdini';
-	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 
 	export let environment: EnvironmentType;
 
@@ -90,24 +90,32 @@
 	};
 </script>
 
-<Modal bind:open width="small" on:close={close}>
+<Modal bind:open width="medium" on:close={close}>
 	<svelte:fragment slot="header">
-		<Heading>Create new secret in {environment.name}</Heading>
+		<Heading>Create new Secret in <i>{environment.name}</i></Heading>
 	</svelte:fragment>
-	<div class="wrapper">
-		<div class="row">
-			<TextField size="small" bind:value={name} error={validate(name)}>
-				<svelte:fragment slot="label">Name</svelte:fragment>
-			</TextField>
-		</div>
-		{#if $createSecret.errors}
-			<Alert variant="error">
-				{#each $createSecret.errors as error}
-					{error.message}
-				{/each}
-			</Alert>
-		{/if}
+	<div class="row">
+		<BodyShort size="medium" spacing>
+			A Secret is a named set of key-value pairs.
+		</BodyShort>
 	</div>
+	<div class="row">
+		<TextField size="small" bind:value={name} error={validate(name)}>
+			<svelte:fragment slot="label">Name</svelte:fragment>
+			<svelte:fragment slot="description">
+				The name is only used to reference the Secret in your workload manifest.
+				<br />
+				<i>Example: my-secret</i>
+			</svelte:fragment>
+		</TextField>
+	</div>
+	{#if $createSecret.errors}
+		<Alert variant="error">
+			{#each $createSecret.errors as error}
+				{error.message}
+			{/each}
+		</Alert>
+	{/if}
 	<svelte:fragment slot="footer">
 		<Button variant="primary" size="small" on:click={create}>Create</Button>
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
@@ -115,11 +123,7 @@
 </Modal>
 
 <style>
-	.wrapper {
-		margin: 2rem 1rem;
-	}
-
 	.row {
-		margin-bottom: 32px;
+		margin: 1rem 0;
 	}
 </style>
