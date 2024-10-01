@@ -28,8 +28,6 @@
 	$: ({ Redis } = data);
 	$: team = $Redis.data?.team;
 
-	//$: ({ sortState, limit, offset } = tableStateFromVariables($Redis.variables));
-
 	$: tableSort = {
 		orderBy: $Redis.variables?.orderBy?.field,
 		direction: $Redis.variables?.orderBy?.direction
