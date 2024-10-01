@@ -1,0 +1,25 @@
+query Buckets($team: Slug!, $orderBy: BucketOrder) {
+	team(slug: $team) {
+		buckets(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
+			edges {
+				node {
+					name
+					environment {
+						name
+					}
+					workload {
+						__typename
+						name
+					}
+				}
+			}
+		}
+	}
+}

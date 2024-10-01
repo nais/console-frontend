@@ -74,7 +74,7 @@
 			<Thead>
 				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENV" style="width: 2rem">Env</Th>
+				<Th sortable={true} sortKey="ENVIRONMENT" style="width: 2rem">Env</Th>
 				<Th style="width: 2rem">Critical</Th>
 				<Th style="width: 8rem;">Risk score</Th>
 				<Th style="width: 150px">Deployed</Th>

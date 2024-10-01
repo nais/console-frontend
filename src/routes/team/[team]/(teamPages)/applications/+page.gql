@@ -2,6 +2,13 @@ query Workloads($team: Slug!, $orderBy: ApplicationOrder) {
 	team(slug: $team) {
 		id
 		applications(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
 			edges {
 				node {
 					id
