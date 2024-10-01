@@ -1,0 +1,25 @@
+query OpenSearch($team: Slug!, $orderBy: OpenSearchOrder) {
+	team(slug: $team) {
+		openSearch(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				totalCount
+				pageStart
+				pageEnd
+			}
+			edges {
+				node {
+					name
+					environment {
+						name
+					}
+					workload {
+						__typename
+						name
+					}
+				}
+			}
+		}
+	}
+}
