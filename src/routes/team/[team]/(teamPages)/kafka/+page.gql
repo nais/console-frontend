@@ -1,0 +1,21 @@
+query KafkaTopics($team: Slug!, $orderBy: KafkaTopicOrder) {
+	team(slug: $team) {
+		kafkaTopics(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
+			edges {
+				node {
+					name
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
