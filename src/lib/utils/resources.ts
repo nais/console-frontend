@@ -1,10 +1,14 @@
-/*
-export function round(value: number, decimals: number = 0): number {
-    const factor = Math.pow(10, decimals);
-    return Math.round(value * factor) / factor;
-}*/
+import {
+	PendingValue,
+	UtilizationResourceType,
+	type TeamResourceUsage$result,
+	type UtilizationResourceType$options
+} from '$houdini';
 
-import { UtilizationResourceType, type UtilizationResourceType$options } from '$houdini';
+export function round(value: number, decimals: number = 0): number {
+	const factor = Math.pow(10, decimals);
+	return Math.round(value * factor) / factor;
+}
 
 // memory should be in Bytes
 export function yearlyOverageCost(
@@ -49,56 +53,6 @@ export function teamUtilization(data: utilization | undefined) {
 	});
 	return Math.round((totalUsed / totalRequested) * 100);
 }
-/*
-export function cpuUtilization(cpuRequest: number | undefined, totalUsage: number): number {
-	if (!cpuRequest) return 0;
-	const totalCores = cpuRequest;
-	const utilization = (totalUsage / totalCores) * 100;
-	return Math.round(utilization * 10 ** 2) / 10 ** 2;
-}
-
-export function memoryUtilization(memory: number, totalUsage: number): number {
-	const utilization = (totalUsage / memory) * 100;
-	return Math.round(utilization * 10 ** 2) / 10 ** 2;
-}
-
-export function sumCPURequests(numOfInstances: number, cpuRequest: string): string {
-	if (cpuRequest.includes('m')) {
-		const cpuRequestInMilliCPU = parseInt(cpuRequest.replace('m', ''));
-		const cpuRequestInCPU = cpuRequestInMilliCPU / 1000;
-		const totalCPURequest = cpuRequestInCPU * numOfInstances;
-		return totalCPURequest.toLocaleString('en-GB', {
-			maximumFractionDigits: 3
-		});
-	} else if (cpuRequest !== '') {
-		const totalCPURequest = parseInt(cpuRequest) * numOfInstances;
-		return totalCPURequest.toLocaleString('en-GB', {
-			maximumFractionDigits: 3
-		});
-	}
-	return '-';
-}
-
-export function sumMemoryRequests(numOfInstances: number, memoryRequest: string): string {
-	const request = bytes.parse(memoryRequest.concat('B'));
-	if (request) {
-		if (memoryRequest.includes('i')) {
-			const b = bytes(request * numOfInstances, { mode: 'binary' })?.replace('B', '');
-			if (b) {
-				return b;
-			} else {
-				return '-';
-			}
-		}
-		const b = bytes(request * numOfInstances)?.replace('B', '');
-		if (b) {
-			return b;
-		} else {
-			return '-';
-		}
-	}
-	return '-';
-}
 
 export type TeamOverageData = {
 	name: string;
@@ -120,29 +74,38 @@ export function mergeCalculateAndSortOverageData(
 		return [];
 	}
 
-	return input.memUtil
+	const memUtil = input.memUtil.filter((memItem) => memItem) as NonNullable<
+		(typeof input.memUtil)[0]
+	>[];
+
+	return memUtil
 		.map((memItem) => {
 			// Find the corresponding CPU utilization item
-			const cpuItem = input.cpuUtil.find((cpu) => cpu.app.name === memItem.app.name && cpu.app.env.name === memItem.app.env.name);
+			const cpuItem = input.cpuUtil.find(
+				(cpu) =>
+					cpu &&
+					cpu.workload.name === memItem.workload.name &&
+					cpu.workload.environment.name === memItem.workload.environment.name
+			);
 
 			if (!cpuItem) {
-				throw new Error(`No corresponding CPU data found for ${memItem.app.name}`);
+				throw new Error(`No corresponding CPU data found for ${memItem.workload.name}`);
 			}
 
 			// Combine the memory and CPU data into one object
 			return {
-				name: memItem.app.name,
-				env: memItem.app.env.name,
+				name: memItem.workload.name,
+				env: memItem.workload.environment.name,
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost:
 					yearlyOverageCost(
-						UsageResourceType.CPU,
+						UtilizationResourceType.CPU,
 						cpuItem.requested,
 						cpuItem.used / cpuItem.requested
 					) +
 					yearlyOverageCost(
-						UsageResourceType.MEMORY,
+						UtilizationResourceType.MEMORY,
 						memItem.requested,
 						memItem.used / memItem.requested
 					)
@@ -203,6 +166,58 @@ export function mergeCalculateAndSortOverageData(
 			return 0;
 		});
 }
+/*
+export function cpuUtilization(cpuRequest: number | undefined, totalUsage: number): number {
+	if (!cpuRequest) return 0;
+	const totalCores = cpuRequest;
+	const utilization = (totalUsage / totalCores) * 100;
+	return Math.round(utilization * 10 ** 2) / 10 ** 2;
+}
+
+export function memoryUtilization(memory: number, totalUsage: number): number {
+	const utilization = (totalUsage / memory) * 100;
+	return Math.round(utilization * 10 ** 2) / 10 ** 2;
+}
+
+export function sumCPURequests(numOfInstances: number, cpuRequest: string): string {
+	if (cpuRequest.includes('m')) {
+		const cpuRequestInMilliCPU = parseInt(cpuRequest.replace('m', ''));
+		const cpuRequestInCPU = cpuRequestInMilliCPU / 1000;
+		const totalCPURequest = cpuRequestInCPU * numOfInstances;
+		return totalCPURequest.toLocaleString('en-GB', {
+			maximumFractionDigits: 3
+		});
+	} else if (cpuRequest !== '') {
+		const totalCPURequest = parseInt(cpuRequest) * numOfInstances;
+		return totalCPURequest.toLocaleString('en-GB', {
+			maximumFractionDigits: 3
+		});
+	}
+	return '-';
+}
+
+export function sumMemoryRequests(numOfInstances: number, memoryRequest: string): string {
+	const request = bytes.parse(memoryRequest.concat('B'));
+	if (request) {
+		if (memoryRequest.includes('i')) {
+			const b = bytes(request * numOfInstances, { mode: 'binary' })?.replace('B', '');
+			if (b) {
+				return b;
+			} else {
+				return '-';
+			}
+		}
+		const b = bytes(request * numOfInstances)?.replace('B', '');
+		if (b) {
+			return b;
+		} else {
+			return '-';
+		}
+	}
+	return '-';
+}
+
+
 
 export type TeamsOverageData = {
 	team: string;

@@ -1,0 +1,27 @@
+query TeamResourceUsage($team: Slug!) {
+	team(slug: $team) @loading {
+		cpuUtil: workloadUtilization(resourceType: CPU) {
+			workload {
+				name
+				__typename
+				environment {
+					name
+				}
+			}
+			requested
+			used
+		}
+
+		memUtil: workloadUtilization(resourceType: MEMORY) {
+			workload {
+				name
+				__typename
+				environment {
+					name
+				}
+			}
+			requested
+			used
+		}
+	}
+}

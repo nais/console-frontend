@@ -1,31 +1,21 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { PendingValue, UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
+	import { truncateString } from '$lib/chart/util';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
-	import {
-		Alert,
-		HelpText,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr,
-		type TableSortState
-	} from '@nais/ds-svelte-community';
-	import bytes from 'bytes-iec';
-	import type { PageData } from './$houdini';
-
-	import { goto } from '$app/navigation';
-	import { PendingValue, UsageResourceType } from '$houdini';
-	import { truncateString } from '$lib/chart/util';
 	import { mergeCalculateAndSortOverageData, round, yearlyOverageCost } from '$lib/utils/resources';
+	import { Alert, HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import type { TableSortState } from '@nais/ds-svelte-community/components/Table/index.js';
+	import bytes from 'bytes-iec';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
+	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ TeamResourceUsage } = data);
@@ -41,15 +31,15 @@
 	$: team = $page.params.team;
 
 	type OverageData = {
-		readonly app: {
+		readonly workload: {
 			readonly name: string;
-			readonly env: {
+			readonly environment: {
 				readonly name: string;
 			};
 		};
 		readonly requested: number;
 		readonly used: number;
-	};
+	} | null;
 
 	function echartOptionsCPUOverageChart(data: OverageData[]) {
 		const opts = optionsCPU(data);
@@ -66,10 +56,11 @@
 	}
 
 	function optionsCPU(input: OverageData[]): EChartsOption {
-		const overage = input.map((s) => {
+		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
+		const overage = tmp.map((s) => {
 			return {
-				name: s.app.name,
-				env: s.app.env.name,
+				name: s.workload.name,
+				env: s.workload.environment.name,
 				overage: s.requested - s.used
 			};
 		});
@@ -113,13 +104,15 @@
 	}
 
 	function optionsMem(input: OverageData[]): EChartsOption {
-		const overage = input.map((s) => {
+		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
+		const overage = tmp.map((s) => {
 			return {
-				name: s.app.name,
-				env: s.app.env.name,
-				overage: (s.requested - s.used) / 1024 / 1024 / 1024
+				name: s.workload.name,
+				env: s.workload.environment.name,
+				overage: s.requested - s.used
 			};
 		});
+
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
 		return {
 			tooltip: {
@@ -127,7 +120,7 @@
 				axisPointer: {
 					type: 'line'
 				},
-				valueFormatter: (value: number) => prettyBytes(value * 1024 * 1024 * 1024)
+				valueFormatter: prettyBytes
 			},
 			xAxis: {
 				type: 'category',
@@ -146,7 +139,11 @@
 			},
 			yAxis: {
 				type: 'value',
-				name: 'Memory'
+				name: 'Memory',
+
+				axisLabel: {
+					formatter: prettyBytes
+				}
 			},
 			series: {
 				name: 'Unutilized memory',
@@ -217,14 +214,17 @@
 					<p class="metric" style="font-size: 1.3rem;">
 						{#if resourceUtilization !== PendingValue}
 							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-								(acc, { requested }) => acc + requested,
+								(acc, item) => acc + (item ? item.requested : 0),
 								0
 							)}
 							{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
-								(acc, { used }) => acc + used,
+								(acc, item) => acc + (item ? item.used : 0),
 								0
 							)}
-							{percentageFormatter(round((cpuUsage / cpuRequested) * 100,0))} of {round(cpuRequested,0)} cores
+							{percentageFormatter(round((cpuUsage / cpuRequested) * 100, 0))} of {round(
+								cpuRequested,
+								0
+							)} cores
 						{/if}
 					</p>
 				</div>
@@ -244,14 +244,14 @@
 					<p class="metric">
 						{#if resourceUtilization !== PendingValue}
 							{@const memoryRequested = resourceUtilization.memUtil.reduce(
-								(acc, { requested }) => acc + requested,
+								(acc, item) => acc + (item ? item.requested : 0),
 								0
 							)}
 							{@const memoryUsage = resourceUtilization.memUtil.reduce(
-								(acc, { used }) => acc + used,
+								(acc, item) => acc + (item ? item.used : 0),
 								0
 							)}
-							{percentageFormatter(round((memoryUsage / memoryRequested) * 100,0))} of {bytes.format(
+							{percentageFormatter(round((memoryUsage / memoryRequested) * 100, 0))} of {bytes.format(
 								memoryRequested,
 								{ decimalPlaces: 2 }
 							)}
@@ -275,18 +275,21 @@
 					<p class="metric">
 						{#if resourceUtilization !== PendingValue}
 							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-								(acc, { requested }) => acc + requested,
+								(acc, item) => acc + (item ? item.requested : 0),
 								0
 							)}
 							{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
-								(acc, { used }) => acc + used,
+								(acc, item) => acc + (item ? item.used : 0),
 								0
 							)}
-							€{round(yearlyOverageCost(
-								UsageResourceType.CPU,
-								cpuRequested,
-								cpuUsage / cpuRequested
-							),0)}
+							€{round(
+								yearlyOverageCost(
+									UtilizationResourceType.CPU,
+									cpuRequested,
+									cpuUsage / cpuRequested
+								),
+								0
+							)}
 						{/if}
 					</p>
 				</div>
@@ -307,18 +310,21 @@
 					<p class="metric">
 						{#if resourceUtilization !== PendingValue}
 							{@const memoryRequested = resourceUtilization.memUtil.reduce(
-								(acc, { requested }) => acc + requested,
+								(acc, item) => acc + (item ? item.requested : 0),
 								0
 							)}
 							{@const memoryUsage = resourceUtilization.memUtil.reduce(
-								(acc, { used }) => acc + used,
+								(acc, item) => acc + (item ? item.used : 0),
 								0
 							)}
-							€{round(yearlyOverageCost(
-								UsageResourceType.MEMORY,
-								memoryRequested,
-								memoryUsage / memoryRequested
-							),0)}
+							€{round(
+								yearlyOverageCost(
+									UtilizationResourceType.MEMORY,
+									memoryRequested,
+									memoryUsage / memoryRequested
+								),
+								0
+							)}
 						{/if}
 					</p>
 				</div>
