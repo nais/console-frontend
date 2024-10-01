@@ -97,18 +97,8 @@
 {#if editKvOpen}
 	<Modal bind:open={editKvOpen} width="medium" on:close={reset}>
 		<svelte:fragment slot="header">
-			<Heading>Edit value</Heading>
+			<Heading>Editing value of key <i>{key}</i></Heading>
 		</svelte:fragment>
-		<div class="entry">
-			<TextField
-				style="font-family: monospace; font-size: var(--a-font-size-small);"
-				size="small"
-				value={key}
-				readonly
-			>
-				<svelte:fragment slot="label">Key</svelte:fragment>
-			</TextField>
-		</div>
 		<div class="entry">
 			<Textarea bind:text={value} label="Value" description="Example: some-value" />
 		</div>
