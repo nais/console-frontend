@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { PendingValue, type TeamVulnerabilities$result, VulnerabilityState } from '$houdini';
-	import { OrderByField, VulnerabilityRankingTrend, type OrderByField$options } from '$houdini/graphql';
+	import {
+		OrderByField,
+		VulnerabilityRankingTrend,
+		type OrderByField$options
+	} from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
@@ -27,19 +31,17 @@
 	import {
 		ArrowCirclepathIcon,
 		SandboxIcon,
-		SealCheckmarkIcon,
-		SealXMarkIcon,
-		ShieldLockIcon,
+		XMarkOctagonIcon,
 		TrendUpIcon,
 		TrendDownIcon,
-		TrendFlatIcon
+		TrendFlatIcon,
+		VitalsIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { te } from 'date-fns/locale';
 
 	export let data: PageData;
 	$: ({ TeamVulnerabilities } = data);
@@ -75,6 +77,13 @@
 			return `/team/${teamName}/${node.env}/job/${node.workloadName}/image`;
 		}
 	};
+
+	const isTooVulnerable = (
+		summary: TeamVulnerabilities$result['team']['vulnerabilitiesSummary']
+	) => {
+		console.log(summary.status);
+		return summary.status.some((s) => s.state === VulnerabilityState.TOO_MANY_VULNERABLE_WORKLOADS);
+	};
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -87,41 +96,51 @@
 	<div class="grid">
 		<Card columns={12}>
 			{#if team !== undefined && team.id !== PendingValue}
-				<div class="summaryCard">
+				<div class="summaryCard" style="align-items: start;">
 					{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== 'OK').length > 0}
 						<div>
-							<SealXMarkIcon font-size="66px" style="color: var(--a-icon-danger)" />
+							<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
 						</div>
 					{:else}
 						<div>
-							<SealCheckmarkIcon font-size="66px" style="color: var(--a-icon-success)" />
+							<Nais
+								size="66px"
+								style="color: var(--a-icon-success)"
+								aria-label="Team is nais"
+								role="image"
+							/>
 						</div>
 					{/if}
 					<div class="summary">
 						<h4>
 							Vulnerability status
 							<HelpText title="Current team vulnerability status"
-								>The current status of the team's vulnerabilities.
+								>If any of the workloads have any vulnerability issues, the icon will show a warning
+								sign and a details link will show.
 							</HelpText>
 						</h4>
-						<div class="metrics">
-							<details>
-								<summary>Show</summary>
-								{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
+						<div style="margin-top: 0.5rem;">
+							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
+								<details>
+									<summary style="font-size: 1rem; var(--color-text-secondary);"
+										>Show details</summary
+									>
 									{#each team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK) as status}
-										<Alert variant="error" style="margin-bottom: 1rem">
-											<strong>{status.title}:</strong>
-											{status.description}
-										</Alert>
+										<div class="wrapper">
+											<Alert variant="error">
+												<h4>{status.title}</h4>
+												{status.description}
+											</Alert>
+										</div>
 									{/each}
-								{/if}
-							</details>
+								</details>
+							{/if}
 						</div>
 					</div>
 				</div>
 			{/if}
 		</Card>
-		<Card columns={3}>
+		<Card columns={3} style="display: flex; align-items:center;">
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
 					<div>
@@ -148,41 +167,44 @@
 						</h4>
 						<p class="metric">
 							{team.vulnerabilitiesSummary.bomCount} of {team.vulnerabilitiesSummary.totalWorkloads}
-							workload(s)
+							workloads
 						</p>
 					</div>
 				{/if}
 			</div>
 		</Card>
-		<Card columns={3}>
+		<Card columns={3} style="display: flex; align-items:center;">
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
-					<div>
-						<Tooltip placement="right" content="severity: CRITICAL">
-							<VulnerabilityBadge
-								text={String(team.vulnerabilitiesSummary.critical)}
-								color={severityToColor('critical')}
-								size={'66px'}
-							/>
-						</Tooltip>
+					<div style="--bg-color: #C8C8C8; display:flex; align-items:center;">
+						<VulnerabilityBadge
+							text={String(team.vulnerabilitiesSummary.critical)}
+							color={severityToColor('critical')}
+							size={'66px'}
+						/>
 					</div>
 					<div class="summary">
 						<h4>Critical vulnerabilities</h4>
-						<p class="metric"></p>
 					</div>
 				{/if}
 			</div>
 		</Card>
-		<Card columns={3}>
+		<Card columns={3} >
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
 					<div class="summaryIcon" style="--bg-color: #C8C8C8">
-						<ShieldLockIcon title="RiskScore" font-size="80" style={'color:lightgrey;'} />
+						<VitalsIcon
+							title="RiskScore"
+							font-size="80"
+							style={isTooVulnerable(team.vulnerabilitiesSummary)
+								? 'color: var(--a-icon-danger)'
+								: 'color: var(--a-icon-success)'}
+						/>
 					</div>
 					<div class="summary">
 						<h4>
 							Total risk score
-							<HelpText title="Current team risk trend"
+							<HelpText title="Current team total risk score"
 								>The total risk score for the team's vulnerabilities.
 							</HelpText>
 						</h4>
@@ -198,11 +220,15 @@
 				{#if team !== undefined && team.id !== PendingValue}
 					<div class="summaryIcon" style="--bg-color: #C8C8C8">
 						{#if team.vulnerabilitiesSummary.teamRanking.trend === VulnerabilityRankingTrend.DOWN}
-							<TrendDownIcon title="RiskScore" font-size="80" style={'color:green;'} />
+							<TrendDownIcon
+								title="RiskScore"
+								font-size="80"
+								style={'color: var(--a-icon-success)'}
+							/>
 						{:else if team.vulnerabilitiesSummary.teamRanking.trend === VulnerabilityRankingTrend.UP}
-							<TrendUpIcon title="RiskScore" font-size="80" style={'color:red;'} />
+							<TrendUpIcon title="RiskScore" font-size="80" style={'color: var(--a-icon-danger)'} />
 						{:else}
-							<TrendFlatIcon title="RiskScore" font-size="80" style={'color:lightblue;'} />
+							<TrendFlatIcon title="RiskScore" font-size="80" style={'color: var(--a-icon-info)'} />
 						{/if}
 					</div>
 					<div class="summary">
@@ -210,8 +236,8 @@
 							Riskscore ranking
 							<HelpText title="Current team ranking"
 								>Ranking of the team's risk score compared to other teams. 1st place means overall
-								highest riskscore. The icon will also show trend up or down since last month. Missing
-								SBOM will something something.
+								highest riskscore. The icon will also show trend up or down since last month. If you
+								are missing SBOMs on any of your workloads this ranking will not be accurate.
 							</HelpText>
 						</h4>
 						<p class="metric">
@@ -309,16 +335,12 @@
 										</Td>
 										<Td>
 											<div class="vulnerability">
-												{#if node.summary.riskScore === -1}
-													<Vulnerability severity="low" count={node.summary.riskScore} />
-												{:else}
-													<Tooltip
-														placement="left"
-														content="Calculated based on the number of vulnerabilities, includes unassigned"
-													>
-														<span class="na">{node.summary.riskScore}</span>
-													</Tooltip>
-												{/if}
+												<Tooltip
+													placement="left"
+													content="Calculated based on the number of vulnerabilities, includes unassigned"
+												>
+													<span class="na">{node.summary.riskScore}</span>
+												</Tooltip>
 											</div>
 										</Td>
 									{:else}
@@ -382,8 +404,17 @@
 		text-align: center;
 	}
 
-	.sbom {
-		margin-left: 0.5rem;
+	.wrapper :global(.navds-alert__wrapper) {
+		max-width: none;
+	}
+	.wrapper {
+		padding-bottom: 0.5rem;
+		font-size: 1rem;
+	}
+	.wrapper h4 {
+		margin-bottom: 0.2rem;
+		font-weight: bold;
+		font-size: 1rem;
 	}
 
 	.env-filter {
