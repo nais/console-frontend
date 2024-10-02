@@ -1794,9 +1794,6 @@ type Team implements Node {
     orderBy: BigQueryDatasetOrder
   ): BigQueryDatasetConnection!
 
-  """Named Google Cloud Storage bucket owned by the team."""
-  bucket(environment: String!, name: String!): Bucket!
-
   """Google Cloud Storage buckets owned by the team."""
   buckets(
     """Get items after this cursor."""
@@ -1878,9 +1875,6 @@ type Team implements Node {
     """Ordering options for items returned from the connection."""
     orderBy: JobOrder
   ): JobConnection!
-
-  """Named Kafka topic owned by the team."""
-  kafkaTopic(environment: String!, name: String!): KafkaTopic!
 
   """Kafka topics owned by the team."""
   kafkaTopics(
@@ -2211,6 +2205,9 @@ type TeamEnvironment implements Node {
   """NAIS application in the team environment."""
   application(name: String!): Application!
 
+  """Storage bucket in the team environment."""
+  bucket(name: String!): Bucket!
+
   """The GCP project ID for the team environment."""
   gcpProjectID: String
 
@@ -2219,6 +2216,9 @@ type TeamEnvironment implements Node {
 
   """NAIS job in the team environment."""
   job(name: String!): Job!
+
+  """Kafka topic in the team environment."""
+  kafkaTopic(name: String!): KafkaTopic!
 
   """Name of the team environment."""
   name: String!

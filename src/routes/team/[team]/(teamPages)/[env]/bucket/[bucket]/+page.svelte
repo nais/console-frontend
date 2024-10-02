@@ -20,7 +20,7 @@
 {#if $Bucket.errors}
 	<GraphErrors errors={$Bucket.errors} />
 {:else if $Bucket.data}
-	{@const bucket = $Bucket.data.team.bucket}
+	{@const bucket = $Bucket.data.team.environment.bucket}
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">

@@ -1,19 +1,21 @@
 query Bucket($team: Slug!, $name: String!, $environment: String!) {
 	team(slug: $team) {
-		bucket(environment: $environment, name: $name) {
-			publicAccessPrevention
-			uniformBucketLevelAccess
-			status {
-				state
-			}
-			name
-			environment {
+		environment(name: $environment) {
+			bucket(name: $name) {
+				publicAccessPrevention
+				uniformBucketLevelAccess
+				status {
+					state
+				}
 				name
-			}
+				environment {
+					name
+				}
 
-			workload {
-				name
-				__typename
+				workload {
+					name
+					__typename
+				}
 			}
 		}
 	}

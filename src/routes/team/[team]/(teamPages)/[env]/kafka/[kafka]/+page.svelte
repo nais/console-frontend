@@ -52,11 +52,12 @@
 {#if $KafkaTopic.errors}
 	<GraphErrors errors={$KafkaTopic.errors} />
 {:else if $KafkaTopic.data}
+	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
 	<div class="grid">
 		<Card columns={6}>
 			<h3 class="heading">
 				<Kafka />
-				{$KafkaTopic.data.team.kafkaTopic.name}
+				{topic.name}
 			</h3>
 
 			<h3>Topic ACLs</h3>
@@ -75,7 +76,7 @@
 					<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
 				</Thead>
 				<Tbody>
-					{#each $KafkaTopic.data.team.kafkaTopic.acl.edges as edge}
+					{#each topic.acl.edges as edge}
 						<Tr>
 							<Td>
 								{#if edge.node.teamName === '*'}
@@ -111,23 +112,22 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{#if $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasPreviousPage || $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasNextPage}
+			{#if topic.acl.pageInfo.hasPreviousPage || topic.acl.pageInfo.hasNextPage}
 				<div class="pagination">
 					<span>
-						{#if $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageStart !== $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageEnd}
-							{$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageStart} - {$KafkaTopic.data?.team
-								.kafkaTopic.acl.pageInfo.pageEnd}
+						{#if topic.acl.pageInfo.pageStart !== topic.acl.pageInfo.pageEnd}
+							{topic.acl.pageInfo.pageStart} - {topic.acl.pageInfo.pageEnd}
 						{:else}
-							{$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageStart}
+							{topic.acl.pageInfo.pageStart}
 						{/if}
-						of {$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.totalCount}
+						of {topic.acl.pageInfo.totalCount}
 					</span>
 
 					<span style="padding-left: 1rem;">
 						<Button
 							size="small"
 							variant="secondary"
-							disabled={!$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasPreviousPage}
+							disabled={!topic.acl.pageInfo.hasPreviousPage}
 							on:click={async () => {
 								return await KafkaTopic.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
@@ -135,7 +135,7 @@
 						<Button
 							size="small"
 							variant="secondary"
-							disabled={!$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasNextPage}
+							disabled={!topic.acl.pageInfo.hasNextPage}
 							on:click={async () => {
 								return await KafkaTopic.loadNextPage();
 							}}
@@ -146,10 +146,10 @@
 				</div>
 			{/if}
 		</Card>
-		<!--Card rows={2} columns={6}>
+		<Card rows={2} columns={6}>
 			<h3>Status</h3>
-
-			<dl class="status">
+			<p>TODO</p>
+			<!--dl class="status">
 				<dt>Fully qualified name</dt>
 				<dd><code>{s.fullyQualifiedName}</code></dd>
 				<dt>Synchronization state</dt>
@@ -171,27 +171,28 @@
 				<dd>TODO<Time time={s.credentialsExpiryTime} /></dd>
 				<dt>Latest Aiven sync failure</dt>
 				<dd><Time time={s.latestAivenSyncFailure} /></dd>
-			</dl>
+			</dl-->
 
-			<details>
+			<!--details>
 				<summary>Status message</summary>
 				<p style="max-width: 25em;">
 					{s.message}
 				</p>
-			</details>
+			</details-->
 
 			<h3>Errors</h3>
-			<ul>
+			<!--ul>
 				{#each s.errors as err}
 					<li>{err}</li>
 				{/each}
-			</ul>
-		</Card-->
+			</ul-->
+			<p>TODO</p>
+		</Card>
 		<Card columns={6}>
 			<h3>Topic configuration</h3>
 			<dl class="status">
-				{#if $KafkaTopic.data.team.kafkaTopic.configuration}
-					{#each Object.entries($KafkaTopic.data.team.kafkaTopic.configuration) as [key, value]}
+				{#if topic.configuration}
+					{#each Object.entries(topic.configuration) as [key, value]}
 						<dt>{key}</dt>
 						<dd>{value}</dd>
 					{/each}
