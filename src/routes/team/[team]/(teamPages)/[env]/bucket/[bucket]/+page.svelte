@@ -57,7 +57,7 @@
 							</div>
 						{/if}
 					</dd>
-
+					<!-- TODO: opprinnelig en sjekk på bucket.status.selfLink - usikker på hvorfor -->
 					<dt>Self link</dt>
 					<dd style="display: flex; align-items: center;">
 						<span
