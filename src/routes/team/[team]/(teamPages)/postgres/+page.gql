@@ -1,0 +1,30 @@
+query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder) {
+	team(slug: $team) {
+		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
+			edges {
+				node {
+					name
+					environment {
+						name
+					}
+
+					connectionName
+					healthy
+
+					version
+
+					workload {
+						name
+					}
+				}
+			}
+		}
+	}
+}
