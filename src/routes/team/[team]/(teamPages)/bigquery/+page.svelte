@@ -41,7 +41,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || 'NAME'
+			field: tableSort.orderBy || BigQueryDatasetOrderField.NAME
 		});
 	};
 
@@ -62,7 +62,7 @@
 			size="small"
 			zebraStripes
 			sort={{
-				orderBy: tableSort.orderBy || 'NAME',
+				orderBy: tableSort.orderBy || BigQueryDatasetOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}

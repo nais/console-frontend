@@ -44,7 +44,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || 'TEAM_SLUG'
+			field: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG
 		});
 	};
 </script>
@@ -65,7 +65,7 @@
 				size="small"
 				zebraStripes
 				sort={{
-					orderBy: tableSort.orderBy || 'TEAM_SLUG',
+					orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 				}}
 				on:sortChange={tableSortChange}

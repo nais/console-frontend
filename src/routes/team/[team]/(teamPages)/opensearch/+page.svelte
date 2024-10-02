@@ -53,7 +53,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || 'NAME'
+			field: tableSort.orderBy || OpenSearchOrderField.NAME
 		});
 	};
 
@@ -68,7 +68,7 @@
 	{/each}
 {/if}
 {#if $OpenSearch.data}
-	{@const os = $OpenSearch.data.team.openSearch}
+	{@const os = $OpenSearch.data.team.openSearchInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -99,7 +99,7 @@
 			size="small"
 			zebraStripes
 			sort={{
-				orderBy: tableSort.orderBy || 'NAME',
+				orderBy: tableSort.orderBy || OpenSearchOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}

@@ -1,0 +1,43 @@
+query OpenSearchInstance(
+	$environment: String!
+	$team: Slug!
+	$name: String!
+	$orderBy: OpenSearchAccessOrder!
+) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			openSearchInstance(name: $name) {
+				id
+				name
+				environment {
+					name
+				}
+				status {
+					state
+				}
+				workload {
+					name
+					environment {
+						name
+					}
+					__typename
+				}
+
+				access(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+					edges {
+						node {
+							access
+							workload {
+								name
+								environment {
+									name
+								}
+								__typename
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

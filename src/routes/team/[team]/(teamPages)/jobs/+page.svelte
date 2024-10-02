@@ -48,7 +48,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || 'NAME'
+			field: tableSort.orderBy || JobOrderField.NAME
 		});
 	};
 </script>
@@ -67,7 +67,7 @@
 			zebraStripes
 			size="small"
 			sort={{
-				orderBy: tableSort.orderBy || 'NAME',
+				orderBy: tableSort.orderBy || JobOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}

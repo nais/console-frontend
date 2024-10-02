@@ -52,7 +52,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || 'NAME'
+			field: tableSort.orderBy || RedisInstanceOrderField.NAME
 		});
 	};
 
@@ -92,7 +92,7 @@
 			size="small"
 			zebraStripes
 			sort={{
-				orderBy: tableSort.orderBy || 'NAME',
+				orderBy: tableSort.orderBy || RedisInstanceOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}

@@ -55,7 +55,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || 'NAME'
+			field: tableSort.orderBy || BucketOrderField.NAME
 		});
 	};
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
@@ -93,7 +93,7 @@
 			size="small"
 			zebraStripes
 			sort={{
-				orderBy: tableSort.orderBy || 'NAME',
+				orderBy: tableSort.orderBy || BucketOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}

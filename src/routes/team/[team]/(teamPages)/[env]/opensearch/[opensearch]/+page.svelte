@@ -1,35 +1,66 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
+	import { OpenSearchAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Time from '$lib/Time.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
-	$: ({ OpenSearchInstance: OpenSearch } = data);
-	$: openSearch = $OpenSearch.data?.team.openSearchInstance;
+	$: ({ OpenSearchInstance } = data);
+
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
+
+	$: tableSort = {
+		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
+		direction: $OpenSearchInstance.variables?.orderBy?.direction
+	};
+
+	const changeParams = (params: Record<string, string>) => {
+		const query = new URLSearchParams(get(page).url.searchParams);
+		for (const [key, value] of Object.entries(params)) {
+			query.set(key, value);
+		}
+		goto(`?${query.toString()}`);
+	};
+
+	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
+		const { key } = e.detail;
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy =
+				OpenSearchAccessOrderField[key as keyof typeof OpenSearchAccessOrderField];
+			tableSort.direction = 'ASC';
+		}
+
+		changeParams({
+			direction: tableSort.direction,
+			field: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD
+		});
+	};
 </script>
 
-{#if $OpenSearch.errors}
-	<GraphErrors errors={$OpenSearch.errors} />
-{:else if openSearch && openSearch.name !== PendingValue}
+{#if $OpenSearchInstance.errors}
+	<GraphErrors errors={$OpenSearchInstance.errors} />
+{:else if $OpenSearchInstance.data}
+	{@const os = $OpenSearchInstance.data.team.environment.openSearchInstance}
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">
 				<Opensearch />
-				{openSearch.name}
+				{os.name}
 			</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
-				{#if openSearch.workload}
-					<WorkloadLink workload={openSearch.workload} env={openSearch.env.name} team={teamName} />
+				{#if os.workload}
+					<WorkloadLink workload={os.workload} env={os.environment.name} team={teamName} />
 				{:else}
 					<div class="inline">
 						<i>This OpenSearch instance does not belong to any workload</i>
@@ -37,23 +68,32 @@
 				{/if}
 			</p>
 			<h4 class="access">Access</h4>
-			{#if openSearch.access.length}
-				<Table size="small" zebraStripes>
+			{#if os.access.edges.length > 0}
+				<Table
+					size="small"
+					zebraStripes
+					sort={{
+						orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
+						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+					}}
+					on:sortChange={tableSortChange}
+				>
 					<Thead>
 						<Tr>
-							<Th>Access level</Th>
-							<Th>Workload</Th>
+							<Th sortable={true} sortKey={OpenSearchAccessOrderField.WORKLOAD}>Workload</Th>
+							<Th sortable={true} sortKey={OpenSearchAccessOrderField.ACCESS}>Access level</Th>
 							<Th>Type</Th>
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each openSearch.access as access}
+						{#each os.access.edges as edge}
+							{@const access = edge.node}
 							<Tr>
-								<Td>{access.role}</Td>
 								<Td>
 									<WorkloadLink workload={access.workload} env={envName} team={teamName} />
 								</Td>
-								<Td>{access.workload.type}</Td>
+								<Td><code>{access.access}</code></Td>
+								<Td>{access.workload.__typename}</Td>
 							</Tr>
 						{/each}
 					</Tbody>
@@ -64,9 +104,9 @@
 		</Card>
 		<Card columns={5}>
 			<h3>Status</h3>
-			<div>
-				{#if openSearch.status.conditions.length}
-					{#each openSearch.status.conditions as cond}
+			<!--div>
+				{#if os.status.conditions.length}
+					{#each os.status.conditions as cond}
 						<dl class="conditions">
 							<dt>Status</dt>
 							<dd class="status">
@@ -95,7 +135,8 @@
 				{:else}
 					<p>No conditions</p>
 				{/if}
-			</div>
+			</div-->
+			TODO: Status
 		</Card>
 	</div>
 {/if}
@@ -113,7 +154,7 @@
 		align-items: center;
 	}
 
-	dl.conditions {
+	/*dl.conditions {
 		display: grid;
 		align-items: center;
 		grid-template-columns: 20% 80%;
@@ -133,7 +174,7 @@
 		display: flex;
 		gap: 1em;
 		align-items: center;
-	}
+	}*/
 
 	h4.access {
 		margin-top: 1em;
@@ -144,5 +185,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+	}
+	code {
+		font-size: 0.8em;
 	}
 </style>

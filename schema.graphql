@@ -1924,7 +1924,7 @@ type Team implements Node {
   ): TeamMemberConnection!
 
   """OpenSearch instances owned by the team."""
-  openSearch(
+  openSearchInstances(
     """Get items after this cursor."""
     after: Cursor
 
@@ -2222,6 +2222,9 @@ type TeamEnvironment implements Node {
 
   """Name of the team environment."""
   name: String!
+
+  """OpenSearch instance in the team environment."""
+  openSearchInstance(name: String!): OpenSearch!
 
   """The Slack alerts channel for the team environment."""
   slackAlertsChannel: String!
