@@ -2205,6 +2205,9 @@ type TeamEnvironment implements Node {
   """NAIS application in the team environment."""
   application(name: String!): Application!
 
+  """BigQuery datasets in the team environment."""
+  bigQueryDataset(name: String!): BigQueryDataset!
+
   """Storage bucket in the team environment."""
   bucket(name: String!): Bucket!
 
@@ -2226,8 +2229,14 @@ type TeamEnvironment implements Node {
   """OpenSearch instance in the team environment."""
   openSearchInstance(name: String!): OpenSearch!
 
+  """Redis instance in the team environment."""
+  redisInstance(name: String!): RedisInstance!
+
   """The Slack alerts channel for the team environment."""
   slackAlertsChannel: String!
+
+  """SQL instance in the team environment."""
+  sqlInstance(name: String!): SqlInstance!
 
   """The connected team."""
   team: Team!

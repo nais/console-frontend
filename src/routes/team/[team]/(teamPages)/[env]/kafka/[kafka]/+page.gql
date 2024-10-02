@@ -27,7 +27,7 @@ query KafkaTopic(
 					__typename
 				}
 
-				acl(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+				acl(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
 					pageInfo {
 						hasNextPage
 						hasPreviousPage

@@ -1,25 +1,25 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { OpenSearchAccessOrderField } from '$houdini';
+	import { RedisInstanceAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import Opensearch from '$lib/icons/Opensearch.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
-	$: ({ OpenSearchInstance } = data);
+	$: ({ RedisInstance } = data);
 
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
 
 	$: tableSort = {
-		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
-		direction: $OpenSearchInstance.variables?.orderBy?.direction
+		orderBy: $RedisInstance.variables?.orderBy?.field,
+		direction: $RedisInstance.variables?.orderBy?.direction
 	};
 
 	const changeParams = (params: Record<string, string>) => {
@@ -37,110 +37,117 @@
 			tableSort.direction = direction;
 		} else {
 			tableSort.orderBy =
-				OpenSearchAccessOrderField[key as keyof typeof OpenSearchAccessOrderField];
+				RedisInstanceAccessOrderField[key as keyof typeof RedisInstanceAccessOrderField];
 			tableSort.direction = 'ASC';
 		}
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD
+			field: tableSort.orderBy || RedisInstanceAccessOrderField.WORKLOAD
 		});
 	};
 </script>
 
-{#if $OpenSearchInstance.errors}
-	<GraphErrors errors={$OpenSearchInstance.errors} />
-{:else if $OpenSearchInstance.data}
-	{@const os = $OpenSearchInstance.data.team.environment.openSearchInstance}
+{#if $RedisInstance.errors}
+	<GraphErrors errors={$RedisInstance.errors} />
+{/if}
+{#if $RedisInstance.data}
+	{@const redisInstance = $RedisInstance.data.team.environment.redisInstance}
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">
-				<Opensearch />
-				{os.name}
+				<Redis />
+				{redisInstance.name}
 			</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
-				{#if os.workload}
-					<WorkloadLink workload={os.workload} env={os.environment.name} team={teamName} />
+				{#if redisInstance.workload}
+					<WorkloadLink
+						workload={redisInstance.workload}
+						env={redisInstance.environment.name}
+						team={teamName}
+					/>
 				{:else}
 					<div class="inline">
-						<i>This OpenSearch instance does not belong to any workload</i>
+						<i>This Redis instance does not belong to any workload</i>
 					</div>
 				{/if}
 			</p>
 			<h4 class="access">Access</h4>
-			{#if os.access.edges.length > 0}
-				<Table
-					size="small"
-					zebraStripes
-					sort={{
-						orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					on:sortChange={tableSortChange}
-				>
-					<Thead>
+			<Table
+				size="small"
+				zebraStripes
+				sort={{
+					orderBy: tableSort.orderBy || RedisInstanceAccessOrderField.WORKLOAD,
+					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+				}}
+				on:sortChange={tableSortChange}
+			>
+				<Thead>
+					<Tr>
+						<Th sortable={true} sortKey={RedisInstanceAccessOrderField.WORKLOAD}>Workload</Th>
+						<Th sortable={true} sortKey={RedisInstanceAccessOrderField.ACCESS}>Access level</Th>
+						<Th>Type</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#each redisInstance.access.edges as edge}
+						{@const access = edge.node}
 						<Tr>
-							<Th sortable={true} sortKey={OpenSearchAccessOrderField.WORKLOAD}>Workload</Th>
-							<Th sortable={true} sortKey={OpenSearchAccessOrderField.ACCESS}>Access level</Th>
-							<Th>Type</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each os.access.edges as edge}
-							{@const access = edge.node}
-							<Tr>
-								<Td>
-									<WorkloadLink workload={access.workload} env={envName} team={teamName} />
-								</Td>
-								<Td><code>{access.access}</code></Td>
-								<Td>{access.workload.__typename}</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-				{#if os.access.pageInfo.hasPreviousPage || os.access.pageInfo.hasNextPage}
-					<div class="pagination">
-						<span>
-							{#if os.access.pageInfo.pageStart !== os.access.pageInfo.pageEnd}
-								{os.access.pageInfo.pageStart} - {os.access.pageInfo.pageEnd}
-							{:else}
-								{os.access.pageInfo.pageStart}
-							{/if}
-							of {os.access.pageInfo.totalCount}
-						</span>
+							<Td>
+								<WorkloadLink workload={access.workload} env={envName} team={teamName} />
+							</Td>
+							<Td>{access.access}</Td>
 
-						<span style="padding-left: 1rem;">
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!os.access.pageInfo.hasPreviousPage}
-								on:click={async () => {
-									return await OpenSearchInstance.loadPreviousPage();
-								}}><ChevronLeftIcon /></Button
-							>
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!os.access.pageInfo.hasNextPage}
-								on:click={async () => {
-									return await OpenSearchInstance.loadNextPage();
-								}}
-							>
-								<ChevronRightIcon /></Button
-							>
-						</span>
-					</div>
-				{/if}
-			{:else}
-				<p>No workloads with configured access</p>
+							<Td>{access.workload.__typename}</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td colspan={3}>No access</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
+			{#if redisInstance.access.pageInfo.hasPreviousPage || redisInstance.access.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if redisInstance.access.pageInfo.pageStart !== redisInstance.access.pageInfo.pageEnd}
+							{redisInstance.access.pageInfo.pageStart} - {redisInstance.access.pageInfo.pageEnd}
+						{:else}
+							{redisInstance.access.pageInfo.pageStart}
+						{/if}
+						of {redisInstance.access.pageInfo.totalCount}
+					</span>
+
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!redisInstance.access.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await RedisInstance.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!redisInstance.access.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await RedisInstance.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
 			{/if}
 		</Card>
 		<Card columns={5}>
 			<h3>Status</h3>
+			TODO: Sooo little status
 			<!--div>
-				{#if os.status.conditions.length}
-					{#each os.status.conditions as cond}
+				{#if redisInstance.status.conditions.length}
+					{#each redisInstance.status.conditions as cond}
 						<dl class="conditions">
 							<dt>Status</dt>
 							<dd class="status">
@@ -170,7 +177,6 @@
 					<p>No conditions</p>
 				{/if}
 			</div-->
-			TODO: Status
 		</Card>
 	</div>
 {/if}
@@ -219,9 +225,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-	}
-	code {
-		font-size: 0.8em;
 	}
 
 	.pagination {

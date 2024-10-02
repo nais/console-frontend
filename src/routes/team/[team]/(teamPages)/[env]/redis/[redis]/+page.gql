@@ -1,12 +1,12 @@
-query OpenSearchInstance(
+query RedisInstance(
 	$environment: String!
 	$team: Slug!
 	$name: String!
-	$orderBy: OpenSearchAccessOrder!
+	$orderBy: RedisInstanceAccessOrder!
 ) {
 	team(slug: $team) {
 		environment(name: $environment) {
-			openSearchInstance(name: $name) {
+			redisInstance(name: $name) {
 				id
 				name
 				environment {
@@ -17,12 +17,8 @@ query OpenSearchInstance(
 				}
 				workload {
 					name
-					environment {
-						name
-					}
 					__typename
 				}
-
 				access(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
 					pageInfo {
 						hasNextPage
@@ -31,6 +27,7 @@ query OpenSearchInstance(
 						pageEnd
 						totalCount
 					}
+
 					edges {
 						node {
 							access
