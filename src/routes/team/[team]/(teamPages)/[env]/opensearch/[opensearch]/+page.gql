@@ -24,6 +24,13 @@ query OpenSearchInstance(
 				}
 
 				access(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						pageStart
+						pageEnd
+						totalCount
+					}
 					edges {
 						node {
 							access

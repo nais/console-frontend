@@ -6,7 +6,8 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
@@ -98,6 +99,39 @@
 						{/each}
 					</Tbody>
 				</Table>
+				{#if os.access.pageInfo.hasPreviousPage || os.access.pageInfo.hasNextPage}
+					<div class="pagination">
+						<span>
+							{#if os.access.pageInfo.pageStart !== os.access.pageInfo.pageEnd}
+								{os.access.pageInfo.pageStart} - {os.access.pageInfo.pageEnd}
+							{:else}
+								{os.access.pageInfo.pageStart}
+							{/if}
+							of {os.access.pageInfo.totalCount}
+						</span>
+
+						<span style="padding-left: 1rem;">
+							<Button
+								size="small"
+								variant="secondary"
+								disabled={!os.access.pageInfo.hasPreviousPage}
+								on:click={async () => {
+									return await OpenSearchInstance.loadPreviousPage();
+								}}><ChevronLeftIcon /></Button
+							>
+							<Button
+								size="small"
+								variant="secondary"
+								disabled={!os.access.pageInfo.hasNextPage}
+								on:click={async () => {
+									return await OpenSearchInstance.loadNextPage();
+								}}
+							>
+								<ChevronRightIcon /></Button
+							>
+						</span>
+					</div>
+				{/if}
 			{:else}
 				<p>No workloads with configured access</p>
 			{/if}

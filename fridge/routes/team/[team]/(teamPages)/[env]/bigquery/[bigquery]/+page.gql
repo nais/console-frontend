@@ -1,34 +1,37 @@
-query BigQueryDataset($env: String!, $team: Slug!, $name: String!) @loading(cascade: true) {
+query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 	team(slug: $team) {
-		bigQueryDataset(env: $env, name: $name) {
-			cascadingDelete
-			description
-			cost
-			id
+		environment(name: $environment) {
 			name
-			status {
-				conditions {
-					reason
-					type
-					status
-					message
-					lastTransitionTime
-				}
-				lastModifiedTime
-				creationTime
-			}
-			env {
-				name
-			}
-
-			workload {
-				name
-				type
-			}
-			access {
-				role
-				email
-			}
 		}
+		#bigQueryDataset(env: $env, name: $name) {
+		#	cascadingDelete
+		#	description
+		#	cost
+		#	id
+		#	name
+		#	status {
+		#		conditions {
+		#			reason
+		#			type
+		#			status
+		#			message
+		#			lastTransitionTime
+		#		}
+		#		lastModifiedTime
+		#		creationTime
+		#	}
+		#	env {
+		#		name
+		#	}
+		#
+		#	workload {
+		#		name
+		#		type
+		#	}
+		#	access {
+		#		role
+		#		email
+		#	}
+		#}
 	}
 }
