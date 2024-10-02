@@ -317,11 +317,9 @@ type BigQueryDatasetStatus {
 
 type Bucket implements Node & Persistence {
   cascadingDelete: Boolean!
-  cors(after: Cursor, before: Cursor, first: Int, last: Int): BucketCorsConnection!
   environment: TeamEnvironment!
   id: ID!
   name: String!
-  projectID: String!
   publicAccessPrevention: String!
   status: BucketStatus!
   team: Team!
@@ -333,24 +331,6 @@ type BucketConnection {
   edges: [BucketEdge!]!
   nodes: [Bucket!]!
   pageInfo: PageInfo!
-}
-
-type BucketCors {
-  maxAgeSeconds: Int
-  methods: [String!]!
-  origins: [String!]!
-  responseHeaders: [String!]!
-}
-
-type BucketCorsConnection {
-  edges: [BucketCorsEdge!]!
-  nodes: [BucketCors!]!
-  pageInfo: PageInfo!
-}
-
-type BucketCorsEdge {
-  cursor: Cursor!
-  node: BucketCors!
 }
 
 type BucketEdge {

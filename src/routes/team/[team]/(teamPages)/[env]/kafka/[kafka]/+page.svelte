@@ -7,8 +7,12 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { KafkaTopicAclOrderField } from '$houdini';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		ChevronLeftIcon,
+		ChevronRightIcon,
+		ExclamationmarkTriangleFillIcon
+	} from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
@@ -107,6 +111,40 @@
 					{/each}
 				</Tbody>
 			</Table>
+			{#if $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasPreviousPage || $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageStart !== $KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageEnd}
+							{$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageStart} - {$KafkaTopic.data?.team
+								.kafkaTopic.acl.pageInfo.pageEnd}
+						{:else}
+							{$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.pageStart}
+						{/if}
+						of {$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.totalCount}
+					</span>
+
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await KafkaTopic.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!$KafkaTopic.data?.team.kafkaTopic.acl.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await KafkaTopic.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		</Card>
 		<!--Card rows={2} columns={6}>
 			<h3>Status</h3>
@@ -191,5 +229,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+	}
+
+	.pagination {
+		text-align: right;
+		padding: 0.5rem;
 	}
 </style>
