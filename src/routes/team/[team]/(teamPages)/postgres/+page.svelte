@@ -69,7 +69,9 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if $SqlInstances.data}
+{/if}
+{#if $SqlInstances.data}
+	{@const instances = $SqlInstances.data.team.sqlInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -189,49 +191,42 @@
 		>
 			<Thead>
 				<Th style="width: 2rem"></Th>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="VERSION">Version</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
-				<Th sortable={true} sortKey="STATUS">Status</Th>
-				<Th sortable={true} sortKey="COST">Cost</Th>
-				<Th sortable={true} sortKey="CPU"
-					><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
-				>
-				<Th sortable={true} sortKey="MEMORY"
-					><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
-				>
-				<Th sortable={true} sortKey="DISK"
-					><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
-				>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Env</Th>
+				<Th>Status</Th>
+				<Th>Cost</Th>
+				<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
+				<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
+				<Th><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th>
 			</Thead>
 			<Tbody>
-				{#if $SqlInstances.data}
-					{#each $SqlInstances.data.team.sqlInstances.edges as edge}
-						<Tr>
-							<Td>
-								{#if !edge.node.workload?.name}
-									<Tooltip content="The SQL instance does not belong to any workload">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The SQL instance does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
-								<a href="/team/{teamName}/{edge.node.environment.name}/postgres/{edge.node.name}"
-									>{edge.node.name}</a
-								>
-							</Td>
-							<Td>
-								{edge.node.version}
-							</Td>
-							<Td>
-								{edge.node.environment.name}
-							</Td>
+				{#each instances.edges as edge}
+					<Tr>
+						<Td>
+							{#if !edge.node.workload?.name}
+								<Tooltip content="The SQL instance does not belong to any workload">
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-warning)"
+										title="The SQL instance does not belong to any workload"
+									/>
+								</Tooltip>
+							{/if}
+						</Td>
+						<Td>
+							<a href="/team/{teamName}/{edge.node.environment.name}/postgres/{edge.node.name}"
+								>{edge.node.name}</a
+							>
+						</Td>
+						<Td>
+							{edge.node.version}
+						</Td>
+						<Td>
+							{edge.node.environment.name}
+						</Td>
 
-							<Td
-								><!--
+						<Td
+							><!--
 								{#if edge.node.healthy && edge.node.state === 'RUNNABLE'}
 									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
 								{:else if node.state !== 'RUNNABLE'}
@@ -246,36 +241,36 @@
 										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
 									</Tooltip>
 								{/if}-->
-							</Td>
-							<Td>
-								<!--{#if node.metrics.cost > 0}
+						</Td>
+						<Td>
+							<!--{#if node.metrics.cost > 0}
 									€{Math.round(node.metrics.cost)}
 								{:else}
 									-
 								{/if}-->
-								TODO: Implement cost
-							</Td>
-							<Td>
-								<!--{#if node.metrics.cpu.utilization}
+							TODO: Implement cost
+						</Td>
+						<Td>
+							<!--{#if node.metrics.cpu.utilization}
 									<span
 										title="{node.metrics.cpu.utilization.toFixed(1)}% of {node.metrics.cpu
 											.cores} core(s)">{node.metrics.cpu.utilization.toFixed(1)}%</span
 									>
 								{/if}-->
-								TODO: Implement CPU
-							</Td>
-							<Td>
-								<!--{#if node.metrics.memory.utilization}
+							TODO: Implement CPU
+						</Td>
+						<Td>
+							<!--{#if node.metrics.memory.utilization}
 									<span
 										title="{node.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
 											node.metrics.memory.quotaBytes
 										)}">{node.metrics.memory.utilization.toFixed(1)}%</span
 									>
 								{/if}-->
-								TODO: Implement memory
-							</Td>
-							<Td>
-								<!--
+							TODO: Implement memory
+						</Td>
+						<Td>
+							<!--
 								{#if node.metrics.disk.utilization}
 									<span
 										title="{node.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
@@ -283,35 +278,33 @@
 										)}">{node.metrics.disk.utilization.toFixed(1)}%</span
 									>
 								{/if}-->
-								TODO: Implement disk
-							</Td>
-						</Tr>
-					{:else}
-						<Tr>
-							<Td colspan={999}>No SQL instances found</Td>
-						</Tr>
-					{/each}
-				{/if}
+							TODO: Implement disk
+						</Td>
+					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={999}>No SQL instances found</Td>
+					</Tr>
+				{/each}
 			</Tbody>
 		</Table>
-		{#if $SqlInstances.data.team.sqlInstances.pageInfo.hasPreviousPage || $SqlInstances.data.team.sqlInstances.pageInfo.hasNextPage}
+		{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
-					{#if $SqlInstances.data.team.sqlInstances.pageInfo.pageStart !== $SqlInstances.data.team.sqlInstances.pageInfo.pageEnd}
-						{$SqlInstances.data.team.sqlInstances.pageInfo.pageStart} - {$SqlInstances.data.team
-							.sqlInstances.pageInfo.pageEnd}
+					{#if instances.pageInfo.pageStart !== instances.pageInfo.pageEnd}
+						{instances.pageInfo.pageStart} - {instances.pageInfo.pageEnd}
 					{:else}
-						{$SqlInstances.data.team.sqlInstances.pageInfo.pageStart}
+						{instances.pageInfo.pageStart}
 					{/if}
 
-					of {$SqlInstances.data.team.sqlInstances.pageInfo.totalCount}
+					of {instances.pageInfo.totalCount}
 				</span>
 
 				<span style="padding-left: 1rem;">
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$SqlInstances.data.team.sqlInstances.pageInfo.hasPreviousPage}
+						disabled={!instances.pageInfo.hasPreviousPage}
 						on:click={async () => {
 							return await SqlInstances.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
@@ -319,7 +312,7 @@
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$SqlInstances.data.team.sqlInstances.pageInfo.hasNextPage}
+						disabled={!instances.pageInfo.hasNextPage}
 						on:click={async () => {
 							return await SqlInstances.loadNextPage();
 						}}

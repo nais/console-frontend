@@ -52,7 +52,9 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if $KafkaTopics.data}
+{/if}
+{#if $KafkaTopics.data}
+	{@const topics = $KafkaTopics.data.team.kafkaTopics}
 	<Card columns={12}>
 		<Table
 			zebraStripes
@@ -64,11 +66,11 @@
 			on:sortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
+				<Th sortable={true} sortKey={KafkaTopicOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={KafkaTopicOrderField.ENVIRONMENT}>Env</Th>
 			</Thead>
 			<Tbody>
-				{#each $KafkaTopics.data.team.kafkaTopics.edges as edge}
+				{#each topics.edges as edge}
 					<Tr>
 						<Td>
 							<a href="/team/{teamName}/{edge.node.environment.name}/kafka/{edge.node.name}"
@@ -86,24 +88,23 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $KafkaTopics.data?.team.kafkaTopics.pageInfo.hasPreviousPage || $KafkaTopics.data?.team.kafkaTopics.pageInfo.hasNextPage}
+		{#if topics.pageInfo.hasPreviousPage || topics.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
-					{#if $KafkaTopics.data.team.kafkaTopics.pageInfo.pageStart !== $KafkaTopics.data.team.kafkaTopics.pageInfo.pageEnd}
-						{$KafkaTopics.data.team.kafkaTopics.pageInfo.pageStart} - {$KafkaTopics.data.team
-							.kafkaTopics.pageInfo.pageEnd}
+					{#if topics.pageInfo.pageStart !== topics.pageInfo.pageEnd}
+						{topics.pageInfo.pageStart} - {topics.pageInfo.pageEnd}
 					{:else}
-						{$KafkaTopics.data.team.kafkaTopics.pageInfo.pageStart}
+						{topics.pageInfo.pageStart}
 					{/if}
 
-					of {$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}
+					of {topics.pageInfo.totalCount}
 				</span>
 
 				<span style="padding-left: 1rem;">
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$KafkaTopics.data.team.kafkaTopics.pageInfo.hasPreviousPage}
+						disabled={!topics.pageInfo.hasPreviousPage}
 						on:click={async () => {
 							return await KafkaTopics.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
@@ -111,7 +112,7 @@
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$KafkaTopics.data.team.kafkaTopics.pageInfo.hasNextPage}
+						disabled={!topics.pageInfo.hasNextPage}
 						on:click={async () => {
 							return await KafkaTopics.loadNextPage();
 						}}

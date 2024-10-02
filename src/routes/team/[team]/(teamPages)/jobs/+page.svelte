@@ -22,7 +22,6 @@
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Jobs } = data);
-	$: team = $Jobs.data?.team;
 
 	$: tableSort = {
 		orderBy: $Jobs.variables?.orderBy?.field,
@@ -60,7 +59,9 @@
 			{error.message}
 		{/each}
 	</Alert>
-{:else}
+{/if}
+{#if $Jobs.data}
+	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>
 		<Table
 			zebraStripes
@@ -72,16 +73,18 @@
 			on:sortChange={tableSortChange}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT" style="width: 2rem">Env</Th>
+				<Th sortable={true} sortKey={JobOrderField.STATUS} style="width: 2rem"></Th>
+				<Th sortable={true} sortKey={JobOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 2rem">Env</Th>
 				<Th style="width: 2rem">Critical</Th>
 				<Th style="width: 8rem;">Risk score</Th>
-				<Th style="width: 150px">Deployed</Th>
+				<Th sortable={true} sortKey={JobOrderField.DEPLOYMENT_TIME} style="width: 150px"
+					>Deployed</Th
+				>
 			</Thead>
 			<Tbody>
-				{#if team !== undefined}
-					{#each team.jobs.edges as edge}
+				{#if jobs !== undefined}
+					{#each jobs.edges as edge}
 						<Tr>
 							<Td>
 								<div class="status">

@@ -68,6 +68,7 @@
 		</Alert>
 	{/each}
 {:else if $Buckets.data}
+	{@const buckets = $Buckets.data.team.buckets}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -98,12 +99,12 @@
 			on:sortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
+				<Th sortable={true} sortKey={BucketOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={BucketOrderField.ENVIRONMENT}>Env</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each $Buckets.data.team.buckets.edges as edge}
+				{#each buckets.edges as edge}
 					<Tr>
 						<Td>
 							<Link href="/team/{teamName}/{edge.node.environment.name}/bucket/{edge.node.name}"
@@ -138,24 +139,23 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $Buckets.data?.team.buckets.pageInfo.hasPreviousPage || $Buckets.data?.team.buckets.pageInfo.hasNextPage}
+		{#if buckets.pageInfo.hasPreviousPage || buckets.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
-					{#if $Buckets.data.team.buckets.pageInfo.pageStart !== $Buckets.data.team.buckets.pageInfo.pageEnd}
-						{$Buckets.data.team.buckets.pageInfo.pageStart} - {$Buckets.data.team.buckets.pageInfo
-							.pageEnd}
+					{#if buckets.pageInfo.pageStart !== buckets.pageInfo.pageEnd}
+						{buckets.pageInfo.pageStart} - {buckets.pageInfo.pageEnd}
 					{:else}
-						{$Buckets.data.team.buckets.pageInfo.pageStart}
+						{buckets.pageInfo.pageStart}
 					{/if}
 
-					of {$Buckets.data.team.buckets.pageInfo.totalCount}
+					of {buckets.pageInfo.totalCount}
 				</span>
 
 				<span style="padding-left: 1rem;">
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$Buckets.data.team.buckets.pageInfo.hasPreviousPage}
+						disabled={!buckets.pageInfo.hasPreviousPage}
 						on:click={async () => {
 							return await Buckets.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
@@ -163,7 +163,7 @@
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$Buckets.data.team.buckets.pageInfo.hasNextPage}
+						disabled={!buckets.pageInfo.hasNextPage}
 						on:click={async () => {
 							return await Buckets.loadNextPage();
 						}}

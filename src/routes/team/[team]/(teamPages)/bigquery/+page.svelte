@@ -55,6 +55,8 @@
 		</Alert>
 	{/each}
 {:else if $BigQuery.data}
+	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
+
 	<Card columns={12}>
 		<Table
 			size="small"
@@ -66,12 +68,12 @@
 			on:sortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
+				<Th sortable={true} sortKey={BigQueryDatasetOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Env</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each $BigQuery.data.team.bigQueryDatasets.edges as edge}
+				{#each datasets.edges as edge}
 					<Tr>
 						<Td>
 							<Link
@@ -105,24 +107,23 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $BigQuery.data?.team.bigQueryDatasets.pageInfo.hasPreviousPage || $BigQuery.data?.team.bigQueryDatasets.pageInfo.hasNextPage}
+		{#if $BigQuery.data?.team.bigQueryDatasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
-					{#if $BigQuery.data.team.bigQueryDatasets.pageInfo.pageStart !== $BigQuery.data.team.bigQueryDatasets.pageInfo.pageEnd}
-						{$BigQuery.data.team.bigQueryDatasets.pageInfo.pageStart} - {$BigQuery.data.team
-							.bigQueryDatasets.pageInfo.pageEnd}
+					{#if datasets.pageInfo.pageStart !== datasets.pageInfo.pageEnd}
+						{datasets.pageInfo.pageStart} - {datasets.pageInfo.pageEnd}
 					{:else}
-						{$BigQuery.data.team.bigQueryDatasets.pageInfo.pageStart}
+						{datasets.pageInfo.pageStart}
 					{/if}
 
-					of {$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}
+					of {datasets.pageInfo.totalCount}
 				</span>
 
 				<span style="padding-left: 1rem;">
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$BigQuery.data.team.bigQueryDatasets.pageInfo.hasPreviousPage}
+						disabled={!datasets.pageInfo.hasPreviousPage}
 						on:click={async () => {
 							return await BigQuery.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
@@ -130,7 +131,7 @@
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$BigQuery.data.team.bigQueryDatasets.pageInfo.hasNextPage}
+						disabled={!datasets.pageInfo.hasNextPage}
 						on:click={async () => {
 							return await BigQuery.loadNextPage();
 						}}

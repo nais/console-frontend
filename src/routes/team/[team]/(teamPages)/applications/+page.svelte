@@ -26,7 +26,6 @@
 
 	$: teamName = $page.params.team;
 	$: ({ Workloads } = data);
-	$: team = $Workloads.data?.team;
 
 	$: tableSort = {
 		orderBy: $Workloads.variables?.orderBy?.field,
@@ -64,7 +63,8 @@
 			{error.message}
 		{/each}
 	</Alert>
-{:else}
+{:else if $Workloads.data}
+	{@const team = $Workloads.data.team}
 	<div class="grid">
 		<Card columns={12}>
 			<Table
@@ -77,13 +77,17 @@
 				on:sortChange={tableSortChange}
 			>
 				<Thead>
-					<Th style="width: 2rem"></Th>
-					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th sortable={true} sortKey="ENVIRONMENT" style="width: 2rem">Env</Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.STATUS} style="width: 2rem"></Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.ENVIRONMENT} style="width: 2rem"
+						>Env</Th
+					>
 					<Th style="width: 2rem">Critical</Th>
 					<Th style="width: 8rem;">Risk score</Th>
 					<Th style="width: 200px">Instances</Th>
-					<Th style="width: 150px">Deployed</Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.DEPLOYMENT_TIME} style="width: 150px"
+						>Deployed</Th
+					>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}

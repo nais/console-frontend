@@ -26,7 +26,6 @@
 
 	$: teamName = $page.params.team;
 	$: ({ Redis } = data);
-	$: team = $Redis.data?.team;
 
 	$: tableSort = {
 		orderBy: $Redis.variables?.orderBy?.field,
@@ -66,7 +65,9 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if team}
+{/if}
+{#if $Redis.data}
+	{@const redis = $Redis.data.team.redisInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -97,12 +98,12 @@
 			on:sortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
+				<Th sortable={true} sortKey={RedisInstanceOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Env</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each team.redisInstances.edges as edge}
+				{#each redis.edges as edge}
 					<Tr>
 						<!-- TODO: show warning if no workload uses this instance -->
 						<Td>
@@ -132,24 +133,23 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $Redis.data?.team.redisInstances.pageInfo.hasPreviousPage || $Redis.data?.team.redisInstances.pageInfo.hasNextPage}
+		{#if redis.pageInfo.hasPreviousPage || redis.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
-					{#if $Redis.data.team.redisInstances.pageInfo.pageStart !== $Redis.data.team.redisInstances.pageInfo.pageEnd}
-						{$Redis.data.team.redisInstances.pageInfo.pageStart} - {$Redis.data.team.redisInstances
-							.pageInfo.pageEnd}
+					{#if redis.pageInfo.pageStart !== redis.pageInfo.pageEnd}
+						{redis.pageInfo.pageStart} - {redis.pageInfo.pageEnd}
 					{:else}
-						{$Redis.data.team.redisInstances.pageInfo.pageStart}
+						{redis.pageInfo.pageStart}
 					{/if}
 
-					of {$Redis.data.team.redisInstances.pageInfo.totalCount}
+					of {redis.pageInfo.totalCount}
 				</span>
 
 				<span style="padding-left: 1rem;">
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$Redis.data.team.redisInstances.pageInfo.hasPreviousPage}
+						disabled={!redis.pageInfo.hasPreviousPage}
 						on:click={async () => {
 							return await Redis.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
@@ -157,7 +157,7 @@
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$Redis.data.team.redisInstances.pageInfo.hasNextPage}
+						disabled={!redis.pageInfo.hasNextPage}
 						on:click={async () => {
 							return await Redis.loadNextPage();
 						}}

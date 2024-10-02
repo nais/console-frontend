@@ -66,7 +66,9 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if $OpenSearch.data}
+{/if}
+{#if $OpenSearch.data}
+	{@const os = $OpenSearch.data.team.openSearch}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -103,12 +105,12 @@
 			on:sortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey="NAME">Name</Th>
-				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
+				<Th sortable={true} sortKey={OpenSearchOrderField.NAME}>Name</Th>
+				<Th sortable={true} sortKey={OpenSearchOrderField.ENVIRONMENT}>Env</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each $OpenSearch.data.team.openSearch.edges as edge}
+				{#each os.edges as edge}
 					<Tr>
 						<!-- TODO: show warning if no workload uses this instance -->
 						<Td>
@@ -143,24 +145,23 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $OpenSearch.data?.team.openSearch.pageInfo.hasPreviousPage || $OpenSearch.data?.team.openSearch.pageInfo.hasNextPage}
+		{#if os.pageInfo.hasPreviousPage || os.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
-					{#if $OpenSearch.data.team.openSearch.pageInfo.pageStart !== $OpenSearch.data.team.openSearch.pageInfo.pageEnd}
-						{$OpenSearch.data.team.openSearch.pageInfo.pageStart} - {$OpenSearch.data.team
-							.openSearch.pageInfo.pageEnd}
+					{#if os.pageInfo.pageStart !== os.pageInfo.pageEnd}
+						{os.pageInfo.pageStart} - {os.pageInfo.pageEnd}
 					{:else}
-						{$OpenSearch.data.team.openSearch.pageInfo.pageStart}
+						{os.pageInfo.pageStart}
 					{/if}
 
-					of {$OpenSearch.data.team.openSearch.pageInfo.totalCount}
+					of {os.pageInfo.totalCount}
 				</span>
 
 				<span style="padding-left: 1rem;">
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$OpenSearch.data.team.openSearch.pageInfo.hasPreviousPage}
+						disabled={!os.pageInfo.hasPreviousPage}
 						on:click={async () => {
 							return await OpenSearch.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
@@ -168,7 +169,7 @@
 					<Button
 						size="small"
 						variant="secondary"
-						disabled={!$OpenSearch.data.team.openSearch.pageInfo.hasNextPage}
+						disabled={!os.pageInfo.hasNextPage}
 						on:click={async () => {
 							return await OpenSearch.loadNextPage();
 						}}
