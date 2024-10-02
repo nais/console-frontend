@@ -8,7 +8,6 @@
 	import {
 		Alert,
 		Button,
-		CopyButton,
 		HelpText,
 		Table,
 		Tbody,
@@ -193,7 +192,6 @@
 				<Th sortable={true} sortKey="NAME">Name</Th>
 				<Th sortable={true} sortKey="VERSION">Version</Th>
 				<Th sortable={true} sortKey="ENVIRONMENT">Env</Th>
-				<Th>Connection Name</Th>
 				<Th sortable={true} sortKey="STATUS">Status</Th>
 				<Th sortable={true} sortKey="COST">Cost</Th>
 				<Th sortable={true} sortKey="CPU"
@@ -231,21 +229,7 @@
 							<Td>
 								{edge.node.environment.name}
 							</Td>
-							<Td>
-								<div style="display: flex; column-gap: .5em; align-items: center; width: 15rem">
-									{#if edge.node.connectionName}
-										<span
-											style="width: 100%; direction: rtl; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
-											title={edge.node.connectionName}>{edge.node.connectionName}</span
-										>
-										<CopyButton
-											size="xsmall"
-											variant="action"
-											copyText={edge.node.connectionName}
-										/>
-									{/if}
-								</div>
-							</Td>
+
 							<Td
 								><!--
 								{#if edge.node.healthy && edge.node.state === 'RUNNABLE'}

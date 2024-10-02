@@ -1814,6 +1814,9 @@ type Team implements Node {
     orderBy: BigQueryDatasetOrder
   ): BigQueryDatasetConnection!
 
+  """Named Google Cloud Storage bucket owned by the team."""
+  bucket(environment: String!, name: String!): Bucket!
+
   """Google Cloud Storage buckets owned by the team."""
   buckets(
     """Get items after this cursor."""
@@ -1895,6 +1898,9 @@ type Team implements Node {
     """Ordering options for items returned from the connection."""
     orderBy: JobOrder
   ): JobConnection!
+
+  """Named Kafka topic owned by the team."""
+  kafkaTopic(environment: String!, name: String!): KafkaTopic!
 
   """Kafka topics owned by the team."""
   kafkaTopics(

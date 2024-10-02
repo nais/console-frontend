@@ -1,0 +1,54 @@
+query KafkaTopic(
+	$team: Slug!
+	$name: String!
+	$environment: String!
+	$orderBy: KafkaTopicAclOrder
+) {
+	team(slug: $team) {
+		kafkaTopic(name: $name, environment: $environment) {
+			name
+			environment {
+				name
+			}
+			configuration {
+				cleanupPolicy
+				maxMessageBytes
+				minimumInSyncReplicas
+				partitions
+				retentionBytes
+				retentionHours
+				segmentHours
+			}
+
+			status {
+				state
+
+				__typename
+			}
+
+			acl(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+				pageInfo {
+					hasNextPage
+					hasPreviousPage
+					totalCount
+					pageStart
+					pageEnd
+				}
+				edges {
+					node {
+						access
+						workloadName
+						teamName
+						workload {
+							environment {
+								name
+							}
+							name
+							__typename
+						}
+					}
+				}
+			}
+		}
+	}
+}
