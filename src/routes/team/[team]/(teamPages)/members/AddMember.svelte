@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, type TeamMemberInput } from '$houdini';
+	import { graphql, type AddTeamMemberInput } from '$houdini';
 	import {
 		Alert,
 		Button,
@@ -12,7 +12,7 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let open: boolean;
 	export let team: string;
@@ -21,7 +21,7 @@
 
 	const store = graphql(`
 		query AddMemberQuery @load {
-			users(limit: 10000) {
+			users(first: 10000) {
 				nodes {
 					id
 					email
@@ -33,17 +33,31 @@
 					displayName
 					name
 					description
-					memberAware
+					#memberAware
 					enabled
 				}
 			}
 		}
 	`);
-
+	/**
+ addTeamMember(
+    input: {teamSlug: "devteam", userEmail: "alice.bergsvik@example.com", role: MEMBER}
+  ) {
+    member {
+      user {
+        email
+      }
+    }
+  }
+*/
 	const create = graphql(`
-		mutation CreateMemberMutation($team: Slug!, $input: TeamMemberInput!) {
-			addTeamMember(member: $input, slug: $team) {
-				slug
+		mutation CreateMemberMutation($input: AddTeamMemberInput!) {
+			addTeamMember(input: $input) {
+				member {
+					user {
+						id
+					}
+				}
 			}
 		}
 	`);
@@ -55,7 +69,7 @@
 	let reconcilers: Reconciler[] = [];
 
 	let loaded = false;
-	onMount(() => {
+	/*onMount(() => {
 		return store.subscribe(async (v) => {
 			if (!v.data) return;
 
@@ -70,30 +84,30 @@
 			selectedRecs = recs.map((r) => r.name);
 			loaded = true;
 		});
-	});
+	});*/
 
-	let role: TeamMemberInput['role'] = 'MEMBER';
+	let role: AddTeamMemberInput['role'] = 'MEMBER';
 	let email: string;
 
 	let errors: string[] = [];
 	const submit = async () => {
 		errors = [];
-		const userID = $store.data?.users.nodes.find((u) => u.email === email)?.id;
+		const userID = $store.data?.users.nodes.find((u) => u.email === email)?.email;
 		if (!userID) {
 			errors = ['User not found'];
 			return;
 		}
 
-		const input: TeamMemberInput = {
+		const input: AddTeamMemberInput = {
 			role,
-			userId: userID,
-			reconcilerOptOuts: reconcilers
+			teamSlug: team,
+			userEmail: userID
+			/*reconcilerOptOuts: reconcilers
 				.filter((r) => !selectedRecs.includes(r.value))
-				.map((r) => r.value)
+				.map((r) => r.value)*/
 		};
 
 		const resp = await create.mutate({
-			team: team,
 			input
 		});
 

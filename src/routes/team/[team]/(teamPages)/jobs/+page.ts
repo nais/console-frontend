@@ -5,6 +5,7 @@ import {
 	type OrderDirection$options
 } from '$houdini';
 import type { JobsVariables } from './$houdini';
+
 export const _JobsVariables: JobsVariables = ({ url }) => {
 	const field = (url.searchParams.get('field') || JobOrderField.NAME) as JobOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;

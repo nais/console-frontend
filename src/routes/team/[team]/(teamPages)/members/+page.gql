@@ -1,0 +1,34 @@
+query Members($team: Slug!, $orderBy: TeamMemberOrder!) {
+	team(slug: $team) {
+		slug
+		viewerIsOwner
+		members(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+			}
+			edges {
+				node {
+					user {
+						id
+						email
+						name
+					}
+
+					#reconcilers {
+					#	enabled
+					#	reconciler {
+					#		displayName
+					#		description
+					#		name
+					#	}
+					#}
+					role
+				}
+			}
+		}
+	}
+}
