@@ -1,6 +1,5 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -27,34 +26,31 @@
 
 	export let data: PageData;
 	$: ({ BigQueryDataset: BigQueryDatasetInstance } = data);
-	$: bigQueryDatasetInstance = $BigQueryDatasetInstance.data?.team.bigQueryDataset;
 	$: teamName = $page.params.team;
 </script>
 
 {#if $BigQueryDatasetInstance.errors}
 	<GraphErrors errors={$BigQueryDatasetInstance.errors} />
-{:else if bigQueryDatasetInstance && bigQueryDatasetInstance.name !== PendingValue}
+{/if}
+{#if $BigQueryDatasetInstance.data}
+	{@const bq = $BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">
 				<BigQueryDataset />
-				{bigQueryDatasetInstance.name}
+				{bq.name}
 			</h3>
 
-			<em>{bigQueryDatasetInstance.description}</em>
+			<em>{bq.description ? bq.description : 'No description'}</em>
 
 			<h4 style="margin: 1em 0 0 0;"><CostIcon size="16" /> Cost</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
-				€{Math.round(bigQueryDatasetInstance.cost)} last 30 days
+				€{Math.round(bq.cost.sum)} last 30 days
 			</p>
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
-				{#if bigQueryDatasetInstance.workload}
-					<WorkloadLink
-						workload={bigQueryDatasetInstance.workload}
-						env={bigQueryDatasetInstance.env.name}
-						team={teamName}
-					/>
+				{#if bq.workload}
+					<WorkloadLink workload={bq.workload} env={bq.environment.name} team={teamName} />
 				{:else}
 					<div class="inline">
 						<i>No owner</i>
@@ -68,14 +64,11 @@
 
 			<dl class="status">
 				<dt>Created</dt>
-				<dd><Time time={bigQueryDatasetInstance.status.creationTime} /></dd>
+				<dd><Time time={bq.status.creationTime} /></dd>
 
 				<dt>Last modified</dt>
 				<dd>
-					<Time
-						time={bigQueryDatasetInstance.status.lastModifiedTime ||
-							bigQueryDatasetInstance.status.creationTime}
-					/>
+					<Time time={bq.status.lastModifiedTime || bq.status.creationTime} />
 				</dd>
 
 				<dt>
@@ -85,10 +78,10 @@
 					</HelpText>
 				</dt>
 				<dd>
-					{#if bigQueryDatasetInstance.cascadingDelete}
+					{#if bq.cascadingDelete}
 						<CheckmarkIcon style="color: var(--a-surface-success)" title="CascadingDelete" />
 					{:else}
-						<Tooltip content={bigQueryDatasetInstance.cascadingDelete.toString()} placement="right">
+						<Tooltip content={bq.cascadingDelete.toString()} placement="right">
 							<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
 						</Tooltip>
 					{/if}
@@ -98,6 +91,7 @@
 		<Card columns={5} rows={2}>
 			<h3>Status</h3>
 			<div>
+				<!--
 				{#if bigQueryDatasetInstance.status.conditions.length}
 					{#each bigQueryDatasetInstance.status.conditions as cond}
 						<dl class="conditions">
@@ -129,11 +123,14 @@
 					<p>No conditions</p>
 				{/if}
 			</div>
-		</Card>
+			-->
+				TODO
+			</div></Card
+		>
 		<Card columns={7}>
 			<h3>Access</h3>
 
-			{#if bigQueryDatasetInstance.access.length}
+			{#if bq.access.edges.length > 0}
 				<Table size="small" zebraStripes>
 					<Thead>
 						<Tr>
@@ -142,13 +139,13 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each bigQueryDatasetInstance.access as access}
+						{#each bq.access.edges as edge}
 							<Tr>
-								<Td>{access.role}</Td>
+								<Td>{edge.node.role}</Td>
 								<Td
 									><div class="email">
-										<span title={access.email}>{access.email}</span>
-										<CopyButton size="xsmall" variant="action" copyText={access.email} />
+										<span title={edge.node.email}>{edge.node.email}</span>
+										<CopyButton size="xsmall" variant="action" copyText={edge.node.email} />
 									</div>
 								</Td>
 							</Tr>
@@ -189,19 +186,19 @@
 		grid-template-columns: 30% 70%;
 	}
 
-	dl.conditions {
+	/*dl.conditions {
 		display: grid;
 		align-items: center;
 		grid-template-columns: 20% 80%;
 	}
+	div dl.conditions:not(:first-child) {
+		margin-top: 3em;
+	}
+	*/
 	.status {
 		display: flex;
 		align-items: center;
 		gap: 0.5em;
-	}
-
-	div dl.conditions:not(:first-child) {
-		margin-top: 3em;
 	}
 
 	dt {
