@@ -1901,6 +1901,9 @@ type Team implements Node {
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time
 
+  """Get a specific member of the team."""
+  member(email: String!): TeamMember!
+
   """Team members."""
   members(
     """Get items after this cursor."""

@@ -1,15 +1,32 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { TeamMemberOrderField } from '$houdini';
+	import { graphql, TeamMemberOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import Confirm from '$lib/components/Confirm.svelte';
+	import {
+		Alert,
+		Button,
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import {
+		ChevronLeftIcon,
+		ChevronRightIcon,
+		PencilIcon,
+		PlusIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
-	//import AddMember from './AddMember.svelte';
+	import EditMember from './EditMember.svelte';
 	//import EditMember from './EditMember.svelte';
 
 	export let data: PageData;
@@ -20,13 +37,15 @@
 		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
 	}
 
-	/*const deleteTeamMember = graphql(`
-		mutation DeleteTeamMember($team: Slug!, $userId: ID!) {
-			removeUserFromTeam(slug: $team, userId: $userId) {
-				slug
+	const deleteTeamMember = graphql(`
+		mutation DeleteTeamMember($input: RemoveTeamMemberInput!) {
+			removeTeamMember(input: $input) {
+				team {
+					slug
+				}
 			}
 		}
-	`);*/
+	`);
 
 	const refetch = () => {
 		Members.fetch({
@@ -35,10 +54,10 @@
 	};
 
 	let addMemberOpen = false;
-	//let editUser: string | null = null;
-	//let editUserOpen = false;
-	//let deleteUser: { id: string; name: string } | null = null;
-	//let deleteUserOpen = false;
+	let editUser: string | null = null;
+	let editUserOpen = false;
+	let deleteUser: { email: string; name: string } | null = null;
+	let deleteUserOpen = false;
 
 	$: canEdit =
 		team?.viewerIsOwner === true ||
@@ -117,33 +136,35 @@
 						<Td>{edge.node.role.toString().toLowerCase()}</Td>
 						<Td>
 							{#if canEdit}
-								<!--Button
-										iconOnly
-										title="Edit member"
-										size="small"
-										variant="tertiary"
-										on:click={() => {
-											editUser = node.user.id.toString();
-											editUserOpen = true;
-										}}
+								<Button
+									iconOnly
+									title="Edit member"
+									size="small"
+									variant="tertiary"
+									on:click={() => {
+										editUser = edge.node.user.email.toString();
+										editUserOpen = true;
+									}}
+								>
+									<svelte:fragment slot="icon-left"><PencilIcon /></svelte:fragment>
+								</Button>
+								<Button
+									iconOnly
+									title="Delete member"
+									size="small"
+									variant="tertiary-neutral"
+									on:click={() => {
+										deleteUser = {
+											email: edge.node.user.email.toString(),
+											name: edge.node.user.name.toString()
+										};
+										deleteUserOpen = true;
+									}}
+								>
+									<svelte:fragment slot="icon-left"
+										><TrashIcon style="color:var(--a-icon-danger)!important" /></svelte:fragment
 									>
-										<svelte:fragment slot="icon-left"><PencilIcon /></svelte:fragment>
-									</Button-->
-								<!--Button
-										iconOnly
-										title="Delete member"
-										size="small"
-										variant="tertiary-neutral"
-										on:click={() => {
-											deleteUser = { id: node.user.id.toString(), name: node.user.name.toString() };
-											deleteUserOpen = true;
-										}}
-									>
-										<svelte:fragment slot="icon-left"
-											><TrashIcon style="color:var(--a-icon-danger)!important" /></svelte:fragment
-										>
-									</Button-->
-								Edit I canz
+								</Button>
 							{/if}
 						</Td>
 					</Tr>
@@ -191,34 +212,34 @@
 			<ActivityLog teamName={team.slug} style="margin-top: 1rem" />
 		{/key}
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
-		<!--
+
 		{#if editUser && editUserOpen}
 			<EditMember
 				bind:open={editUserOpen}
 				team={team.slug}
-				userID={editUser}
+				email={editUser}
 				on:updated={refetch}
 				on:closed={() => {
 					editUser = null;
 				}}
 			/>
-		{/if}-->
-		<!--{#if deleteUser && deleteUserOpen}
+		{/if}
+		{#if deleteUser && deleteUserOpen}
 			{@const teamSlug = team.slug}
-			{@const userId = deleteUser.id}
+			{@const userId = deleteUser.email}
 			<Confirm
 				bind:open={deleteUserOpen}
 				confirmText="Delete"
 				variant="danger"
 				on:confirm={async () => {
-					await deleteTeamMember.mutate({ team: teamSlug, userId });
+					await deleteTeamMember.mutate({ input: { teamSlug: teamSlug, userEmail: userId } });
 					refetch();
 				}}
 			>
 				<svelte:fragment slot="header"><Heading>Delete member</Heading></svelte:fragment>
 				Are you sure you want to remove <b>{deleteUser.name} </b>from this team?
 			</Confirm>
-		{/if}-->
+		{/if}
 	{/if}
 {/if}
 

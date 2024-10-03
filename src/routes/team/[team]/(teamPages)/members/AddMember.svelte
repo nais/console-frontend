@@ -29,27 +29,18 @@
 			}
 
 			reconcilers {
-				nodes {
-					displayName
-					name
-					description
-					#memberAware
-					enabled
+				edges {
+					node {
+						displayName
+						name
+						description
+						enabled
+					}
 				}
 			}
 		}
 	`);
-	/**
- addTeamMember(
-    input: {teamSlug: "devteam", userEmail: "alice.bergsvik@example.com", role: MEMBER}
-  ) {
-    member {
-      user {
-        email
-      }
-    }
-  }
-*/
+
 	const create = graphql(`
 		mutation CreateMemberMutation($input: AddTeamMemberInput!) {
 			addTeamMember(input: $input) {

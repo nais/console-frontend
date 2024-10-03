@@ -1,42 +1,34 @@
 <script lang="ts">
-	import { graphql, type TeamRole$options } from '$houdini';
-	import Label from '$lib/typography/Label.svelte';
-	import {
-		Alert,
-		Checkbox,
-		Fieldset,
-		Heading,
-		HelpText,
-		Modal,
-		Select
-	} from '@nais/ds-svelte-community';
+	import { graphql, type TeamMemberRole$options } from '$houdini';
+	import { Alert, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 	import type { TeamMemberVariables } from './$houdini';
 
 	export let open: boolean;
 	export let team: string;
-	export let userID: string;
+	export let email: string;
 
 	const dispatcher = createEventDispatcher<{ updated: null }>();
+
 	const store = graphql(`
-		query TeamMember($team: Slug!, $userId: ID!) @load {
+		query TeamMember($team: Slug!, $email: String!) @load {
 			team(slug: $team) {
-				member(userId: $userId) {
+				member(email: $email) {
 					role
 					user {
 						id
 						name
 					}
-					reconcilers {
-						enabled
-						reconciler {
-							enabled
-							name
-							displayName
-							description
-							memberAware
-						}
-					}
+					#	reconcilers {
+					#		enabled
+					#		reconciler {
+					#			enabled
+					#			name
+					#			displayName
+					#			description
+					#			memberAware
+					#		}
+					#	}
 				}
 			}
 		}
@@ -45,33 +37,36 @@
 	export const _TeamMemberVariables: TeamMemberVariables = () => {
 		return {
 			team,
-			userId: userID
+			email
 		};
 	};
 
 	const alterRole = graphql(`
-		mutation UpdateMemberRoleMutation($team: Slug!, $userId: ID!, $role: TeamRole!) {
-			setTeamMemberRole(slug: $team, userId: $userId, role: $role) {
-				slug
+		mutation UpdateMemberRoleMutation($input: SetTeamMemberRoleInput!) {
+			setTeamMemberRole(input: $input) {
+				member {
+					role
+				}
 			}
 		}
 	`);
 
-	const addReconcilerOptOut = graphql(`
+	/*const addReconcilerOptOut = graphql(`
 		mutation AddReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: String!) {
 			addReconcilerOptOut(teamSlug: $team, userId: $userId, reconciler: $reconciler) {
 				role
 			}
 		}
-	`);
+	`);*/
 
+	/*
 	const removeReconcilerOptOut = graphql(`
 		mutation RemoveReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: String!) {
 			removeReconcilerOptOut(teamSlug: $team, userId: $userId, reconciler: $reconciler) {
 				role
 			}
 		}
-	`);
+	`);*/
 
 	let errors: string[] = [];
 	const updateRole = async (e: Event) => {
@@ -79,15 +74,20 @@
 		if (!(e.target instanceof HTMLSelectElement)) return;
 
 		await alterRole.mutate({
-			team,
+			/*team,
 			userId: userID,
-			role: e.target?.value as TeamRole$options
+			role: e.target?.value as TeamRole$options*/
+			input: {
+				teamSlug: team,
+				userEmail: email,
+				role: e.target.value as TeamMemberRole$options
+			}
 		});
 		store.fetch({ policy: 'NetworkOnly' });
 		dispatcher('updated', null);
 	};
 
-	const updateReconciler = async (el: unknown | null, reconciler: string) => {
+	/*const updateReconciler = async (el: unknown | null, reconciler: string) => {
 		if (!el) return;
 		if (!(el instanceof HTMLInputElement)) return;
 
@@ -106,7 +106,7 @@
 			});
 		}
 		dispatcher('updated', null);
-	};
+	};*/
 </script>
 
 <Modal bind:open>
@@ -122,13 +122,14 @@
 		<div class="wrapper">
 			<Label>Name</Label>
 			<p>{member.user.name}</p>
+			<p>{JSON.stringify(member)}</p>
 
 			<Select label="Role" style="width:150px" value={member.role} on:change={updateRole}>
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>
 
-			<Fieldset class="navds-checkbox-group navds-checkbox-group--medium">
+			<!--Fieldset class="navds-checkbox-group navds-checkbox-group--medium">
 				<legend class="navds-fieldset__legend navds-label">Enabled features</legend>
 
 				{#each member.reconcilers.filter((r) => r.reconciler.memberAware && r.reconciler.enabled) as { reconciler, enabled }}
@@ -147,7 +148,7 @@
 						</span>
 					</Checkbox>
 				{/each}
-			</Fieldset>
+			</Fieldset-->
 		</div>
 	{/if}
 
@@ -162,10 +163,10 @@
 		min-width: 400px;
 	}
 
-	.option {
+	/*.option {
 		display: inline-flex;
 		gap: 0.5rem;
-	}
+	}*/
 
 	:global(.tooltipAddMemberWrapper) {
 		width: 200px;
