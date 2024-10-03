@@ -1,9 +1,8 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Time from '$lib/Time.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
@@ -24,12 +23,11 @@
 		ExternalLinkIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ SqlInstance } = data);
-	$: instance = $SqlInstance.data?.team.sqlInstance;
+	$: instance = $SqlInstance.data?.team.environment.sqlInstance;
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
 	$: postgres = $page.params.postgres;
@@ -44,7 +42,7 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if instance && instance.id !== PendingValue}
+{:else if instance}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -57,7 +55,7 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						€{Math.round(instance.metrics.cost)}
+						<!--€{Math.round(instance.metrics.cost)}-->TODO: not implemented in backend
 					</p>
 				</div>
 			</div>
@@ -65,7 +63,8 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
+					<!--CircleProgressBar progress={instance.metrics.cpu.utilization / 100} /-->
+					<CircleProgressBar progress={69 / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -75,8 +74,9 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-						core(s)
+						<!--{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
+						core(s)-->TODO:
+						Implement CPU
 					</p>
 				</div>
 			</div>
@@ -84,7 +84,8 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
+					<!--CircleProgressBar progress={instance.metrics.memory.utilization / 100} /-->
+					<CircleProgressBar progress={69 / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -94,9 +95,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+						<!--{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
 							instance.metrics.memory.quotaBytes
-						)}
+					)}-->TODO:
+						Implement memory
 					</p>
 				</div>
 			</div>
@@ -104,7 +106,8 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
+					<!--CircleProgressBar progress={instance.metrics.disk.utilization / 100} /-->
+					<CircleProgressBar progress={69 / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -114,9 +117,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+						<!--{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
 							instance.metrics.disk.quotaBytes
-						)}
+					)}-->TODO:
+						Implement disk
 					</p>
 				</div>
 			</div>
@@ -128,7 +132,7 @@
 			<div class="grid" style="grid-template-columns: 40% 60%;">
 				<p style="display: flex; align-items: center; gap: 0 1rem;">Version</p>
 				<p style="display: flex; align-items: center; gap: 0 0.5rem">
-					{instance.type}
+					{instance.maintenanceVersion}
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem;">
 					State
@@ -138,28 +142,21 @@
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 0.5rem">
-					{#if instance.state === 'RUNNABLE'}
+					<!--{#if instance.state === 'RUNNABLE'}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 					{:else}
 						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" title="yolo" /><span
 							style="font-size: small;">Unhealthy state: {instance.state}</span
 						>
-					{/if}
+					{/if}-->
+					TODO: implement state
 				</p>
 				<p>
-					{instance.workload
-						? instance.workload.__typename === 'App'
-							? 'Application'
-							: 'Job'
-						: 'Workload'}
+					{instance.workload?.__typename}
 				</p>
 				<p>
 					{#if instance.workload}
-						<a
-							href="/team/{teamName}/{envName}/{instance.workload.__typename === 'App'
-								? 'app'
-								: 'job'}/{instance.workload.name}">{instance.workload.name}</a
-						>
+						<WorkloadLink workload={instance.workload} env={envName} team={teamName} />
 					{:else}
 						<ExclamationmarkTriangleFillIcon
 							style="color: var(--a-icon-warning)"
@@ -171,7 +168,7 @@
 				<p>SQL Instance</p>
 				<p>
 					<a
-						href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectId}&supportedpurview=project"
+						href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
 						>{postgres}<ExternalLinkIcon title="Google Cloud Console" font-size="1.5rem" /></a
 					>
 				</p>
@@ -185,9 +182,11 @@
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">
-					{#if instance.isHealthy}
+					{#if instance.healthy}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
-					{:else if instance.status.conditions.length > 0}
+					{:else}
+						TODO: implement conditions
+						<!--{:else if instance.status.conditions.length > 0}
 						{#each instance.status.conditions as condition}
 							<p>
 								{#if condition.type !== 'Ready'}
@@ -203,7 +202,7 @@
 								{/if}
 								Investigate conditions report(s)
 							</p>
-						{/each}
+						{/each}-->
 					{/if}
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem">
@@ -251,7 +250,13 @@
 						style="width: 90%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
 						title={instance.connectionName}>{instance.connectionName}</span
 					>
-					<CopyButton size="small" variant="action" copyText={instance.connectionName.toString()} />
+					{#if instance.connectionName}
+						<CopyButton
+							size="small"
+							variant="action"
+							copyText={instance.connectionName.toString()}
+						/>
+					{/if}
 				</p>
 				<p>Tier</p>
 				<p>{instance.tier}</p>
@@ -356,10 +361,10 @@
 						<Tr>
 							<Td>Automatic backups:</Td>
 							<Td>
-								{instance.backupConfiguration.enabled ? 'Enabled' : 'Disabled'}
+								{instance.backupConfiguration?.enabled ? 'Enabled' : 'Disabled'}
 							</Td>
 						</Tr>
-						{#if instance.backupConfiguration.enabled}
+						{#if instance.backupConfiguration?.enabled}
 							<Tr>
 								<Td>Backup start time:</Td>
 								<Td>{instance.backupConfiguration.startTime}</Td>
@@ -373,7 +378,7 @@
 						{/if}
 						<Tr>
 							<Td>Point in time recovery:</Td>
-							<Td>{instance.backupConfiguration.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
+							<Td>{instance.backupConfiguration?.pointInTimeRecovery ? 'Enabled' : 'Disabled'}</Td>
 						</Tr>
 						<Tr>
 							<Td>Maintenance window:</Td>
@@ -402,68 +407,61 @@
 			</div>
 			<h3 style="margin-bottom: 0.5rem;">Instance flags</h3>
 			<div style="margin-bottom: 1.5rem;">
-				{#if instance.flags.length}
-					<Table zebraStripes size="small">
-						<Thead>
+				<Table zebraStripes size="small">
+					<Thead>
+						<Tr>
+							<Th>Name</Th>
+							<Th>Value</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each instance.flags.edges as edge}
 							<Tr>
-								<Th>Name</Th>
-								<Th>Value</Th>
+								<Td>{edge.node.name}</Td>
+								<Td>{edge.node.value}</Td>
 							</Tr>
-						</Thead>
-						<Tbody>
-							{#each instance.flags as flag}
-								<Tr>
-									<Td>{flag.name}</Td>
-									<Td>{flag.value}</Td>
-								</Tr>
-							{/each}
-						</Tbody>
-					</Table>
-				{:else}
-					<p>No flags set</p>
-				{/if}
+						{:else}
+							<p>No flags set</p>
+						{/each}
+					</Tbody>
+				</Table>
 			</div>
 			<h3 style="margin-bottom: 0.5rem;">Users</h3>
-			{#if instance.users && instance.users.length > 0}
-				<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-					<Table zebraStripes size="small">
-						<Thead>
-							<Th>Name</Th>
-							<Th>
-								<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
-									Authentication <ExternalLinkIcon
-										title="Cloud SQL credentials"
-										font-size="1.5rem"
-									/>
-								</Link>
-							</Th>
-						</Thead>
-						<Tbody>
-							{#each instance.users as user}
-								<Tr>
-									<Td>{user.name}</Td>
-									<Td>{user.authentication}</Td>
-								</Tr>
-							{/each}
-						</Tbody>
-					</Table>
-				</div>
-			{:else}
-				<p>Unable to fetch users at the moment</p>
-			{/if}
+			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
+				<Table zebraStripes size="small">
+					<Thead>
+						<Th>Name</Th>
+						<Th>
+							<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
+								Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
+							</Link>
+						</Th>
+					</Thead>
+					<Tbody>
+						{#each instance.users.edges as edge}
+							<Tr>
+								<Td>{edge.node.name}</Td>
+								<Td>{edge.node.authentication}</Td>
+							</Tr>
+						{:else}
+							<p>Unable to fetch users at the moment</p>
+						{/each}
+					</Tbody>
+				</Table>
+			</div>
 		</Card>
-		{#if !instance.isHealthy && instance.status.conditions.length > 0}
-			<Card columns={12}>
-				<h3 id="conditions">
-					Config status
-					<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
-						FAQ
-						<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
-					</Link>
-				</h3>
-				<div style="margin-bottom: 0.5rem;">
-					<h4>Instance</h4>
-					{#each instance.status.conditions as condition}
+		<!--{#if !instance.healthy&& instance.status.conditions.length > 0}-->
+		<Card columns={12}>
+			<h3 id="conditions">
+				Config status
+				<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
+					FAQ
+					<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
+				</Link>
+			</h3>
+			<div style="margin-bottom: 0.5rem;">
+				<h4>Instance</h4>
+				<!--{#each instance.status.conditions as condition}
 						{#if condition.type !== 'Ready'}
 							<Alert variant="warning" size="small">
 								<h4>{condition.reason}</h4>
@@ -477,11 +475,12 @@
 								Last transaction time <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{/if}
-					{/each}
-				</div>
-				<div style="margin-bottom: 0.5rem;">
-					<h4>Database</h4>
-					{#if instance.database && !instance.database.healthy}
+					{/each}-->
+				TODO: implement conditions?
+			</div>
+			<div style="margin-bottom: 0.5rem;">
+				<h4>Database</h4>
+				<!--{#if instance.database && !instance.database.healthy}
 						{#each instance.database.conditions as condition}
 							<Alert variant="info" size="small">
 								<h4>{condition.reason}</h4>
@@ -489,10 +488,11 @@
 								Last transaction time: <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{/each}
-					{/if}
-				</div>
-			</Card>
-		{/if}
+					{/if}-->
+				TODO: implement conditions?
+			</div>
+		</Card>
+		<!--{/if}-->
 	</div>
 {/if}
 

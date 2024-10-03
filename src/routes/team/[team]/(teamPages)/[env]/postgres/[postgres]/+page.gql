@@ -1,0 +1,101 @@
+query SqlInstance($env: String!, $team: Slug!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			sqlInstance(name: $name) {
+				id
+				name
+				environment {
+					name
+				}
+				cascadingDelete
+				healthy
+				#	type
+				connectionName
+				diskAutoresize
+				diskAutoresizeLimit
+				workload {
+					name
+					__typename
+				}
+				tier
+				#metrics {
+				#	cost
+				#	cpu {
+				#		cores
+				#		utilization
+				#	}
+				#	memory {
+				#		quotaBytes
+				#		utilization
+				#	}
+				#	disk {
+				#		quotaBytes
+				#		utilization
+				#	}
+				#}
+				highAvailability
+				backupConfiguration {
+					enabled
+					startTime
+					retainedBackups
+					pointInTimeRecovery
+				}
+				maintenanceWindow {
+					day
+					hour
+				}
+				maintenanceVersion
+				projectID
+				database {
+					name
+					charset
+					collation
+					healthy
+
+					#conditions {
+					#	type
+					#	status
+					#	reason
+					#	message
+					#	lastTransitionTime
+					#}
+				}
+				flags {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						totalCount
+						pageStart
+						pageEnd
+					}
+					edges {
+						node {
+							name
+							value
+						}
+					}
+				}
+				status {
+					publicIpAddress
+					privateIpAddress
+				}
+
+				users {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						totalCount
+						pageStart
+						pageEnd
+					}
+					edges {
+						node {
+							name
+							authentication
+						}
+					}
+				}
+			}
+		}
+	}
+}
