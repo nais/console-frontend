@@ -122,7 +122,6 @@
 		<div class="wrapper">
 			<Label>Name</Label>
 			<p>{member.user.name}</p>
-			<p>{JSON.stringify(member)}</p>
 
 			<Select label="Role" style="width:150px" value={member.role} on:change={updateRole}>
 				<option value="OWNER">Owner</option>

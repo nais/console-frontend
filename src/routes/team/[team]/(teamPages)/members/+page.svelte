@@ -27,7 +27,6 @@
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
-	//import EditMember from './EditMember.svelte';
 
 	export let data: PageData;
 	$: ({ Members, UserInfo } = data);
