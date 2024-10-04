@@ -3,7 +3,12 @@
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ChevronLeftIcon,
+		ChevronRightIcon,
+		PlusIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -130,6 +135,40 @@
 					{/each}
 				</Tbody>
 			</Table>
+			{#if r.team.repositories.pageInfo.hasPreviousPage || r.team.repositories.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if r.team.repositories.pageInfo.pageStart !== r.team.repositories.pageInfo.pageEnd}
+							{r.team.repositories.pageInfo.pageStart} - {r.team.repositories.pageInfo.pageEnd}
+						{:else}
+							{r.team.repositories.pageInfo.pageStart}
+						{/if}
+
+						of {r.team.repositories.pageInfo.totalCount}
+					</span>
+
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!r.team.repositories.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await Repositories.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!r.team.repositories.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await Repositories.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		</Card>
 		<!--{#key team}
 			<ActivityLog resourceType={AuditEventResourceType.TEAM_REPOSITORY} {teamName} />
@@ -151,5 +190,10 @@
 	.repository > h3 {
 		display: flex;
 		gap: 1rem;
+	}
+
+	.pagination {
+		text-align: right;
+		padding: 0.5rem;
 	}
 </style>

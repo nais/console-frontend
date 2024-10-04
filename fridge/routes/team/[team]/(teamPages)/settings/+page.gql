@@ -1,28 +1,33 @@
 query TeamSettings($team: Slug!) {
 	team(slug: $team) @loading {
-		id @loading
+		id
 		slug
 		purpose
-		slackChannel @loading
+		slackChannel
 		gitHubTeamSlug
 		azureGroupID
 		googleGroupEmail
 		googleArtifactRegistry
 		cdnBucket
-		environments @loading(count: 2) {
+		environments {
 			name
 			gcpProjectID
 			slackAlertsChannel
 		}
-		auditLogs(limit: 5) @loading {
-			nodes @loading(count: 5) {
-				actor
-				action
-				message
-				createdAt
+		auditEntries(first: 5) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				totalCount
+				pageStart
+				pageEnd
 			}
-			pageInfo @loading {
-				hasNextPage @loading
+			edges {
+				node {
+					actor
+					message
+					createdAt
+				}
 			}
 		}
 	}

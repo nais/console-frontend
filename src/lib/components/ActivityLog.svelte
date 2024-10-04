@@ -64,13 +64,13 @@
 				return `/team/${teamName}/${env.name}/app/${resourceName}`;
 			case AuditResourceType.NAISJOB:
 				return `/team/${teamName}/${env.name}/job/${resourceName}`;*/
+
 			case AuditResourceType.TEAM:
 				return `/team/${teamName}`;
 			default:
 				return null;
 		}
 	};
-
 	$: team = $store.data?.team;
 </script>
 
