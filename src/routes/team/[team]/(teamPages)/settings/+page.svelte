@@ -1,42 +1,16 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import {
-		PendingValue,
-		graphql,
-		type GetTeamDeleteKey$input,
-		type GetTeamDeleteKey$result,
-		type QueryResult,
-		AuditEventResourceType
-	} from '$houdini';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Time from '$lib/Time.svelte';
-	import {
-		Alert,
-		BodyLong,
-		Button,
-		CopyButton,
-		Loader,
-		Modal,
-		Skeleton,
-		TextField
-	} from '@nais/ds-svelte-community';
-	import {
-		ArrowsCirclepathIcon,
-		ChatExclamationmarkIcon,
-		EyeIcon,
-		EyeSlashIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
-	import { slide } from 'svelte/transition';
+	import { Alert, Button, Modal } from '@nais/ds-svelte-community';
+	import { ChatExclamationmarkIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 
-	const rotateKey = graphql(`
+	/*const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
 			changeDeployKey(team: $team) {
 				key
@@ -44,21 +18,23 @@
 				expires
 			}
 		}
-	`);
+	`);*/
 
 	const updateTeam = graphql(`
-		mutation UpdateTeam($slug: Slug!, $input: UpdateTeamInput!) {
-			updateTeam(slug: $slug, input: $input) {
-				purpose
-				slackChannel
-				environments {
-					slackAlertsChannel
+		mutation UpdateTeam($input: UpdateTeamInput!) {
+			updateTeam(input: $input) {
+				team {
+					purpose
+					slackChannel
+					environments {
+						slackAlertsChannel
+					}
 				}
 			}
 		}
 	`);
 
-	const updateTeamSlackAlertsChannel = graphql(`
+	/*const updateTeamSlackAlertsChannel = graphql(`
 		mutation UpdateTeamSlackAlertsChannel(
 			$slug: Slug!
 			$input: UpdateTeamSlackAlertsChannelInput!
@@ -69,9 +45,9 @@
 				}
 			}
 		}
-	`);
+	`);*/
 
-	const hookdResponse = graphql(`
+	/*const hookdResponse = graphql(`
 		query HookdDeployKey($team: Slug!) @load {
 			team(slug: $team) @loading(cascade: true) {
 				id
@@ -82,18 +58,18 @@
 				}
 			}
 		}
-	`);
+	`);*/
 
-	const getTeamDeleteKey = graphql(`
+	/*const getTeamDeleteKey = graphql(`
 		mutation GetTeamDeleteKey($slug: Slug!) {
 			requestTeamDeletion(slug: $slug) {
 				key
 			}
 		}
-	`);
+	`);*/
 
-	let deleteKeyLoading = false;
-	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
+	//let deleteKeyLoading = false;
+	//let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
 
 	$: ({ TeamSettings, viewerIsOwner } = data);
 
@@ -101,7 +77,7 @@
 
 	$: team = $page.params.team;
 
-	let showKey = false;
+	//let showKey = false;
 	let showRotateKey = false;
 	let showDeleteTeam = false;
 
@@ -136,13 +112,13 @@
 		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
 	};
 
-	const synchronizeTeam = graphql(`
+	/*const synchronizeTeam = graphql(`
 		mutation SynchronizeTeam($slug: Slug!) {
 			synchronizeTeam(slug: $slug) {
 				correlationID
 			}
 		}
-	`);
+	`);*/
 
 	let synchronizeClicked = false;
 	let rotateClicked = false;
@@ -158,36 +134,33 @@
 	<div class="grid">
 		<Card columns={6}>
 			<h3>{team}</h3>
-			{#if teamSettings.id === PendingValue}
-				<Skeleton variant="text" width="400px" />
-			{:else}
-				<i>
-					<EditText
-						text={teamSettings.purpose}
-						on:save={async (e) => {
-							descriptionError = false;
-							const data = await updateTeam.mutate({
+
+			<i>
+				<EditText
+					text={teamSettings.purpose}
+					on:save={async (e) => {
+						descriptionError = false;
+						const data = await updateTeam.mutate({
+							input: {
 								slug: team,
-								input: {
-									purpose: e.detail
-								}
-							});
-
-							if (data.errors) {
-								descriptionError = true;
+								purpose: e.detail
 							}
-						}}
-					/>
-				</i>
+						});
 
-				{#if descriptionError}
-					<Alert variant="error" size="small">
-						Error updating description. Please try again later.
-					</Alert>
-				{/if}
+						if (data.errors) {
+							descriptionError = true;
+						}
+					}}
+				/>
+			</i>
+
+			{#if descriptionError}
+				<Alert variant="error" size="small">
+					Error updating description. Please try again later.
+				</Alert>
 			{/if}
 			<h4><ChatExclamationmarkIcon /> Slack channels</h4>
-			{#if teamSettings.slackChannel !== PendingValue && teamSettings.slackChannel !== ''}
+			{#if teamSettings.slackChannel !== ''}
 				<p>
 					<b>Default slack-channel:</b>
 					<EditText
@@ -196,8 +169,8 @@
 						on:save={async (e) => {
 							defaultSlackChannelError = false;
 							const data = await updateTeam.mutate({
-								slug: team,
 								input: {
+									slug: team,
 									slackChannel: e.detail
 								}
 							});
@@ -218,33 +191,32 @@
 				<p>
 					Per-environment slack-channels to be used for alerts sent by the platform.
 					{#each teamSettings.environments as env}
-						{#if env !== PendingValue}
-							<div class="channel">
-								<b>{env.name}:</b>
-								<EditText
-									text={env.slackAlertsChannel}
-									variant="textfield"
-									on:save={async (e) => {
-										slackChannelsError = false;
-										if (!teamSettings) {
-											return;
-										}
+						<div class="channel">
+							<b>{env.name}:</b>
+							<EditText
+								text={env.slackAlertsChannel}
+								variant="textfield"
+								on:save={async (e) => {
+									console.log(e);
+									slackChannelsError = false;
+									if (!teamSettings) {
+										return;
+									}
 
-										const data = await updateTeamSlackAlertsChannel.mutate({
-											slug: team,
-											input: {
-												environment: env.name,
-												channelName: e.detail
-											}
-										});
-
-										if (data.errors) {
-											slackChannelsError = true;
+									/*const data = await updateTeamSlackAlertsChannel.mutate({
+										slug: team,
+										input: {
+											environment: env.name,
+											channelName: e.detail
 										}
-									}}
-								/>
-							</div>
-						{/if}
+									});
+
+									if (data.errors) {
+										slackChannelsError = true;
+									}*/
+								}}
+							/>
+						</div>
 					{/each}
 				</p>
 				{#if slackChannelsError}
@@ -257,7 +229,7 @@
 		<Card columns={6}>
 			<h3 class="with_button">
 				Managed resources
-				<Button
+				<!--Button
 					size="xsmall"
 					variant="secondary"
 					loading={$synchronizeTeam.fetching}
@@ -268,8 +240,9 @@
 					}}
 				>
 					Synchronize team
-				</Button>
+				</Button-->
 			</h3>
+			<!--
 			{#if $synchronizeTeam.errors}
 				<GraphErrors errors={$synchronizeTeam.errors} dismissable={true} />
 			{:else if synchronizeClicked}
@@ -281,64 +254,61 @@
 						</Button>
 					</Alert>
 				</div>
-			{/if}
-			{#if teamSettings.id === PendingValue}
-				<Loader />
-			{:else}
-				<h4>Global</h4>
+			{/if}-->
+
+			<h4>Global</h4>
+			<dl>
+				{#if hasGlobalAttributes(teamSettings)}
+					{#if teamSettings.googleArtifactRegistry}
+						<dt>Artifact Registry repository</dt>
+						<dd>{formatGARRepo(teamSettings.googleArtifactRegistry)}</dd>
+					{/if}
+					{#if teamSettings.gitHubTeamSlug}
+						<dt>GitHub team</dt>
+						<dd>{teamSettings.gitHubTeamSlug}</dd>
+					{/if}
+					{#if teamSettings.googleGroupEmail}
+						<dt>Google group email</dt>
+						<dd>{teamSettings.googleGroupEmail}</dd>
+					{/if}
+					{#if teamSettings.cdnBucket}
+						<dt>Team CDN bucket</dt>
+						<dd>
+							<a href="https://console.cloud.google.com/storage/browser/{teamSettings.cdnBucket}">
+								{teamSettings.cdnBucket}
+							</a>
+						</dd>
+					{/if}
+					{#if teamSettings.azureGroupID}
+						<dt>Azure AD group ID</dt>
+						<dd>
+							<a href="https://myaccount.microsoft.com/groups/{teamSettings.azureGroupID}"
+								>{teamSettings.azureGroupID}</a
+							>
+						</dd>
+					{/if}
+				{:else}
+					<Alert variant="info" size="small">No managed resources</Alert>
+				{/if}
+			</dl>
+
+			{#each teamSettings.environments as env}
+				<h4>{env.name}</h4>
 				<dl>
-					{#if hasGlobalAttributes(teamSettings)}
-						{#if teamSettings.googleArtifactRegistry}
-							<dt>Artifact Registry repository</dt>
-							<dd>{formatGARRepo(teamSettings.googleArtifactRegistry)}</dd>
-						{/if}
-						{#if teamSettings.gitHubTeamSlug}
-							<dt>GitHub team</dt>
-							<dd>{teamSettings.gitHubTeamSlug}</dd>
-						{/if}
-						{#if teamSettings.googleGroupEmail}
-							<dt>Google group email</dt>
-							<dd>{teamSettings.googleGroupEmail}</dd>
-						{/if}
-						{#if teamSettings.cdnBucket}
-							<dt>Team CDN bucket</dt>
-							<dd>
-								<a href="https://console.cloud.google.com/storage/browser/{teamSettings.cdnBucket}">
-									{teamSettings.cdnBucket}
-								</a>
-							</dd>
-						{/if}
-						{#if teamSettings.azureGroupID}
-							<dt>Azure AD group ID</dt>
-							<dd>
-								<a href="https://myaccount.microsoft.com/groups/{teamSettings.azureGroupID}"
-									>{teamSettings.azureGroupID}</a
-								>
-							</dd>
-						{/if}
+					{#each envResources(env) as { key, value }}
+						<dt>{key}:</dt>
+						<dd>{value}</dd>
 					{:else}
 						<Alert variant="info" size="small">No managed resources</Alert>
-					{/if}
+					{/each}
 				</dl>
-
-				{#each teamSettings.environments as env}
-					<h4>{env.name}</h4>
-					<dl>
-						{#each envResources(env) as { key, value }}
-							<dt>{key}:</dt>
-							<dd>{value}</dd>
-						{:else}
-							<Alert variant="info" size="small">No managed resources</Alert>
-						{/each}
-					</dl>
-				{/each}
-			{/if}
+			{/each}
 		</Card>
 
 		<Card columns={12}>
 			<h3>Deploy key</h3>
 
-			{#if $hookdResponse.data?.team}
+			<!--{#if $hookdResponse.data?.team}
 				{@const deployKey = $hookdResponse.data.team.deployKey}
 				<dl>
 					<dt>Created:</dt>
@@ -411,7 +381,7 @@
 				</div>
 			{:else}
 				<Alert variant="error">Error getting deploy key. Please try again later.</Alert>
-			{/if}
+			{/if}-->
 		</Card>
 		{#if browser}
 			<Modal bind:open={showRotateKey} closeButton={false}>
@@ -429,7 +399,7 @@
 					on:click={async () => {
 						rotateClicked = false;
 						showRotateKey = !showRotateKey;
-						await rotateKey.mutate({ team });
+						//await rotateKey.mutate({ team });
 						rotateClicked = true;
 					}}
 				>
@@ -439,7 +409,7 @@
 		{/if}
 
 		{#key teamSettings || synchronizeClicked || rotateClicked}
-			<ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} />
+			<!--ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} /-->
 		{/key}
 
 		{#if viewerIsOwner}
@@ -459,7 +429,7 @@
 					variant="danger"
 					on:click={() => {
 						showDeleteTeam = !showDeleteTeam;
-						deleteKeyResp = null;
+						//deleteKeyResp = null;
 					}}
 				>
 					<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
@@ -467,7 +437,7 @@
 				>
 			</Card>
 			{#if browser}
-				<Modal bind:open={showDeleteTeam}>
+				<!--Modal bind:open={showDeleteTeam}>
 					<h3 slot="header">Request team deletion</h3>
 
 					{#if !deleteKeyResp?.data}
@@ -506,7 +476,7 @@
 								loading={deleteKeyLoading}
 								on:click={async () => {
 									deleteKeyLoading = true;
-									deleteKeyResp = await getTeamDeleteKey.mutate({ slug: team });
+									//deleteKeyResp = await getTeamDeleteKey.mutate({ slug: team });
 									deleteKeyLoading = false;
 								}}>Confirm</Button
 							>
@@ -526,7 +496,7 @@
 							>
 						{/if}
 					</svelte:fragment>
-				</Modal>
+				</Modal-->
 			{/if}
 		{/if}
 	</div>

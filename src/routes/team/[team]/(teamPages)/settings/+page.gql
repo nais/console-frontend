@@ -1,5 +1,5 @@
 query TeamSettings($team: Slug!) {
-	team(slug: $team) @loading {
+	team(slug: $team) {
 		id
 		slug
 		purpose
@@ -14,7 +14,7 @@ query TeamSettings($team: Slug!) {
 			gcpProjectID
 			slackAlertsChannel
 		}
-		auditEntries(first: 5) {
+		auditEntries(first: 5) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
