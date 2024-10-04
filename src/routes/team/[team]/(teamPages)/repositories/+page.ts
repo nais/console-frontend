@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+/*import { error } from '@sveltejs/kit';
 import type { RepositoriesVariables } from './$houdini';
 export const _RepositoriesVariables: RepositoriesVariables = ({ url }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
@@ -10,3 +10,4 @@ export const _RepositoriesVariables: RepositoriesVariables = ({ url }) => {
 
 	return { limit, offset };
 };
+*/

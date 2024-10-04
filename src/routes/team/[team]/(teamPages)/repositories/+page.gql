@@ -1,0 +1,24 @@
+query Repositories($team: Slug!) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		id
+		repositories(first: 20) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
+			edges {
+				node {
+					name
+					team {
+						slug
+					}
+				}
+			}
+		}
+		viewerIsOwner
+		viewerIsMember
+	}
+}

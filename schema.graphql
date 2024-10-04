@@ -1468,7 +1468,7 @@ type Repository implements Node {
 
 type RepositoryConnection {
   """List of edges."""
-  edges: [RepositoryEdge]
+  edges: [RepositoryEdge!]!
 
   """List of nodes."""
   nodes: [Repository!]!

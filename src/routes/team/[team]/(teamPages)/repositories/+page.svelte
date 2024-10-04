@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { AuditEventResourceType, graphql } from '$houdini';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Pagination from '$lib/Pagination.svelte';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
-	import { changeParams, limitOffset } from '$lib/pagination';
 	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -12,13 +9,16 @@
 	export let data: PageData;
 
 	$: ({ Repositories } = data);
-	$: team = $Repositories.data?.team;
+
 	$: teamName = $page.params.team;
-	$: ({ limit, offset } = limitOffset($Repositories.variables));
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
-			addRepository(repoName: $repository, teamSlug: $team)
+			addRepositoryToTeam(input: { repositoryName: $repository, teamSlug: $team }) {
+				repository {
+					name
+				}
+			}
 		}
 	`);
 	const addRepository = async (team: string, repository: string) => {
@@ -31,7 +31,9 @@
 
 	const removeRepositoryMutation = graphql(`
 		mutation RemoveRepository($repository: String!, $team: Slug!) {
-			removeRepository(repoName: $repository, teamSlug: $team)
+			removeRepositoryFromTeam(input: { repositoryName: $repository, teamSlug: $team }) {
+				success
+			}
 		}
 	`);
 	const removeRepository = async (team: string, repository: string) => {
@@ -39,6 +41,7 @@
 			repository,
 			team
 		});
+		console.log('will fetch');
 		Repositories.fetch();
 	};
 
@@ -64,9 +67,10 @@
 	const errorMessage = `Invalid input`;
 </script>
 
-{#if team}
+{#if $Repositories.data}
+	{@const r = $Repositories.data}
 	<div class="grid">
-		{#if team.viewerIsOwner || team.viewerIsMember}
+		{#if r.team.viewerIsOwner || r.team.viewerIsMember}
 			<Card>
 				<div class="repository">
 					<h3>Add repository</h3>
@@ -107,15 +111,16 @@
 					<Th style="width:150px">Action</Th>
 				</Thead>
 				<Tbody>
-					{#each team.repositories.nodes as repo}
+					{#each r.team.repositories.edges as edge}
+						{@const repo = edge.node}
 						<Tr>
-							<Td><a href="https://github.com/{repo}" target="_blank">{repo}</a></Td>
+							<Td><a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a></Td>
 							<Td>
 								<Button
 									variant="secondary"
 									size="small"
-									disabled={!team.viewerIsOwner && !team.viewerIsMember}
-									on:click={() => removeRepository(teamName, repo)}
+									disabled={!r.team.viewerIsOwner && !r.team.viewerIsMember}
+									on:click={() => removeRepository(repo.team.slug, repo.name)}
 								>
 									<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
 									Remove
@@ -125,18 +130,10 @@
 					{/each}
 				</Tbody>
 			</Table>
-			<Pagination
-				pageInfo={team.repositories.pageInfo}
-				{limit}
-				{offset}
-				changePage={(e) => {
-					changeParams({ page: e.toString() });
-				}}
-			/>
 		</Card>
-		{#key team}
+		<!--{#key team}
 			<ActivityLog resourceType={AuditEventResourceType.TEAM_REPOSITORY} {teamName} />
-		{/key}
+		{/key}-->
 	</div>
 {/if}
 
