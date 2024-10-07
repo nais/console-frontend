@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import {
 		graphql,
 		type ConfirmTeamDeletion$input,
@@ -79,8 +80,7 @@
 								key: key.key,
 								team: key.team.slug
 							});
-							deleteTeamLoading = false;
-							showConfirmDeleteTeam = !deleteTeamResp.data?.confirmTeamDeletion.deletionStarted;
+							goto('/team/' + key.team.slug, { replaceState: true });
 						}}>Confirm</Button
 					>
 					<Button
