@@ -11,6 +11,16 @@
 </script>
 
 <div class="container">
+	<div class="feedback">
+		<Button
+			variant="secondary"
+			size="xsmall"
+			on:click={() => {
+				/*feedbackOpen = true;*/
+				console.log('Feedback');
+			}}>Feedback</Button
+		>
+	</div>
 	<Card>
 		<h1>Create new team</h1>
 		{#if form?.errors && form.errors.length > 0}
@@ -70,5 +80,10 @@
 	.container {
 		margin: auto;
 		max-width: 1432px;
+	}
+	.feedback {
+		display: flex;
+		justify-content: flex-end;
+		padding: 0.5rem 0;
 	}
 </style>

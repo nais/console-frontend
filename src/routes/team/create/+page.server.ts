@@ -7,7 +7,9 @@ export const actions = {
 		const query = graphql(`
 			mutation CreateTeam($input: CreateTeamInput!) {
 				createTeam(input: $input) {
-					slug
+					team {
+						slug
+					}
 				}
 			}
 		`);
@@ -27,8 +29,8 @@ export const actions = {
 		if (resp.errors) {
 			return { input, errors: resp.errors };
 		}
-		if (resp.data?.createTeam.slug) {
-			redirect(303, `/team/${resp.data.createTeam.slug}`);
+		if (resp.data?.createTeam.team?.slug) {
+			redirect(303, `/team/${resp.data.createTeam.team.slug}`);
 		}
 	}
 } satisfies Actions;
