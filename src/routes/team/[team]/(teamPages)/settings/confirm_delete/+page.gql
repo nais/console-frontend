@@ -1,0 +1,17 @@
+query TeamDeleteKey($team: Slug!, $key: UUID!) {
+	team(slug: $team) {
+		deleteKey(key: $key) {
+			team {
+				slug
+			}
+			createdAt
+			createdBy {
+				id
+				name
+				email
+			}
+			expires
+			key
+		}
+	}
+}

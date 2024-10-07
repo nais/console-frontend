@@ -22,14 +22,16 @@
 		null;
 
 	const deleteTeam = graphql(`
-		mutation ConfirmTeamDeletion($key: String!) {
-			confirmTeamDeletion(key: $key)
+		mutation ConfirmTeamDeletion($key: UUID!, $team: Slug!) {
+			confirmTeamDeletion(input: { key: $key, slug: $team }) {
+				deletionStarted
+			}
 		}
 	`);
 </script>
 
 {#if $TeamDeleteKey.data}
-	{@const key = $TeamDeleteKey.data.teamDeleteKey}
+	{@const key = $TeamDeleteKey.data.team.deleteKey}
 	<Card>
 		<h3>Confirm team deletion</h3>
 		{#if UserInfo.data?.me.__typename == 'User' && UserInfo.data.me.id == key.createdBy.id}
@@ -37,7 +39,7 @@
 		{:else if Date.now() - +key.expires > 0}
 			<Alert variant="error">The delete key has expired.</Alert>
 		{:else}
-			<BodyLong>
+			<BodyLong style="padding-bottom: 1rem;">
 				The deletion was initiated by <strong>{key.createdBy.name}</strong> and expires
 				<strong><Time distance={true} time={key.expires}></Time></strong>. Deleting the team will
 				permanently delete all managed resources and all resources within them. All applications,
@@ -59,9 +61,8 @@
 				<h3 slot="header">Confirm team deletion</h3>
 
 				<BodyLong>
-					Please confirm that you intend to delete <strong
-						>{$TeamDeleteKey.data.teamDeleteKey.team.slug}</strong
-					> and all resources related to it.
+					Please confirm that you intend to delete <strong>{key.team.slug}</strong> and all resources
+					related to it.
 				</BodyLong>
 
 				{#if deleteTeamResp?.errors}
@@ -75,10 +76,11 @@
 						on:click={async () => {
 							deleteTeamLoading = true;
 							deleteTeamResp = await deleteTeam.mutate({
-								key: $TeamDeleteKey.data?.teamDeleteKey.key || ''
+								key: key.key,
+								team: key.team.slug
 							});
 							deleteTeamLoading = false;
-							showConfirmDeleteTeam = !deleteTeamResp.data?.confirmTeamDeletion;
+							showConfirmDeleteTeam = !deleteTeamResp.data?.confirmTeamDeletion.deletionStarted;
 						}}>Confirm</Button
 					>
 					<Button
