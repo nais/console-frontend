@@ -60,22 +60,6 @@
 	let reconcilers: Reconciler[] = [];
 
 	let loaded = false;
-	/*onMount(() => {
-		return store.subscribe(async (v) => {
-			if (!v.data) return;
-
-			const recs = v.data.reconcilers.nodes.filter((r) => r.memberAware && r.enabled);
-			reconcilers =
-				recs.map((r) => ({
-					name: r.displayName,
-					value: r.name,
-					description: r.description
-				})) ?? [];
-
-			selectedRecs = recs.map((r) => r.name);
-			loaded = true;
-		});
-	});*/
 
 	let role: AddTeamMemberInput['role'] = 'MEMBER';
 	let email: string;
@@ -93,9 +77,6 @@
 			role,
 			teamSlug: team,
 			userEmail: userID
-			/*reconcilerOptOuts: reconcilers
-				.filter((r) => !selectedRecs.includes(r.value))
-				.map((r) => r.value)*/
 		};
 
 		const resp = await create.mutate({

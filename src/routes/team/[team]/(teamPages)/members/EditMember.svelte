@@ -19,16 +19,6 @@
 						id
 						name
 					}
-					#	reconcilers {
-					#		enabled
-					#		reconciler {
-					#			enabled
-					#			name
-					#			displayName
-					#			description
-					#			memberAware
-					#		}
-					#	}
 				}
 			}
 		}
@@ -51,32 +41,12 @@
 		}
 	`);
 
-	/*const addReconcilerOptOut = graphql(`
-		mutation AddReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: String!) {
-			addReconcilerOptOut(teamSlug: $team, userId: $userId, reconciler: $reconciler) {
-				role
-			}
-		}
-	`);*/
-
-	/*
-	const removeReconcilerOptOut = graphql(`
-		mutation RemoveReconcilerOptOutMutation($team: Slug!, $userId: ID!, $reconciler: String!) {
-			removeReconcilerOptOut(teamSlug: $team, userId: $userId, reconciler: $reconciler) {
-				role
-			}
-		}
-	`);*/
-
 	let errors: string[] = [];
 	const updateRole = async (e: Event) => {
 		if (!e.target) return;
 		if (!(e.target instanceof HTMLSelectElement)) return;
 
 		await alterRole.mutate({
-			/*team,
-			userId: userID,
-			role: e.target?.value as TeamRole$options*/
 			input: {
 				teamSlug: team,
 				userEmail: email,
@@ -86,27 +56,6 @@
 		store.fetch({ policy: 'NetworkOnly' });
 		dispatcher('updated', null);
 	};
-
-	/*const updateReconciler = async (el: unknown | null, reconciler: string) => {
-		if (!el) return;
-		if (!(el instanceof HTMLInputElement)) return;
-
-		const enabled = el.checked;
-		if (!enabled) {
-			await addReconcilerOptOut.mutate({
-				team,
-				userId: userID,
-				reconciler
-			});
-		} else {
-			await removeReconcilerOptOut.mutate({
-				team,
-				userId: userID,
-				reconciler
-			});
-		}
-		dispatcher('updated', null);
-	};*/
 </script>
 
 <Modal bind:open>
@@ -127,27 +76,6 @@
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>
-
-			<!--Fieldset class="navds-checkbox-group navds-checkbox-group--medium">
-				<legend class="navds-fieldset__legend navds-label">Enabled features</legend>
-
-				{#each member.reconcilers.filter((r) => r.reconciler.memberAware && r.reconciler.enabled) as { reconciler, enabled }}
-					<Checkbox
-						value={reconciler.name}
-						checked={enabled}
-						on:change={(e) => {
-							updateReconciler(e.detail.target, reconciler.name);
-						}}
-					>
-						<span class="option">
-							{reconciler.displayName}
-							<HelpText title="" wrapperClass="tooltipAddMemberWrapper">
-								{reconciler.description}
-							</HelpText>
-						</span>
-					</Checkbox>
-				{/each}
-			</Fieldset-->
 		</div>
 	{/if}
 
@@ -161,11 +89,6 @@
 	.wrapper {
 		min-width: 400px;
 	}
-
-	/*.option {
-		display: inline-flex;
-		gap: 0.5rem;
-	}*/
 
 	:global(.tooltipAddMemberWrapper) {
 		width: 200px;

@@ -18,14 +18,6 @@ query Members($team: Slug!, $orderBy: TeamMemberOrder!) {
 						name
 					}
 
-					#reconcilers {
-					#	enabled
-					#	reconciler {
-					#		displayName
-					#		description
-					#		name
-					#	}
-					#}
 					role
 				}
 			}
