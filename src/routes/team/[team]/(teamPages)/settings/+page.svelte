@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
+	import {
+		type GetTeamDeleteKey$input,
+		type GetTeamDeleteKey$result,
+		graphql,
+		type QueryResult
+	} from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { Alert, Button, Modal } from '@nais/ds-svelte-community';
+	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
 	import { ChatExclamationmarkIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
 
@@ -60,16 +67,26 @@
 		}
 	`);*/
 
-	/*const getTeamDeleteKey = graphql(`
-		mutation GetTeamDeleteKey($slug: Slug!) {
-			requestTeamDeletion(slug: $slug) {
-				key
+	const getTeamDeleteKey = graphql(`
+		mutation GetTeamDeleteKey($input: RequestTeamDeletionInput!) {
+			requestTeamDeletion(input: $input) {
+				key {
+					createdAt
+					createdBy {
+						email
+					}
+					expires
+					key
+					team {
+						slug
+					}
+				}
 			}
 		}
-	`);*/
+	`);
 
-	//let deleteKeyLoading = false;
-	//let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
+	let deleteKeyLoading = false;
+	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
 
 	$: ({ TeamSettings, viewerIsOwner } = data);
 
@@ -112,13 +129,15 @@
 		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
 	};
 
-	/*const synchronizeTeam = graphql(`
-		mutation SynchronizeTeam($slug: Slug!) {
-			synchronizeTeam(slug: $slug) {
-				correlationID
+	const synchronizeTeam = graphql(`
+		mutation SynchronizeTeam($input: SynchronizeTeamInput!) {
+			synchronizeTeam(input: $input) {
+				team {
+					slug
+				}
 			}
 		}
-	`);*/
+	`);
 
 	let synchronizeClicked = false;
 	let rotateClicked = false;
@@ -229,20 +248,19 @@
 		<Card columns={6}>
 			<h3 class="with_button">
 				Managed resources
-				<!--Button
+				<Button
 					size="xsmall"
 					variant="secondary"
 					loading={$synchronizeTeam.fetching}
 					on:click={async () => {
 						synchronizeClicked = false;
-						await synchronizeTeam.mutate({ slug: team });
+						await synchronizeTeam.mutate({ input: { slug: team } });
 						synchronizeClicked = true;
 					}}
 				>
 					Synchronize team
-				</Button-->
+				</Button>
 			</h3>
-			<!--
 			{#if $synchronizeTeam.errors}
 				<GraphErrors errors={$synchronizeTeam.errors} dismissable={true} />
 			{:else if synchronizeClicked}
@@ -254,7 +272,7 @@
 						</Button>
 					</Alert>
 				</div>
-			{/if}-->
+			{/if}
 
 			<h4>Global</h4>
 			<dl>
@@ -437,7 +455,7 @@
 				>
 			</Card>
 			{#if browser}
-				<!--Modal bind:open={showDeleteTeam}>
+				<Modal bind:open={showDeleteTeam}>
 					<h3 slot="header">Request team deletion</h3>
 
 					{#if !deleteKeyResp?.data}
@@ -451,7 +469,9 @@
 						<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
 					{:else if deleteKeyResp?.data}
 						{@const key =
-							window.location + '/confirm_delete?key=' + deleteKeyResp.data.requestTeamDeletion.key}
+							window.location +
+							'/confirm_delete?key=' +
+							deleteKeyResp.data.requestTeamDeletion.key?.key}
 						<Alert>
 							Deletion of <strong>{team}</strong> has been requested. To finalize the deletion send
 							this link to another team owner and let them confirm the deletion.
@@ -476,7 +496,7 @@
 								loading={deleteKeyLoading}
 								on:click={async () => {
 									deleteKeyLoading = true;
-									//deleteKeyResp = await getTeamDeleteKey.mutate({ slug: team });
+									deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: team } });
 									deleteKeyLoading = false;
 								}}>Confirm</Button
 							>
@@ -496,7 +516,7 @@
 							>
 						{/if}
 					</svelte:fragment>
-				</Modal-->
+				</Modal>
 			{/if}
 		{/if}
 	</div>
@@ -518,10 +538,10 @@
 		font-family: monospace;
 		font-size: 1rem;
 	}
-	.deployKey {
+	/*.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
-	}
+	}*/
 	h3 {
 		margin-bottom: 0.5rem;
 	}
@@ -531,14 +551,14 @@
 	i {
 		margin-bottom: 0.5rem;
 	}
-	.buttons {
+	/*.buttons {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
 	}
 	.button {
 		width: 130px;
-	}
+	}*/
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

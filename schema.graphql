@@ -13,7 +13,7 @@ input AddRepositoryToTeamInput {
 
 type AddRepositoryToTeamPayload {
   """Repository that was added to the team."""
-  repository: Repository!
+  repository: Repository
 }
 
 input AddTeamMemberInput {
@@ -29,7 +29,7 @@ input AddTeamMemberInput {
 
 type AddTeamMemberPayload {
   """The added team member."""
-  member: TeamMember!
+  member: TeamMember
 }
 
 """TODO: write"""
@@ -372,7 +372,7 @@ input ConfirmTeamDeletionInput {
 
 type ConfirmTeamDeletionPayload {
   """Whether or not the asynchronous deletion process was started."""
-  deletionStarted: Boolean!
+  deletionStarted: Boolean
 }
 
 type ContainerImage implements Node {
@@ -1436,7 +1436,7 @@ input RemoveRepositoryFromTeamInput {
 
 type RemoveRepositoryFromTeamPayload {
   """Whether or not the repository was removed from the team."""
-  success: Boolean!
+  success: Boolean
 }
 
 input RemoveTeamMemberInput {
@@ -1449,10 +1449,10 @@ input RemoveTeamMemberInput {
 
 type RemoveTeamMemberPayload {
   """The team that the member was removed from."""
-  team: Team!
+  team: Team
 
   """The user that was removed from the team."""
-  user: User!
+  user: User
 }
 
 type Repository implements Node {
@@ -1494,7 +1494,7 @@ type RequestTeamDeletionPayload {
   """
   The delete key for the team. This can be used to confirm the deletion of the team.
   """
-  key: TeamDeleteKey!
+  key: TeamDeleteKey
 }
 
 union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
@@ -1571,7 +1571,7 @@ input SetTeamMemberRoleInput {
 
 type SetTeamMemberRolePayload {
   """The updated team member."""
-  member: TeamMember!
+  member: TeamMember
 }
 
 """
