@@ -274,7 +274,7 @@
 				/>
 				{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
-				{:else if showHelpText || unsupportedFilter}>
+				{:else if showHelpText || unsupportedFilter}
 					<ul class="helpText">
 						<li>
 							<div class="typeIcon">

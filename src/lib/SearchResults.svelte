@@ -1,7 +1,5 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
-	import { PendingValue } from '$houdini';
-	import { Skeleton } from '@nais/ds-svelte-community';
 	import { BucketIcon, DatabaseIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 	import BigQuery from './icons/BigQuery.svelte';
@@ -29,16 +27,11 @@
 		</li>
 	{/if}
 	{#each data.search.nodes as node, i}
-		{#if node.__typename === PendingValue}
-			<li>
-				<Skeleton variant="rounded" width="350px" height="2.5rem" />
-			</li>
-		{/if}
-		{#if node.__typename === 'App'}
+		{#if node.__typename === 'Application'}
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/app/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/app/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -51,17 +44,17 @@
 						</div>
 
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug}
 						</div>
 					</div>
 				</a>
 			</li>
-		{:else if node.__typename === 'NaisJob'}
+		{:else if node.__typename === 'Job'}
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/job/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/job/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -74,7 +67,7 @@
 						</div>
 
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug}
 						</div>
 					</div>
@@ -98,7 +91,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/postgres/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/postgres/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -110,7 +103,7 @@
 							{node.name}
 						</div>
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
@@ -120,7 +113,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/bucket/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/bucket/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -132,7 +125,7 @@
 							{node.name}
 						</div>
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
@@ -142,7 +135,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/opensearch/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/opensearch/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -154,17 +147,17 @@
 							{node.name}
 						</div>
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
 				</a>
 			</li>
-		{:else if node.__typename === 'Redis'}
+		{:else if node.__typename === 'RedisInstance'}
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/redis/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/redis/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -176,7 +169,7 @@
 							{node.name}
 						</div>
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
@@ -186,7 +179,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/kafka/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/kafka/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -198,7 +191,7 @@
 							{node.name}
 						</div>
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
@@ -208,7 +201,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.env.name}/bigquery/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/bigquery/{node.name}"
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
@@ -220,7 +213,7 @@
 							{node.name}
 						</div>
 						<div class="searchInfo">
-							{node.env.name} /
+							{node.environment.name} /
 							{node.team.slug} - {node.__typename}
 						</div>
 					</div>
