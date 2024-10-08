@@ -32,7 +32,7 @@
 				valueFormatter: (value: number) =>
 					value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 			},
-			xAxis: <EChartsOption['xAxis']>{
+			xAxis: {
 				type: 'category',
 				boundaryGap: false,
 				data: dates.map((date) => {
