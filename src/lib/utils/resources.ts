@@ -257,7 +257,6 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 		});
 }
 
-/*
 export function cpuUtilization(cpuRequest: number | undefined, totalUsage: number): number {
 	if (!cpuRequest) return 0;
 	const totalCores = cpuRequest;
@@ -269,7 +268,7 @@ export function memoryUtilization(memory: number, totalUsage: number): number {
 	const utilization = (totalUsage / memory) * 100;
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
-
+/*
 export function sumCPURequests(numOfInstances: number, cpuRequest: string): string {
 	if (cpuRequest.includes('m')) {
 		const cpuRequestInMilliCPU = parseInt(cpuRequest.replace('m', ''));

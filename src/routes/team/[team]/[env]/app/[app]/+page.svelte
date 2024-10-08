@@ -1,27 +1,15 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Confirm from '$lib/components/Confirm.svelte';
-	import Cost from '$lib/components/Cost.svelte';
-	import { Alert, Button } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import Authentications from './Authentications.svelte';
 	import Image from './Image.svelte';
-	import Instances from './Instances.svelte';
-	import Persistence from './Persistence.svelte';
-	import Scaling from './Scaling.svelte';
-	import Secrets from './Secrets.svelte';
-	import Status from './Status.svelte';
-	import Traffic from './Traffic.svelte';
 	import Utilization from './Utilization.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
+	$: console.log($App.data);
 
-	const restartAppMutation = () =>
+	/*const restartAppMutation = () =>
 		graphql(`
 			mutation RestartApp($team: Slug!, $env: String!, $app: String!) {
 				restartApp(team: $team, env: $env, name: $app) {
@@ -32,36 +20,43 @@
 	let restartApp = restartAppMutation();
 	onNavigate(() => {
 		restartApp = restartAppMutation();
-	});
+	});*/
 
-	$: app = $page.params.app;
-	$: env = $page.params.env;
+	$: application = $page.params.app;
+	$: environment = $page.params.env;
 	$: team = $page.params.team;
-	let restart = false;
 
-	const submit = () => {
+	console.log(application, environment, team);
+	//let restart = false;
+
+	/*const submit = () => {
 		restartApp.mutate({
 			app,
 			env,
 			team
 		});
-	};
+	};*/
 </script>
 
 {#if $App.data}
+	{@const app = $App.data.team.environment.application}
 	<div class="grid">
-		<Status app={$App.data.app} />
+		<Card>
+			<!--Status app={$App.data.app} /-->
+			TODO: Status
+		</Card>
 
 		<Card columns={4}>
-			<Image app={$App.data.app} />
+			<Image workload={app} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<Cost {app} {env} {team} />
+			<!--Cost {app} {env} {team} /-->
+			TODO: Cost
 		</Card>
 		<Card columns={12}>
 			<div class="heading">
 				<h4>Instances</h4>
-				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+				<!--{#if app.viewerIsMember || app.viewerIsOwner}
 					<Button
 						variant="secondary"
 						size="small"
@@ -72,9 +67,9 @@
 						<svelte:fragment slot="icon-left"><ArrowCirclepathIcon /></svelte:fragment>
 						Restart
 					</Button>
-				{/if}
+				{/if}-->
 			</div>
-			{#if $restartApp.data}
+			<!--{#if $restartApp.data}
 				<div class="marginbox">
 					{#if !$restartApp.data.restartApp.error}
 						<Alert size="small" variant="success">All instances restarting</Alert>
@@ -82,40 +77,46 @@
 						<Alert size="small" variant="error">{$restartApp.data.restartApp.error}</Alert>
 					{/if}
 				</div>
-			{/if}
+			{/if}-->
 			<div class="utilAndScaling">
-				<Utilization app={$App.data.app} />
+				<Utilization {app} />
 
-				<Scaling app={$App.data.app} />
+				<!--Scaling app={$App.data.app} /-->
+				TODO: Scaling
 			</div>
 
-			<Instances app={$App.data.app} />
+			<!--Instances app={$App.data.app} /-->
+			TODO: Instances
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<Traffic app={$App.data.app} />
+			<!--Traffic app={$App.data.app} /-->
+			TODO: Traffic
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<Persistence persistence={$App.data.app.persistence} />
+			<!--Persistence persistence={$App.data.app.persistence} /-->
+			TODO: Persistence
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
-			<Authentications app={$App.data.app} />
+			<!--Authentications app={$App.data.app} /-->
+			TODO: Authentications
 		</Card>
 		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
 			<Card columns={4}>
 				<h4>Secrets</h4>
-				<Secrets />
+				<!--Secrets /-->
+				TODO: Secrets
 			</Card>
 		{/if}
 	</div>
-	<Confirm bind:open={restart} on:confirm={submit}>
+	<!--Confirm bind:open={restart} on:confirm={submit}>
 		<h3 slot="header">Restart {app}</h3>
 		This will restart all instances of<strong>{app}</strong> in <strong>{env}</strong>.
 		<br />
 		Are you sure?
-	</Confirm>
+	</Confirm-->
 {/if}
 
 <style>
@@ -134,9 +135,9 @@
 		display: flex;
 		justify-content: space-between;
 	}
-	.marginbox {
+	/*.marginbox {
 		margin: 0.5rem 0;
-	}
+	}*/
 	.utilAndScaling {
 		display: flex;
 		gap: 1rem;

@@ -1,41 +1,41 @@
 <script lang="ts">
-	import type { Utilization } from '$houdini';
-	import { fragment, graphql, PendingValue } from '$houdini';
+	import type { AppUtilization } from '$houdini';
+	import { fragment, graphql } from '$houdini';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
 	import prettyBytes from 'pretty-bytes';
 
-	export let app: Utilization;
+	export let app: AppUtilization;
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment Utilization on App {
-				utilization @loading {
-					cpuUsage: used(resourceType: CPU)
+			fragment AppUtilization on Application {
+				utilization {
+					cpuUsage: current(resourceType: CPU)
 					cpuRequests: requested(resourceType: CPU)
-					memoryUsage: used(resourceType: MEMORY)
+					memoryUsage: current(resourceType: MEMORY)
 					memoryRequests: requested(resourceType: MEMORY)
 				}
 			}
 		`)
 	);
+	console.log(data);
 </script>
 
 <div class="wrapper">
 	<h5>Utilization</h5>
-	{#if $data.utilization !== PendingValue}
+	{#if $data.utilization}
 		{@const cpu = $data.utilization.cpuRequests}
 		{@const mem = $data.utilization.memoryRequests}
 		{@const cpuUsage = $data.utilization.cpuUsage}
 		{@const memUsage = $data.utilization.memoryUsage}
 		{@const cpuUtil = cpuUtilization(cpu, cpuUsage)}
 		{@const memUtil = memoryUtilization(mem, memUsage)}
-
 		<CpuIcon />
-		{cpuUtil}% of {cpu}CPUs<br />
+		{cpuUtil}% of {$data.utilization.cpuRequests}CPUs<br />
 		<MemoryIcon />
-		{memUtil}% of {prettyBytes(mem)} of memory
+		{memUtil}% of {prettyBytes($data.utilization.memoryRequests)} of memory
 	{/if}
 </div>
 
