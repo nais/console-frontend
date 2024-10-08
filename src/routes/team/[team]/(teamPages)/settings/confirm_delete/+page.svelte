@@ -23,7 +23,7 @@
 		null;
 
 	const deleteTeam = graphql(`
-		mutation ConfirmTeamDeletion($key: UUID!, $team: Slug!) {
+		mutation ConfirmTeamDeletion($key: String!, $team: Slug!) {
 			confirmTeamDeletion(input: { key: $key, slug: $team }) {
 				deletionStarted
 			}

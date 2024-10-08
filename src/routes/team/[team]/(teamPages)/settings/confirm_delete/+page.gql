@@ -1,4 +1,4 @@
-query TeamDeleteKey($team: Slug!, $key: UUID!) {
+query TeamDeleteKey($team: Slug!, $key: String!) {
 	team(slug: $team) {
 		deleteKey(key: $key) {
 			team {
