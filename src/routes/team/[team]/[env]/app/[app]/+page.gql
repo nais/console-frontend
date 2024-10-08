@@ -5,6 +5,7 @@ query App($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				name
 				...WorkloadImage
 				...AppUtilization
+				...Scaling
 			}
 		}
 		viewerIsMember

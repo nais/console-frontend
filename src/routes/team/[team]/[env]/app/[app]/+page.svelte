@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import type { PageData } from './$houdini';
 	import Image from './Image.svelte';
+	import Scaling from './Scaling.svelte';
 	import Utilization from './Utilization.svelte';
 
 	export let data: PageData;
@@ -81,8 +82,7 @@
 			<div class="utilAndScaling">
 				<Utilization {app} />
 
-				<!--Scaling app={$App.data.app} /-->
-				TODO: Scaling
+				<Scaling {app} />
 			</div>
 
 			<!--Instances app={$App.data.app} /-->

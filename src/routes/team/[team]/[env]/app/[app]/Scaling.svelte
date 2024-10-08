@@ -1,25 +1,24 @@
 <script lang="ts">
 	import type { Scaling } from '$houdini';
-	import { PendingValue, fragment, graphql } from '$houdini';
-	import { Skeleton } from '@nais/ds-svelte-community';
+	import { fragment, graphql } from '$houdini';
 
 	export let app: Scaling;
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment Scaling on App {
-				resources @loading {
+			fragment Scaling on Application {
+				resources {
 					scaling {
-						max
-						min
+						maxInstances
+						minInstances
 						strategies {
-							threshold
 							... on CPUScalingStrategy {
 								threshold
 							}
 							... on KafkaLagScalingStrategy {
 								consumerGroup
-								topic
+								threshold
+								topicName
 							}
 						}
 					}
@@ -42,13 +41,13 @@
 </script>
 
 <div class="wrapper">
-	{#if $data.resources && $data.resources !== PendingValue}
+	{#if $data.resources}
 		{@const resources = $data.resources}
-		{#if resources.scaling.min !== resources.scaling.max}
+		{#if resources.scaling.minInstances !== resources.scaling.maxInstances}
 			<h5>Scaling configuration</h5>
 			<div class="resources">
 				<div class="replicas">
-					{resources.scaling.min} - {resources.scaling.max} instances based on
+					{resources.scaling.minInstances} - {resources.scaling.maxInstances} instances based on
 					{#if resources.scaling.strategies && resources.scaling.strategies.length > 0}
 						{#each resources.scaling.strategies as strategy, i}
 							{#if i > 0}
@@ -66,8 +65,6 @@
 				</div>
 			</div>
 		{/if}
-	{:else}
-		<Skeleton variant="text" width="100px" />
 	{/if}
 </div>
 

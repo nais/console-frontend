@@ -33,7 +33,9 @@
 		{@const cpuUtil = cpuUtilization(cpu, cpuUsage)}
 		{@const memUtil = memoryUtilization(mem, memUsage)}
 		<CpuIcon />
-		{cpuUtil}% of {$data.utilization.cpuRequests}CPUs<br />
+		{cpuUtil}% of {$data.utilization.cpuRequests.toLocaleString('en-GB', {
+			maximumFractionDigits: 2
+		})}CPUs<br />
 		<MemoryIcon />
 		{memUtil}% of {prettyBytes($data.utilization.memoryRequests)} of memory
 	{/if}
