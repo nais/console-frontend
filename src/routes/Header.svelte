@@ -1,33 +1,36 @@
 <script lang="ts">
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
+	import { graphql, SearchType } from '$houdini';
 	import { logEvent } from '$lib/amplitude';
 	import { docURL } from '$lib/doc';
+	import SearchResults from '$lib/SearchResults.svelte';
 	import { Search } from '@nais/ds-svelte-community';
+	import { InformationSquareIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
-	/*const store = graphql(`
-		query SearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
-			search(limit: 10, query: $query, filter: { type: $type }) {
-				nodes @loading(count: 10) {
+	const store = graphql(`
+		query SearchQuery($query: String!, $type: SearchType) {
+			search(first: 20, filter: { query: $query, type: $type }) {
+				nodes {
 					__typename
-					... on App {
+					... on Application {
 						name
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
 					... on Team {
 						slug
 					}
-					... on NaisJob {
+					... on Job {
 						name
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
@@ -36,16 +39,16 @@
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
-					... on Redis {
+					... on RedisInstance {
 						name
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
@@ -54,7 +57,7 @@
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
@@ -63,7 +66,7 @@
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
@@ -72,7 +75,7 @@
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
@@ -81,14 +84,14 @@
 						team {
 							slug
 						}
-						env {
+						environment {
 							name
 						}
 					}
 				}
 			}
 		}
-	`);*/
+	`);
 
 	export let user:
 		| {
@@ -98,13 +101,13 @@
 		| undefined;
 
 	let query = '';
-	/*let selected = -1;
+	let selected = -1;
 	let showSearch = false;
 	let showHelpText = false;
 	let unsupportedFilter = false;
-	let timeout: ReturnType<typeof setTimeout> | null = null;*/
+	let timeout: ReturnType<typeof setTimeout> | null = null;
 
-	/*$: {
+	$: {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -113,30 +116,38 @@
 			showSearch = true;
 			timeout = setTimeout(() => {
 				if (query.startsWith('app:')) {
-					store.fetch({ variables: { query: query.slice(4).trim(), type: SearchType.APP } });
+					store.fetch({
+						variables: { query: query.slice(4).trim(), type: SearchType.APPLICATION }
+					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('team:')) {
 					store.fetch({ variables: { query: query.slice(5).trim(), type: SearchType.TEAM } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('job:')) {
-					store.fetch({ variables: { query: query.slice(4).trim(), type: SearchType.NAISJOB } });
+					store.fetch({ variables: { query: query.slice(4).trim(), type: SearchType.JOB } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('sql:')) {
 					store.fetch({
-						variables: { query: query.slice(4).trim(), type: SearchType.SQLINSTANCE }
+						variables: { query: query.slice(4).trim(), type: SearchType.SQL_INSTANCE }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('redis:')) {
-					store.fetch({ variables: { query: query.slice(6).trim(), type: SearchType.REDIS } });
+					store.fetch({
+						variables: { query: query.slice(6).trim(), type: SearchType.REDIS_INSTANCE }
+					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('bq:')) {
-					store.fetch({ variables: { query: query.slice(3).trim(), type: SearchType.BIGQUERY } });
+					store.fetch({
+						variables: { query: query.slice(3).trim(), type: SearchType.BIGQUERY_DATASET }
+					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('bucket:')) {
 					store.fetch({ variables: { query: query.slice(7).trim(), type: SearchType.BUCKET } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('kafka:')) {
-					store.fetch({ variables: { query: query.slice(6).trim(), type: SearchType.KAFKATOPIC } });
+					store.fetch({
+						variables: { query: query.slice(6).trim(), type: SearchType.KAFKA_TOPIC }
+					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('os:')) {
 					store.fetch({ variables: { query: query.slice(3).trim(), type: SearchType.OPENSEARCH } });
@@ -150,11 +161,10 @@
 				logEvent('search');
 			}, 500);
 		}
-	}*/
+	}
 
 	function on_key_up(event: KeyboardEvent) {
-		console.log(event);
-		/*switch (event.key) {
+		switch (event.key) {
 			case 'ArrowDown':
 				selected += 1;
 				selected = Math.min(($store.data?.search.nodes.length || 0) - 1, Math.max(-1, selected));
@@ -172,42 +182,42 @@
 					if (!node) return;
 					query = '';
 					selected = -1;
-					if (node.__typename === 'App') {
+					if (node.__typename === 'Application') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/app/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/app/${node.name}`);
 					} else if (node.__typename === 'Team') {
 						query = '';
 						showSearch = false;
 						goto(`/team/${node.slug}`);
-					} else if (node.__typename === 'NaisJob') {
+					} else if (node.__typename === 'Job') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/job/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/job/${node.name}`);
 					} else if (node.__typename === 'SqlInstance') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/postgres/${node.name}`);
-					} else if (node.__typename === 'Redis') {
+						goto(`/team/${node.team.slug}/${node.environment.name}/postgres/${node.name}`);
+					} else if (node.__typename === 'RedisInstance') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/redis/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/redis/${node.name}`);
 					} else if (node.__typename === 'OpenSearch') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/opensearch/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/opensearch/${node.name}`);
 					} else if (node.__typename === 'KafkaTopic') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/kafka/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/kafka/${node.name}`);
 					} else if (node.__typename === 'BigQueryDataset') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/bigquery/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/bigquery/${node.name}`);
 					} else if (node.__typename === 'Bucket') {
 						query = '';
 						showSearch = false;
-						goto(`/team/${node.team.slug}/${node.env.name}/bucket/${node.name}`);
+						goto(`/team/${node.team.slug}/${node.environment.name}/bucket/${node.name}`);
 					}
 				}
 				break;
@@ -216,8 +226,7 @@
 				showSearch = false;
 				query = '';
 				break;
-		}*/
-		console.log('on_key_up');
+		}
 	}
 
 	afterNavigate((nav) => {
@@ -234,7 +243,7 @@
 		<div class="header-left">
 			<a href="/" class="logo">
 				<Logo height="2rem" />
-				Console
+				cheer-up-a-tron
 			</a>
 			<div class="search">
 				<Search
@@ -245,47 +254,47 @@
 					size="small"
 					on:blur={() => {
 						setTimeout(() => {
-							/*showSearch = false;
-							showHelpText = false;*/
+							showSearch = false;
+							showHelpText = false;
 						}, 200);
 					}}
 					on:clear={() => {
 						query = '';
-						/*showSearch = false;
-						showHelpText = false;*/
+						showSearch = false;
+						showHelpText = false;
 					}}
 					on:focus={() => {
 						if (query.length > 0) {
-							/*showSearch = true;*/
+							showSearch = true;
 						} else {
-							/*showHelpText = true;*/
+							showHelpText = true;
 						}
 					}}
 					on:keyup={on_key_up}
 				/>
-				<!--{#if $store.data && showSearch && !unsupportedFilter}
+				{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
 				{:else if showHelpText || unsupportedFilter}>
-				<ul class="helpText">
-					<li>
-						<div class="typeIcon">
-							<InformationSquareIcon height="1.5rem" />
-						</div>
-						<div>
-							You can filter your searches with prefixes. Try one of the following:<br />
-							<code>app:myApp</code><br />
-							<code>job:myJob</code><br />
-							<code>team:myTeam</code><br />
-							<code>sql:mySqlinstance</code>
-							<code>redis:myRedisinstance</code>
-							<code>os:myOpenSearchInstance</code>
-							<code>kafka:myKafkaTopic</code>
-							<code>bq:myBigQueryDataSet</code>
-							<code>bucket:myBucket</code>
-						</div>
-					</li>
-				</ul>
-				{/if}-->
+					<ul class="helpText">
+						<li>
+							<div class="typeIcon">
+								<InformationSquareIcon height="1.5rem" />
+							</div>
+							<div>
+								You can filter your searches with prefixes. Try one of the following:<br />
+								<code>app:myApp</code><br />
+								<code>job:myJob</code><br />
+								<code>team:myTeam</code><br />
+								<code>sql:mySqlinstance</code>
+								<code>redis:myRedisinstance</code>
+								<code>os:myOpenSearchInstance</code>
+								<code>kafka:myKafkaTopic</code>
+								<code>bq:myBigQueryDataSet</code>
+								<code>bucket:myBucket</code>
+							</div>
+						</li>
+					</ul>
+				{/if}
 			</div>
 		</div>
 		<div class="right">

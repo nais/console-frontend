@@ -3,7 +3,7 @@ query UserInfo {
 		... on User {
 			id
 			name
-			#isAdmin
+			#isAdmin - TODO
 		}
 	}
 }
