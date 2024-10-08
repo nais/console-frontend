@@ -56,9 +56,7 @@
 	};
 
 	const handleSubmit = () => {
-		console.log(`Adding repository: ${repoName}`);
 		if (validateRepo(repoName)) {
-			console.log(`Valid GitHub repository: ${repoName}`);
 			addRepository(teamName, repoName);
 			inputError = false;
 			repoName = '';

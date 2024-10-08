@@ -89,7 +89,6 @@
 										variant="secondary"
 										disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
 										on:click={async () => {
-											console.log('Next page');
 											return await UserTeams.loadNextPage();
 										}}
 									>

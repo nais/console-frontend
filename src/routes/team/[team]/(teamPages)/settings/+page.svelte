@@ -216,7 +216,6 @@
 								text={env.slackAlertsChannel}
 								variant="textfield"
 								on:save={async (e) => {
-									console.log(e);
 									slackChannelsError = false;
 									if (!teamSettings) {
 										return;
