@@ -36,8 +36,6 @@
 			return 'Unknown';
 		}
 	};
-
-	$: console.log($data.resources);
 </script>
 
 <div class="wrapper">

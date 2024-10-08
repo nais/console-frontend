@@ -20,7 +20,6 @@
 			}
 		`)
 	);
-	console.log(data);
 </script>
 
 <div class="wrapper">
