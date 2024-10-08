@@ -24,7 +24,7 @@
 	function options(data: resourceUsage, request: number, color: string = '#000000'): EChartsOption {
 		const dates = data?.map((d) => d.timestamp) || [];
 		return {
-			tooltip: <EChartsOption['tooltip']>{
+			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
 					type: 'line'
@@ -45,7 +45,7 @@
 					});
 				})
 			},
-			series: <EChartsOption['series']>[
+			series: [
 				{
 					name: 'Usage',
 					type: 'line',
@@ -61,7 +61,7 @@
 				}
 			],
 
-			yAxis: <EChartsOption['yAxis']>{
+			yAxis: {
 				type: 'value',
 				name: 'Usage of requested resources',
 				axisLabel: {
@@ -69,7 +69,7 @@
 				},
 				scale: false
 			}
-		};
+		} as EChartsOption;
 	}
 </script>
 
