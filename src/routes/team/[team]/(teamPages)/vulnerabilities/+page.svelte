@@ -81,7 +81,6 @@
 	const isTooVulnerable = (
 		summary: TeamVulnerabilities$result['team']['vulnerabilitiesSummary']
 	) => {
-		console.log(summary.status);
 		return summary.status.some((s) => s.state === VulnerabilityState.TOO_MANY_VULNERABLE_WORKLOADS);
 	};
 </script>
