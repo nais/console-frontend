@@ -1,0 +1,86 @@
+query AuditEvents($team: Slug!) {
+	team(slug: $team) {
+		slug
+		auditEntries(first: 10) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageEnd
+				pageStart
+				totalCount
+			}
+			edges {
+				node {
+					__typename
+					actor
+					createdAt
+					environmentName
+					message
+					resourceName
+					resourceType
+
+					#... on TeamConfirmDeleteKeyAuditEntry{}
+					#... on TeamCreateDeleteKeyAuditEntry{}
+					#... on TeamCreatedAuditEntry{}
+					... on TeamEnvironmentUpdatedAuditEntry {
+						teamEnvironmentUpdated: data {
+							environmentName
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
+					... on TeamMemberAddedAuditEntry {
+						teamMemberAdded: data {
+							role
+							user {
+								email
+								externalID
+								id
+								name
+							}
+							userEmail
+							userID
+						}
+					}
+					... on TeamMemberRemovedAuditEntry {
+						teamMemberRemoved: data {
+							user {
+								email
+								externalID
+								id
+								name
+							}
+							userEmail
+							userID
+						}
+					}
+					... on TeamMemberSetRoleAuditEntry {
+						teamMemberSetRole: data {
+							role
+							user {
+								email
+								externalID
+								id
+								name
+							}
+							userEmail
+							userID
+						}
+					}
+					... on TeamUpdatedAuditEntry {
+						teamUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

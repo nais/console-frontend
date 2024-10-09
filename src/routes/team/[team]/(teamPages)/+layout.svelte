@@ -19,7 +19,8 @@
 		LineGraphStackedIcon,
 		PersonGroupIcon,
 		QuietZoneIcon,
-		SandboxIcon
+		SandboxIcon,
+		ShieldLockIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	import type { LayoutData } from './$types';
@@ -161,6 +162,12 @@
 					withSubRoutes: true,
 					memberOnly: true,
 					icon: CogIcon
+				},
+				{
+					name: 'Audit',
+					routeId: '/team/[team]/(teamPages)/audit',
+					withSubRoutes: true,
+					icon: ShieldLockIcon
 				}
 			]
 		}

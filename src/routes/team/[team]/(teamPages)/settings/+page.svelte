@@ -8,7 +8,6 @@
 		type QueryResult
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
 	import { ChatExclamationmarkIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -425,10 +424,11 @@
 				>
 			</Modal>
 		{/if}
-
+		<!--
 		{#key teamSettings || synchronizeClicked || rotateClicked}
 			<ActivityLog columns={12} teamName={team} />
 		{/key}
+		-->
 
 		{#if viewerIsOwner}
 			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>

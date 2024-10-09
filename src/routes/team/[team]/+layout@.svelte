@@ -21,6 +21,7 @@
 		members: 'members',
 		repositories: 'repositories',
 		settings: 'settings',
+		audit: 'audit',
 		secrets: 'secrets',
 		postgres: 'postgres',
 		buckets: 'buckets',

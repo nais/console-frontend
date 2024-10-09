@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Card from '$lib/Card.svelte';
-	/*import ActivityLog from '$lib/components/ActivityLog.svelte';*/
 	import { UtilizationResourceType } from '$houdini/graphql';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
+	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -115,7 +113,7 @@
 		<!--Deploys {teamName} /-->
 	</Card>
 
-	<ActivityLog {teamName} columns={12} />
+	<!--ActivityLog {teamName} columns={12} /-->
 </div>
 
 <style>

@@ -3,7 +3,6 @@
 	import { page } from '$app/stores';
 	import { graphql, TeamMemberOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Alert,
@@ -207,9 +206,11 @@
 		{/if}
 	</Card>
 	{#if team}
+		<!--
 		{#key team}
 			<ActivityLog teamName={team.slug} style="margin-top: 1rem" />
 		{/key}
+		-->
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
 
 		{#if editUser && editUserOpen}

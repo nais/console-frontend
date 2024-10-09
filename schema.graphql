@@ -1016,7 +1016,7 @@ type Mutation {
   """Delete an application."""
   deleteApplication(input: DeleteApplicationInput!): DeleteApplicationPayload!
 
-  """Delete an job."""
+  """Delete a job."""
   deleteJob(input: DeleteJobInput!): DeleteJobPayload!
 
   """
@@ -1078,6 +1078,9 @@ type Mutation {
   asynchronous.
   """
   synchronizeTeam(input: SynchronizeTeamInput!): SynchronizeTeamPayload!
+
+  """Trigger a job"""
+  triggerJob(input: TriggerJobInput!): TriggerJobPayload!
 
   """
   Update an existing NAIS team
@@ -2671,6 +2674,28 @@ scalar Time
 type TokenXAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
+}
+
+input TriggerJobInput {
+  """Name of the environment where the job runs."""
+  environmentName: String!
+
+  """Name of the job."""
+  name: String!
+
+  """Name of the new run. Must be unique within the team."""
+  runName: String!
+
+  """Slug of the team that owns the job."""
+  teamSlug: Slug!
+}
+
+type TriggerJobPayload {
+  """The job that was triggered."""
+  job: Job
+
+  """The new job run."""
+  jobRun: JobRun
 }
 
 input UpdateTeamEnvironmentInput {
