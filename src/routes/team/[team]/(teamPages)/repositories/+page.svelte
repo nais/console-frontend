@@ -65,7 +65,41 @@
 		}
 	};
 
+	let filter = '';
+
+	const handleFilter = () => {
+		if (filter === '') {
+			$page.url.searchParams.delete('filter');
+		} else {
+			$page.url.searchParams.set('filter', filter);
+		}
+		history.replaceState({}, '', $page.url.toString());
+		Repositories.fetch({ variables: { filter: { name: filter } } });
+	};
+
+	let searchTimeout: ReturnType<typeof setTimeout> = null;
+
+	const onKeyUp = (e: KeyboardEvent) => {
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+		}
+
+		if (e.key === 'Enter') {
+			handleFilter();
+			return;
+		} else if (e.key === 'Escape') {
+			filter = '';
+			handleFilter();
+			return;
+		}
+
+		searchTimeout = setTimeout(() => {
+			handleFilter();
+		}, 1000);
+	};
+
 	let repoName = '';
+
 	let inputError = false;
 	const errorMessage = `Invalid input`;
 </script>
@@ -108,6 +142,20 @@
 		{/if}
 		<Card>
 			<h3>Repositories</h3>
+
+			<form class="input">
+				<TextField
+					size="small"
+					type="text"
+					id="filter"
+					style="width: 300px;"
+					bind:value={filter}
+					on:keyup={onKeyUp}
+				>
+					<svelte:fragment slot="label">Filter repositories</svelte:fragment>
+				</TextField>
+			</form>
+
 			<Table size="small" zebraStripes>
 				<Thead>
 					<Th>Name</Th>
