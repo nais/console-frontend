@@ -8,6 +8,7 @@
 		type QueryResult
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
 	import { ChatExclamationmarkIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -33,26 +34,20 @@
 				team {
 					purpose
 					slackChannel
-					environments {
-						slackAlertsChannel
-					}
 				}
 			}
 		}
 	`);
 
-	/*const updateTeamSlackAlertsChannel = graphql(`
-		mutation UpdateTeamSlackAlertsChannel(
-			$slug: Slug!
-			$input: UpdateTeamSlackAlertsChannelInput!
-		) {
-			updateTeamSlackAlertsChannel(slug: $slug, input: $input) {
-				environments {
+	const updateTeamSlackAlertsChannel = graphql(`
+		mutation UpdateTeamSlackAlertsChannel($input: UpdateTeamEnvironmentInput!) {
+			updateTeamEnvironment(input: $input) {
+				environment {
 					slackAlertsChannel
 				}
 			}
 		}
-	`);*/
+	`);
 
 	/*const hookdResponse = graphql(`
 		query HookdDeployKey($team: Slug!) @load {
@@ -98,9 +93,9 @@
 	let showRotateKey = false;
 	let showDeleteTeam = false;
 
-	let descriptionError = false;
-	let defaultSlackChannelError = false;
-	let slackChannelsError = false;
+	let descriptionErrors: { message: string }[] | null;
+	let defaultSlackChannelErrors: { message: string }[] | null;
+	let slackChannelsErrors: { message: string }[] | null;
 
 	const hasGlobalAttributes = (obj: {
 		readonly azureGroupID: string | null;
@@ -158,7 +153,7 @@
 				<EditText
 					text={teamSettings.purpose}
 					on:save={async (e) => {
-						descriptionError = false;
+						descriptionErrors = null;
 						const data = await updateTeam.mutate({
 							input: {
 								slug: team,
@@ -167,15 +162,17 @@
 						});
 
 						if (data.errors) {
-							descriptionError = true;
+							descriptionErrors = data.errors;
 						}
 					}}
 				/>
 			</i>
 
-			{#if descriptionError}
+			{#if descriptionErrors}
 				<Alert variant="error" size="small">
-					Error updating description. Please try again later.
+					{#each descriptionErrors as error}
+						{error.message}<br />
+					{/each}
 				</Alert>
 			{/if}
 			<h4><ChatExclamationmarkIcon /> Slack channels</h4>
@@ -186,7 +183,7 @@
 						text={teamSettings.slackChannel}
 						variant="textfield"
 						on:save={async (e) => {
-							defaultSlackChannelError = false;
+							defaultSlackChannelErrors = null;
 							const data = await updateTeam.mutate({
 								input: {
 									slug: team,
@@ -195,14 +192,16 @@
 							});
 
 							if (data.errors) {
-								defaultSlackChannelError = true;
+								defaultSlackChannelErrors = data.errors;
 							}
 						}}
 					/>
 				</p>
-				{#if defaultSlackChannelError}
+				{#if defaultSlackChannelErrors}
 					<Alert variant="error" size="small">
-						Error updating default slack-channel. Please try again later.
+						{#each defaultSlackChannelErrors as error}
+							{error.message}<br />
+						{/each}
 					</Alert>
 				{/if}
 			{/if}
@@ -216,30 +215,32 @@
 								text={env.slackAlertsChannel}
 								variant="textfield"
 								on:save={async (e) => {
-									slackChannelsError = false;
+									slackChannelsErrors = null;
 									if (!teamSettings) {
 										return;
 									}
 
-									/*const data = await updateTeamSlackAlertsChannel.mutate({
-										slug: team,
+									const data = await updateTeamSlackAlertsChannel.mutate({
 										input: {
-											environment: env.name,
-											channelName: e.detail
+											slug: team,
+											environmentName: env.name,
+											slackAlertsChannel: e.detail
 										}
 									});
 
 									if (data.errors) {
-										slackChannelsError = true;
-									}*/
+										slackChannelsErrors = data.errors;
+									}
 								}}
 							/>
 						</div>
 					{/each}
 				</p>
-				{#if slackChannelsError}
+				{#if slackChannelsErrors}
 					<Alert variant="error" size="small">
-						Error updating slack-channels. Please try again later.
+						{#each slackChannelsErrors as error}
+							{error.message}<br />
+						{/each}
 					</Alert>
 				{/if}
 			{/if}
@@ -426,7 +427,7 @@
 		{/if}
 
 		{#key teamSettings || synchronizeClicked || rotateClicked}
-			<!--ActivityLog columns={12} teamName={team} resourceType={AuditEventResourceType.TEAM} /-->
+			<ActivityLog columns={12} teamName={team} />
 		{/key}
 
 		{#if viewerIsOwner}
