@@ -4,6 +4,7 @@
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { TeamDeploysVariables } from './$houdini';
+	import { ArrowCirclepathIcon, SandboxIcon } from '@nais/ds-svelte-community/icons';
 
 	export let teamName: string;
 
@@ -54,14 +55,17 @@
 			<Th>Status</Th>
 		</Thead>
 		<Tbody>
-			{#each $store.data.team.deployments.nodes as { resources, env, created, statuses }}
+			{#each $store.data.team.deployments.nodes.slice(0, 10) as { resources, env, created, statuses }}
 				<Tr>
 					<Td
 						>{#each resources as resource}
-							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
+								<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
 								<a href="/team/{teamName}/{env}/app/{resource.name}/deploys">{resource.name}</a>
 							{:else if resource.kind === 'Naisjob'}
+								<span style="color:var(--a-gray-600)"
+									><ArrowCirclepathIcon {...$$restProps} />
+								</span>
 								<a href="/team/{teamName}/{env}/job/{resource.name}/deploys">{resource.name}</a>
 							{:else}
 								{resource.name}
@@ -73,7 +77,6 @@
 					<Td>
 						{env}
 					</Td>
-
 					<Td
 						>{#if statuses.length === 0}<DeploymentStatus
 								status={'unknown'}

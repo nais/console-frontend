@@ -8,8 +8,8 @@ import {
 import bytes from 'bytes-iec';
 
 export function round(value: number, decimals: number = 0): number {
-    const factor = Math.pow(10, decimals);
-    return Math.round(value * factor) / factor;
+	const factor = Math.pow(10, decimals);
+	return Math.round(value * factor) / factor;
 }
 
 // memory should be in Bytes
@@ -46,7 +46,7 @@ export type utilization = {
 }[];
 
 export function teamUtilization(data: utilization | undefined) {
-	if (data === undefined) return 0;
+	if (data === undefined || data?.length === 0) return 0;
 	let totalRequested = 0;
 	let totalUsed = 0;
 	data.forEach((d) => {
@@ -129,7 +129,9 @@ export function mergeCalculateAndSortOverageData(
 	return input.memUtil
 		.map((memItem) => {
 			// Find the corresponding CPU utilization item
-			const cpuItem = input.cpuUtil.find((cpu) => cpu.app.name === memItem.app.name && cpu.app.env.name === memItem.app.env.name);
+			const cpuItem = input.cpuUtil.find(
+				(cpu) => cpu.app.name === memItem.app.name && cpu.app.env.name === memItem.app.env.name
+			);
 
 			if (!cpuItem) {
 				throw new Error(`No corresponding CPU data found for ${memItem.app.name}`);

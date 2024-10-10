@@ -242,7 +242,10 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							{percentageFormatter(round((cpuUsage / cpuRequested) * 100),0)} of {round(cpuRequested,0)} cores
+							{percentageFormatter(round((cpuUsage / cpuRequested) * 100), 0)} of {round(
+								cpuRequested,
+								0
+							)} cores
 						{/if}
 					</p>
 				</div>
@@ -269,7 +272,7 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							{percentageFormatter(round((memoryUsage / memoryRequested) * 100),0)} of {bytes.format(
+							{percentageFormatter(round((memoryUsage / memoryRequested) * 100), 0)} of {bytes.format(
 								memoryRequested,
 								{ decimalPlaces: 2 }
 							)}
@@ -300,11 +303,10 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							€{round(yearlyOverageCost(
-								UsageResourceType.CPU,
-								cpuRequested,
-								cpuUsage / cpuRequested
-							),0)}
+							€{round(
+								yearlyOverageCost(UsageResourceType.CPU, cpuRequested, cpuUsage / cpuRequested),
+								0
+							)}
 						{/if}
 					</p>
 				</div>
@@ -332,11 +334,14 @@
 								(acc, { used }) => acc + used,
 								0
 							)}
-							€{round(yearlyOverageCost(
-								UsageResourceType.MEMORY,
-								memoryRequested,
-								memoryUsage / memoryRequested
-							),0)}
+							€{round(
+								yearlyOverageCost(
+									UsageResourceType.MEMORY,
+									memoryRequested,
+									memoryUsage / memoryRequested
+								),
+								0
+							)}
 						{/if}
 					</p>
 				</div>

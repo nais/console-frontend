@@ -16,7 +16,7 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { BranchingIcon } from '@nais/ds-svelte-community/icons';
+	import { BranchingIcon, SandboxIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 
@@ -58,7 +58,7 @@
 						<Tr>
 							<Td>
 								{#each node.resources as resource}
-									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
+									<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
 									{resource.name}
 									<br />
 								{/each}

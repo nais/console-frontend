@@ -55,6 +55,14 @@
 						isJob
 					}
 				}
+				... on MissingSbomError {
+					level
+				}
+				... on VulnerableError {
+					summary {
+						riskScore
+					}
+				}
 			}
 		`)
 	);
@@ -201,6 +209,30 @@
 					>Nais Application reference - accessPolicy</a
 				>.</Alert
 			>
+		</div>
+	{:else if $data.__typename === 'MissingSbomError'}
+		<div class="wrapper">
+			<Alert variant="warning">
+				<h4>Missing SBOM</h4>
+				The application does not have a registered Software Bill of Materials (SBOM). Refer to the
+				<a href="https://docs.nais.io/services/salsa/#slsa-in-nais">NAIS documentation</a>
+				for instructions on how to resolve this.
+			</Alert>
+		</div>
+	{:else if $data.__typename === 'VulnerableError'}
+		<div class="wrapper">
+			<Alert variant="warning">
+				<h4>Application is vulnerable</h4>
+				{#if data.summary?.riskScore > 100}
+					The application is considered vulnerable with a risk score of {$data.summary?.riskScore},
+					which exceeds the acceptable threshold of 100.
+				{:else}
+					The application is considered vulnerable because it has a critical vulnerability.
+				{/if}
+				The threshold is determined by either having more than one critical vulnerability or a combined
+				risk score of other severities exceeding 100. Please ensure that your application's dependencies
+				are kept up to date.
+			</Alert>
 		</div>
 	{:else}
 		<div class="wrapper">
