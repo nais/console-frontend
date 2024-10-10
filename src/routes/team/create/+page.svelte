@@ -5,8 +5,10 @@
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
+	import Feedback from '$lib/components/Feedback.svelte';
 
 	export let form: ActionData;
+	let feedbackOpen = false;
 	let saving = false;
 </script>
 
@@ -16,8 +18,7 @@
 			variant="secondary"
 			size="xsmall"
 			on:click={() => {
-				/*feedbackOpen = true;*/
-				console.log('Feedback');
+				feedbackOpen = true;
 			}}>Feedback</Button
 		>
 	</div>
@@ -75,6 +76,9 @@
 		</form>
 	</Card>
 </div>
+{#if feedbackOpen}
+	<Feedback bind:open={feedbackOpen} />
+{/if}
 
 <style>
 	.container {

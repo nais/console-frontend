@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { FeedbackType, graphql, type ValueOf } from '$houdini';
+	import { ConsoleUserFeedbackType, graphql, type ValueOf } from '$houdini';
 	import { logEvent } from '$lib/amplitude';
 	import { replacer } from '$lib/replacer';
 	import { Button, Checkbox, Heading, Modal, Select } from '@nais/ds-svelte-community';
@@ -8,7 +8,7 @@
 
 	export let open: boolean;
 
-	let type: ValueOf<typeof FeedbackType> | '' = '';
+	let type: ValueOf<typeof ConsoleUserFeedbackType> | '' = '';
 	let details = '';
 	let anonymous: boolean = false;
 	let uri = '';
@@ -27,10 +27,10 @@
 
 	const FEEDBACK_TYPE = [
 		{ value: '', text: 'Choose type of feedback' },
-		{ value: FeedbackType.BUG, text: 'Bug' },
-		{ value: FeedbackType.CHANGE_REQUEST, text: 'Change request' },
-		{ value: FeedbackType.QUESTION, text: 'Question' },
-		{ value: FeedbackType.OTHER, text: 'Other' }
+		{ value: ConsoleUserFeedbackType.BUG, text: 'Bug' },
+		{ value: ConsoleUserFeedbackType.CHANGE_REQUEST, text: 'Change request' },
+		{ value: ConsoleUserFeedbackType.QUESTION, text: 'Question' },
+		{ value: ConsoleUserFeedbackType.OTHER, text: 'Other' }
 	];
 
 	const submitFeedback = async () => {
@@ -38,7 +38,6 @@
 		errorType = false;
 		errorDetails = false;
 
-		// error handling
 		if (!type) {
 			errorType = true;
 			return;
@@ -61,15 +60,9 @@
 			type: type
 		});
 
-		if ($feedback.data?.createFeedback.created) {
+		if ($feedback.data?.reportConsoleUserFeedback.reported) {
 			logEvent('feedback');
 			feedbackSent = true;
-			return;
-		}
-
-		if ($feedback.data?.createFeedback.error) {
-			errorMessage = $feedback.data.createFeedback.error;
-			open = true;
 			return;
 		}
 
@@ -93,15 +86,16 @@
 	};
 
 	const feedback = graphql(`
-		mutation createFeedback(
+		mutation reportConsoleUserFeedback(
 			$details: String!
 			$uri: String!
 			$anonymous: Boolean!
-			$type: FeedbackType!
+			$type: ConsoleUserFeedbackType!
 		) {
-			createFeedback(input: { details: $details, uri: $uri, anonymous: $anonymous, type: $type }) {
-				created
-				error
+			reportConsoleUserFeedback(
+				input: { feedback: $details, path: $uri, anonymous: $anonymous, type: $type }
+			) {
+				reported
 			}
 		}
 	`);

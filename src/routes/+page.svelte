@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	//import Feedback from '$lib/components/Feedback.svelte';
+	import Feedback from '$lib/components/Feedback.svelte';
 	import {
 		Button,
 		LinkPanel,
@@ -15,7 +15,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	//let feedbackOpen = false;
+	let feedbackOpen = false;
 
 	export let data: PageData;
 
@@ -30,8 +30,7 @@
 			variant="secondary"
 			size="xsmall"
 			on:click={() => {
-				/*feedbackOpen = true;*/
-				console.log('Feedback');
+				feedbackOpen = true;
 			}}>Feedback</Button
 		>
 	</div>
@@ -108,11 +107,9 @@
 	</div>
 </div>
 
-<!--
 {#if feedbackOpen}
 	<Feedback bind:open={feedbackOpen} />
 {/if}
--->
 
 <style>
 	.pagination {

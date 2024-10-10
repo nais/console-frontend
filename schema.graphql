@@ -375,6 +375,14 @@ type ConfirmTeamDeletionPayload {
   deletionStarted: Boolean
 }
 
+"""The type of a feedback entry."""
+enum ConsoleUserFeedbackType {
+  BUG
+  CHANGE_REQUEST
+  OTHER
+  QUESTION
+}
+
 type ContainerImage implements Node {
   """
   Whether the image has a software bill of materials (SBOM) attached to it.
@@ -1049,6 +1057,9 @@ type Mutation {
   """
   removeTeamMember(input: RemoveTeamMemberInput!): RemoveTeamMemberPayload!
 
+  """Report feedback regarding Console for the NAIS team."""
+  reportConsoleUserFeedback(input: ReportConsoleUserFeedbackInput!): ReportConsoleUserFeedbackPayload!
+
   """
   Request a key that can be used to trigger a team deletion process
   
@@ -1502,6 +1513,29 @@ type RemoveTeamMemberPayload {
   user: User
 }
 
+input ReportConsoleUserFeedbackInput {
+  """
+  Whether the feedback should be reported anonymously or not.
+  
+  When set to false the email address of the authenticated user will be submitted.
+  """
+  anonymous: Boolean!
+
+  """The feedback content."""
+  feedback: String!
+
+  """The path in Console the feedback is related to."""
+  path: String!
+
+  """Type of the feedback."""
+  type: ConsoleUserFeedbackType!
+}
+
+type ReportConsoleUserFeedbackPayload {
+  """Whether or not the feedback entry was successfully reported."""
+  reported: Boolean
+}
+
 type Repository implements Node {
   """ID of the repository."""
   id: ID!
@@ -1598,6 +1632,94 @@ enum SearchType {
   REDIS_INSTANCE
   SQL_INSTANCE
   TEAM
+}
+
+type Secret implements Node {
+  """Applications that use the secret."""
+  applications(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ApplicationConnection!
+
+  """The secret data."""
+  data: [SecretVariable!]!
+
+  """The environment the secret is deployed to."""
+  environment: TeamEnvironment!
+
+  """The globally unique ID of the secret."""
+  id: ID!
+
+  """Jobs that use the secret."""
+  jobs(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): JobConnection!
+
+  """Last time the secret was modified."""
+  lastModifiedAt: Time
+
+  """User who last modified the secret."""
+  lastModifiedBy: User
+
+  """The name of the secret."""
+  name: String!
+
+  """The team that owns the secret."""
+  team: Team!
+}
+
+type SecretConnection {
+  """List of edges."""
+  edges: [SecretEdge!]!
+
+  """List of nodes."""
+  nodes: [Secret!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type SecretEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The Secret."""
+  node: Secret!
+}
+
+type SecretVariable {
+  """The name of the secret."""
+  name: String!
+
+  """The value of the secret."""
+  value: String!
 }
 
 type ServiceCost {
@@ -2053,6 +2175,25 @@ type Team implements Node {
     """
     last: Int
   ): RepositoryConnection!
+
+  """Secrets owned by the team."""
+  secrets(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): SecretConnection!
 
   """Main Slack channel for the team."""
   slackChannel: String!
