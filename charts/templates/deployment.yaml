@@ -21,6 +21,9 @@ spec:
               value: '{{ .Values.tenantDomain }}'
             - name: 'TENANT_NAME'
               value: '{{ .Values.fasit.tenant.name }}'
+          envFrom:
+            - secretRef:
+                name: "{{ .Release.Name }}"
           securityContext:
             capabilities:
               drop:

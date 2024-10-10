@@ -5,7 +5,7 @@ import { json } from '@sveltejs/kit';
 
 const client = new WebClient(env.SLACK_API_TOKEN);
 const channel = env.SLACK_FEEDBACK_CHANNEL_ID || '';
-const tenant = env.TENANT || '';
+const tenant = env.TENANT_NAME || '';
 
 export async function POST({ request }) {
     const body = await request.json();

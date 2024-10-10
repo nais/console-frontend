@@ -16,3 +16,14 @@ values:
   tenantDomain:
     computed:
       template: '{{ subdomain . "" }}'
+  slack.token:
+    displayName: Slack token
+    description: Token for the Slack API
+    config:
+      type: string
+      secret: true
+  slack.feedbackChannel:
+    displayName: Slack feedback channel
+    description: The Slack channel to post feedback to
+    config:
+      type: string
