@@ -1839,11 +1839,6 @@ type ResourceInventory {
   totalSqlInstances: Int!
 }
 
-interface ResourceStatus {
-  errors: [StateError!]!
-  state: State!
-}
-
 type Resources {
   """Instances using resources above this threshold will be killed"""
   limits: Limits!
@@ -2421,18 +2416,6 @@ type Team {
 
   """The vulnerabilities summary for the team's applications."""
   vulnerabilitiesSummary(filter: VulnerabilityFilter): VulnerabilitySummaryForTeam!
-
-  """The workloads owned by the team."""
-  workloads(
-    """Returns the last n entries from the list."""
-    limit: Int
-
-    """Returns the first n entries from the list."""
-    offset: Int
-
-    """Order entries by"""
-    orderBy: OrderBy
-  ): WorkloadList!
 }
 
 """Team deletion key type."""
@@ -2777,7 +2760,6 @@ interface Workload {
   env: Env!
   id: ID!
   image: String!
-  imageDetails: ImageDetails!
   name: String!
   persistence: [Persistence!]!
   resources: Resources!
@@ -2787,12 +2769,7 @@ interface Workload {
   variables: [Variable!]!
 }
 
-type WorkloadList {
-  nodes: [Workload!]!
-  pageInfo: PageInfo!
-}
-
-type WorkloadStatus implements ResourceStatus {
+type WorkloadStatus {
   errors: [StateError!]!
   state: State!
 }
