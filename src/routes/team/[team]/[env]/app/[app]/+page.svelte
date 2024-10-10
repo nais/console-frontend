@@ -51,6 +51,7 @@
 {#if $App.data}
 	<div class="grid">
 		<Status app={$App.data.app} />
+
 		<Card columns={4}>
 			<Image app={$App.data.app} />
 		</Card>
