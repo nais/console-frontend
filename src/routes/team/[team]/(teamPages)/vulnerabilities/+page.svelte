@@ -188,7 +188,7 @@
 				{/if}
 			</div>
 		</Card>
-		<Card columns={3} >
+		<Card columns={3}>
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
 					<div class="summaryIcon" style="--bg-color: #C8C8C8">
