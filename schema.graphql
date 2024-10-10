@@ -375,14 +375,6 @@ type ConfirmTeamDeletionPayload {
   deletionStarted: Boolean
 }
 
-"""The type of a feedback entry."""
-enum ConsoleUserFeedbackType {
-  BUG
-  CHANGE_REQUEST
-  OTHER
-  QUESTION
-}
-
 type ContainerImage implements Node {
   """
   Whether the image has a software bill of materials (SBOM) attached to it.
@@ -1057,9 +1049,6 @@ type Mutation {
   """
   removeTeamMember(input: RemoveTeamMemberInput!): RemoveTeamMemberPayload!
 
-  """Report feedback regarding Console for the NAIS team."""
-  reportConsoleUserFeedback(input: ReportConsoleUserFeedbackInput!): ReportConsoleUserFeedbackPayload!
-
   """
   Request a key that can be used to trigger a team deletion process
   
@@ -1511,29 +1500,6 @@ type RemoveTeamMemberPayload {
 
   """The user that was removed from the team."""
   user: User
-}
-
-input ReportConsoleUserFeedbackInput {
-  """
-  Whether the feedback should be reported anonymously or not.
-  
-  When set to false the email address of the authenticated user will be submitted.
-  """
-  anonymous: Boolean!
-
-  """The feedback content."""
-  feedback: String!
-
-  """The path in Console the feedback is related to."""
-  path: String!
-
-  """Type of the feedback."""
-  type: ConsoleUserFeedbackType!
-}
-
-type ReportConsoleUserFeedbackPayload {
-  """Whether or not the feedback entry was successfully reported."""
-  reported: Boolean
 }
 
 type Repository implements Node {

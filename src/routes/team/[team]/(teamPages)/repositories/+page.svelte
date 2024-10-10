@@ -74,10 +74,10 @@
 			$page.url.searchParams.set('filter', filter);
 		}
 		history.replaceState({}, '', $page.url.toString());
-		Repositories.fetch({ variables: { filter: { name: filter } } });
+		Repositories.fetch({ variables: { team: teamName, filter: { name: filter } } });
 	};
 
-	let searchTimeout: ReturnType<typeof setTimeout> = null;
+	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
 	const onKeyUp = (e: KeyboardEvent) => {
 		if (searchTimeout) {

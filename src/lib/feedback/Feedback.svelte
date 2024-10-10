@@ -1,14 +1,26 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { ConsoleUserFeedbackType, graphql, type ValueOf } from '$houdini';
-	import { logEvent } from '$lib/amplitude';
+	import { graphql } from '$houdini';
 	import { replacer } from '$lib/replacer';
 	import { Button, Checkbox, Heading, Modal, Select } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 
 	export let open: boolean;
 
-	let type: ValueOf<typeof ConsoleUserFeedbackType> | '' = '';
+	const user = graphql(`
+		query Email @load {
+			me {
+				__typename
+				... on User {
+					email
+				}
+			}
+		}
+	`);
+
+	$: email = $user.data?.me.email;
+
+	let type = '';
 	let details = '';
 	let anonymous: boolean = false;
 	let uri = '';
@@ -27,55 +39,11 @@
 
 	const FEEDBACK_TYPE = [
 		{ value: '', text: 'Choose type of feedback' },
-		{ value: ConsoleUserFeedbackType.BUG, text: 'Bug' },
-		{ value: ConsoleUserFeedbackType.CHANGE_REQUEST, text: 'Change request' },
-		{ value: ConsoleUserFeedbackType.QUESTION, text: 'Question' },
-		{ value: ConsoleUserFeedbackType.OTHER, text: 'Other' }
+		{ value: 'BUG', text: 'Bug' },
+		{ value: 'CHANGE_REQUEST', text: 'Change request' },
+		{ value: 'QUESTION', text: 'Question' },
+		{ value: 'OTHER', text: 'Other' }
 	];
-
-	const submitFeedback = async () => {
-		errorMessage = '';
-		errorType = false;
-		errorDetails = false;
-
-		if (!type) {
-			errorType = true;
-			return;
-		}
-
-		if (details === '') {
-			errorDetails = true;
-			return;
-		}
-
-		if (uri === '') {
-			errorMessage = 'Not able to get uri';
-			return;
-		}
-
-		await feedback.mutate({
-			anonymous: anonymous,
-			details: details,
-			uri: uri,
-			type: type
-		});
-
-		if ($feedback.data?.reportConsoleUserFeedback.reported) {
-			logEvent('feedback');
-			feedbackSent = true;
-			return;
-		}
-
-		if ($feedback.errors) {
-			if (errorMessage === '') {
-				errorMessage = $feedback.errors[0].message;
-			}
-			open = true;
-			return;
-		}
-
-		close();
-	};
 
 	const dispatcher = createEventDispatcher<{ close: void }>();
 
@@ -85,20 +53,33 @@
 		dispatcher('close');
 	};
 
-	const feedback = graphql(`
-		mutation reportConsoleUserFeedback(
-			$details: String!
-			$uri: String!
-			$anonymous: Boolean!
-			$type: ConsoleUserFeedbackType!
-		) {
-			reportConsoleUserFeedback(
-				input: { feedback: $details, path: $uri, anonymous: $anonymous, type: $type }
-			) {
-				reported
-			}
+	const submitFeedback = async () => {
+		let response = '';
+		try {
+			const result = await fetch('/api/send-feedback', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					feedback: details,
+					type: type,
+					path: uri,
+					anonymous: anonymous,
+					author: email
+				})
+			});
+
+			const data = await result.json();
+
+			response = data.ok ? 'Message sent!' : 'Failed to send message.';
+			open = false;
+		} catch (error) {
+			console.error('Error:', error);
+			response = 'Error sending message.';
 		}
-	`);
+		return response;
+	};
 </script>
 
 <Modal bind:open width="medium" on:close={close}>

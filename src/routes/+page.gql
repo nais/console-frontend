@@ -2,6 +2,7 @@ query UserTeams {
 	me {
 		__typename
 		... on User {
+			email
 			teams(first: 10) @paginate(mode: SinglePage) {
 				pageInfo {
 					endCursor

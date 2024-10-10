@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import Feedback from '$lib/components/Feedback.svelte';
+	import Feedback from '$lib/feedback/Feedback.svelte';
 	import {
 		Button,
 		LinkPanel,

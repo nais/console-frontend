@@ -42,6 +42,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@slack/types": "^2.14.0",
+		"@slack/web-api": "^7.6.0",
 		"amplitude-js": "^8.21.9",
 		"bytes-iec": "^3.1.1",
 		"cronstrue": "^2.50.0",

@@ -5,7 +5,7 @@
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
-	import Feedback from '$lib/components/Feedback.svelte';
+	import Feedback from '$lib/feedback/Feedback.svelte';
 
 	export let form: ActionData;
 	let feedbackOpen = false;
