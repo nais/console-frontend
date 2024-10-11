@@ -1,17 +1,18 @@
+import type { FeedbackType } from '$lib/feedback/types';
 import type { Block, DividerBlock, HeaderBlock, SectionBlock } from '@slack/types';
 
 export function createFeedbackMessage(
 	anonymous: boolean,
-	author: string,
+	email: string,
 	feedback: string,
 	path: string,
 	tenant: string,
-	type: string
+	type: FeedbackType
 ): Block[] {
 	let headerText: string;
 
 	if (anonymous) {
-		author = 'Anonymous';
+		email = 'Anonymous';
 	}
 
 	switch (type) {
@@ -32,7 +33,7 @@ export function createFeedbackMessage(
 	}
 
 	const details = [
-		`*From:* ${author}`,
+		`*From:* ${email}`,
 		`*URL:* https://console.${tenant}.cloud.nais.io${path}`,
 		`*Tenant:* ${tenant}`
 	];
@@ -60,7 +61,8 @@ export function createFeedbackMessage(
 			type: 'section',
 			text: {
 				type: 'plain_text',
-				text: feedback
+				text: feedback,
+				emoji: false
 			}
 		} as SectionBlock
 	];

@@ -1,26 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
 	import { replacer } from '$lib/replacer';
 	import { Button, Checkbox, Heading, Modal, Select } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
+	import type { FeedbackType } from './types';
 
 	export let open: boolean;
 
-	const user = graphql(`
-		query Email @load {
-			me {
-				__typename
-				... on User {
-					email
-				}
-			}
-		}
-	`);
-
-	$: email = $user.data?.me.email;
-
-	let type = '';
+	let type: FeedbackType;
 	let details = '';
 	let anonymous: boolean = false;
 	let uri = '';
@@ -37,7 +24,7 @@
 		uri = replacer($page.route.id, $page.params);
 	}
 
-	const FEEDBACK_TYPE = [
+	const FEEDBACK_TYPE: { value: FeedbackType | ''; text: string }[] = [
 		{ value: '', text: 'Choose type of feedback' },
 		{ value: 'BUG', text: 'Bug' },
 		{ value: 'CHANGE_REQUEST', text: 'Change request' },
@@ -65,8 +52,7 @@
 					feedback: details,
 					type: type,
 					path: uri,
-					anonymous: anonymous,
-					author: email
+					anonymous: anonymous
 				})
 			});
 

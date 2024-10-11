@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { ServerGetUserStore } from '$houdini';
 import { createFeedbackMessage } from './message';
 import { WebClient } from '@slack/web-api';
 import { json } from '@sveltejs/kit';
@@ -7,30 +8,41 @@ const client = new WebClient(env.SLACK_API_TOKEN);
 const channel = env.SLACK_FEEDBACK_CHANNEL_ID || '';
 const tenant = env.TENANT_NAME || '';
 
-export async function POST({ request }) {
-    const body = await request.json();
-    const { anonymous, author, feedback, path, type } = body;
+export async function POST(event) {
+	const { request } = event;
 
-    try {
-      // Create the feedback message blocks
-      const blocks = createFeedbackMessage(anonymous, author, feedback, path, tenant, type);
+	const q = new ServerGetUserStore();
+	const { data } = await q.fetch({ event });
 
-      // Send the message to Slack using the WebClient
-      const result = await client.chat.postMessage({
-        channel: channel,
-        blocks: blocks,
-        text: `${type} feedback from ${author}`
-      });
+	if (!data?.me.email) {
+		return json({ error: 'Not authenticated' }, { status: 401 });
+	}
 
-      console.log('Failed to send feedback:', result);
+	const email = data.me.email;
 
-      if (result.ok) {
-        return json({ message: 'Feedback sent successfully!' });
-      } else {
-        return json({ error: 'Failed to send feedback' }, { status: 500 });
-      }
-    } catch (error) {
-      console.error('Error sending feedback to Slack:', error);
-      return json({ error: 'An error occurred' }, { status: 500 });
-    }
-  };
+	const body = await request.json();
+	const { anonymous, feedback, path, type } = body;
+
+	try {
+		// Create the feedback message blocks
+		const blocks = createFeedbackMessage(anonymous, email, feedback, path, tenant, type);
+
+		// Send the message to Slack using the WebClient
+		const result = await client.chat.postMessage({
+			channel: channel,
+			blocks: blocks,
+			text: `${type} feedback from ${email}`
+		});
+
+		console.log('Feedback result:', result);
+
+		if (result.ok) {
+			return json({ message: 'Feedback sent successfully!' });
+		} else {
+			return json({ error: 'Failed to send feedback' }, { status: 500 });
+		}
+	} catch (error) {
+		console.error('Error sending feedback to Slack:', error);
+		return json({ error: 'An error occurred' }, { status: 500 });
+	}
+}
