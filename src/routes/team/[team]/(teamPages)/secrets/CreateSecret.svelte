@@ -9,26 +9,36 @@
 </script>
 
 <script lang="ts">
-	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import { goto } from '$app/navigation';
+
+	import { graphql } from '$houdini';
+
+	import {
+		Alert,
+		BodyShort,
+		Button,
+		Heading,
+		Modal,
+		Select,
+		TextField
+	} from '@nais/ds-svelte-community';
 
 	export let team: string;
-	//export let environments: { readonly name: string }[];
-
 	export let environments: EnvironmentType[];
-
 	export let open: boolean;
+
 	let selectedEnvironment = '';
 
-	let name = '';
+	console.log(selectedEnvironment);
 
-	console.log(environments, team);
+	let name = '';
 
 	const close = () => {
 		open = false;
 		name = '';
 	};
 
-	/*const createSecret = graphql(`
+	const createSecret = graphql(`
 		mutation createSecret(
 			$name: String!
 			$team: Slug!
@@ -45,9 +55,9 @@
 				}
 			}
 		}
-	`);*/
+	`);
 
-	/*const create = async () => {
+	const create = async () => {
 		if (validate(name).length > 0 && name.length > 0) {
 			return;
 		}
@@ -55,7 +65,7 @@
 		await createSecret.mutate({
 			name: name,
 			team: team,
-			env: 'dev',
+			env: selectedEnvironment,
 			data: []
 		});
 
@@ -63,19 +73,19 @@
 			open = true;
 			return;
 		}
-		//TODO
-		const secretPage = '/team/' + team + '/' + 'dev' + '/secret/' + name;
+		const secretPage = '/team/' + team + '/' + selectedEnvironment + '/secret/' + name;
 		close();
 		await goto(secretPage);
-	};*/
+	};
 
 	const validate = (name: string) => {
 		if (!name) {
 			return '';
 		}
 
-		/*
-		const names = environment.secrets.map((s) => s.name) || [];
+		const names = environments
+			.filter((env) => env.name === selectedEnvironment)
+			.flatMap((env) => env.secrets.map((secret) => secret.name));
 
 		if (names.includes(name)) {
 			return 'Already exists in environment';
@@ -97,7 +107,6 @@
 			return 'Can only contain letters, numbers, or -';
 		}
 
-		*/
 		return '';
 	};
 </script>
@@ -128,15 +137,15 @@
 			</svelte:fragment>
 		</TextField>
 	</div>
-	<!--{#if $createSecret.errors}
+	{#if $createSecret.errors}
 		<Alert variant="error">
 			{#each $createSecret.errors as error}
 				{error.message}
 			{/each}
 		</Alert>
-	{/if}-->
+	{/if}
 	<svelte:fragment slot="footer">
-		<!--Button variant="primary" size="small" on:click={create}>Create</Button-->
+		<Button variant="primary" size="small" on:click={create}>Create</Button>
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
 	</svelte:fragment>
 </Modal>
