@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { graphql, type VariableInput } from '$houdini';
+	import { graphql, type SecretVariableInput } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import { Alert, Button, Heading, HelpText, Loader } from '@nais/ds-svelte-community';
@@ -25,7 +25,7 @@
 	export let data: PageData;
 
 	$: ({ Secret } = data);
-	$: secret = $Secret.data?.team.secret;
+	$: secret = $Secret.data?.team.environment.secret;
 
 	$: secretName = $page.params.secret;
 	$: env = $page.params.env;
@@ -57,18 +57,25 @@
 	};
 
 	const updateMutation = graphql(`
-		mutation updateSecret($name: String!, $team: Slug!, $env: String!, $data: [VariableInput!]!) {
-			updateSecret(name: $name, team: $team, env: $env, data: $data) {
-				id
-				data {
-					name
-					value
+		mutation updateSecret(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$data: [SecretVariableInput!]!
+		) {
+			updateSecret(input: { name: $name, team: $team, environment: $env, data: $data }) {
+				secret {
+					id
+					data {
+						name
+						value
+					}
+					lastModifiedBy {
+						name
+						email
+					}
+					lastModifiedAt
 				}
-				lastModifiedBy {
-					name
-					email
-				}
-				lastModifiedAt
 			}
 		}
 	`);
@@ -78,7 +85,7 @@
 			return;
 		}
 
-		let data: VariableInput[] = changes.reduce(mergeChanges, secret.data);
+		let data: SecretVariableInput[] = changes.reduce(mergeChanges, secret.data);
 
 		await updateMutation.mutate({
 			data: data,
@@ -100,7 +107,9 @@
 
 	const deleteMutation = graphql(`
 		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
-			deleteSecret(name: $name, team: $team, env: $env)
+			deleteSecret(input: { name: $name, team: $team, environment: $env }) {
+				secretDeleted
+			}
 		}
 	`);
 
@@ -146,14 +155,14 @@
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 		</p>
-		{#if secret.apps.length > 0 || secret.jobs.length > 0}
+		{#if secret.applications.edges.length > 0 || secret.jobs.edges.length > 0}
 			<p>These workloads still reference the secret:</p>
 			<ul>
-				{#each secret.apps as app}
-					<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
+				{#each secret.applications.edges as app}
+					<li><a href="/team/{team}/{env}/app/{app.node.name}">{app.node.name}</a></li>
 				{/each}
-				{#each secret.jobs as job}
-					<li><a href="/team/{team}/{env}/job/{job.name}">{job.name}</a></li>
+				{#each secret.jobs.edges as job}
+					<li><a href="/team/{team}/{env}/job/{job.node.name}">{job.node.name}</a></li>
 				{/each}
 			</ul>
 			<br />
@@ -234,7 +243,7 @@
 						size="small"
 						title="Persist all changes"
 						on:click={updateSecret}
-						loading={$updateMutation.fetching}
+						loading={/*$updateMutation.fetching*/ false}
 						disabled={!dirty(changes)}
 					>
 						<svelte:fragment slot="icon-left">
@@ -251,7 +260,7 @@
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<Workloads apps={secret.apps} jobs={secret.jobs} />
+			<Workloads apps={secret.applications} jobs={secret.jobs} />
 		</Card>
 		<Card columns={4} rows={1}>
 			<Manifest {secretName} />

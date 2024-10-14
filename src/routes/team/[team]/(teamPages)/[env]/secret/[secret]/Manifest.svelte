@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { CopyButton, Link, Tooltip } from '@nais/ds-svelte-community';
 	import { docURL } from '$lib/doc';
+	import { CopyButton, Link, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	export let secretName: string;

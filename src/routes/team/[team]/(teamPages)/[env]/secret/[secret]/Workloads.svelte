@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Alert, HelpText } from '@nais/ds-svelte-community';
 	import { page } from '$app/stores';
-	import type { Secret$result } from '$houdini';
+	import { type Secret$result } from '$houdini';
+	import { Alert, HelpText } from '@nais/ds-svelte-community';
 
-	export let apps: Secret$result['team']['secret']['apps'];
-	export let jobs: Secret$result['team']['secret']['jobs'];
+	export let apps: Secret$result['team']['environment']['secret']['applications'];
+	export let jobs: Secret$result['team']['environment']['secret']['jobs'];
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
@@ -16,23 +16,26 @@
 		All workloads that use this secret.
 	</HelpText>
 </h4>
-{#if apps.length > 0}
+
+{#if apps.edges.length > 0}
 	<h5>Applications</h5>
 	<ul>
-		{#each apps as app}
-			<li><a href="/team/{team}/{env}/app/{app.name}">{app.name}</a></li>
+		{#each apps.edges as app}
+			<li><a href="/team/{team}/{env}/app/{app.node.name}">{app.node.name}</a></li>
 		{/each}
 	</ul>
 {/if}
-{#if jobs.length > 0}
+
+{#if jobs.edges.length > 0}
 	<h5>Jobs</h5>
 	<ul>
-		{#each jobs as job}
-			<li><a href="/team/{team}/{env}/job/{job.name}">{job.name}</a></li>
+		{#each jobs.edges as job}
+			<li><a href="/team/{team}/{env}/job/{job.node.name}">{job.node.name}</a></li>
 		{/each}
 	</ul>
 {/if}
-{#if apps.length === 0 && jobs.length === 0}
+
+{#if apps.edges.length === 0 && jobs.edges.length === 0}
 	<Alert size="small" variant="info">Secret is not in use by any workloads.</Alert>
 {/if}
 

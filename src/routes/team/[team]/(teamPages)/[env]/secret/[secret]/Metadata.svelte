@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Time from '$lib/Time.svelte';
 	import type { Secret$result } from '$houdini';
+	import Time from '$lib/Time.svelte';
 
-	export let lastModifiedAt: Secret$result['team']['secret']['lastModifiedAt'];
-	export let lastModifiedBy: Secret$result['team']['secret']['lastModifiedBy'];
+	export let lastModifiedAt: Secret$result['team']['environment']['secret']['lastModifiedAt'];
+	export let lastModifiedBy: Secret$result['team']['environment']['secret']['lastModifiedBy'];
 </script>
 
 <h4>Metadata</h4>
@@ -44,7 +44,7 @@
 		margin-left: 1rem;
 	}
 
-	.cap {
+	/*.cap {
 		text-transform: capitalize;
-	}
+	}*/
 </style>

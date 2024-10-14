@@ -550,6 +550,22 @@ type DeleteJobPayload {
   team: Team
 }
 
+input DeleteSecretInput {
+  """The environment the secret is deployed to."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+}
+
+type DeleteSecretPayload {
+  """The deleted secret."""
+  secretDeleted: Boolean!
+}
+
 type EntraIDAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
@@ -1038,6 +1054,7 @@ type Mutation {
 
   """Delete a job."""
   deleteJob(input: DeleteJobInput!): DeleteJobPayload!
+  deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
 
   """
   Disable a reconciler
@@ -1101,6 +1118,7 @@ type Mutation {
 
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
+  updateSecret(input: UpdateSecretInput!): UpdateSecretPayload!
 
   """
   Update an existing NAIS team
@@ -2843,6 +2861,25 @@ type TriggerJobPayload {
 
   """The new job run."""
   jobRun: JobRun
+}
+
+input UpdateSecretInput {
+  """The secret data."""
+  data: [SecretVariableInput!]!
+
+  """The environment the secret is deployed to."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+}
+
+type UpdateSecretPayload {
+  """The created secret."""
+  secret: Secret!
 }
 
 input UpdateTeamEnvironmentInput {

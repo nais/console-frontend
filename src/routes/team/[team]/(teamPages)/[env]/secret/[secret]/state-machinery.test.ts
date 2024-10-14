@@ -1,8 +1,8 @@
+import type { SecretVariableInput } from '$houdini';
 import { expect, test } from 'vitest';
 import { mergeChanges, type operation } from './state-machinery';
-import type { VariableInput } from '$houdini';
 
-const initialState: VariableInput[] = [
+const initialState: SecretVariableInput[] = [
 	{
 		name: 'some-key',
 		value: 'some-value'
@@ -59,7 +59,7 @@ test('delete kv', () => {
 });
 
 test('delete exactly one kv', () => {
-	const initialState: VariableInput[] = [
+	const initialState: SecretVariableInput[] = [
 		{
 			name: 'some-key',
 			value: 'some-value'

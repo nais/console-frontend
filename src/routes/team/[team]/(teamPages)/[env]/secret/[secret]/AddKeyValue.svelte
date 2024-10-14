@@ -1,11 +1,11 @@
 <script lang="ts">
+	import type { SecretVariableInput } from '$houdini';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
-	import { addedKey, type operation } from './state-machinery';
-	import type { VariableInput } from '$houdini';
-	import Textarea from './Textarea.svelte';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { addedKey, type operation } from './state-machinery';
+	import Textarea from './Textarea.svelte';
 
-	export let initial: VariableInput[];
+	export let initial: SecretVariableInput[];
 	export let changes: operation[];
 
 	let open: boolean = false;

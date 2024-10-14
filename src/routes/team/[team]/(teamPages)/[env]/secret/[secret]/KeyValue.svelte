@@ -1,11 +1,11 @@
 <script lang="ts">
+	import type { SecretVariableInput } from '$houdini';
 	import { Button, Heading, Modal, Tag, Td, TextField, Tr } from '@nais/ds-svelte-community';
-	import { addedKey, type operation, updatedKey } from './state-machinery';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { VariableInput } from '$houdini';
+	import { addedKey, type operation, updatedKey } from './state-machinery';
 	import Textarea from './Textarea.svelte';
 
-	export let initial: VariableInput[];
+	export let initial: SecretVariableInput[];
 	export let key: string;
 	export let initialValue: string;
 	export let changes: operation[];

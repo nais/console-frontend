@@ -14,7 +14,7 @@
 	$: team = $page.params.team;
 
 	let createSecretOpen = false;
-	let environments: EnvironmentType[]; // = $Secrets.data?.team.environments;
+	let environments: EnvironmentType[];
 
 	$: if ($Secrets.data) {
 		environments = $Secrets.data?.team.environments.map((env) => {

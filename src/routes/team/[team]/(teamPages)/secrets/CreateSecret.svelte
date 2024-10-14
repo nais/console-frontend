@@ -27,9 +27,7 @@
 	export let environments: EnvironmentType[];
 	export let open: boolean;
 
-	let selectedEnvironment = '';
-
-	console.log(selectedEnvironment);
+	let selectedEnvironment = environments[0].name;
 
 	let name = '';
 
@@ -48,6 +46,10 @@
 			createSecret(input: { name: $name, team: $team, environment: $env, data: $data }) {
 				secret {
 					id
+					name
+					environment {
+						name
+					}
 					data {
 						name
 						value
