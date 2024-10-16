@@ -24,13 +24,6 @@ query Workloads(
 					name
 				}
 
-				imageDetails {
-					summary {
-						critical
-						riskScore
-					}
-				}
-
 				status {
 					state
 				}

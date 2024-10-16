@@ -58,13 +58,11 @@
 				}}
 			>
 				<Thead>
-					<Th sortable={true} sortKey="STATUS" style="width: 2rem"></Th>
+					<Th sortable={true} sortKey="STATUS" style="width: 3rem"></Th>
 					<Th sortable={true} sortKey="NAME">Name</Th>
-					<Th sortable={true} sortKey="ENV" style="width: 2rem">Env</Th>
-					<Th sortable={true} sortKey="SEVERITY_CRITICAL" style="width: 2rem">Critical</Th>
-					<Th sortable={true} sortKey="RISK_SCORE" style="width: 8rem;">Risk score</Th>
-					<Th style="width: 200px">Instances</Th>
-					<Th style="width: 150px" sortable={true} sortKey="DEPLOYED">Deployed</Th>
+					<Th sortable={true} sortKey="ENV">Env</Th>
+					<Th>Instances</Th>
+					<Th sortable={true} sortKey="DEPLOYED" style="width: 2rem">Deployed</Th>
 				</Thead>
 				<Tbody>
 					{#if team !== undefined}
@@ -72,7 +70,6 @@
 							{#each new Array(team.apps.nodes.length).fill('text') as variant}
 								<Tr>
 									<Td />
-									<Td><Skeleton {variant} /></Td>
 									<Td><Skeleton {variant} /></Td>
 									<Td><Skeleton {variant} /></Td>
 									<Td><Skeleton {variant} /></Td>
@@ -97,57 +94,6 @@
 										<a href="/team/{teamName}/{node.env.name}/app/{node.name}">{node.name}</a>
 									</Td>
 									<Td>{node.env.name}</Td>
-									<Td style="text-align: center;">
-										<Button
-											as="a"
-											variant="tertiary-neutral"
-											size="small"
-											href="/team/{teamName}/{node.env.name}/app/{node.name}/image"
-										>
-											{#if node.imageDetails.summary}
-												{#if node.imageDetails.summary.critical > 0}
-													<div class="badge">
-														<Tooltip
-															placement="right"
-															content="{node.imageDetails.summary
-																.critical} vulnerabilities found. Please update your dependencies!"
-														>
-															<VulnerabilityBadge
-																text={String(node.imageDetails.summary.critical)}
-																color={severityToColor('critical')}
-																size={'32px'}
-															/>
-														</Tooltip>
-													</div>
-												{:else}
-													<Tooltip placement="right" content="No critical vulnerabilities found">
-														<code class="check success">&check;</code>
-													</Tooltip>
-												{/if}
-											{:else}
-												<Tooltip placement="right" content="No data found in dependencytrack">
-													NA
-												</Tooltip>
-											{/if}
-										</Button>
-									</Td>
-									<Td style="text-align: center">
-										<Button
-											as="a"
-											variant="tertiary"
-											size="small"
-											href="/team/{teamName}/{node.env.name}/app/{node.name}/image"
-										>
-											{#if node.imageDetails.summary}
-												{node.imageDetails.summary.riskScore}
-											{:else}
-												<Tooltip placement="right" content="No data found in dependencytrack">
-													NA
-												</Tooltip>
-											{/if}
-										</Button>
-									</Td>
-
 									<Td>
 										<InstanceStatus app={node} />
 									</Td>

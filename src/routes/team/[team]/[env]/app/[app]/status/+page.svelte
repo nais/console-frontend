@@ -2,7 +2,7 @@
 	import { PendingValue, State } from '$houdini';
 	import ErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import Card from '$lib/Card.svelte';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
@@ -39,6 +39,11 @@
 						{/if}
 					</div>
 					<h4>Application status</h4>
+					<HelpText title="Status for a application">
+						NAIS: The application is running and has no issues <br />FAILING: The application is
+						running but has issues<br />
+						NOTNAIS: The application is not running <br /> UNKNOWN: The application status is unknown.
+					</HelpText>
 				</div>
 			{/if}
 			<div>

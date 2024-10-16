@@ -44,7 +44,7 @@
 			<h4>Status</h4>
 			<div class="iconWrapper">
 				<Nais
-					size="5rem"
+					size="6rem"
 					style="color: var(--a-icon-success)"
 					aria-label="Application is nais"
 					role="image"
@@ -113,7 +113,7 @@
 		justify-content: center;
 		align-items: center;
 		vertical-align: middle;
-		padding-top: 1rem;
+		padding-top: 2rem;
 	}
 
 	.card {

@@ -96,7 +96,7 @@
 		<Card columns={12}>
 			{#if team !== undefined && team.id !== PendingValue}
 				<div class="summaryCard" style="align-items: start;">
-					{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== 'OK').length > 0}
+					{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== 'OK').length > 0 && team.vulnerabilitiesSummary.totalWorkloads > 0}
 						<div>
 							<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
 						</div>
@@ -112,14 +112,18 @@
 					{/if}
 					<div class="summary">
 						<h4>
-							Vulnerability issues
+							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0 && team.vulnerabilitiesSummary.totalWorkloads > 0}
+								<span>Vulnerability issues</span>
+							{:else}
+								<span>No vulnerability issues, good work! </span>
+							{/if}
 							<HelpText title="Current team vulnerability status"
 								>If any of the workloads have any vulnerability issues, the icon will show a warning
 								sign and a details link will show.
 							</HelpText>
 						</h4>
 						<div style="margin-top: 0.5rem;">
-							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
+							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0 && team.vulnerabilitiesSummary.totalWorkloads > 0}
 								<details>
 									<summary style="font-size: 1rem; var(--color-text-secondary);"
 										>Show details</summary
@@ -268,7 +272,7 @@
 				</div>
 			{/if}
 
-			<Table size="small" sort={sortState} on:sortChange={sortChange}>
+			<Table zebraStripes size="small" sort={sortState} on:sortChange={sortChange}>
 				<Thead>
 					<Th></Th>
 					<Th sortable={true} sortKey={OrderByField.NAME}>Workload</Th>
@@ -295,11 +299,17 @@
 								<Tr>
 									<Td>
 										{#if node.workloadType === 'app'}
-											<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
+											<Tooltip placement="right" content="Application">
+												<span style="color:var(--a-gray-600)"
+													><SandboxIcon {...$$restProps} />
+												</span>
+											</Tooltip>
 										{:else if node.workloadType === 'job'}
-											<span style="color:var(--a-gray-600)"
-												><ArrowCirclepathIcon {...$$restProps} />
-											</span>
+											<Tooltip placement="right" content="Job">
+												<span style="color:var(--a-gray-600)"
+													><ArrowCirclepathIcon {...$$restProps} />
+												</span>
+											</Tooltip>
 										{/if}
 									</Td>
 									<Td>
