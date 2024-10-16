@@ -107,6 +107,9 @@ type Application implements Node & Workload {
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
 
+  """Status of the application"""
+  status: WorkloadStatus!
+
   """The team that owns the application."""
   team: Team!
   utilization: WorkloadUtilization!
@@ -781,6 +784,9 @@ type Job implements Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
+
+  """Status of the job"""
+  status: WorkloadStatus!
 
   """The team that owns the job."""
   team: Team!
@@ -3100,6 +3106,9 @@ interface Workload {
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
 
+  """Status of the workload"""
+  status: WorkloadStatus!
+
   """The team that owns the workload."""
   team: Team!
 }
@@ -3215,6 +3224,139 @@ interface WorkloadResources {
 
   """Resources requested by the workload."""
   requests: WorkloadResourceQuantity!
+}
+
+"""State of the workload"""
+enum WorkloadState {
+  """Something is failing"""
+  FAILING
+
+  """Everything is nais"""
+  NAIS
+
+  """Something is not nais"""
+  NOT_NAIS
+
+  """Unknown state"""
+  UNKNOWN
+}
+
+type WorkloadStatus {
+  """Errors related to the workload"""
+  errors: [WorkloadStatusError!]!
+
+  """State of the workload"""
+  state: WorkloadState!
+}
+
+"""Error describing usage of a deprecated ingress"""
+type WorkloadStatusDeprecatedIngress implements WorkloadStatusError {
+  """Deprecated ingress"""
+  ingress: String!
+
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+}
+
+"""Error describing usage of a deprecated registry"""
+type WorkloadStatusDeprecatedRegistry implements WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+
+  """Image name"""
+  name: String!
+
+  """Image registry"""
+  registry: String!
+
+  """Image repository"""
+  repository: String!
+
+  """Image tag"""
+  tag: String!
+}
+
+"""An error for a workload"""
+interface WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+}
+
+"""Workload status error level"""
+enum WorkloadStatusErrorLevel {
+  """ERROR are errors that must be fixed"""
+  ERROR
+
+  """TODO are errors that should be fixed when possible"""
+  TODO
+
+  """WARNING are errors that should be fixed, but are not critical"""
+  WARNING
+}
+
+"""Error describing that the workload is failing to run"""
+type WorkloadStatusFailedRun implements WorkloadStatusError {
+  """Error message"""
+  detail: String!
+
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+
+  """Name of the run"""
+  name: String!
+}
+
+"""An inbound network policies are not met"""
+type WorkloadStatusInboundNetwork implements WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+
+  """Network policy"""
+  policy: NetworkPolicyRule!
+}
+
+"""The last deployed YAML is invalid"""
+type WorkloadStatusInvalidNaisYaml implements WorkloadStatusError {
+  """Error message"""
+  detail: String!
+
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+}
+
+"""Error describing that a workload has new instances that are failing"""
+type WorkloadStatusNewInstancesFailing implements WorkloadStatusError {
+  """Names of the failing instances"""
+  failingInstances: [String!]!
+
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+}
+
+"""
+A workload does not have any active instances, but is requested to have some
+"""
+type WorkloadStatusNoRunningInstances implements WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+}
+
+"""An outbound network policies are not met"""
+type WorkloadStatusOutboundNetwork implements WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+
+  """Network policy"""
+  policy: NetworkPolicyRule!
+}
+
+"""Error describing that the workload is failing to synchronize"""
+type WorkloadStatusSynchronizationFailing implements WorkloadStatusError {
+  """Error message"""
+  detail: String!
+
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
 }
 
 type WorkloadUtilization {
