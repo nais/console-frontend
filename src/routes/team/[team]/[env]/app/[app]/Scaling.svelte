@@ -39,15 +39,15 @@
 </script>
 
 <div class="wrapper">
-	{#if $data.resources}
-		{@const resources = $data.resources}
-		{#if resources.scaling.minInstances !== resources.scaling.maxInstances}
+	{#if $data.resources.scaling}
+		{@const scaling = $data.resources.scaling}
+		{#if scaling.minInstances !== scaling.maxInstances}
 			<h5>Scaling configuration</h5>
 			<div class="resources">
 				<div class="replicas">
-					{resources.scaling.minInstances} - {resources.scaling.maxInstances} instances based on
-					{#if resources.scaling.strategies && resources.scaling.strategies.length > 0}
-						{#each resources.scaling.strategies as strategy, i}
+					{scaling.minInstances} - {scaling.maxInstances} instances based on
+					{#if scaling.strategies && scaling.strategies.length > 0}
+						{#each scaling.strategies as strategy, i}
 							{#if i > 0}
 								<br />and{/if}
 							<b>{renameStrategy(strategy.__typename)}</b>

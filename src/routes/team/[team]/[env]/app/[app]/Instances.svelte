@@ -30,18 +30,10 @@
 						memory
 					}
 				}
-
-				#utilization {
-				#	cpuUsage: used(resourceType: CPU)
-				#	memoryUsage: used(resourceType: MEMORY)
-				#}
 			}
 		`)
 	);
 
-	//$: instances = $data.instances;
-	//$: resources = $data.resources;
-	$: console.log($data);
 	$: appName = $page.params.app;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
@@ -81,6 +73,10 @@
 					{:else}
 						<Td />
 					{/if}
+				</Tr>
+			{:else}
+				<Tr>
+					<Td colspan="7">No instances found</Td>
 				</Tr>
 			{/each}
 
