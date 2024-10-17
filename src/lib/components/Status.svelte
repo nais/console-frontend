@@ -1,9 +1,9 @@
 <script lang="ts">
+	import UnknownIcon from '$lib/icons/UnknownIcon.svelte';
 	import {
 		ExclamationmarkTriangleFillIcon,
 		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
-	import UnknownIcon from './icons/UnknownIcon.svelte';
 
 	export let state: string;
 	export let size: string;

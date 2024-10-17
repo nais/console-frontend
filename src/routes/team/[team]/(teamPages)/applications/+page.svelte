@@ -3,24 +3,12 @@
 	import { page } from '$app/stores';
 	import { ApplicationOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import {
-		Alert,
-		Button,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
+	import Status from '$lib/components/Status.svelte';
+	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
-	//import Status from '$lib/Status.svelte';
-	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 
 	export let data: PageData;
 
@@ -82,8 +70,6 @@
 					<Th sortable={true} sortKey={ApplicationOrderField.ENVIRONMENT} style="width: 2rem"
 						>Env</Th
 					>
-					<Th style="width: 2rem">Critical</Th>
-					<Th style="width: 8rem;">Risk score</Th>
 					<Th style="width: 200px">Instances</Th>
 					<Th sortable={true} sortKey={ApplicationOrderField.DEPLOYMENT_TIME} style="width: 150px"
 						>Deployed</Th
@@ -100,7 +86,7 @@
 												.name}/status"
 											data-sveltekit-preload-data="off"
 										>
-											TODO<!--Status size="1.5rem" state={edge.node.status.state} /-->
+											<Status size="1.5rem" state={edge.node.status.state} />
 										</a>
 									</div>
 								</Td>
@@ -110,57 +96,6 @@
 									>
 								</Td>
 								<Td>{edge.node.environment.name}</Td>
-								<Td style="text-align: center;">
-									<Button
-										as="a"
-										variant="tertiary-neutral"
-										size="small"
-										href="/team/{teamName}/{edge.node.environment.name}/app/{edge.node.name}/image"
-									>
-										{#if edge.node.image.vulnerabilitySummary}
-											{#if edge.node.image.vulnerabilitySummary.critical > 0}
-												<div class="badge">
-													<Tooltip
-														placement="right"
-														content="{edge.node.image.vulnerabilitySummary
-															.critical} vulnerabilities found. Please update your dependencies!"
-													>
-														<VulnerabilityBadge
-															text={String(edge.node.image.vulnerabilitySummary.critical)}
-															color={severityToColor('critical')}
-															size={'32px'}
-														/>
-													</Tooltip>
-												</div>
-											{:else}
-												<Tooltip placement="right" content="No critical vulnerabilities found">
-													<code class="check success">&check;</code>
-												</Tooltip>
-											{/if}
-										{:else}
-											<Tooltip placement="right" content="No data found in dependencytrack">
-												NA
-											</Tooltip>
-										{/if}
-									</Button>
-								</Td>
-								<Td style="text-align: center">
-									<Button
-										as="a"
-										variant="tertiary"
-										size="small"
-										href="/team/{teamName}/{edge.node.environment.name}/app/{edge.node.name}/image"
-									>
-										{#if edge.node.image.vulnerabilitySummary}
-											{edge.node.image.vulnerabilitySummary.riskScore}
-										{:else}
-											<Tooltip placement="right" content="No data found in dependencytrack">
-												NA
-											</Tooltip>
-										{/if}
-									</Button>
-								</Td>
-
 								<Td>
 									<InstanceStatus app={edge.node} />
 								</Td>

@@ -18,12 +18,7 @@ query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC }) 
 					environment {
 						name
 					}
-					image {
-						vulnerabilitySummary {
-							critical
-							riskScore
-						}
-					}
+
 					#deployInfo {
 					#	timestamp
 					#}

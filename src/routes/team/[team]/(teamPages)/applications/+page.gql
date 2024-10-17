@@ -16,25 +16,10 @@ query Workloads($team: Slug!, $orderBy: ApplicationOrder) {
 					environment {
 						name
 					}
-					image {
-						vulnerabilitySummary {
-							critical
-							riskScore
-						}
+					status {
+						state
 					}
-					#deployInfo {
-					#	timestamp
-					#}
-
 					...AppInstancesStatus
-
-					#status {
-					#	state
-					#}
-					#
-					#instances {
-					#	state
-					#}
 				}
 			}
 		}

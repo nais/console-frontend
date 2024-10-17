@@ -3,19 +3,7 @@
 	import { page } from '$app/stores';
 	import { JobOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import {
-		Alert,
-		Button,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
@@ -76,8 +64,6 @@
 				<Th sortable={true} sortKey={JobOrderField.STATUS} style="width: 2rem"></Th>
 				<Th sortable={true} sortKey={JobOrderField.NAME}>Name</Th>
 				<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 2rem">Env</Th>
-				<Th style="width: 2rem">Critical</Th>
-				<Th style="width: 8rem;">Risk score</Th>
 				<Th sortable={true} sortKey={JobOrderField.DEPLOYMENT_TIME} style="width: 150px"
 					>Deployed</Th
 				>
@@ -102,56 +88,6 @@
 								>
 							</Td>
 							<Td>{edge.node.environment.name}</Td>
-							<Td style="text-align: center;">
-								<Button
-									as="a"
-									variant="tertiary-neutral"
-									size="small"
-									href="/team/{teamName}/{edge.node.environment.name}/job/{edge.node.name}/image"
-								>
-									{#if edge.node.image.vulnerabilitySummary}
-										{#if edge.node.image.vulnerabilitySummary.critical > 0}
-											<div class="badge">
-												<Tooltip
-													placement="right"
-													content="{edge.node.image.vulnerabilitySummary
-														.critical} vulnerabilities found. Please update your dependencies!"
-												>
-													<VulnerabilityBadge
-														text={String(edge.node.image.vulnerabilitySummary.critical)}
-														color={severityToColor('critical')}
-														size={'32px'}
-													/>
-												</Tooltip>
-											</div>
-										{:else}
-											<Tooltip placement="right" content="No critical vulnerabilities found">
-												<code class="check success">&check;</code>
-											</Tooltip>
-										{/if}
-									{:else}
-										<Tooltip placement="right" content="No data found in dependencytrack">
-											NA
-										</Tooltip>
-									{/if}
-								</Button>
-							</Td>
-							<Td style="text-align: center">
-								<Button
-									as="a"
-									variant="tertiary"
-									size="small"
-									href="/team/{teamName}/{edge.node.environment.name}/job/{edge.node.name}/image"
-								>
-									{#if edge.node.image.vulnerabilitySummary}
-										{edge.node.image.vulnerabilitySummary.riskScore}
-									{:else}
-										<Tooltip placement="right" content="No data found in dependencytrack">
-											NA
-										</Tooltip>
-									{/if}
-								</Button>
-							</Td>
 
 							<Td>
 								TODO
