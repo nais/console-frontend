@@ -223,8 +223,8 @@
 		<div class="wrapper">
 			<Alert variant="warning">
 				<h4>Application is vulnerable</h4>
-				{#if data.summary?.riskScore > 100}
-					The application is considered vulnerable with a risk score of {$data.summary?.riskScore},
+				{#if $data.summary && $data.summary.riskScore > 100}
+					The application is considered vulnerable with a risk score of {$data.summary.riskScore},
 					which exceeds the acceptable threshold of 100.
 				{:else}
 					The application is considered vulnerable because it has a critical vulnerability.

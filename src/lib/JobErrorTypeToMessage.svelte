@@ -165,11 +165,11 @@
 				> on how to fix.
 			</Alert>
 		</div>
-	{:else if $data.__typename === 'VulnerableError'}
+	{:else if $data.__typename === 'VulnerableError' && $data.summary}
 		<div class="wrapper">
 			<Alert variant="warning">
 				<h4>Application is vulnerable</h4>
-				Application is considered vulnerable with a risk score of {$data.summary?.riskScore} which is
+				Application is considered vulnerable with a risk score of {$data.summary.riskScore} which is
 				higher than the acceptable threshold of 100. Please keep your application's dependencies up to
 				date.
 			</Alert>
