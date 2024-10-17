@@ -1,0 +1,54 @@
+query TeamVulnerabilities(
+	$team: Slug!
+	$orderBy: OrderBy = { field: SEVERITY_CRITICAL, direction: DESC }
+	$limit: Int
+	$offset: Int
+	$filter: VulnerabilityFilter
+) @loading(count: 5, cascade: true) {
+	team(slug: $team) {
+		id
+		environments {
+			name
+		}
+		vulnerabilities(limit: $limit, offset: $offset, orderBy: $orderBy, filter: $filter) {
+			pageInfo {
+				totalCount
+				hasNextPage
+				hasPreviousPage
+			}
+
+			nodes @loading(count: 10) {
+				workloadName
+				workloadType
+				env
+				hasSbom
+				summary {
+					riskScore
+					unassigned
+					critical
+					high
+					medium
+					low
+				}
+			}
+		}
+		vulnerabilitiesSummary(filter: $filter) {
+			riskScore
+			riskScoreTrend
+			critical
+			high
+			medium
+			low
+			bomCount
+			unassigned
+			coverage
+			totalWorkloads
+			vulnerabilityRanking
+			status {
+				state
+				title
+				description
+			}
+		}
+	}
+}

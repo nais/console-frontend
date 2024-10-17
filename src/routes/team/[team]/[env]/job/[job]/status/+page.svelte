@@ -11,7 +11,6 @@
 	export let data: PageData;
 
 	$: ({ JobStatusDetailed } = data);
-	$: status = $JobStatusDetailed.data;
 </script>
 
 <Card>
@@ -22,29 +21,29 @@
 			{/each}
 		</Alert>
 	{/if}
-	{#if status}
-		{#if status.naisjob.name === PendingValue}
+	{#if $JobStatusDetailed.data}
+		{#if $JobStatusDetailed.data.naisjob.name === PendingValue}
 			<Skeleton variant="rectangle" />
 		{:else}
-			{#if status.naisjob.status.state}
+			{#if $JobStatusDetailed.data.naisjob.status.state}
 				<div class="header">
 					<div class="icon">
-						{#if status.naisjob.status.state === State.NAIS}
-							<Nais alt="nais" size="2rem" style="color: var(--a-icon-success)" />
-						{:else if status.naisjob.status.state === State.FAILING}
-							<WarningIcon size="2rem" style="color: var(--a-icon-danger)" />
-						{:else if status.naisjob.status.state === State.NOTNAIS}
-							<Nais alt="notnais" size="2rem" style="color: var(--a-icon-warning)" />
-						{:else if status.naisjob.status.state === State.UNKNOWN}
-							<UnknownIcon size="2rem" style="color: var(--a-icon-warning)" />
+						{#if $JobStatusDetailed.data.naisjob.status.state === State.NAIS}
+							<Nais alt="nais" size="1.5rem" style="color: var(--a-icon-success)" />
+						{:else if $JobStatusDetailed.data.naisjob.status.state === State.FAILING}
+							<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
+						{:else if $JobStatusDetailed.data.naisjob.status.state === State.NOTNAIS}
+							<Nais alt="notnais	" size="1.5rem" style="color: var(--a-icon-warning)" />
+						{:else if $JobStatusDetailed.data.naisjob.status.state === State.UNKNOWN}
+							<UnknownIcon size="1.5rem" style="color: var(--a-icon-warning)" />
 						{/if}
 					</div>
-					<h4>Job status for {status.naisjob.name}</h4>
+					<h4>Job status</h4>
 				</div>
 			{/if}
 			<div>
-				{#if status.naisjob.status.errors && status.naisjob.status.errors.length > 0}
-					{#each status.naisjob.status.errors as error}
+				{#if $JobStatusDetailed.data.naisjob.status.errors && $JobStatusDetailed.data.naisjob.status.errors.length > 0}
+					{#each $JobStatusDetailed.data.naisjob.status.errors as error}
 						<JobErrorTypeToMessage {error} />
 					{/each}
 				{:else}

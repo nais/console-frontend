@@ -1,7 +1,7 @@
 export function severityToColor(severity: string): string {
 	switch (severity) {
 		case 'critical':
-			return '#f86c6b';
+			return 'var(--a-icon-danger)';
 		case 'high':
 			return '#fd8b00';
 		case 'medium':

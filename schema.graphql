@@ -113,7 +113,8 @@ type AppUtilizationData {
 """Team status for apps."""
 type AppsStatus {
   failing: Int!
-  total: Int!
+  notNais: Int!
+  vulnerabilities: Int!
 }
 
 """Audit event type."""
@@ -890,7 +891,8 @@ type InvalidNaisYamlError implements StateError {
 """Team status for jobs."""
 type JobsStatus {
   failing: Int!
-  total: Int!
+  notNais: Int!
+  vulnerabilities: Int!
 }
 
 type KafkaLagScalingStrategy implements ScalingStrategy {
@@ -997,6 +999,11 @@ type Maskinporten {
 type MaskinportenScope {
   consumes: [Consume!]!
   exposes: [Expose!]!
+}
+
+type MissingSbomError implements StateError {
+  level: ErrorLevel!
+  revision: String!
 }
 
 """Monthly cost type."""
@@ -1818,6 +1825,20 @@ type Requests {
   memory: String!
 }
 
+"""A teams inventory of resources."""
+type ResourceInventory {
+  isEmpty: Boolean!
+  totalApps: Int!
+  totalBigQueryDatasets: Int!
+  totalBucket: Int!
+  totalBuckets: Int!
+  totalJobs: Int!
+  totalKafkaTopics: Int!
+  totalOpenSearchInstances: Int!
+  totalRedisInstances: Int!
+  totalSqlInstances: Int!
+}
+
 type Resources {
   """Instances using resources above this threshold will be killed"""
   limits: Limits!
@@ -2324,6 +2345,9 @@ type Team {
     offset: Int
   ): RepositoryList!
 
+  """The teams resources"""
+  resourceInventory: ResourceInventory!
+
   """Get the team's secret by name, and env."""
   secret(
     """The environment the secret is deployed to."""
@@ -2375,7 +2399,23 @@ type Team {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
-  vulnerabilitiesSummary: VulnerabilitySummaryForTeam!
+
+  """The vulnerabilities for the team's applications."""
+  vulnerabilities(
+    filter: VulnerabilityFilter
+
+    """Returns the last n entries from the list."""
+    limit: Int
+
+    """Returns the first n entries from the list."""
+    offset: Int
+
+    """Order entries by"""
+    orderBy: OrderBy
+  ): VulnerabilityList!
+
+  """The vulnerabilities summary for the team's applications."""
+  vulnerabilitiesSummary(filter: VulnerabilityFilter): VulnerabilitySummaryForTeam!
 }
 
 """Team deletion key type."""
@@ -2460,6 +2500,7 @@ type TeamStatus {
   apps: AppsStatus!
   jobs: JobsStatus!
   sqlInstances: SqlInstancesStatus!
+  state: State!
 }
 
 """Team sync type."""
@@ -2641,13 +2682,56 @@ type VulnIdAlias {
   source: String!
 }
 
-type Vulnerability {
-  appName: String!
+input VulnerabilityFilter {
+  """Filter by environment"""
+  envs: [String!]
+
+  """
+  Require the presence of a Software Bill of Materials (SBOM) in the vulnerability report.
+  """
+  requireSbom: Boolean
+}
+
+type VulnerabilityList {
+  nodes: [VulnerabilityNode!]!
+  pageInfo: PageInfo!
+}
+
+type VulnerabilityNode {
   env: String!
-  findingsLink: String!
-  hasBom: Boolean!
+  hasSbom: Boolean!
   id: ID!
-  summary: VulnerabilitySummaryForTeam
+  status: WorkloadStatus!
+  summary: ImageVulnerabilitySummary
+  workloadName: String!
+  workloadType: String!
+}
+
+enum VulnerabilityRanking {
+  LEAST_VULNERABLE
+  MIDDLE
+  MOST_VULNERABLE
+  UNKNOWN
+}
+
+enum VulnerabilityRiskScoreTrend {
+  DOWN
+  FLAT
+  UP
+}
+
+enum VulnerabilityState {
+  COVERAGE_TOO_LOW
+  MISSING_SBOM
+  OK
+  TOO_MANY_VULNERABLE_WORKLOADS
+  VULNERABLE
+}
+
+type VulnerabilityStatus {
+  description: String!
+  state: VulnerabilityState!
+  title: String!
 }
 
 type VulnerabilitySummaryForTeam {
@@ -2658,7 +2742,17 @@ type VulnerabilitySummaryForTeam {
   low: Int!
   medium: Int!
   riskScore: Int!
+  riskScoreTrend: VulnerabilityRiskScoreTrend!
+  status: [VulnerabilityStatus!]!
+  totalWorkloads: Int!
   unassigned: Int!
+  vulnerabilityRanking: VulnerabilityRanking!
+}
+
+type VulnerableError implements StateError {
+  level: ErrorLevel!
+  revision: String!
+  summary: ImageVulnerabilitySummary
 }
 
 interface Workload {

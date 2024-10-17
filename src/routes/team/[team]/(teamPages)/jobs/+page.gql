@@ -18,12 +18,6 @@ query Jobs(
 					timestamp
 				}
 				name
-				imageDetails {
-					summary {
-						critical
-						riskScore
-					}
-				}
 				env {
 					name
 				}
