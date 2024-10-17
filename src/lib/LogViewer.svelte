@@ -75,8 +75,8 @@
 	};
 
 	const updates = graphql(`
-		subscription Logs($input: LogSubscriptionInput!) {
-			log(input: $input) {
+		subscription Logs($filter: WorkloadLogSubscriptionFilter!) {
+			workloadLog(filter: $filter) {
 				time
 				message
 				instance
@@ -86,9 +86,9 @@
 
 	let subscribed = false;
 	const start = async (
-		app: string | undefined,
+		application: string | undefined,
 		job: string | undefined,
-		env: string,
+		environment: string,
 		team: string,
 		instances: string[],
 		running: boolean
@@ -109,7 +109,13 @@
 		logs = [];
 
 		updates.listen({
-			input: { app: app, job: job, env: env, team: team, instances: instances }
+			filter: {
+				application: application,
+				job: job,
+				environment: environment,
+				team: team,
+				instances: instances
+			}
 		});
 
 		if (!subscribed) {
@@ -125,11 +131,11 @@
 			updates.subscribe((result) => {
 				publishEvent(result.fetching);
 				if (result.data) {
-					if (result.data.log.instance === 'api') {
+					if (result.data.workloadLog.instance === 'api') {
 						updates.unlisten();
 						return;
 					}
-					logs = [...logs.slice(-maxLines), result.data.log];
+					logs = [...logs.slice(-maxLines), result.data.workloadLog];
 				}
 				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
 				scrollToBottom();
