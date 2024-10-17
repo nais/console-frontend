@@ -3,12 +3,13 @@ query App($app: String!, $team: Slug!, $env: String!) {
 		environment(name: $env) {
 			application(name: $app) {
 				name
-				...WorkloadImage
+				...AppInstances
+				...AppPersistence
+				...AppStatus
 				...AppUtilization
 				...Scaling
-				...AppStatus
 				...TrafficPolicy
-				...AppPersistence
+				...WorkloadImage
 			}
 		}
 		viewerIsMember

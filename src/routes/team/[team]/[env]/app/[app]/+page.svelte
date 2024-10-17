@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import type { PageData } from './$houdini';
 	import Image from './Image.svelte';
+	import Instances from './Instances.svelte';
 	import Persistence from './Persistence.svelte';
 	import Scaling from './Scaling.svelte';
 	import Status from './Status.svelte';
@@ -85,8 +86,7 @@
 				<Scaling {app} />
 			</div>
 
-			<!--Instances app={$App.data.app} /-->
-			TODO: Instances
+			<Instances {app} />
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
