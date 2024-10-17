@@ -41,35 +41,6 @@
 						}
 					}
 				}
-				#accessPolicy {
-				#	inbound {
-				#		rules {
-				#			application
-				#			namespace
-				#			cluster
-				#			mutual
-				#			mutualExplanation
-				#			isJob
-				#		}
-				#	}
-				#	outbound {
-				#		rules {
-				#			application
-				#			namespace
-				#			cluster
-				#			mutual
-				#			mutualExplanation
-				#			isJob
-				#		}
-				#		external {
-				#			host
-				#			IPv4
-				#			ports {
-				#				port
-				#			}
-				#		}
-				#	}
-				#}
 			}
 		`)
 	);
@@ -109,6 +80,7 @@
 			<ul>
 				{#each $data.ingresses as ingress}
 					{#if !ingress.includes('.external.')}
+						<!-- TODO: fjern når vi har fått på plass ekte ingresser -->
 						<li><a href={ingress}>{internalName(ingress)}</a></li>
 					{/if}
 				{/each}
@@ -137,29 +109,16 @@
 							{/if}
 
 							in {env}
-							<!--{:else if rule.targetWorkload?.type === 'Job'}
-							{#if rule.mutualExplanation === 'APP_NOT_FOUND'}
-								{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-									? '.' + rule.cluster
-									: ''}
+						{:else if rule.targetWorkload?.type === 'Job'}
+							{#if !rule.targetWorkload}
+								{rule.targetWorkloadName}.{rule.targetTeamSlug}
 							{:else}
-								<a
-									href="/team/{rule.namespace || team}/{rule.cluster
-										? rule.cluster
-										: env}/job/{rule.application}"
-									>{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-										? '.' + rule.cluster
-										: ''}</a
+								<a href="/team/{rule.targetTeamSlug}/{env}/job/{rule.targetWorkloadName}"
+									>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 								>
 							{/if}
-							{:else if rule.mutualExplanation === 'APP_NOT_FOUND'}
-							{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-								? '.' + rule.cluster
-								: ''}
-						{:else if rule.mutualExplanation === 'LOCALHOST'}
-							{rule.application}{rule.namespace ? '.' + rule.namespace : ''}{rule.cluster
-								? '.' + rule.cluster
-								: ''}-->
+						{:else if !rule.targetWorkload}
+							{rule.targetWorkloadName}.{rule.targetTeamSlug}
 						{:else}
 							<a href="/team/{rule.targetTeamSlug || team}/{env}/app/{rule.targetWorkloadName}"
 								>{rule.targetWorkloadName}{rule.targetTeamSlug ? '.' + rule.targetTeamSlug : ''}</a
