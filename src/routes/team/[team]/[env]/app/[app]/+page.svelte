@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import type { PageData } from './$houdini';
 	import Image from './Image.svelte';
+	import Persistence from './Persistence.svelte';
 	import Scaling from './Scaling.svelte';
 	import Status from './Status.svelte';
 	import Traffic from './Traffic.svelte';
@@ -93,8 +94,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<!--Persistence persistence={$App.data.app.persistence} /-->
-			TODO: Persistence
+			<Persistence {app} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
