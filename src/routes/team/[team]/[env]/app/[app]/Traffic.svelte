@@ -5,6 +5,7 @@
 	import Globe from '$lib/icons/Globe.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Tooltip } from '@nais/ds-svelte-community';
+	import { HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
 	export let app: TrafficPolicy;
 
@@ -13,7 +14,10 @@
 		graphql(`
 			fragment TrafficPolicy on Application {
 				name
-				ingresses
+				ingresses {
+					url
+					type
+				}
 				networkPolicy {
 					inbound {
 						rules {
@@ -66,9 +70,9 @@
 			<h6>External ingresses</h6>
 			<ul>
 				{#each $data.ingresses as ingress}
-					{#if ingress.includes('.external.')}
+					{#if ingress.type === 'EXTERNAL'}
 						<li>
-							<Globe /><a href={ingress}>{externalName(ingress)}</a>
+							<Globe /><a href={ingress.url}>{externalName(ingress.url)}</a>
 						</li>
 					{/if}
 				{/each}
@@ -79,9 +83,19 @@
 			<h6>Internal ingresses</h6>
 			<ul>
 				{#each $data.ingresses as ingress}
-					{#if !ingress.includes('.external.')}
-						<!-- TODO: fjern når vi har fått på plass ekte ingresser -->
-						<li><a href={ingress}>{internalName(ingress)}</a></li>
+					{#if ingress.type === 'INTERNAL'}
+						<li><HouseIcon /><a href={ingress.url}>{internalName(ingress.url)}</a></li>
+					{/if}
+				{/each}
+				{#if !hasInternal}
+					<li>No internal ingresses</li>
+				{/if}
+			</ul>
+			<h6>Authenticated ingresses</h6>
+			<ul>
+				{#each $data.ingresses as ingress}
+					{#if ingress.type === 'AUTHENTICATED'}
+						<li><PadlockLockedIcon /><a href={ingress.url}>{internalName(ingress.url)}</a></li>
 					{/if}
 				{/each}
 				{#if !hasInternal}

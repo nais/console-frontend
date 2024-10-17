@@ -66,7 +66,7 @@ type Application implements Node & Workload {
   image: ContainerImage!
 
   """List of ingresses for the application."""
-  ingresses: [String!]!
+  ingresses: [Ingress!]!
 
   """
   Kafka topics the application has access to. This does not currently support pagination, but will return all available Kafka topics.
@@ -690,6 +690,21 @@ type ImageVulnerabilitySummary {
 
 type InboundNetworkPolicy {
   rules: [NetworkPolicyRule!]!
+}
+
+type Ingress {
+  """Type of ingress."""
+  type: IngressType!
+
+  """URL for the ingress."""
+  url: String!
+}
+
+enum IngressType {
+  AUTHENTICATED
+  EXTERNAL
+  INTERNAL
+  UNKNOWN
 }
 
 type Job implements Node & Workload {
