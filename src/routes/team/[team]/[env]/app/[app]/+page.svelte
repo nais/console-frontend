@@ -4,6 +4,8 @@
 	import type { PageData } from './$houdini';
 	import Image from './Image.svelte';
 	import Scaling from './Scaling.svelte';
+	import Status from './Status.svelte';
+	import Traffic from './Traffic.svelte';
 	import Utilization from './Utilization.svelte';
 
 	export let data: PageData;
@@ -42,10 +44,7 @@
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
 	<div class="grid">
-		<Card>
-			<!--Status app={$App.data.app} /-->
-			TODO: Status
-		</Card>
+		<Status {app} />
 
 		<Card columns={4}>
 			<Image workload={app} />
@@ -90,8 +89,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<!--Traffic app={$App.data.app} /-->
-			TODO: Traffic
+			<Traffic {app} />
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { PendingValue, fragment, graphql, type AppStatus } from '$houdini';
+	import { fragment, graphql, type AppStatus } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
-	import { Skeleton } from '@nais/ds-svelte-community';
 	import {
 		ExclamationmarkTriangleFillIcon,
 		QuestionmarkDiamondFillIcon
@@ -15,9 +14,9 @@
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment AppStatus on App {
-				status @loading {
-					state @loading
+			fragment AppStatus on Application {
+				status {
+					state
 					errors {
 						__typename
 						level
@@ -30,10 +29,7 @@
 </script>
 
 <div class="card {state.toString()}">
-	{#if $data.status.state == PendingValue}
-		<h4>Status</h4>
-		<Skeleton variant="rectangle" />
-	{:else if $data.status.state === 'NAIS'}
+	{#if $data.status.state === 'NAIS'}
 		<h4>Status</h4>
 		<div class="iconWrapper">
 			<Nais
@@ -59,7 +55,7 @@
 				{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 			</a> detected.
 		</div>
-	{:else if $data.status.state === 'NOTNAIS'}
+	{:else if $data.status.state === 'NOT_NAIS'}
 		<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 		<div>
 			Application is not nais.<br />
@@ -108,7 +104,7 @@
 		background-color: var(--a-bg-default);
 	}
 
-	.NOTNAIS {
+	.NOT_NAIS {
 		background-color: var(--a-surface-warning-moderate);
 		color: var(--a-text-on-warning);
 		border: 1px solid var(--a-border-warning);

@@ -6,6 +6,8 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...WorkloadImage
 				...AppUtilization
 				...Scaling
+				...AppStatus
+				...TrafficPolicy
 			}
 		}
 		viewerIsMember
