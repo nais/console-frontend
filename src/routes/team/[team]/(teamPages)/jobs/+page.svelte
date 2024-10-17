@@ -5,26 +5,13 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import {
 		changeParams,
 		sortTable,
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import {
-		Alert,
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
@@ -122,28 +109,5 @@
 		align-items: center;
 		justify-content: center;
 		line-height: 0.6;
-	}
-	.badge {
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-		width: 100%;
-		height: 32px;
-	}
-	.badge {
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-		width: 100%;
-		height: 32px;
-	}
-
-	.check {
-		font-size: 1.5rem;
-		text-align: center;
-		padding-left: 4px;
-	}
-	.success {
-		color: #4dbd74;
 	}
 </style>

@@ -5,24 +5,20 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Status from '$lib/Status.svelte';
 	import Time from '$lib/Time.svelte';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import {
 		changeParams,
 		sortTable,
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
-		Button,
 		Skeleton,
 		Table,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
@@ -137,21 +133,5 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-	.badge {
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-		width: 100%;
-		height: 32px;
-	}
-
-	.check {
-		font-size: 1.5rem;
-		text-align: center;
-		padding-left: 4px;
-	}
-	.success {
-		color: #4dbd74;
 	}
 </style>
