@@ -34,6 +34,7 @@ query TeamVulnerabilities(
 		}
 		vulnerabilitiesSummary(filter: $filter) {
 			riskScore
+			riskScoreTrend
 			critical
 			high
 			medium
@@ -42,15 +43,11 @@ query TeamVulnerabilities(
 			unassigned
 			coverage
 			totalWorkloads
+			vulnerabilityRanking
 			status {
 				state
 				title
 				description
-			}
-			teamRanking {
-				totalTeams
-				rank
-				trend
 			}
 		}
 	}

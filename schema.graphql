@@ -2707,13 +2707,14 @@ type VulnerabilityNode {
   workloadType: String!
 }
 
-type VulnerabilityRanking {
-  rank: Int!
-  totalTeams: Int!
-  trend: VulnerabilityRankingTrend!
+enum VulnerabilityRanking {
+  LEAST_VULNERABLE
+  MIDDLE
+  MOST_VULNERABLE
+  UNKNOWN
 }
 
-enum VulnerabilityRankingTrend {
+enum VulnerabilityRiskScoreTrend {
   DOWN
   FLAT
   UP
@@ -2741,10 +2742,11 @@ type VulnerabilitySummaryForTeam {
   low: Int!
   medium: Int!
   riskScore: Int!
+  riskScoreTrend: VulnerabilityRiskScoreTrend!
   status: [VulnerabilityStatus!]!
-  teamRanking: VulnerabilityRanking!
   totalWorkloads: Int!
   unassigned: Int!
+  vulnerabilityRanking: VulnerabilityRanking!
 }
 
 type VulnerableError implements StateError {

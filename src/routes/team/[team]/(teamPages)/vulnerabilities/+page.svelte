@@ -3,7 +3,8 @@
 	import { PendingValue, type TeamVulnerabilities$result, VulnerabilityState } from '$houdini';
 	import {
 		OrderByField,
-		VulnerabilityRankingTrend,
+		VulnerabilityRanking,
+		VulnerabilityRiskScoreTrend,
 		type OrderByField$options
 	} from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
@@ -35,7 +36,10 @@
 		TrendUpIcon,
 		TrendDownIcon,
 		TrendFlatIcon,
-		VitalsIcon
+		VitalsIcon,
+		FaceIcon,
+		FaceFrownIcon,
+		FaceSmileIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
@@ -158,7 +162,7 @@
 							<CircleProgressBar
 								size="66px"
 								progress={team.vulnerabilitiesSummary.coverage / 100}
-								startColor="red"
+								startColor="var(--a-icon-danger)"
 								endColor="green"
 							/>
 						{/if}
@@ -196,19 +200,28 @@
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
 					<div class="summaryIcon" style="--bg-color: #C8C8C8">
-						<VitalsIcon
-							title="RiskScore"
-							font-size="80"
-							style={isTooVulnerable(team.vulnerabilitiesSummary)
-								? 'color: var(--a-icon-danger)'
-								: 'color: var(--a-icon-success)'}
-						/>
+						{#if team.vulnerabilitiesSummary.riskScoreTrend === VulnerabilityRiskScoreTrend.UP}
+							<TrendUpIcon title="RiskScore" font-size="80" style="color: var(--a-icon-danger)" />
+						{:else if team.vulnerabilitiesSummary.riskScoreTrend === VulnerabilityRiskScoreTrend.DOWN}
+							<TrendDownIcon
+								title="RiskScore"
+								font-size="80"
+								style="color: var(--a-icon-success)"
+							/>
+						{:else}
+							<TrendFlatIcon
+								title="RiskScore"
+								font-size="80"
+								style="color: var(--a-icon-warning)"
+							/>
+						{/if}
 					</div>
 					<div class="summary">
 						<h4>
 							Total risk score
 							<HelpText title="Current team total risk score"
-								>The total risk score for the team's vulnerabilities.
+								>The total risk score for the team's vulnerabilities. The icon will also show trend
+								up or down since last month.
 							</HelpText>
 						</h4>
 						<p class="metric">
@@ -221,33 +234,82 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				{#if team !== undefined && team.id !== PendingValue}
-					<div class="summaryIcon" style="--bg-color: #C8C8C8">
-						{#if team.vulnerabilitiesSummary.teamRanking.trend === VulnerabilityRankingTrend.DOWN}
-							<TrendDownIcon
-								title="RiskScore"
+					{#if team.vulnerabilitiesSummary.vulnerabilityRanking === VulnerabilityRanking.MOST_VULNERABLE}
+						<div class="summaryIcon" style="--bg-color: #C8C8C8">
+							<FaceFrownIcon
+								title="Most vulnerable"
+								font-size="80"
+								style={'color: var(--a-icon-danger)'}
+							/>
+						</div>
+						<div class="summary">
+							<h4>
+								Team is ranked among the most vulnerable
+								<HelpText title="Team ranking"
+									>Ranking of the team's risk score compared to other teams. Your team is among the
+									most vulnerable teams in the organisation. If you are missing SBOMs on any of your
+									workloads this ranking will not be accurate.
+								</HelpText>
+							</h4>
+							<p class="metric"></p>
+						</div>
+					{:else if team.vulnerabilitiesSummary.vulnerabilityRanking === VulnerabilityRanking.LEAST_VULNERABLE}
+						<div class="summaryIcon" style="--bg-color: #C8C8C8">
+							<FaceSmileIcon
+								title="Least vulnerable"
 								font-size="80"
 								style={'color: var(--a-icon-success)'}
 							/>
-						{:else if team.vulnerabilitiesSummary.teamRanking.trend === VulnerabilityRankingTrend.UP}
-							<TrendUpIcon title="RiskScore" font-size="80" style={'color: var(--a-icon-danger)'} />
-						{:else}
-							<TrendFlatIcon title="RiskScore" font-size="80" style={'color: var(--a-icon-info)'} />
-						{/if}
-					</div>
-					<div class="summary">
-						<h4>
-							Riskscore ranking
-							<HelpText title="Current team ranking"
-								>Ranking of the team's risk score compared to other teams. 1st place means overall
-								highest riskscore. The icon will also show trend up or down since last month. If you
-								are missing SBOMs on any of your workloads this ranking will not be accurate.
-							</HelpText>
-						</h4>
-						<p class="metric">
-							#{team.vulnerabilitiesSummary.teamRanking.rank} of {team.vulnerabilitiesSummary
-								.teamRanking.totalTeams} teams
-						</p>
-					</div>
+						</div>
+						<div class="summary">
+							<h4>
+								Team is ranked among the least vulnerable
+								<HelpText title="Team ranking"
+									>Ranking of the team's risk score compared to other teams. Your team is ranked
+									among the least vulnerable teams in the organisation. If you are missing SBOMs on
+									any of your workloads this ranking will not be accurate.
+								</HelpText>
+							</h4>
+							<p class="metric"></p>
+						</div>
+					{:else if team.vulnerabilitiesSummary.vulnerabilityRanking === VulnerabilityRanking.MIDDLE}
+						<div class="summaryIcon" style="--bg-color: #C8C8C8">
+							<FaceIcon
+								title="Average ranking"
+								font-size="80"
+								style={'color: var(--a-icon-warning)'}
+							/>
+						</div>
+						<div class="summary">
+							<h4>
+								Team is ranked in the middle
+								<HelpText title="Current team ranking"
+									>Ranking of the team's risk score compared to other teams. Your team is ranked in
+									the middle of your organisations teams. If you are missing SBOMs on any of your
+									workloads this ranking will not be accurate.
+								</HelpText>
+							</h4>
+							<p class="metric"></p>
+						</div>
+					{:else}
+						<div class="summaryIcon" style="--bg-color: #C8C8C8">
+							<FaceFrownIcon
+								title="Unknown ranking"
+								font-size="80"
+								style={'color: var(--a-icon-danger)'}
+							/>
+						</div>
+						<div class="summary">
+							<h4>
+								Ranking is unknown
+								<HelpText title="Current team ranking"
+									>Ranking of the team's risk score compared to other teams. If your ranking is
+									unknown this is usually because you are missing SBOMs on your workloads.
+								</HelpText>
+							</h4>
+							<p class="metric"></p>
+						</div>
+					{/if}
 				{/if}
 			</div>
 		</Card>

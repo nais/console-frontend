@@ -95,9 +95,7 @@
 		<Heading>Create new Secret in <i>{environment.name}</i></Heading>
 	</svelte:fragment>
 	<div class="row">
-		<BodyShort size="medium" spacing>
-			A Secret is a named set of key-value pairs.
-		</BodyShort>
+		<BodyShort size="medium" spacing>A Secret is a named set of key-value pairs.</BodyShort>
 	</div>
 	<div class="row">
 		<TextField size="small" bind:value={name} error={validate(name)}>
