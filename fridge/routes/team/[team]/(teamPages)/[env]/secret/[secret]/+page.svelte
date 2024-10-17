@@ -6,7 +6,7 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 	import { Alert, Button, Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 	import { ArrowUndoIcon, FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageData } from '../../../../../../../../src/routes/team/[team]/(teamPages)/[env]/secret/[secret]/$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Data from './Data.svelte';
 	import Manifest from './Manifest.svelte';

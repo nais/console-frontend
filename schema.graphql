@@ -67,6 +67,23 @@ type Application implements Node & Workload {
 
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
+  instances(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): InstanceConnection!
 
   """
   Kafka topics the application has access to. This does not currently support pagination, but will return all available Kafka topics.
@@ -463,10 +480,7 @@ type ContainerImageWorkloadReferenceEdge {
 }
 
 input CreateSecretInput {
-  """The secret data."""
-  data: [SecretVariableInput!]!
-
-  """The environment the secret is deployed to."""
+  """The environment the secret exists in."""
   environment: String!
 
   """The name of the secret."""
@@ -478,7 +492,7 @@ input CreateSecretInput {
 
 type CreateSecretPayload {
   """The created secret."""
-  secret: Secret!
+  secret: Secret
 }
 
 input CreateTeamInput {
@@ -554,7 +568,7 @@ type DeleteJobPayload {
 }
 
 input DeleteSecretInput {
-  """The environment the secret is deployed to."""
+  """The environment the secret exists in."""
   environment: String!
 
   """The name of the secret."""
@@ -566,7 +580,7 @@ input DeleteSecretInput {
 
 type DeleteSecretPayload {
   """The deleted secret."""
-  secretDeleted: Boolean!
+  secretDeleted: Boolean
 }
 
 type EntraIDAuthIntegration implements AuthIntegration {
@@ -705,6 +719,45 @@ enum IngressType {
   EXTERNAL
   INTERNAL
   UNKNOWN
+}
+
+type Instance implements Node {
+  created: Time!
+  id: ID!
+  image: ContainerImage!
+  name: String!
+  restarts: Int!
+  status: InstanceStatus!
+}
+
+type InstanceConnection {
+  """List of edges."""
+  edges: [InstanceEdge!]!
+
+  """List of nodes."""
+  nodes: [Instance!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type InstanceEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The instance."""
+  node: Instance!
+}
+
+enum InstanceState {
+  FAILING
+  RUNNING
+  UNKNOWN
+}
+
+type InstanceStatus {
+  message: String!
+  state: InstanceState!
 }
 
 type Job implements Node & Workload {
@@ -1054,6 +1107,8 @@ type Mutation {
   Note: Service accounts are not allowed to confirm a team deletion.
   """
   confirmTeamDeletion(input: ConfirmTeamDeletionInput!): ConfirmTeamDeletionPayload!
+
+  """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
 
   """
@@ -1075,6 +1130,8 @@ type Mutation {
 
   """Delete a job."""
   deleteJob(input: DeleteJobInput!): DeleteJobPayload!
+
+  """Delete a secret and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
 
   """
@@ -1100,6 +1157,9 @@ type Mutation {
   """Remove a team repository."""
   removeRepositoryFromTeam(input: RemoveRepositoryFromTeamInput!): RemoveRepositoryFromTeamPayload!
 
+  """Remove a secret value from a secret."""
+  removeSecretValue(input: RemoveSecretValueInput!): RemoveSecretValuePayload!
+
   """
   Remove a team member
   
@@ -1123,6 +1183,11 @@ type Mutation {
   restartApplication(input: RestartApplicationInput!): RestartApplicationPayload!
 
   """
+  Set a secret value in a secret. If the value already exists the secret value will be updated.
+  """
+  setSecretValue(input: SetSecretValueInput!): SetSecretValuePayload!
+
+  """
   Assign a role to a team member
   
   The user must already be a member of the team for this mutation to succeed.
@@ -1139,7 +1204,6 @@ type Mutation {
 
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
-  updateSecret(input: UpdateSecretInput!): UpdateSecretPayload!
 
   """
   Update an existing NAIS team
@@ -1545,6 +1609,25 @@ type RemoveRepositoryFromTeamPayload {
   success: Boolean
 }
 
+input RemoveSecretValueInput {
+  """The environment the secret exists in."""
+  environment: String!
+
+  """The name of the secret."""
+  secretName: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+
+  """The secret value to remove."""
+  valueName: String!
+}
+
+type RemoveSecretValuePayload {
+  """The updated secret."""
+  secret: Secret
+}
+
 input RemoveTeamMemberInput {
   """Slug of the team that the member should be removed from."""
   teamSlug: Slug!
@@ -1659,6 +1742,7 @@ enum SearchType {
   TEAM
 }
 
+"""A secret is a collection of secret values."""
 type Secret implements Node {
   """Applications that use the secret."""
   applications(
@@ -1679,10 +1763,7 @@ type Secret implements Node {
     last: Int
   ): ApplicationConnection!
 
-  """The secret data."""
-  data: [SecretVariable!]!
-
-  """The environment the secret is deployed to."""
+  """The environment the secret exists in."""
   environment: TeamEnvironment!
 
   """The globally unique ID of the secret."""
@@ -1718,6 +1799,9 @@ type Secret implements Node {
 
   """The team that owns the secret."""
   team: Team!
+
+  """The secret values contained within the secret."""
+  values: [SecretValue!]!
 
   """Workloads that use the secret."""
   workloads(
@@ -1759,9 +1843,6 @@ type SecretCreatedAuditEntry implements AuditEntry & Node {
   """Creation time of the entry."""
   createdAt: Time!
 
-  """Data associated with the entry."""
-  data: SecretCreatedAuditEntryData!
-
   """The environment name that the entry belongs to."""
   environmentName: String
 
@@ -1781,11 +1862,6 @@ type SecretCreatedAuditEntry implements AuditEntry & Node {
   teamSlug: Slug!
 }
 
-type SecretCreatedAuditEntryData {
-  """The keys added to the secret."""
-  keys: [String!]!
-}
-
 type SecretEdge {
   """Cursor for this edge that can be used for pagination."""
   cursor: Cursor!
@@ -1794,16 +1870,19 @@ type SecretEdge {
   node: Secret!
 }
 
-type SecretVariable {
-  """The name of the secret."""
+type SecretValue {
+  """The name of the secret value."""
   name: String!
 
-  """The value of the secret."""
+  """The secret value itself."""
   value: String!
 }
 
-input SecretVariableInput {
+input SecretValueInput {
+  """The name of the secret value."""
   name: String!
+
+  """The secret value to set."""
   value: String!
 }
 
@@ -1826,6 +1905,25 @@ type ServiceCostSeries {
 
   """The sum of the cost across all services."""
   sum: Float!
+}
+
+input SetSecretValueInput {
+  """The environment the secret exists in."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+
+  """The secret value to set."""
+  value: SecretValueInput!
+}
+
+type SetSecretValuePayload {
+  """The added / updated secret."""
+  secret: Secret
 }
 
 input SetTeamMemberRoleInput {
@@ -2996,25 +3094,6 @@ type TriggerJobPayload {
 
   """The new job run."""
   jobRun: JobRun
-}
-
-input UpdateSecretInput {
-  """The secret data."""
-  data: [SecretVariableInput!]!
-
-  """The environment the secret is deployed to."""
-  environment: String!
-
-  """The name of the secret."""
-  name: String!
-
-  """The team that owns the secret."""
-  team: Slug!
-}
-
-type UpdateSecretPayload {
-  """The created secret."""
-  secret: Secret!
 }
 
 input UpdateTeamEnvironmentInput {
