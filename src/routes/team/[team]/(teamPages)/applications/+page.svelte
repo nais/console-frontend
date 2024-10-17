@@ -20,7 +20,7 @@
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 	//import Status from '$lib/Status.svelte';
-	//import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
+	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 
 	export let data: PageData;
 
@@ -162,8 +162,7 @@
 								</Td>
 
 								<Td>
-									TODO
-									<!--InstanceStatus app={edge.node} /-->
+									<InstanceStatus app={edge.node} />
 								</Td>
 								<Td>
 									<!--

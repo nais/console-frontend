@@ -26,7 +26,7 @@ query Workloads($team: Slug!, $orderBy: ApplicationOrder) {
 					#	timestamp
 					#}
 
-					#...AppInstancesStatus
+					...AppInstancesStatus
 
 					#status {
 					#	state
