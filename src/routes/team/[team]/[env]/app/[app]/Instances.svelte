@@ -76,7 +76,7 @@
 				</Tr>
 			{:else}
 				<Tr>
-					<Td colspan="7">No instances found</Td>
+					<Td colspan={7}>No instances found</Td>
 				</Tr>
 			{/each}
 

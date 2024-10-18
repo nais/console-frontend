@@ -168,22 +168,6 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-	.badge {
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-		width: 100%;
-		height: 32px;
-	}
-
-	.check {
-		font-size: 1.5rem;
-		text-align: center;
-		padding-left: 4px;
-	}
-	.success {
-		color: #4dbd74;
-	}
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;

@@ -18,15 +18,13 @@ query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC }) 
 					environment {
 						name
 					}
+					status {
+						state
+					}
 
 					#deployInfo {
 					#	timestamp
 					#}
-
-					#status {
-					#	state
-					#}
-					#
 				}
 			}
 		}

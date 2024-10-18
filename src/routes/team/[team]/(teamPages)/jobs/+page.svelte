@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { JobOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Status from '$lib/components/Status.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -78,7 +79,7 @@
 										href="/team/{teamName}/{edge.node.environment.name}/job/{edge.node.name}/status"
 										data-sveltekit-preload-data="off"
 									>
-										TODO<!--Status size="1.5rem" state={edge.node.status.state} /-->
+										<Status size="1.5rem" state={edge.node.status.state} />
 									</a>
 								</div>
 							</Td>
@@ -114,28 +115,5 @@
 		align-items: center;
 		justify-content: center;
 		line-height: 0.6;
-	}
-	.badge {
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-		width: 100%;
-		height: 32px;
-	}
-	.badge {
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-		width: 100%;
-		height: 32px;
-	}
-
-	.check {
-		font-size: 1.5rem;
-		text-align: center;
-		padding-left: 4px;
-	}
-	.success {
-		color: #4dbd74;
 	}
 </style>
