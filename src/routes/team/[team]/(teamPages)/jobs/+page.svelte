@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { JobOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Status from '$lib/components/Status.svelte';
+	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -79,7 +79,7 @@
 										href="/team/{teamName}/{edge.node.environment.name}/job/{edge.node.name}/status"
 										data-sveltekit-preload-data="off"
 									>
-										<Status size="1.5rem" state={edge.node.status.state} />
+										<StatusBadge size="1.5rem" state={edge.node.status.state} />
 									</a>
 								</div>
 							</Td>

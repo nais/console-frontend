@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { fragment, graphql, type AppStatus } from '$houdini';
+	import { fragment, graphql, type JobStatus } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
 		ExclamationmarkTriangleFillIcon,
@@ -9,13 +9,13 @@
 
 	$: teamName = $page.params.team;
 	$: envName = $page.params.env;
-	$: appName = $page.params.app;
+	$: jobName = $page.params.job;
 
-	export let app: AppStatus;
+	export let job: JobStatus;
 	$: data = fragment(
-		app,
+		job,
 		graphql(`
-			fragment AppStatus on Application {
+			fragment JobStatus on Job {
 				status {
 					state
 					errors {
@@ -36,22 +36,22 @@
 				<Nais
 					size="5rem"
 					style="color: var(--a-icon-success)"
-					aria-label="Application is nais"
+					aria-label="Job is nais"
 					role="image"
 				/>
-				{#if $data.status?.errors.length > 0}
-					<p>
-						<a href="/team/{teamName}/{envName}/app/{appName}/status"
-							>{$data.status.errors.length} todo{$data.status.errors.length > 1 ? 's' : ''}</a
-						>
-					</p>
-				{/if}
 			</div>
+			{#if $data.status?.errors.length > 0}
+				<p>
+					<a href="/team/{teamName}/{envName}/app/{jobName}/status"
+						>{$data.status.errors.length} todo{$data.status.errors.length > 1 ? 's' : ''}</a
+					>
+				</p>
+			{/if}
 		{:else if $data.status.state === 'FAILING'}
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 			<div>
-				Application is failing.<br />
-				<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+				Job is failing.<br />
+				<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
 					{$data.status.errors.length}
 					{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 				</a> detected.
@@ -59,8 +59,8 @@
 		{:else if $data.status.state === 'NOT_NAIS'}
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 			<div>
-				Application is not nais.<br />
-				<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+				Job is not nais.<br />
+				<a class="status" href="/team/{teamName}/{envName}/job/{jobName}/status">
 					{$data.status.errors.length}
 					{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 				</a>
@@ -68,7 +68,7 @@
 			</div>
 		{:else if $data.status.state === 'UNKNOWN'}
 			<h4>Status <QuestionmarkDiamondFillIcon /></h4>
-			<div>Application status is unknown.</div>
+			<div>Job status is unknown.</div>
 		{/if}
 	</div>
 {/if}
@@ -92,7 +92,7 @@
 	.card {
 		border-radius: 0.5rem;
 		padding: 1rem;
-		grid-column: span 4;
+		grid-column: span 3;
 		grid-row: span 1;
 		background-color: var(--a-bg-default);
 		border: 1px solid var(--active-color-strong);
