@@ -23,7 +23,7 @@ spec:
               value: '{{ .Values.fasit.tenant.name }}'
           envFrom:
             - secretRef:
-                name: "{{ .Release.Name }}"
+                name: '{{ .Release.Name }}'
           securityContext:
             capabilities:
               drop:
