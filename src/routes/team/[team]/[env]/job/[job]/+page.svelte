@@ -9,6 +9,7 @@
 	//import Traffic from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Traffic.svelte';
 	//import Persistence from '../../app/[app]/Persistence.svelte';
 	import type { PageData } from './$houdini';
+	import Schedule from './Schedule.svelte';
 	import Status from './Status.svelte';
 
 	export let data: PageData;
@@ -40,8 +41,7 @@
 
 		<Card columns={3}>
 			<h4>Schedule</h4>
-
-			<!--Schedule schedule={String(job.schedule)} /-->
+			<Schedule schedule={job.schedule} />
 		</Card>
 		<Card columns={12}>
 			<h4>Runs</h4>
