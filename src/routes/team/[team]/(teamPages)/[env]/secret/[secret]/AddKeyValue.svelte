@@ -1,31 +1,15 @@
 <script lang="ts">
-	import type { SecretValueInput } from '$houdini';
+	import { graphql, type SecretValueInput } from '$houdini';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Textarea from './Textarea.svelte';
 
 	export let initial: SecretValueInput[];
-	//export let changes: operation[];
+	export let team: string;
+	export let env: string;
+	export let secretName: string;
 
 	let open: boolean = false;
-	/* TODO: Tror ikke vi trenger noe state-machine
-	const addKv = () => {
-		if (key && value) {
-			if (validKey(key).length > 0) {
-				return;
-			}
-
-			changes = [
-				...changes,
-				{
-					type: 'AddKv',
-					data: { name: key, value }
-				}
-			];
-
-			reset();
-		}
-	};*/
 
 	const validKey = (key: string | undefined) => {
 		if (!key) {
@@ -33,7 +17,7 @@
 		}
 
 		const existingKeys = initial.map((kv) => kv.name);
-		if (existingKeys.includes(key) /*|| addedKey(key, initial, changes)*/) {
+		if (existingKeys.includes(key)) {
 			return 'Key already exists';
 		}
 
@@ -50,6 +34,55 @@
 		}
 		return '';
 	};
+
+	const addSecretValueMutation = graphql(`
+		mutation addSecretValue(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$value: SecretValueInput!
+		) {
+			addSecretValue(input: { environment: $env, name: $name, team: $team, value: $value }) {
+				secret {
+					id
+					values {
+						name
+						value
+					}
+					lastModifiedBy {
+						name
+						email
+					}
+					lastModifiedAt
+				}
+			}
+		}
+	`);
+
+	const addSecretValue = async () => {
+		if (!key || !value) {
+			return;
+		}
+		await addSecretValueMutation.mutate({
+			value: {
+				name: key,
+				value: value
+			},
+			team: team,
+			env: env,
+			name: secretName
+		});
+
+		if ($addSecretValueMutation.errors) {
+			return;
+		}
+
+		open = false;
+		key = undefined;
+		value = undefined;
+	};
+
+	console.log(addSecretValueMutation.name);
 
 	let key: string | undefined;
 	let value: string | undefined;
@@ -95,13 +128,7 @@
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 	<svelte:fragment slot="footer">
-		<Button
-			variant="primary"
-			size="small"
-			on:click={/*addKv*/ (e) => {
-				console.log(e);
-			}}>Add</Button
-		>
+		<Button variant="primary" size="small" on:click={addSecretValue}>Add</Button>
 		<Button variant="secondary" size="small" on:click={reset}>Cancel</Button>
 	</svelte:fragment>
 </Modal>

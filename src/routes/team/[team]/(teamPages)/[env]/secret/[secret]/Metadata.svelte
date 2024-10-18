@@ -1,9 +1,11 @@
 <script lang="ts">
-	import type { Secret$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 
-	export let lastModifiedAt: Secret$result['team']['environment']['secret']['lastModifiedAt'];
-	export let lastModifiedBy: Secret$result['team']['environment']['secret']['lastModifiedBy'];
+	export let lastModifiedAt: Date | null;
+	export let lastModifiedBy: {
+		readonly name: string;
+		readonly email: string;
+	} | null;
 </script>
 
 <h4>Metadata</h4>
@@ -44,7 +46,7 @@
 		margin-left: 1rem;
 	}
 
-	/*.cap {
+	.cap {
 		text-transform: capitalize;
-	}*/
+	}
 </style>

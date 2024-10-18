@@ -1,37 +1,32 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Alert,
 		Button,
+		Heading,
 		HelpText,
 		Loader,
+		Modal,
 		Table,
 		Tbody,
+		Td,
 		Th,
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { FloppydiskIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+
+	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import KeyValue from './KeyValue.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
+	import Textarea from './Textarea.svelte';
 	import Workloads from './Workloads.svelte';
 	//import Data from './Data.svelte';
-	//import { added, deleted, mergeChanges, updated, type operation } from './state-machinery';
-
-	/*beforeNavigate(({ cancel }) => {
-		if (dirty(changes)) {
-			if (!confirm('You have unsaved changes. Are you sure you want to leave this page?')) {
-				cancel();
-			}
-		}
-		if (!confirm('You have unsaved changes. Are you sure you want to leave this page?')) {
-			cancel();
-		}
-	});*/
 
 	export let data: PageData;
 
@@ -39,37 +34,25 @@
 	$: secret = $Secret.data?.team.environment.secret;
 
 	$: secretName = $page.params.secret;
-	//$: env = $page.params.env;
-	//$: team = $page.params.team;
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 
-	//let changes: operation[] = [];
-	let saved = false;
-	//let deleteOpen = false;
-	//let discardOpen = false;
+	let deleteSecretOpen = false;
+	let deleteValueOpen = false;
+	let editValueOpen = false;
 
-	/*const dirty = (changes: operation[]) => {
-		if (!secret) {
-			return false;
-		}
+	let keyToDelete = '';
+	let keyToEdit = '';
+	let valueToEdit = '';
 
-		const mutated = changes.reduce(mergeChanges, secret.data);
-		return (
-			mutated.length !== secret.data.length ||
-			added(secret.data, changes).length > 0 ||
-			deleted(secret.data, changes).length > 0 ||
-			updated(secret.data, changes).length > 0
-		);
-	};*/
-
-	/*const discard = () => {
-		saved = false;
-		//changes = [];
-		Secret.fetch();
-	};*/
-
-	const updateMutation = graphql(`
-		mutation updateSecret($name: String!, $team: Slug!, $env: String!, $values: SecretValueInput!) {
-			setSecretValue(input: { name: $name, team: $team, environment: $env, value: $values }) {
+	const updateSecretValue = graphql(`
+		mutation updateSecretValue(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$value: SecretValueInput!
+		) {
+			updateSecretValue(input: { environment: $env, name: $name, team: $team, value: $value }) {
 				secret {
 					id
 					values {
@@ -85,41 +68,78 @@
 			}
 		}
 	`);
-	const updateSecret = async () => {
-		saved = false;
-		if (!secret || !dirty(changes)) {
+
+	const editValueForKey = async () => {
+		if (keyToEdit == '') {
 			return;
 		}
-
-		let data: SecretVariableInput[] = changes.reduce(mergeChanges, secret.data);
-
-		await updateMutation.mutate({
-			data: data,
-			env: env,
+		await updateSecretValue.mutate({
 			name: secretName,
-			team: team
+			team: team,
+			env: env,
+			value: {
+				name: keyToEdit,
+				value: valueToEdit
+			}
 		});
 
-		if ($updateMutation.errors) {
+		if ($updateSecretValue.errors) {
 			return;
 		}
 
-		changes = [];
-		saved = true;
-		setTimeout(() => {
-			saved = false;
-		}, 3000);
+		editValueOpen = false;
+		keyToEdit = '';
 	};
 
-	/*const deleteMutation = graphql(`
+	const removeSecretValue = graphql(`
+		mutation removeSecretValue($name: String!, $team: Slug!, $env: String!, $valueName: String!) {
+			removeSecretValue(
+				input: { environment: $env, secretName: $name, team: $team, valueName: $valueName }
+			) {
+				secret {
+					id
+					values {
+						name
+						value
+					}
+					lastModifiedBy {
+						name
+						email
+					}
+					lastModifiedAt
+				}
+			}
+		}
+	`);
+
+	const deleteValueFromSecret = async () => {
+		if (keyToDelete == '') {
+			return;
+		}
+		await removeSecretValue.mutate({
+			name: secretName,
+			team: team,
+			env: env,
+			valueName: keyToDelete
+		});
+
+		if ($removeSecretValue.errors) {
+			return;
+		}
+
+		deleteValueOpen = false;
+		keyToDelete = '';
+	};
+
+	const deleteMutation = graphql(`
 		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
 			deleteSecret(input: { name: $name, team: $team, environment: $env }) {
 				secretDeleted
 			}
 		}
-	`);*/
+	`);
 
-	/*const deleteSecret = async () => {
+	const deleteSecret = async () => {
 		await deleteMutation.mutate({
 			name: secretName,
 			team: team,
@@ -131,18 +151,28 @@
 		}
 
 		await goto('/team/' + team + '/secrets');
-	};*/
+	};
 
-	/*const openDeleteModal = () => {
-		deleteOpen = true;
-	};*/
+	const openDeleteModal = () => {
+		deleteSecretOpen = true;
+	};
 
-	/*const openDiscardModal = () => {
-		if (!dirty(changes)) {
-			return;
-		}
-		discardOpen = true;
-	};*/
+	const openDeleteValueModal = (key: string) => {
+		keyToDelete = key;
+		deleteValueOpen = true;
+	};
+
+	const openEditValueModal = (key: string, value: string) => {
+		keyToEdit = key;
+		valueToEdit = value;
+		editValueOpen = true;
+	};
+
+	const cancelEditValue = () => {
+		editValueOpen = false;
+		keyToEdit = '';
+		valueToEdit = '';
+	};
 </script>
 
 {#if $Secret.errors}
@@ -154,7 +184,12 @@
 {:else if $Secret.fetching}
 	<Loader />
 {:else if secret}
-	<!--Confirm confirmText="Delete" variant="danger" bind:open={deleteOpen} on:confirm={deleteSecret}>
+	<Confirm
+		confirmText="Delete"
+		variant="danger"
+		bind:open={deleteSecretOpen}
+		on:confirm={deleteSecret}
+	>
 		<svelte:fragment slot="header">
 			<Heading>Delete secret</Heading>
 		</svelte:fragment>
@@ -175,16 +210,36 @@
 		{/if}
 
 		Are you sure you want to delete this secret?
-	</Confirm-->
-
-	<!--Confirm confirmText="Discard" variant="danger" bind:open={discardOpen} on:confirm={discard}>
+	</Confirm>
+	<Confirm
+		confirmText="Delete key"
+		variant="danger"
+		bind:open={deleteValueOpen}
+		on:confirm={deleteValueFromSecret}
+	>
 		<svelte:fragment slot="header">
-			<Heading>Discard all changes</Heading>
+			<Heading>Delete key from secret</Heading>
 		</svelte:fragment>
-		<p>All unsaved changes will be lost if you continue.</p>
+		<p>
+			This will permanently delete the key <b>{keyToDelete}</b> from the secret named
+			<b>{secret.name}</b>
+			from <b>{env}</b>.
+		</p>
+		{#if secret.applications.edges.length > 0 || secret.jobs.edges.length > 0}
+			<p>These workloads reference the secret:</p>
+			<ul>
+				{#each secret.applications.edges as app}
+					<li><a href="/team/{team}/{env}/app/{app.node.name}">{app.node.name}</a></li>
+				{/each}
+				{#each secret.jobs.edges as job}
+					<li><a href="/team/{team}/{env}/job/{job.node.name}">{job.node.name}</a></li>
+				{/each}
+			</ul>
+			<br />
+		{/if}
 
-		Are you sure you want to discard all changes?
-	</Confirm-->
+		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
+	</Confirm>
 
 	<div class="heading">
 		<span />
@@ -193,7 +248,7 @@
 			title="Delete secret from environment"
 			variant="danger"
 			size="small"
-			on:click={/*openDeleteModal*/ () => {}}
+			on:click={openDeleteModal}
 		>
 			<svelte:fragment slot="icon-left">
 				<TrashIcon />
@@ -202,25 +257,19 @@
 		</Button>
 	</div>
 	<div class="alerts">
-		<!--{#if saved && !dirty(changes)}
-			<Alert variant="success" size="small">All changes saved!</Alert>
-		{/if}
-		{#if !saved && dirty(changes)}
-			<Alert variant="warning" size="small">You have unsaved changes.</Alert>
-		{/if}-->
 		<!--{#if $updateMutation.errors}
 			<Alert variant="error">
 				{#each $updateMutation.errors as error}
 					{error.message}
 				{/each}
-			</Alert>
-		{:else if $deleteMutation.errors}
+			</Alert>-->
+		{#if $deleteMutation.errors}
 			<Alert variant="error">
 				{#each $deleteMutation.errors as error}
 					{error.message}
 				{/each}
 			</Alert>
-		{/if}-->
+		{/if}
 	</div>
 	<div class="grid">
 		<Card columns={8} rows={3}>
@@ -231,31 +280,6 @@
 						A secret contains a set of key-value pairs.
 					</HelpText>
 				</h4>
-				<div class="edit">
-					<!--Button
-						variant="tertiary"
-						size="small"
-						title="Discard all changes"
-						on:click={/*openDiscardModal*/ () => {}}
-					>
-						<svelte:fragment slot="icon-left">
-							<ArrowUndoIcon />
-						</svelte:fragment>
-						Reset
-					</Button-->
-					<Button
-						variant="primary"
-						size="small"
-						title="Persist all changes"
-						on:click={/*updateSecret*/ () => {}}
-						loading={/*$updateMutation.fetching*/ false}
-					>
-						<svelte:fragment slot="icon-left">
-							<FloppydiskIcon />
-						</svelte:fragment>
-						Save
-					</Button>
-				</div>
 			</div>
 			<!--Data initial={secret.values} /-->
 			<Table size="small" style="margin-top: 2rem" zebraStripes>
@@ -263,16 +287,50 @@
 					<Tr>
 						<Th>Key</Th>
 						<Th align="right">Actions</Th>
-						<Th />
 					</Tr>
 				</Thead>
 				<Tbody>
 					{#each secret.values as value}
-						<KeyValue key={value.name} initialValue={value.value} />
+						<Tr>
+							<Td>
+								<p class="key">
+									{value.name}
+								</p>
+							</Td>
+							<Td style="width:100px;" align="right">
+								<Button
+									iconOnly
+									size="small"
+									variant="tertiary"
+									title="Show or edit secret value"
+									on:click={() => {
+										openEditValueModal(value.name, value.value);
+									}}
+								>
+									<svelte:fragment slot="icon-left">
+										<DocPencilIcon />
+									</svelte:fragment>
+								</Button>
+
+								<Button
+									iconOnly
+									size="small"
+									variant="tertiary-neutral"
+									title="Delete key and value"
+									on:click={() => {
+										openDeleteValueModal(value.name);
+									}}
+								>
+									<svelte:fragment slot="icon-left">
+										<TrashIcon style="color:var(--a-icon-danger)!important" />
+									</svelte:fragment>
+								</Button>
+							</Td>
+						</Tr>
 					{/each}
 				</Tbody>
 			</Table>
-			<AddKeyValue initial={secret.values} />
+			<AddKeyValue initial={secret.values} {team} {env} {secretName} />
 		</Card>
 		<Card columns={4} rows={1}>
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
@@ -285,6 +343,18 @@
 		</Card>
 	</div>
 {/if}
+<Modal bind:open={editValueOpen} width="medium" on:close={/*reset*/ () => {}}>
+	<svelte:fragment slot="header">
+		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
+	</svelte:fragment>
+	<div class="entry">
+		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
+	</div>
+	<svelte:fragment slot="footer">
+		<Button variant="primary" size="small" on:click={editValueForKey}>Save</Button>
+		<Button variant="secondary" size="small" on:click={cancelEditValue}>Cancel</Button>
+	</svelte:fragment>
+</Modal>
 
 <style>
 	.grid {
@@ -301,12 +371,6 @@
 		gap: 0.5rem;
 	}
 
-	/*ul {
-		list-style: none;
-		margin: 0 0 1rem 0;
-		padding: 0 1rem 0 1rem;
-	}*/
-
 	.heading {
 		display: flex;
 		justify-content: flex-end;
@@ -321,9 +385,5 @@
 		display: flex;
 		justify-content: space-between;
 		margin: 1rem 0;
-	}
-
-	.edit > :global(*) {
-		margin-right: 8px;
 	}
 </style>
