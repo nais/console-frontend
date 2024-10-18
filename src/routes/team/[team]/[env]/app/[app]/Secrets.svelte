@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { graphql, PendingValue } from '$houdini';
 	import { page } from '$app/stores';
-	import { Alert, Loader, Skeleton } from '@nais/ds-svelte-community';
+	import { graphql } from '$houdini';
+	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { AppSecretsVariables } from './$houdini';
 
 	export const _AppSecretsVariables: AppSecretsVariables = () => {
@@ -10,9 +10,18 @@
 
 	const appSecrets = graphql(`
 		query AppSecrets($app: String!, $team: Slug!, $env: String!) @load {
-			app(name: $app, team: $team, env: $env) @loading {
-				secrets @loading {
-					name
+			team(slug: $team) {
+				environment(name: $env) {
+					application(name: $app) {
+						name
+						secrets {
+							edges {
+								node {
+									name
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -32,14 +41,10 @@
 	</Alert>
 {:else if $appSecrets.data}
 	<div>
-		{#if $appSecrets.data.app.secrets.length > 0}
+		{#if $appSecrets.data.team.environment.application.secrets.edges.length > 0}
 			<ul>
-				{#each $appSecrets.data.app.secrets as secret}
-					{#if secret === PendingValue}
-						<Skeleton variant="text" width="300px" />
-					{:else}
-						<li><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></li>
-					{/if}
+				{#each $appSecrets.data.team.environment.application.secrets.edges as secret}
+					<li><a href="/team/{team}/{env}/secret/{secret.node.name}">{secret.node.name}</a></li>
 				{/each}
 			</ul>
 		{:else}

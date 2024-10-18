@@ -75,6 +75,13 @@ type Application implements Node & Workload {
   """The cost for the application."""
   cost: WorkloadCost!
 
+  """
+  Deployment information for the application.
+  DO NOT USE
+  This is a work in progress, and will be changed in the future.
+  """
+  deploymentInfo: DeploymentInfo!
+
   """The environment the application is deployed in."""
   environment: TeamEnvironment!
 
@@ -134,6 +141,25 @@ type Application implements Node & Workload {
 
   """Resources for the application."""
   resources: ApplicationResources!
+
+  """Secrets used by the application."""
+  secrets(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): SecretConnection!
 
   """
   SQL instances referenced by the application. This does not currently support pagination, but will return all available SQL instances.
@@ -440,6 +466,16 @@ type CPUScalingStrategy {
   threshold: Int!
 }
 
+input ChangeDeploymentKeyInput {
+  """The name of the team to update the deploy key for."""
+  teamSlug: Slug!
+}
+
+type ChangeDeploymentKeyPayload {
+  """The updated deploy key."""
+  deploymentKey: DeploymentKey
+}
+
 input ConfirmTeamDeletionInput {
   """Deletion key, acquired using the requestTeamDeletion mutation."""
   key: String!
@@ -641,6 +677,106 @@ type DeleteSecretPayload {
   secretDeleted: Boolean
 }
 
+"""
+Description of a deployment.
+DO NOT USE
+This type is a work in progress, and will be changed in the future.
+"""
+type Deployment implements Node {
+  created: Time!
+  environment: TeamEnvironment!
+  id: ID!
+  repository: String!
+  resources: [DeploymentResource!]!
+  statuses: [DeploymentStatus!]!
+  team: Team!
+}
+
+type DeploymentConnection {
+  """List of edges."""
+  edges: [DeploymentEdge!]!
+
+  """List of nodes."""
+  nodes: [Deployment!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type DeploymentEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The deployment."""
+  node: Deployment!
+}
+
+"""
+Deployment information for a workload.
+DO NOT USE
+This is a work in progress, and will be changed in the future.
+"""
+type DeploymentInfo {
+  commitSha: String
+  deployer: String
+  history(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentConnection!
+  timestamp: Time
+  url: String
+}
+
+"""Deployment key type."""
+type DeploymentKey implements Node {
+  """The date the deployment key was created."""
+  created: Time!
+
+  """The date the deployment key expires."""
+  expires: Time!
+
+  """The unique identifier of the deployment key."""
+  id: ID!
+
+  """The actual key."""
+  key: String!
+}
+
+"""
+DO NOT USE
+This type is a work in progress, and will be changed in the future.
+"""
+type DeploymentResource {
+  group: String!
+  kind: String!
+  name: String!
+  namespace: String!
+  version: String!
+}
+
+"""
+DO NOT USE
+This type is a work in progress, and will be changed in the future.
+"""
+type DeploymentStatus {
+  created: Time!
+  message: String
+  status: String!
+}
+
 type EntraIDAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
@@ -802,6 +938,13 @@ type Job implements Node & Workload {
   """The cost for the job."""
   cost: WorkloadCost!
 
+  """
+  Deployment information for the job.
+  DO NOT USE
+  This is a work in progress, and will be changed in the future.
+  """
+  deploymentInfo: DeploymentInfo!
+
   """The environment the job is deployed in."""
   environment: TeamEnvironment!
 
@@ -863,6 +1006,25 @@ type Job implements Node & Workload {
 
   """Optional schedule for the job. Jobs with no schedule are run once."""
   schedule: JobSchedule
+
+  """Secrets used by the job."""
+  secrets(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): SecretConnection!
 
   """
   SQL instances referenced by the job. This does not currently support pagination, but will return all available SQL instances.
@@ -1118,6 +1280,9 @@ type Mutation {
   If the user is already a member or an owner of the team, the mutation will result in an error.
   """
   addTeamMember(input: AddTeamMemberInput!): AddTeamMemberPayload!
+
+  """Update the deploy key of a team. Returns the updated deploy key."""
+  changeDeploymentKey(input: ChangeDeploymentKeyInput!): ChangeDeploymentKeyPayload!
 
   """Configure a reconciler."""
   configureReconciler(
@@ -2356,6 +2521,32 @@ type Team implements Node {
   """Whether or not the team is currently being deleted."""
   deletionInProgress: Boolean!
 
+  """Deployment key for the team."""
+  deploymentKey: DeploymentKey
+
+  """
+  List of deployments for the team.
+  DO NOT USE
+  This is a work in progress, and will be changed in the future.
+  """
+  deployments(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentConnection!
+
   """Get a specific environment for the team."""
   environment(name: String!): TeamEnvironment!
 
@@ -3432,6 +3623,13 @@ interface Workload {
   """The cost for a workload."""
   cost: WorkloadCost!
 
+  """
+  Deployment information for the job.
+  DO NOT USE
+  This is a work in progress, and will be changed in the future.
+  """
+  deploymentInfo: DeploymentInfo!
+
   """The environment the workload is deployed in."""
   environment: TeamEnvironment!
 
@@ -3471,6 +3669,25 @@ interface Workload {
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!
+
+  """Secrets used by the workload."""
+  secrets(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): SecretConnection!
 
   """
   SQL instances referenced by the workload. This does not currently support pagination, but will return all available SQL instances.

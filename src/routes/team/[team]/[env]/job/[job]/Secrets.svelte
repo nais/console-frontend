@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { graphql, PendingValue } from '$houdini';
 	import { page } from '$app/stores';
-	import { Alert, Loader, Skeleton } from '@nais/ds-svelte-community';
+	import { graphql } from '$houdini';
+	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import type { JobSecretsVariables } from './$houdini';
 
 	export const _JobSecretsVariables: JobSecretsVariables = () => {
@@ -10,9 +10,17 @@
 
 	const jobSecrets = graphql(`
 		query JobSecrets($job: String!, $team: Slug!, $env: String!) @load {
-			naisjob(name: $job, team: $team, env: $env) @loading {
-				secrets @loading {
-					name
+			team(slug: $team) {
+				environment(name: $env) {
+					job(name: $job) {
+						secrets {
+							edges {
+								node {
+									name
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -32,14 +40,10 @@
 	</Alert>
 {:else if $jobSecrets.data}
 	<div>
-		{#if $jobSecrets.data.naisjob.secrets.length > 0}
+		{#if $jobSecrets.data.team.environment.job.secrets.edges.length > 0}
 			<ul>
-				{#each $jobSecrets.data.naisjob.secrets as secret}
-					{#if secret === PendingValue}
-						<Skeleton variant="text" width="300px" />
-					{:else}
-						<li><a href="/team/{team}/{env}/secret/{secret.name}">{secret.name}</a></li>
-					{/if}
+				{#each $jobSecrets.data.team.environment.job.secrets.edges as secret}
+					<li><a href="/team/{team}/{env}/secret/{secret.node.name}">{secret.node.name}</a></li>
 				{/each}
 			</ul>
 		{:else}

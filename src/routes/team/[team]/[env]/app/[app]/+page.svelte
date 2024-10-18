@@ -6,13 +6,13 @@
 	import Instances from './Instances.svelte';
 	import Persistence from './Persistence.svelte';
 	import Scaling from './Scaling.svelte';
+	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 	import Traffic from './Traffic.svelte';
 	import Utilization from './Utilization.svelte';
 
 	export let data: PageData;
 	$: ({ App } = data);
-	$: console.log($App.data);
 
 	/*const restartAppMutation = () =>
 		graphql(`
@@ -104,8 +104,7 @@
 		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
 			<Card columns={4}>
 				<h4>Secrets</h4>
-				<!--Secrets /-->
-				TODO: Secrets
+				<Secrets />
 			</Card>
 		{/if}
 	</div>
