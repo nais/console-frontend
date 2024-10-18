@@ -1,19 +1,15 @@
 <script lang="ts">
-	import type { SecretVariableInput } from '$houdini';
-	import { Button, Heading, Modal, Tag, Td, TextField, Tr } from '@nais/ds-svelte-community';
+	import { Button, Heading, Modal, Td, TextField, Tr } from '@nais/ds-svelte-community';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import { addedKey, type operation, updatedKey } from './state-machinery';
 	import Textarea from './Textarea.svelte';
 
-	export let initial: SecretVariableInput[];
 	export let key: string;
 	export let initialValue: string;
-	export let changes: operation[];
 
 	let editKvOpen = false;
 	let value: string | undefined = initialValue;
 
-	const deleteKv = () => {
+	/*const deleteKv = () => {
 		changes = [
 			...changes,
 			{
@@ -37,7 +33,7 @@
 		];
 
 		editKvOpen = false;
-	};
+	};*/
 
 	const reset = () => {
 		editKvOpen = false;
@@ -77,7 +73,7 @@
 			size="small"
 			variant="tertiary-neutral"
 			title="Delete key and value"
-			on:click={deleteKv}
+			on:click={/*deleteKv*/ () => {}}
 		>
 			<svelte:fragment slot="icon-left">
 				<TrashIcon style="color:var(--a-icon-danger)!important" />
@@ -85,12 +81,13 @@
 		</Button>
 	</Td>
 
-	<Td style="width:100px;">
-		{#if addedKey(key, initial, changes)}
+	<Td style="width:100px;"
+		>TODO:
+		<!--{#if addedKey(key, initial, changes)}
 			<Tag size="small" variant="success">Added</Tag>
 		{:else if updatedKey(key, initial, changes)}
 			<Tag size="small" variant="warning">Changed</Tag>
-		{/if}
+		{/if}-->
 	</Td>
 </Tr>
 
@@ -113,7 +110,7 @@
 			<Textarea bind:text={value} label="Value" description="Example: some-value" />
 		</div>
 		<svelte:fragment slot="footer">
-			<Button variant="primary" size="small" on:click={updateKv}>Save</Button>
+			<Button variant="primary" size="small" on:click={/*updateKv*/ () => {}}>Save</Button>
 			<Button variant="secondary" size="small" on:click={reset}>Cancel</Button>
 		</svelte:fragment>
 	</Modal>

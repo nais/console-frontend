@@ -1,15 +1,14 @@
 <script lang="ts">
-	import type { SecretVariableInput } from '$houdini';
+	import type { SecretValueInput } from '$houdini';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
-	import { addedKey, type operation } from './state-machinery';
 	import Textarea from './Textarea.svelte';
 
-	export let initial: SecretVariableInput[];
-	export let changes: operation[];
+	export let initial: SecretValueInput[];
+	//export let changes: operation[];
 
 	let open: boolean = false;
-
+	/* TODO: Tror ikke vi trenger noe state-machine
 	const addKv = () => {
 		if (key && value) {
 			if (validKey(key).length > 0) {
@@ -26,7 +25,7 @@
 
 			reset();
 		}
-	};
+	};*/
 
 	const validKey = (key: string | undefined) => {
 		if (!key) {
@@ -34,7 +33,7 @@
 		}
 
 		const existingKeys = initial.map((kv) => kv.name);
-		if (existingKeys.includes(key) || addedKey(key, initial, changes)) {
+		if (existingKeys.includes(key) /*|| addedKey(key, initial, changes)*/) {
 			return 'Key already exists';
 		}
 
@@ -96,7 +95,13 @@
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={addKv}>Add</Button>
+		<Button
+			variant="primary"
+			size="small"
+			on:click={/*addKv*/ (e) => {
+				console.log(e);
+			}}>Add</Button
+		>
 		<Button variant="secondary" size="small" on:click={reset}>Cancel</Button>
 	</svelte:fragment>
 </Modal>

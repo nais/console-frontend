@@ -37,22 +37,13 @@
 	};
 
 	const createSecret = graphql(`
-		mutation createSecret(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$data: [SecretVariableInput!]!
-		) {
-			createSecret(input: { name: $name, team: $team, environment: $env, data: $data }) {
+		mutation createSecret($name: String!, $team: Slug!, $env: String!) {
+			createSecret(input: { name: $name, team: $team, environment: $env }) {
 				secret {
 					id
 					name
 					environment {
 						name
-					}
-					data {
-						name
-						value
 					}
 				}
 			}
@@ -67,8 +58,7 @@
 		await createSecret.mutate({
 			name: name,
 			team: team,
-			env: selectedEnvironment,
-			data: []
+			env: selectedEnvironment
 		});
 
 		if ($createSecret.errors) {
