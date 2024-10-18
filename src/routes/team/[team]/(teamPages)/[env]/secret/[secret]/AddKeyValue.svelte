@@ -82,8 +82,6 @@
 		value = undefined;
 	};
 
-	console.log(addSecretValueMutation.name);
-
 	let key: string | undefined;
 	let value: string | undefined;
 

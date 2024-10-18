@@ -26,7 +26,6 @@
 	import Metadata from './Metadata.svelte';
 	import Textarea from './Textarea.svelte';
 	import Workloads from './Workloads.svelte';
-	//import Data from './Data.svelte';
 
 	export let data: PageData;
 
