@@ -8,7 +8,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...AppStatus
 				...AppUtilization
 				...Scaling
-				...TrafficPolicy
+				...ApplicationNetworkPolicy
 				...WorkloadImage
 			}
 		}

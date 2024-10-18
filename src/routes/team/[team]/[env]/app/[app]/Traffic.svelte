@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { TrafficPolicy } from '$houdini';
+	import type { ApplicationNetworkPolicy } from '$houdini';
 	import { fragment, graphql } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Tooltip } from '@nais/ds-svelte-community';
 	import { HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
-	export let app: TrafficPolicy;
+	export let app: ApplicationNetworkPolicy;
 
 	$: data = fragment(
 		app,
 		graphql(`
-			fragment TrafficPolicy on Application {
+			fragment ApplicationNetworkPolicy on Application {
 				name
 				ingresses {
 					url

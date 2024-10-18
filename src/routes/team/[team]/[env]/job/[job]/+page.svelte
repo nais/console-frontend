@@ -4,13 +4,12 @@
 	//import Authentications from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Authentications.svelte';
 	//import Image from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Image.svelte';
 	//import NaisjobInstances from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Runs.svelte';
-	//import Schedule from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Schedule.svelte';
 	//import Secrets from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Secrets.svelte';
-	//import Traffic from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Traffic.svelte';
 	//import Persistence from '../../app/[app]/Persistence.svelte';
 	import type { PageData } from './$houdini';
 	import Schedule from './Schedule.svelte';
 	import Status from './Status.svelte';
+	import Traffic from './Traffic.svelte';
 
 	export let data: PageData;
 	$: ({ Job } = data);
@@ -49,7 +48,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<!--Traffic {job} /-->
+			<Traffic {job} />
 		</Card>
 
 		<Card columns={4}>
