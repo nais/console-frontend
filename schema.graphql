@@ -16,6 +16,25 @@ type AddRepositoryToTeamPayload {
   repository: Repository
 }
 
+input AddSecretValueInput {
+  """The environment the secret exists in."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+
+  """The secret value to set."""
+  value: SecretValueInput!
+}
+
+type AddSecretValuePayload {
+  """The updated secret."""
+  secret: Secret
+}
+
 input AddTeamMemberInput {
   """The role that the user will have in the team."""
   role: TeamMemberRole!
@@ -1090,6 +1109,9 @@ type Mutation {
   """Add a team repository."""
   addRepositoryToTeam(input: AddRepositoryToTeamInput!): AddRepositoryToTeamPayload!
 
+  """Add a secret value to a secret."""
+  addSecretValue(input: AddSecretValueInput!): AddSecretValuePayload!
+
   """
   Add a team member
   
@@ -1141,7 +1163,7 @@ type Mutation {
   """Delete a job."""
   deleteJob(input: DeleteJobInput!): DeleteJobPayload!
 
-  """Delete a secret and the values it contains."""
+  """Delete a secret, and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
 
   """
@@ -1193,11 +1215,6 @@ type Mutation {
   restartApplication(input: RestartApplicationInput!): RestartApplicationPayload!
 
   """
-  Set a secret value in a secret. If the value already exists the secret value will be updated.
-  """
-  setSecretValue(input: SetSecretValueInput!): SetSecretValuePayload!
-
-  """
   Assign a role to a team member
   
   The user must already be a member of the team for this mutation to succeed.
@@ -1214,6 +1231,9 @@ type Mutation {
 
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
+
+  """Update a secret value within a secret."""
+  updateSecretValue(input: UpdateSecretValueInput!): UpdateSecretValuePayload!
 
   """
   Update an existing NAIS team
@@ -2051,25 +2071,6 @@ type ServiceCostSeries {
 
   """The sum of the cost across all services."""
   sum: Float!
-}
-
-input SetSecretValueInput {
-  """The environment the secret exists in."""
-  environment: String!
-
-  """The name of the secret."""
-  name: String!
-
-  """The team that owns the secret."""
-  team: Slug!
-
-  """The secret value to set."""
-  value: SecretValueInput!
-}
-
-type SetSecretValuePayload {
-  """The added / updated secret."""
-  secret: Secret
 }
 
 input SetTeamMemberRoleInput {
@@ -3240,6 +3241,25 @@ type TriggerJobPayload {
 
   """The new job run."""
   jobRun: JobRun
+}
+
+input UpdateSecretValueInput {
+  """The environment the secret exists in."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+
+  """The secret value to set."""
+  value: SecretValueInput!
+}
+
+type UpdateSecretValuePayload {
+  """The updated secret."""
+  secret: Secret
 }
 
 input UpdateTeamEnvironmentInput {
