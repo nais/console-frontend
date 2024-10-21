@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { UtilizationResourceType } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
+	import Deploys from '$lib/components/Deploys.svelte';
 	import TeamCost from '$lib/components/TeamCost.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -107,8 +108,7 @@
 	<Card rows={1} columns={12}>
 		<h4>Deployments</h4>
 
-		TODO: Deployments
-		<!--Deploys {teamName} /-->
+		<Deploys {teamName} />
 	</Card>
 
 	<!--ActivityLog {teamName} columns={12} /-->
