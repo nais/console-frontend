@@ -58,7 +58,7 @@
 						<Tr>
 							<Td>
 								{#each node.resources as resource}
-									<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
+									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{resource.name}
 									<br />
 								{/each}
