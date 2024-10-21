@@ -1,6 +1,0 @@
-query JobManifest($job: String!, $team: Slug!, $env: String!) @loading(cascade: true) {
-	naisjob(name: $job, team: $team, env: $env) {
-		name
-		manifest
-	}
-}

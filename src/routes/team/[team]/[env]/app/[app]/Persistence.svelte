@@ -152,6 +152,9 @@
 				{/each}
 			</ul>
 		{/if}
+		{#if $data.buckets.edges.length === 0 && $data.bigQueryDatasets.edges.length === 0 && $data.sqlInstances.edges.length === 0 && $data.kafkaTopicAcls.edges.length === 0 && !$data.openSearch && $data.redisInstances.edges.length === 0}
+			No persistence resources found.
+		{/if}
 	</div>
 </div>
 

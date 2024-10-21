@@ -1,40 +1,33 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { fragment, graphql, type AppErrorFragment } from '$houdini';
+	import { fragment, graphql, type JobErrorFragment } from '$houdini';
 	import { Alert } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
 
-	export let error: AppErrorFragment;
+	export let error: JobErrorFragment;
 
 	$: data = fragment(
 		error,
 		graphql(`
-			fragment AppErrorFragment on WorkloadStatusError {
-				level
+			fragment JobErrorFragment on WorkloadStatusError {
 				__typename
-				... on WorkloadStatusDeprecatedIngress {
-					ingress
+
+				... on WorkloadStatusFailedRun {
+					level
+					detail
+					name
 				}
+
 				... on WorkloadStatusDeprecatedRegistry {
+					level
 					name
 					registry
 					repository
 					tag
 				}
-				... on WorkloadStatusNoRunningInstances {
-					level
-				}
 				... on WorkloadStatusInvalidNaisYaml {
+					level
 					detail
-					level
-				}
-				... on WorkloadStatusSynchronizationFailing {
-					detail
-					level
-				}
-				... on WorkloadStatusNewInstancesFailing {
-					failingInstances
-					level
 				}
 				... on WorkloadStatusInboundNetwork {
 					level
@@ -74,51 +67,22 @@
 
 	$: team = $page.params.team;
 	$: env = $page.params.env;
-	$: app = $page.params.app;
+	$: job = $page.params.job;
 </script>
 
 {#if $data}
 	{@const type = $data.__typename}
 	<div class="wrapper">
 		{#if type === 'WorkloadStatusDeprecatedRegistry'}
-			<Alert variant="info">
-				<h4>Todo</h4>
-				Deprecated image registry
-				<strong>{$data.registry}</strong> for image
+			<Alert variant="warning">
+				Deprecated image registry <strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
-				<a href={docURL('/how-to-guides/github-action/')}>docker-build-push</a> on how to migrate to
+				<a href={docURL('/how-to-guides/github-action/')}> docker-build-push</a> on how to migrate to
 				Google Artifact Registry.
-			</Alert>
-		{:else if type === 'WorkloadStatusNoRunningInstances'}
-			<Alert variant="error">
-				No running instances of <strong>{app}</strong> in <strong>{env}</strong>.
-			</Alert>
-		{:else if type === 'WorkloadStatusDeprecatedIngress'}
-			<Alert variant="info">
-				<h4>Todo</h4>
-				Deprecated ingress<strong>{$data.ingress}</strong>. See
-				<a href={docURL('/reference/environments/?h=#' + env)}> ingress documentation</a>
-				for available ingress domains.
 			</Alert>
 		{:else if type === 'WorkloadStatusInvalidNaisYaml'}
 			<Alert variant="error">
-				The <em>nais.yaml</em> configuration is invalid for application <strong>{app}</strong>:
-				<br />{$data.detail}
-			</Alert>
-		{:else if type === 'WorkloadStatusSynchronizationFailing'}
-			<Alert variant="error">
-				Application <strong>{app}</strong> failed to synchronize properly.
-				<br />{$data.detail}
-			</Alert>
-		{:else if type === 'WorkloadStatusNewInstancesFailing'}
-			<Alert variant="warning">
-				{#if app}
-					New instances of <strong>{app}</strong> in <strong>{env}</strong> are failing. Check logs
-					for one or more of the instances:
-					{#each $data.failingInstances as instance}
-						<br /><a href="/team/{team}/{env}/app/{app}/logs?name={instance}">{instance}</a>
-					{/each}
-				{/if}
+				Nais-yaml might be invalid for application <strong>{job}</strong>.
 			</Alert>
 		{:else if type === 'WorkloadStatusInboundNetwork'}
 			<Alert variant="warning">
@@ -139,7 +103,7 @@
 							? $data.policy.targetWorkload.environment.name
 							: env}/app/{$data.policy.targetWorkloadName}">{$data.policy.targetWorkloadName}</a
 					>
-					does not have an outbound rule for {app}.
+					does not have an outbound rule for {job}.
 				{:else}
 					Traffic from <strong>{$data.policy.targetWorkloadName}</strong> from team
 					<strong>{$data.policy.targetTeamSlug}</strong>
@@ -170,7 +134,7 @@
 							? $data.policy.targetWorkload.environment.name
 							: env}/app/{$data.policy.targetWorkloadName}">{$data.policy.targetWorkloadName}</a
 					>
-					does not have an inbound rule for {app}.
+					does not have an inbound rule for {job}.
 				{:else}
 					Traffic to <strong>{$data.policy.targetWorkloadName}</strong> from team
 					<strong>{$data.policy.targetTeamSlug}</strong>
@@ -181,6 +145,11 @@
 				<a href={docURL('/how-to-guides/access-policies/')}
 					>Nais Application reference - accessPolicy</a
 				>.
+			</Alert>
+		{:else if type === 'WorkloadStatusFailedRun'}
+			<Alert variant="error">
+				{$data.name} failed. {$data.detail}. Please consult the
+				<a href="/team/{team}/{env}/job/{job}/logs?{$data.name}">logs</a> if still available.
 			</Alert>
 		{:else}
 			<Alert variant="error">Unkown error</Alert>
@@ -194,8 +163,5 @@
 	}
 	.wrapper {
 		padding-bottom: 1rem;
-	}
-	.wrapper h4 {
-		margin-bottom: 0.5rem;
 	}
 </style>

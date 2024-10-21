@@ -1,18 +1,26 @@
-query AppNotificationState($app: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly) {
+query JobStatusDetailed($job: String!, $team: Slug!, $env: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
-			application(name: $app) {
+			job(name: $job) {
 				name
 
 				status {
 					state
-
 					errors {
-						__typename
-						...AppErrorFragment
+						...JobErrorFragment
 					}
 				}
-
+				runs(first: 20) {
+					edges {
+						node {
+							name
+							status {
+								state
+								message
+							}
+						}
+					}
+				}
 				networkPolicy {
 					inbound {
 						rules {

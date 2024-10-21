@@ -1098,6 +1098,9 @@ type JobRun implements Node {
   """The completion time of the job."""
   completionTime: Time
 
+  """Duration of the job in seconds."""
+  duration: Int!
+
   """The globally unique ID of the job run."""
   id: ID!
 

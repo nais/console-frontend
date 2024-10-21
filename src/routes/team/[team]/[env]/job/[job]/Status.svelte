@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { fragment, graphql, type JobStatus } from '$houdini';
+	import { fragment, graphql, WorkloadState, type JobStatus } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
 		ExclamationmarkTriangleFillIcon,
@@ -30,7 +30,7 @@
 {#if $data.status}
 	{@const state = $data.status.state}
 	<div class="card {state.toString()}">
-		{#if $data.status.state === 'NAIS'}
+		{#if state === WorkloadState.NAIS}
 			<h4>Status</h4>
 			<div class="iconWrapper">
 				<Nais
@@ -42,12 +42,12 @@
 			</div>
 			{#if $data.status?.errors.length > 0}
 				<p>
-					<a href="/team/{teamName}/{envName}/app/{jobName}/status"
+					<a href="/team/{teamName}/{envName}/job/{jobName}/status"
 						>{$data.status.errors.length} todo{$data.status.errors.length > 1 ? 's' : ''}</a
 					>
 				</p>
 			{/if}
-		{:else if $data.status.state === 'FAILING'}
+		{:else if state === WorkloadState.FAILING}
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 			<div>
 				Job is failing.<br />
@@ -56,7 +56,7 @@
 					{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 				</a> detected.
 			</div>
-		{:else if $data.status.state === 'NOT_NAIS'}
+		{:else if state === WorkloadState.NOT_NAIS}
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 			<div>
 				Job is not nais.<br />
@@ -66,7 +66,7 @@
 				</a>
 				detected.
 			</div>
-		{:else if $data.status.state === 'UNKNOWN'}
+		{:else if state === WorkloadState.UNKNOWN}
 			<h4>Status <QuestionmarkDiamondFillIcon /></h4>
 			<div>Job status is unknown.</div>
 		{/if}
