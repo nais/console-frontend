@@ -4,6 +4,7 @@
 	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import Time from '$lib/Time.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
@@ -25,6 +26,11 @@
 						low
 						unassigned
 					}
+				}
+				deploymentInfo {
+					deployer
+					timestamp
+					url
 				}
 			}
 		`)
@@ -74,17 +80,20 @@
 	</h4>
 
 	<p class="lastActivity">
-		<!--{#if deployInfo.url === ''}
+		{#if $data.deploymentInfo.url === ''}
 			Deployed
 		{:else}
-			<a href={deployInfo.url}>Deployed</a>
+			<a href={$data.deploymentInfo.url}>Deployed</a>
 		{/if}
-		<Time time={deployInfo.timestamp} distance={true} />
-		{#if deployInfo.deployer !== ''}
+		{#if $data.deploymentInfo.timestamp}
+			<Time time={$data.deploymentInfo.timestamp} distance={true} />
+		{/if}
+		{#if $data.deploymentInfo.deployer}
 			by
-			<a href="https://github.com/{deployInfo.deployer}" target="_blank">{deployInfo.deployer}</a>.
-		{/if}-->
-		TODO: Deployed
+			<a href="https://github.com/{$data.deploymentInfo.deployer}" target="_blank"
+				>{$data.deploymentInfo.deployer}</a
+			>.
+		{/if}
 	</p>
 
 	<div class="vulnerabilities">

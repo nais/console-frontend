@@ -2,27 +2,21 @@
 	import { graphql } from '$houdini';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { AggregatedCostAppVariables } from './$houdini';
+	import type { AggregatedTeamCostVariables } from './$houdini';
 
-	export const _AggregatedCostAppVariables: AggregatedCostAppVariables = () => {
-		return { application: application, environment: environment, team: team };
+	export const _AggregatedTeamCostVariables: AggregatedTeamCostVariables = () => {
+		return { team: team };
 	};
 
-
-
 	const costQuery = graphql(`
-		query AggregatedCostApp($team: Slug!, $environment: String!, $application: String!) @load {
+		query AggregatedTeamCost($team: Slug!) @load {
 			team(slug: $team) {
-				environment(name: $environment) {
-					application(name: $application) {
-						cost {
-							monthly {
-								sum
-								series {
-									date
-									sum
-								}
-							}
+				cost {
+					monthlySummary {
+						sum
+						series {
+							date
+							cost
 						}
 					}
 				}
@@ -30,8 +24,6 @@
 		}
 	`);
 
-	export let environment: string;
-	export let application: string;
 	export let team: string;
 
 	function getEstimateForMonth(cost: number, date: Date) {
@@ -41,10 +33,10 @@
 		return euroValueFormatter(costPerDay * daysInMonth);
 	}
 
-	function getFactor(cost: { date: Date; sum: number }[]) {
+	function getFactor(cost: { date: Date; cost: number }[]) {
 		const daysKnown = cost[0].date.getDate();
-		const estCostPerDay = cost[0].sum / daysKnown;
-		return (estCostPerDay / (cost[1].sum / cost[1].date.getDate())) * 100 - 100;
+		const estCostPerDay = cost[0].cost / daysKnown;
+		return (estCostPerDay / (cost[1].cost / cost[1].date.getDate())) * 100 - 100;
 	}
 </script>
 
@@ -56,16 +48,16 @@
 		{/each}
 	</Alert>
 {:else if $costQuery.data !== null}
-	{@const cost = $costQuery.data.team.environment.application.cost}
+	{@const cost = $costQuery.data.team.cost}
 	<div>
-		{#if cost.monthly.series.length > 1}
-			{@const factor = getFactor(cost.monthly.series)}
-			{#each cost.monthly.series.slice(0, 2) as item}
+		{#if cost.monthlySummary.series.length > 1}
+			{@const factor = getFactor(cost.monthlySummary.series)}
+			{#each cost.monthlySummary.series.slice(0, 2) as item}
 				{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(item.sum)}
+					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(item.cost)}
 				{:else}
 					{item.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
-						item.sum,
+						item.cost,
 						item.date
 					)}
 					{#if factor > 1.0}
@@ -76,10 +68,10 @@
 				{/if}
 				<br />
 			{/each}
-		{:else if cost.monthly.series.length == 1}
-			{@const c = cost.monthly.series[0]}
+		{:else if cost.monthlySummary.series.length == 1}
+			{@const c = cost.monthlySummary.series[0]}
 			{c.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
-				c.sum,
+				c.cost,
 				c.date
 			)}
 		{:else}

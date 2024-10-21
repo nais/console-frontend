@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import type { PageData } from './$houdini';
 	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
@@ -52,8 +53,7 @@
 			<Image workload={app} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<!--Cost {app} {env} {team} /-->
-			TODO: Cost
+			<Cost {team} {application} {environment} />
 		</Card>
 		<Card columns={12}>
 			<div class="heading">

@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { UtilizationResourceType } from '$houdini/graphql';
 	import Card from '$lib/Card.svelte';
-	import Cost from '$lib/components/Cost.svelte';
+	import TeamCost from '$lib/components/TeamCost.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
@@ -99,11 +99,9 @@
 		</p>
 		<a href="/team/{teamName}/utilization">View team utilization</a>
 	</Card>
-	<Card rows={1} columns={4}>
-		<h4>Cost</h4>
-		<Cost team={teamName} />
-
-		<p><a href="/team/{teamName}/cost">View team costs</a></p>
+	<Card rows={1} columns={3}>
+		<TeamCost team={teamName} />
+		<a href="/team/{teamName}/cost">View team costs</a>
 	</Card>
 
 	<Card rows={1} columns={12}>
