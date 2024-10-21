@@ -11,16 +11,7 @@
 		tableGraphDirection,
 		tableStateFromVariables
 	} from '$lib/pagination';
-	import {
-		Alert,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import InstanceStatus from '../../[env]/app/[app]/InstanceStatus.svelte';
 	import type { PageData } from './$houdini';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';

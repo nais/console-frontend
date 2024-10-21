@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import type { TeamDeploysVariables } from './$houdini';
 	import { ArrowCirclepathIcon, SandboxIcon } from '@nais/ds-svelte-community/icons';
 
@@ -55,24 +55,28 @@
 			<Th>Status</Th>
 		</Thead>
 		<Tbody>
-			{#each $store.data.team.deployments.nodes.slice(0, 10) as { resources, env, created, statuses }}
+			{#each $store.data.team.deployments.nodes.slice(0, 8) as { resources, env, created, statuses }}
 				<Tr>
 					<Td
 						>{#each resources as resource}
 							{#if resource.kind === 'Application'}
-								<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
-								<a href="/team/{teamName}/{env}/app/{resource.name}/deploys">{resource.name}</a>
+								<Tooltip placement="left" content="Application">
+									<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
+									<a href="/team/{teamName}/{env}/app/{resource.name}/deploys">{resource.name}</a>
+								</Tooltip>
 							{:else if resource.kind === 'Naisjob'}
-								<span style="color:var(--a-gray-600)"
-									><ArrowCirclepathIcon {...$$restProps} />
-								</span>
-								<a href="/team/{teamName}/{env}/job/{resource.name}/deploys">{resource.name}</a>
+								<Tooltip placement="left" content="Job">
+									<span style="color:var(--a-gray-600)"
+										><ArrowCirclepathIcon {...$$restProps} />
+									</span>
+									<a href="/team/{teamName}/{env}/job/{resource.name}/deploys">{resource.name}</a>
+								</Tooltip>
 							{:else}
-								{resource.name}
+								<span style="color:var(--a-gray-600)">{resource.kind}:</span>{resource.name}
 							{/if}
 							<br />
-						{/each}</Td
-					>
+						{/each}
+					</Td>
 					<Td><Time time={created} distance={true} /></Td>
 					<Td>
 						{env}
