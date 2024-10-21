@@ -81,19 +81,24 @@
 							{:else if resource.kind === 'Bucket'}
 								<Tooltip placement="left" content="Bucket">
 									<span style="color:var(--a-gray-600)"><BucketIcon {...$$restProps} /> </span>
+									{resource.name}
 								</Tooltip>
 							{:else if resource.kind === 'Topic'}
 								<Tooltip placement="left" content="Kafka Topic">
 									<span style="color:var(--a-gray-600)"><Kafka {...$$restProps} /> </span>
+									{resource.name}
 								</Tooltip>
 							{:else if resource.kind === 'Redis'}
 								<Tooltip placement="left" content="Redis">
 									<span style="color:var(--a-gray-600)"><Redis {...$$restProps} /> </span>
+									{resource.name}
 								</Tooltip>
 							{:else if resource.kind === 'Secret'}
 								<Tooltip placement="left" content="Secret">
 									<span style="color:var(--a-gray-600)"><QuietZoneIcon {...$$restProps} /> </span>
+									{resource.name}
 								</Tooltip>
+							{:else}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>{resource.name}
 							{/if}
 							<br />
