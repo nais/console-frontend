@@ -230,8 +230,8 @@
 					The application is considered vulnerable because it has a critical vulnerability.
 				{/if}
 				The threshold is determined by either having more than one critical vulnerability or a combined
-				risk score of other severities exceeding 100. Please ensure that your application's dependencies
-				are kept up to date.
+				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
+				<a href="/team/{team}/{env}/app/{app}/image">image details</a> for more details.
 			</Alert>
 		</div>
 	{:else}

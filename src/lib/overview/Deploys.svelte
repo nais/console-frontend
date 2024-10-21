@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import type { TeamDeploysVariables } from './$houdini';
-	import { ArrowCirclepathIcon, SandboxIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowCirclepathIcon,
+		BucketIcon,
+		QuietZoneIcon,
+		SandboxIcon
+	} from '@nais/ds-svelte-community/icons';
+	import Kafka from '$lib/icons/Kafka.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
 
 	export let teamName: string;
 
@@ -71,7 +77,22 @@
 									</span>
 									<a href="/team/{teamName}/{env}/job/{resource.name}/deploys">{resource.name}</a>
 								</Tooltip>
-							{:else}
+							{:else if resource.kind === 'Bucket'}
+								<Tooltip placement="left" content="Bucket">
+									<span style="color:var(--a-gray-600)"><BucketIcon {...$$restProps} /> </span>
+								</Tooltip>
+							{:else if resource.kind === 'Topic'}
+								<Tooltip placement="left" content="Kafka Topic">
+									<span style="color:var(--a-gray-600)"><Kafka {...$$restProps} /> </span>
+								</Tooltip>
+							{:else if resource.kind === 'Redis'}
+								<Tooltip placement="left" content="Redis">
+									<span style="color:var(--a-gray-600)"><Redis {...$$restProps} /> </span>
+								</Tooltip>
+							{:else if resource.kind === 'Secret'}
+								<Tooltip placement="left" content="Secret">
+									<span style="color:var(--a-gray-600)"><QuietZoneIcon {...$$restProps} /> </span>
+								</Tooltip>
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>{resource.name}
 							{/if}
 							<br />

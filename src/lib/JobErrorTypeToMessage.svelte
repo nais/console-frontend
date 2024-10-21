@@ -3,6 +3,7 @@
 	import { PendingValue, fragment, graphql, type JobErrorFragment } from '$houdini';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
+	import summary from '$houdini/artifacts/Summary';
 
 	export let error: JobErrorFragment;
 
@@ -168,10 +169,16 @@
 	{:else if $data.__typename === 'VulnerableError' && $data.summary}
 		<div class="wrapper">
 			<Alert variant="warning">
-				<h4>Application is vulnerable</h4>
-				Application is considered vulnerable with a risk score of {$data.summary.riskScore} which is
-				higher than the acceptable threshold of 100. Please keep your application's dependencies up to
-				date.
+				<h4>Job is vulnerable</h4>
+				{#if $data.summary && $data.summary.riskScore > 100}
+					Job is considered vulnerable with a risk score of {$data.summary.riskScore} which is higher
+					than the acceptable threshold of 100.
+				{:else}
+					The job is considered vulnerable because it has a critical vulnerability.
+				{/if}
+				The threshold is determined by either having more than one critical vulnerability or a combined
+				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
+				<a href="/team/{team}/{env}/job/{job}/image">image details</a> for more details.
 			</Alert>
 		</div>
 	{:else}
