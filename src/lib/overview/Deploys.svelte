@@ -11,6 +11,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
+	import { graphql } from '$houdini';
 
 	export let teamName: string;
 
