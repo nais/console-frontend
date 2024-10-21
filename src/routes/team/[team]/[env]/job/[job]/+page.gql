@@ -9,6 +9,8 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				}
 				...JobNetworkPolicy
 				...JobStatus
+				...JobPersistence
+				...JobInstances
 			}
 		}
 	}

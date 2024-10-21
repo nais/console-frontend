@@ -3,20 +3,22 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	//import Authentications from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Authentications.svelte';
 	//import Image from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Image.svelte';
-	//import NaisjobInstances from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Runs.svelte';
-	//import Secrets from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Secrets.svelte';
-	//import Persistence from '../../app/[app]/Persistence.svelte';
+	import { page } from '$app/stores';
+	import JobCost from '$lib/components/JobCost.svelte';
 	import type { PageData } from './$houdini';
+	import Persistence from './Persistence.svelte';
+	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
+	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 	import Traffic from './Traffic.svelte';
 
 	export let data: PageData;
 	$: ({ Job } = data);
 
-	//$: jobName = $page.params.job;
-	//$: env = $page.params.env;
-	//$: team = $page.params.team;
+	$: jobName = $page.params.job;
+	$: environment = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 {#if $Job.errors}
@@ -31,11 +33,12 @@
 		<Status {job} />
 
 		<Card columns={3}>
+			Todo: Image
 			<!--Image {job} /-->
 		</Card>
 
 		<Card columns={3} rows={1}>
-			<!--Cost app={jobName} {env} {team} /-->
+			<JobCost job={jobName} {environment} {team} />
 		</Card>
 
 		<Card columns={3}>
@@ -44,7 +47,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Runs</h4>
-			<!--NaisjobInstances {job} /-->
+			<Runs {job} />
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
@@ -53,7 +56,7 @@
 
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<!--Persistence persistence={job.persistence} /-->
+			<Persistence {job} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
@@ -62,7 +65,7 @@
 		{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
 			<Card columns={4}>
 				<h4>Secrets</h4>
-				<!--Secrets /-->
+				<Secrets />
 			</Card>
 		{/if}
 	</div>

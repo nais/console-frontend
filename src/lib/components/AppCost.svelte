@@ -8,8 +8,6 @@
 		return { application: application, environment: environment, team: team };
 	};
 
-
-
 	const costQuery = graphql(`
 		query AggregatedCostApp($team: Slug!, $environment: String!, $application: String!) @load {
 			team(slug: $team) {
