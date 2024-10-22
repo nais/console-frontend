@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { AppCost$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -15,7 +14,7 @@
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(data: AppCost$result['dailyCostForApp']) {
+	function echartOptionsStackedColumnChart(data: DailCostType) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 50 };
@@ -59,7 +58,9 @@
 			/>
 
 			<EChart
-				options={echartOptionsStackedColumnChart($AppCost.data.dailyCostForApp)}
+				options={echartOptionsStackedColumnChart(
+					$AppCost.data.team.environment.application.cost.daily
+				)}
 				style="height: 400px"
 			/>
 		</Card>

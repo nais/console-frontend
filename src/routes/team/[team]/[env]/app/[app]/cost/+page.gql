@@ -1,0 +1,21 @@
+query AppCost($app: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!)
+@cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		environment(name: $env) {
+			application(name: $app) {
+				cost {
+					daily(from: $from, to: $to) {
+						series {
+							date
+							services {
+								cost
+								service
+							}
+							sum
+						}
+					}
+				}
+			}
+		}
+	}
+}
