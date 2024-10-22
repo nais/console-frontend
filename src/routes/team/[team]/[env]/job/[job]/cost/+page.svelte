@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { JobCost$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import {
+		costTransformStackedColumnChart,
+		getMaxFromDate,
+		getMinToDate,
+		type DailCostType
+	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -15,7 +19,11 @@
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(data: JobCost$result['dailyCostForApp']) {
+	const today = new Date();
+	today.setDate(today.getDate() - 2);
+	const todayMinusTwoDays = today.toISOString().split('T')[0];
+
+	function echartOptionsStackedColumnChart(data: DailCostType) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 50 };
@@ -41,17 +49,22 @@
 <Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
 
 {#if $JobCost.data}
+	{@const d = $JobCost.data.team.environment.job.cost.daily}
 	<div class="grid">
 		<Card columns={12}>
 			<h4>Total cost for job {job} from {from} to {to}</h4>
 			<label for="from">From:</label>
-			<input type="date" id="from" bind:value={from} on:change={update} />
+			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
-			<input type="date" id="to" bind:value={to} on:change={update} />
-			<EChart
-				options={echartOptionsStackedColumnChart($JobCost.data.dailyCostForApp)}
-				style="height: 400px"
+			<input
+				type="date"
+				min={getMinToDate(from)}
+				max={todayMinusTwoDays}
+				id="to"
+				bind:value={to}
+				on:change={update}
 			/>
+			<EChart options={echartOptionsStackedColumnChart(d)} style="height: 400px" />
 		</Card>
 	</div>
 {/if}

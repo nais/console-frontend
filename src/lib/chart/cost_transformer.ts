@@ -1,6 +1,18 @@
 import { euroValueFormatter } from '$lib/utils/formatters';
 import type { EChartsOption } from 'echarts';
 
+export function getMinToDate(from: string) {
+	const fromDate = new Date(from);
+	fromDate.setDate(fromDate.getDate() + 1);
+	return fromDate.toISOString().split('T')[0];
+}
+
+export function getMaxFromDate(to: string) {
+	const toDate = new Date(to);
+	toDate.setDate(toDate.getDate() - 1);
+	return toDate.toISOString().split('T')[0];
+}
+
 export type DailCostType = {
 	readonly series: {
 		readonly date: Date;
@@ -17,7 +29,7 @@ export function costTransformStackedColumnChart(
 	to: Date,
 	data: DailCostType
 ): EChartsOption {
-	const categories: string[] = [];
+	const dates: string[] = [];
 	const seriesData: { [service: string]: number[] } = {};
 	const allServices = new Set<string>();
 
@@ -34,7 +46,7 @@ export function costTransformStackedColumnChart(
 
 		// Check if the entry date is within the provided range
 		if (entryDate >= from && entryDate <= to) {
-			categories.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+			dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
 
 			if (entry.services.length === 0) {
 				// No services for this day, add 0 for all services
@@ -80,7 +92,17 @@ export function costTransformStackedColumnChart(
 
 	// Return the ECharts option object
 	return {
-		title: {},
+		title:
+			series.length === 0
+				? {
+						text: 'No data',
+						left: 'center',
+						top: 'center',
+						textStyle: {
+							color: '#aaa'
+						}
+					}
+				: {},
 		tooltip: {
 			trigger: data.series.length > 10 ? 'item' : 'axis',
 			axisPointer: {
@@ -111,7 +133,8 @@ export function costTransformStackedColumnChart(
 		xAxis: [
 			{
 				type: 'category',
-				boundaryGap: false
+				boundaryGap: false,
+				data: dates.map((date) => date)
 			}
 		],
 		yAxis: [
@@ -126,7 +149,7 @@ export function costTransformStackedColumnChart(
 	} as EChartsOption;
 }
 
-export type TeamCostEnvType = {
+/*export type TeamCostEnvType = {
 	readonly env: string;
 	readonly apps: {
 		readonly app: string;
@@ -207,3 +230,4 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		})
 	} as EChartsOption;
 }
+*/

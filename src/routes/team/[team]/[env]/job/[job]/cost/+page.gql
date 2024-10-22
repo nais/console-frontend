@@ -1,0 +1,20 @@
+query JobCost($job: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				cost {
+					daily(from: $from, to: $to) {
+						series {
+							date
+							services {
+								cost
+								service
+							}
+							sum
+						}
+					}
+				}
+			}
+		}
+	}
+}

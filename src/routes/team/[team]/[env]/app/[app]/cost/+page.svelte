@@ -3,7 +3,12 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
+	import {
+		costTransformStackedColumnChart,
+		getMaxFromDate,
+		getMinToDate,
+		type DailCostType
+	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
@@ -42,27 +47,23 @@
 <Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
 
 {#if $AppCost.data}
+	{@const d = $AppCost.data.team.environment.application.cost.daily}
 	<div class="grid">
 		<Card columns={12}>
 			<h4>Total cost for app {app} from {from} to {to}</h4>
 			<label for="from">From:</label>
-			<input type="date" id="from" bind:value={from} on:change={update} />
+			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} on:change={update} />
 			<label for="to">To:</label>
 			<input
 				type="date"
 				id="to"
-				min={from}
+				min={getMinToDate(from)}
 				max={todayMinusTwoDays}
 				bind:value={to}
 				on:change={update}
 			/>
 
-			<EChart
-				options={echartOptionsStackedColumnChart(
-					$AppCost.data.team.environment.application.cost.daily
-				)}
-				style="height: 400px"
-			/>
+			<EChart options={echartOptionsStackedColumnChart(d)} style="height: 400px" />
 		</Card>
 	</div>
 {/if}
