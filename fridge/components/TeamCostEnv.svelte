@@ -7,7 +7,7 @@
 		type TeamCostEnvType
 	} from '$lib/chart/cost_transformer';
 	import { Skeleton } from '@nais/ds-svelte-community';
-	import type { TeamCostEnvVariables } from './$houdini';
+	import type { TeamCostEnvVariables } from '../../src/lib/components/$houdini';
 
 	export const _TeamCostEnvVariables: TeamCostEnvVariables = () => {
 		return { filter: { team: team, from: from, to: to } };

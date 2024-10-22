@@ -1,16 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import {
-		costTransformStackedColumnChart,
-		type CostEntry,
-		type DailyCost
-	} from '$lib/chart/cost_transformer';
-	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
-	import { Alert, Skeleton } from '@nais/ds-svelte-community';
+	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
+	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -20,22 +14,22 @@
 	let from = data.fromDate?.toISOString().split('T')[0];
 	let to = data.toDate?.toISOString().split('T')[0];
 
-	function echartOptionsStackedColumnChart(data: DailyCost<CostEntry>) {
+	function echartOptionsStackedColumnChart(data: DailCostType) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
 		opts.height = '250px';
 		opts.legend = { ...opts.legend, bottom: 50 };
 		return opts;
 	}
 
-	let fromDate = new Date(from);
-	let toDate = new Date(to);
+	//let fromDate = new Date(from);
+	//let toDate = new Date(to);
 
 	function update() {
 		const old = $TeamCost.variables!;
 		TeamCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
 		const params = new URLSearchParams({ from, to });
-		fromDate = new Date(from);
-		toDate = new Date(to);
+		//fromDate = new Date(from);
+		//toDate = new Date(to);
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
@@ -71,17 +65,15 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Total cost for team {team} from {from} to {to}</h4>
-			{#if $TeamCost.data.dailyCostForTeam === PendingValue}
-				<Skeleton variant="rectangle" height="385px" />
-			{:else}
-				<EChart
-					options={echartOptionsStackedColumnChart($TeamCost.data.dailyCostForTeam)}
-					style="height: 400px"
-				/>
-			{/if}
+			<EChart
+				options={echartOptionsStackedColumnChart($TeamCost.data.team.cost.daily)}
+				style="height: 400px"
+			/>
 		</Card>
 
-		<TeamCostEnv {team} from={fromDate} to={toDate} />
+		<p>Todo: Her kommer TeamCost</p>
+
+		<!--TeamCostEnv {team} from={fromDate} to={toDate} /-->
 	</div>
 {/if}
 

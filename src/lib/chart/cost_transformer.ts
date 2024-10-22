@@ -149,7 +149,7 @@ export function costTransformStackedColumnChart(
 	} as EChartsOption;
 }
 
-/*export type TeamCostEnvType = {
+export type TeamCostEnvType = {
 	readonly env: string;
 	readonly apps: {
 		readonly app: string;
@@ -230,4 +230,3 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		})
 	} as EChartsOption;
 }
-*/
