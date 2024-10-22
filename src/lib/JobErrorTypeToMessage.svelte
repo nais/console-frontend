@@ -3,7 +3,6 @@
 	import { PendingValue, fragment, graphql, type JobErrorFragment } from '$houdini';
 	import { Alert, Skeleton } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
-	import summary from '$houdini/artifacts/Summary';
 
 	export let error: JobErrorFragment;
 

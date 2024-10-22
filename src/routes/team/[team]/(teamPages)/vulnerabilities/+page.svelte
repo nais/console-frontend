@@ -36,7 +36,6 @@
 		TrendUpIcon,
 		TrendDownIcon,
 		TrendFlatIcon,
-		VitalsIcon,
 		FaceIcon,
 		FaceFrownIcon,
 		FaceSmileIcon
@@ -81,12 +80,6 @@
 			return `/team/${teamName}/${node.env}/job/${node.workloadName}/image`;
 		}
 	};
-
-	const isTooVulnerable = (
-		summary: TeamVulnerabilities$result['team']['vulnerabilitiesSummary']
-	) => {
-		return summary.status.some((s) => s.state === VulnerabilityState.TOO_MANY_VULNERABLE_WORKLOADS);
-	};
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -100,7 +93,7 @@
 		<Card columns={12}>
 			{#if team !== undefined && team.id !== PendingValue}
 				<div class="summaryCard" style="align-items: start;">
-					{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== 'OK').length > 0 && team.vulnerabilitiesSummary.totalWorkloads > 0}
+					{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
 						<div>
 							<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
 						</div>
@@ -116,31 +109,33 @@
 					{/if}
 					<div class="summary">
 						<h4>
-							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0 && team.vulnerabilitiesSummary.totalWorkloads > 0}
-								<span>Vulnerability issues</span>
-							{:else}
-								<span>No vulnerability issues, good work! </span>
-							{/if}
+							<span>Vulnerability issues</span>
 							<HelpText title="Current team vulnerability status"
 								>If any of the workloads have any vulnerability issues, the icon will show a warning
 								sign and a details link will show.
 							</HelpText>
 						</h4>
 						<div style="margin-top: 0.5rem;">
-							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0 && team.vulnerabilitiesSummary.totalWorkloads > 0}
-								<details>
-									<summary style="font-size: 1rem; var(--color-text-secondary);"
-										>Show details</summary
-									>
-									{#each team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK) as status}
-										<div class="wrapper">
-											<Alert variant="error">
-												<h4>{status.title}</h4>
-												{status.description}
-											</Alert>
-										</div>
-									{/each}
-								</details>
+							{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
+								{#if team.vulnerabilitiesSummary.bomCount > 0}
+									<details>
+										<summary style="font-size: 1rem; var(--color-text-secondary);"
+											>Show details</summary
+										>
+										{#each team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK) as status}
+											<div class="wrapper">
+												<Alert variant="error">
+													<h4>{status.title}</h4>
+													{status.description}
+												</Alert>
+											</div>
+										{/each}
+									</details>
+								{:else}
+									<span>No workloads with vulnerability data found</span>
+								{/if}
+							{:else}
+								<span>No vulnerability issues, good work! </span>
 							{/if}
 						</div>
 					</div>

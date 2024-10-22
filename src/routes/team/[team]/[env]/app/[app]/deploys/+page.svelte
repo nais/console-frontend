@@ -16,7 +16,7 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { BranchingIcon, SandboxIcon } from '@nais/ds-svelte-community/icons';
+	import { BranchingIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 
