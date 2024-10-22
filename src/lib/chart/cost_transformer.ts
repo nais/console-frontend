@@ -30,7 +30,7 @@ export function costTransformStackedColumnChart(
 	data: DailCostType
 ): EChartsOption {
 	const dates: string[] = [];
-	const seriesData: { [service: string]: number[] } = {};
+	const seriesData: { [service: string]: (number | string)[] } = {};
 	const allServices = new Set<string>();
 
 	// First pass to identify all possible services
@@ -54,7 +54,7 @@ export function costTransformStackedColumnChart(
 					if (!seriesData[service]) {
 						seriesData[service] = [];
 					}
-					seriesData[service].push(0);
+					seriesData[service].push('-');
 				});
 			} else {
 				// Process each service for this day
@@ -71,7 +71,7 @@ export function costTransformStackedColumnChart(
 						if (!seriesData[service]) {
 							seriesData[service] = [];
 						}
-						seriesData[service].push(0);
+						seriesData[service].push('-');
 					}
 				});
 			}
