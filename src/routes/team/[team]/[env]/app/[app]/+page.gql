@@ -5,9 +5,9 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				id
 				name
 				...AppInstances
-				...Persistence
 				...AppStatus
 				...AppUtilization
+				...Persistence
 				...Scaling
 				...WorkloadImage
 			}
