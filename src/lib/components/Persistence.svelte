@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { fragment, graphql, type AppPersistence } from '$houdini';
+	import { fragment, graphql, type Persistence } from '$houdini';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
 
-	export let workload: AppPersistence;
+	export let workload: Persistence;
 
 	$: data = fragment(
 		workload,
 		graphql(`
 			fragment Persistence on Workload {
+				name
 				bigQueryDatasets {
 					edges {
 						node {
