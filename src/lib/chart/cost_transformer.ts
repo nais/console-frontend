@@ -54,7 +54,7 @@ export function costTransformStackedColumnChart(
 					if (!seriesData[service]) {
 						seriesData[service] = [];
 					}
-					seriesData[service].push('-');
+					seriesData[service].push(0);
 				});
 			} else {
 				// Process each service for this day
@@ -71,7 +71,7 @@ export function costTransformStackedColumnChart(
 						if (!seriesData[service]) {
 							seriesData[service] = [];
 						}
-						seriesData[service].push('-');
+						seriesData[service].push(0);
 					}
 				});
 			}

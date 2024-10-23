@@ -44,6 +44,7 @@
 </script>
 
 {#if $Instances.data}
+	{@const instances = $Instances.data.team.environment.application.instances.nodes}
 	<div class="topbar">
 		<div class="instances">
 			{#if $Instances.data}
@@ -51,7 +52,7 @@
 					<svelte:fragment slot="legend">Instances</svelte:fragment>
 					<div class="instance-button">
 						<Chips>
-							{#each $Instances.data.app.instances as instance}
+							{#each instances as instance}
 								{@const name = instance.name}
 								<ToggleChip
 									value={renderInstanceName(name)}
@@ -64,12 +65,12 @@
 						<Button
 							size="small"
 							variant="primary"
-							disabled={instanceNames.size === $Instances.data?.app.instances.length}
+							disabled={instanceNames.size === instances.length}
 							on:click={() => {
-								if (instanceNames.size === $Instances.data?.app.instances.length) {
+								if (instanceNames.size === instances.length) {
 									return;
 								}
-								$Instances.data?.app.instances.forEach((i) => instanceNames.add(i.name));
+								instances.forEach((i) => instanceNames.add(i.name));
 								instanceNames = instanceNames;
 							}}
 						>

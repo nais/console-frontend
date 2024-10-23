@@ -2777,6 +2777,9 @@ type Team implements Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filter the returned objects"""
+    filter: TeamWorkloadsFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -3405,6 +3408,11 @@ type TeamVulnerabilitySummary {
   unassigned: Int!
 }
 
+input TeamWorkloadsFilter {
+  """Only return workloads from the given named environments."""
+  environments: [String!]
+}
+
 """
 Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
 """
@@ -3802,6 +3810,24 @@ enum WorkloadOrderField {
 
   """Order Workloads by status."""
   STATUS
+
+  """Order by risk score"""
+  VULNERABILITY_RISK_SCORE
+
+  """Order apps by vulnerability severity critical"""
+  VULNERABILITY_SEVERITY_CRITICAL
+
+  """Order apps by vulnerability severity high"""
+  VULNERABILITY_SEVERITY_HIGH
+
+  """Order apps by vulnerability severity low"""
+  VULNERABILITY_SEVERITY_LOW
+
+  """Order apps by vulnerability severity medium"""
+  VULNERABILITY_SEVERITY_MEDIUM
+
+  """Order apps by vulnerability severity unassigned"""
+  VULNERABILITY_SEVERITY_UNASSIGNED
 }
 
 type WorkloadResourceQuantity {
