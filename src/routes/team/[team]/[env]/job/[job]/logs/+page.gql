@@ -1,0 +1,13 @@
+query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				runs {
+					nodes {
+						name
+					}
+				}
+			}
+		}
+	}
+}

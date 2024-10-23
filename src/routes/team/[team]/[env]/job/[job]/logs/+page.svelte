@@ -25,7 +25,7 @@
 	$: selectedRun = selected;
 	function setSelected(name: string) {
 		pods = new Set(
-			$RunsWithPodNames.data?.naisjob?.runs
+			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
 				.filter((run) => run.name === name)
 				.map((run) => run.podNames)
 				.flatMap((pod) => pod)
@@ -56,10 +56,10 @@
 
 <div class="topbar">
 	<div class="instances">
-		{#if $RunsWithPodNames.data && $RunsWithPodNames.data.naisjob.runs.length > 0}
+		{#if $RunsWithPodNames.data && $RunsWithPodNames.data.team.environment.job.runs.nodes.length > 0}
 			{#if pods.size > 0}
 				<ToggleGroup size="small" bind:value={selectedRun}>
-					{#each $RunsWithPodNames.data.naisjob.runs as run}
+					{#each $RunsWithPodNames.data.team.environment.job.runs.nodes as run}
 						{#if run.podNames.length > 0}
 							{@const name = run.name}
 							<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
