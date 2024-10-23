@@ -14,8 +14,7 @@
 		{/each}
 	</Alert>
 {:else if $AppManifest.data}
-	{@const workloadID = $AppManifest.data.team.environment.application.id}
-	<Manifest {workloadID} />
+	<Manifest workload={$AppManifest.data.team.environment.application} />
 {/if}
 
 <style>

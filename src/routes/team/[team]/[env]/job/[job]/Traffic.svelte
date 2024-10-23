@@ -1,24 +1,18 @@
 <script lang="ts">
-	import { fragment, graphql, IngressType, type Traffic, type ValueOf } from '$houdini';
+	import { page } from '$app/stores';
+	import type { JobNetworkPolicy } from '$houdini';
+	import { fragment, graphql } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Tooltip } from '@nais/ds-svelte-community';
-	import { HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
-	export let workload: Traffic;
+	export let job: JobNetworkPolicy;
 
-	$: traffic = fragment(
-		workload,
+	$: data = fragment(
+		job,
 		graphql(`
-			fragment Traffic on Workload {
-				__typename
+			fragment JobNetworkPolicy on Job {
 				name
-				environment {
-					name
-				}
-				team {
-					slug
-				}
 				networkPolicy {
 					inbound {
 						rules {
@@ -46,113 +40,48 @@
 						}
 					}
 				}
-				... on Application {
-					ingresses {
-						url
-						type
-					}
-				}
 			}
 		`)
 	);
-
-	const externalIngresses = (
-		ingresses: {
-			readonly url: string;
-			readonly type: ValueOf<typeof IngressType>;
-		}[]
-	) => {
-		return ingresses.filter((ingress) => ingress.type === IngressType.EXTERNAL);
-	};
-
-	const internalIngresses = (
-		ingresses: {
-			readonly url: string;
-			readonly type: ValueOf<typeof IngressType>;
-		}[]
-	) => {
-		return ingresses.filter((ingress) => ingress.type === IngressType.INTERNAL);
-	};
-
-	const authenticatedIngresses = (
-		ingresses: {
-			readonly url: string;
-			readonly type: ValueOf<typeof IngressType>;
-		}[]
-	) => {
-		return ingresses.filter((ingress) => ingress.type === IngressType.AUTHENTICATED);
-	};
+	$: env = $page.params.env;
+	$: team = $page.params.team;
 </script>
 
 <div class="traffic">
 	<div class="directionContent first">
 		<h5>Inbound</h5>
-		{#if $traffic.__typename === 'Application'}
-			<h6>External ingresses</h6>
-			<ul>
-				{#each externalIngresses($traffic.ingresses) as ingress}
-					<li>
-						<Globe /><a href={ingress.url}>{ingress.url}</a>
-					</li>
-				{:else}
-					<li>No external ingresses</li>
-				{/each}
-			</ul>
-			<h6>Internal ingresses</h6>
-			<ul>
-				{#each internalIngresses($traffic.ingresses) as ingress}
-					<li><HouseIcon /><a href={ingress.url}>{ingress.url}</a></li>
-				{:else}
-					<li>No internal ingresses</li>
-				{/each}
-			</ul>
-			<h6>Authenticated ingresses</h6>
-			<ul>
-				{#each authenticatedIngresses($traffic.ingresses) as ingress}
-					<li><PadlockLockedIcon /><a href={ingress.url}>{ingress.url}</a></li>
-				{:else}
-					<li>No authenticated ingresses</li>
-				{/each}
-			</ul>
-		{/if}
 		<h6>Applications</h6>
 		<ul>
-			{#each $traffic.networkPolicy.inbound.rules as rule}
+			{#each $data.networkPolicy.inbound.rules as rule}
 				<li>
 					{#if !rule.mutual}
 						<Tooltip
 							placement="right"
 							content="{rule.targetWorkloadName} is missing outbound policy for {String(
-								$traffic.name
+								$data.name
 							)}"><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
 						>
-					{/if}
-
-					{#if rule.targetWorkloadName == '*'}
-						Any app
+					{/if}{#if rule.targetWorkloadName == '*'}
+						Any workload
 						{#if rule.targetTeamSlug == '*'}
 							from any namespace
 						{:else}
 							in {rule.targetTeamSlug}
 						{/if}
 
-						in {$traffic.environment.name}
+						in {env}
 					{:else if rule.targetWorkload?.type === 'Job'}
 						{#if !rule.targetWorkload}
 							{rule.targetWorkloadName}.{rule.targetTeamSlug}
 						{:else}
-							<a
-								href="/team/{rule.targetTeamSlug}/{$traffic.environment
-									.name}/job/{rule.targetWorkloadName}"
+							<a href="/team/{rule.targetTeamSlug}/{env}/job/{rule.targetWorkloadName}"
 								>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 							>
 						{/if}
 					{:else if !rule.targetWorkload}
 						{rule.targetWorkloadName}.{rule.targetTeamSlug}
 					{:else}
-						<a
-							href="/team/{rule.targetTeamSlug || $traffic.team.slug}/{$traffic.environment
-								.name}/app/{rule.targetWorkloadName}"
+						<a href="/team/{rule.targetTeamSlug || team}/{env}/app/{rule.targetWorkloadName}"
 							>{rule.targetWorkloadName}{rule.targetTeamSlug ? '.' + rule.targetTeamSlug : ''}</a
 						>
 					{/if}
@@ -166,7 +95,7 @@
 		<h5>Outbound</h5>
 		<h6>External hostnames</h6>
 		<ul>
-			{#each $traffic.networkPolicy.outbound.external.filter((e) => e.target) as external}
+			{#each $data.networkPolicy.outbound.external.filter((e) => e.target) as external}
 				{#if external.type === 'ExternalNetworkPolicyHost'}
 					{#each external.ports as port}
 						<li>
@@ -179,12 +108,12 @@
 					{/each}
 				{/if}
 			{:else}
-				<li>No outbound external hosts in access policy</li>
+				<li>No outbound external access policy</li>
 			{/each}
 		</ul>
 		<h6>External IPs</h6>
 		<ul>
-			{#each $traffic.networkPolicy.outbound.external.filter((e) => e.ports) as external}
+			{#each $data.networkPolicy.outbound.external.filter((e) => e.ports) as external}
 				{#if external.type === 'ExternalNetworkPolicyIpv4'}
 					{#each external.ports as port}
 						<li>
@@ -195,19 +124,18 @@
 					{/each}
 				{/if}
 			{:else}
-				<li>No outbound external IPs in access policy</li>
+				<li>No outbound external access policy</li>
 			{/each}
 		</ul>
 		<h6>Applications</h6>
 		<ul>
-			{#each $traffic.networkPolicy.outbound.rules as rule}
+			{#each $data.networkPolicy.outbound.rules as rule}
 				<li>
 					{#if !rule.mutual}
 						<Tooltip
 							placement="right"
-							content="{rule.targetWorkloadName} is missing inbound policy for {String(
-								$traffic.name
-							)}"><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
+							content="{rule.targetWorkloadName} is missing inbound policy for {String($data.name)}"
+							><WarningIcon size="1rem" style="color: var(--a-icon-warning)" /></Tooltip
 						>
 					{/if}
 					{#if rule.targetWorkloadName == '*'}
@@ -218,17 +146,13 @@
 							in {rule.targetTeamSlug}
 						{/if}
 
-						in {$traffic.environment.name}
+						in {env}
 					{:else if rule.targetWorkload?.type === 'Job'}
-						<a
-							href="/team/{rule.targetTeamSlug}/{$traffic.environment
-								.name}/job/{rule.targetWorkloadName}"
+						<a href="/team/{rule.targetTeamSlug}/{env}/job/{rule.targetWorkloadName}"
 							>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 						>
 					{:else}
-						<a
-							href="/team/{rule.targetTeamSlug}/{$traffic.environment
-								.name}/app/{rule.targetWorkloadName}"
+						<a href="/team/{rule.targetTeamSlug}/{env}/app/{rule.targetWorkloadName}"
 							>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 						>
 					{/if}

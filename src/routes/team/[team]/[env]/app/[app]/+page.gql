@@ -10,6 +10,8 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...Persistence
 				...Scaling
 				...WorkloadImage
+				...Traffic
+				...Manifest
 			}
 		}
 		viewerIsMember

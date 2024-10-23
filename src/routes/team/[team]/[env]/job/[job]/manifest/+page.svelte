@@ -14,6 +14,5 @@
 		{/each}
 	</Alert>
 {:else if $JobManifest.data}
-	{@const workloadID = $JobManifest.data.team.environment.job.id}
-	<Manifest {workloadID} />
+	<Manifest workload={$JobManifest.data.team.environment.job} />
 {/if}

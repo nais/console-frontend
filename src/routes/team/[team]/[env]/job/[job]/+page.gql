@@ -9,10 +9,11 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 					timeZone
 				}
 				...JobInstances
-				...JobNetworkPolicy
 				...JobStatus
 				...Persistence
 				...WorkloadImage
+				...Traffic
+				...Manifest
 			}
 		}
 	}

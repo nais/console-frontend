@@ -50,7 +50,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<Traffic workloadID={job.id} />
+			<Traffic workload={job} />
 		</Card>
 
 		<Card columns={4}>

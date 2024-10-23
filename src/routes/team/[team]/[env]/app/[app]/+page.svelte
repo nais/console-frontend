@@ -89,7 +89,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<Traffic workloadID={app.id} />
+			<Traffic workload={app} />
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>
