@@ -2,6 +2,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {
+				id
 				name
 				schedule {
 					expression

@@ -4,12 +4,12 @@
 	import AppCost from '$lib/components/AppCost.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
+	import Traffic from '$lib/components/Traffic.svelte';
 	import type { PageData } from './$houdini';
 	import Instances from './Instances.svelte';
 	import Scaling from './Scaling.svelte';
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
-	import Traffic from './Traffic.svelte';
 	import Utilization from './Utilization.svelte';
 
 	export let data: PageData;
@@ -32,7 +32,6 @@
 	$: environment = $page.params.env;
 	$: team = $page.params.team;
 
-	console.log(application, environment, team);
 	//let restart = false;
 
 	/*const submit = () => {
@@ -90,7 +89,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<Traffic {app} />
+			<Traffic workloadID={app.id} />
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>

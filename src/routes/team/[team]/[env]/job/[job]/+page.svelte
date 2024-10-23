@@ -6,12 +6,12 @@
 	import Image from '$lib/components/Image.svelte';
 	import JobCost from '$lib/components/JobCost.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
+	import Traffic from '$lib/components/Traffic.svelte';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
-	import Traffic from './Traffic.svelte';
 
 	export let data: PageData;
 	$: ({ Job } = data);
@@ -50,7 +50,7 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>
-			<Traffic {job} />
+			<Traffic workloadID={job.id} />
 		</Card>
 
 		<Card columns={4}>
