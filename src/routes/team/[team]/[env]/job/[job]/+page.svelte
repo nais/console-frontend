@@ -2,11 +2,11 @@
 	import Card from '$lib/Card.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	//import Authentications from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Authentications.svelte';
-	//import Image from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Image.svelte';
 	import { page } from '$app/stores';
+	import Image from '$lib/components/Image.svelte';
 	import JobCost from '$lib/components/JobCost.svelte';
+	import Persistence from '$lib/components/Persistence.svelte';
 	import type { PageData } from './$houdini';
-	import Persistence from './Persistence.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Secrets from './Secrets.svelte';
@@ -33,8 +33,7 @@
 		<Status {job} />
 
 		<Card columns={3}>
-			Todo: Image
-			<!--Image {job} /-->
+			<Image workload={job} />
 		</Card>
 
 		<Card columns={3} rows={1}>
@@ -56,7 +55,7 @@
 
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<Persistence {job} />
+			<Persistence workload={job} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>

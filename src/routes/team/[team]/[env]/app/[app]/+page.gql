@@ -4,7 +4,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 			application(name: $app) {
 				name
 				...AppInstances
-				...AppPersistence
+				...Persistence
 				...AppStatus
 				...AppUtilization
 				...Scaling

@@ -2,10 +2,10 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import AppCost from '$lib/components/AppCost.svelte';
+	import Image from '$lib/components/Image.svelte';
+	import Persistence from '$lib/components/Persistence.svelte';
 	import type { PageData } from './$houdini';
-	import Image from './Image.svelte';
 	import Instances from './Instances.svelte';
-	import Persistence from './Persistence.svelte';
 	import Scaling from './Scaling.svelte';
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
@@ -94,7 +94,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Persistence</h4>
-			<Persistence {app} />
+			<Persistence workload={app} />
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
