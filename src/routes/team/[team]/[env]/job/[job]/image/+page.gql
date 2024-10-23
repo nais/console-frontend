@@ -1,0 +1,52 @@
+query JobImage($team: Slug!, $env: String!, $job: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				image {
+					name
+					tag
+					hasSBOM
+
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+					}
+
+					#vulnerabilities {
+					#	edges {
+					#		node {
+					#			description
+					#			identifier
+					#			package
+					#			severity
+					#			state
+					#			url
+					#		}
+					#	}
+					#}
+
+					workloadReferences {
+						edges {
+							node {
+								workload {
+									name
+									team {
+										slug
+									}
+									environment {
+										name
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		viewerIsMember
+	}
+}

@@ -2220,7 +2220,7 @@ type SecretValueUpdatedAuditEntryData {
   valueName: String!
 }
 
-type ServiceCost {
+type ServiceCostPoint {
   """The cost in euros."""
   cost: Float!
 
@@ -2235,7 +2235,7 @@ type ServiceCostSeries {
   date: Date!
 
   """The cost for the services used by the workload."""
-  services: [ServiceCost!]!
+  services: [ServiceCostPoint!]!
 
   """The sum of the cost across all services."""
   sum: Float!
@@ -2960,6 +2960,9 @@ type TeamEnvironment implements Node {
   """Storage bucket in the team environment."""
   bucket(name: String!): Bucket!
 
+  """The cost for the team environment."""
+  cost: TeamEnvironmentCost!
+
   """The GCP project ID for the team environment."""
   gcpProjectID: String
 
@@ -2992,6 +2995,24 @@ type TeamEnvironment implements Node {
 
   """The connected team."""
   team: Team!
+}
+
+type TeamEnvironmentCost {
+  daily(
+    """Start date of the period, inclusive."""
+    from: Date!
+
+    """End date of the period, inclusive."""
+    to: Date!
+  ): TeamEnvironmentCostPeriod!
+}
+
+type TeamEnvironmentCostPeriod {
+  """The cost series."""
+  series: [WorkloadCostSeries!]!
+
+  """The total cost for the period."""
+  sum: Float!
 }
 
 type TeamEnvironmentUpdatedAuditEntry implements AuditEntry & Node {
@@ -3382,6 +3403,31 @@ type TeamUtilizationEnvironmentDataPoint {
   value: Float!
 }
 
+enum TeamVulnerabilityRanking {
+  """Bottom third most vulnerable teams."""
+  LEAST_VULNERABLE
+
+  """Middle third most vulnerable teams."""
+  MIDDLE
+
+  """Top third most vulnerable teams."""
+  MOST_VULNERABLE
+
+  """Unknown ranking."""
+  UNKNOWN
+}
+
+enum TeamVulnerabilityRiskScoreTrend {
+  """Risk score is decreasing."""
+  DOWN
+
+  """Risk score is not changing."""
+  FLAT
+
+  """Risk score is increasing."""
+  UP
+}
+
 type TeamVulnerabilitySummary {
   """Number of workloads with a software bill of materials (SBOM) attached."""
   bomCount: Int!
@@ -3401,8 +3447,14 @@ type TeamVulnerabilitySummary {
   """Number of vulnerabilities with severity MEDIUM."""
   medium: Int!
 
+  """Ranking of the team based on vulnerability severity."""
+  ranking: TeamVulnerabilityRanking!
+
   """Risk score of the team."""
   riskScore: Int!
+
+  """Trend of vulnerability status for the team."""
+  riskScoreTrend: TeamVulnerabilityRiskScoreTrend
 
   """Number of vulnerabilities with severity UNASSIGNED."""
   unassigned: Int!
@@ -3746,6 +3798,30 @@ type WorkloadCostPeriod {
 
   """The total cost for the period."""
   sum: Float!
+}
+
+type WorkloadCostPoint {
+  """The cost in euros."""
+  cost: Float!
+
+  """The workload."""
+  workload: Workload
+
+  """The name of the workload."""
+  workloadName: String!
+}
+
+type WorkloadCostSeries {
+  """
+  The date for the cost. When calculating the cost for a monthly period, the date will be the last day of the month that has cost data.
+  """
+  date: Date!
+
+  """The sum of the cost across all workloads."""
+  sum: Float!
+
+  """The cost for the workloads in the environment."""
+  workloads: [WorkloadCostPoint!]!
 }
 
 type WorkloadEdge {

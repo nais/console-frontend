@@ -1,4 +1,5 @@
-query JobCost($job: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!) {
+query JobCost($job: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!)
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {
