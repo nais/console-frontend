@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { graphql } from '$houdini';
+	import { type DeleteAppPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -38,6 +38,23 @@
 			goto(`/team/${app.team.slug}?deleted=app/${app.name}`);
 		}
 	};
+
+	function hasResourcesToDelete(app: DeleteAppPage$result['team']['environment']['application']) {
+		return (
+			app.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 ||
+			app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
+			app.buckets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
+			app.redisInstances.nodes.length > 0
+		);
+	}
+
+	function hasOrphans(app: DeleteAppPage$result['team']['environment']['application']) {
+		return (
+			app.sqlInstances.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
+			app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
+			app.buckets.nodes.filter((s) => !s.cascadingDelete).length > 0
+		);
+	}
 </script>
 
 {#if $DeleteAppPage?.data?.team.environment.application}
@@ -45,12 +62,13 @@
 	<Card borderColor="var(--a-border-danger)">
 		<h3>Delete {app.name}</h3>
 
-		{#if app.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 || app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 || app.buckets.nodes.filter((s) => s.cascadingDelete).length > 0 || app.redisInstances.nodes.length > 0}
+		{#if hasResourcesToDelete(app)}
 			<p>
 				In addition to the application the following resources
 				<strong>will be permanently deleted</strong>:
 			</p>
 		{/if}
+
 		{#if true}
 			<div>
 				{#each app.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
@@ -84,7 +102,7 @@
 			</div>
 		{/if}
 
-		{#if app.sqlInstances.nodes.filter((s) => !s.cascadingDelete).length > 0 || app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete).length > 0 || app.buckets.nodes.filter((s) => !s.cascadingDelete).length > 0}
+		{#if hasOrphans(app)}
 			<br />
 			<div>
 				In addition to deleting the application the following resources <strong
@@ -105,10 +123,6 @@
 				{#each app.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
-
-				<!--{#each app.kafkaTopicAcls.nodes as node}
-
-				{/each}-->
 			</div>
 		{/if}
 		{@const expected = app.environment.name + '/' + app.name}
