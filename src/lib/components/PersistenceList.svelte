@@ -12,6 +12,8 @@
 				return 'BigQuery';
 			case 'SqlInstance':
 				return 'Postgres';
+			case 'RedisInstance':
+				return 'Redis';
 			default:
 				return typ;
 		}

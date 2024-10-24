@@ -17,7 +17,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!) {
 						riskScore
 					}
 
-					#vulnerabilities {
+					#vulnerabilities(first: 10) @paginate(mode: SinglePage) {
 					#	edges {
 					#		node {
 					#			description
@@ -25,7 +25,6 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!) {
 					#			package
 					#			severity
 					#			state
-					#			url
 					#		}
 					#	}
 					#}

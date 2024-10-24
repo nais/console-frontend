@@ -18,6 +18,6 @@
 	<Kafka {...$$restProps} />
 {:else if type === 'OpenSearch'}
 	<Opensearch {...$$restProps} />
-{:else if type === 'Redis'}
+{:else if type === 'RedisInstance'}
 	<SandboxIcon {...$$restProps} />
 {/if}

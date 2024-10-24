@@ -641,6 +641,9 @@ input DeleteApplicationInput {
 }
 
 type DeleteApplicationPayload {
+  """Whether or not the application was deleted."""
+  success: Boolean
+
   """The team that owned the deleted application."""
   team: Team
 }
@@ -803,6 +806,9 @@ type IDPortenAuthIntegration implements AuthIntegration {
 }
 
 type ImageVulnerability implements Node {
+  """Analysis trail of the vulnerability."""
+  analysisTrail: ImageVulnerabilityAnalysisTrail!
+
   """Description of the vulnerability."""
   description: String!
 
@@ -820,9 +826,70 @@ type ImageVulnerability implements Node {
 
   """State of the vulnerability."""
   state: ImageVulnerabilityState!
+}
 
-  """External URL to the vulnerability."""
-  url: String!
+type ImageVulnerabilityAnalysisComment {
+  """The comment provided."""
+  comment: String!
+
+  """User who commented."""
+  onBehalfOf: String!
+
+  """State of the vulnerability."""
+  state: ImageVulnerabilityAnalysisState!
+
+  """Was the vulnerability suppressed."""
+  suppressed: Boolean!
+
+  """Timestamp of the comment."""
+  timestamp: Time!
+}
+
+type ImageVulnerabilityAnalysisCommentConnection {
+  edges: [ImageVulnerabilityAnalysisCommentEdge!]!
+  nodes: [ImageVulnerabilityAnalysisComment!]!
+  pageInfo: PageInfo!
+}
+
+type ImageVulnerabilityAnalysisCommentEdge {
+  cursor: Cursor!
+  node: ImageVulnerabilityAnalysisComment!
+}
+
+enum ImageVulnerabilityAnalysisState {
+  """Vulnerability is marked as false positive."""
+  FALSE_POSITIVE
+
+  """Vulnerability is triaged."""
+  IN_TRIAGE
+
+  """Vulnerability is marked as not affected."""
+  NOT_AFFECTED
+
+  """Vulnerability is resolved."""
+  RESOLVED
+}
+
+type ImageVulnerabilityAnalysisTrail {
+  comments(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ImageVulnerabilityAnalysisCommentConnection!
+  state: ImageVulnerabilityAnalysisState!
+  suppressed: Boolean!
 }
 
 type ImageVulnerabilityConnection {
@@ -854,8 +921,10 @@ input ImageVulnerabilityOrder {
 }
 
 enum ImageVulnerabilityOrderField {
-  RISK_SCORE
+  IDENTIFIER
+  PACKAGE
   SEVERITY
+  STATE
 }
 
 enum ImageVulnerabilitySeverity {
@@ -1399,6 +1468,12 @@ type Mutation {
 
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
+
+  """
+  Updates a vulnerability
+  This mutation is currently unstable and may change in the future.
+  """
+  updateImageVulnerability(input: UpdateImageVulnerabilityInput!): UpdateImageVulnerabilityPayload!
 
   """Update a secret value within a secret."""
   updateSecretValue(input: UpdateSecretValueInput!): UpdateSecretValuePayload!
@@ -3498,6 +3573,25 @@ type TriggerJobPayload {
 
   """The new job run."""
   jobRun: JobRun
+}
+
+input UpdateImageVulnerabilityInput {
+  """The analysis state of the vulnerability."""
+  analysisState: ImageVulnerabilityAnalysisState!
+
+  """The a comment for suppressing the vulnerability."""
+  comment: String!
+
+  """Should the vulnerability be suppressed."""
+  suppress: Boolean!
+
+  """The id of the vulnerability to suppress."""
+  vulnerabilityID: ID!
+}
+
+type UpdateImageVulnerabilityPayload {
+  """Analysis trail of the suppressed vulnerability."""
+  analysisTrail: ImageVulnerabilityAnalysisTrail!
 }
 
 input UpdateSecretValueInput {
