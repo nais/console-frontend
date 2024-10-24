@@ -15,6 +15,8 @@
 		workload,
 		graphql(`
 			fragment WorkloadImage on Workload {
+				__typename
+				name
 				image {
 					name
 					hasSBOM
@@ -36,7 +38,8 @@
 		`)
 	);
 
-	$: appName = $page.params.app;
+	$: workloadName = $data.name;
+	$: workloadType = $data.__typename === 'Application' ? 'app' : 'job';
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
@@ -74,7 +77,11 @@
 	<h4 class="imageHeader">
 		Image
 
-		<Button as="a" variant="secondary" size="small" href="/team/{team}/{env}/app/{appName}/image"
+		<Button
+			as="a"
+			variant="secondary"
+			size="small"
+			href="/team/{team}/{env}/{workloadType}/{workloadName}/image"
 			>Details
 		</Button>
 	</h4>

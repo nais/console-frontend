@@ -5,17 +5,16 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
+	import Workloads from '$lib/components/image/Workloads.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Alert, CopyButton, Tooltip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	//import Workloads from '$lib/components/image/Workloads.svelte';
 
 	export let data: PageData;
 
-	$: ({ JobImage, UserInfo } = data);
+	$: ({ JobImageDetails, UserInfo } = data);
 
-	$: image = $JobImage.data?.team.environment.job.image;
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
 	//$: auth = $Image.data?.team.viewerIsMember;
 
@@ -44,7 +43,7 @@
 	//let appName = $page.params.app;
 	//let env = $page.params.env;
 	//let team = $page.params.team;
-	//
+
 	let registry: string;
 	let repository: string;
 	let name: string;
@@ -54,8 +53,10 @@
 	//let analysisOpen = false;
 
 	$: {
-		if (image) {
-			({ registry, repository, name } = parseImage(image.name));
+		if ($JobImageDetails.data?.team.environment.job.image) {
+			({ registry, repository, name } = parseImage(
+				$JobImageDetails.data.team.environment.job.image.name
+			));
 		}
 	}
 
@@ -68,12 +69,15 @@
 	};
 </script>
 
-{#if $JobImage.errors}
+{#if $JobImageDetails.errors}
 	<Alert variant="error">
-		<p>{$JobImage.errors[0].message}</p>
+		{#each $JobImageDetails.errors as error}
+			<p>{error.message}</p>
+		{/each}
 	</Alert>
 {/if}
-{#if image}
+{#if $JobImageDetails.data}
+	{@const image = $JobImageDetails.data.team.environment.job.image}
 	<div class="grid">
 		<Card columns={8}>
 			<h4 class="imageHeader">
@@ -83,7 +87,7 @@
 					variant="action"
 					text="Copy image name"
 					activeText="Image name copied"
-					copyText={image.name}
+					copyText={image.name + ':' + image.tag}
 				/>
 			</h4>
 			<div class="imageGrid">
@@ -253,9 +257,9 @@
 				{/if}
 			</Card>
 		{/if}-->
-		<!--Card columns={12}>
-			<Workloads workloads={image.workloadReferences} />
-		</Card-->
+		<Card columns={12}>
+			<Workloads {image} />
+		</Card>
 	</div>
 {/if}
 
@@ -352,7 +356,7 @@
 		grid-column: 2;
 		grid-row: 1;
 	}
-
+	/*
 	.digest {
 		grid-column-start: 1;
 		grid-column-end: 3;
@@ -364,4 +368,5 @@
 		grid-row: 4;
 		margin-top: 1rem;
 	}
+		*/
 </style>

@@ -1,7 +1,8 @@
-query JobImage($team: Slug!, $env: String!, $job: String!) {
+query JobImageDetails($team: Slug!, $env: String!, $job: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {
+				__typename
 				image {
 					name
 					tag
@@ -29,21 +30,7 @@ query JobImage($team: Slug!, $env: String!, $job: String!) {
 					#	}
 					#}
 
-					workloadReferences {
-						edges {
-							node {
-								workload {
-									name
-									team {
-										slug
-									}
-									environment {
-										name
-									}
-								}
-							}
-						}
-					}
+					...WorkloadRefs
 				}
 			}
 		}

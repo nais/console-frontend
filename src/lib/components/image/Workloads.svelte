@@ -1,7 +1,38 @@
 <script lang="ts">
-	import { Table, Tbody, Th, Thead } from '@nais/ds-svelte-community';
+	import { fragment, graphql, type WorkloadRefs } from '$houdini';
+	import Time from '$lib/Time.svelte';
 
-	//export let workloads: ;
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+
+	export let image: WorkloadRefs;
+
+	$: workloadRefs = fragment(
+		image,
+		graphql(`
+			fragment WorkloadRefs on ContainerImage {
+				workloadReferences {
+					edges {
+						node {
+							workload {
+								__typename
+								team {
+									slug
+								}
+								environment {
+									name
+								}
+								name
+								deploymentInfo {
+									url
+									timestamp
+								}
+							}
+						}
+					}
+				}
+			}
+		`)
+	);
 </script>
 
 <div class="workloads">
@@ -15,34 +46,43 @@
 			<Th>Age</Th>
 		</Thead>
 		<Tbody>
-			<!--{#each workloads as workload}
+			{#each $workloadRefs.workloadReferences.edges as workload}
 				<Tr>
 					<Td>
-						<a href={`/team/${workload.team.slug}`}>{workload.team.slug}</a>
+						<a href={`/team/${workload.node.workload.team.slug}`}
+							>{workload.node.workload.team.slug}</a
+						>
 					</Td>
 					<Td>
-						{workload.env.name}
+						{workload.node.workload.environment.name}
 					</Td>
 					<Td>
-						{#if workload.type === 'APP'}
-							<a href={`/team/${workload.team.slug}/${workload.env.name}/app/${workload.name}`}
-								>{workload.name}</a
+						{#if workload.node.workload.__typename === 'Application'}
+							<a
+								href={`/team/${workload.node.workload.team.slug}/${workload.node.workload.environment.name}/app/${workload.node.workload.name}`}
+								>{workload.node.workload.name}</a
 							>
-						{:else if workload.type === 'NAISJOB'}
-							<a href={`/team/${workload.team.slug}/${workload.env.name}/job/${workload.name}`}
-								>{workload.name}</a
+						{:else if workload.node.workload.__typename === 'Job'}
+							<a
+								href={`/team/${workload.node.workload.team.slug}/${workload.node.workload.environment.name}/job/${workload.node.workload.name}`}
+								>{workload.node.workload.name}</a
 							>
 						{/if}
 					</Td>
 					<Td>
-						<a href={workload.deployInfo.url} target="_blank">Run</a>
+						<a href={workload.node.workload.deploymentInfo.url} target="_blank">Run</a>
+					</Td>
+					<Td
+						>{#if workload.node.workload.deploymentInfo.timestamp}
+							<Time distance time={workload.node.workload.deploymentInfo.timestamp} />
+						{/if}
 					</Td>
 				</Tr>
 			{:else}
 				<Tr>
 					<Td colspan={5}>No workloads found using this image in Dependency-Track</Td>
 				</Tr>
-			{/each}-->
+			{/each}
 		</Tbody>
 	</Table>
 </div>

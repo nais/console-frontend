@@ -2995,6 +2995,9 @@ type TeamEnvironment implements Node {
 
   """The connected team."""
   team: Team!
+
+  """Workload in the team environment."""
+  workload(name: String!): Workload!
 }
 
 type TeamEnvironmentCost {
@@ -3454,7 +3457,7 @@ type TeamVulnerabilitySummary {
   riskScore: Int!
 
   """Trend of vulnerability status for the team."""
-  riskScoreTrend: TeamVulnerabilityRiskScoreTrend
+  riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
 
   """Number of vulnerabilities with severity UNASSIGNED."""
   unassigned: Int!

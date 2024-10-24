@@ -1,8 +1,7 @@
-import { error } from '@sveltejs/kit';
-import type { ImageVariables } from './$houdini';
+import type { JobImageDetailsVariables } from './$houdini';
 
-export const _ImageVariables: ImageVariables = ({ url }) => {
-	const page = parseInt(url.searchParams.get('page') || '1');
+export const _JobImageDetailsVariables: JobImageDetailsVariables = (/*{ url }*/) => {
+	/*const page = parseInt(url.searchParams.get('page') || '1');
 	if (!page || page < 1) {
 		error(400, 'Bad pagenumber');
 	}
@@ -11,5 +10,6 @@ export const _ImageVariables: ImageVariables = ({ url }) => {
 	const field = (url.searchParams.get('col') || 'SEVERITY') as never;
 	const direction = (url.searchParams.get('dir') || 'DESC') as never;
 
-	return { limit, offset, orderBy: { field, direction } };
+	return { limit, offset, orderBy: { field, direction } };*/
+	return {};
 };
