@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { type DeleteAppPage$result, graphql } from '$houdini';
+	import { type DeleteJobPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -10,11 +10,14 @@
 
 	export let data: PageData;
 
-	$: ({ DeleteAppPage } = data);
+	$: ({ DeleteJobPage } = data);
 
-	const deleteApp = graphql(`
-		mutation DeleteApp($team: Slug!, $env: String!, $app: String!) {
-			deleteApplication(input: { teamSlug: $team, environmentName: $env, name: $app }) {
+	const deleteJob = graphql(`
+		mutation DeleteJob($team: Slug!, $env: String!, $job: String!) {
+			deleteJob(input: { teamSlug: $team, environmentName: $env, name: $job }) {
+				team {
+					slug
+				}
 				success
 			}
 		}
@@ -23,23 +26,23 @@
 	let confirmation = '';
 
 	const submit = async () => {
-		const app = get(DeleteAppPage).data?.team.environment.application;
-		if (!app) {
+		const job = get(DeleteJobPage).data?.team.environment.job;
+		if (!job) {
 			return;
 		}
 
-		const resp = await deleteApp.mutate({
-			app: app.name,
-			env: app.environment.name,
-			team: app.team.slug
+		const resp = await deleteJob.mutate({
+			job: job.name,
+			env: job.environment.name,
+			team: job.team.slug
 		});
 
-		if (resp.data?.deleteApplication.success) {
-			goto(`/team/${app.team.slug}?deleted=app/${app.name}`);
+		if (resp.data?.deleteJob.success) {
+			goto(`/team/${job.team.slug}?deleted=job/${job.name}`);
 		}
 	};
 
-	function hasResourcesToDelete(app: DeleteAppPage$result['team']['environment']['application']) {
+	function hasResourcesToDelete(app: DeleteJobPage$result['team']['environment']['job']) {
 		return (
 			app.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
@@ -48,7 +51,7 @@
 		);
 	}
 
-	function hasOrphans(app: DeleteAppPage$result['team']['environment']['application']) {
+	function hasOrphans(app: DeleteJobPage$result['team']['environment']['job']) {
 		return (
 			app.sqlInstances.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
 			app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
@@ -57,20 +60,19 @@
 	}
 </script>
 
-{#if $DeleteAppPage?.data?.team.environment.application}
-	{@const app = $DeleteAppPage?.data?.team.environment.application}
+{#if $DeleteJobPage?.data?.team.environment.job}
+	{@const naisjob = $DeleteJobPage?.data?.team.environment.job}
 	<Card borderColor="var(--a-border-danger)">
-		<h3>Delete {app.name}</h3>
+		<h3>Delete {naisjob.name}</h3>
 
-		{#if hasResourcesToDelete(app)}
+		{#if hasResourcesToDelete(naisjob)}
 			<p>
 				In addition to the application the following resources
 				<strong>will be permanently deleted</strong>:
 			</p>
 		{/if}
-
 		<div>
-			{#each app.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each naisjob.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
 				<PersistenceList persistence={node}>
 					This will be deleted because <code>cascadingDelete</code>
 					is set to
@@ -78,7 +80,7 @@
 					in the manifest.
 				</PersistenceList>
 			{/each}
-			{#each app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each naisjob.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
 				<PersistenceList persistence={node}>
 					This will be deleted because <code>cascadingDelete</code>
 					is set to
@@ -86,13 +88,13 @@
 					in the manifest.
 				</PersistenceList>
 			{/each}
-			{#each app.buckets.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each naisjob.buckets.nodes.filter((s) => s.cascadingDelete) as node}
 				<PersistenceList persistence={node}
 					>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
 					manifest.
 				</PersistenceList>
 			{/each}
-			{#each app.redisInstances.nodes as node}
+			{#each naisjob.redisInstances.nodes as node}
 				<PersistenceList persistence={node}
 					>If this Redis instance is defined on team level, it won't be deleted. If it's created by
 					the app, it will be permanently deleted.
@@ -100,7 +102,7 @@
 			{/each}
 		</div>
 
-		{#if hasOrphans(app)}
+		{#if hasOrphans(naisjob)}
 			<br />
 			<div>
 				In addition to deleting the application the following resources <strong
@@ -112,36 +114,37 @@
 				</HelpText>
 			</div>
 			<div>
-				{#each app.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each naisjob.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
-				{#each app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each naisjob.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
-				{#each app.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each naisjob.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
 			</div>
 		{/if}
-		{@const expected = app.environment.name + '/' + app.name}
+
+		{@const expected = naisjob.environment.name + '/' + naisjob.name}
 		<p>
 			Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 			<em>Delete</em>
 		</p>
-		{#if $deleteApp.errors}
-			<GraphErrors errors={$deleteApp.errors} />
+		{#if $deleteJob.errors}
+			<GraphErrors errors={$deleteJob.errors} />
 		{/if}
-		{#if $deleteApp.errors}
+		{#if $deleteJob.errors}
 			<Alert variant="error">
 				Error occured while deleting app:<br />
-				{#each $deleteApp.errors as error}
+				{#each $deleteJob.errors as error}
 					{error.message}<br />
 				{/each}
 			</Alert>
 		{/if}
 		<form on:submit|preventDefault={submit}>
 			<TextField hideLabel bind:value={confirmation} style="width: 300px;" />
-			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteApp.fetching}>
+			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteJob.fetching}>
 				Delete
 			</Button>
 		</form>

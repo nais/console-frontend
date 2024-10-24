@@ -1,0 +1,48 @@
+query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		slug
+		environment(name: $env) {
+			name
+			job(name: $job) {
+				name
+				environment {
+					name
+				}
+				team {
+					slug
+				}
+				bigQueryDatasets {
+					nodes {
+						type: __typename
+						name
+						cascadingDelete
+					}
+				}
+				buckets {
+					nodes {
+						type: __typename
+						name
+						cascadingDelete
+					}
+				}
+				redisInstances {
+					nodes {
+						type: __typename
+						name
+					}
+				}
+				sqlInstances {
+					nodes {
+						type: __typename
+						name
+						cascadingDelete
+					}
+				}
+				openSearch {
+					type: __typename
+					name
+				}
+			}
+		}
+	}
+}

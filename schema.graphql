@@ -660,6 +660,9 @@ input DeleteJobInput {
 }
 
 type DeleteJobPayload {
+  """Whether or not the application was deleted."""
+  success: Boolean
+
   """The team that owned the deleted job."""
   team: Team
 }
@@ -4117,6 +4120,12 @@ type WorkloadStatusInvalidNaisYaml implements WorkloadStatusError {
   level: WorkloadStatusErrorLevel!
 }
 
+"""Error describing that the workload is missing SBOM"""
+type WorkloadStatusMissingSBOM implements WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+}
+
 """Error describing that a workload has new instances that are failing"""
 type WorkloadStatusNewInstancesFailing implements WorkloadStatusError {
   """Names of the failing instances"""
@@ -4150,6 +4159,15 @@ type WorkloadStatusSynchronizationFailing implements WorkloadStatusError {
 
   """Error level"""
   level: WorkloadStatusErrorLevel!
+}
+
+"""Error describing that the workload is missing SBOM"""
+type WorkloadStatusVulnerable implements WorkloadStatusError {
+  """Error level"""
+  level: WorkloadStatusErrorLevel!
+
+  """Vulnerabilities"""
+  summary: ImageVulnerabilitySummary!
 }
 
 type WorkloadUtilization {
