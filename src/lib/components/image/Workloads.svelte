@@ -11,21 +11,19 @@
 		graphql(`
 			fragment WorkloadRefs on ContainerImage {
 				workloadReferences {
-					edges {
-						node {
-							workload {
-								__typename
-								team {
-									slug
-								}
-								environment {
-									name
-								}
+					nodes {
+						workload {
+							__typename
+							team {
+								slug
+							}
+							environment {
 								name
-								deploymentInfo {
-									url
-									timestamp
-								}
+							}
+							name
+							deploymentInfo {
+								url
+								timestamp
 							}
 						}
 					}
@@ -46,35 +44,33 @@
 			<Th>Age</Th>
 		</Thead>
 		<Tbody>
-			{#each $workloadRefs.workloadReferences.edges as workload}
+			{#each $workloadRefs.workloadReferences.nodes as node}
 				<Tr>
 					<Td>
-						<a href={`/team/${workload.node.workload.team.slug}`}
-							>{workload.node.workload.team.slug}</a
-						>
+						<a href={`/team/${node.workload.team.slug}`}>{node.workload.team.slug}</a>
 					</Td>
 					<Td>
-						{workload.node.workload.environment.name}
+						{node.workload.environment.name}
 					</Td>
 					<Td>
-						{#if workload.node.workload.__typename === 'Application'}
+						{#if node.workload.__typename === 'Application'}
 							<a
-								href={`/team/${workload.node.workload.team.slug}/${workload.node.workload.environment.name}/app/${workload.node.workload.name}`}
-								>{workload.node.workload.name}</a
+								href={`/team/${node.workload.team.slug}/${node.workload.environment.name}/app/${node.workload.name}`}
+								>{node.workload.name}</a
 							>
-						{:else if workload.node.workload.__typename === 'Job'}
+						{:else if node.workload.__typename === 'Job'}
 							<a
-								href={`/team/${workload.node.workload.team.slug}/${workload.node.workload.environment.name}/job/${workload.node.workload.name}`}
-								>{workload.node.workload.name}</a
+								href={`/team/${node.workload.team.slug}/${node.workload.environment.name}/job/${node.workload.name}`}
+								>{node.workload.name}</a
 							>
 						{/if}
 					</Td>
 					<Td>
-						<a href={workload.node.workload.deploymentInfo.url} target="_blank">Run</a>
+						<a href={node.workload.deploymentInfo.url} target="_blank">Run</a>
 					</Td>
 					<Td
-						>{#if workload.node.workload.deploymentInfo.timestamp}
-							<Time distance time={workload.node.workload.deploymentInfo.timestamp} />
+						>{#if node.workload.deploymentInfo.timestamp}
+							<Time distance time={node.workload.deploymentInfo.timestamp} />
 						{/if}
 					</Td>
 				</Tr>

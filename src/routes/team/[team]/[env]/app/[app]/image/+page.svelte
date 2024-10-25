@@ -5,6 +5,7 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
+	import Vultnerabilities from '$lib/components/image/Vultnerabilities.svelte';
 	import Workloads from '$lib/components/image/Workloads.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
@@ -16,7 +17,7 @@
 	$: ({ ApplicationImageDetails, UserInfo } = data);
 
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
-	//$: auth = $Image.data?.team.viewerIsMember;
+	$: auth = $ApplicationImageDetails.data?.team.viewerIsMember;
 
 	$: console.log(user);
 
@@ -133,7 +134,7 @@
 		</Card>
 
 		<Card columns={4}>
-			<h4>Vulnerabilities</h4>
+			<h4>Summary</h4>
 			{#if image.vulnerabilitySummary}
 				<div class="circles">
 					<Tooltip placement="right" content="severity: CRITICAL">
@@ -190,6 +191,9 @@
 				No data found.
 				<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
 			{/if}
+		</Card>
+		<Card columns={12}>
+			<Vultnerabilities {image} authorized={auth} />
 		</Card>
 		<!--{#if image.findings && image.projectId !== ''}
 			<Card columns={12}>
