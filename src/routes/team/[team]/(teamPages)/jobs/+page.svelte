@@ -4,6 +4,7 @@
 	import { JobOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import Time from '$lib/Time.svelte';
 	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -91,10 +92,9 @@
 							<Td>{edge.node.environment.name}</Td>
 
 							<Td>
-								TODO
-								<!--{#if edge.node.deployInfo.timestamp}
-									<Time time={edge.node.deployInfo.timestamp} distance={true} />
-								{/if}-->
+								{#if edge.node.deploymentInfo.timestamp}
+									<Time time={edge.node.deploymentInfo.timestamp} distance={true} />
+								{/if}
 							</Td>
 						</Tr>
 					{:else}

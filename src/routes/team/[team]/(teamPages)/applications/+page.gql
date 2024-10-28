@@ -19,6 +19,9 @@ query Workloads($team: Slug!, $orderBy: ApplicationOrder) {
 					status {
 						state
 					}
+					deploymentInfo {
+						timestamp
+					}
 					...AppInstancesStatus
 				}
 			}

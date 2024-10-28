@@ -5,6 +5,7 @@
 	import Card from '$lib/Card.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import Time from '$lib/Time.svelte';
 	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
@@ -100,11 +101,9 @@
 									<InstanceStatus app={edge.node} />
 								</Td>
 								<Td>
-									<!--
-										{#if edge.node.deployInfo.timestamp}
-											<Time time={edge.node.deployInfo.timestamp} distance={true} />
-										{/if}-->
-									TODO
+									{#if edge.node.deploymentInfo.timestamp}
+										<Time time={edge.node.deploymentInfo.timestamp} distance={true} />
+									{/if}
 								</Td>
 							</Tr>
 						{:else}

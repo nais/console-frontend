@@ -22,9 +22,9 @@ query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC }) 
 						state
 					}
 
-					#deployInfo {
-					#	timestamp
-					#}
+					deploymentInfo {
+						timestamp
+					}
 				}
 			}
 		}
