@@ -1148,7 +1148,7 @@ input JobOrder {
 }
 
 enum JobOrderField {
-  """Order Jobs by the deployment time."""
+  """Order applications by the deployment time."""
   DEPLOYMENT_TIME
 
   """Order jobs by the name of the environment."""
@@ -2367,6 +2367,7 @@ type SqlInstance implements Node & Persistence {
   backupConfiguration: SqlInstanceBackupConfiguration
   cascadingDelete: Boolean!
   connectionName: String
+  cost: SqlInstanceCost!
   database: SqlDatabase
   diskAutoresize: Boolean
   diskAutoresizeLimit: Int
@@ -2377,8 +2378,10 @@ type SqlInstance implements Node & Persistence {
   id: ID!
   maintenanceVersion: String
   maintenanceWindow: SqlInstanceMaintenanceWindow
+  metrics: SqlInstanceMetrics!
   name: String!
   projectID: String!
+  state: SqlInstanceState!
   status: SqlInstanceStatus!
   team: Team!
   tier: String!
@@ -2399,6 +2402,20 @@ type SqlInstanceConnection {
   edges: [SqlInstanceEdge!]!
   nodes: [SqlInstance!]!
   pageInfo: PageInfo!
+}
+
+type SqlInstanceCost {
+  sum: Float!
+}
+
+type SqlInstanceCpu {
+  cores: Float!
+  utilization: Float!
+}
+
+type SqlInstanceDisk {
+  quotaBytes: Int!
+  utilization: Float!
 }
 
 type SqlInstanceEdge {
@@ -2427,6 +2444,17 @@ type SqlInstanceMaintenanceWindow {
   hour: Int!
 }
 
+type SqlInstanceMemory {
+  quotaBytes: Int!
+  utilization: Float!
+}
+
+type SqlInstanceMetrics {
+  cpu: SqlInstanceCpu!
+  disk: SqlInstanceDisk!
+  memory: SqlInstanceMemory!
+}
+
 input SqlInstanceOrder {
   direction: OrderDirection!
   field: SqlInstanceOrderField!
@@ -2436,6 +2464,16 @@ enum SqlInstanceOrderField {
   ENVIRONMENT
   NAME
   VERSION
+}
+
+enum SqlInstanceState {
+  FAILED
+  MAINTENANCE
+  PENDING_CREATE
+  PENDING_DELETE
+  RUNNABLE
+  SUSPENDED
+  UNSPECIFIED
 }
 
 type SqlInstanceStatus {

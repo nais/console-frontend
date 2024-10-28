@@ -4,6 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
+	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -21,15 +22,15 @@
 		return opts;
 	}
 
-	//let fromDate = new Date(from);
-	//let toDate = new Date(to);
+	let fromDate = new Date(from);
+	let toDate = new Date(to);
 
 	function update() {
 		const old = $TeamCost.variables!;
 		TeamCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
 		const params = new URLSearchParams({ from, to });
-		//fromDate = new Date(from);
-		//toDate = new Date(to);
+		fromDate = new Date(from);
+		toDate = new Date(to);
 		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
@@ -71,9 +72,7 @@
 			/>
 		</Card>
 
-		<p>Todo: Her kommer TeamCost</p>
-
-		<!--TeamCostEnv {team} from={fromDate} to={toDate} /-->
+		<TeamCostEnv {team} from={fromDate} to={toDate} />
 	</div>
 {/if}
 

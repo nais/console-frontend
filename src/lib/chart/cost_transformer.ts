@@ -150,33 +150,22 @@ export function costTransformStackedColumnChart(
 }
 
 export type TeamCostEnvType = {
-	readonly env: string;
-	readonly apps: {
-		readonly app: string;
-		readonly sum: number;
-		readonly cost: {
-			readonly date: Date;
-			readonly cost: number;
-		}[];
+	readonly date: Date;
+	readonly sum: number;
+	readonly workloads: {
+		readonly cost: number;
+		readonly workloadName: string;
 	}[];
-};
+}[];
 
 export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
-	const dates = new Array<string>();
-	for (
-		let d = data.apps[0].cost[0].date;
-		d <= data.apps[0].cost[data.apps[0].cost.length - 1].date;
-		d.setUTCDate(d.getUTCDate() + 1)
-	) {
-		dates.push(d.toISOString().split('T')[0]);
-	}
+	const dates = data.map((entry) => entry.date.toISOString().split('T')[0]);
 
 	return {
 		title: {},
 		legend: {
 			bottom: 0,
 			width: '90%',
-
 			selector: [
 				{
 					title: 'Inverse selection',
@@ -186,7 +175,7 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		},
 
 		tooltip: {
-			trigger: data.apps.length > 10 ? 'item' : 'axis',
+			trigger: data[0].workloads.length > 10 ? 'item' : 'axis',
 			axisPointer: {
 				type: 'shadow'
 			},
@@ -205,7 +194,7 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		xAxis: [
 			{
 				type: 'category',
-				data: dates.map((date) => date),
+				data: dates,
 				boundaryGap: false
 			}
 		],
@@ -217,16 +206,13 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 				}
 			}
 		],
-		series: data.apps.map((s) => {
-			return {
-				name: s.app,
-				type: 'line',
-				emphasis: {
-					focus: 'series'
-				},
-
-				data: s.cost.map((d) => d.cost)
-			};
-		})
+		series: data[0].workloads.map((_, i) => ({
+			name: data[0].workloads[i].workloadName,
+			type: 'line',
+			emphasis: {
+				focus: 'series'
+			},
+			data: data.map((dateEntry) => dateEntry.workloads[i]?.cost || 0) // Use 0 if no cost data
+		}))
 	} as EChartsOption;
 }
