@@ -1,10 +1,9 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-
-	import { goto } from '$app/navigation';
 	import {
 		Alert,
 		Button,
@@ -18,11 +17,14 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
+		CheckmarkIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
-		ExclamationmarkTriangleFillIcon
+		ExclamationmarkTriangleFillIcon,
+		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 
+	import prettyBytes from 'pretty-bytes';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
@@ -225,60 +227,60 @@
 							{edge.node.environment.name}
 						</Td>
 
-						<Td
-							><!--
-								{#if edge.node.healthy && edge.node.state === 'RUNNABLE'}
-									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-								{:else if node.state !== 'RUNNABLE'}
-									<Tooltip content="Unhealthy state: {node.state}" placement="right">
-										<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-									</Tooltip>
-								{:else}
-									<Tooltip
-										content="The SQL instance has config errors. Check conditions on instance page."
-										placement="right"
-									>
-										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
-									</Tooltip>
-								{/if}-->
+						<Td>
+							{#if edge.node.healthy && edge.node.state === 'RUNNABLE'}
+								<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+							{:else if edge.node.state !== 'RUNNABLE'}
+								<Tooltip content="Unhealthy state: {edge.node.state}" placement="right">
+									<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+								</Tooltip>
+							{:else}
+								<Tooltip
+									content="The SQL instance has config errors. Check conditions on instance page."
+									placement="right"
+								>
+									<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+								</Tooltip>
+							{/if}
 						</Td>
 						<Td>
-							<!--{#if node.metrics.cost > 0}
-									€{Math.round(node.metrics.cost)}
-								{:else}
-									-
-								{/if}-->
-							TODO: Implement cost
+							{#if edge.node.cost.sum > 0}
+								€{Math.round(edge.node.cost.sum)}
+							{:else}
+								-
+							{/if}
 						</Td>
 						<Td>
-							<!--{#if node.metrics.cpu.utilization}
-									<span
-										title="{node.metrics.cpu.utilization.toFixed(1)}% of {node.metrics.cpu
-											.cores} core(s)">{node.metrics.cpu.utilization.toFixed(1)}%</span
-									>
-								{/if}-->
-							TODO: Implement CPU
+							{#if edge.node.metrics.cpu.utilization}
+								<span
+									title="{edge.node.metrics.cpu.utilization.toFixed(1)}% of {edge.node.metrics.cpu
+										.cores} core(s)"
+								>
+									{edge.node.metrics.cpu.utilization.toFixed(1)}%
+								</span>
+							{/if}
 						</Td>
 						<Td>
-							<!--{#if node.metrics.memory.utilization}
-									<span
-										title="{node.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-											node.metrics.memory.quotaBytes
-										)}">{node.metrics.memory.utilization.toFixed(1)}%</span
-									>
-								{/if}-->
-							TODO: Implement memory
+							{#if edge.node.metrics.memory.utilization}
+								<span
+									title="{edge.node.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+										edge.node.metrics.memory.quotaBytes
+									)}"
+								>
+									{edge.node.metrics.memory.utilization.toFixed(1)}%
+								</span>
+							{/if}
 						</Td>
 						<Td>
-							<!--
-								{#if node.metrics.disk.utilization}
-									<span
-										title="{node.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-											node.metrics.disk.quotaBytes
-										)}">{node.metrics.disk.utilization.toFixed(1)}%</span
-									>
-								{/if}-->
-							TODO: Implement disk
+							{#if edge.node.metrics.disk.utilization}
+								<span
+									title="{edge.node.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+										edge.node.metrics.disk.quotaBytes
+									)}"
+								>
+									{edge.node.metrics.disk.utilization.toFixed(1)}%
+								</span>
+							{/if}
 						</Td>
 					</Tr>
 				{:else}

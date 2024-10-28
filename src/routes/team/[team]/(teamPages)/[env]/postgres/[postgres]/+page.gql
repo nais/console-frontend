@@ -17,22 +17,25 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 					name
 					__typename
 				}
+				state
 				tier
-				#metrics {
-				#	cost
-				#	cpu {
-				#		cores
-				#		utilization
-				#	}
-				#	memory {
-				#		quotaBytes
-				#		utilization
-				#	}
-				#	disk {
-				#		quotaBytes
-				#		utilization
-				#	}
-				#}
+				cost {
+					sum
+				}
+				metrics {
+					cpu {
+						cores
+						utilization
+					}
+					memory {
+						quotaBytes
+						utilization
+					}
+					disk {
+						quotaBytes
+						utilization
+					}
+				}
 				highAvailability
 				backupConfiguration {
 					enabled

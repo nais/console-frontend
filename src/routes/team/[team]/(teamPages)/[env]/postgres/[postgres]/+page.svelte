@@ -23,6 +23,7 @@
 		ExternalLinkIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -55,7 +56,7 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						<!--€{Math.round(instance.metrics.cost)}-->TODO: not implemented in backend
+						€{Math.round(instance.cost.sum)}
 					</p>
 				</div>
 			</div>
@@ -63,8 +64,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<!--CircleProgressBar progress={instance.metrics.cpu.utilization / 100} /-->
-					<CircleProgressBar progress={69 / 100} />
+					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -74,9 +74,8 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-						core(s)-->TODO:
-						Implement CPU
+						{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
+						core(s)
 					</p>
 				</div>
 			</div>
@@ -84,8 +83,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<!--CircleProgressBar progress={instance.metrics.memory.utilization / 100} /-->
-					<CircleProgressBar progress={69 / 100} />
+					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -95,10 +93,9 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+						{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
 							instance.metrics.memory.quotaBytes
-					)}-->TODO:
-						Implement memory
+						)}
 					</p>
 				</div>
 			</div>
@@ -106,8 +103,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<!--CircleProgressBar progress={instance.metrics.disk.utilization / 100} /-->
-					<CircleProgressBar progress={69 / 100} />
+					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -117,10 +113,9 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+						{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
 							instance.metrics.disk.quotaBytes
-					)}-->TODO:
-						Implement disk
+						)}
 					</p>
 				</div>
 			</div>
@@ -142,14 +137,13 @@
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 0.5rem">
-					<!--{#if instance.state === 'RUNNABLE'}
+					{#if instance.state === 'RUNNABLE'}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 					{:else}
-						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" title="yolo" /><span
+						<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.5rem" /><span
 							style="font-size: small;">Unhealthy state: {instance.state}</span
 						>
-					{/if}-->
-					TODO: implement state
+					{/if}
 				</p>
 				<p>
 					{instance.workload?.__typename}

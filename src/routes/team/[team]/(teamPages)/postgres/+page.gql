@@ -17,8 +17,25 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder) {
 
 					connectionName
 					healthy
-
+					state
 					version
+					cost {
+						sum
+					}
+					metrics {
+						cpu {
+							cores
+							utilization
+						}
+						memory {
+							quotaBytes
+							utilization
+						}
+						disk {
+							quotaBytes
+							utilization
+						}
+					}
 
 					workload {
 						name
