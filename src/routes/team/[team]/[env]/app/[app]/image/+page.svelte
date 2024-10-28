@@ -193,72 +193,7 @@
 		<Card columns={12}>
 			<Vultnerabilities {image} authorized={auth} {user} />
 		</Card>
-		<!--{#if image.findings && image.projectId !== ''}
-			<Card columns={12}>
-				<h4>Findings</h4>
-				{#if image.findings.nodes.length > 0}
-					<Table zebraStripes size="small">
-						<Thead>
-							<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
-							<Th style="width: 38rem" sortable={true} sortKey="PACKAGE_URL">Package</Th>
-							<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-							<Th style="width: 3rem" sortable={true} sortKey="IS_SUPPRESSED">Suppressed</Th>
-							<Th sortable={true} sortKey="STATE">State</Th>
-						</Thead>
-						<Tbody>
-							{#each image.findings.nodes as finding}
-								<Tr>
-									<Td>
-										{#if auth}
-											<Button
-												variant="tertiary"
-												size="xsmall"
-												on:click={() => {
-													findingToSuppress = finding;
-													suppressOpen = true;
-												}}
-											>
-												<code>{finding.vulnId}</code>
-											</Button>
-										{:else}
-											<code>{finding.vulnId}</code>
-										{/if}
-									</Td>
-									<Td><code>{finding.packageUrl}</code></Td>
-									<Td
-										><code style="color: {severityToColor(finding.severity.toLocaleLowerCase())}"
-											>{finding.severity}</code
-										></Td
-									>
-									<Td style="text-align: center">
-										{#if finding.analysisTrail.isSuppressed}
-											<CheckmarkIcon width={'18px'} height={'18px'} />
-										{/if}
-									</Td>
-									<Td>
-										<Button
-											variant="tertiary-neutral"
-											size="small"
-											disabled={finding.analysisTrail?.state !== '' ? false : true}
-											on:click={() => {
-												analysisTrail = finding;
-												analysisOpen = true;
-											}}
-										>
-											<code
-												>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
-											</code>
-										</Button>
-									</Td>
-								</Tr>
-							{/each}
-						</Tbody>
-					</Table>
-				{:else}
-					<p>No findings found.</p>
-				{/if}
-			</Card>
-		{/if}-->
+
 		<Card columns={12}>
 			<Workloads {image} />
 		</Card>

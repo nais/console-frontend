@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { type NaisJobImage$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import {
 		Button,
@@ -15,11 +14,20 @@
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
 	import type { FindingType } from './SuppressFinding.svelte';
-	import { detailsUrl, joinAliases, parseComment } from './imageUtils';
+	import { detailsUrl } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
-	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
+	export let workloads: {
+		readonly __typename: string | null;
+		readonly team: {
+			readonly slug: string;
+		};
+		readonly environment: {
+			readonly name: string;
+		};
+		readonly name: string;
+	}[];
 
 	const dispatcher = createEventDispatcher<{ close: void }>();
 
@@ -31,18 +39,18 @@
 
 <Modal bind:open width="medium" on:close={close}>
 	<svelte:fragment slot="header">
-		<Heading>Analysis trail for {finding.vulnId}</Heading>
+		<Heading>Analysis trail for {finding.identifier}</Heading>
 	</svelte:fragment>
 	{#if finding.analysisTrail}
 		<div class="info">
 			<dl>
 				<dt>Package:</dt>
-				<dd><code>{finding.packageUrl}</code></dd>
+				<dd><code>{finding.package}</code></dd>
 
-				{#if finding.aliases.length > 0}
+				<!--{#if finding.aliases.length > 0}
 					<dt>Alias(es):</dt>
 					<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
-				{/if}
+				{/if}-->
 				{#if finding.description !== ''}
 					<dt>Description:</dt>
 					<dd>{finding.description}</dd>
@@ -50,8 +58,8 @@
 
 				<dt>Details:</dt>
 				<dd>
-					<a href={detailsUrl(finding.vulnId)} target="_blank"
-						>{detailsUrl(finding.vulnId)}<ExternalLinkIcon /></a
+					<a href={detailsUrl(finding.identifier)} target="_blank"
+						>{detailsUrl(finding.identifier)}<ExternalLinkIcon /></a
 					>
 				</dd>
 			</dl>
@@ -68,7 +76,7 @@
 				<Tbody>
 					{#each workloads as workload}
 						<Tr>
-							<Td>{workload.env.name}</Td>
+							<Td>{workload.environment.name}</Td>
 							<Td>{workload.team.slug}</Td>
 							<Td>{workload.name}</Td>
 						</Tr>
@@ -88,14 +96,14 @@
 				</Thead>
 				<Tbody>
 					{#if finding.analysisTrail.comments.nodes}
-						{#each finding.analysisTrail.comments.nodes as comment}
-							{#if comment}
+						{#each finding.analysisTrail.comments.nodes as node}
+							{#if node}
 								<Tr>
-									<Td>{comment.onBehalfOf}</Td>
-									<Td>{parseComment(comment.comment).state}</Td>
-									<Td>{parseComment(comment.comment).suppressed}</Td>
-									<Td>{parseComment(comment.comment).comment}</Td>
-									<Td><Time time={comment.timestamp} /></Td>
+									<Td>{node.onBehalfOf}</Td>
+									<Td>{node.state}</Td>
+									<Td>{node.suppressed}</Td>
+									<Td>{node.comment}</Td>
+									<Td><Time time={node.timestamp} distance={true} /></Td>
 								</Tr>
 							{/if}
 						{/each}

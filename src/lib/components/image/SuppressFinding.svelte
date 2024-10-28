@@ -50,7 +50,7 @@
 	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
-	import { detailsUrl, parseComment } from './imageUtils';
+	import { detailsUrl } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
@@ -65,7 +65,6 @@
 		readonly name: string;
 	}[];
 
-	export let user: string;
 	export let authorized: boolean;
 
 	let errormessage = '';
@@ -176,7 +175,7 @@
 	];
 
 	const init = (finding: FindingType) => {
-		inputText = parseComment(finding.analysisTrail?.comments?.nodes[0]?.comment ?? '').comment;
+		inputText = finding.analysisTrail?.comments?.nodes[0]?.comment ?? '';
 		selectedReason = finding.analysisTrail?.state ?? '';
 		suppressed = finding.analysisTrail?.suppressed ?? false;
 	};

@@ -4,10 +4,10 @@
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
+	import TrailFinding from './TrailFinding.svelte';
 
 	export let image: ImageVulnerabilities;
 	export let authorized: boolean;
-	export let user: string;
 
 	$: vulnerabilities = fragment(
 		image,
@@ -60,6 +60,8 @@
 
 	let findingToSuppress: FindingType | undefined;
 	let suppressOpen = false;
+	let analysisTrail: FindingType | undefined;
+	let analysisOpen = false;
 </script>
 
 <h4>Vulnerabilities</h4>
@@ -107,8 +109,8 @@
 						size="small"
 						disabled={finding.analysisTrail?.state ? false : true}
 						on:click={() => {
-							//analysisTrail = finding;
-							//analysisOpen = true;
+							analysisTrail = finding;
+							analysisOpen = true;
 						}}
 					>
 						<code>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'} </code>
@@ -129,7 +131,6 @@
 			bind:open={suppressOpen}
 			finding={findingToSuppress}
 			workloads={$vulnerabilities.workloadReferences.nodes.map((node) => node.workload)}
-			{user}
 			{authorized}
 			on:close={() => {
 				findingToSuppress = undefined;
@@ -144,4 +145,15 @@
 			}}
 		/>
 	{/key}
+{/if}
+
+{#if analysisTrail && image && authorized}
+	<TrailFinding
+		bind:open={analysisOpen}
+		finding={analysisTrail}
+		workloads={$vulnerabilities.workloadReferences.nodes.map((node) => node.workload)}
+		on:close={() => {
+			analysisTrail = undefined;
+		}}
+	/>
 {/if}

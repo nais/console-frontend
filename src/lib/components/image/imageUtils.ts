@@ -5,19 +5,6 @@ export const joinAliases = (aliases: { name: string; source: string }[], vulnId:
 		.join(', ');
 };
 
-export const parseComment = (comment: string) => {
-	const parts = comment.split('|');
-	const parsed = parts.reduce(
-		(acc, part) => {
-			const [key, value] = part.split(':');
-			acc[key] = value;
-			return acc;
-		},
-		{} as Record<string, string>
-	);
-	return parsed;
-};
-
 export const detailsUrl = (vulnId: string) => {
 	if (vulnId.startsWith('CVE')) {
 		return `https://nvd.nist.gov/vuln/detail/${vulnId}`;
