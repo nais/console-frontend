@@ -3,8 +3,8 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	//import Authentications from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Authentications.svelte';
 	import { page } from '$app/stores';
+	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
 	import Image from '$lib/components/Image.svelte';
-	import JobCost from '$lib/components/JobCost.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
 	import type { PageData } from './$houdini';
@@ -37,7 +37,7 @@
 		</Card>
 
 		<Card columns={3} rows={1}>
-			<JobCost job={jobName} {environment} {team} />
+			<AggregatedCost workload={jobName} {environment} {team} />
 		</Card>
 
 		<Card columns={3}>

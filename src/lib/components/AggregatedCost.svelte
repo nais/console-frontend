@@ -2,17 +2,17 @@
 	import { graphql } from '$houdini';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { AggregatedCostAppVariables } from './$houdini';
+	import type { AggregatedCostVariables } from './$houdini';
 
-	export const _AggregatedCostAppVariables: AggregatedCostAppVariables = () => {
-		return { application: application, environment: environment, team: team };
+	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
+		return { workload: workload, environment: environment, team: team };
 	};
 
 	const costQuery = graphql(`
-		query AggregatedCostApp($team: Slug!, $environment: String!, $application: String!) @load {
+		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) @load {
 			team(slug: $team) {
 				environment(name: $environment) {
-					application(name: $application) {
+					workload(name: $workload) {
 						cost {
 							monthly {
 								sum
@@ -29,7 +29,7 @@
 	`);
 
 	export let environment: string;
-	export let application: string;
+	export let workload: string;
 	export let team: string;
 
 	function getEstimateForMonth(cost: number, date: Date) {
@@ -54,7 +54,7 @@
 		{/each}
 	</Alert>
 {:else if $costQuery.data !== null}
-	{@const cost = $costQuery.data.team.environment.application.cost}
+	{@const cost = $costQuery.data.team.environment.workload.cost}
 	<div>
 		{#if cost.monthly.series.length > 1}
 			{@const factor = getFactor(cost.monthly.series)}

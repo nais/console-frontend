@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
-	import AppCost from '$lib/components/AppCost.svelte';
+	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
@@ -52,7 +52,7 @@
 			<Image workload={app} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<AppCost {team} {application} {environment} />
+			<AggregatedCost {team} workload={application} {environment} />
 		</Card>
 		<Card columns={12}>
 			<div class="heading">
