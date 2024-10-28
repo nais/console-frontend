@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fragment, graphql, type ImageVulnerabilities } from '$houdini';
+	import { graphql, paginatedFragment, type ImageVulnerabilities } from '$houdini';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
@@ -13,7 +13,7 @@
 	export let image: ImageVulnerabilities;
 	export let authorized: boolean;
 
-	$: vulnerabilities = fragment(
+	$: vulnerabilities = paginatedFragment(
 		image,
 		graphql(`
 			fragment ImageVulnerabilities on ContainerImage {
@@ -160,8 +160,8 @@
 				size="small"
 				variant="secondary"
 				disabled={!$vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage}
-				on:click={async () => {
-					return await vulnerabilities.loadNextPage();
+				on:click={() => {
+					vulnerabilities.loadNextPage();
 				}}
 			>
 				<ChevronRightIcon /></Button
