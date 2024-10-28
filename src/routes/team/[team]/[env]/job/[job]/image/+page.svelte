@@ -5,6 +5,7 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
+	import Vultnerabilities from '$lib/components/image/Vultnerabilities.svelte';
 	import Workloads from '$lib/components/image/Workloads.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
@@ -13,12 +14,9 @@
 
 	export let data: PageData;
 
-	$: ({ JobImageDetails, UserInfo } = data);
+	$: ({ JobImageDetails } = data);
 
-	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
-	//$: auth = $Image.data?.team.viewerIsMember;
-
-	$: console.log(user);
+	$: auth = $JobImageDetails.data?.team.viewerIsMember ?? false;
 
 	/*const summary = graphql(`
 		query Summary($env: String!, $team: Slug!, $app: String!) {
@@ -40,10 +38,6 @@
 
 	const notificationBadgeSize = '48px';
 
-	//let appName = $page.params.app;
-	//let env = $page.params.env;
-	//let team = $page.params.team;
-
 	let registry: string;
 	let repository: string;
 	let name: string;
@@ -53,9 +47,9 @@
 	//let analysisOpen = false;
 
 	$: {
-		if ($JobImageDetails.data?.team.environment.job.image) {
+		if ($JobImageDetails.data?.team.environment.workload.image) {
 			({ registry, repository, name } = parseImage(
-				$JobImageDetails.data.team.environment.job.image.name
+				$JobImageDetails.data.team.environment.workload.image.name
 			));
 		}
 	}
@@ -77,7 +71,7 @@
 	</Alert>
 {/if}
 {#if $JobImageDetails.data}
-	{@const image = $JobImageDetails.data.team.environment.job.image}
+	{@const image = $JobImageDetails.data.team.environment.workload.image}
 	<div class="grid">
 		<Card columns={8}>
 			<h4 class="imageHeader">
@@ -133,7 +127,7 @@
 		</Card>
 
 		<Card columns={4}>
-			<h4>Vulnerabilities</h4>
+			<h4>Summary</h4>
 			{#if image.vulnerabilitySummary}
 				<div class="circles">
 					<Tooltip placement="right" content="severity: CRITICAL">
@@ -191,113 +185,15 @@
 				<a href={docURL('/services/salsa/#slsa-in-nais')} on:click={onClick}> How to fix</a>
 			{/if}
 		</Card>
-		<!--{#if image.findings && image.projectId !== ''}
-			<Card columns={12}>
-				<h4>Findings</h4>
-				{#if image.findings.nodes.length > 0}
-					<Table zebraStripes size="small">
-						<Thead>
-							<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
-							<Th style="width: 38rem" sortable={true} sortKey="PACKAGE_URL">Package</Th>
-							<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-							<Th style="width: 3rem" sortable={true} sortKey="IS_SUPPRESSED">Suppressed</Th>
-							<Th sortable={true} sortKey="STATE">State</Th>
-						</Thead>
-						<Tbody>
-							{#each image.findings.nodes as finding}
-								<Tr>
-									<Td>
-										{#if auth}
-											<Button
-												variant="tertiary"
-												size="xsmall"
-												on:click={() => {
-													findingToSuppress = finding;
-													suppressOpen = true;
-												}}
-											>
-												<code>{finding.vulnId}</code>
-											</Button>
-										{:else}
-											<code>{finding.vulnId}</code>
-										{/if}
-									</Td>
-									<Td><code>{finding.packageUrl}</code></Td>
-									<Td
-										><code style="color: {severityToColor(finding.severity.toLocaleLowerCase())}"
-											>{finding.severity}</code
-										></Td
-									>
-									<Td style="text-align: center">
-										{#if finding.analysisTrail.isSuppressed}
-											<CheckmarkIcon width={'18px'} height={'18px'} />
-										{/if}
-									</Td>
-									<Td>
-										<Button
-											variant="tertiary-neutral"
-											size="small"
-											disabled={finding.analysisTrail?.state !== '' ? false : true}
-											on:click={() => {
-												analysisTrail = finding;
-												analysisOpen = true;
-											}}
-										>
-											<code
-												>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'}
-											</code>
-										</Button>
-									</Td>
-								</Tr>
-							{/each}
-						</Tbody>
-					</Table>
-				{:else}
-					<p>No findings found.</p>
-				{/if}
-			</Card>
-		{/if}-->
+		<Card columns={12}>
+			<Vultnerabilities {image} authorized={auth} />
+		</Card>
+
 		<Card columns={12}>
 			<Workloads {image} />
 		</Card>
 	</div>
 {/if}
-
-<!--
-{#if findingToSuppress && image && image.projectId !== PendingValue && auth !== undefined && auth !== PendingValue}
-	{#key findingToSuppress.id}
-		<SuppressFinding
-			projectId={image?.projectId}
-			bind:open={suppressOpen}
-			finding={findingToSuppress}
-			workloads={image.workloadReferences}
-			{user}
-			{auth}
-			on:close={() => {
-				findingToSuppress = undefined;
-				setTimeout(() => {
-					// refetch the image to update the findings
-					summary.fetch({
-						variables: { env: env, team: team, app: appName },
-						policy: 'NetworkOnly'
-					});
-				}, 2000);
-			}}
-		/>
-	{/key}
-{/if}-->
-<!--
-{#if analysisTrail && image && image.projectId !== PendingValue}
-	<TrailFinding
-		bind:open={analysisOpen}
-		finding={analysisTrail}
-		workloads={image.workloadReferences}
-		on:close={() => {
-			analysisTrail = undefined;
-		}}
-	/>
-{/if}
--->
 
 <style>
 	.circles {
@@ -356,17 +252,4 @@
 		grid-column: 2;
 		grid-row: 1;
 	}
-	/*
-	.digest {
-		grid-column-start: 1;
-		grid-column-end: 3;
-	}
-
-	.rekor {
-		grid-column-start: 1;
-		grid-column-end: 3;
-		grid-row: 4;
-		margin-top: 1rem;
-	}
-		*/
 </style>

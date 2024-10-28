@@ -2,7 +2,11 @@
 	import { fragment, graphql, type ImageVulnerabilities } from '$houdini';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		CheckmarkIcon,
+		ChevronLeftIcon,
+		ChevronRightIcon
+	} from '@nais/ds-svelte-community/icons';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
 
@@ -13,7 +17,14 @@
 		image,
 		graphql(`
 			fragment ImageVulnerabilities on ContainerImage {
-				vulnerabilities {
+				vulnerabilities(first: 10) @paginate(mode: SinglePage) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						pageStart
+						pageEnd
+						totalCount
+					}
 					nodes {
 						id
 						description
@@ -74,7 +85,7 @@
 		<Th sortable={true} sortKey="STATE">State</Th>
 	</Thead>
 	<Tbody>
-		{#each $vulnerabilities.vulnerabilities.nodes as finding}
+		{#each $vulnerabilities.data.vulnerabilities.nodes as v}
 			<Tr>
 				<Td>
 					{#if authorized}
@@ -82,24 +93,23 @@
 							variant="tertiary"
 							size="xsmall"
 							on:click={() => {
-								findingToSuppress = finding;
+								findingToSuppress = v;
 								suppressOpen = true;
 							}}
 						>
-							<code>{finding.identifier}</code>
+							<code>{v.identifier}</code>
 						</Button>
 					{:else}
-						<code>{finding.identifier}</code>
+						<code>{v.identifier}</code>
 					{/if}
 				</Td>
-				<Td><code>{finding.package}</code></Td>
+				<Td><code>{v.package}</code></Td>
 				<Td
-					><code style="color: {severityToColor(finding.severity.toLocaleLowerCase())}"
-						>{finding.severity}</code
+					><code style="color: {severityToColor(v.severity.toLocaleLowerCase())}">{v.severity}</code
 					></Td
 				>
 				<Td style="text-align: center">
-					{#if finding.analysisTrail.suppressed}
+					{#if v.analysisTrail.suppressed}
 						<CheckmarkIcon width={'18px'} height={'18px'} />
 					{/if}
 				</Td>
@@ -107,13 +117,13 @@
 					<Button
 						variant="tertiary-neutral"
 						size="small"
-						disabled={finding.analysisTrail?.state ? false : true}
+						disabled={v.analysisTrail?.state ? false : true}
 						on:click={() => {
-							analysisTrail = finding;
+							analysisTrail = v;
 							analysisOpen = true;
 						}}
 					>
-						<code>{finding.analysisTrail?.state ? finding.analysisTrail?.state : 'N/A'} </code>
+						<code>{v.analysisTrail?.state ? v.analysisTrail?.state : 'N/A'} </code>
 					</Button>
 				</Td>
 			</Tr>
@@ -124,13 +134,48 @@
 		{/each}
 	</Tbody>
 </Table>
+{#if $vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage || $vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage}
+	<div class="pagination">
+		<span>
+			{#if $vulnerabilities.data?.vulnerabilities.pageInfo.pageStart !== $vulnerabilities.data?.vulnerabilities.pageInfo.pageEnd}
+				{$vulnerabilities.data?.vulnerabilities.pageInfo.pageStart} - {$vulnerabilities.data
+					?.vulnerabilities.pageInfo.pageEnd}
+			{:else}
+				{$vulnerabilities.data?.vulnerabilities.pageInfo.pageStart}
+			{/if}
+
+			of {$vulnerabilities.data?.vulnerabilities.pageInfo.totalCount}
+		</span>
+
+		<span style="padding-left: 1rem;">
+			<Button
+				size="small"
+				variant="secondary"
+				disabled={!$vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage}
+				on:click={async () => {
+					return await vulnerabilities.loadPreviousPage();
+				}}><ChevronLeftIcon /></Button
+			>
+			<Button
+				size="small"
+				variant="secondary"
+				disabled={!$vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage}
+				on:click={async () => {
+					return await vulnerabilities.loadNextPage();
+				}}
+			>
+				<ChevronRightIcon /></Button
+			>
+		</span>
+	</div>
+{/if}
 
 {#if findingToSuppress && image && authorized}
 	{#key findingToSuppress.id}
 		<SuppressFinding
 			bind:open={suppressOpen}
 			finding={findingToSuppress}
-			workloads={$vulnerabilities.workloadReferences.nodes.map((node) => node.workload)}
+			workloads={$vulnerabilities.data.workloadReferences.nodes.map((node) => node.workload)}
 			{authorized}
 			on:close={() => {
 				findingToSuppress = undefined;
@@ -151,9 +196,16 @@
 	<TrailFinding
 		bind:open={analysisOpen}
 		finding={analysisTrail}
-		workloads={$vulnerabilities.workloadReferences.nodes.map((node) => node.workload)}
+		workloads={$vulnerabilities.data.workloadReferences.nodes.map((node) => node.workload)}
 		on:close={() => {
 			analysisTrail = undefined;
 		}}
 	/>
 {/if}
+
+<style>
+	.pagination {
+		text-align: right;
+		padding: 0.5rem;
+	}
+</style>

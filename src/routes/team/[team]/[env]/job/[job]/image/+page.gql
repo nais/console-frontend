@@ -1,7 +1,7 @@
 query JobImageDetails($team: Slug!, $env: String!, $job: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
-			job(name: $job) {
+			workload(name: $job) {
 				__typename
 				image {
 					name
@@ -17,19 +17,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) {
 						riskScore
 					}
 
-					#vulnerabilities {
-					#	edges {
-					#		node {
-					#			description
-					#			identifier
-					#			package
-					#			severity
-					#			state
-					#			url
-					#		}
-					#	}
-					#}
-
+					...ImageVulnerabilities
 					...WorkloadRefs
 				}
 			}

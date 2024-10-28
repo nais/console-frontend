@@ -17,18 +17,6 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!) {
 						riskScore
 					}
 
-					#vulnerabilities(first: 10) @paginate(mode: SinglePage) {
-					#	edges {
-					#		node {
-					#			description
-					#			identifier
-					#			package
-					#			severity
-					#			state
-					#		}
-					#	}
-					#}
-
 					...ImageVulnerabilities
 					...WorkloadRefs
 				}

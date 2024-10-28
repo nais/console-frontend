@@ -12,5 +12,6 @@ export const _ApplicationImageDetailsVariables: ApplicationImageDetailsVariables
 	const direction = (url.searchParams.get('dir') || 'DESC') as never;
 
 	return { limit, offset, orderBy: { field, direction } };*/
+		//TODO: Slette den om den ikke behøves
 		return {};
 	};
