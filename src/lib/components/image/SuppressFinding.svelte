@@ -1,34 +1,23 @@
 <script lang="ts" context="module">
 	export type FindingType = {
 		readonly id: string;
-		readonly componentId: string;
 		readonly description: string;
-		readonly packageUrl: string;
-		readonly severity: string;
-		readonly vulnerabilityId: string;
-		readonly vulnId: string;
-		readonly aliases: {
-			readonly name: string;
-			readonly source: string;
-		}[];
-		readonly isSuppressed: boolean;
-		readonly state: string;
+		readonly identifier: string;
+		readonly package: string;
+		readonly severity: ValueOf<typeof ImageVulnerabilitySeverity>;
+		readonly state: ValueOf<typeof ImageVulnerabilityState>;
 		readonly analysisTrail: {
-			readonly id: string;
+			readonly state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
+			readonly suppressed: boolean;
 			readonly comments: {
-				readonly pageInfo: {
-					readonly totalCount: number;
-					readonly hasNextPage: boolean;
-					readonly hasPreviousPage: boolean;
-				};
-				readonly nodes: ({
+				readonly nodes: {
 					readonly comment: string;
 					readonly onBehalfOf: string;
+					readonly state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
+					readonly suppressed: boolean;
 					readonly timestamp: Date;
-				} | null)[];
+				}[];
 			};
-			readonly isSuppressed: boolean;
-			readonly state: string;
 		};
 	};
 </script>
@@ -36,7 +25,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { graphql, type NaisJobImage$result } from '$houdini';
+	import {
+		graphql,
+		ImageVulnerabilityAnalysisState,
+		type ImageVulnerabilitySeverity,
+		type ImageVulnerabilityState,
+		type ValueOf
+	} from '$houdini';
 	import { logEvent } from '$lib/amplitude';
 	import {
 		Alert,
@@ -55,26 +50,35 @@
 	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
-	import { detailsUrl, joinAliases, parseComment } from './imageUtils';
+	import { detailsUrl, parseComment } from './imageUtils';
 
 	export let open: boolean;
 	export let finding: FindingType;
-	export let workloads: NaisJobImage$result['naisjob']['imageDetails']['workloadReferences'];
+	export let workloads: {
+		readonly __typename: string | null;
+		readonly team: {
+			readonly slug: string;
+		};
+		readonly environment: {
+			readonly name: string;
+		};
+		readonly name: string;
+	}[];
 
 	export let user: string;
-	export let auth: boolean;
-
-	export let projectId: string;
+	export let authorized: boolean;
 
 	let errormessage = '';
 
-	let selectedReason = '';
+	let selectedReason: ValueOf<typeof ImageVulnerabilityAnalysisState> | '' = '';
 	let inputText = '';
 	let suppressed: boolean = false;
 
 	let team = $page.params.team;
 	let env = $page.params.env;
-	let workload = $page.params.app;
+	let workload = $page.params.app ?? $page.params.job;
+
+	console.log(workload);
 
 	// check if route contains app or job
 	if ($page.route.id && $page.route.id.includes('app')) {
@@ -94,7 +98,9 @@
 	const triggerSuppress = async () => {
 		errormessage = '';
 
-		if (selectedReason === 'Suppress reason' || selectedReason === '') {
+		console.log('re', selectedReason);
+
+		if (selectedReason === '') {
 			errormessage += 'Please select a suppress reason from the Analysis dropdown.';
 			return;
 		}
@@ -105,14 +111,10 @@
 		}
 
 		await suppress.mutate({
-			analysisState: selectedReason.toUpperCase(),
+			analysisState: selectedReason,
 			comment: inputText,
-			componentId: finding.componentId,
-			projectId: projectId,
-			vulnerabilityId: finding.vulnerabilityId,
-			suppressedBy: user,
-			suppress: suppressed,
-			team: team
+			vulnerabilityID: finding.id,
+			suppress: suppressed
 		});
 
 		if ($suppress.errors) {
@@ -130,76 +132,73 @@
 		await goto(imagePage, { replaceState: true });
 	};
 
+	// TODO: needs refresh
 	const suppress = graphql(`
 		mutation SuppressFinding(
-			$analysisState: String!
+			$analysisState: ImageVulnerabilityAnalysisState!
 			$comment: String!
-			$componentId: String!
-			$projectId: String!
-			$vulnerabilityId: String!
-			$suppressedBy: String!
 			$suppress: Boolean!
-			$team: Slug!
+			$vulnerabilityID: ID!
 		) {
-			suppressFinding(
-				analysisState: $analysisState
-				comment: $comment
-				componentId: $componentId
-				projectId: $projectId
-				vulnerabilityId: $vulnerabilityId
-				suppressedBy: $suppressedBy
-				suppress: $suppress
-				team: $team
+			updateImageVulnerability(
+				input: {
+					analysisState: $analysisState
+					comment: $comment
+					suppress: $suppress
+					vulnerabilityID: $vulnerabilityID
+				}
 			) {
-				id
-				isSuppressed
-				state
-				comments(limit: 20, offset: 0) {
-					pageInfo {
-						hasNextPage
-						hasPreviousPage
-						totalCount
-					}
-					nodes {
-						comment
-						timestamp
-						onBehalfOf
+				analysisTrail {
+					state
+					suppressed
+					comments {
+						nodes {
+							comment
+							onBehalfOf
+							state
+							suppressed
+							timestamp
+						}
 					}
 				}
 			}
 		}
 	`);
 
+	console.log(suppress);
+
 	const SUPPRESS_OPTIONS = [
 		{ value: '', text: 'Suppress reason' },
-		{ value: 'IN_TRIAGE', text: 'In triage' },
-		{ value: 'RESOLVED', text: 'Resolved' },
-		{ value: 'FALSE_POSITIVE', text: 'False positive' },
-		{ value: 'NOT_AFFECTED', text: 'Not affected' }
+		{ value: ImageVulnerabilityAnalysisState.IN_TRIAGE, text: 'In triage' },
+		{ value: ImageVulnerabilityAnalysisState.RESOLVED, text: 'Resolved' },
+		{ value: ImageVulnerabilityAnalysisState.FALSE_POSITIVE, text: 'False positive' },
+		{ value: ImageVulnerabilityAnalysisState.NOT_AFFECTED, text: 'Not affected' }
 	];
 
 	const init = (finding: FindingType) => {
 		inputText = parseComment(finding.analysisTrail?.comments?.nodes[0]?.comment ?? '').comment;
 		selectedReason = finding.analysisTrail?.state ?? '';
-		suppressed = finding.analysisTrail?.isSuppressed ?? false;
+		suppressed = finding.analysisTrail?.suppressed ?? false;
 	};
 	$: init(finding);
 </script>
 
 <Modal bind:open width="medium" on:close={close}>
 	<svelte:fragment slot="header">
-		<Heading>Suppress finding for {finding.vulnId}</Heading>
+		<Heading>Suppress finding for {finding.identifier}</Heading>
 	</svelte:fragment>
 
 	<div class="info">
 		<dl>
 			<dt>Package:</dt>
-			<dd><code>{finding.packageUrl}</code></dd>
+			<dd><code>{finding.package}</code></dd>
 
+			<!--
+			TODO: Fjerne?
 			{#if finding.aliases.length > 0}
 				<dt>Alias(es):</dt>
 				<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
-			{/if}
+			{/if}-->
 			{#if finding.description !== ''}
 				<dt>Description:</dt>
 				<dd>{finding.description}</dd>
@@ -207,8 +206,8 @@
 
 			<dt>Details:</dt>
 			<dd>
-				<a href={detailsUrl(finding.vulnId)} target="_blank"
-					>{detailsUrl(finding.vulnId)}<ExternalLinkIcon /></a
+				<a href={detailsUrl(finding.identifier)} target="_blank"
+					>{detailsUrl(finding.identifier)}<ExternalLinkIcon /></a
 				>
 			</dd>
 		</dl>
@@ -224,7 +223,7 @@
 			<Tbody>
 				{#each workloads as workload}
 					<Tr>
-						<Td>{workload.env.name}</Td>
+						<Td>{workload.environment.name}</Td>
 						<Td>{workload.team.slug}</Td>
 						<Td>{workload.name}</Td>
 					</Tr>
@@ -257,10 +256,9 @@
 			<svelte:fragment slot="label">Comment</svelte:fragment>
 		</TextField>
 		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
-		Updated by: {user}<br />
 	</div>
 	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={triggerSuppress} disabled={!auth}
+		<Button variant="primary" size="small" on:click={triggerSuppress} disabled={!authorized}
 			>Update</Button
 		>
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>

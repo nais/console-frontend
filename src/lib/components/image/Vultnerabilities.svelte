@@ -3,9 +3,11 @@
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
+	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 
 	export let image: ImageVulnerabilities;
 	export let authorized: boolean;
+	export let user: string;
 
 	$: vulnerabilities = fragment(
 		image,
@@ -13,6 +15,7 @@
 			fragment ImageVulnerabilities on ContainerImage {
 				vulnerabilities {
 					nodes {
+						id
 						description
 						identifier
 						package
@@ -21,6 +24,15 @@
 						analysisTrail {
 							state
 							suppressed
+							comments {
+								nodes {
+									comment
+									onBehalfOf
+									state
+									suppressed
+									timestamp
+								}
+							}
 						}
 					}
 				}
@@ -45,6 +57,9 @@
 			}
 		`)
 	);
+
+	let findingToSuppress: FindingType | undefined;
+	let suppressOpen = false;
 </script>
 
 <h4>Vulnerabilities</h4>
@@ -65,8 +80,8 @@
 							variant="tertiary"
 							size="xsmall"
 							on:click={() => {
-								//findingToSuppress = finding;
-								//suppressOpen = true;
+								findingToSuppress = finding;
+								suppressOpen = true;
 							}}
 						>
 							<code>{finding.identifier}</code>
@@ -108,5 +123,25 @@
 	</Tbody>
 </Table>
 
-<style>
-</style>
+{#if findingToSuppress && image && authorized}
+	{#key findingToSuppress.id}
+		<SuppressFinding
+			bind:open={suppressOpen}
+			finding={findingToSuppress}
+			workloads={$vulnerabilities.workloadReferences.nodes.map((node) => node.workload)}
+			{user}
+			{authorized}
+			on:close={() => {
+				findingToSuppress = undefined;
+				setTimeout(() => {
+					// refetch the image to update the findings
+					/*summary.fetch({
+						variables: { env: env, team: team, app: appName },
+						policy: 'NetworkOnly'
+					});*/
+					console.log('Refetching image');
+				}, 2000);
+			}}
+		/>
+	{/key}
+{/if}

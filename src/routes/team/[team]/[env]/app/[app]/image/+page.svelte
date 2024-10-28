@@ -17,9 +17,7 @@
 	$: ({ ApplicationImageDetails, UserInfo } = data);
 
 	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
-	$: auth = $ApplicationImageDetails.data?.team.viewerIsMember;
-
-	$: console.log(user);
+	$: auth = $ApplicationImageDetails.data?.team.viewerIsMember ?? false;
 
 	/*const summary = graphql(`
 		query Summary($env: String!, $team: Slug!, $app: String!) {
@@ -54,9 +52,9 @@
 	//let analysisOpen = false;
 
 	$: {
-		if ($ApplicationImageDetails.data?.team.environment.application.image) {
+		if ($ApplicationImageDetails.data?.team.environment.workload.image) {
 			({ registry, repository, name } = parseImage(
-				$ApplicationImageDetails.data.team.environment.application.image.name
+				$ApplicationImageDetails.data.team.environment.workload.image.name
 			));
 		}
 	}
@@ -78,7 +76,7 @@
 	</Alert>
 {/if}
 {#if $ApplicationImageDetails.data}
-	{@const image = $ApplicationImageDetails.data.team.environment.application.image}
+	{@const image = $ApplicationImageDetails.data.team.environment.workload.image}
 	<div class="grid">
 		<Card columns={8}>
 			<h4 class="imageHeader">
@@ -193,7 +191,7 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<Vultnerabilities {image} authorized={auth} />
+			<Vultnerabilities {image} authorized={auth} {user} />
 		</Card>
 		<!--{#if image.findings && image.projectId !== ''}
 			<Card columns={12}>
@@ -266,42 +264,6 @@
 		</Card>
 	</div>
 {/if}
-
-<!--
-{#if findingToSuppress && image && image.projectId !== PendingValue && auth !== undefined && auth !== PendingValue}
-	{#key findingToSuppress.id}
-		<SuppressFinding
-			projectId={image?.projectId}
-			bind:open={suppressOpen}
-			finding={findingToSuppress}
-			workloads={image.workloadReferences}
-			{user}
-			{auth}
-			on:close={() => {
-				findingToSuppress = undefined;
-				setTimeout(() => {
-					// refetch the image to update the findings
-					summary.fetch({
-						variables: { env: env, team: team, app: appName },
-						policy: 'NetworkOnly'
-					});
-				}, 2000);
-			}}
-		/>
-	{/key}
-{/if}-->
-<!--
-{#if analysisTrail && image && image.projectId !== PendingValue}
-	<TrailFinding
-		bind:open={analysisOpen}
-		finding={analysisTrail}
-		workloads={image.workloadReferences}
-		on:close={() => {
-			analysisTrail = undefined;
-		}}
-	/>
-{/if}
--->
 
 <style>
 	.circles {
