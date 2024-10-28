@@ -42,6 +42,10 @@
 	function getFactor(cost: { date: Date; sum: number }[]) {
 		const daysKnown = cost[0].date.getDate();
 		const estCostPerDay = cost[0].sum / daysKnown;
+		const retVal = (estCostPerDay / (cost[1].sum / cost[1].date.getDate())) * 100 - 100;
+		if (retVal === Infinity || isNaN(retVal)) {
+			return 0;
+		}
 		return (estCostPerDay / (cost[1].sum / cost[1].date.getDate())) * 100 - 100;
 	}
 </script>
