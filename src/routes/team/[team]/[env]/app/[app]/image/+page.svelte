@@ -14,9 +14,8 @@
 
 	export let data: PageData;
 
-	$: ({ ApplicationImageDetails, UserInfo } = data);
+	$: ({ ApplicationImageDetails } = data);
 
-	$: user = UserInfo.data?.me.__typename == 'User' ? UserInfo.data?.me.name : '';
 	$: auth = $ApplicationImageDetails.data?.team.viewerIsMember ?? false;
 
 	/*const summary = graphql(`
@@ -38,10 +37,6 @@
 	`);*/
 
 	const notificationBadgeSize = '48px';
-
-	//let appName = $page.params.app;
-	//let env = $page.params.env;
-	//let team = $page.params.team;
 
 	let registry: string;
 	let repository: string;
@@ -191,7 +186,7 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<Vultnerabilities {image} authorized={auth} {user} />
+			<Vultnerabilities {image} authorized={auth} />
 		</Card>
 
 		<Card columns={12}>
