@@ -1,4 +1,4 @@
-query JobImageDetails($team: Slug!, $env: String!, $job: String!) {
+query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environment(name: $env) {
 			workload(name: $job) {

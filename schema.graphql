@@ -3631,8 +3631,8 @@ input UpdateImageVulnerabilityInput {
 }
 
 type UpdateImageVulnerabilityPayload {
-  """Analysis trail of the suppressed vulnerability."""
-  analysisTrail: ImageVulnerabilityAnalysisTrail!
+  """The vulnerability updated."""
+  vulnerability: ImageVulnerability
 }
 
 input UpdateSecretValueInput {

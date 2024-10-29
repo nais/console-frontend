@@ -17,7 +17,8 @@
 		image,
 		graphql(`
 			fragment ImageVulnerabilities on ContainerImage {
-				vulnerabilities(first: 10) @paginate(mode: SinglePage) {
+				vulnerabilities(first: 10, orderBy: { field: IDENTIFIER, direction: DESC })
+					@paginate(mode: SinglePage, name: "Image_Vulnerabilities") {
 					pageInfo {
 						hasNextPage
 						hasPreviousPage
@@ -25,23 +26,25 @@
 						pageEnd
 						totalCount
 					}
-					nodes {
-						id
-						description
-						identifier
-						package
-						severity
-						state
-						analysisTrail {
+					edges {
+						node {
+							id
+							description
+							identifier
+							package
+							severity
 							state
-							suppressed
-							comments {
-								nodes {
-									comment
-									onBehalfOf
-									state
-									suppressed
-									timestamp
+							analysisTrail {
+								state
+								suppressed
+								comments {
+									nodes {
+										comment
+										onBehalfOf
+										state
+										suppressed
+										timestamp
+									}
 								}
 							}
 						}
@@ -85,53 +88,56 @@
 		<Th sortable={true} sortKey="STATE">State</Th>
 	</Thead>
 	<Tbody>
-		{#each $vulnerabilities.data.vulnerabilities.nodes as v}
-			<Tr>
-				<Td>
-					{#if authorized}
+		{#if $vulnerabilities.data}
+			{#each $vulnerabilities.data.vulnerabilities.edges as v}
+				<Tr>
+					<Td>
+						{#if authorized}
+							<Button
+								variant="tertiary"
+								size="xsmall"
+								on:click={() => {
+									findingToSuppress = v.node;
+									suppressOpen = true;
+								}}
+							>
+								<code>{v.node.identifier}</code>
+							</Button>
+						{:else}
+							<code>{v.node.identifier}</code>
+						{/if}
+					</Td>
+					<Td><code>{v.node.package}</code></Td>
+					<Td
+						><code style="color: {severityToColor(v.node.severity.toLocaleLowerCase())}"
+							>{v.node.severity}</code
+						></Td
+					>
+					<Td style="text-align: center">
+						{#if v.node.analysisTrail.suppressed}
+							<CheckmarkIcon width={'18px'} height={'18px'} />
+						{/if}
+					</Td>
+					<Td>
 						<Button
-							variant="tertiary"
-							size="xsmall"
+							variant="tertiary-neutral"
+							size="small"
+							disabled={v.node.analysisTrail?.state ? false : true}
 							on:click={() => {
-								findingToSuppress = v;
-								suppressOpen = true;
+								analysisTrail = v.node;
+								analysisOpen = true;
 							}}
 						>
-							<code>{v.identifier}</code>
+							<code>{v.node.analysisTrail?.state ? v.node.analysisTrail?.state : 'N/A'} </code>
 						</Button>
-					{:else}
-						<code>{v.identifier}</code>
-					{/if}
-				</Td>
-				<Td><code>{v.package}</code></Td>
-				<Td
-					><code style="color: {severityToColor(v.severity.toLocaleLowerCase())}">{v.severity}</code
-					></Td
-				>
-				<Td style="text-align: center">
-					{#if v.analysisTrail.suppressed}
-						<CheckmarkIcon width={'18px'} height={'18px'} />
-					{/if}
-				</Td>
-				<Td>
-					<Button
-						variant="tertiary-neutral"
-						size="small"
-						disabled={v.analysisTrail?.state ? false : true}
-						on:click={() => {
-							analysisTrail = v;
-							analysisOpen = true;
-						}}
-					>
-						<code>{v.analysisTrail?.state ? v.analysisTrail?.state : 'N/A'} </code>
-					</Button>
-				</Td>
-			</Tr>
-		{:else}
-			<Tr>
-				<Td colspan={999}>No vulnerabilities</Td>
-			</Tr>
-		{/each}
+					</Td>
+				</Tr>
+			{:else}
+				<Tr>
+					<Td colspan={999}>No vulnerabilities</Td>
+				</Tr>
+			{/each}
+		{/if}
 	</Tbody>
 </Table>
 {#if $vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage || $vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage}

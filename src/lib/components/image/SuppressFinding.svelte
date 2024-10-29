@@ -147,16 +147,18 @@
 					vulnerabilityID: $vulnerabilityID
 				}
 			) {
-				analysisTrail {
-					state
-					suppressed
-					comments {
-						nodes {
-							comment
-							onBehalfOf
-							state
-							suppressed
-							timestamp
+				vulnerability {
+					analysisTrail {
+						state
+						suppressed
+						comments {
+							nodes {
+								comment
+								onBehalfOf
+								state
+								suppressed
+								timestamp
+							}
 						}
 					}
 				}
