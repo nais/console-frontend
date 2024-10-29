@@ -27,9 +27,10 @@
 		pods = new Set(
 			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
 				.filter((run) => run.name === name)
-				.map((run) => run.podNames)
+				.map((run) => run.instances.nodes.map((instance) => instance.name))
 				.flatMap((pod) => pod)
 		);
+		console.log(pods);
 		running = true;
 	}
 	$: setSelected(selectedRun);
@@ -54,63 +55,66 @@
 	}
 </script>
 
-<div class="topbar">
-	<div class="instances">
-		{#if $RunsWithPodNames.data && $RunsWithPodNames.data.team.environment.job.runs.nodes.length > 0}
-			{#if pods.size > 0}
-				<ToggleGroup size="small" bind:value={selectedRun}>
-					{#each $RunsWithPodNames.data.team.environment.job.runs.nodes as run}
-						{#if run.podNames.length > 0}
-							{@const name = run.name}
-							<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
-						{/if}
-					{/each}
-				</ToggleGroup>
+{#if $RunsWithPodNames.data}
+	{@const runs = $RunsWithPodNames.data.team.environment.job.runs.nodes}
+	<div class="topbar">
+		<div class="instances">
+			{#if runs.length > 0}
+				{#if pods.size > 0}
+					<ToggleGroup size="small" bind:value={selectedRun}>
+						{#each runs as run}
+							{#if run.instances.nodes.length > 0}
+								{@const name = run.name}
+								<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
+							{/if}
+						{/each}
+					</ToggleGroup>
+				{/if}
 			{/if}
-		{/if}
+		</div>
+		<div>
+			{#if fetching}
+				<Button
+					on:click={() => {
+						running = false;
+					}}>Pause</Button
+				>
+			{:else}
+				<Button
+					on:click={() => {
+						running = true;
+					}}>Restart</Button
+				>
+			{/if}
+		</div>
 	</div>
-	<div>
-		{#if fetching}
-			<Button
-				on:click={() => {
-					running = false;
-				}}>Pause</Button
-			>
-		{:else}
-			<Button
-				on:click={() => {
-					running = true;
-				}}>Restart</Button
-			>
-		{/if}
-	</div>
-</div>
-{#if fetching}
-	<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
+	{#if fetching}
+		<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
+	{/if}
+	<Chips size="small">
+		{#each viewOptions as option}
+			<ToggleChip
+				value={option}
+				selected={selectedViewOptions.has(option)}
+				on:click={() => toggleSelectedViewOptions(option)}
+			/>
+		{/each}
+	</Chips>
+	<LogViewer
+		{job}
+		{env}
+		{team}
+		{running}
+		showName={selectedViewOptions.has('Name')}
+		showTime={selectedViewOptions.has('Time')}
+		showLevel={selectedViewOptions.has('Level')}
+		instances={pods}
+		on:fetching={(e) => {
+			fetching = e.detail;
+		}}
+		on:scrolledUp={() => (running = false)}
+	/>
 {/if}
-<Chips size="small">
-	{#each viewOptions as option}
-		<ToggleChip
-			value={option}
-			selected={selectedViewOptions.has(option)}
-			on:click={() => toggleSelectedViewOptions(option)}
-		/>
-	{/each}
-</Chips>
-<LogViewer
-	{job}
-	{env}
-	{team}
-	{running}
-	showName={selectedViewOptions.has('Name')}
-	showTime={selectedViewOptions.has('Time')}
-	showLevel={selectedViewOptions.has('Level')}
-	instances={pods}
-	on:fetching={(e) => {
-		fetching = e.detail;
-	}}
-	on:scrolledUp={() => (running = false)}
-/>
 
 <style>
 	.topbar {
