@@ -1,10 +1,15 @@
 <script lang="ts">
+	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
+	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Instances from './Instances.svelte';
 	import Scaling from './Scaling.svelte';
@@ -15,32 +20,37 @@
 	export let data: PageData;
 	$: ({ App } = data);
 
-	/*const restartAppMutation = () =>
+	const restartAppMutation = () =>
 		graphql(`
-			mutation RestartApp($team: Slug!, $env: String!, $app: String!) {
-				restartApp(team: $team, env: $env, name: $app) {
-					error
+			mutation RestartApp($team: Slug!, $environment: String!, $application: String!) {
+				restartApplication(
+					input: { teamSlug: $team, environmentName: $environment, name: $application }
+				) {
+					application {
+						name
+					}
 				}
 			}
 		`);
 	let restartApp = restartAppMutation();
+
 	onNavigate(() => {
 		restartApp = restartAppMutation();
-	});*/
+	});
 
 	$: application = $page.params.app;
 	$: environment = $page.params.env;
 	$: team = $page.params.team;
 
-	//let restart = false;
+	let restart = false;
 
-	/*const submit = () => {
+	const submit = () => {
 		restartApp.mutate({
-			app,
-			env,
+			application,
+			environment,
 			team
 		});
-	};*/
+	};
 </script>
 
 {#if $App.data}
@@ -57,7 +67,7 @@
 		<Card columns={12}>
 			<div class="heading">
 				<h4>Instances</h4>
-				<!--{#if app.viewerIsMember || app.viewerIsOwner}
+				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
 					<Button
 						variant="secondary"
 						size="small"
@@ -68,17 +78,19 @@
 						<svelte:fragment slot="icon-left"><ArrowCirclepathIcon /></svelte:fragment>
 						Restart
 					</Button>
-				{/if}-->
+				{/if}
 			</div>
-			<!--{#if $restartApp.data}
+			{#if $restartApp.data}
 				<div class="marginbox">
-					{#if !$restartApp.data.restartApp.error}
+					{#if !$restartApp.errors}
 						<Alert size="small" variant="success">All instances restarting</Alert>
 					{:else}
-						<Alert size="small" variant="error">{$restartApp.data.restartApp.error}</Alert>
+						{#each $restartApp.errors as error}
+							<Alert size="small" variant="error">{error.message}</Alert>
+						{/each}
 					{/if}
 				</div>
-			{/if}-->
+			{/if}
 			<div class="utilAndScaling">
 				<Utilization {app} />
 
@@ -107,12 +119,14 @@
 			</Card>
 		{/if}
 	</div>
-	<!--Confirm bind:open={restart} on:confirm={submit}>
-		<h3 slot="header">Restart {app}</h3>
-		This will restart all instances of<strong>{app}</strong> in <strong>{env}</strong>.
+	<Confirm bind:open={restart} on:confirm={submit}>
+		<h3 slot="header">Restart {application}</h3>
+		This will restart all instances of
+		<strong>{application}</strong> in
+		<strong>{environment}</strong>.
 		<br />
 		Are you sure?
-	</Confirm-->
+	</Confirm>
 {/if}
 
 <style>
@@ -131,9 +145,9 @@
 		display: flex;
 		justify-content: space-between;
 	}
-	/*.marginbox {
+	.marginbox {
 		margin: 0.5rem 0;
-	}*/
+	}
 	.utilAndScaling {
 		display: flex;
 		gap: 1rem;
