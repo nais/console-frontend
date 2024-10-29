@@ -31,6 +31,8 @@
 
 	export let data: LayoutData;
 
+	console.log(data);
+
 	$: team = $page.params.team;
 	const nav: menuGroup[] = [
 		{
@@ -49,13 +51,15 @@
 					name: 'Apps',
 					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
-					icon: SandboxIcon
+					icon: SandboxIcon,
+					inventoryCount: data.inventoryCounts?.applications.total
 				},
 				{
 					name: 'Jobs',
 					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
-					icon: ArrowCirclepathIcon
+					icon: ArrowCirclepathIcon,
+					inventoryCount: data.inventoryCounts?.jobs.total
 				},
 				{
 					name: 'Secrets',
@@ -74,42 +78,48 @@
 					routeId: '/team/[team]/(teamPages)/postgres',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
 					withSubRoutes: true,
-					icon: DatabaseIcon
+					icon: DatabaseIcon,
+					inventoryCount: data.inventoryCounts?.sqlInstances.total
 				},
 				{
 					name: 'Buckets',
 					routeId: '/team/[team]/(teamPages)/buckets',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/bucket/[bucket]'],
 					withSubRoutes: true,
-					icon: BucketIcon
+					icon: BucketIcon,
+					inventoryCount: data.inventoryCounts?.buckets.total
 				},
 				{
 					name: 'Redis',
 					routeId: '/team/[team]/(teamPages)/redis',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/redis/[redis]'],
 					withSubRoutes: true,
-					icon: Redis
+					icon: Redis,
+					inventoryCount: data.inventoryCounts?.redisInstances.total
 				},
 				{
 					name: 'OpenSearch',
 					routeId: '/team/[team]/(teamPages)/opensearch',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
 					withSubRoutes: true,
-					icon: Opensearch
+					icon: Opensearch,
+					inventoryCount: data.inventoryCounts?.openSearchInstances.total
 				},
 				{
 					name: 'Kafka topics',
 					routeId: '/team/[team]/(teamPages)/kafka',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
 					withSubRoutes: true,
-					icon: Kafka
+					icon: Kafka,
+					inventoryCount: data.inventoryCounts?.kafkaTopics.total
 				},
 				{
 					name: 'BigQuery',
 					routeId: '/team/[team]/(teamPages)/bigquery',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/bigquery/[bigquery]'],
 					withSubRoutes: true,
-					icon: BigQuery
+					icon: BigQuery,
+					inventoryCount: data.inventoryCounts?.bigQueryDatasets.total
 				},
 				{
 					name: 'Unleash',

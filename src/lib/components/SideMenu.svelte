@@ -7,6 +7,7 @@
 		icon?: ComponentType;
 		iconColor?: string;
 		extraRoutes?: string[];
+		inventoryCount?: number;
 	};
 	export type menuGroup = {
 		items: menuItem[];
@@ -14,8 +15,8 @@
 </script>
 
 <script lang="ts">
-	import { replacer } from '$lib/replacer';
 	import { page } from '$app/stores';
+	import { replacer } from '$lib/replacer';
 	export let nav: menuGroup[];
 
 	const isActive = (menuItem: menuItem, current: string | null) => {
@@ -42,11 +43,20 @@
 			{#each items as item}
 				<li class:active={isActive(item, $page.route.id)}>
 					<a class="unstyled" href={replacer(item.routeId, $page.params)}>
-						{#if item.icon}
-							<svelte:component this={item.icon} />
-						{/if}
-						{item.name}</a
-					>
+						<div class="item-container">
+							<div class="left-content">
+								{#if item.icon}
+									<svelte:component this={item.icon} />
+								{/if}
+								<span>{item.name}</span>
+							</div>
+							{#if item.inventoryCount}
+								<div class="right-content">
+									<span class="inventorytag">{item.inventoryCount}</span>
+								</div>
+							{/if}
+						</div>
+					</a>
 				</li>
 			{/each}
 		{/each}
@@ -54,6 +64,14 @@
 </div>
 
 <style>
+	.inventorytag {
+		display: inline-block;
+		padding: 0.25rem 0.5rem;
+		background-color: var(--a-surface-backdrop);
+		color: var(--a-text-on-action);
+		border-radius: 25%;
+		font-size: var(--a-font-size-small);
+	}
 	.sidemenu {
 		width: 200px;
 	}
@@ -101,5 +119,22 @@
 			var(--active-color-strong) 20%,
 			var(--active-color) 100%
 		);
+	}
+
+	.item-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+	}
+
+	.left-content {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem; /* Adds space between icon and name */
+	}
+
+	.right-content {
+		margin-left: auto;
 	}
 </style>

@@ -20,5 +20,10 @@ query Overview($team: Slug!) @cache(policy: NetworkOnly) {
 				}
 			}
 		}
+		inventoryCounts {
+			applications {
+				total
+			}
+		}
 	}
 }
