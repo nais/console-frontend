@@ -1,4 +1,5 @@
-query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC }) {
+query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC })
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		id
 		jobs(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {

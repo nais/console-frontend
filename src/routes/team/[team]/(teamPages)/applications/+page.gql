@@ -1,4 +1,4 @@
-query Workloads($team: Slug!, $orderBy: ApplicationOrder) {
+query Workloads($team: Slug!, $orderBy: ApplicationOrder) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		id
 		applications(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
