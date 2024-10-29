@@ -1179,6 +1179,25 @@ type JobRun implements Node {
   """The container image of the job run."""
   image: ContainerImage!
 
+  """Job run instances."""
+  instances(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): JobRunInstanceConnection!
+
   """The name of the job run."""
   name: String!
 
@@ -1206,6 +1225,33 @@ type JobRunEdge {
 
   """The job run."""
   node: JobRun!
+}
+
+type JobRunInstance implements Node {
+  """The globally unique ID of the job run instance."""
+  id: ID!
+
+  """The name of the job run instance."""
+  name: String!
+}
+
+type JobRunInstanceConnection {
+  """List of edges."""
+  edges: [JobRunInstanceEdge!]!
+
+  """List of nodes."""
+  nodes: [JobRunInstance!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type JobRunInstanceEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The instance."""
+  node: JobRunInstance!
 }
 
 enum JobRunState {
