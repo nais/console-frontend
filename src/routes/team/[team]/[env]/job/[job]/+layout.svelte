@@ -110,9 +110,7 @@
 
 	.main {
 		gap: 1rem;
-		display: flex;
-		justify-content: flex-start;
-		align-items: flex-start;
-		direction: row;
+		display: grid;
+		grid-template-columns: 200px 1fr;
 	}
 </style>

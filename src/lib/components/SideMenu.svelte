@@ -72,9 +72,6 @@
 		border-radius: 25%;
 		font-size: var(--a-font-size-small);
 	}
-	.sidemenu {
-		width: 200px;
-	}
 	.sidemenu ul {
 		list-style: none;
 		padding: 0;
