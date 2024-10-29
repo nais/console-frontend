@@ -5,11 +5,9 @@ query ReconcilerLogs {
 			displayName
 			name
 			description
-			memberAware
-			errors {
+			errors(first: 10) {
 				nodes {
-					id
-					correlationId
+					correlationID
 					createdAt
 					message
 					team {

@@ -1777,7 +1777,7 @@ type Query {
 }
 
 """Reconciler type."""
-type Reconciler {
+type Reconciler implements Node {
   """Reconciler configuration keys and descriptions."""
   config: [ReconcilerConfig!]!
 
@@ -1794,6 +1794,28 @@ type Reconciler {
 
   """Whether or not the reconciler is enabled."""
   enabled: Boolean!
+
+  """Potential errors that have occurred during the reconciler's operation."""
+  errors(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ReconcilerErrorConnection!
+
+  """Unique identifier for the reconciler."""
+  id: ID!
 
   """The name of the reconciler."""
   name: String!
@@ -1850,6 +1872,32 @@ type ReconcilerEdge {
 
   """The reconciler."""
   node: Reconciler!
+}
+
+type ReconcilerError {
+  correlationID: String!
+  createdAt: Time!
+  message: String!
+  team: Team!
+}
+
+type ReconcilerErrorConnection {
+  """List of edges."""
+  edges: [ReconcilerErrorEdge!]!
+
+  """List of nodes."""
+  nodes: [ReconcilerError!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type ReconcilerErrorEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The reconcilerError."""
+  node: ReconcilerError!
 }
 
 type RedisInstance implements Node & Persistence {

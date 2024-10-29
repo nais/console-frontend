@@ -2,7 +2,7 @@
 
 /** @type {import('houdini').ConfigFile} */
 const config = {
-	paginationStrategy: 'cursor',
+	defaultPaginateMode: 'SinglePage',
 	watchSchema: {
 		url: 'http://127.0.0.1:3000/graphql',
 		headers: {
@@ -46,8 +46,8 @@ const config = {
 		}
 	},
 	types: {
-		Reconciler: {
-			keys: ['name']
+		ReconcilerError: {
+			keys: ['correlationID']
 		}
 	}
 };
