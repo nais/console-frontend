@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { graphql, UsersyncRunStatus } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -147,4 +147,4 @@
 	.run :global(time) {
 		border-bottom: 1px dotted var(--a-border-default);
 	}
-</style>
+</style> -->

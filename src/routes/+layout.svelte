@@ -8,10 +8,10 @@
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
-	import type { PageData } from './$houdini';
+	import type { LayoutData } from './$houdini';
 	import Login from './Login.svelte';
 
-	export let data: PageData;
+	export let data: LayoutData;
 	$: ({ UserInfo } = data);
 
 	$: user = UserInfo.data?.me as

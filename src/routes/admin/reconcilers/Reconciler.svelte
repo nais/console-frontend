@@ -30,7 +30,6 @@
 				displayName
 				enabled
 				name
-				memberAware
 				config {
 					configured
 					description

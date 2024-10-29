@@ -1,5 +1,5 @@
 query AdminReconcilers {
-	reconcilers(limit: 100) {
+	reconcilers(first: 100) {
 		nodes {
 			...ReconcilerFragment
 		}

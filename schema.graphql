@@ -3757,6 +3757,9 @@ type User implements Node {
   """The globally unique ID of the user."""
   id: ID!
 
+  """True of the user is global admin."""
+  isAdmin: Boolean!
+
   """The full name of the user."""
   name: String!
 
