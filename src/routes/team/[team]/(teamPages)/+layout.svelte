@@ -31,8 +31,6 @@
 
 	export let data: LayoutData;
 
-	console.log(data);
-
 	$: team = $page.params.team;
 	const nav: menuGroup[] = [
 		{

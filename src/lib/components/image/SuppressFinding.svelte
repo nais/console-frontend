@@ -77,8 +77,6 @@
 	let env = $page.params.env;
 	let workload = $page.params.app ?? $page.params.job;
 
-	console.log(workload);
-
 	// check if route contains app or job
 	if ($page.route.id && $page.route.id.includes('app')) {
 		workload = 'app/' + $page.params.app;
@@ -96,8 +94,6 @@
 
 	const triggerSuppress = async () => {
 		errormessage = '';
-
-		console.log('re', selectedReason);
 
 		if (selectedReason === '') {
 			errormessage += 'Please select a suppress reason from the Analysis dropdown.';
@@ -165,8 +161,6 @@
 			}
 		}
 	`);
-
-	console.log(suppress);
 
 	const SUPPRESS_OPTIONS = [
 		{ value: '', text: 'Suppress reason' },

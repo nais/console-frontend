@@ -46,7 +46,6 @@
 			repository,
 			team
 		});
-		console.log('will fetch');
 		Repositories.fetch();
 	};
 
