@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { graphql } from '$houdini';
+	import { graphql, type WorkloadLogSubscriptionFilter } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { createEventDispatcher, onDestroy, tick } from 'svelte';
 	import { get } from 'svelte/store';
@@ -108,14 +108,28 @@
 		}
 		logs = [];
 
-		updates.listen({
-			filter: {
+		let filter: WorkloadLogSubscriptionFilter;
+
+		if (application && application != '') {
+			filter = {
 				application: application,
+				environment: environment,
+				team: team,
+				instances: instances
+			};
+		} else if (job && job != '') {
+			filter = {
 				job: job,
 				environment: environment,
 				team: team,
 				instances: instances
-			}
+			};
+		} else {
+			return;
+		}
+
+		updates.listen({
+			filter: filter
 		});
 
 		if (!subscribed) {
