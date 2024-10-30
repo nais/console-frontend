@@ -444,7 +444,7 @@
 				</Table>
 			</div>
 		</Card>
-		<!--{#if !instance.healthy&& instance.status.conditions.length > 0}-->
+		<!--{#if !instance.healthy&& instance.status.conditions.length > 0}
 		<Card columns={12}>
 			<h3 id="conditions">
 				Config status
@@ -455,7 +455,7 @@
 			</h3>
 			<div style="margin-bottom: 0.5rem;">
 				<h4>Instance</h4>
-				<!--{#each instance.status.conditions as condition}
+				{#each instance.status.conditions as condition}
 						{#if condition.type !== 'Ready'}
 							<Alert variant="warning" size="small">
 								<h4>{condition.reason}</h4>
@@ -469,12 +469,12 @@
 								Last transaction time <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{/if}
-					{/each}-->
+					{/each}
 				TODO: implement conditions?
 			</div>
 			<div style="margin-bottom: 0.5rem;">
 				<h4>Database</h4>
-				<!--{#if instance.database && !instance.database.healthy}
+				{#if instance.database && !instance.database.healthy}
 						{#each instance.database.conditions as condition}
 							<Alert variant="info" size="small">
 								<h4>{condition.reason}</h4>
@@ -482,11 +482,11 @@
 								Last transaction time: <strong><Time time={condition.lastTransitionTime} /></strong>
 							</Alert>
 						{/each}
-					{/if}-->
+					{/if}
 				TODO: implement conditions?
 			</div>
 		</Card>
-		<!--{/if}-->
+		{/if}-->
 	</div>
 {/if}
 

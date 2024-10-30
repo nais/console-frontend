@@ -1,3 +1,4 @@
+<!-- TODO: Denne brukes ikke lenger dersom vi kun skal ha activity log på team - ./src/routes/team/[team]/(teamPages)/audit brukes i stede -->
 <script lang="ts">
 	import { AuditResourceType, graphql, type AuditResourceType$options } from '$houdini';
 	import type { TeamEventsVariables } from '$houdini/types/src/lib/components/$houdini';
