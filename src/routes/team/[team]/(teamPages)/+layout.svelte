@@ -50,14 +50,16 @@
 					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
 					icon: SandboxIcon,
-					inventoryCount: data.inventoryCounts?.applications.total
+					inventoryCount: data.inventoryCounts?.applications.total,
+					notNais: (data.inventoryCounts?.applications.notNais ?? 0) > 0
 				},
 				{
 					name: 'Jobs',
 					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: ArrowCirclepathIcon,
-					inventoryCount: data.inventoryCounts?.jobs.total
+					inventoryCount: data.inventoryCounts?.jobs.total,
+					notNais: (data.inventoryCounts?.jobs.notNais ?? 0) > 0
 				},
 				{
 					name: 'Secrets',

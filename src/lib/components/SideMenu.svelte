@@ -8,6 +8,7 @@
 		iconColor?: string;
 		extraRoutes?: string[];
 		inventoryCount?: number;
+		notNais?: boolean;
 	};
 	export type menuGroup = {
 		items: menuItem[];
@@ -17,6 +18,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { replacer } from '$lib/replacer';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	export let nav: menuGroup[];
 
 	const isActive = (menuItem: menuItem, current: string | null) => {
@@ -45,10 +47,13 @@
 					<a class="unstyled" href={replacer(item.routeId, $page.params)}>
 						<div class="item-container">
 							<div class="left-content">
-								{#if item.icon}
-									<svelte:component this={item.icon} />
-								{/if}
-								<span>{item.name}</span>
+								<svelte:component this={item.icon} />
+								<span>
+									{item.name}
+									{#if item.notNais}
+										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
+									{/if}
+								</span>
 							</div>
 							{#if item.inventoryCount}
 								<div class="right-content">
@@ -72,10 +77,12 @@
 		border-radius: 25%;
 		font-size: var(--a-font-size-small);
 	}
+
 	.sidemenu ul {
 		list-style: none;
 		padding: 0;
 	}
+
 	li {
 		margin: 0;
 	}
