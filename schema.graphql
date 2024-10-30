@@ -51,6 +51,15 @@ type AddTeamMemberPayload {
   member: TeamMember
 }
 
+input AllowTeamAccessToUnleashInput {
+  allowedTeamSlug: Slug!
+  teamSlug: Slug!
+}
+
+type AllowTeamAccessToUnleashPayload {
+  unleash: UnleashInstance
+}
+
 """TODO: write"""
 type Application implements Node & Workload {
   """List of authentication and authorization for the application."""
@@ -620,6 +629,14 @@ input CreateTeamInput {
 type CreateTeamPayload {
   """The newly created team."""
   team: Team
+}
+
+input CreateUnleashInstanceInput {
+  teamSlug: Slug!
+}
+
+type CreateUnleashInstancePayload {
+  unleash: UnleashInstance
 }
 
 """
@@ -1405,6 +1422,9 @@ type Mutation {
   """
   addTeamMember(input: AddTeamMemberInput!): AddTeamMemberPayload!
 
+  """Add team to the list of teams that can access the Unleash instance."""
+  allowTeamAccessToUnleash(input: AllowTeamAccessToUnleashInput!): AllowTeamAccessToUnleashPayload!
+
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeploymentKey(input: ChangeDeploymentKeyInput!): ChangeDeploymentKeyPayload!
 
@@ -1445,6 +1465,14 @@ type Mutation {
   NAIS teams.
   """
   createTeam(input: CreateTeamInput!): CreateTeamPayload!
+
+  """
+  Create a new Unleash instance.
+  
+  This mutation will create a new Unleash instance for the given team. The team
+  will be set as owner of the Unleash instance and will be able to manage it.
+  """
+  createUnleashForTeam(input: CreateUnleashInstanceInput!): CreateUnleashInstancePayload!
 
   """Delete an application."""
   deleteApplication(input: DeleteApplicationInput!): DeleteApplicationPayload!
@@ -1502,6 +1530,11 @@ type Mutation {
 
   """Restart an application."""
   restartApplication(input: RestartApplicationInput!): RestartApplicationPayload!
+
+  """
+  Remove team from the list of teams that can access the Unleash instance.
+  """
+  revokeTeamAccessToUnleash(input: RevokeTeamAccessToUnleashInput!): RevokeTeamAccessToUnleashPayload!
 
   """
   Assign a role to a team member
@@ -2073,6 +2106,15 @@ input RestartApplicationInput {
 type RestartApplicationPayload {
   """The application that was restarted."""
   application: Application
+}
+
+input RevokeTeamAccessToUnleashInput {
+  revokedTeamSlug: Slug!
+  teamSlug: Slug!
+}
+
+type RevokeTeamAccessToUnleashPayload {
+  unleash: UnleashInstance
 }
 
 union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
@@ -2973,6 +3015,7 @@ type Team implements Node {
     """Ordering options for items returned from the connection."""
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
+  unleash: UnleashInstance
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
@@ -3711,6 +3754,42 @@ type TriggerJobPayload {
 
   """The new job run."""
   jobRun: JobRun
+}
+
+type UnleashInstance implements Node {
+  allowedTeams(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): TeamConnection!
+  apiIngress: String!
+  id: ID!
+  metrics: UnleashInstanceMetrics!
+  name: String!
+  ready: Boolean!
+  version: String!
+  webIngress: String!
+}
+
+type UnleashInstanceMetrics {
+  apiTokens: Int!
+  cpuRequests: Float!
+  cpuUtilization: Float!
+  memoryRequests: Float!
+  memoryUtilization: Float!
+  toggles: Int!
 }
 
 input UpdateImageVulnerabilityInput {

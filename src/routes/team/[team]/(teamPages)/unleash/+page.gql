@@ -1,0 +1,24 @@
+query Unleash($team: Slug!) {
+	team(slug: $team) {
+		unleash {
+			name
+			version
+			allowedTeams(first: 20) @paginate {
+				nodes {
+					slug
+				}
+			}
+			webIngress
+			apiIngress
+			metrics {
+				apiTokens
+				cpuUtilization
+				cpuRequests
+				memoryUtilization
+				memoryRequests
+				toggles
+			}
+			ready
+		}
+	}
+}

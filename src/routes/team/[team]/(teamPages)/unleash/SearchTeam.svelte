@@ -1,88 +1,16 @@
 <script lang="ts">
-	import { graphql, type SearchQuery$result } from '$houdini';
+	import { graphql, type SearchQuery$result, type TeamSearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
 	import { Search } from '@nais/ds-svelte-community';
 
 	const store = graphql(`
-		query TeamSearchQuery($query: String!, $type: SearchType) @loading(cascade: true) {
-			search(limit: 10, query: $query, filter: { type: $type }) {
+		query TeamSearchQuery($query: String!) @loading(cascade: true) {
+			search(first: 10, filter: { query: $query, type: TEAM }) {
 				nodes @loading(count: 10) {
 					__typename
-					... on App {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
 					... on Team {
 						slug
-					}
-					... on NaisJob {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
-					... on SqlInstance {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
-					... on Redis {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
-					... on OpenSearch {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
-					... on BigQueryDataset {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
-					... on Bucket {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
-					}
-					... on KafkaTopic {
-						name
-						team {
-							slug
-						}
-						env {
-							name
-						}
 					}
 				}
 			}
@@ -97,7 +25,7 @@
 	export let onSelected: (
 		node: SearchQuery$result['search']['nodes'][0],
 		e: MouseEvent | KeyboardEvent
-	) => void = (node, e) => {
+	) => void = () => {
 		query = '';
 		showSearch = false;
 	};
@@ -110,7 +38,7 @@
 		if (query.length > 0) {
 			showSearch = true;
 			timeout = setTimeout(() => {
-				store.fetch({ variables: { query: query, type: 'TEAM' } });
+				store.fetch({ variables: { query: query } });
 				logEvent('search');
 			}, 500);
 		}
@@ -146,6 +74,12 @@
 				break;
 		}
 	}
+
+	// This is a quick hack to support allow SearchResults to accept a subset of the expected data.
+	// It allows our types to handle only teams, while the component expects all other possible types as well.
+	function hack(data: TeamSearchQuery$result) {
+		return data as never;
+	}
 </script>
 
 <div class="search">
@@ -172,7 +106,7 @@
 		on:keyup={on_key_up}
 	/>
 	{#if $store.data && showSearch}
-		<SearchResults {showSearch} data={$store.data} {onSelected} bind:query {selected} />
+		<SearchResults {showSearch} data={hack($store.data)} {onSelected} bind:query {selected} />
 	{/if}
 </div>
 

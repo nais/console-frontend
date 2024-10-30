@@ -1,6 +1,6 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import { page } from '$app/stores';
-	import { AuditEventResourceType, graphql, type SearchQuery$result } from '$houdini';
+	import { graphql, type SearchQuery$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -32,13 +32,12 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 	import SearchTeam from './SearchTeam.svelte';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
 
 	export let data: PageData;
 	$: ({ Unleash } = data);
 	$: team = $page.params.team;
-	$: unleash = $Unleash.data?.team?.unleash.instance;
-	$: metrics = $Unleash.data?.team?.unleash.instance?.metrics || {
+	$: unleash = $Unleash.data?.team?.unleash;
+	$: metrics = $Unleash.data?.team?.unleash?.metrics || {
 		apiTokens: 0,
 		cpuUtilization: 0,
 		cpuRequests: 0,
@@ -46,17 +45,20 @@
 		memoryRequests: 0,
 		toggles: 0
 	};
-	$: enabled = $Unleash.data?.team?.unleash.enabled;
+	$: enabled = true;
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
-			createUnleashForTeam(team: $team) {
-				enabled
-				instance {
+			createUnleashForTeam(input: { teamSlug: $team }) {
+				unleash {
 					name
 					version
-					allowedTeams
+					allowedTeams {
+						nodes {
+							slug
+						}
+					}
 					webIngress
 					apiIngress
 					metrics {
@@ -83,56 +85,78 @@
 			return;
 		}
 
-		unleash = $createUnleashForTeam.data?.createUnleashForTeam.instance;
+		unleash = $createUnleashForTeam.data?.createUnleashForTeam.unleash;
 	};
 
-	const updateUnleashForTeam = graphql(`
-		mutation updateUnleashForTeam($team: Slug!, $name: String!, $allowedTeams: [String!]) {
-			updateUnleashForTeam(team: $team, name: $name, allowedTeams: $allowedTeams) {
-				enabled
-				instance {
+	const allowTeamAccess = graphql(`
+		mutation AllowTeamAccess($team: Slug!, $allowedTeamSlug: Slug!) {
+			allowTeamAccessToUnleash(input: { teamSlug: $team, allowedTeamSlug: $allowedTeamSlug }) {
+				unleash {
 					name
-					version
-					allowedTeams
-					webIngress
-					apiIngress
-					metrics {
-						apiTokens
-						cpuUtilization
-						cpuRequests
-						memoryUtilization
-						memoryRequests
-						toggles
-					}
-					ready
+				}
+			}
+		}
+	`);
+	const revokeTeamAccess = graphql(`
+		mutation RevokeTeamAccess($team: Slug!, $revokedTeamSlug: Slug!) {
+			revokeTeamAccessToUnleash(input: { teamSlug: $team, revokedTeamSlug: $revokedTeamSlug }) {
+				unleash {
+					name
 				}
 			}
 		}
 	`);
 
-	const updateUnleash = async (instanceName: string, allowedTeams: string[]) => {
-		console.log('update unleash');
-		await updateUnleashForTeam.mutate({
-			team: team,
-			name: instanceName,
-			allowedTeams: allowedTeams
-		});
+	// const updateUnleashForTeam = graphql(`
+	// 	mutation updateUnleashForTeam($team: Slug!, $name: String!, $allowedTeams: [String!]) {
+	// 		updateUnleashForTeam(team: $team, name: $name, allowedTeams: $allowedTeams) {
+	// 			enabled
+	// 			instance {
+	// 				name
+	// 				version
+	// 				allowedTeams
+	// 				webIngress
+	// 				apiIngress
+	// 				metrics {
+	// 					apiTokens
+	// 					cpuUtilization
+	// 					cpuRequests
+	// 					memoryUtilization
+	// 					memoryRequests
+	// 					toggles
+	// 				}
+	// 				ready
+	// 			}
+	// 		}
+	// 	}
+	// `);
 
-		if ($updateUnleashForTeam.errors) {
-			console.log($updateUnleashForTeam.errors);
-			return;
-		}
+	// const updateUnleash = async (instanceName: string, allowedTeams: string[]) => {
+	// 	console.log('update unleash');
+	// 	await updateUnleashForTeam.mutate({
+	// 		team: team,
+	// 		name: instanceName,
+	// 		allowedTeams: allowedTeams
+	// 	});
 
-		unleash = $updateUnleashForTeam.data?.updateUnleashForTeam.instance;
-	};
+	// 	if ($updateUnleashForTeam.errors) {
+	// 		console.log($updateUnleashForTeam.errors);
+	// 		return;
+	// 	}
+
+	// 	unleash = $updateUnleashForTeam.data?.updateUnleashForTeam.instance;
+	// };
 
 	let removeTeamName = '';
 	let removeTeamConfirmOpen = false;
 
 	const removeTeam = async () => {
-		const instanceName = unleash?.name || '';
-		const allowedTeams = unleash?.allowedTeams.filter((team) => team !== removeTeamName) || [];
-		await updateUnleash(instanceName, allowedTeams);
+		await revokeTeamAccess.mutate({
+			team: team,
+			revokedTeamSlug: removeTeamName
+		});
+
+		Unleash.fetch({ policy: 'CacheAndNetwork' });
 	};
 
 	const removeTeamClickHandler = async (teamName: string) => {
@@ -175,14 +199,16 @@
 		addTeamInput = '';
 		addTeamModalOpen = false;
 
-		if (unleash?.allowedTeams.includes(teamName)) {
+		if (unleash?.allowedTeams.nodes.find((team) => team.slug === teamName)) {
 			return;
 		}
 
-		const instanceName = unleash?.name || '';
-		const allowedTeams = [...(unleash?.allowedTeams || []), teamName];
+		await allowTeamAccess.mutate({
+			team: team,
+			allowedTeamSlug: teamName
+		});
 
-		await updateUnleash(instanceName, allowedTeams);
+		Unleash.fetch({ policy: 'CacheAndNetwork' });
 	};
 
 	const addTeamClose = () => {
@@ -374,10 +400,10 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each unleash.allowedTeams as team}
+					{#each unleash.allowedTeams.nodes as team}
 						<Tr>
 							<Td>
-								<a href="/team/{team}">{team}</a>
+								<a href="/team/{team.slug}">{team.slug}</a>
 							</Td>
 							<Td style="width:100px;" align="right">
 								<Button
@@ -386,7 +412,7 @@
 									disabled={unleash.ready === false}
 									variant="tertiary-neutral"
 									title="Delete key and value"
-									on:click={() => removeTeamClickHandler(team)}
+									on:click={() => removeTeamClickHandler(team.slug)}
 								>
 									<svelte:fragment slot="icon-left">
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
@@ -411,17 +437,14 @@
 					Add team
 				</Button>
 			</p>
-			{#if $updateUnleashForTeam.errors}
+			<!-- {#if $updateUnleashForTeam.errors}
 				{#each distinctErrors($updateUnleashForTeam.errors) as error}
 					<Alert style="margin-bottom: 1rem;" variant="error">
 						{error}
 					</Alert>
 				{/each}
-			{/if}
+			{/if} -->
 		</Card>
-		{#key unleash}
-			<ActivityLog teamName={team} resourceType={AuditEventResourceType.UNLEASH} columns={12} />
-		{/key}
 	</div>
 {:else}
 	<div style="">
