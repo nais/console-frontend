@@ -78,4 +78,6 @@
 			No cost data available
 		{/if}
 	</div>
+
+	<a href="/team/{team}/cost">View team costs</a>
 {/if}
