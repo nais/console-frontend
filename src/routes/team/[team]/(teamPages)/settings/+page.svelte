@@ -9,23 +9,32 @@
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
-	import { ChatExclamationmarkIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowsCirclepathIcon,
+		ChatExclamationmarkIcon,
+		EyeIcon,
+		EyeSlashIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
 
 	export let data: PageData;
 
-	/*const rotateKey = graphql(`
+	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
-			changeDeployKey(team: $team) {
-				key
-				created
-				expires
+			changeDeploymentKey(input: { teamSlug: $team }) {
+				deploymentKey {
+					created
+					expires
+					key
+				}
 			}
 		}
-	`);*/
+	`);
 
 	const updateTeam = graphql(`
 		mutation UpdateTeam($input: UpdateTeamInput!) {
@@ -47,19 +56,6 @@
 			}
 		}
 	`);
-
-	/*const hookdResponse = graphql(`
-		query HookdDeployKey($team: Slug!) @load {
-			team(slug: $team) @loading(cascade: true) {
-				id
-				deployKey {
-					key
-					created
-					expires
-				}
-			}
-		}
-	`);*/
 
 	const getTeamDeleteKey = graphql(`
 		mutation GetTeamDeleteKey($input: RequestTeamDeletionInput!) {
@@ -88,7 +84,7 @@
 
 	$: team = $page.params.team;
 
-	//let showKey = false;
+	let showKey = false;
 	let showRotateKey = false;
 	let showDeleteTeam = false;
 
@@ -134,7 +130,7 @@
 	`);
 
 	let synchronizeClicked = false;
-	let rotateClicked = false;
+	//let rotateClicked = false;
 </script>
 
 {#if $TeamSettings.errors}
@@ -325,21 +321,13 @@
 		<Card columns={12}>
 			<h3>Deploy key</h3>
 
-			<!--{#if $hookdResponse.data?.team}
-				{@const deployKey = $hookdResponse.data.team.deployKey}
+			{#if teamSettings.deploymentKey}
+				{@const deployKey = teamSettings.deploymentKey}
 				<dl>
 					<dt>Created:</dt>
-					{#if deployKey.key === PendingValue}
-						<dd><Skeleton variant="text" /></dd>
-					{:else}
-						<dd><Time time={deployKey.created} distance={true} /></dd>
-					{/if}
+					<dd><Time time={deployKey.created} distance={true} /></dd>
 					<dt>Expires:</dt>
-					{#if deployKey.expires === PendingValue}
-						<dd><Skeleton variant="text" /></dd>
-					{:else}
-						<dd><Time time={deployKey.expires} distance={true} /></dd>
-					{/if}
+					<dd><Time time={deployKey.expires} distance={true} /></dd>
 					<dt>Key:</dt>
 					<dd>
 						<div class="deployKey">
@@ -355,11 +343,7 @@
 									<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
 								>
 							{:else}
-								{#if deployKey.key === PendingValue}
-									<dd><Skeleton variant="text" /></dd>
-								{:else}
-									{deployKey.key.replaceAll(/./g, '*')}
-								{/if}
+								{deployKey.key.replaceAll(/./g, '*')}
 								<Button
 									size="xsmall"
 									variant="tertiary"
@@ -379,7 +363,7 @@
 							text="Copy key"
 							activeText="Key copied"
 							variant="action"
-							copyText={deployKey.key === PendingValue ? '' : deployKey.key}
+							copyText={deployKey.key}
 							size="small"
 						/>
 					</div>
@@ -398,7 +382,7 @@
 				</div>
 			{:else}
 				<Alert variant="error">Error getting deploy key. Please try again later.</Alert>
-			{/if}-->
+			{/if}
 		</Card>
 		{#if browser}
 			<Modal bind:open={showRotateKey} closeButton={false}>
@@ -414,10 +398,10 @@
 				<Button
 					variant="danger"
 					on:click={async () => {
-						rotateClicked = false;
+						//rotateClicked = false;
 						showRotateKey = !showRotateKey;
-						//await rotateKey.mutate({ team });
-						rotateClicked = true;
+						await rotateKey.mutate({ team });
+						//rotateClicked = true;
 					}}
 				>
 					Rotate key</Button
@@ -425,6 +409,7 @@
 			</Modal>
 		{/if}
 		<!--
+		TODO: Skal vel bort?
 		{#key teamSettings || synchronizeClicked || rotateClicked}
 			<ActivityLog columns={12} teamName={team} />
 		{/key}
@@ -538,10 +523,10 @@
 		font-family: monospace;
 		font-size: 1rem;
 	}
-	/*.deployKey {
+	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
-	}*/
+	}
 	h3 {
 		margin-bottom: 0.5rem;
 	}
@@ -551,14 +536,14 @@
 	i {
 		margin-bottom: 0.5rem;
 	}
-	/*.buttons {
+	.buttons {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
 	}
 	.button {
 		width: 130px;
-	}*/
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

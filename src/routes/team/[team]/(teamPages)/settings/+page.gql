@@ -1,6 +1,5 @@
 query TeamSettings($team: Slug!) {
 	team(slug: $team) {
-		id
 		slug
 		purpose
 		slackChannel
@@ -9,26 +8,15 @@ query TeamSettings($team: Slug!) {
 		googleGroupEmail
 		googleArtifactRegistry
 		cdnBucket
+		deploymentKey {
+			created
+			expires
+			key
+		}
 		environments {
 			name
 			gcpProjectID
 			slackAlertsChannel
-		}
-		auditEntries(first: 5) @paginate(mode: SinglePage) {
-			pageInfo {
-				hasNextPage
-				hasPreviousPage
-				totalCount
-				pageStart
-				pageEnd
-			}
-			edges {
-				node {
-					actor
-					message
-					createdAt
-				}
-			}
 		}
 	}
 }
