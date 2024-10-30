@@ -10,9 +10,10 @@
 		error,
 		graphql(`
 			fragment AppErrorFragment on WorkloadStatusError {
-				level
 				__typename
+
 				... on WorkloadStatusDeprecatedIngress {
+					level
 					ingress
 				}
 				... on WorkloadStatusDeprecatedRegistry {
@@ -20,20 +21,6 @@
 					registry
 					repository
 					tag
-				}
-				... on WorkloadStatusNoRunningInstances {
-					level
-				}
-				... on WorkloadStatusInvalidNaisYaml {
-					detail
-					level
-				}
-				... on WorkloadStatusSynchronizationFailing {
-					detail
-					level
-				}
-				... on WorkloadStatusNewInstancesFailing {
-					failingInstances
 					level
 				}
 				... on WorkloadStatusInboundNetwork {
@@ -52,6 +39,17 @@
 						targetWorkloadName
 					}
 				}
+				... on WorkloadStatusInvalidNaisYaml {
+					detail
+					level
+				}
+				... on WorkloadStatusNewInstancesFailing {
+					failingInstances
+					level
+				}
+				... on WorkloadStatusNoRunningInstances {
+					level
+				}
 				... on WorkloadStatusOutboundNetwork {
 					level
 					policy {
@@ -67,6 +65,13 @@
 						targetTeamSlug
 						targetWorkloadName
 					}
+				}
+				... on WorkloadStatusSynchronizationFailing {
+					detail
+					level
+				}
+				... on WorkloadStatusMissingSBOM {
+					level
 				}
 			}
 		`)
@@ -181,6 +186,13 @@
 				<a href={docURL('/how-to-guides/access-policies/')}
 					>Nais Application reference - accessPolicy</a
 				>.
+			</Alert>
+		{:else if type === 'WorkloadStatusMissingSBOM'}
+			<Alert variant="info">
+				<h4>Todo</h4>
+				SBOM missing for
+				<strong>{app}</strong>. See
+				<a href={docURL('/services/salsa/#slsa-in-nais')}>docker-build-push</a> on how to mitigate.
 			</Alert>
 		{:else}
 			<Alert variant="error">Unkown error</Alert>
