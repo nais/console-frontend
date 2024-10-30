@@ -337,6 +337,9 @@ type AuditEntryEdge {
 
 """The type of the resource that was affected by the action."""
 enum AuditResourceType {
+  """All audit entries related to secrets will use this resource type."""
+  SECRET
+
   """All audit entries related to teams will use this resource type."""
   TEAM
   UNKNOWN

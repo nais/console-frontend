@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
-	import ActivityLog from '$lib/components/ActivityLog.svelte';
 	import AggregatedTeamCost from '$lib/components/AggregatedTeamCost.svelte';
 	import Deploys from '$lib/components/Deploys.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
@@ -42,7 +41,7 @@
 		<Deploys {teamName} />
 	</Card>
 
-	<ActivityLog {teamName} columns={12} />
+	<!--ActivityLog {teamName} columns={12} /-->
 </div>
 
 <style>

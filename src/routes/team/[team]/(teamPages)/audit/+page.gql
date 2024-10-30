@@ -1,17 +1,18 @@
-query AuditEvents($team: Slug!) {
-	team(slug: $team) {
+query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
+	team(slug: $team) @loading {
 		slug
-		auditEntries(first: 10) @paginate(mode: SinglePage) {
-			pageInfo {
+		auditEntries(first: 10) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
 				hasNextPage
 				hasPreviousPage
 				pageEnd
 				pageStart
 				totalCount
 			}
-			edges {
-				node {
+			edges @loading(count: 10) {
+				node @loading {
 					__typename
+					createdAt @loading
 					actor
 					createdAt
 					environmentName
@@ -19,9 +20,22 @@ query AuditEvents($team: Slug!) {
 					resourceName
 					resourceType
 
-					#... on TeamConfirmDeleteKeyAuditEntry{}
-					#... on TeamCreateDeleteKeyAuditEntry{}
-					#... on TeamCreatedAuditEntry{}
+					... on SecretValueAddedAuditEntry {
+						secretValueAdded: data {
+							valueName
+						}
+					}
+					... on SecretValueRemovedAuditEntry {
+						secretValueRemoved: data {
+							valueName
+						}
+					}
+					... on SecretValueUpdatedAuditEntry {
+						secretValueUpdated: data {
+							valueName
+						}
+					}
+
 					... on TeamEnvironmentUpdatedAuditEntry {
 						teamEnvironmentUpdated: data {
 							environmentName
