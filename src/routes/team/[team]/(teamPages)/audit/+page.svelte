@@ -51,58 +51,61 @@
 						</div>
 					{:else}
 						<div class="line">
-							<BodyShort size="small" spacing>
-								{#if edge.node.__typename === 'TeamEnvironmentUpdatedAuditEntry'}
-									{edge.node.message}
-									{#if edge.node.teamEnvironmentUpdated.updatedFields.length > 0}
-										{#each edge.node.teamEnvironmentUpdated.updatedFields as field}
-											{field.field}. Changed from {field.oldValue} to {field.newValue}.
-										{/each}
+							<div style="width: 85%">
+								<!-- TODO: Her bør vi kanskje kontrollere bredden på en bedre måte. Flyter over tiden til høyre ved mye tekst. -->
+								<BodyShort size="small" spacing>
+									{#if edge.node.__typename === 'TeamEnvironmentUpdatedAuditEntry'}
+										{edge.node.message}
+										{#if edge.node.teamEnvironmentUpdated.updatedFields.length > 0}
+											{#each edge.node.teamEnvironmentUpdated.updatedFields as field}
+												{field.field}. Changed from {field.oldValue} to {field.newValue}.
+											{/each}
+										{/if}
+									{:else if edge.node.__typename === 'TeamMemberAddedAuditEntry'}
+										{edge.node.message}
+										{#if edge.node.teamMemberAdded}
+											{edge.node.teamMemberAdded.user?.name} ({edge.node.teamMemberAdded.user
+												?.email}) was added as {edge.node.teamMemberAdded.role}.
+										{/if}
+									{:else if edge.node.__typename === 'TeamMemberRemovedAuditEntry'}
+										{edge.node.message}
+										{#if edge.node.teamMemberRemoved}
+											{edge.node.teamMemberRemoved.user?.name} ({edge.node.teamMemberRemoved.user
+												?.email}) was removed.
+										{/if}
+									{:else if edge.node.__typename === 'TeamMemberSetRoleAuditEntry'}
+										{edge.node.message}
+										{#if edge.node.teamMemberSetRole}
+											{edge.node.teamMemberSetRole.user?.name} ({edge.node.teamMemberSetRole.user
+												?.email}) was set to {edge.node.teamMemberSetRole.role}.
+										{/if}
+									{:else if edge.node.__typename === 'TeamUpdatedAuditEntry'}
+										{edge.node.message}
+										{#if edge.node.teamUpdated?.updatedFields.length}
+											{#each edge.node.teamUpdated?.updatedFields as field}
+												{field.field}. Changed from {field.oldValue} to {field.newValue}.
+											{/each}
+										{/if}
+									{:else}
+										{edge.node.message}
+										{@const link = resourceLink(
+											edge.node.environmentName ? edge.node.environmentName : '',
+											edge.node.resourceType,
+											edge.node.resourceName
+										)}
+										{#if link}
+											<a href={link}>{edge.node.resourceName}</a>
+										{/if}
 									{/if}
-								{:else if edge.node.__typename === 'TeamMemberAddedAuditEntry'}
-									{edge.node.message}
-									{#if edge.node.teamMemberAdded}
-										{edge.node.teamMemberAdded.user?.name} ({edge.node.teamMemberAdded.user?.email})
-										was added as {edge.node.teamMemberAdded.role}.
+									{#if edge.node.environmentName}
+										in {edge.node.environmentName}
 									{/if}
-								{:else if edge.node.__typename === 'TeamMemberRemovedAuditEntry'}
-									{edge.node.message}
-									{#if edge.node.teamMemberRemoved}
-										{edge.node.teamMemberRemoved.user?.name} ({edge.node.teamMemberRemoved.user
-											?.email}) was removed.
-									{/if}
-								{:else if edge.node.__typename === 'TeamMemberSetRoleAuditEntry'}
-									{edge.node.message}
-									{#if edge.node.teamMemberSetRole}
-										{edge.node.teamMemberSetRole.user?.name} ({edge.node.teamMemberSetRole.user
-											?.email}) was set to {edge.node.teamMemberSetRole.role}.
-									{/if}
-								{:else if edge.node.__typename === 'TeamUpdatedAuditEntry'}
-									{edge.node.message}
-									{#if edge.node.teamUpdated?.updatedFields.length}
-										{#each edge.node.teamUpdated?.updatedFields as field}
-											{field.field}. Changed from {field.oldValue} to {field.newValue}.
-										{/each}
-									{/if}
-								{:else}
-									{edge.node.message}
-									{@const link = resourceLink(
-										edge.node.environmentName ? edge.node.environmentName : '',
-										edge.node.resourceType,
-										edge.node.resourceName
-									)}
-									{#if link}
-										<a href={link}>{edge.node.resourceName}</a>
-									{/if}
-								{/if}
-								{#if edge.node.environmentName}
-									in {edge.node.environmentName}
-								{/if}
 
-								{#if edge.node.environmentName}
-									in {edge.node.environmentName}
-								{/if}
-							</BodyShort>
+									{#if edge.node.environmentName}
+										in {edge.node.environmentName}
+									{/if}
+								</BodyShort>
+							</div>
 							<BodyShort size="small" style="color: var(--a-text-subtle)">
 								{edge.node.actor}
 							</BodyShort>
