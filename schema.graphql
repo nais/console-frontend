@@ -2316,6 +2316,25 @@ type SecretEdge {
   node: Secret!
 }
 
+input SecretOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: SecretOrderField!
+}
+
+enum SecretOrderField {
+  """Order secrets by the name of the environment."""
+  ENVIRONMENT
+
+  """Order secrets by the last time it was modified."""
+  LAST_MODIFIED_AT
+
+  """Order secrets by name."""
+  NAME
+}
+
 type SecretValue {
   """The name of the secret value."""
   name: String!
@@ -2989,6 +3008,9 @@ type Team implements Node {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: SecretOrder
   ): SecretConnection!
 
   """Main Slack channel for the team."""
