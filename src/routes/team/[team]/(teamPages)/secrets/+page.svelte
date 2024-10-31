@@ -1,17 +1,24 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
-	export let data: PageData;
-
-	$: ({ Secrets } = data);
 	$: team = $page.params.team;
+	export let data: PageData;
+	$: ({ Secrets } = data);
+
+	$: tableSort = {
+		orderBy: $Secrets.variables?.orderBy?.field,
+		direction: $Secrets.variables?.orderBy?.direction
+	};
 
 	let createSecretOpen = false;
 	let environments: EnvironmentType[];
@@ -31,9 +38,35 @@
 		});
 	}
 
+	const changeParams = (params: Record<string, string>) => {
+		const query = new URLSearchParams(get(page).url.searchParams);
+		for (const [key, value] of Object.entries(params)) {
+			query.set(key, value);
+		}
+		goto(`?${query.toString()}`);
+	};
+
+	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
+		const { key } = e.detail;
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy = SecretOrderField[key as keyof typeof SecretOrderField];
+			tableSort.direction = 'ASC';
+		}
+
+		changeParams({
+			direction: tableSort.direction ? tableSort.direction : 'ASC',
+			field: tableSort.orderBy || SecretOrderField.NAME
+		});
+	};
+
 	const open = () => {
 		createSecretOpen = true;
 	};
+
+	$: console.log('vars', $Secrets.variables);
 </script>
 
 {#if $Secrets.errors}
@@ -51,11 +84,21 @@
 					</svelte:fragment>
 				</Button>
 			</div>
-			<Table size="small" zebraStripes>
+			<Table
+				size="small"
+				zebraStripes
+				sort={{
+					orderBy: tableSort.orderBy || SecretOrderField.NAME,
+					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+				}}
+				on:sortChange={tableSortChange}
+			>
 				<Thead>
-					<Th>Name</Th>
-					<Th>Environment</Th>
-					<Th align="right">Last Modified</Th>
+					<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
+					<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
+						>Last Modified</Th
+					>
 				</Thead>
 				<Tbody>
 					{#each secrets.edges as secret}
@@ -79,6 +122,7 @@
 					{/each}
 				</Tbody>
 			</Table>
+			{JSON.stringify(secrets.pageInfo)}
 			{#if secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage}
 				<div class="pagination">
 					<span>
