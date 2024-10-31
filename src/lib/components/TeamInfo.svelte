@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
+	import { get } from 'svelte/store';
 	import type { TeamInfoVariables } from './$houdini';
 
 	export let teamName: string;
@@ -31,8 +33,7 @@
 			}
 		}
 	`);
-
-	$: console.log($teamInfo);
+	const githubOrganization = get(page).data.githubOrganization;
 </script>
 
 <h4>Team summary</h4>
@@ -42,7 +43,8 @@
 	{#if $teamInfo.data.team.gitHubTeamSlug}
 		<strong>GitHub team:</strong>
 		<!-- TODO: Denne må inn i chartet via gitHub.organization tilsvarende reconciler feature-->
-		<a href="https://github.com/orgs/navikt/teams/{$teamInfo.data.team.gitHubTeamSlug}"
+		<a
+			href="https://github.com/orgs/{githubOrganization}/teams/{$teamInfo.data.team.gitHubTeamSlug}"
 			>{$teamInfo.data.team.gitHubTeamSlug}</a
 		>
 		<br />
@@ -51,23 +53,6 @@
 	{#if $teamInfo.data.team.slackChannel}
 		<strong>Slack channel:</strong>
 		{$teamInfo.data.team.slackChannel}
-		<br />
-	{/if}
-	{#if $teamInfo.data.team.lastSuccessfulSync}
-		<strong>Last successful sync:</strong>
-		{$teamInfo.data.team.lastSuccessfulSync}
-		<br />
-	{/if}
-	{#if $teamInfo.data.team.members}
-		<strong>Members:</strong>
-		<a href="/team/{teamName}/members">{$teamInfo.data.team.members.pageInfo.totalCount}</a>
-		<br />
-	{/if}
-	{#if $teamInfo.data.team.repositories}
-		<strong>Repositories:</strong>
-		<a href="/team/{teamName}/repositories"
-			>{$teamInfo.data.team.repositories.pageInfo.totalCount}</a
-		>
 		<br />
 	{/if}
 {/if}
