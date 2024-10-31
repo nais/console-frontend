@@ -45,7 +45,7 @@
 		<Deploys {teamName} />
 	</Card>
 
-	<!--ActivityLog {teamName} columns={12} /-->
+	<!--ActivityLog {teamName} columns={12} /> TODO: Fjernes? -->
 </div>
 
 <style>

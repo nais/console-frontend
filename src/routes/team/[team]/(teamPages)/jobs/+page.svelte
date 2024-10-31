@@ -106,7 +106,7 @@
 			</Tbody>
 		</Table>
 	</Card>
-	<!--ActivityLog {teamName} resourceType={AuditEventResourceType.NAISJOB} columns={12} /-->
+	<!--ActivityLog {teamName} resourceType={AuditEventResourceType.NAISJOB} columns={12} /> TODO: Fjernes? -->
 {/if}
 
 <style>

@@ -150,7 +150,7 @@
 				</div>
 			{/if}
 		</Card>
-		<!--ActivityLog {teamName} resourceType={AuditEventResourceType.APP} columns={12} /-->
+		<!--ActivityLog {teamName} resourceType={AuditEventResourceType.APP} columns={12} /> TODO: Fjernes? -->
 	</div>
 {/if}
 
