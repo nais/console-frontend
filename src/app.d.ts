@@ -5,6 +5,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			tenantName: string;
+			githubOrganization: string;
 		}
 		// interface PageData {}
 		// interface Platform {}

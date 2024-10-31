@@ -27,3 +27,9 @@ values:
     description: The Slack channel to post feedback to
     config:
       type: string
+  gitHub.organization:
+    displayName: GitHub organization
+    description: The organization slug where the github reconciler will manage teams
+    computed:
+      template: |
+        {{ .Env.teams_github_org | quote }}

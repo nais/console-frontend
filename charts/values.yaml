@@ -7,4 +7,9 @@ tenantDomain: ''
 
 fasit:
   tenant:
-    name: ''
+    name: # mapped in fasit
+gitHub:
+  organization: # mapped in fasit
+slack:
+  token:
+  feedbackChannel:

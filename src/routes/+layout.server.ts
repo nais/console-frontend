@@ -7,6 +7,7 @@ export const load: LayoutServerLoad = async (event) => {
 
 	return {
 		UserInfo: userInfo,
-		tenantName: event.locals.tenantName
+		tenantName: event.locals.tenantName,
+		githubOrganization: event.locals.githubOrganization
 	};
 };
