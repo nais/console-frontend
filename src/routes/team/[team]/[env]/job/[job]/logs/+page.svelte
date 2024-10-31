@@ -30,7 +30,6 @@
 				.map((run) => run.instances.nodes.map((instance) => instance.name))
 				.flatMap((pod) => pod)
 		);
-		console.log(pods);
 		running = true;
 	}
 	$: setSelected(selectedRun);

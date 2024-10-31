@@ -65,8 +65,6 @@
 	const open = () => {
 		createSecretOpen = true;
 	};
-
-	$: console.log('vars', $Secrets.variables);
 </script>
 
 {#if $Secrets.errors}
@@ -122,7 +120,6 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{JSON.stringify(secrets.pageInfo)}
 			{#if secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage}
 				<div class="pagination">
 					<span>
