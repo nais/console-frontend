@@ -57,7 +57,7 @@
 			zebraStripes
 			size="small"
 			sort={{
-				orderBy: tableSort.orderBy || JobOrderField.NAME,
+				orderBy: tableSort.orderBy || JobOrderField.STATUS,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}
