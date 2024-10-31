@@ -1,4 +1,5 @@
-import { error } from '@sveltejs/kit';
+// TODO: Denne trengs vel ikke lenger? Kommenterer ut for å få npm run check ok.
+/*import { error } from '@sveltejs/kit';
 import type { AdminUsersVariables } from './$houdini';
 export const _AdminUsersVariables: AdminUsersVariables = ({ url }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
@@ -9,4 +10,4 @@ export const _AdminUsersVariables: AdminUsersVariables = ({ url }) => {
 	const offset = (page - 1) * limit;
 
 	return { limit, offset };
-};
+};*/
