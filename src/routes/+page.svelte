@@ -35,7 +35,7 @@
 		>
 	</div>
 	<div class="grid">
-		<Card columns={4} rows={1}>
+		<Card columns={12} rows={1}>
 			<div class="header">
 				<h2>
 					<PersonGroupIcon />

@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import AggregatedTeamCost from '$lib/components/AggregatedTeamCost.svelte';
 	import Deploys from '$lib/components/Deploys.svelte';
+	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
@@ -23,6 +24,9 @@
 		<TeamStatus {teamName} />
 		TODO: TeamStatus
 	</Card-->
+	<Card rows={2} columns={3}>
+		<TeamInfo {teamName} />
+	</Card>
 
 	<Card rows={2} columns={3}>
 		<VulnerabilitySummary {teamName} />
@@ -31,7 +35,7 @@
 	<Card rows={2} columns={3}>
 		<TeamUtilizationAndOverage {teamName} />
 	</Card>
-	<Card rows={1} columns={3}>
+	<Card rows={2} columns={3}>
 		<AggregatedTeamCost team={teamName} />
 	</Card>
 
