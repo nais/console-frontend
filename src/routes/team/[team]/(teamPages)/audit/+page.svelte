@@ -86,6 +86,18 @@
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}
+									{:else if edge.node.__typename === 'UnleashInstanceUpdatedAuditEntry'}
+										{@const data = edge.node.unleashInstanceUpdated}
+										{edge.node.message}
+										{#if data?.allowedTeamSlug}
+											Allowed <a href="/team/{data.allowedTeamSlug}">
+												{data.allowedTeamSlug}
+											</a> to access the instance.
+										{:else if data?.revokedTeamSlug}
+											Revoked access for <a href="/team/{data.revokedTeamSlug}">
+												{data.revokedTeamSlug}
+											</a> to the instance.
+										{/if}
 									{:else}
 										{edge.node.message}
 										{@const link = resourceLink(

@@ -93,6 +93,13 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 							}
 						}
 					}
+
+					... on UnleashInstanceUpdatedAuditEntry {
+						unleashInstanceUpdated: data {
+							allowedTeamSlug
+							revokedTeamSlug
+						}
+					}
 				}
 			}
 		}
