@@ -58,7 +58,7 @@
 			size="small"
 			sort={{
 				orderBy: tableSort.orderBy || JobOrderField.STATUS,
-				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+				direction: tableSort.direction === 'DESC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}
 		>
