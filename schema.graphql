@@ -2622,8 +2622,13 @@ input SqlInstanceOrder {
 }
 
 enum SqlInstanceOrderField {
+  COST
+  CPU_UTILIZATION
+  DISK_UTILIZATION
   ENVIRONMENT
+  MEMORY_UTILIZATION
   NAME
+  STATUS
   VERSION
 }
 

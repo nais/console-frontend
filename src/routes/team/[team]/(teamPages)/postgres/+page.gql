@@ -16,7 +16,6 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder) {
 					}
 
 					connectionName
-					healthy
 					state
 					version
 					cost {

@@ -196,11 +196,17 @@
 				<Th sortable={true} sortKey={SqlInstanceOrderField.NAME}>Name</Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Env</Th>
-				<Th>Status</Th>
-				<Th>Cost</Th>
-				<Th><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th>
-				<Th><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th>
-				<Th><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.STATUS}>Status</Th>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.COST}>Cost</Th>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.CPU_UTILIZATION}
+					><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
+				>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.MEMORY_UTILIZATION}
+					><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
+				>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.DISK_UTILIZATION}
+					><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
+				>
 			</Thead>
 			<Tbody>
 				{#each instances.edges as edge}
@@ -228,18 +234,11 @@
 						</Td>
 
 						<Td>
-							{#if edge.node.healthy && edge.node.state === 'RUNNABLE'}
+							{#if edge.node.state === 'RUNNABLE'}
 								<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-							{:else if edge.node.state !== 'RUNNABLE'}
+							{:else}
 								<Tooltip content="Unhealthy state: {edge.node.state}" placement="right">
 									<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-								</Tooltip>
-							{:else}
-								<Tooltip
-									content="The SQL instance has config errors. Check conditions on instance page."
-									placement="right"
-								>
-									<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
 								</Tooltip>
 							{/if}
 						</Td>
