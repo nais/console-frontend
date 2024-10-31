@@ -177,6 +177,7 @@
 					name: 'Audit',
 					routeId: '/team/[team]/(teamPages)/audit',
 					withSubRoutes: true,
+					memberOnly: true,
 					icon: ShieldLockIcon
 				}
 			]

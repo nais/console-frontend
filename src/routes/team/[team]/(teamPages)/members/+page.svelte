@@ -59,7 +59,7 @@
 
 	$: canEdit =
 		team?.viewerIsOwner === true ||
-		UserInfo.data?.me.__typename == 'User' /*TODO: && UserInfo.data?.me.isAdmin*/;
+		(UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin);
 
 	$: tableSort = {
 		orderBy: $Members.variables?.orderBy?.field,
