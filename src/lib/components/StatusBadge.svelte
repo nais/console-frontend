@@ -11,7 +11,7 @@
 
 {#if state === 'FAILING'}
 	<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" title="Application is failing" />
-{:else if state === 'NOTNAIS'}
+{:else if state === 'NOT_NAIS'}
 	<ExclamationmarkTriangleFillIcon
 		style="color: var(--a-icon-warning)"
 		title="Application is not nais"
