@@ -1,21 +1,8 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { graphql, PendingValue, type UserDeploys$result } from '$houdini';
 	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-
-	/*const sortTeamDeploys = (userDeploys: UserDeploys$result['me'], slice = 10) => {
-		if (userDeploys === PendingValue)
-			return [PendingValue, PendingValue, PendingValue, PendingValue] as (typeof PendingValue)[];
-		if (userDeploys.__typename !== 'User') return [];
-
-		return userDeploys.teams.nodes
-			.map((team) => team.team.deployments)
-			.flatMap((deploys) => deploys.nodes)
-			.sort((a, b) => {
-				return b.created.getTime() - a.created.getTime();
-			})
-			.slice(0, slice);
-	};*/
+	import Time from '$lib/Time.svelte';
+	import { Alert, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
 	const store = graphql(`
 		query UserDeploys @load {
@@ -29,26 +16,24 @@
 						nodes {
 							team {
 								slug
-
-								#deployments {
-								#	pageInfo {
-								#		totalCount
-								#	}
-								#	nodes {
-								#		created
-								#		env
-								#		team {
-								#			slug
-								#		}
-								#		resources {
-								#			kind
-								#			name
-								#		}
-								#		statuses {
-								#			status
-								#		}
-								#	}
-								#}
+								deployments(first: 10) {
+									nodes {
+										created
+										environment {
+											name
+										}
+										team {
+											slug
+										}
+										resources {
+											kind
+											name
+										}
+										statuses {
+											status
+										}
+									}
+								}
 							}
 						}
 					}
@@ -56,6 +41,20 @@
 			}
 		}
 	`);
+
+	const sortTeamDeploys = (userDeploys: UserDeploys$result['me']) => {
+		if (userDeploys === PendingValue)
+			return Array(20).fill(PendingValue) as (typeof PendingValue)[];
+		if (userDeploys.__typename !== 'User') return [];
+
+		return userDeploys.teams.nodes
+			.map((team) => team.team.deployments)
+			.flatMap((deploys) => deploys.nodes)
+			.sort((a, b) => {
+				return b.created.getTime() - a.created.getTime();
+			})
+			.slice(0, 10);
+	};
 </script>
 
 {#if $store.errors !== null}
@@ -78,7 +77,7 @@
 			<Th>When</Th>
 		</Thead>
 		<Tbody>
-			<!--{#each sortTeamDeploys($store.data.me) as deploy}
+			{#each sortTeamDeploys($store.data.me) as deploy}
 				{#if deploy == PendingValue}
 					<Tr>
 						{#each new Array(4).fill('text') as variant}
@@ -94,27 +93,34 @@
 						</Td>
 						<Td>
 							{#if deploy.resources[0].kind === 'Naisjob'}
-								<a href="/team/{deploy.team.slug}/{deploy.env}/job/{deploy.resources[0].name}">
+								<a
+									href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{deploy.resources[0]
+										.name}"
+								>
 									{deploy.resources[0].name}</a
 								>
 							{:else}
-								<a href="/team/{deploy.team.slug}/{deploy.env}/app/{deploy.resources[0].name}">
+								<a
+									href="/team/{deploy.team.slug}/{deploy.environment.name}/app/{deploy.resources[0]
+										.name}"
+								>
 									{deploy.resources[0].name}</a
 								>
 							{/if}
 						</Td>
 						<Td>
-							{deploy.env}
+							{deploy.environment.name}
 						</Td>
 						<Td>
 							<Time time={deploy.created} distance={true} />
 						</Td>
 					</Tr>
 				{/if}
-			{/each}-->
-			<Tr>
-				<Td colspan={4}>Not implemented</Td>
-			</Tr>
+			{:else}
+				<Tr>
+					<Td colspan={999}>No deploys found</Td>
+				</Tr>
+			{/each}
 		</Tbody>
 	</Table>
 {/if}

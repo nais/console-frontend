@@ -14,6 +14,7 @@
 		PlusIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import Deploys from './Deploys.svelte';
 
 	let feedbackOpen = false;
 
@@ -35,7 +36,7 @@
 		>
 	</div>
 	<div class="grid">
-		<Card columns={12} rows={1}>
+		<Card columns={4} rows={1}>
 			<div class="header">
 				<h2>
 					<PersonGroupIcon />
@@ -101,9 +102,9 @@
 			</div>
 		</Card>
 
-		<!--Card columns={8} rows={2}>
+		<Card columns={8} rows={1}>
 			<Deploys />
-		</Card-->
+		</Card>
 	</div>
 </div>
 
