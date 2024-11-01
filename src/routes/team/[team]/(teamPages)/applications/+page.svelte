@@ -115,7 +115,7 @@
 			size="small"
 			sort={{
 				orderBy: tableSort.orderBy || ApplicationOrderField.STATUS,
-				direction: tableSort.direction === 'DESC' ? 'ascending' : 'descending'
+				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
 			on:sortChange={tableSortChange}
 		>

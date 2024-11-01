@@ -1,7 +1,8 @@
-query Repositories($team: Slug!, $filter: TeamRepositoryFilter) @cache(policy: NetworkOnly) {
+query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamRepositoryFilter)
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		id
-		repositories(first: 20, filter: $filter) @paginate(mode: SinglePage) {
+		repositories(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage

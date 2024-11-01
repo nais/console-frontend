@@ -2095,6 +2095,20 @@ type RepositoryEdge {
   node: Repository!
 }
 
+"""Ordering options when fetching repositories."""
+input RepositoryOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: RepositoryOrderField!
+}
+
+enum RepositoryOrderField {
+  """Order repositories by name."""
+  NAME
+}
+
 input RequestTeamDeletionInput {
   """Slug of the team to request a team deletion key for."""
   slug: Slug!
@@ -3012,6 +3026,9 @@ type Team implements Node {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: RepositoryOrder
   ): RepositoryConnection!
 
   """Secrets owned by the team."""
