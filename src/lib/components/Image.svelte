@@ -108,7 +108,6 @@
 
 		{#if image !== null}
 			{#if !image.hasSBOM}
-				<!-- && image.projectId !== ''-->
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				Data was discovered, but the SBOM was not rendered. Please refer to the
 				<a href={docURL('/security/salsa/#slsa-in-nais')}>NAIS documentation</a>
