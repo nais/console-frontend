@@ -6,6 +6,10 @@ query Bucket($team: Slug!, $name: String!, $environment: String!) {
 				uniformBucketLevelAccess
 				status {
 					state
+					errors {
+						details
+						message
+					}
 				}
 				name
 				environment {

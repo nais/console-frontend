@@ -17,18 +17,20 @@
 	$: teamName = $page.params.team;
 </script>
 
-{#if $Bucket.errors}
-	<GraphErrors errors={$Bucket.errors} />
-{:else if $Bucket.data}
-	{@const bucket = $Bucket.data.team.environment.bucket}
-	<div class="grid">
-		<Card columns={7}>
+<div class="grid">
+	{#if $Bucket.errors}
+		<GraphErrors errors={$Bucket.errors} />
+	{:else if $Bucket.data}
+		{@const bucket = $Bucket.data.team.environment.bucket}
+		<Card columns={12}>
 			<h3 class="heading">
 				<BucketIcon />
 				{bucket.name}
 			</h3>
 			<div>
 				<dl class="config">
+					<dt>Status</dt>
+					<dd>{bucket.status.state}</dd>
 					<dt>Bucket</dt>
 					<dd>
 						<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
@@ -73,15 +75,34 @@
 				</dl>
 			</div>
 		</Card>
-		<Card columns={5}>
+		<!-- <Card columns={5}>
 			<h3>Status</h3>
 			<div>
-				TODO
 				{bucket.status.state}
+				{#each bucket.status.errors as error}
+					<details>
+						<summary>{error.message}</summary>
+						<p style="max-width: 25em;">{error.details}</p>
+					</details>
+				{/each}
 			</div>
-		</Card>
-	</div>
-{/if}
+		</Card> -->
+
+		{#if bucket.status.errors.length > 0}
+			<Card columns={12}>
+				<h3>Errors</h3>
+				<div>
+					{#each bucket.status.errors as error}
+						<details>
+							<summary>{error.message}</summary>
+							<p>{error.details}</p>
+						</details>
+					{/each}
+				</div>
+			</Card>
+		{/if}
+	{/if}
+</div>
 
 <style>
 	.grid {

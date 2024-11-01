@@ -457,6 +457,11 @@ type BucketEdge {
   node: Bucket!
 }
 
+type BucketError {
+  details: String
+  message: String!
+}
+
 input BucketOrder {
   direction: OrderDirection!
   field: BucketOrderField!
@@ -467,8 +472,15 @@ enum BucketOrderField {
   NAME
 }
 
+enum BucketState {
+  ERROR
+  HEALTHY
+  UNKNOWN
+}
+
 type BucketStatus {
-  state: String!
+  errors: [BucketError!]!
+  state: BucketState!
 }
 
 """
