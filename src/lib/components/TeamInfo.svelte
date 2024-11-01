@@ -42,7 +42,6 @@
 
 	{#if $teamInfo.data.team.gitHubTeamSlug}
 		<strong>GitHub team:</strong>
-		<!-- TODO: Denne må inn i chartet via gitHub.organization tilsvarende reconciler feature-->
 		<a
 			href="https://github.com/orgs/{githubOrganization}/teams/{$teamInfo.data.team.gitHubTeamSlug}"
 			>{$teamInfo.data.team.gitHubTeamSlug}</a
