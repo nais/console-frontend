@@ -11,6 +11,7 @@
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import Authentications from './Authentications.svelte';
 	import Instances from './Instances.svelte';
 	import Scaling from './Scaling.svelte';
 	import Secrets from './Secrets.svelte';
@@ -109,8 +110,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
-			<!--Authentications app={$App.data.app} /-->
-			TODO: Authentications
+			<Authentications {app} />
 		</Card>
 		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
 			<Card columns={4}>

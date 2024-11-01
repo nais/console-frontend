@@ -12,6 +12,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...WorkloadImage
 				...Traffic
 				...Manifest
+				...AppAuthIntegrations
 			}
 		}
 		viewerIsMember

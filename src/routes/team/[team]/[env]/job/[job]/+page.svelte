@@ -8,6 +8,7 @@
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
 	import type { PageData } from './$houdini';
+	import Authentications from './Authentications.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Secrets from './Secrets.svelte';
@@ -59,7 +60,7 @@
 		</Card>
 		<Card columns={4}>
 			<h4>Authentications</h4>
-			<!--Authentications {job} /-->
+			<Authentications {job} />
 		</Card>
 		{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
 			<Card columns={4}>

@@ -18,33 +18,11 @@
 
 	$: auth = $JobImageDetails.data?.team.viewerIsMember ?? false;
 
-	/*const summary = graphql(`
-		query Summary($env: String!, $team: Slug!, $app: String!) {
-			app(env: $env, team: $team, name: $app) {
-				imageDetails {
-					projectId
-					summary {
-						riskScore
-						critical
-						high
-						medium
-						low
-						unassigned
-					}
-				}
-			}
-		}
-	`);*/
-
 	const notificationBadgeSize = '48px';
 
 	let registry: string;
 	let repository: string;
 	let name: string;
-	//let findingToSuppress: FindingType | undefined;
-	//let suppressOpen = false;
-	//let analysisTrail: FindingType | undefined;
-	//let analysisOpen = false;
 
 	$: {
 		if ($JobImageDetails.data?.team.environment.workload.image) {
@@ -101,28 +79,6 @@
 					<h5>Tag</h5>
 					<code>{image.tag ? image.tag : ''}</code>
 				</div>
-				<!--{#if image.projectId !== ''}
-					<div class="digest">
-						<h5>Digest</h5>
-						<code>{image.rekor.imageDigestSHA ? image.rekor.imageDigestSHA : ''}</code>
-					</div>
-					<div class="rekor">
-						<a href="https://search.sigstore.dev/?logIndex={image.rekor.logIndex}">
-							Attestation details
-							<ExternalLinkIcon title="Open attestation details" />
-						</a>
-						|
-						<a href={image.rekor.runInvocationURI}>
-							Build reference
-							<ExternalLinkIcon title="Open build reference" />
-						</a>
-						|
-						<a href="https://{registry}/{repository}/{name}">
-							Image registry
-							<ExternalLinkIcon title="Open images in registry" />
-						</a>
-					</div>
-				{/if}-->
 			</div>
 		</Card>
 
@@ -167,13 +123,6 @@
 					</Tooltip>
 				</div>
 				Risk score: {image.vulnerabilitySummary.riskScore} <br />
-				<!--{#if image.projectUrl !== ''}
-					Explore findings in
-					<a href={image.projectUrl} target="_blank"
-						>Dependency track
-						<ExternalLinkIcon title="Open project in Dependency track" font-size="1.5rem" />
-					</a>
-				{/if}-->
 			{:else if !image.hasSBOM}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				Data was discovered, but the SBOM was not rendered. Please refer to the
