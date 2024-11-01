@@ -75,18 +75,6 @@
 				</dl>
 			</div>
 		</Card>
-		<!-- <Card columns={5}>
-			<h3>Status</h3>
-			<div>
-				{bucket.status.state}
-				{#each bucket.status.errors as error}
-					<details>
-						<summary>{error.message}</summary>
-						<p style="max-width: 25em;">{error.details}</p>
-					</details>
-				{/each}
-			</div>
-		</Card> -->
 
 		{#if bucket.status.errors.length > 0}
 			<Card columns={12}>
