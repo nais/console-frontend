@@ -245,7 +245,6 @@
 <div class="breadcrumbs">
 	<div class="page">
 		<nav>
-			<!-- {$page.route.id} -->
 			<a href="/team/{$page.params.team}">{$page.params.team}</a>
 
 			{#each crumbs($page.route.id, $page.params) as { name, path }}

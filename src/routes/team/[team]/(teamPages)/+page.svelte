@@ -20,10 +20,6 @@
 {/if}
 
 <div class="grid">
-	<!--Card rows={1} columns={2}>
-		<TeamStatus {teamName} />
-		TODO: TeamStatus
-	</Card-->
 	<Card rows={2} columns={3}>
 		<TeamInfo {teamName} />
 	</Card>
@@ -44,8 +40,6 @@
 
 		<Deploys {teamName} />
 	</Card>
-
-	<!--ActivityLog {teamName} columns={12} /> TODO: Fjernes? -->
 </div>
 
 <style>

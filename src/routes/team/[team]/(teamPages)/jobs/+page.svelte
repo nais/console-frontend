@@ -196,7 +196,6 @@
 			</div>
 		{/if}
 	</Card>
-	<!--ActivityLog {teamName} resourceType={AuditEventResourceType.NAISJOB} columns={12} /> TODO: Fjernes? -->
 {/if}
 
 <style>

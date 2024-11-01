@@ -201,7 +201,6 @@
 			</div>
 		{/if}
 	</Card>
-	<!--ActivityLog {teamName} resourceType={AuditEventResourceType.APP} columns={12} /> TODO: Fjernes? -->
 {/if}
 
 <style>

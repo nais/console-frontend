@@ -158,7 +158,6 @@
 		{#if createSecretOpen}
 			<CreateSecret {team} bind:open={createSecretOpen} {environments} />
 		{/if}
-		<!--ActivityLog teamName={team} resourceType={AuditEventResourceType.SECRET} columns={12} /> TODO: Fjernes? -->
 	</div>
 {/if}
 
