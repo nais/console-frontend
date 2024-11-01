@@ -187,13 +187,6 @@
 		<dl>
 			<dt>Package:</dt>
 			<dd><code>{finding.package}</code></dd>
-
-			<!--
-			TODO: Fjerne?
-			{#if finding.aliases.length > 0}
-				<dt>Alias(es):</dt>
-				<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
-			{/if}-->
 			{#if finding.description !== ''}
 				<dt>Description:</dt>
 				<dd>{finding.description}</dd>
