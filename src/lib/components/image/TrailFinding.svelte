@@ -46,16 +46,10 @@
 			<dl>
 				<dt>Package:</dt>
 				<dd><code>{finding.package}</code></dd>
-
-				<!--{#if finding.aliases.length > 0}
-					<dt>Alias(es):</dt>
-					<dd><code>{joinAliases(finding.aliases, finding.vulnId)}</code></dd>
-				{/if}-->
 				{#if finding.description !== ''}
 					<dt>Description:</dt>
 					<dd>{finding.description}</dd>
 				{/if}
-
 				<dt>Details:</dt>
 				<dd>
 					<a href={detailsUrl(finding.identifier)} target="_blank"
