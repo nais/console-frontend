@@ -24,6 +24,7 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import prettyBytes from 'pretty-bytes';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -73,7 +74,8 @@
 	{/each}
 {/if}
 {#if $SqlInstances.data}
-	{@const instances = $SqlInstances.data.team.sqlInstances}
+	{@const team = $SqlInstances.data.team}
+	{@const instances = team.sqlInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -86,12 +88,7 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{#if metrics.cost === PendingValue}
-							<Skeleton variant="text" />
-						{:else}
-							€{Math.round(metrics.cost)}
-						{/if}-->
-						TODO: Implement cost
+						{euroValueFormatter(team.cost.daily.sum)}
 					</p>
 				</div>
 			</div>

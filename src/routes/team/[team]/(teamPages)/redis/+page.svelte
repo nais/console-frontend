@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { RedisInstanceOrderField } from '$houdini';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		Alert,
 		Button,
@@ -67,7 +68,8 @@
 	{/each}
 {/if}
 {#if $Redis.data}
-	{@const redis = $Redis.data.team.redisInstances}
+	{@const team = $Redis.data.team}
+	{@const redis = team.redisInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -80,8 +82,7 @@
 						<HelpText title="">Total Redis cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						<!--€{Math.round(team.redisInstances.cost)}-->
-						TODO: not implemented in backend
+						{euroValueFormatter(team.cost.daily.sum)}
 					</p>
 				</div>
 			</div>

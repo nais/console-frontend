@@ -5,6 +5,7 @@
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		Alert,
 		Button,
@@ -68,7 +69,8 @@
 		</Alert>
 	{/each}
 {:else if $Buckets.data}
-	{@const buckets = $Buckets.data.team.buckets}
+	{@const team = $Buckets.data.team}
+	{@const buckets = team.buckets}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -81,8 +83,7 @@
 						<HelpText title="">Total Bucket cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						<!--€{Math.round(team.buckets.metrics.cost)}-->
-						TODO: Implement cost
+						{euroValueFormatter(team.cost.daily.sum)}
 					</p>
 				</div>
 			</div>

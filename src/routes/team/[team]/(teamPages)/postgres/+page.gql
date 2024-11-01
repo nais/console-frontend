@@ -1,5 +1,10 @@
-query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder) {
+query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: Date!) {
 	team(slug: $team) {
+		cost {
+			daily(from: $from, to: $to, filter: { services: ["Cloud SQL"] }) {
+				sum
+			}
+		}
 		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage

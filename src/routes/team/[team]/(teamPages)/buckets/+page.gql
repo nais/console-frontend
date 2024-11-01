@@ -1,5 +1,10 @@
-query Buckets($team: Slug!, $orderBy: BucketOrder) {
+query Buckets($team: Slug!, $orderBy: BucketOrder, $from: Date!, $to: Date!) {
 	team(slug: $team) {
+		cost {
+			daily(from: $from, to: $to, filter: { services: ["Cloud Storage"] }) {
+				sum
+			}
+		}
 		buckets(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage

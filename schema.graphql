@@ -3122,6 +3122,9 @@ type TeamConnection {
 
 type TeamCost {
   daily(
+    """Filter the results."""
+    filter: TeamCostDailyFilter
+
     """Start date of the period, inclusive."""
     from: Date!
 
@@ -3129,6 +3132,11 @@ type TeamCost {
     to: Date!
   ): TeamCostPeriod!
   monthlySummary: TeamCostMonthlySummary!
+}
+
+input TeamCostDailyFilter {
+  """Services to include in the summary."""
+  services: [String!]
 }
 
 type TeamCostMonthlySample {

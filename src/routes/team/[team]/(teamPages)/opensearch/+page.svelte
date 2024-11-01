@@ -6,6 +6,7 @@
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
 	import { goto } from '$app/navigation';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { resourceLink } from '$lib/utils/links';
 	import {
 		Alert,
@@ -68,7 +69,8 @@
 	{/each}
 {/if}
 {#if $OpenSearch.data}
-	{@const os = $OpenSearch.data.team.openSearchInstances}
+	{@const team = $OpenSearch.data.team}
+	{@const os = team.openSearchInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -81,14 +83,7 @@
 						<HelpText title="">Total OpenSearch cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						<!--
-						{#if team.openSearch.metrics.cost !== PendingValue}
-							€{Math.round(team.openSearch.metrics.cost)}
-						{:else}
-							<Skeleton variant="text" />
-						{/if}
-						-->
-						No cost for you
+						{euroValueFormatter(team.cost.daily.sum)}
 					</p>
 				</div>
 			</div>

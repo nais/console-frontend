@@ -1,6 +1,10 @@
-query Redis($team: Slug!, $orderBy: RedisInstanceOrder) {
+query Redis($team: Slug!, $orderBy: RedisInstanceOrder, $from: Date!, $to: Date!) {
 	team(slug: $team) {
-		id
+		cost {
+			daily(from: $from, to: $to, filter: { services: ["Redis"] }) {
+				sum
+			}
+		}
 		redisInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
@@ -12,7 +16,6 @@ query Redis($team: Slug!, $orderBy: RedisInstanceOrder) {
 
 			edges {
 				node {
-					id
 					name
 					environment {
 						name
