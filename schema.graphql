@@ -2710,6 +2710,9 @@ type Team implements Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filtering options for items returned from the connection."""
+    filter: TeamApplicationsFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -3017,6 +3020,7 @@ type Team implements Node {
     """Ordering options for items returned from the connection."""
     orderBy: SecretOrder
   ): SecretConnection!
+  serviceUtilization: TeamServiceUtilization!
 
   """Main Slack channel for the team."""
   slackChannel: String!
@@ -3079,6 +3083,10 @@ type Team implements Node {
     """Ordering options for items returned from the connection."""
     orderBy: WorkloadOrder
   ): WorkloadConnection!
+}
+
+input TeamApplicationsFilter {
+  name: String!
 }
 
 type TeamConfirmDeleteKeyAuditEntry implements AuditEntry & Node {
@@ -3629,6 +3637,34 @@ enum TeamOrderField {
 input TeamRepositoryFilter {
   """Filter by repository name containing the phrase."""
   name: String
+}
+
+type TeamServiceUtilization {
+  sqlInstances: TeamServiceUtilizationSqlInstances!
+}
+
+type TeamServiceUtilizationSqlInstances {
+  cpu: TeamServiceUtilizationSqlInstancesCPU!
+  disk: TeamServiceUtilizationSqlInstancesDisk!
+  memory: TeamServiceUtilizationSqlInstancesMemory!
+}
+
+type TeamServiceUtilizationSqlInstancesCPU {
+  requested: Float!
+  used: Float!
+  utilization: Float!
+}
+
+type TeamServiceUtilizationSqlInstancesDisk {
+  requested: Int!
+  used: Int!
+  utilization: Float!
+}
+
+type TeamServiceUtilizationSqlInstancesMemory {
+  requested: Int!
+  used: Int!
+  utilization: Float!
 }
 
 type TeamUpdatedAuditEntry implements AuditEntry & Node {

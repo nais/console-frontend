@@ -5,6 +5,22 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				sum
 			}
 		}
+		serviceUtilization {
+			sqlInstances {
+				cpu {
+					requested
+					utilization
+				}
+				disk {
+					requested
+					utilization
+				}
+				memory {
+					requested
+					utilization
+				}
+			}
+		}
 		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage

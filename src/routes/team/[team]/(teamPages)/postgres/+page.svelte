@@ -24,6 +24,7 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 
+	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import prettyBytes from 'pretty-bytes';
 	import { get } from 'svelte/store';
@@ -76,6 +77,7 @@
 {#if $SqlInstances.data}
 	{@const team = $SqlInstances.data.team}
 	{@const instances = team.sqlInstances}
+	{@const metrics = team.serviceUtilization.sqlInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -96,27 +98,18 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<!--{#if metrics.cost === PendingValue}
-						<Skeleton height={'50px'} width={'50px'} variant="circle" />
-					{:else}
-						<CircleProgressBar progress={metrics.cpu.utilization / 100} />
-					{/if}-->
-					TODO: Implement CPU
+					<CircleProgressBar progress={metrics.cpu.utilization} />
 				</div>
 				<div class="summary">
 					<h4>
 						CPU utilization
-						<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour.
+						<HelpText title="Current CPU utilization">
+							CPU utilization for the last elapsed hour.
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{#if metrics.cost === PendingValue}
-							<Skeleton variant="text" />
-						{:else}
-							{metrics.cpu.utilization.toFixed(1)}% of {metrics.cpu.cores.toLocaleString()} core(s)
-						{/if}-->
-						TODO: Implement CPU
+						{(metrics.cpu.utilization * 100).toFixed(1)}% of
+						{metrics.cpu.requested.toFixed(0)} core(s)
 					</p>
 				</div>
 			</div>
@@ -124,12 +117,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<!--{#if metrics.cost === PendingValue}
-						<Skeleton height={'50px'} width={'50px'} variant="circle" />
-					{:else}
-						<CircleProgressBar progress={metrics.memory.utilization / 100} />
-					{/if}-->
-					TODO: Implement memory
+					<CircleProgressBar progress={metrics.memory.utilization} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -139,12 +127,8 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{#if metrics.cost === PendingValue}
-							<Skeleton variant="text" />
-						{:else}
-							{metrics.memory.utilization.toFixed(1)}% of {prettyBytes(metrics.memory.quotaBytes)}
-						{/if}-->
-						TODO: Implement memory
+						{(metrics.memory.utilization * 100).toFixed(1)}% of
+						{prettyBytes(metrics.memory.requested)}
 					</p>
 				</div>
 			</div>
@@ -152,12 +136,7 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<!--{#if metrics.cost === PendingValue}
-						<Skeleton height={'50px'} width={'50px'} variant="circle" />
-					{:else}
-						<CircleProgressBar progress={metrics.disk.utilization / 100} />
-					{/if}-->
-					TODO: Implement disk
+					<CircleProgressBar progress={metrics.disk.utilization} />
 				</div>
 				<div class="summary">
 					<h4>
@@ -167,12 +146,8 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						<!--{#if metrics.cost === PendingValue}
-							<Skeleton variant="text" />
-						{:else}
-							{metrics.disk.utilization.toFixed(1)}% of {prettyBytes(metrics.disk.quotaBytes)}
-						{/if}-->
-						TODO: Implement disk
+						{(metrics.disk.utilization * 100).toFixed(1)}% of
+						{prettyBytes(metrics.disk.requested)}
 					</p>
 				</div>
 			</div>
