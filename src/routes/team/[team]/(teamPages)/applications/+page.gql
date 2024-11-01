@@ -1,7 +1,8 @@
-query Workloads($team: Slug!, $orderBy: ApplicationOrder) @cache(policy: NetworkOnly) {
+query Applications($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter)
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		id
-		applications(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+		applications(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage

@@ -1,8 +1,7 @@
-query Jobs($team: Slug!, $orderBy: JobOrder = { field: NAME, direction: DESC })
-@cache(policy: NetworkOnly) {
+query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		id
-		jobs(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+		jobs(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount
 				endCursor

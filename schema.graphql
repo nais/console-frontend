@@ -2870,6 +2870,9 @@ type Team implements Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filtering options for items returned from the connection."""
+    filter: TeamJobsFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -3425,6 +3428,10 @@ type TeamInventoryCounts {
   openSearchInstances: TeamInventoryCountOpenSearchInstances!
   redisInstances: TeamInventoryCountRedisInstances!
   sqlInstances: TeamInventoryCountSqlInstances!
+}
+
+input TeamJobsFilter {
+  name: String!
 }
 
 type TeamMember {

@@ -5,13 +5,57 @@
 	import Card from '$lib/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Table,
+		Tbody,
+		Td,
+		TextField,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
 	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Jobs } = data);
+
+	let filter = '';
+
+	const handleFilter = () => {
+		if (filter === '') {
+			$page.url.searchParams.delete('filter');
+		} else {
+			$page.url.searchParams.set('filter', filter);
+		}
+		history.replaceState({}, '', $page.url.toString());
+		Jobs.fetch({ variables: { team: teamName, filter: { name: filter } } });
+	};
+
+	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+
+	const onKeyUp = (e: KeyboardEvent) => {
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+		}
+
+		if (e.key === 'Enter') {
+			handleFilter();
+			return;
+		} else if (e.key === 'Escape') {
+			filter = '';
+			handleFilter();
+			return;
+		}
+
+		searchTimeout = setTimeout(() => {
+			handleFilter();
+		}, 1000);
+	};
 
 	$: tableSort = {
 		orderBy: $Jobs.variables?.orderBy?.field,
@@ -53,6 +97,18 @@
 {#if $Jobs.data}
 	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>
+		<form class="input">
+			<TextField
+				size="small"
+				type="text"
+				id="filter"
+				style="width: 300px;"
+				bind:value={filter}
+				on:keyup={onKeyUp}
+			>
+				<svelte:fragment slot="label">Filter jobs on name</svelte:fragment>
+			</TextField>
+		</form>
 		<Table
 			zebraStripes
 			size="small"
@@ -105,6 +161,40 @@
 				{/if}
 			</Tbody>
 		</Table>
+		{#if $Jobs.data?.team.jobs.pageInfo.hasPreviousPage || $Jobs.data?.team.jobs.pageInfo.hasNextPage}
+			<div class="pagination">
+				<span>
+					{#if $Jobs.data.team.jobs.pageInfo.pageStart !== $Jobs.data.team.jobs.pageInfo.pageEnd}
+						{$Jobs.data.team.jobs.pageInfo.pageStart} - {$Jobs.data.team.jobs.pageInfo.pageEnd}
+					{:else}
+						{$Jobs.data.team.jobs.pageInfo.pageStart}
+					{/if}
+
+					of {$Jobs.data.team.jobs.pageInfo.totalCount}
+				</span>
+
+				<span style="padding-left: 1rem;">
+					<Button
+						size="small"
+						variant="secondary"
+						disabled={!$Jobs.data.team.jobs.pageInfo.hasPreviousPage}
+						on:click={async () => {
+							return await Jobs.loadPreviousPage();
+						}}><ChevronLeftIcon /></Button
+					>
+					<Button
+						size="small"
+						variant="secondary"
+						disabled={!$Jobs.data.team.jobs.pageInfo.hasNextPage}
+						on:click={async () => {
+							return await Jobs.loadNextPage();
+						}}
+					>
+						<ChevronRightIcon /></Button
+					>
+				</span>
+			</div>
+		{/if}
 	</Card>
 	<!--ActivityLog {teamName} resourceType={AuditEventResourceType.NAISJOB} columns={12} /> TODO: Fjernes? -->
 {/if}
@@ -115,5 +205,13 @@
 		align-items: center;
 		justify-content: center;
 		line-height: 0.6;
+	}
+	.pagination {
+		text-align: right;
+		padding: 0.5rem;
+	}
+	.input {
+		font-size: 1rem;
+		margin: 1rem 0;
 	}
 </style>

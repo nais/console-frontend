@@ -208,7 +208,7 @@
 	{#if team}
 		<!--
 		{#key team}
-			<ActivityLog teamName={team.slug} style="margin-top: 1rem" />
+			<ActivityLog teamName={team.slug} style="margin-top: 1rem" /> //TODO: Fjernes?
 		{/key}
 		-->
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
