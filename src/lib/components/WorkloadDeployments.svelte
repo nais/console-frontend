@@ -20,28 +20,29 @@
 				}
 				deploymentInfo {
 					history {
-						edges {
-							node {
-								resources {
-									group
-									kind
-									name
-									version
-								}
-								statuses {
-									status
-									message
-									created
-								}
-								created
-								repository
+						nodes {
+							resources {
+								group
+								kind
+								name
+								version
 							}
+							statuses {
+								status
+								message
+								created
+							}
+							created
+							repository
 						}
 					}
 				}
 			}
 		`)
 	);
+	$: deploysOrderedByDate = $data.deploymentInfo.history.nodes.sort((a, b) => {
+		return new Date(b.created).getTime() - new Date(a.created).getTime();
+	});
 </script>
 
 <h4>Deployments - {$data.environment.name}/{$data.name}</h4>
@@ -55,12 +56,12 @@
 			<Th>Status</Th>
 		</Thead>
 		<Tbody>
-			{#each $data.deploymentInfo.history.edges as edge}
+			{#each deploysOrderedByDate as deploy}
 				<Tr>
 					<Td>{$data.team.slug}</Td>
 					<Td>{$data.environment.name}</Td>
 					<Td>
-						{#each edge.node.resources as resource}
+						{#each deploy.resources as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
 								<a
@@ -78,12 +79,12 @@
 							<br />
 						{/each}
 					</Td>
-					<Td><Time time={edge.node.created} distance={true} /></Td>
+					<Td><Time time={deploy.created} distance={true} /></Td>
 					<Td>
-						{#if edge.node.statuses.length === 0}
+						{#if deploy.statuses.length === 0}
 							<DeploymentStatus status={'unknown'} />
 						{:else}
-							<DeploymentStatus status={edge.node.statuses[0].status} />
+							<DeploymentStatus status={deploy.statuses[0].status} />
 						{/if}
 					</Td>
 				</Tr>

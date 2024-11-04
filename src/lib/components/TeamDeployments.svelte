@@ -36,6 +36,9 @@
 			}
 		`)
 	);
+	$: deploysOrderedByDate = $data.deployments.nodes.sort((a, b) => {
+		return new Date(b.created).getTime() - new Date(a.created).getTime();
+	});
 </script>
 
 <h4>Deployments</h4>
@@ -49,22 +52,24 @@
 			<Th>Status</Th>
 		</Thead>
 		<Tbody>
-			{#each $data.deployments.nodes as node}
+			{#each deploysOrderedByDate as deploy}
 				<Tr>
-					<Td>{node.team.slug}</Td>
+					<Td>{deploy.team.slug}</Td>
 					<Td>
-						{node.environment.name}
+						{deploy.environment.name}
 					</Td>
 					<Td
-						>{#each node.resources as resource}
+						>{#each deploy.resources as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
-								<a href="/team/{node.team.slug}/{node.environment.name}/app/{resource.name}/deploys"
-									>{resource.name}</a
+								<a
+									href="/team/{deploy.team.slug}/{deploy.environment
+										.name}/app/{resource.name}/deploys">{resource.name}</a
 								>
 							{:else if resource.kind === 'Job'}
-								<a href="/team/{node.team.slug}/{node.environment.name}/job/{resource.name}/deploys"
-									>{resource.name}</a
+								<a
+									href="/team/{deploy.team.slug}/{deploy.environment
+										.name}/job/{resource.name}/deploys">{resource.name}</a
 								>
 							{:else}
 								{resource.name}
@@ -72,12 +77,12 @@
 							<br />
 						{/each}</Td
 					>
-					<Td><Time time={node.created} distance={true} /></Td>
+					<Td><Time time={deploy.created} distance={true} /></Td>
 
 					<Td
-						>{#if node.statuses.length === 0}<DeploymentStatus
+						>{#if deploy.statuses.length === 0}<DeploymentStatus
 								status={'unknown'}
-							/>{:else}<DeploymentStatus status={node.statuses[0].status} />{/if}</Td
+							/>{:else}<DeploymentStatus status={deploy.statuses[0].status} />{/if}</Td
 					>
 				</Tr>
 			{/each}
