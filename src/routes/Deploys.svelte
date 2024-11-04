@@ -72,9 +72,9 @@
 	<Table size="small" zebraStripes>
 		<Thead>
 			<Th>Team</Th>
-			<Th>App</Th>
-			<Th>Env</Th>
-			<Th>When</Th>
+			<Th>Workload</Th>
+			<Th>Environment</Th>
+			<Th>Created</Th>
 		</Thead>
 		<Tbody>
 			{#each sortTeamDeploys($store.data.me) as deploy}
@@ -92,7 +92,7 @@
 							<a href="/team/{deploy.team.slug}">{deploy.team.slug}</a>
 						</Td>
 						<Td>
-							{#if deploy.resources[0].kind === 'Naisjob'}
+							{#if deploy.resources[0].kind === 'Job'}
 								<a
 									href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{deploy.resources[0]
 										.name}"
