@@ -61,18 +61,18 @@
 </script>
 
 {#if $DeleteJobPage?.data?.team.environment.job}
-	{@const naisjob = $DeleteJobPage?.data?.team.environment.job}
+	{@const job = $DeleteJobPage?.data?.team.environment.job}
 	<Card borderColor="var(--a-border-danger)">
-		<h3>Delete {naisjob.name}</h3>
+		<h3>Delete {job.name}</h3>
 
-		{#if hasResourcesToDelete(naisjob)}
+		{#if hasResourcesToDelete(job)}
 			<p>
 				In addition to the application the following resources
 				<strong>will be permanently deleted</strong>:
 			</p>
 		{/if}
 		<div>
-			{#each naisjob.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
 				<PersistenceList persistence={node}>
 					This will be deleted because <code>cascadingDelete</code>
 					is set to
@@ -80,7 +80,7 @@
 					in the manifest.
 				</PersistenceList>
 			{/each}
-			{#each naisjob.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
 				<PersistenceList persistence={node}>
 					This will be deleted because <code>cascadingDelete</code>
 					is set to
@@ -88,13 +88,13 @@
 					in the manifest.
 				</PersistenceList>
 			{/each}
-			{#each naisjob.buckets.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node}
 				<PersistenceList persistence={node}
 					>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
 					manifest.
 				</PersistenceList>
 			{/each}
-			{#each naisjob.redisInstances.nodes as node}
+			{#each job.redisInstances.nodes as node}
 				<PersistenceList persistence={node}
 					>If this Redis instance is defined on team level, it won't be deleted. If it's created by
 					the app, it will be permanently deleted.
@@ -102,7 +102,7 @@
 			{/each}
 		</div>
 
-		{#if hasOrphans(naisjob)}
+		{#if hasOrphans(job)}
 			<br />
 			<div>
 				In addition to deleting the application the following resources <strong
@@ -114,19 +114,19 @@
 				</HelpText>
 			</div>
 			<div>
-				{#each naisjob.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each job.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
-				{#each naisjob.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
-				{#each naisjob.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
 					<PersistenceList persistence={node} />
 				{/each}
 			</div>
 		{/if}
 
-		{@const expected = naisjob.environment.name + '/' + naisjob.name}
+		{@const expected = job.environment.name + '/' + job.name}
 		<p>
 			Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 			<em>Delete</em>
