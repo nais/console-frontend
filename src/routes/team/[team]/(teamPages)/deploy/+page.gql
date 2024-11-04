@@ -1,6 +1,6 @@
 query TeamDeployments($team: Slug!) {
 	team(slug: $team) {
-		deployments(first: 20) @paginate(mode: SinglePage) {
+		deployments {
 			pageInfo {
 				totalCount
 				hasNextPage

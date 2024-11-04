@@ -3,8 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Status from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -41,7 +40,7 @@
 									<a href="/team/{team}/{edge.node.environment.name}/app/{resource.name}"
 										>{resource.name}</a
 									>
-								{:else if resource.kind === 'Naisjob'}
+								{:else if resource.kind === 'Job'}
 									<a href="/team/{team}/{edge.node.environment.name}/job/{resource.name}"
 										>{resource.name}</a
 									>
@@ -64,39 +63,5 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if d.pageInfo.hasPreviousPage || d.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if d.pageInfo.pageStart !== d.pageInfo.pageEnd}
-						{d.pageInfo.pageStart} - {d.pageInfo.pageEnd}
-					{:else}
-						{d.pageInfo.pageStart}
-					{/if}
-
-					of {d.pageInfo.totalCount}
-				</span>
-
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!d.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await TeamDeployments.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!d.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await TeamDeployments.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
-		{/if}
 	</Card>
 {/if}
