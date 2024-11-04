@@ -18,10 +18,13 @@
 		resourceName: string
 	) => {
 		switch (resourceType) {
+			//TODO: Her mangler nok noen audit resource types fra backend.
 			/*case AuditResourceType.APP:
 				return `/team/${teamName}/${env.name}/app/${resourceName}`;
 			case AuditResourceType.NAISJOB:
 				return `/team/${teamName}/${env.name}/job/${resourceName}`;*/
+			case AuditResourceType.UNLEASH:
+				return `/team/${teamName}/unleash`;
 			case AuditResourceType.SECRET:
 				return `/team/${teamName}/${environmentName}/secret/${resourceName}`;
 			case AuditResourceType.TEAM:
