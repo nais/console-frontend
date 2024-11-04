@@ -1,0 +1,5 @@
+query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		...TeamDeploymentsNew
+	}
+}

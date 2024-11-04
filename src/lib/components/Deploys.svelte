@@ -1,77 +1,69 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-
+	import { fragment, graphql, type TeamDeploymentsNew } from '$houdini';
+	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import type { TeamDeploysVariables } from './$houdini';
-	import DeploymentStatus from './DeploymentStatus.svelte';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	export let teamName: string;
+	export let team: TeamDeploymentsNew;
 
-	export const _TeamDeploysVariables: TeamDeploysVariables = () => {
-		return { team: teamName };
-	};
-
-	const store = graphql(`
-		query TeamDeploys($team: Slug!) @load {
-			team(slug: $team) {
-				deployments(first: 20) {
-					pageInfo {
-						totalCount
-					}
-					edges {
-						node {
-							statuses {
-								status
-								message
-								created
-							}
-							resources {
-								group
-								kind
-								name
-								version
-								namespace
-							}
-							environment {
-								name
-							}
+	$: data = fragment(
+		team,
+		graphql(`
+			fragment TeamDeploymentsNew on Team {
+				deployments {
+					nodes {
+						statuses {
+							status
+							message
 							created
+						}
+						resources {
+							group
+							kind
+							name
+							version
+							namespace
+						}
+						environment {
+							name
+						}
+						created
+						team {
+							slug
 						}
 					}
 				}
 			}
-		}
-	`);
+		`)
+	);
 </script>
 
-{#if $store.errors !== null}
-	<Alert variant="error">
-		{#each $store.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
-{#if $store.data !== null}
+<h4>Deployments</h4>
+{#if $data !== null}
 	<Table size="small" zebraStripes>
 		<Thead>
+			<Th>Team</Th>
+			<Th>Environment</Th>
 			<Th>Resource(s)</Th>
 			<Th>Created</Th>
-			<Th>Cluster</Th>
 			<Th>Status</Th>
 		</Thead>
 		<Tbody>
-			{#each $store.data.team.deployments.edges as edge}
+			{#each $data.deployments.nodes as node}
 				<Tr>
+					<Td>{node.team.slug}</Td>
+					<Td>
+						{node.environment.name}
+					</Td>
 					<Td
-						>{#each edge.node.resources as resource}
+						>{#each node.resources as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
-								<a href="/team/{teamName}/{edge.node.environment.name}/app/{resource.name}/deploys"
+								<a href="/team/{node.team.slug}/{node.environment.name}/app/{resource.name}/deploys"
 									>{resource.name}</a
 								>
-							{:else if resource.kind === 'Naisjob'}
-								<a href="/team/{teamName}/{edge.node.environment.name}/job/{resource.name}/deploys"
+							{:else if resource.kind === 'Job'}
+								<a href="/team/{node.team.slug}/{node.environment.name}/job/{resource.name}/deploys"
 									>{resource.name}</a
 								>
 							{:else}
@@ -80,15 +72,12 @@
 							<br />
 						{/each}</Td
 					>
-					<Td><Time time={edge.node.created} distance={true} /></Td>
-					<Td>
-						{edge.node.environment.name}
-					</Td>
+					<Td><Time time={node.created} distance={true} /></Td>
 
 					<Td
-						>{#if edge.node.statuses.length === 0}<DeploymentStatus
+						>{#if node.statuses.length === 0}<DeploymentStatus
 								status={'unknown'}
-							/>{:else}<DeploymentStatus status={edge.node.statuses[0].status} />{/if}</Td
+							/>{:else}<DeploymentStatus status={node.statuses[0].status} />{/if}</Td
 					>
 				</Tr>
 			{/each}

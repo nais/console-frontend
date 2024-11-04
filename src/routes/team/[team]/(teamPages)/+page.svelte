@@ -8,6 +8,11 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 
+	import type { PageData } from './$houdini';
+
+	export let data: PageData;
+	$: ({ TeamOverview } = data);
+
 	$: teamName = $page.params.team;
 </script>
 
@@ -36,9 +41,9 @@
 	</Card>
 
 	<Card rows={1} columns={12}>
-		<h4>Deployments</h4>
-
-		<Deploys {teamName} />
+		{#if $TeamOverview.data}
+			<Deploys team={$TeamOverview.data.team} />
+		{/if}
 	</Card>
 </div>
 

@@ -1,35 +1,5 @@
 query TeamDeployments($team: Slug!) {
 	team(slug: $team) {
-		deployments {
-			pageInfo {
-				totalCount
-				hasNextPage
-				hasPreviousPage
-				pageStart
-				pageEnd
-			}
-			edges {
-				node {
-					id
-					created
-					environment {
-						name
-					}
-					repository
-					resources {
-						group
-						kind
-						version
-						name
-						namespace
-					}
-					statuses {
-						created
-						message
-						status
-					}
-				}
-			}
-		}
+		...TeamDeploymentsNew
 	}
 }
