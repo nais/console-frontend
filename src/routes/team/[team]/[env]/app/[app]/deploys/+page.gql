@@ -1,28 +1,8 @@
 query AppDeploys($app: String!, $team: Slug!, $env: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
-			application(name: $app) {
-				deploymentInfo {
-					history(first: 20) {
-						edges {
-							node {
-								resources {
-									group
-									kind
-									name
-									version
-								}
-								statuses {
-									status
-									message
-									created
-								}
-								created
-								repository
-							}
-						}
-					}
-				}
+			workload(name: $app) {
+				...WorkloadDeployments
 			}
 		}
 	}

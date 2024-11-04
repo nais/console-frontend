@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import AggregatedTeamCost from '$lib/components/AggregatedTeamCost.svelte';
-	import Deploys from '$lib/components/Deploys.svelte';
+	import Deploys from '$lib/components/TeamDeployments.svelte';
 	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';

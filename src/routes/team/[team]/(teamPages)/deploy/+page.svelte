@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import Deploys from '$lib/components/Deploys.svelte';
+	import Deploys from '$lib/components/TeamDeployments.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
