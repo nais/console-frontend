@@ -1,5 +1,4 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -13,8 +12,6 @@
 
 	export let data: PageData;
 	$: ({ Bucket } = data);
-
-	$: teamName = $page.params.team;
 </script>
 
 <div class="grid">

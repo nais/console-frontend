@@ -1,5 +1,4 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -26,7 +25,6 @@
 
 	export let data: PageData;
 	$: ({ BigQueryDataset: BigQueryDatasetInstance } = data);
-	$: teamName = $page.params.team;
 </script>
 
 {#if $BigQueryDatasetInstance.errors}
