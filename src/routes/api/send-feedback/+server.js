@@ -13,7 +13,9 @@ export async function POST(event) {
 
 	const q = new ServerGetUserStore();
 	const { data } = await q.fetch({ event });
-
+	if (data?.me.__typename !== 'User') {
+		return json({ error: 'Not authenticated' }, { status: 401 });
+	}
 	if (!data?.me.email) {
 		return json({ error: 'Not authenticated' }, { status: 401 });
 	}

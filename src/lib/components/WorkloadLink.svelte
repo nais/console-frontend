@@ -2,12 +2,17 @@
 	export let workload: {
 		readonly name: string;
 		readonly __typename: string | null;
+		readonly environment: {
+			readonly name: string;
+		};
+		readonly team: {
+			readonly slug: string;
+		};
 	};
-
-	export let team: string;
-	export let env: string;
 </script>
 
-<a href="/team/{team}/{env}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
-	>{workload.name}</a
+<a
+	href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename === 'Job'
+		? 'job'
+		: 'app'}/{workload.name}">{workload.name}</a
 >

@@ -117,11 +117,7 @@
 						</Td>
 						<Td>
 							{#if edge.node.workload}
-								<WorkloadLink
-									workload={edge.node.workload}
-									env={edge.node.environment.name}
-									team={teamName}
-								/>
+								<WorkloadLink workload={edge.node.workload} />
 							{:else}
 								<div class="inline">
 									<i>No owner</i>

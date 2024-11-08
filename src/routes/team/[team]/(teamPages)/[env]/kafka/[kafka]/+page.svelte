@@ -89,11 +89,7 @@
 								{#if edge.node.workloadName === '*'}
 									All workloads
 								{:else if edge.node.workload}
-									<WorkloadLink
-										workload={edge.node.workload}
-										team={edge.node.teamName}
-										env={edge.node.workload.environment.name}
-									/>
+									<WorkloadLink workload={edge.node.workload} />
 								{:else}
 									<div class="workloadNotFound">
 										<ExclamationmarkTriangleFillIcon

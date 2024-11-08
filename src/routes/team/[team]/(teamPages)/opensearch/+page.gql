@@ -22,6 +22,12 @@ query OpenSearch($team: Slug!, $orderBy: OpenSearchOrder, $from: Date!, $to: Dat
 					workload {
 						__typename
 						name
+						environment {
+							name
+						}
+						team {
+							slug
+						}
 					}
 				}
 			}

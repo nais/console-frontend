@@ -50,7 +50,7 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
 				{#if bq.workload}
-					<WorkloadLink workload={bq.workload} env={bq.environment.name} team={teamName} />
+					<WorkloadLink workload={bq.workload} />
 				{:else}
 					<div class="inline">
 						<i>No owner</i>

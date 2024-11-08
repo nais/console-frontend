@@ -1,0 +1,51 @@
+query TeamVulnerabilities($team: Slug!, $orderBy: WorkloadOrder, $filter: TeamWorkloadsFilter) {
+	team(slug: $team) {
+		environments {
+			name
+		}
+		vulnerabilitySummary {
+			bomCount
+			coverage
+			critical
+			high
+			low
+			medium
+			ranking
+			riskScore
+			riskScoreTrend
+			unassigned
+		}
+		workloads(first: 10, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+			pageInfo {
+				totalCount
+				pageStart
+				pageEnd
+				hasNextPage
+				hasPreviousPage
+			}
+			nodes {
+				__typename
+				name
+				environment {
+					name
+				}
+				team {
+					slug
+				}
+				image {
+					name
+					tag
+					hasSBOM
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+					}
+				}
+			}
+		}
+	}
+}

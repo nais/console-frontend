@@ -22,6 +22,12 @@ query Buckets($team: Slug!, $orderBy: BucketOrder, $from: Date!, $to: Date!) {
 					workload {
 						__typename
 						name
+						environment {
+							name
+						}
+						team {
+							slug
+						}
 					}
 				}
 			}

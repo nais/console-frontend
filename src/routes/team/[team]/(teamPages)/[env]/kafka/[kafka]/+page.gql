@@ -46,6 +46,9 @@ query KafkaTopic(
 								}
 								name
 								__typename
+								team {
+									slug
+								}
 							}
 						}
 					}

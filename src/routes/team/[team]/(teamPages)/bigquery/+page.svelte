@@ -90,11 +90,7 @@
 						</Td>
 						<Td>
 							{#if edge.node.workload}
-								<WorkloadLink
-									workload={edge.node.workload}
-									env={edge.node.environment.name}
-									team={teamName}
-								/>
+								<WorkloadLink workload={edge.node.workload} />
 							{:else}
 								<em>No owner</em>
 							{/if}

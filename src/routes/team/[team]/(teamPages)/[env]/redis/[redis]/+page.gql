@@ -18,6 +18,12 @@ query RedisInstance(
 				workload {
 					name
 					__typename
+					environment {
+						name
+					}
+					team {
+						slug
+					}
 				}
 				access(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
 					pageInfo {
@@ -37,6 +43,9 @@ query RedisInstance(
 									name
 								}
 								__typename
+								team {
+									slug
+								}
 							}
 						}
 					}

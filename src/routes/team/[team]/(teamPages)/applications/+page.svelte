@@ -26,7 +26,7 @@
 	$: teamName = $page.params.team;
 	$: ({ Applications } = data);
 
-	let filter = '';
+	let filter: string = '';
 
 	const handleFilter = () => {
 		if (filter === '') {

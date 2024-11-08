@@ -117,11 +117,7 @@
 						</Td>
 						<Td>
 							{#if edge.node.workload}
-								<WorkloadLink
-									workload={edge.node.workload}
-									team={teamName}
-									env={edge.node.environment.name}
-								/>
+								<WorkloadLink workload={edge.node.workload} />
 							{:else}
 								<em title="The Redis instance is owned by the team">Team</em>
 							{/if}

@@ -14,9 +14,6 @@
 	export let data: PageData;
 	$: ({ OpenSearchInstance } = data);
 
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
-
 	$: tableSort = {
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
 		direction: $OpenSearchInstance.variables?.orderBy?.direction
@@ -61,7 +58,7 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
 				{#if os.workload}
-					<WorkloadLink workload={os.workload} env={os.environment.name} team={teamName} />
+					<WorkloadLink workload={os.workload} />
 				{:else}
 					<div class="inline">
 						<i>This OpenSearch instance does not belong to any workload</i>
@@ -91,7 +88,7 @@
 							{@const access = edge.node}
 							<Tr>
 								<Td>
-									<WorkloadLink workload={access.workload} env={envName} team={teamName} />
+									<WorkloadLink workload={access.workload} />
 								</Td>
 								<Td><code>{access.access}</code></Td>
 								<Td>{access.workload.__typename}</Td>

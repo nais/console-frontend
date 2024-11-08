@@ -44,11 +44,7 @@
 					<dt>Owner</dt>
 					<dd>
 						{#if bucket.workload}
-							<WorkloadLink
-								workload={bucket.workload}
-								env={bucket.environment.name}
-								team={teamName}
-							/>
+							<WorkloadLink workload={bucket.workload} />
 						{:else}
 							<div class="inline">
 								<i>No owner</i>

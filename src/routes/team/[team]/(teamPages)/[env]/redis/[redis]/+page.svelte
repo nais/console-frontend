@@ -14,9 +14,6 @@
 	export let data: PageData;
 	$: ({ RedisInstance } = data);
 
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
-
 	$: tableSort = {
 		orderBy: $RedisInstance.variables?.orderBy?.field,
 		direction: $RedisInstance.variables?.orderBy?.direction
@@ -62,11 +59,7 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
 				{#if redisInstance.workload}
-					<WorkloadLink
-						workload={redisInstance.workload}
-						env={redisInstance.environment.name}
-						team={teamName}
-					/>
+					<WorkloadLink workload={redisInstance.workload} />
 				{:else}
 					<div class="inline">
 						<i>This Redis instance does not belong to any workload</i>
@@ -95,7 +88,7 @@
 						{@const access = edge.node}
 						<Tr>
 							<Td>
-								<WorkloadLink workload={access.workload} env={envName} team={teamName} />
+								<WorkloadLink workload={access.workload} />
 							</Td>
 							<Td>{access.access}</Td>
 

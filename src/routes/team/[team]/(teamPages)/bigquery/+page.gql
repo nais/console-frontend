@@ -17,6 +17,12 @@ query BigQuery($team: Slug!, $orderBy: BigQueryDatasetOrder) {
 					workload {
 						__typename
 						name
+						environment {
+							name
+						}
+						team {
+							slug
+						}
 					}
 				}
 			}

@@ -21,8 +21,14 @@ query Redis($team: Slug!, $orderBy: RedisInstanceOrder, $from: Date!, $to: Date!
 						name
 					}
 					workload {
-						name
 						__typename
+						name
+						environment {
+							name
+						}
+						team {
+							slug
+						}
 					}
 				}
 			}

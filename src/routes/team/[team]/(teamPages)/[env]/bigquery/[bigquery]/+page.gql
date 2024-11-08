@@ -20,6 +20,12 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 				workload {
 					name
 					__typename
+					environment {
+						name
+					}
+					team {
+						slug
+					}
 				}
 				access {
 					edges {

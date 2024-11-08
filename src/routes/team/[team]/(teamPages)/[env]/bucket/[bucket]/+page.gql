@@ -19,6 +19,12 @@ query Bucket($team: Slug!, $name: String!, $environment: String!) {
 				workload {
 					name
 					__typename
+					environment {
+						name
+					}
+					team {
+						slug
+					}
 				}
 			}
 		}

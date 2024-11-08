@@ -29,8 +29,6 @@
 	export let data: PageData;
 	$: ({ SqlInstance } = data);
 	$: instance = $SqlInstance.data?.team.environment.sqlInstance;
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
 	$: postgres = $page.params.postgres;
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
@@ -150,7 +148,7 @@
 				</p>
 				<p>
 					{#if instance.workload}
-						<WorkloadLink workload={instance.workload} env={envName} team={teamName} />
+						<WorkloadLink workload={instance.workload} />
 					{:else}
 						<ExclamationmarkTriangleFillIcon
 							style="color: var(--a-icon-warning)"
