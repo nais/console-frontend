@@ -60,7 +60,11 @@ type AllowTeamAccessToUnleashPayload {
   unleash: UnleashInstance
 }
 
-"""TODO: write"""
+"""
+An application lets you run one or more instances of a container image on the [NAIS platform](https://nais.io/).
+
+Learn more about how to create and configure your applications in the [NAIS documentation](https://docs.nais.io/workloads/application/).
+"""
 type Application implements Node & Workload {
   """List of authentication and authorization for the application."""
   authIntegrations: [ApplicationAuthIntegrations!]!
@@ -102,6 +106,8 @@ type Application implements Node & Workload {
 
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
+
+  """The application instances."""
   instances(
     """Get items after this cursor."""
     after: Cursor
@@ -186,8 +192,10 @@ type Application implements Node & Workload {
   utilization: WorkloadUtilization!
 }
 
+"""Authentication integrations for the application."""
 union ApplicationAuthIntegrations = EntraIDAuthIntegration | IDPortenAuthIntegration | MaskinportenAuthIntegration | TokenXAuthIntegration
 
+"""Application connection."""
 type ApplicationConnection {
   """List of edges."""
   edges: [ApplicationEdge!]!
@@ -199,6 +207,7 @@ type ApplicationConnection {
   pageInfo: PageInfo!
 }
 
+"""Application edge."""
 type ApplicationEdge {
   """Cursor for this edge that can be used for pagination."""
   cursor: Cursor!
@@ -246,6 +255,7 @@ type ApplicationInstanceStatus {
   state: ApplicationInstanceState!
 }
 
+"""The manifest that describes the application."""
 type ApplicationManifest implements WorkloadManifest {
   """The manifest content, serialized as a YAML document."""
   content: String!
@@ -260,6 +270,7 @@ input ApplicationOrder {
   field: ApplicationOrderField!
 }
 
+"""Fields to order applications by."""
 enum ApplicationOrderField {
   """Order applications by the deployment time."""
   DEPLOYMENT_TIME
@@ -285,7 +296,7 @@ type ApplicationResources implements WorkloadResources {
   scaling: ApplicationScaling!
 }
 
-"""TODO: write"""
+"""The scaling configuration of an application."""
 type ApplicationScaling {
   """The maximum number of application instances."""
   maxInstances: Int!
@@ -297,6 +308,7 @@ type ApplicationScaling {
   strategies: [ScalingStrategy!]!
 }
 
+"""Interface for audit entries."""
 interface AuditEntry {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -325,6 +337,7 @@ interface AuditEntry {
   teamSlug: Slug
 }
 
+"""Audit entry connection."""
 type AuditEntryConnection {
   """List of edges."""
   edges: [AuditEntryEdge!]!
@@ -336,6 +349,7 @@ type AuditEntryConnection {
   pageInfo: PageInfo!
 }
 
+"""Audit entry edge."""
 type AuditEntryEdge {
   """Cursor for this edge that can be used for pagination."""
   cursor: Cursor!
@@ -351,19 +365,26 @@ enum AuditResourceType {
 
   """All audit entries related to teams will use this resource type."""
   TEAM
+
+  """Unknown type."""
   UNKNOWN
 
   """All audit entries related to unleash will use this resource type."""
   UNLEASH
 }
 
+"""
+Interface for authentication and authorization integrations.
+
+Read more about this topic in the [NAIS documentation](https://docs.nais.io/auth/).
+"""
 interface AuthIntegration {
   """The name of the integration."""
   name: String!
 }
 
-"""Authenticated user type. Can be a user or a service account."""
-union AuthenticatedUser = User
+"""Authenticated user type."""
+union AuthenticatedUser = ServiceAccount | User
 
 type BigQueryDataset implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: BigQueryDatasetAccessOrder): BigQueryDatasetAccessConnection!
@@ -516,6 +537,7 @@ type ConfirmTeamDeletionPayload {
   deletionStarted: Boolean
 }
 
+"""Container image."""
 type ContainerImage implements Node {
   """
   Whether the image has a software bill of materials (SBOM) attached to it.
@@ -818,6 +840,11 @@ type DeploymentStatus {
   status: String!
 }
 
+"""
+Entra ID (aka Azure AD) authentication.
+
+Read more: https://docs.nais.io/auth/entra-id/
+"""
 type EntraIDAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
@@ -838,6 +865,11 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
+"""
+ID-porten authentication.
+
+Read more: https://docs.nais.io/auth/idporten/
+"""
 type IDPortenAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
@@ -1417,6 +1449,11 @@ type KafkaTopicStatus {
   state: String!
 }
 
+"""
+Maskinporten authentication.
+
+Read more: https://docs.nais.io/auth/maskinporten/
+"""
 type MaskinportenAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
@@ -1490,7 +1527,10 @@ type Mutation {
   createUnleashForTeam(input: CreateUnleashInstanceInput!): CreateUnleashInstancePayload!
 
   """Delete an application."""
-  deleteApplication(input: DeleteApplicationInput!): DeleteApplicationPayload!
+  deleteApplication(
+    """Input for deleting an application."""
+    input: DeleteApplicationInput!
+  ): DeleteApplicationPayload!
 
   """Delete a job."""
   deleteJob(input: DeleteJobInput!): DeleteJobPayload!
@@ -1544,7 +1584,10 @@ type Mutation {
   requestTeamDeletion(input: RequestTeamDeletionInput!): RequestTeamDeletionPayload!
 
   """Restart an application."""
-  restartApplication(input: RestartApplicationInput!): RestartApplicationPayload!
+  restartApplication(
+    """Input for restarting an application."""
+    input: RestartApplicationInput!
+  ): RestartApplicationPayload!
 
   """
   Remove team from the list of teams that can access the Unleash instance.
@@ -1736,7 +1779,10 @@ type Query {
   me: AuthenticatedUser!
 
   """Fetch an object using its globally unique ID."""
-  node(id: ID!): Node
+  node(
+    """The ID of the object to fetch."""
+    id: ID!
+  ): Node
 
   """Get a collection of reconcilers."""
   reconcilers(
@@ -1756,12 +1802,16 @@ type Query {
     """
     last: Int
   ): ReconcilerConnection!
+
+  """Search for entities."""
   search(
     """Get items after this cursor."""
     after: Cursor
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filter the search results."""
     filter: SearchFilter!
 
     """
@@ -1802,7 +1852,10 @@ type Query {
   teamsUtilization(resourceType: UtilizationResourceType!): [TeamUtilizationData!]!
 
   """Get a user by its ID."""
-  user(id: ID!): User!
+  user(
+    """The ID of the user to get."""
+    id: ID!
+  ): User!
 
   """Get a list of users."""
   users(
@@ -2146,15 +2199,24 @@ type RevokeTeamAccessToUnleashPayload {
   unleash: UnleashInstance
 }
 
+"""Types of scaling strategies."""
 union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
 
+"""Search filter for filtering search results."""
 input SearchFilter {
+  """The query string."""
   query: String!
+
+  """
+  The type of entities to search for. If not specified, all types will be searched.
+  """
   type: SearchType
 }
 
+"""Types that can be searched for."""
 union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | RedisInstance | SqlInstance | Team
 
+"""Search node connection."""
 type SearchNodeConnection {
   """List of edges."""
   edges: [SearchNodeEdge!]!
@@ -2166,6 +2228,7 @@ type SearchNodeConnection {
   pageInfo: PageInfo!
 }
 
+"""Search node edge."""
 type SearchNodeEdge {
   """Cursor for this edge that can be used for pagination."""
   cursor: Cursor!
@@ -2174,7 +2237,9 @@ type SearchNodeEdge {
   node: SearchNode!
 }
 
+"""A list of possible search types."""
 enum SearchType {
+  """Search for applications."""
   APPLICATION
   BIGQUERY_DATASET
   BUCKET
@@ -2183,6 +2248,8 @@ enum SearchType {
   OPENSEARCH
   REDIS_INSTANCE
   SQL_INSTANCE
+
+  """Search for teams."""
   TEAM
 }
 
@@ -2483,6 +2550,19 @@ type SecretValueUpdatedAuditEntry implements AuditEntry & Node {
 type SecretValueUpdatedAuditEntryData {
   """The name of the updated value."""
   valueName: String!
+}
+
+"""
+Service account type.
+
+This is a work in progress, and will be changed in the future.
+"""
+type ServiceAccount implements Node {
+  """The globally unique ID of the service account."""
+  id: ID!
+
+  """The name of the service account."""
+  name: String!
 }
 
 type ServiceCostPoint {
@@ -3117,7 +3197,9 @@ type Team implements Node {
   ): WorkloadConnection!
 }
 
+"""Input for filtering the applications of a team."""
 input TeamApplicationsFilter {
+  """Filter by the name of the application."""
   name: String!
 }
 
@@ -3286,7 +3368,10 @@ type TeamEdge {
 
 type TeamEnvironment implements Node {
   """NAIS application in the team environment."""
-  application(name: String!): Application!
+  application(
+    """The name of the application."""
+    name: String!
+  ): Application!
 
   """BigQuery datasets in the team environment."""
   bigQueryDataset(name: String!): BigQueryDataset!
@@ -3331,7 +3416,10 @@ type TeamEnvironment implements Node {
   team: Team!
 
   """Workload in the team environment."""
-  workload(name: String!): Workload!
+  workload(
+    """The name of the workload to get."""
+    name: String!
+  ): Workload!
 }
 
 type TeamEnvironmentCost {
@@ -3402,8 +3490,12 @@ type TeamEnvironmentUpdatedAuditEntryDataUpdatedField {
   oldValue: String
 }
 
+"""Application inventory count for a team."""
 type TeamInventoryCountApplications {
-  """Number of applications considered not nais."""
+  """
+  Number of applications considered "not nais". When an application is considered "not nais", it means that the
+  application might not be working as expected, or that it is not following the NAIS guidelines.
+  """
   notNais: Int!
 
   """Total number of applications."""
@@ -3449,6 +3541,7 @@ type TeamInventoryCountSqlInstances {
 }
 
 type TeamInventoryCounts {
+  """Application inventory count for a team."""
   applications: TeamInventoryCountApplications!
   bigQueryDatasets: TeamInventoryCountBigQueryDatasets!
   buckets: TeamInventoryCountBuckets!
@@ -3829,6 +3922,7 @@ type TeamVulnerabilitySummary {
   unassigned: Int!
 }
 
+"""Input for filtering team workloads."""
 input TeamWorkloadsFilter {
   """Only return workloads from the given named environments."""
   environments: [String!]
@@ -3839,6 +3933,11 @@ Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, 
 """
 scalar Time
 
+"""
+TokenX authentication.
+
+Read more: https://docs.nais.io/auth/tokenx/
+"""
 type TokenXAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
@@ -4072,7 +4171,7 @@ type User implements Node {
   """The globally unique ID of the user."""
   id: ID!
 
-  """True of the user is global admin."""
+  """True if the user is global admin."""
   isAdmin: Boolean!
 
   """The full name of the user."""
@@ -4101,6 +4200,7 @@ type User implements Node {
   ): TeamMemberConnection!
 }
 
+"""User connection."""
 type UserConnection {
   """List of edges."""
   edges: [UserEdge!]!
@@ -4112,6 +4212,7 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
+"""User edge."""
 type UserEdge {
   """Cursor for this edge that can be used for pagination."""
   cursor: Cursor!
@@ -4134,7 +4235,7 @@ enum UserOrderField {
   """The email address of the user."""
   EMAIL
 
-  """The name of user."""
+  """The name of the user."""
   NAME
 }
 
@@ -4168,6 +4269,7 @@ enum UtilizationResourceType {
   MEMORY
 }
 
+"""Interface for workloads."""
 interface Workload {
   """
   BigQuery datasets referenced by the workload. This does not currently support pagination, but will return all available datasets.
@@ -4269,6 +4371,7 @@ interface Workload {
   team: Team!
 }
 
+"""Workload connection."""
 type WorkloadConnection {
   """List of edges."""
   edges: [WorkloadEdge!]!
@@ -4326,6 +4429,7 @@ type WorkloadCostSeries {
   workloads: [WorkloadCostPoint!]!
 }
 
+"""Workload edge."""
 type WorkloadEdge {
   """Cursor for this edge that can be used for pagination."""
   cursor: Cursor!
@@ -4362,6 +4466,7 @@ input WorkloadLogSubscriptionFilter {
   team: Slug!
 }
 
+"""Interface for workload manifests."""
 interface WorkloadManifest {
   """The manifest content, serialized as a YAML document."""
   content: String!
@@ -4376,17 +4481,18 @@ input WorkloadOrder {
   field: WorkloadOrderField!
 }
 
+"""Fields to order workloads by."""
 enum WorkloadOrderField {
-  """Order Workloads by the deployment time."""
+  """Order by the deployment time."""
   DEPLOYMENT_TIME
 
-  """Order Workloads by the name of the environment."""
+  """Order by the name of the environment the workload is deployed in."""
   ENVIRONMENT
 
-  """Order Workloads by name."""
+  """Order by name."""
   NAME
 
-  """Order Workloads by status."""
+  """Order by status."""
   STATUS
 
   """Order by risk score"""
@@ -4408,6 +4514,7 @@ enum WorkloadOrderField {
   VULNERABILITY_SEVERITY_UNASSIGNED
 }
 
+"""Resource quantities for a workload."""
 type WorkloadResourceQuantity {
   """The number of CPU cores."""
   cpu: Float!
@@ -4416,6 +4523,7 @@ type WorkloadResourceQuantity {
   memory: Int!
 }
 
+"""Interface for resources allocated to workloads."""
 interface WorkloadResources {
   """Instances using resources above this threshold will be killed."""
   limits: WorkloadResourceQuantity!
