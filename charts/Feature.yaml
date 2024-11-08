@@ -2,15 +2,9 @@ environmentKinds:
   - management
 values:
   host:
-    displayName: override hostname during testing
+    displayName: hostname override
     computed:
       template: '{{ subdomain . "console" }}'
-    config:
-      type: string
-  teamsHost:
-    displayName: host for the old teams frontend, used to set up redirect
-    computed:
-      template: '{{ subdomain . "teams" }}'
     config:
       type: string
   tenantDomain:
