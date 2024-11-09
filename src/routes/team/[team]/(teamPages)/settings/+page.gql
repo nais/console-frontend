@@ -4,7 +4,7 @@ query TeamSettings($team: Slug!) {
 		purpose
 		slackChannel
 		gitHubTeamSlug
-		azureGroupID
+		entraIDGroupID
 		googleGroupEmail
 		googleArtifactRegistry
 		cdnBucket

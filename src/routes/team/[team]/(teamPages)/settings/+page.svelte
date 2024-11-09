@@ -93,13 +93,13 @@
 	let slackChannelsErrors: { message: string }[] | null;
 
 	const hasGlobalAttributes = (obj: {
-		readonly azureGroupID: string | null;
+		readonly entraIDGroupID: string | null;
 		readonly gitHubTeamSlug: string | null;
 		readonly googleGroupEmail: string | null;
 		readonly googleArtifactRegistry: string | null;
 		readonly cdnBucket: string | null;
 	}) =>
-		obj.azureGroupID !== null ||
+		obj.entraIDGroupID !== null ||
 		obj.gitHubTeamSlug !== null ||
 		obj.googleGroupEmail !== null ||
 		obj.googleArtifactRegistry !== null ||
@@ -292,11 +292,11 @@
 							</a>
 						</dd>
 					{/if}
-					{#if teamSettings.azureGroupID}
+					{#if teamSettings.entraIDGroupID}
 						<dt>Azure AD group ID</dt>
 						<dd>
-							<a href="https://myaccount.microsoft.com/groups/{teamSettings.azureGroupID}"
-								>{teamSettings.azureGroupID}</a
+							<a href="https://myaccount.microsoft.com/groups/{teamSettings.entraIDGroupID}"
+								>{teamSettings.entraIDGroupID}</a
 							>
 						</dd>
 					{/if}
