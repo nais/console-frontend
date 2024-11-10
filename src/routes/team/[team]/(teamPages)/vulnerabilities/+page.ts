@@ -1,13 +1,14 @@
 import {
 	WorkloadOrderField,
 	type OrderDirection$options,
+	type TeamVulnerabilitySummaryFilter,
 	type TeamWorkloadsFilter,
 	type WorkloadOrder,
 	type WorkloadOrderField$options
 } from '$houdini';
 import type { TeamVulnerabilitiesVariables } from './$houdini';
 export const _TeamVulnerabilitiesVariables: TeamVulnerabilitiesVariables = ({ url }) => {
-	const filter = url.searchParams.get('filter') || '';
+	const filter = url.searchParams.get('environment') || '';
 	const field = (url.searchParams.get('field') ||
 		WorkloadOrderField.VULNERABILITY_RISK_SCORE) as WorkloadOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'DESC') as OrderDirection$options;
@@ -20,6 +21,7 @@ export const _TeamVulnerabilitiesVariables: TeamVulnerabilitiesVariables = ({ ur
 
 	return {
 		filter: { environments: [filter] } as TeamWorkloadsFilter,
+		filterSummary: { environments: [filter] } as TeamVulnerabilitySummaryFilter,
 		orderBy: { field: field, direction: direction } as WorkloadOrder
 	};
 };

@@ -4,6 +4,7 @@
 	import {
 		TeamVulnerabilityRanking,
 		TeamVulnerabilityRiskScoreTrend,
+		TeamVulnerabilityState,
 		WorkloadOrderField
 	} from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
@@ -38,7 +39,8 @@
 		SandboxIcon,
 		TrendDownIcon,
 		TrendFlatIcon,
-		TrendUpIcon
+		TrendUpIcon,
+		XMarkOctagonIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -46,11 +48,12 @@
 	export let data: PageData;
 
 	$: ({ TeamVulnerabilities } = data);
-	$: team = $TeamVulnerabilities.data?.team;
-
-	$: teamName = $page.params.team;
 
 	let selectedEnvironment: string = '';
+
+	if (get(page).url.searchParams.has('environment')) {
+		selectedEnvironment = get(page).url.searchParams.get('environment') || '';
+	}
 
 	$: tableSort = {
 		orderBy: $TeamVulnerabilities.variables?.orderBy?.field,
@@ -60,6 +63,10 @@
 	const changeParams = (params: Record<string, string>) => {
 		const query = new URLSearchParams(get(page).url.searchParams);
 		for (const [key, value] of Object.entries(params)) {
+			if (value === '') {
+				query.delete(key);
+				continue;
+			}
 			query.set(key, value);
 		}
 		goto(`?${query.toString()}`);
@@ -80,24 +87,6 @@
 			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL
 		});
 	};
-
-	const handleEnvironment = () => {
-		if (selectedEnvironment === '') {
-			$page.url.searchParams.delete('filter');
-		} else {
-			$page.url.searchParams.set('filter', selectedEnvironment);
-		}
-		history.replaceState({}, '', $page.url.toString());
-		if (selectedEnvironment === '') {
-			TeamVulnerabilities.fetch({
-				variables: { team: teamName, filter: {} }
-			});
-			return;
-		}
-		TeamVulnerabilities.fetch({
-			variables: { team: teamName, filter: { environments: [selectedEnvironment] } }
-		});
-	};
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -106,17 +95,13 @@
 			{error.message}
 		{/each}
 	</Alert>
-{:else}
+{/if}
+{#if $TeamVulnerabilities.data}
+	{@const team = $TeamVulnerabilities.data.team}
 	<div class="grid">
-		<!--Card columns={12}>
-			<h1>Vulnz</h1>
-			{#if $TeamVulnerabilities.data}
-				<pre>{JSON.stringify($TeamVulnerabilities.data, null, 2)}</pre>
-			{/if}
-		</Card-->
-		<!--Card columns={12}>
+		<Card columns={12}>
 			<div class="summaryCard" style="align-items: start;">
-				{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
+				{#if team?.vulnerabilitySummary?.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
 					<div>
 						<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
 					</div>
@@ -139,13 +124,13 @@
 						</HelpText>
 					</h4>
 					<div style="margin-top: 0.5rem;">
-						{#if team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK).length > 0}
-							{#if team.vulnerabilitiesSummary.bomCount > 0}
+						{#if team?.vulnerabilitySummary?.status && team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK).length > 0}
+							{#if team?.vulnerabilitySummary.bomCount > 0}
 								<details>
 									<summary style="font-size: 1rem; var(--color-text-secondary);"
 										>Show details</summary
 									>
-									{#each team.vulnerabilitiesSummary.status.filter((status) => status.state !== VulnerabilityState.OK) as status}
+									{#each team?.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK) as status}
 										<div class="wrapper">
 											<Alert variant="error">
 												<h4>{status.title}</h4>
@@ -163,12 +148,11 @@
 					</div>
 				</div>
 			</div>
-		</Card-->
+		</Card>
 		<Card columns={3} style="display: flex; align-items:center;">
 			<div class="summaryCard">
 				{#if team !== undefined}
 					<div>
-						<!--{JSON.stringify(team.vulnerabilitySummary, null, 2)}-->
 						{#if team.vulnerabilitySummary.coverage >= 100}
 							<Nais
 								size="66px"
@@ -216,37 +200,27 @@
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
-				{#if team !== undefined}
-					<div class="summaryIcon" style="--bg-color: #C8C8C8">
-						{#if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.UP}
-							<TrendUpIcon title="RiskScore" font-size="80" style="color: var(--a-icon-danger)" />
-						{:else if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.DOWN}
-							<TrendDownIcon
-								title="RiskScore"
-								font-size="80"
-								style="color: var(--a-icon-success)"
-							/>
-						{:else}
-							<TrendFlatIcon
-								title="RiskScore"
-								font-size="80"
-								style="color: var(--a-icon-warning)"
-							/>
-						{/if}
-					</div>
-					<div class="summary">
-						<h4>
-							Total risk score
-							<HelpText title="Current team total risk score"
-								>The total risk score for the team's vulnerabilities. The icon will also show trend
-								up or down since last month.
-							</HelpText>
-						</h4>
-						<p class="metric">
-							{team.vulnerabilitySummary.riskScore}
-						</p>
-					</div>
-				{/if}
+				<div class="summaryIcon" style="--bg-color: #C8C8C8">
+					{#if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.UP}
+						<TrendUpIcon title="RiskScore" font-size="80" style="color: var(--a-icon-danger)" />
+					{:else if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.DOWN}
+						<TrendDownIcon title="RiskScore" font-size="80" style="color: var(--a-icon-success)" />
+					{:else}
+						<TrendFlatIcon title="RiskScore" font-size="80" style="color: var(--a-icon-warning)" />
+					{/if}
+				</div>
+				<div class="summary">
+					<h4>
+						Total risk score
+						<HelpText title="Current team total risk score"
+							>The total risk score for the team's vulnerabilities. The icon will also show trend up
+							or down since last month.
+						</HelpText>
+					</h4>
+					<p class="metric">
+						{team.vulnerabilitySummary.riskScore}
+					</p>
+				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
@@ -333,24 +307,24 @@
 		</Card>
 		<Card columns={12}>
 			<h4>Workloads with SBOM</h4>
-			{#if team !== undefined}
-				<div class="env-filter">
-					<Select
-						size="small"
-						hideLabel={true}
-						bind:value={selectedEnvironment}
-						on:change={() => {
-							handleEnvironment();
-						}}
-						label="Environment"
-					>
-						<option value="">All environments</option>
-						{#each team.environments as env}
-							<option value={env.name}>{env.name}</option>
-						{/each}
-					</Select>
-				</div>
-			{/if}
+			<div class="env-filter">
+				<Select
+					size="small"
+					hideLabel={true}
+					bind:value={selectedEnvironment}
+					on:change={() => {
+						changeParams({
+							environment: selectedEnvironment
+						});
+					}}
+					label="Environment"
+				>
+					<option value="">All environments</option>
+					{#each team.environments as env}
+						<option value={env.name}>{env.name}</option>
+					{/each}
+				</Select>
+			</div>
 
 			<Table
 				zebraStripes
@@ -377,15 +351,16 @@
 					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}>Risk Score</Th>
 				</Thead>
 				<Tbody>
-					{#if team !== undefined}
-						{#each team.workloads.nodes as node}
+					{#if team.workloads.nodes.length > 0}
+						{@const workloads = team.workloads.nodes}
+						{#each workloads as workload}
 							<Tr>
 								<Td>
-									{#if node.__typename === 'Application'}
+									{#if workload.__typename === 'Application'}
 										<Tooltip placement="right" content="Application">
 											<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
 										</Tooltip>
-									{:else if node.__typename === 'Job'}
+									{:else if workload.__typename === 'Job'}
 										<Tooltip placement="right" content="Job">
 											<span style="color:var(--a-gray-600)"
 												><ArrowCirclepathIcon {...$$restProps} />
@@ -394,17 +369,15 @@
 									{/if}
 								</Td>
 								<Td>
-									{#if node.__typename}
-										<WorkloadLink workload={node} />
-									{/if}
+									<WorkloadLink {workload} />
 								</Td>
-								<Td>{node.environment.name}</Td>
+								<Td>{workload.environment.name}</Td>
 								<Td>
 									<div class="vulnerability">
 										<Vulnerability
 											severity="critical"
-											count={node.image.vulnerabilitySummary
-												? node.image.vulnerabilitySummary.critical
+											count={workload.image.vulnerabilitySummary
+												? workload.image.vulnerabilitySummary.critical
 												: undefined}
 										/>
 									</div>
@@ -413,8 +386,8 @@
 									<div class="vulnerability">
 										<Vulnerability
 											severity="high"
-											count={node.image.vulnerabilitySummary
-												? node.image.vulnerabilitySummary.high
+											count={workload.image.vulnerabilitySummary
+												? workload.image.vulnerabilitySummary.high
 												: undefined}
 										/>
 									</div>
@@ -423,8 +396,8 @@
 									<div class="vulnerability">
 										<Vulnerability
 											severity="medium"
-											count={node.image.vulnerabilitySummary
-												? node.image.vulnerabilitySummary.medium
+											count={workload.image.vulnerabilitySummary
+												? workload.image.vulnerabilitySummary.medium
 												: undefined}
 										/>
 									</div>
@@ -433,8 +406,8 @@
 									<div class="vulnerability">
 										<Vulnerability
 											severity="low"
-											count={node.image.vulnerabilitySummary
-												? node.image.vulnerabilitySummary.low
+											count={workload.image.vulnerabilitySummary
+												? workload.image.vulnerabilitySummary.low
 												: undefined}
 										/>
 									</div>
@@ -443,8 +416,8 @@
 									<div class="vulnerability">
 										<Vulnerability
 											severity="unassigned"
-											count={node.image.vulnerabilitySummary
-												? node.image.vulnerabilitySummary.unassigned
+											count={workload.image.vulnerabilitySummary
+												? workload.image.vulnerabilitySummary.unassigned
 												: undefined}
 										/>
 									</div>
@@ -456,8 +429,8 @@
 											content="Calculated based on the number of vulnerabilities, includes unassigned"
 										>
 											<span class="align-center"
-												>{node.image.vulnerabilitySummary
-													? node.image.vulnerabilitySummary.riskScore
+												>{workload.image.vulnerabilitySummary
+													? workload.image.vulnerabilitySummary.riskScore
 													: '-'}</span
 											>
 										</Tooltip>
@@ -530,7 +503,6 @@
 		text-align: center;
 	}
 
-	/* TODO: disse hører til øverste kortet
 	.wrapper :global(.navds-alert__wrapper) {
 		max-width: none;
 	}
@@ -542,7 +514,7 @@
 		margin-bottom: 0.2rem;
 		font-weight: bold;
 		font-size: 1rem;
-	}*/
+	}
 
 	.env-filter {
 		display: flex;

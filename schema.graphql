@@ -841,7 +841,7 @@ type DeploymentStatus {
 }
 
 """
-Entra ID (aka Azure AD) authentication.
+Entra ID (f.k.a. Azure AD) authentication.
 
 Read more: https://docs.nais.io/auth/entra-id/
 """
@@ -2805,7 +2805,7 @@ The team type represents a team on the [NAIS platform](https://nais.io/).
 
 Learn more about what NAIS teams are and what they can be used for in the [official NAIS documentation](https://docs.nais.io/explanations/team/).
 
-External resources (e.g. azureGroupID, gitHubTeamSlug) are managed by [NAIS API reconcilers](https://github.com/nais/api-reconcilers).
+External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [NAIS API reconcilers](https://github.com/nais/api-reconcilers).
 """
 type Team implements Node {
   """NAIS applications owned by the team."""
@@ -2852,11 +2852,6 @@ type Team implements Node {
     last: Int
   ): AuditEntryConnection!
 
-  """
-  The ID of the Azure AD group for the team. This value is managed by the Azure AD reconciler.
-  """
-  azureGroupID: String
-
   """BigQuery datasets owned by the team."""
   bigQueryDatasets(
     """Get items after this cursor."""
@@ -2901,9 +2896,7 @@ type Team implements Node {
     orderBy: BucketOrder
   ): BucketConnection!
 
-  """
-  The CDN bucket for the team. This value is managed by the Google CDN reconciler.
-  """
+  """The CDN bucket for the team."""
   cdnBucket: String
 
   """The cost for the team."""
@@ -2941,25 +2934,22 @@ type Team implements Node {
     last: Int
   ): DeploymentConnection!
 
+  """The ID of the Entra ID (f.k.a. Azure AD) group for the team."""
+  entraIDGroupID: String
+
   """Get a specific environment for the team."""
   environment(name: String!): TeamEnvironment!
 
   """Environments for the team."""
   environments: [TeamEnvironment!]!
 
-  """
-  The slug of the GitHub team. This value is managed by the GitHub reconciler.
-  """
+  """The slug of the GitHub team."""
   gitHubTeamSlug: String
 
-  """
-  The Google Artifact Registry for the team. This value is managed by the Google Artifact Registry (GAR) reconciler.
-  """
+  """The Google Artifact Registry for the team."""
   googleArtifactRegistry: String
 
-  """
-  The email address of the Google Workspace group for the team. This value is managed by the Google Workspace reconciler.
-  """
+  """The email address of the Google Workspace group for the team."""
   googleGroupEmail: String
 
   """The globally unique ID of the team."""
@@ -3168,7 +3158,7 @@ type Team implements Node {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
-  vulnerabilitySummary: TeamVulnerabilitySummary!
+  vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
   """NAIS Workloads owned by the team."""
@@ -3890,6 +3880,20 @@ enum TeamVulnerabilityRiskScoreTrend {
   UP
 }
 
+enum TeamVulnerabilityState {
+  COVERAGE_TOO_LOW
+  MISSING_SBOM
+  OK
+  TOO_MANY_VULNERABLE_WORKLOADS
+  VULNERABLE
+}
+
+type TeamVulnerabilityStatus {
+  description: String!
+  state: TeamVulnerabilityState!
+  title: String!
+}
+
 type TeamVulnerabilitySummary {
   """Number of workloads with a software bill of materials (SBOM) attached."""
   bomCount: Int!
@@ -3918,8 +3922,17 @@ type TeamVulnerabilitySummary {
   """Trend of vulnerability status for the team."""
   riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
 
+  """Aggregated status of the vulnerabilities for the team."""
+  status: [TeamVulnerabilityStatus!]!
+
   """Number of vulnerabilities with severity UNASSIGNED."""
   unassigned: Int!
+}
+
+"""Input for filtering team workloads."""
+input TeamVulnerabilitySummaryFilter {
+  """Only return workloads from the given named environments."""
+  environments: [String!]
 }
 
 """Input for filtering team workloads."""

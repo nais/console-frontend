@@ -1,9 +1,14 @@
-query TeamVulnerabilities($team: Slug!, $orderBy: WorkloadOrder, $filter: TeamWorkloadsFilter) {
+query TeamVulnerabilities(
+	$team: Slug!
+	$orderBy: WorkloadOrder
+	$filter: TeamWorkloadsFilter
+	$filterSummary: TeamVulnerabilitySummaryFilter
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environments {
 			name
 		}
-		vulnerabilitySummary {
+		vulnerabilitySummary(filter: $filterSummary) {
 			bomCount
 			coverage
 			critical
@@ -14,6 +19,11 @@ query TeamVulnerabilities($team: Slug!, $orderBy: WorkloadOrder, $filter: TeamWo
 			riskScore
 			riskScoreTrend
 			unassigned
+			status {
+				state
+				title
+				description
+			}
 		}
 		workloads(first: 10, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
