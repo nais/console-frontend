@@ -4,11 +4,10 @@
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
-	import { goto } from '$app/navigation';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { resourceLink } from '$lib/utils/links';
 	import { Alert, Button, Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
-	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -19,14 +18,6 @@
 	$: tableSort = {
 		orderBy: $BigQuery.variables?.orderBy?.field,
 		direction: $BigQuery.variables?.orderBy?.direction
-	};
-
-	const changeParams = (params: Record<string, string>) => {
-		const query = new URLSearchParams(get(page).url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
 	};
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {

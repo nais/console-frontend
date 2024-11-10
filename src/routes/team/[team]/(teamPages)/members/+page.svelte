@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { graphql, TeamMemberOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
 		Button,
@@ -22,7 +21,6 @@
 		PlusIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
@@ -64,14 +62,6 @@
 	$: tableSort = {
 		orderBy: $Members.variables?.orderBy?.field,
 		direction: $Members.variables?.orderBy?.direction
-	};
-
-	const changeParams = (params: Record<string, string>) => {
-		const query = new URLSearchParams(get(page).url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
 	};
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {

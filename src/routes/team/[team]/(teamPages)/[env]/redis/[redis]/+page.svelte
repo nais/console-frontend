@@ -1,14 +1,12 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { RedisInstanceAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
-	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -17,14 +15,6 @@
 	$: tableSort = {
 		orderBy: $RedisInstance.variables?.orderBy?.field,
 		direction: $RedisInstance.variables?.orderBy?.direction
-	};
-
-	const changeParams = (params: Record<string, string>) => {
-		const query = new URLSearchParams(get(page).url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
 	};
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {

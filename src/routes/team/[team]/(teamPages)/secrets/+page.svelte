@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
-	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
@@ -37,14 +36,6 @@
 			};
 		});
 	}
-
-	const changeParams = (params: Record<string, string>) => {
-		const query = new URLSearchParams(get(page).url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
-	};
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
 		const { key } = e.detail;

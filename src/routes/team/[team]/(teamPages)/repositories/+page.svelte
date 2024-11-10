@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { graphql, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -10,8 +9,8 @@
 		PlusIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
+	import { changeParams } from '$lib/utils/searchparams';
 
 	export let data: PageData;
 
@@ -102,14 +101,6 @@
 	$: tableSort = {
 		orderBy: $Repositories.variables?.orderBy?.field,
 		direction: $Repositories.variables?.orderBy?.direction
-	};
-
-	const changeParams = (params: Record<string, string>) => {
-		const query = new URLSearchParams(get(page).url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
 	};
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {

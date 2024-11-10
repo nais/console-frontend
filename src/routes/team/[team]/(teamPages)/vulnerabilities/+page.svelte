@@ -13,9 +13,9 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
 		Button,
@@ -58,18 +58,6 @@
 	$: tableSort = {
 		orderBy: $TeamVulnerabilities.variables?.orderBy?.field,
 		direction: $TeamVulnerabilities.variables?.orderBy?.direction
-	};
-
-	const changeParams = (params: Record<string, string>) => {
-		const query = new URLSearchParams(get(page).url.searchParams);
-		for (const [key, value] of Object.entries(params)) {
-			if (value === '') {
-				query.delete(key);
-				continue;
-			}
-			query.set(key, value);
-		}
-		goto(`?${query.toString()}`);
 	};
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
