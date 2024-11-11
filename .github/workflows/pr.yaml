@@ -1,5 +1,8 @@
 name: Check pull request
-on: pull_request
+on:
+  push:
+    branches-ignore:
+      - main
 env:
   NAME: console-frontend
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
