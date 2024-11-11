@@ -12,7 +12,7 @@ spec:
     - to:
         - podSelector:
             matchLabels:
-              app: nais-api
+              app: nais-api-test
   podSelector:
     matchLabels:
       app: '{{ .Release.Name }}'
