@@ -1,21 +1,20 @@
 query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamRepositoryFilter)
 @cache(policy: NetworkOnly) {
-	team(slug: $team) {
-		id
-		repositories(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
-			pageInfo {
+	team(slug: $team) @loading {
+		repositories(first: 20, orderBy: $orderBy, filter: $filter)
+			@paginate(mode: SinglePage)
+			@loading {
+			pageInfo @loading {
 				hasNextPage
 				hasPreviousPage
 				pageStart
 				pageEnd
 				totalCount
 			}
-			edges {
-				node {
-					name
-					team {
-						slug
-					}
+			nodes @loading {
+				name
+				team {
+					slug
 				}
 			}
 		}

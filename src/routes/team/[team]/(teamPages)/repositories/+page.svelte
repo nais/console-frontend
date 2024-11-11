@@ -1,8 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { graphql, RepositoryOrderField } from '$houdini';
+	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { changeParams } from '$lib/utils/searchparams';
+	import {
+		Button,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		TextField,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -10,7 +21,6 @@
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import { changeParams } from '$lib/utils/searchparams';
 
 	export let data: PageData;
 
@@ -126,9 +136,8 @@
 </script>
 
 {#if $Repositories.data}
-	{@const r = $Repositories.data}
 	<div class="grid">
-		{#if r.team.viewerIsOwner || r.team.viewerIsMember}
+		{#if $Repositories.data.team.viewerIsOwner || $Repositories.data.team.viewerIsMember}
 			<Card>
 				<div class="repository">
 					<h3>Add repository</h3>
@@ -191,63 +200,77 @@
 					<Th style="width:150px">Action</Th>
 				</Thead>
 				<Tbody>
-					{#each r.team.repositories.edges as edge}
-						{@const repo = edge.node}
-						<Tr>
-							<Td><a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a></Td>
-							<Td>
-								<Button
-									variant="secondary"
-									size="small"
-									disabled={!r.team.viewerIsOwner && !r.team.viewerIsMember}
-									on:click={() => removeRepository(repo.team.slug, repo.name)}
-								>
-									<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
-									Remove
-								</Button>
-							</Td>
-						</Tr>
+					{#each $Repositories.data.team.repositories.nodes as repo}
+						{#if repo === PendingValue}
+							<Tr>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+								<Td>
+									<Button variant="secondary" size="small" disabled={true}>
+										<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
+										Remove
+									</Button>
+								</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td><a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a></Td>
+								<Td>
+									<Button
+										variant="secondary"
+										size="small"
+										disabled={!$Repositories.data.team.viewerIsOwner &&
+											!$Repositories.data.team.viewerIsMember}
+										on:click={() => removeRepository(repo.team.slug, repo.name)}
+									>
+										<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
+										Remove
+									</Button>
+								</Td>
+							</Tr>
+						{/if}
 					{/each}
 				</Tbody>
 			</Table>
-			{#if r.team.repositories.pageInfo.hasPreviousPage || r.team.repositories.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if r.team.repositories.pageInfo.pageStart !== r.team.repositories.pageInfo.pageEnd}
-							{r.team.repositories.pageInfo.pageStart} - {r.team.repositories.pageInfo.pageEnd}
-						{:else}
-							{r.team.repositories.pageInfo.pageStart}
-						{/if}
+			{#if $Repositories.data.team.repositories.pageInfo !== PendingValue}
+				{#if $Repositories.data.team.repositories.pageInfo.hasPreviousPage || $Repositories.data.team.repositories.pageInfo.hasNextPage}
+					<div class="pagination">
+						<span>
+							{#if $Repositories.data.team.repositories.pageInfo.pageStart !== $Repositories.data.team.repositories.pageInfo.pageEnd}
+								{$Repositories.data.team.repositories.pageInfo.pageStart} - {$Repositories.data.team
+									.repositories.pageInfo.pageEnd}
+							{:else}
+								{$Repositories.data.team.repositories.pageInfo.pageStart}
+							{/if}
 
-						of {r.team.repositories.pageInfo.totalCount}
-					</span>
+							of {$Repositories.data.team.repositories.pageInfo.totalCount}
+						</span>
 
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!r.team.repositories.pageInfo.hasPreviousPage}
-							on:click={async () => {
-								return await Repositories.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!r.team.repositories.pageInfo.hasNextPage}
-							on:click={async () => {
-								return await Repositories.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+						<span style="padding-left: 1rem;">
+							<Button
+								size="small"
+								variant="secondary"
+								disabled={!$Repositories.data.team.repositories.pageInfo.hasPreviousPage}
+								on:click={async () => {
+									return await Repositories.loadPreviousPage();
+								}}><ChevronLeftIcon /></Button
+							>
+							<Button
+								size="small"
+								variant="secondary"
+								disabled={!$Repositories.data.team.repositories.pageInfo.hasNextPage}
+								on:click={async () => {
+									return await Repositories.loadNextPage();
+								}}
+							>
+								<ChevronRightIcon /></Button
+							>
+						</span>
+					</div>
+				{/if}
 			{/if}
 		</Card>
-		<!--{#key team}
-			<ActivityLog resourceType={AuditEventResourceType.TEAM_REPOSITORY} {teamName} />
-		{/key}-->
 	</div>
 {/if}
 
