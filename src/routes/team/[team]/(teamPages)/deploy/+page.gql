@@ -1,5 +1,5 @@
 query TeamDeployments($team: Slug!) {
-	team(slug: $team) {
+	team(slug: $team) @loading {
 		...TeamDeploymentsNew
 	}
 }
