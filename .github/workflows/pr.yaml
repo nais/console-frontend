@@ -8,12 +8,14 @@ env:
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
 jobs:
   check:
-    name: Build and push
+    name: Lint and check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: npm install
-        run: npm install --ci
+        run: |-
+          npm install --ci
+          npx svelte-kit sync
       - name: npm run check
         run: npm run check
       - name: npm run lint
