@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { JobOrderField } from '$houdini';
+	import { JobOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import Time from '$lib/Time.svelte';
@@ -8,6 +8,7 @@
 	import {
 		Alert,
 		Button,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -19,11 +20,12 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	$: teamName = $page.params.team;
 	export let data: PageData;
 	$: ({ Jobs } = data);
 
-	let filter = '';
+	$: teamName = $page.params.team;
+
+	let filter: string = '';
 
 	const handleFilter = () => {
 		if (filter === '') {
@@ -119,31 +121,44 @@
 			</Thead>
 			<Tbody>
 				{#if jobs !== undefined}
-					{#each jobs.edges as edge}
-						<Tr>
-							<Td>
-								<div class="status">
-									<a
-										href="/team/{teamName}/{edge.node.environment.name}/job/{edge.node.name}/status"
-										data-sveltekit-preload-data="off"
-									>
-										<StatusBadge size="1.5rem" state={edge.node.status.state} />
-									</a>
-								</div>
-							</Td>
-							<Td>
-								<a href="/team/{teamName}/{edge.node.environment.name}/job/{edge.node.name}"
-									>{edge.node.name}</a
-								>
-							</Td>
-							<Td>{edge.node.environment.name}</Td>
+					{#each jobs.nodes as job}
+						{#if job === PendingValue}
+							<Tr>
+								<Td>
+									<Skeleton variant="rounded" />
+								</Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+								<Td><Skeleton variant="text" /></Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td>
+									<div class="status">
+										<a
+											href="/team/{teamName}/{job.environment.name}/job/{job.name}/status"
+											data-sveltekit-preload-data="off"
+										>
+											<StatusBadge size="1.5rem" state={job.status.state} />
+										</a>
+									</div>
+								</Td>
+								<Td>
+									<a href="/team/{teamName}/{job.environment.name}/job/{job.name}">{job.name}</a>
+								</Td>
+								<Td>{job.environment.name}</Td>
 
-							<Td>
-								{#if edge.node.deploymentInfo.timestamp}
-									<Time time={edge.node.deploymentInfo.timestamp} distance={true} />
-								{/if}
-							</Td>
-						</Tr>
+								<Td>
+									{#if job.deploymentInfo.timestamp}
+										<Time time={job.deploymentInfo.timestamp} distance={true} />
+									{/if}
+								</Td>
+							</Tr>
+						{/if}
 					{:else}
 						<Tr>
 							<Td colspan={999}>No jobs found</Td>
@@ -152,39 +167,41 @@
 				{/if}
 			</Tbody>
 		</Table>
-		{#if $Jobs.data?.team.jobs.pageInfo.hasPreviousPage || $Jobs.data?.team.jobs.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if $Jobs.data.team.jobs.pageInfo.pageStart !== $Jobs.data.team.jobs.pageInfo.pageEnd}
-						{$Jobs.data.team.jobs.pageInfo.pageStart} - {$Jobs.data.team.jobs.pageInfo.pageEnd}
-					{:else}
-						{$Jobs.data.team.jobs.pageInfo.pageStart}
-					{/if}
+		{#if jobs.pageInfo !== PendingValue}
+			{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if jobs.pageInfo.pageStart !== jobs.pageInfo.pageEnd}
+							{jobs.pageInfo.pageStart} - {jobs.pageInfo.pageEnd}
+						{:else}
+							{jobs.pageInfo.pageStart}
+						{/if}
 
-					of {$Jobs.data.team.jobs.pageInfo.totalCount}
-				</span>
+						of {jobs.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!$Jobs.data.team.jobs.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await Jobs.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!$Jobs.data.team.jobs.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await Jobs.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!jobs.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await Jobs.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!jobs.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await Jobs.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}

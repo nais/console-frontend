@@ -1,8 +1,7 @@
 query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(policy: NetworkOnly) {
-	team(slug: $team) {
-		id
-		jobs(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
-			pageInfo {
+	team(slug: $team) @loading {
+		jobs(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
 				totalCount
 				endCursor
 				startCursor
@@ -11,20 +10,16 @@ query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(pol
 				pageEnd
 				pageStart
 			}
-			edges {
-				node {
-					id
+			nodes @loading(count: 20) {
+				name
+				environment {
 					name
-					environment {
-						name
-					}
-					status {
-						state
-					}
-
-					deploymentInfo {
-						timestamp
-					}
+				}
+				status {
+					state
+				}
+				deploymentInfo {
+					timestamp
 				}
 			}
 		}

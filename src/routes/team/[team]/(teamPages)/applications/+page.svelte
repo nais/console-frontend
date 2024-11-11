@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { ApplicationOrderField } from '$houdini';
+	import { ApplicationOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
 	import Time from '$lib/Time.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
 		Button,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -21,9 +22,9 @@
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
+	$: ({ Applications } = data);
 
 	$: teamName = $page.params.team;
-	$: ({ Applications } = data);
 
 	let filter: string = '';
 
@@ -87,7 +88,7 @@
 		{/each}
 	</Alert>
 {:else if $Applications.data}
-	{@const team = $Applications.data.team}
+	{@const applications = $Applications.data.team.applications}
 	<Card columns={12}>
 		<form class="input">
 			<TextField
@@ -120,34 +121,50 @@
 				>
 			</Thead>
 			<Tbody>
-				{#if team !== undefined}
-					{#each team.applications.edges as edge}
-						<Tr>
-							<Td>
-								<div class="status">
-									<a
-										href="/team/{teamName}/{edge.node.environment.name}/app/{edge.node.name}/status"
-										data-sveltekit-preload-data="off"
-									>
-										<StatusBadge size="1.5rem" state={edge.node.status.state} />
-									</a>
-								</div>
-							</Td>
-							<Td>
-								<a href="/team/{teamName}/{edge.node.environment.name}/app/{edge.node.name}"
-									>{edge.node.name}</a
-								>
-							</Td>
-							<Td>{edge.node.environment.name}</Td>
-							<Td>
-								<InstanceStatus app={edge.node} />
-							</Td>
-							<Td>
-								{#if edge.node.deploymentInfo.timestamp}
-									<Time time={edge.node.deploymentInfo.timestamp} distance={true} />
-								{/if}
-							</Td>
-						</Tr>
+				{#if applications !== undefined}
+					{#each applications.nodes as app}
+						{#if app === PendingValue}
+							<Tr>
+								<Td>
+									<Skeleton variant="rounded" />
+								</Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+								<Td><Skeleton variant="text" /></Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td>
+									<div class="status">
+										<a
+											href="/team/{teamName}/{app.environment.name}/app/{app.name}/status"
+											data-sveltekit-preload-data="off"
+										>
+											<StatusBadge size="1.5rem" state={app.status.state} />
+										</a>
+									</div>
+								</Td>
+								<Td>
+									<a href="/team/{teamName}/{app.environment.name}/app/{app.name}">{app.name}</a>
+								</Td>
+								<Td>{app.environment.name}</Td>
+								<Td>
+									<InstanceStatus {app} />
+								</Td>
+								<Td>
+									{#if app.deploymentInfo.timestamp}
+										<Time time={app.deploymentInfo.timestamp} distance={true} />
+									{/if}
+								</Td>
+							</Tr>
+						{/if}
 					{:else}
 						<Tr>
 							<Td colspan={999}>No apps found</Td>
@@ -156,40 +173,41 @@
 				{/if}
 			</Tbody>
 		</Table>
-		{#if $Applications.data?.team.applications.pageInfo.hasPreviousPage || $Applications.data?.team.applications.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if $Applications.data.team.applications.pageInfo.pageStart !== $Applications.data.team.applications.pageInfo.pageEnd}
-						{$Applications.data.team.applications.pageInfo.pageStart} - {$Applications.data.team
-							.applications.pageInfo.pageEnd}
-					{:else}
-						{$Applications.data.team.applications.pageInfo.pageStart}
-					{/if}
+		{#if applications.pageInfo !== PendingValue}
+			{#if applications.pageInfo.hasPreviousPage || applications.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if applications.pageInfo.pageStart !== applications.pageInfo.pageEnd}
+							{applications.pageInfo.pageStart} - {applications.pageInfo.pageEnd}
+						{:else}
+							{applications.pageInfo.pageStart}
+						{/if}
 
-					of {$Applications.data.team.applications.pageInfo.totalCount}
-				</span>
+						of {applications.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!$Applications.data.team.applications.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await Applications.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!$Applications.data.team.applications.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await Applications.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!applications.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await Applications.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!applications.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await Applications.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}
