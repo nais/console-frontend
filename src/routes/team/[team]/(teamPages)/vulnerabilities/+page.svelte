@@ -112,7 +112,7 @@
 						</HelpText>
 					</h4>
 					<div style="margin-top: 0.5rem;">
-						{#if team?.vulnerabilitySummary?.status && team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK).length > 0}
+						{#if team?.vulnerabilitySummary?.status && team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
 							{#if team?.vulnerabilitySummary.bomCount > 0}
 								<details>
 									<summary style="font-size: 1rem; var(--color-text-secondary);"
