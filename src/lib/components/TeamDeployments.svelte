@@ -116,6 +116,10 @@
 								/>{:else}<DeploymentStatus status={deploy.statuses[0].status} />{/if}</Td
 						>
 					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={99}>No deployments yet</Td>
+					</Tr>
 				{/each}
 			{/if}
 		{/if}
