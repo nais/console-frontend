@@ -6,7 +6,7 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 			}
 		}
 		serviceUtilization @loading {
-			sqlInstances {
+			sqlInstances @loading {
 				cpu {
 					requested
 					utilization

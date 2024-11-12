@@ -69,6 +69,7 @@
 {#if $SqlInstances.data}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const instances = $SqlInstances.data.team.sqlInstances}
+	{@const utilization = $SqlInstances.data.team.serviceUtilization}
 
 	<div class="summary-grid">
 		<Card columns={3}>
@@ -94,10 +95,8 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
-						<CircleProgressBar
-							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.utilization}
-						/>
+					{#if utilization.sqlInstances !== PendingValue}
+						<CircleProgressBar progress={utilization.sqlInstances.cpu.utilization} />
 					{:else}
 						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
@@ -110,12 +109,10 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
-							{(
-								$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.utilization * 100
-							).toFixed(1)}% of
-							{$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.requested.toFixed(0)} core{$SqlInstances
-								.data.team.serviceUtilization.sqlInstances.cpu.requested > 1
+						{#if utilization.sqlInstances !== PendingValue}
+							{(utilization.sqlInstances.cpu.utilization * 100).toFixed(1)}% of
+							{utilization.sqlInstances.cpu.requested.toFixed(0)} core{utilization.sqlInstances.cpu
+								.requested > 1
 								? 's'
 								: ''}
 						{:else}
@@ -128,10 +125,8 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
-						<CircleProgressBar
-							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.utilization}
-						/>
+					{#if utilization.sqlInstances !== PendingValue}
+						<CircleProgressBar progress={utilization.sqlInstances.memory.utilization} />
 					{:else}
 						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
@@ -144,13 +139,9 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
-							{(
-								$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.utilization * 100
-							).toFixed(1)}% of
-							{prettyBytes(
-								$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.requested
-							)}
+						{#if utilization.sqlInstances !== PendingValue}
+							{(utilization.sqlInstances.memory.utilization * 100).toFixed(1)}% of
+							{prettyBytes(utilization.sqlInstances.memory.requested)}
 						{:else}
 							<Skeleton variant="text" />
 						{/if}
@@ -161,10 +152,8 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
-						<CircleProgressBar
-							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.disk.utilization}
-						/>
+					{#if utilization.sqlInstances !== PendingValue}
+						<CircleProgressBar progress={utilization.sqlInstances.disk.utilization} />
 					{:else}
 						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
@@ -177,11 +166,9 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
-							{(
-								$SqlInstances.data.team.serviceUtilization.sqlInstances.disk.utilization * 100
-							).toFixed(1)}% of
-							{prettyBytes($SqlInstances.data.team.serviceUtilization.sqlInstances.disk.requested)}
+						{#if utilization.sqlInstances !== PendingValue}
+							{(utilization.sqlInstances.disk.utilization * 100).toFixed(1)}% of
+							{prettyBytes(utilization.sqlInstances.disk.requested)}
 						{:else}
 							<Skeleton variant="text" />
 						{/if}
