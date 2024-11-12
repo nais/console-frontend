@@ -66,7 +66,7 @@
 {#if $costQuery.data !== null}
 	{#each $costQuery.data.team.environments as environment}
 		<Card columns={12}>
-			{#if environment.cost.daily.series[0].workloads.length > 0}
+			{#if environment.cost.daily.series[0] && environment.cost.daily.series[0].workloads.length > 0}
 				<h4>
 					Daily cost per application and job for <span style="font-weight: bold;"
 						>{environment.name}</span
