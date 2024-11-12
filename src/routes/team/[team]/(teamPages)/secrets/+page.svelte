@@ -27,11 +27,11 @@
 			return {
 				name: env.name,
 				secrets:
-					$Secrets.data?.team.secrets.edges
-						.filter((edge) => edge.node.environment.name === env.name)
-						.map((edge) => ({
-							name: edge.node.name,
-							lastModifiedAt: edge.node.lastModifiedAt ? new Date(edge.node.lastModifiedAt) : null
+					$Secrets.data?.team.secrets.nodes
+						.filter((node) => node.environment.name === env.name)
+						.map((node) => ({
+							name: node.name,
+							lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
 						})) || []
 			};
 		});
@@ -90,17 +90,17 @@
 					>
 				</Thead>
 				<Tbody>
-					{#each secrets.edges as secret}
+					{#each secrets.nodes as secret}
 						<Tr>
 							<Td>
-								<a href="/team/{team}/{secret.node.environment.name}/secret/{secret.node.name}"
-									>{secret.node.name}</a
+								<a href="/team/{team}/{secret.environment.name}/secret/{secret.name}"
+									>{secret.name}</a
 								>
 							</Td>
-							<Td>{secret.node.environment.name}</Td>
+							<Td>{secret.environment.name}</Td>
 							<Td align="right">
-								{#if secret.node.lastModifiedAt}
-									<Time time={secret.node.lastModifiedAt} distance />
+								{#if secret.lastModifiedAt}
+									<Time time={secret.lastModifiedAt} distance />
 								{:else}
 									<code>n/a</code>
 								{/if}
