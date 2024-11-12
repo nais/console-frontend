@@ -75,8 +75,8 @@
 		}
 
 		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || ApplicationOrderField.NAME
+			direction: tableSort.direction || 'DESC',
+			field: tableSort.orderBy || ApplicationOrderField.STATUS
 		});
 	};
 </script>

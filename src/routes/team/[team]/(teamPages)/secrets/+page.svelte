@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { SecretOrderField } from '$houdini';
+	import { PendingValue, SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
@@ -23,18 +23,28 @@
 	let environments: EnvironmentType[];
 
 	$: if ($Secrets.data) {
-		environments = $Secrets.data?.team.environments.map((env) => {
-			return {
-				name: env.name,
-				secrets:
-					$Secrets.data?.team.secrets.nodes
-						.filter((node) => node.environment.name === env.name)
-						.map((node) => ({
-							name: node.name,
-							lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
-						})) || []
-			};
-		});
+		environments = $Secrets.data?.team.environments
+			.map((env) => {
+				if (env == PendingValue) {
+					return;
+				}
+				return {
+					name: env.name,
+					secrets:
+						$Secrets.data?.team.secrets.nodes
+							.filter((node) => node !== PendingValue && node.environment.name === env.name)
+							.map((node) => {
+								if (node === PendingValue) {
+									return;
+								}
+								return {
+									name: node.name,
+									lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
+								};
+							}) || []
+				};
+			})
+			.filter((env) => env !== undefined) as EnvironmentType[];
 	}
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
@@ -91,27 +101,39 @@
 				</Thead>
 				<Tbody>
 					{#each secrets.nodes as secret}
-						<Tr>
-							<Td>
-								<a href="/team/{team}/{secret.environment.name}/secret/{secret.name}"
-									>{secret.name}</a
-								>
-							</Td>
-							<Td>{secret.environment.name}</Td>
-							<Td align="right">
-								{#if secret.lastModifiedAt}
-									<Time time={secret.lastModifiedAt} distance />
-								{:else}
-									<code>n/a</code>
-								{/if}
-							</Td>
-						</Tr>
+						{#if secret === PendingValue}
+							<Tr>
+								<Td><Skeleton variant="text" /></Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+								<Td>
+									<Skeleton variant="text" />
+								</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td>
+									<a href="/team/{team}/{secret.environment.name}/secret/{secret.name}"
+										>{secret.name}</a
+									>
+								</Td>
+								<Td>{secret.environment.name}</Td>
+								<Td align="right">
+									{#if secret.lastModifiedAt}
+										<Time time={secret.lastModifiedAt} distance />
+									{:else}
+										<code>n/a</code>
+									{/if}
+								</Td>
+							</Tr>
+						{/if}
 					{:else}
 						<Tr><Td colspan={99}>No secrets in this environment</Td></Tr>
 					{/each}
 				</Tbody>
 			</Table>
-			{#if secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage}
+			{#if secrets.pageInfo !== PendingValue && (secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage)}
 				<div class="pagination">
 					<span>
 						{#if secrets.pageInfo.pageStart !== secrets.pageInfo.pageEnd}
