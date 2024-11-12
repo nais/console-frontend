@@ -91,7 +91,6 @@
 				</div>
 			</div>
 		</Card>
-		<!--$SqlInstances.data.team.serviceUtilization-->
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
@@ -100,7 +99,7 @@
 							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.utilization}
 						/>
 					{:else}
-						<Skeleton variant="circle" />
+						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
 				</div>
 				<div class="summary">
@@ -134,7 +133,7 @@
 							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.utilization}
 						/>
 					{:else}
-						<Skeleton variant="circle" />
+						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
 				</div>
 				<div class="summary">
@@ -167,7 +166,7 @@
 							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.disk.utilization}
 						/>
 					{:else}
-						<Skeleton variant="circle" />
+						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
 				</div>
 				<div class="summary">
