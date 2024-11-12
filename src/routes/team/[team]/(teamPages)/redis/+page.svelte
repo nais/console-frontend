@@ -116,7 +116,7 @@
 					</Tr>
 				{:else}
 					<Tr>
-						<Td colspan={999}>No Redis' found</Td>
+						<Td colspan={999}>No Redis found</Td>
 					</Tr>
 				{/each}
 			</Tbody>

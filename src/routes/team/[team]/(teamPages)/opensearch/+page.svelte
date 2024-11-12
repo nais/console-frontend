@@ -122,7 +122,7 @@
 					</Tr>
 				{:else}
 					<Tr>
-						<Td colspan={999}>No OpenSearch' found</Td>
+						<Td colspan={999}>No OpenSearch found</Td>
 					</Tr>
 				{/each}
 			</Tbody>

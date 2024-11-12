@@ -4,8 +4,8 @@
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
-	import { changeParams } from '$lib/utils/searchparams';
 	import { resourceLink } from '$lib/utils/links';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, Button, Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -89,7 +89,7 @@
 					</Tr>
 				{:else}
 					<Tr>
-						<Td colspan={999}>No BigQuery s found</Td>
+						<Td colspan={999}>No BigQuery datasets found</Td>
 					</Tr>
 				{/each}
 			</Tbody>
