@@ -93,14 +93,12 @@
 							>{#each deploy.resources as resource}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
-									<a
-										href="/team/{deploy.team.slug}/{deploy.environment
-											.name}/app/{resource.name}/deploys">{resource.name}</a
+									<a href="/team/{deploy.team.slug}/{deploy.environment.name}/app/{resource.name}"
+										>{resource.name}</a
 									>
 								{:else if resource.kind === 'Job'}
-									<a
-										href="/team/{deploy.team.slug}/{deploy.environment
-											.name}/job/{resource.name}/deploys">{resource.name}</a
+									<a href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{resource.name}"
+										>{resource.name}</a
 									>
 								{:else}
 									{resource.name}
