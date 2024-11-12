@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { BucketOrderField } from '$houdini';
+	import { BucketOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -10,7 +10,7 @@
 		Alert,
 		Button,
 		HelpText,
-		Link,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -60,8 +60,8 @@
 		</Alert>
 	{/each}
 {:else if $Buckets.data}
-	{@const team = $Buckets.data.team}
-	{@const buckets = team.buckets}
+	{@const cost = $Buckets.data.team.cost}
+	{@const buckets = $Buckets.data.team.buckets}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -74,7 +74,11 @@
 						<HelpText title="">Total Bucket cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{euroValueFormatter(team.cost.daily.sum)}
+						{#if cost !== PendingValue}
+							{euroValueFormatter(cost.daily.sum)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
@@ -96,30 +100,44 @@
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each buckets.edges as edge}
-					<Tr>
-						<Td>
-							<Link href="/team/{teamName}/{edge.node.environment.name}/bucket/{edge.node.name}"
-								>{edge.node.name}</Link
-							>
-						</Td>
-						<Td>
-							{edge.node.environment.name}
-						</Td>
-						<Td>
-							{#if edge.node.workload}
-								<WorkloadLink workload={edge.node.workload} />
-							{:else}
-								<div class="inline">
-									<i>No owner</i>
-									<ExclamationmarkTriangleFillIcon
-										style="color: var(--a-icon-warning)"
-										title="The bucket does not belong to any workload"
-									/>
-								</div>
-							{/if}
-						</Td>
-					</Tr>
+				{#each buckets.nodes as b}
+					{#if b !== PendingValue}
+						<Tr>
+							<Td>
+								<a href="/team/{teamName}/{b.environment.name}/bucket/{b.name}" target="_blank"
+									>{b.name}</a
+								>
+							</Td>
+							<Td>
+								{b.environment.name}
+							</Td>
+							<Td>
+								{#if b.workload}
+									<WorkloadLink workload={b.workload} />
+								{:else}
+									<div class="inline">
+										<i>No owner</i>
+										<ExclamationmarkTriangleFillIcon
+											style="color: var(--a-icon-warning)"
+											title="The bucket does not belong to any workload"
+										/>
+									</div>
+								{/if}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+						</Tr>
+					{/if}
 				{:else}
 					<Tr>
 						<Td colspan={999}>No buckets found</Td>
@@ -127,39 +145,41 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if buckets.pageInfo.hasPreviousPage || buckets.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if buckets.pageInfo.pageStart !== buckets.pageInfo.pageEnd}
-						{buckets.pageInfo.pageStart} - {buckets.pageInfo.pageEnd}
-					{:else}
-						{buckets.pageInfo.pageStart}
-					{/if}
+		{#if buckets.pageInfo !== PendingValue}
+			{#if buckets.pageInfo.hasPreviousPage || buckets.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if buckets.pageInfo.pageStart !== buckets.pageInfo.pageEnd}
+							{buckets.pageInfo.pageStart} - {buckets.pageInfo.pageEnd}
+						{:else}
+							{buckets.pageInfo.pageStart}
+						{/if}
 
-					of {buckets.pageInfo.totalCount}
-				</span>
+						of {buckets.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!buckets.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await Buckets.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!buckets.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await Buckets.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!buckets.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await Buckets.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!buckets.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await Buckets.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}

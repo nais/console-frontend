@@ -1,28 +1,26 @@
 query BigQuery($team: Slug!, $orderBy: BigQueryDatasetOrder) {
-	team(slug: $team) {
-		bigQueryDatasets(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
-			pageInfo {
+	team(slug: $team) @loading {
+		bigQueryDatasets(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
 				hasNextPage
 				hasPreviousPage
 				pageStart
 				pageEnd
 				totalCount
 			}
-			edges {
-				node {
+			nodes @loading {
+				name
+				environment {
+					name
+				}
+				workload {
+					__typename
 					name
 					environment {
 						name
 					}
-					workload {
-						__typename
-						name
-						environment {
-							name
-						}
-						team {
-							slug
-						}
+					team {
+						slug
 					}
 				}
 			}

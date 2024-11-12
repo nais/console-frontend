@@ -1,34 +1,31 @@
 query Redis($team: Slug!, $orderBy: RedisInstanceOrder, $from: Date!, $to: Date!) {
-	team(slug: $team) {
-		cost {
+	team(slug: $team) @loading {
+		cost @loading {
 			daily(from: $from, to: $to, filter: { services: ["Redis"] }) {
 				sum
 			}
 		}
-		redisInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
-			pageInfo {
+		redisInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
 				hasNextPage
 				hasPreviousPage
 				totalCount
 				pageStart
 				pageEnd
 			}
-
-			edges {
-				node {
+			nodes @loading {
+				name
+				environment {
+					name
+				}
+				workload {
+					__typename
 					name
 					environment {
 						name
 					}
-					workload {
-						__typename
-						name
-						environment {
-							name
-						}
-						team {
-							slug
-						}
+					team {
+						slug
 					}
 				}
 			}

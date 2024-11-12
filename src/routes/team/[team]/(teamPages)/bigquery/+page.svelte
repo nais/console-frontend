@@ -1,12 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { BigQueryDatasetOrderField } from '$houdini';
+	import { BigQueryDatasetOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, Button, Link, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -47,7 +57,6 @@
 	{/each}
 {:else if $BigQuery.data}
 	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
-
 	<Card columns={12}>
 		<Table
 			size="small"
@@ -64,28 +73,36 @@
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each datasets.edges as edge}
+				{#each datasets.nodes as ds}
 					<Tr>
-						<Td>
-							<Link
-								href={resourceLink(
-									edge.node.environment.name,
-									teamName,
-									'bigquery',
-									edge.node.name
-								)}>{edge.node.name}</Link
-							>
-						</Td>
-						<Td>
-							{edge.node.environment.name}
-						</Td>
-						<Td>
-							{#if edge.node.workload}
-								<WorkloadLink workload={edge.node.workload} />
-							{:else}
-								<em>No owner</em>
-							{/if}
-						</Td>
+						{#if ds !== PendingValue}
+							<Td>
+								<a
+									href={resourceLink(ds.environment.name, teamName, 'bigquery', ds.name)}
+									target="_blank">{ds.name}</a
+								>
+							</Td>
+							<Td>
+								{ds.environment.name}
+							</Td>
+							<Td>
+								{#if ds.workload}
+									<WorkloadLink workload={ds.workload} />
+								{:else}
+									<em>No owner</em>
+								{/if}
+							</Td>
+						{:else}
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+						{/if}
 					</Tr>
 				{:else}
 					<Tr>
@@ -94,39 +111,41 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if $BigQuery.data?.team.bigQueryDatasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if datasets.pageInfo.pageStart !== datasets.pageInfo.pageEnd}
-						{datasets.pageInfo.pageStart} - {datasets.pageInfo.pageEnd}
-					{:else}
-						{datasets.pageInfo.pageStart}
-					{/if}
+		{#if datasets.pageInfo !== PendingValue}
+			{#if datasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if datasets.pageInfo.pageStart !== datasets.pageInfo.pageEnd}
+							{datasets.pageInfo.pageStart} - {datasets.pageInfo.pageEnd}
+						{:else}
+							{datasets.pageInfo.pageStart}
+						{/if}
 
-					of {datasets.pageInfo.totalCount}
-				</span>
+						of {datasets.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!datasets.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await BigQuery.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!datasets.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await BigQuery.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!datasets.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await BigQuery.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!datasets.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await BigQuery.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}

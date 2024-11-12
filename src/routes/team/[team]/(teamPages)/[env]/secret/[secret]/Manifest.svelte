@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { docURL } from '$lib/doc';
-	import { CopyButton, Link, Tooltip } from '@nais/ds-svelte-community';
+	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	export let secretName: string;
@@ -14,10 +14,10 @@
 
 <h5>Documentation</h5>
 <div class="value">
-	<Link href={docURL('/services/secrets/how-to/workload/')}
+	<a href={docURL('/services/secrets/how-to/workload/')} target="_blank"
 		>How-to guide
 		<ExternalLinkIcon title="How-to guide" font-size="1.5rem" />
-	</Link>
+	</a>
 </div>
 
 <h5>Manifest</h5>

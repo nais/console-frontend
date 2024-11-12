@@ -9,7 +9,6 @@
 		Alert,
 		CopyButton,
 		HelpText,
-		Link,
 		Table,
 		Tbody,
 		Td,
@@ -73,7 +72,7 @@
 					</h4>
 					<p class="metric">
 						{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-						core(s)
+						core{instance.metrics.cpu.cores > 1 ? 's' : ''}
 					</p>
 				</div>
 			</div>
@@ -313,29 +312,34 @@
 			<h3 style="margin-top: 1.5rem;">Documentation</h3>
 			<ul>
 				<li>
-					<Link href={docURL('/how-to-guides/persistence/postgres')}
+					<a href={docURL('/how-to-guides/persistence/postgres')} target="_blank"
 						>How to guide
 						<ExternalLinkIcon title="How to guide" font-size="1.5rem" />
-					</Link>
+					</a>
 				</li>
 				<li>
-					<Link href={docURL('/how-to-guides/persistence/postgres/#upgrading-major-version')}
+					<a
+						href={docURL('/how-to-guides/persistence/postgres/#upgrading-major-version')}
+						target="_blank"
 						>Upgrading major version
 						<ExternalLinkIcon title="Upgrading major version" font-size="1.5rem" />
-					</Link>
+					</a>
 				</li>
 				<li>
-					<Link
+					<a
 						href="https://cloud.google.com/products/calculator?hl=en&dl=CiRjYmFlZDQ1MS0yMDQwLTRiNzEtYjUxYi1mNmFlYmJjZTdmNDUQBxokNTQxRjU0QTktN0E1NS00ODVGLUI2RDUtOUFFOUI1QzZCNTNG"
+						target="_blank"
 						>Google cost calculator
 						<ExternalLinkIcon title="Google cost calculator" font-size="1.5rem" />
-					</Link>
+					</a>
 				</li>
 				<li>
-					<Link href={docURL('/how-to-guides/persistence/postgres/#deleting-the-database')}
+					<a
+						href={docURL('/how-to-guides/persistence/postgres/#deleting-the-database')}
+						target="_blank"
 						>Deletion Protection
 						<ExternalLinkIcon title="Deletion Protection" font-size="1.5rem" />
-					</Link>
+					</a>
 				</li>
 			</ul>
 		</Card>
@@ -424,9 +428,12 @@
 					<Thead>
 						<Th>Name</Th>
 						<Th>
-							<Link href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}>
+							<a
+								href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}
+								target="_blank"
+							>
 								Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
-							</Link>
+							</a>
 						</Th>
 					</Thead>
 					<Tbody>
@@ -446,10 +453,10 @@
 		<Card columns={12}>
 			<h3 id="conditions">
 				Config status
-				<Link style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')}>
+				<a style="float: right" href={docURL('/how-to-guides/persistence/postgres/#faq')} target="_blank">
 					FAQ
 					<ExternalLinkIcon title="postgres FAQ" font-size="1.5rem" />
-				</Link>
+				</a>
 			</h3>
 			<div style="margin-bottom: 0.5rem;">
 				<h4>Instance</h4>

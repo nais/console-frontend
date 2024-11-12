@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
-	import { RedisInstanceOrderField } from '$houdini';
+	import { PendingValue, RedisInstanceOrderField } from '$houdini';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -11,7 +11,7 @@
 		Alert,
 		Button,
 		HelpText,
-		Link,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -59,8 +59,8 @@
 	{/each}
 {/if}
 {#if $Redis.data}
-	{@const team = $Redis.data.team}
-	{@const redis = team.redisInstances}
+	{@const cost = $Redis.data.team.cost}
+	{@const redis = $Redis.data.team.redisInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -73,7 +73,11 @@
 						<HelpText title="">Total Redis cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{euroValueFormatter(team.cost.daily.sum)}
+						{#if cost !== PendingValue}
+							{euroValueFormatter(cost.daily.sum)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
@@ -95,25 +99,39 @@
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each redis.edges as edge}
-					<Tr>
-						<!-- TODO: show warning if no workload uses this instance -->
-						<Td>
-							<Link href="/team/{teamName}/{edge.node.environment.name}/redis/{edge.node.name}">
-								{edge.node.name}
-							</Link>
-						</Td>
-						<Td>
-							{edge.node.environment.name}
-						</Td>
-						<Td>
-							{#if edge.node.workload}
-								<WorkloadLink workload={edge.node.workload} />
-							{:else}
-								<em title="The Redis instance is owned by the team">Team</em>
-							{/if}
-						</Td>
-					</Tr>
+				{#each redis.nodes as r}
+					{#if r !== PendingValue}
+						<Tr>
+							<!-- TODO: show warning if no workload uses this instance -->
+							<Td>
+								<a href="/team/{teamName}/{r.environment.name}/redis/{r.name}">
+									{r.name}
+								</a>
+							</Td>
+							<Td>
+								{r.environment.name}
+							</Td>
+							<Td>
+								{#if r.workload}
+									<WorkloadLink workload={r.workload} />
+								{:else}
+									<em title="The Redis instance is owned by the team">Team</em>
+								{/if}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+						</Tr>
+					{/if}
 				{:else}
 					<Tr>
 						<Td colspan={999}>No Redis found</Td>
@@ -121,39 +139,41 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if redis.pageInfo.hasPreviousPage || redis.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if redis.pageInfo.pageStart !== redis.pageInfo.pageEnd}
-						{redis.pageInfo.pageStart} - {redis.pageInfo.pageEnd}
-					{:else}
-						{redis.pageInfo.pageStart}
-					{/if}
+		{#if redis.pageInfo !== PendingValue}
+			{#if redis.pageInfo.hasPreviousPage || redis.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if redis.pageInfo.pageStart !== redis.pageInfo.pageEnd}
+							{redis.pageInfo.pageStart} - {redis.pageInfo.pageEnd}
+						{:else}
+							{redis.pageInfo.pageStart}
+						{/if}
 
-					of {redis.pageInfo.totalCount}
-				</span>
+						of {redis.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!redis.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await Redis.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!redis.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await Redis.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!redis.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await Redis.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!redis.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await Redis.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}

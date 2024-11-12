@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { SqlInstanceOrderField } from '$houdini';
+	import { PendingValue, SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		Alert,
 		Button,
 		HelpText,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -66,9 +67,9 @@
 	{/each}
 {/if}
 {#if $SqlInstances.data}
-	{@const team = $SqlInstances.data.team}
-	{@const instances = team.sqlInstances}
-	{@const metrics = team.serviceUtilization.sqlInstances}
+	{@const cost = $SqlInstances.data.team.cost}
+	{@const instances = $SqlInstances.data.team.sqlInstances}
+
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -81,15 +82,26 @@
 						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{euroValueFormatter(team.cost.daily.sum)}
+						{#if cost !== PendingValue}
+							{euroValueFormatter(cost.daily.sum)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
 		</Card>
+		<!--$SqlInstances.data.team.serviceUtilization-->
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={metrics.cpu.utilization} />
+					{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
+						<CircleProgressBar
+							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.utilization}
+						/>
+					{:else}
+						<Skeleton variant="circle" />
+					{/if}
 				</div>
 				<div class="summary">
 					<h4>
@@ -99,8 +111,17 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{(metrics.cpu.utilization * 100).toFixed(1)}% of
-						{metrics.cpu.requested.toFixed(0)} core(s)
+						{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
+							{(
+								$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.utilization * 100
+							).toFixed(1)}% of
+							{$SqlInstances.data.team.serviceUtilization.sqlInstances.cpu.requested.toFixed(0)} core{$SqlInstances
+								.data.team.serviceUtilization.sqlInstances.cpu.requested > 1
+								? 's'
+								: ''}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
@@ -108,7 +129,13 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={metrics.memory.utilization} />
+					{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
+						<CircleProgressBar
+							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.utilization}
+						/>
+					{:else}
+						<Skeleton variant="circle" />
+					{/if}
 				</div>
 				<div class="summary">
 					<h4>
@@ -118,8 +145,16 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{(metrics.memory.utilization * 100).toFixed(1)}% of
-						{prettyBytes(metrics.memory.requested)}
+						{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
+							{(
+								$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.utilization * 100
+							).toFixed(1)}% of
+							{prettyBytes(
+								$SqlInstances.data.team.serviceUtilization.sqlInstances.memory.requested
+							)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
@@ -127,7 +162,13 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div>
-					<CircleProgressBar progress={metrics.disk.utilization} />
+					{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
+						<CircleProgressBar
+							progress={$SqlInstances.data.team.serviceUtilization.sqlInstances.disk.utilization}
+						/>
+					{:else}
+						<Skeleton variant="circle" />
+					{/if}
 				</div>
 				<div class="summary">
 					<h4>
@@ -137,8 +178,14 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{(metrics.disk.utilization * 100).toFixed(1)}% of
-						{prettyBytes(metrics.disk.requested)}
+						{#if $SqlInstances.data.team.serviceUtilization !== PendingValue}
+							{(
+								$SqlInstances.data.team.serviceUtilization.sqlInstances.disk.utilization * 100
+							).toFixed(1)}% of
+							{prettyBytes($SqlInstances.data.team.serviceUtilization.sqlInstances.disk.requested)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
@@ -172,79 +219,111 @@
 				>
 			</Thead>
 			<Tbody>
-				{#each instances.edges as edge}
-					<Tr>
-						<Td>
-							{#if !edge.node.workload?.name}
-								<Tooltip content="The SQL instance does not belong to any workload">
-									<ExclamationmarkTriangleFillIcon
-										style="color: var(--a-icon-warning)"
-										title="The SQL instance does not belong to any workload"
-									/>
-								</Tooltip>
-							{/if}
-						</Td>
-						<Td>
-							<a href="/team/{teamName}/{edge.node.environment.name}/postgres/{edge.node.name}"
-								>{edge.node.name}</a
-							>
-						</Td>
-						<Td>
-							{edge.node.version}
-						</Td>
-						<Td>
-							{edge.node.environment.name}
-						</Td>
+				{#each instances.nodes as i}
+					{#if i !== PendingValue}
+						<Tr>
+							<Td>
+								{#if !i.workload?.name}
+									<Tooltip content="The SQL instance does not belong to any workload">
+										<ExclamationmarkTriangleFillIcon
+											style="color: var(--a-icon-warning)"
+											title="The SQL instance does not belong to any workload"
+										/>
+									</Tooltip>
+								{/if}
+							</Td>
+							<Td>
+								<a href="/team/{teamName}/{i.environment.name}/postgres/{i.name}">{i.name}</a>
+							</Td>
+							<Td>
+								{i.version}
+							</Td>
+							<Td>
+								{i.environment.name}
+							</Td>
 
-						<Td>
-							{#if edge.node.state === 'RUNNABLE'}
-								<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-							{:else}
-								<Tooltip content="Unhealthy state: {edge.node.state}" placement="right">
-									<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-								</Tooltip>
-							{/if}
-						</Td>
-						<Td>
-							{#if edge.node.cost.sum > 0}
-								€{Math.round(edge.node.cost.sum)}
-							{:else}
-								-
-							{/if}
-						</Td>
-						<Td>
-							{#if edge.node.metrics.cpu.utilization}
-								<span
-									title="{edge.node.metrics.cpu.utilization.toFixed(1)}% of {edge.node.metrics.cpu
-										.cores} core(s)"
-								>
-									{edge.node.metrics.cpu.utilization.toFixed(1)}%
-								</span>
-							{/if}
-						</Td>
-						<Td>
-							{#if edge.node.metrics.memory.utilization}
-								<span
-									title="{edge.node.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-										edge.node.metrics.memory.quotaBytes
-									)}"
-								>
-									{edge.node.metrics.memory.utilization.toFixed(1)}%
-								</span>
-							{/if}
-						</Td>
-						<Td>
-							{#if edge.node.metrics.disk.utilization}
-								<span
-									title="{edge.node.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-										edge.node.metrics.disk.quotaBytes
-									)}"
-								>
-									{edge.node.metrics.disk.utilization.toFixed(1)}%
-								</span>
-							{/if}
-						</Td>
-					</Tr>
+							<Td>
+								{#if i.state === 'RUNNABLE'}
+									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+								{:else}
+									<Tooltip content="Unhealthy state: {i.state}" placement="right">
+										<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+									</Tooltip>
+								{/if}
+							</Td>
+							<Td>
+								{#if i.cost.sum > 0}
+									€{Math.round(i.cost.sum)}
+								{:else}
+									-
+								{/if}
+							</Td>
+							<Td>
+								{#if i.metrics.cpu.utilization}
+									<span
+										title="{i.metrics.cpu.utilization.toFixed(1)}% of {i.metrics.cpu.cores} core{i
+											.metrics.cpu.cores > 1
+											? 's'
+											: ''}"
+									>
+										{i.metrics.cpu.utilization.toFixed(1)}%
+									</span>
+								{/if}
+							</Td>
+							<Td>
+								{#if i.metrics.memory.utilization}
+									<span
+										title="{i.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+											i.metrics.memory.quotaBytes
+										)}"
+									>
+										{i.metrics.memory.utilization.toFixed(1)}%
+									</span>
+								{/if}
+							</Td>
+							<Td>
+								{#if i.metrics.disk.utilization}
+									<span
+										title="{i.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+											i.metrics.disk.quotaBytes
+										)}"
+									>
+										{i.metrics.disk.utilization.toFixed(1)}%
+									</span>
+								{/if}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+						</Tr>
+					{/if}
 				{:else}
 					<Tr>
 						<Td colspan={999}>No SQL instances found</Td>
@@ -252,39 +331,41 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if instances.pageInfo.pageStart !== instances.pageInfo.pageEnd}
-						{instances.pageInfo.pageStart} - {instances.pageInfo.pageEnd}
-					{:else}
-						{instances.pageInfo.pageStart}
-					{/if}
+		{#if instances.pageInfo !== PendingValue}
+			{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if instances.pageInfo.pageStart !== instances.pageInfo.pageEnd}
+							{instances.pageInfo.pageStart} - {instances.pageInfo.pageEnd}
+						{:else}
+							{instances.pageInfo.pageStart}
+						{/if}
 
-					of {instances.pageInfo.totalCount}
-				</span>
+						of {instances.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!instances.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await SqlInstances.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!instances.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await SqlInstances.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!instances.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await SqlInstances.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!instances.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await SqlInstances.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}

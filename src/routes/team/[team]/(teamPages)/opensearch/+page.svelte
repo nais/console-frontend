@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { OpenSearchOrderField } from '$houdini';
+	import { OpenSearchOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -12,7 +12,7 @@
 		Alert,
 		Button,
 		HelpText,
-		Link,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -60,8 +60,8 @@
 	{/each}
 {/if}
 {#if $OpenSearch.data}
-	{@const team = $OpenSearch.data.team}
-	{@const os = team.openSearchInstances}
+	{@const cost = $OpenSearch.data.team.cost}
+	{@const os = $OpenSearch.data.team.openSearchInstances}
 	<div class="summary-grid">
 		<Card columns={3}>
 			<div class="summaryCard">
@@ -74,7 +74,11 @@
 						<HelpText title="">Total OpenSearch cost for team for the last 30 days.</HelpText>
 					</h4>
 					<p class="metric">
-						{euroValueFormatter(team.cost.daily.sum)}
+						{#if cost !== PendingValue}
+							{euroValueFormatter(cost.daily.sum)}
+						{:else}
+							<Skeleton variant="text" />
+						{/if}
 					</p>
 				</div>
 			</div>
@@ -96,70 +100,77 @@
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>
-				{#each os.edges as edge}
-					<Tr>
-						<!-- TODO: show warning if no workload uses this instance -->
-						<Td>
-							<Link
-								href={resourceLink(
-									edge.node.environment.name,
-									teamName,
-									'opensearch',
-									edge.node.name
-								)}>{edge.node.name}</Link
-							>
-						</Td>
-						<Td>
-							{edge.node.environment.name}
-						</Td>
-						<Td>
-							{#if edge.node.workload}
-								<WorkloadLink workload={edge.node.workload} />
-							{:else}
-								<em title="The OpenSearch instance is owned by the team">Team</em>
-							{/if}
-						</Td>
-					</Tr>
-				{:else}
-					<Tr>
-						<Td colspan={999}>No OpenSearch found</Td>
-					</Tr>
+				{#each os.nodes as o}
+					{#if o !== PendingValue}
+						<Tr>
+							<!-- TODO: show warning if no workload uses this instance -->
+							<Td>
+								<a href={resourceLink(o.environment.name, teamName, 'opensearch', o.name)}
+									>{o.name}</a
+								>
+							</Td>
+							<Td>
+								{o.environment.name}
+							</Td>
+							<Td>
+								{#if o.workload}
+									<WorkloadLink workload={o.workload} />
+								{:else}
+									<em title="The OpenSearch instance is owned by the team">Team</em>
+								{/if}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+						</Tr>
+					{/if}
 				{/each}
 			</Tbody>
 		</Table>
-		{#if os.pageInfo.hasPreviousPage || os.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if os.pageInfo.pageStart !== os.pageInfo.pageEnd}
-						{os.pageInfo.pageStart} - {os.pageInfo.pageEnd}
-					{:else}
-						{os.pageInfo.pageStart}
-					{/if}
+		{#if os.pageInfo !== PendingValue}
+			{#if os.pageInfo.hasPreviousPage || os.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if os.pageInfo.pageStart !== os.pageInfo.pageEnd}
+							{os.pageInfo.pageStart} - {os.pageInfo.pageEnd}
+						{:else}
+							{os.pageInfo.pageStart}
+						{/if}
 
-					of {os.pageInfo.totalCount}
-				</span>
+						of {os.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!os.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await OpenSearch.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!os.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await OpenSearch.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!os.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await OpenSearch.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!os.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await OpenSearch.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}

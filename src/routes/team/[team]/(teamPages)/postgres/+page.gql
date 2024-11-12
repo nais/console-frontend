@@ -1,11 +1,11 @@
 query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: Date!) {
-	team(slug: $team) {
-		cost {
+	team(slug: $team) @loading {
+		cost @loading {
 			daily(from: $from, to: $to, filter: { services: ["Cloud SQL"] }) {
 				sum
 			}
 		}
-		serviceUtilization {
+		serviceUtilization @loading {
 			sqlInstances {
 				cpu {
 					requested
@@ -21,45 +21,43 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				}
 			}
 		}
-		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
-			pageInfo {
+		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
 				hasNextPage
 				hasPreviousPage
 				pageStart
 				pageEnd
 				totalCount
 			}
-			edges {
-				node {
+			nodes @loading {
+				name
+				environment {
 					name
-					environment {
-						name
-					}
+				}
 
-					connectionName
-					state
-					version
-					cost {
-						sum
+				connectionName
+				state
+				version
+				cost {
+					sum
+				}
+				metrics {
+					cpu {
+						cores
+						utilization
 					}
-					metrics {
-						cpu {
-							cores
-							utilization
-						}
-						memory {
-							quotaBytes
-							utilization
-						}
-						disk {
-							quotaBytes
-							utilization
-						}
+					memory {
+						quotaBytes
+						utilization
 					}
+					disk {
+						quotaBytes
+						utilization
+					}
+				}
 
-					workload {
-						name
-					}
+				workload {
+					name
 				}
 			}
 		}

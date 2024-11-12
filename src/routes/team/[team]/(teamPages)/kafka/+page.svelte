@@ -1,10 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { KafkaTopicOrderField } from '$houdini';
+	import { KafkaTopicOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -61,17 +71,29 @@
 				<Th sortable={true} sortKey={KafkaTopicOrderField.ENVIRONMENT}>Env</Th>
 			</Thead>
 			<Tbody>
-				{#each topics.edges as edge}
-					<Tr>
-						<Td>
-							<a href="/team/{teamName}/{edge.node.environment.name}/kafka/{edge.node.name}"
-								>{edge.node.name}</a
-							>
-						</Td>
-						<Td>
-							{edge.node.environment.name}
-						</Td>
-					</Tr>
+				{#each topics.nodes as t}
+					{#if t !== PendingValue}
+						<Tr>
+							<Td>
+								<a href="/team/{teamName}/{t.environment.name}/kafka/{t.name}">{t.name}</a>
+							</Td>
+							<Td>
+								{t.environment.name}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+							<Td>
+								<Skeleton variant="text" />
+							</Td>
+						</Tr>
+					{/if}
 				{:else}
 					<Tr>
 						<Td colspan={999}>No Kafka topics found</Td>
@@ -79,39 +101,41 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if topics.pageInfo.hasPreviousPage || topics.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if topics.pageInfo.pageStart !== topics.pageInfo.pageEnd}
-						{topics.pageInfo.pageStart} - {topics.pageInfo.pageEnd}
-					{:else}
-						{topics.pageInfo.pageStart}
-					{/if}
+		{#if topics.pageInfo !== PendingValue}
+			{#if topics.pageInfo.hasPreviousPage || topics.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if topics.pageInfo.pageStart !== topics.pageInfo.pageEnd}
+							{topics.pageInfo.pageStart} - {topics.pageInfo.pageEnd}
+						{:else}
+							{topics.pageInfo.pageStart}
+						{/if}
 
-					of {topics.pageInfo.totalCount}
-				</span>
+						of {topics.pageInfo.totalCount}
+					</span>
 
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!topics.pageInfo.hasPreviousPage}
-						on:click={async () => {
-							return await KafkaTopics.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!topics.pageInfo.hasNextPage}
-						on:click={async () => {
-							return await KafkaTopics.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!topics.pageInfo.hasPreviousPage}
+							on:click={async () => {
+								return await KafkaTopics.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!topics.pageInfo.hasNextPage}
+							on:click={async () => {
+								return await KafkaTopics.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
 		{/if}
 	</Card>
 {/if}
