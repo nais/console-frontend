@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { fragment, graphql, PendingValue, type TeamDeploymentsNew } from '$houdini';
+	import { fragment, graphql, PendingValue, type TeamDeployments } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	export let team: TeamDeploymentsNew;
+	export let team: TeamDeployments;
 
 	$: data = fragment(
 		team,
 		graphql(`
-			fragment TeamDeploymentsNew on Team {
+			fragment TeamDeployments on Team {
 				deployments @loading {
 					nodes {
 						statuses {

@@ -47,7 +47,7 @@
 		{
 			items: [
 				{
-					name: 'Apps',
+					name: 'Applications',
 					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
 					icon: SandboxIcon,

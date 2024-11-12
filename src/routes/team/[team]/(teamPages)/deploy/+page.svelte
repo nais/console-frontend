@@ -1,24 +1,24 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import Deploys from '$lib/components/TeamDeployments.svelte';
+	import TeamDeployments from '$lib/components/TeamDeployments.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
-	$: ({ TeamDeployments } = data);
+	$: ({ Deployments } = data);
 </script>
 
-{#if $TeamDeployments.errors}
+{#if $Deployments.errors}
 	<Alert variant="error">
-		{#each $TeamDeployments.errors as error}
+		{#each $Deployments.errors as error}
 			{error.message}
 		{/each}
 	</Alert>
 {/if}
 
-{#if $TeamDeployments.data}
+{#if $Deployments.data}
 	<Card>
-		<Deploys team={$TeamDeployments.data.team} />
+		<TeamDeployments team={$Deployments.data.team} />
 	</Card>
 {/if}
