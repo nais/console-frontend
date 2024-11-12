@@ -133,6 +133,10 @@
 							</Td>
 						</Tr>
 					{/if}
+				{:else}
+					<Tr>
+						<Td colspan={999}>No OpenSearch instances found</Td>
+					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
