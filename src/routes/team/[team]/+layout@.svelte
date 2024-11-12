@@ -29,7 +29,8 @@
 		opensearch: 'opensearch',
 		kafka: 'kafka topics',
 		bigquery: 'bigquery',
-		unleash: 'unleash'
+		unleash: 'unleash',
+		vulnerabilities: 'vulnerabilities'
 	};
 
 	const simpleJobPages: { [key: string]: string } = {
