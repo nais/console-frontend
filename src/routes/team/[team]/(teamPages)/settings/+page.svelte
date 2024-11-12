@@ -18,7 +18,6 @@
 		EyeSlashIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { slide } from 'svelte/transition';
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
 
@@ -119,17 +118,6 @@
 		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
 	};
 
-	const synchronizeTeam = graphql(`
-		mutation SynchronizeTeam($input: SynchronizeTeamInput!) {
-			synchronizeTeam(input: $input) {
-				team {
-					slug
-				}
-			}
-		}
-	`);
-
-	let synchronizeClicked = false;
 	//let rotateClicked = false;
 </script>
 
@@ -241,33 +229,7 @@
 			{/if}
 		</Card>
 		<Card columns={6}>
-			<h3 class="with_button">
-				Managed resources
-				<Button
-					size="xsmall"
-					variant="secondary"
-					loading={$synchronizeTeam.fetching}
-					on:click={async () => {
-						synchronizeClicked = false;
-						await synchronizeTeam.mutate({ input: { slug: team } });
-						synchronizeClicked = true;
-					}}
-				>
-					Synchronize team
-				</Button>
-			</h3>
-			{#if $synchronizeTeam.errors}
-				<GraphErrors errors={$synchronizeTeam.errors} dismissable={true} />
-			{:else if synchronizeClicked}
-				<div transition:slide={{ duration: 200 }}>
-					<Alert variant="success" size="small">
-						Synchronization started, team resources will soon be updated.
-						<Button size="xsmall" variant="tertiary" on:click={() => (synchronizeClicked = false)}>
-							Dismiss
-						</Button>
-					</Alert>
-				</div>
-			{/if}
+			<h3 class="with_button">Managed resources</h3>
 
 			<h4>Global</h4>
 			<dl>
