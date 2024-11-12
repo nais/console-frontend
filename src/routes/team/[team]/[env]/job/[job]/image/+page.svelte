@@ -5,7 +5,7 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
-	import Vultnerabilities from '$lib/components/image/Vultnerabilities.svelte';
+	import Vulnerabilities from '$lib/components/image/Vulnerabilities.svelte';
 	import Workloads from '$lib/components/image/Workloads.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
@@ -135,7 +135,7 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<Vultnerabilities {image} authorized={auth} />
+			<Vulnerabilities {image} authorized={auth} />
 		</Card>
 
 		<Card columns={12}>
