@@ -16,7 +16,7 @@
 
 	$: ({ JobImageDetails } = data);
 
-	$: auth = $JobImageDetails.data?.team.viewerIsMember ?? false;
+	$: authorized = $JobImageDetails.data?.team.viewerIsMember ?? false;
 
 	const notificationBadgeSize = '48px';
 
@@ -135,7 +135,12 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<ImageVulnerabilities {image} authorized={auth} />
+			<ImageVulnerabilities
+				team={$JobImageDetails.data?.team.slug}
+				environment={$JobImageDetails.data?.team.environment.name}
+				workload={$JobImageDetails.data?.team.environment.workload.name}
+				{authorized}
+			/>
 		</Card>
 
 		<Card columns={12}>

@@ -1,13 +1,15 @@
 query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
+		slug
 		environment(name: $env) {
+			name
 			workload(name: $job) {
 				__typename
+				name
 				image {
 					name
 					tag
 					hasSBOM
-
 					vulnerabilitySummary {
 						critical
 						high
@@ -16,7 +18,6 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						unassigned
 						riskScore
 					}
-
 					...ImageWorkloadReferences
 				}
 			}
