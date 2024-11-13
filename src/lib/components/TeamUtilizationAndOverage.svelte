@@ -59,19 +59,17 @@
 		.reduce((acc, item) => acc + item.used, 0);
 </script>
 
-<h4>Utilization</h4>
+<h4 class="container">
+	Utilization<HelpText title="Current team utilization"
+		>Current CPU and memory utilization for the team's application.<br />Overage cost is an annual
+		estimate based on current utilization.</HelpText
+	>
+</h4>
 <Table size="small" zebraStripes>
 	<Thead>
 		<Tr>
 			<Th>Resource</Th>
-			<Th
-				><div class="tableHeader">
-					Current<HelpText title="Current team utilization"
-						>Current CPU and memory utilization for the team's application.<br />Overage cost is an
-						annual estimate based on current utilization.</HelpText
-					>
-				</div></Th
-			>
+			<Th><div class="tableHeader">Current</div></Th>
 		</Tr>
 	</Thead>
 	<Tbody>
@@ -115,3 +113,10 @@
 	{/if}
 </p>
 <a href="/team/{teamName}/utilization">View team utilization</a>
+
+<style>
+	.container {
+		display: flex;
+		justify-content: space-between;
+	}
+</style>
