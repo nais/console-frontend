@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { graphql, UtilizationResourceType } from '$houdini';
+	import { graphql, PendingValue, UtilizationResourceType } from '$houdini';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
-	import { HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { AggregatedTeamUtilizationVariables } from './$houdini';
 
 	export const _AggregatedTeamUtilizationVariables: AggregatedTeamUtilizationVariables = () => {
@@ -11,8 +11,8 @@
 
 	const utilization = graphql(`
 		query AggregatedTeamUtilization($team: Slug!) @load {
-			team(slug: $team) {
-				cpuUtil: workloadUtilization(resourceType: CPU) {
+			team(slug: $team) @loading {
+				cpuUtil: workloadUtilization(resourceType: CPU) @loading {
 					requested
 					used
 					workload {
@@ -22,7 +22,7 @@
 						}
 					}
 				}
-				memUtil: workloadUtilization(resourceType: MEMORY) {
+				memUtil: workloadUtilization(resourceType: MEMORY) @loading {
 					requested
 					used
 					workload {
@@ -38,17 +38,25 @@
 
 	export let teamName: string;
 
-	$: cpuMetrics = $utilization.data?.team?.cpuUtil.filter((item) => !!item) ?? [];
+	$: cpuMetrics = $utilization.data?.team.cpuUtil.filter((item) => !!item) ?? [];
 
-	$: cpuRequested = cpuMetrics.reduce((acc, item) => acc + item.requested, 0);
+	$: cpuRequested = cpuMetrics
+		.filter((metric) => metric !== PendingValue)
+		.reduce((acc, item) => acc + item.requested, 0);
 
-	$: cpuUsage = cpuMetrics.reduce((acc, item) => acc + item.used, 0);
+	$: cpuUsage = cpuMetrics
+		.filter((metric) => metric !== PendingValue)
+		.reduce((acc, item) => acc + item.used, 0);
 
 	$: memoryMetrics = $utilization.data?.team?.memUtil.filter((item) => !!item) ?? [];
 
-	$: memoryRequested = memoryMetrics.reduce((acc, item) => acc + item.requested, 0);
+	$: memoryRequested = memoryMetrics
+		.filter((metric) => metric !== PendingValue)
+		.reduce((acc, item) => acc + item.requested, 0);
 
-	$: memoryUsage = memoryMetrics.reduce((acc, item) => acc + item.used, 0);
+	$: memoryUsage = memoryMetrics
+		.filter((metric) => metric !== PendingValue)
+		.reduce((acc, item) => acc + item.used, 0);
 </script>
 
 <h4>Utilization</h4>
@@ -71,7 +79,11 @@
 			<Td>Memory</Td>
 			<Td>
 				{#if memoryMetrics.length > 0}
-					{percentageFormatter(teamUtilization(memoryMetrics))}
+					{#if memoryMetrics[0] !== PendingValue}
+						{percentageFormatter(teamUtilization(memoryMetrics))}
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				{:else}
 					-
 				{/if}
@@ -81,7 +93,11 @@
 			<Td>CPU</Td>
 			<Td>
 				{#if cpuMetrics.length > 0}
-					{percentageFormatter(teamUtilization(cpuMetrics))}
+					{#if cpuMetrics[0] !== PendingValue}
+						{percentageFormatter(teamUtilization(cpuMetrics))}
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				{:else}
 					-
 				{/if}
