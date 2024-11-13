@@ -66,30 +66,30 @@
 					<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
 				</Thead>
 				<Tbody>
-					{#each topic.acl.edges as edge}
+					{#each topic.acl.nodes as a}
 						<Tr>
 							<Td>
-								{#if edge.node.teamName === '*'}
+								{#if a.teamName === '*'}
 									All teams
 								{:else}
-									<a href="/team/{edge.node.teamName}">{edge.node.teamName}</a>
+									<a href="/team/{a.teamName}">{a.teamName}</a>
 								{/if}
 							</Td>
 							<Td>
-								{#if edge.node.workloadName === '*'}
+								{#if a.workloadName === '*'}
 									All workloads
-								{:else if edge.node.workload}
-									<WorkloadLink workload={edge.node.workload} />
+								{:else if a.workload}
+									<WorkloadLink workload={a.workload} />
 								{:else}
 									<div class="workloadNotFound">
 										<ExclamationmarkTriangleFillIcon
 											style="color: var(--a-icon-warning)"
 											title="Workload not found"
-										/>{edge.node.workloadName}
+										/>{a.workloadName}
 									</div>
 								{/if}
 							</Td>
-							<Td>{edge.node.access}</Td>
+							<Td>{a.access}</Td>
 						</Tr>
 					{:else}
 						<Tr>

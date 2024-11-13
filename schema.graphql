@@ -1062,6 +1062,7 @@ enum ImageVulnerabilityOrderField {
   PACKAGE
   SEVERITY
   STATE
+  SUPPRESSED
 }
 
 enum ImageVulnerabilitySeverity {
@@ -1439,7 +1440,6 @@ type KafkaTopic implements Node & Persistence {
   id: ID!
   name: String!
   pool: String!
-  status: KafkaTopicStatus!
   team: Team!
 }
 
@@ -1510,10 +1510,6 @@ input KafkaTopicOrder {
 enum KafkaTopicOrderField {
   ENVIRONMENT
   NAME
-}
-
-type KafkaTopicStatus {
-  state: String!
 }
 
 """

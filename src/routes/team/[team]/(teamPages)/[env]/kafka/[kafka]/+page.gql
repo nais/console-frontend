@@ -20,13 +20,6 @@ query KafkaTopic(
 					retentionHours
 					segmentHours
 				}
-
-				status {
-					state
-
-					__typename
-				}
-
 				acl(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
 					pageInfo {
 						hasNextPage
@@ -35,20 +28,18 @@ query KafkaTopic(
 						pageStart
 						pageEnd
 					}
-					edges {
-						node {
-							access
-							workloadName
-							teamName
-							workload {
-								environment {
-									name
-								}
+					nodes {
+						access
+						workloadName
+						teamName
+						workload {
+							environment {
 								name
-								__typename
-								team {
-									slug
-								}
+							}
+							name
+							__typename
+							team {
+								slug
 							}
 						}
 					}
