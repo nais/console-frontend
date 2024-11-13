@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { graphql } from '$houdini';
+	import { graphql, PendingValue } from '$houdini';
+	import { Skeleton } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamInfoVariables } from './$houdini';
 
@@ -12,24 +13,10 @@
 
 	const teamInfo = graphql(`
 		query TeamInfo($team: Slug!) @load {
-			team(slug: $team) {
-				slug
-				gitHubTeamSlug
-				googleArtifactRegistry
-				googleGroupEmail
-				lastSuccessfulSync
-				members {
-					pageInfo {
-						totalCount
-					}
-				}
-				purpose
-				repositories {
-					pageInfo {
-						totalCount
-					}
-				}
-				slackChannel
+			team(slug: $team) @loading {
+				gitHubTeamSlug @loading
+				purpose @loading
+				slackChannel @loading
 			}
 		}
 	`);
@@ -38,20 +25,32 @@
 
 <h4>Team summary</h4>
 {#if $teamInfo.data}
-	<p>{$teamInfo.data.team.purpose}</p>
+	{@const t = $teamInfo.data.team}
+	{#if t.purpose !== PendingValue}
+		<p>{t.purpose}</p>
+	{:else}
+		<Skeleton variant="text" />
+	{/if}
 
-	{#if $teamInfo.data.team.gitHubTeamSlug}
+	{#if t.gitHubTeamSlug}
 		<strong>GitHub team:</strong>
-		<a
-			href="https://github.com/orgs/{githubOrganization}/teams/{$teamInfo.data.team.gitHubTeamSlug}"
-			>{$teamInfo.data.team.gitHubTeamSlug}</a
-		>
+		{#if t.gitHubTeamSlug !== PendingValue}
+			<a href="https://github.com/orgs/{githubOrganization}/teams/{t.gitHubTeamSlug}"
+				>{t.gitHubTeamSlug}</a
+			>
+		{:else}
+			<Skeleton variant="text" />
+		{/if}
 		<br />
 	{/if}
 
-	{#if $teamInfo.data.team.slackChannel}
+	{#if t.slackChannel}
 		<strong>Slack channel:</strong>
-		{$teamInfo.data.team.slackChannel}
+		{#if t.slackChannel !== PendingValue}
+			{t.slackChannel}
+		{:else}
+			<Skeleton variant="text" />
+		{/if}
 		<br />
 	{/if}
 {/if}
