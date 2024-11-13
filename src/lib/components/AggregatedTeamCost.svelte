@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { graphql, PendingValue } from '$houdini';
 	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { AggregatedTeamCostVariables } from './$houdini';
 
 	export const _AggregatedTeamCostVariables: AggregatedTeamCostVariables = () => {
@@ -10,9 +10,9 @@
 
 	const costQuery = graphql(`
 		query AggregatedTeamCost($team: Slug!) @load {
-			team(slug: $team) {
-				cost {
-					monthlySummary {
+			team(slug: $team) @loading {
+				cost @loading {
+					monthlySummary @loading {
 						sum
 						series {
 							date
@@ -40,7 +40,11 @@
 	}
 </script>
 
-<h4>Cost</h4>
+<h4 class="container">
+	Cost<HelpText title="Aggregated team cost"
+		>Aggregated cost for team. Current month is estimated.</HelpText
+	>
+</h4>
 {#if $costQuery.errors}
 	<Alert variant="error">
 		{#each $costQuery.errors as error}
@@ -50,34 +54,43 @@
 {:else if $costQuery.data !== null}
 	{@const cost = $costQuery.data.team.cost}
 	<div>
-		{#if cost.monthlySummary.series.length > 1}
-			{@const factor = getFactor(cost.monthlySummary.series)}
-			{#each cost.monthlySummary.series.slice(0, 2) as item}
-				{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(item.cost)}
-				{:else}
-					{item.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
-						item.cost,
-						item.date
-					)}
-					{#if factor > 1.0}
-						(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+		{#if cost.monthlySummary !== PendingValue}
+			{#if cost.monthlySummary.series.length > 1}
+				{@const factor = getFactor(cost.monthlySummary.series)}
+				{#each cost.monthlySummary.series.slice(0, 2) as item}
+					{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
+						{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(item.cost)}
 					{:else}
-						(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+						{item.date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(
+							item.cost,
+							item.date
+						)}
+						{#if factor > 1.0}
+							(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+						{:else}
+							(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+						{/if}
 					{/if}
-				{/if}
-				<br />
-			{/each}
-		{:else if cost.monthlySummary.series.length == 1}
-			{@const c = cost.monthlySummary.series[0]}
-			{c.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
-				c.cost,
-				c.date
-			)}
+					<br />
+				{/each}
+			{:else if cost.monthlySummary.series.length == 1}
+				{@const c = cost.monthlySummary.series[0]}
+				{c.date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(c.cost, c.date)}
+			{:else}
+				No cost data available
+			{/if}
 		{:else}
-			No cost data available
+			<Skeleton variant="text" />: <Skeleton variant="text" /><br />
+			<Skeleton variant="text" />: <Skeleton variant="text" />
 		{/if}
 	</div>
 
 	<a href="/team/{team}/cost">View team costs</a>
 {/if}
+
+<style>
+	.container {
+		display: flex;
+		justify-content: space-between;
+	}
+</style>
