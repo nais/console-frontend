@@ -161,7 +161,7 @@
 				<div class="summary">
 					<h4>
 						Disk utilization
-						<HelpText title="Current memory utilization">
+						<HelpText title="Current disk utilization">
 							Disk utilization for the last elapsed hour.
 						</HelpText>
 					</h4>

@@ -71,7 +71,7 @@
 
 				<dt>
 					Cascading delete
-					<HelpText title="Current memory utilization"
+					<HelpText title="Cascading delete"
 						>if true, deleting the application will also delete the dataset and all its tables.
 					</HelpText>
 				</dt>
