@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import {
@@ -47,17 +48,17 @@
 				>
 			</div>
 			<div class="teams">
-				{#if $UserTeams.data}
+				{#if $UserTeams.data && $UserTeams.data.me !== PendingValue}
 					{#if $UserTeams.data.me.__typename == 'User'}
-						{#each $UserTeams.data.me.teams.edges as edge}
+						{#each $UserTeams.data.me.teams.nodes as node}
 							<LinkPanel
-								about={edge.node.team.purpose}
-								href="/team/{edge.node.team.slug}"
+								about={node.team.purpose}
+								href="/team/{node.team.slug}"
 								border={true}
 								as="a"
 							>
-								<LinkPanelTitle>{edge.node.team.slug}</LinkPanelTitle>
-								<LinkPanelDescription>{edge.node.team.purpose}</LinkPanelDescription>
+								<LinkPanelTitle>{node.team.slug}</LinkPanelTitle>
+								<LinkPanelDescription>{node.team.purpose}</LinkPanelDescription>
 							</LinkPanel>
 						{:else}
 							<p>You are not a member of any teams.</p>

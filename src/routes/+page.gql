@@ -12,13 +12,11 @@ query UserTeams {
 					startCursor
 					totalCount
 				}
-				edges {
-					node {
-						team {
-							id
-							slug
-							purpose
-						}
+				nodes {
+					team {
+						id
+						slug
+						purpose
 					}
 				}
 			}
