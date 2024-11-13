@@ -115,10 +115,6 @@
 									{#if edge.node.environmentName}
 										in {edge.node.environmentName}
 									{/if}
-
-									{#if edge.node.environmentName}
-										in {edge.node.environmentName}
-									{/if}
 								</BodyShort>
 							</div>
 							<BodyShort size="small" style="color: var(--a-text-subtle)">
