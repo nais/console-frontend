@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import {
@@ -48,7 +47,7 @@
 				>
 			</div>
 			<div class="teams">
-				{#if $UserTeams.data && $UserTeams.data.me !== PendingValue}
+				{#if $UserTeams.data}
 					{#if $UserTeams.data.me.__typename == 'User'}
 						{#each $UserTeams.data.me.teams.nodes as node}
 							<LinkPanel
