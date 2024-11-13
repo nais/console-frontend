@@ -5,18 +5,19 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
-	import Vulnerabilities from '$lib/components/image/Vulnerabilities.svelte';
-	import Workloads from '$lib/components/image/Workloads.svelte';
+	import { PendingValue } from '$houdini';
+	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
+	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Alert, CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import { Alert, CopyButton, Skeleton, Tooltip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 
 	$: ({ ApplicationImageDetails } = data);
 
-	$: auth = $ApplicationImageDetails.data?.team.viewerIsMember ?? false;
+	$: authorized = $ApplicationImageDetails.data?.team.viewerIsMember ?? false;
 
 	const notificationBadgeSize = '48px';
 
@@ -25,7 +26,10 @@
 	let name: string;
 
 	$: {
-		if ($ApplicationImageDetails.data?.team.environment.workload.image) {
+		if (
+			$ApplicationImageDetails.data?.team.environment.workload.image &&
+			$ApplicationImageDetails.data?.team.environment.workload.image.name !== PendingValue
+		) {
 			({ registry, repository, name } = parseImage(
 				$ApplicationImageDetails.data.team.environment.workload.image.name
 			));
@@ -58,26 +62,43 @@
 					size="xsmall"
 					variant="action"
 					text="Copy image name"
+					disabled={image.name === PendingValue}
 					activeText="Image name copied"
-					copyText={image.name + ':' + image.tag}
+					copyText={image.name !== PendingValue ? image.name + ':' + image.tag : ''}
 				/>
 			</h4>
 			<div class="imageGrid">
 				<div class="registry">
 					<h5>Registry</h5>
-					<code>{registry}</code>
+					{#if image.name !== PendingValue}
+						<code>{registry}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				</div>
 				<div class="repository">
 					<h5>Repository</h5>
-					<code>{repository}</code>
+					{#if image.name !== PendingValue}
+						<code>{repository}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				</div>
 				<div class="imageName">
 					<h5>Name</h5>
-					<code>{name}</code>
+					{#if image.name !== PendingValue}
+						<code>{name}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				</div>
 				<div class="tag">
 					<h5>Tag</h5>
-					<code>{image.tag ? image.tag : ''}</code>
+					{#if image.name !== PendingValue}
+						<code>{image.tag ? image.tag : ''}</code>
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				</div>
 			</div>
 		</Card>
@@ -86,43 +107,86 @@
 			<h4>Summary</h4>
 			{#if image.vulnerabilitySummary}
 				<div class="circles">
-					<Tooltip placement="right" content="severity: CRITICAL">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.critical)}
-							color={severityToColor('critical')}
-							size={notificationBadgeSize}
+					{#if image.vulnerabilitySummary !== PendingValue}
+						<Tooltip placement="right" content="severity: CRITICAL">
+							<VulnerabilityBadge
+								text={String(image.vulnerabilitySummary.critical)}
+								color={severityToColor('critical')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+					{:else}
+						<Skeleton
+							variant="circle"
+							height={notificationBadgeSize}
+							width={notificationBadgeSize}
 						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: HIGH">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.high)}
-							color={severityToColor('high')}
-							size={notificationBadgeSize}
+					{/if}
+
+					{#if image.vulnerabilitySummary !== PendingValue}
+						<Tooltip placement="right" content="severity: HIGH"
+							><VulnerabilityBadge
+								text={String(image.vulnerabilitySummary.high)}
+								color={severityToColor('high')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+					{:else}
+						<Skeleton
+							variant="circle"
+							height={notificationBadgeSize}
+							width={notificationBadgeSize}
 						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: MEDIUM">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.medium)}
-							color={severityToColor('medium')}
-							size={notificationBadgeSize}
+					{/if}
+					{#if image.vulnerabilitySummary !== PendingValue}
+						<Tooltip placement="right" content="severity: MEDIUM">
+							<VulnerabilityBadge
+								text={String(image.vulnerabilitySummary.medium)}
+								color={severityToColor('medium')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+					{:else}
+						<Skeleton
+							variant="circle"
+							height={notificationBadgeSize}
+							width={notificationBadgeSize}
 						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: LOW">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.low)}
-							color={severityToColor('low')}
-							size={notificationBadgeSize}
+					{/if}
+					{#if image.vulnerabilitySummary !== PendingValue}
+						<Tooltip placement="right" content="severity: LOW">
+							<VulnerabilityBadge
+								text={String(image.vulnerabilitySummary.low)}
+								color={severityToColor('low')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+					{:else}
+						<Skeleton
+							variant="circle"
+							height={notificationBadgeSize}
+							width={notificationBadgeSize}
 						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: UNASSIGNED">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.unassigned)}
-							color={severityToColor('unassigned')}
-							size={notificationBadgeSize}
+					{/if}
+					{#if image.vulnerabilitySummary !== PendingValue}
+						<Tooltip placement="right" content="severity: UNASSIGNED">
+							<VulnerabilityBadge
+								text={String(image.vulnerabilitySummary.unassigned)}
+								color={severityToColor('unassigned')}
+								size={notificationBadgeSize}
+							/>
+						</Tooltip>
+					{:else}
+						<Skeleton
+							variant="circle"
+							height={notificationBadgeSize}
+							width={notificationBadgeSize}
 						/>
-					</Tooltip>
+					{/if}
 				</div>
-				Risk score: {image.vulnerabilitySummary.riskScore} <br />
+				Risk score: {#if image.vulnerabilitySummary !== PendingValue}{image.vulnerabilitySummary
+						.riskScore} <br />{:else}
+					<Skeleton variant="text" />{/if}
 			{:else if !image.hasSBOM}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				Data was discovered, but the SBOM was not rendered. Please refer to the
@@ -135,11 +199,11 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<Vulnerabilities {image} authorized={auth} />
+			<ImageVulnerabilities {image} {authorized} />
 		</Card>
 
 		<Card columns={12}>
-			<Workloads {image} />
+			<ImageWorkloadReferences {image} />
 		</Card>
 	</div>
 {/if}

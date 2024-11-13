@@ -1,15 +1,15 @@
 query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 @cache(policy: NetworkOnly) {
-	team(slug: $team) {
-		environment(name: $env) {
-			workload(name: $app) {
+	team(slug: $team) @loading {
+		environment(name: $env) @loading {
+			workload(name: $app) @loading {
 				__typename
-				image {
-					name
+				image @loading {
+					name @loading
 					tag
 					hasSBOM
 
-					vulnerabilitySummary {
+					vulnerabilitySummary @loading {
 						critical
 						high
 						medium
@@ -19,10 +19,10 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					}
 
 					...ImageVulnerabilities
-					...WorkloadRefs
+					...ImageWorkloadReferences
 				}
 			}
 		}
-		viewerIsMember
+		viewerIsMember @loading
 	}
 }

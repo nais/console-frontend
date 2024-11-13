@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { graphql, paginatedFragment, type ImageVulnerabilities } from '$houdini';
+	import { graphql, paginatedFragment, PendingValue, type ImageVulnerabilities } from '$houdini';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ChevronLeftIcon,
@@ -11,46 +11,45 @@
 	import TrailFinding from './TrailFinding.svelte';
 
 	export let image: ImageVulnerabilities;
-	export let authorized: boolean;
+	export let authorized: boolean | typeof PendingValue;
 
 	$: vulnerabilities = paginatedFragment(
 		image,
 		graphql(`
 			fragment ImageVulnerabilities on ContainerImage {
-				vulnerabilities(first: 10, orderBy: { field: IDENTIFIER, direction: DESC })
-					@paginate(mode: SinglePage, name: "Image_Vulnerabilities") {
-					pageInfo {
+				vulnerabilities(first: 10, orderBy: { field: SEVERITY, direction: DESC })
+					@paginate(mode: SinglePage)
+					@loading {
+					pageInfo @loading {
 						hasNextPage
 						hasPreviousPage
 						pageStart
 						pageEnd
 						totalCount
 					}
-					edges {
-						node {
-							id
-							description
-							identifier
-							package
-							severity
+					nodes @loading {
+						id
+						description
+						identifier
+						package
+						severity
+						state
+						analysisTrail {
 							state
-							analysisTrail {
-								state
-								suppressed
-								comments {
-									nodes {
-										comment
-										onBehalfOf
-										state
-										suppressed
-										timestamp
-									}
+							suppressed
+							comments {
+								nodes {
+									comment
+									onBehalfOf
+									state
+									suppressed
+									timestamp
 								}
 							}
 						}
 					}
 				}
-				workloadReferences {
+				workloadReferences @loading {
 					nodes {
 						workload {
 							__typename
@@ -89,49 +88,59 @@
 	</Thead>
 	<Tbody>
 		{#if $vulnerabilities.data}
-			{#each $vulnerabilities.data.vulnerabilities.edges as v}
-				<Tr>
-					<Td>
-						{#if authorized}
+			{#each $vulnerabilities.data.vulnerabilities.nodes as v}
+				{#if v !== PendingValue}
+					<Tr>
+						<Td>
+							{#if authorized}
+								<Button
+									variant="tertiary"
+									size="xsmall"
+									on:click={() => {
+										findingToSuppress = v;
+										suppressOpen = true;
+									}}
+								>
+									<code>{v.identifier}</code>
+								</Button>
+							{:else}
+								<code>{v.identifier}</code>
+							{/if}
+						</Td>
+						<Td><code>{v.package}</code></Td>
+						<Td
+							><code style="color: {severityToColor(v.severity.toLocaleLowerCase())}"
+								>{v.severity}</code
+							></Td
+						>
+						<Td style="text-align: center">
+							{#if v.analysisTrail.suppressed}
+								<CheckmarkIcon width={'18px'} height={'18px'} />
+							{/if}
+						</Td>
+						<Td>
 							<Button
-								variant="tertiary"
-								size="xsmall"
+								variant="tertiary-neutral"
+								size="small"
+								disabled={v.analysisTrail?.state ? false : true}
 								on:click={() => {
-									findingToSuppress = v.node;
-									suppressOpen = true;
+									analysisTrail = v;
+									analysisOpen = true;
 								}}
 							>
-								<code>{v.node.identifier}</code>
+								<code>{v.analysisTrail?.state ? v.analysisTrail?.state : 'N/A'} </code>
 							</Button>
-						{:else}
-							<code>{v.node.identifier}</code>
-						{/if}
-					</Td>
-					<Td><code>{v.node.package}</code></Td>
-					<Td
-						><code style="color: {severityToColor(v.node.severity.toLocaleLowerCase())}"
-							>{v.node.severity}</code
-						></Td
-					>
-					<Td style="text-align: center">
-						{#if v.node.analysisTrail.suppressed}
-							<CheckmarkIcon width={'18px'} height={'18px'} />
-						{/if}
-					</Td>
-					<Td>
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							disabled={v.node.analysisTrail?.state ? false : true}
-							on:click={() => {
-								analysisTrail = v.node;
-								analysisOpen = true;
-							}}
-						>
-							<code>{v.node.analysisTrail?.state ? v.node.analysisTrail?.state : 'N/A'} </code>
-						</Button>
-					</Td>
-				</Tr>
+						</Td>
+					</Tr>
+				{:else}
+					<Tr>
+						<Td><Skeleton variant="rectangle" /></Td>
+						<Td><Skeleton variant="text" /></Td>
+						<Td><Skeleton variant="text" /></Td>
+						<Td><Skeleton variant="text" /></Td>
+						<Td><Skeleton variant="rectangle" /></Td>
+					</Tr>
+				{/if}
 			{:else}
 				<Tr>
 					<Td colspan={999}>No vulnerabilities</Td>
@@ -140,7 +149,7 @@
 		{/if}
 	</Tbody>
 </Table>
-{#if $vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage || $vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage}
+{#if $vulnerabilities.data?.vulnerabilities.pageInfo !== PendingValue && ($vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage || $vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage)}
 	<div class="pagination">
 		<span>
 			{#if $vulnerabilities.data?.vulnerabilities.pageInfo.pageStart !== $vulnerabilities.data?.vulnerabilities.pageInfo.pageEnd}
@@ -176,7 +185,7 @@
 	</div>
 {/if}
 
-{#if findingToSuppress && image && authorized}
+{#if findingToSuppress && image && authorized !== PendingValue && authorized && $vulnerabilities.data.workloadReferences !== PendingValue}
 	{#key findingToSuppress.id}
 		<SuppressFinding
 			bind:open={suppressOpen}
@@ -198,7 +207,7 @@
 	{/key}
 {/if}
 
-{#if analysisTrail && image && authorized}
+{#if analysisTrail && image && authorized !== PendingValue && authorized && $vulnerabilities.data.workloadReferences !== PendingValue}
 	<TrailFinding
 		bind:open={analysisOpen}
 		finding={analysisTrail}
@@ -213,5 +222,9 @@
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;
+	}
+
+	code {
+		font-size: 0.8rem;
 	}
 </style>

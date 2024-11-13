@@ -5,8 +5,8 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
-	import Vulnerabilities from '$lib/components/image/Vulnerabilities.svelte';
-	import Workloads from '$lib/components/image/Workloads.svelte';
+	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
+	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Alert, CopyButton, Tooltip } from '@nais/ds-svelte-community';
@@ -135,11 +135,11 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<Vulnerabilities {image} authorized={auth} />
+			<ImageVulnerabilities {image} authorized={auth} />
 		</Card>
 
 		<Card columns={12}>
-			<Workloads {image} />
+			<ImageWorkloadReferences {image} />
 		</Card>
 	</div>
 {/if}
