@@ -199,7 +199,12 @@
 			{/if}
 		</Card>
 		<Card columns={12}>
-			<ImageVulnerabilities {image} {authorized} />
+			<ImageVulnerabilities
+				team={$ApplicationImageDetails.data?.team.slug}
+				environment={$ApplicationImageDetails.data?.team.environment.name}
+				workload={$ApplicationImageDetails.data?.team.environment.workload.name}
+				{authorized}
+			/>
 		</Card>
 
 		<Card columns={12}>

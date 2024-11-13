@@ -1,9 +1,12 @@
 query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 @cache(policy: NetworkOnly) {
 	team(slug: $team) @loading {
+		slug @loading
 		environment(name: $env) @loading {
+			name @loading
 			workload(name: $app) @loading {
 				__typename
+				name @loading
 				image @loading {
 					name @loading
 					tag
@@ -18,7 +21,6 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						riskScore
 					}
 
-					...ImageVulnerabilities
 					...ImageWorkloadReferences
 				}
 			}

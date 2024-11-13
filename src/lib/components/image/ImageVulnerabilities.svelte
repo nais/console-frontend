@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { graphql, paginatedFragment, PendingValue, type ImageVulnerabilities } from '$houdini';
+	import { graphql, ImageVulnerabilityOrderField, PendingValue } from '$houdini';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
@@ -7,88 +8,176 @@
 		ChevronLeftIcon,
 		ChevronRightIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { ImageVulnerabilitiesVariables } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
 
-	export let image: ImageVulnerabilities;
 	export let authorized: boolean | typeof PendingValue;
 
-	$: vulnerabilities = paginatedFragment(
-		image,
-		graphql(`
-			fragment ImageVulnerabilities on ContainerImage {
-				vulnerabilities(first: 10, orderBy: { field: SEVERITY, direction: DESC })
-					@paginate(mode: SinglePage)
-					@loading {
-					pageInfo @loading {
-						hasNextPage
-						hasPreviousPage
-						pageStart
-						pageEnd
-						totalCount
-					}
-					nodes @loading {
-						id
-						description
-						identifier
-						package
-						severity
-						state
-						analysisTrail {
-							state
-							suppressed
-							comments {
-								nodes {
-									comment
-									onBehalfOf
+	export let team: string | typeof PendingValue;
+	export let environment: string | typeof PendingValue;
+	export let workload: string | typeof PendingValue;
+
+	export const _ImageVulnerabilitiesVariables: ImageVulnerabilitiesVariables = () => {
+		if (team === PendingValue || environment === PendingValue || workload === PendingValue) {
+			return { team: '', environment: '', workload: '' };
+		}
+		return {
+			workload: workload,
+			environment: environment,
+			team: team,
+			orderBy: {
+				field: tableSort.orderBy ? tableSort.orderBy : ImageVulnerabilityOrderField.SEVERITY,
+				direction: tableSort.direction ? tableSort.direction : 'DESC'
+			}
+		};
+	};
+
+	const vulnerabilities = graphql(`
+		query ImageVulnerabilities(
+			$team: Slug!
+			$environment: String!
+			$workload: String!
+			$orderBy: ImageVulnerabilityOrder
+		) @load {
+			team(slug: $team) @loading {
+				environment(name: $environment) @loading {
+					workload(name: $workload) @loading {
+						__typename
+						image @loading {
+							vulnerabilities(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
+								pageInfo @loading {
+									hasNextPage
+									hasPreviousPage
+									pageStart
+									pageEnd
+									totalCount
+								}
+								nodes @loading {
+									id
+									description
+									identifier
+									package
+									severity
 									state
-									suppressed
-									timestamp
+									analysisTrail {
+										state
+										suppressed
+										comments {
+											nodes {
+												comment
+												onBehalfOf
+												state
+												suppressed
+												timestamp
+											}
+										}
+									}
+								}
+							}
+							workloadReferences @loading {
+								nodes {
+									workload {
+										__typename
+										team {
+											slug
+										}
+										environment {
+											name
+										}
+										name
+										deploymentInfo {
+											url
+											timestamp
+										}
+									}
 								}
 							}
 						}
 					}
 				}
-				workloadReferences @loading {
-					nodes {
-						workload {
-							__typename
-							team {
-								slug
-							}
-							environment {
-								name
-							}
-							name
-							deploymentInfo {
-								url
-								timestamp
-							}
-						}
-					}
-				}
+				viewerIsMember
 			}
-		`)
-	);
+		}
+	`);
 
 	let findingToSuppress: FindingType | undefined;
 	let suppressOpen = false;
 	let analysisTrail: FindingType | undefined;
 	let analysisOpen = false;
+
+	$: image = $vulnerabilities.data?.team.environment.workload.image;
+
+	$: tableSort = {
+		orderBy: $vulnerabilities.variables?.orderBy?.field,
+		direction: $vulnerabilities.variables?.orderBy?.direction
+	};
+
+	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
+		const { key } = e.detail;
+		console.log(key);
+
+		if (key === tableSort.orderBy) {
+			console.log('toggle direction');
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			console.log('change field');
+			tableSort.orderBy =
+				ImageVulnerabilityOrderField[key as keyof typeof ImageVulnerabilityOrderField];
+			tableSort.direction = 'ASC';
+		}
+
+		changeParams({
+			direction: tableSort.direction || 'DESC',
+			field: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY
+		});
+
+		if (team !== PendingValue && environment !== PendingValue && workload !== PendingValue) {
+			vulnerabilities.fetch({
+				variables: {
+					team: team,
+					environment: environment,
+					workload: workload,
+					orderBy: {
+						field: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
+						direction: tableSort.direction || 'DESC'
+					}
+				}
+			});
+		}
+	};
 </script>
 
 <h4>Vulnerabilities</h4>
-<Table zebraStripes size="small">
+<Table
+	zebraStripes
+	size="small"
+	sort={{
+		orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
+		direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+	}}
+	on:sortChange={tableSortChange}
+>
 	<Thead>
-		<Th style="width: 12rem" sortable={true} sortKey="NAME">ID</Th>
-		<Th style="width: 38rem" sortable={true} sortKey="PACKAGE_URL">Package</Th>
-		<Th style="width: 7rem " sortable={true} sortKey="SEVERITY">Severity</Th>
-		<Th style="width: 3rem" sortable={true} sortKey="IS_SUPPRESSED">Suppressed</Th>
-		<Th sortable={true} sortKey="STATE">State</Th>
+		<Th style="width: 12rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
+			>ID</Th
+		>
+		<Th style="width: 38rem" sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}
+			>Package</Th
+		>
+		<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
+			>Severity</Th
+		>
+		<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
+			>Suppressed</Th
+		>
+		<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
 	</Thead>
 	<Tbody>
 		{#if $vulnerabilities.data}
-			{#each $vulnerabilities.data.vulnerabilities.nodes as v}
+			{@const vulnz = $vulnerabilities.data.team.environment.workload.image.vulnerabilities.nodes}
+			{#each vulnz as v}
 				{#if v !== PendingValue}
 					<Tr>
 						<Td>
@@ -149,73 +238,67 @@
 		{/if}
 	</Tbody>
 </Table>
-{#if $vulnerabilities.data?.vulnerabilities.pageInfo !== PendingValue && ($vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage || $vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage)}
-	<div class="pagination">
-		<span>
-			{#if $vulnerabilities.data?.vulnerabilities.pageInfo.pageStart !== $vulnerabilities.data?.vulnerabilities.pageInfo.pageEnd}
-				{$vulnerabilities.data?.vulnerabilities.pageInfo.pageStart} - {$vulnerabilities.data
-					?.vulnerabilities.pageInfo.pageEnd}
-			{:else}
-				{$vulnerabilities.data?.vulnerabilities.pageInfo.pageStart}
-			{/if}
+{#if image}
+	{#if image.vulnerabilities.pageInfo !== PendingValue && (image.vulnerabilities.pageInfo.hasPreviousPage || image.vulnerabilities.pageInfo.hasNextPage)}
+		<div class="pagination">
+			<span>
+				{#if image.vulnerabilities.pageInfo.pageStart !== image.vulnerabilities.pageInfo.pageEnd}
+					{image.vulnerabilities.pageInfo.pageStart} -
+					{image.vulnerabilities.pageInfo.pageEnd}
+				{:else}
+					{image.vulnerabilities.pageInfo.pageStart}
+				{/if}
 
-			of {$vulnerabilities.data?.vulnerabilities.pageInfo.totalCount}
-		</span>
+				of {image.vulnerabilities.pageInfo.totalCount}
+			</span>
 
-		<span style="padding-left: 1rem;">
-			<Button
-				size="small"
-				variant="secondary"
-				disabled={!$vulnerabilities.data?.vulnerabilities.pageInfo.hasPreviousPage}
-				on:click={async () => {
-					return await vulnerabilities.loadPreviousPage();
-				}}><ChevronLeftIcon /></Button
-			>
-			<Button
-				size="small"
-				variant="secondary"
-				disabled={!$vulnerabilities.data?.vulnerabilities.pageInfo.hasNextPage}
-				on:click={() => {
-					vulnerabilities.loadNextPage();
+			<span style="padding-left: 1rem;">
+				<Button
+					size="small"
+					variant="secondary"
+					disabled={!image.vulnerabilities.pageInfo.hasPreviousPage}
+					on:click={async () => {
+						return await vulnerabilities.loadPreviousPage();
+					}}><ChevronLeftIcon /></Button
+				>
+				<Button
+					size="small"
+					variant="secondary"
+					disabled={!image.vulnerabilities.pageInfo.hasNextPage}
+					on:click={() => {
+						vulnerabilities.loadNextPage();
+					}}
+				>
+					<ChevronRightIcon /></Button
+				>
+			</span>
+		</div>
+	{/if}
+
+	{#if findingToSuppress && authorized !== PendingValue && authorized && image.workloadReferences && image.workloadReferences !== PendingValue}
+		{#key findingToSuppress.id}
+			<SuppressFinding
+				bind:open={suppressOpen}
+				finding={findingToSuppress}
+				workloads={image.workloadReferences.nodes.map((node) => node.workload)}
+				{authorized}
+				on:close={() => {
+					findingToSuppress = undefined;
 				}}
-			>
-				<ChevronRightIcon /></Button
-			>
-		</span>
-	</div>
-{/if}
+			/>
+		{/key}
+	{/if}
 
-{#if findingToSuppress && image && authorized !== PendingValue && authorized && $vulnerabilities.data.workloadReferences !== PendingValue}
-	{#key findingToSuppress.id}
-		<SuppressFinding
-			bind:open={suppressOpen}
-			finding={findingToSuppress}
-			workloads={$vulnerabilities.data.workloadReferences.nodes.map((node) => node.workload)}
-			{authorized}
+	{#if analysisTrail && authorized !== PendingValue && authorized && image.workloadReferences && image.workloadReferences !== PendingValue}
+		<TrailFinding
+			bind:open={analysisOpen}
+			finding={analysisTrail}
+			workloads={image.workloadReferences.nodes.map((node) => node.workload)}
 			on:close={() => {
-				findingToSuppress = undefined;
-				setTimeout(() => {
-					// refetch the image to update the findings
-					/*summary.fetch({
-						variables: { env: env, team: team, app: appName },
-						policy: 'NetworkOnly'
-					});*/
-					console.log('Refetching image');
-				}, 2000);
+				analysisTrail = undefined;
 			}}
 		/>
-	{/key}
-{/if}
-
-{#if analysisTrail && image && authorized !== PendingValue && authorized && $vulnerabilities.data.workloadReferences !== PendingValue}
-	<TrailFinding
-		bind:open={analysisOpen}
-		finding={analysisTrail}
-		workloads={$vulnerabilities.data.workloadReferences.nodes.map((node) => node.workload)}
-		on:close={() => {
-			analysisTrail = undefined;
-		}}
-	/>
+	{/if}
 {/if}
 
 <style>
