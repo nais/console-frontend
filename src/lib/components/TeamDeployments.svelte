@@ -11,7 +11,7 @@
 		graphql(`
 			fragment TeamDeployments on Team {
 				deployments @loading {
-					nodes {
+					nodes @loading {
 						statuses {
 							status
 							message
@@ -37,26 +37,29 @@
 		`)
 	);
 
-	type Deployment = {
-		readonly team: { readonly slug: string };
-		readonly environment: { readonly name: string };
-		readonly resources: {
-			readonly group: string;
-			readonly kind: string;
-			readonly name: string;
-			readonly version: string;
-			readonly namespace: string;
-		}[];
-		readonly created: Date;
-		readonly statuses: {
-			readonly status: string;
-			readonly message: string | null;
-			readonly created: Date;
-		}[];
-	};
+	type Deployment =
+		| {
+				readonly team: { readonly slug: string };
+				readonly environment: { readonly name: string };
+				readonly resources: {
+					readonly group: string;
+					readonly kind: string;
+					readonly name: string;
+					readonly version: string;
+					readonly namespace: string;
+				}[];
+				readonly created: Date;
+				readonly statuses: {
+					readonly status: string;
+					readonly message: string | null;
+					readonly created: Date;
+				}[];
+		  }
+		| typeof PendingValue;
 
 	function orderDeploymentsByDate(nodes: Deployment[]) {
 		return nodes.sort((a, b) => {
+			if (a === PendingValue || b === PendingValue) return 0;
 			return new Date(b.created).getTime() - new Date(a.created).getTime();
 		});
 	}
@@ -73,18 +76,10 @@
 		<Th>Status</Th>
 	</Thead>
 	<Tbody>
-		{#if $data !== null}
-			{#if $data.deployments === PendingValue}
+		{#if $data.deployments !== null}
+			{#each orderDeploymentsByDate($data.deployments.nodes) as deploy}
 				<Tr>
-					<Td><Skeleton variant="text" /></Td>
-					<Td><Skeleton variant="text" /></Td>
-					<Td><Skeleton variant="text" /></Td>
-					<Td><Skeleton variant="text" /></Td>
-					<Td><Skeleton variant="rectangle" /></Td>
-				</Tr>
-			{:else}
-				{#each orderDeploymentsByDate($data.deployments.nodes) as deploy}
-					<Tr>
+					{#if deploy !== PendingValue}
 						<Td>{deploy.team.slug}</Td>
 						<Td>
 							{deploy.environment.name}
@@ -113,13 +108,29 @@
 									status={'unknown'}
 								/>{:else}<DeploymentStatus status={deploy.statuses[0].status} />{/if}</Td
 						>
-					</Tr>
-				{:else}
-					<Tr>
-						<Td colspan={99}>No deployments yet</Td>
-					</Tr>
-				{/each}
-			{/if}
+					{:else}
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+						<Td>
+							<Skeleton variant="text" />
+						</Td>
+					{/if}
+				</Tr>
+			{:else}
+				<Tr>
+					<Td colspan={99}>No deployments yet</Td>
+				</Tr>
+			{/each}
 		{/if}
 	</Tbody>
 </Table>
