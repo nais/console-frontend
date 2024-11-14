@@ -53,7 +53,7 @@
 									pageEnd
 									totalCount
 								}
-								nodes @loading {
+								nodes @loading(count: 10) {
 									id
 									description
 									identifier
