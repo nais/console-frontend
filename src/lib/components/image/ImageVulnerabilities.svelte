@@ -223,7 +223,7 @@
 					</Tr>
 				{:else}
 					<Tr>
-						<Td><Skeleton variant="rectangle" /></Td>
+						<Td><Skeleton height="32px" variant="rectangle" /></Td>
 						<Td><Skeleton variant="text" /></Td>
 						<Td><Skeleton variant="text" /></Td>
 						<Td><Skeleton variant="text" /></Td>
