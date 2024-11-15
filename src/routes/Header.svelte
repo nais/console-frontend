@@ -243,7 +243,7 @@
 		<div class="header-left">
 			<a href="/" class="logo">
 				<Logo height="2rem" />
-				cheer-up-a-tron
+				Console
 			</a>
 			<div class="search">
 				<Search
