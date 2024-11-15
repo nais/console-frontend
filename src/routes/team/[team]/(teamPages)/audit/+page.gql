@@ -35,7 +35,6 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 							valueName
 						}
 					}
-
 					... on TeamEnvironmentUpdatedAuditEntry {
 						teamEnvironmentUpdated: data {
 							environmentName
@@ -93,7 +92,11 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 							}
 						}
 					}
-
+					... on UnleashInstanceCreatedAuditEntry {
+						unleashInstanceCreated: data {
+							name
+						}
+					}
 					... on UnleashInstanceUpdatedAuditEntry {
 						unleashInstanceUpdated: data {
 							allowedTeamSlug

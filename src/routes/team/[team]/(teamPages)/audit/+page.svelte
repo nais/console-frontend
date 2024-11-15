@@ -19,9 +19,9 @@
 	) => {
 		switch (resourceType) {
 			//TODO: Her mangler nok noen audit resource types fra backend.
-			/*case AuditResourceType.APP:
-				return `/team/${teamName}/${env.name}/app/${resourceName}`;
-			case AuditResourceType.NAISJOB:
+			case AuditResourceType.APP:
+				return `/team/${teamName}/${environmentName}/app/${resourceName}`;
+			/*case AuditResourceType.JOB:
 				return `/team/${teamName}/${env.name}/job/${resourceName}`;*/
 			case AuditResourceType.UNLEASH:
 				return `/team/${teamName}/unleash`;
@@ -55,9 +55,41 @@
 					{:else}
 						<div class="line">
 							<div style="width: 85%">
-								<!-- TODO: Her bør vi kanskje kontrollere bredden på en bedre måte. Flyter over tiden til høyre ved mye tekst. -->
 								<BodyShort size="small" spacing>
-									{#if edge.node.__typename === 'TeamEnvironmentUpdatedAuditEntry'}
+									{#if edge.node.__typename === 'SecretValueAddedAuditEntry'}
+										{edge.node.message}
+										<strong>{edge.node.secretValueAdded?.valueName}</strong> from
+										{@const link = resourceLink(
+											edge.node.environmentName ? edge.node.environmentName : '',
+											edge.node.resourceType,
+											edge.node.resourceName
+										)}
+										{#if link}
+											<a href={link}>{edge.node.resourceName}</a>
+										{/if}
+									{:else if edge.node.__typename === 'SecretValueRemovedAuditEntry'}
+										{edge.node.message}
+										<strong>{edge.node.secretValueRemoved?.valueName}</strong> from
+										{@const link = resourceLink(
+											edge.node.environmentName ? edge.node.environmentName : '',
+											edge.node.resourceType,
+											edge.node.resourceName
+										)}
+										{#if link}
+											<a href={link}>{edge.node.resourceName}</a>
+										{/if}
+									{:else if edge.node.__typename === 'SecretValueUpdatedAuditEntry'}
+										{edge.node.message}
+										<strong>{edge.node.secretValueUpdated?.valueName}</strong> from
+										{@const link = resourceLink(
+											edge.node.environmentName ? edge.node.environmentName : '',
+											edge.node.resourceType,
+											edge.node.resourceName
+										)}
+										{#if link}
+											<a href={link}>{edge.node.resourceName}</a>
+										{/if}
+									{:else if edge.node.__typename === 'TeamEnvironmentUpdatedAuditEntry'}
 										{edge.node.message}
 										{#if edge.node.teamEnvironmentUpdated.updatedFields.length > 0}
 											{#each edge.node.teamEnvironmentUpdated.updatedFields as field}
