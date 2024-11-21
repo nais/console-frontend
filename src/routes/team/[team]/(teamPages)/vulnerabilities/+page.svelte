@@ -2,6 +2,7 @@
 	import Card from '$lib/Card.svelte';
 
 	import {
+		PendingValue,
 		TeamVulnerabilityRanking,
 		TeamVulnerabilityRiskScoreTrend,
 		TeamVulnerabilityState,
@@ -10,8 +11,6 @@
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
 
 	import { page } from '$app/stores';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
@@ -21,6 +20,7 @@
 		Button,
 		HelpText,
 		Select,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -88,19 +88,25 @@
 	{@const team = $TeamVulnerabilities.data.team}
 	<div class="grid">
 		<Card columns={12}>
-			<div class="summaryCard" style="align-items: start;">
-				{#if team?.vulnerabilitySummary?.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
-					<div>
-						<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
-					</div>
+			<div class="summaryCard" style="align-items: start; min-height: 90px">
+				{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
+					{#if team?.vulnerabilitySummary?.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
+						<div>
+							<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
+						</div>
+					{:else}
+						<div>
+							<Nais
+								size="66px"
+								style="color: var(--a-icon-success)"
+								aria-label="Team is nais"
+								role="image"
+							/>
+						</div>
+					{/if}
 				{:else}
 					<div>
-						<Nais
-							size="66px"
-							style="color: var(--a-icon-success)"
-							aria-label="Team is nais"
-							role="image"
-						/>
+						<Skeleton variant="rounded" width="66px" height="66px" />
 					</div>
 				{/if}
 				<div class="summary">
@@ -112,26 +118,30 @@
 						</HelpText>
 					</h4>
 					<div style="margin-top: 0.5rem;">
-						{#if team?.vulnerabilitySummary?.status && team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
-							{#if team?.vulnerabilitySummary.bomCount > 0}
-								<details>
-									<summary style="font-size: 1rem; var(--color-text-secondary);"
-										>Show details</summary
-									>
-									{#each team?.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK) as status}
-										<div class="wrapper">
-											<Alert variant="error">
-												<h4>{status.title}</h4>
-												{status.description}
-											</Alert>
-										</div>
-									{/each}
-								</details>
+						{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
+							{#if team?.vulnerabilitySummary?.status && team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
+								{#if team?.vulnerabilitySummary.bomCount > 0}
+									<details>
+										<summary style="font-size: 1rem; var(--color-text-secondary);"
+											>Show details</summary
+										>
+										{#each team?.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK) as status}
+											<div class="wrapper">
+												<Alert variant="error">
+													<h4>{status.title}</h4>
+													{status.description}
+												</Alert>
+											</div>
+										{/each}
+									</details>
+								{:else}
+									<span>No workloads with vulnerability data found</span>
+								{/if}
 							{:else}
-								<span>No workloads with vulnerability data found</span>
+								<span>No vulnerability issues, good work! </span>
 							{/if}
 						{:else}
-							<span>No vulnerability issues, good work! </span>
+							<Skeleton variant="rounded" width="10rem" />
 						{/if}
 					</div>
 				</div>
@@ -139,8 +149,8 @@
 		</Card>
 		<Card columns={3} style="display: flex; align-items:center;">
 			<div class="summaryCard">
-				{#if team !== undefined}
-					<div>
+				<div>
+					{#if team?.vulnerabilitySummary.coverage !== PendingValue}
 						{#if team.vulnerabilitySummary.coverage >= 100}
 							<Nais
 								size="66px"
@@ -156,27 +166,35 @@
 								endColor="green"
 							/>
 						{/if}
-					</div>
-					<div class="summary">
-						<h4>
-							SBOM coverage
-							<HelpText title="Current SBOM coverage">Workloads with an SBOM.</HelpText>
-						</h4>
-						<p class="metric">
+					{:else}
+						<div>
+							<Skeleton variant="circle" width="66px" height="66px" />
+						</div>
+					{/if}
+				</div>
+				<div class="summary">
+					<h4>
+						SBOM coverage
+						<HelpText title="Current SBOM coverage">Workloads with an SBOM.</HelpText>
+					</h4>
+					<p class="metric">
+						{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
 							{team.vulnerabilitySummary.bomCount} of {team.workloads.pageInfo.totalCount}
 							workloads
-						</p>
-					</div>
-				{/if}
+						{:else}
+							<Skeleton variant="text" width="44px" />
+						{/if}
+					</p>
+				</div>
 			</div>
 		</Card>
 		<Card columns={3} style="display: flex; align-items:center;">
 			<div class="summaryCard">
 				{#if team !== undefined}
 					<div style="--bg-color: #C8C8C8; display:flex; align-items:center;">
-						<VulnerabilityBadge
-							text={String(team.vulnerabilitySummary.critical)}
-							color={severityToColor('critical')}
+						<Vulnerability
+							count={team.vulnerabilitySummary.critical}
+							severity="critical"
 							size={'66px'}
 						/>
 					</div>
@@ -189,12 +207,24 @@
 		<Card columns={3}>
 			<div class="summaryCard">
 				<div class="summaryIcon" style="--bg-color: #C8C8C8">
-					{#if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.UP}
-						<TrendUpIcon title="RiskScore" font-size="80" style="color: var(--a-icon-danger)" />
-					{:else if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.DOWN}
-						<TrendDownIcon title="RiskScore" font-size="80" style="color: var(--a-icon-success)" />
+					{#if team?.vulnerabilitySummary.riskScoreTrend !== PendingValue}
+						{#if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.UP}
+							<TrendUpIcon title="RiskScore" font-size="80" style="color: var(--a-icon-danger)" />
+						{:else if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.DOWN}
+							<TrendDownIcon
+								title="RiskScore"
+								font-size="80"
+								style="color: var(--a-icon-success)"
+							/>
+						{:else}
+							<TrendFlatIcon
+								title="RiskScore"
+								font-size="80"
+								style="color: var(--a-icon-warning)"
+							/>
+						{/if}
 					{:else}
-						<TrendFlatIcon title="RiskScore" font-size="80" style="color: var(--a-icon-warning)" />
+						<Skeleton variant="rounded" width="66px" height="66px" />
 					{/if}
 				</div>
 				<div class="summary">
@@ -206,14 +236,18 @@
 						</HelpText>
 					</h4>
 					<p class="metric">
-						{team.vulnerabilitySummary.riskScore}
+						{#if team?.vulnerabilitySummary.riskScore !== PendingValue}
+							{team.vulnerabilitySummary.riskScore}
+						{:else}
+							<Skeleton variant="text" width="44px" />
+						{/if}
 					</p>
 				</div>
 			</div>
 		</Card>
 		<Card columns={3}>
 			<div class="summaryCard">
-				{#if team !== undefined}
+				{#if team?.vulnerabilitySummary.ranking !== PendingValue}
 					{#if team.vulnerabilitySummary.ranking === TeamVulnerabilityRanking.MOST_VULNERABLE}
 						<div class="summaryIcon" style="--bg-color: #C8C8C8">
 							<FaceFrownIcon
@@ -223,15 +257,14 @@
 							/>
 						</div>
 						<div class="summary">
-							<h4>
+							<p>
 								Team is ranked among the most vulnerable
 								<HelpText title="Team ranking"
 									>Ranking of the team's risk score compared to other teams. Your team is among the
 									most vulnerable teams in the organisation. If you are missing SBOMs on any of your
 									workloads this ranking will not be accurate.
 								</HelpText>
-							</h4>
-							<p class="metric"></p>
+							</p>
 						</div>
 					{:else if team.vulnerabilitySummary.ranking === TeamVulnerabilityRanking.LEAST_VULNERABLE}
 						<div class="summaryIcon" style="--bg-color: #C8C8C8">
@@ -242,15 +275,14 @@
 							/>
 						</div>
 						<div class="summary">
-							<h4>
+							<p>
 								Team is ranked among the least vulnerable
 								<HelpText title="Team ranking"
 									>Ranking of the team's risk score compared to other teams. Your team is ranked
 									among the least vulnerable teams in the organisation. If you are missing SBOMs on
 									any of your workloads this ranking will not be accurate.
 								</HelpText>
-							</h4>
-							<p class="metric"></p>
+							</p>
 						</div>
 					{:else if team.vulnerabilitySummary.ranking === TeamVulnerabilityRanking.MIDDLE}
 						<div class="summaryIcon" style="--bg-color: #C8C8C8">
@@ -261,15 +293,14 @@
 							/>
 						</div>
 						<div class="summary">
-							<h4>
+							<p>
 								Team is ranked in the middle
 								<HelpText title="Current team ranking"
 									>Ranking of the team's risk score compared to other teams. Your team is ranked in
 									the middle of your organisations teams. If you are missing SBOMs on any of your
 									workloads this ranking will not be accurate.
 								</HelpText>
-							</h4>
-							<p class="metric"></p>
+							</p>
 						</div>
 					{:else}
 						<div class="summaryIcon" style="--bg-color: #C8C8C8">
@@ -280,16 +311,22 @@
 							/>
 						</div>
 						<div class="summary">
-							<h4>
+							<p>
 								Ranking is unknown
 								<HelpText title="Current team ranking"
 									>Ranking of the team's risk score compared to other teams. If your ranking is
 									unknown this is usually because you are missing SBOMs on your workloads.
 								</HelpText>
-							</h4>
-							<p class="metric"></p>
+							</p>
 						</div>
 					{/if}
+				{:else}
+					<div class="summaryIcon" style="--bg-color: #C8C8C8">
+						<Skeleton variant="rounded" width="66px" height="66px" />
+					</div>
+					<div class="summary">
+						<Skeleton variant="text" />
+					</div>
 				{/if}
 			</div>
 		</Card>
@@ -308,8 +345,11 @@
 					label="Environment"
 				>
 					<option value="">All environments</option>
+
 					{#each team.environments as env}
-						<option value={env.name}>{env.name}</option>
+						{#if env.name !== PendingValue}
+							<option value={env.name}>{env.name}</option>
+						{/if}
 					{/each}
 				</Select>
 			</div>
@@ -344,22 +384,38 @@
 						{#each workloads as workload}
 							<Tr>
 								<Td>
-									{#if workload.__typename === 'Application'}
-										<Tooltip placement="right" content="Application">
-											<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
-										</Tooltip>
-									{:else if workload.__typename === 'Job'}
-										<Tooltip placement="right" content="Job">
-											<span style="color:var(--a-gray-600)"
-												><ArrowCirclepathIcon {...$$restProps} />
-											</span>
-										</Tooltip>
+									{#if workload.__typename !== PendingValue}
+										{#if workload.__typename === 'Application'}
+											<Tooltip placement="right" content="Application">
+												<span style="color:var(--a-gray-600)"
+													><SandboxIcon {...$$restProps} />
+												</span>
+											</Tooltip>
+										{:else if workload.__typename === 'Job'}
+											<Tooltip placement="right" content="Job">
+												<span style="color:var(--a-gray-600)"
+													><ArrowCirclepathIcon {...$$restProps} />
+												</span>
+											</Tooltip>
+										{/if}
+									{:else}
+										<Skeleton variant="circle" width="16px" height="16px" />
 									{/if}
 								</Td>
 								<Td>
-									<WorkloadLink {workload} />
+									{#if workload.__typename !== PendingValue}
+										<WorkloadLink {workload} />
+									{:else}
+										<Skeleton variant="text" />
+									{/if}
 								</Td>
-								<Td>{workload.environment.name}</Td>
+								<Td>
+									{#if workload.__typename !== PendingValue}
+										{workload.environment.name}
+									{:else}
+										<Skeleton variant="text" />
+									{/if}
+								</Td>
 								<Td>
 									<div class="vulnerability">
 										<Vulnerability
@@ -367,6 +423,7 @@
 											count={workload.image.vulnerabilitySummary
 												? workload.image.vulnerabilitySummary.critical
 												: undefined}
+											size="32px"
 										/>
 									</div>
 								</Td>
@@ -377,6 +434,7 @@
 											count={workload.image.vulnerabilitySummary
 												? workload.image.vulnerabilitySummary.high
 												: undefined}
+											size="32px"
 										/>
 									</div>
 								</Td>
@@ -387,6 +445,7 @@
 											count={workload.image.vulnerabilitySummary
 												? workload.image.vulnerabilitySummary.medium
 												: undefined}
+											size="32px"
 										/>
 									</div>
 								</Td>
@@ -397,6 +456,7 @@
 											count={workload.image.vulnerabilitySummary
 												? workload.image.vulnerabilitySummary.low
 												: undefined}
+											size="32px"
 										/>
 									</div>
 								</Td>
@@ -407,21 +467,26 @@
 											count={workload.image.vulnerabilitySummary
 												? workload.image.vulnerabilitySummary.unassigned
 												: undefined}
+											size="32px"
 										/>
 									</div>
 								</Td>
 								<Td>
 									<div class="vulnerability">
-										<Tooltip
+										<!--Tooltip
 											placement="left"
 											content="Calculated based on the number of vulnerabilities, includes unassigned"
-										>
+										-->
+										{#if workload.image.vulnerabilitySummary?.riskScore !== PendingValue}
 											<span class="align-center"
 												>{workload.image.vulnerabilitySummary
 													? workload.image.vulnerabilitySummary.riskScore
 													: '-'}</span
 											>
-										</Tooltip>
+										{:else}
+											<Skeleton variant="text" width="32px" />
+										{/if}
+										<!--/Tooltip-->
 									</div>
 								</Td>
 							</Tr>
@@ -433,7 +498,7 @@
 					{/if}
 				</Tbody>
 			</Table>
-			{#if $TeamVulnerabilities.data?.team.workloads.pageInfo.hasPreviousPage || $TeamVulnerabilities.data?.team.workloads.pageInfo.hasNextPage}
+			{#if $TeamVulnerabilities.data?.team.workloads.pageInfo.totalCount !== PendingValue && ($TeamVulnerabilities.data?.team.workloads.pageInfo.hasPreviousPage || $TeamVulnerabilities.data?.team.workloads.pageInfo.hasNextPage)}
 				<div class="pagination">
 					<span>
 						{#if $TeamVulnerabilities.data?.team.workloads.pageInfo.pageStart !== $TeamVulnerabilities.data?.team.workloads.pageInfo.pageEnd}
@@ -484,7 +549,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: 32px;
 	}
 
 	.align-center {
@@ -517,9 +581,17 @@
 
 	.summary {
 		width: 100%;
+		min-height: 80px;
 	}
 
 	.summary > h4 {
+		display: flex;
+		justify-content: space-between;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
+	}
+	.summary > p {
 		display: flex;
 		justify-content: space-between;
 		margin: 0;

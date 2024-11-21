@@ -4,37 +4,37 @@ query TeamVulnerabilities(
 	$filter: TeamWorkloadsFilter
 	$filterSummary: TeamVulnerabilitySummaryFilter
 ) @cache(policy: NetworkOnly) {
-	team(slug: $team) {
-		environments {
-			name
+	team(slug: $team) @loading {
+		environments @loading {
+			name @loading
 		}
-		vulnerabilitySummary(filter: $filterSummary) {
-			bomCount
-			coverage
-			critical
-			high
-			low
-			medium
-			ranking
-			riskScore
-			riskScoreTrend
+		vulnerabilitySummary(filter: $filterSummary) @loading {
+			bomCount @loading
+			coverage @loading
+			critical @loading
+			high @loading
+			low @loading
+			medium @loading
+			ranking @loading
+			riskScore @loading
+			riskScoreTrend @loading
 			unassigned
-			status {
+			status @loading {
 				state
 				title
 				description
 			}
 		}
-		workloads(first: 10, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
-			pageInfo {
-				totalCount
+		workloads(first: 10, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
+				totalCount @loading
 				pageStart
 				pageEnd
 				hasNextPage
 				hasPreviousPage
 			}
-			nodes {
-				__typename
+			nodes @loading {
+				__typename @loading
 				name
 				environment {
 					name
@@ -42,17 +42,17 @@ query TeamVulnerabilities(
 				team {
 					slug
 				}
-				image {
+				image @loading {
 					name
 					tag
 					hasSBOM
-					vulnerabilitySummary {
-						critical
-						high
-						medium
-						low
-						unassigned
-						riskScore
+					vulnerabilitySummary @loading {
+						critical @loading
+						high @loading
+						medium @loading
+						low @loading
+						unassigned @loading
+						riskScore @loading
 					}
 				}
 			}
