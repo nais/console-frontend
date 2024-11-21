@@ -3,7 +3,7 @@ query TeamVulnerabilities(
 	$orderBy: WorkloadOrder
 	$filter: TeamWorkloadsFilter
 	$filterSummary: TeamVulnerabilitySummaryFilter
-) @cache(policy: NetworkOnly) {
+) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) @loading {
 		environments @loading {
 			name @loading
