@@ -37,7 +37,6 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 					}
 					... on TeamEnvironmentUpdatedAuditEntry {
 						teamEnvironmentUpdated: data {
-							environmentName
 							updatedFields {
 								field
 								newValue
@@ -48,24 +47,12 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 					... on TeamMemberAddedAuditEntry {
 						teamMemberAdded: data {
 							role
-							user {
-								email
-								externalID
-								id
-								name
-							}
 							userEmail
 							userID
 						}
 					}
 					... on TeamMemberRemovedAuditEntry {
 						teamMemberRemoved: data {
-							user {
-								email
-								externalID
-								id
-								name
-							}
 							userEmail
 							userID
 						}
@@ -73,12 +60,6 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 					... on TeamMemberSetRoleAuditEntry {
 						teamMemberSetRole: data {
 							role
-							user {
-								email
-								externalID
-								id
-								name
-							}
 							userEmail
 							userID
 						}
@@ -90,11 +71,6 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 								newValue
 								oldValue
 							}
-						}
-					}
-					... on UnleashInstanceCreatedAuditEntry {
-						unleashInstanceCreated: data {
-							name
 						}
 					}
 					... on UnleashInstanceUpdatedAuditEntry {

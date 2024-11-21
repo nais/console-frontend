@@ -44,7 +44,7 @@
 
 	const enableReconciler = graphql(`
 		mutation EnableReconciler($name: String!) {
-			enableReconciler(name: $name) {
+			enableReconciler(input: { name: $name }) {
 				enabled
 			}
 		}
@@ -52,7 +52,7 @@
 
 	const disableReconciler = graphql(`
 		mutation DisableReconciler($name: String!) {
-			disableReconciler(name: $name) {
+			disableReconciler(input: { name: $name }) {
 				enabled
 			}
 		}
@@ -85,7 +85,7 @@
 
 	const saveConfigMutation = graphql(`
 		mutation SaveReconcilerConfig($name: String!, $config: [ReconcilerConfigInput!]!) {
-			configureReconciler(name: $name, config: $config) {
+			configureReconciler(input: { name: $name, config: $config }) {
 				configured
 			}
 		}

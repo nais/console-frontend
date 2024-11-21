@@ -99,20 +99,19 @@
 									{:else if edge.node.__typename === 'TeamMemberAddedAuditEntry'}
 										{edge.node.message}
 										{#if edge.node.teamMemberAdded}
-											{edge.node.teamMemberAdded.user?.name} ({edge.node.teamMemberAdded.user
-												?.email}) was added as {edge.node.teamMemberAdded.role}.
+											{edge.node.teamMemberAdded.userEmail}) was added as {edge.node.teamMemberAdded
+												.role}.
 										{/if}
 									{:else if edge.node.__typename === 'TeamMemberRemovedAuditEntry'}
 										{edge.node.message}
 										{#if edge.node.teamMemberRemoved}
-											{edge.node.teamMemberRemoved.user?.name} ({edge.node.teamMemberRemoved.user
-												?.email}) was removed.
+											{edge.node.teamMemberRemoved.userEmail}) was removed.
 										{/if}
 									{:else if edge.node.__typename === 'TeamMemberSetRoleAuditEntry'}
 										{edge.node.message}
 										{#if edge.node.teamMemberSetRole}
-											{edge.node.teamMemberSetRole.user?.name} ({edge.node.teamMemberSetRole.user
-												?.email}) was set to {edge.node.teamMemberSetRole.role}.
+											{edge.node.teamMemberSetRole.userEmail}) was set to {edge.node
+												.teamMemberSetRole.role}.
 										{/if}
 									{:else if edge.node.__typename === 'TeamUpdatedAuditEntry'}
 										{edge.node.message}

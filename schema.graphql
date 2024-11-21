@@ -333,9 +333,6 @@ type ApplicationRestartedAuditEntry implements AuditEntry & Node {
   """Creation time of the entry."""
   createdAt: Time!
 
-  """The data associated with the audit entry."""
-  data: ApplicationRestartedAuditEntryData
-
   """The environment name that the entry belongs to."""
   environmentName: String
 
@@ -353,11 +350,6 @@ type ApplicationRestartedAuditEntry implements AuditEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
-}
-
-type ApplicationRestartedAuditEntryData {
-  """The application that was restarted."""
-  application: Application
 }
 
 """The scaling configuration of an application."""
@@ -591,6 +583,14 @@ type ChangeDeploymentKeyPayload {
   deploymentKey: DeploymentKey
 }
 
+input ConfigureReconcilerInput {
+  """List of reconciler config inputs."""
+  config: [ReconcilerConfigInput!]!
+
+  """The name of the reconciler to configure."""
+  name: String!
+}
+
 input ConfirmTeamDeletionInput {
   """Deletion key, acquired using the requestTeamDeletion mutation."""
   key: String!
@@ -735,11 +735,11 @@ type CreateTeamPayload {
   team: Team
 }
 
-input CreateUnleashInstanceInput {
+input CreateUnleashForTeamInput {
   teamSlug: Slug!
 }
 
-type CreateUnleashInstancePayload {
+type CreateUnleashForTeamPayload {
   unleash: UnleashInstance
 }
 
@@ -905,6 +905,16 @@ type DeploymentStatus {
   created: Time!
   message: String
   status: String!
+}
+
+input DisableReconcilerInput {
+  """The name of the reconciler to disable."""
+  name: String!
+}
+
+input EnableReconcilerInput {
+  """The name of the reconciler to enable."""
+  name: String!
 }
 
 """
@@ -1600,13 +1610,7 @@ type Mutation {
   changeDeploymentKey(input: ChangeDeploymentKeyInput!): ChangeDeploymentKeyPayload!
 
   """Configure a reconciler."""
-  configureReconciler(
-    """List of reconciler config inputs."""
-    config: [ReconcilerConfigInput!]!
-
-    """The name of the reconciler to configure."""
-    name: String!
-  ): Reconciler!
+  configureReconciler(input: ConfigureReconcilerInput!): Reconciler!
 
   """
   Confirm a team deletion
@@ -1643,7 +1647,7 @@ type Mutation {
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
   """
-  createUnleashForTeam(input: CreateUnleashInstanceInput!): CreateUnleashInstancePayload!
+  createUnleashForTeam(input: CreateUnleashForTeamInput!): CreateUnleashForTeamPayload!
 
   """Delete an application."""
   deleteApplication(
@@ -1662,20 +1666,14 @@ type Mutation {
   
   The reconciler configuration will be left intact.
   """
-  disableReconciler(
-    """The name of the reconciler to disable."""
-    name: String!
-  ): Reconciler!
+  disableReconciler(input: DisableReconcilerInput!): Reconciler!
 
   """
   Enable a reconciler
   
   A reconciler must be fully configured before it can be enabled.
   """
-  enableReconciler(
-    """The name of the reconciler to enable."""
-    name: String!
-  ): Reconciler!
+  enableReconciler(input: EnableReconcilerInput!): Reconciler!
 
   """Remove a team repository."""
   removeRepositoryFromTeam(input: RemoveRepositoryFromTeamInput!): RemoveRepositoryFromTeamPayload!
@@ -2099,7 +2097,7 @@ type ReconcilerConfiguredAuditEntry implements AuditEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: ReconcilerConfiguredAuditEntryData
+  data: ReconcilerConfiguredAuditEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2724,7 +2722,7 @@ type SecretValueAddedAuditEntry implements AuditEntry & Node {
   createdAt: Time!
 
   """Data associated with the entry."""
-  data: SecretValueAddedAuditEntryData
+  data: SecretValueAddedAuditEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2768,7 +2766,7 @@ type SecretValueRemovedAuditEntry implements AuditEntry & Node {
   createdAt: Time!
 
   """Data associated with the entry."""
-  data: SecretValueRemovedAuditEntryData
+  data: SecretValueRemovedAuditEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2804,7 +2802,7 @@ type SecretValueUpdatedAuditEntry implements AuditEntry & Node {
   createdAt: Time!
 
   """Data associated with the entry."""
-  data: SecretValueUpdatedAuditEntryData
+  data: SecretValueUpdatedAuditEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2843,7 +2841,7 @@ type ServiceAccount implements Node {
   name: String!
 }
 
-type ServiceCostPoint {
+type ServiceCostSample {
   """The cost in euros."""
   cost: Float!
 
@@ -2858,7 +2856,7 @@ type ServiceCostSeries {
   date: Date!
 
   """The cost for the services used by the workload."""
-  services: [ServiceCostPoint!]!
+  services: [ServiceCostSample!]!
 
   """The sum of the cost across all services."""
   sum: Float!
@@ -3758,9 +3756,6 @@ type TeamEnvironmentUpdatedAuditEntry implements AuditEntry & Node {
 }
 
 type TeamEnvironmentUpdatedAuditEntryData {
-  """The name of the environment that was updated."""
-  environmentName: String!
-
   """Fields that were updated."""
   updatedFields: [TeamEnvironmentUpdatedAuditEntryDataUpdatedField!]!
 }
@@ -3888,9 +3883,6 @@ type TeamMemberAddedAuditEntryData {
   """The role that the user was added with."""
   role: TeamMemberRole!
 
-  """The user itself."""
-  user: User
-
   """The email address of the user that was added."""
   userEmail: String!
 
@@ -3970,9 +3962,6 @@ type TeamMemberRemovedAuditEntry implements AuditEntry & Node {
 }
 
 type TeamMemberRemovedAuditEntryData {
-  """The user itself."""
-  user: User
-
   """The email address of the user that was removed."""
   userEmail: String!
 
@@ -4023,9 +4012,6 @@ type TeamMemberSetRoleAuditEntry implements AuditEntry & Node {
 type TeamMemberSetRoleAuditEntryData {
   """The role that the user was assigned."""
   role: TeamMemberRole!
-
-  """The user itself."""
-  user: User
 
   """The email address of the user that was added."""
   userEmail: String!
@@ -4092,7 +4078,7 @@ type TeamUpdatedAuditEntry implements AuditEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: TeamUpdatedAuditEntryData
+  data: TeamUpdatedAuditEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -4141,14 +4127,6 @@ type TeamUtilizationData {
 
   """The current resource usage."""
   used: Float!
-}
-
-type TeamUtilizationEnvironmentDataPoint {
-  """The team environment"""
-  environment: TeamEnvironment!
-
-  """Value of the used resource at the given timestamp."""
-  value: Float!
 }
 
 enum TeamVulnerabilityRanking {
@@ -4310,9 +4288,6 @@ type UnleashInstanceCreatedAuditEntry implements AuditEntry & Node {
   """Creation time of the entry."""
   createdAt: Time!
 
-  """Data associated with the creation."""
-  data: UnleashInstanceCreatedAuditEntryData
-
   """The environment name that the entry belongs to."""
   environmentName: String
 
@@ -4330,11 +4305,6 @@ type UnleashInstanceCreatedAuditEntry implements AuditEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
-}
-
-type UnleashInstanceCreatedAuditEntryData {
-  """Name of the Unleash instance."""
-  name: String!
 }
 
 type UnleashInstanceMetrics {
@@ -4356,7 +4326,7 @@ type UnleashInstanceUpdatedAuditEntry implements AuditEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: UnleashInstanceUpdatedAuditEntryData
+  data: UnleashInstanceUpdatedAuditEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -4378,10 +4348,10 @@ type UnleashInstanceUpdatedAuditEntry implements AuditEntry & Node {
 }
 
 type UnleashInstanceUpdatedAuditEntryData {
-  """Allowed team slugs."""
+  """Allowed team slug."""
   allowedTeamSlug: Slug
 
-  """Revoked team slugs."""
+  """Revoked team slug."""
   revokedTeamSlug: Slug
 }
 
@@ -4563,19 +4533,19 @@ enum UserTeamOrderField {
   TEAM_SLUG
 }
 
+"""Resource type."""
+enum UtilizationResourceType {
+  CPU
+  MEMORY
+}
+
 """Resource utilization type."""
-type UtilizationDataPoint {
+type UtilizationSample {
   """Timestamp of the value."""
   timestamp: Time!
 
   """Value of the used resource at the given timestamp."""
   value: Float!
-}
-
-"""Resource type."""
-enum UtilizationResourceType {
-  CPU
-  MEMORY
 }
 
 type VulnerabilityUpdatedAuditEntry implements AuditEntry & Node {
@@ -4742,7 +4712,7 @@ type WorkloadCostPeriod {
   sum: Float!
 }
 
-type WorkloadCostPoint {
+type WorkloadCostSample {
   """The cost in euros."""
   cost: Float!
 
@@ -4763,7 +4733,7 @@ type WorkloadCostSeries {
   sum: Float!
 
   """The cost for the workloads in the environment."""
-  workloads: [WorkloadCostPoint!]!
+  workloads: [WorkloadCostSample!]!
 }
 
 """Workload edge."""
@@ -5027,7 +4997,7 @@ type WorkloadUtilization {
   requested(resourceType: UtilizationResourceType!): Float!
 
   """Usage between start and end with step size for given resource type."""
-  series(input: WorkloadUtilizationSeriesInput!): [UtilizationDataPoint!]!
+  series(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
 }
 
 type WorkloadUtilizationData {
