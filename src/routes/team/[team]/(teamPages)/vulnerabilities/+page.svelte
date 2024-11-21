@@ -5,38 +5,20 @@
 		PendingValue,
 		TeamVulnerabilityRanking,
 		TeamVulnerabilityRiskScoreTrend,
-		TeamVulnerabilityState,
-		WorkloadOrderField
+		TeamVulnerabilityState
 	} from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 
 	import { page } from '$app/stores';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
+	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
-		Alert,
-		Button,
-		HelpText,
-		Select,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import {
-		ArrowCirclepathIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon,
 		FaceFrownIcon,
 		FaceIcon,
 		FaceSmileIcon,
-		SandboxIcon,
 		TrendDownIcon,
 		TrendFlatIcon,
 		TrendUpIcon,
@@ -47,34 +29,10 @@
 
 	export let data: PageData;
 
-	$: ({ TeamVulnerabilities } = data);
-
 	let selectedEnvironment: string = '';
+	selectedEnvironment = get(page).url.searchParams.get('environment') || '';
 
-	if (get(page).url.searchParams.has('environment')) {
-		selectedEnvironment = get(page).url.searchParams.get('environment') || '';
-	}
-
-	$: tableSort = {
-		orderBy: $TeamVulnerabilities.variables?.orderBy?.field,
-		direction: $TeamVulnerabilities.variables?.orderBy?.direction
-	};
-
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = WorkloadOrderField[key as keyof typeof WorkloadOrderField];
-			tableSort.direction = 'ASC';
-		}
-
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL
-		});
-	};
+	$: ({ TeamVulnerabilities } = data);
 </script>
 
 {#if $TeamVulnerabilities.errors}
@@ -179,7 +137,7 @@
 					</h4>
 					<p class="metric">
 						{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
-							{team.vulnerabilitySummary.bomCount} of {team.workloads.pageInfo.totalCount}
+							{team.vulnerabilitySummary.bomCount} of {team.workloads?.pageInfo.totalCount}
 							workloads
 						{:else}
 							<Skeleton variant="text" width="44px" />
@@ -348,191 +306,18 @@
 
 					{#each team.environments as env}
 						{#if env.name !== PendingValue}
-							<option value={env.name}>{env.name}</option>
+							{#if env.name === selectedEnvironment}
+								<option value={env.name} selected={true}>{env.name}</option>
+							{:else}
+								<option value={env.name}>{env.name}</option>
+							{/if}
 						{/if}
 					{/each}
 				</Select>
 			</div>
-
-			<Table
-				zebraStripes
-				size="small"
-				sort={{
-					orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
-					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-				}}
-				on:sortChange={tableSortChange}
-			>
-				<Thead>
-					<Th></Th>
-					<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-					<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Env</Th>
-					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
-						>Critical</Th
-					>
-					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}>High</Th>
-					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}>Medium</Th>
-					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}>Low</Th>
-					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
-						>Unassigned</Th
-					>
-					<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}>Risk Score</Th>
-				</Thead>
-				<Tbody>
-					{#if team.workloads.nodes.length > 0}
-						{@const workloads = team.workloads.nodes}
-						{#each workloads as workload}
-							<Tr>
-								<Td>
-									{#if workload.__typename !== PendingValue}
-										{#if workload.__typename === 'Application'}
-											<Tooltip placement="right" content="Application">
-												<span style="color:var(--a-gray-600)"
-													><SandboxIcon {...$$restProps} />
-												</span>
-											</Tooltip>
-										{:else if workload.__typename === 'Job'}
-											<Tooltip placement="right" content="Job">
-												<span style="color:var(--a-gray-600)"
-													><ArrowCirclepathIcon {...$$restProps} />
-												</span>
-											</Tooltip>
-										{/if}
-									{:else}
-										<Skeleton variant="circle" width="16px" height="16px" />
-									{/if}
-								</Td>
-								<Td>
-									{#if workload.__typename !== PendingValue}
-										<WorkloadLink {workload} />
-									{:else}
-										<Skeleton variant="text" />
-									{/if}
-								</Td>
-								<Td>
-									{#if workload.__typename !== PendingValue}
-										{workload.environment.name}
-									{:else}
-										<Skeleton variant="text" />
-									{/if}
-								</Td>
-								<Td>
-									<div class="vulnerability">
-										<Vulnerability
-											severity="critical"
-											count={workload.image.vulnerabilitySummary
-												? workload.image.vulnerabilitySummary.critical
-												: undefined}
-											size="32px"
-										/>
-									</div>
-								</Td>
-								<Td>
-									<div class="vulnerability">
-										<Vulnerability
-											severity="high"
-											count={workload.image.vulnerabilitySummary
-												? workload.image.vulnerabilitySummary.high
-												: undefined}
-											size="32px"
-										/>
-									</div>
-								</Td>
-								<Td>
-									<div class="vulnerability">
-										<Vulnerability
-											severity="medium"
-											count={workload.image.vulnerabilitySummary
-												? workload.image.vulnerabilitySummary.medium
-												: undefined}
-											size="32px"
-										/>
-									</div>
-								</Td>
-								<Td>
-									<div class="vulnerability">
-										<Vulnerability
-											severity="low"
-											count={workload.image.vulnerabilitySummary
-												? workload.image.vulnerabilitySummary.low
-												: undefined}
-											size="32px"
-										/>
-									</div>
-								</Td>
-								<Td>
-									<div class="vulnerability">
-										<Vulnerability
-											severity="unassigned"
-											count={workload.image.vulnerabilitySummary
-												? workload.image.vulnerabilitySummary.unassigned
-												: undefined}
-											size="32px"
-										/>
-									</div>
-								</Td>
-								<Td>
-									<div class="vulnerability">
-										<!--Tooltip
-											placement="left"
-											content="Calculated based on the number of vulnerabilities, includes unassigned"
-										-->
-										{#if workload.image.vulnerabilitySummary?.riskScore !== PendingValue}
-											<span class="align-center"
-												>{workload.image.vulnerabilitySummary
-													? workload.image.vulnerabilitySummary.riskScore
-													: '-'}</span
-											>
-										{:else}
-											<Skeleton variant="text" width="32px" />
-										{/if}
-										<!--/Tooltip-->
-									</div>
-								</Td>
-							</Tr>
-						{/each}
-					{:else}
-						<Tr>
-							<Td colspan={9}>No workloads with vulnerability data found</Td>
-						</Tr>
-					{/if}
-				</Tbody>
-			</Table>
-			{#if $TeamVulnerabilities.data?.team.workloads.pageInfo.totalCount !== PendingValue && ($TeamVulnerabilities.data?.team.workloads.pageInfo.hasPreviousPage || $TeamVulnerabilities.data?.team.workloads.pageInfo.hasNextPage)}
-				<div class="pagination">
-					<span>
-						{#if $TeamVulnerabilities.data?.team.workloads.pageInfo.pageStart !== $TeamVulnerabilities.data?.team.workloads.pageInfo.pageEnd}
-							{$TeamVulnerabilities.data?.team.workloads.pageInfo.pageStart} - {$TeamVulnerabilities
-								.data?.team.workloads.pageInfo.pageEnd}
-						{:else}
-							{$TeamVulnerabilities.data?.team.workloads.pageInfo.pageStart}
-						{/if}
-
-						of {$TeamVulnerabilities.data?.team.workloads.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!$TeamVulnerabilities.data?.team.workloads.pageInfo.hasPreviousPage}
-							on:click={async () => {
-								return await TeamVulnerabilities.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!$TeamVulnerabilities.data?.team.workloads.pageInfo.hasNextPage}
-							on:click={async () => {
-								return await TeamVulnerabilities.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
-			{/if}
+			{#key selectedEnvironment}
+				<WorkloadsWithSbom team={$page.params.team} environment={selectedEnvironment} />
+			{/key}
 		</Card>
 	</div>
 {/if}
@@ -543,16 +328,6 @@
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-
-	.vulnerability {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.align-center {
-		text-align: center;
 	}
 
 	.wrapper :global(.navds-alert__wrapper) {
@@ -567,23 +342,15 @@
 		font-weight: bold;
 		font-size: 1rem;
 	}
-
-	.env-filter {
-		display: flex;
-		margin-bottom: 1rem;
-	}
-
 	.summaryIcon {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
-
 	.summary {
 		width: 100%;
 		min-height: 80px;
 	}
-
 	.summary > h4 {
 		display: flex;
 		justify-content: space-between;
@@ -598,20 +365,17 @@
 		font-size: 1rem;
 		color: var(--color-text-secondary);
 	}
-
 	.metric {
 		font-size: 1.3rem;
 		margin: 0;
 	}
-
 	.summaryCard {
 		display: flex;
 		align-items: center;
 		gap: 20px;
 	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
+	.env-filter {
+		display: flex;
+		margin-bottom: 1rem;
 	}
 </style>

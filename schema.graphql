@@ -1960,11 +1960,8 @@ type Query {
   ): TeamConnection!
   teamsUtilization(resourceType: UtilizationResourceType!): [TeamUtilizationData!]!
 
-  """Get a user by its ID."""
-  user(
-    """The ID of the user to get."""
-    id: ID!
-  ): User!
+  """Get a user by an identifier."""
+  user(email: String): User!
 
   """Get a list of users."""
   users(
