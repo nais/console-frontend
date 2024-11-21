@@ -77,10 +77,9 @@
 					<Tr>
 						{#if ds !== PendingValue}
 							<Td>
-								<a
-									href={resourceLink(ds.environment.name, teamName, 'bigquery', ds.name)}
-									target="_blank">{ds.name}</a
-								>
+								<a href={resourceLink(ds.environment.name, teamName, 'bigquery', ds.name)}>
+									{ds.name}
+								</a>
 							</Td>
 							<Td>
 								{ds.environment.name}

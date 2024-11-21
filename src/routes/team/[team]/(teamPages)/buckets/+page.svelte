@@ -104,9 +104,9 @@
 					{#if b !== PendingValue}
 						<Tr>
 							<Td>
-								<a href="/team/{teamName}/{b.environment.name}/bucket/{b.name}" target="_blank"
-									>{b.name}</a
-								>
+								<a href="/team/{teamName}/{b.environment.name}/bucket/{b.name}">
+									{b.name}
+								</a>
 							</Td>
 							<Td>
 								{b.environment.name}
