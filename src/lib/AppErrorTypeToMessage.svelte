@@ -198,7 +198,7 @@
 			<Alert variant="warning">
 				<h4>Missing SBOM</h4>
 				The application does not have a registered Software Bill of Materials (SBOM). Refer to the
-				<a href="https://docs.nais.io/services/salsa/#slsa-in-nais">NAIS documentation</a>
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>NAIS documentation</a>
 				for instructions on how to resolve this.
 			</Alert>
 		{:else if type === 'WorkloadStatusVulnerable'}

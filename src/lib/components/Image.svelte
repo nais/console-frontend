@@ -110,12 +110,12 @@
 			{#if !image.hasSBOM}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				Data was discovered, but the SBOM was not rendered. Please refer to the
-				<a href={docURL('/security/salsa/#slsa-in-nais')}>NAIS documentation</a>
+				<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
 				for further assistance.
 			{:else if image.vulnerabilitySummary === null}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				No data found.
-				<a href={docURL('/services/salsa/#slsa-in-nais')} target="_blank">How to fix</a>
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} target="_blank">How to fix</a>
 			{:else if image.hasSBOM && image.vulnerabilitySummary && isFindings(image.vulnerabilitySummary)}
 				<Tooltip placement="right" content="severity: CRITICAL">
 					<VulnerabilityBadge
