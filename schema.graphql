@@ -3162,9 +3162,6 @@ type Team implements Node {
     orderBy: BucketOrder
   ): BucketConnection!
 
-  """The CDN bucket for the team."""
-  cdnBucket: String
-
   """The cost for the team."""
   cost: TeamCost!
 
@@ -3200,23 +3197,14 @@ type Team implements Node {
     last: Int
   ): DeploymentConnection!
 
-  """The ID of the Entra ID (f.k.a. Azure AD) group for the team."""
-  entraIDGroupID: String
-
   """Get a specific environment for the team."""
   environment(name: String!): TeamEnvironment!
 
   """Environments for the team."""
   environments: [TeamEnvironment!]!
 
-  """The slug of the GitHub team."""
-  gitHubTeamSlug: String
-
-  """The Google Artifact Registry for the team."""
-  googleArtifactRegistry: String
-
-  """The email address of the Google Workspace group for the team."""
-  googleGroupEmail: String
+  """External resources for the team."""
+  externalResources: TeamExternalResources!
 
   """The globally unique ID of the team."""
   id: ID!
@@ -3459,6 +3447,11 @@ input TeamApplicationsFilter {
   name: String!
 }
 
+type TeamCDN {
+  """The CDN bucket for the team."""
+  bucket: String!
+}
+
 type TeamConfirmDeleteKeyAuditEntry implements AuditEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3650,6 +3643,11 @@ type TeamEdge {
   node: Team!
 }
 
+type TeamEntraIDGroup {
+  """The ID of the Entra ID (f.k.a. Azure AD) group for the team."""
+  groupID: String!
+}
+
 type TeamEnvironment implements Node {
   """NAIS application in the team environment."""
   application(
@@ -3769,6 +3767,38 @@ type TeamEnvironmentUpdatedAuditEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+type TeamExternalResources {
+  """CDN bucket."""
+  cdn: TeamCDN
+
+  """The Entra ID (f.k.a. Azure AD) group for the team."""
+  entraIDGroup: TeamEntraIDGroup
+
+  """The teams GitHub team."""
+  gitHubTeam: TeamGitHubTeam
+
+  """Google Artifact Registry."""
+  googleArtifactRegistry: TeamGoogleArtifactRegistry
+
+  """The Google group for the team."""
+  googleGroup: TeamGoogleGroup
+}
+
+type TeamGitHubTeam {
+  """The slug of the GitHub team."""
+  slug: String!
+}
+
+type TeamGoogleArtifactRegistry {
+  """The Google Artifact Registry for the team."""
+  repository: String!
+}
+
+type TeamGoogleGroup {
+  """The email address of the Google Workspace group for the team."""
+  email: String!
 }
 
 """Application inventory count for a team."""
