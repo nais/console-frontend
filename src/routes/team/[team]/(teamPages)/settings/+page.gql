@@ -3,11 +3,6 @@ query TeamSettings($team: Slug!) {
 		slug
 		purpose
 		slackChannel
-		gitHubTeamSlug
-		entraIDGroupID
-		googleGroupEmail
-		googleArtifactRegistry
-		cdnBucket
 		deploymentKey {
 			created
 			expires
@@ -17,6 +12,23 @@ query TeamSettings($team: Slug!) {
 			name
 			gcpProjectID
 			slackAlertsChannel
+		}
+		externalResources {
+			entraIDGroup {
+				groupID
+			}
+			googleGroup {
+				email
+			}
+			googleArtifactRegistry {
+				repository
+			}
+			cdn {
+				bucket
+			}
+			gitHubTeam {
+				slug
+			}
 		}
 	}
 }

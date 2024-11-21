@@ -92,17 +92,17 @@
 	let slackChannelsErrors: { message: string }[] | null;
 
 	const hasGlobalAttributes = (obj: {
-		readonly entraIDGroupID: string | null;
-		readonly gitHubTeamSlug: string | null;
-		readonly googleGroupEmail: string | null;
-		readonly googleArtifactRegistry: string | null;
-		readonly cdnBucket: string | null;
+		readonly entraIDGroup: unknown | null;
+		readonly gitHubTeam: unknown | null;
+		readonly googleGroup: unknown | null;
+		readonly googleArtifactRegistry: unknown | null;
+		readonly cdn: unknown | null;
 	}) =>
-		obj.entraIDGroupID !== null ||
-		obj.gitHubTeamSlug !== null ||
-		obj.googleGroupEmail !== null ||
+		obj.entraIDGroup !== null ||
+		obj.gitHubTeam !== null ||
+		obj.googleGroup !== null ||
 		obj.googleArtifactRegistry !== null ||
-		obj.cdnBucket !== null;
+		obj.cdn !== null;
 
 	const envResources = (obj: { readonly gcpProjectID: string | null }) => {
 		const lines: { key: string; value: string }[] = [];
@@ -233,33 +233,34 @@
 
 			<h4>Global</h4>
 			<dl>
-				{#if hasGlobalAttributes(teamSettings)}
-					{#if teamSettings.googleArtifactRegistry}
+				{#if hasGlobalAttributes(teamSettings.externalResources)}
+					{@const external = teamSettings.externalResources}
+					{#if external.googleArtifactRegistry}
 						<dt>Artifact Registry repository</dt>
-						<dd>{formatGARRepo(teamSettings.googleArtifactRegistry)}</dd>
+						<dd>{formatGARRepo(external.googleArtifactRegistry.repository)}</dd>
 					{/if}
-					{#if teamSettings.gitHubTeamSlug}
+					{#if external.gitHubTeam}
 						<dt>GitHub team</dt>
-						<dd>{teamSettings.gitHubTeamSlug}</dd>
+						<dd>{external.gitHubTeam.slug}</dd>
 					{/if}
-					{#if teamSettings.googleGroupEmail}
+					{#if external.googleGroup}
 						<dt>Google group email</dt>
-						<dd>{teamSettings.googleGroupEmail}</dd>
+						<dd>{external.googleGroup.email}</dd>
 					{/if}
-					{#if teamSettings.cdnBucket}
+					{#if external.cdn}
 						<dt>Team CDN bucket</dt>
 						<dd>
-							<a href="https://console.cloud.google.com/storage/browser/{teamSettings.cdnBucket}">
-								{teamSettings.cdnBucket}
+							<a href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}">
+								{external.cdn.bucket}
 							</a>
 						</dd>
 					{/if}
-					{#if teamSettings.entraIDGroupID}
+					{#if external.entraIDGroup}
 						<dt>Azure AD group ID</dt>
 						<dd>
-							<a href="https://myaccount.microsoft.com/groups/{teamSettings.entraIDGroupID}"
-								>{teamSettings.entraIDGroupID}</a
-							>
+							<a href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}">
+								{external.entraIDGroup.groupID}
+							</a>
 						</dd>
 					{/if}
 				{:else}

@@ -16,7 +16,11 @@
 	const teamInfo = graphql(`
 		query TeamInfo($team: Slug!) @load {
 			team(slug: $team) @loading {
-				gitHubTeamSlug @loading
+				externalResources @loading {
+					gitHubTeam @loading {
+						slug @loading
+					}
+				}
 				purpose @loading
 				slackChannel @loading
 				workloads @loading {
@@ -70,12 +74,15 @@
 		<Skeleton variant="text" />
 	{/if}
 
-	{#if t.gitHubTeamSlug}
+	{#if t.externalResources.gitHubTeam}
 		<strong>GitHub team:</strong>
-		{#if t.gitHubTeamSlug !== PendingValue}
-			<a href="https://github.com/orgs/{githubOrganization}/teams/{t.gitHubTeamSlug}"
-				>{t.gitHubTeamSlug}</a
+		{#if t.externalResources.gitHubTeam?.slug !== PendingValue}
+			<a
+				href="https://github.com/orgs/{githubOrganization}/teams/{t.externalResources.gitHubTeam
+					.slug}"
 			>
+				{t.externalResources.gitHubTeam?.slug}
+			</a>
 		{:else}
 			<Skeleton variant="text" />
 		{/if}
