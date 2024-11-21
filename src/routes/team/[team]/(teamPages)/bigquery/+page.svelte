@@ -55,7 +55,8 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if $BigQuery.data}
+{/if}
+{#if $BigQuery.data}
 	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
 	<Card columns={12}>
 		<Table

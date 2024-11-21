@@ -59,7 +59,8 @@
 			{error}
 		</Alert>
 	{/each}
-{:else if $Buckets.data}
+{/if}
+{#if $Buckets.data}
 	{@const cost = $Buckets.data.team.cost}
 	{@const buckets = $Buckets.data.team.buckets}
 	<div class="summary-grid">
