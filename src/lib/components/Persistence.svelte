@@ -14,6 +14,9 @@
 		graphql(`
 			fragment Persistence on Workload {
 				name
+				environment {
+					name
+				}
 				bigQueryDatasets {
 					edges {
 						node {
@@ -33,14 +36,9 @@
 						node {
 							teamName
 							access
+							workloadName
 							topic {
 								name
-							}
-							workload {
-								name
-								environment {
-									name
-								}
 							}
 						}
 					}
@@ -116,13 +114,15 @@
 			<h5><Kafka />Kafka</h5>
 			<ul>
 				{#each $data.kafkaTopicAcls.edges as acl}
-					<li>
-						<a
-							href={`/team/${acl.node.teamName}/${acl.node.workload?.environment.name === 'prod-fss' ? 'prod-gcp' : acl.node.workload?.environment.name === 'dev-fss' ? 'dev-gcp' : acl.node.workload?.environment.name}/kafka/${acl.node.topic.name}`}
-							>{acl.node.topic.name}</a
-						>
-						<code>({acl.node.access})</code>
-					</li>
+					{#if acl.node.teamName !== '*'}
+						<li>
+							<a
+								href={`/team/${acl.node.teamName}/${$data.environment.name === 'prod-fss' ? 'prod-gcp' : $data.environment.name === 'dev-fss' ? 'dev-gcp' : $data.environment.name}/kafka/${acl.node.topic.name}`}
+								>{acl.node.topic.name}</a
+							>
+							<code>({acl.node.access})</code>
+						</li>
+					{/if}
 				{/each}
 			</ul>
 		{/if}

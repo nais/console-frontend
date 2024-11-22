@@ -125,10 +125,9 @@
 				</div>
 			{/if}
 		</Card>
-		<Card columns={5}>
+		<!--Card columns={5}>
 			<h3>Status</h3>
-			TODO: Sooo little status
-			<!--div>
+			<div>
 				{#if redisInstance.status.conditions.length}
 					{#each redisInstance.status.conditions as cond}
 						<dl class="conditions">
@@ -159,8 +158,8 @@
 				{:else}
 					<p>No conditions</p>
 				{/if}
-			</div-->
-		</Card>
+			</div>
+		</Card-->
 	</div>
 {/if}
 

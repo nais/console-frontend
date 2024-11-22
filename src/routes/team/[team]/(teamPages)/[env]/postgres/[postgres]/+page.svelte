@@ -175,9 +175,8 @@
 				<p style="display: flex; align-items: center;">
 					{#if instance.healthy}
 						<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
-					{:else}
-						TODO: implement conditions
-						<!--{:else if instance.status.conditions.length > 0}
+						<!--{:else}
+						{:else if instance.status.conditions.length > 0}
 						{#each instance.status.conditions as condition}
 							<p>
 								{#if condition.type !== 'Ready'}
@@ -475,7 +474,6 @@
 							</Alert>
 						{/if}
 					{/each}
-				TODO: implement conditions?
 			</div>
 			<div style="margin-bottom: 0.5rem;">
 				<h4>Database</h4>
@@ -488,7 +486,6 @@
 							</Alert>
 						{/each}
 					{/if}
-				TODO: implement conditions?
 			</div>
 		</Card>
 		{/if}-->

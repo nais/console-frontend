@@ -157,7 +157,6 @@
 					<p>No conditions</p>
 				{/if}
 			</div-->
-			TODO: Status
 		</Card>
 	</div>
 {/if}

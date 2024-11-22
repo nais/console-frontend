@@ -86,10 +86,10 @@
 				</dd>
 			</dl>
 		</Card>
-		<Card columns={5} rows={2}>
+		<!--Card columns={5} rows={2}>
 			<h3>Status</h3>
 			<div>
-				<!--
+
 				{#if bigQueryDatasetInstance.status.conditions.length}
 					{#each bigQueryDatasetInstance.status.conditions as cond}
 						<dl class="conditions">
@@ -121,10 +121,9 @@
 					<p>No conditions</p>
 				{/if}
 			</div>
-			-->
-				TODO
+
 			</div></Card
-		>
+		-->
 		<Card columns={7}>
 			<h3>Access</h3>
 
