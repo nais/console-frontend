@@ -44,7 +44,7 @@
 {:else if $KafkaTopic.data}
 	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
 	<div class="grid">
-		<Card columns={6}>
+		<Card columns={12}>
 			<h3 class="heading">
 				<Kafka />
 				{topic.name}
@@ -132,10 +132,9 @@
 				</div>
 			{/if}
 		</Card>
-		<Card rows={2} columns={6}>
+		<!--Card rows={2} columns={6}>
 			<h3>Status</h3>
-			<p>TODO</p>
-			<!--dl class="status">
+			<dl class="status">
 				<dt>Fully qualified name</dt>
 				<dd><code>{s.fullyQualifiedName}</code></dd>
 				<dt>Synchronization state</dt>
@@ -154,27 +153,27 @@
 				<dt>Synchronization time</dt>
 				<dd><Time time={s.synchronizationTime} /></dd>
 				<dt>Credentials expiry time</dt>
-				<dd>TODO<Time time={s.credentialsExpiryTime} /></dd>
+				<dd><Time time={s.credentialsExpiryTime} /></dd>
 				<dt>Latest Aiven sync failure</dt>
 				<dd><Time time={s.latestAivenSyncFailure} /></dd>
-			</dl-->
+			</dl>
 
-			<!--details>
+			<details>
 				<summary>Status message</summary>
 				<p style="max-width: 25em;">
 					{s.message}
 				</p>
-			</details-->
+			</details>
 
 			<h3>Errors</h3>
-			<!--ul>
+			<ul>
 				{#each s.errors as err}
 					<li>{err}</li>
 				{/each}
-			</ul-->
-			<p>TODO</p>
-		</Card>
-		<Card columns={6}>
+			</ul>
+
+		</Card-->
+		<Card columns={12}>
 			<h3>Topic configuration</h3>
 			<dl class="status">
 				{#if topic.configuration}
