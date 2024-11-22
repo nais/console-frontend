@@ -100,26 +100,24 @@
 											{/each}
 										{/if}
 									{:else if edge.node.__typename === 'TeamMemberAddedActivityLogEntry'}
-										{edge.node.message}
 										{#if edge.node.teamMemberAdded}
-											{edge.node.teamMemberAdded.userEmail !== ''
+											Added member {edge.node.teamMemberAdded.userEmail !== ''
 												? edge.node.teamMemberAdded.userEmail
-												: 'unknown email'} was added as {edge.node.teamMemberAdded.role}.
+												: 'unknown email'} to team as {edge.node.teamMemberAdded.role}.
 										{/if}
 									{:else if edge.node.__typename === 'TeamMemberRemovedActivityLogEntry'}
-										{edge.node.message}
 										{#if edge.node.teamMemberRemoved}
-											{edge.node.teamMemberRemoved.userEmail !== ''
+											Removed {edge.node.teamMemberRemoved.userEmail !== ''
 												? edge.node.teamMemberRemoved.userEmail
 												: 'unknown email'}
-											was removed.
+											from team.
 										{/if}
 									{:else if edge.node.__typename === 'TeamMemberSetRoleActivityLogEntry'}
-										{edge.node.message}
 										{#if edge.node.teamMemberSetRole}
-											{edge.node.teamMemberSetRole.userEmail !== ''
+											Set role to {edge.node.teamMemberSetRole.role} for {edge.node
+												.teamMemberSetRole.userEmail !== ''
 												? edge.node.teamMemberSetRole.userEmail
-												: 'unknown email'} was set to {edge.node.teamMemberSetRole.role}.
+												: 'unknown email'}.
 										{/if}
 									{:else if edge.node.__typename === 'TeamUpdatedActivityLogEntry'}
 										{edge.node.message}
