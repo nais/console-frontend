@@ -1,7 +1,7 @@
 query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) @loading {
 		slug
-		auditEntries(first: 10) @paginate(mode: SinglePage) @loading {
+		activityLog(first: 10) @paginate(mode: SinglePage) @loading {
 			pageInfo @loading {
 				hasNextPage
 				hasPreviousPage
@@ -20,22 +20,22 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 					resourceName
 					resourceType
 
-					... on SecretValueAddedAuditEntry {
+					... on SecretValueAddedActivityLogEntry {
 						secretValueAdded: data {
 							valueName
 						}
 					}
-					... on SecretValueRemovedAuditEntry {
+					... on SecretValueRemovedActivityLogEntry {
 						secretValueRemoved: data {
 							valueName
 						}
 					}
-					... on SecretValueUpdatedAuditEntry {
+					... on SecretValueUpdatedActivityLogEntry {
 						secretValueUpdated: data {
 							valueName
 						}
 					}
-					... on TeamEnvironmentUpdatedAuditEntry {
+					... on TeamEnvironmentUpdatedActivityLogEntry {
 						teamEnvironmentUpdated: data {
 							updatedFields {
 								field
@@ -44,27 +44,27 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 							}
 						}
 					}
-					... on TeamMemberAddedAuditEntry {
+					... on TeamMemberAddedActivityLogEntry {
 						teamMemberAdded: data {
 							role
 							userEmail
 							userID
 						}
 					}
-					... on TeamMemberRemovedAuditEntry {
+					... on TeamMemberRemovedActivityLogEntry {
 						teamMemberRemoved: data {
 							userEmail
 							userID
 						}
 					}
-					... on TeamMemberSetRoleAuditEntry {
+					... on TeamMemberSetRoleActivityLogEntry {
 						teamMemberSetRole: data {
 							role
 							userEmail
 							userID
 						}
 					}
-					... on TeamUpdatedAuditEntry {
+					... on TeamUpdatedActivityLogEntry {
 						teamUpdated: data {
 							updatedFields {
 								field
@@ -73,7 +73,7 @@ query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
 							}
 						}
 					}
-					... on UnleashInstanceUpdatedAuditEntry {
+					... on UnleashInstanceUpdatedActivityLogEntry {
 						unleashInstanceUpdated: data {
 							allowedTeamSlug
 							revokedTeamSlug

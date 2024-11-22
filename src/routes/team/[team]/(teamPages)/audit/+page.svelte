@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { AuditResourceType, PendingValue, type AuditResourceType$options } from '$houdini';
+	import {
+		ActivityLogEntryResourceType,
+		type ActivityLogEntryResourceType$options,
+		PendingValue
+	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Button, Skeleton } from '@nais/ds-svelte-community';
@@ -14,20 +18,19 @@
 
 	const resourceLink = (
 		environmentName: string,
-		resourceType: AuditResourceType$options,
+		resourceType: ActivityLogEntryResourceType$options,
 		resourceName: string
 	) => {
 		switch (resourceType) {
-			//TODO: Her mangler nok noen audit resource types fra backend.
-			case AuditResourceType.APP:
+			case ActivityLogEntryResourceType.APP:
 				return `/team/${teamName}/${environmentName}/app/${resourceName}`;
-			/*case AuditResourceType.JOB:
-				return `/team/${teamName}/${env.name}/job/${resourceName}`;*/
-			case AuditResourceType.UNLEASH:
+			case ActivityLogEntryResourceType.JOB:
+				return `/team/${teamName}/${environmentName}/job/${resourceName}`;
+			case ActivityLogEntryResourceType.UNLEASH:
 				return `/team/${teamName}/unleash`;
-			case AuditResourceType.SECRET:
+			case ActivityLogEntryResourceType.SECRET:
 				return `/team/${teamName}/${environmentName}/secret/${resourceName}`;
-			case AuditResourceType.TEAM:
+			case ActivityLogEntryResourceType.TEAM:
 				return `/team/${teamName}`;
 			default:
 				return null;
@@ -42,7 +45,7 @@
 			{#if $AuditEvents.data}
 				{@const ae = $AuditEvents.data}
 
-				{#each ae.team.auditEntries.edges as edge}
+				{#each ae.team.activityLog.edges as edge}
 					{#if edge.node.createdAt === PendingValue}
 						<div class="line">
 							<BodyShort size="small" spacing>
@@ -56,7 +59,7 @@
 						<div class="line">
 							<div style="width: 85%">
 								<BodyShort size="small" spacing>
-									{#if edge.node.__typename === 'SecretValueAddedAuditEntry'}
+									{#if edge.node.__typename === 'SecretValueAddedActivityLogEntry'}
 										{edge.node.message}
 										<strong>{edge.node.secretValueAdded?.valueName}</strong> from
 										{@const link = resourceLink(
@@ -67,7 +70,7 @@
 										{#if link}
 											<a href={link}>{edge.node.resourceName}</a>
 										{/if}
-									{:else if edge.node.__typename === 'SecretValueRemovedAuditEntry'}
+									{:else if edge.node.__typename === 'SecretValueRemovedActivityLogEntry'}
 										{edge.node.message}
 										<strong>{edge.node.secretValueRemoved?.valueName}</strong> from
 										{@const link = resourceLink(
@@ -78,7 +81,7 @@
 										{#if link}
 											<a href={link}>{edge.node.resourceName}</a>
 										{/if}
-									{:else if edge.node.__typename === 'SecretValueUpdatedAuditEntry'}
+									{:else if edge.node.__typename === 'SecretValueUpdatedActivityLogEntry'}
 										{edge.node.message}
 										<strong>{edge.node.secretValueUpdated?.valueName}</strong> from
 										{@const link = resourceLink(
@@ -89,39 +92,39 @@
 										{#if link}
 											<a href={link}>{edge.node.resourceName}</a>
 										{/if}
-									{:else if edge.node.__typename === 'TeamEnvironmentUpdatedAuditEntry'}
+									{:else if edge.node.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamEnvironmentUpdated.updatedFields.length > 0}
 											{#each edge.node.teamEnvironmentUpdated.updatedFields as field}
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}
-									{:else if edge.node.__typename === 'TeamMemberAddedAuditEntry'}
+									{:else if edge.node.__typename === 'TeamMemberAddedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamMemberAdded}
 											{edge.node.teamMemberAdded.userID} ({edge.node.teamMemberAdded.userEmail}) was
 											added as {edge.node.teamMemberAdded.role}.
 										{/if}
-									{:else if edge.node.__typename === 'TeamMemberRemovedAuditEntry'}
+									{:else if edge.node.__typename === 'TeamMemberRemovedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamMemberRemoved}
 											{edge.node.teamMemberRemoved.userID} ({edge.node.teamMemberRemoved.userEmail})
 											was removed.
 										{/if}
-									{:else if edge.node.__typename === 'TeamMemberSetRoleAuditEntry'}
+									{:else if edge.node.__typename === 'TeamMemberSetRoleActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamMemberSetRole}
 											{edge.node.teamMemberSetRole.userID} ({edge.node.teamMemberSetRole.userEmail})
 											was set to {edge.node.teamMemberSetRole.role}.
 										{/if}
-									{:else if edge.node.__typename === 'TeamUpdatedAuditEntry'}
+									{:else if edge.node.__typename === 'TeamUpdatedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamUpdated?.updatedFields.length}
 											{#each edge.node.teamUpdated?.updatedFields as field}
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}
-									{:else if edge.node.__typename === 'UnleashInstanceUpdatedAuditEntry'}
+									{:else if edge.node.__typename === 'UnleashInstanceUpdatedActivityLogEntry'}
 										{@const data = edge.node.unleashInstanceUpdated}
 										{edge.node.message}
 										{#if data?.allowedTeamSlug}
@@ -163,23 +166,23 @@
 				{:else}
 					<p>No events</p>
 				{/each}
-				{#if ae.team.auditEntries.pageInfo !== PendingValue && (ae.team.auditEntries.pageInfo.hasPreviousPage || ae.team.auditEntries.pageInfo.hasNextPage)}
+				{#if ae.team.activityLog.pageInfo !== PendingValue && (ae.team.activityLog.pageInfo.hasPreviousPage || ae.team.activityLog.pageInfo.hasNextPage)}
 					<div class="pagination">
 						<span>
-							{#if ae.team.auditEntries.pageInfo.pageStart !== ae.team.auditEntries.pageInfo.pageEnd}
-								{ae.team.auditEntries.pageInfo.pageStart} - {ae.team.auditEntries.pageInfo.pageEnd}
+							{#if ae.team.activityLog.pageInfo.pageStart !== ae.team.activityLog.pageInfo.pageEnd}
+								{ae.team.activityLog.pageInfo.pageStart} - {ae.team.activityLog.pageInfo.pageEnd}
 							{:else}
-								{ae.team.auditEntries.pageInfo.pageStart}
+								{ae.team.activityLog.pageInfo.pageStart}
 							{/if}
 
-							of {ae.team.auditEntries.pageInfo.totalCount}
+							of {ae.team.activityLog.pageInfo.totalCount}
 						</span>
 
 						<span style="padding-left: 1rem;">
 							<Button
 								size="small"
 								variant="secondary"
-								disabled={!ae.team.auditEntries.pageInfo.hasPreviousPage}
+								disabled={!ae.team.activityLog.pageInfo.hasPreviousPage}
 								on:click={async () => {
 									return await AuditEvents.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
@@ -187,7 +190,7 @@
 							<Button
 								size="small"
 								variant="secondary"
-								disabled={!ae.team.auditEntries.pageInfo.hasNextPage}
+								disabled={!ae.team.activityLog.pageInfo.hasNextPage}
 								on:click={async () => {
 									return await AuditEvents.loadNextPage();
 								}}
