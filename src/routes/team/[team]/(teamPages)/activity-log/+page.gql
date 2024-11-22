@@ -1,4 +1,4 @@
-query AuditEvents($team: Slug!) @cache(policy: NetworkOnly) {
+query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) @loading {
 		slug
 		activityLog(first: 10) @paginate(mode: SinglePage) @loading {

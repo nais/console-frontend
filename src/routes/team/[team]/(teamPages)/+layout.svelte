@@ -182,8 +182,8 @@
 					icon: CogIcon
 				},
 				{
-					name: 'Audit',
-					routeId: '/team/[team]/(teamPages)/audit',
+					name: 'Activity log',
+					routeId: '/team/[team]/(teamPages)/activity-log',
 					withSubRoutes: true,
 					memberOnly: true,
 					icon: ShieldLockIcon

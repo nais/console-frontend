@@ -21,7 +21,7 @@
 		members: 'members',
 		repositories: 'repositories',
 		settings: 'settings',
-		audit: 'audit',
+		'activity-log': 'activity log',
 		secrets: 'secrets',
 		postgres: 'postgres',
 		buckets: 'buckets',

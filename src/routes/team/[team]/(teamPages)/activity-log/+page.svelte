@@ -12,7 +12,7 @@
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
-	$: ({ AuditEvents, viewerIsMember } = data);
+	$: ({ ActivityLog, viewerIsMember } = data);
 
 	$: teamName = $page.params.team;
 
@@ -40,10 +40,10 @@
 
 <div class="grid">
 	<Card columns={12}>
-		<h1>Audit</h1>
+		<h4>Activity log</h4>
 		{#if viewerIsMember}
-			{#if $AuditEvents.data}
-				{@const ae = $AuditEvents.data}
+			{#if $ActivityLog.data}
+				{@const ae = $ActivityLog.data}
 
 				{#each ae.team.activityLog.edges as edge}
 					{#if edge.node.createdAt === PendingValue}
@@ -184,7 +184,7 @@
 								variant="secondary"
 								disabled={!ae.team.activityLog.pageInfo.hasPreviousPage}
 								on:click={async () => {
-									return await AuditEvents.loadPreviousPage();
+									return await ActivityLog.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
 							<Button
@@ -192,7 +192,7 @@
 								variant="secondary"
 								disabled={!ae.team.activityLog.pageInfo.hasNextPage}
 								on:click={async () => {
-									return await AuditEvents.loadNextPage();
+									return await ActivityLog.loadNextPage();
 								}}
 							>
 								<ChevronRightIcon /></Button
