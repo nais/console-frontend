@@ -33,7 +33,8 @@
 	export let data: LayoutData;
 
 	$: team = $page.params.team;
-	const nav: menuGroup[] = [
+	let nav: menuGroup[];
+	$: nav = [
 		{
 			items: [
 				{
