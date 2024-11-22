@@ -371,12 +371,6 @@
 				>
 			</Modal>
 		{/if}
-		<!--
-		TODO: Skal vel bort?
-		{#key teamSettings || synchronizeClicked || rotateClicked}
-			<ActivityLog columns={12} teamName={team} />
-		{/key}
-		-->
 
 		{#if viewerIsOwner}
 			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>
