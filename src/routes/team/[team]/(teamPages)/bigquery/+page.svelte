@@ -70,7 +70,7 @@
 		>
 			<Thead>
 				<Th sortable={true} sortKey={BigQueryDatasetOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Env</Th>
+				<Th sortable={true} sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Environment</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>

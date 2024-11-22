@@ -1,12 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 
-	import {
-		PendingValue,
-		TeamVulnerabilityRanking,
-		TeamVulnerabilityRiskScoreTrend,
-		TeamVulnerabilityState
-	} from '$houdini';
+	import { PendingValue, TeamVulnerabilityRiskScoreTrend, TeamVulnerabilityState } from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 
@@ -16,9 +11,6 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
-		FaceFrownIcon,
-		FaceIcon,
-		FaceSmileIcon,
 		TrendDownIcon,
 		TrendFlatIcon,
 		TrendUpIcon,
@@ -150,11 +142,15 @@
 			<div class="summaryCard">
 				{#if team !== undefined}
 					<div style="--bg-color: #C8C8C8; display:flex; align-items:center;">
-						<Vulnerability
-							count={team.vulnerabilitySummary.critical}
-							severity="critical"
-							size={'66px'}
-						/>
+						{#if team.vulnerabilitySummary.critical == 0}
+							<code class="check">&check;</code>
+						{:else}
+							<Vulnerability
+								count={team.vulnerabilitySummary.critical}
+								severity="critical"
+								size={'66px'}
+							/>
+						{/if}
 					</div>
 					<div class="summary">
 						<h4>Critical vulnerabilities</h4>
@@ -203,7 +199,7 @@
 				</div>
 			</div>
 		</Card>
-		<Card columns={3}>
+		<!--Card columns={3}>
 			<div class="summaryCard">
 				{#if team?.vulnerabilitySummary.ranking !== PendingValue}
 					{#if team.vulnerabilitySummary.ranking === TeamVulnerabilityRanking.MOST_VULNERABLE}
@@ -287,7 +283,7 @@
 					</div>
 				{/if}
 			</div>
-		</Card>
+		</Card-->
 		<Card columns={12}>
 			<h4>Workloads with SBOM</h4>
 			<div class="env-filter">
@@ -357,6 +353,7 @@
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);
+		font-weight: bold;
 	}
 	.summary > p {
 		display: flex;
@@ -377,5 +374,11 @@
 	.env-filter {
 		display: flex;
 		margin-bottom: 1rem;
+	}
+	.check {
+		font-size: 4rem;
+		color: #4dbd74;
+		text-align: center;
+		padding-left: 4px;
 	}
 </style>

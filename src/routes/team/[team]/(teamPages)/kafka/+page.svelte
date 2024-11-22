@@ -68,7 +68,7 @@
 		>
 			<Thead>
 				<Th sortable={true} sortKey={KafkaTopicOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={KafkaTopicOrderField.ENVIRONMENT}>Env</Th>
+				<Th sortable={true} sortKey={KafkaTopicOrderField.ENVIRONMENT}>Environment</Th>
 			</Thead>
 			<Tbody>
 				{#each topics.nodes as t}

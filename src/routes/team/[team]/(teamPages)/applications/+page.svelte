@@ -114,7 +114,8 @@
 			<Thead>
 				<Th sortable={true} sortKey={ApplicationOrderField.STATUS} style="width: 2rem"></Th>
 				<Th sortable={true} sortKey={ApplicationOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={ApplicationOrderField.ENVIRONMENT} style="width: 10rem">Env</Th
+				<Th sortable={true} sortKey={ApplicationOrderField.ENVIRONMENT} style="width: 10rem"
+					>Environment</Th
 				>
 				<Th style="width: 200px">Instances</Th>
 				<Th sortable={true} sortKey={ApplicationOrderField.DEPLOYMENT_TIME} style="width: 150px"

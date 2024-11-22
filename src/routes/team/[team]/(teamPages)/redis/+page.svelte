@@ -95,7 +95,7 @@
 		>
 			<Thead>
 				<Th sortable={true} sortKey={RedisInstanceOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Env</Th>
+				<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Environment</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>

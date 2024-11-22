@@ -135,7 +135,7 @@
 		<Thead>
 			<Th></Th>
 			<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Env</Th>
+			<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Environment</Th>
 			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}>Critical</Th>
 			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}>High</Th>
 			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}>Medium</Th>

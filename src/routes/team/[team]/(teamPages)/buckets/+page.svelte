@@ -97,7 +97,7 @@
 		>
 			<Thead>
 				<Th sortable={true} sortKey={BucketOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={BucketOrderField.ENVIRONMENT}>Env</Th>
+				<Th sortable={true} sortKey={BucketOrderField.ENVIRONMENT}>Environment</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>

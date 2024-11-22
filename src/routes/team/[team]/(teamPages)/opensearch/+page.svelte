@@ -96,7 +96,7 @@
 		>
 			<Thead>
 				<Th sortable={true} sortKey={OpenSearchOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={OpenSearchOrderField.ENVIRONMENT}>Env</Th>
+				<Th sortable={true} sortKey={OpenSearchOrderField.ENVIRONMENT}>Environment</Th>
 				<Th>Owner</Th>
 			</Thead>
 			<Tbody>

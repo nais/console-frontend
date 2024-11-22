@@ -114,7 +114,8 @@
 			<Thead>
 				<Th sortable={true} sortKey={JobOrderField.STATUS} style="width: 2rem"></Th>
 				<Th sortable={true} sortKey={JobOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 10rem">Env</Th>
+				<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 10rem">Environment</Th
+				>
 				<Th sortable={true} sortKey={JobOrderField.DEPLOYMENT_TIME} style="width: 150px"
 					>Deployed</Th
 				>

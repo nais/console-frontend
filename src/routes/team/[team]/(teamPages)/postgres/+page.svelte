@@ -191,7 +191,7 @@
 				<Th style="width: 2rem"></Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.NAME}>Name</Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Env</Th>
+				<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Environment</Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.STATUS}>Status</Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.COST}>Cost</Th>
 				<Th sortable={true} sortKey={SqlInstanceOrderField.CPU_UTILIZATION}
