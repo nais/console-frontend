@@ -48,20 +48,17 @@ query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
 						teamMemberAdded: data {
 							role
 							userEmail
-							userID
 						}
 					}
 					... on TeamMemberRemovedActivityLogEntry {
 						teamMemberRemoved: data {
 							userEmail
-							userID
 						}
 					}
 					... on TeamMemberSetRoleActivityLogEntry {
 						teamMemberSetRole: data {
 							role
 							userEmail
-							userID
 						}
 					}
 					... on TeamUpdatedActivityLogEntry {
