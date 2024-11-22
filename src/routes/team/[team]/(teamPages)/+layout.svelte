@@ -24,6 +24,8 @@
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 
+	import { graphql, PendingValue } from '$houdini';
+	import type { InventoryCountsVariables } from './$houdini';
 	import type { LayoutData } from './$types';
 
 	type menuGroup = {
@@ -33,6 +35,48 @@
 	export let data: LayoutData;
 
 	$: team = $page.params.team;
+
+	export const _InventoryCountsVariables: InventoryCountsVariables = () => {
+		return { team: team };
+	};
+
+	const inventoryCounts = graphql(`
+		query InventoryCounts($team: Slug!) @load {
+			team(slug: $team) @loading(cascade: true) {
+				inventoryCounts {
+					applications {
+						total
+						notNais
+					}
+					jobs {
+						total
+						notNais
+					}
+					sqlInstances {
+						total
+					}
+					buckets {
+						total
+					}
+					redisInstances {
+						total
+					}
+					openSearchInstances {
+						total
+					}
+					kafkaTopics {
+						total
+					}
+					bigQueryDatasets {
+						total
+					}
+				}
+			}
+		}
+	`);
+
+	$: console.log($inventoryCounts.data);
+
 	let nav: menuGroup[];
 	$: nav = [
 		{
@@ -52,16 +96,22 @@
 					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
 					icon: SandboxIcon,
-					inventoryCount: data.inventoryCounts?.applications.total,
-					notNais: (data.inventoryCounts?.applications.notNais ?? 0) > 0
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.applications.total,
+					notNais:
+						$inventoryCounts.data?.team.inventoryCounts.applications.notNais !== PendingValue
+							? ($inventoryCounts.data?.team.inventoryCounts.applications.notNais ?? 0) > 0
+							: false
 				},
 				{
 					name: 'Jobs',
 					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
 					icon: ArrowCirclepathIcon,
-					inventoryCount: data.inventoryCounts?.jobs.total,
-					notNais: (data.inventoryCounts?.jobs.notNais ?? 0) > 0
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.jobs.total,
+					notNais:
+						$inventoryCounts.data?.team.inventoryCounts.jobs.notNais !== PendingValue
+							? ($inventoryCounts.data?.team.inventoryCounts.jobs.notNais ?? 0) > 0
+							: false
 				},
 				{
 					name: 'Secrets',
@@ -81,7 +131,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
 					withSubRoutes: true,
 					icon: DatabaseIcon,
-					inventoryCount: data.inventoryCounts?.sqlInstances.total
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.sqlInstances.total
 				},
 				{
 					name: 'Buckets',
@@ -89,7 +139,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/bucket/[bucket]'],
 					withSubRoutes: true,
 					icon: BucketIcon,
-					inventoryCount: data.inventoryCounts?.buckets.total
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.buckets.total
 				},
 				{
 					name: 'Redis',
@@ -97,7 +147,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/redis/[redis]'],
 					withSubRoutes: true,
 					icon: Redis,
-					inventoryCount: data.inventoryCounts?.redisInstances.total
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.redisInstances.total
 				},
 				{
 					name: 'OpenSearch',
@@ -105,7 +155,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
 					withSubRoutes: true,
 					icon: Opensearch,
-					inventoryCount: data.inventoryCounts?.openSearchInstances.total
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.openSearchInstances.total
 				},
 				{
 					name: 'Kafka topics',
@@ -113,7 +163,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
 					withSubRoutes: true,
 					icon: Kafka,
-					inventoryCount: data.inventoryCounts?.kafkaTopics.total
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.kafkaTopics.total
 				},
 				{
 					name: 'BigQuery',
@@ -121,7 +171,7 @@
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/bigquery/[bigquery]'],
 					withSubRoutes: true,
 					icon: BigQuery,
-					inventoryCount: data.inventoryCounts?.bigQueryDatasets.total
+					inventoryCount: $inventoryCounts.data?.team.inventoryCounts.bigQueryDatasets.total
 				},
 				{
 					name: 'Unleash',

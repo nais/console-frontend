@@ -7,8 +7,8 @@
 		icon?: ComponentType;
 		iconColor?: string;
 		extraRoutes?: string[];
-		inventoryCount?: number;
-		notNais?: boolean;
+		inventoryCount?: number | typeof PendingValue;
+		notNais?: boolean | typeof PendingValue;
 	};
 	export type menuGroup = {
 		items: menuItem[];
@@ -17,6 +17,7 @@
 
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { PendingValue } from '$houdini';
 	import { replacer } from '$lib/replacer';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	export let nav: menuGroup[];
@@ -48,7 +49,7 @@
 						<div class="item-container">
 							<div class="left-content">
 								<svelte:component this={item.icon} />
-								<span>
+								<span style="line-height: 1.7rem;">
 									{item.name}
 									{#if item.notNais}
 										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
@@ -57,7 +58,11 @@
 							</div>
 							{#if item.inventoryCount}
 								<div class="right-content">
-									<span class="inventorytag">{item.inventoryCount}</span>
+									{#if item.inventoryCount !== PendingValue}
+										<span class="inventorytag">{item.inventoryCount}</span>
+									{:else}
+										<span class="inventorytag">...</span>
+									{/if}
 								</div>
 							{/if}
 						</div>

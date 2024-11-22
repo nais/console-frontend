@@ -3,33 +3,5 @@ query TeamRoles($team: Slug!) {
 		viewerIsOwner
 		viewerIsMember
 		deletionInProgress
-		inventoryCounts {
-			applications {
-				total
-				notNais
-			}
-			bigQueryDatasets {
-				total
-			}
-			buckets {
-				total
-			}
-			jobs {
-				total
-				notNais
-			}
-			kafkaTopics {
-				total
-			}
-			openSearchInstances {
-				total
-			}
-			redisInstances {
-				total
-			}
-			sqlInstances {
-				total
-			}
-		}
 	}
 }
