@@ -2113,11 +2113,6 @@ input ReconcilerConfigInput {
   value: String!
 }
 
-type ReconcilerConfiguredActivityLogData {
-  """Keys that were updated."""
-  updatedKeys: [String!]!
-}
-
 type ReconcilerConfiguredActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -2128,7 +2123,7 @@ type ReconcilerConfiguredActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: ReconcilerConfiguredActivityLogData!
+  data: ReconcilerConfiguredActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2147,6 +2142,11 @@ type ReconcilerConfiguredActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type ReconcilerConfiguredActivityLogEntryData {
+  """Keys that were updated."""
+  updatedKeys: [String!]!
 }
 
 type ReconcilerConnection {
@@ -2738,11 +2738,6 @@ type SecretValue {
   value: String!
 }
 
-type SecretValueAddedActivityLogData {
-  """The name of the added value."""
-  valueName: String!
-}
-
 type SecretValueAddedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -2753,7 +2748,7 @@ type SecretValueAddedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the entry."""
-  data: SecretValueAddedActivityLogData!
+  data: SecretValueAddedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2774,17 +2769,17 @@ type SecretValueAddedActivityLogEntry implements ActivityLogEntry & Node {
   teamSlug: Slug!
 }
 
+type SecretValueAddedActivityLogEntryData {
+  """The name of the added value."""
+  valueName: String!
+}
+
 input SecretValueInput {
   """The name of the secret value."""
   name: String!
 
   """The secret value to set."""
   value: String!
-}
-
-type SecretValueRemovedActivityLogData {
-  """The name of the removed value."""
-  valueName: String!
 }
 
 type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node {
@@ -2797,7 +2792,7 @@ type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the entry."""
-  data: SecretValueRemovedActivityLogData!
+  data: SecretValueRemovedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2818,8 +2813,8 @@ type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node {
   teamSlug: Slug!
 }
 
-type SecretValueUpdatedActivityLogData {
-  """The name of the updated value."""
+type SecretValueRemovedActivityLogEntryData {
+  """The name of the removed value."""
   valueName: String!
 }
 
@@ -2833,7 +2828,7 @@ type SecretValueUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the entry."""
-  data: SecretValueUpdatedActivityLogData!
+  data: SecretValueUpdatedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -2852,6 +2847,11 @@ type SecretValueUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type SecretValueUpdatedActivityLogEntryData {
+  """The name of the updated value."""
+  valueName: String!
 }
 
 """
@@ -3748,22 +3748,6 @@ type TeamEnvironmentCostPeriod {
   sum: Float!
 }
 
-type TeamEnvironmentUpdatedActivityLogData {
-  """Fields that were updated."""
-  updatedFields: [TeamEnvironmentUpdatedActivityLogDataUpdatedField!]!
-}
-
-type TeamEnvironmentUpdatedActivityLogDataUpdatedField {
-  """The name of the field."""
-  field: String!
-
-  """The new value of the field."""
-  newValue: String
-
-  """The old value of the field."""
-  oldValue: String
-}
-
 type TeamEnvironmentUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3774,7 +3758,7 @@ type TeamEnvironmentUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the action."""
-  data: TeamEnvironmentUpdatedActivityLogData!
+  data: TeamEnvironmentUpdatedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -3793,6 +3777,22 @@ type TeamEnvironmentUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type TeamEnvironmentUpdatedActivityLogEntryData {
+  """Fields that were updated."""
+  updatedFields: [TeamEnvironmentUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type TeamEnvironmentUpdatedActivityLogEntryDataUpdatedField {
+  """The name of the field."""
+  field: String!
+
+  """The new value of the field."""
+  newValue: String
+
+  """The old value of the field."""
+  oldValue: String
 }
 
 type TeamExternalResources {
@@ -3904,17 +3904,6 @@ type TeamMember {
   user: User!
 }
 
-type TeamMemberAddedActivityLogData {
-  """The role that the user was added with."""
-  role: TeamMemberRole!
-
-  """The email address of the user that was added."""
-  userEmail: String!
-
-  """The ID of the user that was added."""
-  userID: ID!
-}
-
 type TeamMemberAddedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3925,7 +3914,7 @@ type TeamMemberAddedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the action."""
-  data: TeamMemberAddedActivityLogData!
+  data: TeamMemberAddedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -3944,6 +3933,17 @@ type TeamMemberAddedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type TeamMemberAddedActivityLogEntryData {
+  """The role that the user was added with."""
+  role: TeamMemberRole!
+
+  """The email address of the user that was added."""
+  userEmail: String!
+
+  """The ID of the user that was added."""
+  userID: ID!
 }
 
 type TeamMemberConnection {
@@ -3986,14 +3986,6 @@ enum TeamMemberOrderField {
   ROLE
 }
 
-type TeamMemberRemovedActivityLogData {
-  """The email address of the user that was removed."""
-  userEmail: String!
-
-  """The ID of the user that was removed."""
-  userID: ID!
-}
-
 type TeamMemberRemovedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -4004,7 +3996,7 @@ type TeamMemberRemovedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the action."""
-  data: TeamMemberRemovedActivityLogData!
+  data: TeamMemberRemovedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -4025,6 +4017,14 @@ type TeamMemberRemovedActivityLogEntry implements ActivityLogEntry & Node {
   teamSlug: Slug!
 }
 
+type TeamMemberRemovedActivityLogEntryData {
+  """The email address of the user that was removed."""
+  userEmail: String!
+
+  """The ID of the user that was removed."""
+  userID: ID!
+}
+
 """Team member roles."""
 enum TeamMemberRole {
   """Regular member, read only access."""
@@ -4032,17 +4032,6 @@ enum TeamMemberRole {
 
   """Team owner, full access to the team."""
   OWNER
-}
-
-type TeamMemberSetRoleActivityLogData {
-  """The role that the user was assigned."""
-  role: TeamMemberRole!
-
-  """The email address of the user that was added."""
-  userEmail: String!
-
-  """The ID of the user that was added."""
-  userID: ID!
 }
 
 type TeamMemberSetRoleActivityLogEntry implements ActivityLogEntry & Node {
@@ -4055,7 +4044,7 @@ type TeamMemberSetRoleActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the action."""
-  data: TeamMemberSetRoleActivityLogData!
+  data: TeamMemberSetRoleActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -4074,6 +4063,17 @@ type TeamMemberSetRoleActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type TeamMemberSetRoleActivityLogEntryData {
+  """The role that the user was assigned."""
+  role: TeamMemberRole!
+
+  """The email address of the user that was added."""
+  userEmail: String!
+
+  """The ID of the user that was added."""
+  userID: ID!
 }
 
 """Ordering options when fetching teams."""
@@ -4124,22 +4124,6 @@ type TeamServiceUtilizationSqlInstancesMemory {
   utilization: Float!
 }
 
-type TeamUpdatedActivityLogData {
-  """Fields that were updated."""
-  updatedFields: [TeamUpdatedActivityLogDataUpdatedField!]!
-}
-
-type TeamUpdatedActivityLogDataUpdatedField {
-  """The name of the field."""
-  field: String!
-
-  """The new value of the field."""
-  newValue: String
-
-  """The old value of the field."""
-  oldValue: String
-}
-
 type TeamUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -4150,7 +4134,7 @@ type TeamUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: TeamUpdatedActivityLogData!
+  data: TeamUpdatedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -4169,6 +4153,22 @@ type TeamUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type TeamUpdatedActivityLogEntryData {
+  """Fields that were updated."""
+  updatedFields: [TeamUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type TeamUpdatedActivityLogEntryDataUpdatedField {
+  """The name of the field."""
+  field: String!
+
+  """The new value of the field."""
+  newValue: String
+
+  """The old value of the field."""
+  oldValue: String
 }
 
 type TeamUtilizationData {
@@ -4372,14 +4372,6 @@ type UnleashInstanceMetrics {
   toggles: Int!
 }
 
-type UnleashInstanceUpdatedActivityLogData {
-  """Allowed team slug."""
-  allowedTeamSlug: Slug
-
-  """Revoked team slug."""
-  revokedTeamSlug: Slug
-}
-
 type UnleashInstanceUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -4390,7 +4382,7 @@ type UnleashInstanceUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: UnleashInstanceUpdatedActivityLogData!
+  data: UnleashInstanceUpdatedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -4409,6 +4401,14 @@ type UnleashInstanceUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type UnleashInstanceUpdatedActivityLogEntryData {
+  """Allowed team slug."""
+  allowedTeamSlug: Slug
+
+  """Revoked team slug."""
+  revokedTeamSlug: Slug
 }
 
 input UpdateImageVulnerabilityInput {
