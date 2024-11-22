@@ -61,8 +61,6 @@
 			}
 		}
 	}
-
-	$: console.log('team status:', status);
 </script>
 
 <h4>Team summary</h4>
