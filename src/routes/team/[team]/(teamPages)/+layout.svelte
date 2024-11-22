@@ -25,7 +25,6 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	import { graphql, PendingValue } from '$houdini';
-	import type { InventoryCountsVariables } from './$houdini';
 	import type { LayoutData } from './$types';
 
 	type menuGroup = {
@@ -35,10 +34,6 @@
 	export let data: LayoutData;
 
 	$: team = $page.params.team;
-
-	export const _InventoryCountsVariables: InventoryCountsVariables = () => {
-		return { team: team };
-	};
 
 	const inventoryCounts = graphql(`
 		query InventoryCounts($team: Slug!) @load {
@@ -75,7 +70,15 @@
 		}
 	`);
 
-	$: console.log($inventoryCounts.data);
+	let initialLoad = true;
+
+	$: {
+		if (!initialLoad && team !== $inventoryCounts.variables?.team) {
+			inventoryCounts.fetch({ variables: { team } });
+		} else {
+			initialLoad = false;
+		}
+	}
 
 	let nav: menuGroup[];
 	$: nav = [
