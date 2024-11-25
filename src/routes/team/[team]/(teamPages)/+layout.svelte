@@ -73,7 +73,8 @@
 	let initialLoad = true;
 
 	$: {
-		if (!initialLoad && team !== $inventoryCounts.variables?.team) {
+		if (!initialLoad && team !== $inventoryCounts?.variables?.team) {
+			console.log('fetch', team, $inventoryCounts?.variables?.team);
 			inventoryCounts.fetch({ variables: { team } });
 		} else {
 			initialLoad = false;
