@@ -27,6 +27,7 @@
 						medium
 						low
 						unassigned
+						riskScore
 					}
 				}
 				deploymentInfo {
@@ -43,7 +44,7 @@
 	$: env = $page.params.env;
 	$: team = $page.params.team;
 
-	const notificationBadgeSize = '38px';
+	const notificationBadgeSize = '42';
 
 	const isFindings = (summary: {
 		readonly critical: number;
@@ -104,7 +105,12 @@
 	</p>
 
 	<div class="vulnerabilities">
-		<h5>Vulnerabilities</h5>
+		<h5>
+			Vulnerabilities
+			<span style="font-weight: normal;">
+				(Risk score: {image.vulnerabilitySummary?.riskScore})
+			</span>
+		</h5>
 
 		{#if image !== null}
 			{#if !image.hasSBOM}
@@ -117,41 +123,43 @@
 				No data found.
 				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} target="_blank">How to fix</a>
 			{:else if image.hasSBOM && image.vulnerabilitySummary && isFindings(image.vulnerabilitySummary)}
-				<Tooltip placement="right" content="severity: CRITICAL">
-					<VulnerabilityBadge
-						text={String(image.vulnerabilitySummary.critical)}
-						color={severityToColor('critical')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: HIGH">
-					<VulnerabilityBadge
-						text={String(image.vulnerabilitySummary.high)}
-						color={severityToColor('high')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: MEDIUM">
-					<VulnerabilityBadge
-						text={String(image.vulnerabilitySummary.medium)}
-						color={severityToColor('medium')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: LOW">
-					<VulnerabilityBadge
-						text={String(image.vulnerabilitySummary.low)}
-						color={severityToColor('low')}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
-				<Tooltip placement="right" content="severity: UNASSIGNED">
-					<VulnerabilityBadge
-						text={String(image.vulnerabilitySummary.unassigned)}
-						color={'#6e6e6e'}
-						size={notificationBadgeSize}
-					/>
-				</Tooltip>
+				<div class="circles">
+					<Tooltip placement="right" content="severity: CRITICAL">
+						<VulnerabilityBadge
+							text={String(image.vulnerabilitySummary.critical)}
+							color={severityToColor('critical')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+					<Tooltip placement="right" content="severity: HIGH">
+						<VulnerabilityBadge
+							text={String(image.vulnerabilitySummary.high)}
+							color={severityToColor('high')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+					<Tooltip placement="right" content="severity: MEDIUM">
+						<VulnerabilityBadge
+							text={String(image.vulnerabilitySummary.medium)}
+							color={severityToColor('medium')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+					<Tooltip placement="right" content="severity: LOW">
+						<VulnerabilityBadge
+							text={String(image.vulnerabilitySummary.low)}
+							color={severityToColor('low')}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+					<Tooltip placement="right" content="severity: UNASSIGNED">
+						<VulnerabilityBadge
+							text={String(image.vulnerabilitySummary.unassigned)}
+							color={'#6e6e6e'}
+							size={notificationBadgeSize}
+						/>
+					</Tooltip>
+				</div>
 			{:else if image.hasSBOM}
 				<code class="check">&check;</code> No vulnerabilities found. Good work!
 			{/if}
@@ -191,5 +199,12 @@
 		color: #4dbd74;
 		text-align: center;
 		padding-left: 4px;
+	}
+	.circles {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		gap: 0.5rem;
 	}
 </style>
