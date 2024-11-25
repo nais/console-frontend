@@ -39,8 +39,8 @@
 	<div class="grid">
 		<Card columns={12}>
 			<div class="summaryCard" style="align-items: start; min-height: 90px">
-				{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
-					{#if team?.vulnerabilitySummary?.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
+				{#if team.vulnerabilitySummary.bomCount !== PendingValue}
+					{#if team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK).length > 0}
 						<div>
 							<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
 						</div>
@@ -68,8 +68,8 @@
 						</HelpText>
 					</h4>
 					<div style="margin-top: 0.5rem;">
-						{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
-							{#if team?.vulnerabilitySummary?.status && team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK)}
+						{#if team.vulnerabilitySummary.bomCount !== PendingValue}
+							{#if team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK).length > 0}
 								{#if team?.vulnerabilitySummary.bomCount > 0}
 									<details>
 										<summary style="font-size: 1rem; var(--color-text-secondary);"
