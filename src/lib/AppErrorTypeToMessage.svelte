@@ -108,7 +108,7 @@
 		{:else if type === 'WorkloadStatusDeprecatedIngress'}
 			<Alert variant="info">
 				<h4>Todo</h4>
-				Deprecated ingress<strong>{$data.ingress}</strong>. See
+				Deprecated ingress<strong> {$data.ingress}</strong>. See
 				<a href={docURL('/reference/environments/?h=#' + env)}> ingress documentation</a>
 				for available ingress domains.
 			</Alert>
