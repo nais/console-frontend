@@ -1,0 +1,32 @@
+query InventoryCounts($team: Slug!) {
+	team(slug: $team) @loading(cascade: true) {
+		inventoryCounts {
+			applications {
+				total
+				notNais
+			}
+			jobs {
+				total
+				notNais
+			}
+			sqlInstances {
+				total
+			}
+			buckets {
+				total
+			}
+			redisInstances {
+				total
+			}
+			openSearchInstances {
+				total
+			}
+			kafkaTopics {
+				total
+			}
+			bigQueryDatasets {
+				total
+			}
+		}
+	}
+}

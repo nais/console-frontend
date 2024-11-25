@@ -24,8 +24,8 @@
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
 
-	import { graphql, PendingValue } from '$houdini';
-	import type { LayoutData } from './$types';
+	import { PendingValue } from '$houdini';
+	import type { LayoutData } from './$houdini';
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
@@ -34,56 +34,11 @@
 	export let data: LayoutData;
 
 	$: team = $page.params.team;
-
-	const inventoryCounts = graphql(`
-		query InventoryCounts($team: Slug!) @load {
-			team(slug: $team) @loading(cascade: true) {
-				inventoryCounts {
-					applications {
-						total
-						notNais
-					}
-					jobs {
-						total
-						notNais
-					}
-					sqlInstances {
-						total
-					}
-					buckets {
-						total
-					}
-					redisInstances {
-						total
-					}
-					openSearchInstances {
-						total
-					}
-					kafkaTopics {
-						total
-					}
-					bigQueryDatasets {
-						total
-					}
-				}
-			}
-		}
-	`);
-
-	let initialLoad = true;
-
-	$: {
-		if (!initialLoad && team !== $inventoryCounts?.variables?.team) {
-			console.log('fetch', team, $inventoryCounts?.variables?.team);
-			inventoryCounts.fetch({ variables: { team } });
-		} else {
-			initialLoad = false;
-		}
-	}
+	$: ({ InventoryCounts } = data);
 
 	let nav: menuGroup[];
 	$: {
-		if ($inventoryCounts) {
+		if ($InventoryCounts) {
 			nav = [
 				{
 					items: [
@@ -102,10 +57,10 @@
 							routeId: '/team/[team]/(teamPages)/applications',
 							withSubRoutes: true,
 							icon: SandboxIcon,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.applications.total,
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.applications.total,
 							notNais:
-								$inventoryCounts.data?.team.inventoryCounts.applications.notNais !== PendingValue
-									? ($inventoryCounts.data?.team.inventoryCounts.applications.notNais ?? 0) > 0
+								$InventoryCounts.data?.team.inventoryCounts.applications.notNais !== PendingValue
+									? ($InventoryCounts.data?.team.inventoryCounts.applications.notNais ?? 0) > 0
 									: false
 						},
 						{
@@ -113,10 +68,10 @@
 							routeId: '/team/[team]/(teamPages)/jobs',
 							withSubRoutes: true,
 							icon: ArrowCirclepathIcon,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.jobs.total,
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.jobs.total,
 							notNais:
-								$inventoryCounts.data?.team.inventoryCounts.jobs.notNais !== PendingValue
-									? ($inventoryCounts.data?.team.inventoryCounts.jobs.notNais ?? 0) > 0
+								$InventoryCounts.data?.team.inventoryCounts.jobs.notNais !== PendingValue
+									? ($InventoryCounts.data?.team.inventoryCounts.jobs.notNais ?? 0) > 0
 									: false
 						},
 						{
@@ -137,7 +92,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/postgres/[postgres]'],
 							withSubRoutes: true,
 							icon: DatabaseIcon,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.sqlInstances.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.sqlInstances.total
 						},
 						{
 							name: 'Buckets',
@@ -145,7 +100,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/bucket/[bucket]'],
 							withSubRoutes: true,
 							icon: BucketIcon,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.buckets.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.buckets.total
 						},
 						{
 							name: 'Redis',
@@ -153,7 +108,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/redis/[redis]'],
 							withSubRoutes: true,
 							icon: Redis,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.redisInstances.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.redisInstances.total
 						},
 						{
 							name: 'OpenSearch',
@@ -161,7 +116,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
 							withSubRoutes: true,
 							icon: Opensearch,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.openSearchInstances.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.openSearchInstances.total
 						},
 						{
 							name: 'Kafka topics',
@@ -169,7 +124,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
 							withSubRoutes: true,
 							icon: Kafka,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.kafkaTopics.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.kafkaTopics.total
 						},
 						{
 							name: 'BigQuery',
@@ -177,7 +132,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/bigquery/[bigquery]'],
 							withSubRoutes: true,
 							icon: BigQuery,
-							inventoryCount: $inventoryCounts.data?.team.inventoryCounts.bigQueryDatasets.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.bigQueryDatasets.total
 						},
 						{
 							name: 'Unleash',
