@@ -1,7 +1,6 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
-	//import Authentications from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Authentications.svelte';
 	import { page } from '$app/stores';
+	import Card from '$lib/Card.svelte';
 	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
