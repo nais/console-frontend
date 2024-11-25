@@ -3,11 +3,12 @@
 	import { UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
-	import { Alert, HelpText } from '@nais/ds-svelte-community';
+	import { HelpText } from '@nais/ds-svelte-community';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -73,13 +74,9 @@
 	}
 </script>
 
-{#if $ResourceUtilizationForApp.errors}
-	<Alert variant="error">
-		{#each $ResourceUtilizationForApp.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $ResourceUtilizationForApp.data}
+<GraphErrors errors={$ResourceUtilizationForApp.errors} />
+
+{#if $ResourceUtilizationForApp.data}
 	{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
 
 	<div class="grid">

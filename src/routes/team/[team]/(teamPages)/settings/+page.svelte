@@ -121,13 +121,9 @@
 	//let rotateClicked = false;
 </script>
 
-{#if $TeamSettings.errors}
-	<Alert variant="error">
-		{#each $TeamSettings.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if teamSettings}
+<GraphErrors errors={$TeamSettings.errors} />
+
+{#if teamSettings}
 	<div class="grid">
 		<Card columns={6}>
 			<h3>{team}</h3>
@@ -151,13 +147,8 @@
 				/>
 			</i>
 
-			{#if descriptionErrors}
-				<Alert variant="error" size="small">
-					{#each descriptionErrors as error}
-						{error.message}<br />
-					{/each}
-				</Alert>
-			{/if}
+			<GraphErrors errors={descriptionErrors} size="small" />
+
 			<h4><ChatExclamationmarkIcon /> Slack channels</h4>
 			{#if teamSettings.slackChannel !== ''}
 				<p>
@@ -180,13 +171,7 @@
 						}}
 					/>
 				</p>
-				{#if defaultSlackChannelErrors}
-					<Alert variant="error" size="small">
-						{#each defaultSlackChannelErrors as error}
-							{error.message}<br />
-						{/each}
-					</Alert>
-				{/if}
+				<GraphErrors errors={defaultSlackChannelErrors} size="small" />
 			{/if}
 			{#if teamSettings.environments && teamSettings.environments.length > 0}
 				<p>
@@ -219,13 +204,8 @@
 						</div>
 					{/each}
 				</p>
-				{#if slackChannelsErrors}
-					<Alert variant="error" size="small">
-						{#each slackChannelsErrors as error}
-							{error.message}<br />
-						{/each}
-					</Alert>
-				{/if}
+
+				<GraphErrors errors={slackChannelsErrors} size="small" />
 			{/if}
 		</Card>
 		<Card columns={6}>

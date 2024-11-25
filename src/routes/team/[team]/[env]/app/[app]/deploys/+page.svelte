@@ -1,20 +1,14 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import WorkloadDeployments from '$lib/components/WorkloadDeployments.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
 
 	$: ({ AppDeploys } = data);
 </script>
 
-{#if $AppDeploys.errors}
-	<Alert variant="error">
-		{#each $AppDeploys.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$AppDeploys.errors} />
 
 {#if $AppDeploys.data}
 	<Card>

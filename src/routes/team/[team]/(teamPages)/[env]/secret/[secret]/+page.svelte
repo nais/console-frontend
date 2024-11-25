@@ -5,7 +5,6 @@
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import {
-		Alert,
 		Button,
 		Heading,
 		HelpText,
@@ -19,6 +18,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
@@ -174,13 +174,9 @@
 	};
 </script>
 
-{#if $Secret.errors}
-	<Alert variant="error">
-		{#each $Secret.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $Secret.fetching}
+<GraphErrors errors={$Secret.errors} />
+
+{#if $Secret.fetching}
 	<Loader />
 {:else if secret}
 	<Confirm
@@ -263,11 +259,7 @@
 				{/each}
 			</Alert>-->
 		{#if $deleteMutation.errors}
-			<Alert variant="error">
-				{#each $deleteMutation.errors as error}
-					{error.message}
-				{/each}
-			</Alert>
+			<GraphErrors errors={$deleteMutation.errors} />
 		{/if}
 	</div>
 	<div class="grid">

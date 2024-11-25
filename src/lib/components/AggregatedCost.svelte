@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { Alert } from '@nais/ds-svelte-community';
 	import type { AggregatedCostVariables } from './$houdini';
 
 	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
@@ -51,13 +51,10 @@
 </script>
 
 <h4>Cost</h4>
-{#if $costQuery.errors}
-	<Alert variant="error">
-		{#each $costQuery.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $costQuery.data !== null}
+
+<GraphErrors errors={$costQuery.errors} />
+
+{#if $costQuery.data !== null}
 	{@const cost = $costQuery.data.team.environment.workload.cost}
 	<div>
 		{#if cost.monthly.series.length > 1}

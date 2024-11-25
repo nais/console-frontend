@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
-	import { Alert, Loader } from '@nais/ds-svelte-community';
+	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import type { JobSecretsVariables } from './$houdini';
 
 	export const _JobSecretsVariables: JobSecretsVariables = () => {
@@ -30,14 +31,10 @@
 	$: team = $page.params.team;
 </script>
 
+<GraphErrors errors={$jobSecrets.errors} />
+
 {#if $jobSecrets.fetching}
 	<Loader />
-{:else if $jobSecrets.errors}
-	<Alert variant="error">
-		{#each $jobSecrets.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
 {:else if $jobSecrets.data}
 	<div>
 		{#if $jobSecrets.data.team.environment.job.secrets.edges.length > 0}

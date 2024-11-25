@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -10,13 +11,8 @@
 </script>
 
 <Card>
-	{#if $JobStatusDetailed.errors}
-		<Alert variant="error">
-			{#each $JobStatusDetailed.errors as error}
-				{error.message}
-			{/each}
-		</Alert>
-	{/if}
+	<GraphErrors errors={$JobStatusDetailed.errors} />
+
 	{#if $JobStatusDetailed.data}
 		{@const job = $JobStatusDetailed.data.team.environment.job}
 		<h4>Job status</h4>

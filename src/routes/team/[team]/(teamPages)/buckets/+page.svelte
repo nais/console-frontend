@@ -3,11 +3,11 @@
 	import { BucketOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Alert,
 		Button,
 		HelpText,
 		Skeleton,
@@ -50,16 +50,10 @@
 			field: tableSort.orderBy || BucketOrderField.NAME
 		});
 	};
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $Buckets.errors}
-	{#each distinctErrors($Buckets.errors) as error}
-		<Alert variant="error">
-			{error}
-		</Alert>
-	{/each}
-{/if}
+<GraphErrors errors={$Buckets.errors} />
+
 {#if $Buckets.data}
 	{@const cost = $Buckets.data.team.cost}
 	{@const buckets = $Buckets.data.team.buckets}

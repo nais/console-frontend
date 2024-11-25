@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
-	import { Alert, Loader } from '@nais/ds-svelte-community';
+	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import type { AppSecretsVariables } from './$houdini';
 
 	export const _AppSecretsVariables: AppSecretsVariables = () => {
@@ -31,14 +32,10 @@
 	$: team = $page.params.team;
 </script>
 
+<GraphErrors errors={$appSecrets.errors} />
+
 {#if $appSecrets.fetching}
 	<Loader />
-{:else if $appSecrets.errors}
-	<Alert variant="error">
-		{#each $appSecrets.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
 {:else if $appSecrets.data}
 	<div>
 		{#if $appSecrets.data.team.environment.application.secrets.edges.length > 0}

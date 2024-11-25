@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
 	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
@@ -39,13 +40,7 @@
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
 </script>
 
-{#if $TeamCost.errors}
-	<Alert variant="error">
-		{#each $TeamCost.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$TeamCost.errors} />
 
 <Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
 

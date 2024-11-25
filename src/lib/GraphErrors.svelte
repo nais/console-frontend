@@ -4,21 +4,15 @@
 	type error = { message: string };
 
 	export let size: 'small' | 'medium' = 'medium';
-	export let errors: error[];
+	export let errors: error[] | null;
 	export let dismissable = false;
 
 	const pick = (errors: error[]) => {
-		const unique: string[] = [];
-		errors.forEach((error) => {
-			if (!unique.includes(error.message)) {
-				unique.push(error.message);
-			}
-		});
-		return unique;
+		return new Set(errors.map((error) => error.message));
 	};
 </script>
 
-{#if errors.length > 0}
+{#if errors && errors.length > 0}
 	<Alert variant="error" {size}>
 		{#each pick(errors) as error}
 			{error}

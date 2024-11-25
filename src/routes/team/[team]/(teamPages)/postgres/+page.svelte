@@ -4,7 +4,6 @@
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
-		Alert,
 		Button,
 		HelpText,
 		Skeleton,
@@ -25,6 +24,7 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import prettyBytes from 'pretty-bytes';
@@ -55,17 +55,10 @@
 			field: tableSort.orderBy || SqlInstanceOrderField.NAME
 		});
 	};
-
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $SqlInstances.errors}
-	{#each distinctErrors($SqlInstances.errors) as error}
-		<Alert variant="error">
-			{error}
-		</Alert>
-	{/each}
-{/if}
+<GraphErrors errors={$SqlInstances.errors} />
+
 {#if $SqlInstances.data}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const instances = $SqlInstances.data.team.sqlInstances}

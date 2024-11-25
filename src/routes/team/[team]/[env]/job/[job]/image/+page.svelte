@@ -7,9 +7,10 @@
 
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Alert, CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -41,13 +42,8 @@
 	};
 </script>
 
-{#if $JobImageDetails.errors}
-	<Alert variant="error">
-		{#each $JobImageDetails.errors as error}
-			<p>{error.message}</p>
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$JobImageDetails.errors} />
+
 {#if $JobImageDetails.data}
 	{@const image = $JobImageDetails.data.team.environment.workload.image}
 	<div class="grid">

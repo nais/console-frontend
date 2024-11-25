@@ -4,19 +4,10 @@
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		Alert,
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -45,17 +36,10 @@
 			field: tableSort.orderBy || BigQueryDatasetOrderField.NAME
 		});
 	};
-
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $BigQuery.errors}
-	{#each distinctErrors($BigQuery.errors) as error}
-		<Alert variant="error">
-			{error}
-		</Alert>
-	{/each}
-{/if}
+<GraphErrors errors={$BigQuery.errors} />
+
 {#if $BigQuery.data}
 	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
 	<Card columns={12}>

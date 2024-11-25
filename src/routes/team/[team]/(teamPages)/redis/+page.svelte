@@ -5,10 +5,10 @@
 
 	import { PendingValue, RedisInstanceOrderField } from '$houdini';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Alert,
 		Button,
 		HelpText,
 		Skeleton,
@@ -47,17 +47,10 @@
 			field: tableSort.orderBy || RedisInstanceOrderField.NAME
 		});
 	};
-
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $Redis.errors}
-	{#each distinctErrors($Redis.errors) as error}
-		<Alert variant="error">
-			{error}
-		</Alert>
-	{/each}
-{/if}
+<GraphErrors errors={$Redis.errors} />
+
 {#if $Redis.data}
 	{@const cost = $Redis.data.team.cost}
 	{@const redis = $Redis.data.team.redisInstances}

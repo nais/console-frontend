@@ -3,10 +3,10 @@
 	import { JobOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Alert,
 		Button,
 		Skeleton,
 		Table,
@@ -80,13 +80,8 @@
 	};
 </script>
 
-{#if $Jobs.errors}
-	<Alert variant="error">
-		{#each $Jobs.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$Jobs.errors} />
+
 {#if $Jobs.data}
 	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>

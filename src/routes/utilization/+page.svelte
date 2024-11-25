@@ -4,6 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
@@ -14,7 +15,6 @@
 		yearlyOverageCost
 	} from '$lib/utils/resources';
 	import {
-		Alert,
 		HelpText,
 		Table,
 		Tbody,
@@ -212,13 +212,8 @@
 	};
 </script>
 
-{#if $TenantUtilization.errors}
-	<Alert variant="error">
-		{#each $TenantUtilization.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$TenantUtilization.errors} />
+
 <div class="grid">
 	{#if resourceUtilization}
 		<Card columns={3} borderColor="#83bff6">

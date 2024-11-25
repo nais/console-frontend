@@ -3,13 +3,12 @@
 	import { OpenSearchOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Alert,
 		Button,
 		HelpText,
 		Skeleton,
@@ -48,17 +47,10 @@
 			field: tableSort.orderBy || OpenSearchOrderField.NAME
 		});
 	};
-
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $OpenSearch.errors}
-	{#each distinctErrors($OpenSearch.errors) as error}
-		<Alert variant="error">
-			{error}
-		</Alert>
-	{/each}
-{/if}
+<GraphErrors errors={$OpenSearch.errors} />
+
 {#if $OpenSearch.data}
 	{@const cost = $OpenSearch.data.team.cost}
 	{@const os = $OpenSearch.data.team.openSearchInstances}

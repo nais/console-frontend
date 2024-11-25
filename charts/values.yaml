@@ -1,8 +1,8 @@
 image:
   repository: europe-north1-docker.pkg.dev/nais-io/nais/images
   name: console-frontend
-host: ""
-tenantDomain: ""
+host: ''
+tenantDomain: ''
 
 fasit:
   tenant:
@@ -11,4 +11,4 @@ gitHub:
   organization: # mapped in fasit
 slack:
   token:
-  feedbackChannel: "#console-user-feedback"
+  feedbackChannel: '#console-user-feedback'

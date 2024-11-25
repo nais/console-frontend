@@ -12,16 +12,9 @@
 	import { goto } from '$app/navigation';
 
 	import { graphql } from '$houdini';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 
-	import {
-		Alert,
-		BodyShort,
-		Button,
-		Heading,
-		Modal,
-		Select,
-		TextField
-	} from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 
 	export let team: string;
 	export let environments: EnvironmentType[];
@@ -129,13 +122,9 @@
 			</svelte:fragment>
 		</TextField>
 	</div>
-	{#if $createSecret.errors}
-		<Alert variant="error">
-			{#each $createSecret.errors as error}
-				{error.message}
-			{/each}
-		</Alert>
-	{/if}
+
+	<GraphErrors errors={$createSecret.errors} />
+
 	<svelte:fragment slot="footer">
 		<Button variant="primary" size="small" on:click={create}>Create</Button>
 		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>

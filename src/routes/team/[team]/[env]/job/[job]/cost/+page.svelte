@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
 		costTransformStackedColumnChart,
@@ -38,13 +39,7 @@
 	}
 </script>
 
-{#if $JobCost.errors}
-	<Alert variant="error">
-		{#each $JobCost.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$JobCost.errors} />
 
 <Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
 

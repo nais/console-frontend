@@ -4,10 +4,10 @@
 	import Card from '$lib/Card.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Alert,
 		Button,
 		Skeleton,
 		Table,
@@ -81,13 +81,9 @@
 	};
 </script>
 
-{#if $Applications.errors}
-	<Alert variant="error">
-		{#each $Applications.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $Applications.data}
+<GraphErrors errors={$Applications.errors} />
+
+{#if $Applications.data}
 	{@const applications = $Applications.data.team.applications}
 	<Card columns={12}>
 		<form class="input">

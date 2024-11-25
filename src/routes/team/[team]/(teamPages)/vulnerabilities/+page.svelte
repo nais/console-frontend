@@ -8,6 +8,7 @@
 	import { page } from '$app/stores';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
@@ -27,13 +28,8 @@
 	$: ({ TeamVulnerabilities } = data);
 </script>
 
-{#if $TeamVulnerabilities.errors}
-	<Alert variant="error">
-		{#each $TeamVulnerabilities.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$TeamVulnerabilities.errors} />
+
 {#if $TeamVulnerabilities.data}
 	{@const team = $TeamVulnerabilities.data.team}
 	<div class="grid">

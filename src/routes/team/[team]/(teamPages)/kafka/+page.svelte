@@ -3,18 +3,9 @@
 	import { KafkaTopicOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		Alert,
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -43,17 +34,10 @@
 			field: tableSort.orderBy || KafkaTopicOrderField.NAME
 		});
 	};
-
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $KafkaTopics.errors}
-	{#each distinctErrors($KafkaTopics.errors) as error}
-		<Alert variant="error">
-			{error}
-		</Alert>
-	{/each}
-{/if}
+<GraphErrors errors={$KafkaTopics.errors} />
+
 {#if $KafkaTopics.data}
 	{@const topics = $KafkaTopics.data.team.kafkaTopics}
 	<Card columns={12}>

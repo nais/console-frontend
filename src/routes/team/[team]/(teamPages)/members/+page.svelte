@@ -2,18 +2,9 @@
 	import { graphql, TeamMemberOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		Alert,
-		Button,
-		Heading,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -81,13 +72,8 @@
 	};
 </script>
 
-{#if $Members.errors}
-	<Alert variant="error">
-		{#each $Members.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if team}
+<GraphErrors errors={$Members.errors} />
+{#if team}
 	<Card>
 		<div class="header">
 			<h3>Members</h3>

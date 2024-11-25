@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
 	//import Authentications from '../../../../../../../fridge/routes/team/[team]/[env]/job/[job]/Authentications.svelte';
 	import { page } from '$app/stores';
 	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Runs from './Runs.svelte';
@@ -22,13 +22,9 @@
 	$: team = $page.params.team;
 </script>
 
-{#if $Job.errors}
-	<Alert variant="error">
-		{#each $Job.errors as error}
-			{error.message}
-		{/each}
-	</Alert>
-{:else if $Job.data}
+<GraphErrors errors={$Job.errors} />
+
+{#if $Job.data}
 	{@const job = $Job.data.team.environment.job}
 	<div class="grid">
 		<Status {job} />

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AppErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -10,13 +11,8 @@
 </script>
 
 <Card>
-	{#if $AppNotificationState.errors}
-		<Alert variant="error">
-			{#each $AppNotificationState.errors as error}
-				{error.message}
-			{/each}
-		</Alert>
-	{/if}
+	<GraphErrors errors={$AppNotificationState.errors} />
+
 	{#if $AppNotificationState.data}
 		{@const app = $AppNotificationState.data.team.environment.application}
 		<h4>Application status</h4>

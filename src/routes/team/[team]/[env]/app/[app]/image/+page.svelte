@@ -8,9 +8,10 @@
 	import { PendingValue } from '$houdini';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Alert, CopyButton, Skeleton, Tooltip } from '@nais/ds-svelte-community';
+	import { CopyButton, Skeleton, Tooltip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
@@ -45,13 +46,8 @@
 	};
 </script>
 
-{#if $ApplicationImageDetails.errors}
-	<Alert variant="error">
-		{#each $ApplicationImageDetails.errors as error}
-			<p>{error.message}</p>
-		{/each}
-	</Alert>
-{/if}
+<GraphErrors errors={$ApplicationImageDetails.errors} />
+
 {#if $ApplicationImageDetails.data}
 	{@const image = $ApplicationImageDetails.data.team.environment.workload.image}
 	<div class="grid">
