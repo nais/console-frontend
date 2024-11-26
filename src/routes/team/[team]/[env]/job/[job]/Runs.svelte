@@ -6,7 +6,7 @@
 	import Nais from '$lib/icons/Nais.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { ArrowsCirclepathIcon, QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 
 	export let job: JobInstances;
 
@@ -67,7 +67,7 @@
 		{#each $data.runs.edges as run}
 			<Tr>
 				<Td style="text-align: center;">
-					{#if run.node.status.state === JobRunState.FAILED && !run.node.completionTime}
+					{#if run.node.status.state === JobRunState.RUNNING}
 						<Tooltip content="Run in progress" placement="right">
 							<ArrowsCirclepathIcon
 								width="1.5rem"
@@ -75,9 +75,19 @@
 								style="color: var(--a-icon-success)"
 							/>
 						</Tooltip>
-					{:else if run.node.status.state !== JobRunState.FAILED && run.node.completionTime}
+					{:else if run.node.status.state === JobRunState.PENDING}
+						<Tooltip content="Run is pending" placement="right">
+							<ArrowsCirclepathIcon width="1.5rem" height="1.5rem" style="color: inherit" />
+						</Tooltip>
+					{:else if run.node.status.state === JobRunState.SUCCEEDED}
 						<Tooltip content="Run completed successfully" placement="right"
 							><Nais size="1.5rem" style="color: var(--a-icon-success)" />
+						</Tooltip>
+					{:else if run.node.status.state === JobRunState.UNKNOWN}
+						<Tooltip content="Run status unknown" placement="right">
+							<span style="font-size: 1.5rem;">
+								<QuestionmarkIcon style="color: var(--a-icon-warning)" />
+							</span>
 						</Tooltip>
 					{:else}
 						<Tooltip content="Run failed" placement="right">
