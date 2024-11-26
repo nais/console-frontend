@@ -11,13 +11,6 @@
 		graphql(`
 			fragment JobErrorFragment on WorkloadStatusError {
 				__typename
-
-				... on WorkloadStatusFailedRun {
-					level
-					detail
-					name
-				}
-
 				... on WorkloadStatusDeprecatedRegistry {
 					level
 					name
@@ -60,6 +53,20 @@
 						targetTeamSlug
 						targetWorkloadName
 					}
+				}
+				... on WorkloadStatusMissingSBOM {
+					level
+				}
+				... on WorkloadStatusVulnerable {
+					level
+					summary {
+						riskScore
+					}
+				}
+				... on WorkloadStatusFailedRun {
+					level
+					detail
+					name
 				}
 			}
 		`)
@@ -146,10 +153,25 @@
 					>Nais Application reference - accessPolicy</a
 				>.
 			</Alert>
-		{:else if type === 'WorkloadStatusFailedRun'}
-			<Alert variant="error">
-				{$data.name} failed. {$data.detail}. Please consult the
-				<a href="/team/{team}/{env}/job/{job}/logs?{$data.name}">logs</a> if still available.
+		{:else if type === 'WorkloadStatusMissingSBOM'}
+			<Alert variant="warning">
+				<h4>Missing SBOM</h4>
+				The workload does not have a registered Software Bill of Materials (SBOM). Refer to the
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>NAIS documentation</a>
+				for instructions on how to resolve this.
+			</Alert>
+		{:else if type === 'WorkloadStatusVulnerable'}
+			<Alert variant="warning">
+				<h4>Workload is vulnerable</h4>
+				{#if $data.summary && $data.summary.riskScore > 100}
+					The workload is considered vulnerable with a risk score of {$data.summary.riskScore},
+					which exceeds the acceptable threshold of 100.
+				{:else}
+					The workload is considered vulnerable because it has a critical vulnerability.
+				{/if}
+				The threshold is determined by either having more than one critical vulnerability or a combined
+				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
+				<a href="/team/{team}/{env}/app/{job}/image">image details</a> for more details.
 			</Alert>
 		{:else}
 			<Alert variant="error">Unkown error</Alert>

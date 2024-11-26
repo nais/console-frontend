@@ -11,16 +11,15 @@
 		graphql(`
 			fragment AppErrorFragment on WorkloadStatusError {
 				__typename
-
-				... on WorkloadStatusDeprecatedIngress {
-					level
-					ingress
-				}
 				... on WorkloadStatusDeprecatedRegistry {
 					name
 					registry
 					repository
 					tag
+					level
+				}
+				... on WorkloadStatusInvalidNaisYaml {
+					detail
 					level
 				}
 				... on WorkloadStatusInboundNetwork {
@@ -39,17 +38,6 @@
 						targetWorkloadName
 					}
 				}
-				... on WorkloadStatusInvalidNaisYaml {
-					detail
-					level
-				}
-				... on WorkloadStatusNewInstancesFailing {
-					failingInstances
-					level
-				}
-				... on WorkloadStatusNoRunningInstances {
-					level
-				}
 				... on WorkloadStatusOutboundNetwork {
 					level
 					policy {
@@ -66,19 +54,29 @@
 						targetWorkloadName
 					}
 				}
-				... on WorkloadStatusSynchronizationFailing {
-					detail
-					level
-				}
 				... on WorkloadStatusMissingSBOM {
 					level
 				}
-
 				... on WorkloadStatusVulnerable {
 					level
 					summary {
 						riskScore
 					}
+				}
+				... on WorkloadStatusSynchronizationFailing {
+					detail
+					level
+				}
+				... on WorkloadStatusDeprecatedIngress {
+					level
+					ingress
+				}
+				... on WorkloadStatusNewInstancesFailing {
+					failingInstances
+					level
+				}
+				... on WorkloadStatusNoRunningInstances {
+					level
 				}
 			}
 		`)
@@ -198,18 +196,18 @@
 		{:else if type === 'WorkloadStatusMissingSBOM'}
 			<Alert variant="warning">
 				<h4>Missing SBOM</h4>
-				The application does not have a registered Software Bill of Materials (SBOM). Refer to the
+				The workload does not have a registered Software Bill of Materials (SBOM). Refer to the
 				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>NAIS documentation</a>
 				for instructions on how to resolve this.
 			</Alert>
 		{:else if type === 'WorkloadStatusVulnerable'}
 			<Alert variant="warning">
-				<h4>Application is vulnerable</h4>
+				<h4>Workload is vulnerable</h4>
 				{#if $data.summary && $data.summary.riskScore > 100}
-					The application is considered vulnerable with a risk score of {$data.summary.riskScore},
+					The workload is considered vulnerable with a risk score of {$data.summary.riskScore},
 					which exceeds the acceptable threshold of 100.
 				{:else}
-					The application is considered vulnerable because it has a critical vulnerability.
+					The workload is considered vulnerable because it has a critical vulnerability.
 				{/if}
 				The threshold is determined by either having more than one critical vulnerability or a combined
 				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
