@@ -36,6 +36,23 @@
 	$: jobName = $page.params.job;
 	$: env = $page.params.env;
 	$: team = $page.params.team;
+
+	const formatDuration = (duration: number) => {
+		const minute = 60;
+		const hour = 60 * minute;
+
+		const hours = Math.floor(duration / hour);
+		const minutes = Math.floor((duration % hour) / minute);
+		const seconds = Math.floor(duration % minute);
+
+		if (hours > 0) {
+			return `${hours}h ${minutes}m ${seconds}s`;
+		} else if (minutes > 0) {
+			return `${minutes}m ${seconds}s`;
+		} else {
+			return `${seconds}s`;
+		}
+	};
 </script>
 
 <Table size="small" zebraStripes>
@@ -79,7 +96,7 @@
 						Not started
 					{/if}
 				</Td>
-				<Td>{run.node.duration}</Td>
+				<Td>{formatDuration(run.node.duration)}</Td>
 				{#if run.node.status.message}
 					<Td>{run.node.status.message}</Td>
 				{:else}
