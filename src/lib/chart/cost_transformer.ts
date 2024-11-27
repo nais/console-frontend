@@ -161,6 +161,17 @@ export type TeamCostEnvType = {
 export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 	const dates = data.map((entry) => entry.date.toISOString().split('T')[0]);
 
+	const workloadNames = new Set<string>();
+	data.forEach((entry) => {
+		entry.workloads.forEach((workload) => {
+			if (workload.workloadName !== '') {
+				workloadNames.add(workload.workloadName);
+			}
+		});
+	});
+
+	console.log('workloadNames', workloadNames);
+
 	return {
 		title: {},
 		legend: {
@@ -206,23 +217,16 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 				}
 			}
 		],
-		/*series: data[0].workloads.map((_, i) => ({
-			name: data[0].workloads[i].workloadName,
+		series: Array.from(workloadNames).map((workloadName) => ({
+			name: workloadName,
 			type: 'line',
 			emphasis: {
 				focus: 'series'
 			},
-			data: data.map((dateEntry) => dateEntry.workloads[i]?.cost || 0) // Use 0 if no cost data
-		}))*/
-		series: data[0].workloads
-			.filter((workload) => workload.workloadName !== '')
-			.map((workload, i) => ({
-				name: workload.workloadName,
-				type: 'line',
-				emphasis: {
-					focus: 'series'
-				},
-				data: data.map((dateEntry) => dateEntry.workloads[i]?.cost || 0) // Use 0 if no cost data
-			}))
+			data: data.map((dateEntry) => {
+				const workload = dateEntry.workloads.find((w) => w.workloadName === workloadName);
+				return workload?.cost || 0;
+			})
+		}))
 	} as EChartsOption;
 }
