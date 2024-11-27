@@ -5,14 +5,49 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		Button,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		ToggleGroup,
+		ToggleGroupItem,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import {
+		CheckmarkIcon,
+		ChevronLeftIcon,
+		ChevronRightIcon,
+		PlusIcon,
+		XMarkIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
-	$: team = $page.params.team;
 	export let data: PageData;
 	$: ({ Secrets } = data);
+
+	$: team = $page.params.team;
+
+	const varToInUse = (inUse: boolean | undefined | null) => {
+		console.log(inUse);
+		if (inUse === true) {
+			return 'inUse';
+		} else if (inUse === false) {
+			return 'notInUse';
+		}
+		return 'all';
+	};
+
+	let inUse = varToInUse($Secrets?.variables?.filter?.inUse);
+	console.log(inUse);
+
+	const handleInUse = (e: CustomEvent<string>) => {
+		changeParams({ filter: e.detail });
+	};
 
 	$: tableSort = {
 		orderBy: $Secrets.variables?.orderBy?.field,
@@ -83,91 +118,116 @@
 					</svelte:fragment>
 				</Button>
 			</div>
-			<Table
-				size="small"
-				zebraStripes
-				sort={{
-					orderBy: tableSort.orderBy || SecretOrderField.NAME,
-					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-				}}
-				on:sortChange={tableSortChange}
-			>
-				<Thead>
-					<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
-					<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
-					<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
-						>Last Modified</Th
-					>
-				</Thead>
-				<Tbody>
-					{#each secrets.nodes as secret}
-						{#if secret === PendingValue}
-							<Tr>
-								<Td><Skeleton variant="text" /></Td>
-								<Td>
-									<Skeleton variant="text" />
-								</Td>
-								<Td>
-									<Skeleton variant="text" />
-								</Td>
-							</Tr>
-						{:else}
-							<Tr>
-								<Td>
-									<a href="/team/{team}/{secret.environment.name}/secret/{secret.name}"
-										>{secret.name}</a
-									>
-								</Td>
-								<Td>{secret.environment.name}</Td>
-								<Td align="right">
-									{#if secret.lastModifiedAt}
-										<Time time={secret.lastModifiedAt} distance />
-									{:else}
-										<code>n/a</code>
-									{/if}
-								</Td>
-							</Tr>
-						{/if}
-					{:else}
-						<Tr><Td colspan={99}>No secrets in this environment</Td></Tr>
-					{/each}
-				</Tbody>
-			</Table>
-			{#if secrets.pageInfo !== PendingValue && (secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage)}
-				<div class="pagination">
-					<span>
-						{#if secrets.pageInfo.pageStart !== secrets.pageInfo.pageEnd}
-							{secrets.pageInfo.pageStart} - {secrets.pageInfo.pageEnd}
-						{:else}
-							{secrets.pageInfo.pageStart}
-						{/if}
-
-						of {secrets.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!secrets.pageInfo.hasPreviousPage}
-							on:click={async () => {
-								return await Secrets.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!secrets.pageInfo.hasNextPage}
-							on:click={async () => {
-								return await Secrets.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
+			<div>
+				<div style="padding-bottom: 1rem;">
+					<ToggleGroup bind:value={inUse} variant="neutral" size="small" on:change={handleInUse}>
+						<ToggleGroupItem value="all">All</ToggleGroupItem>
+						<ToggleGroupItem value="inUse">In use</ToggleGroupItem>
+						<ToggleGroupItem value="notInUse">Not in use</ToggleGroupItem>
+					</ToggleGroup>
 				</div>
-			{/if}
-		</Card>
+				<Table
+					size="small"
+					zebraStripes
+					sort={{
+						orderBy: tableSort.orderBy || SecretOrderField.NAME,
+						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+					}}
+					on:sortChange={tableSortChange}
+				>
+					<Thead>
+						<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
+						<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
+						<Th>In Use</Th>
+						<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
+							>Last Modified</Th
+						>
+					</Thead>
+					<Tbody>
+						{#each secrets.nodes as secret}
+							{#if secret === PendingValue}
+								<Tr>
+									<Td><Skeleton variant="text" /></Td>
+									<Td>
+										<Skeleton variant="text" />
+									</Td>
+									<Td><Skeleton variant="circle" /></Td>
+									<Td>
+										<Skeleton variant="text" />
+									</Td>
+								</Tr>
+							{:else}
+								<Tr>
+									<Td>
+										<a href="/team/{team}/{secret.environment.name}/secret/{secret.name}"
+											>{secret.name}</a
+										>
+									</Td>
+									<Td>{secret.environment.name}</Td>
+									<Td>
+										{#if secret.workloads.pageInfo.totalCount > 0}
+											<CheckmarkIcon
+												style="color: var(--a-surface-success)"
+												title="{secret.workloads.pageInfo
+													.totalCount} workloads are using this secret"
+											/>
+										{:else}
+											<XMarkIcon
+												style="color: var(--a-surface-danger)"
+												title="No workloads are using this secret"
+											/>
+										{/if}
+									</Td>
+									<Td align="right">
+										{#if secret.lastModifiedAt}
+											<Time time={secret.lastModifiedAt} distance />
+										{:else}
+											<code>n/a</code>
+										{/if}
+									</Td>
+								</Tr>
+							{/if}
+						{:else}
+							<Tr><Td colspan={99}>No secrets in this environment</Td></Tr>
+						{/each}
+					</Tbody>
+				</Table>
+				{#if secrets.pageInfo !== PendingValue && (secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage)}
+					<div class="pagination">
+						<span>
+							{#if secrets.pageInfo.pageStart !== secrets.pageInfo.pageEnd}
+								{secrets.pageInfo.pageStart} - {secrets.pageInfo.pageEnd}
+							{:else}
+								{secrets.pageInfo.pageStart}
+							{/if}
+
+							of {secrets.pageInfo.totalCount}
+						</span>
+
+						<span style="padding-left: 1rem;">
+							<Button
+								size="small"
+								variant="secondary"
+								disabled={!secrets.pageInfo.hasPreviousPage}
+								on:click={async () => {
+									return await Secrets.loadPreviousPage();
+								}}><ChevronLeftIcon /></Button
+							>
+							<Button
+								size="small"
+								variant="secondary"
+								disabled={!secrets.pageInfo.hasNextPage}
+								on:click={async () => {
+									return await Secrets.loadNextPage();
+								}}
+							>
+								<ChevronRightIcon /></Button
+							>
+						</span>
+					</div>
+				{/if}
+			</div></Card
+		>
 		{#if createSecretOpen}
 			<CreateSecret {team} bind:open={createSecretOpen} {environments} />
 		{/if}

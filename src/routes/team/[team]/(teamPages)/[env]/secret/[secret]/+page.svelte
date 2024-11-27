@@ -18,6 +18,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -191,14 +192,13 @@
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 		</p>
-		{#if secret.applications.edges.length > 0 || secret.jobs.edges.length > 0}
+		{#if secret.workloads.nodes.length > 0}
 			<p>These workloads still reference the secret:</p>
 			<ul>
-				{#each secret.applications.edges as app}
-					<li><a href="/team/{team}/{env}/app/{app.node.name}">{app.node.name}</a></li>
-				{/each}
-				{#each secret.jobs.edges as job}
-					<li><a href="/team/{team}/{env}/job/{job.node.name}">{job.node.name}</a></li>
+				{#each secret.workloads.nodes as workload}
+					<li>
+						<WorkloadLink {workload} />
+					</li>
 				{/each}
 			</ul>
 			<br />
@@ -220,14 +220,13 @@
 			<b>{secret.name}</b>
 			from <b>{env}</b>.
 		</p>
-		{#if secret.applications.edges.length > 0 || secret.jobs.edges.length > 0}
+		{#if secret.workloads.nodes.length > 0}
 			<p>These workloads reference the secret:</p>
 			<ul>
-				{#each secret.applications.edges as app}
-					<li><a href="/team/{team}/{env}/app/{app.node.name}">{app.node.name}</a></li>
-				{/each}
-				{#each secret.jobs.edges as job}
-					<li><a href="/team/{team}/{env}/job/{job.node.name}">{job.node.name}</a></li>
+				{#each secret.workloads.nodes as workload}
+					<li>
+						<WorkloadLink {workload} />
+					</li>
 				{/each}
 			</ul>
 			<br />
@@ -327,7 +326,7 @@
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<Workloads apps={secret.applications} jobs={secret.jobs} />
+			<Workloads workloads={secret.workloads} />
 		</Card>
 		<Card columns={4} rows={1}>
 			<Manifest {secretName} />

@@ -2711,6 +2711,12 @@ type SecretEdge {
   node: Secret!
 }
 
+"""Input for filtering the secrets of a team."""
+input SecretFilter {
+  """Filter by usage of the secret."""
+  inUse: Boolean
+}
+
 input SecretOrder {
   """The direction to order items by."""
   direction: OrderDirection!
@@ -3388,6 +3394,9 @@ type Team implements Node {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: SecretFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.

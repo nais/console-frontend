@@ -1,13 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { type Secret$result } from '$houdini';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { Alert, HelpText } from '@nais/ds-svelte-community';
 
-	export let apps: Secret$result['team']['environment']['secret']['applications'];
-	export let jobs: Secret$result['team']['environment']['secret']['jobs'];
-
-	$: team = $page.params.team;
-	$: env = $page.params.env;
+	export let workloads: Secret$result['team']['environment']['secret']['workloads'];
 </script>
 
 <h4>
@@ -17,25 +13,16 @@
 	</HelpText>
 </h4>
 
-{#if apps.edges.length > 0}
-	<h5>Applications</h5>
+{#if workloads.nodes.length > 0}
+	<h5>Workloads</h5>
 	<ul>
-		{#each apps.edges as app}
-			<li><a href="/team/{team}/{env}/app/{app.node.name}">{app.node.name}</a></li>
+		{#each workloads.nodes as workload}
+			<li><WorkloadLink {workload} /></li>
 		{/each}
 	</ul>
 {/if}
 
-{#if jobs.edges.length > 0}
-	<h5>Jobs</h5>
-	<ul>
-		{#each jobs.edges as job}
-			<li><a href="/team/{team}/{env}/job/{job.node.name}">{job.node.name}</a></li>
-		{/each}
-	</ul>
-{/if}
-
-{#if apps.edges.length === 0 && jobs.edges.length === 0}
+{#if workloads.nodes.length === 0}
 	<Alert size="small" variant="info">Secret is not in use by any workloads.</Alert>
 {/if}
 
