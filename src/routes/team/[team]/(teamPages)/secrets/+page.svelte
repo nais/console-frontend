@@ -32,20 +32,11 @@
 
 	$: team = $page.params.team;
 
-	const varToInUse = (inUse: boolean | undefined | null) => {
-		console.log(inUse);
-		if (inUse === true) {
-			return 'inUse';
-		} else if (inUse === false) {
-			return 'notInUse';
-		}
-		return 'all';
-	};
-
-	let inUse = varToInUse($Secrets?.variables?.filter?.inUse);
-	console.log(inUse);
-
 	const handleInUse = (e: CustomEvent<string>) => {
+		if (e.detail === 'all') {
+			changeParams({ filter: '' });
+			return;
+		}
 		changeParams({ filter: e.detail });
 	};
 
@@ -120,7 +111,11 @@
 			</div>
 			<div>
 				<div style="padding-bottom: 1rem;">
-					<ToggleGroup bind:value={inUse} variant="neutral" size="small" on:change={handleInUse}>
+					<ToggleGroup
+						value={$page.url.searchParams.get('filter') || 'all'}
+						size="small"
+						on:change={handleInUse}
+					>
 						<ToggleGroupItem value="all">All</ToggleGroupItem>
 						<ToggleGroupItem value="inUse">In use</ToggleGroupItem>
 						<ToggleGroupItem value="notInUse">Not in use</ToggleGroupItem>
