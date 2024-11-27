@@ -971,6 +971,11 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
+type Features {
+  """Wether Unleash is enabled or not."""
+  unleash: Boolean!
+}
+
 """
 ID-porten authentication.
 
@@ -1913,6 +1918,9 @@ interface Persistence {
 
 """The query root for the NAIS GraphQL API."""
 type Query {
+  """Feature flags."""
+  features: Features!
+
   """The currently authenticated user."""
   me: AuthenticatedUser!
 

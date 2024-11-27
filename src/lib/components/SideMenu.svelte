@@ -9,6 +9,7 @@
 		extraRoutes?: string[];
 		inventoryCount?: number | typeof PendingValue;
 		notNais?: boolean | typeof PendingValue;
+		featureToggle?: boolean;
 	};
 	export type menuGroup = {
 		items: menuItem[];
@@ -44,30 +45,32 @@
 				<hr />
 			{/if}
 			{#each items as item}
-				<li class:active={isActive(item, $page.route.id)}>
-					<a class="unstyled" href={replacer(item.routeId, $page.params)}>
-						<div class="item-container">
-							<div class="left-content">
-								<svelte:component this={item.icon} />
-								<span style="line-height: 1.7rem;">
-									{item.name}
-									{#if item.notNais}
-										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
-									{/if}
-								</span>
-							</div>
-							{#if item.inventoryCount}
-								<div class="right-content">
-									{#if item.inventoryCount !== PendingValue}
-										<span class="inventorytag">{item.inventoryCount}</span>
-									{:else}
-										<span class="inventorytag">...</span>
-									{/if}
+				{#if item.featureToggle !== false}
+					<li class:active={isActive(item, $page.route.id)}>
+						<a class="unstyled" href={replacer(item.routeId, $page.params)}>
+							<div class="item-container">
+								<div class="left-content">
+									<svelte:component this={item.icon} />
+									<span style="line-height: 1.7rem;">
+										{item.name}
+										{#if item.notNais}
+											<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
+										{/if}
+									</span>
 								</div>
-							{/if}
-						</div>
-					</a>
-				</li>
+								{#if item.inventoryCount}
+									<div class="right-content">
+										{#if item.inventoryCount !== PendingValue}
+											<span class="inventorytag">{item.inventoryCount}</span>
+										{:else}
+											<span class="inventorytag">...</span>
+										{/if}
+									</div>
+								{/if}
+							</div>
+						</a>
+					</li>
+				{/if}
 			{/each}
 		{/each}
 	</ul>

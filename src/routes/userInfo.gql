@@ -6,4 +6,7 @@ query UserInfo {
 			isAdmin
 		}
 	}
+	features {
+		unleash
+	}
 }

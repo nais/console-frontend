@@ -34,7 +34,7 @@
 	export let data: LayoutData;
 
 	$: team = $page.params.team;
-	$: ({ InventoryCounts } = data);
+	$: ({ InventoryCounts, UserInfo } = data);
 
 	let nav: menuGroup[];
 	$: {
@@ -139,7 +139,8 @@
 							routeId: '/team/[team]/(teamPages)/unleash',
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
 							withSubRoutes: true,
-							icon: Unleash
+							icon: Unleash,
+							featureToggle: UserInfo.data?.features.unleash
 						}
 					]
 				},
