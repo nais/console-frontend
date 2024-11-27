@@ -45,7 +45,7 @@
 					icon: ImageIcon
 				},
 				{
-					name: 'Deploys',
+					name: 'Deployments',
 					routeId: '/team/[team]/[env]/app/[app]/deploys',
 					icon: ArrowsSquarepathIcon
 				},

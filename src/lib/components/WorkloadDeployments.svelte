@@ -88,6 +88,10 @@
 						{/if}
 					</Td>
 				</Tr>
+			{:else}
+				<Tr>
+					<Td colspan={999}>No deployments found</Td>
+				</Tr>
 			{/each}
 		</Tbody>
 	</Table>

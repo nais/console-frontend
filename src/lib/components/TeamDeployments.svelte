@@ -128,7 +128,7 @@
 				</Tr>
 			{:else}
 				<Tr>
-					<Td colspan={99}>No deployments yet</Td>
+					<Td colspan={999}>No deployments found</Td>
 				</Tr>
 			{/each}
 		{/if}

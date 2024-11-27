@@ -15,7 +15,7 @@
 	const simpleTeamPages: { [key: string]: string } = {
 		applications: 'applications',
 		jobs: 'jobs',
-		deploy: 'deploys',
+		deploy: 'deployments',
 		cost: 'cost',
 		utilization: 'utilization',
 		members: 'members',
@@ -36,7 +36,7 @@
 	const simpleJobPages: { [key: string]: string } = {
 		'': '', // overview
 		status: 'status',
-		deploys: 'deploys',
+		deploys: 'deployments',
 		cost: 'cost',
 		logs: 'logs',
 		manifest: 'manifest',
@@ -46,7 +46,7 @@
 	const simpleAppPages: { [key: string]: string } = {
 		'': '', // overview
 		status: 'status',
-		deploys: 'deploys',
+		deploys: 'deployments',
 		cost: 'cost',
 		utilization: 'utilization',
 		logs: 'logs',

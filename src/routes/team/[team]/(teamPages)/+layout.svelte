@@ -146,7 +146,7 @@
 				{
 					items: [
 						{
-							name: 'Deploys',
+							name: 'Deployments',
 							routeId: '/team/[team]/(teamPages)/deploy',
 							withSubRoutes: true,
 							icon: ArrowsSquarepathIcon
