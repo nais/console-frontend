@@ -64,7 +64,7 @@
 {#if $store.data !== null}
 	<h2>
 		<DeploysIcon size="1.5rem" />
-		My teams latest deploys
+		My teams latest deployments
 	</h2>
 	<Table size="small" zebraStripes>
 		<Thead>
@@ -87,22 +87,27 @@
 				{:else}
 					<Tr>
 						<Td>
-							{#each deploy.resources as resource}
+							{#each deploy.resources as resource, i}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
-								{#if deploy.resources[0].kind === 'Job'}
+								{#if resource.kind === 'Naisjob'}
 									<a
 										href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{deploy
 											.resources[0].name}"
 									>
 										{deploy.resources[0].name}</a
 									>
-								{:else}
+								{:else if resource.kind === 'Application'}
 									<a
 										href="/team/{deploy.team.slug}/{deploy.environment.name}/app/{deploy
 											.resources[0].name}"
 									>
-										{deploy.resources[0].name}</a
+										{resource.name}</a
 									>
+								{:else}
+									{resource.name}
+								{/if}
+								{#if deploy.resources.length > 1 && i !== deploy.resources.length - 1}
+									<br />
 								{/if}
 							{/each}
 						</Td>
