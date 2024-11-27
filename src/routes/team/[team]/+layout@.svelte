@@ -13,7 +13,7 @@
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
 	const simpleTeamPages: { [key: string]: string } = {
-		applications: 'apps',
+		applications: 'applications',
 		jobs: 'jobs',
 		deploy: 'deploys',
 		cost: 'cost',
@@ -74,7 +74,7 @@
 		'/team/[team]/(teamPages)/[env]/postgres/[postgres]': (params: Data) => {
 			return [
 				{
-					name: 'Postgres',
+					name: 'postgres',
 					path: replacer('/team/[team]/(teamPages)/postgres', params)
 				},
 				{
@@ -89,7 +89,7 @@
 		'/team/[team]/(teamPages)/[env]/bucket/[bucket]': (params: Data) => {
 			return [
 				{
-					name: 'Buckets',
+					name: 'buckets',
 					path: replacer('/team/[team]/(teamPages)/buckets', params)
 				},
 				{
@@ -104,7 +104,7 @@
 		'/team/[team]/(teamPages)/[env]/redis/[redis]': (params: Data) => {
 			return [
 				{
-					name: 'Redis',
+					name: 'redis',
 					path: replacer('/team/[team]/(teamPages)/redis', params)
 				},
 				{
@@ -119,7 +119,7 @@
 		'/team/[team]/(teamPages)/[env]/opensearch/[opensearch]': (params: Data) => {
 			return [
 				{
-					name: 'OpenSearch',
+					name: 'opensearch',
 					path: replacer('/team/[team]/(teamPages)/opensearch', params)
 				},
 				{
@@ -134,7 +134,7 @@
 		'/team/[team]/(teamPages)/[env]/kafka/[kafka]': (params: Data) => {
 			return [
 				{
-					name: 'Kafka topic',
+					name: 'kafka topic',
 					path: replacer('/team/[team]/(teamPages)/kafka', params)
 				},
 				{
@@ -149,7 +149,7 @@
 		'/team/[team]/(teamPages)/[env]/bigquery/[bigquery]': (params: Data) => {
 			return [
 				{
-					name: 'BigQuery',
+					name: 'bigquery',
 					path: replacer('/team/[team]/(teamPages)/bigquery', params)
 				},
 				{
@@ -195,7 +195,7 @@
 		pages[`/team/[team]/[env]/app/[app]${key ? '/' + key : ''}`] = (params: Data) => {
 			const ret = [
 				{
-					name: 'apps',
+					name: 'applications',
 					path: replacer('/team/[team]/applications', params)
 				},
 				{
