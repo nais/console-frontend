@@ -247,7 +247,7 @@
 			</a>
 			<div class="search">
 				<Search
-					placeholder="Search for apps, jobs, teams and more..."
+					placeholder="Search for applications, jobs, teams and more..."
 					bind:value={query}
 					label="search"
 					variant="simple"
