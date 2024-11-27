@@ -15,7 +15,7 @@
 {#if errors && errors.length > 0}
 	<Alert variant="error" {size}>
 		{#each pick(errors) as error}
-			{error}
+			{error}<br />
 		{/each}
 		{#if dismissable}
 			<Button variant="tertiary" size="small" on:click={() => (errors = [])}>Dismiss</Button>
