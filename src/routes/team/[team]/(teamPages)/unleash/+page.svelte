@@ -4,6 +4,7 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
 		Alert,
 		Button,
@@ -46,7 +47,6 @@
 		toggles: 0
 	};
 	$: enabled = true;
-	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
@@ -81,7 +81,6 @@
 		});
 
 		if ($createUnleashForTeam.errors) {
-			console.log($createUnleashForTeam.errors);
 			return;
 		}
 
@@ -106,46 +105,6 @@
 			}
 		}
 	`);
-
-	// const updateUnleashForTeam = graphql(`
-	// 	mutation updateUnleashForTeam($team: Slug!, $name: String!, $allowedTeams: [String!]) {
-	// 		updateUnleashForTeam(team: $team, name: $name, allowedTeams: $allowedTeams) {
-	// 			enabled
-	// 			instance {
-	// 				name
-	// 				version
-	// 				allowedTeams
-	// 				webIngress
-	// 				apiIngress
-	// 				metrics {
-	// 					apiTokens
-	// 					cpuUtilization
-	// 					cpuRequests
-	// 					memoryUtilization
-	// 					memoryRequests
-	// 					toggles
-	// 				}
-	// 				ready
-	// 			}
-	// 		}
-	// 	}
-	// `);
-
-	// const updateUnleash = async (instanceName: string, allowedTeams: string[]) => {
-	// 	console.log('update unleash');
-	// 	await updateUnleashForTeam.mutate({
-	// 		team: team,
-	// 		name: instanceName,
-	// 		allowedTeams: allowedTeams
-	// 	});
-
-	// 	if ($updateUnleashForTeam.errors) {
-	// 		console.log($updateUnleashForTeam.errors);
-	// 		return;
-	// 	}
-
-	// 	unleash = $updateUnleashForTeam.data?.updateUnleashForTeam.instance;
-	// };
 
 	let removeTeamName = '';
 	let removeTeamConfirmOpen = false;
@@ -217,19 +176,10 @@
 	};
 </script>
 
-{#if $Unleash.errors}
-	{#each distinctErrors($Unleash.errors) as error}
-		<Alert style="margin-bottom: 1rem;" variant="error">
-			{error}
-		</Alert>
-	{/each}
-{:else if $createUnleashForTeam.errors}
-	{#each distinctErrors($createUnleashForTeam.errors) as error}
-		<Alert style="margin-bottom: 1rem;" variant="error">
-			{error}
-		</Alert>
-	{/each}
-{:else if !enabled}
+<GraphErrors errors={$Unleash.errors} />
+<GraphErrors errors={$createUnleashForTeam.errors} />
+
+{#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
 		Unleash is not enabled for this tenant. Please contact your administrator.
 	</Alert>

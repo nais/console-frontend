@@ -170,8 +170,6 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		});
 	});
 
-	console.log('workloadNames', workloadNames);
-
 	return {
 		title: {},
 		legend: {

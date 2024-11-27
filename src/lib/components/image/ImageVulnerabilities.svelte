@@ -115,14 +115,11 @@
 
 	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
 		const { key } = e.detail;
-		console.log(key);
 
 		if (key === tableSort.orderBy) {
-			console.log('toggle direction');
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
 		} else {
-			console.log('change field');
 			tableSort.orderBy =
 				ImageVulnerabilityOrderField[key as keyof typeof ImageVulnerabilityOrderField];
 			tableSort.direction = 'ASC';
