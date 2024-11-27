@@ -206,13 +206,23 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 				}
 			}
 		],
-		series: data[0].workloads.map((_, i) => ({
+		/*series: data[0].workloads.map((_, i) => ({
 			name: data[0].workloads[i].workloadName,
 			type: 'line',
 			emphasis: {
 				focus: 'series'
 			},
 			data: data.map((dateEntry) => dateEntry.workloads[i]?.cost || 0) // Use 0 if no cost data
-		}))
+		}))*/
+		series: data[0].workloads
+			.filter((workload) => workload.workloadName !== '')
+			.map((workload, i) => ({
+				name: workload.workloadName,
+				type: 'line',
+				emphasis: {
+					focus: 'series'
+				},
+				data: data.map((dateEntry) => dateEntry.workloads[i]?.cost || 0) // Use 0 if no cost data
+			}))
 	} as EChartsOption;
 }
