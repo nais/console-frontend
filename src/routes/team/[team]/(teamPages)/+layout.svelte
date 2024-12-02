@@ -108,7 +108,8 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/redis/[redis]'],
 							withSubRoutes: true,
 							icon: Redis,
-							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.redisInstances.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.redisInstances.total,
+							featureToggle: UserInfo.data?.features.redis.enabled
 						},
 						{
 							name: 'OpenSearch',
@@ -116,7 +117,8 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
 							withSubRoutes: true,
 							icon: Opensearch,
-							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.openSearchInstances.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.openSearchInstances.total,
+							featureToggle: UserInfo.data?.features.openSearch.enabled
 						},
 						{
 							name: 'Kafka topics',
@@ -124,7 +126,8 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/kafka/[kafka]'],
 							withSubRoutes: true,
 							icon: Kafka,
-							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.kafkaTopics.total
+							inventoryCount: $InventoryCounts.data?.team.inventoryCounts.kafkaTopics.total,
+							featureToggle: UserInfo.data?.features.kafka.enabled
 						},
 						{
 							name: 'BigQuery',
@@ -140,7 +143,7 @@
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/unleash/[unleash]'],
 							withSubRoutes: true,
 							icon: Unleash,
-							featureToggle: UserInfo.data?.features.unleash
+							featureToggle: UserInfo.data?.features.unleash.enabled
 						}
 					]
 				},

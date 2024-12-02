@@ -7,6 +7,17 @@ query UserInfo {
 		}
 	}
 	features {
-		unleash
+		unleash {
+			enabled
+		}
+		redis {
+			enabled
+		}
+		kafka {
+			enabled
+		}
+		openSearch {
+			enabled
+		}
 	}
 }
