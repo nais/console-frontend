@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { JobInstances } from '$houdini';
+	import type { JobRuns } from '$houdini';
 	import { fragment, graphql, JobRunState } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
@@ -8,14 +8,14 @@
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import { ArrowsCirclepathIcon, QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 
-	export let job: JobInstances;
+	export let job: JobRuns;
 
 	$: data = fragment(
 		job,
 		graphql(`
-			fragment JobInstances on Job {
+			fragment JobRuns on Job {
 				name
-				runs(first: 20) {
+				runs(first: 20) @list(name: "All_Runs") {
 					edges {
 						node {
 							name

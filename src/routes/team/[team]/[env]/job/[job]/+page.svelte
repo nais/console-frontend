@@ -1,11 +1,15 @@
 <script lang="ts">
+	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { Button, Modal, TextField } from '@nais/ds-svelte-community';
+	import { TimerStartIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Runs from './Runs.svelte';
@@ -16,9 +20,109 @@
 	export let data: PageData;
 	$: ({ Job } = data);
 
+	const triggerRunMutation = () =>
+		graphql(`
+			mutation TriggerJob(
+				$team: Slug!
+				$environment: String!
+				$jobName: String!
+				$runName: String!
+				$jobId: ID!
+			) {
+				triggerJob(
+					input: {
+						environmentName: $environment
+						teamSlug: $team
+						runName: $runName
+						name: $jobName
+					}
+				) {
+					jobRun {
+						...All_Runs_insert @parentID(value: $jobId) @prepend
+					}
+				}
+			}
+		`);
+
+	let triggerRun = triggerRunMutation();
+
+	onNavigate(() => {
+		triggerRun = triggerRunMutation();
+	});
+
 	$: jobName = $page.params.job;
 	$: environment = $page.params.env;
 	$: team = $page.params.team;
+
+	let open = false;
+	let runName = '';
+	let errors: string[] = [];
+
+	const submit = () => {
+		triggerRun.mutate({
+			jobName,
+			environment,
+			team,
+			runName,
+			jobId: $Job.data!.team.environment.job.id
+		});
+	};
+
+	const cancel = () => {
+		runName = '';
+		errors = [];
+		open = false;
+	};
+
+	const confirm = () => {
+		let valid = validateJobName(runName);
+		console.log(valid);
+		if (!valid.isValid) {
+			open = true;
+			errors = valid.errors;
+			return;
+		} else if (runName !== '') {
+			open = false;
+			submit();
+		} else {
+			open = true;
+			errors = ['The run name cannot be empty.'];
+		}
+	};
+
+	type ValidationResult = {
+		isValid: boolean;
+		errors: string[];
+	};
+
+	function validateJobName(input: string): ValidationResult {
+		const errors: string[] = [];
+
+		// Kubernetes resource name regex and length constraint
+		const k8sNameRegex = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
+		const maxNameLength = 63;
+
+		// Validate jobName
+		if (!input) {
+			errors.push('Run name is required.');
+		} else {
+			if (!k8sNameRegex.test(input)) {
+				errors.push(
+					'Run name must be a valid Kubernetes resource name (lowercase alphanumeric and hyphens).'
+				);
+			}
+			if (input.length > maxNameLength) {
+				errors.push(
+					`Run name must not exceed ${maxNameLength} characters. Current length: ${input.length}.`
+				);
+			}
+		}
+
+		return {
+			isValid: errors.length === 0,
+			errors
+		};
+	}
 </script>
 
 <GraphErrors errors={$Job.errors} />
@@ -41,7 +145,21 @@
 			<Schedule schedule={job.schedule} />
 		</Card>
 		<Card columns={12}>
-			<h4>Runs</h4>
+			<div class="heading">
+				<h4>Runs</h4>
+				{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
+					<Button
+						variant="secondary"
+						size="small"
+						on:click={() => {
+							open = true;
+						}}
+					>
+						<svelte:fragment slot="icon-left"><TimerStartIcon /></svelte:fragment>
+						Trigger run
+					</Button>
+				{/if}
+			</div>
 			<Runs {job} />
 		</Card>
 		<Card columns={12}>
@@ -64,6 +182,39 @@
 			</Card>
 		{/if}
 	</div>
+	<Modal bind:open on:close>
+		<svelte:fragment slot="header">
+			<h3>Trigger run of {jobName}</h3>
+		</svelte:fragment>
+		<div class="wrapper">
+			This will trigger a new run of
+			<strong>{jobName}</strong> in
+			<strong>{environment}</strong>.
+			<br />
+			Please provide a name for the run.
+			<br />
+			<br />
+			<TextField type="text" bind:value={runName}>
+				<svelte:fragment slot="label">Run name:</svelte:fragment>
+			</TextField>
+
+			{#if $triggerRun.errors?.length ?? 0 > 0}
+				<GraphErrors errors={$triggerRun.errors} />
+			{/if}
+			{#if errors.length > 0}
+				<div class="errors">
+					{#each errors as error}
+						<span>{error}</span><br />
+					{/each}
+				</div>
+			{/if}
+		</div>
+
+		<svelte:fragment slot="footer">
+			<Button variant="primary" type="submit" on:click={confirm}>Confirm</Button>
+			<Button variant="tertiary" type="reset" on:click={cancel}>Cancel</Button>
+		</svelte:fragment>
+	</Modal>
 {/if}
 
 <style>
@@ -76,5 +227,16 @@
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
+	}
+	.heading {
+		display: flex;
+		justify-content: space-between;
+	}
+	.wrapper {
+		width: 500px;
+	}
+	.errors {
+		margin-top: 1rem;
+		color: var(--a-text-danger);
 	}
 </style>
