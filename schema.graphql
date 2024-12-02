@@ -971,6 +971,55 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
+type FeatureKafka implements Node {
+  """Wether Kafka is enabled or not."""
+  enabled: Boolean!
+
+  """Unique identifier for the feature."""
+  id: ID!
+}
+
+type FeatureOpenSearch implements Node {
+  """Wether OpenSearch is enabled or not."""
+  enabled: Boolean!
+
+  """Unique identifier for the feature."""
+  id: ID!
+}
+
+type FeatureRedis implements Node {
+  """Wether Redis is enabled or not."""
+  enabled: Boolean!
+
+  """Unique identifier for the feature."""
+  id: ID!
+}
+
+type FeatureUnleash implements Node {
+  """Wether Unleash is enabled or not."""
+  enabled: Boolean!
+
+  """Unique identifier for the feature."""
+  id: ID!
+}
+
+type Features implements Node {
+  """Unique identifier for the feature container."""
+  id: ID!
+
+  """Information about Kafka feature."""
+  kafka: FeatureKafka!
+
+  """Information about OpenSearch feature."""
+  openSearch: FeatureOpenSearch!
+
+  """Information about Redis feature."""
+  redis: FeatureRedis!
+
+  """Information about Unleash feature."""
+  unleash: FeatureUnleash!
+}
+
 """
 ID-porten authentication.
 
@@ -1913,6 +1962,9 @@ interface Persistence {
 
 """The query root for the NAIS GraphQL API."""
 type Query {
+  """Feature flags."""
+  features: Features!
+
   """The currently authenticated user."""
   me: AuthenticatedUser!
 

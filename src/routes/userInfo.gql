@@ -6,4 +6,18 @@ query UserInfo {
 			isAdmin
 		}
 	}
+	features {
+		unleash {
+			enabled
+		}
+		redis {
+			enabled
+		}
+		kafka {
+			enabled
+		}
+		openSearch {
+			enabled
+		}
+	}
 }
