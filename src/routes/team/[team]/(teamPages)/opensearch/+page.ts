@@ -1,11 +1,20 @@
 import {
+	load_OpenSearch,
 	OpenSearchOrderField,
 	type OpenSearchOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { OpenSearchVariables } from './$houdini';
+import { error } from '@sveltejs/kit';
+import type { PageLoad } from './$houdini';
 
-export const _OpenSearchVariables: OpenSearchVariables = ({ url }) => {
+export const load: PageLoad = async (event) => {
+	const { url } = event;
+	const parent = await event.parent();
+
+	if (parent.UserInfo.data?.features.openSearch.enabled === false) {
+		error(404, 'OpenSearch not enabled');
+	}
+
 	const field = (url.searchParams.get('field') ||
 		OpenSearchOrderField.NAME) as OpenSearchOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
@@ -18,5 +27,15 @@ export const _OpenSearchVariables: OpenSearchVariables = ({ url }) => {
 	const to = new Date();
 	to.setDate(to.getDate() - 1);
 
-	return { orderBy: { field: field, direction: direction }, from, to };
+	return {
+		...(await load_OpenSearch({
+			event,
+			variables: {
+				team: event.params.team,
+				orderBy: { field: field, direction: direction },
+				from,
+				to
+			}
+		}))
+	};
 };

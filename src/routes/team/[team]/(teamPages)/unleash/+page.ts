@@ -5,7 +5,7 @@ import type { PageLoad } from './$houdini';
 export const load: PageLoad = async (event) => {
 	const parent = await event.parent();
 
-	if (parent.UserInfo.data?.features.unleash === false) {
+	if (parent.UserInfo.data?.features.unleash.enabled === false) {
 		error(404, 'Unleash not enabled');
 	}
 

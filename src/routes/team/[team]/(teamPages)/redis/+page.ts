@@ -1,12 +1,20 @@
-import type { RedisVariables } from './$houdini';
-
 import {
+	load_Redis,
 	RedisInstanceOrderField,
 	type OrderDirection$options,
 	type RedisInstanceOrderField$options
 } from '$houdini';
+import { error } from '@sveltejs/kit';
+import type { PageLoad } from './$houdini';
 
-export const _RedisVariables: RedisVariables = ({ url }) => {
+export const load: PageLoad = async (event) => {
+	const { url } = event;
+	const parent = await event.parent();
+
+	if (parent.UserInfo.data?.features.redis.enabled === false) {
+		error(404, 'Redis not enabled');
+	}
+
 	const field = (url.searchParams.get('field') ||
 		RedisInstanceOrderField.NAME) as RedisInstanceOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
@@ -19,5 +27,15 @@ export const _RedisVariables: RedisVariables = ({ url }) => {
 	const to = new Date();
 	to.setDate(to.getDate() - 1);
 
-	return { orderBy: { field: field, direction: direction }, to, from };
+	return {
+		...(await load_Redis({
+			event,
+			variables: {
+				team: event.params.team,
+				orderBy: { field: field, direction: direction },
+				to,
+				from
+			}
+		}))
+	};
 };
