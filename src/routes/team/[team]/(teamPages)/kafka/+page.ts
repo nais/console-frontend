@@ -11,8 +11,8 @@ export const load: PageLoad = async (event) => {
 	const { url } = event;
 	const parent = await event.parent();
 
-	if (parent.UserInfo.data?.features.openSearch.enabled === false) {
-		error(404, 'OpenSearch not enabled');
+	if (parent.UserInfo.data?.features.kafka.enabled === false) {
+		error(404, 'Kafka not enabled');
 	}
 
 	const field = (url.searchParams.get('field') ||
