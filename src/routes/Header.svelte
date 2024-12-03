@@ -246,7 +246,7 @@
 					height="2rem"
 					fill="gradient"
 					gradientColors={['var(--active-color-strong)', '#ffffff']}
-					gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '0%' }}
+					gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '%' }}
 				/>
 				<span class="nais-console">Nais Console</span>
 			</a>
