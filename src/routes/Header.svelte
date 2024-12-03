@@ -242,8 +242,13 @@
 	<div class="header-content">
 		<div class="header-left">
 			<a href="/" class="logo">
-				<Logo height="2rem" />
-				Console
+				<Logo
+					height="2rem"
+					fill="gradient"
+					gradientColors={['var(--active-color)', '#ffffff']}
+					gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '0%' }}
+				/>
+				<span class="nais-console">Nais Console</span>
 			</a>
 			<div class="search">
 				<Search
@@ -427,5 +432,11 @@
 
 	.cap a {
 		color: var(--a-text-on-inverted);
+	}
+	.nais-console {
+		background: linear-gradient(to left, var(--active-color), #ffffff);
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
 	}
 </style>

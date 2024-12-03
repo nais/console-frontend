@@ -35,7 +35,7 @@
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Logo height="1.5rem" />
+						<Logo height="1.5rem" fill="currentColor" />
 						<div>App</div>
 					</div>
 					<div>
