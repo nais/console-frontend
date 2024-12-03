@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Console - Log in</title>
+	<title>Nais Console - Log in</title>
 	<style>
 		body {
 			background: var(--a-bg-default);
@@ -24,10 +24,10 @@
 			<Logo
 				height=".8em"
 				fill="gradient"
-				gradientColors={['var(--active-color-strong)', '#ffffff']}
-				gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '0%' }}
+				gradientColors={['var(--active-color-strong)', '#000000']}
+				gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '%' }}
 			/>
-			Console
+			Nais Console
 		</h1>
 
 		{#if $page.url.searchParams?.get('error')}
@@ -46,7 +46,7 @@
 		<p>To access this page you need to log in with your Google Workspace account.</p>
 
 		<Button as="a" href="/oauth2/login?redirect_uri={redirectPath($page.url)}" variant="primary"
-			>Log in to NAIS Console</Button
+			>Log in to Nais Console</Button
 		>
 	</div>
 </div>
