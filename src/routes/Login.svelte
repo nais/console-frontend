@@ -21,7 +21,12 @@
 <div class="wrapper">
 	<div class="login">
 		<h1>
-			<Logo height=".8em" />
+			<Logo
+				height=".8em"
+				fill="gradient"
+				gradientColors={['var(--active-color-strong)', '#ffffff']}
+				gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '0%' }}
+			/>
 			Console
 		</h1>
 
