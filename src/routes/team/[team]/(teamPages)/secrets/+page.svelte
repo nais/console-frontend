@@ -183,7 +183,7 @@
 								</Tr>
 							{/if}
 						{:else}
-							<Tr><Td colspan={99}>No secrets in this environment</Td></Tr>
+							<Tr><Td colspan={99}>No secrets for team</Td></Tr>
 						{/each}
 					</Tbody>
 				</Table>
