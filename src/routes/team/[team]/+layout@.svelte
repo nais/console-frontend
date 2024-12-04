@@ -7,7 +7,7 @@
 	import type { LayoutData } from './$houdini';
 
 	export let data: LayoutData;
-	$: ({ deletionInProgress } = data);
+	$: ({ deletionInProgress, lastSuccessfulSync } = data);
 
 	let feedbackOpen = false;
 
@@ -273,6 +273,12 @@
 	{#if deletionInProgress}
 		<Alert variant="warning" style="margin-bottom: 1rem;"
 			>The team and all of its resources is currently being deleted.</Alert
+		>
+	{/if}
+	{#if !lastSuccessfulSync && !deletionInProgress}
+		<Alert variant="success" style="margin-bottom: 1rem;"
+			>The team and all of its resources is currently beeing created. Expected time to completion is
+			about 15 minutes.</Alert
 		>
 	{/if}
 	<slot />

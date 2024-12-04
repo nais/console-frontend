@@ -3,5 +3,6 @@ query TeamRoles($team: Slug!) {
 		viewerIsOwner
 		viewerIsMember
 		deletionInProgress
+		lastSuccessfulSync
 	}
 }
