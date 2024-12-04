@@ -21,12 +21,7 @@
 <div class="wrapper">
 	<div class="login">
 		<h1>
-			<Logo
-				height=".8em"
-				fill="gradient"
-				gradientColors={['var(--active-color-strong)', '#000000']}
-				gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '%' }}
-			/>
+			<Logo height=".8em" fill="currentColor" />
 			Nais Console
 		</h1>
 
