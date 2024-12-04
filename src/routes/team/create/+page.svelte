@@ -10,8 +10,11 @@
 	export let form: ActionData;
 	let feedbackOpen = false;
 	let saving = false;
-	let slackChannelError = '';
-	let teamSlugError = '';
+	$: slackChannelError = '';
+	$: teamSlugError = '';
+	$: purposeError = '';
+	$: disabled =
+		slackChannelError !== 'no_error' || teamSlugError !== 'no_error' || purposeError !== 'no_error';
 
 	const reservedSlugs = [
 		'nais-system',
@@ -24,9 +27,10 @@
 		'default'
 	];
 	const slugPattern = /^[a-z](-?[a-z0-9]+)+$/;
-	const slackChannelPattern = /^[a-z0-9_-]{1,80}$/;
+	const slackChannelPattern = /^[a-zæåø0-9_-]{1,80}$/;
 
 	function handleTeamSlugInput(event: Event) {
+		if (!event) return;
 		const input = event.target as HTMLInputElement | null;
 		if (input) {
 			const slug = input.value;
@@ -65,16 +69,17 @@
 			// Validate the slug against the pattern
 			if (!slugPattern.test(slug)) {
 				teamSlugError =
-					'A team slug must start with a lowercase letter and can contain lowercase letters, numbers, and hyphens. It cannot start or end with a hyphen.';
+					'A team slug must begin with a lowercase letter and may include lowercase letters, numbers, and hyphens. However, it cannot start or end with a hyphen, nor can it contain consecutive hyphens.';
 				return;
 			}
 
 			// If all validations pass, clear the error
-			teamSlugError = '';
+			teamSlugError = 'no_error';
 		}
 	}
 
 	function handleSlackChannelInput(event: Event) {
+		if (!event) return;
 		const input = event.target as HTMLInputElement | null;
 		if (input) {
 			let cursorPosition = input.selectionStart ?? 0;
@@ -82,10 +87,10 @@
 
 			// Ensure the input value starts with a single '#'
 			if (!value.startsWith('#')) {
-				value = '#' + value.replace(/^#+/, '');
+				value = '#' + value.replace(/#+/, '');
 				cursorPosition++;
 			} else {
-				value = '#' + value.slice(1).replace(/^#+/, '');
+				value = '#' + value.slice(1).replace(/#+/, '');
 			}
 
 			// Set the corrected value back to the input
@@ -106,11 +111,23 @@
 				slackChannelError =
 					'Invalid Slack channel name. It must contain only lowercase letters, numbers, hyphens, and underscores, and be between 1 and 80 characters long.';
 			} else {
-				slackChannelError = '';
+				slackChannelError = 'no_error';
 			}
 		}
 		if (form && input) {
 			form.input.slackChannel = input.value;
+		}
+	}
+
+	function handlePurposeInput(event: Event) {
+		if (!event) return;
+		const input = event.target as HTMLInputElement | null;
+		if (input) {
+			if (input.value.length < 3) {
+				purposeError = 'The purpose must be at least 3 characters long.';
+			} else {
+				purposeError = 'no_error';
+			}
 		}
 	}
 </script>
@@ -156,19 +173,22 @@
 				<svelte:fragment slot="description">
 					Example: my-team-name<br />
 					<WarningIcon style="color:var(--a-icon-warning)" /> It is not possible to change the identifier
-					after creation, so choose wisely. Also, the identifier can not start with "nais" or "team".
+					after creation, so choose wisely.
 				</svelte:fragment>
 			</TextField>
-			{#if teamSlugError && teamSlugError !== ''}
+			{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
 				<p style="color:var(--a-text-danger)">{teamSlugError}</p>
 			{/if}
 			<br />
-			<TextField name="description" value={form?.input.purpose}>
+			<TextField name="description" value={form?.input.purpose} on:input={handlePurposeInput}>
 				<svelte:fragment slot="label">Purpose of the team</svelte:fragment>
 				<svelte:fragment slot="description">
 					Example: Making sure users have a good experience
 				</svelte:fragment>
 			</TextField>
+			{#if purposeError !== 'no_error' && purposeError !== ''}
+				<p style="color:var(--a-text-danger)">{purposeError}</p>
+			{/if}
 			<br />
 			<TextField
 				name="slackChannel"
@@ -178,11 +198,11 @@
 				<svelte:fragment slot="label">Slack channel</svelte:fragment>
 				<svelte:fragment slot="description">Example: #my-team-slack</svelte:fragment>
 			</TextField>
-			{#if slackChannelError && slackChannelError !== ''}
+			{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
 				<p style="color:var(--a-text-danger)">{slackChannelError}</p>
 			{/if}
 			<br />
-			<Button loading={saving} disabled={Boolean(slackChannelError) || Boolean(teamSlugError)}>
+			<Button loading={saving} {disabled}>
 				<svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>
 				Create team
 			</Button>
