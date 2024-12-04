@@ -376,11 +376,13 @@
 					Request team deletion</Button
 				>
 			</Card>
-			{#if teamSettings.lastSuccessfulSync}
-				<p>Last successful sync: <Time time={teamSettings.lastSuccessfulSync} /></p>
-			{:else}
-				<p>No successful syncs</p>
-			{/if}
+			<p class="last-sync">
+				{#if teamSettings.lastSuccessfulSync}
+					Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
+				{:else}
+					No successful syncs
+				{/if}
+			</p>
 			{#if browser}
 				<Modal bind:open={showDeleteTeam}>
 					<h3 slot="header">Request team deletion</h3>
@@ -512,5 +514,12 @@
 
 	.deletewrapper div {
 		flex-grow: 1;
+	}
+	.last-sync {
+		width: 100%;
+		grid-column: span 12;
+		color: var(--a-text-subtle);
+		font-size: 0.8rem;
+		text-align: right;
 	}
 </style>
