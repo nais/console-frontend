@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
-	import { BucketIcon, DatabaseIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
-	import Logo from '../Logo.svelte';
+	import {
+		ArrowCirclepathIcon,
+		BucketIcon,
+		DatabaseIcon,
+		PersonGroupIcon,
+		SandboxIcon
+	} from '@nais/ds-svelte-community/icons';
 	import BigQuery from './icons/BigQuery.svelte';
 	import Kafka from './icons/Kafka.svelte';
 	import Opensearch from './icons/Opensearch.svelte';
@@ -35,7 +40,7 @@
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Logo height="1.5rem" fill="currentColor" />
+						<SandboxIcon height="1.5rem" />
 						<div>App</div>
 					</div>
 					<div>
@@ -58,7 +63,7 @@
 					on:click={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Logo height="1.5rem" />
+						<ArrowCirclepathIcon height="1.5rem" />
 						<div>Job</div>
 					</div>
 					<div>
