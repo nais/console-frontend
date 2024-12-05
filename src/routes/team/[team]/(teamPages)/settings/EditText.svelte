@@ -31,7 +31,7 @@
 			<textarea
 				class="navds-text-field__input navds-body-short navds-body-short--medium"
 				bind:value={newText}
-			/>
+			></textarea>
 		{/if}
 		<Button on:click={save} size="xsmall">Save</Button>
 		<Button on:click={reset} size="xsmall" variant="secondary-neutral">Cancel</Button>

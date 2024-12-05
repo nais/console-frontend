@@ -107,7 +107,7 @@
 		</TextField>
 		<datalist id="add-member-email">
 			{#each emails as email}
-				<option value={email} />
+				<option value={email}>{email}</option>
 			{/each}
 		</datalist>
 

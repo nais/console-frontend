@@ -106,7 +106,7 @@
 					style="resize: vertical; min-height: 16rem; "
 					placeholder="Enter your feedback here..."
 					disabled={feedbackSent}
-				/>
+				></textarea>
 				<span id="charCount"
 					>{maxlength - details.length} character{maxlength - details.length == 1 ? '' : 's'} remaining</span
 				>
