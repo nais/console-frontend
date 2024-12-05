@@ -236,7 +236,6 @@
 	</Confirm>
 
 	<div class="heading">
-		<span />
 		<Button
 			class="delete-secret"
 			title="Delete secret from environment"

@@ -13,8 +13,8 @@
 		| undefined;
 
 	export let loaders: {
-		loadNextPage: () => Promise<void>;
-		loadPreviousPage: () => Promise<void>;
+		loadNextPage: () => unknown;
+		loadPreviousPage: () => unknown;
 	};
 </script>
 

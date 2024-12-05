@@ -1,4 +1,4 @@
-<script lang="ts" xmlns="http://www.w3.org/1999/html">
+<script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -46,7 +46,7 @@
 				€{Math.round(bq.cost.sum)} last 30 days
 			</p>
 			<h4 style="margin-bottom: 0;">Owner</h4>
-			<p style="margin-left: 1em; margin-top: 0;">
+			<div style="margin-left: 1em; margin-top: 0;">
 				{#if bq.workload}
 					<WorkloadLink workload={bq.workload} />
 				{:else}
@@ -58,7 +58,7 @@
 						/>
 					</div>
 				{/if}
-			</p>
+			</div>
 
 			<dl class="status">
 				<dt>Created</dt>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
-	import { graphql, SearchType } from '$houdini';
+	import { graphql } from '$houdini';
 	import { logEvent } from '$lib/amplitude';
 	import { docURL } from '$lib/doc';
 	import SearchResults from '$lib/SearchResults.svelte';
@@ -117,40 +117,40 @@
 			timeout = setTimeout(() => {
 				if (query.startsWith('app:')) {
 					store.fetch({
-						variables: { query: query.slice(4).trim(), type: SearchType.APPLICATION }
+						variables: { query: query.slice(4).trim(), type: 'APPLICATION' }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('team:')) {
-					store.fetch({ variables: { query: query.slice(5).trim(), type: SearchType.TEAM } });
+					store.fetch({ variables: { query: query.slice(5).trim(), type: 'TEAM' } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('job:')) {
-					store.fetch({ variables: { query: query.slice(4).trim(), type: SearchType.JOB } });
+					store.fetch({ variables: { query: query.slice(4).trim(), type: 'JOB' } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('sql:')) {
 					store.fetch({
-						variables: { query: query.slice(4).trim(), type: SearchType.SQL_INSTANCE }
+						variables: { query: query.slice(4).trim(), type: 'SQL_INSTANCE' }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('redis:')) {
 					store.fetch({
-						variables: { query: query.slice(6).trim(), type: SearchType.REDIS_INSTANCE }
+						variables: { query: query.slice(6).trim(), type: 'REDIS_INSTANCE' }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('bq:')) {
 					store.fetch({
-						variables: { query: query.slice(3).trim(), type: SearchType.BIGQUERY_DATASET }
+						variables: { query: query.slice(3).trim(), type: 'BIGQUERY_DATASET' }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('bucket:')) {
-					store.fetch({ variables: { query: query.slice(7).trim(), type: SearchType.BUCKET } });
+					store.fetch({ variables: { query: query.slice(7).trim(), type: 'BUCKET' } });
 					unsupportedFilter = false;
 				} else if (query.startsWith('kafka:')) {
 					store.fetch({
-						variables: { query: query.slice(6).trim(), type: SearchType.KAFKA_TOPIC }
+						variables: { query: query.slice(6).trim(), type: 'KAFKA_TOPIC' }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('os:')) {
-					store.fetch({ variables: { query: query.slice(3).trim(), type: SearchType.OPENSEARCH } });
+					store.fetch({ variables: { query: query.slice(3).trim(), type: 'OPENSEARCH' } });
 					unsupportedFilter = false;
 				} else if (query.lastIndexOf(':') >= 0) {
 					unsupportedFilter = true;
@@ -350,7 +350,7 @@
 		width: 350px;
 	}
 
-	.helpText > ul li {
+	.helpText > li {
 		height: 3rem;
 		background-color: var(--a-surface-default);
 		color: var(--a-text-default);

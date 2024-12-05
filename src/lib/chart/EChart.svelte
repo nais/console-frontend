@@ -5,7 +5,7 @@
 		EChartsOption,
 		EChartsType
 	} from 'echarts';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, mount } from 'svelte';
 	import Legends from './Legends.svelte';
 
 	export let options: EChartsOption;
@@ -19,7 +19,7 @@
 	const chart = (el: HTMLDivElement, options: EChartsOption) => {
 		const formatter = (t: DefaultLabelFormatterCallbackParams[]) => {
 			const el = document.createElement('div');
-			new Legends({
+			mount(Legends, {
 				props: {
 					params: t,
 					activeSeries: activeSeries,

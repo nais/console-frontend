@@ -1,4 +1,4 @@
-<script lang="ts" xmlns="http://www.w3.org/1999/html">
+<script lang="ts">
 	import { RedisInstanceAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -47,7 +47,7 @@
 				{redisInstance.name}
 			</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
-			<p style="margin-left: 1em; margin-top: 0;">
+			<div style="margin-left: 1em; margin-top: 0;">
 				{#if redisInstance.workload}
 					<WorkloadLink workload={redisInstance.workload} />
 				{:else}
@@ -55,7 +55,7 @@
 						<i>This Redis instance does not belong to any workload</i>
 					</div>
 				{/if}
-			</p>
+			</div>
 			<h4 class="access">Access</h4>
 			<Table
 				size="small"

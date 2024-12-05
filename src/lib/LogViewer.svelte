@@ -215,7 +215,7 @@
 				<pre class="message">{log.message}</pre>
 			</div>
 		{/each}
-		<div use:intersect id="bottom" />
+		<div use:intersect id="bottom"></div>
 	</div>
 {/if}
 

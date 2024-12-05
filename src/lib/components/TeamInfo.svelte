@@ -49,13 +49,13 @@
 				});
 
 			if (states.includes(WorkloadState.FAILING)) {
-				status = WorkloadState.FAILING;
+				status = 'FAILING';
 			} else if (states?.includes(WorkloadState.NOT_NAIS)) {
-				status = WorkloadState.NOT_NAIS;
+				status = 'NOT_NAIS';
 			} else if (states?.includes(WorkloadState.NAIS)) {
-				status = WorkloadState.NAIS;
+				status = 'NAIS';
 			} else if (states?.includes(WorkloadState.UNKNOWN)) {
-				status = WorkloadState.UNKNOWN;
+				status = 'UNKNOWN';
 			} else {
 				status = 'NAIS';
 			}

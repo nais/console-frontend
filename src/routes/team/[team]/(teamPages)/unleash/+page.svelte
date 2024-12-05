@@ -1,4 +1,4 @@
-<script lang="ts" xmlns="http://www.w3.org/1999/html">
+<script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql, type SearchQuery$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
