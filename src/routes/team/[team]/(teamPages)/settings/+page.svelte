@@ -174,7 +174,7 @@
 				<GraphErrors errors={defaultSlackChannelErrors} size="small" />
 			{/if}
 			{#if teamSettings.environments && teamSettings.environments.length > 0}
-				<p>
+				<div>
 					Per-environment slack-channels to be used for alerts sent by the platform.
 					{#each teamSettings.environments as env}
 						<div class="channel">
@@ -203,7 +203,7 @@
 							/>
 						</div>
 					{/each}
-				</p>
+				</div>
 
 				<GraphErrors errors={slackChannelsErrors} size="small" />
 			{/if}

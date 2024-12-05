@@ -25,7 +25,7 @@
 		{cols}
 		bind:value={text}
 		{readonly}
-	/>
+	></textarea>
 </div>
 
 <style>
