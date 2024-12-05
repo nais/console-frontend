@@ -59,7 +59,7 @@
 			const data = await result.json();
 
 			response = data.ok ? 'Message sent!' : 'Failed to send message.';
-			open = false;
+			feedbackSent = true;
 		} catch (error) {
 			console.error('Error:', error);
 			response = 'Error sending message.';
@@ -70,7 +70,7 @@
 
 <Modal bind:open width="medium" on:close={close}>
 	<svelte:fragment slot="header">
-		<Heading>Console feedback</Heading>
+		<Heading>Nais Console feedback</Heading>
 	</svelte:fragment>
 
 	{#if feedbackSent}
