@@ -123,7 +123,7 @@
 				width="3em"
 				style="color: var(--a-icon-warning)"
 			/>
-			<p>One ore more workloads are having issues</p>
+			<p>One or more workloads are having issues</p>
 		</div>
 	{:else}
 		<p>Team status is unknown</p>
