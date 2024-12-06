@@ -12,11 +12,14 @@
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
 
-	export let authorized: boolean | typeof PendingValue;
+	interface Props {
+		authorized: boolean | typeof PendingValue;
+		team: string | typeof PendingValue;
+		environment: string | typeof PendingValue;
+		workload: string | typeof PendingValue;
+	}
 
-	export let team: string | typeof PendingValue;
-	export let environment: string | typeof PendingValue;
-	export let workload: string | typeof PendingValue;
+	let { authorized, team, environment, workload }: Props = $props();
 
 	export const _ImageVulnerabilitiesVariables: ImageVulnerabilitiesVariables = () => {
 		if (team === PendingValue || environment === PendingValue || workload === PendingValue) {
@@ -101,21 +104,19 @@
 		}
 	`);
 
-	let findingToSuppress: FindingType | undefined;
-	let suppressOpen = false;
-	let analysisTrail: FindingType | undefined;
-	let analysisOpen = false;
+	let findingToSuppress: FindingType | undefined = $state();
+	let suppressOpen = $state(false);
+	let analysisTrail: FindingType | undefined = $state();
+	let analysisOpen = $state(false);
 
-	$: image = $vulnerabilities.data?.team.environment.workload.image;
+	let image = $derived($vulnerabilities.data?.team.environment.workload.image);
 
-	$: tableSort = {
+	let tableSort = $derived({
 		orderBy: $vulnerabilities.variables?.orderBy?.field,
 		direction: $vulnerabilities.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
-
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -154,22 +155,24 @@
 		orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
 		direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 	}}
-	on:sortChange={tableSortChange}
+	onSortChange={tableSortChange}
 >
 	<Thead>
-		<Th style="width: 12rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
-			>ID</Th
-		>
-		<Th style="width: 38rem" sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}
-			>Package</Th
-		>
-		<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
-			>Severity</Th
-		>
-		<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
-			>Suppressed</Th
-		>
-		<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
+		<Tr>
+			<Th style="width: 12rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
+				>ID</Th
+			>
+			<Th style="width: 38rem" sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}
+				>Package</Th
+			>
+			<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
+				>Severity</Th
+			>
+			<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
+				>Suppressed</Th
+			>
+			<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
+		</Tr>
 	</Thead>
 	<Tbody>
 		{#if $vulnerabilities.data}
@@ -182,7 +185,7 @@
 								<Button
 									variant="tertiary"
 									size="xsmall"
-									on:click={() => {
+									onClick={() => {
 										findingToSuppress = v;
 										suppressOpen = true;
 									}}
@@ -209,7 +212,7 @@
 								variant="tertiary-neutral"
 								size="small"
 								disabled={v.analysisTrail?.state ? false : true}
-								on:click={() => {
+								onClick={() => {
 									analysisTrail = v;
 									analysisOpen = true;
 								}}
@@ -254,7 +257,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!image.vulnerabilities.pageInfo.hasPreviousPage}
-					on:click={async () => {
+					onClick={async () => {
 						return await vulnerabilities.loadPreviousPage();
 					}}><ChevronLeftIcon /></Button
 				>
@@ -262,7 +265,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!image.vulnerabilities.pageInfo.hasNextPage}
-					on:click={() => {
+					onClick={() => {
 						vulnerabilities.loadNextPage();
 					}}
 				>

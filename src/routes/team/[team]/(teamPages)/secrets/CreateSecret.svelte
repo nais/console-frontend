@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export type EnvironmentType = {
 		readonly name: string;
 		readonly secrets: {
@@ -16,13 +16,17 @@
 
 	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 
-	export let team: string;
-	export let environments: EnvironmentType[];
-	export let open: boolean;
+	interface Props {
+		team: string;
+		environments: EnvironmentType[];
+		open: boolean;
+	}
 
-	let selectedEnvironment = environments[0].name;
+	let { team, environments, open = $bindable() }: Props = $props();
 
-	let name = '';
+	let selectedEnvironment = $state(environments[0].name);
+
+	let name = $state('');
 
 	const close = () => {
 		open = false;
@@ -96,39 +100,41 @@
 	};
 </script>
 
-<Modal bind:open width="medium" on:close={close}>
-	<svelte:fragment slot="header">
+<Modal bind:open width="medium" onClose={close}>
+	{#snippet header()}
 		<Heading>Create new secret</Heading>
-	</svelte:fragment>
+	{/snippet}
 	<div class="row">
 		<BodyShort size="medium" spacing>A secret is a named set of key-value pairs.</BodyShort>
 	</div>
 	<div class="row">
 		<Select size="small" label="Environment" bind:value={selectedEnvironment}>
-			<svelte:fragment slot="description">
+			{#snippet description()}
 				The environment in which the secret will be created.
-			</svelte:fragment>
+			{/snippet}
 			{#each environments as option}
 				<option value={option.name}>{option.name}</option>
 			{/each}
 		</Select>
 		<br />
 		<TextField size="small" bind:value={name} error={validate(name)}>
-			<svelte:fragment slot="label">Name</svelte:fragment>
-			<svelte:fragment slot="description">
+			{#snippet label()}
+				Name
+			{/snippet}
+			{#snippet description()}
 				The name is only used to reference the secret in your workload manifest.
 				<br />
 				<i>Example: my-secret</i>
-			</svelte:fragment>
+			{/snippet}
 		</TextField>
 	</div>
 
 	<GraphErrors errors={$createSecret.errors} />
 
-	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={create}>Create</Button>
-		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
-	</svelte:fragment>
+	{#snippet footer()}
+		<Button variant="primary" size="small" onClick={create}>Create</Button>
+		<Button variant="secondary" size="small" onClick={close}>Cancel</Button>
+	{/snippet}
 </Modal>
 
 <style>

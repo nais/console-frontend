@@ -8,34 +8,40 @@
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import { ArrowsCirclepathIcon, QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 
-	export let job: JobRuns;
+	interface Props {
+		job: JobRuns;
+	}
 
-	$: data = fragment(
-		job,
-		graphql(`
-			fragment JobRuns on Job {
-				name
-				runs(first: 20) @list(name: "All_Runs") {
-					edges {
-						node {
-							name
-							startTime
-							completionTime
-							duration
-							status {
-								message
-								state
+	let { job }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			job,
+			graphql(`
+				fragment JobRuns on Job {
+					name
+					runs(first: 20) @list(name: "All_Runs") {
+						edges {
+							node {
+								name
+								startTime
+								completionTime
+								duration
+								status {
+									message
+									state
+								}
 							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
-	$: jobName = $page.params.job;
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let jobName = $derived($page.params.job);
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 
 	const formatDuration = (duration: number) => {
 		const minute = 60;
@@ -57,11 +63,13 @@
 
 <Table size="small" zebraStripes>
 	<Thead>
-		<Th style="width: 4rem;">Status</Th>
-		<Th>Name</Th>
-		<Th>Started</Th>
-		<Th>Duration</Th>
-		<Th>Message</Th>
+		<Tr>
+			<Th style="width: 4rem;">Status</Th>
+			<Th>Name</Th>
+			<Th>Started</Th>
+			<Th>Duration</Th>
+			<Th>Message</Th>
+		</Tr>
 	</Thead>
 	<Tbody>
 		{#each $data.runs.edges as run}

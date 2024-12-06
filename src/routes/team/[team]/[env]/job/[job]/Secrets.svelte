@@ -27,8 +27,8 @@
 		}
 	`);
 
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 </script>
 
 <GraphErrors errors={$jobSecrets.errors} />

@@ -17,8 +17,12 @@
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 
-	export let data: PageData;
-	$: ({ Job } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { Job } = $derived(data);
 
 	const triggerRunMutation = () =>
 		graphql(`
@@ -44,19 +48,19 @@
 			}
 		`);
 
-	let triggerRun = triggerRunMutation();
+	let triggerRun = $state(triggerRunMutation());
 
 	onNavigate(() => {
 		triggerRun = triggerRunMutation();
 	});
 
-	$: jobName = $page.params.job;
-	$: environment = $page.params.env;
-	$: team = $page.params.team;
+	let jobName = $derived($page.params.job);
+	let environment = $derived($page.params.env);
+	let team = $derived($page.params.team);
 
-	let open = false;
-	let runName = '';
-	let errors: string[] = [];
+	let open = $state(false);
+	let runName = $state('');
+	let errors: string[] = $state([]);
 
 	const submit = () => {
 		triggerRun.mutate({
@@ -151,11 +155,11 @@
 					<Button
 						variant="secondary"
 						size="small"
-						on:click={() => {
+						onClick={() => {
 							open = true;
 						}}
+						iconLeft={TimerStartIcon}
 					>
-						<svelte:fragment slot="icon-left"><TimerStartIcon /></svelte:fragment>
 						Trigger run
 					</Button>
 				{/if}
@@ -182,10 +186,10 @@
 			</Card>
 		{/if}
 	</div>
-	<Modal bind:open on:close>
-		<svelte:fragment slot="header">
+	<Modal bind:open onClose={close}>
+		{#snippet header()}
 			<h3>Trigger run of {jobName}</h3>
-		</svelte:fragment>
+		{/snippet}
 		<div class="wrapper">
 			This will trigger a new run of
 			<strong>{jobName}</strong> in
@@ -195,7 +199,9 @@
 			<br />
 			<br />
 			<TextField type="text" bind:value={runName}>
-				<svelte:fragment slot="label">Run name:</svelte:fragment>
+				{#snippet label()}
+					Run name:
+				{/snippet}
 			</TextField>
 
 			{#if $triggerRun.errors?.length ?? 0 > 0}
@@ -210,10 +216,10 @@
 			{/if}
 		</div>
 
-		<svelte:fragment slot="footer">
-			<Button variant="primary" type="submit" on:click={confirm}>Confirm</Button>
-			<Button variant="tertiary" type="reset" on:click={cancel}>Cancel</Button>
-		</svelte:fragment>
+		{#snippet footer()}
+			<Button variant="primary" type="submit" onClick={confirm}>Confirm</Button>
+			<Button variant="tertiary" type="reset" onClick={cancel}>Cancel</Button>
+		{/snippet}
 	</Modal>
 {/if}
 

@@ -30,9 +30,6 @@ export default defineConfig((mode) => {
 					target: 'http://127.0.0.1:3000'
 				}
 			}
-		},
-		ssr: {
-			noExternal: ['@navikt/ds-css']
 		}
 	};
 });

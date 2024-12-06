@@ -2,20 +2,23 @@
 	import { Button } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 
-	export let page:
-		| {
-				readonly hasNextPage: boolean;
-				readonly hasPreviousPage: boolean;
-				readonly pageStart: number;
-				readonly pageEnd: number;
-				readonly totalCount: number;
-		  }
-		| undefined;
+	interface Props {
+		page:
+			| {
+					readonly hasNextPage: boolean;
+					readonly hasPreviousPage: boolean;
+					readonly pageStart: number;
+					readonly pageEnd: number;
+					readonly totalCount: number;
+			  }
+			| undefined;
+		loaders: {
+			loadNextPage: () => unknown;
+			loadPreviousPage: () => unknown;
+		};
+	}
 
-	export let loaders: {
-		loadNextPage: () => unknown;
-		loadPreviousPage: () => unknown;
-	};
+	let { page, loaders }: Props = $props();
 </script>
 
 {#if page && (page.hasPreviousPage || page.hasNextPage)}
@@ -35,7 +38,7 @@
 				size="small"
 				variant="secondary"
 				disabled={!page.hasPreviousPage}
-				on:click={() => loaders.loadPreviousPage()}
+				onClick={() => loaders.loadPreviousPage()}
 			>
 				<ChevronLeftIcon />
 			</Button>
@@ -43,7 +46,7 @@
 				size="small"
 				variant="secondary"
 				disabled={!page.hasNextPage}
-				on:click={() => loaders.loadNextPage()}
+				onClick={() => loaders.loadNextPage()}
 			>
 				<ChevronRightIcon />
 			</Button>

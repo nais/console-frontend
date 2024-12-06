@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
@@ -31,13 +33,18 @@
 		items: (menuItem & { memberOnly?: boolean })[];
 	};
 
-	export let data: LayoutData;
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
 
-	$: team = $page.params.team;
-	$: ({ InventoryCounts, UserInfo } = data);
+	let { data, children }: Props = $props();
 
-	let nav: menuGroup[];
-	$: {
+	let team = $derived($page.params.team);
+	let { InventoryCounts, UserInfo } = $derived(data);
+
+	let nav: menuGroup[] = $state([]);
+	run(() => {
 		if ($InventoryCounts) {
 			nav = [
 				{
@@ -210,7 +217,7 @@
 		} else {
 			nav = [];
 		}
-	}
+	});
 
 	function memberOnly(
 		nav: menuGroup[],
@@ -231,7 +238,7 @@
 <div class="main">
 	<SideMenu nav={memberOnly(nav, data)} />
 	<div class="container">
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 

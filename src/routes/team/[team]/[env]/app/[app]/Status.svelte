@@ -7,23 +7,29 @@
 		QuestionmarkDiamondFillIcon
 	} from '@nais/ds-svelte-community/icons';
 
-	$: teamName = $page.params.team;
-	$: envName = $page.params.env;
-	$: appName = $page.params.app;
+	let teamName = $derived($page.params.team);
+	let envName = $derived($page.params.env);
+	let appName = $derived($page.params.app);
 
-	export let app: AppStatus;
-	$: data = fragment(
-		app,
-		graphql(`
-			fragment AppStatus on Application {
-				status {
-					state
-					errors {
-						__typename
+	interface Props {
+		app: AppStatus;
+	}
+
+	let { app }: Props = $props();
+	let data = $derived(
+		fragment(
+			app,
+			graphql(`
+				fragment AppStatus on Application {
+					status {
+						state
+						errors {
+							__typename
+						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 </script>
 

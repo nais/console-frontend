@@ -23,8 +23,12 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ BigQueryDataset: BigQueryDatasetInstance } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { BigQueryDataset: BigQueryDatasetInstance } = $derived(data);
 </script>
 
 {#if $BigQueryDatasetInstance.errors}

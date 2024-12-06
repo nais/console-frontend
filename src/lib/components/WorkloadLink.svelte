@@ -1,14 +1,18 @@
 <script lang="ts">
-	export let workload: {
-		readonly name: string;
-		readonly __typename: string | null;
-		readonly environment: {
+	interface Props {
+		workload: {
 			readonly name: string;
+			readonly __typename: string | null;
+			readonly environment: {
+				readonly name: string;
+			};
+			readonly team: {
+				readonly slug: string;
+			};
 		};
-		readonly team: {
-			readonly slug: string;
-		};
-	};
+	}
+
+	let { workload }: Props = $props();
 </script>
 
 <a

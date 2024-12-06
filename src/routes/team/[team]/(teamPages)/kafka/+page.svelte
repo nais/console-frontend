@@ -9,18 +9,21 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
-	$: ({ KafkaTopics } = data);
+	let { data }: Props = $props();
 
-	$: tableSort = {
+	let teamName = $derived($page.params.team);
+	let { KafkaTopics } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $KafkaTopics.variables?.orderBy?.field,
 		direction: $KafkaTopics.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -48,11 +51,13 @@
 				orderBy: tableSort.orderBy || KafkaTopicOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={KafkaTopicOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={KafkaTopicOrderField.ENVIRONMENT}>Environment</Th>
+				<Tr>
+					<Th sortable={true} sortKey={KafkaTopicOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={KafkaTopicOrderField.ENVIRONMENT}>Environment</Th>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each topics.nodes as t}
@@ -103,7 +108,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!topics.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await KafkaTopics.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -111,7 +116,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!topics.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await KafkaTopics.loadNextPage();
 							}}
 						>

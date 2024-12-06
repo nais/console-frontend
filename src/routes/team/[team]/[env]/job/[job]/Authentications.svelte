@@ -1,26 +1,32 @@
 <script lang="ts">
 	import { fragment, graphql, type JobAuthIntegrations } from '$houdini';
 
-	export let job: JobAuthIntegrations;
-	$: data = fragment(
-		job,
-		graphql(`
-			fragment JobAuthIntegrations on Job {
-				authIntegrations {
-					__typename
-					... on EntraIDAuthIntegration {
-						name
-					}
-					... on MaskinportenAuthIntegration {
-						name
+	interface Props {
+		job: JobAuthIntegrations;
+	}
+
+	let { job }: Props = $props();
+	let data = $derived(
+		fragment(
+			job,
+			graphql(`
+				fragment JobAuthIntegrations on Job {
+					authIntegrations {
+						__typename
+						... on EntraIDAuthIntegration {
+							name
+						}
+						... on MaskinportenAuthIntegration {
+							name
+						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 	//$: loading = $data.authz.map((d) => d.__typename).includes(PendingValue);
 
-	$: authz = $data.authIntegrations;
+	let authz = $derived($data.authIntegrations);
 </script>
 
 <div>

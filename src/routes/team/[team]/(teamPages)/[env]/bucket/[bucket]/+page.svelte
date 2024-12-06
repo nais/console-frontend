@@ -10,8 +10,12 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ Bucket } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { Bucket } = $derived(data);
 </script>
 
 <div class="grid">

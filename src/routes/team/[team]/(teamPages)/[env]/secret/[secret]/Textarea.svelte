@@ -1,10 +1,21 @@
 <script lang="ts">
-	export let text: string | undefined;
-	export let label: string = '';
-	export let description: string = '';
-	export let readonly: boolean = false;
-	export let rows = 5;
-	export let cols = 40;
+	interface Props {
+		text: string | undefined;
+		label?: string;
+		description?: string;
+		readonly?: boolean;
+		rows?: number;
+		cols?: number;
+	}
+
+	let {
+		text = $bindable(),
+		label = '',
+		description = '',
+		readonly = false,
+		rows = 5,
+		cols = 40
+	}: Props = $props();
 </script>
 
 <div class="navds-form-field">

@@ -7,81 +7,87 @@
 	import Redis from '$lib/icons/Redis.svelte';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
 
-	export let workload: Persistence;
+	interface Props {
+		workload: Persistence;
+	}
 
-	$: data = fragment(
-		workload,
-		graphql(`
-			fragment Persistence on Workload {
-				name
-				environment {
+	let { workload }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			workload,
+			graphql(`
+				fragment Persistence on Workload {
 					name
-				}
-				bigQueryDatasets {
-					edges {
-						node {
-							name
-						}
+					environment {
+						name
 					}
-				}
-				buckets {
-					edges {
-						node {
-							name
-						}
-					}
-				}
-				kafkaTopicAcls {
-					edges {
-						node {
-							teamName
-							access
-							workloadName
-							topic {
-								name
-								team {
-									slug
-								}
-								environment {
-									name
-								}
-							}
-						}
-					}
-				}
-				openSearch {
-					name
-					access {
+					bigQueryDatasets {
 						edges {
 							node {
+								name
+							}
+						}
+					}
+					buckets {
+						edges {
+							node {
+								name
+							}
+						}
+					}
+					kafkaTopicAcls {
+						edges {
+							node {
+								teamName
 								access
-								workload {
+								workloadName
+								topic {
 									name
+									team {
+										slug
+									}
+									environment {
+										name
+									}
 								}
 							}
 						}
 					}
-				}
-				redisInstances {
-					edges {
-						node {
-							name
+					openSearch {
+						name
+						access {
+							edges {
+								node {
+									access
+									workload {
+										name
+									}
+								}
+							}
+						}
+					}
+					redisInstances {
+						edges {
+							node {
+								name
+							}
+						}
+					}
+					sqlInstances {
+						edges {
+							node {
+								name
+							}
 						}
 					}
 				}
-				sqlInstances {
-					edges {
-						node {
-							name
-						}
-					}
-				}
-			}
-		`)
+			`)
+		)
 	);
 
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 </script>
 
 <div class="persistence">

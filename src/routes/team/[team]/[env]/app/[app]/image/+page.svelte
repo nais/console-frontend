@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { logEvent } from '$lib/amplitude';
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
@@ -14,19 +16,23 @@
 	import { CopyButton, Skeleton, Tooltip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ ApplicationImageDetails } = data);
+	let { data }: Props = $props();
 
-	$: authorized = $ApplicationImageDetails.data?.team.viewerIsMember ?? false;
+	let { ApplicationImageDetails } = $derived(data);
+
+	let authorized = $derived($ApplicationImageDetails.data?.team.viewerIsMember ?? false);
 
 	const notificationBadgeSize = '48px';
 
-	let registry: string;
-	let repository: string;
-	let name: string;
+	let registry: string = $state('');
+	let repository: string = $state('');
+	let name: string = $state('');
 
-	$: {
+	run(() => {
 		if (
 			$ApplicationImageDetails.data?.team.environment.workload.image &&
 			$ApplicationImageDetails.data?.team.environment.workload.image.name !== PendingValue
@@ -35,7 +41,7 @@
 				$ApplicationImageDetails.data.team.environment.workload.image.name
 			));
 		}
-	}
+	});
 
 	const onClick = () => {
 		let props = {};
@@ -191,9 +197,7 @@
 			{:else}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				No data found.
-				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} on:click={onClick}>
-					How to fix</a
-				>
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} onclick={onClick}> How to fix</a>
 			{/if}
 		</Card>
 		<Card columns={12}>

@@ -1,10 +1,15 @@
 <script lang="ts">
 	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 
-	export let persistence: {
-		type: string | null;
-		name: string;
-	};
+	interface Props {
+		persistence: {
+			type: string | null;
+			name: string;
+		};
+		children?: import('svelte').Snippet;
+	}
+
+	let { persistence, children }: Props = $props();
 
 	const persistenceTypeToName = (typ: string | null) => {
 		switch (typ) {
@@ -29,7 +34,7 @@
 		<strong>{persistence.name}</strong>
 	</div>
 	<div class="content">
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 

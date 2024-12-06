@@ -16,18 +16,22 @@
 	import type { FindingType } from './SuppressFinding.svelte';
 	import { detailsUrl } from './imageUtils';
 
-	export let open: boolean;
-	export let finding: FindingType;
-	export let workloads: {
-		readonly __typename: string | null;
-		readonly team: {
-			readonly slug: string;
-		};
-		readonly environment: {
+	interface Props {
+		open: boolean;
+		finding: FindingType;
+		workloads: {
+			readonly __typename: string | null;
+			readonly team: {
+				readonly slug: string;
+			};
+			readonly environment: {
+				readonly name: string;
+			};
 			readonly name: string;
-		};
-		readonly name: string;
-	}[];
+		}[];
+	}
+
+	let { open = $bindable(), finding, workloads }: Props = $props();
 
 	const dispatcher = createEventDispatcher<{ close: void }>();
 
@@ -37,10 +41,10 @@
 	};
 </script>
 
-<Modal bind:open width="medium" on:close={close}>
-	<svelte:fragment slot="header">
+<Modal bind:open width="medium" onClose={close}>
+	{#snippet header()}
 		<Heading>Analysis trail for {finding.identifier}</Heading>
-	</svelte:fragment>
+	{/snippet}
 	{#if finding.analysisTrail}
 		<div class="info">
 			<dl>
@@ -63,9 +67,11 @@
 			<h5>Affected workloads</h5>
 			<Table size="small" zebraStripes>
 				<Thead>
-					<Th>Environment</Th>
-					<Th>Team</Th>
-					<Th>Workload</Th>
+					<Tr>
+						<Th>Environment</Th>
+						<Th>Team</Th>
+						<Th>Workload</Th>
+					</Tr>
 				</Thead>
 				<Tbody>
 					{#each workloads as workload}
@@ -82,11 +88,13 @@
 		<div class="trail">
 			<Table size="small" zebraStripes>
 				<Thead>
-					<Th>Actor</Th>
-					<Th>State</Th>
-					<Th>Suppressed</Th>
-					<Th>Comment</Th>
-					<Th>Timestamp</Th>
+					<Tr>
+						<Th>Actor</Th>
+						<Th>State</Th>
+						<Th>Suppressed</Th>
+						<Th>Comment</Th>
+						<Th>Timestamp</Th>
+					</Tr>
 				</Thead>
 				<Tbody>
 					{#if finding.analysisTrail.comments.nodes}
@@ -106,9 +114,9 @@
 			</Table>
 		</div>
 	{/if}
-	<svelte:fragment slot="footer">
-		<Button variant="secondary" size="small" on:click={close}>Close</Button>
-	</svelte:fragment>
+	{#snippet footer()}
+		<Button variant="secondary" size="small" onClick={close}>Close</Button>
+	{/snippet}
 </Modal>
 
 <style>

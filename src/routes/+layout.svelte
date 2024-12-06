@@ -11,16 +11,23 @@
 	import type { LayoutData } from './$houdini';
 	import Login from './Login.svelte';
 
-	export let data: LayoutData;
-	$: ({ UserInfo } = data);
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
 
-	$: user = UserInfo.data?.me as
-		| {
-				readonly name: string;
-				readonly isAdmin: boolean;
-				readonly __typename: 'User';
-		  }
-		| undefined;
+	let { data, children }: Props = $props();
+	let { UserInfo } = $derived(data);
+
+	let user = $derived(
+		UserInfo.data?.me as
+			| {
+					readonly name: string;
+					readonly isAdmin: boolean;
+					readonly __typename: 'User';
+			  }
+			| undefined
+	);
 
 	let activeColor = () => {
 		const now = new Date();
@@ -70,7 +77,7 @@
 			<Header {user} />
 		{/if}
 
-		<slot />
+		{@render children?.()}
 	{/if}
 </div>
 

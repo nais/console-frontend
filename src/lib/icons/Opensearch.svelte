@@ -1,10 +1,15 @@
 <script lang="ts">
-	export let size = '1em';
+	interface Props {
+		size?: string;
+		[key: string]: unknown;
+	}
+
+	let { size = '1em', ...rest }: Props = $props();
 </script>
 
 <svg
 	xmlns="http://www.w3.org/2000/svg"
-	{...$$restProps}
+	{...rest}
 	width={size}
 	height={size}
 	role="img"

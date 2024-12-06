@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { graphql, type SearchQuery$result, type TeamSearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -17,20 +19,27 @@
 		}
 	`);
 
-	export let query = '';
-	let selected = -1;
-	let showSearch = false;
-	let timeout: ReturnType<typeof setTimeout> | null = null;
+	let selected = $state(-1);
+	let showSearch = $state(false);
+	let timeout: ReturnType<typeof setTimeout> | null = $state(null);
 
-	export let onSelected: (
-		node: SearchQuery$result['search']['nodes'][0],
-		e: MouseEvent | KeyboardEvent
-	) => void = () => {
-		query = '';
-		showSearch = false;
-	};
+	interface Props {
+		query?: string;
+		onSelected?: (
+			node: SearchQuery$result['search']['nodes'][0],
+			e: MouseEvent | KeyboardEvent
+		) => void;
+	}
 
-	$: {
+	let {
+		query = $bindable(''),
+		onSelected = () => {
+			query = '';
+			showSearch = false;
+		}
+	}: Props = $props();
+
+	run(() => {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -42,7 +51,7 @@
 				logEvent('search');
 			}, 500);
 		}
-	}
+	});
 
 	function on_key_up(event: KeyboardEvent) {
 		switch (event.key) {
@@ -89,21 +98,21 @@
 		label="search"
 		variant="simple"
 		size="small"
-		on:blur={() => {
+		onBlur={() => {
 			setTimeout(() => {
 				showSearch = false;
 			}, 200);
 		}}
-		on:clear={() => {
+		onClear={() => {
 			query = '';
 			showSearch = false;
 		}}
-		on:focus={() => {
+		onFocus={() => {
 			if (query.length > 0) {
 				showSearch = true;
 			}
 		}}
-		on:keyup={on_key_up}
+		onKeyup={on_key_up}
 	/>
 	{#if $store.data && showSearch}
 		<SearchResults {showSearch} data={hack($store.data)} {onSelected} bind:query {selected} />

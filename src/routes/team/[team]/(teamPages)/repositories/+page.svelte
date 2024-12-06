@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -22,11 +24,15 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ Repositories } = data);
+	let { data }: Props = $props();
 
-	$: teamName = $page.params.team;
+	let { Repositories } = $derived(data);
+
+	let teamName = $derived($page.params.team);
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
@@ -75,7 +81,7 @@
 		}
 	};
 
-	let filter = '';
+	let filter = $state('');
 
 	const handleFilter = () => {
 		if (filter === '') {
@@ -108,13 +114,12 @@
 		}, 1000);
 	};
 
-	$: tableSort = {
+	let tableSort = $derived({
 		orderBy: $Repositories.variables?.orderBy?.field,
 		direction: $Repositories.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -129,9 +134,9 @@
 		});
 	};
 
-	let repoName = '';
+	let repoName = $state('');
 
-	let inputError = false;
+	let inputError = $state(false);
 	const errorMessage = `Invalid input`;
 </script>
 
@@ -146,7 +151,7 @@
 						<em
 							>Adding a repository will grant it access to deployment actions on behalf of the team.</em
 						>
-						<form on:submit|preventDefault={handleSubmit} class="input">
+						<form onsubmit={preventDefault(handleSubmit)} class="input">
 							<TextField
 								size="small"
 								type="text"
@@ -155,16 +160,17 @@
 								bind:value={repoName}
 								error={inputError ? errorMessage : undefined}
 							>
-								<svelte:fragment slot="label">Repository name</svelte:fragment>
-								<svelte:fragment slot="description"
-									>GitHub repository and organization names can include alphanumeric characters,
+								{#snippet label()}
+									Repository name
+								{/snippet}
+								{#snippet description()}
+									GitHub repository and organization names can include alphanumeric characters,
 									hyphens, and underscores, and must follow the format
 									&lt;organization&gt;/&lt;repository&gt;.
-								</svelte:fragment>
+								{/snippet}
 							</TextField>
 							<div style="margin-top: 1rem;">
-								<Button size="small" variant="secondary" type="submit">
-									<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
+								<Button size="small" variant="secondary" type="submit" iconLeft={PlusIcon}>
 									Add
 								</Button>
 							</div>
@@ -183,9 +189,11 @@
 						id="filter"
 						style="width: 300px;"
 						bind:value={filter}
-						on:keyup={onKeyUp}
+						onKeyup={onKeyUp}
 					>
-						<svelte:fragment slot="label">Filter repositories</svelte:fragment>
+						{#snippet label()}
+							Filter repositories
+						{/snippet}
 					</TextField>
 				</form>
 
@@ -196,11 +204,13 @@
 						orderBy: tableSort.orderBy || RepositoryOrderField.NAME,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 					}}
-					on:sortChange={tableSortChange}
+					onSortChange={tableSortChange}
 				>
 					<Thead>
-						<Th sortable={true} sortKey={RepositoryOrderField.NAME}>Name</Th>
-						<Th style="width:150px">Action</Th>
+						<Tr>
+							<Th sortable={true} sortKey={RepositoryOrderField.NAME}>Name</Th>
+							<Th style="width:150px">Action</Th>
+						</Tr>
 					</Thead>
 					<Tbody>
 						{#each team.repositories.nodes as repo}
@@ -210,8 +220,7 @@
 										<Skeleton variant="text" />
 									</Td>
 									<Td>
-										<Button variant="secondary" size="small" disabled={true}>
-											<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
+										<Button variant="secondary" size="small" disabled={true} iconLeft={TrashIcon}>
 											Remove
 										</Button>
 									</Td>
@@ -224,9 +233,9 @@
 											variant="secondary"
 											size="small"
 											disabled={!team.viewerIsOwner && !team.viewerIsMember}
-											on:click={() => removeRepository(repo.team.slug, repo.name)}
+											onClick={() => removeRepository(repo.team.slug, repo.name)}
+											iconLeft={TrashIcon}
 										>
-											<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
 											Remove
 										</Button>
 									</Td>
@@ -253,7 +262,7 @@
 									size="small"
 									variant="secondary"
 									disabled={!team.repositories.pageInfo.hasPreviousPage}
-									on:click={async () => {
+									onClick={async () => {
 										return await Repositories.loadPreviousPage();
 									}}><ChevronLeftIcon /></Button
 								>
@@ -261,7 +270,7 @@
 									size="small"
 									variant="secondary"
 									disabled={!team.repositories.pageInfo.hasNextPage}
-									on:click={async () => {
+									onClick={async () => {
 										return await Repositories.loadNextPage();
 									}}
 								>

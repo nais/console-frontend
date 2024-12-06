@@ -14,9 +14,14 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
 
-	$: team = $page.params.team;
+	let team = $derived($page.params.team);
 
-	export let data: LayoutData;
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
@@ -99,7 +104,7 @@
 <div class="main">
 	<SideMenu nav={memberOnly(nav, data)} />
 	<div class="container">
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 

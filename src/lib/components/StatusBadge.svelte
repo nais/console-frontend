@@ -5,8 +5,12 @@
 		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
 
-	export let state: string;
-	export let size: string;
+	interface Props {
+		state: string;
+		size: string;
+	}
+
+	let { state, size }: Props = $props();
 </script>
 
 {#if state === 'FAILING'}
