@@ -5,9 +5,13 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ AppNotificationState } = data);
+	let { data }: Props = $props();
+
+	let { AppNotificationState } = $derived(data);
 </script>
 
 <Card>

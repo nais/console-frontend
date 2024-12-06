@@ -23,18 +23,21 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
-	$: ({ BigQuery } = data);
+	let { data }: Props = $props();
 
-	$: tableSort = {
+	let teamName = $derived($page.params.team);
+	let { BigQuery } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $BigQuery.variables?.orderBy?.field,
 		direction: $BigQuery.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -85,12 +88,14 @@
 				orderBy: tableSort.orderBy || BigQueryDatasetOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={BigQueryDatasetOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Environment</Th>
-				<Th>Owner</Th>
+				<Tr>
+					<Th sortable={true} sortKey={BigQueryDatasetOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Environment</Th>
+					<Th>Owner</Th>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each datasets.nodes as ds}
@@ -148,7 +153,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!datasets.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await BigQuery.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -156,7 +161,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!datasets.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await BigQuery.loadNextPage();
 							}}
 						>

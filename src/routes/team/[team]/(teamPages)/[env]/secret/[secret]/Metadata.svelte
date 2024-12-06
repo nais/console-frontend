@@ -1,11 +1,15 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
 
-	export let lastModifiedAt: Date | null;
-	export let lastModifiedBy: {
-		readonly name: string;
-		readonly email: string;
-	} | null;
+	interface Props {
+		lastModifiedAt: Date | null;
+		lastModifiedBy: {
+			readonly name: string;
+			readonly email: string;
+		} | null;
+	}
+
+	let { lastModifiedAt, lastModifiedBy }: Props = $props();
 </script>
 
 <h4>Metadata</h4>

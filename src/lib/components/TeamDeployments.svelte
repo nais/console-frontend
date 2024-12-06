@@ -4,37 +4,43 @@
 	import Time from '$lib/Time.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	export let team: TeamDeployments;
+	interface Props {
+		team: TeamDeployments;
+	}
 
-	$: data = fragment(
-		team,
-		graphql(`
-			fragment TeamDeployments on Team {
-				deployments @loading {
-					nodes @loading {
-						statuses {
-							status
-							message
+	let { team }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			team,
+			graphql(`
+				fragment TeamDeployments on Team {
+					deployments @loading {
+						nodes @loading {
+							statuses {
+								status
+								message
+								created
+							}
+							resources {
+								group
+								kind
+								name
+								version
+								namespace
+							}
+							environment {
+								name
+							}
 							created
-						}
-						resources {
-							group
-							kind
-							name
-							version
-							namespace
-						}
-						environment {
-							name
-						}
-						created
-						team {
-							slug
+							team {
+								slug
+							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
 	type Deployment =
@@ -69,11 +75,13 @@
 
 <Table size="small" zebraStripes>
 	<Thead>
-		<Th>Team</Th>
-		<Th>Environment</Th>
-		<Th>Resource(s)</Th>
-		<Th>Created</Th>
-		<Th>Status</Th>
+		<Tr>
+			<Th>Team</Th>
+			<Th>Environment</Th>
+			<Th>Resource(s)</Th>
+			<Th>Created</Th>
+			<Th>Status</Th>
+		</Tr>
 	</Thead>
 	<Tbody>
 		{#if $data.deployments !== null}

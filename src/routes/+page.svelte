@@ -1,12 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
-	import {
-		Button,
-		LinkPanel,
-		LinkPanelDescription,
-		LinkPanelTitle
-	} from '@nais/ds-svelte-community';
+	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -16,11 +11,15 @@
 	import type { PageData } from './$houdini';
 	import Deploys from './Deploys.svelte';
 
-	let feedbackOpen = false;
+	let feedbackOpen = $state(false);
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ UserTeams } = data);
+	let { data }: Props = $props();
+
+	let UserTeams = $derived(data.UserTeams);
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
@@ -30,7 +29,7 @@
 		<Button
 			variant="secondary"
 			size="xsmall"
-			on:click={() => {
+			onClick={() => {
 				feedbackOpen = true;
 			}}>Feedback</Button
 		>
@@ -42,23 +41,18 @@
 					<PersonGroupIcon />
 					My teams
 				</h2>
-				<Button as="a" size="small" href="/team/create" variant="primary"
-					><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Create team</Button
-				>
+				<Button as="a" size="small" href="/team/create" variant="primary" iconLeft={PlusIcon}>
+					Create team
+				</Button>
 			</div>
 			<div class="teams">
 				{#if $UserTeams.data}
 					{#if $UserTeams.data.me.__typename == 'User'}
 						{#each $UserTeams.data.me.teams.nodes as node}
-							<LinkPanel
-								about={node.team.purpose}
-								href="/team/{node.team.slug}"
-								border={true}
-								as="a"
-							>
-								<LinkPanelTitle>{node.team.slug}</LinkPanelTitle>
-								<LinkPanelDescription>{node.team.purpose}</LinkPanelDescription>
-							</LinkPanel>
+							<a href="/team/{node.team.slug}">
+								<h1>{node.team.slug}</h1>
+								<p>{node.team.purpose}</p>
+							</a>
 						{:else}
 							<p>You are not a member of any teams.</p>
 						{/each}
@@ -80,20 +74,22 @@
 										size="small"
 										variant="secondary"
 										disabled={!$UserTeams.data.me.teams.pageInfo.hasPreviousPage}
-										on:click={async () => {
+										onClick={async () => {
 											return await UserTeams.loadPreviousPage();
-										}}><ChevronLeftIcon /></Button
+										}}
 									>
+										<ChevronLeftIcon />
+									</Button>
 									<Button
 										size="small"
 										variant="secondary"
 										disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
-										on:click={async () => {
+										onClick={async () => {
 											return await UserTeams.loadNextPage();
 										}}
 									>
-										<ChevronRightIcon /></Button
-									>
+										<ChevronRightIcon />
+									</Button>
 								</span>
 							</div>
 						{/if}

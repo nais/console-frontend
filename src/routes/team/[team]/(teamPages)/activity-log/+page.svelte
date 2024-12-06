@@ -11,10 +11,14 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ ActivityLog, viewerIsMember } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
+	let { data }: Props = $props();
+	let { ActivityLog, viewerIsMember } = $derived(data);
+
+	let teamName = $derived($page.params.team);
 
 	const resourceLink = (
 		environmentName: string,
@@ -185,7 +189,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!ae.team.activityLog.pageInfo.hasPreviousPage}
-								on:click={async () => {
+								onClick={async () => {
 									return await ActivityLog.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
@@ -193,7 +197,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!ae.team.activityLog.pageInfo.hasNextPage}
-								on:click={async () => {
+								onClick={async () => {
 									return await ActivityLog.loadNextPage();
 								}}
 							>
@@ -212,7 +216,7 @@
 		position: relative;
 	}
 
-	.line:is(:not(:last-child)) {
+	.line:is(:global(:not(:last-child))) {
 		border-bottom: 1px solid var(--a-border-divider);
 		padding-bottom: 1rem;
 		margin-bottom: 1rem;

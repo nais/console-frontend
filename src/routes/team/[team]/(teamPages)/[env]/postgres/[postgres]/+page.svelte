@@ -25,10 +25,14 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ SqlInstance } = data);
-	$: instance = $SqlInstance.data?.team.environment.sqlInstance;
-	$: postgres = $page.params.postgres;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { SqlInstance } = $derived(data);
+	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
+	let postgres = $derived($page.params.postgres);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 	const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -425,15 +429,20 @@
 			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
 				<Table zebraStripes size="small">
 					<Thead>
-						<Th>Name</Th>
-						<Th>
-							<a
-								href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}
-								target="_blank"
-							>
-								Authentication <ExternalLinkIcon title="Cloud SQL credentials" font-size="1.5rem" />
-							</a>
-						</Th>
+						<Tr>
+							<Th>Name</Th>
+							<Th>
+								<a
+									href={docURL('/how-to-guides/persistence/postgres/#cloud-sql-credentials')}
+									target="_blank"
+								>
+									Authentication <ExternalLinkIcon
+										title="Cloud SQL credentials"
+										font-size="1.5rem"
+									/>
+								</a>
+							</Th>
+						</Tr>
 					</Thead>
 					<Tbody>
 						{#each instance.users.edges as edge}

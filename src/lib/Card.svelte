@@ -1,19 +1,36 @@
 <script lang="ts">
-	export let paddingBottom = '';
-	export let minWidth = '';
-	export let width = '';
-	export let height = '';
-	export let columns = 0;
-	export let rows = 0;
-	export let borderColor = 'var(--active-color-strong)';
-	export let style = '';
+	interface Props {
+		paddingBottom?: string;
+		minWidth?: string;
+		width?: string;
+		height?: string;
+		columns?: number;
+		rows?: number;
+		borderColor?: string;
+		style?: string;
+		children?: import('svelte').Snippet;
+		[key: string]: unknown;
+	}
+
+	let {
+		paddingBottom = '',
+		minWidth = '',
+		width = '',
+		height = '',
+		columns = 0,
+		rows = 0,
+		borderColor = 'var(--active-color-strong)',
+		style = '',
+		children,
+		...rest
+	}: Props = $props();
 </script>
 
 <div
-	{...$$restProps}
+	{...rest}
 	style="{style}; --columns: {columns}; --rows: {rows}; padding-bottom: {paddingBottom}; min-width: {minWidth}; width: {width}; height: {height}; --borderColor: {borderColor};"
 >
-	<slot />
+	{@render children?.()}
 </div>
 
 <style>

@@ -35,9 +35,13 @@
 		}
 	`);
 
-	export let from: Date;
-	export let to: Date;
-	export let team: string;
+	interface Props {
+		from: Date;
+		to: Date;
+		team: string;
+	}
+
+	let { from, to, team }: Props = $props();
 
 	function echartOptionsColumnChart(data: TeamCostEnvType) {
 		const opts = costTransformColumnChartTeamCostEnv(data);

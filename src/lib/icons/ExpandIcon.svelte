@@ -1,9 +1,14 @@
 <script lang="ts">
-	export let width = '1em';
+	interface Props {
+		width?: string;
+		[key: string]: unknown;
+	}
+
+	let { width = '1em', ...rest }: Props = $props();
 </script>
 
 <svg
-	{...$$restProps}
+	{...rest}
 	{width}
 	height="1em"
 	viewBox="0 0 24 24"

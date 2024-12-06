@@ -3,7 +3,11 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { Alert, HelpText } from '@nais/ds-svelte-community';
 
-	export let workloads: Secret$result['team']['environment']['secret']['workloads'];
+	interface Props {
+		workloads: Secret$result['team']['environment']['secret']['workloads'];
+	}
+
+	let { workloads }: Props = $props();
 </script>
 
 <h4>

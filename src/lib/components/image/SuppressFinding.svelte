@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export type FindingType = {
 		readonly id: string;
 		readonly description: string;
@@ -23,6 +23,8 @@
 </script>
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import {
@@ -52,26 +54,29 @@
 	import { createEventDispatcher } from 'svelte';
 	import { detailsUrl } from './imageUtils';
 
-	export let open: boolean;
-	export let finding: FindingType;
-	export let workloads: {
-		readonly __typename: string | null;
-		readonly team: {
-			readonly slug: string;
-		};
-		readonly environment: {
+	interface Props {
+		open: boolean;
+		finding: FindingType;
+		workloads: {
+			readonly __typename: string | null;
+			readonly team: {
+				readonly slug: string;
+			};
+			readonly environment: {
+				readonly name: string;
+			};
 			readonly name: string;
-		};
-		readonly name: string;
-	}[];
+		}[];
+		authorized: boolean;
+	}
 
-	export let authorized: boolean;
+	let { open = $bindable(), finding, workloads, authorized }: Props = $props();
 
-	let errormessage = '';
+	let errormessage = $state('');
 
-	let selectedReason: ValueOf<typeof ImageVulnerabilityAnalysisState> | '' = '';
-	let inputText = '';
-	let suppressed: boolean = false;
+	let selectedReason: ValueOf<typeof ImageVulnerabilityAnalysisState> | '' = $state('');
+	let inputText = $state('');
+	let suppressed: boolean = $state(false);
 
 	let team = $page.params.team;
 	let env = $page.params.env;
@@ -175,13 +180,15 @@
 		selectedReason = finding.analysisTrail?.state ?? '';
 		suppressed = finding.analysisTrail?.suppressed ?? false;
 	};
-	$: init(finding);
+	run(() => {
+		init(finding);
+	});
 </script>
 
-<Modal bind:open width="medium" on:close={close}>
-	<svelte:fragment slot="header">
+<Modal bind:open width="medium" onClose={close}>
+	{#snippet header()}
 		<Heading>Suppress finding for {finding.identifier}</Heading>
-	</svelte:fragment>
+	{/snippet}
 
 	<div class="info">
 		<dl>
@@ -204,9 +211,11 @@
 		<h5>Affected workloads</h5>
 		<Table size="small" zebraStripes>
 			<Thead>
-				<Th>Environment</Th>
-				<Th>Team</Th>
-				<Th>Workload</Th>
+				<Tr>
+					<Th>Environment</Th>
+					<Th>Team</Th>
+					<Th>Workload</Th>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each workloads as workload}
@@ -241,16 +250,18 @@
 		</Select>
 
 		<TextField type="text" bind:value={inputText}>
-			<svelte:fragment slot="label">Comment</svelte:fragment>
+			{#snippet label()}
+				Comment
+			{/snippet}
 		</TextField>
 		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
 	</div>
-	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={triggerSuppress} disabled={!authorized}
+	{#snippet footer()}
+		<Button variant="primary" size="small" onClick={triggerSuppress} disabled={!authorized}
 			>Update</Button
 		>
-		<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
-	</svelte:fragment>
+		<Button variant="secondary" size="small" onClick={close}>Cancel</Button>
+	{/snippet}
 </Modal>
 
 <style>

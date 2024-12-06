@@ -1,6 +1,11 @@
 <script lang="ts">
-	export let color = '#ff0000';
-	export let size = '32px';
+	interface Props {
+		color?: string;
+		size?: string;
+		[key: string]: unknown;
+	}
+
+	let { color = '#ff0000', size = '32px', ...rest }: Props = $props();
 </script>
 
 <svg
@@ -11,7 +16,7 @@
 	viewBox="0 0 32 32"
 	width={size}
 	height={size}
-	{...$$restProps}
+	{...rest}
 >
 	<g>
 		<circle

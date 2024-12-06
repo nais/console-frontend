@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault, run } from 'svelte/legacy';
+
 	import { fragment, graphql, type ReconcilerFragment } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -13,33 +15,39 @@
 	} from '@nais/ds-svelte-community';
 	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 
-	export let reconciler: ReconcilerFragment;
+	interface Props {
+		reconciler: ReconcilerFragment;
+	}
 
-	let confirm = false;
-	let errors: string[] = [];
-	let configErrors: string[] = [];
-	let reconcileLoading = false;
-	let configLoading = false;
+	let { reconciler }: Props = $props();
 
-	$: r = fragment(
-		reconciler,
-		graphql(`
-			fragment ReconcilerFragment on Reconciler {
-				configured
-				description
-				displayName
-				enabled
-				name
-				config {
+	let confirm = $state(false);
+	let errors: string[] = $state([]);
+	let configErrors: string[] = $state([]);
+	let reconcileLoading = $state(false);
+	let configLoading = $state(false);
+
+	let r = $derived(
+		fragment(
+			reconciler,
+			graphql(`
+				fragment ReconcilerFragment on Reconciler {
 					configured
 					description
 					displayName
-					key
-					value
-					secret
+					enabled
+					name
+					config {
+						configured
+						description
+						displayName
+						key
+						value
+						secret
+					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
 	const enableReconciler = graphql(`
@@ -75,13 +83,15 @@
 	};
 
 	// We do not submit secrets with no value
-	let config: { key: string; value: string; secret: boolean }[] = [];
-	$: config = config?.length
-		? config
-		: $r.config.map((c) => {
-				const r = { key: c.key, value: c.value || '', secret: c.secret };
-				return r;
-			});
+	let config: { key: string; value: string; secret: boolean }[] = $state([]);
+	run(() => {
+		config = config?.length
+			? config
+			: $r.config.map((c) => {
+					const r = { key: c.key, value: c.value || '', secret: c.secret };
+					return r;
+				});
+	});
 
 	const saveConfigMutation = graphql(`
 		mutation SaveReconcilerConfig($name: String!, $config: [ReconcilerConfigInput!]!) {
@@ -123,7 +133,7 @@
 		checked={$r.enabled}
 		loading={reconcileLoading}
 		disabled={reconcileLoading}
-		on:click={(e) => {
+		onClick={(e: MouseEvent) => {
 			e.preventDefault();
 			confirm = true;
 		}}
@@ -133,22 +143,24 @@
 	{#if $r.config.length > 0}
 		<Accordion>
 			<AccordionItem heading="Configuration">
-				<form on:submit|preventDefault={saveConfig}>
+				<form onsubmit={preventDefault(saveConfig)}>
 					{#each configErrors as error}
 						<Alert variant="error">{error}</Alert>
 					{/each}
 
 					{#each $r.config as c, i}
 						<TextField bind:value={config[i].value} style="width:400px">
-							<svelte:fragment slot="label">{c.displayName}</svelte:fragment>
-							<svelte:fragment slot="description">
+							{#snippet label()}
+								{c.displayName}
+							{/snippet}
+							{#snippet description()}
 								{c.description}
 								{#if c.secret && c.configured}
 									<br />
 									<InformationSquareFillIcon /> This value is already configured. It is hidden because
 									it is secret.
 								{/if}
-							</svelte:fragment>
+							{/snippet}
 						</TextField>
 					{/each}
 					<Button loading={configLoading} disabled={configLoading}>Save</Button>
@@ -159,7 +171,9 @@
 </Card>
 
 <Confirm bind:open={confirm} on:confirm={toggle}>
-	<svelte:fragment slot="header">Confirmation required</svelte:fragment>
+	{#snippet header()}
+		Confirmation required
+	{/snippet}
 	This will <b>{$r.enabled ? 'disable' : 'enable'} </b>synchronization of <i>{$r.displayName}</i><br
 	/>
 	Are you sure?

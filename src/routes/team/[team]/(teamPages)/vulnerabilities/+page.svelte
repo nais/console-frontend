@@ -20,12 +20,16 @@
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	let selectedEnvironment: string = '';
+	let { data }: Props = $props();
+
+	let selectedEnvironment: string = $state('');
 	selectedEnvironment = get(page).url.searchParams.get('environment') || '';
 
-	$: ({ TeamVulnerabilities } = data);
+	let { TeamVulnerabilities } = $derived(data);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -287,7 +291,7 @@
 					size="small"
 					hideLabel={true}
 					bind:value={selectedEnvironment}
-					on:change={() => {
+					onChange={() => {
 						changeParams({
 							environment: selectedEnvironment
 						});

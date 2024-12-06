@@ -37,27 +37,37 @@
 		}
 	`);
 
-	export let teamName: string;
+	interface Props {
+		teamName: string;
+	}
 
-	$: cpuMetrics = $utilization.data?.team.cpuUtil.filter((item) => !!item) ?? [];
+	let { teamName }: Props = $props();
 
-	$: cpuRequested = cpuMetrics
-		.filter((metric) => metric !== PendingValue)
-		.reduce((acc, item) => acc + item.requested, 0);
+	let cpuMetrics = $derived($utilization.data?.team.cpuUtil.filter((item) => !!item) ?? []);
 
-	$: cpuUsage = cpuMetrics
-		.filter((metric) => metric !== PendingValue)
-		.reduce((acc, item) => acc + item.used, 0);
+	let cpuRequested = $derived(
+		cpuMetrics
+			.filter((metric) => metric !== PendingValue)
+			.reduce((acc, item) => acc + item.requested, 0)
+	);
 
-	$: memoryMetrics = $utilization.data?.team?.memUtil.filter((item) => !!item) ?? [];
+	let cpuUsage = $derived(
+		cpuMetrics.filter((metric) => metric !== PendingValue).reduce((acc, item) => acc + item.used, 0)
+	);
 
-	$: memoryRequested = memoryMetrics
-		.filter((metric) => metric !== PendingValue)
-		.reduce((acc, item) => acc + item.requested, 0);
+	let memoryMetrics = $derived($utilization.data?.team?.memUtil.filter((item) => !!item) ?? []);
 
-	$: memoryUsage = memoryMetrics
-		.filter((metric) => metric !== PendingValue)
-		.reduce((acc, item) => acc + item.used, 0);
+	let memoryRequested = $derived(
+		memoryMetrics
+			.filter((metric) => metric !== PendingValue)
+			.reduce((acc, item) => acc + item.requested, 0)
+	);
+
+	let memoryUsage = $derived(
+		memoryMetrics
+			.filter((metric) => metric !== PendingValue)
+			.reduce((acc, item) => acc + item.used, 0)
+	);
 </script>
 
 <h4 class="container">

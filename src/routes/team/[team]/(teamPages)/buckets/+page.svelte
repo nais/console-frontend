@@ -25,18 +25,21 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
-	$: ({ Buckets } = data);
+	let { data }: Props = $props();
 
-	$: tableSort = {
+	let teamName = $derived($page.params.team);
+	let { Buckets } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $Buckets.variables?.orderBy?.field,
 		direction: $Buckets.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -87,12 +90,14 @@
 				orderBy: tableSort.orderBy || BucketOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={BucketOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={BucketOrderField.ENVIRONMENT}>Environment</Th>
-				<Th>Owner</Th>
+				<Tr>
+					<Th sortable={true} sortKey={BucketOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={BucketOrderField.ENVIRONMENT}>Environment</Th>
+					<Th>Owner</Th>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each buckets.nodes as b}
@@ -158,7 +163,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!buckets.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Buckets.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -166,7 +171,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!buckets.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Buckets.loadNextPage();
 							}}
 						>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, WorkloadState, type ValueOf } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
@@ -7,7 +9,11 @@
 	import { get } from 'svelte/store';
 	import type { TeamInfoVariables } from './$houdini';
 
-	export let teamName: string;
+	interface Props {
+		teamName: string;
+	}
+
+	let { teamName }: Props = $props();
 
 	export const _TeamInfoVariables: TeamInfoVariables = () => {
 		return { team: teamName };
@@ -34,9 +40,9 @@
 		}
 	`);
 	const githubOrganization = get(page).data.githubOrganization;
-	let status: string | undefined = undefined;
+	let status: string | undefined = $state(undefined);
 
-	$: {
+	run(() => {
 		if ($teamInfo.data?.team.workloads !== PendingValue) {
 			let states: ValueOf<typeof WorkloadState>[] = [];
 			states =
@@ -60,7 +66,7 @@
 				status = 'NAIS';
 			}
 		}
-	}
+	});
 </script>
 
 <h4>Team summary</h4>

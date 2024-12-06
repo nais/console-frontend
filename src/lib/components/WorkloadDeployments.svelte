@@ -4,56 +4,66 @@
 	import Time from '$lib/Time.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	export let workload: WorkloadDeployments;
+	interface Props {
+		workload: WorkloadDeployments;
+	}
 
-	$: data = fragment(
-		workload,
-		graphql(`
-			fragment WorkloadDeployments on Workload {
-				__typename
-				name
-				team {
-					slug
-				}
-				environment {
+	let { workload }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			workload,
+			graphql(`
+				fragment WorkloadDeployments on Workload {
+					__typename
 					name
-				}
-				deploymentInfo {
-					history {
-						nodes {
-							resources {
-								group
-								kind
-								name
-								version
-							}
-							statuses {
-								status
-								message
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+					deploymentInfo {
+						history {
+							nodes {
+								resources {
+									group
+									kind
+									name
+									version
+								}
+								statuses {
+									status
+									message
+									created
+								}
 								created
+								repository
 							}
-							created
-							repository
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
-	$: deploysOrderedByDate = $data.deploymentInfo.history.nodes.sort((a, b) => {
-		return new Date(b.created).getTime() - new Date(a.created).getTime();
-	});
+	let deploysOrderedByDate = $derived(
+		$data.deploymentInfo.history.nodes.sort((a, b) => {
+			return new Date(b.created).getTime() - new Date(a.created).getTime();
+		})
+	);
 </script>
 
 <h4>Deployments - {$data.environment.name}/{$data.name}</h4>
 {#if $data !== null}
 	<Table size="small" zebraStripes>
 		<Thead>
-			<Th>Team</Th>
-			<Th>Environment</Th>
-			<Th>Resource(s)</Th>
-			<Th>Created</Th>
-			<Th>Status</Th>
+			<Tr>
+				<Th>Team</Th>
+				<Th>Environment</Th>
+				<Th>Resource(s)</Th>
+				<Th>Created</Th>
+				<Th>Status</Th>
+			</Tr>
 		</Thead>
 		<Tbody>
 			{#each deploysOrderedByDate as deploy}

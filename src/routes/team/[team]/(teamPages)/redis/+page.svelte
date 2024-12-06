@@ -22,18 +22,21 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
-	$: ({ Redis } = data);
+	let { data }: Props = $props();
 
-	$: tableSort = {
+	let teamName = $derived($page.params.team);
+	let { Redis } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $Redis.variables?.orderBy?.field,
 		direction: $Redis.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -84,12 +87,14 @@
 				orderBy: tableSort.orderBy || RedisInstanceOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={RedisInstanceOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Environment</Th>
-				<Th>Owner</Th>
+				<Tr>
+					<Th sortable={true} sortKey={RedisInstanceOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Environment</Th>
+					<Th>Owner</Th>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each redis.nodes as r}
@@ -150,7 +155,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!redis.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Redis.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -158,7 +163,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!redis.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Redis.loadNextPage();
 							}}
 						>

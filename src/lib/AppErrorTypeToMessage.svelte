@@ -4,87 +4,93 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
 
-	export let error: AppErrorFragment;
+	interface Props {
+		error: AppErrorFragment;
+	}
 
-	$: data = fragment(
-		error,
-		graphql(`
-			fragment AppErrorFragment on WorkloadStatusError {
-				__typename
-				... on WorkloadStatusDeprecatedRegistry {
-					name
-					registry
-					repository
-					tag
-					level
-				}
-				... on WorkloadStatusInvalidNaisYaml {
-					detail
-					level
-				}
-				... on WorkloadStatusInboundNetwork {
-					level
-					policy {
-						targetWorkload {
-							name
-							environment {
+	let { error }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			error,
+			graphql(`
+				fragment AppErrorFragment on WorkloadStatusError {
+					__typename
+					... on WorkloadStatusDeprecatedRegistry {
+						name
+						registry
+						repository
+						tag
+						level
+					}
+					... on WorkloadStatusInvalidNaisYaml {
+						detail
+						level
+					}
+					... on WorkloadStatusInboundNetwork {
+						level
+						policy {
+							targetWorkload {
 								name
+								environment {
+									name
+								}
 							}
+							targetTeam {
+								slug
+							}
+							targetTeamSlug
+							targetWorkloadName
 						}
-						targetTeam {
-							slug
-						}
-						targetTeamSlug
-						targetWorkloadName
 					}
-				}
-				... on WorkloadStatusOutboundNetwork {
-					level
-					policy {
-						targetWorkload {
-							name
-							environment {
+					... on WorkloadStatusOutboundNetwork {
+						level
+						policy {
+							targetWorkload {
 								name
+								environment {
+									name
+								}
 							}
+							targetTeam {
+								slug
+							}
+							targetTeamSlug
+							targetWorkloadName
 						}
-						targetTeam {
-							slug
+					}
+					... on WorkloadStatusMissingSBOM {
+						level
+					}
+					... on WorkloadStatusVulnerable {
+						level
+						summary {
+							riskScore
 						}
-						targetTeamSlug
-						targetWorkloadName
+					}
+					... on WorkloadStatusSynchronizationFailing {
+						detail
+						level
+					}
+					... on WorkloadStatusDeprecatedIngress {
+						level
+						ingress
+					}
+					... on WorkloadStatusNewInstancesFailing {
+						failingInstances
+						level
+					}
+					... on WorkloadStatusNoRunningInstances {
+						level
 					}
 				}
-				... on WorkloadStatusMissingSBOM {
-					level
-				}
-				... on WorkloadStatusVulnerable {
-					level
-					summary {
-						riskScore
-					}
-				}
-				... on WorkloadStatusSynchronizationFailing {
-					detail
-					level
-				}
-				... on WorkloadStatusDeprecatedIngress {
-					level
-					ingress
-				}
-				... on WorkloadStatusNewInstancesFailing {
-					failingInstances
-					level
-				}
-				... on WorkloadStatusNoRunningInstances {
-					level
-				}
-			}
-		`)
+			`)
+		)
 	);
 
-	$: team = $page.params.team;
-	$: env = $page.params.env;
-	$: app = $page.params.app;
+	let team = $derived($page.params.team);
+	let env = $derived($page.params.env);
+	let app = $derived($page.params.app);
 </script>
 
 {#if $data}

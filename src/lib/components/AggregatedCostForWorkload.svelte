@@ -29,9 +29,13 @@
 		}
 	`);
 
-	export let environment: string;
-	export let workload: string;
-	export let team: string;
+	interface Props {
+		environment: string;
+		workload: string;
+		team: string;
+	}
+
+	let { environment, workload, team }: Props = $props();
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();

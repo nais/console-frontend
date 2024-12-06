@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
@@ -11,7 +13,12 @@
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { percentageFormatter } from '$lib/utils/formatters';
-	import { mergeCalculateAndSortOverageData, round, yearlyOverageCost } from '$lib/utils/resources';
+	import {
+		mergeCalculateAndSortOverageData,
+		round,
+		type TeamOverageData,
+		yearlyOverageCost
+	} from '$lib/utils/resources';
 	import { HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { TableSortState } from '@nais/ds-svelte-community/components/Table/index.js';
 	import bytes from 'bytes-iec';
@@ -19,18 +26,11 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ TeamResourceUsage } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: resourceUtilization = $TeamResourceUsage.data?.team;
-
-	$: overageTable = mergeCalculateAndSortOverageData(
-		resourceUtilization,
-		sortState.orderBy,
-		sortState.direction
-	);
-
-	$: team = $page.params.team;
+	let { data }: Props = $props();
 
 	type OverageData = {
 		readonly workload: {
@@ -187,10 +187,21 @@
 		return sortState;
 	};
 
-	let sortState: TableSortState = {
+	let sortState: TableSortState = $state({
 		orderBy: 'COST',
 		direction: 'descending'
-	};
+	});
+	let { TeamResourceUsage } = $derived(data);
+	let resourceUtilization = $derived($TeamResourceUsage.data?.team);
+	let overageTable: TeamOverageData[] = $state([]);
+	run(() => {
+		overageTable = mergeCalculateAndSortOverageData(
+			resourceUtilization,
+			sortState.orderBy,
+			sortState.direction
+		);
+	});
+	let team = $derived($page.params.team);
 </script>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
@@ -358,8 +369,7 @@
 					size={'small'}
 					sort={sortState}
 					zebraStripes
-					on:sortChange={(e) => {
-						const { key } = e.detail;
+					onSortChange={(key) => {
 						sortState = sortTable(key, sortState);
 					}}
 				>

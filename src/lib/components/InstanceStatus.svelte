@@ -2,26 +2,32 @@
 	import type { AppInstancesStatus } from '$houdini';
 	import { fragment, graphql } from '$houdini';
 
-	export let app: AppInstancesStatus;
-	$: data = fragment(
-		app,
-		graphql(`
-			fragment AppInstancesStatus on Application {
-				instances {
-					pageInfo {
-						totalCount
-					}
-					edges {
-						node {
-							status {
-								message
-								state
+	interface Props {
+		app: AppInstancesStatus;
+	}
+
+	let { app }: Props = $props();
+	let data = $derived(
+		fragment(
+			app,
+			graphql(`
+				fragment AppInstancesStatus on Application {
+					instances {
+						pageInfo {
+							totalCount
+						}
+						edges {
+							node {
+								status {
+									message
+									state
+								}
 							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 </script>
 

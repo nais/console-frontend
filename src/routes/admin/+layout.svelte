@@ -3,8 +3,13 @@
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
 
-	$: currentRoute = $page.route.id;
+	let { children }: Props = $props();
+
+	let currentRoute = $derived($page.route.id);
 	const nav = [
 		{
 			tab: 'Users',
@@ -50,7 +55,7 @@
 		{/each}
 	</Tabs>
 	<div class="container">
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 

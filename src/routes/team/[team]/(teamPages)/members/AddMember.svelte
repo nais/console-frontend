@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { graphql, type AddTeamMemberInput } from '$houdini';
 	import {
 		Alert,
@@ -14,8 +16,12 @@
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
 
-	export let open: boolean;
-	export let team: string;
+	interface Props {
+		open: boolean;
+		team: string;
+	}
+
+	let { open = $bindable(), team }: Props = $props();
 
 	const dispatcher = createEventDispatcher<{ created: null }>();
 
@@ -53,18 +59,18 @@
 		}
 	`);
 
-	$: emails = $store.data?.users.nodes.map((user) => user.email) ?? [];
+	let emails = $derived($store.data?.users.nodes.map((user) => user.email) ?? []);
 
 	type Reconciler = { name: string; value: string; description: string };
-	let selectedRecs: string[] = [];
+	let selectedRecs: string[] = $state([]);
 	let reconcilers: Reconciler[] = [];
 
 	let loaded = false;
 
-	let role: AddTeamMemberInput['role'] = 'MEMBER';
-	let email: string;
+	let role: AddTeamMemberInput['role'] = $state('MEMBER');
+	let email: string = $state('');
 
-	let errors: string[] = [];
+	let errors: string[] = $state([]);
 	const submit = async () => {
 		errors = [];
 		const userID = $store.data?.users.nodes.find((u) => u.email === email)?.email;
@@ -95,15 +101,19 @@
 </script>
 
 <Modal bind:open>
-	<svelte:fragment slot="header"><Heading>Add member</Heading></svelte:fragment>
+	{#snippet header()}
+		<Heading>Add member</Heading>
+	{/snippet}
 
 	{#each errors as error}
 		<Alert variant="error">{error}</Alert>
 	{/each}
 
-	<form on:submit|preventDefault={submit} class="wrapper">
+	<form onsubmit={preventDefault(submit)} class="wrapper">
 		<TextField list="add-member-email" type="email" bind:value={email}>
-			<svelte:fragment slot="label">Email</svelte:fragment>
+			{#snippet label()}
+				Email
+			{/snippet}
 		</TextField>
 		<datalist id="add-member-email">
 			{#each emails as email}
@@ -132,12 +142,9 @@
 		{/if}
 	</form>
 
-	<svelte:fragment slot="footer">
-		<Button type="submit" on:click={submit}>
-			<svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>
-			Add member
-		</Button>
-	</svelte:fragment>
+	{#snippet footer()}
+		<Button type="submit" onClick={submit} iconLeft={PlusIcon}>Add member</Button>
+	{/snippet}
 </Modal>
 
 <style>

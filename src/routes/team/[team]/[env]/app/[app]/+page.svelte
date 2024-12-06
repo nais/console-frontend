@@ -18,8 +18,12 @@
 	import Status from './Status.svelte';
 	import Utilization from './Utilization.svelte';
 
-	export let data: PageData;
-	$: ({ App } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { App } = $derived(data);
 
 	const restartAppMutation = () =>
 		graphql(`
@@ -33,17 +37,17 @@
 				}
 			}
 		`);
-	let restartApp = restartAppMutation();
+	let restartApp = $state(restartAppMutation());
 
 	onNavigate(() => {
 		restartApp = restartAppMutation();
 	});
 
-	$: application = $page.params.app;
-	$: environment = $page.params.env;
-	$: team = $page.params.team;
+	let application = $derived($page.params.app);
+	let environment = $derived($page.params.env);
+	let team = $derived($page.params.team);
 
-	let restart = false;
+	let restart = $state(false);
 
 	const submit = () => {
 		restartApp.mutate({
@@ -72,11 +76,11 @@
 					<Button
 						variant="secondary"
 						size="small"
-						on:click={() => {
+						onClick={() => {
 							restart = true;
 						}}
+						iconLeft={ArrowCirclepathIcon}
 					>
-						<svelte:fragment slot="icon-left"><ArrowCirclepathIcon /></svelte:fragment>
 						Restart
 					</Button>
 				{/if}
@@ -120,7 +124,9 @@
 		{/if}
 	</div>
 	<Confirm bind:open={restart} on:confirm={submit}>
-		<h3 slot="header">Restart {application}</h3>
+		{#snippet header()}
+			<h3>Restart {application}</h3>
+		{/snippet}
 		This will restart all instances of
 		<strong>{application}</strong> in
 		<strong>{environment}</strong>.

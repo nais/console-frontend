@@ -14,16 +14,19 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ KafkaTopic } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: tableSort = {
+	let { data }: Props = $props();
+	let { KafkaTopic } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $KafkaTopic.variables?.orderBy?.field,
 		direction: $KafkaTopic.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -58,12 +61,14 @@
 					orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 				}}
-				on:sortChange={tableSortChange}
+				onSortChange={tableSortChange}
 			>
 				<Thead>
-					<Th sortable={true} sortKey={KafkaTopicAclOrderField.TEAM_SLUG}>Team</Th>
-					<Th sortable={true} sortKey={KafkaTopicAclOrderField.CONSUMER}>Consumer</Th>
-					<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
+					<Tr>
+						<Th sortable={true} sortKey={KafkaTopicAclOrderField.TEAM_SLUG}>Team</Th>
+						<Th sortable={true} sortKey={KafkaTopicAclOrderField.CONSUMER}>Consumer</Th>
+						<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
+					</Tr>
 				</Thead>
 				<Tbody>
 					{#each topic.acl.nodes as a}
@@ -114,7 +119,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!topic.acl.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await KafkaTopic.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -122,7 +127,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!topic.acl.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await KafkaTopic.loadNextPage();
 							}}
 						>

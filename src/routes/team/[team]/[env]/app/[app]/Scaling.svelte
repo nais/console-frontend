@@ -2,29 +2,35 @@
 	import type { Scaling } from '$houdini';
 	import { fragment, graphql } from '$houdini';
 
-	export let app: Scaling;
-	$: data = fragment(
-		app,
-		graphql(`
-			fragment Scaling on Application {
-				resources {
-					scaling {
-						maxInstances
-						minInstances
-						strategies {
-							... on CPUScalingStrategy {
-								threshold
-							}
-							... on KafkaLagScalingStrategy {
-								consumerGroup
-								threshold
-								topicName
+	interface Props {
+		app: Scaling;
+	}
+
+	let { app }: Props = $props();
+	let data = $derived(
+		fragment(
+			app,
+			graphql(`
+				fragment Scaling on Application {
+					resources {
+						scaling {
+							maxInstances
+							minInstances
+							strategies {
+								... on CPUScalingStrategy {
+									threshold
+								}
+								... on KafkaLagScalingStrategy {
+									consumerGroup
+									threshold
+									topicName
+								}
 							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
 	const renameStrategy = (type: string) => {

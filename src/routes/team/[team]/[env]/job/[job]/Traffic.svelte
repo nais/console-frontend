@@ -6,45 +6,51 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Tooltip } from '@nais/ds-svelte-community';
 
-	export let job: JobNetworkPolicy;
+	interface Props {
+		job: JobNetworkPolicy;
+	}
 
-	$: data = fragment(
-		job,
-		graphql(`
-			fragment JobNetworkPolicy on Job {
-				name
-				networkPolicy {
-					inbound {
-						rules {
-							mutual
-							targetTeamSlug
-							targetWorkloadName
-							targetWorkload {
-								type: __typename
+	let { job }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			job,
+			graphql(`
+				fragment JobNetworkPolicy on Job {
+					name
+					networkPolicy {
+						inbound {
+							rules {
+								mutual
+								targetTeamSlug
+								targetWorkloadName
+								targetWorkload {
+									type: __typename
+								}
 							}
 						}
-					}
-					outbound {
-						rules {
-							mutual
-							targetTeamSlug
-							targetWorkloadName
-							targetWorkload {
-								type: __typename
+						outbound {
+							rules {
+								mutual
+								targetTeamSlug
+								targetWorkloadName
+								targetWorkload {
+									type: __typename
+								}
 							}
-						}
-						external {
-							type: __typename
-							ports
-							target
+							external {
+								type: __typename
+								ports
+								target
+							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 </script>
 
 <div class="traffic">
