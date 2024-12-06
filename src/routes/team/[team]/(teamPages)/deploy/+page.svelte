@@ -4,9 +4,13 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ Deployments } = data);
+	let { data }: Props = $props();
+
+	let { Deployments } = $derived(data);
 </script>
 
 <GraphErrors errors={$Deployments.errors} />

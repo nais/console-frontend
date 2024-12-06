@@ -5,9 +5,13 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ JobStatusDetailed } = data);
+	let { data }: Props = $props();
+
+	let { JobStatusDetailed } = $derived(data);
 </script>
 
 <Card>

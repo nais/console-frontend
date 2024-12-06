@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run as run_1 } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import {
@@ -10,19 +12,27 @@
 	} from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	let running = true;
-	let fetching = false;
+	let running = $state(true);
+	let fetching = $state(false);
 
-	$: team = $page.params.team;
-	$: env = $page.params.env;
-	$: job = $page.params.job;
+	let team = $derived($page.params.team);
+	let env = $derived($page.params.env);
+	let job = $derived($page.params.job);
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ RunsWithPodNames, selected } = data);
+	let { data }: Props = $props();
 
-	let pods: Set<string> = new Set([selected]);
-	$: selectedRun = selected;
+	let { RunsWithPodNames, selected } = $derived(data);
+
+	// svelte-ignore state_referenced_locally
+	let pods: Set<string> = $state(new Set([selected]));
+	let selectedRun: string = $state('');
+	run_1(() => {
+		selectedRun = selected;
+	});
 	function setSelected(name: string) {
 		pods = new Set(
 			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
@@ -32,7 +42,9 @@
 		);
 		running = true;
 	}
-	$: setSelected(selectedRun);
+	run_1(() => {
+		setSelected(selectedRun);
+	});
 
 	function renderRunName(i: string) {
 		if (i.startsWith(job)) {
@@ -43,7 +55,7 @@
 	}
 
 	const viewOptions = ['Time', 'Level', 'Name'];
-	let selectedViewOptions = new Set(viewOptions);
+	let selectedViewOptions = $state(new Set(viewOptions));
 	function toggleSelectedViewOptions(option: string) {
 		if (selectedViewOptions.has(option)) {
 			selectedViewOptions.delete(option);
@@ -74,13 +86,13 @@
 		<div>
 			{#if fetching}
 				<Button
-					on:click={() => {
+					onClick={() => {
 						running = false;
 					}}>Pause</Button
 				>
 			{:else}
 				<Button
-					on:click={() => {
+					onClick={() => {
 						running = true;
 					}}>Restart</Button
 				>
@@ -95,7 +107,7 @@
 			<ToggleChip
 				value={option}
 				selected={selectedViewOptions.has(option)}
-				on:click={() => toggleSelectedViewOptions(option)}
+				onClick={() => toggleSelectedViewOptions(option)}
 			/>
 		{/each}
 	</Chips>

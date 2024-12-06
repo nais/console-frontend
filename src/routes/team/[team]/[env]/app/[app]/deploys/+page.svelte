@@ -3,9 +3,13 @@
 	import WorkloadDeployments from '$lib/components/WorkloadDeployments.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { PageData } from './$houdini';
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ AppDeploys } = data);
+	let { data }: Props = $props();
+
+	let { AppDeploys } = $derived(data);
 </script>
 
 <GraphErrors errors={$AppDeploys.errors} />

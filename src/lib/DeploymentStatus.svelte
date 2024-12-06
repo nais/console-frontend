@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { Tag } from '@nais/ds-svelte-community';
 
-	export let status: string;
+	interface Props {
+		status: string;
+	}
+
+	let { status }: Props = $props();
 
 	const asdf = (
 		status: string
@@ -20,7 +24,7 @@
 		}
 	};
 
-	$: statusType = asdf(status);
+	let statusType = $derived(asdf(status));
 </script>
 
 <Tag variant={statusType.variant} size="small"><span>{statusType.title}</span></Tag>

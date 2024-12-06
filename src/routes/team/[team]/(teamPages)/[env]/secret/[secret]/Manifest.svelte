@@ -3,7 +3,11 @@
 	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
-	export let secretName: string;
+	interface Props {
+		secretName: string;
+	}
+
+	let { secretName }: Props = $props();
 
 	const workloadManifest = () => `spec:
   envFrom:

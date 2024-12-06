@@ -9,16 +9,19 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ RedisInstance } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: tableSort = {
+	let { data }: Props = $props();
+	let { RedisInstance } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $RedisInstance.variables?.orderBy?.field,
 		direction: $RedisInstance.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -64,7 +67,7 @@
 					orderBy: tableSort.orderBy || RedisInstanceAccessOrderField.WORKLOAD,
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 				}}
-				on:sortChange={tableSortChange}
+				onSortChange={tableSortChange}
 			>
 				<Thead>
 					<Tr>
@@ -107,7 +110,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!redisInstance.access.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await RedisInstance.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -115,7 +118,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!redisInstance.access.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await RedisInstance.loadNextPage();
 							}}
 						>

@@ -4,12 +4,16 @@
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Textarea from './Textarea.svelte';
 
-	export let initial: SecretValueInput[];
-	export let team: string;
-	export let env: string;
-	export let secretName: string;
+	interface Props {
+		initial: SecretValueInput[];
+		team: string;
+		env: string;
+		secretName: string;
+	}
 
-	let open: boolean = false;
+	let { initial, team, env, secretName }: Props = $props();
+
+	let open: boolean = $state(false);
 
 	const validKey = (key: string | undefined) => {
 		if (!key) {
@@ -82,8 +86,8 @@
 		value = undefined;
 	};
 
-	let key: string | undefined;
-	let value: string | undefined;
+	let key: string | undefined = $state();
+	let value: string | undefined = $state();
 
 	const openModal = () => {
 		open = true;
@@ -97,18 +101,21 @@
 </script>
 
 <div class="buttons">
-	<Button title="Add new key and value" variant="tertiary" size="small" on:click={openModal}>
-		<svelte:fragment slot="icon-left">
-			<PlusCircleFillIcon />
-		</svelte:fragment>
+	<Button
+		title="Add new key and value"
+		variant="tertiary"
+		size="small"
+		onClick={openModal}
+		iconLeft={PlusCircleFillIcon}
+	>
 		Add key and value
 	</Button>
 </div>
 
 <Modal bind:open width="medium">
-	<svelte:fragment slot="header">
+	{#snippet header()}
 		<Heading>Add new key and value</Heading>
-	</svelte:fragment>
+	{/snippet}
 	<div class="entry">
 		<TextField
 			style="font-family: monospace; font-size: var(--a-font-size-small);"
@@ -116,19 +123,21 @@
 			bind:value={key}
 			error={validKey(key)}
 		>
-			<svelte:fragment slot="label">Key</svelte:fragment>
-			<svelte:fragment slot="description"
-				><i>Examples: SOME_KEY, some.key, or some-key</i></svelte:fragment
-			>
+			{#snippet label()}
+				Key
+			{/snippet}
+			{#snippet description()}
+				<i>Examples: SOME_KEY, some.key, or some-key</i>
+			{/snippet}
 		</TextField>
 	</div>
 	<div class="entry">
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
-	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={addSecretValue}>Add</Button>
-		<Button variant="secondary" size="small" on:click={reset}>Cancel</Button>
-	</svelte:fragment>
+	{#snippet footer()}
+		<Button variant="primary" size="small" onClick={addSecretValue}>Add</Button>
+		<Button variant="secondary" size="small" onClick={reset}>Cancel</Button>
+	{/snippet}
 </Modal>
 
 <style>

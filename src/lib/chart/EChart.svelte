@@ -8,9 +8,13 @@
 	import { createEventDispatcher, mount } from 'svelte';
 	import Legends from './Legends.svelte';
 
-	export let options: EChartsOption;
-	export let theme = 'london';
-	export let style = '';
+	interface Props {
+		options: EChartsOption;
+		theme?: string;
+		style?: string;
+	}
+
+	let { options, theme = 'london', style = '' }: Props = $props();
 
 	const dispatcher = createEventDispatcher<{ click: ECElementEvent }>();
 

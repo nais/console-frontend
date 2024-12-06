@@ -28,22 +28,26 @@
 	import Textarea from './Textarea.svelte';
 	import Workloads from './Workloads.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ Secret } = data);
-	$: secret = $Secret.data?.team.environment.secret;
+	let { data }: Props = $props();
 
-	$: secretName = $page.params.secret;
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let { Secret } = $derived(data);
+	let secret = $derived($Secret.data?.team.environment.secret);
 
-	let deleteSecretOpen = false;
-	let deleteValueOpen = false;
-	let editValueOpen = false;
+	let secretName = $derived($page.params.secret);
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 
-	let keyToDelete = '';
-	let keyToEdit = '';
-	let valueToEdit = '';
+	let deleteSecretOpen = $state(false);
+	let deleteValueOpen = $state(false);
+	let editValueOpen = $state(false);
+
+	let keyToDelete = $state('');
+	let keyToEdit = $state('');
+	let valueToEdit = $state('');
 
 	const updateSecretValue = graphql(`
 		mutation updateSecretValue(
@@ -186,9 +190,9 @@
 		bind:open={deleteSecretOpen}
 		on:confirm={deleteSecret}
 	>
-		<svelte:fragment slot="header">
+		{#snippet header()}
 			<Heading>Delete secret</Heading>
-		</svelte:fragment>
+		{/snippet}
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
 		</p>
@@ -212,9 +216,9 @@
 		bind:open={deleteValueOpen}
 		on:confirm={deleteValueFromSecret}
 	>
-		<svelte:fragment slot="header">
+		{#snippet header()}
 			<Heading>Delete key from secret</Heading>
-		</svelte:fragment>
+		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the secret named
 			<b>{secret.name}</b>
@@ -241,11 +245,9 @@
 			title="Delete secret from environment"
 			variant="danger"
 			size="small"
-			on:click={openDeleteModal}
+			onClick={openDeleteModal}
+			iconLeft={TrashIcon}
 		>
-			<svelte:fragment slot="icon-left">
-				<TrashIcon />
-			</svelte:fragment>
 			Delete
 		</Button>
 	</div>
@@ -292,27 +294,24 @@
 									size="small"
 									variant="tertiary"
 									title="Show or edit secret value"
-									on:click={() => {
+									onClick={() => {
 										openEditValueModal(value.name, value.value);
 									}}
-								>
-									<svelte:fragment slot="icon-left">
-										<DocPencilIcon />
-									</svelte:fragment>
-								</Button>
+									iconLeft={DocPencilIcon}
+								></Button>
 
 								<Button
 									iconOnly
 									size="small"
 									variant="tertiary-neutral"
 									title="Delete key and value"
-									on:click={() => {
+									onClick={() => {
 										openDeleteValueModal(value.name);
 									}}
 								>
-									<svelte:fragment slot="icon-left">
+									{#snippet iconLeft()}
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
-									</svelte:fragment>
+									{/snippet}
 								</Button>
 							</Td>
 						</Tr>
@@ -332,17 +331,17 @@
 		</Card>
 	</div>
 {/if}
-<Modal bind:open={editValueOpen} width="medium" on:close={/*reset*/ () => {}}>
-	<svelte:fragment slot="header">
+<Modal bind:open={editValueOpen} width="medium" onClose={/*reset*/ () => {}}>
+	{#snippet header()}
 		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
-	</svelte:fragment>
+	{/snippet}
 	<div class="entry">
 		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
 	</div>
-	<svelte:fragment slot="footer">
-		<Button variant="primary" size="small" on:click={editValueForKey}>Save</Button>
-		<Button variant="secondary" size="small" on:click={cancelEditValue}>Cancel</Button>
-	</svelte:fragment>
+	{#snippet footer()}
+		<Button variant="primary" size="small" onClick={editValueForKey}>Save</Button>
+		<Button variant="secondary" size="small" onClick={cancelEditValue}>Cancel</Button>
+	{/snippet}
 </Modal>
 
 <style>

@@ -25,7 +25,11 @@
 		}
 	`);
 
-	export let team: string;
+	interface Props {
+		team: string;
+	}
+
+	let { team }: Props = $props();
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();

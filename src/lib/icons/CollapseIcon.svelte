@@ -1,5 +1,10 @@
 <script lang="ts">
-	export let width = '1em';
+	interface Props {
+		width?: string;
+		[key: string]: unknown;
+	}
+
+	let { width = '1em', ...rest }: Props = $props();
 </script>
 
 <svg
@@ -10,7 +15,7 @@
 	xmlns="http://www.w3.org/2000/svg"
 	focusable="false"
 	role="img"
-	{...$$restProps}
+	{...rest}
 	><path
 		fill-rule="evenodd"
 		clip-rule="evenodd"

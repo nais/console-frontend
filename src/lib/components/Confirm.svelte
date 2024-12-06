@@ -2,16 +2,28 @@
 	import { Button, Modal } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 
-	export let confirmText = 'Confirm';
-	export let open = false;
-	export let variant:
-		| 'primary'
-		| 'primary-neutral'
-		| 'secondary'
-		| 'secondary-neutral'
-		| 'tertiary'
-		| 'tertiary-neutral'
-		| 'danger' = 'primary';
+	interface Props {
+		confirmText?: string;
+		open?: boolean;
+		variant?:
+			| 'primary'
+			| 'primary-neutral'
+			| 'secondary'
+			| 'secondary-neutral'
+			| 'tertiary'
+			| 'tertiary-neutral'
+			| 'danger';
+		header?: import('svelte').Snippet;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		confirmText = 'Confirm',
+		open = $bindable(false),
+		variant = 'primary',
+		header,
+		children
+	}: Props = $props();
 
 	const dispatch = createEventDispatcher();
 
@@ -24,21 +36,23 @@
 		open = false;
 		dispatch('confirm');
 	};
+
+	const header_render = $derived(header);
 </script>
 
-<Modal bind:open on:close>
-	<svelte:fragment slot="header">
-		<slot name="header" />
-	</svelte:fragment>
+<Modal bind:open onClose={close}>
+	{#snippet header()}
+		{@render header_render?.()}
+	{/snippet}
 
 	<div class="wrapper">
-		<slot />
+		{@render children?.()}
 	</div>
 
-	<svelte:fragment slot="footer">
-		<Button {variant} type="submit" on:click={confirm}>{confirmText}</Button>
-		<Button variant="tertiary" type="reset" on:click={cancel}>Cancel</Button>
-	</svelte:fragment>
+	{#snippet footer()}
+		<Button {variant} type="submit" onClick={confirm}>{confirmText}</Button>
+		<Button variant="tertiary" type="reset" onClick={cancel}>Cancel</Button>
+	{/snippet}
 </Modal>
 
 <style>

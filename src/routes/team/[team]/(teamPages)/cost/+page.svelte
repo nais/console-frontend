@@ -9,12 +9,16 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ TeamCost } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { TeamCost } = $derived(data);
 
 	let team = $page.params.team;
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
+	let from = $state(data.fromDate?.toISOString().split('T')[0]);
+	let to = $state(data.toDate?.toISOString().split('T')[0]);
 
 	function echartOptionsStackedColumnChart(data: DailCostType) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
@@ -23,8 +27,13 @@
 		return opts;
 	}
 
-	let fromDate = new Date(from);
-	let toDate = new Date(to);
+	let fromDate = $state(new Date());
+	let toDate = $state(new Date());
+
+	$effect(() => {
+		fromDate = new Date(from);
+		toDate = new Date(to);
+	});
 
 	function update() {
 		const old = $TeamCost.variables!;
@@ -48,7 +57,7 @@
 	<div class="grid">
 		<Card columns={4}>
 			<label for="from">From:</label>
-			<input type="date" id="from" bind:value={from} on:change={update} />
+			<input type="date" id="from" bind:value={from} onchange={update} />
 			<label for="to">To:</label>
 			<input
 				type="date"
@@ -56,7 +65,7 @@
 				min={from}
 				max={todayMinusTwoDays}
 				bind:value={to}
-				on:change={update}
+				onchange={update}
 			/>
 		</Card>
 		<Card columns={12}>

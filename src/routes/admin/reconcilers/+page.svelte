@@ -2,10 +2,14 @@
 	import type { PageData } from './$houdini';
 	import Reconciler from './Reconciler.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ AdminReconcilers } = data);
-	$: reconcilers = $AdminReconcilers.data?.reconcilers.nodes;
+	let { data }: Props = $props();
+
+	let { AdminReconcilers } = $derived(data);
+	let reconcilers = $derived($AdminReconcilers.data?.reconcilers.nodes);
 </script>
 
 {#each reconcilers || [] as r}

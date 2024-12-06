@@ -4,10 +4,14 @@
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ ReconcilerLogs } = data);
-	$: reconcilers = $ReconcilerLogs.data?.reconcilers.nodes;
+	let { data }: Props = $props();
+
+	let { ReconcilerLogs } = $derived(data);
+	let reconcilers = $derived($ReconcilerLogs.data?.reconcilers.nodes);
 
 	type Error = {
 		reconcilerName: string;

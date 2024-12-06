@@ -6,10 +6,15 @@
 	import { ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$houdini';
 
-	export let data: LayoutData;
-	$: ({ deletionInProgress, lastSuccessfulSync } = data);
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
 
-	let feedbackOpen = false;
+	let { data, children }: Props = $props();
+	let { deletionInProgress, lastSuccessfulSync } = $derived(data);
+
+	let feedbackOpen = $state(false);
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
 	const simpleTeamPages: { [key: string]: string } = {
@@ -261,7 +266,7 @@
 			<Button
 				variant="secondary"
 				size="xsmall"
-				on:click={() => {
+				onClick={() => {
 					feedbackOpen = true;
 				}}>Feedback</Button
 			>
@@ -281,7 +286,7 @@
 			about 15 minutes.</Alert
 		>
 	{/if}
-	<slot />
+	{@render children?.()}
 </div>
 
 {#if feedbackOpen}

@@ -6,19 +6,25 @@
 	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
 	import prettyBytes from 'pretty-bytes';
 
-	export let app: AppUtilization;
-	$: data = fragment(
-		app,
-		graphql(`
-			fragment AppUtilization on Application {
-				utilization {
-					cpuUsage: current(resourceType: CPU)
-					cpuRequests: requested(resourceType: CPU)
-					memoryUsage: current(resourceType: MEMORY)
-					memoryRequests: requested(resourceType: MEMORY)
+	interface Props {
+		app: AppUtilization;
+	}
+
+	let { app }: Props = $props();
+	let data = $derived(
+		fragment(
+			app,
+			graphql(`
+				fragment AppUtilization on Application {
+					utilization {
+						cpuUsage: current(resourceType: CPU)
+						cpuRequests: requested(resourceType: CPU)
+						memoryUsage: current(resourceType: MEMORY)
+						memoryRequests: requested(resourceType: MEMORY)
+					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 </script>
 

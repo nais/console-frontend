@@ -1,15 +1,25 @@
 <script lang="ts">
-	export let fill = 'gradient'; // Use 'gradient' to enable the gradient
-	export let gradientColors = ['#4CAF50', '#2196F3']; // Default gradient colors
-	export let gradientDirection = { x1: '0%', y1: '0%', x2: '100%', y2: '0%' }; // Default direction (horizontal)
+	interface Props {
+		fill?: string; // Use 'gradient' to enable the gradient
+		gradientColors?: [string, string]; // Default gradient colors
+		gradientDirection?: {
+			x1: string;
+			y1: string;
+			x2: string;
+			y2: string;
+		}; // Default direction (horizontal)
+		[key: string]: unknown;
+	}
+
+	let {
+		fill = 'gradient',
+		gradientColors = ['#4CAF50', '#2196F3'],
+		gradientDirection = { x1: '0%', y1: '0%', x2: '100%', y2: '0%' },
+		...rest
+	}: Props = $props();
 </script>
 
-<svg
-	xmlns="http://www.w3.org/2000/svg"
-	xml:space="preserve"
-	viewBox="0 0 287.36 410.27"
-	{...$$restProps}
->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 287.36 410.27" {...rest}>
 	<defs>
 		<linearGradient
 			id="gradient"

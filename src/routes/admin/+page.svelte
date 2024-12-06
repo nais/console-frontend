@@ -5,9 +5,13 @@
 	import type { PageData } from './$houdini';
 	import SyncRuns from './SyncRuns.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ AdminUsers } = data);
+	let { data }: Props = $props();
+
+	let { AdminUsers } = $derived(data);
 </script>
 
 <br />

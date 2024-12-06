@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let href = '';
-	export let active = false;
-	export let title = '';
+	interface Props {
+		href?: string;
+		active?: boolean;
+		title?: string;
+	}
+
+	let { href = '', active = false, title = '' }: Props = $props();
 </script>
 
 <a {href} class="tab" class:active>

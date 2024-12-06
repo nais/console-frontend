@@ -1,19 +1,35 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import { graphql, type WorkloadLogSubscriptionFilter } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { createEventDispatcher, onDestroy, tick } from 'svelte';
 	import { get } from 'svelte/store';
 
-	export let app: string | undefined = undefined;
-	export let job: string | undefined = undefined;
-	export let team: string;
-	export let env: string;
-	export let instances: Set<string>;
-	export let running = false;
-	export let showName = true;
-	export let showTime = true;
-	export let showLevel = true;
+	interface Props {
+		app?: string | undefined;
+		job?: string | undefined;
+		team: string;
+		env: string;
+		instances: Set<string>;
+		running?: boolean;
+		showName?: boolean;
+		showTime?: boolean;
+		showLevel?: boolean;
+	}
+
+	let {
+		app = undefined,
+		job = undefined,
+		team,
+		env,
+		instances,
+		running = false,
+		showName = true,
+		showTime = true,
+		showLevel = true
+	}: Props = $props();
 
 	const dispatch = createEventDispatcher<{ fetching: boolean; scrolledUp: null }>();
 
@@ -52,7 +68,7 @@
 	}
 
 	const maxLines = 255;
-	let logs: LogLine[] = [];
+	let logs: LogLine[] = $state([]);
 
 	function getLogLevel(message: string) {
 		const logLevel = message.match(/"level":"(\w+)"/);
@@ -62,7 +78,7 @@
 		return 'INFO';
 	}
 
-	let logview: HTMLElement;
+	let logview: HTMLElement | undefined = $state();
 
 	const scrollToBottom = async () => {
 		if (!logview) {
@@ -166,7 +182,9 @@
 
 	onDestroy(destroy);
 
-	$: start(app, job, env, team, Array.from(instances), running);
+	run(() => {
+		start(app, job, env, team, Array.from(instances), running);
+	});
 
 	function renderInstanceName(i: string) {
 		if (app) {

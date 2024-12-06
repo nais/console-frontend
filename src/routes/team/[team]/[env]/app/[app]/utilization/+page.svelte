@@ -13,8 +13,12 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ ResourceUtilizationForApp } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { ResourceUtilizationForApp } = $derived(data);
 	export const start = new Date();
 
 	type resourceUsage = {

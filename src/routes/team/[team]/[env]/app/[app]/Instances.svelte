@@ -6,37 +6,43 @@
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 
-	export let app: AppInstances;
-	$: data = fragment(
-		app,
-		graphql(`
-			fragment AppInstances on Application {
-				instances {
-					edges {
-						node {
-							name
-							restarts
-							status {
-								state
-								message
+	interface Props {
+		app: AppInstances;
+	}
+
+	let { app }: Props = $props();
+	let data = $derived(
+		fragment(
+			app,
+			graphql(`
+				fragment AppInstances on Application {
+					instances {
+						edges {
+							node {
+								name
+								restarts
+								status {
+									state
+									message
+								}
+								created
 							}
-							created
+						}
+					}
+					resources {
+						requests {
+							cpu
+							memory
 						}
 					}
 				}
-				resources {
-					requests {
-						cpu
-						memory
-					}
-				}
-			}
-		`)
+			`)
+		)
 	);
 
-	$: appName = $page.params.app;
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let appName = $derived($page.params.app);
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 </script>
 
 {#if $data.instances}
@@ -45,13 +51,15 @@
 
 	<Table size="small" style="margin-bottom: 1rem" zebraStripes>
 		<Thead>
-			<Th>Name</Th>
-			<Th>CPU request</Th>
-			<Th>Memory request</Th>
-			<Th>Restarts</Th>
-			<Th>Status</Th>
-			<Th>Created</Th>
-			<Th>Message</Th>
+			<Tr>
+				<Th>Name</Th>
+				<Th>CPU request</Th>
+				<Th>Memory request</Th>
+				<Th>Restarts</Th>
+				<Th>Status</Th>
+				<Th>Created</Th>
+				<Th>Message</Th>
+			</Tr>
 		</Thead>
 		<Tbody>
 			{#each instances as instance}

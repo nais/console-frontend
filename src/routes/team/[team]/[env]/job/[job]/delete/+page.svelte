@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { goto } from '$app/navigation';
 	import { type DeleteJobPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -8,9 +10,13 @@
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ DeleteJobPage } = data);
+	let { data }: Props = $props();
+
+	let { DeleteJobPage } = $derived(data);
 
 	const deleteJob = graphql(`
 		mutation DeleteJob($team: Slug!, $env: String!, $job: String!) {
@@ -23,7 +29,7 @@
 		}
 	`);
 
-	let confirmation = '';
+	let confirmation = $state('');
 
 	const submit = async () => {
 		const job = get(DeleteJobPage).data?.team.environment.job;
@@ -142,8 +148,8 @@
 				{/each}
 			</Alert>
 		{/if}
-		<form on:submit|preventDefault={submit}>
-			<TextField hideLabel bind:value={confirmation} style="width: 300px;" />
+		<form onsubmit={preventDefault(submit)}>
+			<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
 			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteJob.fetching}>
 				Delete
 			</Button>

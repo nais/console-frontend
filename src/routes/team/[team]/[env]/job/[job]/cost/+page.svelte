@@ -12,13 +12,17 @@
 	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ JobCost } = data);
+	let { data }: Props = $props();
+
+	let { JobCost } = $derived(data);
 
 	let job = $page.params.job;
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
+	let from = $state(data.fromDate?.toISOString().split('T')[0]);
+	let to = $state(data.toDate?.toISOString().split('T')[0]);
 
 	const today = new Date();
 	today.setDate(today.getDate() - 2);
@@ -49,7 +53,7 @@
 		<Card columns={12}>
 			<h4>Total cost for job {job} from {from} to {to}</h4>
 			<label for="from">From:</label>
-			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} on:change={update} />
+			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} onchange={update} />
 			<label for="to">To:</label>
 			<input
 				type="date"
@@ -57,7 +61,7 @@
 				max={todayMinusTwoDays}
 				id="to"
 				bind:value={to}
-				on:change={update}
+				onchange={update}
 			/>
 			<EChart options={echartOptionsStackedColumnChart(d)} style="height: 400px" />
 		</Card>

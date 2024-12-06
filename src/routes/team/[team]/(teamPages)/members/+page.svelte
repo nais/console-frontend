@@ -16,9 +16,13 @@
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
 
-	export let data: PageData;
-	$: ({ Members, UserInfo } = data);
-	$: team = $Members.data?.team;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { Members, UserInfo } = $derived(data);
+	let team = $derived($Members.data?.team);
 
 	function capitalizeFirstLetterInEachWord(str: string): string {
 		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
@@ -40,23 +44,23 @@
 		});
 	};
 
-	let addMemberOpen = false;
-	let editUser: string | null = null;
-	let editUserOpen = false;
-	let deleteUser: { email: string; name: string } | null = null;
-	let deleteUserOpen = false;
+	let addMemberOpen = $state(false);
+	let editUser: string | null = $state(null);
+	let editUserOpen = $state(false);
+	let deleteUser: { email: string; name: string } | null = $state(null);
+	let deleteUserOpen = $state(false);
 
-	$: canEdit =
+	let canEdit = $derived(
 		team?.viewerIsOwner === true ||
-		(UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin);
+			(UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin)
+	);
 
-	$: tableSort = {
+	let tableSort = $derived({
 		orderBy: $Members.variables?.orderBy?.field,
 		direction: $Members.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -80,10 +84,11 @@
 			{#if canEdit}
 				<Button
 					size="small"
-					on:click={() => {
+					onClick={() => {
 						addMemberOpen = !addMemberOpen;
-					}}><svelte:fragment slot="icon-left"><PlusIcon /></svelte:fragment>Add member</Button
-				>
+					}}
+					iconLeft={PlusIcon}
+				/>
 			{/if}
 		</div>
 
@@ -94,13 +99,15 @@
 				orderBy: tableSort.orderBy || TeamMemberOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={TeamMemberOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={TeamMemberOrderField.EMAIL}>E-mail</Th>
-				<Th sortable={true} sortKey={TeamMemberOrderField.ROLE}>Role</Th>
-				<Th style="width:100px">&nbsp;</Th>
+				<Tr>
+					<Th sortable={true} sortKey={TeamMemberOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={TeamMemberOrderField.EMAIL}>E-mail</Th>
+					<Th sortable={true} sortKey={TeamMemberOrderField.ROLE}>Role</Th>
+					<Th style="width:100px">&nbsp;</Th>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each team.members.edges as edge}
@@ -115,19 +122,18 @@
 									title="Edit member"
 									size="small"
 									variant="tertiary"
-									on:click={() => {
+									onClick={() => {
 										editUser = edge.node.user.email.toString();
 										editUserOpen = true;
 									}}
-								>
-									<svelte:fragment slot="icon-left"><PencilIcon /></svelte:fragment>
-								</Button>
+									iconLeft={PencilIcon}
+								/>
 								<Button
 									iconOnly
 									title="Delete member"
 									size="small"
 									variant="tertiary-neutral"
-									on:click={() => {
+									onClick={() => {
 										deleteUser = {
 											email: edge.node.user.email.toString(),
 											name: edge.node.user.name.toString()
@@ -135,9 +141,9 @@
 										deleteUserOpen = true;
 									}}
 								>
-									<svelte:fragment slot="icon-left"
-										><TrashIcon style="color:var(--a-icon-danger)!important" /></svelte:fragment
-									>
+									{#snippet iconLeft()}
+										<TrashIcon style="color:var(--a-icon-danger)!important" />
+									{/snippet}
 								</Button>
 							{/if}
 						</Td>
@@ -163,7 +169,7 @@
 						size="small"
 						variant="secondary"
 						disabled={!$Members.data.team.members.pageInfo.hasPreviousPage}
-						on:click={async () => {
+						onClick={async () => {
 							return await Members.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
 					>
@@ -171,7 +177,7 @@
 						size="small"
 						variant="secondary"
 						disabled={!$Members.data.team.members.pageInfo.hasNextPage}
-						on:click={async () => {
+						onClick={async () => {
 							return await Members.loadNextPage();
 						}}
 					>
@@ -212,7 +218,9 @@
 					refetch();
 				}}
 			>
-				<svelte:fragment slot="header"><Heading>Delete member</Heading></svelte:fragment>
+				{#snippet header()}
+					<Heading>Delete member</Heading>
+				{/snippet}
 				Are you sure you want to remove <b>{deleteUser.name} </b>from this team?
 			</Confirm>
 		{/if}

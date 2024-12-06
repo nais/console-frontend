@@ -2,9 +2,13 @@
 	import type { DefaultLabelFormatterCallbackParams } from 'echarts';
 	import Legend from './Legend.svelte';
 
-	export let params: DefaultLabelFormatterCallbackParams[];
-	export let activeSeries: string | undefined;
-	export let valueFormatter: ((a: unknown) => string) | undefined;
+	interface Props {
+		params: DefaultLabelFormatterCallbackParams[];
+		activeSeries: string | undefined;
+		valueFormatter: ((a: unknown) => string) | undefined;
+	}
+
+	let { params, activeSeries, valueFormatter }: Props = $props();
 </script>
 
 <div style="margin: 0px 0 0;line-height:1;">

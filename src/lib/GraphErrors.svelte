@@ -3,9 +3,13 @@
 
 	type error = { message: string };
 
-	export let size: 'small' | 'medium' = 'medium';
-	export let errors: error[] | null;
-	export let dismissable = false;
+	interface Props {
+		size?: 'small' | 'medium';
+		errors?: error[] | null;
+		dismissable?: boolean;
+	}
+
+	let { size = 'medium', errors = $bindable(), dismissable = false }: Props = $props();
 
 	const pick = (errors: error[]) => {
 		return new Set(errors.map((error) => error.message));
@@ -18,7 +22,7 @@
 			{error}<br />
 		{/each}
 		{#if dismissable}
-			<Button variant="tertiary" size="small" on:click={() => (errors = [])}>Dismiss</Button>
+			<Button variant="tertiary" size="small" onClick={() => (errors = [])}>Dismiss</Button>
 		{/if}
 	</Alert>
 {/if}

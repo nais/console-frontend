@@ -1,10 +1,10 @@
-<script lang="ts" context="module">
-	import type { ComponentType } from 'svelte';
+<script lang="ts" module>
+	import type { Component } from 'svelte';
 	export type menuItem = {
 		name: string;
 		routeId: string;
 		withSubRoutes?: boolean;
-		icon?: ComponentType;
+		icon?: Component;
 		iconColor?: string;
 		extraRoutes?: string[];
 		inventoryCount?: number | typeof PendingValue;
@@ -21,7 +21,11 @@
 	import { PendingValue } from '$houdini';
 	import { replacer } from '$lib/replacer';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
-	export let nav: menuGroup[];
+	interface Props {
+		nav: menuGroup[];
+	}
+
+	let { nav }: Props = $props();
 
 	const isActive = (menuItem: menuItem, current: string | null) => {
 		if (current === menuItem.routeId) {
@@ -50,7 +54,7 @@
 						<a class="unstyled" href={replacer(item.routeId, $page.params)}>
 							<div class="item-container">
 								<div class="left-content">
-									<svelte:component this={item.icon} />
+									<item.icon />
 									<span style="line-height: 1.7rem;">
 										{item.name}
 										{#if item.notNais}

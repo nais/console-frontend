@@ -21,7 +21,11 @@
 	import type { PageData } from './$houdini';
 	import EditText from './EditText.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
@@ -74,22 +78,23 @@
 		}
 	`);
 
-	let deleteKeyLoading = false;
-	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null = null;
+	let deleteKeyLoading = $state(false);
+	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null =
+		$state(null);
 
-	$: ({ TeamSettings, viewerIsOwner } = data);
+	let { TeamSettings, viewerIsOwner } = $derived(data);
 
-	$: teamSettings = $TeamSettings.data?.team;
+	let teamSettings = $derived($TeamSettings.data?.team);
 
-	$: team = $page.params.team;
+	let team = $derived($page.params.team);
 
-	let showKey = false;
-	let showRotateKey = false;
-	let showDeleteTeam = false;
+	let showKey = $state(false);
+	let showRotateKey = $state(false);
+	let showDeleteTeam = $state(false);
 
-	let descriptionErrors: { message: string }[] | null;
-	let defaultSlackChannelErrors: { message: string }[] | null;
-	let slackChannelsErrors: { message: string }[] | null;
+	let descriptionErrors: { message: string }[] | undefined = $state();
+	let defaultSlackChannelErrors: { message: string }[] | undefined = $state();
+	let slackChannelsErrors: { message: string }[] | undefined = $state();
 
 	const hasGlobalAttributes = (obj: {
 		readonly entraIDGroup: unknown | null;
@@ -132,7 +137,7 @@
 				<EditText
 					text={teamSettings.purpose}
 					on:save={async (e) => {
-						descriptionErrors = null;
+						descriptionErrors = undefined;
 						const data = await updateTeam.mutate({
 							input: {
 								slug: team,
@@ -157,7 +162,7 @@
 						text={teamSettings.slackChannel}
 						variant="textfield"
 						on:save={async (e) => {
-							defaultSlackChannelErrors = null;
+							defaultSlackChannelErrors = undefined;
 							const data = await updateTeam.mutate({
 								input: {
 									slug: team,
@@ -183,7 +188,7 @@
 								text={env.slackAlertsChannel}
 								variant="textfield"
 								on:save={async (e) => {
-									slackChannelsErrors = null;
+									slackChannelsErrors = undefined;
 									if (!teamSettings) {
 										return;
 									}
@@ -279,23 +284,21 @@
 								<Button
 									size="xsmall"
 									variant="tertiary"
-									on:click={() => {
+									onClick={() => {
 										showKey = !showKey;
 									}}
-								>
-									<svelte:fragment slot="icon-left"><EyeSlashIcon /></svelte:fragment></Button
-								>
+									iconLeft={EyeSlashIcon}
+								/>
 							{:else}
 								{deployKey.key.replaceAll(/./g, '*')}
 								<Button
 									size="xsmall"
 									variant="tertiary"
-									on:click={() => {
+									onClick={() => {
 										showKey = !showKey;
 									}}
-								>
-									<svelte:fragment slot="icon-left"><EyeIcon /></svelte:fragment></Button
-								>
+									iconLeft={EyeIcon}
+								/>
 							{/if}
 						</div>
 					</dd>
@@ -314,13 +317,13 @@
 						<Button
 							size="small"
 							variant="danger"
-							on:click={() => {
+							onClick={() => {
 								showRotateKey = !showRotateKey;
 							}}
+							iconLeft={ArrowsCirclepathIcon}
 						>
-							<svelte:fragment slot="icon-left"><ArrowsCirclepathIcon /></svelte:fragment>
-							Rotate key</Button
-						>
+							Rotate key
+						</Button>
 					</div>
 				</div>
 			{:else}
@@ -332,7 +335,7 @@
 				<h3>Rotate deploy key</h3>
 				<p>Are you sure you want to rotate the deploy key?</p>
 				<Button
-					on:click={() => {
+					onClick={() => {
 						showRotateKey = !showRotateKey;
 					}}
 				>
@@ -340,7 +343,7 @@
 				>
 				<Button
 					variant="danger"
-					on:click={async () => {
+					onClick={async () => {
 						//rotateClicked = false;
 						showRotateKey = !showRotateKey;
 						await rotateKey.mutate({ team });
@@ -367,12 +370,12 @@
 
 				<Button
 					variant="danger"
-					on:click={() => {
+					onClick={() => {
 						showDeleteTeam = !showDeleteTeam;
 						//deleteKeyResp = null;
 					}}
+					iconLeft={TrashIcon}
 				>
-					<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
 					Request team deletion</Button
 				>
 			</Card>
@@ -385,7 +388,9 @@
 			</p>
 			{#if browser}
 				<Modal bind:open={showDeleteTeam}>
-					<h3 slot="header">Request team deletion</h3>
+					{#snippet header()}
+						<h3>Request team deletion</h3>
+					{/snippet}
 
 					{#if !deleteKeyResp?.data}
 						<BodyLong>
@@ -406,7 +411,15 @@
 							this link to another team owner and let them confirm the deletion.
 
 							<div class="deletewrapper">
-								<div><TextField readonly={true} size="small" value={key}></TextField></div>
+								<div>
+									<TextField
+										label="Sharable url"
+										hideLabel={true}
+										readonly={true}
+										size="small"
+										value={key}
+									></TextField>
+								</div>
 								<CopyButton
 									text="Copy URL"
 									activeText="URL copied"
@@ -418,12 +431,12 @@
 						</Alert>
 					{/if}
 
-					<svelte:fragment slot="footer">
+					{#snippet footer()}
 						{#if !deleteKeyResp?.data}
 							<Button
 								type="submit"
 								loading={deleteKeyLoading}
-								on:click={async () => {
+								onClick={async () => {
 									deleteKeyLoading = true;
 									deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: team } });
 									deleteKeyLoading = false;
@@ -433,18 +446,18 @@
 								variant="tertiary"
 								disabled={deleteKeyLoading}
 								type="reset"
-								on:click={() => {
+								onClick={() => {
 									showDeleteTeam = !showDeleteTeam;
 								}}>Cancel</Button
 							>
 						{:else}
 							<Button
-								on:click={() => {
+								onClick={() => {
 									showDeleteTeam = !showDeleteTeam;
 								}}>Close</Button
 							>
 						{/if}
-					</svelte:fragment>
+					{/snippet}
 				</Modal>
 			{/if}
 		{/if}

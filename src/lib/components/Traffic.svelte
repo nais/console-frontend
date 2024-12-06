@@ -5,55 +5,61 @@
 	import { Tooltip } from '@nais/ds-svelte-community';
 	import { HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
-	export let workload: Traffic;
+	interface Props {
+		workload: Traffic;
+	}
 
-	$: traffic = fragment(
-		workload,
-		graphql(`
-			fragment Traffic on Workload {
-				__typename
-				name
-				environment {
+	let { workload }: Props = $props();
+
+	let traffic = $derived(
+		fragment(
+			workload,
+			graphql(`
+				fragment Traffic on Workload {
+					__typename
 					name
-				}
-				team {
-					slug
-				}
-				networkPolicy {
-					inbound {
-						rules {
-							mutual
-							targetTeamSlug
-							targetWorkloadName
-							targetWorkload {
+					environment {
+						name
+					}
+					team {
+						slug
+					}
+					networkPolicy {
+						inbound {
+							rules {
+								mutual
+								targetTeamSlug
+								targetWorkloadName
+								targetWorkload {
+									type: __typename
+								}
+							}
+						}
+						outbound {
+							rules {
+								mutual
+								targetTeamSlug
+								targetWorkloadName
+								targetWorkload {
+									type: __typename
+								}
+							}
+							external {
 								type: __typename
+								ports
+								target
 							}
 						}
 					}
-					outbound {
-						rules {
-							mutual
-							targetTeamSlug
-							targetWorkloadName
-							targetWorkload {
-								type: __typename
-							}
-						}
-						external {
-							type: __typename
-							ports
-							target
+					... on Application {
+						ingresses {
+							url
+							type
 						}
 					}
 				}
-				... on Application {
-					ingresses {
-						url
-						type
-					}
-				}
-			}
-		`)
+			`)
+		)
 	);
 
 	const externalIngresses = (

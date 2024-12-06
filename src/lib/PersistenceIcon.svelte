@@ -5,19 +5,24 @@
 	import Opensearch from './icons/Opensearch.svelte';
 	import PostgresStroke from './icons/PostgresStroke.svelte';
 
-	export let type: string;
+	interface Props {
+		type: string;
+		[key: string]: unknown;
+	}
+
+	let { type, ...rest }: Props = $props();
 </script>
 
 {#if type === 'Bucket'}
-	<BucketIcon {...$$restProps} />
+	<BucketIcon {...rest} />
 {:else if type === 'BigQueryDataset'}
-	<BigQuery {...$$restProps} />
+	<BigQuery {...rest} />
 {:else if type === 'SqlInstance'}
-	<PostgresStroke {...$$restProps} />
+	<PostgresStroke {...rest} />
 {:else if type === 'Kafka'}
-	<Kafka {...$$restProps} />
+	<Kafka {...rest} />
 {:else if type === 'OpenSearch'}
-	<Opensearch {...$$restProps} />
+	<Opensearch {...rest} />
 {:else if type === 'RedisInstance'}
-	<SandboxIcon {...$$restProps} />
+	<SandboxIcon {...rest} />
 {/if}

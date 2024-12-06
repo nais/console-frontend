@@ -30,18 +30,21 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
-	$: ({ SqlInstances } = data);
+	let { data }: Props = $props();
 
-	$: tableSort = {
+	let teamName = $derived($page.params.team);
+	let { SqlInstances } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $SqlInstances.variables?.orderBy?.field,
 		direction: $SqlInstances.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -178,24 +181,26 @@
 				orderBy: tableSort.orderBy || SqlInstanceOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th style="width: 2rem"></Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Environment</Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.STATUS}>Status</Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.COST}>Cost</Th>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.CPU_UTILIZATION}
-					><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
-				>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.MEMORY_UTILIZATION}
-					><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
-				>
-				<Th sortable={true} sortKey={SqlInstanceOrderField.DISK_UTILIZATION}
-					><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
-				>
+				<Tr>
+					<Th style="width: 2rem"></Th>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Environment</Th>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.STATUS}>Status</Th>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.COST}>Cost</Th>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.CPU_UTILIZATION}
+						><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
+					>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.MEMORY_UTILIZATION}
+						><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
+					>
+					<Th sortable={true} sortKey={SqlInstanceOrderField.DISK_UTILIZATION}
+						><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
+					>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#each instances.nodes as i}
@@ -328,7 +333,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!instances.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await SqlInstances.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -336,7 +341,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!instances.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await SqlInstances.loadNextPage();
 							}}
 						>

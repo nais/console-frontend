@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import { PendingValue, SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -27,10 +29,14 @@
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
-	export let data: PageData;
-	$: ({ Secrets } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: team = $page.params.team;
+	let { data }: Props = $props();
+	let { Secrets } = $derived(data);
+
+	let team = $derived($page.params.team);
 
 	const handleInUse = (e: CustomEvent<string>) => {
 		if (e.detail === 'all') {
@@ -40,41 +46,42 @@
 		changeParams({ filter: e.detail });
 	};
 
-	$: tableSort = {
+	let tableSort = $derived({
 		orderBy: $Secrets.variables?.orderBy?.field,
 		direction: $Secrets.variables?.orderBy?.direction
-	};
+	});
 
-	let createSecretOpen = false;
-	let environments: EnvironmentType[];
+	let createSecretOpen = $state(false);
+	let environments: EnvironmentType[] = $state([]);
 
-	$: if ($Secrets.data) {
-		environments = $Secrets.data?.team.environments
-			.map((env) => {
-				if (env == PendingValue) {
-					return;
-				}
-				return {
-					name: env.name,
-					secrets:
-						$Secrets.data?.team.secrets.nodes
-							.filter((node) => node !== PendingValue && node.environment.name === env.name)
-							.map((node) => {
-								if (node === PendingValue) {
-									return;
-								}
-								return {
-									name: node.name,
-									lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
-								};
-							}) || []
-				};
-			})
-			.filter((env) => env !== undefined) as EnvironmentType[];
-	}
+	run(() => {
+		if ($Secrets.data) {
+			environments = $Secrets.data?.team.environments
+				.map((env) => {
+					if (env == PendingValue) {
+						return;
+					}
+					return {
+						name: env.name,
+						secrets:
+							$Secrets.data?.team.secrets.nodes
+								.filter((node) => node !== PendingValue && node.environment.name === env.name)
+								.map((node) => {
+									if (node === PendingValue) {
+										return;
+									}
+									return {
+										name: node.name,
+										lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
+									};
+								}) || []
+					};
+				})
+				.filter((env) => env !== undefined) as EnvironmentType[];
+		}
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -102,11 +109,8 @@
 		<Card columns={12}>
 			<div class="card-heading">
 				<h4>Secrets</h4>
-				<Button variant="secondary" size="small" on:click={() => open()}>
+				<Button variant="secondary" size="small" onClick={() => open()} iconLeft={PlusIcon}>
 					Create Secret
-					<svelte:fragment slot="icon-left">
-						<PlusIcon />
-					</svelte:fragment>
 				</Button>
 			</div>
 			<div>
@@ -114,7 +118,7 @@
 					<ToggleGroup
 						value={$page.url.searchParams.get('filter') || 'all'}
 						size="small"
-						on:change={handleInUse}
+						onChange={handleInUse}
 					>
 						<ToggleGroupItem value="all">All</ToggleGroupItem>
 						<ToggleGroupItem value="inUse">In use</ToggleGroupItem>
@@ -128,15 +132,17 @@
 						orderBy: tableSort.orderBy || SecretOrderField.NAME,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 					}}
-					on:sortChange={tableSortChange}
+					onSortChange={tableSortChange}
 				>
 					<Thead>
-						<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
-						<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
-						<Th>In Use</Th>
-						<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
-							>Last Modified</Th
-						>
+						<Tr>
+							<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
+							<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
+							<Th>In Use</Th>
+							<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
+								>Last Modified</Th
+							>
+						</Tr>
 					</Thead>
 					<Tbody>
 						{#each secrets.nodes as secret}
@@ -204,7 +210,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!secrets.pageInfo.hasPreviousPage}
-								on:click={async () => {
+								onClick={async () => {
 									return await Secrets.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
@@ -212,7 +218,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!secrets.pageInfo.hasNextPage}
-								on:click={async () => {
+								onClick={async () => {
 									return await Secrets.loadNextPage();
 								}}
 							>

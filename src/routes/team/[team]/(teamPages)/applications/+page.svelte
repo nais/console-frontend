@@ -21,12 +21,16 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ Applications } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
+	let { data }: Props = $props();
+	let { Applications } = $derived(data);
 
-	let filter: string = '';
+	let teamName = $derived($page.params.team);
+
+	let filter: string = $state('');
 
 	const handleFilter = () => {
 		if (filter === '') {
@@ -59,13 +63,12 @@
 		}, 1000);
 	};
 
-	$: tableSort = {
+	let tableSort = $derived({
 		orderBy: $Applications.variables?.orderBy?.field,
 		direction: $Applications.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -93,9 +96,11 @@
 				id="filter"
 				style="width: 300px;"
 				bind:value={filter}
-				on:keyup={onKeyUp}
+				onKeyup={onKeyUp}
 			>
-				<svelte:fragment slot="label">Filter applications on name</svelte:fragment>
+				{#snippet label()}
+					Filter applications on name
+				{/snippet}
 			</TextField>
 		</form>
 		<Table
@@ -105,18 +110,20 @@
 				orderBy: tableSort.orderBy || ApplicationOrderField.STATUS,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={ApplicationOrderField.STATUS} style="width: 2rem"></Th>
-				<Th sortable={true} sortKey={ApplicationOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={ApplicationOrderField.ENVIRONMENT} style="width: 10rem"
-					>Environment</Th
-				>
-				<Th style="width: 200px">Instances</Th>
-				<Th sortable={true} sortKey={ApplicationOrderField.DEPLOYMENT_TIME} style="width: 150px"
-					>Deployed</Th
-				>
+				<Tr>
+					<Th sortable={true} sortKey={ApplicationOrderField.STATUS} style="width: 2rem"></Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.ENVIRONMENT} style="width: 10rem"
+						>Environment</Th
+					>
+					<Th style="width: 200px">Instances</Th>
+					<Th sortable={true} sortKey={ApplicationOrderField.DEPLOYMENT_TIME} style="width: 150px"
+						>Deployed</Th
+					>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#if applications !== undefined}
@@ -189,7 +196,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!applications.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Applications.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -197,7 +204,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!applications.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Applications.loadNextPage();
 							}}
 						>

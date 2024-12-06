@@ -34,19 +34,25 @@
 	import type { PageData } from './$houdini';
 	import SearchTeam from './SearchTeam.svelte';
 
-	export let data: PageData;
-	$: ({ Unleash } = data);
-	$: team = $page.params.team;
-	$: unleash = $Unleash.data?.team?.unleash;
-	$: metrics = $Unleash.data?.team?.unleash?.metrics || {
-		apiTokens: 0,
-		cpuUtilization: 0,
-		cpuRequests: 0,
-		memoryUtilization: 0,
-		memoryRequests: 0,
-		toggles: 0
-	};
-	$: enabled = true;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { Unleash } = $derived(data);
+	let team = $derived($page.params.team);
+	let unleash = $derived($Unleash.data?.team?.unleash);
+	let metrics = $derived(
+		$Unleash.data?.team?.unleash?.metrics || {
+			apiTokens: 0,
+			cpuUtilization: 0,
+			cpuRequests: 0,
+			memoryUtilization: 0,
+			memoryRequests: 0,
+			toggles: 0
+		}
+	);
+	let enabled = $derived(true);
 
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
@@ -83,8 +89,6 @@
 		if ($createUnleashForTeam.errors) {
 			return;
 		}
-
-		unleash = $createUnleashForTeam.data?.createUnleashForTeam.unleash;
 	};
 
 	const allowTeamAccess = graphql(`
@@ -106,8 +110,8 @@
 		}
 	`);
 
-	let removeTeamName = '';
-	let removeTeamConfirmOpen = false;
+	let removeTeamName = $state('');
+	let removeTeamConfirmOpen = $state(false);
 
 	const removeTeam = async () => {
 		await revokeTeamAccess.mutate({
@@ -123,8 +127,8 @@
 		removeTeamConfirmOpen = true;
 	};
 
-	let addTeamModalOpen = false;
-	let addTeamInput = '';
+	let addTeamModalOpen = $state(false);
+	let addTeamInput = $state('');
 
 	const validateTeam = (team: string) => {
 		if (team.length === 0) {
@@ -190,9 +194,9 @@
 		bind:open={removeTeamConfirmOpen}
 		on:confirm={removeTeam}
 	>
-		<svelte:fragment slot="header">
+		{#snippet header()}
 			<Heading>Remove team</Heading>
-		</svelte:fragment>
+		{/snippet}
 		<p>
 			This will permanently remove the team named <b>{removeTeamName}</b> from
 			<b>{unleash.name}</b>.
@@ -203,15 +207,14 @@
 
 	<div class="modal-overrider">
 		<Modal bind:open={addTeamModalOpen} width="small">
-			<svelte:fragment slot="header">
+			{#snippet header()}
 				<Heading>Give team access to this Unleash</Heading>
-			</svelte:fragment>
+			{/snippet}
 			<div class="search-container">
 				<SearchTeam bind:query={addTeamInput} onSelected={onTeamSelected} />
-				<Button variant="primary" size="small" on:click={addTeam}>Add</Button>
-				<Button variant="secondary" size="small" on:click={addTeamClose}>Cancel</Button>
+				<Button variant="primary" size="small" onClick={addTeam}>Add</Button>
+				<Button variant="secondary" size="small" onClick={addTeamClose}>Cancel</Button>
 			</div>
-			<svelte:fragment slot="footer"></svelte:fragment>
 		</Modal>
 	</div>
 
@@ -362,11 +365,11 @@
 									disabled={unleash.ready === false}
 									variant="tertiary-neutral"
 									title="Delete key and value"
-									on:click={() => removeTeamClickHandler(team.slug)}
+									onClick={() => removeTeamClickHandler(team.slug)}
 								>
-									<svelte:fragment slot="icon-left">
+									{#snippet iconLeft()}
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
-									</svelte:fragment>
+									{/snippet}
 								</Button>
 							</Td>
 						</Tr>
@@ -379,11 +382,9 @@
 					variant="tertiary"
 					disabled={unleash.ready === false}
 					size="small"
-					on:click={addTeamClickHandler}
+					onClick={addTeamClickHandler}
+					iconLeft={PlusCircleFillIcon}
 				>
-					<svelte:fragment slot="icon-left">
-						<PlusCircleFillIcon />
-					</svelte:fragment>
 					Add team
 				</Button>
 			</p>
@@ -404,11 +405,8 @@
 			to your team.
 		</p>
 		<Tooltip content="Coming soon...">
-			<Button variant="secondary" size="medium" on:click={createNewUnleash}>
+			<Button variant="secondary" size="medium" onClick={createNewUnleash} iconLeft={PlusIcon}>
 				Enable Unleash
-				<svelte:fragment slot="icon-left">
-					<PlusIcon />
-				</svelte:fragment>
 			</Button>
 		</Tooltip>
 	</div>

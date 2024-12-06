@@ -12,13 +12,17 @@
 	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ AppCost } = data);
+	let { data }: Props = $props();
+
+	let { AppCost } = $derived(data);
 
 	let app = $page.params.app;
-	let from = data.fromDate?.toISOString().split('T')[0];
-	let to = data.toDate?.toISOString().split('T')[0];
+	let from = $state(data.fromDate?.toISOString().split('T')[0]);
+	let to = $state(data.toDate?.toISOString().split('T')[0]);
 
 	function echartOptionsStackedColumnChart(data: DailCostType) {
 		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
@@ -47,7 +51,7 @@
 		<Card columns={12}>
 			<h4>Total cost for app {app} from {from} to {to}</h4>
 			<label for="from">From:</label>
-			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} on:change={update} />
+			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} onchange={update} />
 			<label for="to">To:</label>
 			<input
 				type="date"
@@ -55,7 +59,7 @@
 				min={getMinToDate(from)}
 				max={todayMinusTwoDays}
 				bind:value={to}
-				on:change={update}
+				onchange={update}
 			/>
 
 			<EChart options={echartOptionsStackedColumnChart(d)} style="height: 400px" />

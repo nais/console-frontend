@@ -3,8 +3,12 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ AppManifest } = data);
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { AppManifest } = $derived(data);
 </script>
 
 <GraphErrors errors={$AppManifest.errors} />

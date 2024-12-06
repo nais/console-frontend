@@ -20,12 +20,16 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ Jobs } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
+	let { data }: Props = $props();
+	let { Jobs } = $derived(data);
 
-	let filter: string = '';
+	let teamName = $derived($page.params.team);
+
+	let filter: string = $state('');
 
 	const handleFilter = () => {
 		if (filter === '') {
@@ -58,13 +62,12 @@
 		}, 1000);
 	};
 
-	$: tableSort = {
+	let tableSort = $derived({
 		orderBy: $Jobs.variables?.orderBy?.field,
 		direction: $Jobs.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -92,9 +95,11 @@
 				id="filter"
 				style="width: 300px;"
 				bind:value={filter}
-				on:keyup={onKeyUp}
+				onKeyup={onKeyUp}
 			>
-				<svelte:fragment slot="label">Filter jobs on name</svelte:fragment>
+				{#snippet label()}
+					Filter jobs on name
+				{/snippet}
 			</TextField>
 		</form>
 		<Table
@@ -104,16 +109,19 @@
 				orderBy: tableSort.orderBy || JobOrderField.STATUS,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			on:sortChange={tableSortChange}
+			onSortChange={tableSortChange}
 		>
 			<Thead>
-				<Th sortable={true} sortKey={JobOrderField.STATUS} style="width: 2rem"></Th>
-				<Th sortable={true} sortKey={JobOrderField.NAME}>Name</Th>
-				<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 10rem">Environment</Th
-				>
-				<Th sortable={true} sortKey={JobOrderField.DEPLOYMENT_TIME} style="width: 150px"
-					>Deployed</Th
-				>
+				<Tr>
+					<Th sortable={true} sortKey={JobOrderField.STATUS} style="width: 2rem"></Th>
+					<Th sortable={true} sortKey={JobOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 10rem"
+						>Environment</Th
+					>
+					<Th sortable={true} sortKey={JobOrderField.DEPLOYMENT_TIME} style="width: 150px"
+						>Deployed</Th
+					>
+				</Tr>
 			</Thead>
 			<Tbody>
 				{#if jobs !== undefined}
@@ -181,7 +189,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!jobs.pageInfo.hasPreviousPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Jobs.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -189,7 +197,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!jobs.pageInfo.hasNextPage}
-							on:click={async () => {
+							onClick={async () => {
 								return await Jobs.loadNextPage();
 							}}
 						>

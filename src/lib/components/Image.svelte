@@ -9,40 +9,46 @@
 
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
 
-	export let workload: WorkloadImage;
+	interface Props {
+		workload: WorkloadImage;
+	}
 
-	$: data = fragment(
-		workload,
-		graphql(`
-			fragment WorkloadImage on Workload {
-				__typename
-				name
-				image {
+	let { workload }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			workload,
+			graphql(`
+				fragment WorkloadImage on Workload {
+					__typename
 					name
-					hasSBOM
-					tag
-					vulnerabilitySummary {
-						critical
-						high
-						medium
-						low
-						unassigned
-						riskScore
+					image {
+						name
+						hasSBOM
+						tag
+						vulnerabilitySummary {
+							critical
+							high
+							medium
+							low
+							unassigned
+							riskScore
+						}
+					}
+					deploymentInfo {
+						deployer
+						timestamp
+						url
 					}
 				}
-				deploymentInfo {
-					deployer
-					timestamp
-					url
-				}
-			}
-		`)
+			`)
+		)
 	);
 
-	$: workloadName = $data.name;
-	$: workloadType = $data.__typename === 'Application' ? 'app' : 'job';
-	$: env = $page.params.env;
-	$: team = $page.params.team;
+	let workloadName = $derived($data.name);
+	let workloadType = $derived($data.__typename === 'Application' ? 'app' : 'job');
+	let env = $derived($page.params.env);
+	let team = $derived($page.params.team);
 
 	const notificationBadgeSize = '42';
 

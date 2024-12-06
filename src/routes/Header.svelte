@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { afterNavigate, goto } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import { logEvent } from '$lib/amplitude';
@@ -93,21 +95,25 @@
 		}
 	`);
 
-	export let user:
-		| {
-				readonly name: string;
-				readonly isAdmin: boolean;
-		  }
-		| undefined;
+	interface Props {
+		user:
+			| {
+					readonly name: string;
+					readonly isAdmin: boolean;
+			  }
+			| undefined;
+	}
 
-	let query = '';
-	let selected = -1;
-	let showSearch = false;
-	let showHelpText = false;
-	let unsupportedFilter = false;
-	let timeout: ReturnType<typeof setTimeout> | null = null;
+	let { user }: Props = $props();
 
-	$: {
+	let query = $state('');
+	let selected = $state(-1);
+	let showSearch = $state(false);
+	let showHelpText = $state(false);
+	let unsupportedFilter = $state(false);
+	let timeout: ReturnType<typeof setTimeout> | null = $state(null);
+
+	run(() => {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -161,7 +167,7 @@
 				logEvent('search');
 			}, 500);
 		}
-	}
+	});
 
 	function on_key_up(event: KeyboardEvent) {
 		switch (event.key) {
@@ -257,25 +263,25 @@
 					label="search"
 					variant="simple"
 					size="small"
-					on:blur={() => {
+					onBlur={() => {
 						setTimeout(() => {
 							showSearch = false;
 							showHelpText = false;
 						}, 200);
 					}}
-					on:clear={() => {
+					onClear={() => {
 						query = '';
 						showSearch = false;
 						showHelpText = false;
 					}}
-					on:focus={() => {
+					onFocus={() => {
 						if (query.length > 0) {
 							showSearch = true;
 						} else {
 							showHelpText = true;
 						}
 					}}
-					on:keyup={on_key_up}
+					onKeyup={on_key_up}
 				/>
 				{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />

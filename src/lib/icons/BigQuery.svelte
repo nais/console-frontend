@@ -1,13 +1,13 @@
 <script lang="ts">
-	export let size = '1em';
+	interface Props {
+		size?: string;
+		[key: string]: unknown;
+	}
+
+	let { size = '1em', ...rest }: Props = $props();
 </script>
 
-<svg
-	xmlns="http://www.w3.org/2000/svg"
-	{...$$restProps}
-	width={size}
-	height={size}
-	viewBox="0 0 24 24"
+<svg xmlns="http://www.w3.org/2000/svg" {...rest} width={size} height={size} viewBox="0 0 24 24"
 	><defs
 		><style>
 			.cls-1 {

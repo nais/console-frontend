@@ -4,16 +4,21 @@
 	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
-	let running = true;
-	let fetching = false;
+	let running = $state(true);
+	let fetching = $state(false);
 
-	$: team = $page.params.team;
-	$: env = $page.params.env;
-	$: app = $page.params.app;
+	let team = $derived($page.params.team);
+	let env = $derived($page.params.env);
+	let app = $derived($page.params.app);
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ Instances, instanceNames } = data);
+	let { data }: Props = $props();
+
+	let Instances = $derived(data.Instances);
+	let instanceNames: Set<string> = $state(data.instanceNames);
 
 	function toggleInstance(i: string) {
 		if (instanceNames.has(i)) {
@@ -32,7 +37,7 @@
 	}
 
 	const viewOptions = ['Time', 'Level', 'Name'];
-	let selectedViewOptions = new Set(viewOptions);
+	let selectedViewOptions = $state(new Set(viewOptions));
 	function toggleSelectedViewOptions(option: string) {
 		if (selectedViewOptions.has(option)) {
 			selectedViewOptions.delete(option);
@@ -49,7 +54,9 @@
 		<div class="instances">
 			{#if $Instances.data}
 				<Fieldset style="flex-grow: 1;">
-					<svelte:fragment slot="legend">Instances</svelte:fragment>
+					{#snippet legend()}
+						Instances
+					{/snippet}
 					<div class="instance-button">
 						<Chips>
 							{#each instances as instance}
@@ -57,7 +64,7 @@
 								<ToggleChip
 									value={renderInstanceName(name)}
 									selected={instanceNames.has(name)}
-									on:click={() => toggleInstance(name)}
+									onClick={() => toggleInstance(name)}
 								/>
 							{/each}
 						</Chips>
@@ -66,7 +73,7 @@
 							size="small"
 							variant="primary"
 							disabled={instanceNames.size === instances.length}
-							on:click={() => {
+							onClick={() => {
 								if (instanceNames.size === instances.length) {
 									return;
 								}
@@ -83,7 +90,7 @@
 		<div>
 			{#if fetching}
 				<Button
-					on:click={() => {
+					onClick={() => {
 						running = false;
 					}}
 				>
@@ -91,7 +98,7 @@
 				</Button>
 			{:else}
 				<Button
-					on:click={() => {
+					onClick={() => {
 						running = true;
 					}}
 				>
@@ -114,7 +121,7 @@
 				<ToggleChip
 					value={option}
 					selected={selectedViewOptions.has(option)}
-					on:click={() => toggleSelectedViewOptions(option)}
+					onClick={() => toggleSelectedViewOptions(option)}
 				/>
 			{/each}
 		</Chips>

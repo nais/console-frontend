@@ -10,10 +10,14 @@
 
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ TeamOverview } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: teamName = $page.params.team;
+	let { data }: Props = $props();
+	let { TeamOverview } = $derived(data);
+
+	let teamName = $derived($page.params.team);
 </script>
 
 {#if $page.url.searchParams.has('deleted')}

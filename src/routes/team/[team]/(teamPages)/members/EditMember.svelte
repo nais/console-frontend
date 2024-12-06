@@ -4,9 +4,13 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { TeamMemberVariables } from './$houdini';
 
-	export let open: boolean;
-	export let team: string;
-	export let email: string;
+	interface Props {
+		open: boolean;
+		team: string;
+		email: string;
+	}
+
+	let { open = $bindable(), team, email }: Props = $props();
 
 	const dispatcher = createEventDispatcher<{ updated: null }>();
 
@@ -59,7 +63,9 @@
 </script>
 
 <Modal bind:open>
-	<svelte:fragment slot="header"><Heading>Edit member</Heading></svelte:fragment>
+	{#snippet header()}
+		<Heading>Edit member</Heading>
+	{/snippet}
 
 	{#if $store.data}
 		{@const member = $store.data.team.member}
@@ -72,14 +78,12 @@
 			<Label>Name</Label>
 			<p>{member.user.name}</p>
 
-			<Select label="Role" style="width:150px" value={member.role} on:change={updateRole}>
+			<Select label="Role" style="width:150px" value={member.role} onChange={updateRole}>
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>
 		</div>
 	{/if}
-
-	<svelte:fragment slot="footer"></svelte:fragment>
 </Modal>
 
 <style>

@@ -1,16 +1,29 @@
-<script>
-	export let size = '50px';
-	export let progress;
-	export let startColor = 'green';
-	export let endColor = 'red';
+<script lang="ts">
+	interface Props {
+		size?: string;
+		progress: number;
+		startColor?: string;
+		endColor?: string;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		size = '50px',
+		progress,
+		startColor = 'green',
+		endColor = 'red',
+		children
+	}: Props = $props();
 	const angle = 360 * progress;
 	const background = `radial-gradient(white 50%, transparent 51%),
     conic-gradient(transparent 0deg ${angle}deg, gainsboro ${angle}deg 360deg),
     conic-gradient(${startColor} 0deg, ${startColor} 90deg, orange 240deg, ${endColor});`;
-	$: cssVarStyles = `--background:${background};--size:${size};display: grid;place-items: center;`;
+	let cssVarStyles = $derived(
+		`--background:${background};--size:${size};display: grid;place-items: center;`
+	);
 </script>
 
-<div id="progress-circle" style={cssVarStyles}><slot /></div>
+<div id="progress-circle" style={cssVarStyles}>{@render children?.()}</div>
 
 <style>
 	#progress-circle {

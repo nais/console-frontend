@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -13,7 +15,8 @@
 	import {
 		mergeCalculateAndSortOverageDataAllTeams,
 		round,
-		yearlyOverageCost
+		yearlyOverageCost,
+		type TeamsOverageData
 	} from '$lib/utils/resources';
 	import {
 		HelpText,
@@ -30,16 +33,11 @@
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ TenantUtilization } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: resourceUtilization = mergeAll($TenantUtilization.data);
-
-	$: overageTable = mergeCalculateAndSortOverageDataAllTeams(
-		resourceUtilization,
-		sortState.orderBy,
-		sortState.direction
-	);
+	let { data }: Props = $props();
 
 	type TenantOverageData = {
 		readonly team: { readonly slug: string };
@@ -207,10 +205,20 @@
 		return sortState;
 	};
 
-	let sortState: TableSortState = {
+	let sortState: TableSortState = $state({
 		orderBy: 'COST',
 		direction: 'descending'
-	};
+	});
+	let { TenantUtilization } = $derived(data);
+	let resourceUtilization = $derived(mergeAll($TenantUtilization.data));
+	let overageTable: TeamsOverageData[] = $state([]);
+	run(() => {
+		overageTable = mergeCalculateAndSortOverageDataAllTeams(
+			resourceUtilization,
+			sortState.orderBy,
+			sortState.direction
+		);
+	});
 </script>
 
 <GraphErrors errors={$TenantUtilization.errors} />
@@ -376,8 +384,7 @@
 					size={'small'}
 					sort={sortState}
 					zebraStripes
-					on:sortChange={(e) => {
-						const { key } = e.detail;
+					onSortChange={(key) => {
 						sortState = sortTable(key, sortState);
 					}}
 				>

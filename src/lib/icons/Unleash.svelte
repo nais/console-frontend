@@ -1,5 +1,10 @@
 <script lang="ts">
-	export let size = '1em';
+	interface Props {
+		size?: string;
+		[key: string]: unknown;
+	}
+
+	let { size = '1em', ...rest }: Props = $props();
 </script>
 
 <svg
@@ -8,7 +13,7 @@
 	height={size}
 	viewBox="0 0 70 70"
 	fill="none"
-	{...$$restProps}
+	{...rest}
 >
 	<g clip-path="url(#clip0)">
 		<circle stroke="#222" cx="35" cy="35" r="30" stroke-width="4"></circle>

@@ -9,16 +9,19 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
-	$: ({ OpenSearchInstance } = data);
+	interface Props {
+		data: PageData;
+	}
 
-	$: tableSort = {
+	let { data }: Props = $props();
+	let { OpenSearchInstance } = $derived(data);
+
+	let tableSort = $derived({
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
 		direction: $OpenSearchInstance.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -64,7 +67,7 @@
 						orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 					}}
-					on:sortChange={tableSortChange}
+					onSortChange={tableSortChange}
 				>
 					<Thead>
 						<Tr>
@@ -102,7 +105,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!os.access.pageInfo.hasPreviousPage}
-								on:click={async () => {
+								onClick={async () => {
 									return await OpenSearchInstance.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
@@ -110,7 +113,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!os.access.pageInfo.hasNextPage}
-								on:click={async () => {
+								onClick={async () => {
 									return await OpenSearchInstance.loadNextPage();
 								}}
 							>

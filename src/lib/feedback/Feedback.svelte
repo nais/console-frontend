@@ -5,14 +5,18 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { FeedbackType } from './types';
 
-	export let open: boolean;
+	interface Props {
+		open: boolean;
+	}
 
-	let type: FeedbackType;
-	let details = '';
-	let anonymous: boolean = false;
+	let { open = $bindable() }: Props = $props();
+
+	let type: FeedbackType = $state('CHANGE_REQUEST');
+	let details = $state('');
+	let anonymous: boolean = $state(false);
 	let uri = '';
 
-	let feedbackSent: boolean = false;
+	let feedbackSent: boolean = $state(false);
 
 	let errorMessage: string = '';
 	let errorType: boolean = false;
@@ -68,10 +72,10 @@
 	};
 </script>
 
-<Modal bind:open width="medium" on:close={close}>
-	<svelte:fragment slot="header">
+<Modal bind:open width="medium" onClose={close}>
+	{#snippet header()}
 		<Heading>Nais Console feedback</Heading>
-	</svelte:fragment>
+	{/snippet}
 
 	{#if feedbackSent}
 		<p>Thank you for your feedback!</p>
@@ -129,14 +133,14 @@
 		</div>
 		<Checkbox bind:checked={anonymous}>Anonymous feedback</Checkbox>
 	{/if}
-	<svelte:fragment slot="footer">
+	{#snippet footer()}
 		{#if feedbackSent}
-			<Button variant="primary" size="small" on:click={close}>Close</Button>
+			<Button variant="primary" size="small" onClick={close}>Close</Button>
 		{:else}
-			<Button variant="primary" size="small" on:click={submitFeedback}>Submit</Button>
-			<Button variant="secondary" size="small" on:click={close}>Cancel</Button>
+			<Button variant="primary" size="small" onClick={submitFeedback}>Submit</Button>
+			<Button variant="secondary" size="small" onClick={close}>Cancel</Button>
 		{/if}
-	</svelte:fragment>
+	{/snippet}
 </Modal>
 
 <style>

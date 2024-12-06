@@ -13,14 +13,18 @@
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	$: ({ TeamDeleteKey, UserInfo } = data);
+	let { data }: Props = $props();
 
-	let showConfirmDeleteTeam = false;
-	let deleteTeamLoading = false;
+	let { TeamDeleteKey, UserInfo } = $derived(data);
+
+	let showConfirmDeleteTeam = $state(false);
+	let deleteTeamLoading = $state(false);
 	let deleteTeamResp: QueryResult<ConfirmTeamDeletion$result, ConfirmTeamDeletion$input> | null =
-		null;
+		$state(null);
 
 	const deleteTeam = graphql(`
 		mutation ConfirmTeamDeletion($key: String!, $team: Slug!) {
@@ -49,17 +53,19 @@
 			</BodyLong>
 
 			<Button
-				on:click={() => {
+				onClick={() => {
 					showConfirmDeleteTeam = !showConfirmDeleteTeam;
 				}}
 				variant="danger"
+				iconLeft={TrashIcon}
 			>
-				<svelte:fragment slot="icon-left"><TrashIcon /></svelte:fragment>
-				Delete team</Button
-			>
+				Delete team
+			</Button>
 
 			<Modal bind:open={showConfirmDeleteTeam}>
-				<h3 slot="header">Confirm team deletion</h3>
+				{#snippet header()}
+					<h3>Confirm team deletion</h3>
+				{/snippet}
 
 				<BodyLong>
 					Please confirm that you intend to delete <strong>{key.team.slug}</strong> and all resources
@@ -70,11 +76,11 @@
 					<GraphErrors errors={deleteTeamResp.errors} />
 				{/if}
 
-				<svelte:fragment slot="footer">
+				{#snippet footer()}
 					<Button
 						type="submit"
 						loading={deleteTeamLoading}
-						on:click={async () => {
+						onClick={async () => {
 							deleteTeamLoading = true;
 							deleteTeamResp = await deleteTeam.mutate({
 								key: key.key,
@@ -87,11 +93,11 @@
 						variant="tertiary"
 						disabled={deleteTeamLoading}
 						type="reset"
-						on:click={() => {
+						onClick={() => {
 							showConfirmDeleteTeam = false;
 						}}>Cancel</Button
 					>
-				</svelte:fragment>
+				{/snippet}
 			</Modal>
 		{/if}
 	</Card>

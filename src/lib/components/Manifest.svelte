@@ -3,18 +3,24 @@
 	import Card from '$lib/Card.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
 
-	export let workload: Manifest;
+	interface Props {
+		workload: Manifest;
+	}
 
-	$: manifest = fragment(
-		workload,
-		graphql(`
-			fragment Manifest on Workload {
-				name
-				manifest {
-					content
+	let { workload }: Props = $props();
+
+	let manifest = $derived(
+		fragment(
+			workload,
+			graphql(`
+				fragment Manifest on Workload {
+					name
+					manifest {
+						content
+					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 </script>
 

@@ -68,11 +68,13 @@
 	</h2>
 	<Table size="small" zebraStripes>
 		<Thead>
-			<Th>Resource(s)</Th>
-			<Th>Team</Th>
-			<Th>Environment</Th>
-			<Th>Created</Th>
-			<Th>Status</Th>
+			<Tr>
+				<Th>Resource(s)</Th>
+				<Th>Team</Th>
+				<Th>Environment</Th>
+				<Th>Created</Th>
+				<Th>Status</Th>
+			</Tr>
 		</Thead>
 		<Tbody>
 			{#each sortTeamDeploys($store.data.me) as deploy}

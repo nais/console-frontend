@@ -12,17 +12,27 @@
 	import Opensearch from './icons/Opensearch.svelte';
 	import Redis from './icons/Redis.svelte';
 
-	export let data: SearchQuery$result;
-	export let query: string;
-	export let selected: number;
-	export let showSearch: boolean;
-	export let onSelected: (
-		node: SearchQuery$result['search']['nodes'][0],
-		e: MouseEvent | KeyboardEvent
-	) => void = () => {
-		query = '';
-		showSearch = false;
-	};
+	interface Props {
+		data: SearchQuery$result;
+		query: string;
+		selected: number;
+		showSearch: boolean;
+		onSelected?: (
+			node: SearchQuery$result['search']['nodes'][0],
+			e: MouseEvent | KeyboardEvent
+		) => void;
+	}
+
+	let {
+		data,
+		query = $bindable(),
+		selected,
+		showSearch = $bindable(),
+		onSelected = () => {
+			query = '';
+			showSearch = false;
+		}
+	}: Props = $props();
 </script>
 
 <ul>
@@ -37,7 +47,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/app/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<SandboxIcon height="1.5rem" />
@@ -60,7 +70,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/job/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<ArrowCirclepathIcon height="1.5rem" />
@@ -83,7 +93,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.slug}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<PersonGroupIcon height="1.5rem" />
@@ -97,7 +107,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/postgres/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<DatabaseIcon height="1.5rem" />
@@ -119,7 +129,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/bucket/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<BucketIcon height="1.5rem" />
@@ -141,7 +151,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/opensearch/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Opensearch height="1.5rem" />
@@ -163,7 +173,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/redis/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Redis height="1.5rem" />
@@ -185,7 +195,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/kafka/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<Kafka height="1.5rem" />
@@ -207,7 +217,7 @@
 				<a
 					class={selected == i ? 'selected' : ''}
 					href="/team/{node.team.slug}/{node.environment.name}/bigquery/{node.name}"
-					on:click={onSelected.bind({}, node)}
+					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
 						<BigQuery height="1.5rem" />

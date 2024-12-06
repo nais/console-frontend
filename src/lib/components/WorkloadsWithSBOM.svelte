@@ -92,16 +92,20 @@
 		}
 	`);
 
-	export let team: string;
-	export let environment: string;
+	interface Props {
+		team: string;
+		environment: string;
+		[key: string]: unknown;
+	}
 
-	$: tableSort = {
+	let { team, environment, ...rest }: Props = $props();
+
+	let tableSort = $derived({
 		orderBy: $query.variables?.orderBy?.field,
 		direction: $query.variables?.orderBy?.direction
-	};
+	});
 
-	const tableSortChange = (e: CustomEvent<{ key: string }>) => {
-		const { key } = e.detail;
+	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -130,20 +134,24 @@
 			orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
 			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 		}}
-		on:sortChange={tableSortChange}
+		onSortChange={tableSortChange}
 	>
 		<Thead>
-			<Th></Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Environment</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}>Critical</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}>High</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}>Medium</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}>Low</Th>
-			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
-				>Unassigned</Th
-			>
-			<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}>Risk Score</Th>
+			<Tr>
+				<Th></Th>
+				<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
+				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Environment</Th>
+				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
+					>Critical</Th
+				>
+				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}>High</Th>
+				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}>Medium</Th>
+				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}>Low</Th>
+				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
+					>Unassigned</Th
+				>
+				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}>Risk Score</Th>
+			</Tr>
 		</Thead>
 		<Tbody>
 			{#if team.workloads.nodes.length > 0}
@@ -154,13 +162,11 @@
 							{#if workload.__typename !== PendingValue}
 								{#if workload.__typename === 'Application'}
 									<Tooltip placement="right" content="Application">
-										<span style="color:var(--a-gray-600)"><SandboxIcon {...$$restProps} /> </span>
+										<span style="color:var(--a-gray-600)"><SandboxIcon {...rest} /> </span>
 									</Tooltip>
 								{:else if workload.__typename === 'Job'}
 									<Tooltip placement="right" content="Job">
-										<span style="color:var(--a-gray-600)"
-											><ArrowCirclepathIcon {...$$restProps} />
-										</span>
+										<span style="color:var(--a-gray-600)"><ArrowCirclepathIcon {...rest} /> </span>
 									</Tooltip>
 								{/if}
 							{:else}
@@ -276,7 +282,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!$query.data?.team.workloads.pageInfo.hasPreviousPage}
-					on:click={async () => {
+					onClick={async () => {
 						return await query.loadPreviousPage();
 					}}><ChevronLeftIcon /></Button
 				>
@@ -284,7 +290,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!$query.data?.team.workloads.pageInfo.hasNextPage}
-					on:click={async () => {
+					onClick={async () => {
 						return await query.loadNextPage();
 					}}
 				>

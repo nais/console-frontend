@@ -4,77 +4,83 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
 
-	export let error: JobErrorFragment;
+	interface Props {
+		error: JobErrorFragment;
+	}
 
-	$: data = fragment(
-		error,
-		graphql(`
-			fragment JobErrorFragment on WorkloadStatusError {
-				__typename
-				... on WorkloadStatusDeprecatedRegistry {
-					level
-					name
-					registry
-					repository
-					tag
-				}
-				... on WorkloadStatusInvalidNaisYaml {
-					level
-					detail
-				}
-				... on WorkloadStatusInboundNetwork {
-					level
-					policy {
-						targetWorkload {
-							name
-							environment {
+	let { error }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			error,
+			graphql(`
+				fragment JobErrorFragment on WorkloadStatusError {
+					__typename
+					... on WorkloadStatusDeprecatedRegistry {
+						level
+						name
+						registry
+						repository
+						tag
+					}
+					... on WorkloadStatusInvalidNaisYaml {
+						level
+						detail
+					}
+					... on WorkloadStatusInboundNetwork {
+						level
+						policy {
+							targetWorkload {
 								name
+								environment {
+									name
+								}
 							}
+							targetTeam {
+								slug
+							}
+							targetTeamSlug
+							targetWorkloadName
 						}
-						targetTeam {
-							slug
-						}
-						targetTeamSlug
-						targetWorkloadName
 					}
-				}
-				... on WorkloadStatusOutboundNetwork {
-					level
-					policy {
-						targetWorkload {
-							name
-							environment {
+					... on WorkloadStatusOutboundNetwork {
+						level
+						policy {
+							targetWorkload {
 								name
+								environment {
+									name
+								}
 							}
+							targetTeam {
+								slug
+							}
+							targetTeamSlug
+							targetWorkloadName
 						}
-						targetTeam {
-							slug
+					}
+					... on WorkloadStatusMissingSBOM {
+						level
+					}
+					... on WorkloadStatusVulnerable {
+						level
+						summary {
+							riskScore
 						}
-						targetTeamSlug
-						targetWorkloadName
+					}
+					... on WorkloadStatusFailedRun {
+						level
+						detail
+						name
 					}
 				}
-				... on WorkloadStatusMissingSBOM {
-					level
-				}
-				... on WorkloadStatusVulnerable {
-					level
-					summary {
-						riskScore
-					}
-				}
-				... on WorkloadStatusFailedRun {
-					level
-					detail
-					name
-				}
-			}
-		`)
+			`)
+		)
 	);
 
-	$: team = $page.params.team;
-	$: env = $page.params.env;
-	$: job = $page.params.job;
+	let team = $derived($page.params.team);
+	let env = $derived($page.params.env);
+	let job = $derived($page.params.job);
 </script>
 
 {#if $data}

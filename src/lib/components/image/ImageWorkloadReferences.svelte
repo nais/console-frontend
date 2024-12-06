@@ -4,32 +4,38 @@
 
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 
-	export let image: ImageWorkloadReferences;
+	interface Props {
+		image: ImageWorkloadReferences;
+	}
 
-	$: workloadRefs = fragment(
-		image,
-		graphql(`
-			fragment ImageWorkloadReferences on ContainerImage {
-				workloadReferences @loading {
-					nodes @loading {
-						workload {
-							__typename
-							team {
-								slug
-							}
-							environment {
+	let { image }: Props = $props();
+
+	let workloadRefs = $derived(
+		fragment(
+			image,
+			graphql(`
+				fragment ImageWorkloadReferences on ContainerImage {
+					workloadReferences @loading {
+						nodes @loading {
+							workload {
+								__typename
+								team {
+									slug
+								}
+								environment {
+									name
+								}
 								name
-							}
-							name
-							deploymentInfo {
-								url
-								timestamp
+								deploymentInfo {
+									url
+									timestamp
+								}
 							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 </script>
 
@@ -37,11 +43,13 @@
 	<h4>Workloads using image</h4>
 	<Table size="small" zebraStripes>
 		<Thead>
-			<Th>Team</Th>
-			<Th>Environment</Th>
-			<Th>Workload</Th>
-			<Th>Deploy ref</Th>
-			<Th>Age</Th>
+			<Tr>
+				<Th>Team</Th>
+				<Th>Environment</Th>
+				<Th>Workload</Th>
+				<Th>Deploy ref</Th>
+				<Th>Age</Th>
+			</Tr>
 		</Thead>
 		<Tbody>
 			{#each $workloadRefs.workloadReferences.nodes as node}

@@ -7,14 +7,22 @@
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
 
-	export let form: ActionData;
-	let feedbackOpen = false;
-	let saving = false;
-	$: slackChannelError = '';
-	$: teamSlugError = '';
-	$: purposeError = '';
-	$: disabled =
-		slackChannelError !== 'no_error' || teamSlugError !== 'no_error' || purposeError !== 'no_error';
+	interface Props {
+		form: ActionData;
+	}
+
+	let { form = $bindable() }: Props = $props();
+	let feedbackOpen = $state(false);
+	let saving = $state(false);
+	let slackChannelError = $state('');
+
+	let teamSlugError = $state('');
+
+	let purposeError = $state('');
+
+	let disabled = $derived(
+		slackChannelError !== 'no_error' || teamSlugError !== 'no_error' || purposeError !== 'no_error'
+	);
 
 	const reservedSlugs = [
 		'nais-system',
@@ -137,7 +145,7 @@
 		<Button
 			variant="secondary"
 			size="xsmall"
-			on:click={() => {
+			onClick={() => {
 				feedbackOpen = true;
 			}}>Feedback</Button
 		>
@@ -168,23 +176,27 @@
 				};
 			}}
 		>
-			<TextField name="name" value={form?.input.slug} on:input={handleTeamSlugInput}>
-				<svelte:fragment slot="label">Identifier / Name</svelte:fragment>
-				<svelte:fragment slot="description">
+			<TextField name="name" value={form?.input.slug} oninput={handleTeamSlugInput}>
+				{#snippet label()}
+					Identifier / Name
+				{/snippet}
+				{#snippet description()}
 					Example: my-team-name<br />
 					<WarningIcon style="color:var(--a-icon-warning)" /> It is not possible to change the identifier
 					after creation, so choose wisely.
-				</svelte:fragment>
+				{/snippet}
 			</TextField>
 			{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
 				<p style="color:var(--a-text-danger)">{teamSlugError}</p>
 			{/if}
 			<br />
-			<TextField name="description" value={form?.input.purpose} on:input={handlePurposeInput}>
-				<svelte:fragment slot="label">Purpose of the team</svelte:fragment>
-				<svelte:fragment slot="description">
+			<TextField name="description" value={form?.input.purpose} oninput={handlePurposeInput}>
+				{#snippet label()}
+					Purpose of the team
+				{/snippet}
+				{#snippet description()}
 					Example: Making sure users have a good experience
-				</svelte:fragment>
+				{/snippet}
 			</TextField>
 			{#if purposeError !== 'no_error' && purposeError !== ''}
 				<p style="color:var(--a-text-danger)">{purposeError}</p>
@@ -193,19 +205,20 @@
 			<TextField
 				name="slackChannel"
 				value={form?.input.slackChannel}
-				on:input={handleSlackChannelInput}
+				oninput={handleSlackChannelInput}
 			>
-				<svelte:fragment slot="label">Slack channel</svelte:fragment>
-				<svelte:fragment slot="description">Example: #my-team-slack</svelte:fragment>
+				{#snippet label()}
+					Slack channel
+				{/snippet}
+				{#snippet description()}
+					Example: #my-team-slack
+				{/snippet}
 			</TextField>
 			{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
 				<p style="color:var(--a-text-danger)">{slackChannelError}</p>
 			{/if}
 			<br />
-			<Button loading={saving} {disabled}>
-				<svelte:fragment slot="icon-left"><FloppydiskIcon /></svelte:fragment>
-				Create team
-			</Button>
+			<Button loading={saving} {disabled} iconLeft={FloppydiskIcon}>Create team</Button>
 		</form>
 	</Card>
 </div>

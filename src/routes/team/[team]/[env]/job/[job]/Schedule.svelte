@@ -1,10 +1,14 @@
 <script lang="ts">
 	import cronstrue from 'cronstrue';
 
-	export let schedule: {
-		readonly expression: string;
-		readonly timeZone: string;
-	} | null;
+	interface Props {
+		schedule: {
+			readonly expression: string;
+			readonly timeZone: string;
+		} | null;
+	}
+
+	let { schedule }: Props = $props();
 </script>
 
 <div>
