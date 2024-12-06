@@ -173,6 +173,11 @@
 				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
 				<a href="/team/{team}/{env}/app/{job}/image">image details</a> for more details.
 			</Alert>
+		{:else if type === 'WorkloadStatusFailedRun'}
+			<Alert variant="error">
+				<h4>Failed to run job</h4>
+				{$data.detail}
+			</Alert>
 		{:else}
 			<Alert variant="error">Unkown error</Alert>
 		{/if}
