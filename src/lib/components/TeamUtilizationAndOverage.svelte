@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { graphql, PendingValue, UtilizationResourceType } from '$houdini';
-	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
+	import { percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { AggregatedTeamUtilizationVariables } from './$houdini';
+	import Cost from './Cost.svelte';
 
 	export const _AggregatedTeamUtilizationVariables: AggregatedTeamUtilizationVariables = () => {
 		return { team: teamName };
@@ -106,10 +107,10 @@
 <p>
 	Overage cost:
 	{#if cpuRequested && cpuUsage && memoryRequested && memoryUsage}
-		{euroValueFormatter(
-			yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage) +
-				yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage)
-		)}
+		<Cost
+			cost={yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage) +
+				yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage)}
+		/>
 	{/if}
 </p>
 <a href="/team/{teamName}/utilization">View team utilization</a>

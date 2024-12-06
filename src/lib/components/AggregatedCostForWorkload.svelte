@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import { HelpText } from '@nais/ds-svelte-community';
 	import type { AggregatedCostVariables } from './$houdini';
+	import Cost from './Cost.svelte';
 
 	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
 		return { workload: workload, environment: environment, team: team };
@@ -36,7 +37,7 @@
 		const daysKnown = date.getDate();
 		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 		const costPerDay = cost / daysKnown;
-		return euroValueFormatter(costPerDay * daysInMonth);
+		return costPerDay * daysInMonth;
 	}
 
 	function getFactor(cost: { date: Date; sum: number }[]) {
@@ -50,7 +51,11 @@
 	}
 </script>
 
-<h4>Cost</h4>
+<h4 class="container">
+	Cost<HelpText title="Aggregated workload cost"
+		>Aggregated cost for workload. Current month is estimated.</HelpText
+	>
+</h4>
 
 <GraphErrors errors={$costQuery.errors} />
 
@@ -61,12 +66,11 @@
 			{@const factor = getFactor(cost.monthly.series)}
 			{#each cost.monthly.series.slice(0, 2) as item}
 				{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(item.sum)}
+					{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.sum} />
 				{:else}
-					{item.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
-						item.sum,
-						item.date
-					)}
+					{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
+						cost={getEstimateForMonth(item.sum, item.date)}
+					/>
 					{#if factor > 1.0}
 						(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
 					{:else}
@@ -77,12 +81,16 @@
 			{/each}
 		{:else if cost.monthly.series.length == 1}
 			{@const c = cost.monthly.series[0]}
-			{c.date.toLocaleString('en-GB', { month: 'long' })} (estimated): {getEstimateForMonth(
-				c.sum,
-				c.date
-			)}
+			<Cost cost={getEstimateForMonth(c.sum, c.date)} />
 		{:else}
 			No cost data available
 		{/if}
 	</div>
 {/if}
+
+<style>
+	.container {
+		display: flex;
+		justify-content: space-between;
+	}
+</style>

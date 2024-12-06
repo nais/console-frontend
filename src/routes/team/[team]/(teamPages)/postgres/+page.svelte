@@ -24,8 +24,8 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -77,7 +77,7 @@
 					</h4>
 					<p class="metric">
 						{#if cost !== PendingValue}
-							{euroValueFormatter(cost.daily.sum)}
+							<Cost cost={cost.daily.sum} />
 						{:else}
 							<Skeleton variant="text" />
 						{/if}

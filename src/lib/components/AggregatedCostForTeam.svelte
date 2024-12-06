@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { graphql, PendingValue } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { AggregatedTeamCostVariables } from './$houdini';
+	import Cost from './Cost.svelte';
 
 	export const _AggregatedTeamCostVariables: AggregatedTeamCostVariables = () => {
 		return { team: team };
@@ -31,7 +31,7 @@
 		const daysKnown = date.getDate();
 		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 		const costPerDay = cost / daysKnown;
-		return euroValueFormatter(costPerDay * daysInMonth);
+		return costPerDay * daysInMonth;
 	}
 
 	function getFactor(cost: { date: Date; cost: number }[]) {
@@ -57,12 +57,11 @@
 				{@const factor = getFactor(cost.monthlySummary.series)}
 				{#each cost.monthlySummary.series.slice(0, 2) as item}
 					{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-						{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(item.cost)}
+						{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.cost} />
 					{:else}
-						{item.date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(
-							item.cost,
-							item.date
-						)}
+						{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
+							cost={getEstimateForMonth(item.cost, item.date)}
+						/>
 						{#if factor > 1.0}
 							(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
 						{:else}
@@ -73,7 +72,9 @@
 				{/each}
 			{:else if cost.monthlySummary.series.length == 1}
 				{@const c = cost.monthlySummary.series[0]}
-				{c.date.toLocaleString('en-GB', { month: 'long' })}: {getEstimateForMonth(c.cost, c.date)}
+				{c.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
+					cost={getEstimateForMonth(c.cost, c.date)}
+				/>
 			{:else}
 				No cost data available
 			{/if}

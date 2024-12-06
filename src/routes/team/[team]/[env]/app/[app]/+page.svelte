@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import AggregatedCost from '$lib/components/AggregatedCost.svelte';
+	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
@@ -63,7 +63,7 @@
 			<Image workload={app} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<AggregatedCost {team} workload={application} {environment} />
+			<AggregatedCostForWorkload {team} workload={application} {environment} />
 		</Card>
 		<Card columns={12}>
 			<div class="heading">

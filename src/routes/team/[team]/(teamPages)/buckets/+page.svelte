@@ -2,10 +2,10 @@
 	import { page } from '$app/stores';
 	import { BucketOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Cost from '$lib/components/Cost.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Button,
@@ -70,7 +70,7 @@
 					</h4>
 					<p class="metric">
 						{#if cost !== PendingValue}
-							{euroValueFormatter(cost.daily.sum)}
+							<Cost cost={cost.daily.sum} />
 						{:else}
 							<Skeleton variant="text" />
 						{/if}

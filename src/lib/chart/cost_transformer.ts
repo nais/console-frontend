@@ -1,5 +1,12 @@
-import { euroValueFormatter } from '$lib/utils/formatters';
 import type { EChartsOption } from 'echarts';
+
+function euroValueFormatter(value: number): string {
+	return value.toLocaleString('en-GB', {
+		style: 'currency',
+		currency: 'EUR',
+		maximumFractionDigits: 2
+	});
+}
 
 export function getMinToDate(from: string) {
 	const fromDate = new Date(from);

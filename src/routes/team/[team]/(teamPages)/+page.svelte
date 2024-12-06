@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
-	import AggregatedTeamCost from '$lib/components/AggregatedTeamCost.svelte';
+	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import Deploys from '$lib/components/TeamDeployments.svelte';
 	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
@@ -37,7 +37,7 @@
 		<TeamUtilizationAndOverage {teamName} />
 	</Card>
 	<Card rows={2} columns={3}>
-		<AggregatedTeamCost team={teamName} />
+		<AggregatedCostForTeam team={teamName} />
 	</Card>
 
 	<Card rows={1} columns={12}>

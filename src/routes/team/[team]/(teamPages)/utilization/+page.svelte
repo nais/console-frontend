@@ -5,11 +5,12 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
+	import Cost from '$lib/components/Cost.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
+	import { percentageFormatter } from '$lib/utils/formatters';
 	import { mergeCalculateAndSortOverageData, round, yearlyOverageCost } from '$lib/utils/resources';
 	import { HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { TableSortState } from '@nais/ds-svelte-community/components/Table/index.js';
@@ -388,11 +389,9 @@
 										})}</Td
 									>
 									<Td>{prettyBytes(overage.unusedMem)}</Td>
-									<Td
-										>{overage.estimatedAnnualOverageCost > 0.0
-											? euroValueFormatter(overage.estimatedAnnualOverageCost)
-											: '€0.00'}</Td
-									>
+									<Td>
+										<Cost cost={overage.estimatedAnnualOverageCost} />
+									</Td>
 								</Tr>
 							{:else}
 								<p>No overage data for team {team}</p>
