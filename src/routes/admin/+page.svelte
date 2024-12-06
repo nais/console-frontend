@@ -20,7 +20,7 @@
 <Card>
 	<h2>Users</h2>
 	{#if $AdminUsers.data}
-		<Table zebraStripes>
+		<Table zebraStripes size="small">
 			<Thead>
 				<Tr>
 					<Th>Name</Th>
@@ -45,6 +45,16 @@
 			</Tbody>
 		</Table>
 
-		<Pagination page={$AdminUsers.data.users.pageInfo} loaders={AdminUsers} />
+		<Pagination
+			page={$AdminUsers.data.users.pageInfo}
+			loaders={{
+				loadNextPage: async () => {
+					await AdminUsers.loadNextPage();
+				},
+				loadPreviousPage: async () => {
+					await AdminUsers.loadPreviousPage();
+				}
+			}}
+		/>
 	{/if}
 </Card>

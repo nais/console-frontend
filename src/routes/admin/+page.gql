@@ -1,5 +1,5 @@
 query AdminUsers {
-	users(first: 50) @paginate(mode: SinglePage) {
+	users(first: 20) @paginate(mode: SinglePage) {
 		nodes {
 			name
 			email
