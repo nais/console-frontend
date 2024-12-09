@@ -37,14 +37,14 @@
 				bind:value={newText}
 			></textarea>
 		{/if}
-		<Button onClick={save} size="xsmall">Save</Button>
-		<Button onClick={reset} size="xsmall" variant="secondary-neutral">Cancel</Button>
+		<Button onclick={save} size="xsmall">Save</Button>
+		<Button onclick={reset} size="xsmall" variant="secondary-neutral">Cancel</Button>
 	</div>
 {:else if height !== undefined}
 	<div bind:clientHeight={height} class:hidden={edit}>
 		<span class:tall={variant == 'textarea'}>{text}</span>
 		<Button
-			onClick={() => {
+			onclick={() => {
 				edit = true;
 			}}
 			size="xsmall"

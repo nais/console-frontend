@@ -64,7 +64,7 @@
 								<ToggleChip
 									value={renderInstanceName(name)}
 									selected={instanceNames.has(name)}
-									onClick={() => toggleInstance(name)}
+									onclick={() => toggleInstance(name)}
 								/>
 							{/each}
 						</Chips>
@@ -73,7 +73,7 @@
 							size="small"
 							variant="primary"
 							disabled={instanceNames.size === instances.length}
-							onClick={() => {
+							onclick={() => {
 								if (instanceNames.size === instances.length) {
 									return;
 								}
@@ -90,7 +90,7 @@
 		<div>
 			{#if fetching}
 				<Button
-					onClick={() => {
+					onclick={() => {
 						running = false;
 					}}
 				>
@@ -98,7 +98,7 @@
 				</Button>
 			{:else}
 				<Button
-					onClick={() => {
+					onclick={() => {
 						running = true;
 					}}
 				>
@@ -121,7 +121,7 @@
 				<ToggleChip
 					value={option}
 					selected={selectedViewOptions.has(option)}
-					onClick={() => toggleSelectedViewOptions(option)}
+					onclick={() => toggleSelectedViewOptions(option)}
 				/>
 			{/each}
 		</Chips>

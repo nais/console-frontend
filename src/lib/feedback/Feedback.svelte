@@ -135,10 +135,10 @@
 	{/if}
 	{#snippet footer()}
 		{#if feedbackSent}
-			<Button variant="primary" size="small" onClick={close}>Close</Button>
+			<Button variant="primary" size="small" onclick={close}>Close</Button>
 		{:else}
-			<Button variant="primary" size="small" onClick={submitFeedback}>Submit</Button>
-			<Button variant="secondary" size="small" onClick={close}>Cancel</Button>
+			<Button variant="primary" size="small" onclick={submitFeedback}>Submit</Button>
+			<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 		{/if}
 	{/snippet}
 </Modal>

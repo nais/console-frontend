@@ -145,7 +145,7 @@
 		<Button
 			variant="secondary"
 			size="xsmall"
-			onClick={() => {
+			onclick={() => {
 				feedbackOpen = true;
 			}}>Feedback</Button
 		>

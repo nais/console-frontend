@@ -29,7 +29,7 @@
 		<Button
 			variant="secondary"
 			size="xsmall"
-			onClick={() => {
+			onclick={() => {
 				feedbackOpen = true;
 			}}>Feedback</Button
 		>
@@ -87,7 +87,7 @@
 										size="small"
 										variant="secondary"
 										disabled={!$UserTeams.data.me.teams.pageInfo.hasPreviousPage}
-										onClick={async () => {
+										onclick={async () => {
 											return await UserTeams.loadPreviousPage();
 										}}
 									>
@@ -97,7 +97,7 @@
 										size="small"
 										variant="secondary"
 										disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
-										onClick={async () => {
+										onclick={async () => {
 											return await UserTeams.loadNextPage();
 										}}
 									>
@@ -162,12 +162,13 @@
 			&:hover {
 				h3 {
 					text-decoration: underline;
-					color: var(--a-text-action-hover)
+					color: var(--a-text-action-hover);
 				}
 				box-shadow: var(--a-shadow-large);
 				border-color: var(--ac-link-panel-hover-border, var(--a-border-action));
 			}
-			&:active, &:focus{
+			&:active,
+			&:focus {
 				background-color: var(--a-surface-subtle);
 			}
 		}

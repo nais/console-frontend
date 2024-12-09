@@ -155,7 +155,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!redis.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Redis.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -163,7 +163,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!redis.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Redis.loadNextPage();
 							}}
 						>

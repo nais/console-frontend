@@ -153,7 +153,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!datasets.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await BigQuery.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -161,7 +161,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!datasets.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await BigQuery.loadNextPage();
 							}}
 						>

@@ -84,7 +84,7 @@
 			{#if canEdit}
 				<Button
 					size="small"
-					onClick={() => {
+					onclick={() => {
 						addMemberOpen = !addMemberOpen;
 					}}
 					iconLeft={PlusIcon}
@@ -122,7 +122,7 @@
 									title="Edit member"
 									size="small"
 									variant="tertiary"
-									onClick={() => {
+									onclick={() => {
 										editUser = edge.node.user.email.toString();
 										editUserOpen = true;
 									}}
@@ -133,7 +133,7 @@
 									title="Delete member"
 									size="small"
 									variant="tertiary-neutral"
-									onClick={() => {
+									onclick={() => {
 										deleteUser = {
 											email: edge.node.user.email.toString(),
 											name: edge.node.user.name.toString()
@@ -169,7 +169,7 @@
 						size="small"
 						variant="secondary"
 						disabled={!$Members.data.team.members.pageInfo.hasPreviousPage}
-						onClick={async () => {
+						onclick={async () => {
 							return await Members.loadPreviousPage();
 						}}><ChevronLeftIcon /></Button
 					>
@@ -177,7 +177,7 @@
 						size="small"
 						variant="secondary"
 						disabled={!$Members.data.team.members.pageInfo.hasNextPage}
-						onClick={async () => {
+						onclick={async () => {
 							return await Members.loadNextPage();
 						}}
 					>

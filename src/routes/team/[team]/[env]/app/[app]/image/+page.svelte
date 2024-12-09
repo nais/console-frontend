@@ -43,7 +43,7 @@
 		}
 	});
 
-	const onClick = () => {
+	const onclick = () => {
 		let props = {};
 		props = {
 			routeID: '/dependencytrack/app/findings'
@@ -197,7 +197,7 @@
 			{:else}
 				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
 				No data found.
-				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} onclick={onClick}> How to fix</a>
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} {onclick}> How to fix</a>
 			{/if}
 		</Card>
 		<Card columns={12}>

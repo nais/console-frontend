@@ -212,8 +212,8 @@
 			{/snippet}
 			<div class="search-container">
 				<SearchTeam bind:query={addTeamInput} onSelected={onTeamSelected} />
-				<Button variant="primary" size="small" onClick={addTeam}>Add</Button>
-				<Button variant="secondary" size="small" onClick={addTeamClose}>Cancel</Button>
+				<Button variant="primary" size="small" onclick={addTeam}>Add</Button>
+				<Button variant="secondary" size="small" onclick={addTeamClose}>Cancel</Button>
 			</div>
 		</Modal>
 	</div>
@@ -365,7 +365,7 @@
 									disabled={unleash.ready === false}
 									variant="tertiary-neutral"
 									title="Delete key and value"
-									onClick={() => removeTeamClickHandler(team.slug)}
+									onclick={() => removeTeamClickHandler(team.slug)}
 								>
 									{#snippet iconLeft()}
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
@@ -382,7 +382,7 @@
 					variant="tertiary"
 					disabled={unleash.ready === false}
 					size="small"
-					onClick={addTeamClickHandler}
+					onclick={addTeamClickHandler}
 					iconLeft={PlusCircleFillIcon}
 				>
 					Add team
@@ -405,7 +405,7 @@
 			to your team.
 		</p>
 		<Tooltip content="Coming soon...">
-			<Button variant="secondary" size="medium" onClick={createNewUnleash} iconLeft={PlusIcon}>
+			<Button variant="secondary" size="medium" onclick={createNewUnleash} iconLeft={PlusIcon}>
 				Enable Unleash
 			</Button>
 		</Tooltip>

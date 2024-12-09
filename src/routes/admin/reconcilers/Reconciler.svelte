@@ -133,7 +133,7 @@
 		checked={$r.enabled}
 		loading={reconcileLoading}
 		disabled={reconcileLoading}
-		onClick={(e: MouseEvent) => {
+		onclick={(e: MouseEvent) => {
 			e.preventDefault();
 			confirm = true;
 		}}

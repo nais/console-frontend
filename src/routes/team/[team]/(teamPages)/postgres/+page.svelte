@@ -333,7 +333,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!instances.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await SqlInstances.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -341,7 +341,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!instances.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await SqlInstances.loadNextPage();
 							}}
 						>

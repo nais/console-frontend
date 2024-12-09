@@ -109,7 +109,7 @@
 		<Card columns={12}>
 			<div class="card-heading">
 				<h4>Secrets</h4>
-				<Button variant="secondary" size="small" onClick={() => open()} iconLeft={PlusIcon}>
+				<Button variant="secondary" size="small" onclick={() => open()} iconLeft={PlusIcon}>
 					Create Secret
 				</Button>
 			</div>
@@ -210,7 +210,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!secrets.pageInfo.hasPreviousPage}
-								onClick={async () => {
+								onclick={async () => {
 									return await Secrets.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
@@ -218,7 +218,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!secrets.pageInfo.hasNextPage}
-								onClick={async () => {
+								onclick={async () => {
 									return await Secrets.loadNextPage();
 								}}
 							>

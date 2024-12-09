@@ -22,7 +22,7 @@
 			{error}<br />
 		{/each}
 		{#if dismissable}
-			<Button variant="tertiary" size="small" onClick={() => (errors = [])}>Dismiss</Button>
+			<Button variant="tertiary" size="small" onclick={() => (errors = [])}>Dismiss</Button>
 		{/if}
 	</Alert>
 {/if}

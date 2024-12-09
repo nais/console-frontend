@@ -233,7 +233,7 @@
 											variant="secondary"
 											size="small"
 											disabled={!team.viewerIsOwner && !team.viewerIsMember}
-											onClick={() => removeRepository(repo.team.slug, repo.name)}
+											onclick={() => removeRepository(repo.team.slug, repo.name)}
 											iconLeft={TrashIcon}
 										>
 											Remove
@@ -262,7 +262,7 @@
 									size="small"
 									variant="secondary"
 									disabled={!team.repositories.pageInfo.hasPreviousPage}
-									onClick={async () => {
+									onclick={async () => {
 										return await Repositories.loadPreviousPage();
 									}}><ChevronLeftIcon /></Button
 								>
@@ -270,7 +270,7 @@
 									size="small"
 									variant="secondary"
 									disabled={!team.repositories.pageInfo.hasNextPage}
-									onClick={async () => {
+									onclick={async () => {
 										return await Repositories.loadNextPage();
 									}}
 								>

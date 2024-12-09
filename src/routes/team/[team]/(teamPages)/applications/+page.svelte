@@ -196,7 +196,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!applications.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Applications.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -204,7 +204,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!applications.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Applications.loadNextPage();
 							}}
 						>
