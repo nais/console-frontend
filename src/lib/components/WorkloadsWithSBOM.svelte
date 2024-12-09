@@ -18,12 +18,26 @@
 		ChevronRightIcon,
 		SandboxIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { untrack } from 'svelte';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
-	const calcVariables = () => {
-		if (environment !== '') {
+	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
+		console.log('WorkloadsWithSbomVariables');
+		return untrack(() => {
+			if (environment !== '') {
+				return {
+					team: team,
+					orderBy: {
+						field: tableSort.orderBy
+							? tableSort.orderBy
+							: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
+						direction: tableSort.direction ? tableSort.direction : 'DESC'
+					},
+					filter: { environments: [environment] }
+				};
+			}
 			return {
 				team: team,
 				orderBy: {
@@ -31,23 +45,9 @@
 						? tableSort.orderBy
 						: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
 					direction: tableSort.direction ? tableSort.direction : 'DESC'
-				},
-				filter: { environments: [environment] }
+				}
 			};
-		}
-		return {
-			team: team,
-			orderBy: {
-				field: tableSort.orderBy
-					? tableSort.orderBy
-					: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
-				direction: tableSort.direction ? tableSort.direction : 'DESC'
-			}
-		};
-	};
-
-	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
-		return calcVariables();
+		});
 	};
 
 	const query = graphql(`
@@ -117,9 +117,6 @@
 		changeParams({
 			direction: tableSort.direction,
 			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL
-		});
-		query.fetch({
-			variables: calcVariables()
 		});
 	};
 </script>
@@ -282,7 +279,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!$query.data?.team.workloads.pageInfo.hasPreviousPage}
-					onClick={async () => {
+					onclick={async () => {
 						return await query.loadPreviousPage();
 					}}><ChevronLeftIcon /></Button
 				>
@@ -290,7 +287,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!$query.data?.team.workloads.pageInfo.hasNextPage}
-					onClick={async () => {
+					onclick={async () => {
 						return await query.loadNextPage();
 					}}
 				>
