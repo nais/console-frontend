@@ -56,10 +56,10 @@
 							<Box
 								as="a"
 								background="surface-default"
-								borderColor="border-subtle"
+								borderColor="border-default"
 								padding="4"
-								borderWidth="2"
-								borderRadius="xlarge"
+								borderWidth="1"
+								borderRadius="medium"
 								href={`/team/${node.team.slug}`}
 								class="box"
 							>
@@ -152,14 +152,9 @@
 		flex-direction: column;
 		gap: 1rem;
 		:global(.box) {
-			padding: 1rem;
-			border: 1px solid var(--a-text-default);
-			border-radius: 0.25rem;
 			text-decoration: none;
-			text-decoration-style: none;
 			color: var(--a-text-default);
 			display: block;
-			text-decoration: none;
 			> * {
 				text-decoration: none;
 				color: var(--a-text-default);
@@ -167,9 +162,13 @@
 			&:hover {
 				h3 {
 					text-decoration: underline;
+					color: var(--a-text-action-hover)
 				}
 				box-shadow: var(--a-shadow-large);
 				border-color: var(--ac-link-panel-hover-border, var(--a-border-action));
+			}
+			&:active, &:focus{
+				background-color: var(--a-surface-subtle);
 			}
 		}
 	}
