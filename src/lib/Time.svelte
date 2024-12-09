@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { format, formatDistance } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import { onDestroy, untrack } from 'svelte';
@@ -25,6 +23,7 @@
 		}
 	});
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		distance;
 		untrack(() => {
 			if (distance) {

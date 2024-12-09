@@ -185,7 +185,7 @@
 								<Button
 									variant="tertiary"
 									size="xsmall"
-									onClick={() => {
+									onclick={() => {
 										findingToSuppress = v;
 										suppressOpen = true;
 									}}
@@ -212,7 +212,7 @@
 								variant="tertiary-neutral"
 								size="small"
 								disabled={v.analysisTrail?.state ? false : true}
-								onClick={() => {
+								onclick={() => {
 									analysisTrail = v;
 									analysisOpen = true;
 								}}
@@ -257,7 +257,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!image.vulnerabilities.pageInfo.hasPreviousPage}
-					onClick={async () => {
+					onclick={async () => {
 						return await vulnerabilities.loadPreviousPage();
 					}}><ChevronLeftIcon /></Button
 				>
@@ -265,7 +265,7 @@
 					size="small"
 					variant="secondary"
 					disabled={!image.vulnerabilities.pageInfo.hasNextPage}
-					onClick={() => {
+					onclick={() => {
 						vulnerabilities.loadNextPage();
 					}}
 				>

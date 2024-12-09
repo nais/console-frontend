@@ -50,8 +50,8 @@
 	</div>
 
 	{#snippet footer()}
-		<Button {variant} type="submit" onClick={confirm}>{confirmText}</Button>
-		<Button variant="tertiary" type="reset" onClick={cancel}>Cancel</Button>
+		<Button {variant} type="submit" onclick={confirm}>{confirmText}</Button>
+		<Button variant="tertiary" type="reset" onclick={cancel}>Cancel</Button>
 	{/snippet}
 </Modal>
 
