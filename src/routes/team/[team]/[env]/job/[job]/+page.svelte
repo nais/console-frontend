@@ -186,7 +186,7 @@
 			</Card>
 		{/if}
 	</div>
-	<Modal bind:open onClose={close}>
+	<Modal bind:open onclose={close}>
 		{#snippet header()}
 			<h3>Trigger run of {jobName}</h3>
 		{/snippet}

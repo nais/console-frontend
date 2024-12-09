@@ -185,7 +185,7 @@
 	});
 </script>
 
-<Modal bind:open width="medium" onClose={close}>
+<Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
 		<Heading>Suppress finding for {finding.identifier}</Heading>
 	{/snippet}

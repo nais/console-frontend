@@ -263,25 +263,25 @@
 					label="search"
 					variant="simple"
 					size="small"
-					onBlur={() => {
+					onblur={() => {
 						setTimeout(() => {
 							showSearch = false;
 							showHelpText = false;
 						}, 200);
 					}}
-					onClear={() => {
+					onclear={() => {
 						query = '';
 						showSearch = false;
 						showHelpText = false;
 					}}
-					onFocus={() => {
+					onfocus={() => {
 						if (query.length > 0) {
 							showSearch = true;
 						} else {
 							showHelpText = true;
 						}
 					}}
-					onKeyup={on_key_up}
+					onkeyup={on_key_up}
 				/>
 				{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />

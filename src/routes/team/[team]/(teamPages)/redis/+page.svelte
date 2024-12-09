@@ -87,7 +87,7 @@
 				orderBy: tableSort.orderBy || RedisInstanceOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			onSortChange={tableSortChange}
+			onsortchange={tableSortChange}
 		>
 			<Thead>
 				<Tr>

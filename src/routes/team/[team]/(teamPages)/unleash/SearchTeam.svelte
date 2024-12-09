@@ -98,21 +98,21 @@
 		label="search"
 		variant="simple"
 		size="small"
-		onBlur={() => {
+		onblur={() => {
 			setTimeout(() => {
 				showSearch = false;
 			}, 200);
 		}}
-		onClear={() => {
+		onclear={() => {
 			query = '';
 			showSearch = false;
 		}}
-		onFocus={() => {
+		onfocus={() => {
 			if (query.length > 0) {
 				showSearch = true;
 			}
 		}}
-		onKeyup={on_key_up}
+		onkeyup={on_key_up}
 	/>
 	{#if $store.data && showSearch}
 		<SearchResults {showSearch} data={hack($store.data)} {onSelected} bind:query {selected} />
