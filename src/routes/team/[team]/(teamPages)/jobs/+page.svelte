@@ -95,7 +95,7 @@
 				id="filter"
 				style="width: 300px;"
 				bind:value={filter}
-				onKeyup={onKeyUp}
+				onkeyup={onKeyUp}
 			>
 				{#snippet label()}
 					Filter jobs on name
