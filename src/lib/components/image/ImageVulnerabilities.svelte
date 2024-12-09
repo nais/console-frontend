@@ -8,6 +8,7 @@
 		ChevronLeftIcon,
 		ChevronRightIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { untrack } from 'svelte';
 	import type { ImageVulnerabilitiesVariables } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
@@ -22,18 +23,20 @@
 	let { authorized, team, environment, workload }: Props = $props();
 
 	export const _ImageVulnerabilitiesVariables: ImageVulnerabilitiesVariables = () => {
-		if (team === PendingValue || environment === PendingValue || workload === PendingValue) {
-			return { team: '', environment: '', workload: '' };
-		}
-		return {
-			workload: workload,
-			environment: environment,
-			team: team,
-			orderBy: {
-				field: tableSort.orderBy ? tableSort.orderBy : ImageVulnerabilityOrderField.SEVERITY,
-				direction: tableSort.direction ? tableSort.direction : 'DESC'
+		return untrack(() => {
+			if (team === PendingValue || environment === PendingValue || workload === PendingValue) {
+				return { team: '', environment: '', workload: '' };
 			}
-		};
+			return {
+				workload: workload,
+				environment: environment,
+				team: team,
+				orderBy: {
+					field: tableSort.orderBy ? tableSort.orderBy : ImageVulnerabilityOrderField.SEVERITY,
+					direction: tableSort.direction ? tableSort.direction : 'DESC'
+				}
+			};
+		});
 	};
 
 	const vulnerabilities = graphql(`
