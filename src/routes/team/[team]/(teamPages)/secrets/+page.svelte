@@ -38,12 +38,12 @@
 
 	let team = $derived($page.params.team);
 
-	const handleInUse = (e: CustomEvent<string>) => {
-		if (e.detail === 'all') {
+	const handleInUse = (value: string) => {
+		if (value === 'all') {
 			changeParams({ filter: '' });
 			return;
 		}
-		changeParams({ filter: e.detail });
+		changeParams({ filter: value });
 	};
 
 	let tableSort = $derived({
@@ -118,7 +118,7 @@
 					<ToggleGroup
 						value={$page.url.searchParams.get('filter') || 'all'}
 						size="small"
-						onChange={handleInUse}
+						onchange={handleInUse}
 					>
 						<ToggleGroupItem value="all">All</ToggleGroupItem>
 						<ToggleGroupItem value="inUse">In use</ToggleGroupItem>
@@ -132,7 +132,7 @@
 						orderBy: tableSort.orderBy || SecretOrderField.NAME,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 					}}
-					onSortChange={tableSortChange}
+					onsortchange={tableSortChange}
 				>
 					<Thead>
 						<Tr>

@@ -78,7 +78,7 @@
 			<Label>Name</Label>
 			<p>{member.user.name}</p>
 
-			<Select label="Role" style="width:150px" value={member.role} onChange={updateRole}>
+			<Select label="Role" style="width:150px" value={member.role} onchange={updateRole}>
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>

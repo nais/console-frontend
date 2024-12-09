@@ -189,7 +189,7 @@
 						id="filter"
 						style="width: 300px;"
 						bind:value={filter}
-						onKeyup={onKeyUp}
+						onkeyup={onKeyUp}
 					>
 						{#snippet label()}
 							Filter repositories
@@ -204,7 +204,7 @@
 						orderBy: tableSort.orderBy || RepositoryOrderField.NAME,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 					}}
-					onSortChange={tableSortChange}
+					onsortchange={tableSortChange}
 				>
 					<Thead>
 						<Tr>

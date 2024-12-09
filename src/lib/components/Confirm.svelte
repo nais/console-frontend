@@ -40,7 +40,7 @@
 	const header_render = $derived(header);
 </script>
 
-<Modal bind:open onClose={close}>
+<Modal bind:open onclose={close}>
 	{#snippet header()}
 		{@render header_render?.()}
 	{/snippet}

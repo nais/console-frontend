@@ -291,7 +291,7 @@
 					size="small"
 					hideLabel={true}
 					bind:value={selectedEnvironment}
-					onChange={() => {
+					onchange={() => {
 						changeParams({
 							environment: selectedEnvironment
 						});

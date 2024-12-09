@@ -384,7 +384,7 @@
 					size={'small'}
 					sort={sortState}
 					zebraStripes
-					onSortChange={(key) => {
+					onsortchange={(key) => {
 						sortState = sortTable(key, sortState);
 					}}
 				>

@@ -61,7 +61,7 @@
 					orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 				}}
-				onSortChange={tableSortChange}
+				onsortchange={tableSortChange}
 			>
 				<Thead>
 					<Tr>

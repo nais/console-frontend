@@ -181,7 +181,7 @@
 				orderBy: tableSort.orderBy || SqlInstanceOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			onSortChange={tableSortChange}
+			onsortchange={tableSortChange}
 		>
 			<Thead>
 				<Tr>

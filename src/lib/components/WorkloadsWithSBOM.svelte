@@ -131,7 +131,7 @@
 			orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
 			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 		}}
-		onSortChange={tableSortChange}
+		onsortchange={tableSortChange}
 	>
 		<Thead>
 			<Tr>

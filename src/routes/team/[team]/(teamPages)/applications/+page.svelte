@@ -110,7 +110,7 @@
 				orderBy: tableSort.orderBy || ApplicationOrderField.STATUS,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			onSortChange={tableSortChange}
+			onsortchange={tableSortChange}
 		>
 			<Thead>
 				<Tr>
