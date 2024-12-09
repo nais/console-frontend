@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
-	import { Button } from '@nais/ds-svelte-community';
+	import { Box, Button } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,
 		ChevronRightIcon,
@@ -49,10 +49,23 @@
 				{#if $UserTeams.data}
 					{#if $UserTeams.data.me.__typename == 'User'}
 						{#each $UserTeams.data.me.teams.nodes as node}
-							<a href="/team/{node.team.slug}">
-								<h1>{node.team.slug}</h1>
-								<p>{node.team.purpose}</p>
-							</a>
+							<!--div class="box">
+								<h3>{node.team.slug}</h3>
+								<span>{node.team.purpose}</span>
+							</div-->
+							<Box
+								as="a"
+								background="surface-default"
+								borderColor="border-subtle"
+								padding="4"
+								borderWidth="2"
+								borderRadius="xlarge"
+								href={`/team/${node.team.slug}`}
+								class="box"
+							>
+								<h3>{node.team.slug}</h3>
+								<span>{node.team.purpose}</span>
+							</Box>
 						{:else}
 							<p>You are not a member of any teams.</p>
 						{/each}
@@ -109,6 +122,10 @@
 {/if}
 
 <style>
+	h3 {
+		font-weight: 600;
+		margin-bottom: 0;
+	}
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;
@@ -134,7 +151,29 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		:global(.box) {
+			padding: 1rem;
+			border: 1px solid var(--a-text-default);
+			border-radius: 0.25rem;
+			text-decoration: none;
+			text-decoration-style: none;
+			color: var(--a-text-default);
+			display: block;
+			text-decoration: none;
+			> * {
+				text-decoration: none;
+				color: var(--a-text-default);
+			}
+			&:hover {
+				h3 {
+					text-decoration: underline;
+				}
+				box-shadow: var(--a-shadow-large);
+				border-color: var(--ac-link-panel-hover-border, var(--a-border-action));
+			}
+		}
 	}
+
 	.header {
 		display: flex;
 		justify-content: space-between;
