@@ -155,7 +155,7 @@
 		orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
 		direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 	}}
-	onSortChange={tableSortChange}
+	onsortchange={tableSortChange}
 >
 	<Thead>
 		<Tr>

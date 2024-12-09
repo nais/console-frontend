@@ -88,7 +88,7 @@
 				orderBy: tableSort.orderBy || BigQueryDatasetOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 			}}
-			onSortChange={tableSortChange}
+			onsortchange={tableSortChange}
 		>
 			<Thead>
 				<Tr>
