@@ -24,7 +24,6 @@
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
-		console.log('WorkloadsWithSbomVariables');
 		return untrack(() => {
 			if (environment !== '') {
 				return {
