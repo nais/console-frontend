@@ -3,7 +3,7 @@
 
 	import { format, formatDistance } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	interface Props {
 		time: Date;
 		dateFormat?: string;
@@ -24,17 +24,20 @@
 			clearInterval(interval);
 		}
 	});
-	run(() => {
-		if (distance) {
-			if (!interval) interval = setInterval(() => (text = distanceText()), 1000 * 60);
-			text = distanceText();
-		} else {
-			if (interval) {
-				clearInterval(interval);
-				interval = undefined;
+	$effect(() => {
+		distance;
+		untrack(() => {
+			if (distance) {
+				if (!interval) interval = setInterval(() => (text = distanceText()), 1000 * 60);
+				text = distanceText();
+			} else {
+				if (interval) {
+					clearInterval(interval);
+					interval = undefined;
+				}
+				text = format(time, dateFormat, { locale: enGB });
 			}
-			text = format(time, dateFormat, { locale: enGB });
-		}
+		});
 	});
 </script>
 
