@@ -119,7 +119,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!topic.acl.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await KafkaTopic.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -127,7 +127,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!topic.acl.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await KafkaTopic.loadNextPage();
 							}}
 						>

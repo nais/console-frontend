@@ -132,8 +132,8 @@
 	<GraphErrors errors={$createSecret.errors} />
 
 	{#snippet footer()}
-		<Button variant="primary" size="small" onClick={create}>Create</Button>
-		<Button variant="secondary" size="small" onClick={close}>Cancel</Button>
+		<Button variant="primary" size="small" onclick={create}>Create</Button>
+		<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 	{/snippet}
 </Modal>
 

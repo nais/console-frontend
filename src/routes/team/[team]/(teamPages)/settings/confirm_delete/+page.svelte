@@ -53,7 +53,7 @@
 			</BodyLong>
 
 			<Button
-				onClick={() => {
+				onclick={() => {
 					showConfirmDeleteTeam = !showConfirmDeleteTeam;
 				}}
 				variant="danger"
@@ -80,7 +80,7 @@
 					<Button
 						type="submit"
 						loading={deleteTeamLoading}
-						onClick={async () => {
+						onclick={async () => {
 							deleteTeamLoading = true;
 							deleteTeamResp = await deleteTeam.mutate({
 								key: key.key,
@@ -93,7 +93,7 @@
 						variant="tertiary"
 						disabled={deleteTeamLoading}
 						type="reset"
-						onClick={() => {
+						onclick={() => {
 							showConfirmDeleteTeam = false;
 						}}>Cancel</Button
 					>

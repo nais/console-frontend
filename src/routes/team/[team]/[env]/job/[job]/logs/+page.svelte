@@ -86,13 +86,13 @@
 		<div>
 			{#if fetching}
 				<Button
-					onClick={() => {
+					onclick={() => {
 						running = false;
 					}}>Pause</Button
 				>
 			{:else}
 				<Button
-					onClick={() => {
+					onclick={() => {
 						running = true;
 					}}>Restart</Button
 				>
@@ -107,7 +107,7 @@
 			<ToggleChip
 				value={option}
 				selected={selectedViewOptions.has(option)}
-				onClick={() => toggleSelectedViewOptions(option)}
+				onclick={() => toggleSelectedViewOptions(option)}
 			/>
 		{/each}
 	</Chips>

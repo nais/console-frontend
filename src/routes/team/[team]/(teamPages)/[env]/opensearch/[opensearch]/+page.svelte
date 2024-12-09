@@ -105,7 +105,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!os.access.pageInfo.hasPreviousPage}
-								onClick={async () => {
+								onclick={async () => {
 									return await OpenSearchInstance.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
@@ -113,7 +113,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!os.access.pageInfo.hasNextPage}
-								onClick={async () => {
+								onclick={async () => {
 									return await OpenSearchInstance.loadNextPage();
 								}}
 							>

@@ -245,7 +245,7 @@
 			title="Delete secret from environment"
 			variant="danger"
 			size="small"
-			onClick={openDeleteModal}
+			onclick={openDeleteModal}
 			iconLeft={TrashIcon}
 		>
 			Delete
@@ -294,7 +294,7 @@
 									size="small"
 									variant="tertiary"
 									title="Show or edit secret value"
-									onClick={() => {
+									onclick={() => {
 										openEditValueModal(value.name, value.value);
 									}}
 									iconLeft={DocPencilIcon}
@@ -305,7 +305,7 @@
 									size="small"
 									variant="tertiary-neutral"
 									title="Delete key and value"
-									onClick={() => {
+									onclick={() => {
 										openDeleteValueModal(value.name);
 									}}
 								>
@@ -339,8 +339,8 @@
 		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
 	</div>
 	{#snippet footer()}
-		<Button variant="primary" size="small" onClick={editValueForKey}>Save</Button>
-		<Button variant="secondary" size="small" onClick={cancelEditValue}>Cancel</Button>
+		<Button variant="primary" size="small" onclick={editValueForKey}>Save</Button>
+		<Button variant="secondary" size="small" onclick={cancelEditValue}>Cancel</Button>
 	{/snippet}
 </Modal>
 

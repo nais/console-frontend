@@ -155,7 +155,7 @@
 					<Button
 						variant="secondary"
 						size="small"
-						onClick={() => {
+						onclick={() => {
 							open = true;
 						}}
 						iconLeft={TimerStartIcon}
@@ -217,8 +217,8 @@
 		</div>
 
 		{#snippet footer()}
-			<Button variant="primary" type="submit" onClick={confirm}>Confirm</Button>
-			<Button variant="tertiary" type="reset" onClick={cancel}>Cancel</Button>
+			<Button variant="primary" type="submit" onclick={confirm}>Confirm</Button>
+			<Button variant="tertiary" type="reset" onclick={cancel}>Cancel</Button>
 		{/snippet}
 	</Modal>
 {/if}

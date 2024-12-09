@@ -76,7 +76,7 @@
 					<Button
 						variant="secondary"
 						size="small"
-						onClick={() => {
+						onclick={() => {
 							restart = true;
 						}}
 						iconLeft={ArrowCirclepathIcon}

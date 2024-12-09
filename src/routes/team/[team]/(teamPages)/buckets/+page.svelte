@@ -163,7 +163,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!buckets.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Buckets.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -171,7 +171,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!buckets.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Buckets.loadNextPage();
 							}}
 						>

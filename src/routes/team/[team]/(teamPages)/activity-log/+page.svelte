@@ -189,7 +189,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!ae.team.activityLog.pageInfo.hasPreviousPage}
-								onClick={async () => {
+								onclick={async () => {
 									return await ActivityLog.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
 							>
@@ -197,7 +197,7 @@
 								size="small"
 								variant="secondary"
 								disabled={!ae.team.activityLog.pageInfo.hasNextPage}
-								onClick={async () => {
+								onclick={async () => {
 									return await ActivityLog.loadNextPage();
 								}}
 							>

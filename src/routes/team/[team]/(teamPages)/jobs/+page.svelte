@@ -189,7 +189,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!jobs.pageInfo.hasPreviousPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Jobs.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
 						>
@@ -197,7 +197,7 @@
 							size="small"
 							variant="secondary"
 							disabled={!jobs.pageInfo.hasNextPage}
-							onClick={async () => {
+							onclick={async () => {
 								return await Jobs.loadNextPage();
 							}}
 						>

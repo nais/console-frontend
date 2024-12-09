@@ -257,10 +257,10 @@
 		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
 	</div>
 	{#snippet footer()}
-		<Button variant="primary" size="small" onClick={triggerSuppress} disabled={!authorized}
+		<Button variant="primary" size="small" onclick={triggerSuppress} disabled={!authorized}
 			>Update</Button
 		>
-		<Button variant="secondary" size="small" onClick={close}>Cancel</Button>
+		<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 	{/snippet}
 </Modal>
 

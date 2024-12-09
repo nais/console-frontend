@@ -38,7 +38,7 @@
 				size="small"
 				variant="secondary"
 				disabled={!page.hasPreviousPage}
-				onClick={() => loaders.loadPreviousPage()}
+				onclick={() => loaders.loadPreviousPage()}
 			>
 				<ChevronLeftIcon />
 			</Button>
@@ -46,7 +46,7 @@
 				size="small"
 				variant="secondary"
 				disabled={!page.hasNextPage}
-				onClick={() => loaders.loadNextPage()}
+				onclick={() => loaders.loadNextPage()}
 			>
 				<ChevronRightIcon />
 			</Button>

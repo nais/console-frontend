@@ -115,7 +115,7 @@
 		</div>
 	{/if}
 	{#snippet footer()}
-		<Button variant="secondary" size="small" onClick={close}>Close</Button>
+		<Button variant="secondary" size="small" onclick={close}>Close</Button>
 	{/snippet}
 </Modal>
 

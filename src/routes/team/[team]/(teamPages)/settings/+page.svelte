@@ -284,7 +284,7 @@
 								<Button
 									size="xsmall"
 									variant="tertiary"
-									onClick={() => {
+									onclick={() => {
 										showKey = !showKey;
 									}}
 									iconLeft={EyeSlashIcon}
@@ -294,7 +294,7 @@
 								<Button
 									size="xsmall"
 									variant="tertiary"
-									onClick={() => {
+									onclick={() => {
 										showKey = !showKey;
 									}}
 									iconLeft={EyeIcon}
@@ -317,7 +317,7 @@
 						<Button
 							size="small"
 							variant="danger"
-							onClick={() => {
+							onclick={() => {
 								showRotateKey = !showRotateKey;
 							}}
 							iconLeft={ArrowsCirclepathIcon}
@@ -335,7 +335,7 @@
 				<h3>Rotate deploy key</h3>
 				<p>Are you sure you want to rotate the deploy key?</p>
 				<Button
-					onClick={() => {
+					onclick={() => {
 						showRotateKey = !showRotateKey;
 					}}
 				>
@@ -343,7 +343,7 @@
 				>
 				<Button
 					variant="danger"
-					onClick={async () => {
+					onclick={async () => {
 						//rotateClicked = false;
 						showRotateKey = !showRotateKey;
 						await rotateKey.mutate({ team });
@@ -370,7 +370,7 @@
 
 				<Button
 					variant="danger"
-					onClick={() => {
+					onclick={() => {
 						showDeleteTeam = !showDeleteTeam;
 						//deleteKeyResp = null;
 					}}
@@ -436,7 +436,7 @@
 							<Button
 								type="submit"
 								loading={deleteKeyLoading}
-								onClick={async () => {
+								onclick={async () => {
 									deleteKeyLoading = true;
 									deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: team } });
 									deleteKeyLoading = false;
@@ -446,13 +446,13 @@
 								variant="tertiary"
 								disabled={deleteKeyLoading}
 								type="reset"
-								onClick={() => {
+								onclick={() => {
 									showDeleteTeam = !showDeleteTeam;
 								}}>Cancel</Button
 							>
 						{:else}
 							<Button
-								onClick={() => {
+								onclick={() => {
 									showDeleteTeam = !showDeleteTeam;
 								}}>Close</Button
 							>

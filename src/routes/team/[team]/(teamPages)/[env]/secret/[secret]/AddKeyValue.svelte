@@ -105,7 +105,7 @@
 		title="Add new key and value"
 		variant="tertiary"
 		size="small"
-		onClick={openModal}
+		onclick={openModal}
 		iconLeft={PlusCircleFillIcon}
 	>
 		Add key and value
@@ -135,8 +135,8 @@
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 	{#snippet footer()}
-		<Button variant="primary" size="small" onClick={addSecretValue}>Add</Button>
-		<Button variant="secondary" size="small" onClick={reset}>Cancel</Button>
+		<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>
+		<Button variant="secondary" size="small" onclick={reset}>Cancel</Button>
 	{/snippet}
 </Modal>
 
