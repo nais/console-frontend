@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
@@ -44,7 +42,7 @@
 	let { InventoryCounts, UserInfo } = $derived(data);
 
 	let nav: menuGroup[] = $state([]);
-	run(() => {
+	$effect(() => {
 		if ($InventoryCounts) {
 			nav = [
 				{
