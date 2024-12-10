@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
@@ -194,7 +192,8 @@
 	let { TeamResourceUsage } = $derived(data);
 	let resourceUtilization = $derived($TeamResourceUsage.data?.team);
 	let overageTable: TeamOverageData[] = $state([]);
-	run(() => {
+
+	$effect(() => {
 		overageTable = mergeCalculateAndSortOverageData(
 			resourceUtilization,
 			sortState.orderBy,

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, WorkloadState, type ValueOf } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
@@ -41,8 +39,7 @@
 	`);
 	const githubOrganization = get(page).data.githubOrganization;
 	let status: string | undefined = $state(undefined);
-
-	run(() => {
+	$effect(() => {
 		if ($teamInfo.data?.team.workloads !== PendingValue) {
 			let states: ValueOf<typeof WorkloadState>[] = [];
 			states =

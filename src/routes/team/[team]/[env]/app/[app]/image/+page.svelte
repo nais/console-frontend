@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { logEvent } from '$lib/amplitude';
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
@@ -32,7 +30,7 @@
 	let repository: string = $state('');
 	let name: string = $state('');
 
-	run(() => {
+	$effect(() => {
 		if (
 			$ApplicationImageDetails.data?.team.environment.workload.image &&
 			$ApplicationImageDetails.data?.team.environment.workload.image.name !== PendingValue
