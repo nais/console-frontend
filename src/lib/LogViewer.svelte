@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import { graphql, type WorkloadLogSubscriptionFilter } from '$houdini';
 	import Time from '$lib/Time.svelte';
@@ -182,7 +180,7 @@
 
 	onDestroy(destroy);
 
-	run(() => {
+	$effect(() => {
 		start(app, job, env, team, Array.from(instances), running);
 	});
 

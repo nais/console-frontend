@@ -23,8 +23,6 @@
 </script>
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import {
@@ -180,7 +178,8 @@
 		selectedReason = finding.analysisTrail?.state ?? '';
 		suppressed = finding.analysisTrail?.suppressed ?? false;
 	};
-	run(() => {
+
+	$effect(() => {
 		init(finding);
 	});
 </script>
