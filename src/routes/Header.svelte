@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { afterNavigate, goto } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import { logEvent } from '$lib/amplitude';
@@ -113,7 +111,7 @@
 	let unsupportedFilter = $state(false);
 	let timeout: ReturnType<typeof setTimeout> | null = $state(null);
 
-	run(() => {
+	function search() {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -167,7 +165,7 @@
 				logEvent('search');
 			}, 500);
 		}
-	});
+	}
 
 	function on_key_up(event: KeyboardEvent) {
 		switch (event.key) {
@@ -282,6 +280,8 @@
 						}
 					}}
 					onkeyup={on_key_up}
+					oninput={search}
+					autocomplete="off"
 				/>
 				{#if $store.data && showSearch && !unsupportedFilter}
 					<SearchResults {showSearch} data={$store.data} bind:query {selected} />
