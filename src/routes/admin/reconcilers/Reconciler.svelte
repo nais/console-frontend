@@ -1,9 +1,6 @@
 <script lang="ts">
-	import { preventDefault, run } from 'svelte/legacy';
-
 	import { fragment, graphql, type ReconcilerFragment } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Accordion,
 		AccordionItem,
@@ -14,6 +11,7 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
+	import { untrack } from 'svelte';
 
 	interface Props {
 		reconciler: ReconcilerFragment;
@@ -27,27 +25,25 @@
 	let reconcileLoading = $state(false);
 	let configLoading = $state(false);
 
-	let r = $derived(
-		fragment(
-			reconciler,
-			graphql(`
-				fragment ReconcilerFragment on Reconciler {
+	let r = fragment(
+		reconciler,
+		graphql(`
+			fragment ReconcilerFragment on Reconciler {
+				configured
+				description
+				displayName
+				enabled
+				name
+				config {
 					configured
 					description
 					displayName
-					enabled
-					name
-					config {
-						configured
-						description
-						displayName
-						key
-						value
-						secret
-					}
+					key
+					value
+					secret
 				}
-			`)
-		)
+			}
+		`)
 	);
 
 	const enableReconciler = graphql(`
@@ -84,13 +80,16 @@
 
 	// We do not submit secrets with no value
 	let config: { key: string; value: string; secret: boolean }[] = $state([]);
-	run(() => {
-		config = config?.length
-			? config
-			: $r.config.map((c) => {
-					const r = { key: c.key, value: c.value || '', secret: c.secret };
-					return r;
-				});
+
+	$effect(() => {
+		untrack(() => {
+			config = config?.length
+				? config
+				: $r.config.map((c) => {
+						const r = { key: c.key, value: c.value || '', secret: c.secret };
+						return r;
+					});
+		});
 	});
 
 	const saveConfigMutation = graphql(`
@@ -140,10 +139,15 @@
 	>
 		Synchronize {$r.displayName}</Switch
 	>
-	{#if $r.config.length > 0}
+	{#if $r.config.length > 0 && config.length > 0}
 		<Accordion>
 			<AccordionItem heading="Configuration">
-				<form onsubmit={preventDefault(saveConfig)}>
+				<form
+					onsubmit={(e: SubmitEvent) => {
+						e.preventDefault();
+						saveConfig();
+					}}
+				>
 					{#each configErrors as error}
 						<Alert variant="error">{error}</Alert>
 					{/each}
@@ -169,7 +173,7 @@
 		</Accordion>
 	{/if}
 </Card>
-
+<!--
 <Confirm bind:open={confirm} on:confirm={toggle}>
 	{#snippet header()}
 		Confirmation required
@@ -178,3 +182,5 @@
 	/>
 	Are you sure?
 </Confirm>
+
+-->
