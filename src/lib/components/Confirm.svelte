@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Modal } from '@nais/ds-svelte-community';
-	import { createEventDispatcher } from 'svelte';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
 		confirmText?: string;
@@ -13,8 +13,11 @@
 			| 'tertiary'
 			| 'tertiary-neutral'
 			| 'danger';
-		header?: import('svelte').Snippet;
-		children?: import('svelte').Snippet;
+		header?: Snippet;
+		children: Snippet;
+		onconfirm: () => void;
+		oncancel?: () => void;
+		onclose?: () => void;
 	}
 
 	let {
@@ -22,31 +25,28 @@
 		open = $bindable(false),
 		variant = 'primary',
 		header,
-		children
+		children,
+		onconfirm,
+		oncancel,
+		onclose
 	}: Props = $props();
-
-	const dispatch = createEventDispatcher();
 
 	const cancel = () => {
 		open = false;
-		dispatch('cancel');
+		oncancel?.();
 	};
 
 	const confirm = () => {
 		open = false;
-		dispatch('confirm');
+		onconfirm();
 	};
 
-	const header_render = $derived(header);
 </script>
 
-<Modal bind:open onclose={close}>
-	{#snippet header()}
-		{@render header_render?.()}
-	{/snippet}
+<Modal bind:open {onclose} {header}>
 
 	<div class="wrapper">
-		{@render children?.()}
+		{@render children()}
 	</div>
 
 	{#snippet footer()}
