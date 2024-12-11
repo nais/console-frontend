@@ -263,6 +263,15 @@
 
 		<Card columns={12}>
 			<h3>Deploy key</h3>
+			<p>
+				Deploy keys can be used to authenticate for deployments instead of using
+				<a
+					href="https://docs.nais.io/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment"
+				>
+					repository authorization
+				</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from
+				local machines.
+			</p>
 
 			{#if teamSettings.deploymentKey}
 				{@const deployKey = teamSettings.deploymentKey}
