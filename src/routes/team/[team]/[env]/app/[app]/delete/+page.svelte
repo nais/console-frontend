@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { preventDefault } from 'svelte/legacy';
-
 	import { goto } from '$app/navigation';
 	import { type DeleteAppPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -145,7 +143,12 @@
 				{/each}
 			</Alert>
 		{/if}
-		<form onsubmit={preventDefault(submit)}>
+		<form
+			onsubmit={(e: SubmitEvent) => {
+				e.preventDefault();
+				submit();
+			}}
+		>
 			<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
 			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteApp.fetching}>
 				Delete
