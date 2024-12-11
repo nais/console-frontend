@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { preventDefault } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -151,7 +149,13 @@
 						<em
 							>Adding a repository will grant it access to deployment actions on behalf of the team.</em
 						>
-						<form onsubmit={preventDefault(handleSubmit)} class="input">
+						<form
+							onsubmit={(e: SubmitEvent) => {
+								e.preventDefault();
+								handleSubmit();
+							}}
+							class="input"
+						>
 							<TextField
 								size="small"
 								type="text"

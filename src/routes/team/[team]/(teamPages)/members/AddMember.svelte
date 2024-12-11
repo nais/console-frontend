@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { preventDefault } from 'svelte/legacy';
-
 	import { graphql, type AddTeamMemberInput } from '$houdini';
 	import {
 		Alert,
@@ -109,7 +107,13 @@
 		<Alert variant="error">{error}</Alert>
 	{/each}
 
-	<form onsubmit={preventDefault(submit)} class="wrapper">
+	<form
+		onsubmit={(e: SubmitEvent) => {
+			e.preventDefault();
+			submit();
+		}}
+		class="wrapper"
+	>
 		<TextField list="add-member-email" type="email" bind:value={email}>
 			{#snippet label()}
 				Email
