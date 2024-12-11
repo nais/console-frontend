@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type ReconcilerFragment } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Accordion,
 		AccordionItem,
@@ -172,9 +173,8 @@
 			</AccordionItem>
 		</Accordion>
 	{/if}
-</Card>
-<!--
-<Confirm bind:open={confirm} on:confirm={toggle}>
+</Card> 
+<Confirm bind:open={confirm} onconfirm={toggle}>
 	{#snippet header()}
 		Confirmation required
 	{/snippet}
@@ -183,4 +183,3 @@
 	Are you sure?
 </Confirm>
 
--->
