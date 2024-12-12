@@ -99,6 +99,10 @@
 		errors: string[];
 	};
 
+	function close() {
+		open = false;
+	}
+
 	function validateJobName(input: string): ValidationResult {
 		const errors: string[] = [];
 

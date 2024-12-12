@@ -123,7 +123,7 @@
 			</Card>
 		{/if}
 	</div>
-	<Confirm bind:open={restart} on:confirm={submit}>
+	<Confirm bind:open={restart} onconfirm={submit}>
 		{#snippet header()}
 			<h3>Restart {application}</h3>
 		{/snippet}
