@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { graphql, type SearchQuery$result, type TeamSearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { logEvent } from '$lib/amplitude';
@@ -39,7 +37,7 @@
 		}
 	}: Props = $props();
 
-	run(() => {
+	function searchTeam() {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -51,7 +49,7 @@
 				logEvent('search');
 			}, 500);
 		}
-	});
+	}
 
 	function on_key_up(event: KeyboardEvent) {
 		switch (event.key) {
@@ -113,6 +111,7 @@
 			}
 		}}
 		onkeyup={on_key_up}
+		oninput={searchTeam}
 	/>
 	{#if $store.data && showSearch}
 		<SearchResults {showSearch} data={hack($store.data)} {onSelected} bind:query {selected} />

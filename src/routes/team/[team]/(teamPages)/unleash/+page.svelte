@@ -89,6 +89,8 @@
 		if ($createUnleashForTeam.errors) {
 			return;
 		}
+
+		Unleash.fetch({ policy: 'CacheAndNetwork' });
 	};
 
 	const allowTeamAccess = graphql(`
@@ -192,7 +194,7 @@
 		confirmText="Delete"
 		variant="danger"
 		bind:open={removeTeamConfirmOpen}
-		on:confirm={removeTeam}
+		onconfirm={removeTeam}
 	>
 		{#snippet header()}
 			<Heading>Remove team</Heading>
@@ -404,11 +406,9 @@
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
 		</p>
-		<Tooltip content="Coming soon...">
-			<Button variant="secondary" size="medium" onclick={createNewUnleash} iconLeft={PlusIcon}>
-				Enable Unleash
-			</Button>
-		</Tooltip>
+		<Button variant="secondary" size="medium" onclick={createNewUnleash} iconLeft={PlusIcon}>
+			Enable Unleash
+		</Button>
 	</div>
 {/if}
 
