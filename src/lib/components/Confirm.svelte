@@ -40,11 +40,9 @@
 		open = false;
 		onconfirm();
 	};
-
 </script>
 
 <Modal bind:open {onclose} {header}>
-
 	<div class="wrapper">
 		{@render children()}
 	</div>
