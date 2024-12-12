@@ -173,7 +173,7 @@
 			</AccordionItem>
 		</Accordion>
 	{/if}
-</Card> 
+</Card>
 <Confirm bind:open={confirm} onconfirm={toggle}>
 	{#snippet header()}
 		Confirmation required
@@ -182,4 +182,3 @@
 	/>
 	Are you sure?
 </Confirm>
-
