@@ -213,7 +213,7 @@
 				bind:open={deleteUserOpen}
 				confirmText="Delete"
 				variant="danger"
-				on:confirm={async () => {
+				onconfirm={async () => {
 					await deleteTeamMember.mutate({ input: { teamSlug: teamSlug, userEmail: userId } });
 					refetch();
 				}}
