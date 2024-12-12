@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -31,6 +29,7 @@
 	import bytes from 'bytes-iec';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
+	import { untrack } from 'svelte';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -212,12 +211,14 @@
 	let { TenantUtilization } = $derived(data);
 	let resourceUtilization = $derived(mergeAll($TenantUtilization.data));
 	let overageTable: TeamsOverageData[] = $state([]);
-	run(() => {
-		overageTable = mergeCalculateAndSortOverageDataAllTeams(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction
-		);
+	$effect(() => {
+		untrack(() => {
+			overageTable = mergeCalculateAndSortOverageDataAllTeams(
+				resourceUtilization,
+				sortState.orderBy,
+				sortState.direction
+			);
+		});
 	});
 </script>
 
@@ -404,19 +405,21 @@
 										{overage.team}
 									</a>
 								</Td>
-								<Td
-									>{overage.unusedCpu.toLocaleString('en-GB', {
+								<Td>
+									{overage.unusedCpu.toLocaleString('en-GB', {
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2
-									})}</Td
-								>
+									})}
+								</Td>
 								<Td>{prettyBytes(overage.unusedMem)}</Td>
 								<Td>
 									<Cost cost={overage.estimatedAnnualOverageCost} />
 								</Td>
 							</Tr>
 						{:else}
-							<p>No overage data for tenant.</p>
+							<Tr>
+								<Td colspan={999}>No overage data for tenant.</Td>
+							</Tr>
 						{/each}
 					</Tbody>
 				</Table>
