@@ -331,7 +331,7 @@
 		</Card>
 	</div>
 {/if}
-<Modal bind:open={()=> editValueOpen, ()=>{cancelEditValue()}} width="medium">
+<Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}
 		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
 	{/snippet}

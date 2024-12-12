@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, type SecretValueInput } from '$houdini';
-	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { Button, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Textarea from './Textarea.svelte';
 
@@ -111,7 +111,7 @@
 		Add key and value
 	</Button>
 </div>
-<Modal bind:open={()=> open, ()=>{reset()}} width="medium" header="Add new key and value">
+<Modal bind:open onclose={reset} width="medium" header="Add new key and value">
 	<div class="entry">
 		<TextField
 			style="font-family: monospace; font-size: var(--a-font-size-small);"
@@ -120,7 +120,7 @@
 			error={validKey(key)}
 			description="Examples: SOME_KEY, some.key, or some-key"
 			label="Key"
-			/>
+		/>
 	</div>
 	<div class="entry">
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
