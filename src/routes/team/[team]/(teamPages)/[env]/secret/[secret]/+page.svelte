@@ -188,7 +188,7 @@
 		confirmText="Delete"
 		variant="danger"
 		bind:open={deleteSecretOpen}
-		on:confirm={deleteSecret}
+		onconfirm={deleteSecret}
 	>
 		{#snippet header()}
 			<Heading>Delete secret</Heading>
@@ -214,7 +214,7 @@
 		confirmText="Delete key"
 		variant="danger"
 		bind:open={deleteValueOpen}
-		on:confirm={deleteValueFromSecret}
+		onconfirm={deleteValueFromSecret}
 	>
 		{#snippet header()}
 			<Heading>Delete key from secret</Heading>
@@ -331,7 +331,7 @@
 		</Card>
 	</div>
 {/if}
-<Modal bind:open={editValueOpen} width="medium" onclose={/*reset*/ () => {}}>
+<Modal bind:open={()=> editValueOpen, ()=>{cancelEditValue()}} width="medium">
 	{#snippet header()}
 		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
 	{/snippet}

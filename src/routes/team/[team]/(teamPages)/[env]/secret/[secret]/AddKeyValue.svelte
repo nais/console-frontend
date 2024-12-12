@@ -82,12 +82,12 @@
 		}
 
 		open = false;
-		key = undefined;
-		value = undefined;
+		key = '';
+		value = '';
 	};
 
-	let key: string | undefined = $state();
-	let value: string | undefined = $state();
+	let key: string = $state('');
+	let value: string = $state('');
 
 	const openModal = () => {
 		open = true;
@@ -95,8 +95,8 @@
 
 	const reset = () => {
 		open = false;
-		key = undefined;
-		value = undefined;
+		key = '';
+		value = '';
 	};
 </script>
 
@@ -111,31 +111,27 @@
 		Add key and value
 	</Button>
 </div>
-
-<Modal bind:open width="medium">
-	{#snippet header()}
-		<Heading>Add new key and value</Heading>
-	{/snippet}
+<Modal bind:open={()=> open, ()=>{reset()}} width="medium" header="Add new key and value">
 	<div class="entry">
 		<TextField
 			style="font-family: monospace; font-size: var(--a-font-size-small);"
 			size="small"
 			bind:value={key}
 			error={validKey(key)}
-		>
-			{#snippet label()}
-				Key
-			{/snippet}
-			{#snippet description()}
-				<i>Examples: SOME_KEY, some.key, or some-key</i>
-			{/snippet}
-		</TextField>
+			description="Examples: SOME_KEY, some.key, or some-key"
+			label="Key"
+			/>
 	</div>
 	<div class="entry">
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 	{#snippet footer()}
-		<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>
+		<Button
+			variant="primary"
+			size="small"
+			onclick={addSecretValue}
+			disabled={key === '' || value === ''}>Add</Button
+		>
 		<Button variant="secondary" size="small" onclick={reset}>Cancel</Button>
 	{/snippet}
 </Modal>
