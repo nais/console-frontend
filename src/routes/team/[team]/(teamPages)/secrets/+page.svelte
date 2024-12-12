@@ -54,7 +54,7 @@
 	let createSecretOpen = $state(false);
 	let environments: EnvironmentType[] = $state([]);
 
-	run(() => {
+	$effect(() => {
 		if ($Secrets.data) {
 			environments = $Secrets.data?.team.environments
 				.map((env) => {
@@ -230,7 +230,9 @@
 			</div></Card
 		>
 		{#if createSecretOpen}
+		<!--
 			<CreateSecret {team} bind:open={createSecretOpen} {environments} />
+		-->
 		{/if}
 	</div>
 {/if}
