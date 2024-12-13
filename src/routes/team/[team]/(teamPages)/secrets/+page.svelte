@@ -230,9 +230,7 @@
 			</div></Card
 		>
 		{#if createSecretOpen}
-			<!--
 			<CreateSecret {team} bind:open={createSecretOpen} {environments} />
-		-->
 		{/if}
 	</div>
 {/if}
