@@ -235,5 +235,6 @@
 	.feedback {
 		display: flex;
 		justify-content: flex-end;
+		padding: 0.5rem 0;
 	}
 </style>

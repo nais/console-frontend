@@ -80,7 +80,6 @@
 
 	const confirm = () => {
 		let valid = validateJobName(runName);
-		console.log(valid);
 		if (!valid.isValid) {
 			open = true;
 			errors = valid.errors;

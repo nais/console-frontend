@@ -281,7 +281,7 @@
 		>
 	{/if}
 	{#if !lastSuccessfulSync && !deletionInProgress}
-		<Alert variant="success" style="margin-bottom: 1rem;"
+		<Alert variant="success" style="margin-bottom: 1rem;" contentMaxWidth={false}
 			>The team and all of its resources is currently beeing created. Expected time to completion is
 			about 15 minutes.</Alert
 		>
