@@ -13,7 +13,6 @@ export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
 	}
 
 	return {
-		selected: data.RunsWithPodNames.team.environment.job.runs.nodes.map((run) => run.name)[0],
-		unknownName: !!name
+		selected: data.RunsWithPodNames.team.environment.job.runs.nodes.map((run) => run.name)[0]
 	};
 }

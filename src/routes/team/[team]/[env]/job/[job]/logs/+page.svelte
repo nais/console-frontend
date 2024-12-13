@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run as run_1 } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import {
@@ -30,9 +28,9 @@
 	// svelte-ignore state_referenced_locally
 	let pods: Set<string> = $state(new Set([selected]));
 	let selectedRun: string = $state('');
-	run_1(() => {
-		selectedRun = selected;
-	});
+	//run_1(() => {
+	//	selectedRun = selected;
+	//});
 	function setSelected(name: string) {
 		pods = new Set(
 			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
@@ -42,9 +40,9 @@
 		);
 		running = true;
 	}
-	run_1(() => {
-		setSelected(selectedRun);
-	});
+	//run_1(() => {
+	//	setSelected(selectedRun);
+	//});
 
 	function renderRunName(i: string) {
 		if (i.startsWith(job)) {
@@ -123,7 +121,6 @@
 		on:fetching={(e) => {
 			fetching = e.detail;
 		}}
-		on:scrolledUp={() => (running = false)}
 	/>
 {/if}
 
