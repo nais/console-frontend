@@ -94,7 +94,7 @@
 	</h4>
 
 	<p class="lastActivity">
-		{#if $data.deploymentInfo.url }
+		{#if $data.deploymentInfo.url}
 			<a href={$data.deploymentInfo.url}>Deployed</a>
 		{:else}
 			Deployed

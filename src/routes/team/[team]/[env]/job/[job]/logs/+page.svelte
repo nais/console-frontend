@@ -8,6 +8,7 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
 
 	let running = $state(true);
@@ -28,10 +29,8 @@
 	// svelte-ignore state_referenced_locally
 	let pods: Set<string> = $state(new Set([selected]));
 	let selectedRun: string = $state('');
-	//run_1(() => {
-	//	selectedRun = selected;
-	//});
 	function setSelected(name: string) {
+		console.log('set selected', name, $RunsWithPodNames.data);
 		pods = new Set(
 			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
 				.filter((run) => run.name === name)
@@ -40,9 +39,13 @@
 		);
 		running = true;
 	}
-	//run_1(() => {
-	//	setSelected(selectedRun);
-	//});
+
+	$effect(() => {
+		if (selectedRun == '') {
+			selectedRun = selected;
+			setSelected(selected);
+		}
+	});
 
 	function renderRunName(i: string) {
 		if (i.startsWith(job)) {
@@ -53,14 +56,13 @@
 	}
 
 	const viewOptions = ['Time', 'Level', 'Name'];
-	let selectedViewOptions = $state(new Set(viewOptions));
+	let selectedViewOptions = new SvelteSet(viewOptions);
 	function toggleSelectedViewOptions(option: string) {
 		if (selectedViewOptions.has(option)) {
 			selectedViewOptions.delete(option);
 		} else {
 			selectedViewOptions.add(option);
 		}
-		selectedViewOptions = selectedViewOptions;
 	}
 </script>
 
@@ -69,16 +71,14 @@
 	<div class="topbar">
 		<div class="instances">
 			{#if runs.length > 0}
-				{#if pods.size > 0}
-					<ToggleGroup size="small" bind:value={selectedRun}>
-						{#each runs as run}
-							{#if run.instances.nodes.length > 0}
-								{@const name = run.name}
-								<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
-							{/if}
-						{/each}
-					</ToggleGroup>
-				{/if}
+				<ToggleGroup size="small" bind:value={selectedRun} onchange={setSelected}>
+					{#each runs as run}
+						{#if run.instances.nodes.length > 0}
+							{@const name = run.name}
+							<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
+						{/if}
+					{/each}
+				</ToggleGroup>
 			{/if}
 		</div>
 		<div>
@@ -121,6 +121,7 @@
 		on:fetching={(e) => {
 			fetching = e.detail;
 		}}
+		on:scrolledUp={() => (running = false)}
 	/>
 {/if}
 
