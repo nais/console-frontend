@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
 
 	let running = $state(true);
@@ -18,7 +19,7 @@
 	let { data }: Props = $props();
 
 	let Instances = $derived(data.Instances);
-	let instanceNames: Set<string> = $state(data.instanceNames);
+	let instanceNames: Set<string> = data.instanceNames;
 
 	function toggleInstance(i: string) {
 		if (instanceNames.has(i)) {
@@ -26,7 +27,6 @@
 		} else {
 			instanceNames.add(i);
 		}
-		instanceNames = instanceNames;
 		if (!running) {
 			running = true;
 		}
@@ -37,14 +37,13 @@
 	}
 
 	const viewOptions = ['Time', 'Level', 'Name'];
-	let selectedViewOptions = $state(new Set(viewOptions));
+	let selectedViewOptions = new SvelteSet(viewOptions);
 	function toggleSelectedViewOptions(option: string) {
 		if (selectedViewOptions.has(option)) {
 			selectedViewOptions.delete(option);
 		} else {
 			selectedViewOptions.add(option);
 		}
-		selectedViewOptions = selectedViewOptions;
 	}
 </script>
 
@@ -78,7 +77,6 @@
 									return;
 								}
 								instances.forEach((i) => instanceNames.add(i.name));
-								instanceNames = instanceNames;
 							}}
 						>
 							Select all

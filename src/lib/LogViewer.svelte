@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { graphql, type WorkloadLogSubscriptionFilter } from '$houdini';
 	import Time from '$lib/Time.svelte';
-	import { createEventDispatcher, onDestroy, tick } from 'svelte';
+	import { createEventDispatcher, onDestroy, tick, untrack } from 'svelte';
 	import { get } from 'svelte/store';
 
 	interface Props {
@@ -83,7 +83,7 @@
 			return;
 		}
 		await tick();
-		logview.scroll({
+		logview?.scroll({
 			top: logview.scrollHeight
 		});
 	};
@@ -99,14 +99,7 @@
 	`);
 
 	let subscribed = false;
-	const start = async (
-		application: string | undefined,
-		job: string | undefined,
-		environment: string,
-		team: string,
-		instances: string[],
-		running: boolean
-	) => {
+	const start = async () => {
 		if (!browser) {
 			return;
 		}
@@ -117,26 +110,26 @@
 		if (get(updates).fetching) {
 			await updates.unlisten();
 		}
-		if (instances.length === 0) {
+		if (instances.size === 0) {
 			return;
 		}
 		logs = [];
 
 		let filter: WorkloadLogSubscriptionFilter;
 
-		if (application && application != '') {
+		if (app && app != '') {
 			filter = {
-				application: application,
-				environment: environment,
+				application: app,
+				environment: env,
 				team: team,
-				instances: instances
+				instances: Array.from(instances)
 			};
 		} else if (job && job != '') {
 			filter = {
 				job: job,
-				environment: environment,
+				environment: env,
 				team: team,
-				instances: instances
+				instances: Array.from(instances)
 			};
 		} else {
 			return;
@@ -163,9 +156,13 @@
 						updates.unlisten();
 						return;
 					}
-					logs = [...logs.slice(-maxLines), result.data.workloadLog];
+					const wl = result.data.workloadLog;
+					untrack(() => {
+						logs = [...logs.slice(-maxLines), wl];
+						logs.sort((a, b) => a.time.getTime() - b.time.getTime());
+					});
 				}
-				logs.sort((a, b) => a.time.getTime() - b.time.getTime());
+				// logs.sort((a, b) => a.time.getTime() - b.time.getTime());
 				scrollToBottom();
 			});
 			subscribed = true;
@@ -181,7 +178,7 @@
 	onDestroy(destroy);
 
 	$effect(() => {
-		start(app, job, env, team, Array.from(instances), running);
+		start();
 	});
 
 	function renderInstanceName(i: string) {
