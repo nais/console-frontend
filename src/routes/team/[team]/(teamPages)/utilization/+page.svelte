@@ -6,6 +6,7 @@
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
 	import Cost from '$lib/components/Cost.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
@@ -14,12 +15,18 @@
 	import {
 		mergeCalculateAndSortOverageData,
 		round,
-		type TeamOverageData,
-		yearlyOverageCost
+		yearlyOverageCost,
+		type TeamOverageData
 	} from '$lib/utils/resources';
-	import { HelpText, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import type { TableSortState } from '@nais/ds-svelte-community/components/Table/index.js';
-	import bytes from 'bytes-iec';
+	import {
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community/components/Table/index.js';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -208,135 +215,114 @@
 <div class="grid">
 	{#if resourceUtilization}
 		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #83bff6">
-					<CpuIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization<HelpText title="Current CPU utilization">
-							Current CPU utilization for team {team}.
-						</HelpText>
-					</h4>
-					<p class="metric" style="font-size: 1.3rem;">
-						{#if resourceUtilization !== PendingValue}
-							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-								(acc, item) => acc + (item ? item.requested : 0),
-								0
-							)}
-							{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
-								(acc, item) => acc + (item ? item.used : 0),
-								0
-							)}
-							{percentageFormatter(round((cpuUsage / cpuRequested) * 100, 0))} of {round(
-								cpuRequested,
-								0
-							)} cores
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
+			<SummaryCard
+				color="blue"
+				title="CPU utilization"
+				helpTextTitle="Current CPU utilization"
+				helpText="Current CPU utilization for team {team}."
+			>
+				{#snippet icon({ color })}
+					<CpuIcon size="32" {color} />
+				{/snippet}
+				{#if resourceUtilization !== PendingValue}
+					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
+						(acc, item) => acc + (item ? item.requested : 0),
+						0
+					)}
+					{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
+						(acc, item) => acc + (item ? item.used : 0),
+						0
+					)}
+					{percentageFormatter(round((cpuUsage / cpuRequested) * 100, 0))} of {round(
+						cpuRequested,
+						0
+					)} cores
+				{/if}
+			</SummaryCard>
+		</Card>
 		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<MemoryIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization<HelpText title="Current memory utilization"
-							>Current memory utilization for team {team}.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
-							{@const memoryRequested = resourceUtilization.memUtil.reduce(
-								(acc, item) => acc + (item ? item.requested : 0),
-								0
-							)}
-							{@const memoryUsage = resourceUtilization.memUtil.reduce(
-								(acc, item) => acc + (item ? item.used : 0),
-								0
-							)}
-							{percentageFormatter(round((memoryUsage / memoryRequested) * 100, 0))} of {bytes.format(
-								memoryRequested,
-								{ decimalPlaces: 2 }
-							)}
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
+			<SummaryCard
+				color="green"
+				title="Memory utilization"
+				helpTextTitle="Current memory utilization"
+				helpText="Current memory utilization for team {team}."
+			>
+				{#snippet icon({ color })}
+					<MemoryIcon size="32" {color} />
+				{/snippet}
+				{#if resourceUtilization !== PendingValue}
+					{@const memoryRequested = resourceUtilization.memUtil.reduce(
+						(acc, item) => acc + (item ? item.requested : 0),
+						0
+					)}
+					{@const memoryUsage = resourceUtilization.memUtil.reduce(
+						(acc, item) => acc + (item ? item.used : 0),
+						0
+					)}
+					{percentageFormatter(round((memoryUsage / memoryRequested) * 100, 0))} of {prettyBytes(
+						memoryRequested
+					)}
+				{/if}
+			</SummaryCard>
+		</Card>
 		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard" style="--bg-color: #83bff6">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						Unused CPU cost<HelpText title="Annual cost of unused CPU"
-							>Estimate of annual cost of unused CPU for team {team} calculated from current utilization
-							data.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
-							{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-								(acc, item) => acc + (item ? item.requested : 0),
-								0
-							)}
-							{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
-								(acc, item) => acc + (item ? item.used : 0),
-								0
-							)}
-							€{round(
-								yearlyOverageCost(
-									UtilizationResourceType.CPU,
-									cpuRequested,
-									cpuUsage / cpuRequested
-								),
-								0
-							)}
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
+			<SummaryCard
+				color="blue"
+				title="Unused CPU cost"
+				helpTextTitle="Annual cost of unused CPU"
+				helpText="Estimate of annual cost of unused CPU for team {team} calculated from current utilization
+							data."
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+				{#if resourceUtilization !== PendingValue}
+					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
+						(acc, item) => acc + (item ? item.requested : 0),
+						0
+					)}
+					{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
+						(acc, item) => acc + (item ? item.used : 0),
+						0
+					)}
+					€{round(
+						yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage / cpuRequested),
+						0
+					)}
+				{/if}
+			</SummaryCard>
+		</Card>
 		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Unused memory cost<HelpText placement={'left'} title="Annual cost of unused memory"
-							>Estimate of annual cost of unused memory for team {team} calculated from current utilization
-							data.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if resourceUtilization !== PendingValue}
-							{@const memoryRequested = resourceUtilization.memUtil.reduce(
-								(acc, item) => acc + (item ? item.requested : 0),
-								0
-							)}
-							{@const memoryUsage = resourceUtilization.memUtil.reduce(
-								(acc, item) => acc + (item ? item.used : 0),
-								0
-							)}
-							€{round(
-								yearlyOverageCost(
-									UtilizationResourceType.MEMORY,
-									memoryRequested,
-									memoryUsage / memoryRequested
-								),
-								0
-							)}
-						{/if}
-					</p>
-				</div>
-			</div></Card
-		>
+			<SummaryCard
+				color="green"
+				title="Unused memory cost"
+				helpTextTitle="Annual cost of unused memory"
+				helpText="Estimate of annual cost of unused memory for team {team} calculated from current utilization
+							data."
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+				{#if resourceUtilization !== PendingValue}
+					{@const memoryRequested = resourceUtilization.memUtil.reduce(
+						(acc, item) => acc + (item ? item.requested : 0),
+						0
+					)}
+					{@const memoryUsage = resourceUtilization.memUtil.reduce(
+						(acc, item) => acc + (item ? item.used : 0),
+						0
+					)}
+					€{round(
+						yearlyOverageCost(
+							UtilizationResourceType.MEMORY,
+							memoryRequested,
+							memoryUsage / memoryRequested
+						),
+						0
+					)}
+				{/if}
+			</SummaryCard>
+		</Card>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<div style="display: flex; justify-content: space-between;">
 				<h3>Unused resources per application</h3>
@@ -403,7 +389,9 @@
 									</Td>
 								</Tr>
 							{:else}
-								<p>No overage data for team {team}</p>
+								<Tr>
+									<Td colspan={999}>No overage data for team {team}</Td>
+								</Tr>
 							{/each}
 						{/if}
 					</Tbody>
@@ -415,37 +403,9 @@
 
 <style>
 	.grid {
-		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-
-	.summaryIcon {
-		display: flex;
-		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 2px solid var(--bg-color);
-		border-radius: 5px;
-	}
-	.summary > h4 {
-		display: flex;
-		gap: 0.5rem;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
-	}
-	.summaryCard {
-		display: flex;
-		align-items: center;
-		gap: 20px;
 	}
 </style>
