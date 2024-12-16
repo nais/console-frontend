@@ -69,13 +69,11 @@
 						Cost
 						<HelpText title="">Total Big Query cost for team for the last 30 days.</HelpText>
 					</h4>
-					<p class="metric">
-						{#if cost !== PendingValue}
-							<Cost cost={cost.daily.sum} />
-						{:else}
-							<Skeleton variant="text" />
-						{/if}
-					</p>
+					{#if cost !== PendingValue}
+						<Cost cost={cost.daily.sum} />
+					{:else}
+						<Skeleton variant="text" />
+					{/if}
 				</div>
 			</div>
 		</Card>
@@ -211,9 +209,5 @@
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);
-	}
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
 	}
 </style>
