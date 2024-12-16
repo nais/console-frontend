@@ -29,7 +29,6 @@
 	import bytes from 'bytes-iec';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
-	import { untrack } from 'svelte';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -196,11 +195,6 @@
 			}
 		}
 
-		overageTable = mergeCalculateAndSortOverageDataAllTeams(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction
-		);
 		return sortState;
 	};
 
@@ -212,13 +206,11 @@
 	let resourceUtilization = $derived(mergeAll($TenantUtilization.data));
 	let overageTable: TeamsOverageData[] = $state([]);
 	$effect(() => {
-		untrack(() => {
-			overageTable = mergeCalculateAndSortOverageDataAllTeams(
-				resourceUtilization,
-				sortState.orderBy,
-				sortState.direction
-			);
-		});
+		overageTable = mergeCalculateAndSortOverageDataAllTeams(
+			resourceUtilization,
+			sortState.orderBy,
+			sortState.direction
+		);
 	});
 </script>
 
