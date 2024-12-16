@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import Cost from '$lib/components/Cost.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -47,79 +49,60 @@
 {:else if instance}
 	<div class="summary-grid">
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost
-						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
-					</h4>
-					<p class="metric">
-						€{Math.round(instance.cost.sum)}
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="Cost"
+				helpText="Total SQL instance cost for the last 30 days"
+				color="blue"
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+				<Cost cost={Math.round(instance.cost.sum)} />
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="CPU utilization"
+				helpText="Current CPU utilization"
+				color="green"
+				styled={false}
+			>
+				{#snippet icon()}
 					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization
-						<HelpText title="Current CPU utilization">
-							CPU utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-						core{instance.metrics.cpu.cores > 1 ? 's' : ''}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+				{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
+				core{instance.metrics.cpu.cores > 1 ? 's' : ''}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="Memory utilization"
+				helpText="Current memory utilization"
+				color="green"
+				styled={false}
+			>
+				{#snippet icon()}
 					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current memory utilization">
-							Memory utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-							instance.metrics.memory.quotaBytes
-						)}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+				{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+					instance.metrics.memory.quotaBytes
+				)}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="Disk utilization"
+				helpText="Current disk utilization"
+				color="green"
+				styled={false}
+			>
+				{#snippet icon()}
 					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						Disk utilization
-						<HelpText title="Current disk utilization"
-							>Disk utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-							instance.metrics.disk.quotaBytes
-						)}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+				{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+					instance.metrics.disk.quotaBytes
+				)}
+			</SummaryCard>
 		</Card>
 	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
@@ -519,34 +502,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-
-	.summaryIcon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 1px solid var(--bg-color);
-		border-radius: 5px;
-	}
-
-	.summary > h4 {
-		display: flex;
-		gap: 0.5rem;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
-	}
-
-	.summaryCard {
-		display: flex;
-		align-items: center;
-		gap: 20px;
 	}
 </style>
