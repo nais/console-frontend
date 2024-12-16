@@ -2,10 +2,11 @@
 	import Card from '$lib/Card.svelte';
 
 	import { PendingValue, TeamVulnerabilityRiskScoreTrend, TeamVulnerabilityState } from '$houdini';
-	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 
 	import { page } from '$app/stores';
+	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -38,26 +39,20 @@
 	{@const team = $TeamVulnerabilities.data.team}
 	<div class="grid">
 		<Card columns={12}>
-			<div class="summaryCard" style="align-items: start; min-height: 90px">
+			<div class="vulnerabilitySummary">
 				{#if team.vulnerabilitySummary.bomCount !== PendingValue}
 					{#if team.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK).length > 0}
-						<div>
-							<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
-						</div>
+						<XMarkOctagonIcon font-size="66px" style="color: var(--a-icon-danger)" />
 					{:else}
-						<div>
-							<Nais
-								size="66px"
-								style="color: var(--a-icon-success)"
-								aria-label="Team is nais"
-								role="image"
-							/>
-						</div>
+						<Nais
+							size="66px"
+							style="color: var(--a-icon-success)"
+							aria-label="Team is nais"
+							role="image"
+						/>
 					{/if}
 				{:else}
-					<div>
-						<Skeleton variant="rounded" width="66px" height="66px" />
-					</div>
+					<Skeleton variant="rounded" width="66px" height="66px" />
 				{/if}
 				<div class="summary">
 					<h4>
@@ -98,69 +93,69 @@
 			</div>
 		</Card>
 		<Card columns={3} style="display: flex; align-items:center;">
-			<div class="summaryCard">
-				<div>
+			<SummaryCard title="SBOM coverage" color="grey" styled={false}>
+				{#snippet icon()}
 					{#if team?.vulnerabilitySummary.coverage !== PendingValue}
 						{#if team.vulnerabilitySummary.coverage >= 100}
 							<Nais
-								size="66px"
 								style="color: var(--a-icon-success)"
 								aria-label="Workload is nais"
 								role="image"
 							/>
 						{:else}
 							<CircleProgressBar
-								size="66px"
 								progress={team.vulnerabilitySummary.coverage / 100}
 								startColor="var(--a-icon-danger)"
 								endColor="green"
 							/>
 						{/if}
 					{:else}
-						<div>
-							<Skeleton variant="circle" width="66px" height="66px" />
-						</div>
+						<Skeleton variant="circle" width="66px" height="66px" />
 					{/if}
-				</div>
-				<div class="summary">
-					<h4>
-						SBOM coverage
-						<HelpText title="Current SBOM coverage">Workloads with an SBOM.</HelpText>
-					</h4>
-					<p class="metric">
-						{#if team?.vulnerabilitySummary.bomCount !== PendingValue}
-							{team.vulnerabilitySummary.bomCount} of {team.workloads?.pageInfo.totalCount}
-							workloads
+				{/snippet}
+				{#if team !== undefined}
+					{#if team.vulnerabilitySummary.bomCount !== PendingValue}
+						{#if team.vulnerabilitySummary.bomCount > 0}
+							{team.vulnerabilitySummary.bomCount} of {team.workloads?.pageInfo.totalCount} workloads
+							have SBOM
 						{:else}
-							<Skeleton variant="text" width="44px" />
+							No workloads with SBOM found
 						{/if}
-					</p>
-				</div>
-			</div>
+					{:else}
+						<Skeleton variant="text" width="44px" />
+					{/if}
+				{/if}
+			</SummaryCard>
 		</Card>
 		<Card columns={3} style="display: flex; align-items:center;">
-			<div class="summaryCard">
-				{#if team !== undefined}
-					<div style="--bg-color: #C8C8C8; display:flex; align-items:center;">
-						{#if team.vulnerabilitySummary.critical == 0}
-							<code class="check">&check;</code>
-						{:else}
+			<SummaryCard title="Critical vulnerabilities" color={'grey'} styled={false}>
+				{#snippet icon()}
+					{#if team?.vulnerabilitySummary.critical !== PendingValue}
+						{#if team.vulnerabilitySummary.critical > 0}
 							<Vulnerability
 								count={team.vulnerabilitySummary.critical}
 								severity="critical"
 								size={'66px'}
 							/>
+						{:else}
+							<code class="check">&check;</code>
 						{/if}
-					</div>
-					<div class="summary">
-						<h4>Critical vulnerabilities</h4>
-					</div>
+					{:else}
+						<Skeleton variant="rounded" width="66px" height="66px" />
+					{/if}
+				{/snippet}
+				{#if team !== undefined}
+					{#if team.vulnerabilitySummary.critical !== PendingValue}
+						{team.vulnerabilitySummary.critical} critical vulnerabilities
+					{:else}
+						<Skeleton variant="text" width="44px" />
+					{/if}
 				{/if}
-			</div>
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #C8C8C8">
+			<SummaryCard title="Total risk score" color={'grey'} styled={false}>
+				{#snippet icon()}
 					{#if team?.vulnerabilitySummary.riskScoreTrend !== PendingValue}
 						{#if team.vulnerabilitySummary.riskScoreTrend === TeamVulnerabilityRiskScoreTrend.UP}
 							<TrendUpIcon title="RiskScore" font-size="80" style="color: var(--a-icon-danger)" />
@@ -180,24 +175,15 @@
 					{:else}
 						<Skeleton variant="rounded" width="66px" height="66px" />
 					{/if}
-				</div>
-				<div class="summary">
-					<h4>
-						Total risk score
-						<HelpText title="Current team total risk score"
-							>The total risk score for the team's vulnerabilities. The icon will also show trend up
-							or down since last month.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if team?.vulnerabilitySummary.riskScore !== PendingValue}
-							{team.vulnerabilitySummary.riskScore}
-						{:else}
-							<Skeleton variant="text" width="44px" />
-						{/if}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+				{#if team !== undefined}
+					{#if team.vulnerabilitySummary.riskScore !== PendingValue}
+						{team.vulnerabilitySummary.riskScore}
+					{:else}
+						<Skeleton variant="text" width="44px" />
+					{/if}
+				{/if}
+			</SummaryCard>
 		</Card>
 		<!--Card columns={3}>
 			<div class="summaryCard">
@@ -338,11 +324,7 @@
 		font-weight: bold;
 		font-size: 1rem;
 	}
-	.summaryIcon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+
 	.summary {
 		width: 100%;
 		min-height: 80px;
@@ -355,21 +337,13 @@
 		color: var(--color-text-secondary);
 		font-weight: bold;
 	}
-	.summary > p {
-		display: flex;
-		justify-content: space-between;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-	.metric {
-		font-size: 1.3rem;
-		margin: 0;
-	}
-	.summaryCard {
+
+	.vulnerabilitySummary {
 		display: flex;
 		align-items: center;
 		gap: 20px;
+		align-items: start;
+		min-height: 90px;
 	}
 	.env-filter {
 		display: flex;
