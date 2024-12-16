@@ -9,6 +9,7 @@
 
 	interface Props {
 		helpText?: string;
+		helpTextTitle?: string;
 		title: string;
 		icon: Snippet<[{ color: string }]>;
 		children: Snippet;
@@ -16,9 +17,16 @@
 		styled?: boolean;
 	}
 
-	let { helpText, title, icon, children, color: colorName, styled = true }: Props = $props();
+	let {
+		helpText,
+		helpTextTitle,
+		title,
+		icon,
+		children,
+		color: colorName,
+		styled = true
+	}: Props = $props();
 	let color = $derived(colors[colorName]);
-	const helpTextTitle = 'Hjelpetekst';
 </script>
 
 <div class="summaryCard">
@@ -34,7 +42,7 @@
 		<h4>
 			{title}
 			{#if helpText}
-				<HelpText title={helpTextTitle}>{helpText}</HelpText>
+				<HelpText title={helpTextTitle ? helpTextTitle : ''}>{helpText}</HelpText>
 			{/if}
 		</h4>
 		<p class="metric">
