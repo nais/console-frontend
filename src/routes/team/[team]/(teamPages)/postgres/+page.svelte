@@ -2,10 +2,8 @@
 	import { page } from '$app/stores';
 	import { PendingValue, SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		Button,
-		HelpText,
 		Skeleton,
 		Table,
 		Tbody,
@@ -25,7 +23,9 @@
 
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -69,108 +69,92 @@
 
 	<div class="summary-grid">
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost
-						<HelpText title="">Total SQL instance cost for the last 30 days.</HelpText>
-					</h4>
-					<p class="metric">
-						{#if cost !== PendingValue}
-							<Cost cost={cost.daily.sum} />
-						{:else}
-							<Skeleton variant="text" />
-						{/if}
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="Cost"
+				helpText="Total SQL instance cost for the last 30 days"
+				color="green"
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+				{#if cost !== PendingValue}
+					<Cost cost={cost.daily.sum} />
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="CPU utilization"
+				helpText="Current CPU utilization"
+				color="blue"
+				styled={false}
+			>
+				{#snippet icon()}
 					{#if utilization.sqlInstances !== PendingValue}
 						<CircleProgressBar progress={utilization.sqlInstances.cpu.utilization} />
 					{:else}
 						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization
-						<HelpText title="Current CPU utilization">
-							CPU utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if utilization.sqlInstances !== PendingValue}
-							{(utilization.sqlInstances.cpu.utilization * 100).toFixed(1)}% of
-							{utilization.sqlInstances.cpu.requested.toFixed(0)} core{utilization.sqlInstances.cpu
-								.requested > 1
-								? 's'
-								: ''}
-						{:else}
-							<Skeleton variant="text" />
-						{/if}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+
+				{#if utilization.sqlInstances !== PendingValue}
+					{(utilization.sqlInstances.cpu.utilization * 100).toFixed(1)}% of
+					{utilization.sqlInstances.cpu.requested.toFixed(0)} core{utilization.sqlInstances.cpu
+						.requested > 1
+						? 's'
+						: ''}
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="Memory utilization"
+				helpText="Memory utilization for the last elapsed hour."
+				color="blue"
+				styled={false}
+			>
+				{#snippet icon()}
 					{#if utilization.sqlInstances !== PendingValue}
 						<CircleProgressBar progress={utilization.sqlInstances.memory.utilization} />
 					{:else}
 						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current memory utilization">
-							Memory utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if utilization.sqlInstances !== PendingValue}
-							{(utilization.sqlInstances.memory.utilization * 100).toFixed(1)}% of
-							{prettyBytes(utilization.sqlInstances.memory.requested)}
-						{:else}
-							<Skeleton variant="text" />
-						{/if}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+
+				{#if utilization.sqlInstances !== PendingValue}
+					{(utilization.sqlInstances.memory.utilization * 100).toFixed(1)}% of
+					{prettyBytes(utilization.sqlInstances.memory.requested)}
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="Disk utilization"
+				helpText="Disk utilization for the last elapsed hour."
+				color="blue"
+				styled={false}
+			>
+				{#snippet icon()}
 					{#if utilization.sqlInstances !== PendingValue}
 						<CircleProgressBar progress={utilization.sqlInstances.disk.utilization} />
 					{:else}
 						<Skeleton height="50px" width="50px" variant="circle" />
 					{/if}
-				</div>
-				<div class="summary">
-					<h4>
-						Disk utilization
-						<HelpText title="Current disk utilization">
-							Disk utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{#if utilization.sqlInstances !== PendingValue}
-							{(utilization.sqlInstances.disk.utilization * 100).toFixed(1)}% of
-							{prettyBytes(utilization.sqlInstances.disk.requested)}
-						{:else}
-							<Skeleton variant="text" />
-						{/if}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+
+				{#if utilization.sqlInstances !== PendingValue}
+					{(utilization.sqlInstances.disk.utilization * 100).toFixed(1)}% of
+					{prettyBytes(utilization.sqlInstances.disk.requested)}
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			</SummaryCard>
 		</Card>
 	</div>
 	<Card columns={12}>
@@ -361,41 +345,6 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-
-	.summaryIcon {
-		display: flex;
-		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 2px solid var(--bg-color);
-		border-radius: 5px;
-	}
-
-	.summary {
-		width: 100%;
-	}
-
-	.summary > h4 {
-		display: flex;
-		justify-content: space-between;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
-	}
-
-	.summaryCard {
-		display: grid;
-		grid-template-columns: 50px 1fr;
-		align-items: center;
-		gap: 20px;
 	}
 
 	.pagination {
