@@ -1,5 +1,10 @@
 query InventoryCounts($team: Slug!) {
 	team(slug: $team) @loading(cascade: true) {
+		secrets {
+			pageInfo {
+				totalCount
+			}
+		}
 		inventoryCounts {
 			applications {
 				total
