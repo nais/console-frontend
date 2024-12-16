@@ -4,7 +4,8 @@
 
 	const colors = {
 		green: '#91dc75',
-		blue: '#83bff6'
+		blue: '#83bff6',
+		grey: '#c0c0c0'
 	};
 
 	interface Props {

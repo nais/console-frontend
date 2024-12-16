@@ -4,13 +4,13 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
 		Alert,
 		Button,
 		CopyButton,
 		Heading,
-		HelpText,
 		Modal,
 		Table,
 		Tbody,
@@ -222,74 +222,56 @@
 
 	<div class="summary-grid">
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #C8C8C8">
-					<BulletListIcon font-size="32" />
-				</div>
-				<div class="summary">
-					<h4>
-						Toggles
-						<HelpText title="">Number of feature toggles in the Unleash server.</HelpText>
-					</h4>
-					<p class="metric">
-						{metrics.toggles}
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="Toggles"
+				helpText="Number of feature toggles in the Unleash server"
+				color="grey"
+			>
+				{#snippet icon({ color })}
+					<BulletListIcon font-size="32" {color} />
+				{/snippet}
+				{metrics.toggles}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #C8C8C8">
-					<TokenIcon font-size="32" />
-				</div>
-				<div class="summary">
-					<h4>
-						API clients
-						<HelpText title="API clients">
-							Number of API clients that are using the Unleash server.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{metrics.apiTokens}
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="API clients"
+				helpText="Number of API clients that are using the Unleash server"
+				color="grey"
+			>
+				{#snippet icon({ color })}
+					<TokenIcon font-size="32" {color} />
+				{/snippet}
+				{metrics.apiTokens}
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="CPU utilization"
+				helpTextTitle="Current CPU utilization"
+				helpText="CPU utilization for the last elapsed hour."
+				color="grey"
+				styled={false}
+			>
+				{#snippet icon()}
 					<CircleProgressBar progress={metrics.cpuUtilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization
-						<HelpText title="Current CPU utilization"
-							>CPU utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{metrics.cpuUtilization.toFixed(1)}% of {metrics.cpuRequests} CPUs
-					</p>
-				</div>
-			</div>
+				{/snippet}
+				{metrics.cpuUtilization.toFixed(1)}% of {metrics.cpuRequests} CPUs
+			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div>
+			<SummaryCard
+				title="Memory utilization"
+				helpTextTitle="Current memory utilization"
+				helpText="Memory utilization for the last elapsed hour."
+				color="grey"
+				styled={false}
+			>
+				{#snippet icon()}
 					<CircleProgressBar progress={metrics.memoryUtilization / 100} />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current memory utilization"
-							>Memory utilization for the last elapsed hour.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{metrics.memoryUtilization.toFixed(1)}% of {prettyBytes(metrics.memoryRequests)}
-					</p>
-				</div>
-			</div>
+				{/snippet}
+				{metrics.memoryUtilization.toFixed(1)}% of {prettyBytes(metrics.memoryRequests)}
+			</SummaryCard>
 		</Card>
 	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
@@ -446,34 +428,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-
-	.summaryIcon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 1px solid var(--bg-color);
-		border-radius: 5px;
-	}
-
-	.summary > h4 {
-		display: flex;
-		gap: 0.5rem;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
-	}
-
-	.summaryCard {
-		display: flex;
-		align-items: center;
-		gap: 20px;
 	}
 </style>

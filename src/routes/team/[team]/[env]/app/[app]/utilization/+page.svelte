@@ -3,12 +3,13 @@
 	import { UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
+	import Cost from '$lib/components/Cost.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
-	import { HelpText } from '@nais/ds-svelte-community';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -85,102 +86,83 @@
 
 	<div class="grid">
 		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #83bff6">
-					<CpuIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						CPU utilization
-						<HelpText title="Current CPU utilization">
-							Current CPU utilization based on the total cores requested for all instances
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{cpuUtilization(utilization.requested_cpu, utilization.current_cpu)}% of {utilization.requested_cpu.toLocaleString(
-							'en-GB',
-							{
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							}
-						)} cores
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="CPU utilization"
+				helpTextTitle="Current CPU utilization"
+				helpText="Current CPU utilization based on the total cores requested for all instances."
+				color="blue"
+			>
+				{#snippet icon({ color })}
+					<CpuIcon size="32" {color} />
+				{/snippet}
+				{cpuUtilization(utilization.requested_cpu, utilization.current_cpu)}% of {utilization.requested_cpu.toLocaleString(
+					'en-GB',
+					{
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2
+					}
+				)} cores
+			</SummaryCard>
 		</Card>
 		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard">
-				<div class="summaryIcon">
-					<MemoryIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Memory utilization
-						<HelpText title="Current Memory utilization">
-							Current memory utilization based on the total memory requested for all instances
-						</HelpText>
-					</h4>
-					<p class="metric">
-						{memoryUtilization(utilization.requested_memory, utilization.current_memory)}% of {prettyBytes(
-							utilization.requested_memory,
-							{
-								locale: 'en',
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							}
-						)}
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="Memory utilization"
+				helpTextTitle="Current Memory utilization"
+				helpText="Current memory utilization based on the total memory requested for all instances."
+				color="green"
+			>
+				{#snippet icon({ color })}
+					<MemoryIcon size="32" {color} />
+				{/snippet}
+				{memoryUtilization(utilization.requested_memory, utilization.current_memory)}% of {prettyBytes(
+					utilization.requested_memory,
+					{
+						locale: 'en',
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2
+					}
+				)}
+			</SummaryCard>
 		</Card>
 		<Card columns={3} borderColor="#83bff6">
-			<div class="summaryCard" style="--bg-color: #83bff6">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#83bff6" />
-				</div>
-				<div class="summary">
-					<h4>
-						Unused CPU cost<HelpText title="Annual cost of unused CPU">
-							Estimate of annual cost of unused CPU calculated based on current utilization.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						€ {yearlyOverageCost(
-							UtilizationResourceType.CPU,
-							utilization.requested_cpu,
-							cpuUtilization(utilization.requested_cpu, utilization.current_cpu)
-						).toLocaleString('en-GB', {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2
-						})}
-					</p>
-				</div>
-			</div>
+			<SummaryCard
+				title="Unused CPU cost"
+				helpTextTitle="Annual cost of unused CPU"
+				helpText="Estimate of annual cost of unused CPU calculated based on current utilization."
+				color="blue"
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+
+				<Cost
+					cost={yearlyOverageCost(
+						UtilizationResourceType.CPU,
+						utilization.requested_cpu,
+						cpuUtilization(utilization.requested_cpu, utilization.current_cpu)
+					)}
+				/>
+			</SummaryCard>
 		</Card>
 		<Card columns={3} borderColor="#91dc75">
-			<div class="summaryCard" style="--bg-color: #91dc75">
-				<div class="summaryIcon">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4 style="font-size: 0.9rem">
-						Unused memory cost<HelpText title="Annual cost of unused memory">
-							Estimate of annual cost of unused memory calculated based on current utilization.
-						</HelpText>
-					</h4>
-					<p class="metric">
-						€ {yearlyOverageCost(
-							UtilizationResourceType.MEMORY,
-							utilization.requested_memory,
-							memoryUtilization(utilization.requested_memory, utilization.current_memory)
-						).toLocaleString('en-GB', {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2
-						})}
-					</p>
-				</div>
-			</div></Card
-		>
+			<SummaryCard
+				title="Unused memory cost"
+				helpTextTitle="Annual cost of unused memory"
+				helpText="Estimate of annual cost of unused memory calculated based on current utilization."
+				color="green"
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+				<Cost
+					cost={yearlyOverageCost(
+						UtilizationResourceType.MEMORY,
+						utilization.requested_memory,
+						memoryUtilization(utilization.requested_memory, utilization.current_memory)
+					)}
+				/>
+			</SummaryCard>
+		</Card>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<span class="graphHeader">
 				<h3 style={'margin-bottom: 0'}>Memory usage</h3>
@@ -224,35 +206,6 @@
 		row-gap: 1rem;
 	}
 
-	.summaryIcon {
-		display: flex;
-		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 2px solid var(--bg-color);
-		border-radius: 5px;
-	}
-	.summary > h4 {
-		display: flex;
-		gap: 0.5rem;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-	.metric {
-		display: flex;
-		gap: 0.5rem;
-		font-size: 1.3rem;
-		margin: 0;
-		white-space: nowrap;
-	}
-	.summaryCard {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-	}
 	.graphHeader {
 		display: flex;
 		justify-content: space-between;
