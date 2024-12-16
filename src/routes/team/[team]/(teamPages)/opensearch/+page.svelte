@@ -182,11 +182,12 @@
 
 	.summaryIcon {
 		display: flex;
+		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
 		justify-content: center;
 		align-items: center;
 		width: 50px;
 		height: 50px;
-		border: 1px solid var(--bg-color);
+		border: 2px solid var(--bg-color);
 		border-radius: 5px;
 	}
 
@@ -207,11 +208,11 @@
 	}
 
 	.summaryCard {
-		display: flex;
+		display: grid;
+		grid-template-columns: 50px 1fr;
 		align-items: center;
 		gap: 20px;
 	}
-
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;
