@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { OpenSearchOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
@@ -19,8 +18,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived(page.params.team);
-	let { OpenSearch } = $derived(data);
+	let { OpenSearch, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $OpenSearch.variables?.orderBy?.field,
@@ -85,7 +83,7 @@
 						<Tr>
 							<!-- TODO: show warning if no workload uses this instance -->
 							<Td>
-								<a href={resourceLink(o.environment.name, teamName, 'opensearch', o.name)}
+								<a href={resourceLink(o.environment.name, teamSlug, 'opensearch', o.name)}
 									>{o.name}</a
 								>
 							</Td>

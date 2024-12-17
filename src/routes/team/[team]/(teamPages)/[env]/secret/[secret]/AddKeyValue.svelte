@@ -6,12 +6,12 @@
 
 	interface Props {
 		initial: SecretValueInput[];
-		team: string;
+		teamSlug: string;
 		env: string;
 		secretName: string;
 	}
 
-	let { initial, team, env, secretName }: Props = $props();
+	let { initial, teamSlug, env, secretName }: Props = $props();
 
 	let open: boolean = $state(false);
 
@@ -72,7 +72,7 @@
 				name: key,
 				value: value
 			},
-			team: team,
+			team: teamSlug,
 			env: env,
 			name: secretName
 		});

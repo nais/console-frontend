@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { BucketOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
@@ -22,8 +21,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived(page.params.team);
-	let { Buckets } = $derived(data);
+	let { Buckets, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Buckets.variables?.orderBy?.field,
@@ -91,7 +89,7 @@
 					{#if b !== PendingValue}
 						<Tr>
 							<Td>
-								<a href="/team/{teamName}/{b.environment.name}/bucket/{b.name}">
+								<a href="/team/{teamSlug}/{b.environment.name}/bucket/{b.name}">
 									{b.name}
 								</a>
 							</Td>

@@ -6,7 +6,7 @@
 	import Cost from './Cost.svelte';
 
 	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
-		return { workload: workload, environment: environment, team: team };
+		return { workload: workload, environment: environment, team: teamSlug };
 	};
 
 	const costQuery = graphql(`
@@ -32,10 +32,10 @@
 	interface Props {
 		environment: string;
 		workload: string;
-		team: string;
+		teamSlug: string;
 	}
 
-	let { environment, workload, team }: Props = $props();
+	let { environment, workload, teamSlug }: Props = $props();
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();

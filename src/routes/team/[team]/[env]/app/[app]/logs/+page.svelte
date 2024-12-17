@@ -8,7 +8,6 @@
 	let running = $state(true);
 	let fetching = $state(false);
 
-	let team = $derived(page.params.team);
 	let env = $derived(page.params.env);
 	let app = $derived(page.params.app);
 
@@ -17,6 +16,7 @@
 	}
 
 	let { data }: Props = $props();
+	let { teamSlug } = $derived(data);
 
 	let Instances = $derived(data.Instances);
 	let instanceNames: Set<string> = data.instanceNames;
@@ -127,7 +127,7 @@
 	<LogViewer
 		{app}
 		{env}
-		{team}
+		team={teamSlug}
 		{running}
 		showName={selectedViewOptions.has('Name')}
 		showTime={selectedViewOptions.has('Time')}

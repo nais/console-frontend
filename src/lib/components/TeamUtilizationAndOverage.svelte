@@ -7,7 +7,7 @@
 	import Cost from './Cost.svelte';
 
 	export const _AggregatedTeamUtilizationVariables: AggregatedTeamUtilizationVariables = () => {
-		return { team: teamName };
+		return { team: teamSlug };
 	};
 
 	const utilization = graphql(`
@@ -38,10 +38,10 @@
 	`);
 
 	interface Props {
-		teamName: string;
+		teamSlug: string;
 	}
 
-	let { teamName }: Props = $props();
+	let { teamSlug }: Props = $props();
 
 	let cpuMetrics = $derived($utilization.data?.team.cpuUtil.filter((item) => !!item) ?? []);
 
@@ -123,7 +123,7 @@
 		/>
 	{/if}
 </p>
-<a href="/team/{teamName}/utilization">View team utilization</a>
+<a href="/team/{teamSlug}/utilization">View team utilization</a>
 
 <style>
 	.container {

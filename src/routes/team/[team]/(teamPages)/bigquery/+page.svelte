@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { BigQueryDatasetOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -20,8 +19,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived(page.params.team);
-	let { BigQuery } = $derived(data);
+	let { BigQuery, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $BigQuery.variables?.orderBy?.field,
@@ -89,7 +87,7 @@
 					<Tr>
 						{#if ds !== PendingValue}
 							<Td>
-								<a href={resourceLink(ds.environment.name, teamName, 'bigquery', ds.name)}>
+								<a href={resourceLink(ds.environment.name, teamSlug, 'bigquery', ds.name)}>
 									{ds.name}
 								</a>
 							</Td>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { KafkaTopicOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 
@@ -15,8 +14,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived(page.params.team);
-	let { KafkaTopics } = $derived(data);
+	let { KafkaTopics, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $KafkaTopics.variables?.orderBy?.field,
@@ -64,7 +62,7 @@
 					{#if t !== PendingValue}
 						<Tr>
 							<Td>
-								<a href="/team/{teamName}/{t.environment.name}/kafka/{t.name}">{t.name}</a>
+								<a href="/team/{teamSlug}/{t.environment.name}/kafka/{t.name}">{t.name}</a>
 							</Td>
 							<Td>
 								{t.environment.name}

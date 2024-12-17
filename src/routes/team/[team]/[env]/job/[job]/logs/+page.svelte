@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import {
 		Button,
@@ -14,17 +13,13 @@
 	let running = $state(true);
 	let fetching = $state(false);
 
-	let team = $derived(page.params.team);
-	let env = $derived(page.params.env);
-	let job = $derived(page.params.job);
-
 	interface Props {
 		data: PageData;
 	}
 
 	let { data }: Props = $props();
 
-	let { RunsWithPodNames, selected } = $derived(data);
+	let { RunsWithPodNames, selected, teamSlug } = $derived(data);
 
 	// svelte-ignore state_referenced_locally
 	let pods: Set<string> = $state(new Set([selected]));
@@ -48,11 +43,12 @@
 	});
 
 	function renderRunName(i: string) {
-		if (i.startsWith(job)) {
-			return i.slice(job.length + 1);
-		} else {
-			return i;
+		if ($RunsWithPodNames.data?.team.environment.job.name) {
+			if (i.startsWith($RunsWithPodNames.data?.team.environment.job.name ?? '')) {
+				return i.slice($RunsWithPodNames.data?.team.environment.job.name.length + 1);
+			}
 		}
+		return i;
 	}
 
 	const viewOptions = ['Time', 'Level', 'Name'];
@@ -110,9 +106,9 @@
 		{/each}
 	</Chips>
 	<LogViewer
-		{job}
-		{env}
-		{team}
+		job={$RunsWithPodNames.data?.team.environment.job.name}
+		env={$RunsWithPodNames.data?.team.environment.name}
+		team={teamSlug}
 		{running}
 		showName={selectedViewOptions.has('Name')}
 		showTime={selectedViewOptions.has('Time')}

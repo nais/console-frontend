@@ -26,9 +26,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Applications } = $derived(data);
-
-	let teamName = $derived(page.params.team);
+	let { Applications, teamSlug } = $derived(data);
 
 	let filter: string = $state('');
 
@@ -39,7 +37,7 @@
 			page.url.searchParams.set('filter', filter);
 		}
 		history.replaceState({}, '', page.url.toString());
-		Applications.fetch({ variables: { team: teamName, filter: { name: filter } } });
+		Applications.fetch({ variables: { team: teamSlug, filter: { name: filter } } });
 	};
 
 	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -149,7 +147,7 @@
 								<Td>
 									<div class="status">
 										<a
-											href="/team/{teamName}/{app.environment.name}/app/{app.name}/status"
+											href="/team/{teamSlug}/{app.environment.name}/app/{app.name}/status"
 											data-sveltekit-preload-data="off"
 										>
 											<StatusBadge size="1.5rem" state={app.status.state} />
@@ -157,7 +155,7 @@
 									</div>
 								</Td>
 								<Td>
-									<a href="/team/{teamName}/{app.environment.name}/app/{app.name}">{app.name}</a>
+									<a href="/team/{teamSlug}/{app.environment.name}/app/{app.name}">{app.name}</a>
 								</Td>
 								<Td>{app.environment.name}</Td>
 								<Td>

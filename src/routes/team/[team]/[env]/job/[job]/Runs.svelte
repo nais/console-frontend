@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import type { JobRuns } from '$houdini';
 	import { fragment, graphql, JobRunState } from '$houdini';
 	import Time from '$lib/Time.svelte';
@@ -19,7 +18,13 @@
 			job,
 			graphql(`
 				fragment JobRuns on Job {
+					team {
+						slug
+					}
 					name
+					environment {
+						name
+					}
 					runs(first: 20) @list(name: "All_Runs") {
 						edges {
 							node {
@@ -38,10 +43,6 @@
 			`)
 		)
 	);
-
-	let jobName = $derived(page.params.job);
-	let env = $derived(page.params.env);
-	let team = $derived(page.params.team);
 
 	const formatDuration = (duration: number) => {
 		const minute = 60;
@@ -104,7 +105,9 @@
 					{/if}
 				</Td>
 				<Td
-					><a href="/team/{team}/{env}/job/{jobName}/logs?name={run.node.name}">{run.node.name}</a
+					><a
+						href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/logs?name={run
+							.node.name}">{run.node.name}</a
 					></Td
 				>
 				<Td>

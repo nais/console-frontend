@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { PendingValue, SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import {
@@ -36,8 +35,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived(page.params.team);
-	let { SqlInstances } = $derived(data);
+	let { SqlInstances, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $SqlInstances.variables?.orderBy?.field,
@@ -201,7 +199,7 @@
 								{/if}
 							</Td>
 							<Td>
-								<a href="/team/{teamName}/{i.environment.name}/postgres/{i.name}">{i.name}</a>
+								<a href="/team/{teamSlug}/{i.environment.name}/postgres/{i.name}">{i.name}</a>
 							</Td>
 							<Td>
 								{i.version}

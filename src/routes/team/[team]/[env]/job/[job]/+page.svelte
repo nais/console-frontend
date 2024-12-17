@@ -22,12 +22,12 @@
 	}
 
 	let { data }: Props = $props();
-	let { Job } = $derived(data);
+	let { Job, teamSlug } = $derived(data);
 
 	const triggerRunMutation = () =>
 		graphql(`
 			mutation TriggerJob(
-				$team: Slug!
+				$teamSlug: Slug!
 				$environment: String!
 				$jobName: String!
 				$runName: String!
@@ -36,7 +36,7 @@
 				triggerJob(
 					input: {
 						environmentName: $environment
-						teamSlug: $team
+						teamSlug: $teamSlug
 						runName: $runName
 						name: $jobName
 					}
@@ -56,7 +56,6 @@
 
 	let jobName = $derived(page.params.job);
 	let environment = $derived(page.params.env);
-	let team = $derived(page.params.team);
 
 	let open = $state(false);
 	let runName = $state('');
@@ -66,7 +65,7 @@
 		triggerRun.mutate({
 			jobName,
 			environment,
-			team,
+			teamSlug,
 			runName,
 			jobId: $Job.data!.team.environment.job.id
 		});
@@ -144,7 +143,7 @@
 		</Card>
 
 		<Card columns={3} rows={1}>
-			<AggregatedCostForWorkload workload={jobName} {environment} {team} />
+			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 		</Card>
 
 		<Card columns={3}>

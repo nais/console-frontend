@@ -32,9 +32,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Secrets } = $derived(data);
-
-	let team = $derived(page.params.team);
+	let { Secrets, teamSlug } = $derived(data);
 
 	const handleInUse = (value: string) => {
 		if (value === 'all') {
@@ -158,7 +156,7 @@
 							{:else}
 								<Tr>
 									<Td>
-										<a href="/team/{team}/{secret.environment.name}/secret/{secret.name}"
+										<a href="/team/{teamSlug}/{secret.environment.name}/secret/{secret.name}"
 											>{secret.name}</a
 										>
 									</Td>
@@ -228,7 +226,7 @@
 			</div></Card
 		>
 		{#if createSecretOpen}
-			<CreateSecret {team} bind:open={createSecretOpen} {environments} />
+			<CreateSecret team={teamSlug} bind:open={createSecretOpen} {environments} />
 		{/if}
 	</div>
 {/if}

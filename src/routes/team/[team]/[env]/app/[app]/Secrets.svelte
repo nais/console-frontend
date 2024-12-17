@@ -12,7 +12,9 @@
 	const appSecrets = graphql(`
 		query AppSecrets($app: String!, $team: Slug!, $env: String!) @load {
 			team(slug: $team) {
+				slug
 				environment(name: $env) {
+					name
 					application(name: $app) {
 						name
 						secrets {
@@ -27,9 +29,6 @@
 			}
 		}
 	`);
-
-	let env = $derived(page.params.env);
-	let team = $derived(page.params.team);
 </script>
 
 <GraphErrors errors={$appSecrets.errors} />
@@ -41,7 +40,12 @@
 		{#if $appSecrets.data.team.environment.application.secrets.edges.length > 0}
 			<ul>
 				{#each $appSecrets.data.team.environment.application.secrets.edges as secret}
-					<li><a href="/team/{team}/{env}/secret/{secret.node.name}">{secret.node.name}</a></li>
+					<li>
+						<a
+							href="/team/{$appSecrets.data.team.slug}/{$appSecrets.data.team.environment
+								.name}/secret/{secret.node.name}">{secret.node.name}</a
+						>
+					</li>
 				{/each}
 			</ul>
 		{:else}

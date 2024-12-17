@@ -8,9 +8,10 @@
 
 	interface Props {
 		app: AppInstances;
+		teamSlug: string;
 	}
 
-	let { app }: Props = $props();
+	let { app, teamSlug }: Props = $props();
 	let data = $derived(
 		fragment(
 			app,
@@ -42,7 +43,6 @@
 
 	let appName = $derived(page.params.app);
 	let env = $derived(page.params.env);
-	let team = $derived(page.params.team);
 </script>
 
 {#if $data.instances}
@@ -65,7 +65,9 @@
 			{#each instances as instance}
 				<Tr>
 					<Td>
-						<a href="/team/{team}/{env}/app/{appName}/logs?name={instance.name}">{instance.name}</a>
+						<a href="/team/{teamSlug}/{env}/app/{appName}/logs?name={instance.name}"
+							>{instance.name}</a
+						>
 					</Td>
 					<Td>{resources.requests.cpu ? resources.requests.cpu + ' CPUs' : '-'}</Td>
 					<Td>{resources.requests.memory ? prettyBytes(resources.requests.memory) : '-'}</Td>

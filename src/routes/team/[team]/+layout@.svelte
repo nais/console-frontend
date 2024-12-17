@@ -12,7 +12,7 @@
 	}
 
 	let { data, children }: Props = $props();
-	let { deletionInProgress, lastSuccessfulSync } = $derived(data);
+	let { deletionInProgress, lastSuccessfulSync, teamSlug } = $derived(data);
 
 	let feedbackOpen = $state(false);
 
@@ -251,7 +251,7 @@
 <div class="breadcrumbs">
 	<div class="page">
 		<nav>
-			<a href="/team/{$page.params.team}">{$page.params.team}</a>
+			<a href="/team/{teamSlug}">{teamSlug}</a>
 
 			{#each crumbs($page.route.id, $page.params) as { name, path }}
 				<ChevronRightIcon style="font-size: 1.5rem" />

@@ -6,7 +6,7 @@
 	import Cost from './Cost.svelte';
 
 	export const _AggregatedTeamCostVariables: AggregatedTeamCostVariables = () => {
-		return { team: team };
+		return { team: teamSlug };
 	};
 
 	const costQuery = graphql(`
@@ -26,10 +26,10 @@
 	`);
 
 	interface Props {
-		team: string;
+		teamSlug: string;
 	}
 
-	let { team }: Props = $props();
+	let { teamSlug }: Props = $props();
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();
@@ -88,7 +88,7 @@
 		{/if}
 	</div>
 
-	<a href="/team/{team}/cost">View team costs</a>
+	<a href="/team/{teamSlug}/cost">View team costs</a>
 {/if}
 
 <style>

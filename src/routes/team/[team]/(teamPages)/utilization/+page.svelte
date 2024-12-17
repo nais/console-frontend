@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -36,6 +35,7 @@
 	}
 
 	let { data }: Props = $props();
+	let { teamSlug } = $derived(data);
 
 	type OverageData = {
 		readonly workload: {
@@ -207,7 +207,6 @@
 			sortState.direction
 		);
 	});
-	let team = $derived(page.params.team);
 </script>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
@@ -219,7 +218,7 @@
 				color="blue"
 				title="CPU utilization"
 				helpTextTitle="Current CPU utilization"
-				helpText="Current CPU utilization for team {team}."
+				helpText="Current CPU utilization for team {teamSlug}."
 			>
 				{#snippet icon({ color })}
 					<CpuIcon size="32" {color} />
@@ -245,7 +244,7 @@
 				color="green"
 				title="Memory utilization"
 				helpTextTitle="Current memory utilization"
-				helpText="Current memory utilization for team {team}."
+				helpText="Current memory utilization for team {teamSlug}."
 			>
 				{#snippet icon({ color })}
 					<MemoryIcon size="32" {color} />
@@ -270,7 +269,7 @@
 				color="blue"
 				title="Unused CPU cost"
 				helpTextTitle="Annual cost of unused CPU"
-				helpText="Estimate of annual cost of unused CPU for team {team} calculated from current utilization
+				helpText="Estimate of annual cost of unused CPU for team {teamSlug} calculated from current utilization
 							data."
 			>
 				{#snippet icon({ color })}
@@ -297,7 +296,7 @@
 				color="green"
 				title="Unused memory cost"
 				helpTextTitle="Annual cost of unused memory"
-				helpText="Estimate of annual cost of unused memory for team {team} calculated from current utilization
+				helpText="Estimate of annual cost of unused memory for team {teamSlug} calculated from current utilization
 							data."
 			>
 				{#snippet icon({ color })}
@@ -335,7 +334,7 @@
 						style="height: 350px; width: 50%;"
 						on:click={(e) => {
 							const [env, app] = e.detail.name.split(':');
-							goto(`/team/${team}/${env}/app/${app}/utilization`);
+							goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
 						}}
 					/>
 					<EChart
@@ -343,7 +342,7 @@
 						style="height: 350px; width: 50%;"
 						on:click={(e) => {
 							const [env, app] = e.detail.name.split(':');
-							goto(`/team/${team}/${env}/app/${app}/utilization`);
+							goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
 						}}
 					/>
 				{/if}
@@ -372,7 +371,7 @@
 							{#each overageTable as overage}
 								<Tr>
 									<Td>
-										<a href={`/team/${team}/${overage.env}/app/${overage.name}/utilization`}>
+										<a href={`/team/${teamSlug}/${overage.env}/app/${overage.name}/utilization`}>
 											{overage.name}
 										</a>
 									</Td>
@@ -390,7 +389,7 @@
 								</Tr>
 							{:else}
 								<Tr>
-									<Td colspan={999}>No overage data for team {team}</Td>
+									<Td colspan={999}>No overage data for team {teamSlug}</Td>
 								</Tr>
 							{/each}
 						{/if}

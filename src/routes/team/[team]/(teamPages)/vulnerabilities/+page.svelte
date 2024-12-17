@@ -26,6 +26,7 @@
 	}
 
 	let { data }: Props = $props();
+	let { teamSlug } = $derived(data);
 
 	let selectedEnvironment: string = $state('');
 	selectedEnvironment = get(page).url.searchParams.get('environment') || '';
@@ -298,7 +299,7 @@
 				</Select>
 			</div>
 			{#key selectedEnvironment}
-				<WorkloadsWithSbom team={$page.params.team} environment={selectedEnvironment} />
+				<WorkloadsWithSbom team={teamSlug} environment={selectedEnvironment} />
 			{/key}
 		</Card>
 	</div>

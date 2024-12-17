@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { page } from '$app/state';
 	import {
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
@@ -26,6 +25,7 @@
 	}
 
 	let { data }: Props = $props();
+	let { teamSlug } = $derived(data);
 
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
@@ -86,8 +86,6 @@
 
 	let teamSettings = $derived($TeamSettings.data?.team);
 
-	let team = $derived(page.params.team);
-
 	let showKey = $state(false);
 	let showRotateKey = $state(false);
 	let showDeleteTeam = $state(false);
@@ -131,7 +129,7 @@
 {#if teamSettings}
 	<div class="grid">
 		<Card columns={6}>
-			<h3>{team}</h3>
+			<h3>{teamSlug}</h3>
 
 			<i>
 				<EditText
@@ -140,7 +138,7 @@
 						descriptionErrors = undefined;
 						const data = await updateTeam.mutate({
 							input: {
-								slug: team,
+								slug: teamSlug,
 								purpose: e.detail
 							}
 						});
@@ -165,7 +163,7 @@
 							defaultSlackChannelErrors = undefined;
 							const data = await updateTeam.mutate({
 								input: {
-									slug: team,
+									slug: teamSlug,
 									slackChannel: e.detail
 								}
 							});
@@ -195,7 +193,7 @@
 
 									const data = await updateTeamSlackAlertsChannel.mutate({
 										input: {
-											slug: team,
+											slug: teamSlug,
 											environmentName: env.name,
 											slackAlertsChannel: e.detail
 										}
@@ -355,7 +353,7 @@
 					onclick={async () => {
 						//rotateClicked = false;
 						showRotateKey = !showRotateKey;
-						await rotateKey.mutate({ team });
+						await rotateKey.mutate({ team: teamSlug });
 						//rotateClicked = true;
 					}}
 				>
@@ -403,8 +401,8 @@
 
 					{#if !deleteKeyResp?.data}
 						<BodyLong>
-							Please confirm that you intend to delete <strong>{team}</strong> and all resources related
-							to it.
+							Please confirm that you intend to delete <strong>{teamSlug}</strong> and all resources
+							related to it.
 						</BodyLong>
 					{/if}
 
@@ -416,8 +414,8 @@
 							'/confirm_delete?key=' +
 							deleteKeyResp.data.requestTeamDeletion.key?.key}
 						<Alert>
-							Deletion of <strong>{team}</strong> has been requested. To finalize the deletion send
-							this link to another team owner and let them confirm the deletion.
+							Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion
+							send this link to another team owner and let them confirm the deletion.
 
 							<div class="deletewrapper">
 								<div>
@@ -447,7 +445,7 @@
 								loading={deleteKeyLoading}
 								onclick={async () => {
 									deleteKeyLoading = true;
-									deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: team } });
+									deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: teamSlug } });
 									deleteKeyLoading = false;
 								}}>Confirm</Button
 							>

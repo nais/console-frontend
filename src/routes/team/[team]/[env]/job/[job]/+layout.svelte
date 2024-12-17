@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -14,14 +13,13 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
 
-	let team = $derived(page.params.team);
-
 	interface Props {
 		data: LayoutData;
 		children?: import('svelte').Snippet;
 	}
 
 	let { data, children }: Props = $props();
+	let { teamSlug } = $derived(data);
 
 	type menuGroup = {
 		items: (menuItem & { memberOnly?: boolean })[];
@@ -99,7 +97,7 @@
 	}
 </script>
 
-<svelte:head><title>{team} - Console</title></svelte:head>
+<svelte:head><title>{teamSlug} - Console</title></svelte:head>
 
 <div class="main">
 	<SideMenu nav={memberOnly(nav, data)} />

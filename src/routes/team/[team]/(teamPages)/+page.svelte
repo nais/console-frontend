@@ -15,9 +15,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { TeamOverview } = $derived(data);
-
-	let teamName = $derived(page.params.team);
+	let { TeamOverview, teamSlug } = $derived(data);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -30,18 +28,18 @@
 
 <div class="grid">
 	<Card rows={2} columns={3}>
-		<TeamInfo {teamName} />
+		<TeamInfo {teamSlug} />
 	</Card>
 
 	<Card rows={2} columns={3}>
-		<VulnerabilitySummary {teamName} />
+		<VulnerabilitySummary {teamSlug} />
 	</Card>
 
 	<Card rows={2} columns={3}>
-		<TeamUtilizationAndOverage {teamName} />
+		<TeamUtilizationAndOverage {teamSlug} />
 	</Card>
 	<Card rows={2} columns={3}>
-		<AggregatedCostForTeam team={teamName} />
+		<AggregatedCostForTeam {teamSlug} />
 	</Card>
 
 	<Card rows={1} columns={12}>

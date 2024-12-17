@@ -23,7 +23,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { App } = $derived(data);
+	let { App, teamSlug } = $derived(data);
 
 	const restartAppMutation = () =>
 		graphql(`
@@ -45,7 +45,6 @@
 
 	let application = $derived(page.params.app);
 	let environment = $derived(page.params.env);
-	let team = $derived(page.params.team);
 
 	let restart = $state(false);
 
@@ -53,7 +52,7 @@
 		restartApp.mutate({
 			application,
 			environment,
-			team
+			team: teamSlug
 		});
 	};
 </script>
@@ -67,7 +66,7 @@
 			<Image workload={app} />
 		</Card>
 		<Card columns={4} rows={1}>
-			<AggregatedCostForWorkload {team} workload={application} {environment} />
+			<AggregatedCostForWorkload {teamSlug} workload={application} {environment} />
 		</Card>
 		<Card columns={12}>
 			<div class="heading">
@@ -102,7 +101,7 @@
 				<Scaling {app} />
 			</div>
 
-			<Instances {app} />
+			<Instances {teamSlug} {app} />
 		</Card>
 		<Card columns={12}>
 			<h4>Traffic policies</h4>

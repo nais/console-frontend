@@ -8,13 +8,13 @@
 	import type { TeamInfoVariables } from './$houdini';
 
 	interface Props {
-		teamName: string;
+		teamSlug: string;
 	}
 
-	let { teamName }: Props = $props();
+	let { teamSlug }: Props = $props();
 
 	export const _TeamInfoVariables: TeamInfoVariables = () => {
-		return { team: teamName };
+		return { team: teamSlug };
 	};
 
 	const teamInfo = graphql(`

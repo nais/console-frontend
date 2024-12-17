@@ -28,9 +28,7 @@
 
 	let { data }: Props = $props();
 
-	let { Repositories } = $derived(data);
-
-	let teamName = $derived(page.params.team);
+	let { Repositories, teamSlug } = $derived(data);
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
@@ -71,7 +69,7 @@
 
 	const handleSubmit = () => {
 		if (validateRepo(repoName)) {
-			addRepository(teamName, repoName);
+			addRepository(teamSlug, repoName);
 			inputError = false;
 			repoName = '';
 		} else {
@@ -88,7 +86,7 @@
 			page.url.searchParams.set('filter', filter);
 		}
 		history.replaceState({}, '', page.url.toString());
-		Repositories.fetch({ variables: { team: teamName, filter: { name: filter } } });
+		Repositories.fetch({ variables: { team: teamSlug, filter: { name: filter } } });
 	};
 
 	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;

@@ -32,11 +32,13 @@ export const load: LayoutLoad = async (event) => {
 	if (!current.data) {
 		return {
 			viewerIsMember: false,
-			viewerIsOwner: false
+			viewerIsOwner: false,
+			teamSlug: event.params.team
 		};
 	}
 
 	return {
-		...current.data.team
+		...current.data.team,
+		teamSlug: event.params.team
 	};
 };

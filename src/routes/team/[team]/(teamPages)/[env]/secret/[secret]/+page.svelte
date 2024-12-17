@@ -34,12 +34,11 @@
 
 	let { data }: Props = $props();
 
-	let { Secret } = $derived(data);
+	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
 
 	let secretName = $derived(page.params.secret);
 	let env = $derived(page.params.env);
-	let team = $derived(page.params.team);
 
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);
@@ -79,7 +78,7 @@
 		}
 		await updateSecretValue.mutate({
 			name: secretName,
-			team: team,
+			team: teamSlug,
 			env: env,
 			value: {
 				name: keyToEdit,
@@ -122,7 +121,7 @@
 		}
 		await removeSecretValue.mutate({
 			name: secretName,
-			team: team,
+			team: teamSlug,
 			env: env,
 			valueName: keyToDelete
 		});
@@ -146,7 +145,7 @@
 	const deleteSecret = async () => {
 		await deleteMutation.mutate({
 			name: secretName,
-			team: team,
+			team: teamSlug,
 			env: env
 		});
 
@@ -154,7 +153,7 @@
 			return;
 		}
 
-		await goto('/team/' + team + '/secrets');
+		await goto('/team/' + teamSlug + '/secrets');
 	};
 
 	const openDeleteModal = () => {
@@ -318,7 +317,7 @@
 					{/each}
 				</Tbody>
 			</Table>
-			<AddKeyValue initial={secret.values} {team} {env} {secretName} />
+			<AddKeyValue initial={secret.values} {teamSlug} {env} {secretName} />
 		</Card>
 		<Card columns={4} rows={1}>
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />

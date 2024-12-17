@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import {
 		ActivityLogEntryResourceType,
 		type ActivityLogEntryResourceType$options,
@@ -16,9 +15,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { ActivityLog, viewerIsMember } = $derived(data);
-
-	let teamName = $derived(page.params.team);
+	let { ActivityLog, viewerIsMember, teamSlug } = $derived(data);
 
 	const resourceLink = (
 		environmentName: string,
@@ -27,15 +24,15 @@
 	) => {
 		switch (resourceType) {
 			case ActivityLogEntryResourceType.APP:
-				return `/team/${teamName}/${environmentName}/app/${resourceName}`;
+				return `/team/${teamSlug}/${environmentName}/app/${resourceName}`;
 			case ActivityLogEntryResourceType.JOB:
-				return `/team/${teamName}/${environmentName}/job/${resourceName}`;
+				return `/team/${teamSlug}/${environmentName}/job/${resourceName}`;
 			case ActivityLogEntryResourceType.UNLEASH:
-				return `/team/${teamName}/unleash`;
+				return `/team/${teamSlug}/unleash`;
 			case ActivityLogEntryResourceType.SECRET:
-				return `/team/${teamName}/${environmentName}/secret/${resourceName}`;
+				return `/team/${teamSlug}/${environmentName}/secret/${resourceName}`;
 			case ActivityLogEntryResourceType.TEAM:
-				return `/team/${teamName}`;
+				return `/team/${teamSlug}`;
 			default:
 				return null;
 		}

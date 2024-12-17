@@ -1,15 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { fragment, graphql, type AppStatus } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
 		ExclamationmarkTriangleFillIcon,
 		QuestionmarkDiamondFillIcon
 	} from '@nais/ds-svelte-community/icons';
-
-	let teamName = $derived(page.params.team);
-	let envName = $derived(page.params.env);
-	let appName = $derived(page.params.app);
 
 	interface Props {
 		app: AppStatus;
@@ -21,6 +16,13 @@
 			app,
 			graphql(`
 				fragment AppStatus on Application {
+					name
+					team {
+						slug
+					}
+					environment {
+						name
+					}
 					status {
 						state
 						errors {
@@ -47,7 +49,7 @@
 				/>
 				{#if $data.status?.errors.length > 0}
 					<p>
-						<a href="/team/{teamName}/{envName}/app/{appName}/status"
+						<a href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/status"
 							>{$data.status.errors.length} todo{$data.status.errors.length > 1 ? 's' : ''}</a
 						>
 					</p>
@@ -57,7 +59,10 @@
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" /></h4>
 			<div>
 				Application is failing.<br />
-				<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+				<a
+					class="status"
+					href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/status"
+				>
 					{$data.status.errors.length}
 					{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 				</a> detected.
@@ -66,7 +71,10 @@
 			<h4>Status <ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" /></h4>
 			<div>
 				Application is not nais.<br />
-				<a class="status" href="/team/{teamName}/{envName}/app/{appName}/status">
+				<a
+					class="status"
+					href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/status"
+				>
 					{$data.status.errors.length}
 					{$data.status.errors.length > 1 ? 'issues' : 'issue'}
 				</a>

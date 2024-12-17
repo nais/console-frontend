@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import type { JobNetworkPolicy } from '$houdini';
 	import { fragment, graphql } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
@@ -18,6 +17,12 @@
 			graphql(`
 				fragment JobNetworkPolicy on Job {
 					name
+					environment {
+						name
+					}
+					team {
+						slug
+					}
 					networkPolicy {
 						inbound {
 							rules {
@@ -49,8 +54,6 @@
 			`)
 		)
 	);
-	let env = $derived(page.params.env);
-	let team = $derived(page.params.team);
 </script>
 
 <div class="traffic">
@@ -75,19 +78,23 @@
 							in {rule.targetTeamSlug}
 						{/if}
 
-						in {env}
+						in {$data.environment.name}
 					{:else if rule.targetWorkload?.type === 'Job'}
 						{#if !rule.targetWorkload}
 							{rule.targetWorkloadName}.{rule.targetTeamSlug}
 						{:else}
-							<a href="/team/{rule.targetTeamSlug}/{env}/job/{rule.targetWorkloadName}"
+							<a
+								href="/team/{rule.targetTeamSlug}/{$data.environment
+									.name}/job/{rule.targetWorkloadName}"
 								>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 							>
 						{/if}
 					{:else if !rule.targetWorkload}
 						{rule.targetWorkloadName}.{rule.targetTeamSlug}
 					{:else}
-						<a href="/team/{rule.targetTeamSlug || team}/{env}/app/{rule.targetWorkloadName}"
+						<a
+							href="/team/{rule.targetTeamSlug || $data.team.slug}/{$data.environment
+								.name}/app/{rule.targetWorkloadName}"
 							>{rule.targetWorkloadName}{rule.targetTeamSlug ? '.' + rule.targetTeamSlug : ''}</a
 						>
 					{/if}
@@ -152,13 +159,17 @@
 							in {rule.targetTeamSlug}
 						{/if}
 
-						in {env}
+						in {$data.environment.name}
 					{:else if rule.targetWorkload?.type === 'Job'}
-						<a href="/team/{rule.targetTeamSlug}/{env}/job/{rule.targetWorkloadName}"
+						<a
+							href="/team/{rule.targetTeamSlug}/{$data.environment
+								.name}/job/{rule.targetWorkloadName}"
 							>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 						>
 					{:else}
-						<a href="/team/{rule.targetTeamSlug}/{env}/app/{rule.targetWorkloadName}"
+						<a
+							href="/team/{rule.targetTeamSlug}/{$data.environment
+								.name}/app/{rule.targetWorkloadName}"
 							>{rule.targetWorkloadName}.{rule.targetTeamSlug}</a
 						>
 					{/if}

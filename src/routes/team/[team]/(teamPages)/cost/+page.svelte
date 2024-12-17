@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -14,9 +13,8 @@
 	}
 
 	let { data }: Props = $props();
-	let { TeamCost } = $derived(data);
+	let { TeamCost, teamSlug } = $derived(data);
 
-	let team = page.params.team;
 	let from = $state(data.fromDate?.toISOString().split('T')[0]);
 	let to = $state(data.toDate?.toISOString().split('T')[0]);
 
@@ -69,14 +67,14 @@
 			/>
 		</Card>
 		<Card columns={12}>
-			<h4>Total cost for team {team} from {from} to {to}</h4>
+			<h4>Total cost for team {teamSlug} from {from} to {to}</h4>
 			<EChart
 				options={echartOptionsStackedColumnChart($TeamCost.data.team.cost.daily)}
 				style="height: 400px"
 			/>
 		</Card>
 
-		<TeamCostEnv {team} from={fromDate} to={toDate} />
+		<TeamCostEnv team={teamSlug} from={fromDate} to={toDate} />
 	</div>
 {/if}
 

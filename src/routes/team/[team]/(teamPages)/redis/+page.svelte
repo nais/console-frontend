@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
@@ -19,8 +18,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived(page.params.team);
-	let { Redis } = $derived(data);
+	let { Redis, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Redis.variables?.orderBy?.field,
@@ -85,7 +83,7 @@
 						<Tr>
 							<!-- TODO: show warning if no workload uses this instance -->
 							<Td>
-								<a href="/team/{teamName}/{r.environment.name}/redis/{r.name}">
+								<a href="/team/{teamSlug}/{r.environment.name}/redis/{r.name}">
 									{r.name}
 								</a>
 							</Td>

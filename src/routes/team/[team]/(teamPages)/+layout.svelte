@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
@@ -38,8 +37,7 @@
 
 	let { data, children }: Props = $props();
 
-	let team = $derived(page.params.team);
-	let { InventoryCounts, UserInfo } = $derived(data);
+	let { InventoryCounts, UserInfo, teamSlug } = $derived(data);
 
 	let nav: menuGroup[] = $state([]);
 	$effect(() => {
@@ -231,7 +229,7 @@
 	}
 </script>
 
-<svelte:head><title>{team} - Console</title></svelte:head>
+<svelte:head><title>{teamSlug} - Console</title></svelte:head>
 
 <div class="main">
 	<SideMenu nav={memberOnly(nav, data)} />
