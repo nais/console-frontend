@@ -82,7 +82,6 @@
 							routeId: '/team/[team]/(teamPages)/secrets',
 							extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
 							withSubRoutes: true,
-							inventoryCount: $InventoryCounts.data?.team.secrets.pageInfo.totalCount,
 							icon: QuietZoneIcon,
 							memberOnly: true
 						}
