@@ -13,6 +13,7 @@
 	} from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
+	import type { AddMemberQueryVariables } from './$houdini';
 
 	interface Props {
 		open: boolean;
@@ -23,15 +24,27 @@
 
 	const dispatcher = createEventDispatcher<{ created: null }>();
 
+	export const _AddMemberQueryVariables: AddMemberQueryVariables = () => {
+		return { team: team };
+	};
+
 	const store = graphql(`
-		query AddMemberQuery @load {
+		query AddMemberQuery($team: Slug!) @load {
 			users(first: 10000) {
 				nodes {
 					id
 					email
 				}
 			}
-
+			team(slug: $team) {
+				members {
+					nodes {
+						user {
+							email
+						}
+					}
+				}
+			}
 			reconcilers {
 				edges {
 					node {
@@ -49,6 +62,15 @@
 		mutation CreateMemberMutation($input: AddTeamMemberInput!) {
 			addTeamMember(input: $input) {
 				member {
+					team {
+						members {
+							nodes {
+								user {
+									email
+								}
+							}
+						}
+					}
 					user {
 						id
 					}
@@ -57,7 +79,13 @@
 		}
 	`);
 
-	let emails = $derived($store.data?.users.nodes.map((user) => user.email) ?? []);
+	let emails = $derived.by(() => {
+		const allEmails = $store.data?.users.nodes.map((user) => user.email) ?? [];
+		const teamMemberEmails = new Set(
+			$store.data?.team.members.nodes.map((member) => member.user.email) ?? []
+		);
+		return allEmails.filter((email) => !teamMemberEmails.has(email));
+	});
 
 	type Reconciler = { name: string; value: string; description: string };
 	let selectedRecs: string[] = $state([]);
