@@ -129,7 +129,7 @@
 					{#if acl.node.teamName !== '*'}
 						<li>
 							<a
-								href={`/team/${acl.node.topic.team.slug}/${acl.node.topic.environment.name === 'prod-fss' ? 'prod-gcp' : acl.node.topic.environment.name === 'dev-fss' ? 'dev-gcp' : $data.environment.name}/kafka/${acl.node.topic.name}`}
+								href={`/team/${acl.node.topic.team.slug}/${acl.node.topic.environment.name === 'prod-fss' ? 'prod-gcp' : acl.node.topic.environment.name === 'dev-fss' ? 'dev-gcp' : acl.node.topic.environment.name}/kafka/${acl.node.topic.name}`}
 								>{acl.node.topic.name}</a
 							>
 							<code>({acl.node.access})</code>
