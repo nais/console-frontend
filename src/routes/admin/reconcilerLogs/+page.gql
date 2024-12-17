@@ -5,7 +5,7 @@ query ReconcilerLogs {
 			displayName
 			name
 			description
-			errors(first: 10) {
+			errors {
 				nodes {
 					correlationID
 					createdAt

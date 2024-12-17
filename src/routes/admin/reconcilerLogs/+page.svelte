@@ -33,7 +33,7 @@
 			.toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 </script>
 
-<Table zebraStripes>
+<Table size="small" zebraStripes>
 	<Thead>
 		<Tr>
 			<Th>Message</Th>

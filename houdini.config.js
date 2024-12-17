@@ -44,11 +44,6 @@ const config = {
 				return date.toISOString();
 			}
 		}
-	},
-	types: {
-		ReconcilerError: {
-			keys: ['correlationID']
-		}
 	}
 };
 
