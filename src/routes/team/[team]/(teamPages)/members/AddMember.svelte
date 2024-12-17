@@ -93,6 +93,7 @@
 		}
 
 		open = false;
+		email = '';
 
 		dispatcher('created', null);
 	};

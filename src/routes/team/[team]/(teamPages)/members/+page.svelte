@@ -87,8 +87,8 @@
 					onclick={() => {
 						addMemberOpen = !addMemberOpen;
 					}}
-					iconLeft={PlusIcon}
-				/>
+					iconLeft={PlusIcon}>Add member</Button
+				>
 			{/if}
 		</div>
 
