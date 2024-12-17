@@ -178,7 +178,7 @@
 	{#snippet header()}
 		Confirmation required
 	{/snippet}
-	This will <b>{$r.enabled ? 'disable' : 'enable'} </b>synchronization of <i>{$r.displayName}</i><br
+	This will <b>{$r.enabled ? 'disable' : 'enable'}</b> synchronization of <i>{$r.displayName}</i><br
 	/>
 	Are you sure?
 </Confirm>
