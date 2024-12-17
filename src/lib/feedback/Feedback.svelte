@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { replacer } from '$lib/replacer';
 	import { Button, Checkbox, Heading, Modal, Select } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
@@ -24,8 +24,8 @@
 
 	const maxlength = 3000;
 
-	if ($page.route.id !== null) {
-		uri = replacer($page.route.id, $page.params);
+	if (page.route.id !== null) {
+		uri = replacer(page.route.id, page.params);
 	}
 
 	const FEEDBACK_TYPE: { value: FeedbackType | ''; text: string }[] = [

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fragment, graphql, type AppStatus } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
@@ -7,9 +7,9 @@
 		QuestionmarkDiamondFillIcon
 	} from '@nais/ds-svelte-community/icons';
 
-	let teamName = $derived($page.params.team);
-	let envName = $derived($page.params.env);
-	let appName = $derived($page.params.app);
+	let teamName = $derived(page.params.team);
+	let envName = $derived(page.params.env);
+	let appName = $derived(page.params.app);
 
 	interface Props {
 		app: AppStatus;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
@@ -38,7 +38,7 @@
 
 	let { data, children }: Props = $props();
 
-	let team = $derived($page.params.team);
+	let team = $derived(page.params.team);
 	let { InventoryCounts, UserInfo } = $derived(data);
 
 	let nav: menuGroup[] = $state([]);

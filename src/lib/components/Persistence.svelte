@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fragment, graphql, type Persistence } from '$houdini';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
@@ -86,8 +86,8 @@
 		)
 	);
 
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 </script>
 
 <div class="persistence">

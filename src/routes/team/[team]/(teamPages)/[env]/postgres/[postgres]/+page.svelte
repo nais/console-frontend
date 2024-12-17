@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
@@ -34,7 +34,7 @@
 	let { data }: Props = $props();
 	let { SqlInstance } = $derived(data);
 	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
-	let postgres = $derived($page.params.postgres);
+	let postgres = $derived(page.params.postgres);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 	const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

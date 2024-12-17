@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
@@ -9,7 +9,7 @@
 
 	let { children }: Props = $props();
 
-	let currentRoute = $derived($page.route.id);
+	let currentRoute = $derived(page.route.id);
 	const nav = [
 		{
 			tab: 'Users',

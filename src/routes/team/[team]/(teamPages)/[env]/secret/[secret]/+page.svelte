@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -37,9 +37,9 @@
 	let { Secret } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
 
-	let secretName = $derived($page.params.secret);
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let secretName = $derived(page.params.secret);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);

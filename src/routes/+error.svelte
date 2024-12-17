@@ -1,12 +1,12 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 </script>
 
 <div>
-	<Heading size="large">{$page.status}</Heading>
+	<Heading size="large">{page.status}</Heading>
 	<BodyShort>
-		{$page.error?.message || 'Unknown error'}
+		{page.error?.message || 'Unknown error'}
 	</BodyShort>
 </div>
 

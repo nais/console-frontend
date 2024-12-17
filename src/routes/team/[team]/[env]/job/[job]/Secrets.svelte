@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 	import type { JobSecretsVariables } from './$houdini';
 
 	export const _JobSecretsVariables: JobSecretsVariables = () => {
-		return { job: $page.params.job, team: $page.params.team, env: $page.params.env };
+		return { job: page.params.job, team: page.params.team, env: page.params.env };
 	};
 
 	const jobSecrets = graphql(`
@@ -27,8 +27,8 @@
 		}
 	`);
 
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 </script>
 
 <GraphErrors errors={$jobSecrets.errors} />

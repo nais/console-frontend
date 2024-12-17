@@ -24,7 +24,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		graphql,
 		ImageVulnerabilityAnalysisState,
@@ -76,15 +76,15 @@
 	let inputText = $state('');
 	let suppressed: boolean = $state(false);
 
-	let team = $page.params.team;
-	let env = $page.params.env;
-	let workload = $page.params.app ?? $page.params.job;
+	let team = page.params.team;
+	let env = page.params.env;
+	let workload = page.params.app ?? page.params.job;
 
 	// check if route contains app or job
-	if ($page.route.id && $page.route.id.includes('app')) {
-		workload = 'app/' + $page.params.app;
+	if (page.route.id && page.route.id.includes('app')) {
+		workload = 'app/' + page.params.app;
 	} else {
-		workload = 'job/' + $page.params.job;
+		workload = 'job/' + page.params.job;
 	}
 
 	const dispatcher = createEventDispatcher<{ close: void }>();

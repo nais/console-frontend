@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { JobNetworkPolicy } from '$houdini';
 	import { fragment, graphql } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
@@ -49,8 +49,8 @@
 			`)
 		)
 	);
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 </script>
 
 <div class="traffic">

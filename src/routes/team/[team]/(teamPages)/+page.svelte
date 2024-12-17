@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import Deploys from '$lib/components/TeamDeployments.svelte';
@@ -17,11 +17,11 @@
 	let { data }: Props = $props();
 	let { TeamOverview } = $derived(data);
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 </script>
 
-{#if $page.url.searchParams.has('deleted')}
-	{@const msgParts = ($page.url.searchParams.get('deleted') || '').split('/')}
+{#if page.url.searchParams.has('deleted')}
+	{@const msgParts = (page.url.searchParams.get('deleted') || '').split('/')}
 	<Alert variant="success" size="small">
 		Successfully deleted {msgParts[0]}
 		{msgParts[1]}.

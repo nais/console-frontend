@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fragment, graphql, type JobErrorFragment } from '$houdini';
 	import { Alert } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
@@ -78,9 +78,9 @@
 		)
 	);
 
-	let team = $derived($page.params.team);
-	let env = $derived($page.params.env);
-	let job = $derived($page.params.job);
+	let team = $derived(page.params.team);
+	let env = $derived(page.params.env);
+	let job = $derived(page.params.job);
 </script>
 
 {#if $data}

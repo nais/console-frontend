@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { BigQueryDatasetOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -20,7 +20,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 	let { BigQuery } = $derived(data);
 
 	let tableSort = $derived({

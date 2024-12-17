@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { AppInstances } from '$houdini';
 	import { fragment, graphql } from '$houdini';
 	import Time from '$lib/Time.svelte';
@@ -40,9 +40,9 @@
 		)
 	);
 
-	let appName = $derived($page.params.app);
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let appName = $derived(page.params.app);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 </script>
 
 {#if $data.instances}

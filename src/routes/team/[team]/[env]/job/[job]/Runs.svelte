@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { JobRuns } from '$houdini';
 	import { fragment, graphql, JobRunState } from '$houdini';
 	import Time from '$lib/Time.svelte';
@@ -39,9 +39,9 @@
 		)
 	);
 
-	let jobName = $derived($page.params.job);
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let jobName = $derived(page.params.job);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 
 	const formatDuration = (duration: number) => {
 		const minute = 60;

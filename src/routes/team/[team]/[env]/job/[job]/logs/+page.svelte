@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import {
 		Button,
@@ -14,9 +14,9 @@
 	let running = $state(true);
 	let fetching = $state(false);
 
-	let team = $derived($page.params.team);
-	let env = $derived($page.params.env);
-	let job = $derived($page.params.job);
+	let team = $derived(page.params.team);
+	let env = $derived(page.params.env);
+	let job = $derived(page.params.job);
 
 	interface Props {
 		data: PageData;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -20,7 +20,7 @@
 
 	let { AppCost } = $derived(data);
 
-	let app = $page.params.app;
+	let app = page.params.app;
 	let from = $state(data.fromDate?.toISOString().split('T')[0]);
 	let to = $state(data.toDate?.toISOString().split('T')[0]);
 

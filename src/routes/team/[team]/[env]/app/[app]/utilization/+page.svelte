@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -169,7 +169,7 @@
 				<span class="intervalPicker">
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval}
 						<a
-							class:active={($page.url.searchParams.get('interval') || '7d') == interval}
+							class:active={(page.url.searchParams.get('interval') || '7d') == interval}
 							href="?interval={interval}">{interval}</a
 						>
 					{/each}

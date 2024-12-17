@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fragment, graphql, WorkloadState, type JobStatus } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 	import {
@@ -7,9 +7,9 @@
 		QuestionmarkDiamondFillIcon
 	} from '@nais/ds-svelte-community/icons';
 
-	let teamName = $derived($page.params.team);
-	let envName = $derived($page.params.env);
-	let jobName = $derived($page.params.job);
+	let teamName = $derived(page.params.team);
+	let envName = $derived(page.params.env);
+	let jobName = $derived(page.params.job);
 
 	interface Props {
 		job: JobStatus;

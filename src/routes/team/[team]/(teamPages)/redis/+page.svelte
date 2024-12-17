@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 
@@ -19,7 +19,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 	let { Redis } = $derived(data);
 
 	let tableSort = $derived({

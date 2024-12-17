@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
@@ -43,9 +43,9 @@
 		restartApp = restartAppMutation();
 	});
 
-	let application = $derived($page.params.app);
-	let environment = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let application = $derived(page.params.app);
+	let environment = $derived(page.params.env);
+	let team = $derived(page.params.team);
 
 	let restart = $state(false);
 

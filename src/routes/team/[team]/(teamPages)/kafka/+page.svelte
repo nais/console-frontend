@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { KafkaTopicOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 
@@ -15,7 +15,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 	let { KafkaTopics } = $derived(data);
 
 	let tableSort = $derived({

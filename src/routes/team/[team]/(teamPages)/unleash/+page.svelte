@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { graphql, type SearchQuery$result } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
@@ -40,7 +40,7 @@
 
 	let { data }: Props = $props();
 	let { Unleash } = $derived(data);
-	let team = $derived($page.params.team);
+	let team = $derived(page.params.team);
 	let unleash = $derived($Unleash.data?.team?.unleash);
 	let metrics = $derived(
 		$Unleash.data?.team?.unleash?.metrics || {

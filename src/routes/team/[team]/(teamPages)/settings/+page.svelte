@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
@@ -86,7 +86,7 @@
 
 	let teamSettings = $derived($TeamSettings.data?.team);
 
-	let team = $derived($page.params.team);
+	let team = $derived(page.params.team);
 
 	let showKey = $state(false);
 	let showRotateKey = $state(false);

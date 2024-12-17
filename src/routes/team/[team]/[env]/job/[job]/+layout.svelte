@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
@@ -14,7 +14,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
 
-	let team = $derived($page.params.team);
+	let team = $derived(page.params.team);
 
 	interface Props {
 		data: LayoutData;

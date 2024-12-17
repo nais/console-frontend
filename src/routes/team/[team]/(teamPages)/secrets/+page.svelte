@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { PendingValue, SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -34,7 +34,7 @@
 	let { data }: Props = $props();
 	let { Secrets } = $derived(data);
 
-	let team = $derived($page.params.team);
+	let team = $derived(page.params.team);
 
 	const handleInUse = (value: string) => {
 		if (value === 'all') {
@@ -114,7 +114,7 @@
 			<div>
 				<div style="padding-bottom: 1rem;">
 					<ToggleGroup
-						value={$page.url.searchParams.get('filter') || 'all'}
+						value={page.url.searchParams.get('filter') || 'all'}
 						size="small"
 						onchange={handleInUse}
 					>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -8,9 +8,9 @@
 	let running = $state(true);
 	let fetching = $state(false);
 
-	let team = $derived($page.params.team);
-	let env = $derived($page.params.env);
-	let app = $derived($page.params.app);
+	let team = $derived(page.params.team);
+	let env = $derived(page.params.env);
+	let app = $derived(page.params.app);
 
 	interface Props {
 		data: PageData;

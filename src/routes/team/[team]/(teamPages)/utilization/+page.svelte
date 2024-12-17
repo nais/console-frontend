@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -207,7 +207,7 @@
 			sortState.direction
 		);
 	});
-	let team = $derived($page.params.team);
+	let team = $derived(page.params.team);
 </script>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />

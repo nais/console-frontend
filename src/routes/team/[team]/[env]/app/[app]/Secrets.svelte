@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 	import type { AppSecretsVariables } from './$houdini';
 
 	export const _AppSecretsVariables: AppSecretsVariables = () => {
-		return { app: $page.params.app, team: $page.params.team, env: $page.params.env };
+		return { app: page.params.app, team: page.params.team, env: page.params.env };
 	};
 
 	const appSecrets = graphql(`
@@ -28,8 +28,8 @@
 		}
 	`);
 
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 </script>
 
 <GraphErrors errors={$appSecrets.errors} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -30,7 +30,7 @@
 
 	let { Repositories } = $derived(data);
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
@@ -83,11 +83,11 @@
 
 	const handleFilter = () => {
 		if (filter === '') {
-			$page.url.searchParams.delete('filter');
+			page.url.searchParams.delete('filter');
 		} else {
-			$page.url.searchParams.set('filter', filter);
+			page.url.searchParams.set('filter', filter);
 		}
-		history.replaceState({}, '', $page.url.toString());
+		history.replaceState({}, '', page.url.toString());
 		Repositories.fetch({ variables: { team: teamName, filter: { name: filter } } });
 	};
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { PendingValue, SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import {
@@ -36,7 +36,7 @@
 
 	let { data }: Props = $props();
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 	let { SqlInstances } = $derived(data);
 
 	let tableSort = $derived({

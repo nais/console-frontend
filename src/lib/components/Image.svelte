@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
@@ -47,8 +47,8 @@
 
 	let workloadName = $derived($data.name);
 	let workloadType = $derived($data.__typename === 'Application' ? 'app' : 'job');
-	let env = $derived($page.params.env);
-	let team = $derived($page.params.team);
+	let env = $derived(page.params.env);
+	let team = $derived(page.params.team);
 
 	const notificationBadgeSize = '42';
 

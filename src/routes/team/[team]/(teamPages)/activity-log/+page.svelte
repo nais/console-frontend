@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		ActivityLogEntryResourceType,
 		type ActivityLogEntryResourceType$options,
@@ -18,7 +18,7 @@
 	let { data }: Props = $props();
 	let { ActivityLog, viewerIsMember } = $derived(data);
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 
 	const resourceLink = (
 		environmentName: string,

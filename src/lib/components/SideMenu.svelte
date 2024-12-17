@@ -17,7 +17,7 @@
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { PendingValue } from '$houdini';
 	import { replacer } from '$lib/replacer';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -50,8 +50,8 @@
 			{/if}
 			{#each items as item}
 				{#if item.featureToggle !== false}
-					<li class:active={isActive(item, $page.route.id)}>
-						<a class="unstyled" href={replacer(item.routeId, $page.params)}>
+					<li class:active={isActive(item, page.route.id)}>
+						<a class="unstyled" href={replacer(item.routeId, page.params)}>
 							<div class="item-container">
 								<div class="left-content">
 									<item.icon />

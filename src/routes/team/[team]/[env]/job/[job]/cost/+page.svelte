@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -20,7 +20,7 @@
 
 	let { JobCost } = $derived(data);
 
-	let job = $page.params.job;
+	let job = page.params.job;
 	let from = $state(data.fromDate?.toISOString().split('T')[0]);
 	let to = $state(data.toDate?.toISOString().split('T')[0]);
 

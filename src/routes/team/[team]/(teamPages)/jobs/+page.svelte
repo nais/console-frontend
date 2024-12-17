@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { JobOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
@@ -27,17 +27,17 @@
 	let { data }: Props = $props();
 	let { Jobs } = $derived(data);
 
-	let teamName = $derived($page.params.team);
+	let teamName = $derived(page.params.team);
 
 	let filter: string = $state('');
 
 	const handleFilter = () => {
 		if (filter === '') {
-			$page.url.searchParams.delete('filter');
+			page.url.searchParams.delete('filter');
 		} else {
-			$page.url.searchParams.set('filter', filter);
+			page.url.searchParams.set('filter', filter);
 		}
-		history.replaceState({}, '', $page.url.toString());
+		history.replaceState({}, '', page.url.toString());
 		Jobs.fetch({ variables: { team: teamName, filter: { name: filter } } });
 	};
 
