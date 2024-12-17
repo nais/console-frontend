@@ -5,21 +5,12 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	import Cost from '$lib/components/Cost.svelte';
+	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		Button,
-		HelpText,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -60,22 +51,20 @@
 	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
 	<div class="summary-grid">
 		<Card columns={3}>
-			<div class="summaryCard">
-				<div class="summaryIcon" style="--bg-color: #91dc75">
-					<CostIcon size="32" color="#91dc75" />
-				</div>
-				<div class="summary">
-					<h4>
-						Cost
-						<HelpText title="">Total Big Query cost for team for the last 30 days.</HelpText>
-					</h4>
-					{#if cost !== PendingValue}
-						<Cost cost={cost.daily.sum} />
-					{:else}
-						<Skeleton variant="text" />
-					{/if}
-				</div>
-			</div>
+			<SummaryCard
+				title="Cost"
+				helpText="Total Big Query cost for team for the last 30 days."
+				color="green"
+			>
+				{#snippet icon({ color })}
+					<CostIcon size="32" {color} />
+				{/snippet}
+				{#if cost !== PendingValue}
+					<Cost cost={cost.daily.sum} />
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			</SummaryCard>
 		</Card>
 	</div>
 	<Card columns={12}>
@@ -183,31 +172,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-	.summaryCard {
-		display: grid;
-		grid-template-columns: 50px 1fr;
-		align-items: center;
-		gap: 20px;
-	}
-	.summaryIcon {
-		display: flex;
-		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
-		justify-content: center;
-		align-items: center;
-		width: 50px;
-		height: 50px;
-		border: 2px solid var(--bg-color);
-		border-radius: 5px;
-	}
-	.summary {
-		width: 100%;
-	}
-	.summary > h4 {
-		display: flex;
-		justify-content: space-between;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
 	}
 </style>
