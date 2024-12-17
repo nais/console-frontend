@@ -86,7 +86,6 @@
 							withSubRoutes: true,
 							inventoryCount: $InventoryCounts.data?.team.secrets.pageInfo.totalCount,
 							icon: QuietZoneIcon,
-							inventoryCount: $InventoryCounts.data?.team.secrets.pageInfo.totalCount,
 							memberOnly: true
 						}
 					]
