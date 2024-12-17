@@ -20,7 +20,7 @@ export function yearlyOverageCost(
 	const costPerCpuCorePerYear = 136.69;
 	const costPerBytePerYear = 18.71 / 1024 / 1024 / 1024;
 
-	const overage = request - request * (utilization / 100);
+	const overage = request - request * (Math.abs(utilization) / 100);
 
 	let cost = 0.0;
 
@@ -101,23 +101,25 @@ export function mergeCalculateAndSortOverageData(
 				throw new Error(`No corresponding CPU data found for ${memItem.workload.name}`);
 			}
 
+			const estimatedAnnualOverageCost =
+				yearlyOverageCost(
+					UtilizationResourceType.CPU,
+					cpuItem.requested,
+					cpuItem.used / cpuItem.requested
+				) +
+				yearlyOverageCost(
+					UtilizationResourceType.MEMORY,
+					memItem.requested,
+					memItem.used / memItem.requested
+				);
+
 			// Combine the memory and CPU data into one object
 			return {
 				name: memItem.workload.name,
 				env: memItem.workload.environment.name,
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
-				estimatedAnnualOverageCost:
-					yearlyOverageCost(
-						UtilizationResourceType.CPU,
-						cpuItem.requested,
-						cpuItem.used / cpuItem.requested
-					) +
-					yearlyOverageCost(
-						UtilizationResourceType.MEMORY,
-						memItem.requested,
-						memItem.used / memItem.requested
-					)
+				estimatedAnnualOverageCost: estimatedAnnualOverageCost
 			};
 		})
 		.sort((a, b) => {
