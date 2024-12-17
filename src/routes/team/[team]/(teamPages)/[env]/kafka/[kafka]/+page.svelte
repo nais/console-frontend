@@ -5,7 +5,7 @@
 	import Kafka from '$lib/icons/Kafka.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,

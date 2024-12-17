@@ -25,7 +25,7 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 

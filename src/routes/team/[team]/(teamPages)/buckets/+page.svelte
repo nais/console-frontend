@@ -6,7 +6,7 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,

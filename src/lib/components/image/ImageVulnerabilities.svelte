@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, ImageVulnerabilityOrderField, PendingValue } from '$houdini';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {

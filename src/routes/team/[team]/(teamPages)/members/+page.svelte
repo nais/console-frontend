@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,

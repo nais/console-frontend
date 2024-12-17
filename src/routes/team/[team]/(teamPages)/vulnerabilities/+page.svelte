@@ -10,7 +10,7 @@
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
 		TrendDownIcon,
@@ -298,9 +298,7 @@
 					{/each}
 				</Select>
 			</div>
-			{#key selectedEnvironment}
-				<WorkloadsWithSbom team={teamSlug} environment={selectedEnvironment} />
-			{/key}
+			<WorkloadsWithSbom team={teamSlug} environment={selectedEnvironment} />
 		</Card>
 	</div>
 {/if}

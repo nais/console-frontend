@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
 		Button,
 		Skeleton,

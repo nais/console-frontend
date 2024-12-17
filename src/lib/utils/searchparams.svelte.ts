@@ -1,9 +1,8 @@
 import { goto } from '$app/navigation';
-import { page } from '$app/stores';
-import { get } from 'svelte/store';
+import { page } from '$app/state';
 
 export const changeParams = (params: Record<string, string>) => {
-	const query = new URLSearchParams(get(page).url.searchParams);
+	const query = new URLSearchParams(page.url.searchParams);
 	for (const [key, value] of Object.entries(params)) {
 		if (value === '') {
 			query.delete(key);

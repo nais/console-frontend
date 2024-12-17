@@ -4,7 +4,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';

@@ -1,6 +1,13 @@
 <script lang="ts">
-	import { graphql, PendingValue, WorkloadOrderField } from '$houdini';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { page } from '$app/state';
+	import {
+		graphql,
+		PendingValue,
+		WorkloadOrderField,
+		type OrderDirection$options,
+		type WorkloadOrderField$options
+	} from '$houdini';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
 		Button,
 		Skeleton,
@@ -18,35 +25,42 @@
 		ChevronRightIcon,
 		SandboxIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { untrack } from 'svelte';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
+	interface Props {
+		team: string;
+		environment: string;
+		[key: string]: unknown;
+	}
+
+	let { team, environment, ...rest }: Props = $props();
+
 	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
-		return untrack(() => {
-			if (environment !== '') {
-				return {
-					team: team,
-					orderBy: {
-						field: tableSort.orderBy
-							? tableSort.orderBy
-							: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
-						direction: tableSort.direction ? tableSort.direction : 'DESC'
-					},
-					filter: { environments: [environment] }
-				};
-			}
+		const env = environment;
+		const field = tableSort.orderBy
+			? tableSort.orderBy
+			: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL;
+		const direction = tableSort.direction ? tableSort.direction : 'DESC';
+
+		if (env !== '') {
 			return {
 				team: team,
 				orderBy: {
-					field: tableSort.orderBy
-						? tableSort.orderBy
-						: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
-					direction: tableSort.direction ? tableSort.direction : 'DESC'
-				}
+					field,
+					direction
+				},
+				filter: { environments: [env] }
 			};
-		});
+		}
+		return {
+			team: team,
+			orderBy: {
+				field,
+				direction
+			}
+		};
 	};
 
 	const query = graphql(`
@@ -91,17 +105,9 @@
 		}
 	`);
 
-	interface Props {
-		team: string;
-		environment: string;
-		[key: string]: unknown;
-	}
-
-	let { team, environment, ...rest }: Props = $props();
-
 	let tableSort = $derived({
-		orderBy: $query.variables?.orderBy?.field,
-		direction: $query.variables?.orderBy?.direction
+		orderBy: page.url.searchParams.get('field') as WorkloadOrderField$options | null,
+		direction: page.url.searchParams.get('direction') as OrderDirection$options | null
 	});
 
 	const tableSortChange = (key: string) => {
@@ -109,8 +115,15 @@
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
 		} else {
-			tableSort.orderBy = WorkloadOrderField[key as keyof typeof WorkloadOrderField];
-			tableSort.direction = 'ASC';
+			tableSort.orderBy = WorkloadOrderField[key as WorkloadOrderField$options];
+			switch (tableSort.orderBy) {
+				case WorkloadOrderField.ENVIRONMENT:
+				case WorkloadOrderField.NAME:
+					tableSort.direction = 'ASC';
+					break;
+				default:
+					tableSort.direction = 'DESC';
+			}
 		}
 
 		changeParams({

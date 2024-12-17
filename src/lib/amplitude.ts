@@ -1,7 +1,6 @@
 import { browser, dev } from '$app/environment';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import amplitude from 'amplitude-js';
-import { get } from 'svelte/store';
 
 const getApiKey = () => {
 	if (dev) {
@@ -18,7 +17,7 @@ export const logEvent = (event: Events, properties?: object) => {
 	if (!browser) return;
 
 	const eventDataDefault = {
-		routeID: get(page).route.id,
+		routeID: page.route.id,
 		domain: window.location.host,
 		service: 'nais-console'
 	};
