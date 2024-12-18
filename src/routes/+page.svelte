@@ -49,10 +49,6 @@
 				{#if $UserTeams.data}
 					{#if $UserTeams.data.me.__typename == 'User'}
 						{#each $UserTeams.data.me.teams.nodes as node}
-							<!--div class="box">
-								<h3>{node.team.slug}</h3>
-								<span>{node.team.purpose}</span>
-							</div-->
 							<Box
 								as="a"
 								background="surface-default"
@@ -67,7 +63,11 @@
 								<span>{node.team.purpose}</span>
 							</Box>
 						{:else}
-							<p>You are not a member of any teams.</p>
+							<p>
+								You don't seem to belong to any teams at the moment. You can create a new team or
+								search for the team you'd like to join. Once you find it, locate one of the owners
+								in the members list on the team page to request membership.
+							</p>
 						{/each}
 						{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage || $UserTeams.data.me.teams.pageInfo.hasNextPage}
 							<div class="pagination">

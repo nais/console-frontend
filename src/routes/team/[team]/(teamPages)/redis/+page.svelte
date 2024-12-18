@@ -72,6 +72,7 @@
 		>
 			<Thead>
 				<Tr>
+					<Th />
 					<Th sortable={true} sortKey={RedisInstanceOrderField.NAME}>Name</Th>
 					<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Environment</Th>
 					<Th>Owner</Th>
@@ -82,6 +83,7 @@
 					{#if r !== PendingValue}
 						<Tr>
 							<!-- TODO: show warning if no workload uses this instance -->
+							<Td></Td>
 							<Td>
 								<a href="/team/{teamSlug}/{r.environment.name}/redis/{r.name}">
 									{r.name}

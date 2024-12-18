@@ -90,44 +90,6 @@
 				</dd>
 			</dl>
 		</Card>
-		<!--Card columns={5} rows={2}>
-			<h3>Status</h3>
-			<div>
-
-				{#if bigQueryDatasetInstance.status.conditions.length}
-					{#each bigQueryDatasetInstance.status.conditions as cond}
-						<dl class="conditions">
-							<dt>Status</dt>
-							<dd class="status">
-								{#if cond.status === 'True'}
-									{cond.type}
-									<CheckmarkIcon
-										style="color: var(--a-surface-success); font-size: 1.5rem"
-										title={cond.type}
-									/>
-								{:else}
-									{cond.type}
-									<ExclamationmarkTriangleFillIcon
-										style="color: var(--a-icon-info)"
-										title={cond.type}
-									/>
-								{/if}
-							</dd>
-							<dt>Reason</dt>
-							<dd>{cond.reason} (<Time time={cond.lastTransitionTime} />)</dd>
-						</dl>
-						<details>
-							<summary>Status message</summary>
-							<p style="max-width: 25em;">{cond.message}</p>
-						</details>
-					{/each}
-				{:else}
-					<p>No conditions</p>
-				{/if}
-			</div>
-
-			</div></Card
-		-->
 		<Card columns={7}>
 			<h3>Access</h3>
 

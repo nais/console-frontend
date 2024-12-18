@@ -137,47 +137,6 @@
 				</div>
 			{/if}
 		</Card>
-		<!--Card rows={2} columns={6}>
-			<h3>Status</h3>
-			<dl class="status">
-				<dt>Fully qualified name</dt>
-				<dd><code>{s.fullyQualifiedName}</code></dd>
-				<dt>Synchronization state</dt>
-				<dd>
-					{#if s.synchronizationState === State.NAIS}
-						<Nais style="color: var(--a-icon-success)" />
-					{:else if s.synchronizationState === State.NOTNAIS}
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="Not NAIS!"
-						/>
-					{:else}
-						Unknown
-					{/if}
-				</dd>
-				<dt>Synchronization time</dt>
-				<dd><Time time={s.synchronizationTime} /></dd>
-				<dt>Credentials expiry time</dt>
-				<dd><Time time={s.credentialsExpiryTime} /></dd>
-				<dt>Latest Aiven sync failure</dt>
-				<dd><Time time={s.latestAivenSyncFailure} /></dd>
-			</dl>
-
-			<details>
-				<summary>Status message</summary>
-				<p style="max-width: 25em;">
-					{s.message}
-				</p>
-			</details>
-
-			<h3>Errors</h3>
-			<ul>
-				{#each s.errors as err}
-					<li>{err}</li>
-				{/each}
-			</ul>
-
-		</Card-->
 		<Card columns={12}>
 			<h3>Topic configuration</h3>
 			<dl class="status">

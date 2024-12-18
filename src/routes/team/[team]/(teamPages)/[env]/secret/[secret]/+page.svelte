@@ -251,12 +251,6 @@
 		</Button>
 	</div>
 	<div class="alerts">
-		<!--{#if $updateMutation.errors}
-			<Alert variant="error">
-				{#each $updateMutation.errors as error}
-					{error.message}
-				{/each}
-			</Alert>-->
 		{#if $deleteMutation.errors}
 			<GraphErrors errors={$deleteMutation.errors} />
 		{/if}
@@ -271,7 +265,6 @@
 					</HelpText>
 				</h4>
 			</div>
-			<!--Data initial={secret.values} /-->
 			<Table size="small" style="margin-top: 2rem" zebraStripes>
 				<Thead>
 					<Tr>

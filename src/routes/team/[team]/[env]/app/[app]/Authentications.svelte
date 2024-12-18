@@ -30,15 +30,11 @@
 			`)
 		)
 	);
-	//$: loading = $data.authIntegrations.map((d) => d.__typename).includes(PendingValue);
 
 	let authz = $derived($data.authIntegrations);
 </script>
 
 <div>
-	<!--{#if loading}
-		<Skeleton variant="text" width="300px" />
-	{/if}-->
 	<ul>
 		{#each authz as a}
 			<li>{a.name}</li>

@@ -370,13 +370,6 @@
 					Add team
 				</Button>
 			</p>
-			<!-- {#if $updateUnleashForTeam.errors}
-				{#each distinctErrors($updateUnleashForTeam.errors) as error}
-					<Alert style="margin-bottom: 1rem;" variant="error">
-						{error}
-					</Alert>
-				{/each}
-			{/if} -->
 		</Card>
 	</div>
 {:else}
