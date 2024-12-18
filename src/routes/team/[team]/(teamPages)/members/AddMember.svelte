@@ -1,16 +1,6 @@
 <script lang="ts">
 	import { graphql, type AddTeamMemberInput } from '$houdini';
-	import {
-		Alert,
-		Button,
-		Checkbox,
-		CheckboxGroup,
-		Heading,
-		HelpText,
-		Modal,
-		Select,
-		TextField
-	} from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
 	import type { AddMemberQueryVariables } from './$houdini';
@@ -45,16 +35,6 @@
 					}
 				}
 			}
-			reconcilers {
-				edges {
-					node {
-						displayName
-						name
-						description
-						enabled
-					}
-				}
-			}
 		}
 	`);
 
@@ -86,12 +66,6 @@
 		);
 		return allEmails.filter((email) => !teamMemberEmails.has(email));
 	});
-
-	type Reconciler = { name: string; value: string; description: string };
-	let selectedRecs: string[] = $state([]);
-	let reconcilers: Reconciler[] = [];
-
-	let loaded = false;
 
 	let role: AddTeamMemberInput['role'] = $state('MEMBER');
 	let email: string = $state('');
@@ -129,7 +103,7 @@
 
 <Modal bind:open>
 	{#snippet header()}
-		<Heading>Add member</Heading>
+		<Heading>Add member to {team}</Heading>
 	{/snippet}
 
 	{#each errors as error}
@@ -143,6 +117,7 @@
 		}}
 		class="wrapper"
 	>
+		<p>Team members are given access to the team's GCP projects, Grafana, and other services.</p>
 		<TextField list="add-member-email" type="email" bind:value={email}>
 			{#snippet label()}
 				Email
@@ -153,26 +128,11 @@
 				<option value={email}>{email}</option>
 			{/each}
 		</datalist>
-
+		<br />
 		<Select label="Role" style="width:150px" bind:value={role}>
 			<option value="OWNER">Owner</option>
 			<option value="MEMBER">Member</option>
 		</Select>
-
-		{#if loaded}
-			<CheckboxGroup legend="Enabled features" bind:value={selectedRecs}>
-				{#each reconcilers as reconciler}
-					<Checkbox value={reconciler.value} checked={true}>
-						<span class="option">
-							{reconciler.name}
-							<HelpText title="" wrapperClass="tooltipAddMemberWrapper">
-								{reconciler.description}
-							</HelpText>
-						</span>
-					</Checkbox>
-				{/each}
-			</CheckboxGroup>
-		{/if}
 	</form>
 
 	{#snippet footer()}
@@ -183,11 +143,6 @@
 <style>
 	.wrapper {
 		min-width: 400px;
-	}
-
-	.option {
-		display: inline-flex;
-		gap: 0.5rem;
 	}
 
 	:global(.tooltipAddMemberWrapper) {
