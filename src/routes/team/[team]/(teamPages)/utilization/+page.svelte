@@ -276,14 +276,14 @@
 					<CostIcon size="32" {color} />
 				{/snippet}
 				{#if resourceUtilization !== PendingValue}
-					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
+					{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
+						(item) => item && item.used < item.requested
+					)}
+					{@const cpuRequested = filteredCpuUtil.reduce(
 						(acc, item) => acc + (item ? item.requested : 0),
 						0
 					)}
-					{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
-						(acc, item) => acc + (item ? item.used : 0),
-						0
-					)}
+					{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
 					€{round(
 						yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage / cpuRequested),
 						0
@@ -303,11 +303,14 @@
 					<CostIcon size="32" {color} />
 				{/snippet}
 				{#if resourceUtilization !== PendingValue}
-					{@const memoryRequested = resourceUtilization.memUtil.reduce(
+					{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
+						(item) => item && item.used < item.requested
+					)}
+					{@const memoryRequested = filtertedMemoryUtil.reduce(
 						(acc, item) => acc + (item ? item.requested : 0),
 						0
 					)}
-					{@const memoryUsage = resourceUtilization.memUtil.reduce(
+					{@const memoryUsage = filtertedMemoryUtil.reduce(
 						(acc, item) => acc + (item ? item.used : 0),
 						0
 					)}

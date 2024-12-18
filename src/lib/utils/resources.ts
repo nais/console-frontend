@@ -20,7 +20,7 @@ export function yearlyOverageCost(
 	const costPerCpuCorePerYear = 136.69;
 	const costPerBytePerYear = 18.71 / 1024 / 1024 / 1024;
 
-	const overage = request - request * (Math.abs(utilization) / 100);
+	const overage = request - request * Math.abs(utilization);
 
 	let cost = 0.0;
 

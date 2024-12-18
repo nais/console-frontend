@@ -12,12 +12,10 @@
 	}
 
 	let { data }: Props = $props();
-	let { teamSlug } = $derived(data);
+	let { teamSlug, env, app } = $derived(data);
 
 	let Instances = $derived(data.Instances);
 	let instanceNames: Set<string> = data.instanceNames;
-	let env = data.env;
-	let app = data.app;
 
 	function toggleInstance(i: string) {
 		if (instanceNames.has(i)) {
