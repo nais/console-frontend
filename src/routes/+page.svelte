@@ -10,6 +10,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Deploys from './Deploys.svelte';
+	import Onboarding from './Onboarding.svelte';
 
 	let feedbackOpen = $state(false);
 
@@ -20,6 +21,10 @@
 	let { data }: Props = $props();
 
 	let UserTeams = $derived(data.UserTeams);
+
+	let userTeams = $derived(
+		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data?.me.teams?.nodes.length
+	);
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
@@ -35,85 +40,89 @@
 		>
 	</div>
 	<div class="grid">
-		<Card columns={4} rows={1}>
-			<div class="header">
-				<h2>
-					<PersonGroupIcon />
-					My teams
-				</h2>
-				<Button as="a" size="small" href="/team/create" variant="primary" iconLeft={PlusIcon}>
-					Create team
-				</Button>
-			</div>
-			<div class="teams">
-				{#if $UserTeams.data}
-					{#if $UserTeams.data.me.__typename == 'User'}
-						{#each $UserTeams.data.me.teams.nodes as node}
-							<Box
-								as="a"
-								background="surface-default"
-								borderColor="border-default"
-								padding="4"
-								borderWidth="1"
-								borderRadius="medium"
-								href={`/team/${node.team.slug}`}
-								class="box"
-							>
-								<h3>{node.team.slug}</h3>
-								<span>{node.team.purpose}</span>
-							</Box>
-						{:else}
-							<p>
-								You don't seem to belong to any teams at the moment. You can create a new team or
-								search for the team you'd like to join. Once you find it, locate one of the owners
-								in the members list on the team page to request membership.
-							</p>
-						{/each}
-						{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage || $UserTeams.data.me.teams.pageInfo.hasNextPage}
-							<div class="pagination">
-								<span>
-									{#if $UserTeams.data.me.teams.pageInfo.pageStart !== $UserTeams.data.me.teams.pageInfo.pageEnd}
-										{$UserTeams.data.me.teams.pageInfo.pageStart} - {$UserTeams.data.me.teams
-											.pageInfo.pageEnd}
-									{:else}
-										{$UserTeams.data.me.teams.pageInfo.pageStart}
-									{/if}
+		{#if userTeams !== false && userTeams === 0}
+			<Onboarding />
+		{:else}
+			<Card columns={4} rows={1}>
+				<div class="header">
+					<h2>
+						<PersonGroupIcon />
+						My teams
+					</h2>
+					<Button as="a" size="small" href="/team/create" variant="primary" iconLeft={PlusIcon}>
+						Create team
+					</Button>
+				</div>
+				<div class="teams">
+					{#if $UserTeams.data}
+						{#if $UserTeams.data.me.__typename == 'User'}
+							{#each $UserTeams.data.me.teams.nodes as node}
+								<Box
+									as="a"
+									background="surface-default"
+									borderColor="border-default"
+									padding="4"
+									borderWidth="1"
+									borderRadius="medium"
+									href={`/team/${node.team.slug}`}
+									class="box"
+								>
+									<h3>{node.team.slug}</h3>
+									<span>{node.team.purpose}</span>
+								</Box>
+							{:else}
+								<p>
+									You don't seem to belong to any teams at the moment. You can create a new team or
+									search for the team you'd like to join. Once you find it, locate one of the owners
+									in the members list on the team page to request membership.
+								</p>
+							{/each}
+							{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage || $UserTeams.data.me.teams.pageInfo.hasNextPage}
+								<div class="pagination">
+									<span>
+										{#if $UserTeams.data.me.teams.pageInfo.pageStart !== $UserTeams.data.me.teams.pageInfo.pageEnd}
+											{$UserTeams.data.me.teams.pageInfo.pageStart} - {$UserTeams.data.me.teams
+												.pageInfo.pageEnd}
+										{:else}
+											{$UserTeams.data.me.teams.pageInfo.pageStart}
+										{/if}
 
-									of {$UserTeams.data.me.teams.pageInfo.totalCount}
-								</span>
+										of {$UserTeams.data.me.teams.pageInfo.totalCount}
+									</span>
 
-								<span style="padding-left: 1rem;">
-									<Button
-										size="small"
-										variant="secondary"
-										disabled={!$UserTeams.data.me.teams.pageInfo.hasPreviousPage}
-										onclick={async () => {
-											return await UserTeams.loadPreviousPage();
-										}}
-									>
-										<ChevronLeftIcon />
-									</Button>
-									<Button
-										size="small"
-										variant="secondary"
-										disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
-										onclick={async () => {
-											return await UserTeams.loadNextPage();
-										}}
-									>
-										<ChevronRightIcon />
-									</Button>
-								</span>
-							</div>
+									<span style="padding-left: 1rem;">
+										<Button
+											size="small"
+											variant="secondary"
+											disabled={!$UserTeams.data.me.teams.pageInfo.hasPreviousPage}
+											onclick={async () => {
+												return await UserTeams.loadPreviousPage();
+											}}
+										>
+											<ChevronLeftIcon />
+										</Button>
+										<Button
+											size="small"
+											variant="secondary"
+											disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
+											onclick={async () => {
+												return await UserTeams.loadNextPage();
+											}}
+										>
+											<ChevronRightIcon />
+										</Button>
+									</span>
+								</div>
+							{/if}
 						{/if}
 					{/if}
-				{/if}
-			</div>
-		</Card>
+				</div>
+			</Card>
 
-		<Card columns={8} rows={1}>
-			<Deploys />
-		</Card>
+			<Card columns={8} rows={1}>
+				<Deploys />
+			</Card>
+		{/if}
 	</div>
 </div>
 
