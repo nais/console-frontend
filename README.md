@@ -21,7 +21,7 @@ In developmen
 
 ### Local user override
 
-When running locally, the frontend will proxy requests to the backend through a Vite Proxy.
+When running locally, the frontend will proxy requests to the locally running [backend](https://github.com/nais/api) through a Vite Proxy.
 This proxy will add a special header for local development to specify which user to run as.
 
 There's two well known users:
