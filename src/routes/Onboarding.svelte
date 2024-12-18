@@ -92,7 +92,7 @@
 							borderWidth="1"
 							borderRadius="medium"
 						>
-							Team {teamSearchQuery} not found. Please try another search.
+							Team '{teamSearchQuery}' not found. Please try searching again.
 						</Box>
 					{/each}
 				</div>
