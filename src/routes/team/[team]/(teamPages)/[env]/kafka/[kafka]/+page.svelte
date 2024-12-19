@@ -53,7 +53,7 @@
 				{topic.name}
 			</h3>
 
-			<h3>Topic ACLs</h3>
+			<h3>Topic access control list</h3>
 			<Table
 				size="small"
 				zebraStripes
@@ -66,7 +66,7 @@
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={KafkaTopicAclOrderField.TEAM_SLUG}>Team</Th>
-						<Th sortable={true} sortKey={KafkaTopicAclOrderField.CONSUMER}>Consumer</Th>
+						<Th sortable={true} sortKey={KafkaTopicAclOrderField.CONSUMER}>Workload</Th>
 						<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
 					</Tr>
 				</Thead>
