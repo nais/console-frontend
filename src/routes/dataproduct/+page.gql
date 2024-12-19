@@ -1,5 +1,5 @@
 query DataProduct {
-	teams {
+	teams(first: 1000) {
 		nodes {
 			inventoryCounts {
 				applications {
