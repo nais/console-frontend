@@ -83,6 +83,11 @@
 									href="/team/{$data.team.slug}/{$data.environment
 										.name}/job/{resource.name}/deploys">{resource.name}</a
 								>
+							{:else if resource.kind === 'Topic'}
+								<a
+									href="/team/{$data.team.slug}/{$data.environment
+										.name}/kafka/{resource.name}/deploys">{resource.name}</a
+								>
 							{:else}
 								{resource.name}
 							{/if}
