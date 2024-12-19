@@ -2,7 +2,13 @@
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import { BodyLong, Box, Button, Heading, Search } from '@nais/ds-svelte-community';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+
+	interface Props {
+		tenantName: string;
+	}
+
+	let { tenantName }: Props = $props();
 
 	const teamSearch = graphql(`
 		query OnboardingTeamSearch($query: String!) {
@@ -17,6 +23,24 @@
 				}
 				pageInfo {
 					totalCount
+				}
+			}
+		}
+	`);
+
+	const teams = graphql(`
+		query OnboardingTeams @load {
+			teams(first: 5) @paginate {
+				pageInfo {
+					hasNextPage
+					hasPreviousPage
+					pageStart
+					pageEnd
+					totalCount
+				}
+				nodes {
+					slug
+					purpose
 				}
 			}
 		}
@@ -40,32 +64,43 @@
 </script>
 
 <Card columns={12}>
-	<Heading level="1" size="large">Welcome to Nais Console!</Heading>
-	<BodyLong>
-		Looks like you're not a member of any teams yet. To get started with the Nais platform, you need
-		to join a team.<br />
-		You can either create a new team or request to join an existing one.
-	</BodyLong>
+	<Heading level="1" size="large" spacing={true}>Welcome to Nais Console! 🎉</Heading>
+	{#if $teams.data && $teams.data.teams.pageInfo.totalCount === 0}
+		<BodyLong>To get started you need to create {tenantName}’s first team.</BodyLong>
+	{:else}
+		<BodyLong>
+			To get started you need to be part of a team. You can either find an existing team, or you can
+			create a new one.
+		</BodyLong>
 
-	<div class="split">
+		<div class="create">
+			<!--Heading level="2" size="medium">Create a team</Heading>
+			<BodyLong>You can create a new team and invite others to join.</BodyLong-->
+			<div class="button">
+				<Button as="a" size="medium" href="/team/create" variant="primary" icon={PlusIcon}>
+					Create new team
+				</Button>
+			</div>
+		</div>
+
 		<div class="join">
-			<Heading level="2" size="medium">Join a team</Heading>
+			<Heading level="2" size="medium">Find a team</Heading>
 			<BodyLong>
-				To join a team, you need to be added by a team member of the desired team. You can search
-				for the team in the search box below and ask a team member to add you.
+				Once you’ve found your team, ask one of the team owners to add you as a member.
 			</BodyLong>
+			<div class="search">
+				<Search
+					bind:value={teamSearchQuery}
+					oninput={searchTeam}
+					label="Team search"
+					size="small"
+					variant="simple"
+					description="Search for a team"
+					hideLabel={false}
+				/>
+			</div>
 
-			<Search
-				bind:value={teamSearchQuery}
-				oninput={searchTeam}
-				label="Team search"
-				size="small"
-				variant="simple"
-				description="Search for a team"
-				hideLabel={false}
-			/>
-
-			{#if $teamSearch.data}
+			{#if $teamSearch.data && teamSearchQuery !== ''}
 				<div class="teams">
 					{#each $teamSearch.data.search.edges as { node }}
 						{#if node.__typename === 'Team'}
@@ -96,29 +131,82 @@
 						</Box>
 					{/each}
 				</div>
+			{:else if $teams.data}
+				<div class="teams">
+					{#each $teams.data.teams.nodes as team}
+						<Box
+							as="a"
+							background="surface-default"
+							borderColor="border-default"
+							padding="4"
+							borderWidth="1"
+							borderRadius="medium"
+							href={`/team/${team.slug}/members`}
+							class="box"
+						>
+							<h3>{team.slug}</h3>
+							<span>{team.purpose}</span>
+						</Box>
+					{/each}
+					{#if $teams.data.teams.pageInfo.hasPreviousPage || $teams.data.teams.pageInfo.hasNextPage}
+						<div class="pagination">
+							<span>
+								{#if $teams.data.teams.pageInfo.pageStart !== $teams.data.teams.pageInfo.pageEnd}
+									{$teams.data.teams.pageInfo.pageStart} - {$teams.data.teams.pageInfo.pageEnd}
+								{:else}
+									{$teams.data.teams.pageInfo.pageStart}
+								{/if}
+
+								of {$teams.data.teams.pageInfo.totalCount}
+							</span>
+
+							<span style="padding-left: 1rem;">
+								<Button
+									size="small"
+									variant="secondary"
+									disabled={!$teams.data.teams.pageInfo.hasPreviousPage}
+									onclick={async () => {
+										return await teams.loadPreviousPage();
+									}}><ChevronLeftIcon /></Button
+								>
+								<Button
+									size="small"
+									variant="secondary"
+									disabled={!$teams.pageInfo.hasNextPage}
+									onclick={async () => {
+										return await teams.loadNextPage();
+									}}
+								>
+									<ChevronRightIcon /></Button
+								>
+							</span>
+						</div>
+					{/if}
+				</div>
 			{/if}
 		</div>
-		<div class="create">
-			<Heading level="2" size="medium">Create a team</Heading>
-			<BodyLong>You can create a new team and invite others to join.</BodyLong>
-			<Button as="a" size="small" href="/team/create" variant="primary" icon={PlusIcon}>
-				Create new team
-			</Button>
-		</div>
-	</div>
+	{/if}
 </Card>
 
 <style>
-	.split {
+	/*.split {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 2rem;
 		padding-top: 2rem;
+	}*/
+	.create {
+		padding-top: 2rem;
 	}
 
 	.join {
-		display: grid;
+		/*display: grid;*/
 		gap: 1rem;
+		padding-top: 2rem;
+	}
+
+	.search {
+		padding: 1rem 0;
 	}
 
 	.teams {
@@ -150,5 +238,9 @@
 				background-color: var(--a-surface-subtle);
 			}
 		}
+	}
+	.pagination {
+		text-align: right;
+		padding: 0.5rem;
 	}
 </style>

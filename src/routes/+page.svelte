@@ -21,6 +21,7 @@
 	let { data }: Props = $props();
 
 	let UserTeams = $derived(data.UserTeams);
+	let tenantName = $derived(data.tenantName);
 
 	let userTeams = $derived(
 		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data?.me.teams?.nodes.length
@@ -41,7 +42,7 @@
 	</div>
 	<div class="grid">
 		{#if userTeams !== false && userTeams === 0}
-			<Onboarding />
+			<Onboarding {tenantName} />
 		{:else}
 			<Card columns={4} rows={1}>
 				<div class="header">
