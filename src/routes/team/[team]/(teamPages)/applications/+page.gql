@@ -1,6 +1,9 @@
 query Applications($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter)
 @cache(policy: NetworkOnly) {
 	team(slug: $team) @loading {
+		environments @loading {
+			name
+		}
 		applications(first: 20, orderBy: $orderBy, filter: $filter)
 			@paginate(mode: SinglePage)
 			@loading {

@@ -2,22 +2,16 @@
 	import { page } from '$app/state';
 	import { ApplicationOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import FilteredInput, {
+		type AppliedFilter,
+		type Filter
+	} from '$lib/components/FilteredInput/FilteredInput.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import {
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		TextField,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -31,13 +25,14 @@
 	let filter: string = $state('');
 
 	const handleFilter = () => {
-		if (filter === '') {
-			page.url.searchParams.delete('filter');
-		} else {
-			page.url.searchParams.set('filter', filter);
-		}
+		// if (filter === '') {
+		// 	page.url.searchParams.delete('filter');
+		// } else {
+		// 	page.url.searchParams.set('filter', filter);
+		// }
 		history.replaceState({}, '', page.url.toString());
-		Applications.fetch({ variables: { team: teamSlug, filter: { name: filter } } });
+		const environments = filters.filter((f) => f.key === 'environment')?.map((f) => f.value);
+		Applications.fetch({ variables: { team: teamSlug, filter: { name: freetext, environments } } });
 	};
 
 	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -80,6 +75,17 @@
 			field: tableSort.orderBy || ApplicationOrderField.STATUS
 		});
 	};
+
+	let filters: AppliedFilter[] = $state([]);
+	let freetext: string = $state('');
+	let supportedFilters: Filter[] = [
+		{
+			key: 'environment',
+			values: $Applications.data?.team.environments
+				.filter((env) => env != PendingValue)
+				.map((env) => ({ value: env.name }))
+		}
+	];
 </script>
 
 <GraphErrors errors={$Applications.errors} />
@@ -87,20 +93,15 @@
 {#if $Applications.data}
 	{@const applications = $Applications.data.team.applications}
 	<Card columns={12}>
-		<form class="input">
-			<TextField
-				size="small"
-				type="text"
-				id="filter"
-				style="width: 300px;"
-				bind:value={filter}
-				onkeyup={onKeyUp}
-			>
-				{#snippet label()}
-					Filter applications on name
-				{/snippet}
-			</TextField>
-		</form>
+		<FilteredInput
+			bind:filters
+			bind:value={filter}
+			bind:freetext
+			{supportedFilters}
+			onkeyup={onKeyUp}
+			placeholder="Filter applications"
+		/>
+
 		<Table
 			zebraStripes
 			size="small"
@@ -225,9 +226,5 @@
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;
-	}
-	.input {
-		font-size: 1rem;
-		margin: 1rem 0;
 	}
 </style>

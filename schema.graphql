@@ -3530,8 +3530,11 @@ type Team implements Node {
 
 """Input for filtering the applications of a team."""
 input TeamApplicationsFilter {
+  """Filter by the name of the environment."""
+  environments: [String!]
+
   """Filter by the name of the application."""
-  name: String!
+  name: String
 }
 
 type TeamCDN {
