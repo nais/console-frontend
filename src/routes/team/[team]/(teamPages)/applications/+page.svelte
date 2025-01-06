@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import { ApplicationOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
@@ -25,12 +26,7 @@
 	let filter: string = $state('');
 
 	const handleFilter = () => {
-		// if (filter === '') {
-		// 	page.url.searchParams.delete('filter');
-		// } else {
-		// 	page.url.searchParams.set('filter', filter);
-		// }
-		history.replaceState({}, '', page.url.toString());
+		replaceState(page.url.toString(), {});
 		const environments = filters.filter((f) => f.key === 'environment')?.map((f) => f.value);
 		Applications.fetch({ variables: { team: teamSlug, filter: { name: freetext, environments } } });
 	};

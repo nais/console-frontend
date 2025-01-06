@@ -1,5 +1,8 @@
 query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(policy: NetworkOnly) {
 	team(slug: $team) @loading {
+		environments @loading {
+			name
+		}
 		jobs(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) @loading {
 			pageInfo @loading {
 				totalCount

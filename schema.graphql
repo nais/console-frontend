@@ -3954,6 +3954,10 @@ type TeamInventoryCounts {
 }
 
 input TeamJobsFilter {
+  """Filter by the name of the environment."""
+  environments: [String!]
+
+  """Filter by the name of the application."""
   name: String!
 }
 

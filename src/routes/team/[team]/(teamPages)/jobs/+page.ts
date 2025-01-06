@@ -13,7 +13,7 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 	const direction = (url.searchParams.get('direction') || 'DESC') as OrderDirection$options;
 
 	return {
-		orderBy: { field: field, direction: direction } as JobOrder,
-		filter: { name: filter } as TeamJobsFilter
+		filter: { name: filter } as TeamJobsFilter,
+		orderBy: { field: field, direction: direction } as JobOrder
 	};
 };
