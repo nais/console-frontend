@@ -30,6 +30,7 @@
 		reconciler,
 		graphql(`
 			fragment ReconcilerFragment on Reconciler {
+				id
 				configured
 				description
 				displayName
@@ -42,6 +43,11 @@
 					key
 					value
 					secret
+				}
+				errors {
+					pageInfo {
+						totalCount
+					}
 				}
 			}
 		`)
@@ -123,6 +129,12 @@
 
 <Card style="margin-bottom:1rem;">
 	<Heading level="2">{$r.displayName}</Heading>
+	{#if $r.errors.pageInfo.totalCount}
+		<span class="reconciler-error">
+			Reconciler has {$r.errors.pageInfo.totalCount} errors. Please consult the
+			<a href="/admin/reconcilerLogs/{$r.id}">logs</a>.
+		</span>
+	{/if}
 	<p>{$r.description}</p>
 
 	{#each errors as error}
@@ -182,3 +194,9 @@
 	/>
 	Are you sure?
 </Confirm>
+
+<style>
+	.reconciler-error {
+		color: var(--a-text-danger);
+	}
+</style>

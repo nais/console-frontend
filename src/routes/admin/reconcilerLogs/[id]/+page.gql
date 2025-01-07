@@ -1,0 +1,30 @@
+query ReconcilerLogs($id: ID!) {
+	node(id: $id) {
+		__typename
+		... on Reconciler {
+			enabled
+			displayName
+			name
+			description
+			errors(first: 20) @paginate(mode: SinglePage) {
+				pageInfo {
+					hasNextPage
+					hasPreviousPage
+					startCursor
+					endCursor
+					totalCount
+					pageStart
+					pageEnd
+				}
+				nodes {
+					correlationID
+					createdAt
+					message
+					team {
+						slug
+					}
+				}
+			}
+		}
+	}
+}
