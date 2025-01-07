@@ -251,12 +251,12 @@
 <div class="breadcrumbs">
 	<div class="page">
 		<nav>
-			<a href="/team/{teamSlug}">{teamSlug}</a>
+			<a href="/team/{teamSlug}" class="unstyled">{teamSlug}</a>
 
 			{#each crumbs($page.route.id, $page.params) as { name, path }}
 				<ChevronRightIcon style="font-size: 1.5rem" />
 				{#if path}
-					<a href={path}>{name}</a>
+					<a class="unstyled" href={path}>{name}</a>
 				{:else}
 					<span>{name}</span>
 				{/if}
