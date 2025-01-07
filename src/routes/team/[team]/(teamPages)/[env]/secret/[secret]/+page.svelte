@@ -245,7 +245,7 @@
 			variant="danger"
 			size="small"
 			onclick={openDeleteModal}
-			iconLeft={TrashIcon}
+			icon={TrashIcon}
 		>
 			Delete
 		</Button>
@@ -282,18 +282,16 @@
 							</Td>
 							<Td style="width:100px;" align="right">
 								<Button
-									iconOnly
 									size="small"
 									variant="tertiary"
 									title="Show or edit secret value"
 									onclick={() => {
 										openEditValueModal(value.name, value.value);
 									}}
-									iconLeft={DocPencilIcon}
-								></Button>
+									icon={DocPencilIcon}
+								/>
 
 								<Button
-									iconOnly
 									size="small"
 									variant="tertiary-neutral"
 									title="Delete key and value"
@@ -301,7 +299,7 @@
 										openDeleteValueModal(value.name);
 									}}
 								>
-									{#snippet iconLeft()}
+									{#snippet icon()}
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
 									{/snippet}
 								</Button>

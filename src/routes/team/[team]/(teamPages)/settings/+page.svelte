@@ -294,7 +294,7 @@
 									onclick={() => {
 										showKey = !showKey;
 									}}
-									iconLeft={EyeSlashIcon}
+									icon={EyeSlashIcon}
 								/>
 							{:else}
 								{deployKey.key.replaceAll(/./g, '*')}
@@ -304,7 +304,7 @@
 									onclick={() => {
 										showKey = !showKey;
 									}}
-									iconLeft={EyeIcon}
+									icon={EyeIcon}
 								/>
 							{/if}
 						</div>
@@ -327,7 +327,7 @@
 							onclick={() => {
 								showRotateKey = !showRotateKey;
 							}}
-							iconLeft={ArrowsCirclepathIcon}
+							icon={ArrowsCirclepathIcon}
 						>
 							Rotate key
 						</Button>
@@ -381,7 +381,7 @@
 						showDeleteTeam = !showDeleteTeam;
 						//deleteKeyResp = null;
 					}}
-					iconLeft={TrashIcon}
+					icon={TrashIcon}
 				>
 					Request team deletion</Button
 				>

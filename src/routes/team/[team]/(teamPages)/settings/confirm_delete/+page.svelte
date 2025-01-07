@@ -57,7 +57,7 @@
 					showConfirmDeleteTeam = !showConfirmDeleteTeam;
 				}}
 				variant="danger"
-				iconLeft={TrashIcon}
+				icon={TrashIcon}
 			>
 				Delete team
 			</Button>

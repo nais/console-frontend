@@ -160,7 +160,7 @@
 						onclick={() => {
 							open = true;
 						}}
-						iconLeft={TimerStartIcon}
+						icon={TimerStartIcon}
 					>
 						Trigger run
 					</Button>

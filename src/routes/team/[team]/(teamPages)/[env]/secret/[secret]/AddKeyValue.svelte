@@ -106,7 +106,7 @@
 		variant="tertiary"
 		size="small"
 		onclick={openModal}
-		iconLeft={PlusCircleFillIcon}
+		icon={PlusCircleFillIcon}
 	>
 		Add key and value
 	</Button>

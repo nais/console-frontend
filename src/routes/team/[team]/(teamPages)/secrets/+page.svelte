@@ -105,7 +105,7 @@
 		<Card columns={12}>
 			<div class="card-heading">
 				<h4>Secrets</h4>
-				<Button variant="secondary" size="small" onclick={() => open()} iconLeft={PlusIcon}>
+				<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
 					Create Secret
 				</Button>
 			</div>

@@ -48,9 +48,8 @@
 				edit = true;
 			}}
 			size="xsmall"
-			iconOnly={true}
 			variant="tertiary"
-			iconLeft={PencilIcon}
+			icon={PencilIcon}
 		/>
 	</div>
 {:else}

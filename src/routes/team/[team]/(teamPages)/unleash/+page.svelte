@@ -342,14 +342,13 @@
 							</Td>
 							<Td style="width:100px;" align="right">
 								<Button
-									iconOnly
 									size="small"
 									disabled={unleash.ready === false}
 									variant="tertiary-neutral"
 									title="Delete key and value"
 									onclick={() => removeTeamClickHandler(team.slug)}
 								>
-									{#snippet iconLeft()}
+									{#snippet icon()}
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
 									{/snippet}
 								</Button>
@@ -365,7 +364,7 @@
 					disabled={unleash.ready === false}
 					size="small"
 					onclick={addTeamClickHandler}
-					iconLeft={PlusCircleFillIcon}
+					icon={PlusCircleFillIcon}
 				>
 					Add team
 				</Button>
@@ -379,7 +378,7 @@
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
 		</p>
-		<Button variant="secondary" size="medium" onclick={createNewUnleash} iconLeft={PlusIcon}>
+		<Button variant="secondary" size="medium" onclick={createNewUnleash} icon={PlusIcon}>
 			Enable Unleash
 		</Button>
 	</div>

@@ -172,9 +172,7 @@
 								{/snippet}
 							</TextField>
 							<div style="margin-top: 1rem;">
-								<Button size="small" variant="secondary" type="submit" iconLeft={PlusIcon}>
-									Add
-								</Button>
+								<Button size="small" variant="secondary" type="submit" icon={PlusIcon}>Add</Button>
 							</div>
 						</form>
 					</div>
@@ -222,7 +220,7 @@
 										<Skeleton variant="text" />
 									</Td>
 									<Td>
-										<Button variant="secondary" size="small" disabled={true} iconLeft={TrashIcon}>
+										<Button variant="secondary" size="small" disabled={true} icon={TrashIcon}>
 											Remove
 										</Button>
 									</Td>
@@ -236,7 +234,7 @@
 											size="small"
 											disabled={!team.viewerIsOwner && !team.viewerIsMember}
 											onclick={() => removeRepository(repo.team.slug, repo.name)}
-											iconLeft={TrashIcon}
+											icon={TrashIcon}
 										>
 											Remove
 										</Button>

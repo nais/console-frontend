@@ -136,7 +136,7 @@
 	</form>
 
 	{#snippet footer()}
-		<Button type="submit" onclick={submit} iconLeft={PlusIcon}>Add member</Button>
+		<Button type="submit" onclick={submit} icon={PlusIcon}>Add member</Button>
 	{/snippet}
 </Modal>
 

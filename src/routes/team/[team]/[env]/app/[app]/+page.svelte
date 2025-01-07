@@ -78,7 +78,7 @@
 						onclick={() => {
 							restart = true;
 						}}
-						iconLeft={ArrowCirclepathIcon}
+						icon={ArrowCirclepathIcon}
 					>
 						Restart
 					</Button>

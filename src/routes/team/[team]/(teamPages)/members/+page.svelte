@@ -87,7 +87,7 @@
 					onclick={() => {
 						addMemberOpen = !addMemberOpen;
 					}}
-					iconLeft={PlusIcon}>Add member</Button
+					icon={PlusIcon}>Add member</Button
 				>
 			{/if}
 		</div>
@@ -118,7 +118,6 @@
 						<Td>
 							{#if canEdit}
 								<Button
-									iconOnly
 									title="Edit member"
 									size="small"
 									variant="tertiary"
@@ -126,10 +125,9 @@
 										editUser = edge.node.user.email.toString();
 										editUserOpen = true;
 									}}
-									iconLeft={PencilIcon}
+									icon={PencilIcon}
 								/>
 								<Button
-									iconOnly
 									title="Delete member"
 									size="small"
 									variant="tertiary-neutral"
@@ -141,7 +139,7 @@
 										deleteUserOpen = true;
 									}}
 								>
-									{#snippet iconLeft()}
+									{#snippet icon()}
 										<TrashIcon style="color:var(--a-icon-danger)!important" />
 									{/snippet}
 								</Button>
