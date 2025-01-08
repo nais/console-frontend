@@ -172,34 +172,30 @@
 		<h5>Outbound</h5>
 		<h6>External hostnames</h6>
 		<ul>
-			{#each $traffic.networkPolicy.outbound.external.filter((e) => e.target) as external}
-				{#if external.type === 'ExternalNetworkPolicyHost'}
-					{#each external.ports as port}
-						<li>
-							<Globe /><a href="{external.target}:{port}">{external.target}:{port}</a><br />
-						</li>
-					{:else}
-						<li>
-							<Globe /><a href="https://{external.target}">https://{external.target}</a><br />
-						</li>
-					{/each}
-				{/if}
+			{#each $traffic.networkPolicy.outbound.external.filter((e) => e.type === 'ExternalNetworkPolicyHost') as external}
+				{#each external.ports as port}
+					<li>
+						<Globe /><a href="{external.target}:{port}">{external.target}:{port}</a><br />
+					</li>
+				{:else}
+					<li>
+						<Globe /><a href="https://{external.target}">https://{external.target}</a><br />
+					</li>
+				{/each}
 			{:else}
 				<li>No outbound external hosts in access policy</li>
 			{/each}
 		</ul>
 		<h6>External IPs</h6>
 		<ul>
-			{#each $traffic.networkPolicy.outbound.external.filter((e) => e.ports) as external}
-				{#if external.type === 'ExternalNetworkPolicyIpv4'}
-					{#each external.ports as port}
-						<li>
-							<Globe />{external.target}:{port}<br />
-						</li>
-					{:else}
-						<li><Globe />{external.target}<br /></li>
-					{/each}
-				{/if}
+			{#each $traffic.networkPolicy.outbound.external.filter((e) => e.type === 'ExternalNetworkPolicyIpv4') as external}
+				{#each external.ports as port}
+					<li>
+						<Globe />{external.target}:{port}<br />
+					</li>
+				{:else}
+					<li><Globe />{external.target}<br /></li>
+				{/each}
 			{:else}
 				<li>No outbound external IPs in access policy</li>
 			{/each}
