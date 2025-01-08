@@ -1,4 +1,4 @@
-query UserTeams {
+query UserTeams @cache(policy: NetworkOnly) {
 	me {
 		__typename
 		... on User {
