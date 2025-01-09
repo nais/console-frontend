@@ -73,14 +73,14 @@
 
 	let filters: AppliedFilter[] = $state([]);
 	let freetext: string = $state('');
-	let supportedFilters: Filter[] = [
+	let supportedFilters: Filter[] = $derived([
 		{
 			key: 'environment',
 			values: $Jobs.data?.team.environments
 				.filter((env) => env != PendingValue)
 				.map((env) => ({ value: env.name }))
 		}
-	];
+	]);
 </script>
 
 <GraphErrors errors={$Jobs.errors} />
