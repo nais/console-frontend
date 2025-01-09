@@ -107,7 +107,9 @@
 			<h6>Internal ingresses</h6>
 			<ul>
 				{#each internalIngresses($traffic.ingresses) as ingress}
-					<li><HouseIcon /><a href={ingress.url}>{ingress.url}</a></li>
+					<li>
+						<HouseIcon /><a href={ingress.url}>{ingress.url}</a>
+					</li>
 				{:else}
 					<li>No internal ingresses</li>
 				{/each}
@@ -253,7 +255,6 @@
 	}
 	.directionContent.first {
 		border-right: 1px solid var(--a-border-divider);
-		width: 40%;
 	}
 	.directionContent,
 	h6 {
