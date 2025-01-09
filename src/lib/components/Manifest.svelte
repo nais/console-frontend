@@ -2,6 +2,9 @@
 	import { fragment, graphql, type Manifest } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
+	import Highlight, { LineNumbers } from 'svelte-highlight';
+	import { yaml } from 'svelte-highlight/languages';
+	import 'svelte-highlight/styles/github.css';
 
 	interface Props {
 		workload: Manifest;
@@ -35,7 +38,9 @@
 				copyText={$manifest.manifest.content}
 			/>
 		</h3>
-		<pre>{$manifest.manifest.content}</pre>
+		<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
+			<LineNumbers {highlighted} hideBorder />
+		</Highlight>
 	{/if}
 </Card>
 

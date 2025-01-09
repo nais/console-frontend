@@ -49,6 +49,7 @@
 		"graphql": "^16.10.0",
 		"graphql-sse": "^2.5.3",
 		"pretty-bytes": "^6.1.1",
-		"svelte-floating-ui": "^1.5.9"
+		"svelte-floating-ui": "^1.5.9",
+		"svelte-highlight": "^7.8.2"
 	}
 }
