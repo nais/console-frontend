@@ -56,7 +56,7 @@
 				<Th>CPU request</Th>
 				<Th>Memory request</Th>
 				<Th>Restarts</Th>
-				<Th>Status</Th>
+				<Th>State</Th>
 				<Th>Created</Th>
 				<Th>Message</Th>
 			</Tr>
