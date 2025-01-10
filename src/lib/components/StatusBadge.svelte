@@ -14,17 +14,17 @@
 </script>
 
 {#if state === 'FAILING'}
-	<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" title="Application is failing" />
+	<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" title="Workload is failing" />
 {:else if state === 'NOT_NAIS'}
 	<ExclamationmarkTriangleFillIcon
 		style="color: var(--a-icon-warning)"
-		title="Application is not nais"
+		title="Workload is not nais"
 	/>
 {:else if state === 'UNKNOWN'}
 	<UnknownIcon
 		{size}
 		style="color: var(--a-icon-warning)"
-		aria-label="Unknown application status"
+		aria-label="Unknown workload status"
 		role="image"
 	/>
 {/if}
