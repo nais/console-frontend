@@ -28,7 +28,7 @@
 				{#each $ReconcilerLogs.data.node.errors.nodes as error}
 					<Tr>
 						<Td><span class="message">{error.message}</span></Td>
-						<Td>{error.team.slug}</Td>
+						<Td><a href="/team/{error.team.slug}">{error.team.slug}</a></Td>
 						<Td><Time time={error.createdAt} distance={true} /></Td>
 					</Tr>
 				{:else}
