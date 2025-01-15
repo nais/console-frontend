@@ -6,6 +6,7 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Button,
+		CopyButton,
 		Heading,
 		HelpText,
 		Loader,
@@ -280,29 +281,37 @@
 									{value.name}
 								</p>
 							</Td>
-							<Td style="width:100px;" align="right">
-								<Button
-									size="small"
-									variant="tertiary"
-									title="Show or edit secret value"
-									onclick={() => {
-										openEditValueModal(value.name, value.value);
-									}}
-									icon={DocPencilIcon}
-								/>
+							<Td style="width: 100px" align="right">
+								<div class="buttons">
+									<CopyButton
+										activeText="Value copied"
+										variant="action"
+										size="small"
+										copyText={value.value}
+									/>
+									<Button
+										size="small"
+										variant="tertiary"
+										title="Show or edit secret value"
+										onclick={() => {
+											openEditValueModal(value.name, value.value);
+										}}
+										icon={DocPencilIcon}
+									/>
 
-								<Button
-									size="small"
-									variant="tertiary-neutral"
-									title="Delete key and value"
-									onclick={() => {
-										openDeleteValueModal(value.name);
-									}}
-								>
-									{#snippet icon()}
-										<TrashIcon style="color:var(--a-icon-danger)!important" />
-									{/snippet}
-								</Button>
+									<Button
+										size="small"
+										variant="tertiary-neutral"
+										title="Delete key and value"
+										onclick={() => {
+											openDeleteValueModal(value.name);
+										}}
+									>
+										{#snippet icon()}
+											<TrashIcon style="color:var(--a-icon-danger)!important" />
+										{/snippet}
+									</Button>
+								</div>
 							</Td>
 						</Tr>
 					{/each}
@@ -342,6 +351,9 @@
 		row-gap: 1rem;
 	}
 
+	.buttons {
+		display: flex;
+	}
 	h4 {
 		display: flex;
 		font-weight: 400;
