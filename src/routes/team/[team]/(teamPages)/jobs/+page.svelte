@@ -28,15 +28,15 @@
 		replaceState(page.url.toString(), {});
 		const environments = filters.filter((f) => f.key === 'environment')?.map((f) => f.value);
 		Jobs.fetch({ variables: { team: teamSlug, filter: { name: freetext, environments } } });
+		changeParams({
+			direction: tableSort.direction || 'DESC',
+			field: tableSort.orderBy || JobOrderField.STATUS,
+			environments: environments.join(','),
+			filter: freetext
+		});
 	};
 
-	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
-
 	const onKeyUp = (e: KeyboardEvent) => {
-		if (searchTimeout) {
-			clearTimeout(searchTimeout);
-		}
-
 		if (e.key === 'Enter') {
 			handleFilter();
 			return;
@@ -45,10 +45,6 @@
 			handleFilter();
 			return;
 		}
-
-		searchTimeout = setTimeout(() => {
-			handleFilter();
-		}, 1000);
 	};
 
 	let tableSort = $derived({
@@ -67,7 +63,12 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || JobOrderField.NAME
+			field: tableSort.orderBy || JobOrderField.NAME,
+			environments: filters
+				.filter((f) => f.key === 'environment')
+				?.map((f) => f.value)
+				.join(','),
+			filter: freetext
 		});
 	};
 
@@ -78,6 +79,13 @@
 			key: 'environment',
 			values: $Jobs.data?.team.environments
 				.filter((env) => env != PendingValue)
+				.filter(
+					(env) =>
+						filters
+							.filter((f) => f.key === 'environment')
+							?.map((f) => f.value)
+							.indexOf(env.name) === -1
+				)
 				.map((env) => ({ value: env.name }))
 		}
 	]);

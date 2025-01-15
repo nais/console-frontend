@@ -49,7 +49,7 @@
 	let caretPosition = $state(0);
 	let caretOffetWidth = $state(0);
 	let active = $state(false);
-	let activeOptionIndex = $state(0);
+	let activeOptionIndex = $state(-1);
 
 	type FilterElements =
 		| {
@@ -127,23 +127,24 @@
 			if (newIndex < numElements) {
 				activeOptionIndex = newIndex;
 			} else {
-				activeOptionIndex = 0;
+				activeOptionIndex = -1;
 			}
 		} else if (event.key === 'ArrowUp') {
 			event.preventDefault();
 			const numElements = dropdownGroup?.children.length ?? 0;
 			let newIndex = activeOptionIndex - 1;
-			if (newIndex >= 0) {
+			if (newIndex >= -1) {
 				activeOptionIndex = newIndex;
 			} else {
 				activeOptionIndex = numElements - 1;
 			}
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
-			preventKeyUp = true;
+			activeOptionIndex = -1;
 			const activeElementValue = (dropdownGroup?.querySelector('.active') as HTMLDivElement)
 				?.dataset.value;
 			if (activeElementValue) {
+				preventKeyUp = true;
 				event.preventDefault();
 				let restoreTo = -1;
 				if (activeFormatElement.type === 'text') {
@@ -212,6 +213,10 @@
 				.filter((f) => {
 					// Filter out the filters that should only be used once
 					if (f.single && formatted.find((fo) => fo.type == 'filter' && f.key === fo.key)) {
+						return false;
+					}
+					// Filter out filters that are exhausted
+					if (typeof f.values !== 'function' && !f.values?.length) {
 						return false;
 					}
 					// Filter out the filters that are not matching the current text
