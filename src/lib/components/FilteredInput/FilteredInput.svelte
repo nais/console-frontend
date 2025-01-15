@@ -140,10 +140,11 @@
 			}
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
-			preventKeyUp = true;
+			//TODO: preventKeyUp = true;
 			const activeElementValue = (dropdownGroup?.querySelector('.active') as HTMLDivElement)
 				?.dataset.value;
 			if (activeElementValue) {
+				preventKeyUp = true;
 				event.preventDefault();
 				let restoreTo = -1;
 				if (activeFormatElement.type === 'text') {

@@ -29,15 +29,15 @@
 		replaceState(page.url.toString(), {});
 		const environments = filters.filter((f) => f.key === 'environment')?.map((f) => f.value);
 		Applications.fetch({ variables: { team: teamSlug, filter: { name: freetext, environments } } });
+		changeParams({
+			direction: tableSort.direction || 'DESC',
+			field: tableSort.orderBy || ApplicationOrderField.STATUS,
+			environments: environments.join(','),
+			filter: freetext
+		});
 	};
 
-	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
-
 	const onKeyUp = (e: KeyboardEvent) => {
-		if (searchTimeout) {
-			clearTimeout(searchTimeout);
-		}
-
 		if (e.key === 'Enter') {
 			handleFilter();
 			return;
@@ -46,10 +46,6 @@
 			handleFilter();
 			return;
 		}
-
-		searchTimeout = setTimeout(() => {
-			handleFilter();
-		}, 1000);
 	};
 
 	let tableSort = $derived({
@@ -68,7 +64,12 @@
 
 		changeParams({
 			direction: tableSort.direction || 'DESC',
-			field: tableSort.orderBy || ApplicationOrderField.STATUS
+			field: tableSort.orderBy || ApplicationOrderField.STATUS,
+			environments: filters
+				.filter((f) => f.key === 'environment')
+				?.map((f) => f.value)
+				.join(','),
+			filter: freetext
 		});
 	};
 
