@@ -80,6 +80,13 @@
 			key: 'environment',
 			values: $Applications.data?.team.environments
 				.filter((env) => env != PendingValue)
+				.filter(
+					(env) =>
+						filters
+							.filter((f) => f.key === 'environment')
+							?.map((f) => f.value)
+							.indexOf(env.name) === -1
+				)
 				.map((env) => ({ value: env.name }))
 		}
 	]);
