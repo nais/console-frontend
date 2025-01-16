@@ -98,7 +98,7 @@
 							</Td>
 							<Td>
 								{#if b.workload}
-									<WorkloadLink workload={b.workload} />
+									<WorkloadLink workload={b.workload} showIcon={true} />
 								{:else}
 									<div class="inline">
 										<i>No owner</i>

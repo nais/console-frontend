@@ -84,7 +84,7 @@
 								{#if a.workloadName === '*'}
 									All workloads
 								{:else if a.workload}
-									<WorkloadLink workload={a.workload} />
+									<WorkloadLink workload={a.workload} showIcon={true} />
 								{:else}
 									<div class="workloadNotFound">
 										<ExclamationmarkTriangleFillIcon

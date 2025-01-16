@@ -21,7 +21,7 @@
 	<h5>Workloads</h5>
 	<ul>
 		{#each workloads.nodes as workload}
-			<li><WorkloadLink {workload} /></li>
+			<li><WorkloadLink {workload} showIcon={true} /></li>
 		{/each}
 	</ul>
 {/if}

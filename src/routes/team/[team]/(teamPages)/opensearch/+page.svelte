@@ -92,7 +92,7 @@
 							</Td>
 							<Td>
 								{#if o.workload}
-									<WorkloadLink workload={o.workload} />
+									<WorkloadLink workload={o.workload} showIcon={true} />
 								{:else}
 									<em title="The OpenSearch instance is owned by the team">Team</em>
 								{/if}

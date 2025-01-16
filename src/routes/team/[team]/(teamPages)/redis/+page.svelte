@@ -72,7 +72,6 @@
 		>
 			<Thead>
 				<Tr>
-					<Th />
 					<Th sortable={true} sortKey={RedisInstanceOrderField.NAME}>Name</Th>
 					<Th sortable={true} sortKey={RedisInstanceOrderField.ENVIRONMENT}>Environment</Th>
 					<Th>Owner</Th>
@@ -82,8 +81,6 @@
 				{#each redis.nodes as r}
 					{#if r !== PendingValue}
 						<Tr>
-							<!-- TODO: show warning if no workload uses this instance -->
-							<Td></Td>
 							<Td>
 								<a href="/team/{teamSlug}/{r.environment.name}/redis/{r.name}">
 									{r.name}
@@ -94,7 +91,7 @@
 							</Td>
 							<Td>
 								{#if r.workload}
-									<WorkloadLink workload={r.workload} />
+									<WorkloadLink workload={r.workload} showIcon={true} />
 								{:else}
 									<em title="The Redis instance is owned by the team">Team</em>
 								{/if}

@@ -5,6 +5,7 @@
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import {
+		Alert,
 		Button,
 		CopyButton,
 		Heading,
@@ -334,6 +335,9 @@
 	{#snippet header()}
 		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
 	{/snippet}
+	<Alert variant="info" size="small">
+		Editing this secret will cause a restart of the applications listed below.
+	</Alert>
 	<div class="entry">
 		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
 	</div>
@@ -369,6 +373,9 @@
 
 	.alerts {
 		margin-bottom: 1rem;
+	}
+	.entry {
+		margin: 2rem 0;
 	}
 
 	.data-heading {

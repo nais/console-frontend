@@ -20,7 +20,7 @@
 	import { page } from '$app/state';
 	import { PendingValue } from '$houdini';
 	import { replacer } from '$lib/replacer';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	interface Props {
 		nav: menuGroup[];
 	}
@@ -55,12 +55,14 @@
 							<div class="item-container">
 								<div class="left-content">
 									<item.icon />
-									<span style="line-height: 1.7rem;">
-										{item.name}
-										{#if item.notNais}
-											<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-danger)" />
-										{/if}
-									</span>
+									{item.name}
+									{#if item.notNais}
+										<CircleFillIcon
+											style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
+											height="0.5rem"
+											width="0.5rem"
+										/>
+									{/if}
 								</div>
 								{#if item.inventoryCount}
 									<div class="right-content">

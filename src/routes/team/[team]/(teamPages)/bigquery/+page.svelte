@@ -96,7 +96,7 @@
 							</Td>
 							<Td>
 								{#if ds.workload}
-									<WorkloadLink workload={ds.workload} />
+									<WorkloadLink workload={ds.workload} showIcon={true} />
 								{:else}
 									<em>No owner</em>
 								{/if}
