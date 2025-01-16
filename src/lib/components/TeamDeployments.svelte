@@ -99,7 +99,7 @@
 									<a href="/team/{deploy.team.slug}/{deploy.environment.name}/app/{resource.name}"
 										>{resource.name}</a
 									>
-								{:else if resource.kind === 'Job'}
+								{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
 									<a href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{resource.name}"
 										>{resource.name}</a
 									>
