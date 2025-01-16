@@ -54,6 +54,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 					hour
 				}
 				maintenanceVersion
+				version
 				projectID
 				database {
 					name

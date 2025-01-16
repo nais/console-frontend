@@ -111,7 +111,7 @@
 			<div class="grid" style="grid-template-columns: 40% 60%;">
 				<p style="display: flex; align-items: center; gap: 0 1rem;">Version</p>
 				<p style="display: flex; align-items: center; gap: 0 0.5rem">
-					{instance.maintenanceVersion}
+					{instance.version}
 				</p>
 				<p style="display: flex; align-items: center; gap: 0 1rem;">
 					State
