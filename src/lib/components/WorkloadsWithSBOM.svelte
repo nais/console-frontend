@@ -8,23 +8,8 @@
 		type WorkloadOrderField$options
 	} from '$houdini';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import {
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import {
-		ArrowCirclepathIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon,
-		SandboxIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
@@ -147,7 +132,6 @@
 	>
 		<Thead>
 			<Tr>
-				<Th></Th>
 				<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
 				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Environment</Th>
 				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
@@ -169,22 +153,7 @@
 					<Tr>
 						<Td>
 							{#if workload.__typename !== PendingValue}
-								{#if workload.__typename === 'Application'}
-									<Tooltip placement="right" content="Application">
-										<span style="color:var(--a-gray-600)"><SandboxIcon {...rest} /> </span>
-									</Tooltip>
-								{:else if workload.__typename === 'Job'}
-									<Tooltip placement="right" content="Job">
-										<span style="color:var(--a-gray-600)"><ArrowCirclepathIcon {...rest} /> </span>
-									</Tooltip>
-								{/if}
-							{:else}
-								<Skeleton variant="circle" width="16px" height="16px" />
-							{/if}
-						</Td>
-						<Td>
-							{#if workload.__typename !== PendingValue}
-								<WorkloadLink {workload} />
+								<WorkloadLink {workload} showIcon={true} />
 							{:else}
 								<Skeleton variant="text" />
 							{/if}
