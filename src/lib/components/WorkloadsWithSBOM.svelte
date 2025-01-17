@@ -20,7 +20,7 @@
 		[key: string]: unknown;
 	}
 
-	let { team, environment, ...rest }: Props = $props();
+	let { team, environment }: Props = $props();
 
 	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
 		const env = environment;
