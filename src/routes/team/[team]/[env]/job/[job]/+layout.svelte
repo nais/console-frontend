@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		ArrowsSquarepathIcon,
 		BellIcon,
@@ -9,7 +8,8 @@
 		FileTextIcon,
 		HouseIcon,
 		ImageIcon,
-		TrashIcon
+		TrashIcon,
+		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$types';
 
@@ -55,7 +55,7 @@
 				{
 					name: 'Cost',
 					routeId: '/team/[team]/[env]/job/[job]/cost',
-					icon: CostIcon
+					icon: WalletIcon
 				},
 				{
 					name: 'Logs',

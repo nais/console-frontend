@@ -3,9 +3,8 @@
 	import { fragment, graphql, type Persistence } from '$houdini';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
-	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
-	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
+	import { BucketIcon, DatabaseIcon, MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: Persistence;
@@ -139,7 +138,7 @@
 			</ul>
 		{/if}
 		{#if $data.openSearch}
-			<h5><Opensearch />OpenSearch</h5>
+			<h5><MagnifyingGlassIcon />OpenSearch</h5>
 			<ul>
 				<li>
 					<a href={`/team/${team}/${env}/opensearch/${$data.openSearch.name}`}

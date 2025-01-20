@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 
 	import { PendingValue, RedisInstanceOrderField } from '$houdini';
 	import Cost from '$lib/components/Cost.svelte';
@@ -9,7 +8,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronLeftIcon, ChevronRightIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -50,7 +49,7 @@
 		<Card columns={3}>
 			<SummaryCard title="Cost" helpText="Total Redis cost for the last 30 days" color="green">
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if cost !== PendingValue}
 					<Cost cost={cost.daily.sum} />

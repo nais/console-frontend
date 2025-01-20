@@ -2,9 +2,7 @@
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import BigQuery from '$lib/icons/BigQuery.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
-	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
 	import Unleash from '$lib/icons/Unleash.svelte';
 	import {
@@ -16,11 +14,13 @@
 		DatabaseIcon,
 		HouseIcon,
 		LineGraphStackedIcon,
+		MagnifyingGlassIcon,
 		PackageIcon,
 		PadlockLockedIcon,
 		PersonGroupIcon,
 		ShieldLockIcon,
-		VirusIcon
+		VirusIcon,
+		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	import { PendingValue } from '$houdini';
@@ -116,7 +116,7 @@
 					routeId: '/team/[team]/(teamPages)/opensearch',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
 					withSubRoutes: true,
-					icon: Opensearch,
+					icon: MagnifyingGlassIcon,
 					inventoryCount: $InventoryCounts.data?.team.inventoryCounts.openSearchInstances.total,
 					featureToggle: UserInfo.data?.features.openSearch.enabled
 				},
@@ -159,7 +159,7 @@
 					name: 'Cost',
 					routeId: '/team/[team]/(teamPages)/cost',
 					withSubRoutes: true,
-					icon: CostIcon
+					icon: WalletIcon
 				},
 				{
 					name: 'Utilization',

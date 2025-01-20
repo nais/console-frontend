@@ -6,7 +6,6 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		Alert,
 		CopyButton,
@@ -22,6 +21,7 @@
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon,
+		WalletIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
@@ -55,7 +55,7 @@
 				color="blue"
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				<Cost cost={Math.round(instance.cost.sum)} />
 			</SummaryCard>

@@ -6,11 +6,10 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronLeftIcon, ChevronRightIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -55,7 +54,7 @@
 				color="green"
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if cost !== PendingValue}
 					<Cost cost={cost.daily.sum} />

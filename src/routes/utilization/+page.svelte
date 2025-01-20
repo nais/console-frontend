@@ -7,7 +7,6 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { percentageFormatter } from '$lib/utils/formatters';
@@ -18,6 +17,7 @@
 		type TeamsOverageData
 	} from '$lib/utils/resources';
 	import { Table, Tbody, Td, Th, Thead, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -265,7 +265,7 @@
 				helpText="Estimate of annual cost of unused CPU for tenant calculated from current utilization data."
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if resourceUtilization.cpuUtil.length > 0}
 					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
@@ -288,7 +288,7 @@
 				helpText="Estimate of annual cost of unused memory for tenant calculated from current utilization data."
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if resourceUtilization.memUtil.length > 0}
 					{@const memoryRequested = resourceUtilization.memUtil.reduce(

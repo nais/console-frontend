@@ -5,13 +5,13 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
 		ChevronLeftIcon,
 		ChevronRightIcon,
-		ExclamationmarkTriangleFillIcon
+		ExclamationmarkTriangleFillIcon,
+		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -57,7 +57,7 @@
 				color="green"
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if cost !== PendingValue}
 					<Cost cost={cost.daily.sum} />

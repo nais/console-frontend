@@ -4,7 +4,6 @@
 	import Time from '$lib/Time.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import {
 		CopyButton,
 		HelpText,
@@ -19,6 +18,7 @@
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
+		WalletIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -45,7 +45,7 @@
 
 			<em>{bq.description ? bq.description : 'No description'}</em>
 
-			<h4 style="margin: 1em 0 0 0;"><CostIcon size="16" /> Cost</h4>
+			<h4 style="margin: 1em 0 0 0;"><WalletIcon height="16px" width="16px" /> Cost</h4>
 			<p style="margin-left: 1em; margin-top: 0;">
 				€{Math.round(bq.cost.sum)} last 30 days
 			</p>

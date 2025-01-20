@@ -4,15 +4,18 @@
 	import BigQuery from '$lib/icons/BigQuery.svelte';
 	import Kafka from '$lib/icons/Kafka.svelte';
 	import Redis from '$lib/icons/Redis.svelte';
+	import Unleash from '$lib/icons/Unleash.svelte';
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
 	import {
 		ArrowCirclepathIcon,
+		ArrowsSquarepathIcon,
 		BucketIcon,
 		DatabaseIcon,
 		MagnifyingGlassIcon,
 		PackageIcon,
-		PadlockLockedIcon
+		PadlockLockedIcon,
+		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$houdini';
 
@@ -286,6 +289,12 @@
 						<a class="unstyled" href={path}><Kafka /> {name}</a>
 					{:else if path.match(/(bigquery)\/[a-zA-Z0-9-]+/)}
 						<a class="unstyled" href={path}><BigQuery /> {name}</a>
+					{:else if path.match(/(unleash)/)}
+						<a class="unstyled" href={path}><Unleash /> {name}</a>
+					{:else if path.match(/(deploy)/)}
+						<a class="unstyled" href={path}><ArrowsSquarepathIcon /> {name}</a>
+					{:else if path.match(/(cost)/)}
+						<a class="unstyled" href={path}><WalletIcon /> {name}</a>
 					{:else}
 						<a class="unstyled" href={path}>{name}</a>
 					{/if}

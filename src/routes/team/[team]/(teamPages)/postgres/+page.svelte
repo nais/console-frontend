@@ -17,6 +17,7 @@
 		ChevronLeftIcon,
 		ChevronRightIcon,
 		ExclamationmarkTriangleFillIcon,
+		WalletIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 
@@ -24,7 +25,6 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -73,7 +73,7 @@
 				color="green"
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if cost !== PendingValue}
 					<Cost cost={cost.daily.sum} />

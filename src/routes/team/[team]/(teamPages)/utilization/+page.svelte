@@ -8,7 +8,6 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { percentageFormatter } from '$lib/utils/formatters';
@@ -27,6 +26,7 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community/components/Table/index.js';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -274,7 +274,7 @@
 							data."
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if resourceUtilization !== PendingValue}
 					{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
@@ -301,7 +301,7 @@
 							data."
 			>
 				{#snippet icon({ color })}
-					<CostIcon size="32" {color} />
+					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{#if resourceUtilization !== PendingValue}
 					{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
