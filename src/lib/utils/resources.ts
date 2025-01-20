@@ -69,7 +69,7 @@ export type TeamOverageData = {
 	unusedMem: number;
 	unusedCpu: number;
 	estimatedAnnualOverageCost: number;
-	type: 'App' | 'Job';
+	type: string | null;
 };
 
 export function mergeCalculateAndSortOverageData(
@@ -121,7 +121,7 @@ export function mergeCalculateAndSortOverageData(
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost: estimatedAnnualOverageCost,
-				type: memItem.workload.__typename
+				type: memItem.workload.__typename as string | null
 			};
 		})
 		.sort((a, b) => {
