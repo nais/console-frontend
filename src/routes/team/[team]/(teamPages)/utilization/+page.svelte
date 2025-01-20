@@ -6,6 +6,7 @@
 	import { truncateString } from '$lib/chart/util';
 	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CostIcon from '$lib/icons/CostIcon.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
@@ -374,9 +375,15 @@
 							{#each overageTable as overage}
 								<Tr>
 									<Td>
-										<a href={`/team/${teamSlug}/${overage.env}/app/${overage.name}/utilization`}>
-											{overage.name}
-										</a>
+										<WorkloadLink
+											workload={{
+												__typename: overage.type,
+												environment: { name: overage.env },
+												team: { slug: teamSlug },
+												name: overage.name
+											}}
+											showIcon={true}
+										/>
 									</Td>
 									<Td>{overage.env}</Td>
 									<Td
