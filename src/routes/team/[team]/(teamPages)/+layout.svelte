@@ -16,9 +16,9 @@
 		DatabaseIcon,
 		HouseIcon,
 		LineGraphStackedIcon,
+		PackageIcon,
+		PadlockLockedIcon,
 		PersonGroupIcon,
-		QuietZoneIcon,
-		SandboxIcon,
 		ShieldLockIcon,
 		VirusIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -56,7 +56,7 @@
 					name: 'Applications',
 					routeId: '/team/[team]/(teamPages)/applications',
 					withSubRoutes: true,
-					icon: SandboxIcon,
+					icon: PackageIcon,
 					inventoryCount: $InventoryCounts.data?.team.inventoryCounts.applications.total,
 					notNais:
 						$InventoryCounts.data?.team.inventoryCounts.applications.notNais !== PendingValue
@@ -79,7 +79,7 @@
 					routeId: '/team/[team]/(teamPages)/secrets',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/secret/[secret]'],
 					withSubRoutes: true,
-					icon: QuietZoneIcon,
+					icon: PadlockLockedIcon,
 					memberOnly: true
 				}
 			]

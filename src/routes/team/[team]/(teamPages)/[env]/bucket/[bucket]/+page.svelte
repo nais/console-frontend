@@ -45,7 +45,7 @@
 					<dt>Owner</dt>
 					<dd>
 						{#if bucket.workload}
-							<WorkloadLink workload={bucket.workload} />
+							<WorkloadLink workload={bucket.workload} showIcon={true} />
 						{:else}
 							<div class="inline">
 								<i>No owner</i>

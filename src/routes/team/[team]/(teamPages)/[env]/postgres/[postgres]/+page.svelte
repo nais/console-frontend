@@ -134,7 +134,7 @@
 				</p>
 				<p>
 					{#if instance.workload}
-						<WorkloadLink workload={instance.workload} />
+						<WorkloadLink workload={instance.workload} showIcon={true} />
 					{:else}
 						<ExclamationmarkTriangleFillIcon
 							style="color: var(--a-icon-warning)"

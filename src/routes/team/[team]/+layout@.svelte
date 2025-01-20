@@ -1,9 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Feedback from '$lib/feedback/Feedback.svelte';
+	import BigQuery from '$lib/icons/BigQuery.svelte';
+	import Kafka from '$lib/icons/Kafka.svelte';
+	import Redis from '$lib/icons/Redis.svelte';
 	import { replacer, type Data } from '$lib/replacer';
-	import { Alert, Button } from '@nais/ds-svelte-community';
-	import { ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
+	import {
+		ArrowCirclepathIcon,
+		BucketIcon,
+		DatabaseIcon,
+		MagnifyingGlassIcon,
+		PackageIcon,
+		PadlockLockedIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$houdini';
 
 	interface Props {
@@ -254,9 +264,31 @@
 			<a href="/team/{teamSlug}" class="unstyled">{teamSlug}</a>
 
 			{#each crumbs($page.route.id, $page.params) as { name, path }}
-				<ChevronRightIcon style="font-size: 1.5rem" />
+				<BodyLong style="height: 28px; width: 28px; text-align: center; color: var(--a-gray-500);"
+					>/</BodyLong
+				>
 				{#if path}
-					<a class="unstyled" href={path}>{name}</a>
+					{#if path.match(/app\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><PackageIcon /> {name}</a>
+					{:else if path.match(/job\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><ArrowCirclepathIcon /> {name}</a>
+					{:else if path.match(/(secret)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><PadlockLockedIcon /> {name}</a>
+					{:else if path.match(/(postgres)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><DatabaseIcon /> {name}</a>
+					{:else if path.match(/(bucket)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><BucketIcon /> {name}</a>
+					{:else if path.match(/(redis)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><Redis /> {name}</a>
+					{:else if path.match(/(opensearch)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><MagnifyingGlassIcon /> {name}</a>
+					{:else if path.match(/(kafka)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><Kafka /> {name}</a>
+					{:else if path.match(/(bigquery)\/[a-zA-Z0-9-]+/)}
+						<a class="unstyled" href={path}><BigQuery /> {name}</a>
+					{:else}
+						<a class="unstyled" href={path}>{name}</a>
+					{/if}
 				{:else}
 					<span>{name}</span>
 				{/if}
@@ -308,6 +340,14 @@
 		display: flex;
 		justify-content: space-between;
 		margin: 0 auto;
+	}
+
+	.unstyled {
+		text-decoration: none;
+		color: inherit;
+		display: flex;
+		gap: 0.2rem;
+		align-items: center;
 	}
 
 	span {

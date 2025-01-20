@@ -51,7 +51,7 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<div style="margin-left: 1em; margin-top: 0;">
 				{#if os.workload}
-					<WorkloadLink workload={os.workload} />
+					<WorkloadLink workload={os.workload} showIcon={true} />
 				{:else}
 					<div class="inline">
 						<i>This OpenSearch instance does not belong to any workload</i>
@@ -81,7 +81,7 @@
 							{@const access = edge.node}
 							<Tr>
 								<Td>
-									<WorkloadLink workload={access.workload} />
+									<WorkloadLink workload={access.workload} showIcon={true} />
 								</Td>
 								<Td><code>{access.access}</code></Td>
 								<Td>{access.workload.__typename}</Td>

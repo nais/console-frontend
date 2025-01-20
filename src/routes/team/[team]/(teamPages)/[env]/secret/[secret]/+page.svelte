@@ -202,7 +202,7 @@
 			<ul>
 				{#each secret.workloads.nodes as workload}
 					<li>
-						<WorkloadLink {workload} />
+						<WorkloadLink {workload} showIcon={true} />
 					</li>
 				{/each}
 			</ul>
@@ -230,7 +230,7 @@
 			<ul>
 				{#each secret.workloads.nodes as workload}
 					<li>
-						<WorkloadLink {workload} />
+						<WorkloadLink {workload} showIcon={true} />
 					</li>
 				{/each}
 			</ul>

@@ -3,6 +3,7 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
 		team: TeamDeployments;
@@ -94,16 +95,28 @@
 						</Td>
 						<Td
 							>{#each deploy.resources as resource}
-								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 								{#if resource.kind === 'Application'}
-									<a href="/team/{deploy.team.slug}/{deploy.environment.name}/app/{resource.name}"
-										>{resource.name}</a
-									>
+									<WorkloadLink
+										workload={{
+											__typename: 'App',
+											environment: { name: deploy.environment.name },
+											team: { slug: deploy.team.slug },
+											name: resource.name
+										}}
+										showIcon={true}
+									/>
 								{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
-									<a href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{resource.name}"
-										>{resource.name}</a
-									>
+									<WorkloadLink
+										workload={{
+											__typename: 'Job',
+											environment: { name: deploy.environment.name },
+											team: { slug: deploy.team.slug },
+											name: resource.name
+										}}
+										showIcon={true}
+									/>
 								{:else}
+									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{resource.name}
 								{/if}
 								<br />
