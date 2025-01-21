@@ -37,16 +37,19 @@
 
 	let { environment, workload, teamSlug }: Props = $props();
 
-	function getEstimateForMonth(cost: number, date: Date) {
+	function getEstimateForMonth(cost: number, date: Date): number {
 		const daysKnown = date.getDate();
 		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 		const costPerDay = cost / daysKnown;
 		return costPerDay * daysInMonth;
 	}
 
-	function getFactor(cost: { date: Date; sum: number }[]) {
+	function getFactor(cost: { date: Date; sum: number }[]): number {
 		const daysKnown = cost[0].date.getDate();
 		const estCostPerDay = cost[0].sum / daysKnown;
+		if (cost.length < 2) {
+			return 0;
+		}
 		const retVal = (estCostPerDay / (cost[1].sum / cost[1].date.getDate())) * 100 - 100;
 		if (retVal === Infinity || isNaN(retVal)) {
 			return 0;
@@ -65,19 +68,21 @@
 
 {#if $costQuery.data !== null}
 	{@const cost = $costQuery.data.team.environment.workload.cost}
+	{@const factor = getFactor(cost.monthly.series)}
 	<div>
 		{#each cost.monthly.series.slice(0, 2) as item}
 			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
 				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.sum} />
 			{:else}
-				{@const factor = getFactor(cost.monthly.series)}
 				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
 					cost={getEstimateForMonth(item.sum, item.date)}
 				/>
-				{#if factor > 1.0}
-					(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
-				{:else}
-					(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+				{#if cost.monthly.series.length > 1}
+					{#if factor > 1.0}
+						(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+					{:else}
+						(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+					{/if}
 				{/if}
 			{/if}
 			<br />
