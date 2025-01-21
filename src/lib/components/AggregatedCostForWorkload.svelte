@@ -65,12 +65,12 @@
 
 {#if $costQuery.data !== null}
 	{@const cost = $costQuery.data.team.environment.workload.cost}
-	{@const factor = getFactor(cost.monthly.series)}
 	<div>
 		{#each cost.monthly.series.slice(0, 2) as item}
 			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
 				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.sum} />
 			{:else}
+				{@const factor = getFactor(cost.monthly.series)}
 				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
 					cost={getEstimateForMonth(item.sum, item.date)}
 				/>
