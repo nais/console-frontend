@@ -31,23 +31,23 @@
 					<Tr>
 						<Td>
 							{#if entry.__typename === 'RoleAssignedUserSyncLogEntry'}
-							Assigned role <em>{entry.roleName}</em>
+								Assigned role <em>{entry.roleName}</em>
 							{:else if entry.__typename === 'RoleRevokedUserSyncLogEntry'}
-							Revoked role <em>{entry.roleName}</em>
+								Revoked role <em>{entry.roleName}</em>
 							{:else}
-							{entry.message}
+								{entry.message}
 							{/if}
 						</Td>
 						<Td>
 							{entry.userName}
 							{#if entry.__typename === 'UserUpdatedUserSyncLogEntry' && entry.oldUserName !== entry.userName}
-							<span class="old-value">{entry.oldUserName}</span>
+								<span class="old-value">{entry.oldUserName}</span>
 							{/if}
 						</Td>
 						<Td>
 							{entry.userEmail}
 							{#if entry.__typename === 'UserUpdatedUserSyncLogEntry' && entry.oldUserEmail !== entry.userEmail}
-							<span class="old-value">{entry.oldUserEmail}</span>
+								<span class="old-value">{entry.oldUserEmail}</span>
 							{/if}
 						</Td>
 						<Td><Time time={entry.createdAt} distance={true} /></Td>

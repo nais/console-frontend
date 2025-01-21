@@ -7,15 +7,15 @@ query UserSyncLogs {
 			userName
 			userEmail
 			... on UserUpdatedUserSyncLogEntry {
-        		oldUserName
-        		oldUserEmail
-      		}
-      		... on RoleAssignedUserSyncLogEntry {
-        		roleName
-      		}
-      		... on RoleRevokedUserSyncLogEntry {
-        		roleName
-      		}
+				oldUserName
+				oldUserEmail
+			}
+			... on RoleAssignedUserSyncLogEntry {
+				roleName
+			}
+			... on RoleRevokedUserSyncLogEntry {
+				roleName
+			}
 		}
 		pageInfo {
 			hasNextPage
