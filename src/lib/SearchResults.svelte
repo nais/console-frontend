@@ -4,13 +4,13 @@
 		ArrowCirclepathIcon,
 		BucketIcon,
 		DatabaseIcon,
-		PersonGroupIcon,
-		SandboxIcon
+		PackageIcon,
+		PersonGroupIcon
 	} from '@nais/ds-svelte-community/icons';
-	import BigQuery from './icons/BigQueryIcon.svelte';
-	import Kafka from './icons/KafkaIcon.svelte';
-	import Opensearch from './icons/OpenSearchIcon.svelte';
-	import Redis from './icons/RedisIcon.svelte';
+	import BigQueryIcon from './icons/BigQueryIcon.svelte';
+	import KafkaIcon from './icons/KafkaIcon.svelte';
+	import OpenSearchIcon from './icons/OpenSearchIcon.svelte';
+	import RedisIcon from './icons/RedisIcon.svelte';
 
 	interface Props {
 		data: SearchQuery$result;
@@ -50,7 +50,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<SandboxIcon height="1.5rem" />
+						<PackageIcon height="1.5rem" />
 						<div>App</div>
 					</div>
 					<div>
@@ -154,7 +154,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Opensearch height="1.5rem" />
+						<OpenSearchIcon height="1.5rem" />
 						<div></div>
 					</div>
 					<div>
@@ -176,7 +176,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Redis height="1.5rem" />
+						<RedisIcon height="1.5rem" />
 						<div>Redis</div>
 					</div>
 					<div>
@@ -198,7 +198,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Kafka height="1.5rem" />
+						<KafkaIcon height="1.5rem" />
 						<div>Kafka</div>
 					</div>
 					<div>
@@ -220,7 +220,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<BigQuery height="1.5rem" />
+						<BigQueryIcon height="1.5rem" />
 						<div>BQ</div>
 					</div>
 					<div>
