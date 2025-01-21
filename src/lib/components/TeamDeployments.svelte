@@ -78,8 +78,8 @@
 <Table size="small" zebraStripes>
 	<Thead>
 		<Tr>
-			<Th>Environment</Th>
 			<Th>Resource(s)</Th>
+			<Th>Environment</Th>
 			<Th>Created</Th>
 			<Th>Status</Th>
 		</Tr>
@@ -89,9 +89,6 @@
 			{#each orderDeploymentsByDate($data.deployments.nodes) as deploy}
 				<Tr>
 					{#if deploy !== PendingValue}
-						<Td>
-							{deploy.environment.name}
-						</Td>
 						<Td
 							>{#each deploy.resources as resource}
 								{#if resource.kind === 'Application'}
@@ -121,6 +118,9 @@
 								<br />
 							{/each}</Td
 						>
+						<Td>
+							{deploy.environment.name}
+						</Td>
 						<Td><Time time={deploy.created} distance={true} /></Td>
 
 						<Td
