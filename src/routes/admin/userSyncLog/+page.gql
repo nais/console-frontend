@@ -1,0 +1,28 @@
+query UserSyncLogs {
+	userSyncLog(first: 20) @paginate(mode: SinglePage) {
+		nodes {
+			__typename
+			createdAt
+			message
+			userName
+			userEmail
+			... on UserUpdatedUserSyncLogEntry {
+        		oldUserName
+        		oldUserEmail
+      		}
+      		... on RoleAssignedUserSyncLogEntry {
+        		roleName
+      		}
+      		... on RoleRevokedUserSyncLogEntry {
+        		roleName
+      		}
+		}
+		pageInfo {
+			hasNextPage
+			hasPreviousPage
+			pageStart
+			pageEnd
+			totalCount
+		}
+	}
+}

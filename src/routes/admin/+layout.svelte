@@ -17,6 +17,11 @@
 			withSubRoutes: false
 		},
 		{
+			tab: 'User sync log',
+			routeId: '/admin/userSyncLog',
+			withSubRoutes: false
+		},
+		{
 			tab: 'Reconcilers',
 			routeId: '/admin/reconcilers',
 			withSubRoutes: false
