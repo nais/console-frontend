@@ -65,30 +65,25 @@
 
 {#if $costQuery.data !== null}
 	{@const cost = $costQuery.data.team.environment.workload.cost}
+	{@const factor = getFactor(cost.monthly.series)}
 	<div>
-		{#if cost.monthly.series.length > 1}
-			{@const factor = getFactor(cost.monthly.series)}
-			{#each cost.monthly.series.slice(0, 2) as item}
-				{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-					{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.sum} />
+		{#each cost.monthly.series.slice(0, 2) as item}
+			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
+				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.sum} />
+			{:else}
+				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
+					cost={getEstimateForMonth(item.sum, item.date)}
+				/>
+				{#if factor > 1.0}
+					(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
 				{:else}
-					{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
-						cost={getEstimateForMonth(item.sum, item.date)}
-					/>
-					{#if factor > 1.0}
-						(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
-					{:else}
-						(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
-					{/if}
+					(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
 				{/if}
-				<br />
-			{/each}
-		{:else if cost.monthly.series.length == 1}
-			{@const c = cost.monthly.series[0]}
-			<Cost cost={getEstimateForMonth(c.sum, c.date)} />
+			{/if}
+			<br />
 		{:else}
 			No cost data available
-		{/if}
+		{/each}
 	</div>
 {/if}
 
