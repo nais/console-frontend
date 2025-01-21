@@ -2,9 +2,9 @@
 	import { graphql, PendingValue, type UserDeploys$result } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import DeploysIcon from '$lib/icons/DeploysIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ArrowsSquarepathIcon } from '@nais/ds-svelte-community/icons';
 
 	const store = graphql(`
 		query UserDeploys @load {
@@ -63,7 +63,7 @@
 
 {#if $store.data !== null}
 	<h2>
-		<DeploysIcon size="1.5rem" />
+		<ArrowsSquarepathIcon size="1.5rem" />
 		My teams latest deployments
 	</h2>
 	<Table size="small" zebraStripes>

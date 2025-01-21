@@ -2,9 +2,9 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import Kafka from '$lib/icons/Kafka.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
@@ -49,7 +49,9 @@
 	<div class="grid">
 		<Card columns={12}>
 			<h3 class="heading">
-				<Kafka />
+				{#if topic.__typename}
+					<PersistenceIcon type={topic.__typename} size="32px" />
+				{/if}
 				{topic.name}
 			</h3>
 
@@ -154,7 +156,7 @@
 <style>
 	.heading {
 		display: flex;
-		gap: 1rem;
+		gap: 0.5rem;
 		align-items: center;
 	}
 

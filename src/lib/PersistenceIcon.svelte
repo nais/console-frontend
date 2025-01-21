@@ -1,28 +1,35 @@
 <script lang="ts">
-	import { BucketIcon, SandboxIcon } from '@nais/ds-svelte-community/icons';
-	import BigQuery from './icons/BigQuery.svelte';
-	import Kafka from './icons/Kafka.svelte';
-	import Opensearch from './icons/Opensearch.svelte';
-	import PostgresStroke from './icons/PostgresStroke.svelte';
+	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
+	import BigQueryIcon from './icons/BigQueryIcon.svelte';
+	import KafkaIcon from './icons/KafkaIcon.svelte';
+	import OpenSearchIcon from './icons/OpenSearchIcon.svelte';
+	import RedisIcon from './icons/RedisIcon.svelte';
+	import UnleashIcon from './icons/UnleashIcon.svelte';
+	import ValkeyIcon from './icons/ValkeyIcon.svelte';
 
 	interface Props {
 		type: string;
+		size: string;
 		[key: string]: unknown;
 	}
 
-	let { type, ...rest }: Props = $props();
+	let { type, size = '24px', ...rest }: Props = $props();
 </script>
 
 {#if type === 'Bucket'}
-	<BucketIcon {...rest} />
+	<BucketIcon width={size} height={size} {...rest} />
 {:else if type === 'BigQueryDataset'}
-	<BigQuery {...rest} />
+	<BigQueryIcon {size} {...rest} />
 {:else if type === 'SqlInstance'}
-	<PostgresStroke {...rest} />
-{:else if type === 'Kafka'}
-	<Kafka {...rest} />
+	<DatabaseIcon width={size} height={size} {...rest} />
+{:else if type === 'KafkaTopic'}
+	<KafkaIcon {size} {...rest} />
 {:else if type === 'OpenSearch'}
-	<Opensearch {...rest} />
+	<OpenSearchIcon {size} {...rest} />
 {:else if type === 'RedisInstance'}
-	<SandboxIcon {...rest} />
+	<RedisIcon {size} {...rest} />
+{:else if type === 'Valket'}
+	<ValkeyIcon {size} {...rest} />
+{:else if type === 'UnleashInstance'}
+	<UnleashIcon {size} {...rest} />
 {/if}

@@ -7,10 +7,10 @@
 		PersonGroupIcon,
 		SandboxIcon
 	} from '@nais/ds-svelte-community/icons';
-	import BigQuery from './icons/BigQuery.svelte';
-	import Kafka from './icons/Kafka.svelte';
-	import Opensearch from './icons/Opensearch.svelte';
-	import Redis from './icons/Redis.svelte';
+	import BigQuery from './icons/BigQueryIcon.svelte';
+	import Kafka from './icons/KafkaIcon.svelte';
+	import Opensearch from './icons/OpenSearchIcon.svelte';
+	import Redis from './icons/RedisIcon.svelte';
 
 	interface Props {
 		data: SearchQuery$result;

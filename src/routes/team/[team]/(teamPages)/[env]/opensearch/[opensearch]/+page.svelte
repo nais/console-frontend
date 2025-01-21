@@ -2,8 +2,8 @@
 	import { OpenSearchAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import Opensearch from '$lib/icons/Opensearch.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
@@ -45,7 +45,9 @@
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">
-				<Opensearch />
+				{#if os.__typename}
+					<PersistenceIcon type={os.__typename} size="32px" />
+				{/if}
 				{os.name}
 			</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
@@ -138,31 +140,9 @@
 	}
 	.heading {
 		display: flex;
-		gap: 1rem;
+		gap: 0.5rem;
 		align-items: center;
 	}
-
-	/*dl.conditions {
-		display: grid;
-		align-items: center;
-		grid-template-columns: 20% 80%;
-	}
-	.status {
-		display: flex;
-		align-items: center;
-		gap: 0.5em;
-	}
-
-	div dl.conditions:not(:first-child) {
-		margin-top: 3em;
-	}
-
-	dt {
-		font-weight: bold;
-		display: flex;
-		gap: 1em;
-		align-items: center;
-	}*/
 
 	h4.access {
 		margin-top: 1em;

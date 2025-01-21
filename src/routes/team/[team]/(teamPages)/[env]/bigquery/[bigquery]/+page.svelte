@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import BigQueryDataset from '$lib/icons/BigQuery.svelte';
 	import {
 		CopyButton,
 		HelpText,
@@ -39,7 +39,9 @@
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">
-				<BigQueryDataset />
+				{#if bq.__typename}
+					<PersistenceIcon type={bq.__typename} size="32px" />
+				{/if}
 				{bq.name}
 			</h3>
 
@@ -140,7 +142,7 @@
 	}
 	.heading {
 		display: flex;
-		gap: 1rem;
+		gap: 0.5rem;
 		align-items: center;
 	}
 	dl.status {

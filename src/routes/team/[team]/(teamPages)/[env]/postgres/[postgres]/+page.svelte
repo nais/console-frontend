@@ -6,6 +6,7 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import {
 		Alert,
 		CopyButton,
@@ -107,7 +108,13 @@
 	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={6}>
-			<h3>Information</h3>
+			<h3 class="heading">
+				{#if instance.__typename}
+					<PersistenceIcon type={instance.__typename} size="32px" />
+				{/if}
+				{instance.name}
+			</h3>
+			<h4>Information</h4>
 			<div class="grid" style="grid-template-columns: 40% 60%;">
 				<p style="display: flex; align-items: center; gap: 0 1rem;">Version</p>
 				<p style="display: flex; align-items: center; gap: 0 0.5rem">
@@ -243,7 +250,7 @@
 					<p>{instance.diskAutoresizeLimit} GB</p>
 				{/if}
 			</div>
-			<h3 style="margin-top: 1.5rem;">Database</h3>
+			<h4 style="margin-top: 1.5rem;">Database</h4>
 			{#if instance.database}
 				<div class="grid" style="grid-template-columns: 40% 60%;">
 					<p style="display: flex; align-items: center; gap: 0 1rem">Name</p>
@@ -279,7 +286,7 @@
 			{:else}
 				<p>Instance does not have a database</p>
 			{/if}
-			<h3 style="margin-top: 1.5rem;">Documentation</h3>
+			<h4 style="margin-top: 1.5rem;">Documentation</h4>
 			<ul>
 				<li>
 					<a href={docURL('/how-to-guides/persistence/postgres')} target="_blank"
@@ -437,6 +444,12 @@
 
 	.grid p {
 		margin: 0.2rem 0;
+	}
+
+	.heading {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
 	}
 
 	.summary-grid {

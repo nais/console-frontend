@@ -2,6 +2,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			sqlInstance(name: $name) {
+				__typename
 				id
 				name
 				environment {

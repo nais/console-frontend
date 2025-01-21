@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import {
-		BucketIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -25,7 +25,9 @@
 		{@const bucket = $Bucket.data.team.environment.bucket}
 		<Card columns={12}>
 			<h3 class="heading">
-				<BucketIcon />
+				{#if bucket.__typename}
+					<PersistenceIcon type={bucket.__typename} size="32px" />
+				{/if}
 				{bucket.name}
 			</h3>
 			<div>
@@ -99,7 +101,7 @@
 
 	.heading {
 		display: flex;
-		gap: 1rem;
+		gap: 0.5rem;
 		align-items: center;
 	}
 

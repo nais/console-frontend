@@ -7,6 +7,7 @@ query KafkaTopic(
 	team(slug: $team) {
 		environment(name: $environment) {
 			kafkaTopic(name: $name) {
+				__typename
 				name
 				environment {
 					name

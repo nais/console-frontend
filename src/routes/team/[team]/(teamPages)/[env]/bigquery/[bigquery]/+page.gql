@@ -3,6 +3,7 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 		environment(name: $environment) {
 			name
 			bigQueryDataset(name: $name) {
+				__typename
 				cascadingDelete
 				description
 				cost {

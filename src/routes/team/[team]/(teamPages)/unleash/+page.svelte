@@ -5,6 +5,7 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import {
 		Alert,
 		Button,
@@ -274,7 +275,13 @@
 	</div>
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={8}>
-			<h3>Information</h3>
+			<h3 class="heading">
+				{#if unleash.__typename}
+					<PersistenceIcon type={unleash.__typename} size="32px" />
+				{/if}
+				{unleash.name}
+			</h3>
+
 			<div class="grid" style="grid-template-columns: 20% 80%;">
 				<p>Name</p>
 				<p>{unleash.name}</p>
@@ -410,6 +417,12 @@
 		display: flex;
 		align-items: center;
 		gap: 0 0.5rem;
+	}
+
+	.heading {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
 	}
 
 	.summary-grid {

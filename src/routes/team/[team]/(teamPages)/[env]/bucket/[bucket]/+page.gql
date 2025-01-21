@@ -2,6 +2,7 @@ query Bucket($team: Slug!, $name: String!, $environment: String!) {
 	team(slug: $team) {
 		environment(name: $environment) {
 			bucket(name: $name) {
+				__typename
 				publicAccessPrevention
 				uniformBucketLevelAccess
 				status {

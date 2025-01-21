@@ -1,6 +1,7 @@
 query Unleash($team: Slug!) {
 	team(slug: $team) {
 		unleash {
+			__typename
 			name
 			version
 			allowedTeams(first: 20) @paginate {

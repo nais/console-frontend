@@ -27,7 +27,7 @@
 
 <div class="persistence permanent">
 	<div class="icon">
-		<PersistenceIcon type={persistence.type || ''} style="height: 2rem" />
+		<PersistenceIcon type={persistence.type || ''} size="2rem" />
 	</div>
 	<div class="name">
 		<span>{persistenceTypeToName(persistence.type)}</span>

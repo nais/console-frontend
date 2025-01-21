@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Feedback from '$lib/feedback/Feedback.svelte';
-	import BigQuery from '$lib/icons/BigQuery.svelte';
-	import Kafka from '$lib/icons/Kafka.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
-	import Unleash from '$lib/icons/Unleash.svelte';
+	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
+	import Kafka from '$lib/icons/KafkaIcon.svelte';
+	import Opensearch from '$lib/icons/OpenSearchIcon.svelte';
+	import Redis from '$lib/icons/RedisIcon.svelte';
+	import Unleash from '$lib/icons/UnleashIcon.svelte';
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
 	import {
@@ -12,7 +13,6 @@
 		ArrowsSquarepathIcon,
 		BucketIcon,
 		DatabaseIcon,
-		MagnifyingGlassIcon,
 		PackageIcon,
 		PadlockLockedIcon,
 		WalletIcon
@@ -284,7 +284,7 @@
 					{:else if path.match(/(redis)\/[a-zA-Z0-9-]+/)}
 						<a class="unstyled" href={path}><Redis /> {name}</a>
 					{:else if path.match(/(opensearch)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><MagnifyingGlassIcon /> {name}</a>
+						<a class="unstyled" href={path}><Opensearch /> {name}</a>
 					{:else if path.match(/(kafka)\/[a-zA-Z0-9-]+/)}
 						<a class="unstyled" href={path}><Kafka /> {name}</a>
 					{:else if path.match(/(bigquery)\/[a-zA-Z0-9-]+/)}

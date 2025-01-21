@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { fragment, graphql, type Persistence } from '$houdini';
-	import BigQuery from '$lib/icons/BigQuery.svelte';
-	import Kafka from '$lib/icons/Kafka.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
-	import { BucketIcon, DatabaseIcon, MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
+	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
+	import Kafka from '$lib/icons/KafkaIcon.svelte';
+	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import Redis from '$lib/icons/RedisIcon.svelte';
+	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: Persistence;
@@ -138,7 +139,7 @@
 			</ul>
 		{/if}
 		{#if $data.openSearch}
-			<h5><MagnifyingGlassIcon />OpenSearch</h5>
+			<h5><OpenSearchIcon />OpenSearch</h5>
 			<ul>
 				<li>
 					<a href={`/team/${team}/${env}/opensearch/${$data.openSearch.name}`}
@@ -181,7 +182,6 @@
 		align-items: center;
 		margin-top: 0px;
 		align-self: start;
-		gap: 0.5rem;
 		font-size: 1.2rem;
 	}
 	ul {

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
-	import BigQuery from '$lib/icons/BigQuery.svelte';
-	import Kafka from '$lib/icons/Kafka.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
-	import Unleash from '$lib/icons/Unleash.svelte';
+	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
+	import Kafka from '$lib/icons/KafkaIcon.svelte';
+	import Redis from '$lib/icons/RedisIcon.svelte';
+	import Unleash from '$lib/icons/UnleashIcon.svelte';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsSquarepathIcon,
@@ -14,7 +14,6 @@
 		DatabaseIcon,
 		HouseIcon,
 		LineGraphStackedIcon,
-		MagnifyingGlassIcon,
 		PackageIcon,
 		PadlockLockedIcon,
 		PersonGroupIcon,
@@ -24,6 +23,7 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	import { PendingValue } from '$houdini';
+	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import type { LayoutData } from './$houdini';
 
 	type menuGroup = {
@@ -116,7 +116,7 @@
 					routeId: '/team/[team]/(teamPages)/opensearch',
 					extraRoutes: ['/team/[team]/(teamPages)/[env]/opensearch/[opensearch]'],
 					withSubRoutes: true,
-					icon: MagnifyingGlassIcon,
+					icon: OpenSearchIcon,
 					inventoryCount: $InventoryCounts.data?.team.inventoryCounts.openSearchInstances.total,
 					featureToggle: UserInfo.data?.features.openSearch.enabled
 				},

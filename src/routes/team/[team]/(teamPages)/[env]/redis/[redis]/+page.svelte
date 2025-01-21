@@ -2,8 +2,8 @@
 	import { RedisInstanceAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import Redis from '$lib/icons/Redis.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
@@ -46,7 +46,9 @@
 	<div class="grid">
 		<Card columns={7}>
 			<h3 class="heading">
-				<Redis />
+				{#if redisInstance.__typename}
+					<PersistenceIcon type={redisInstance.__typename} size="32px" />
+				{/if}
 				{redisInstance.name}
 			</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
@@ -140,8 +142,8 @@
 	}
 	.heading {
 		display: flex;
-		gap: 1rem;
 		align-items: center;
+		gap: 0.5rem;
 	}
 
 	h4.access {
