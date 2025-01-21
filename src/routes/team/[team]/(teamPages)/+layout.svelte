@@ -7,7 +7,6 @@
 	import Unleash from '$lib/icons/UnleashIcon.svelte';
 	import {
 		ArrowCirclepathIcon,
-		ArrowsSquarepathIcon,
 		BranchingIcon,
 		BucketIcon,
 		CogIcon,
@@ -17,6 +16,7 @@
 		PackageIcon,
 		PadlockLockedIcon,
 		PersonGroupIcon,
+		RocketIcon,
 		ShieldLockIcon,
 		VirusIcon,
 		WalletIcon
@@ -153,7 +153,7 @@
 					name: 'Deployments',
 					routeId: '/team/[team]/(teamPages)/deploy',
 					withSubRoutes: true,
-					icon: ArrowsSquarepathIcon
+					icon: RocketIcon
 				},
 				{
 					name: 'Cost',

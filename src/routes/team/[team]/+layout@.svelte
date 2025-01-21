@@ -10,11 +10,11 @@
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
 	import {
 		ArrowCirclepathIcon,
-		ArrowsSquarepathIcon,
 		BucketIcon,
 		DatabaseIcon,
 		PackageIcon,
 		PadlockLockedIcon,
+		RocketIcon,
 		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { LayoutData } from './$houdini';
@@ -292,7 +292,7 @@
 					{:else if path.match(/(unleash)/)}
 						<a class="unstyled" href={path}><Unleash /> {name}</a>
 					{:else if path.match(/(deploy)/)}
-						<a class="unstyled" href={path}><ArrowsSquarepathIcon /> {name}</a>
+						<a class="unstyled" href={path}><RocketIcon /> {name}</a>
 					{:else if path.match(/(cost)/)}
 						<a class="unstyled" href={path}><WalletIcon /> {name}</a>
 					{:else}

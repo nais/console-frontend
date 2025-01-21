@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { graphql, PendingValue, type UserDeploys$result } from '$houdini';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ArrowsSquarepathIcon } from '@nais/ds-svelte-community/icons';
+	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 
 	const store = graphql(`
 		query UserDeploys @load {
@@ -63,7 +64,7 @@
 
 {#if $store.data !== null}
 	<h2>
-		<ArrowsSquarepathIcon size="1.5rem" />
+		<RocketIcon size="1.5rem" />
 		My teams latest deployments
 	</h2>
 	<Table size="small" zebraStripes>
@@ -89,28 +90,32 @@
 				{:else}
 					<Tr>
 						<Td>
-							{#each deploy.resources as resource, i}
-								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
-								{#if resource.kind === 'Naisjob'}
-									<a
-										href="/team/{deploy.team.slug}/{deploy.environment.name}/job/{deploy
-											.resources[0].name}"
-									>
-										{deploy.resources[0].name}</a
-									>
-								{:else if resource.kind === 'Application'}
-									<a
-										href="/team/{deploy.team.slug}/{deploy.environment.name}/app/{deploy
-											.resources[0].name}"
-									>
-										{resource.name}</a
-									>
+							{#each deploy.resources as resource}
+								{#if resource.kind === 'Application'}
+									<WorkloadLink
+										workload={{
+											__typename: 'App',
+											environment: { name: deploy.environment.name },
+											team: { slug: deploy.team.slug },
+											name: resource.name
+										}}
+										showIcon={true}
+									/>
+								{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
+									<WorkloadLink
+										workload={{
+											__typename: 'Job',
+											environment: { name: deploy.environment.name },
+											team: { slug: deploy.team.slug },
+											name: resource.name
+										}}
+										showIcon={true}
+									/>
 								{:else}
+									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 									{resource.name}
 								{/if}
-								{#if deploy.resources.length > 1 && i !== deploy.resources.length - 1}
-									<br />
-								{/if}
+								<br />
 							{/each}
 						</Td>
 						<Td>

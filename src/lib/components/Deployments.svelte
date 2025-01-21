@@ -3,6 +3,7 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: WorkloadDeployments;
@@ -53,7 +54,7 @@
 	);
 </script>
 
-<h4>Deployments - {$data.environment.name}/{$data.name}</h4>
+<h4 class="heading"><RocketIcon /> Deployments - {$data.environment.name}/{$data.name}</h4>
 {#if $data !== null}
 	<Table size="small" zebraStripes>
 		<Thead>
@@ -111,3 +112,11 @@
 		</Tbody>
 	</Table>
 {/if}
+
+<style>
+	.heading {
+		display: flex;
+		gap: 0.3rem;
+		align-items: center;
+	}
+</style>

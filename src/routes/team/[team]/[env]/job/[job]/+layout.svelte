@@ -2,12 +2,12 @@
 	import type { menuItem } from '$lib/components/SideMenu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import {
-		ArrowsSquarepathIcon,
 		BellIcon,
 		Density3Icon,
 		FileTextIcon,
 		HouseIcon,
 		ImageIcon,
+		RocketIcon,
 		TrashIcon,
 		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -50,7 +50,7 @@
 				{
 					name: 'Deployments',
 					routeId: '/team/[team]/[env]/job/[job]/deploys',
-					icon: ArrowsSquarepathIcon
+					icon: RocketIcon
 				},
 				{
 					name: 'Cost',
