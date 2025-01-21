@@ -78,7 +78,6 @@
 <Table size="small" zebraStripes>
 	<Thead>
 		<Tr>
-			<Th>Team</Th>
 			<Th>Environment</Th>
 			<Th>Resource(s)</Th>
 			<Th>Created</Th>
@@ -90,7 +89,6 @@
 			{#each orderDeploymentsByDate($data.deployments.nodes) as deploy}
 				<Tr>
 					{#if deploy !== PendingValue}
-						<Td>{deploy.team.slug}</Td>
 						<Td>
 							{deploy.environment.name}
 						</Td>
