@@ -23,6 +23,9 @@ query DataProduct {
 				redisInstances {
 					total
 				}
+				valkeyInstances {
+					total
+				}
 				sqlInstances {
 					total
 				}

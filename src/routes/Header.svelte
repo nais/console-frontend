@@ -52,6 +52,15 @@
 							name
 						}
 					}
+					... on ValkeyInstance {
+						name
+						team {
+							slug
+						}
+						environment {
+							name
+						}
+					}
 					... on OpenSearch {
 						name
 						team {
@@ -140,6 +149,11 @@
 						variables: { query: query.slice(6).trim(), type: 'REDIS_INSTANCE' }
 					});
 					unsupportedFilter = false;
+				} else if (query.startsWith('valkey:')) {
+					store.fetch({
+						variables: { query: query.slice(6).trim(), type: 'VALKEY_INSTANCE' }
+					});
+					unsupportedFilter = false;
 				} else if (query.startsWith('bq:')) {
 					store.fetch({
 						variables: { query: query.slice(3).trim(), type: 'BIGQUERY_DATASET' }
@@ -206,6 +220,10 @@
 						query = '';
 						showSearch = false;
 						goto(`/team/${node.team.slug}/${node.environment.name}/redis/${node.name}`);
+					} else if (node.__typename === 'ValkeyInstance') {
+						query = '';
+						showSearch = false;
+						goto(`/team/${node.team.slug}/${node.environment.name}/valkey/${node.name}`);
 					} else if (node.__typename === 'OpenSearch') {
 						query = '';
 						showSearch = false;

@@ -1,0 +1,56 @@
+query ValkeyInstance(
+	$environment: String!
+	$team: Slug!
+	$name: String!
+	$orderBy: ValkeyInstanceAccessOrder!
+) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			valkeyInstance(name: $name) {
+				id
+				name
+				environment {
+					name
+				}
+				status {
+					state
+				}
+				workload {
+					name
+					__typename
+					environment {
+						name
+					}
+					team {
+						slug
+					}
+				}
+				access(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						pageStart
+						pageEnd
+						totalCount
+					}
+
+					edges {
+						node {
+							access
+							workload {
+								name
+								environment {
+									name
+								}
+								__typename
+								team {
+									slug
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
