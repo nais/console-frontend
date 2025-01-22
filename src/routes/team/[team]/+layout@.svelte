@@ -314,7 +314,7 @@
 	<div class="page">
 		<nav>
 			<a class="unstyled" href="/team/{teamSlug}"
-				><div class="typeIcon">
+				><div class="type-icon">
 					<PersonGroupIcon />
 				</div>
 				<div>
@@ -329,7 +329,7 @@
 				{#if (item.path && !item.isHeader) || (item.isHeader && index !== crumbs($page.route.id, $page.params).length - 1)}
 					<a class="unstyled" href={item.path}>
 						{#if item.icon}
-							<div class="typeIcon">
+							<div class="type-icon">
 								<item.icon />
 							</div>
 						{/if}
@@ -370,14 +370,14 @@
 		{@const item = header($page.route.id, $page.params)}
 		<div class="header">
 			{#if item?.icon}
-				<div class="typeIconHeader">
+				<div class="type-icon-header">
 					<item.icon height={'48px'} width={'48px'} />
 				</div>
 			{/if}
 			<div>
-				<h1>{header($page.route.id, $page.params)?.name}</h1>
+				<h2>{header($page.route.id, $page.params)?.name}</h2>
 				{#if item?.showEnv}
-					<div style="font-size: 1.25rem; color: var(--a-text-subtle);">
+					<div class="env-header">
 						{$page.params.env}
 					</div>
 				{/if}
@@ -405,13 +405,18 @@
 		gap: 1rem;
 	}
 
-	.typeIcon {
+	.env-header {
+		color: var(--a-text-subtle);
+		font-size: 1rem;
+	}
+
+	.type-icon {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 	}
 
-	.typeIconHeader {
+	.type-icon-header {
 		display: flex;
 		flex-direction: row;
 	}
