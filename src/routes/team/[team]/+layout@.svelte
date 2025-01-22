@@ -19,7 +19,6 @@
 		Density3Icon,
 		FileTextIcon,
 		ImageIcon,
-		LineGraphIcon,
 		LineGraphStackedIcon,
 		PackageIcon,
 		PadlockLockedIcon,
@@ -82,7 +81,7 @@
 		status: { name: 'status', icon: BellIcon },
 		deploys: { name: 'deployments', icon: RocketIcon },
 		cost: { name: 'cost', icon: WalletIcon },
-		utilization: { name: 'utilization', icon: LineGraphIcon },
+		utilization: { name: 'utilization', icon: LineGraphStackedIcon },
 		logs: { name: 'logs', icon: Density3Icon },
 		manifest: { name: 'manifest', icon: FileTextIcon },
 		delete: { name: 'delete', icon: TrashIcon },
@@ -304,7 +303,8 @@
 		}
 		const found = pages[routeId];
 		if (found) {
-			return found(params)[found(params).length - 1];
+			const items = found(params);
+			return items.find((item) => item.isHeader) || null;
 		}
 		return null;
 	}
@@ -335,11 +335,6 @@
 						{/if}
 						<div>
 							{item.name}
-							{#if item.showEnv}
-								<div class="env">
-									{$page.params.env}
-								</div>
-							{/if}
 						</div>
 					</a>
 				{:else if !item.isHeader}
@@ -350,7 +345,7 @@
 		<div>
 			<Button
 				variant="secondary"
-				size="small"
+				size="xsmall"
 				onclick={() => {
 					feedbackOpen = true;
 				}}>Feedback</Button
@@ -382,7 +377,7 @@
 			<div>
 				<h1>{header($page.route.id, $page.params)?.name}</h1>
 				{#if item?.showEnv}
-					<div style="font-size: 1rem; color: var(--a-text-subtle);">
+					<div style="font-size: 1.25rem; color: var(--a-text-subtle);">
 						{$page.params.env}
 					</div>
 				{/if}
@@ -409,10 +404,6 @@
 		margin-bottom: 1rem;
 		gap: 1rem;
 	}
-	.env {
-		font-size: 0.75rem;
-		color: var(--a-text-subtle);
-	}
 
 	.typeIcon {
 		display: flex;
@@ -431,7 +422,6 @@
 		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--active-color-strong);
 		align-items: center;
-		height: 57px;
 	}
 
 	.breadcrumbs .page {
