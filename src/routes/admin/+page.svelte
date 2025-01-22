@@ -3,7 +3,6 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import SyncRuns from './SyncRuns.svelte';
 
 	interface Props {
 		data: PageData;
@@ -14,12 +13,6 @@
 	let { AdminUsers } = $derived(data);
 </script>
 
-<br />
-
-<Card>
-	<h2>User sync logs</h2>
-	<SyncRuns />
-</Card>
 <br />
 <Card>
 	<h2>Users</h2>

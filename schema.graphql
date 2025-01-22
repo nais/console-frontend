@@ -2044,6 +2044,25 @@ type Query {
   """Get a user by an identifier."""
   user(email: String): User!
 
+  """Log entries from the user sync process."""
+  userSyncLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): UserSyncLogEntryConnection!
+
   """Get a list of users."""
   users(
     """Get items after this cursor."""
@@ -2551,6 +2570,54 @@ input RevokeTeamAccessToUnleashInput {
 
 type RevokeTeamAccessToUnleashPayload {
   unleash: UnleashInstance
+}
+
+"""Assigned role to user log entry."""
+type RoleAssignedUserSyncLogEntry implements Node & UserSyncLogEntry {
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the log entry."""
+  message: String!
+
+  """The name of the assigned role."""
+  roleName: String!
+
+  """The email address of the user that was assigned a role."""
+  userEmail: String!
+
+  """The ID of the user that was assigned a role."""
+  userID: ID!
+
+  """The name of the user that was assigned a role."""
+  userName: String!
+}
+
+"""Revoked role from user log entry."""
+type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the log entry."""
+  message: String!
+
+  """The name of the revoked role."""
+  roleName: String!
+
+  """The email address of the user that got a role revoked."""
+  userEmail: String!
+
+  """The ID of the user that got a role revoked."""
+  userID: ID!
+
+  """The name of the user that got a role revoked."""
+  userName: String!
 }
 
 """Types of scaling strategies."""
@@ -4615,6 +4682,48 @@ type UserConnection {
   pageInfo: PageInfo!
 }
 
+"""User created log entry."""
+type UserCreatedUserSyncLogEntry implements Node & UserSyncLogEntry {
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the log entry."""
+  message: String!
+
+  """The email address of the created user."""
+  userEmail: String!
+
+  """The ID of the created user."""
+  userID: ID!
+
+  """The name of the created user."""
+  userName: String!
+}
+
+"""User deleted log entry."""
+type UserDeletedUserSyncLogEntry implements Node & UserSyncLogEntry {
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the log entry."""
+  message: String!
+
+  """The email address of the deleted user."""
+  userEmail: String!
+
+  """The ID of the deleted user."""
+  userID: ID!
+
+  """The name of the deleted user."""
+  userName: String!
+}
+
 """User edge."""
 type UserEdge {
   """Cursor for this edge that can be used for pagination."""
@@ -4642,6 +4751,48 @@ enum UserOrderField {
   NAME
 }
 
+"""Interface for user sync log entries."""
+interface UserSyncLogEntry {
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the log entry."""
+  message: String!
+
+  """The email address of the affected user."""
+  userEmail: String!
+
+  """The ID of the affected user."""
+  userID: ID!
+
+  """The name of the affected user."""
+  userName: String!
+}
+
+"""User sync log entry connection."""
+type UserSyncLogEntryConnection {
+  """List of edges."""
+  edges: [UserSyncLogEntryEdge!]!
+
+  """List of nodes."""
+  nodes: [UserSyncLogEntry!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+"""User sync log edge."""
+type UserSyncLogEntryEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The log entry."""
+  node: UserSyncLogEntry!
+}
+
 """Ordering options when fetching the teams a user is connected to."""
 input UserTeamOrder {
   """The direction to order items by."""
@@ -4655,6 +4806,33 @@ input UserTeamOrder {
 enum UserTeamOrderField {
   """The unique slug of the team."""
   TEAM_SLUG
+}
+
+"""User updated log entry."""
+type UserUpdatedUserSyncLogEntry implements Node & UserSyncLogEntry {
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the log entry."""
+  message: String!
+
+  """The old email address of the user."""
+  oldUserEmail: String!
+
+  """The old name of the user."""
+  oldUserName: String!
+
+  """The email address of the updated user."""
+  userEmail: String!
+
+  """The ID of the updated user."""
+  userID: ID!
+
+  """The name of the updated user."""
+  userName: String!
 }
 
 """Resource type."""
