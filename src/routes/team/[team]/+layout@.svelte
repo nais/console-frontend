@@ -92,7 +92,7 @@
 	const pages: {
 		[key: string]: (
 			params: Data
-		) => { name: string; path?: string; icon?: Component; showEnv?: boolean }[];
+		) => { name: string; path?: string; icon?: Component; showEnv?: boolean; isHeader?: boolean }[];
 	} = {
 		'/team/[team]/(teamPages)/[env]/secret/[secret]': (params: Data) => {
 			return [
@@ -219,7 +219,8 @@
 					name: params.job,
 					path: replacer('/team/[team]/[env]/job/[job]', params),
 					icon: BriefcaseClockIcon,
-					showEnv: true
+					showEnv: true,
+					isHeader: true
 				},
 				{
 					name: simpleJobPages[key].name,
@@ -247,7 +248,8 @@
 					name: params.app,
 					path: replacer('/team/[team]/[env]/app/[app]', params),
 					icon: PackageIcon,
-					showEnv: true
+					showEnv: true,
+					isHeader: true
 				},
 				{
 					name: simpleAppPages[key].name,
@@ -286,6 +288,26 @@
 		}
 		return [];
 	}
+
+	function header(
+		routeId: string | null,
+		params: Data
+	): {
+		name: string;
+		path?: string;
+		icon?: Component;
+		showEnv?: boolean;
+		isHeader?: boolean;
+	} | null {
+		if (!routeId) {
+			return null;
+		}
+		const found = pages[routeId];
+		if (found) {
+			return found(params)[found(params).length - 1];
+		}
+		return null;
+	}
 </script>
 
 <div class="breadcrumbs">
@@ -300,11 +322,11 @@
 				</div>
 			</a>
 
-			{#each crumbs($page.route.id, $page.params) as item}
+			{#each crumbs($page.route.id, $page.params) as item, index (item)}
 				<BodyLong style="height: 28px; width: 28px; text-align: center; color: var(--a-gray-500);"
 					>/</BodyLong
 				>
-				{#if item.path}
+				{#if (item.path && !item.isHeader) || (item.isHeader && index !== crumbs($page.route.id, $page.params).length - 1)}
 					<a class="unstyled" href={item.path}>
 						{#if item.icon}
 							<div class="typeIcon">
@@ -320,7 +342,7 @@
 							{/if}
 						</div>
 					</a>
-				{:else}
+				{:else if !item.isHeader}
 					<span>{item.name}</span>
 				{/if}
 			{/each}
@@ -349,6 +371,25 @@
 			about 15 minutes.</Alert
 		>
 	{/if}
+	{#if header($page.route.id, $page.params)?.isHeader}
+		{@const item = header($page.route.id, $page.params)}
+		<div class="header">
+			{#if item?.icon}
+				<div class="typeIconHeader">
+					<item.icon height={'48px'} width={'48px'} />
+				</div>
+			{/if}
+			<div>
+				<h1>{header($page.route.id, $page.params)?.name}</h1>
+				{#if item?.showEnv}
+					<div style="font-size: 1rem; color: var(--a-text-subtle);">
+						{$page.params.env}
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
+
 	{@render children?.()}
 </div>
 
@@ -362,6 +403,12 @@
 		width: 100%;
 	}
 
+	.header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 1rem;
+		gap: 1rem;
+	}
 	.env {
 		font-size: 0.75rem;
 		color: var(--a-text-subtle);
@@ -371,6 +418,11 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+	}
+
+	.typeIconHeader {
+		display: flex;
+		flex-direction: row;
 	}
 
 	.breadcrumbs {
