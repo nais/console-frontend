@@ -4,6 +4,7 @@
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Time from '$lib/Time.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 
 	interface Props {
 		data: PageData;
@@ -16,6 +17,7 @@
 <br />
 <Card>
 	<h2>User sync log</h2>
+	<GraphErrors errors={$UserSyncLogs.errors} />
 	{#if $UserSyncLogs.data}
 		<Table zebraStripes size="small">
 			<Thead>
