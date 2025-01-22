@@ -25,6 +25,8 @@
 	$effect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		distance;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		time;
 		untrack(() => {
 			if (distance) {
 				if (!interval) interval = setInterval(() => (text = distanceText()), 1000 * 60);
