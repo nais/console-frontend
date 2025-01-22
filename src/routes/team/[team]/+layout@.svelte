@@ -1,22 +1,36 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Feedback from '$lib/feedback/Feedback.svelte';
-	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
-	import Kafka from '$lib/icons/KafkaIcon.svelte';
-	import Opensearch from '$lib/icons/OpenSearchIcon.svelte';
-	import Redis from '$lib/icons/RedisIcon.svelte';
-	import Unleash from '$lib/icons/UnleashIcon.svelte';
+	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
+	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
+	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import RedisIcon from '$lib/icons/RedisIcon.svelte';
+	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
 	import {
+		BellIcon,
+		BranchingIcon,
 		BriefcaseClockIcon,
 		BucketIcon,
+		CogIcon,
 		DatabaseIcon,
+		Density3Icon,
+		FileTextIcon,
+		ImageIcon,
+		LineGraphIcon,
+		LineGraphStackedIcon,
 		PackageIcon,
 		PadlockLockedIcon,
+		PersonGroupIcon,
+		PersonIcon,
 		RocketIcon,
+		ShieldLockIcon,
+		TrashIcon,
+		VirusIcon,
 		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { Component } from 'svelte';
 	import type { LayoutData } from './$houdini';
 
 	interface Props {
@@ -30,50 +44,54 @@
 	let feedbackOpen = $state(false);
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
-	const simpleTeamPages: { [key: string]: string } = {
-		applications: 'applications',
-		jobs: 'jobs',
-		deploy: 'deployments',
-		cost: 'cost',
-		utilization: 'utilization',
-		members: 'members',
-		repositories: 'repositories',
-		settings: 'settings',
-		'activity-log': 'activity log',
-		secrets: 'secrets',
-		postgres: 'postgres',
-		buckets: 'buckets',
-		redis: 'redis',
-		opensearch: 'opensearch',
-		kafka: 'kafka topics',
-		bigquery: 'bigquery',
-		unleash: 'unleash',
-		vulnerabilities: 'vulnerabilities'
+	const simpleTeamPages: { [key: string]: { name: string; icon?: Component } } = {
+		applications: { name: 'applications' },
+		jobs: { name: 'jobs' },
+		deploy: { name: 'deployments', icon: RocketIcon },
+		cost: { name: 'cost', icon: WalletIcon },
+		utilization: { name: 'utilization', icon: LineGraphStackedIcon },
+		members: { name: 'members', icon: PersonIcon },
+		repositories: { name: 'repositories', icon: BranchingIcon },
+		settings: { name: 'settings', icon: CogIcon },
+		'activity-log': { name: 'activity log', icon: ShieldLockIcon },
+		secrets: { name: 'secrets' },
+		postgres: { name: 'postgres' },
+		buckets: { name: 'buckets' },
+		redis: { name: 'redis' },
+		opensearch: { name: 'opensearch' },
+		kafka: { name: 'kafka topics' },
+		bigquery: { name: 'bigquery' },
+		unleash: { name: 'unleash', icon: UnleashIcon },
+		vulnerabilities: { name: 'vulnerabilities', icon: VirusIcon }
 	};
 
-	const simpleJobPages: { [key: string]: string } = {
-		'': '', // overview
-		status: 'status',
-		deploys: 'deployments',
-		cost: 'cost',
-		logs: 'logs',
-		manifest: 'manifest',
-		delete: 'delete',
-		image: 'image details'
+	const simpleJobPages: { [key: string]: { name: string; icon?: Component } } = {
+		'': { name: '' }, // overview
+		status: { name: 'status', icon: BellIcon },
+		deploys: { name: 'deployments', icon: RocketIcon },
+		cost: { name: 'cost', icon: WalletIcon },
+		logs: { name: 'logs', icon: Density3Icon },
+		manifest: { name: 'manifest', icon: FileTextIcon },
+		delete: { name: 'delete', icon: TrashIcon },
+		image: { name: 'image details', icon: ImageIcon }
 	};
-	const simpleAppPages: { [key: string]: string } = {
-		'': '', // overview
-		status: 'status',
-		deploys: 'deployments',
-		cost: 'cost',
-		utilization: 'utilization',
-		logs: 'logs',
-		manifest: 'manifest',
-		delete: 'delete',
-		image: 'image details'
+	const simpleAppPages: { [key: string]: { name: string; icon?: Component } } = {
+		'': { name: '' }, // overview
+		status: { name: 'status', icon: BellIcon },
+		deploys: { name: 'deployments', icon: RocketIcon },
+		cost: { name: 'cost', icon: WalletIcon },
+		utilization: { name: 'utilization', icon: LineGraphIcon },
+		logs: { name: 'logs', icon: Density3Icon },
+		manifest: { name: 'manifest', icon: FileTextIcon },
+		delete: { name: 'delete', icon: TrashIcon },
+		image: { name: 'image details', icon: ImageIcon }
 	};
 
-	const pages: { [key: string]: (params: Data) => { name: string; path?: string }[] } = {
+	const pages: {
+		[key: string]: (
+			params: Data
+		) => { name: string; path?: string; icon?: Component; showEnv?: boolean }[];
+	} = {
 		'/team/[team]/(teamPages)/[env]/secret/[secret]': (params: Data) => {
 			return [
 				{
@@ -81,11 +99,10 @@
 					path: replacer('/team/[team]/(teamPages)/secrets', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.secret,
-					path: replacer('/team/[team]/(teamPages)/[env]/secret/[secret]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/secret/[secret]', params),
+					icon: PadlockLockedIcon,
+					showEnv: true
 				}
 			];
 		},
@@ -96,11 +113,10 @@
 					path: replacer('/team/[team]/(teamPages)/postgres', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.postgres,
-					path: replacer('/team/[team]/(teamPages)/[env]/postgres/[postgres]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/postgres/[postgres]', params),
+					icon: DatabaseIcon,
+					showEnv: true
 				}
 			];
 		},
@@ -111,11 +127,10 @@
 					path: replacer('/team/[team]/(teamPages)/buckets', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.bucket,
-					path: replacer('/team/[team]/(teamPages)/[env]/bucket/[bucket]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/bucket/[bucket]', params),
+					icon: BucketIcon,
+					showEnv: true
 				}
 			];
 		},
@@ -126,11 +141,10 @@
 					path: replacer('/team/[team]/(teamPages)/redis', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.redis,
-					path: replacer('/team/[team]/(teamPages)/[env]/redis/[redis]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/redis/[redis]', params),
+					icon: RedisIcon,
+					showEnv: true
 				}
 			];
 		},
@@ -141,11 +155,10 @@
 					path: replacer('/team/[team]/(teamPages)/opensearch', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.opensearch,
-					path: replacer('/team/[team]/(teamPages)/[env]/opensearch/[opensearch]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/opensearch/[opensearch]', params),
+					icon: OpenSearchIcon,
+					showEnv: true
 				}
 			];
 		},
@@ -156,11 +169,10 @@
 					path: replacer('/team/[team]/(teamPages)/kafka', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.kafka,
-					path: replacer('/team/[team]/(teamPages)/[env]/kafka/[kafka]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/kafka/[kafka]', params),
+					icon: KafkaIcon,
+					showEnv: true
 				}
 			];
 		},
@@ -171,11 +183,10 @@
 					path: replacer('/team/[team]/(teamPages)/bigquery', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.bigquery,
-					path: replacer('/team/[team]/(teamPages)/[env]/bigquery/[bigquery]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/bigquery/[bigquery]', params),
+					icon: BigQueryIcon,
+					showEnv: true
 				}
 			];
 		}
@@ -189,15 +200,15 @@
 					path: replacer('/team/[team]/jobs', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.job,
-					path: replacer('/team/[team]/[env]/job/[job]', params)
+					path: replacer('/team/[team]/[env]/job/[job]', params),
+					icon: BriefcaseClockIcon,
+					showEnv: true
 				},
 				{
-					name: simpleJobPages[key],
-					path: replacer(`/team/[team]/[env]/job/[job]/${key}`, params)
+					name: simpleJobPages[key].name,
+					path: replacer(`/team/[team]/[env]/job/[job]/${key}`, params),
+					icon: simpleJobPages[key].icon
 				}
 			];
 
@@ -217,16 +228,15 @@
 					path: replacer('/team/[team]/applications', params)
 				},
 				{
-					name: params.env
-				},
-
-				{
 					name: params.app,
-					path: replacer('/team/[team]/[env]/app/[app]', params)
+					path: replacer('/team/[team]/[env]/app/[app]', params),
+					icon: PackageIcon,
+					showEnv: true
 				},
 				{
-					name: simpleAppPages[key],
-					path: replacer(`/team/[team]/[env]/app/[app]/${key}`, params)
+					name: simpleAppPages[key].name,
+					path: replacer(`/team/[team]/[env]/app/[app]/${key}`, params),
+					icon: simpleAppPages[key].icon
 				}
 			];
 
@@ -242,8 +252,9 @@
 		pages[`/team/[team]/(teamPages)/${key}`] = (params: Data) => {
 			return [
 				{
-					name: simpleTeamPages[key],
-					path: replacer(`/team/[team]/(teamPages)/${key}`, params)
+					name: simpleTeamPages[key].name,
+					path: replacer(`/team/[team]/(teamPages)/${key}`, params),
+					icon: simpleTeamPages[key].icon
 				}
 			];
 		};
@@ -264,49 +275,44 @@
 <div class="breadcrumbs">
 	<div class="page">
 		<nav>
-			<a href="/team/{teamSlug}" class="unstyled">{teamSlug}</a>
+			<a class="unstyled" href="/team/{teamSlug}"
+				><div class="typeIcon">
+					<PersonGroupIcon />
+				</div>
+				<div>
+					{teamSlug}
+				</div>
+			</a>
 
-			{#each crumbs($page.route.id, $page.params) as { name, path }}
+			{#each crumbs($page.route.id, $page.params) as item}
 				<BodyLong style="height: 28px; width: 28px; text-align: center; color: var(--a-gray-500);"
 					>/</BodyLong
 				>
-				{#if path}
-					{#if path.match(/app\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><PackageIcon /> {name}</a>
-					{:else if path.match(/job\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><BriefcaseClockIcon /> {name}</a>
-					{:else if path.match(/(secret)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><PadlockLockedIcon /> {name}</a>
-					{:else if path.match(/(postgres)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><DatabaseIcon /> {name}</a>
-					{:else if path.match(/(bucket)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><BucketIcon /> {name}</a>
-					{:else if path.match(/(redis)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><Redis /> {name}</a>
-					{:else if path.match(/(opensearch)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><Opensearch /> {name}</a>
-					{:else if path.match(/(kafka)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><Kafka /> {name}</a>
-					{:else if path.match(/(bigquery)\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><BigQuery /> {name}</a>
-					{:else if path.match(/(unleash)/)}
-						<a class="unstyled" href={path}><Unleash /> {name}</a>
-					{:else if path.match(/(deploy)/)}
-						<a class="unstyled" href={path}><RocketIcon /> {name}</a>
-					{:else if path.match(/(cost)/)}
-						<a class="unstyled" href={path}><WalletIcon /> {name}</a>
-					{:else}
-						<a class="unstyled" href={path}>{name}</a>
-					{/if}
+				{#if item.path}
+					<a class="unstyled" href={item.path}>
+						{#if item.icon}
+							<div class="typeIcon">
+								<item.icon />
+							</div>
+						{/if}
+						<div>
+							{item.name}
+							{#if item.showEnv}
+								<div class="env">
+									{$page.params.env}
+								</div>
+							{/if}
+						</div>
+					</a>
 				{:else}
-					<span>{name}</span>
+					<span>{item.name}</span>
 				{/if}
 			{/each}
 		</nav>
 		<div>
 			<Button
 				variant="secondary"
-				size="xsmall"
+				size="small"
 				onclick={() => {
 					feedbackOpen = true;
 				}}>Feedback</Button
@@ -337,18 +343,34 @@
 <style>
 	.page {
 		margin-top: 1rem;
+		width: 100%;
+	}
+
+	.env {
+		font-size: 0.75rem;
+		color: var(--a-text-subtle);
+	}
+
+	.typeIcon {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 	}
 
 	.breadcrumbs {
+		display: flex;
 		background: var(--active-color);
 		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--active-color-strong);
+		align-items: center;
+		height: 57px;
 	}
 
 	.breadcrumbs .page {
 		display: flex;
 		justify-content: space-between;
 		margin: 0 auto;
+		align-items: center;
 	}
 
 	.unstyled {
