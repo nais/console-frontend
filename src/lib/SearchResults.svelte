@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SearchQuery$result } from '$houdini';
 	import {
-		ArrowCirclepathIcon,
+		BriefcaseClockIcon,
 		BucketIcon,
 		DatabaseIcon,
 		PackageIcon,
@@ -73,7 +73,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<ArrowCirclepathIcon height="1.5rem" />
+						<BriefcaseClockIcon height="1.5rem" />
 						<div>Job</div>
 					</div>
 					<div>

@@ -6,8 +6,8 @@
 	import Redis from '$lib/icons/RedisIcon.svelte';
 	import Unleash from '$lib/icons/UnleashIcon.svelte';
 	import {
-		ArrowCirclepathIcon,
 		BranchingIcon,
+		BriefcaseClockIcon,
 		BucketIcon,
 		CogIcon,
 		DatabaseIcon,
@@ -67,7 +67,7 @@
 					name: 'Jobs',
 					routeId: '/team/[team]/(teamPages)/jobs',
 					withSubRoutes: true,
-					icon: ArrowCirclepathIcon,
+					icon: BriefcaseClockIcon,
 					inventoryCount: $InventoryCounts.data?.team.inventoryCounts.jobs.total,
 					notNais:
 						$InventoryCounts.data?.team.inventoryCounts.jobs.notNais !== PendingValue

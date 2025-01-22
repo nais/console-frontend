@@ -9,7 +9,7 @@
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
 	import {
-		ArrowCirclepathIcon,
+		BriefcaseClockIcon,
 		BucketIcon,
 		DatabaseIcon,
 		PackageIcon,
@@ -274,7 +274,7 @@
 					{#if path.match(/app\/[a-zA-Z0-9-]+/)}
 						<a class="unstyled" href={path}><PackageIcon /> {name}</a>
 					{:else if path.match(/job\/[a-zA-Z0-9-]+/)}
-						<a class="unstyled" href={path}><ArrowCirclepathIcon /> {name}</a>
+						<a class="unstyled" href={path}><BriefcaseClockIcon /> {name}</a>
 					{:else if path.match(/(secret)\/[a-zA-Z0-9-]+/)}
 						<a class="unstyled" href={path}><PadlockLockedIcon /> {name}</a>
 					{:else if path.match(/(postgres)\/[a-zA-Z0-9-]+/)}

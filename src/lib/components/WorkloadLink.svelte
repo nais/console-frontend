@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowCirclepathIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: {
@@ -25,7 +25,7 @@
 >
 	{#if showIcon}
 		{#if workload.__typename === 'Job'}
-			<ArrowCirclepathIcon />
+			<BriefcaseClockIcon />
 		{:else}
 			<PackageIcon />
 		{/if}
