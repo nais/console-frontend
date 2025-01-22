@@ -107,7 +107,7 @@
 			{/each}
 			{#each job.valkeyInstances.nodes as node}
 				<PersistenceList persistence={node}
-				>If this Valkey instance is defined on team level, it won't be deleted. If it's created by
+					>If this Valkey instance is defined on team level, it won't be deleted. If it's created by
 					the app, it will be permanently deleted.
 				</PersistenceList>
 			{/each}
