@@ -249,7 +249,7 @@ type Application implements Node & Workload {
   redisInstances(
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -1030,7 +1030,7 @@ type Features implements Node {
   openSearch: FeatureOpenSearch!
 
   """Information about Redis feature."""
-  redis: FeatureRedis!
+  redis: FeatureRedis! @deprecated(reason: "We are switching to Valkey")
 
   """Information about Unleash feature."""
   unleash: FeatureUnleash!
@@ -1294,7 +1294,7 @@ type Job implements Node & Workload {
   redisInstances(
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """Resources for the job."""
   resources: JobResources!
@@ -2350,7 +2350,7 @@ type ReconcilerErrorEdge {
 
 type RedisInstance implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: RedisInstanceAccessOrder): RedisInstanceAccessConnection!
-  cost: RedisInstanceCost!
+  cost: RedisInstanceCost! @deprecated(reason: "We are switching to Valkey")
   environment: TeamEnvironment!
   id: ID!
   name: String!
@@ -2381,8 +2381,8 @@ input RedisInstanceAccessOrder {
 }
 
 enum RedisInstanceAccessOrderField {
-  ACCESS
-  WORKLOAD
+  ACCESS @deprecated(reason: "We are switching to Valkey")
+  WORKLOAD @deprecated(reason: "We are switching to Valkey")
 }
 
 type RedisInstanceConnection {
@@ -2392,7 +2392,7 @@ type RedisInstanceConnection {
 }
 
 type RedisInstanceCost {
-  sum: Float!
+  sum: Float! @deprecated(reason: "We are switching to Valkey")
 }
 
 type RedisInstanceEdge {
@@ -2406,8 +2406,8 @@ input RedisInstanceOrder {
 }
 
 enum RedisInstanceOrderField {
-  ENVIRONMENT
-  NAME
+  ENVIRONMENT @deprecated(reason: "We are switching to Valkey")
+  NAME @deprecated(reason: "We are switching to Valkey")
 }
 
 type RedisInstanceStatus {
@@ -2694,7 +2694,7 @@ enum SearchType {
   JOB
   KAFKA_TOPIC
   OPENSEARCH
-  REDIS_INSTANCE
+  REDIS_INSTANCE @deprecated(reason: "We are switching to Valkey")
   SQL_INSTANCE
 
   """Search for teams."""
@@ -3511,7 +3511,7 @@ type Team implements Node {
 
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
   repositories(
     """Get items after this cursor."""
     after: Cursor
@@ -3890,7 +3890,7 @@ type TeamEnvironment implements Node {
   openSearchInstance(name: String!): OpenSearch!
 
   """Redis instance in the team environment."""
-  redisInstance(name: String!): RedisInstance!
+  redisInstance(name: String!): RedisInstance! @deprecated(reason: "We are switching to Valkey")
 
   """Get a secret by name."""
   secret(name: String!): Secret!
@@ -4074,7 +4074,7 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearchInstances: TeamInventoryCountOpenSearchInstances!
-  redisInstances: TeamInventoryCountRedisInstances!
+  redisInstances: TeamInventoryCountRedisInstances! @deprecated(reason: "We are switching to Valkey")
   sqlInstances: TeamInventoryCountSqlInstances!
   valkeyInstances: TeamInventoryCountValkeyInstances!
 }
@@ -5066,7 +5066,7 @@ interface Workload {
   redisInstances(
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!

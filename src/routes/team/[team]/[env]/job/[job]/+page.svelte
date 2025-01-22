@@ -147,7 +147,7 @@
 		</Card>
 
 		<Card columns={3}>
-			<h4>Schedule</h4>
+			<h4>Run configuration</h4>
 			<Schedule schedule={job.schedule} />
 		</Card>
 		<Card columns={12}>
