@@ -199,7 +199,7 @@
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
-						<Valkey height="1.5rem" />
+						<ValkeyIcon height="1.5rem" />
 						<div>Valkey</div>
 					</div>
 					<div>

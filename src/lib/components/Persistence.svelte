@@ -174,7 +174,7 @@
 		{/if}
 
 		{#if $data.valkeyInstances.edges.length > 0}
-			<h5><Redis />Valkey</h5>
+			<h5><Valkey />Valkey</h5>
 			<ul>
 				{#each $data.valkeyInstances.edges as valkey}
 					<li>

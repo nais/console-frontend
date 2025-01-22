@@ -157,11 +157,10 @@
 					path: replacer('/team/[team]/(teamPages)/valkey', params)
 				},
 				{
-					name: params.env
-				},
-				{
 					name: params.valkey,
-					path: replacer('/team/[team]/(teamPages)/[env]/valkey/[valkey]', params)
+					path: replacer('/team/[team]/(teamPages)/[env]/valkey/[valkey]', params),
+					icon: ValkeyIcon,
+					showEnv: true
 				}
 			];
 		},
