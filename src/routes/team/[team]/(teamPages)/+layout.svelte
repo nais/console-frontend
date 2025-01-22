@@ -15,7 +15,7 @@
 		LineGraphStackedIcon,
 		PackageIcon,
 		PadlockLockedIcon,
-		PersonGroupIcon,
+		PersonIcon,
 		RocketIcon,
 		ShieldLockIcon,
 		VirusIcon,
@@ -181,7 +181,7 @@
 					name: 'Members',
 					routeId: '/team/[team]/(teamPages)/members',
 					withSubRoutes: true,
-					icon: PersonGroupIcon
+					icon: PersonIcon
 				},
 				{
 					name: 'Repositories',
