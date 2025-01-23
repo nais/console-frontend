@@ -28,7 +28,7 @@
 	<OpenSearchIcon {size} {...rest} />
 {:else if type === 'RedisInstance'}
 	<RedisIcon {size} {...rest} />
-{:else if type === 'Valket'}
+{:else if type === 'ValkeyInstance'}
 	<ValkeyIcon {size} {...rest} />
 {:else if type === 'UnleashInstance'}
 	<UnleashIcon {size} {...rest} />

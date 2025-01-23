@@ -12,7 +12,11 @@
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		BriefcaseClockIcon,
+		ChevronLeftIcon,
+		ChevronRightIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -96,14 +100,22 @@
 {#if $Jobs.data}
 	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>
-		<FilteredInput
-			bind:filters
-			bind:value={filter}
-			bind:freetext
-			{supportedFilters}
-			onkeyup={onKeyUp}
-			placeholder="Filter jobs"
-		/>
+		<div class="header">
+			<div style="display: flex; align-items: center; width: 50%; gap: 4px;">
+				<BriefcaseClockIcon width="32px" height="32px" />
+				<h3 style="margin: 0px;">Jobs</h3>
+			</div>
+			<div style="width:50%">
+				<FilteredInput
+					bind:filters
+					bind:value={filter}
+					bind:freetext
+					{supportedFilters}
+					onkeyup={onKeyUp}
+					placeholder="Filter jobs"
+				/>
+			</div>
+		</div>
 
 		<Table
 			zebraStripes
@@ -214,6 +226,14 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin: 1rem 0;
+	}
+
 	.status {
 		display: flex;
 		align-items: center;
