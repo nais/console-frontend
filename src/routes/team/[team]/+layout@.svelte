@@ -5,6 +5,7 @@
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import RedisIcon from '$lib/icons/RedisIcon.svelte';
+	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
@@ -57,6 +58,7 @@
 		postgres: { name: 'postgres' },
 		buckets: { name: 'buckets' },
 		redis: { name: 'redis' },
+		valkey: { name: 'valkey' },
 		opensearch: { name: 'opensearch' },
 		kafka: { name: 'kafka topics' },
 		bigquery: { name: 'bigquery' },
@@ -143,6 +145,20 @@
 					name: params.redis,
 					path: replacer('/team/[team]/(teamPages)/[env]/redis/[redis]', params),
 					icon: RedisIcon,
+					showEnv: true
+				}
+			];
+		},
+		'/team/[team]/(teamPages)/[env]/valkey/[valkey]': (params: Data) => {
+			return [
+				{
+					name: 'valkey',
+					path: replacer('/team/[team]/(teamPages)/valkey', params)
+				},
+				{
+					name: params.valkey,
+					path: replacer('/team/[team]/(teamPages)/[env]/valkey/[valkey]', params),
+					icon: ValkeyIcon,
 					showEnv: true
 				}
 			];

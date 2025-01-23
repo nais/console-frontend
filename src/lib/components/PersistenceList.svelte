@@ -19,6 +19,8 @@
 				return 'Postgres';
 			case 'RedisInstance':
 				return 'Redis';
+			case 'ValkeyInstance':
+				return 'Valkey';
 			default:
 				return typ;
 		}

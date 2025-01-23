@@ -3,6 +3,7 @@
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
 	import Kafka from '$lib/icons/KafkaIcon.svelte';
+	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import Redis from '$lib/icons/RedisIcon.svelte';
 	import Unleash from '$lib/icons/UnleashIcon.svelte';
 	import {
@@ -110,6 +111,15 @@
 					icon: Redis,
 					inventoryCount: $InventoryCounts.data?.team.inventoryCounts.redisInstances.total,
 					featureToggle: UserInfo.data?.features.redis.enabled
+				},
+				{
+					name: 'Valkey',
+					routeId: '/team/[team]/(teamPages)/valkey',
+					extraRoutes: ['/team/[team]/(teamPages)/[env]/valkey/[valkey]'],
+					withSubRoutes: true,
+					icon: Valkey,
+					inventoryCount: $InventoryCounts.data?.team.inventoryCounts.valkeyInstances.total,
+					featureToggle: UserInfo.data?.features.valkey.enabled
 				},
 				{
 					name: 'OpenSearch',

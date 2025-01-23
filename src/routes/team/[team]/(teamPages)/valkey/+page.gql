@@ -1,0 +1,34 @@
+query Valkey($team: Slug!, $orderBy: ValkeyInstanceOrder, $from: Date!, $to: Date!) {
+	team(slug: $team) @loading {
+		cost @loading {
+			daily(from: $from, to: $to, filter: { services: ["Valkey"] }) {
+				sum
+			}
+		}
+		valkeyInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
+			pageInfo @loading {
+				hasNextPage
+				hasPreviousPage
+				totalCount
+				pageStart
+				pageEnd
+			}
+			nodes @loading {
+				name
+				environment {
+					name
+				}
+				workload {
+					__typename
+					name
+					environment {
+						name
+					}
+					team {
+						slug
+					}
+				}
+			}
+		}
+	}
+}

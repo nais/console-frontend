@@ -31,6 +31,12 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 						name
 					}
 				}
+				valkeyInstances {
+					nodes {
+						type: __typename
+						name
+					}
+				}
 				sqlInstances {
 					nodes {
 						type: __typename

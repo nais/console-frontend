@@ -4,6 +4,7 @@
 	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
 	import Kafka from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import Redis from '$lib/icons/RedisIcon.svelte';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
 
@@ -68,6 +69,13 @@
 						}
 					}
 					redisInstances {
+						edges {
+							node {
+								name
+							}
+						}
+					}
+					valkeyInstances {
 						edges {
 							node {
 								name
@@ -164,7 +172,19 @@
 				{/each}
 			</ul>
 		{/if}
-		{#if $data.buckets.edges.length === 0 && $data.bigQueryDatasets.edges.length === 0 && $data.sqlInstances.edges.length === 0 && $data.kafkaTopicAcls.edges.length === 0 && !$data.openSearch && $data.redisInstances.edges.length === 0}
+
+		{#if $data.valkeyInstances.edges.length > 0}
+			<h5><Valkey />Valkey</h5>
+			<ul>
+				{#each $data.valkeyInstances.edges as valkey}
+					<li>
+						<a href={`/team/${team}/${env}/valkey/${valkey.node.name}`}>{valkey.node.name}</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+
+		{#if $data.buckets.edges.length === 0 && $data.bigQueryDatasets.edges.length === 0 && $data.sqlInstances.edges.length === 0 && $data.kafkaTopicAcls.edges.length === 0 && !$data.openSearch && $data.redisInstances.edges.length === 0 && $data.valkeyInstances.edges.length === 0}
 			No persistence resources found.
 		{/if}
 	</div>

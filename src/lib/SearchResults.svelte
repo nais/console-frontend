@@ -11,6 +11,7 @@
 	import KafkaIcon from './icons/KafkaIcon.svelte';
 	import OpenSearchIcon from './icons/OpenSearchIcon.svelte';
 	import RedisIcon from './icons/RedisIcon.svelte';
+	import ValkeyIcon from './icons/ValkeyIcon.svelte';
 
 	interface Props {
 		data: SearchQuery$result;
@@ -178,6 +179,28 @@
 					<div class="typeIcon">
 						<RedisIcon height="1.5rem" />
 						<div>Redis</div>
+					</div>
+					<div>
+						<div>
+							{node.name}
+						</div>
+						<div class="searchInfo">
+							{node.environment.name} /
+							{node.team.slug} - {node.__typename}
+						</div>
+					</div>
+				</a>
+			</li>
+		{:else if node.__typename === 'ValkeyInstance'}
+			<li>
+				<a
+					class={selected == i ? 'selected' : ''}
+					href="/team/{node.team.slug}/{node.environment.name}/redis/{node.name}"
+					onclick={onSelected.bind({}, node)}
+				>
+					<div class="typeIcon">
+						<ValkeyIcon height="1.5rem" />
+						<div>Valkey</div>
 					</div>
 					<div>
 						<div>

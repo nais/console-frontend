@@ -13,6 +13,9 @@ query UserInfo {
 		redis {
 			enabled
 		}
+		valkey {
+			enabled
+		}
 		kafka {
 			enabled
 		}

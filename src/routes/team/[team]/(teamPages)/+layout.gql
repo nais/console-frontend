@@ -18,6 +18,9 @@ query InventoryCounts($team: Slug!) {
 			redisInstances {
 				total
 			}
+			valkeyInstances {
+				total
+			}
 			openSearchInstances {
 				total
 			}

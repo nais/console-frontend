@@ -7,6 +7,7 @@ The following snippet contains the most important commands for development.
 ```bash
 npm install
 cp .env.example .env # Copy the example environment file
+npm run build # Build the project
 npm run dev # Starts a development server on port 5173
 
 npm run check # Check for various issues
@@ -17,7 +18,6 @@ npm run format # Format the code (Or use a Prettier extension in  your editor)
 ## User
 
 In production `api` uses oauth2 to authenticate users.
-In developmen
 
 ### Local user override
 
