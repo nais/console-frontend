@@ -249,7 +249,7 @@ type Application implements Node & Workload {
   redisInstances(
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -287,6 +287,14 @@ type Application implements Node & Workload {
   """The team that owns the application."""
   team: Team!
   utilization: WorkloadUtilization!
+
+  """
+  Valkey instances referenced by the application. This does not currently support pagination, but will return all available Valkey instances.
+  """
+  valkeyInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: ValkeyInstanceOrder
+  ): ValkeyInstanceConnection!
 }
 
 """Authentication integrations for the application."""
@@ -1003,6 +1011,14 @@ type FeatureUnleash implements Node {
   id: ID!
 }
 
+type FeatureValkey implements Node {
+  """Wether Valkey is enabled or not."""
+  enabled: Boolean!
+
+  """Unique identifier for the feature."""
+  id: ID!
+}
+
 type Features implements Node {
   """Unique identifier for the feature container."""
   id: ID!
@@ -1014,10 +1030,13 @@ type Features implements Node {
   openSearch: FeatureOpenSearch!
 
   """Information about Redis feature."""
-  redis: FeatureRedis!
+  redis: FeatureRedis! @deprecated(reason: "We are switching to Valkey")
 
   """Information about Unleash feature."""
   unleash: FeatureUnleash!
+
+  """Information about Valkey feature."""
+  valkey: FeatureValkey!
 }
 
 """
@@ -1275,7 +1294,7 @@ type Job implements Node & Workload {
   redisInstances(
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """Resources for the job."""
   resources: JobResources!
@@ -1334,6 +1353,14 @@ type Job implements Node & Workload {
 
   """The team that owns the job."""
   team: Team!
+
+  """
+  Valkey instances referenced by the job. This does not currently support pagination, but will return all available Valkey instances.
+  """
+  valkeyInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: ValkeyInstanceOrder
+  ): ValkeyInstanceConnection!
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -2323,7 +2350,7 @@ type ReconcilerErrorEdge {
 
 type RedisInstance implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: RedisInstanceAccessOrder): RedisInstanceAccessConnection!
-  cost: RedisInstanceCost!
+  cost: RedisInstanceCost! @deprecated(reason: "We are switching to Valkey")
   environment: TeamEnvironment!
   id: ID!
   name: String!
@@ -2354,8 +2381,8 @@ input RedisInstanceAccessOrder {
 }
 
 enum RedisInstanceAccessOrderField {
-  ACCESS
-  WORKLOAD
+  ACCESS @deprecated(reason: "We are switching to Valkey")
+  WORKLOAD @deprecated(reason: "We are switching to Valkey")
 }
 
 type RedisInstanceConnection {
@@ -2365,7 +2392,7 @@ type RedisInstanceConnection {
 }
 
 type RedisInstanceCost {
-  sum: Float!
+  sum: Float! @deprecated(reason: "We are switching to Valkey")
 }
 
 type RedisInstanceEdge {
@@ -2379,8 +2406,8 @@ input RedisInstanceOrder {
 }
 
 enum RedisInstanceOrderField {
-  ENVIRONMENT
-  NAME
+  ENVIRONMENT @deprecated(reason: "We are switching to Valkey")
+  NAME @deprecated(reason: "We are switching to Valkey")
 }
 
 type RedisInstanceStatus {
@@ -2635,7 +2662,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | RedisInstance | SqlInstance | Team
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | RedisInstance | SqlInstance | Team | ValkeyInstance
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -2667,11 +2694,12 @@ enum SearchType {
   JOB
   KAFKA_TOPIC
   OPENSEARCH
-  REDIS_INSTANCE
+  REDIS_INSTANCE @deprecated(reason: "We are switching to Valkey")
   SQL_INSTANCE
 
   """Search for teams."""
   TEAM
+  VALKEY_INSTANCE
 }
 
 """A secret is a collection of secret values."""
@@ -3483,7 +3511,7 @@ type Team implements Node {
 
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
   repositories(
     """Get items after this cursor."""
     after: Cursor
@@ -3560,6 +3588,28 @@ type Team implements Node {
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
   unleash: UnleashInstance
+
+  """Valkey instances owned by the team."""
+  valkeyInstances(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: ValkeyInstanceOrder
+  ): ValkeyInstanceConnection!
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
@@ -3840,7 +3890,7 @@ type TeamEnvironment implements Node {
   openSearchInstance(name: String!): OpenSearch!
 
   """Redis instance in the team environment."""
-  redisInstance(name: String!): RedisInstance!
+  redisInstance(name: String!): RedisInstance! @deprecated(reason: "We are switching to Valkey")
 
   """Get a secret by name."""
   secret(name: String!): Secret!
@@ -3853,6 +3903,9 @@ type TeamEnvironment implements Node {
 
   """The connected team."""
   team: Team!
+
+  """Valkey instance in the team environment."""
+  valkeyInstance(name: String!): ValkeyInstance!
 
   """Workload in the team environment."""
   workload(
@@ -4008,6 +4061,11 @@ type TeamInventoryCountSqlInstances {
   total: Int!
 }
 
+type TeamInventoryCountValkeyInstances {
+  """Total number of Valkey instances."""
+  total: Int!
+}
+
 type TeamInventoryCounts {
   """Application inventory count for a team."""
   applications: TeamInventoryCountApplications!
@@ -4016,8 +4074,9 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearchInstances: TeamInventoryCountOpenSearchInstances!
-  redisInstances: TeamInventoryCountRedisInstances!
+  redisInstances: TeamInventoryCountRedisInstances! @deprecated(reason: "We are switching to Valkey")
   sqlInstances: TeamInventoryCountSqlInstances!
+  valkeyInstances: TeamInventoryCountValkeyInstances!
 }
 
 input TeamJobsFilter {
@@ -4850,6 +4909,72 @@ type UtilizationSample {
   value: Float!
 }
 
+type ValkeyInstance implements Node & Persistence {
+  access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: ValkeyInstanceAccessOrder): ValkeyInstanceAccessConnection!
+  cost: ValkeyInstanceCost!
+  environment: TeamEnvironment!
+  id: ID!
+  name: String!
+  status: ValkeyInstanceStatus!
+  team: Team!
+  workload: Workload
+}
+
+type ValkeyInstanceAccess {
+  access: String!
+  workload: Workload!
+}
+
+type ValkeyInstanceAccessConnection {
+  edges: [ValkeyInstanceAccessEdge!]!
+  nodes: [ValkeyInstanceAccess!]!
+  pageInfo: PageInfo!
+}
+
+type ValkeyInstanceAccessEdge {
+  cursor: Cursor!
+  node: ValkeyInstanceAccess!
+}
+
+input ValkeyInstanceAccessOrder {
+  direction: OrderDirection!
+  field: ValkeyInstanceAccessOrderField!
+}
+
+enum ValkeyInstanceAccessOrderField {
+  ACCESS
+  WORKLOAD
+}
+
+type ValkeyInstanceConnection {
+  edges: [ValkeyInstanceEdge!]!
+  nodes: [ValkeyInstance!]!
+  pageInfo: PageInfo!
+}
+
+type ValkeyInstanceCost {
+  sum: Float!
+}
+
+type ValkeyInstanceEdge {
+  cursor: Cursor!
+  node: ValkeyInstance!
+}
+
+input ValkeyInstanceOrder {
+  direction: OrderDirection!
+  field: ValkeyInstanceOrderField!
+}
+
+enum ValkeyInstanceOrderField {
+  ENVIRONMENT
+  NAME
+}
+
+type ValkeyInstanceStatus {
+  state: String!
+}
+
 type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -4941,7 +5066,7 @@ interface Workload {
   redisInstances(
     """Ordering options for items returned from the connection."""
     orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection!
+  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!
@@ -4978,6 +5103,14 @@ interface Workload {
 
   """The team that owns the workload."""
   team: Team!
+
+  """
+  Valkey instances referenced by the workload. This does not currently support pagination, but will return all available Valkey instances.
+  """
+  valkeyInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: ValkeyInstanceOrder
+  ): ValkeyInstanceConnection!
 }
 
 """Workload connection."""
