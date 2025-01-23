@@ -13,7 +13,7 @@
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronLeftIcon, ChevronRightIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -97,14 +97,22 @@
 {#if $Applications.data}
 	{@const applications = $Applications.data.team.applications}
 	<Card columns={12}>
-		<FilteredInput
-			bind:filters
-			bind:value={filter}
-			bind:freetext
-			{supportedFilters}
-			onkeyup={onKeyUp}
-			placeholder="Filter applications"
-		/>
+		<div class="header">
+			<div style="display: flex; align-items: center; width: 50%; gap: 4px;">
+				<PackageIcon width="32px" height="32px" />
+				<h3 style="margin: 0px;">Applications</h3>
+			</div>
+			<div style="width:50%">
+				<FilteredInput
+					bind:filters
+					bind:value={filter}
+					bind:freetext
+					{supportedFilters}
+					onkeyup={onKeyUp}
+					placeholder="Filter applications"
+				/>
+			</div>
+		</div>
 
 		<Table
 			zebraStripes
@@ -221,6 +229,13 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin: 1rem 0;
+	}
 	.status {
 		display: flex;
 		align-items: center;
