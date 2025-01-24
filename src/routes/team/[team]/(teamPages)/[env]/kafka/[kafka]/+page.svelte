@@ -4,11 +4,10 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
+	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import {
-		ArrowLeftIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
 		ExclamationmarkTriangleFillIcon
@@ -47,26 +46,14 @@
 	<GraphErrors errors={$KafkaTopic.errors} />
 {:else if $KafkaTopic.data}
 	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
-	<div class="resource-header-wrapper">
-		<div class="header">
-			<span>
-				<a href="/team/{$KafkaTopic.data?.team.slug}/kafka"><ArrowLeftIcon /> All Kafka topics</a>
-			</span>
-			<div class="icon-and-name-wrapper">
-				<div class="icon">
-					{#if topic.__typename}
-						<PersistenceIcon size={'32px'} type={topic.__typename} />
-					{/if}
-				</div>
-				<div>
-					<h3>{topic.name}</h3>
-					<span class="environment">
-						{topic.environment.name}
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
+
+	<PersistenceHeader
+		type={topic.__typename}
+		name={topic.name}
+		environment={topic.environment.name}
+		text="All Kafka topics"
+		path="/team/{$KafkaTopic.data.team.slug}/kafka"
+	/>
 	<div class="grid">
 		<Card columns={12}>
 			<h3>Topic access control list</h3>
@@ -170,35 +157,6 @@
 {/if}
 
 <style>
-	.resource-header-wrapper {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		margin-bottom: 1rem;
-		.header {
-			display: flex;
-			flex-direction: column;
-			align-items: left;
-		}
-		.icon-and-name-wrapper {
-			display: flex;
-			align-items: center;
-			gap: 4px;
-
-			.icon {
-				display: flex;
-				flex-direction: row;
-			}
-			h3 {
-				margin: 0;
-			}
-			.environment {
-				color: var(--a-text-subtle);
-				font-size: 1rem;
-			}
-		}
-	}
-
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

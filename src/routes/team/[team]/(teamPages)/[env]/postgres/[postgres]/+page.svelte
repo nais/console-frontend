@@ -6,7 +6,7 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
+	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import {
 		Alert,
 		CopyButton,
@@ -19,7 +19,6 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
-		ArrowLeftIcon,
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon,
@@ -49,28 +48,13 @@
 		</Alert>
 	{/each}
 {:else if instance}
-	<div class="resource-header-wrapper">
-		<div class="header">
-			<span>
-				<a href="/team/{$SqlInstance.data?.team.slug}/postgres"
-					><ArrowLeftIcon /> All Postgres instances</a
-				>
-			</span>
-			<div class="icon-and-name-wrapper">
-				<div class="icon">
-					{#if instance.__typename}
-						<PersistenceIcon size={'32px'} type={instance.__typename} />
-					{/if}
-				</div>
-				<div>
-					<h3>{instance.name}</h3>
-					<span class="environment">
-						{instance.environment.name}
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
+	<PersistenceHeader
+		type={instance.__typename}
+		name={instance.name}
+		environment={instance.environment.name}
+		text="All Postgres instances"
+		path="/team/{$SqlInstance.data?.team.slug}/postgres"
+	/>
 	<div class="summary-grid">
 		<Card columns={3}>
 			<SummaryCard
@@ -453,34 +437,6 @@
 {/if}
 
 <style>
-	.resource-header-wrapper {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		margin-bottom: 1rem;
-		.header {
-			display: flex;
-			flex-direction: column;
-			align-items: left;
-		}
-		.icon-and-name-wrapper {
-			display: flex;
-			align-items: center;
-			gap: 4px;
-
-			.icon {
-				display: flex;
-				flex-direction: row;
-			}
-			h3 {
-				margin: 0;
-			}
-			.environment {
-				color: var(--a-text-subtle);
-				font-size: 1rem;
-			}
-		}
-	}
 	.grid {
 		display: grid;
 		column-gap: 0.5rem;

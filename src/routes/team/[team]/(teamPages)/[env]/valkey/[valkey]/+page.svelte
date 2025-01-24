@@ -2,15 +2,11 @@
 	import { ValkeyInstanceAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
+	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import {
-		ArrowLeftIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -46,36 +42,21 @@
 	<GraphErrors errors={$ValkeyInstance.errors} />
 {/if}
 {#if $ValkeyInstance.data}
-	{@const valkeyInstance = $ValkeyInstance.data.team.environment.valkeyInstance}
-	<div class="resource-header-wrapper">
-		<div class="header">
-			<span>
-				<a href="/team/{$ValkeyInstance.data?.team.slug}/valkey"
-					><ArrowLeftIcon /> All Valkey instances</a
-				>
-			</span>
-			<div class="icon-and-name-wrapper">
-				<div class="icon">
-					{#if valkeyInstance.__typename}
-						<PersistenceIcon size={'32px'} type={valkeyInstance.__typename} />
-					{/if}
-				</div>
-				<div>
-					<h3>{valkeyInstance.name}</h3>
-					<span class="environment">
-						{valkeyInstance.environment.name}
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
+	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
+	<PersistenceHeader
+		type={instance.__typename}
+		name={instance.name}
+		environment={instance.environment.name}
+		text="All Valkey instances"
+		path="/team/{$ValkeyInstance.data?.team.slug}/valkey"
+	/>
 	<div class="grid">
 		<Card columns={12}>
 			<h3>Valkey details</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<div style="margin-left: 1em; margin-top: 0;">
-				{#if valkeyInstance.workload}
-					<WorkloadLink workload={valkeyInstance.workload} showIcon={true} />
+				{#if instance.workload}
+					<WorkloadLink workload={instance.workload} showIcon={true} />
 				{:else}
 					<div class="inline">
 						<i>This Valkey instance does not belong to any workload</i>
@@ -100,7 +81,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each valkeyInstance.access.edges as edge}
+					{#each instance.access.edges as edge}
 						{@const access = edge.node}
 						<Tr>
 							<Td>
@@ -117,22 +98,22 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{#if valkeyInstance.access.pageInfo.hasPreviousPage || valkeyInstance.access.pageInfo.hasNextPage}
+			{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
 				<div class="pagination">
 					<span>
-						{#if valkeyInstance.access.pageInfo.pageStart !== valkeyInstance.access.pageInfo.pageEnd}
-							{valkeyInstance.access.pageInfo.pageStart} - {valkeyInstance.access.pageInfo.pageEnd}
+						{#if instance.access.pageInfo.pageStart !== instance.access.pageInfo.pageEnd}
+							{instance.access.pageInfo.pageStart} - {instance.access.pageInfo.pageEnd}
 						{:else}
-							{valkeyInstance.access.pageInfo.pageStart}
+							{instance.access.pageInfo.pageStart}
 						{/if}
-						of {valkeyInstance.access.pageInfo.totalCount}
+						of {instance.access.pageInfo.totalCount}
 					</span>
 
 					<span style="padding-left: 1rem;">
 						<Button
 							size="small"
 							variant="secondary"
-							disabled={!valkeyInstance.access.pageInfo.hasPreviousPage}
+							disabled={!instance.access.pageInfo.hasPreviousPage}
 							onclick={async () => {
 								return await ValkeyInstance.loadPreviousPage();
 							}}><ChevronLeftIcon /></Button
@@ -140,7 +121,7 @@
 						<Button
 							size="small"
 							variant="secondary"
-							disabled={!valkeyInstance.access.pageInfo.hasNextPage}
+							disabled={!instance.access.pageInfo.hasNextPage}
 							onclick={async () => {
 								return await ValkeyInstance.loadNextPage();
 							}}
@@ -155,34 +136,6 @@
 {/if}
 
 <style>
-	.resource-header-wrapper {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		margin-bottom: 1rem;
-		.header {
-			display: flex;
-			flex-direction: column;
-			align-items: left;
-		}
-		.icon-and-name-wrapper {
-			display: flex;
-			align-items: center;
-			gap: 4px;
-
-			.icon {
-				display: flex;
-				flex-direction: row;
-			}
-			h3 {
-				margin: 0;
-			}
-			.environment {
-				color: var(--a-text-subtle);
-				font-size: 1rem;
-			}
-		}
-	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

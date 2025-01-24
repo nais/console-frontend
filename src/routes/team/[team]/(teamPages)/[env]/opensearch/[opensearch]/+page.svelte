@@ -2,15 +2,11 @@
 	import { OpenSearchAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
+	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import {
-		ArrowLeftIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -46,28 +42,13 @@
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}
 	{@const instance = $OpenSearchInstance.data.team.environment.openSearchInstance}
-	<div class="resource-header-wrapper">
-		<div class="header">
-			<span>
-				<a href="/team/{$OpenSearchInstance.data?.team.slug}/opensearch"
-					><ArrowLeftIcon /> All OpenSearch instances</a
-				>
-			</span>
-			<div class="icon-and-name-wrapper">
-				<div class="icon">
-					{#if instance.__typename}
-						<PersistenceIcon size={'32px'} type={instance.__typename} />
-					{/if}
-				</div>
-				<div>
-					<h3>{instance.name}</h3>
-					<span class="environment">
-						{instance.environment.name}
-					</span>
-				</div>
-			</div>
-		</div>
-	</div>
+	<PersistenceHeader
+		type={instance.__typename}
+		name={instance.name}
+		environment={instance.environment.name}
+		text="All OpenSearch instances"
+		path="/team/{$OpenSearchInstance.data.team.slug}/opensearch"
+	/>
 	<div class="grid">
 		<Card columns={12}>
 			<h3>OpenSearch instance details</h3>
@@ -153,34 +134,6 @@
 {/if}
 
 <style>
-	.resource-header-wrapper {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		margin-bottom: 1rem;
-		.header {
-			display: flex;
-			flex-direction: column;
-			align-items: left;
-		}
-		.icon-and-name-wrapper {
-			display: flex;
-			align-items: center;
-			gap: 4px;
-
-			.icon {
-				display: flex;
-				flex-direction: row;
-			}
-			h3 {
-				margin: 0;
-			}
-			.environment {
-				color: var(--a-text-subtle);
-				font-size: 1rem;
-			}
-		}
-	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
