@@ -48,7 +48,7 @@
 		.icon-and-name-wrapper {
 			display: flex;
 			align-items: center;
-			gap: 4px;
+			gap: 0.5rem;
 
 			.icon {
 				display: flex;
