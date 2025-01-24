@@ -22,7 +22,12 @@
 
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowLeftIcon,
+		DocPencilIcon,
+		PadlockLockedIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
@@ -240,18 +245,74 @@
 		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
 	</Confirm>
 
-	<div class="heading">
-		<Button
-			class="delete-secret"
-			title="Delete secret from environment"
-			variant="danger"
-			size="small"
-			onclick={openDeleteModal}
-			icon={TrashIcon}
-		>
-			Delete
-		</Button>
+	<!--div class="header">
+		<div class="heading">
+			<div style="display: flex; flex-type: column; align-items: center; gap: 4px;">
+				<a href="/team/{teamSlug}/secrets">
+					<ArrowLeftIcon /> All secrets
+				</a>
+			</div>
+			<div class="type-icon-header">
+				<PadlockLockedIcon height={'32px'} width={'32px'} />
+			</div>
+			<div>
+				<h3 style="margin: 0;">{secret.name}</h3>
+
+				<div class="env-header">
+					{secret.environment.name}
+				</div>
+			</div>
+		</div>
+		<div>
+			<Button
+				class="delete-secret"
+				title="Delete secret from environment"
+				variant="danger"
+				size="small"
+				onclick={openDeleteModal}
+				icon={TrashIcon}
+			>
+				Delete
+			</Button>
+		</div>
+	</div-->
+
+	<div style="display: flex; flex-direction: row; justify-content: space-between;">
+		<div style="display: flex; flex-direction: column; align-items: left; ">
+			<span
+				><a href="/team/{teamSlug}/secrets">
+					<ArrowLeftIcon /> All secrets
+				</a>
+			</span>
+			<div style="display: flex; align-items: center; gap: 4px;">
+				<div
+					style="display: flex;
+		flex-direction: row;"
+				>
+					<PadlockLockedIcon height={'32px'} width={'32px'} />
+				</div>
+				<div>
+					<h3 style="margin: 0;">{secret.name}</h3>
+					<div style="color: var(--a-text-subtle);	font-size: 1rem;">
+						{secret.environment.name}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<Button
+				class="delete-secret"
+				title="Delete secret from environment"
+				variant="danger"
+				size="small"
+				onclick={openDeleteModal}
+				icon={TrashIcon}
+			>
+				Delete
+			</Button>
+		</div>
 	</div>
+
 	<div class="alerts">
 		{#if $deleteMutation.errors}
 			<GraphErrors errors={$deleteMutation.errors} />
@@ -363,12 +424,6 @@
 		font-weight: 400;
 		margin-bottom: 0.5rem;
 		gap: 0.5rem;
-	}
-
-	.heading {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
 	}
 
 	.alerts {

@@ -5,6 +5,7 @@ query KafkaTopic(
 	$orderBy: KafkaTopicAclOrder
 ) {
 	team(slug: $team) {
+		slug
 		environment(name: $environment) {
 			kafkaTopic(name: $name) {
 				__typename

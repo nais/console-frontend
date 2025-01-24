@@ -1,5 +1,6 @@
 query Bucket($team: Slug!, $name: String!, $environment: String!) {
 	team(slug: $team) {
+		slug
 		environment(name: $environment) {
 			bucket(name: $name) {
 				__typename

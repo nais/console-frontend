@@ -6,7 +6,11 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowLeftIcon,
+		ChevronLeftIcon,
+		ChevronRightIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -41,19 +45,36 @@
 {#if $OpenSearchInstance.errors}
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}
-	{@const os = $OpenSearchInstance.data.team.environment.openSearchInstance}
+	{@const instance = $OpenSearchInstance.data.team.environment.openSearchInstance}
+	<div class="resource-header-wrapper">
+		<div class="header">
+			<span>
+				<a href="/team/{$OpenSearchInstance.data?.team.slug}/opensearch"
+					><ArrowLeftIcon /> All OpenSearch instances</a
+				>
+			</span>
+			<div class="icon-and-name-wrapper">
+				<div class="icon">
+					{#if instance.__typename}
+						<PersistenceIcon size={'32px'} type={instance.__typename} />
+					{/if}
+				</div>
+				<div>
+					<h3>{instance.name}</h3>
+					<span class="environment">
+						{instance.environment.name}
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="grid">
-		<Card columns={7}>
-			<h3 class="heading">
-				{#if os.__typename}
-					<PersistenceIcon type={os.__typename} size="32px" />
-				{/if}
-				{os.name}
-			</h3>
+		<Card columns={12}>
+			<h3>OpenSearch instance details</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<div style="margin-left: 1em; margin-top: 0;">
-				{#if os.workload}
-					<WorkloadLink workload={os.workload} showIcon={true} />
+				{#if instance.workload}
+					<WorkloadLink workload={instance.workload} showIcon={true} />
 				{:else}
 					<div class="inline">
 						<i>This OpenSearch instance does not belong to any workload</i>
@@ -61,7 +82,7 @@
 				{/if}
 			</div>
 			<h4 class="access">Access</h4>
-			{#if os.access.edges.length > 0}
+			{#if instance.access.edges.length > 0}
 				<Table
 					size="small"
 					zebraStripes
@@ -79,7 +100,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each os.access.edges as edge}
+						{#each instance.access.edges as edge}
 							{@const access = edge.node}
 							<Tr>
 								<Td>
@@ -91,22 +112,22 @@
 						{/each}
 					</Tbody>
 				</Table>
-				{#if os.access.pageInfo.hasPreviousPage || os.access.pageInfo.hasNextPage}
+				{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
 					<div class="pagination">
 						<span>
-							{#if os.access.pageInfo.pageStart !== os.access.pageInfo.pageEnd}
-								{os.access.pageInfo.pageStart} - {os.access.pageInfo.pageEnd}
+							{#if instance.access.pageInfo.pageStart !== instance.access.pageInfo.pageEnd}
+								{instance.access.pageInfo.pageStart} - {instance.access.pageInfo.pageEnd}
 							{:else}
-								{os.access.pageInfo.pageStart}
+								{instance.access.pageInfo.pageStart}
 							{/if}
-							of {os.access.pageInfo.totalCount}
+							of {instance.access.pageInfo.totalCount}
 						</span>
 
 						<span style="padding-left: 1rem;">
 							<Button
 								size="small"
 								variant="secondary"
-								disabled={!os.access.pageInfo.hasPreviousPage}
+								disabled={!instance.access.pageInfo.hasPreviousPage}
 								onclick={async () => {
 									return await OpenSearchInstance.loadPreviousPage();
 								}}><ChevronLeftIcon /></Button
@@ -114,7 +135,7 @@
 							<Button
 								size="small"
 								variant="secondary"
-								disabled={!os.access.pageInfo.hasNextPage}
+								disabled={!instance.access.pageInfo.hasNextPage}
 								onclick={async () => {
 									return await OpenSearchInstance.loadNextPage();
 								}}
@@ -132,16 +153,39 @@
 {/if}
 
 <style>
+	.resource-header-wrapper {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+		.header {
+			display: flex;
+			flex-direction: column;
+			align-items: left;
+		}
+		.icon-and-name-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+
+			.icon {
+				display: flex;
+				flex-direction: row;
+			}
+			h3 {
+				margin: 0;
+			}
+			.environment {
+				color: var(--a-text-subtle);
+				font-size: 1rem;
+			}
+		}
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
-	}
-	.heading {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
 	}
 
 	h4.access {

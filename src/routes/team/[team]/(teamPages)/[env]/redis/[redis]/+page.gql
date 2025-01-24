@@ -5,6 +5,7 @@ query RedisInstance(
 	$orderBy: RedisInstanceAccessOrder!
 ) {
 	team(slug: $team) {
+		slug
 		environment(name: $environment) {
 			redisInstance(name: $name) {
 				__typename

@@ -6,7 +6,11 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowLeftIcon,
+		ChevronLeftIcon,
+		ChevronRightIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -43,14 +47,31 @@
 {/if}
 {#if $RedisInstance.data}
 	{@const redisInstance = $RedisInstance.data.team.environment.redisInstance}
+	<div class="resource-header-wrapper">
+		<div class="header">
+			<span>
+				<a href="/team/{$RedisInstance.data?.team.slug}/redis"
+					><ArrowLeftIcon /> All Redis instances</a
+				>
+			</span>
+			<div class="icon-and-name-wrapper">
+				<div class="icon">
+					{#if redisInstance.__typename}
+						<PersistenceIcon size={'32px'} type={redisInstance.__typename} />
+					{/if}
+				</div>
+				<div>
+					<h3>{redisInstance.name}</h3>
+					<span class="environment">
+						{redisInstance.environment.name}
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="grid">
-		<Card columns={7}>
-			<h3 class="heading">
-				{#if redisInstance.__typename}
-					<PersistenceIcon type={redisInstance.__typename} size="32px" />
-				{/if}
-				{redisInstance.name}
-			</h3>
+		<Card columns={12}>
+			<h3>Redis details</h3>
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<div style="margin-left: 1em; margin-top: 0;">
 				{#if redisInstance.workload}
@@ -140,10 +161,34 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-	.heading {
+
+	.resource-header-wrapper {
 		display: flex;
-		align-items: center;
-		gap: 0.5rem;
+		flex-direction: row;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+		.header {
+			display: flex;
+			flex-direction: column;
+			align-items: left;
+		}
+		.icon-and-name-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+
+			.icon {
+				display: flex;
+				flex-direction: row;
+			}
+			h3 {
+				margin: 0;
+			}
+			.environment {
+				color: var(--a-text-subtle);
+				font-size: 1rem;
+			}
+		}
 	}
 
 	h4.access {

@@ -21,6 +21,7 @@
 		CheckmarkIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
+		PadlockLockedIcon,
 		PlusIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -103,12 +104,18 @@
 	{@const secrets = $Secrets.data.team.secrets}
 	<div class="grid">
 		<Card columns={12}>
-			<div class="card-heading">
-				<h4>Secrets</h4>
-				<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
-					Create Secret
-				</Button>
+			<div class="header">
+				<div style="display: flex; align-items: center; width: 50%; gap: 4px;">
+					<PadlockLockedIcon width="32px" height="32px" />
+					<h3 style="margin: 0px;">Secrets</h3>
+				</div>
+				<div>
+					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
+						Create Secret
+					</Button>
+				</div>
 			</div>
+
 			<div>
 				<div style="padding-bottom: 1rem;">
 					<ToggleGroup
@@ -238,15 +245,20 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-	h4 {
-		margin: 0;
-	}
 
-	.card-heading {
+	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 0.75rem;
+		align-self: stretch;
+		margin: 1rem 0;
+	}
+
+	.header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 1rem;
+		gap: 1rem;
 	}
 
 	.pagination {

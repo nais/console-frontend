@@ -5,6 +5,7 @@ query OpenSearchInstance(
 	$orderBy: OpenSearchAccessOrder!
 ) {
 	team(slug: $team) {
+		slug
 		environment(name: $environment) {
 			openSearchInstance(name: $name) {
 				__typename

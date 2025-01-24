@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import {
 		CopyButton,
 		HelpText,
@@ -16,6 +16,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
+		ArrowLeftIcon,
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		WalletIcon,
@@ -36,14 +37,34 @@
 {/if}
 {#if $BigQueryDatasetInstance.data}
 	{@const bq = $BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
+	<div
+		style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 1rem;"
+	>
+		<div style="display: flex; flex-direction: column; align-items: left; ">
+			<span
+				><a href="/team/{$BigQueryDatasetInstance.data.team.slug}/bigquery">
+					<ArrowLeftIcon /> All BigQuery instances
+				</a>
+			</span>
+			<div style="display: flex; align-items: center; gap: 4px;">
+				<div
+					style="display: flex;
+	flex-direction: row;"
+				>
+					<BigQueryIcon height={'32px'} width={'32px'} />
+				</div>
+				<div>
+					<h3 style="margin: 0;">{bq.name}</h3>
+					<div style="color: var(--a-text-subtle);	font-size: 1rem;">
+						{bq.environment.name}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="grid">
-		<Card columns={7}>
-			<h3 class="heading">
-				{#if bq.__typename}
-					<PersistenceIcon type={bq.__typename} size="32px" />
-				{/if}
-				{bq.name}
-			</h3>
+		<Card columns={12}>
+			<h3>Information</h3>
 
 			<em>{bq.description ? bq.description : 'No description'}</em>
 
@@ -92,7 +113,7 @@
 				</dd>
 			</dl>
 		</Card>
-		<Card columns={7}>
+		<Card columns={12}>
 			<h3>Access</h3>
 
 			{#if bq.access.edges.length > 0}
@@ -140,26 +161,13 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 	}
-	.heading {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-	}
+
 	dl.status {
 		display: grid;
 		align-items: center;
 		grid-template-columns: 30% 70%;
 	}
 
-	/*dl.conditions {
-		display: grid;
-		align-items: center;
-		grid-template-columns: 20% 80%;
-	}
-	div dl.conditions:not(:first-child) {
-		margin-top: 3em;
-	}
-	*/
 	.status {
 		display: flex;
 		align-items: center;

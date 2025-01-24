@@ -1,5 +1,6 @@
 query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 	team(slug: $team) {
+		slug
 		environment(name: $environment) {
 			name
 			bigQueryDataset(name: $name) {

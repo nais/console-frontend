@@ -19,6 +19,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
+		ArrowLeftIcon,
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon,
@@ -48,6 +49,28 @@
 		</Alert>
 	{/each}
 {:else if instance}
+	<div class="resource-header-wrapper">
+		<div class="header">
+			<span>
+				<a href="/team/{$SqlInstance.data?.team.slug}/postgres"
+					><ArrowLeftIcon /> All Postgres instances</a
+				>
+			</span>
+			<div class="icon-and-name-wrapper">
+				<div class="icon">
+					{#if instance.__typename}
+						<PersistenceIcon size={'32px'} type={instance.__typename} />
+					{/if}
+				</div>
+				<div>
+					<h3>{instance.name}</h3>
+					<span class="environment">
+						{instance.environment.name}
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="summary-grid">
 		<Card columns={3}>
 			<SummaryCard
@@ -106,14 +129,9 @@
 			</SummaryCard>
 		</Card>
 	</div>
+
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={6}>
-			<h3 class="heading">
-				{#if instance.__typename}
-					<PersistenceIcon type={instance.__typename} size="32px" />
-				{/if}
-				{instance.name}
-			</h3>
 			<h4>Information</h4>
 			<div class="grid" style="grid-template-columns: 40% 60%;">
 				<p style="display: flex; align-items: center; gap: 0 1rem;">Version</p>
@@ -435,6 +453,34 @@
 {/if}
 
 <style>
+	.resource-header-wrapper {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+		.header {
+			display: flex;
+			flex-direction: column;
+			align-items: left;
+		}
+		.icon-and-name-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+
+			.icon {
+				display: flex;
+				flex-direction: row;
+			}
+			h3 {
+				margin: 0;
+			}
+			.environment {
+				color: var(--a-text-subtle);
+				font-size: 1rem;
+			}
+		}
+	}
 	.grid {
 		display: grid;
 		column-gap: 0.5rem;
@@ -444,12 +490,6 @@
 
 	.grid p {
 		margin: 0.2rem 0;
-	}
-
-	.heading {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
 	}
 
 	.summary-grid {

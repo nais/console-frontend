@@ -5,6 +5,7 @@ query ValkeyInstance(
 	$orderBy: ValkeyInstanceAccessOrder!
 ) {
 	team(slug: $team) {
+		slug
 		environment(name: $environment) {
 			valkeyInstance(name: $name) {
 				__typename

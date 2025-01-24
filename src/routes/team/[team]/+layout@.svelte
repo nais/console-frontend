@@ -5,8 +5,8 @@
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import RedisIcon from '$lib/icons/RedisIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
+	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import { replacer, type Data } from '$lib/replacer';
 	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
 	import {
@@ -45,8 +45,8 @@
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
 	const simpleTeamPages: { [key: string]: { name: string; icon?: Component } } = {
-		applications: { name: 'applications' },
-		jobs: { name: 'jobs' },
+		applications: { name: 'applications', icon: PackageIcon },
+		jobs: { name: 'jobs', icon: BriefcaseClockIcon },
 		deploy: { name: 'deployments', icon: RocketIcon },
 		cost: { name: 'cost', icon: WalletIcon },
 		utilization: { name: 'utilization', icon: LineGraphStackedIcon },
@@ -54,14 +54,14 @@
 		repositories: { name: 'repositories', icon: BranchingIcon },
 		settings: { name: 'settings', icon: CogIcon },
 		'activity-log': { name: 'activity log', icon: ShieldLockIcon },
-		secrets: { name: 'secrets' },
-		postgres: { name: 'postgres' },
-		buckets: { name: 'buckets' },
-		redis: { name: 'redis' },
-		valkey: { name: 'valkey' },
-		opensearch: { name: 'opensearch' },
-		kafka: { name: 'kafka topics' },
-		bigquery: { name: 'bigquery' },
+		secrets: { name: 'secrets', icon: PadlockLockedIcon },
+		postgres: { name: 'postgres', icon: DatabaseIcon },
+		buckets: { name: 'buckets', icon: BucketIcon },
+		redis: { name: 'redis', icon: RedisIcon },
+		valkey: { name: 'valkey', icon: ValkeyIcon },
+		opensearch: { name: 'opensearch', icon: OpenSearchIcon },
+		kafka: { name: 'kafka topics', icon: KafkaIcon },
+		bigquery: { name: 'bigquery', icon: BigQueryIcon },
 		unleash: { name: 'unleash', icon: UnleashIcon },
 		vulnerabilities: { name: 'vulnerabilities', icon: VirusIcon }
 	};
@@ -97,12 +97,12 @@
 			return [
 				{
 					name: 'secrets',
-					path: replacer('/team/[team]/(teamPages)/secrets', params)
+					path: replacer('/team/[team]/(teamPages)/secrets', params),
+					icon: PadlockLockedIcon
 				},
 				{
 					name: params.secret,
 					path: replacer('/team/[team]/(teamPages)/[env]/secret/[secret]', params),
-					icon: PadlockLockedIcon,
 					showEnv: true
 				}
 			];
@@ -111,12 +111,12 @@
 			return [
 				{
 					name: 'postgres',
-					path: replacer('/team/[team]/(teamPages)/postgres', params)
+					path: replacer('/team/[team]/(teamPages)/postgres', params),
+					icon: DatabaseIcon
 				},
 				{
 					name: params.postgres,
 					path: replacer('/team/[team]/(teamPages)/[env]/postgres/[postgres]', params),
-					icon: DatabaseIcon,
 					showEnv: true
 				}
 			];
@@ -125,12 +125,12 @@
 			return [
 				{
 					name: 'buckets',
-					path: replacer('/team/[team]/(teamPages)/buckets', params)
+					path: replacer('/team/[team]/(teamPages)/buckets', params),
+					icon: BucketIcon
 				},
 				{
 					name: params.bucket,
 					path: replacer('/team/[team]/(teamPages)/[env]/bucket/[bucket]', params),
-					icon: BucketIcon,
 					showEnv: true
 				}
 			];
@@ -139,12 +139,12 @@
 			return [
 				{
 					name: 'redis',
+					icon: RedisIcon,
 					path: replacer('/team/[team]/(teamPages)/redis', params)
 				},
 				{
 					name: params.redis,
 					path: replacer('/team/[team]/(teamPages)/[env]/redis/[redis]', params),
-					icon: RedisIcon,
 					showEnv: true
 				}
 			];
@@ -153,12 +153,12 @@
 			return [
 				{
 					name: 'valkey',
-					path: replacer('/team/[team]/(teamPages)/valkey', params)
+					path: replacer('/team/[team]/(teamPages)/valkey', params),
+					icon: ValkeyIcon
 				},
 				{
 					name: params.valkey,
 					path: replacer('/team/[team]/(teamPages)/[env]/valkey/[valkey]', params),
-					icon: ValkeyIcon,
 					showEnv: true
 				}
 			];
@@ -167,12 +167,12 @@
 			return [
 				{
 					name: 'opensearch',
-					path: replacer('/team/[team]/(teamPages)/opensearch', params)
+					path: replacer('/team/[team]/(teamPages)/opensearch', params),
+					icon: OpenSearchIcon
 				},
 				{
 					name: params.opensearch,
 					path: replacer('/team/[team]/(teamPages)/[env]/opensearch/[opensearch]', params),
-					icon: OpenSearchIcon,
 					showEnv: true
 				}
 			];
@@ -181,12 +181,12 @@
 			return [
 				{
 					name: 'kafka topic',
-					path: replacer('/team/[team]/(teamPages)/kafka', params)
+					path: replacer('/team/[team]/(teamPages)/kafka', params),
+					icon: KafkaIcon
 				},
 				{
 					name: params.kafka,
 					path: replacer('/team/[team]/(teamPages)/[env]/kafka/[kafka]', params),
-					icon: KafkaIcon,
 					showEnv: true
 				}
 			];
@@ -195,12 +195,12 @@
 			return [
 				{
 					name: 'bigquery',
-					path: replacer('/team/[team]/(teamPages)/bigquery', params)
+					path: replacer('/team/[team]/(teamPages)/bigquery', params),
+					icon: BigQueryIcon
 				},
 				{
 					name: params.bigquery,
 					path: replacer('/team/[team]/(teamPages)/[env]/bigquery/[bigquery]', params),
-					icon: BigQueryIcon,
 					showEnv: true
 				}
 			];
@@ -212,7 +212,8 @@
 			const ret = [
 				{
 					name: 'jobs',
-					path: replacer('/team/[team]/jobs', params)
+					path: replacer('/team/[team]/jobs', params),
+					icon: BriefcaseClockIcon
 				},
 				{
 					name: params.job,
@@ -241,14 +242,15 @@
 			const ret = [
 				{
 					name: 'applications',
-					path: replacer('/team/[team]/applications', params)
+					path: replacer('/team/[team]/applications', params),
+					icon: PackageIcon
 				},
 				{
 					name: params.app,
 					path: replacer('/team/[team]/[env]/app/[app]', params),
-					icon: PackageIcon,
 					showEnv: true,
-					isHeader: true
+					isHeader: true,
+					icon: PackageIcon
 				},
 				{
 					name: simpleAppPages[key].name,
@@ -326,9 +328,9 @@
 				<BodyLong style="height: 28px; width: 28px; text-align: center; color: var(--a-gray-500);"
 					>/</BodyLong
 				>
-				{#if (item.path && !item.isHeader) || (item.isHeader && index !== crumbs($page.route.id, $page.params).length - 1)}
+				{#if item.path && !item.isHeader}
 					<a class="unstyled" href={item.path}>
-						{#if item.icon}
+						{#if item.icon || (item.isHeader && index !== crumbs($page.route.id, $page.params).length - 1)}
 							<div class="type-icon">
 								<item.icon />
 							</div>
@@ -337,7 +339,7 @@
 							{item.name}
 						</div>
 					</a>
-				{:else if !item.isHeader}
+				{:else}
 					<span>{item.name}</span>
 				{/if}
 			{/each}
