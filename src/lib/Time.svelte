@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { format, formatDistance } from 'date-fns';
+	import { format, formatDistanceStrict } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import { onDestroy, untrack } from 'svelte';
 	interface Props {
@@ -10,12 +10,12 @@
 
 	let { time, dateFormat = 'PPPP', distance = false }: Props = $props();
 	let title = format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB });
-	let text: string = $state('');
 	const distanceText = () =>
-		formatDistance(time, Date.now(), {
-			addSuffix: true,
-			includeSeconds: true
+		formatDistanceStrict(time, Date.now(), {
+			addSuffix: true
+			// includeSeconds: true
 		});
+	let text: string = $state(distanceText());
 	let interval: ReturnType<typeof setTimeout> | undefined = $state();
 	onDestroy(() => {
 		if (interval) {
