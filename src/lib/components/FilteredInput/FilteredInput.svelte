@@ -41,6 +41,8 @@
 		...restProps
 	}: Props = $props();
 
+	console.log(filters);
+
 	let content = $state('');
 	let inputEl: HTMLInputElement | null = $state(null);
 	let caretEl: HTMLSpanElement | null = $state(null);

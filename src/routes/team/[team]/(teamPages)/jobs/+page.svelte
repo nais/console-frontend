@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
-	import { JobOrderField, PendingValue } from '$houdini';
+	import { JobOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import FilteredInput, {
 		type AppliedFilter,
@@ -11,11 +11,36 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Button,
+		Detail,
+		Heading,
+		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import {
+		ActionMenu,
+		ActionMenuGroup,
+		ActionMenuItem
+	} from '@nais/ds-svelte-community/experimental.js';
 	import {
 		BriefcaseClockIcon,
+		CheckmarkCircleFillIcon,
+		CheckmarkCircleIcon,
+		CheckmarkIcon,
+		ChevronDownIcon,
 		ChevronLeftIcon,
-		ChevronRightIcon
+		ChevronRightIcon,
+		CircleBrokenIcon,
+		MenuElipsisVerticalIcon,
+		QuestionmarkIcon,
+		RocketIcon,
+		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -82,7 +107,6 @@
 		{
 			key: 'environment',
 			values: $Jobs.data?.team.environments
-				.filter((env) => env != PendingValue)
 				.filter(
 					(env) =>
 						filters
@@ -117,7 +141,81 @@
 			</div>
 		</div>
 
-		<Table
+		<div style="border: 1px solid var(--a-border-default); border-radius: 4px; overflow: hidden;">
+			<div
+				style="
+				background-color: var(--a-surface-subtle);
+				border-bottom: 1px solid var(--a-border-default);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 8px 12px;"
+			>
+				<Detail style="font-weight: bold;">{jobs.nodes.length} jobs</Detail>
+				{#snippet trigger(props: any)}
+					<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+						Environment
+						{#snippet icon()}
+							<ChevronDownIcon />
+						{/snippet}
+					</Button>
+				{/snippet}
+				<ActionMenu {trigger}>
+					{#each $Jobs.data.team.environments as env}
+						<ActionMenuItem
+							onSelect={() => {
+								console.log('selected', env.name);
+								filters.push({ key: 'environment', value: env.name });
+							}}
+						>
+							{#snippet icon()}
+								<CheckmarkIcon />
+							{/snippet}
+							{env.name}
+						</ActionMenuItem>
+					{/each}
+				</ActionMenu>
+			</div>
+			{#each jobs.nodes as job}
+				<div
+					style="
+					display: flex; 
+					justify-content: space-between; 
+					align-items: center; border-bottom: 1px solid var(--a-border-default); padding: 8px 12px;"
+				>
+					<div>
+						<Heading level="3" size="xsmall">{job.name}</Heading>
+						<Detail>{job.environment.name}</Detail>
+					</div>
+					<div style="min-width: 110px; display: flex; gap: 4px; flex-direction: column;">
+						{#if job.runs.nodes[0]?.startTime}
+							<div style="display: flex; gap: 4px; align-items: center;" title="Last run status">
+								{#if job.runs.nodes[0].status.state === 'RUNNING'}
+									<Loader size="xsmall" variant="interaction" />
+								{:else if job.runs.nodes[0].status.state === 'PENDING'}
+									<Loader size="xsmall" variant="interaction" />
+								{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
+									<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+								{:else if job.runs.nodes[0].status.state === 'FAILED'}
+									<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+								{:else}
+									<QuestionmarkIcon />
+								{/if}
+								<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
+							</div>
+						{/if}
+						{#if job.deploymentInfo.timestamp}
+							<div style="display: flex; gap: 4px; align-items: center;">
+								<RocketIcon title="Last deploy" />
+								<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
+							</div>
+						{/if}
+					</div>
+				</div>
+			{/each}
+		</div>
+
+		<!-- <Table
 			zebraStripes
 			size="small"
 			sort={{
@@ -141,43 +239,28 @@
 			<Tbody>
 				{#if jobs !== undefined}
 					{#each jobs.nodes as job}
-						{#if job === PendingValue}
-							<Tr>
-								<Td>
-									<Skeleton variant="rounded" />
-								</Td>
-								<Td>
-									<Skeleton variant="text" />
-								</Td>
-								<Td><Skeleton variant="text" /></Td>
-								<Td>
-									<Skeleton variant="text" />
-								</Td>
-							</Tr>
-						{:else}
-							<Tr>
-								<Td>
-									<div class="status">
-										<a
-											href="/team/{teamSlug}/{job.environment.name}/job/{job.name}/status"
-											data-sveltekit-preload-data="off"
-										>
-											<StatusBadge size="1.5rem" state={job.status.state} />
-										</a>
-									</div>
-								</Td>
-								<Td>
-									<a href="/team/{teamSlug}/{job.environment.name}/job/{job.name}">{job.name}</a>
-								</Td>
-								<Td>{job.environment.name}</Td>
+						<Tr>
+							<Td>
+								<div class="status">
+									<a
+										href="/team/{teamSlug}/{job.environment.name}/job/{job.name}/status"
+										data-sveltekit-preload-data="off"
+									>
+										<StatusBadge size="1.5rem" state={job.status.state} />
+									</a>
+								</div>
+							</Td>
+							<Td>
+								<a href="/team/{teamSlug}/{job.environment.name}/job/{job.name}">{job.name}</a>
+							</Td>
+							<Td>{job.environment.name}</Td>
 
-								<Td>
-									{#if job.deploymentInfo.timestamp}
-										<Time time={job.deploymentInfo.timestamp} distance={true} />
-									{/if}
-								</Td>
-							</Tr>
-						{/if}
+							<Td>
+								{#if job.deploymentInfo.timestamp}
+									<Time time={job.deploymentInfo.timestamp} distance={true} />
+								{/if}
+							</Td>
+						</Tr>
 					{:else}
 						<Tr>
 							<Td colspan={999}>No jobs found</Td>
@@ -185,42 +268,40 @@
 					{/each}
 				{/if}
 			</Tbody>
-		</Table>
-		{#if jobs.pageInfo !== PendingValue}
-			{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if jobs.pageInfo.pageStart !== jobs.pageInfo.pageEnd}
-							{jobs.pageInfo.pageStart} - {jobs.pageInfo.pageEnd}
-						{:else}
-							{jobs.pageInfo.pageStart}
-						{/if}
+		</Table> -->
+		{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
+			<div class="pagination">
+				<span>
+					{#if jobs.pageInfo.pageStart !== jobs.pageInfo.pageEnd}
+						{jobs.pageInfo.pageStart} - {jobs.pageInfo.pageEnd}
+					{:else}
+						{jobs.pageInfo.pageStart}
+					{/if}
 
-						of {jobs.pageInfo.totalCount}
-					</span>
+					of {jobs.pageInfo.totalCount}
+				</span>
 
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!jobs.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await Jobs.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!jobs.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await Jobs.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
-			{/if}
+				<span style="padding-left: 1rem;">
+					<Button
+						size="small"
+						variant="secondary"
+						disabled={!jobs.pageInfo.hasPreviousPage}
+						onclick={async () => {
+							return await Jobs.loadPreviousPage();
+						}}><ChevronLeftIcon /></Button
+					>
+					<Button
+						size="small"
+						variant="secondary"
+						disabled={!jobs.pageInfo.hasNextPage}
+						onclick={async () => {
+							return await Jobs.loadNextPage();
+						}}
+					>
+						<ChevronRightIcon /></Button
+					>
+				</span>
+			</div>
 		{/if}
 	</Card>
 {/if}
