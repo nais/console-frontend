@@ -20,5 +20,5 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 };
 
 export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
-	return { data, initialFilter: url.searchParams.get('filter') || '' };
+	return { data, initialEnvironments: url.searchParams.get('environments') || '' };
 }

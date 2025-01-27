@@ -5,7 +5,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, Button, Detail, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Detail, Heading, Loader, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
 	import {
 		BriefcaseClockIcon,
@@ -25,13 +25,19 @@
 	}
 
 	let { data }: Props = $props();
-	let { Jobs, teamSlug } = $derived(data);
+	let { Jobs, teamSlug, initialEnvironments } = $derived(data);
 
-	// example code from doc
+	//let filter: string = $state('');
+
 	let views: { [key: string]: boolean } = $state({});
+	let filteredEnvs = $derived(initialEnvironments.split(','));
 
 	$Jobs.data?.team.environments.forEach((env) => {
-		views[env.name] = true;
+		if (filteredEnvs.includes(env.name) || filteredEnvs[0] === '') {
+			views[env.name] = true;
+		} else {
+			views[env.name] = false;
+		}
 	});
 
 	/*let rows = $state(25);
@@ -58,8 +64,8 @@
 		changeParams({
 			//direction: tableSort.direction || 'DESC',
 			//field: tableSort.orderBy || JobOrderField.STATUS,
-			environments: environments.length > 0 ? environments.join(',') : []
-			//filter: freetext
+			environments: environments.length > 0 ? environments.join(',') : ''
+			//filter: filter
 		});
 	};
 </script>
@@ -73,6 +79,17 @@
 			<div style="display: flex; align-items: center; width: 50%; gap: 4px;">
 				<BriefcaseClockIcon width="32px" height="32px" />
 				<h3 style="margin: 0px;">Jobs</h3>
+			</div>
+			<div style="width: 50%;">
+				<Search
+					label="filter jobs"
+					placeholder="Filter jobs by name"
+					hideLabel={true}
+					size="small"
+					variant="simple"
+					width="100%"
+					autocomplete="off"
+				/>
 			</div>
 		</div>
 		<BodyLong style="margin-bottom: 1rem;">
