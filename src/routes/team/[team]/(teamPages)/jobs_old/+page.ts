@@ -5,9 +5,9 @@ import {
 	type OrderDirection$options,
 	type TeamJobsFilter
 } from '$houdini';
-import type { JobsVariables } from './$houdini';
+import type { Jobs_oldVariables } from './$houdini';
 
-export const _JobsVariables: JobsVariables = ({ url }) => {
+export const _JobsVariables: Jobs_oldVariables = ({ url }) => {
 	const filter: string = url.searchParams.get('filter') || '';
 	const environments: string[] = url.searchParams.get('environments')?.split(',') || [];
 	const field = (url.searchParams.get('field') || JobOrderField.STATUS) as JobOrderField$options;
