@@ -1,16 +1,11 @@
 <script lang="ts">
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
-	import { JobOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import FilteredInput, {
-		type AppliedFilter,
-		type Filter
-	} from '$lib/components/FilteredInput/FilteredInput.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Detail, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Detail, Heading, Loader } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
 	import {
 		BriefcaseClockIcon,
@@ -18,6 +13,7 @@
 		ChevronDownIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
+		ExternalLinkIcon,
 		QuestionmarkIcon,
 		RocketIcon,
 		XMarkOctagonFillIcon
@@ -31,83 +27,40 @@
 	let { data }: Props = $props();
 	let { Jobs, teamSlug } = $derived(data);
 
-	let filter: string = $state('');
+	// example code from doc
+	let views: { [key: string]: boolean } = $state({});
+
+	$Jobs.data?.team.environments.forEach((env) => {
+		views[env.name] = true;
+	});
+
+	/*let rows = $state(25);
+	 */
+	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
+		console.log(checkboxId, checked);
+		if (checkboxId === '*') {
+			Object.keys(views).forEach((key) => {
+				views[key] = checked;
+			});
+		} else {
+			views[checkboxId] = checked;
+		}
+		handleFilter();
+	};
 
 	const handleFilter = () => {
 		replaceState(page.url.toString(), {});
-		const environments = filters.filter((f) => f.key === 'environment')?.map((f) => f.value);
-		Jobs.fetch({ variables: { team: teamSlug, filter: { name: freetext, environments } } });
-		changeParams({
-			direction: tableSort.direction || 'DESC',
-			field: tableSort.orderBy || JobOrderField.STATUS,
-			environments: environments.join(','),
-			filter: freetext
+		const environments: string[] = Object.keys(views).filter((key) => {
+			return views[key];
 		});
-	};
-
-	const onKeyUp = (e: KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			handleFilter();
-			return;
-		} else if (e.key === 'Escape') {
-			filter = '';
-			handleFilter();
-			return;
-		}
-	};
-
-	let tableSort = $derived({
-		orderBy: $Jobs.variables?.orderBy?.field,
-		direction: $Jobs.variables?.orderBy?.direction
-	});
-
-	/*const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = JobOrderField[key as keyof typeof JobOrderField];
-			tableSort.direction = 'ASC';
-		}
+		Jobs.fetch({ variables: { team: teamSlug, filter: { name: '', environments } } });
 
 		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || JobOrderField.NAME,
-			environments: filters
-				.filter((f) => f.key === 'environment')
-				?.map((f) => f.value)
-				.join(','),
-			filter: freetext
+			//direction: tableSort.direction || 'DESC',
+			//field: tableSort.orderBy || JobOrderField.STATUS,
+			environments: environments.length > 0 ? environments.join(',') : []
+			//filter: freetext
 		});
-	};*/
-
-	let filters: AppliedFilter[] = $state([]);
-	let freetext: string = $state('');
-	let supportedFilters: Filter[] = $derived([
-		{
-			key: 'environment',
-			values: $Jobs.data?.team.environments
-				.filter(
-					(env) =>
-						filters
-							.filter((f) => f.key === 'environment')
-							?.map((f) => f.value)
-							.indexOf(env.name) === -1
-				)
-				.map((env) => ({ value: env.name }))
-		}
-	]);
-
-	// example code from doc
-	/*let views = $state({
-		started: true,
-		fnr: false,
-		tags: true
-	});
-	let rows = $state(25);
-*/
-	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
-		console.log(checkboxId, checked);
 	};
 </script>
 
@@ -121,18 +74,14 @@
 				<BriefcaseClockIcon width="32px" height="32px" />
 				<h3 style="margin: 0px;">Jobs</h3>
 			</div>
-			<div style="width:50%">
-				<FilteredInput
-					bind:filters
-					bind:value={filter}
-					bind:freetext
-					{supportedFilters}
-					onkeyup={onKeyUp}
-					placeholder="Filter jobs"
-				/>
-			</div>
 		</div>
-
+		<BodyLong style="margin-bottom: 1rem;">
+			A job is used for one-off or scheduled tasks meant to complete and then exit. Learn more about
+			jobs.<br />
+			<a href="https://doc.nais.io/workloads/job/"
+				>Learn more about jobs<ExternalLinkIcon title="NAIS documentation" /></a
+			>
+		</BodyLong>
 		<div style="border: 1px solid var(--a-border-default); border-radius: 4px; overflow: hidden;">
 			<div
 				style="background-color: var(--a-surface-subtle); border-bottom: 1px solid var(--a-border-default); display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;"
@@ -147,9 +96,19 @@
 							{/snippet}
 						</Button>
 					{/snippet}
+					<ActionMenuCheckboxItem
+						checked={Object.values(views).length > 0 && Object.values(views).every(Boolean)
+							? true
+							: Object.values(views).some(Boolean)
+								? 'indeterminate'
+								: false}
+						onchange={(checked) => handleCheckboxChange('*', checked)}
+					>
+						All environments
+					</ActionMenuCheckboxItem>
 					{#each $Jobs.data.team.environments as env}
 						<ActionMenuCheckboxItem
-							checked={true}
+							checked={views[env.name]}
 							onchange={(checked) => handleCheckboxChange(env.name, checked)}
 						>
 							{env.name}
@@ -241,12 +200,6 @@
 		margin: 1rem 0;
 	}
 
-	/*.status {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		line-height: 0.6;
-	}*/
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;

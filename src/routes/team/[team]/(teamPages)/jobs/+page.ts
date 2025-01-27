@@ -5,7 +5,7 @@ import {
 	type OrderDirection$options,
 	type TeamJobsFilter
 } from '$houdini';
-import type { JobsVariables } from './$houdini';
+import type { AfterLoadEvent, JobsVariables } from './$houdini';
 
 export const _JobsVariables: JobsVariables = ({ url }) => {
 	const filter: string = url.searchParams.get('filter') || '';
@@ -18,3 +18,7 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 		orderBy: { field: field, direction: direction } as JobOrder
 	};
 };
+
+export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
+	return { data, initialFilter: url.searchParams.get('filter') || '' };
+}
