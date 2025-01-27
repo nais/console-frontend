@@ -7,37 +7,17 @@
 		type AppliedFilter,
 		type Filter
 	} from '$lib/components/FilteredInput/FilteredInput.svelte';
-	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import {
-		Button,
-		Detail,
-		Heading,
-		Loader,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import {
-		ActionMenu,
-		ActionMenuGroup,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental.js';
+	import { Button, Detail, Heading, Loader } from '@nais/ds-svelte-community';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
 	import {
 		BriefcaseClockIcon,
 		CheckmarkCircleFillIcon,
-		CheckmarkCircleIcon,
-		CheckmarkIcon,
 		ChevronDownIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
-		CircleBrokenIcon,
-		MenuElipsisVerticalIcon,
 		QuestionmarkIcon,
 		RocketIcon,
 		XMarkOctagonFillIcon
@@ -81,7 +61,7 @@
 		direction: $Jobs.variables?.orderBy?.direction
 	});
 
-	const tableSortChange = (key: string) => {
+	/*const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
@@ -99,7 +79,7 @@
 				.join(','),
 			filter: freetext
 		});
-	};
+	};*/
 
 	let filters: AppliedFilter[] = $state([]);
 	let freetext: string = $state('');
@@ -117,6 +97,18 @@
 				.map((env) => ({ value: env.name }))
 		}
 	]);
+
+	// example code from doc
+	/*let views = $state({
+		started: true,
+		fnr: false,
+		tags: true
+	});
+	let rows = $state(25);
+*/
+	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
+		console.log(checkboxId, checked);
+	};
 </script>
 
 <GraphErrors errors={$Jobs.errors} />
@@ -143,44 +135,33 @@
 
 		<div style="border: 1px solid var(--a-border-default); border-radius: 4px; overflow: hidden;">
 			<div
-				style="
-				background-color: var(--a-surface-subtle);
-				border-bottom: 1px solid var(--a-border-default);
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding: 8px 12px;"
+				style="background-color: var(--a-surface-subtle); border-bottom: 1px solid var(--a-border-default); display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;"
 			>
 				<Detail style="font-weight: bold;">{jobs.nodes.length} jobs</Detail>
-				{#snippet trigger(props: any)}
-					<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
-						Environment
-						{#snippet icon()}
-							<ChevronDownIcon />
-						{/snippet}
-					</Button>
-				{/snippet}
-				<ActionMenu {trigger}>
-					{#each $Jobs.data.team.environments as env}
-						<ActionMenuItem
-							onSelect={() => {
-								console.log('selected', env.name);
-								filters.push({ key: 'environment', value: env.name });
-							}}
-						>
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+							Environment
 							{#snippet icon()}
-								<CheckmarkIcon />
+								<ChevronDownIcon />
 							{/snippet}
+						</Button>
+					{/snippet}
+					{#each $Jobs.data.team.environments as env}
+						<ActionMenuCheckboxItem
+							checked={true}
+							onchange={(checked) => handleCheckboxChange(env.name, checked)}
+						>
 							{env.name}
-						</ActionMenuItem>
+						</ActionMenuCheckboxItem>
 					{/each}
 				</ActionMenu>
 			</div>
 			{#each jobs.nodes as job}
 				<div
 					style="
-					display: flex; 
-					justify-content: space-between; 
+					display: flex;
+					justify-content: space-between;
 					align-items: center; border-bottom: 1px solid var(--a-border-default); padding: 8px 12px;"
 				>
 					<div>
@@ -214,61 +195,6 @@
 				</div>
 			{/each}
 		</div>
-
-		<!-- <Table
-			zebraStripes
-			size="small"
-			sort={{
-				orderBy: tableSort.orderBy || JobOrderField.STATUS,
-				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-			}}
-			onsortchange={tableSortChange}
-		>
-			<Thead>
-				<Tr>
-					<Th sortable={true} sortKey={JobOrderField.STATUS} style="width: 2rem"></Th>
-					<Th sortable={true} sortKey={JobOrderField.NAME}>Name</Th>
-					<Th sortable={true} sortKey={JobOrderField.ENVIRONMENT} style="width: 10rem"
-						>Environment</Th
-					>
-					<Th sortable={true} sortKey={JobOrderField.DEPLOYMENT_TIME} style="width: 150px"
-						>Deployed</Th
-					>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#if jobs !== undefined}
-					{#each jobs.nodes as job}
-						<Tr>
-							<Td>
-								<div class="status">
-									<a
-										href="/team/{teamSlug}/{job.environment.name}/job/{job.name}/status"
-										data-sveltekit-preload-data="off"
-									>
-										<StatusBadge size="1.5rem" state={job.status.state} />
-									</a>
-								</div>
-							</Td>
-							<Td>
-								<a href="/team/{teamSlug}/{job.environment.name}/job/{job.name}">{job.name}</a>
-							</Td>
-							<Td>{job.environment.name}</Td>
-
-							<Td>
-								{#if job.deploymentInfo.timestamp}
-									<Time time={job.deploymentInfo.timestamp} distance={true} />
-								{/if}
-							</Td>
-						</Tr>
-					{:else}
-						<Tr>
-							<Td colspan={999}>No jobs found</Td>
-						</Tr>
-					{/each}
-				{/if}
-			</Tbody>
-		</Table> -->
 		{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
 			<div class="pagination">
 				<span>
@@ -315,12 +241,12 @@
 		margin: 1rem 0;
 	}
 
-	.status {
+	/*.status {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		line-height: 0.6;
-	}
+	}*/
 	.pagination {
 		text-align: right;
 		padding: 0.5rem;
