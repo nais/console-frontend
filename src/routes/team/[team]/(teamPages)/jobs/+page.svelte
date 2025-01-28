@@ -4,7 +4,8 @@
 	import { JobOrderField, OrderDirection } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import SortIcon from '$lib/icons/SortIcon.svelte';
+	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
+	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, Button, Detail, Heading, Loader, Search } from '@nais/ds-svelte-community';
@@ -33,7 +34,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Jobs, teamSlug, initialEnvironments } = $derived(data);
+	let { Jobs, initialEnvironments } = $derived(data);
 
 	let filter: string = $state(data.initialFilter);
 	$effect(() => {
@@ -43,7 +44,7 @@
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments.split(','));
 
-	let jobOrderField: keyof typeof JobOrderField = $state(JobOrderField.STATUS);
+	let jobOrderField: keyof typeof JobOrderField = $state(JobOrderField.NAME);
 	let jobOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.DESC);
 
 	$Jobs.data?.team.environments.forEach((env) => {
@@ -65,13 +66,24 @@
 		handleFilter();
 	};
 
+	const handleSortDirection = (key: string) => {
+		console.log('sort direction', key);
+		jobOrderDirection = key as keyof typeof OrderDirection;
+		handleFilter();
+	};
+
+	const handleSortField = (key: string) => {
+		console.log('sort field', key);
+		jobOrderField = JobOrderField[key as keyof typeof JobOrderField];
+		handleFilter();
+	};
+
 	const handleFilter = () => {
+		console.trace('handleFilter');
 		replaceState(page.url.toString(), {});
 		const environments: string[] = Object.keys(views).filter((key) => {
 			return views[key];
 		});
-
-		Jobs.fetch({ variables: { team: teamSlug, filter: { name: filter, environments } } });
 
 		changeParams({
 			direction: jobOrderDirection,
@@ -120,8 +132,7 @@
 			</div>
 		</div>
 		<BodyLong style="margin-bottom: 1rem;">
-			A job is used for one-off or scheduled tasks meant to complete and then exit. Learn more about
-			jobs.<br />
+			A job is used for one-off or scheduled tasks meant to complete and then exit.<br />
 			<a href="https://doc.nais.io/workloads/job/"
 				>Learn more about jobs<ExternalLinkIcon title="NAIS documentation" /></a
 			>
@@ -161,34 +172,69 @@
 							</ActionMenuCheckboxItem>
 						{/each}
 					</ActionMenu>
-					<SortIcon size="1rem" />
+					{#if jobOrderDirection === OrderDirection.ASC}
+						<SortAscendingIcon size="1rem" />
+					{:else}
+						<SortDescendingIcon size="1rem" />
+					{/if}
 					<ActionMenu>
 						{#snippet trigger(props)}
 							<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
 								{#snippet icon()}
 									<ChevronDownIcon aria-hidden="true" />
 								{/snippet}
-								Name
+								{jobOrderField === JobOrderField.NAME
+									? 'Name'
+									: jobOrderField === JobOrderField.STATUS
+										? 'Status'
+										: jobOrderField === JobOrderField.ENVIRONMENT
+											? 'Environment'
+											: 'Deployed'}
 							</Button>
 						{/snippet}
 						<ActionMenuRadioGroup bind:value={jobOrderField} label="Order by">
-							<ActionMenuRadioItem value={JobOrderField.NAME}>Name</ActionMenuRadioItem>
-							<ActionMenuRadioItem value={JobOrderField.STATUS}>Status</ActionMenuRadioItem>
-							<ActionMenuRadioItem value={JobOrderField.ENVIRONMENT}
+							<ActionMenuRadioItem
+								value={JobOrderField.NAME}
+								onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
+							>
+							<ActionMenuRadioItem
+								value={JobOrderField.STATUS}
+								onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
+							>
+							<ActionMenuRadioItem
+								value={JobOrderField.ENVIRONMENT}
+								onselect={(value) => handleSortField(value as string)}
 								>Environment</ActionMenuRadioItem
 							>
-							<ActionMenuRadioItem value={JobOrderField.DEPLOYMENT_TIME}
-								>Deployed</ActionMenuRadioItem
+							<ActionMenuRadioItem
+								value={JobOrderField.DEPLOYMENT_TIME}
+								onselect={(value) => handleSortField(value as string)}>Deployed</ActionMenuRadioItem
 							>
 						</ActionMenuRadioGroup>
 						<ActionMenuDivider />
 						<ActionMenuRadioGroup bind:value={jobOrderDirection} label="Direction">
 							{#if jobOrderField === JobOrderField.DEPLOYMENT_TIME}
-								<ActionMenuRadioItem value={OrderDirection.ASC}>Newest</ActionMenuRadioItem>
-								<ActionMenuRadioItem value={OrderDirection.DESC}>Oldest</ActionMenuRadioItem>
+								<ActionMenuRadioItem
+									value={OrderDirection.DESC}
+									onselect={(value) => handleSortDirection(value as string)}
+									>Newest</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={OrderDirection.ASC}
+									onselect={(value) => handleSortDirection(value as string)}
+									>Oldest</ActionMenuRadioItem
+								>
 							{:else}
-								<ActionMenuRadioItem value={OrderDirection.ASC}>Ascending</ActionMenuRadioItem>
-								<ActionMenuRadioItem value={OrderDirection.DESC}>Descending</ActionMenuRadioItem>
+								<ActionMenuRadioItem
+									value={OrderDirection.ASC}
+									onselect={(value) => handleSortDirection(value as string)}
+									>Ascending</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={OrderDirection.DESC}
+									onselect={(value) => handleSortDirection(value as string)}
+									>Descending</ActionMenuRadioItem
+								>
 							{/if}
 						</ActionMenuRadioGroup>
 					</ActionMenu>
