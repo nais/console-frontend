@@ -1,12 +1,20 @@
 <script lang="ts">
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
+	import { JobOrderField, OrderDirection } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import SortIcon from '$lib/icons/SortIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, Button, Detail, Heading, Loader, Search } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
+	import {
+		ActionMenu,
+		ActionMenuCheckboxItem,
+		ActionMenuDivider,
+		ActionMenuRadioGroup,
+		ActionMenuRadioItem
+	} from '@nais/ds-svelte-community/experimental.js';
 	import {
 		BriefcaseClockIcon,
 		CheckmarkCircleFillIcon,
@@ -27,10 +35,16 @@
 	let { data }: Props = $props();
 	let { Jobs, teamSlug, initialEnvironments } = $derived(data);
 
-	//let filter: string = $state('');
+	let filter: string = $state(data.initialFilter);
+	$effect(() => {
+		filter = data.initialFilter;
+	});
 
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments.split(','));
+
+	let jobOrderField: keyof typeof JobOrderField = $state(JobOrderField.STATUS);
+	let jobOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.DESC);
 
 	$Jobs.data?.team.environments.forEach((env) => {
 		if (filteredEnvs.includes(env.name) || filteredEnvs[0] === '') {
@@ -40,10 +54,7 @@
 		}
 	});
 
-	/*let rows = $state(25);
-	 */
 	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
-		console.log(checkboxId, checked);
 		if (checkboxId === '*') {
 			Object.keys(views).forEach((key) => {
 				views[key] = checked;
@@ -59,13 +70,14 @@
 		const environments: string[] = Object.keys(views).filter((key) => {
 			return views[key];
 		});
-		Jobs.fetch({ variables: { team: teamSlug, filter: { name: '', environments } } });
+
+		Jobs.fetch({ variables: { team: teamSlug, filter: { name: filter, environments } } });
 
 		changeParams({
-			//direction: tableSort.direction || 'DESC',
-			//field: tableSort.orderBy || JobOrderField.STATUS,
-			environments: environments.length > 0 ? environments.join(',') : ''
-			//filter: filter
+			direction: jobOrderDirection,
+			field: jobOrderField,
+			environments: environments.length > 0 ? environments.join(',') : '',
+			filter: filter
 		});
 	};
 </script>
@@ -76,20 +88,35 @@
 	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>
 		<div class="header">
-			<div style="display: flex; align-items: center; width: 50%; gap: 4px;">
+			<div class="heading">
 				<BriefcaseClockIcon width="32px" height="32px" />
-				<h3 style="margin: 0px;">Jobs</h3>
+				<h3>Jobs</h3>
 			</div>
-			<div style="width: 50%;">
-				<Search
-					label="filter jobs"
-					placeholder="Filter jobs by name"
-					hideLabel={true}
-					size="small"
-					variant="simple"
-					width="100%"
-					autocomplete="off"
-				/>
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						handleFilter();
+					}}
+				>
+					<Search
+						clearButton={true}
+						clearButtonLabel="Clear"
+						label="filter jobs"
+						placeholder="Filter jobs by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							console.log('reset');
+							filter = '';
+							handleFilter();
+						}}
+					/>
+				</form>
 			</div>
 		</div>
 		<BodyLong style="margin-bottom: 1rem;">
@@ -99,52 +126,81 @@
 				>Learn more about jobs<ExternalLinkIcon title="NAIS documentation" /></a
 			>
 		</BodyLong>
-		<div style="border: 1px solid var(--a-border-default); border-radius: 4px; overflow: hidden;">
-			<div
-				style="background-color: var(--a-surface-subtle); border-bottom: 1px solid var(--a-border-default); display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;"
-			>
-				<Detail style="font-weight: bold;">{jobs.nodes.length} jobs</Detail>
-				<ActionMenu>
-					{#snippet trigger(props)}
-						<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
-							Environment
-							{#snippet icon()}
-								<ChevronDownIcon />
-							{/snippet}
-						</Button>
-					{/snippet}
-					<ActionMenuCheckboxItem
-						checked={Object.values(views).length > 0 && Object.values(views).every(Boolean)
-							? true
-							: Object.values(views).some(Boolean)
-								? 'indeterminate'
-								: false}
-						onchange={(checked) => handleCheckboxChange('*', checked)}
-					>
-						All environments
-					</ActionMenuCheckboxItem>
-					{#each $Jobs.data.team.environments as env}
+
+		<div class="jobs-wrapper">
+			<div class="jobs-header">
+				<div class="jobs-count">
+					<Detail>{jobs.nodes.length} jobs</Detail>
+				</div>
+				<div>
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+								Environment
+								{#snippet icon()}
+									<ChevronDownIcon />
+								{/snippet}
+							</Button>
+						{/snippet}
 						<ActionMenuCheckboxItem
-							checked={views[env.name]}
-							onchange={(checked) => handleCheckboxChange(env.name, checked)}
+							checked={Object.values(views).length > 0 && Object.values(views).every(Boolean)
+								? true
+								: Object.values(views).some(Boolean)
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => handleCheckboxChange('*', checked)}
 						>
-							{env.name}
+							All environments
 						</ActionMenuCheckboxItem>
-					{/each}
-				</ActionMenu>
+						{#each $Jobs.data.team.environments as env}
+							<ActionMenuCheckboxItem
+								checked={views[env.name]}
+								onchange={(checked) => handleCheckboxChange(env.name, checked)}
+							>
+								{env.name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenu>
+					<SortIcon size="1rem" />
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+								{#snippet icon()}
+									<ChevronDownIcon aria-hidden="true" />
+								{/snippet}
+								Name
+							</Button>
+						{/snippet}
+						<ActionMenuRadioGroup bind:value={jobOrderField} label="Order by">
+							<ActionMenuRadioItem value={JobOrderField.NAME}>Name</ActionMenuRadioItem>
+							<ActionMenuRadioItem value={JobOrderField.STATUS}>Status</ActionMenuRadioItem>
+							<ActionMenuRadioItem value={JobOrderField.ENVIRONMENT}
+								>Environment</ActionMenuRadioItem
+							>
+							<ActionMenuRadioItem value={JobOrderField.DEPLOYMENT_TIME}
+								>Deployed</ActionMenuRadioItem
+							>
+						</ActionMenuRadioGroup>
+						<ActionMenuDivider />
+						<ActionMenuRadioGroup bind:value={jobOrderDirection} label="Direction">
+							{#if jobOrderField === JobOrderField.DEPLOYMENT_TIME}
+								<ActionMenuRadioItem value={OrderDirection.ASC}>Newest</ActionMenuRadioItem>
+								<ActionMenuRadioItem value={OrderDirection.DESC}>Oldest</ActionMenuRadioItem>
+							{:else}
+								<ActionMenuRadioItem value={OrderDirection.ASC}>Ascending</ActionMenuRadioItem>
+								<ActionMenuRadioItem value={OrderDirection.DESC}>Descending</ActionMenuRadioItem>
+							{/if}
+						</ActionMenuRadioGroup>
+					</ActionMenu>
+				</div>
 			</div>
 			{#each jobs.nodes as job}
-				<div
-					style="
-					display: flex;
-					justify-content: space-between;
-					align-items: center; border-bottom: 1px solid var(--a-border-default); padding: 8px 12px;"
-				>
+				<div class="jobs-list">
 					<div>
 						<Heading level="3" size="xsmall">{job.name}</Heading>
 						<Detail>{job.environment.name}</Detail>
 					</div>
-					<div style="min-width: 110px; display: flex; gap: 4px; flex-direction: column;">
+					<div class="job-info">
 						{#if job.runs.nodes[0]?.startTime}
 							<div style="display: flex; gap: 4px; align-items: center;" title="Last run status">
 								{#if job.runs.nodes[0].status.state === 'RUNNING'}
@@ -162,7 +218,7 @@
 							</div>
 						{/if}
 						{#if job.deploymentInfo.timestamp}
-							<div style="display: flex; gap: 4px; align-items: center;">
+							<div class="job-detail">
 								<RocketIcon title="Last deploy" />
 								<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
 							</div>
@@ -215,6 +271,53 @@
 		align-items: center;
 		align-self: stretch;
 		margin: 1rem 0;
+		.heading {
+			display: flex;
+			align-items: center;
+			width: 50%;
+			gap: 4px;
+			h3 {
+				margin: 0;
+			}
+		}
+		.search {
+			width: 50%;
+		}
+	}
+
+	.jobs-wrapper {
+		border: 1px solid var(--a-border-default);
+		border-radius: 4px;
+		overflow: hidden;
+		.jobs-header {
+			background-color: var(--a-surface-subtle);
+			border-bottom: 1px solid var(--a-border-default);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+		}
+		.jobs-count {
+			font-weight: bold;
+		}
+		.jobs-list {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			border-bottom: 1px solid var(--a-border-default);
+			padding: 8px 12px;
+		}
+		.job-info {
+			min-width: 110px;
+			display: flex;
+			gap: 4px;
+			flex-direction: column;
+		}
+		.job-detail {
+			display: flex;
+			gap: 4px;
+			align-items: center;
+		}
 	}
 
 	.pagination {
