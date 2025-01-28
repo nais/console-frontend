@@ -235,7 +235,7 @@
 			</div>
 			{#each jobs.nodes as job}
 				<div class="jobs-list">
-					<div>
+					<div class="job-link">
 						<WorkloadLink workload={job} />
 						<Detail>{job.environment.name}</Detail>
 					</div>
@@ -346,6 +346,19 @@
 			align-items: center;
 			border-bottom: 1px solid var(--a-border-default);
 			padding: 8px 12px;
+
+			.job-link {
+				:global(a) {
+					font-weight: var(--a-font-weight-bold);
+					&:not(:active) {
+						color: var(--a-text-defualt);
+					}
+					text-decoration: none;
+					&:hover {
+						text-decoration: underline;
+					}
+				}
+			}
 		}
 		.job-info {
 			min-width: 110px;
