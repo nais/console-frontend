@@ -101,31 +101,6 @@
 				<BriefcaseClockIcon width="32px" height="32px" />
 				<h3>Jobs</h3>
 			</div>
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						handleFilter();
-					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter jobs"
-						placeholder="Filter jobs by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
-						onclear={() => {
-							filter = '';
-							handleFilter();
-						}}
-					/>
-				</form>
-			</div>
 		</div>
 		<BodyLong style="margin-bottom: 1rem;">
 			A job is used for one-off or scheduled tasks meant to complete and then exit.<br />
@@ -133,7 +108,31 @@
 				>Learn more about jobs<ExternalLinkIcon title="NAIS documentation" /></a
 			>
 		</BodyLong>
-
+		<div class="search">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleFilter();
+				}}
+			>
+				<Search
+					clearButton={true}
+					clearButtonLabel="Clear"
+					label="filter jobs"
+					placeholder="Filter jobs by name"
+					hideLabel={true}
+					size="small"
+					variant="simple"
+					width="100%"
+					autocomplete="off"
+					bind:value={filter}
+					onclear={() => {
+						filter = '';
+						handleFilter();
+					}}
+				/>
+			</form>
+		</div>
 		<div class="jobs-wrapper">
 			<div class="jobs-header">
 				<div class="jobs-count">
@@ -322,11 +321,12 @@
 				margin: 0;
 			}
 		}
-		.search {
-			width: 50%;
-		}
 	}
-
+	.search {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
+	}
 	.jobs-wrapper {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
