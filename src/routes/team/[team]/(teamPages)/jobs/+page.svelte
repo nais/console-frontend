@@ -22,7 +22,6 @@
 		ChevronDownIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
-		ExternalLinkIcon,
 		QuestionmarkIcon,
 		RocketIcon,
 		XMarkOctagonFillIcon
@@ -103,10 +102,8 @@
 			</div>
 		</div>
 		<BodyLong style="margin-bottom: 1rem;">
-			A job is used for one-off or scheduled tasks meant to complete and then exit.<br />
-			<a href="https://doc.nais.io/workloads/job/"
-				>Learn more about jobs<ExternalLinkIcon title="NAIS documentation" /></a
-			>
+			A job is used for one-off or scheduled tasks meant to complete and then exit.
+			<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
 		</BodyLong>
 		<div class="search">
 			<form
