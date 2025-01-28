@@ -1,7 +1,7 @@
 image:
   repository: europe-north1-docker.pkg.dev/nais-io/nais/images
   name: console-frontend
-ingressClass: "nais-ingress"
+ingressClass: 'nais-ingress'
 host: ''
 tenantDomain: ''
 
