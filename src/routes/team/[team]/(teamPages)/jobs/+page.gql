@@ -14,9 +14,13 @@ query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(pol
 				pageStart
 			}
 			nodes {
+				__typename
 				name
 				environment {
 					name
+				}
+				team {
+					slug
 				}
 				runs(first: 1) {
 					nodes {

@@ -3,12 +3,13 @@
 	import { page } from '$app/state';
 	import { JobOrderField, OrderDirection } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, Button, Detail, Heading, Loader, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Detail, Loader, Search } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -235,7 +236,7 @@
 			{#each jobs.nodes as job}
 				<div class="jobs-list">
 					<div>
-						<Heading level="3" size="xsmall">{job.name}</Heading>
+						<WorkloadLink workload={job} />
 						<Detail>{job.environment.name}</Detail>
 					</div>
 					<div class="job-info">
