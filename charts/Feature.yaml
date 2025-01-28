@@ -1,6 +1,11 @@
 environmentKinds:
   - management
 values:
+  ingressClass:
+    displayName: Ingress class
+    description: Ingress class
+    config:
+      type: string
   host:
     displayName: hostname override
     computed:
