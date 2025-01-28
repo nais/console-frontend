@@ -67,19 +67,16 @@
 	};
 
 	const handleSortDirection = (key: string) => {
-		console.log('sort direction', key);
 		jobOrderDirection = key as keyof typeof OrderDirection;
 		handleFilter();
 	};
 
 	const handleSortField = (key: string) => {
-		console.log('sort field', key);
 		jobOrderField = JobOrderField[key as keyof typeof JobOrderField];
 		handleFilter();
 	};
 
 	const handleFilter = () => {
-		console.trace('handleFilter');
 		replaceState(page.url.toString(), {});
 		const environments: string[] = Object.keys(views).filter((key) => {
 			return views[key];
@@ -123,7 +120,6 @@
 						autocomplete="off"
 						bind:value={filter}
 						onclear={() => {
-							console.log('reset');
 							filter = '';
 							handleFilter();
 						}}
