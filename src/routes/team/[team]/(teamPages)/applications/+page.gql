@@ -1,23 +1,29 @@
-query Applications($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter)
-@cache(policy: NetworkOnly) {
-	team(slug: $team) @loading {
-		environments @loading {
+query Applications(
+	$team: Slug!
+	$orderBy: ApplicationOrder
+	$filter: TeamApplicationsFilter
+	$rows: Int
+) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		environments {
 			name
 		}
-		applications(first: 20, orderBy: $orderBy, filter: $filter)
-			@paginate(mode: SinglePage)
-			@loading {
-			pageInfo @loading {
+		applications(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				pageStart
 				pageEnd
 				totalCount
 			}
-			nodes @loading(count: 20) {
+			nodes {
+				__typename
 				name
 				environment {
 					name
+				}
+				team {
+					slug
 				}
 				status {
 					state

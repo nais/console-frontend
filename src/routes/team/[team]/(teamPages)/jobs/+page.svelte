@@ -131,7 +131,7 @@
 						clearButton={true}
 						clearButtonLabel="Clear"
 						label="filter jobs"
-						placeholder="Filter jobs by name"
+						placeholder="Filter by name"
 						hideLabel={true}
 						size="small"
 						variant="simple"

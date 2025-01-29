@@ -9,7 +9,7 @@
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
 	import { Alert, Button } from '@nais/ds-svelte-community';
-	import { BriefcaseClockIcon } from '@nais/ds-svelte-community/icons';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Authentications from './Authentications.svelte';
 	import Instances from './Instances.svelte';
@@ -78,7 +78,7 @@
 						onclick={() => {
 							restart = true;
 						}}
-						icon={BriefcaseClockIcon}
+						icon={ArrowCirclepathIcon}
 					>
 						Restart
 					</Button>
