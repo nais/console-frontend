@@ -45,8 +45,10 @@ query Applications(
 				status {
 					state
 				}
-				deploymentInfo {
-					timestamp
+				deployments(first: 1) {
+					nodes {
+						createdAt
+					}
 				}
 				...AppInstancesStatus
 			}

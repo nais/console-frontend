@@ -26,9 +26,11 @@
 									name
 								}
 								name
-								deploymentInfo {
-									url
-									timestamp
+								deployments(first: 1) {
+									nodes {
+										triggerUrl
+										createdAt
+									}
 								}
 							}
 						}
@@ -54,32 +56,37 @@
 		<Tbody>
 			{#each $workloadRefs.workloadReferences.nodes as node}
 				{#if node !== PendingValue}
+					{@const { workload } = node}
+					{@const deployInfo =
+						workload.deployments.nodes.length > 0 ? workload.deployments.nodes[0] : null}
 					<Tr>
 						<Td>
-							<a href={`/team/${node.workload.team.slug}`}>{node.workload.team.slug}</a>
+							<a href={`/team/${workload.team.slug}`}>{workload.team.slug}</a>
 						</Td>
 						<Td>
-							{node.workload.environment.name}
+							{workload.environment.name}
 						</Td>
 						<Td>
-							{#if node.workload.__typename === 'Application'}
+							{#if workload.__typename === 'Application'}
 								<a
-									href={`/team/${node.workload.team.slug}/${node.workload.environment.name}/app/${node.workload.name}`}
-									>{node.workload.name}</a
+									href={`/team/${workload.team.slug}/${workload.environment.name}/app/${workload.name}`}
+									>{workload.name}</a
 								>
-							{:else if node.workload.__typename === 'Job'}
+							{:else if workload.__typename === 'Job'}
 								<a
-									href={`/team/${node.workload.team.slug}/${node.workload.environment.name}/job/${node.workload.name}`}
-									>{node.workload.name}</a
+									href={`/team/${workload.team.slug}/${workload.environment.name}/job/${workload.name}`}
+									>{workload.name}</a
 								>
 							{/if}
 						</Td>
 						<Td>
-							<a href={node.workload.deploymentInfo.url} target="_blank">Run</a>
+							{#if deployInfo?.triggerUrl}
+								<a href={deployInfo?.triggerUrl} target="_blank">Run</a>
+							{/if}
 						</Td>
 						<Td
-							>{#if node.workload.deploymentInfo.timestamp}
-								<Time distance time={node.workload.deploymentInfo.timestamp} />
+							>{#if deployInfo?.createdAt}
+								<Time distance time={deployInfo.createdAt} />
 							{/if}
 						</Td>
 					</Tr>

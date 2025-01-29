@@ -24,23 +24,23 @@
 					environment {
 						name
 					}
-					deploymentInfo {
-						history {
-							nodes {
-								resources {
-									group
+					deployments {
+						nodes {
+							resources {
+								nodes {
 									kind
 									name
-									version
 								}
-								statuses {
-									status
-									message
-									created
-								}
-								created
-								repository
 							}
+							statuses {
+								nodes {
+									state
+									message
+									createdAt
+								}
+							}
+							createdAt
+							repository
 						}
 					}
 				}
@@ -48,8 +48,8 @@
 		)
 	);
 	let deploysOrderedByDate = $derived(
-		$data.deploymentInfo.history.nodes.sort((a, b) => {
-			return new Date(b.created).getTime() - new Date(a.created).getTime();
+		$data.deployments.nodes.sort((a, b) => {
+			return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 		})
 	);
 </script>
@@ -72,7 +72,7 @@
 					<Td>{$data.team.slug}</Td>
 					<Td>{$data.environment.name}</Td>
 					<Td>
-						{#each deploy.resources as resource}
+						{#each deploy.resources.nodes as resource}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
 								<a
@@ -95,12 +95,12 @@
 							<br />
 						{/each}
 					</Td>
-					<Td><Time time={deploy.created} distance={true} /></Td>
+					<Td><Time time={deploy.createdAt} distance={true} /></Td>
 					<Td>
-						{#if deploy.statuses.length === 0}
+						{#if deploy.statuses.nodes.length === 0}
 							<DeploymentStatus status={'unknown'} />
 						{:else}
-							<DeploymentStatus status={deploy.statuses[0].status} />
+							<DeploymentStatus status={deploy.statuses.nodes[0].state} />
 						{/if}
 					</Td>
 				</Tr>

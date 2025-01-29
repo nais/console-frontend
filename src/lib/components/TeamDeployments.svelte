@@ -20,57 +20,27 @@
 					deployments @loading {
 						nodes @loading {
 							statuses {
-								status
-								message
-								created
+								nodes {
+									state
+									message
+									createdAt
+								}
 							}
 							resources {
-								group
-								kind
-								name
-								version
-								namespace
+								nodes {
+									kind
+									name
+								}
 							}
-							environment {
-								name
-							}
-							created
-							team {
-								slug
-							}
+							environmentName
+							createdAt
+							teamSlug
 						}
 					}
 				}
 			`)
 		)
 	);
-
-	type Deployment =
-		| {
-				readonly team: { readonly slug: string };
-				readonly environment: { readonly name: string };
-				readonly resources: {
-					readonly group: string;
-					readonly kind: string;
-					readonly name: string;
-					readonly version: string;
-					readonly namespace: string;
-				}[];
-				readonly created: Date;
-				readonly statuses: {
-					readonly status: string;
-					readonly message: string | null;
-					readonly created: Date;
-				}[];
-		  }
-		| typeof PendingValue;
-
-	function orderDeploymentsByDate(nodes: Deployment[]) {
-		return nodes.sort((a, b) => {
-			if (a === PendingValue || b === PendingValue) return 0;
-			return new Date(b.created).getTime() - new Date(a.created).getTime();
-		});
-	}
 </script>
 
 <h4 class="heading"><RocketIcon />Deployments</h4>
@@ -86,17 +56,17 @@
 	</Thead>
 	<Tbody>
 		{#if $data.deployments !== null}
-			{#each orderDeploymentsByDate($data.deployments.nodes) as deploy}
+			{#each $data.deployments.nodes as deploy}
 				<Tr>
 					{#if deploy !== PendingValue}
 						<Td
-							>{#each deploy.resources as resource}
+							>{#each deploy.resources.nodes as resource}
 								{#if resource.kind === 'Application'}
 									<WorkloadLink
 										workload={{
 											__typename: 'App',
-											environment: { name: deploy.environment.name },
-											team: { slug: deploy.team.slug },
+											environment: { name: deploy.environmentName },
+											team: { slug: deploy.teamSlug },
 											name: resource.name
 										}}
 										showIcon={true}
@@ -105,8 +75,8 @@
 									<WorkloadLink
 										workload={{
 											__typename: 'Job',
-											environment: { name: deploy.environment.name },
-											team: { slug: deploy.team.slug },
+											environment: { name: deploy.environmentName },
+											team: { slug: deploy.teamSlug },
 											name: resource.name
 										}}
 										showIcon={true}
@@ -119,14 +89,14 @@
 							{/each}</Td
 						>
 						<Td>
-							{deploy.environment.name}
+							{deploy.environmentName}
 						</Td>
-						<Td><Time time={deploy.created} distance={true} /></Td>
+						<Td><Time time={deploy.createdAt} distance={true} /></Td>
 
 						<Td
-							>{#if deploy.statuses.length === 0}<DeploymentStatus
+							>{#if deploy.statuses.nodes.length === 0}<DeploymentStatus
 									status={'unknown'}
-								/>{:else}<DeploymentStatus status={deploy.statuses[0].status} />{/if}</Td
+								/>{:else}<DeploymentStatus status={deploy.statuses.nodes[0].state} />{/if}</Td
 						>
 					{:else}
 						<Td>

@@ -19,19 +19,19 @@
 								deployments(first: 10) {
 									nodes {
 										id
-										created
-										environment {
-											name
-										}
-										team {
-											slug
-										}
+										createdAt
+										environmentName
+										teamSlug
 										resources {
-											kind
-											name
+											nodes {
+												kind
+												name
+											}
 										}
 										statuses {
-											status
+											nodes {
+												state
+											}
 										}
 									}
 								}
@@ -52,7 +52,7 @@
 			.flatMap((team) => team.team.deployments.nodes)
 			.map((deploy) => ({ ...deploy })) // Create a new object for each deployment
 			.sort((a, b) => {
-				return new Date(b.created).getTime() - new Date(a.created).getTime();
+				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 			})
 			.slice(0, 10);
 
@@ -90,13 +90,13 @@
 				{:else}
 					<Tr>
 						<Td>
-							{#each deploy.resources as resource}
+							{#each deploy.resources.nodes as resource}
 								{#if resource.kind === 'Application'}
 									<WorkloadLink
 										workload={{
 											__typename: 'App',
-											environment: { name: deploy.environment.name },
-											team: { slug: deploy.team.slug },
+											environment: { name: deploy.environmentName },
+											team: { slug: deploy.teamSlug },
 											name: resource.name
 										}}
 										showIcon={true}
@@ -105,8 +105,8 @@
 									<WorkloadLink
 										workload={{
 											__typename: 'Job',
-											environment: { name: deploy.environment.name },
-											team: { slug: deploy.team.slug },
+											environment: { name: deploy.environmentName },
+											team: { slug: deploy.teamSlug },
 											name: resource.name
 										}}
 										showIcon={true}
@@ -119,20 +119,20 @@
 							{/each}
 						</Td>
 						<Td>
-							<a href="/team/{deploy.team.slug}">{deploy.team.slug}</a>
+							<a href="/team/{deploy.teamSlug}">{deploy.teamSlug}</a>
 						</Td>
 						<Td>
-							{deploy.environment.name}
+							{deploy.environmentName}
 						</Td>
 
 						<Td>
-							<Time time={deploy.created} distance={true} />
+							<Time time={deploy.createdAt} distance={true} />
 						</Td>
 						<Td>
-							{#if deploy.statuses.length === 0}
+							{#if deploy.statuses.nodes.length === 0}
 								<DeploymentStatus status={'unknown'} />
 							{:else}
-								<DeploymentStatus status={deploy.statuses[0].status} />
+								<DeploymentStatus status={deploy.statuses.nodes[0].state} />
 							{/if}
 						</Td>
 					</Tr>

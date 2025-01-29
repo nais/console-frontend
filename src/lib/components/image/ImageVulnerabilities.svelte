@@ -91,10 +91,6 @@
 											name
 										}
 										name
-										deploymentInfo {
-											url
-											timestamp
-										}
 									}
 								}
 							}

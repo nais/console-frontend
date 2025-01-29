@@ -1,30 +1,34 @@
 <script lang="ts">
+	import { DeploymentStatusState, type DeploymentStatusState$options } from '$houdini';
 	import { Tag } from '@nais/ds-svelte-community';
+	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 
 	interface Props {
-		status: string;
+		status: DeploymentStatusState$options;
 	}
 
 	let { status }: Props = $props();
 
-	const asdf = (
-		status: string
-	): { variant: 'success' | 'error' | 'neutral' | 'warning' | 'info'; title: string } => {
+	let statusType: { variant: TagProps['variant']; title: string } = $derived.by(() => {
 		switch (status) {
-			case 'success':
+			case DeploymentStatusState.SUCCESS:
 				return { variant: 'success', title: 'Success' };
-			case 'in_progress':
+			case DeploymentStatusState.IN_PROGRESS:
 				return { variant: 'info', title: 'In progress' };
-			case 'queued':
+			case DeploymentStatusState.QUEUED:
 				return { variant: 'neutral', title: 'Queued' };
-			case 'failure':
+			case DeploymentStatusState.FAILURE:
 				return { variant: 'error', title: 'Failed' };
+			case DeploymentStatusState.ERROR:
+				return { variant: 'error', title: 'Error' };
+			case DeploymentStatusState.INACTIVE:
+				return { variant: 'neutral', title: 'Inactive' };
+			case DeploymentStatusState.PENDING:
+				return { variant: 'neutral', title: 'Pending' };
 			default:
 				return { variant: 'neutral', title: 'Unknown' };
 		}
-	};
-
-	let statusType = $derived(asdf(status));
+	});
 </script>
 
 <Tag variant={statusType.variant} size="small"><span>{statusType.title}</span></Tag>
