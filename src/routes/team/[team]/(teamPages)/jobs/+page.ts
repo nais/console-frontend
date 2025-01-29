@@ -12,10 +12,12 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 	const environments: string[] = url.searchParams.get('environments')?.split(',') || [];
 	const field = (url.searchParams.get('field') || JobOrderField.NAME) as JobOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const rows = parseInt(url.searchParams.get('rows') || '10');
 
 	return {
 		filter: { name: filter, environments } as TeamJobsFilter,
-		orderBy: { field: field, direction: direction } as JobOrder
+		orderBy: { field: field, direction: direction } as JobOrder,
+		rows
 	};
 };
 

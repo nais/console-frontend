@@ -43,6 +43,10 @@
 	$effect(() => {
 		filter = data.initialFilter;
 	});
+	let rows: number = $state(10);
+	/*$effect(() => {
+		rows = data.initialRows;
+	});*/
 
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments.split(','));
@@ -79,6 +83,11 @@
 		handleFilter();
 	};
 
+	const handleNumberOfRows = (value: number) => {
+		rows = Number(value);
+		handleFilter();
+	};
+
 	const handleFilter = () => {
 		replaceState(page.url.toString(), {});
 		const environments: string[] = Object.keys(views).filter((key) => {
@@ -89,7 +98,8 @@
 			direction: jobOrderDirection,
 			field: jobOrderField,
 			environments: environments.length > 0 ? environments.join(',') : '',
-			filter: filter
+			filter: filter,
+			rows: rows.toString()
 		});
 	};
 </script>
@@ -241,6 +251,25 @@
 									>
 								{/if}
 							</ActionMenuRadioGroup>
+							<ActionMenuDivider />
+							<ActionMenuRadioGroup bind:value={rows} label="Rows per page">
+								<ActionMenuRadioItem
+									value="5"
+									onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value="10"
+									onselect={(value) => handleNumberOfRows(value as number)}>10</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value="25"
+									onselect={(value) => handleNumberOfRows(value as number)}>25</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value="50"
+									onselect={(value) => handleNumberOfRows(value as number)}>50</ActionMenuRadioItem
+								>
+							</ActionMenuRadioGroup>
 						</ActionMenu>
 					</div>
 				</div>
@@ -363,7 +392,7 @@
 							variant="secondary"
 							disabled={!jobs.pageInfo.hasPreviousPage}
 							onclick={async () => {
-								return await Jobs.loadPreviousPage();
+								return await Jobs.loadPreviousPage({ last: rows });
 							}}><ChevronLeftIcon /></Button
 						>
 						<Button
@@ -371,7 +400,7 @@
 							variant="secondary"
 							disabled={!jobs.pageInfo.hasNextPage}
 							onclick={async () => {
-								return await Jobs.loadNextPage();
+								return await Jobs.loadNextPage({ first: rows });
 							}}
 						>
 							<ChevronRightIcon /></Button

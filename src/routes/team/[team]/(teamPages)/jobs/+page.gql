@@ -1,9 +1,10 @@
-query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(policy: NetworkOnly) {
+query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter, $rows: Int)
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environments {
 			name
 		}
-		jobs(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+		jobs(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount
 				endCursor
@@ -13,6 +14,7 @@ query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) @cache(pol
 				pageEnd
 				pageStart
 			}
+
 			nodes {
 				__typename
 				name
