@@ -9,7 +9,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, Button, Detail, Loader, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Detail, Loader, Search, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -140,14 +140,17 @@
 					<div class="jobs-count">
 						<Detail>{jobs.nodes.length} jobs</Detail>
 					</div>
-					<div>
+					<div style="display: flex; gap: 1rem;">
 						<ActionMenu>
 							{#snippet trigger(props)}
-								<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+								<Button
+									variant="tertiary-neutral"
+									size="small"
+									iconPosition="right"
+									{...props}
+									icon={ChevronDownIcon}
+								>
 									Environment
-									{#snippet icon()}
-										<ChevronDownIcon />
-									{/snippet}
 								</Button>
 							{/snippet}
 							<ActionMenuCheckboxItem
@@ -169,24 +172,27 @@
 								</ActionMenuCheckboxItem>
 							{/each}
 						</ActionMenu>
-						{#if jobOrderDirection === OrderDirection.ASC}
-							<SortAscendingIcon size="1rem" />
-						{:else}
-							<SortDescendingIcon size="1rem" />
-						{/if}
+
 						<ActionMenu>
 							{#snippet trigger(props)}
-								<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+								<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
 									{#snippet icon()}
-										<ChevronDownIcon aria-hidden="true" />
+										{#if jobOrderDirection === OrderDirection.ASC}
+											<SortAscendingIcon size="1rem" />
+										{:else}
+											<SortDescendingIcon size="1rem" />
+										{/if}
 									{/snippet}
-									{jobOrderField === JobOrderField.NAME
-										? 'Name'
-										: jobOrderField === JobOrderField.STATUS
-											? 'Status'
-											: jobOrderField === JobOrderField.ENVIRONMENT
-												? 'Environment'
-												: 'Deployed'}
+									<span style="display: flex; align-items: center; gap: 8px;">
+										{jobOrderField === JobOrderField.NAME
+											? 'Name'
+											: jobOrderField === JobOrderField.STATUS
+												? 'Status'
+												: jobOrderField === JobOrderField.ENVIRONMENT
+													? 'Environment'
+													: 'Deployed'}
+										<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
+									</span>
 								</Button>
 							{/snippet}
 							<ActionMenuRadioGroup bind:value={jobOrderField} label="Order by">
@@ -243,33 +249,37 @@
 						<div class="job-link-wrapper">
 							<div>
 								{#if job.status.state === WorkloadState.NAIS}
-									<CircleFillIcon
-										style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-										title="Job is NAIS"
-									/>
+									<Tooltip content="Job is NAIS">
+										<CircleFillIcon
+											style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
+											height="0.5rem"
+											width="0.5rem"
+										/>
+									</Tooltip>
 								{:else if job.status.state === WorkloadState.NOT_NAIS}
-									<CircleFillIcon
-										style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-										title="Job is not NAIS"
-									/>
+									<Tooltip content="Job is not NAIS">
+										<CircleFillIcon
+											style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
+											height="0.5rem"
+											width="0.5rem"
+										/>
+									</Tooltip>
 								{:else if job.status.state === WorkloadState.FAILING}
-									<CircleFillIcon
-										style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-										title="Job is failing"
-									/>
+									<Tooltip content="Job is failing">
+										<CircleFillIcon
+											style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
+											height="0.5rem"
+											width="0.5rem"
+										/>
+									</Tooltip>
 								{:else}
-									<CircleFillIcon
-										style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-										title="Job status is UNKNOWN"
-									/>
+									<Tooltip content="Job status is UNKNOWN">
+										<CircleFillIcon
+											style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
+											height="0.5rem"
+											width="0.5rem"
+										/>
+									</Tooltip>
 								{/if}
 							</div>
 							<div class="job-link">
@@ -278,45 +288,58 @@
 							</div>
 						</div>
 						<div class="job-info">
-							<div style="display: flex; gap: 4px; align-items: center;" title="Last run status">
+							<div style="display: flex; gap: 4px; align-items: center;">
 								{#if job.runs.nodes[0]?.status}
 									{#if job.runs.nodes[0].status.state === 'RUNNING'}
-										<Loader size="xsmall" variant="interaction" title="Job is running" />
+										<Tooltip content="Job is running">
+											<Loader size="xsmall" variant="interaction" />
+										</Tooltip>
 									{:else if job.runs.nodes[0].status.state === 'PENDING'}
-										<Loader size="xsmall" variant="interaction" title="Job run pending" />
+										<Tooltip content="Job run pending">
+											<Loader size="xsmall" variant="interaction" />
+										</Tooltip>
 									{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
-										<CheckmarkCircleFillIcon
-											style="color: var(--a-icon-success)"
-											title="Last job ran successfully"
-										/>
+										<Tooltip content="Last job ran successfully">
+											<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+										</Tooltip>
 									{:else if job.runs.nodes[0].status.state === 'FAILED'}
-										<XMarkOctagonFillIcon
-											style="color: var(--a-icon-danger)"
-											title="Last job run failed"
-										/>
+										<Tooltip content="Last job run failed">
+											<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+										</Tooltip>
 									{:else}
-										<QuestionmarkIcon title="Job run status is unknown" />
+										<Tooltip content="Job run status is unknown">
+											<QuestionmarkIcon />
+										</Tooltip>
 									{/if}
 								{:else}
-									<QuestionmarkIcon title="Job run status is unknown" />
+									<Tooltip content="Job run status is unknown">
+										<QuestionmarkIcon />
+									</Tooltip>
 								{/if}
 								{#if job.runs.nodes[0]?.startTime}
-									<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
+									<Tooltip
+										content="Last run - {format(job.runs.nodes[0].startTime, 'PPPP', {
+											locale: enGB
+										})}"
+									>
+										<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
+									</Tooltip>
 								{:else}
 									<Detail>No runs</Detail>
 								{/if}
 							</div>
 
 							{#if job.deploymentInfo.timestamp}
-								<div
-									class="job-detail"
-									title="Last deploy - {format(job.deploymentInfo.timestamp, 'PPPP', {
+								<Tooltip
+									content="Last deploy - {format(job.deploymentInfo.timestamp, 'PPPP', {
 										locale: enGB
 									})}"
 								>
-									<RocketIcon />
-									<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
-								</div>
+									<div class="job-detail">
+										<RocketIcon />
+										<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
+									</div>
+								</Tooltip>
 							{/if}
 						</div>
 					</div>
@@ -393,7 +416,7 @@
 	.jobs-wrapper {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
-		overflow: hidden;
+		/*overflow: hidden;*/
 		.jobs-header {
 			background-color: var(--a-surface-subtle);
 			border-bottom: 1px solid var(--a-border-default);
