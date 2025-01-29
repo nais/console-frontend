@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
-	import { JobOrderField, OrderDirection } from '$houdini';
+	import { JobOrderField, OrderDirection, WorkloadState } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -23,10 +23,13 @@
 		ChevronDownIcon,
 		ChevronLeftIcon,
 		ChevronRightIcon,
+		CircleFillIcon,
 		QuestionmarkIcon,
 		RocketIcon,
 		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { format } from 'date-fns';
+	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -102,203 +105,265 @@
 				<h3>Jobs</h3>
 			</div>
 		</div>
-		<BodyLong style="margin-bottom: 1rem;">
-			A job is used for one-off or scheduled tasks meant to complete and then exit.
-			<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
-		</BodyLong>
-		<div class="search">
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					handleFilter();
-				}}
-			>
-				<Search
-					clearButton={true}
-					clearButtonLabel="Clear"
-					label="filter jobs"
-					placeholder="Filter jobs by name"
-					hideLabel={true}
-					size="small"
-					variant="simple"
-					width="100%"
-					autocomplete="off"
-					bind:value={filter}
-					onclear={() => {
-						filter = '';
+		{#if jobs.nodes.length > 0}
+			<BodyLong style="margin-bottom: 1rem;">
+				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
+				<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
+			</BodyLong>
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
 						handleFilter();
 					}}
-				/>
-			</form>
-		</div>
-		<div class="jobs-wrapper">
-			<div class="jobs-header">
-				<div class="jobs-count">
-					<Detail>{jobs.nodes.length} jobs</Detail>
-				</div>
-				<div>
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
-								Environment
-								{#snippet icon()}
-									<ChevronDownIcon />
-								{/snippet}
-							</Button>
-						{/snippet}
-						<ActionMenuCheckboxItem
-							checked={Object.values(views).length > 0 && Object.values(views).every(Boolean)
-								? true
-								: Object.values(views).some(Boolean)
-									? 'indeterminate'
-									: false}
-							onchange={(checked) => handleCheckboxChange('*', checked)}
-						>
-							All environments
-						</ActionMenuCheckboxItem>
-						{#each $Jobs.data.team.environments as env}
-							<ActionMenuCheckboxItem
-								checked={views[env.name]}
-								onchange={(checked) => handleCheckboxChange(env.name, checked)}
-							>
-								{env.name}
-							</ActionMenuCheckboxItem>
-						{/each}
-					</ActionMenu>
-					{#if jobOrderDirection === OrderDirection.ASC}
-						<SortAscendingIcon size="1rem" />
-					{:else}
-						<SortDescendingIcon size="1rem" />
-					{/if}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
-								{#snippet icon()}
-									<ChevronDownIcon aria-hidden="true" />
-								{/snippet}
-								{jobOrderField === JobOrderField.NAME
-									? 'Name'
-									: jobOrderField === JobOrderField.STATUS
-										? 'Status'
-										: jobOrderField === JobOrderField.ENVIRONMENT
-											? 'Environment'
-											: 'Deployed'}
-							</Button>
-						{/snippet}
-						<ActionMenuRadioGroup bind:value={jobOrderField} label="Order by">
-							<ActionMenuRadioItem
-								value={JobOrderField.NAME}
-								onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
-							>
-							<ActionMenuRadioItem
-								value={JobOrderField.STATUS}
-								onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
-							>
-							<ActionMenuRadioItem
-								value={JobOrderField.ENVIRONMENT}
-								onselect={(value) => handleSortField(value as string)}
-								>Environment</ActionMenuRadioItem
-							>
-							<ActionMenuRadioItem
-								value={JobOrderField.DEPLOYMENT_TIME}
-								onselect={(value) => handleSortField(value as string)}>Deployed</ActionMenuRadioItem
-							>
-						</ActionMenuRadioGroup>
-						<ActionMenuDivider />
-						<ActionMenuRadioGroup bind:value={jobOrderDirection} label="Direction">
-							{#if jobOrderField === JobOrderField.DEPLOYMENT_TIME}
-								<ActionMenuRadioItem
-									value={OrderDirection.DESC}
-									onselect={(value) => handleSortDirection(value as string)}
-									>Newest</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value={OrderDirection.ASC}
-									onselect={(value) => handleSortDirection(value as string)}
-									>Oldest</ActionMenuRadioItem
-								>
-							{:else}
-								<ActionMenuRadioItem
-									value={OrderDirection.ASC}
-									onselect={(value) => handleSortDirection(value as string)}
-									>Ascending</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value={OrderDirection.DESC}
-									onselect={(value) => handleSortDirection(value as string)}
-									>Descending</ActionMenuRadioItem
-								>
-							{/if}
-						</ActionMenuRadioGroup>
-					</ActionMenu>
-				</div>
-			</div>
-			{#each jobs.nodes as job}
-				<div class="jobs-list">
-					<div class="job-link">
-						<WorkloadLink workload={job} />
-						<Detail>{job.environment.name}</Detail>
-					</div>
-					<div class="job-info">
-						{#if job.runs.nodes[0]?.startTime}
-							<div style="display: flex; gap: 4px; align-items: center;" title="Last run status">
-								{#if job.runs.nodes[0].status.state === 'RUNNING'}
-									<Loader size="xsmall" variant="interaction" />
-								{:else if job.runs.nodes[0].status.state === 'PENDING'}
-									<Loader size="xsmall" variant="interaction" />
-								{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
-									<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
-								{:else if job.runs.nodes[0].status.state === 'FAILED'}
-									<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
-								{:else}
-									<QuestionmarkIcon />
-								{/if}
-								<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
-							</div>
-						{/if}
-						{#if job.deploymentInfo.timestamp}
-							<div class="job-detail">
-								<RocketIcon title="Last deploy" />
-								<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
-							</div>
-						{/if}
-					</div>
-				</div>
-			{/each}
-		</div>
-		{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if jobs.pageInfo.pageStart !== jobs.pageInfo.pageEnd}
-						{jobs.pageInfo.pageStart} - {jobs.pageInfo.pageEnd}
-					{:else}
-						{jobs.pageInfo.pageStart}
-					{/if}
-
-					of {jobs.pageInfo.totalCount}
-				</span>
-
-				<span style="padding-left: 1rem;">
-					<Button
+				>
+					<Search
+						clearButton={true}
+						clearButtonLabel="Clear"
+						label="filter jobs"
+						placeholder="Filter jobs by name"
+						hideLabel={true}
 						size="small"
-						variant="secondary"
-						disabled={!jobs.pageInfo.hasPreviousPage}
-						onclick={async () => {
-							return await Jobs.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!jobs.pageInfo.hasNextPage}
-						onclick={async () => {
-							return await Jobs.loadNextPage();
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							handleFilter();
 						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
+					/>
+				</form>
 			</div>
+			<div class="jobs-wrapper">
+				<div class="jobs-header">
+					<div class="jobs-count">
+						<Detail>{jobs.nodes.length} jobs</Detail>
+					</div>
+					<div>
+						<ActionMenu>
+							{#snippet trigger(props)}
+								<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+									Environment
+									{#snippet icon()}
+										<ChevronDownIcon />
+									{/snippet}
+								</Button>
+							{/snippet}
+							<ActionMenuCheckboxItem
+								checked={Object.values(views).length > 0 && Object.values(views).every(Boolean)
+									? true
+									: Object.values(views).some(Boolean)
+										? 'indeterminate'
+										: false}
+								onchange={(checked) => handleCheckboxChange('*', checked)}
+							>
+								All environments
+							</ActionMenuCheckboxItem>
+							{#each $Jobs.data.team.environments as env}
+								<ActionMenuCheckboxItem
+									checked={views[env.name]}
+									onchange={(checked) => handleCheckboxChange(env.name, checked)}
+								>
+									{env.name}
+								</ActionMenuCheckboxItem>
+							{/each}
+						</ActionMenu>
+						{#if jobOrderDirection === OrderDirection.ASC}
+							<SortAscendingIcon size="1rem" />
+						{:else}
+							<SortDescendingIcon size="1rem" />
+						{/if}
+						<ActionMenu>
+							{#snippet trigger(props)}
+								<Button variant="tertiary-neutral" size="small" iconPosition="right" {...props}>
+									{#snippet icon()}
+										<ChevronDownIcon aria-hidden="true" />
+									{/snippet}
+									{jobOrderField === JobOrderField.NAME
+										? 'Name'
+										: jobOrderField === JobOrderField.STATUS
+											? 'Status'
+											: jobOrderField === JobOrderField.ENVIRONMENT
+												? 'Environment'
+												: 'Deployed'}
+								</Button>
+							{/snippet}
+							<ActionMenuRadioGroup bind:value={jobOrderField} label="Order by">
+								<ActionMenuRadioItem
+									value={JobOrderField.NAME}
+									onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={JobOrderField.STATUS}
+									onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={JobOrderField.ENVIRONMENT}
+									onselect={(value) => handleSortField(value as string)}
+									>Environment</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={JobOrderField.DEPLOYMENT_TIME}
+									onselect={(value) => handleSortField(value as string)}
+									>Deployed</ActionMenuRadioItem
+								>
+							</ActionMenuRadioGroup>
+							<ActionMenuDivider />
+							<ActionMenuRadioGroup bind:value={jobOrderDirection} label="Direction">
+								{#if jobOrderField === JobOrderField.DEPLOYMENT_TIME}
+									<ActionMenuRadioItem
+										value={OrderDirection.DESC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Newest</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={OrderDirection.ASC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Oldest</ActionMenuRadioItem
+									>
+								{:else}
+									<ActionMenuRadioItem
+										value={OrderDirection.ASC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Ascending</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={OrderDirection.DESC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Descending</ActionMenuRadioItem
+									>
+								{/if}
+							</ActionMenuRadioGroup>
+						</ActionMenu>
+					</div>
+				</div>
+				{#each jobs.nodes as job}
+					<div class="jobs-list">
+						<div class="job-link-wrapper">
+							<div>
+								{#if job.status.state === WorkloadState.NAIS}
+									<CircleFillIcon
+										style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+										title="Job is NAIS"
+									/>
+								{:else if job.status.state === WorkloadState.NOT_NAIS}
+									<CircleFillIcon
+										style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+										title="Job is not NAIS"
+									/>
+								{:else if job.status.state === WorkloadState.FAILING}
+									<CircleFillIcon
+										style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+										title="Job is failing"
+									/>
+								{:else}
+									<CircleFillIcon
+										style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+										title="Job status is UNKNOWN"
+									/>
+								{/if}
+							</div>
+							<div class="job-link">
+								<WorkloadLink workload={job} />
+								<Detail>{job.environment.name}</Detail>
+							</div>
+						</div>
+						<div class="job-info">
+							<div style="display: flex; gap: 4px; align-items: center;" title="Last run status">
+								{#if job.runs.nodes[0]?.status}
+									{#if job.runs.nodes[0].status.state === 'RUNNING'}
+										<Loader size="xsmall" variant="interaction" title="Job is running" />
+									{:else if job.runs.nodes[0].status.state === 'PENDING'}
+										<Loader size="xsmall" variant="interaction" title="Job run pending" />
+									{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
+										<CheckmarkCircleFillIcon
+											style="color: var(--a-icon-success)"
+											title="Last job ran successfully"
+										/>
+									{:else if job.runs.nodes[0].status.state === 'FAILED'}
+										<XMarkOctagonFillIcon
+											style="color: var(--a-icon-danger)"
+											title="Last job run failed"
+										/>
+									{:else}
+										<QuestionmarkIcon title="Job run status is unknown" />
+									{/if}
+								{:else}
+									<QuestionmarkIcon title="Job run status is unknown" />
+								{/if}
+								{#if job.runs.nodes[0]?.startTime}
+									<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
+								{:else}
+									<Detail>No runs</Detail>
+								{/if}
+							</div>
+
+							{#if job.deploymentInfo.timestamp}
+								<div
+									class="job-detail"
+									title="Last deploy - {format(job.deploymentInfo.timestamp, 'PPPP', {
+										locale: enGB
+									})}"
+								>
+									<RocketIcon />
+									<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+			{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
+				<div class="pagination">
+					<span>
+						{#if jobs.pageInfo.pageStart !== jobs.pageInfo.pageEnd}
+							{jobs.pageInfo.pageStart} - {jobs.pageInfo.pageEnd}
+						{:else}
+							{jobs.pageInfo.pageStart}
+						{/if}
+
+						of {jobs.pageInfo.totalCount}
+					</span>
+
+					<span style="padding-left: 1rem;">
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!jobs.pageInfo.hasPreviousPage}
+							onclick={async () => {
+								return await Jobs.loadPreviousPage();
+							}}><ChevronLeftIcon /></Button
+						>
+						<Button
+							size="small"
+							variant="secondary"
+							disabled={!jobs.pageInfo.hasNextPage}
+							onclick={async () => {
+								return await Jobs.loadNextPage();
+							}}
+						>
+							<ChevronRightIcon /></Button
+						>
+					</span>
+				</div>
+			{/if}
+		{:else}
+			<BodyLong
+				><strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
+				completion and then exit.
+				<a href="https://doc.nais.io/workloads/job/"
+					>Learn more about jobs and how to get started.</a
+				></BodyLong
+			>
 		{/if}
 	</Card>
 {/if}
@@ -341,6 +406,10 @@
 			font-weight: bold;
 		}
 		.jobs-list {
+			.job-link-wrapper {
+				display: flex;
+				gap: 0.3rem;
+			}
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
