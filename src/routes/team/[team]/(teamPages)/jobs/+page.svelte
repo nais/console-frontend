@@ -52,7 +52,7 @@
 	let filteredEnvs = $derived(initialEnvironments.split(','));
 
 	let jobOrderField: keyof typeof JobOrderField = $state(JobOrderField.NAME);
-	let jobOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.DESC);
+	let jobOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.ASC);
 
 	$Jobs.data?.team.environments.forEach((env) => {
 		if (filteredEnvs.includes(env.name) || filteredEnvs[0] === '') {
