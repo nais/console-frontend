@@ -145,10 +145,10 @@
 					/>
 				</form>
 			</div>
-			<div class="jobs-wrapper">
+			<div class="jobs-list">
 				<div class="jobs-header">
 					<div class="jobs-count">
-						<Detail>{jobs.nodes.length} jobs</Detail>
+						<Detail>{jobs.pageInfo.totalCount} jobs</Detail>
 					</div>
 					<div style="display: flex; gap: 1rem;">
 						<ActionMenu>
@@ -274,7 +274,7 @@
 					</div>
 				</div>
 				{#each jobs.nodes as job}
-					<div class="jobs-list">
+					<div class="jobs-list-item">
 						<div class="job-link-wrapper">
 							<div>
 								{#if job.status.state === WorkloadState.NAIS}
@@ -317,7 +317,7 @@
 							</div>
 						</div>
 						<div class="job-info">
-							<div style="display: flex; gap: 4px; align-items: center;">
+							<div style="display: flex; gap: 4px; align-items: center; ">
 								{#if job.runs.nodes[0]?.status}
 									{#if job.runs.nodes[0].status.state === 'RUNNING'}
 										<Tooltip content="Job is running">
@@ -442,12 +442,14 @@
 		justify-content: flex-end;
 		margin-bottom: 1rem;
 	}
-	.jobs-wrapper {
+	.jobs-list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
 		/*overflow: hidden;*/
+
 		.jobs-header {
 			background-color: var(--a-surface-subtle);
+			border-radius: 4px 4px 0 0;
 			border-bottom: 1px solid var(--a-border-default);
 			display: flex;
 			justify-content: space-between;
@@ -457,7 +459,7 @@
 		.jobs-count {
 			font-weight: bold;
 		}
-		.jobs-list {
+		.jobs-list-item {
 			.job-link-wrapper {
 				display: flex;
 				gap: 0.3rem;
@@ -465,8 +467,10 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			border-bottom: 1px solid var(--a-border-default);
 			padding: 8px 12px;
+			&:not(:last-of-type) {
+				border-bottom: 1px solid var(--a-border-default);
+			}
 
 			.job-link {
 				:global(a) {
