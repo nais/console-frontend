@@ -130,7 +130,7 @@
 						</Td>
 						<Td>
 							{#if deploy.statuses.nodes.length === 0}
-								<DeploymentStatus status={'unknown'} />
+								<DeploymentStatus status={'UNKNOWN'} />
 							{:else}
 								<DeploymentStatus status={deploy.statuses.nodes[0].state} />
 							{/if}

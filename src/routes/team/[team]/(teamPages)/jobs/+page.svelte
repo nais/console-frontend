@@ -358,15 +358,16 @@
 							</div>
 						</div>
 						<div class="job-info">
-							{#if job.deploymentInfo.timestamp}
+							{#if job.deployments.nodes.length > 0}
+								{@const timestamp = job.deployments.nodes[0].createdAt}
 								<Tooltip
-									content="Last deploy - {format(job.deploymentInfo.timestamp, 'PPPP', {
+									content="Last deploy - {format(timestamp, 'PPPP', {
 										locale: enGB
 									})}"
 								>
 									<div class="job-detail">
 										<RocketIcon />
-										<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
+										<Detail><Time time={timestamp} distance={true} /></Detail>
 									</div>
 								</Tooltip>
 							{/if}

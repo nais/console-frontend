@@ -4,7 +4,7 @@
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 
 	interface Props {
-		status: DeploymentStatusState$options;
+		status: DeploymentStatusState$options | 'UNKNOWN';
 	}
 
 	let { status }: Props = $props();
