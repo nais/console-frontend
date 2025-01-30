@@ -21,8 +21,6 @@
 		BriefcaseClockIcon,
 		CheckmarkCircleFillIcon,
 		ChevronDownIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon,
 		CircleFillIcon,
 		QuestionmarkIcon,
 		RocketIcon,

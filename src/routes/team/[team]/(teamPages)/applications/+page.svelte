@@ -10,7 +10,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, BodyShort, Button, Detail, Search, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Detail, Search, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -21,8 +21,6 @@
 	import {
 		BriefcaseClockIcon,
 		ChevronDownIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon,
 		CircleFillIcon,
 		RocketIcon
 	} from '@nais/ds-svelte-community/icons';

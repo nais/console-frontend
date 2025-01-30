@@ -8,11 +8,11 @@
 		type WorkloadOrderField$options
 	} from '$houdini';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		team: string;
@@ -244,40 +244,14 @@
 			{/if}
 		</Tbody>
 	</Table>
-	{#if $query.data?.team.workloads.pageInfo.totalCount !== PendingValue && ($query.data?.team.workloads.pageInfo.hasPreviousPage || $query.data?.team.workloads.pageInfo.hasNextPage)}
-		<div class="pagination">
-			<span>
-				{#if $query.data?.team.workloads.pageInfo.pageStart !== $query.data?.team.workloads.pageInfo.pageEnd}
-					{$query.data?.team.workloads.pageInfo.pageStart} - {$query.data?.team.workloads.pageInfo
-						.pageEnd}
-				{:else}
-					{$query.data?.team.workloads.pageInfo.pageStart}
-				{/if}
-
-				of {$query.data?.team.workloads.pageInfo.totalCount}
-			</span>
-
-			<span style="padding-left: 1rem;">
-				<Button
-					size="small"
-					variant="secondary"
-					disabled={!$query.data?.team.workloads.pageInfo.hasPreviousPage}
-					onclick={async () => {
-						return await query.loadPreviousPage();
-					}}><ChevronLeftIcon /></Button
-				>
-				<Button
-					size="small"
-					variant="secondary"
-					disabled={!$query.data?.team.workloads.pageInfo.hasNextPage}
-					onclick={async () => {
-						return await query.loadNextPage();
-					}}
-				>
-					<ChevronRightIcon /></Button
-				>
-			</span>
-		</div>
+	{#if $query.data?.team.workloads.pageInfo.totalCount !== PendingValue}
+		<Pagination
+			page={$query.data?.team.workloads.pageInfo}
+			loaders={{
+				loadPreviousPage: () => query.loadPreviousPage(),
+				loadNextPage: () => query.loadNextPage()
+			}}
+		/>
 	{/if}
 {/if}
 
@@ -289,10 +263,5 @@
 	}
 	.align-center {
 		text-align: center;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>
