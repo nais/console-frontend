@@ -2,7 +2,10 @@ query Applications(
 	$team: Slug!
 	$orderBy: ApplicationOrder
 	$filter: TeamApplicationsFilter
-	$rows: Int
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environments {
@@ -13,7 +16,14 @@ query Applications(
 				totalCount
 			}
 		}
-		applications(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+		applications(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			filter: $filter
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount
 				hasNextPage
