@@ -10,11 +10,13 @@ query Applications(
 		}
 		applications(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
+				totalCount
+				endCursor
+				startCursor
 				hasNextPage
 				hasPreviousPage
-				pageStart
 				pageEnd
-				totalCount
+				pageStart
 			}
 			nodes {
 				__typename
