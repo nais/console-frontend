@@ -10,6 +10,8 @@ query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamReposit
 				pageStart
 				pageEnd
 				totalCount
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

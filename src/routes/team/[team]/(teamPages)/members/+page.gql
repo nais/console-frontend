@@ -9,6 +9,8 @@ query Members($team: Slug!, $orderBy: TeamMemberOrder!) {
 				hasPreviousPage
 				pageStart
 				pageEnd
+				startCursor
+				endCursor
 			}
 			edges {
 				node {

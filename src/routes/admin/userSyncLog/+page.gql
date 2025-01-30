@@ -23,6 +23,8 @@ query UserSyncLogs {
 			pageStart
 			pageEnd
 			totalCount
+			startCursor
+			endCursor
 		}
 	}
 }

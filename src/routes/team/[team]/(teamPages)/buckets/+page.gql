@@ -12,6 +12,8 @@ query Buckets($team: Slug!, $orderBy: BucketOrder, $from: Date!, $to: Date!) {
 				pageStart
 				pageEnd
 				totalCount
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

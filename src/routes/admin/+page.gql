@@ -12,6 +12,8 @@ query AdminUsers {
 			pageStart
 			pageEnd
 			totalCount
+			startCursor
+			endCursor
 		}
 	}
 }

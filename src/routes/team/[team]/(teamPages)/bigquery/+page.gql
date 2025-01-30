@@ -12,6 +12,8 @@ query BigQuery($team: Slug!, $orderBy: BigQueryDatasetOrder, $from: Date!, $to: 
 				pageStart
 				pageEnd
 				totalCount
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

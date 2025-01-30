@@ -4,12 +4,12 @@ query UserTeams {
 		... on User {
 			teams(first: 10) @paginate(mode: SinglePage) {
 				pageInfo {
-					endCursor
 					hasNextPage
 					hasPreviousPage
 					pageEnd
 					pageStart
 					startCursor
+					endCursor
 					totalCount
 				}
 				nodes {

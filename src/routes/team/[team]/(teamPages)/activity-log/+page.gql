@@ -8,6 +8,8 @@ query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
 				pageEnd
 				pageStart
 				totalCount
+				startCursor
+				endCursor
 			}
 			edges @loading(count: 10) {
 				node @loading {

@@ -7,6 +7,8 @@ query KafkaTopics($team: Slug!, $orderBy: KafkaTopicOrder) {
 				pageStart
 				pageEnd
 				totalCount
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

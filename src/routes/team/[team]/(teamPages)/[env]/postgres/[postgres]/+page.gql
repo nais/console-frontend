@@ -79,6 +79,8 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 						totalCount
 						pageStart
 						pageEnd
+						startCursor
+						endCursor
 					}
 					edges {
 						node {
@@ -99,6 +101,8 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 						totalCount
 						pageStart
 						pageEnd
+						startCursor
+						endCursor
 					}
 					edges {
 						node {

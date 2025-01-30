@@ -34,6 +34,8 @@ query ValkeyInstance(
 						pageStart
 						pageEnd
 						totalCount
+						startCursor
+						endCursor
 					}
 
 					edges {

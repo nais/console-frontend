@@ -12,6 +12,8 @@ query Redis($team: Slug!, $orderBy: RedisInstanceOrder, $from: Date!, $to: Date!
 				totalCount
 				pageStart
 				pageEnd
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

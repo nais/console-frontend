@@ -28,6 +28,8 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				pageStart
 				pageEnd
 				totalCount
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

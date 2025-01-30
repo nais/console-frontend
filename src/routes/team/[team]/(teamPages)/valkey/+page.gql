@@ -12,6 +12,8 @@ query Valkey($team: Slug!, $orderBy: ValkeyInstanceOrder, $from: Date!, $to: Dat
 				totalCount
 				pageStart
 				pageEnd
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name

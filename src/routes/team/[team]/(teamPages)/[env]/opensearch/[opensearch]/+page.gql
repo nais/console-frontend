@@ -35,6 +35,8 @@ query OpenSearchInstance(
 						pageStart
 						pageEnd
 						totalCount
+						startCursor
+						endCursor
 					}
 					edges {
 						node {

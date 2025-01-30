@@ -29,6 +29,8 @@ query KafkaTopic(
 						totalCount
 						pageStart
 						pageEnd
+						startCursor
+						endCursor
 					}
 					nodes {
 						access

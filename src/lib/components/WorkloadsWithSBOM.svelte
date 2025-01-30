@@ -61,6 +61,8 @@
 						pageEnd
 						hasNextPage
 						hasPreviousPage
+						startCursor
+						endCursor
 					}
 					nodes @loading {
 						__typename @loading

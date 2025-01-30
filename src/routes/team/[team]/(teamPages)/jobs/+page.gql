@@ -13,12 +13,12 @@ query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter, $rows: Int
 		jobs(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount
-				endCursor
-				startCursor
 				hasNextPage
 				hasPreviousPage
 				pageEnd
 				pageStart
+				startCursor
+				endCursor
 			}
 
 			nodes {

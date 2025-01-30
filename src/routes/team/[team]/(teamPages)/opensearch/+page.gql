@@ -12,6 +12,8 @@ query OpenSearch($team: Slug!, $orderBy: OpenSearchOrder, $from: Date!, $to: Dat
 				totalCount
 				pageStart
 				pageEnd
+				startCursor
+				endCursor
 			}
 			nodes @loading {
 				name
