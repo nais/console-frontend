@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { replaceState } from '$app/navigation';
-	import { page } from '$app/state';
 	import { ApplicationOrderField, JobOrderField, OrderDirection, WorkloadState } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
@@ -425,7 +423,7 @@
 		/*overflow: hidden;*/
 
 		.applications-header {
-			background-color: var(--a-surface-subtle);
+			background-color: var(--active-color);
 			border-radius: 4px 4px 0 0;
 			border-bottom: 1px solid var(--a-border-default);
 			display: flex;
@@ -445,8 +443,13 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: 8px 12px;
+
 			&:not(:last-of-type) {
 				border-bottom: 1px solid var(--a-border-default);
+			}
+
+			&:hover {
+				background-color: var(--a-surface-subtle);
 			}
 
 			.application-link {
