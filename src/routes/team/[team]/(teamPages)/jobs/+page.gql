@@ -4,6 +4,12 @@ query Jobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter, $rows: Int
 		environments {
 			name
 		}
+		totalJobs: jobs {
+			pageInfo {
+				totalCount
+			}
+		}
+
 		jobs(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount

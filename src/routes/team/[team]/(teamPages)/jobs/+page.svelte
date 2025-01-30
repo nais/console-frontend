@@ -112,7 +112,7 @@
 				<h3>Jobs</h3>
 			</div>
 		</div>
-		{#if jobs.nodes.length > 0}
+		{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
 			<BodyLong style="margin-bottom: 1rem;">
 				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
 				<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
@@ -405,7 +405,7 @@
 					</span>
 				</div>
 			{/if}
-		{:else}
+		{:else if $Jobs.data.team.totalJobs.pageInfo.totalCount == 0}
 			<BodyLong
 				><strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
 				completion and then exit.

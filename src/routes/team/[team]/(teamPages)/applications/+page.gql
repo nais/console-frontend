@@ -8,6 +8,11 @@ query Applications(
 		environments {
 			name
 		}
+		totalApplications: applications {
+			pageInfo {
+				totalCount
+			}
+		}
 		applications(first: $rows, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount

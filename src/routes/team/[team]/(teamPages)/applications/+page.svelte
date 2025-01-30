@@ -110,7 +110,7 @@
 				<h3>Applications</h3>
 			</div>
 		</div>
-		{#if apps.nodes.length > 0}
+		{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}
 			<BodyLong style="margin-bottom: 1rem;">
 				Applications are long-running processes designed to handle continuous workloads and remain
 				active until stopped or restarted.
@@ -366,7 +366,7 @@
 					</span>
 				</div>
 			{/if}
-		{:else}
+		{:else if $Applications.data.team.totalApplications.pageInfo.totalCount == 0}
 			<BodyLong
 				><strong>No applications found.</strong> Applications are long-running processes designed to
 				handle continuous workloads and remain active until stopped or restarted.
