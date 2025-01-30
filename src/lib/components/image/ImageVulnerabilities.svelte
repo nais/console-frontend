@@ -57,6 +57,8 @@
 									hasPreviousPage
 									pageStart
 									pageEnd
+									endCursor
+									startCursor
 									totalCount
 								}
 								nodes @loading(count: 10) {
