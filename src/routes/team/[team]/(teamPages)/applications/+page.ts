@@ -15,8 +15,6 @@ export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
 	const rows: number = parseInt(url.searchParams.get('rows') || '10');
 
-	console.log('rows var:', rows);
-
 	return {
 		filter: { name: filter, environments } as TeamApplicationsFilter,
 		orderBy: { field: field, direction: direction } as ApplicationOrder,
