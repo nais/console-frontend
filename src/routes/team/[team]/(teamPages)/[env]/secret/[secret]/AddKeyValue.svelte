@@ -122,16 +122,16 @@
 			label="Key"
 		/>
 	</div>
+
 	<div class="entry">
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 	{#snippet footer()}
-		<Button
-			variant="primary"
-			size="small"
-			onclick={addSecretValue}
-			disabled={key === '' || value === ''}>Add</Button
-		>
+		{#if key === '' || value === ''}
+			<Button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</Button>
+		{:else}
+			<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>
+		{/if}
 		<Button variant="secondary" size="small" onclick={reset}>Cancel</Button>
 	{/snippet}
 </Modal>
