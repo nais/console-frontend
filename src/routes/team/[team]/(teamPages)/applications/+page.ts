@@ -13,7 +13,9 @@ export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 	const field: string = (url.searchParams.get('field') ||
 		ApplicationOrderField.NAME) as ApplicationOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
-	const rows = parseInt(url.searchParams.get('rows') || '10');
+	const rows: number = parseInt(url.searchParams.get('rows') || '10');
+
+	console.log('rows var:', rows);
 
 	return {
 		filter: { name: filter, environments } as TeamApplicationsFilter,
@@ -26,6 +28,7 @@ export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
 	return {
 		data,
 		initialEnvironments: url.searchParams.get('environments') ?? null,
-		initialFilter: url.searchParams.get('filter') || ''
+		initialFilter: url.searchParams.get('filter') || '',
+		initialRows: parseInt(url.searchParams.get('rows') || '10')
 	};
 }

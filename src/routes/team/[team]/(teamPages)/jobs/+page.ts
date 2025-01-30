@@ -12,7 +12,7 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 	const environments: string[] = url.searchParams.get('environments')?.split(',') || [];
 	const field = (url.searchParams.get('field') || JobOrderField.NAME) as JobOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
-	const rows = parseInt(url.searchParams.get('rows') || '10');
+	const rows: number = parseInt(url.searchParams.get('rows') || '10');
 
 	return {
 		filter: { name: filter, environments } as TeamJobsFilter,
@@ -25,6 +25,7 @@ export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
 	return {
 		data,
 		initialEnvironments: url.searchParams.get('environments') ?? null,
-		initialFilter: url.searchParams.get('filter') || ''
+		initialFilter: url.searchParams.get('filter') || '',
+		initialRows: parseInt(url.searchParams.get('rows') || '10')
 	};
 }

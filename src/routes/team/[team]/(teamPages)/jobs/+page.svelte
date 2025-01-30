@@ -43,7 +43,11 @@
 	$effect(() => {
 		filter = data.initialFilter;
 	});
-	let rows: number = $state(10);
+
+	let rows: number = $state(data.initialRows);
+	$effect(() => {
+		rows = data.initialRows;
+	});
 
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments?.split(','));
