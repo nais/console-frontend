@@ -9,7 +9,15 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, Button, Detail, Loader, Search, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		BodyShort,
+		Button,
+		Detail,
+		Loader,
+		Search,
+		Tooltip
+	} from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -150,7 +158,10 @@
 			<div class="jobs-list">
 				<div class="jobs-header">
 					<div class="jobs-count">
-						<Detail>{jobs.pageInfo.totalCount} jobs</Detail>
+						<BodyShort size="small" style="font-weight: bold;">
+							{jobs.pageInfo.totalCount} applications (of total {$Jobs.data.team.totalJobs.pageInfo
+								.totalCount})</BodyShort
+						>
 					</div>
 					<div style="display: flex; gap: 1rem;">
 						<ActionMenu>
