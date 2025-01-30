@@ -159,9 +159,11 @@
 				<div class="jobs-header">
 					<div class="jobs-count">
 						<BodyShort size="small" style="font-weight: bold;">
-							{jobs.pageInfo.totalCount} applications (of total {$Jobs.data.team.totalJobs.pageInfo
-								.totalCount})</BodyShort
-						>
+							{jobs.pageInfo.totalCount} jobs
+							{jobs.pageInfo.totalCount !== $Jobs.data.team.totalJobs.pageInfo.totalCount
+								? `(of total ${$Jobs.data.team.totalJobs.pageInfo.totalCount})`
+								: ''}
+						</BodyShort>
 					</div>
 					<div style="display: flex; gap: 1rem;">
 						<ActionMenu>

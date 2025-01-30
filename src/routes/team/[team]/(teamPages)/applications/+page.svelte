@@ -160,8 +160,11 @@
 				<div class="applications-header">
 					<div class="applications-count">
 						<BodyShort size="small" style="font-weight: bold;">
-							{apps.pageInfo.totalCount} applications (of total {$Applications.data.team
-								.totalApplications.pageInfo.totalCount})</BodyShort
+							{apps.pageInfo.totalCount} applications
+							{apps.pageInfo.totalCount !==
+							$Applications.data.team.totalApplications.pageInfo.totalCount
+								? `(of total ${$Applications.data.team.totalApplications.pageInfo.totalCount})`
+								: ''}</BodyShort
 						>
 					</div>
 					<div style="display: flex; gap: 1rem;">
