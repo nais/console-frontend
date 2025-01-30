@@ -37,6 +37,8 @@
 					pageStart
 					pageEnd
 					totalCount
+					startCursor
+					endCursor
 				}
 				nodes {
 					slug
