@@ -8,6 +8,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, BodyShort, Button, Detail, Search, Tooltip } from '@nais/ds-svelte-community';
@@ -27,7 +28,6 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
-	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		data: PageData;
@@ -163,7 +163,7 @@
 									{...props}
 									icon={ChevronDownIcon}
 								>
-									Environment
+									<span style="font-weight: normal">Environment</span>
 								</Button>
 							{/snippet}
 							<ActionMenuCheckboxItem
@@ -229,29 +229,41 @@
 								>
 							</ActionMenuRadioGroup>
 							<ActionMenuDivider />
-							<ActionMenuRadioGroup bind:value={appOrderDirection} label="Direction">
+							<ActionMenuRadioGroup bind:value={appOrderDirection} label="Sort direction">
 								{#if appOrderField === JobOrderField.DEPLOYMENT_TIME}
 									<ActionMenuRadioItem
 										value={OrderDirection.DESC}
 										onselect={(value) => handleSortDirection(value as string)}
-										>Newest</ActionMenuRadioItem
 									>
+										<div class="icon">
+											<SortDescendingIcon size="1rem" />Newest
+										</div>
+									</ActionMenuRadioItem>
 									<ActionMenuRadioItem
 										value={OrderDirection.ASC}
 										onselect={(value) => handleSortDirection(value as string)}
-										>Oldest</ActionMenuRadioItem
 									>
+										<div class="icon">
+											<SortAscendingIcon size="1rem" />Oldest
+										</div>
+									</ActionMenuRadioItem>
 								{:else}
 									<ActionMenuRadioItem
 										value={OrderDirection.ASC}
 										onselect={(value) => handleSortDirection(value as string)}
-										>Ascending</ActionMenuRadioItem
 									>
+										<div class="icon">
+											<SortAscendingIcon size="1rem" />Ascending
+										</div>
+									</ActionMenuRadioItem>
 									<ActionMenuRadioItem
 										value={OrderDirection.DESC}
 										onselect={(value) => handleSortDirection(value as string)}
-										>Descending</ActionMenuRadioItem
 									>
+										<div class="icon">
+											<SortDescendingIcon size="1rem" />Descending
+										</div>
+									</ActionMenuRadioItem>
 								{/if}
 							</ActionMenuRadioGroup>
 							<ActionMenuDivider />
@@ -380,6 +392,13 @@
 		justify-content: flex-end;
 		margin-bottom: 1rem;
 	}
+
+	.icon {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		margin-left: 4px;
+	}
 	.applications-list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
@@ -426,7 +445,7 @@
 		.application-info {
 			display: grid;
 			grid-template-columns: 20px 1fr;
-			min-width: 110px;
+			min-width: 114px;
 			gap: 4px;
 			flex-direction: column;
 		}

@@ -7,6 +7,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
@@ -37,7 +38,6 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
-	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		data: PageData;
@@ -173,7 +173,7 @@
 									{...props}
 									icon={ChevronDownIcon}
 								>
-									Environment
+									<span style="font-weight: normal">Environment</span>
 								</Button>
 							{/snippet}
 							<ActionMenuCheckboxItem
@@ -472,7 +472,7 @@
 			}
 		}
 		.job-info {
-			min-width: 110px;
+			min-width: 114px;
 			display: flex;
 			gap: 4px;
 			flex-direction: column;
