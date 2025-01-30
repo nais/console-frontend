@@ -2,15 +2,11 @@
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import { Box, Button } from '@nais/ds-svelte-community';
-	import {
-		ChevronLeftIcon,
-		ChevronRightIcon,
-		PersonGroupIcon,
-		PlusIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Deploys from './Deploys.svelte';
 	import Onboarding from './Onboarding.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 
 	let feedbackOpen = $state(false);
 
@@ -54,9 +50,9 @@
 						Create team
 					</Button>
 				</div>
-				<div class="teams">
-					{#if $UserTeams.data}
-						{#if $UserTeams.data.me.__typename == 'User'}
+				{#if $UserTeams.data}
+					{#if $UserTeams.data.me.__typename == 'User'}
+						<div class="teams">
 							{#each $UserTeams.data.me.teams.nodes as node}
 								<Box
 									as="a"
@@ -78,46 +74,16 @@
 									in the members list on the team page to request membership.
 								</p>
 							{/each}
-							{#if $UserTeams.data.me.teams.pageInfo.hasPreviousPage || $UserTeams.data.me.teams.pageInfo.hasNextPage}
-								<div class="pagination">
-									<span>
-										{#if $UserTeams.data.me.teams.pageInfo.pageStart !== $UserTeams.data.me.teams.pageInfo.pageEnd}
-											{$UserTeams.data.me.teams.pageInfo.pageStart} - {$UserTeams.data.me.teams
-												.pageInfo.pageEnd}
-										{:else}
-											{$UserTeams.data.me.teams.pageInfo.pageStart}
-										{/if}
-
-										of {$UserTeams.data.me.teams.pageInfo.totalCount}
-									</span>
-
-									<span style="padding-left: 1rem;">
-										<Button
-											size="small"
-											variant="secondary"
-											disabled={!$UserTeams.data.me.teams.pageInfo.hasPreviousPage}
-											onclick={async () => {
-												return await UserTeams.loadPreviousPage();
-											}}
-										>
-											<ChevronLeftIcon />
-										</Button>
-										<Button
-											size="small"
-											variant="secondary"
-											disabled={!$UserTeams.data.me.teams.pageInfo.hasNextPage}
-											onclick={async () => {
-												return await UserTeams.loadNextPage();
-											}}
-										>
-											<ChevronRightIcon />
-										</Button>
-									</span>
-								</div>
-							{/if}
-						{/if}
+						</div>
+						<Pagination
+							page={$UserTeams.data.me.teams.pageInfo}
+							loaders={{
+								loadPreviousPage: () => UserTeams.loadPreviousPage(),
+								loadNextPage: () => UserTeams.loadNextPage()
+							}}
+						/>
 					{/if}
-				</div>
+				{/if}
 			</Card>
 
 			<Card columns={8} rows={1}>
@@ -135,10 +101,6 @@
 	h3 {
 		font-weight: 600;
 		margin-bottom: 0;
-	}
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 	.grid {
 		display: grid;
