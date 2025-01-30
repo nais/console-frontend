@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
 		Button,
@@ -14,12 +15,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import {
-		ChevronLeftIcon,
-		ChevronRightIcon,
-		PlusIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -246,38 +242,13 @@
 				</Table>
 				{#if team.repositories.pageInfo !== PendingValue}
 					{#if team.repositories.pageInfo.hasPreviousPage || team.repositories.pageInfo.hasNextPage}
-						<div class="pagination">
-							<span>
-								{#if team.repositories.pageInfo.pageStart !== team.repositories.pageInfo.pageEnd}
-									{team.repositories.pageInfo.pageStart} - {team.repositories.pageInfo.pageEnd}
-								{:else}
-									{team.repositories.pageInfo.pageStart}
-								{/if}
-
-								of {team.repositories.pageInfo.totalCount}
-							</span>
-
-							<span style="padding-left: 1rem;">
-								<Button
-									size="small"
-									variant="secondary"
-									disabled={!team.repositories.pageInfo.hasPreviousPage}
-									onclick={async () => {
-										return await Repositories.loadPreviousPage();
-									}}><ChevronLeftIcon /></Button
-								>
-								<Button
-									size="small"
-									variant="secondary"
-									disabled={!team.repositories.pageInfo.hasNextPage}
-									onclick={async () => {
-										return await Repositories.loadNextPage();
-									}}
-								>
-									<ChevronRightIcon /></Button
-								>
-							</span>
-						</div>
+						<Pagination
+							page={team.repositories.pageInfo}
+							loaders={{
+								loadPreviousPage: () => Repositories.loadPreviousPage(),
+								loadNextPage: () => Repositories.loadNextPage()
+							}}
+						/>
 					{/if}
 				{/if}
 			</Card>
@@ -298,10 +269,5 @@
 	.repository > h3 {
 		display: flex;
 		gap: 1rem;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

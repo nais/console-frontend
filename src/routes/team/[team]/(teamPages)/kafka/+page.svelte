@@ -3,9 +3,9 @@
 	import Card from '$lib/Card.svelte';
 
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -90,46 +90,14 @@
 		</Table>
 		{#if topics.pageInfo !== PendingValue}
 			{#if topics.pageInfo.hasPreviousPage || topics.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if topics.pageInfo.pageStart !== topics.pageInfo.pageEnd}
-							{topics.pageInfo.pageStart} - {topics.pageInfo.pageEnd}
-						{:else}
-							{topics.pageInfo.pageStart}
-						{/if}
-
-						of {topics.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!topics.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await KafkaTopics.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!topics.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await KafkaTopics.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+				<Pagination
+					page={topics.pageInfo}
+					loaders={{
+						loadPreviousPage: () => KafkaTopics.loadPreviousPage(),
+						loadNextPage: () => KafkaTopics.loadNextPage()
+					}}
+				/>
 			{/if}
 		{/if}
 	</Card>
 {/if}
-
-<style>
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
-	}
-</style>

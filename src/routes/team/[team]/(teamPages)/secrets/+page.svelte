@@ -3,6 +3,7 @@
 	import { PendingValue, SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
@@ -19,8 +20,6 @@
 	} from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon,
 		PadlockLockedIcon,
 		PlusIcon,
 		XMarkIcon
@@ -197,38 +196,13 @@
 					</Tbody>
 				</Table>
 				{#if secrets.pageInfo !== PendingValue && (secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage)}
-					<div class="pagination">
-						<span>
-							{#if secrets.pageInfo.pageStart !== secrets.pageInfo.pageEnd}
-								{secrets.pageInfo.pageStart} - {secrets.pageInfo.pageEnd}
-							{:else}
-								{secrets.pageInfo.pageStart}
-							{/if}
-
-							of {secrets.pageInfo.totalCount}
-						</span>
-
-						<span style="padding-left: 1rem;">
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!secrets.pageInfo.hasPreviousPage}
-								onclick={async () => {
-									return await Secrets.loadPreviousPage();
-								}}><ChevronLeftIcon /></Button
-							>
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!secrets.pageInfo.hasNextPage}
-								onclick={async () => {
-									return await Secrets.loadNextPage();
-								}}
-							>
-								<ChevronRightIcon /></Button
-							>
-						</span>
-					</div>
+					<Pagination
+						page={secrets.pageInfo}
+						loaders={{
+							loadPreviousPage: () => Secrets.loadPreviousPage(),
+							loadNextPage: () => Secrets.loadNextPage()
+						}}
+					/>
 				{/if}
 			</div></Card
 		>
@@ -259,10 +233,5 @@
 		align-items: center;
 		margin-bottom: 1rem;
 		gap: 1rem;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

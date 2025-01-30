@@ -5,9 +5,9 @@
 		PendingValue
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort, Button, Skeleton } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Skeleton } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -170,38 +170,13 @@
 					<p>No events</p>
 				{/each}
 				{#if ae.team.activityLog.pageInfo !== PendingValue && (ae.team.activityLog.pageInfo.hasPreviousPage || ae.team.activityLog.pageInfo.hasNextPage)}
-					<div class="pagination">
-						<span>
-							{#if ae.team.activityLog.pageInfo.pageStart !== ae.team.activityLog.pageInfo.pageEnd}
-								{ae.team.activityLog.pageInfo.pageStart} - {ae.team.activityLog.pageInfo.pageEnd}
-							{:else}
-								{ae.team.activityLog.pageInfo.pageStart}
-							{/if}
-
-							of {ae.team.activityLog.pageInfo.totalCount}
-						</span>
-
-						<span style="padding-left: 1rem;">
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!ae.team.activityLog.pageInfo.hasPreviousPage}
-								onclick={async () => {
-									return await ActivityLog.loadPreviousPage();
-								}}><ChevronLeftIcon /></Button
-							>
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!ae.team.activityLog.pageInfo.hasNextPage}
-								onclick={async () => {
-									return await ActivityLog.loadNextPage();
-								}}
-							>
-								<ChevronRightIcon /></Button
-							>
-						</span>
-					</div>
+					<Pagination
+						page={ae.team.activityLog.pageInfo}
+						loaders={{
+							loadPreviousPage: () => ActivityLog.loadPreviousPage(),
+							loadNextPage: () => ActivityLog.loadNextPage()
+						}}
+					/>
 				{/if}
 			{/if}
 		{/if}
@@ -217,9 +192,5 @@
 		border-bottom: 1px solid var(--a-border-divider);
 		padding-bottom: 1rem;
 		margin-bottom: 1rem;
-	}
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

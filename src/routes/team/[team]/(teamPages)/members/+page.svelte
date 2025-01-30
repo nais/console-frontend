@@ -3,15 +3,10 @@
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import {
-		ChevronLeftIcon,
-		ChevronRightIcon,
-		PencilIcon,
-		PlusIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
@@ -150,39 +145,13 @@
 			</Tbody>
 		</Table>
 		{#if $Members.data?.team.members.pageInfo.hasPreviousPage || $Members.data?.team.members.pageInfo.hasNextPage}
-			<div class="pagination">
-				<span>
-					{#if $Members.data.team.members.pageInfo.pageStart !== $Members.data.team.members.pageInfo.pageEnd}
-						{$Members.data.team.members.pageInfo.pageStart} - {$Members.data.team.members.pageInfo
-							.pageEnd}
-					{:else}
-						{$Members.data.team.members.pageInfo.pageStart}
-					{/if}
-
-					of {$Members.data.team.members.pageInfo.totalCount}
-				</span>
-
-				<span style="padding-left: 1rem;">
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!$Members.data.team.members.pageInfo.hasPreviousPage}
-						onclick={async () => {
-							return await Members.loadPreviousPage();
-						}}><ChevronLeftIcon /></Button
-					>
-					<Button
-						size="small"
-						variant="secondary"
-						disabled={!$Members.data.team.members.pageInfo.hasNextPage}
-						onclick={async () => {
-							return await Members.loadNextPage();
-						}}
-					>
-						<ChevronRightIcon /></Button
-					>
-				</span>
-			</div>
+			<Pagination
+				page={$Members.data.team.members.pageInfo}
+				loaders={{
+					loadPreviousPage: () => Members.loadPreviousPage(),
+					loadNextPage: () => Members.loadNextPage()
+				}}
+			/>
 		{/if}
 	</Card>
 	{#if team}
@@ -229,9 +198,5 @@
 	}
 	.header h3 {
 		margin: 0;
-	}
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

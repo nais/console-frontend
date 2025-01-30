@@ -6,10 +6,11 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -121,48 +122,19 @@
 		</Table>
 		{#if datasets.pageInfo !== PendingValue}
 			{#if datasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if datasets.pageInfo.pageStart !== datasets.pageInfo.pageEnd}
-							{datasets.pageInfo.pageStart} - {datasets.pageInfo.pageEnd}
-						{:else}
-							{datasets.pageInfo.pageStart}
-						{/if}
-
-						of {datasets.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!datasets.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await BigQuery.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!datasets.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await BigQuery.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+				<Pagination
+					page={datasets.pageInfo}
+					loaders={{
+						loadPreviousPage: () => BigQuery.loadPreviousPage(),
+						loadNextPage: () => BigQuery.loadNextPage()
+					}}
+				/>
 			{/if}
 		{/if}
 	</Card>
 {/if}
 
 <style>
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
-	}
 	.summary-grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

@@ -1,21 +1,9 @@
 <script lang="ts">
 	import { PendingValue, SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import {
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tooltip,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon,
 		ExclamationmarkTriangleFillIcon,
 		WalletIcon,
 		XMarkIcon
@@ -25,6 +13,7 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -299,38 +288,13 @@
 		</Table>
 		{#if instances.pageInfo !== PendingValue}
 			{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if instances.pageInfo.pageStart !== instances.pageInfo.pageEnd}
-							{instances.pageInfo.pageStart} - {instances.pageInfo.pageEnd}
-						{:else}
-							{instances.pageInfo.pageStart}
-						{/if}
-
-						of {instances.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!instances.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await SqlInstances.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!instances.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await SqlInstances.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+				<Pagination
+					page={instances.pageInfo}
+					loaders={{
+						loadPreviousPage: () => SqlInstances.loadPreviousPage(),
+						loadNextPage: () => SqlInstances.loadNextPage()
+					}}
+				/>
 			{/if}
 		{/if}
 	</Card>
@@ -343,10 +307,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

@@ -4,14 +4,11 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
+	import Pagination from '$lib/Pagination.svelte';
 	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import {
-		ChevronLeftIcon,
-		ChevronRightIcon,
-		ExclamationmarkTriangleFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -107,37 +104,13 @@
 				</Tbody>
 			</Table>
 			{#if topic.acl.pageInfo.hasPreviousPage || topic.acl.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if topic.acl.pageInfo.pageStart !== topic.acl.pageInfo.pageEnd}
-							{topic.acl.pageInfo.pageStart} - {topic.acl.pageInfo.pageEnd}
-						{:else}
-							{topic.acl.pageInfo.pageStart}
-						{/if}
-						of {topic.acl.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!topic.acl.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await KafkaTopic.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!topic.acl.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await KafkaTopic.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+				<Pagination
+					page={topic.acl.pageInfo}
+					loaders={{
+						loadPreviousPage: () => KafkaTopic.loadPreviousPage(),
+						loadNextPage: () => KafkaTopic.loadNextPage()
+					}}
+				/>
 			{/if}
 		</Card>
 		{#if topic.configuration}
@@ -178,10 +151,5 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

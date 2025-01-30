@@ -6,9 +6,10 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -118,38 +119,13 @@
 		</Table>
 		{#if valkey.pageInfo !== PendingValue}
 			{#if valkey.pageInfo.hasPreviousPage || valkey.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if valkey.pageInfo.pageStart !== valkey.pageInfo.pageEnd}
-							{valkey.pageInfo.pageStart} - {valkey.pageInfo.pageEnd}
-						{:else}
-							{valkey.pageInfo.pageStart}
-						{/if}
-
-						of {valkey.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!valkey.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await Valkey.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!valkey.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await Valkey.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+				<Pagination
+					page={valkey.pageInfo}
+					loaders={{
+						loadPreviousPage: () => Valkey.loadPreviousPage(),
+						loadNextPage: () => Valkey.loadNextPage()
+					}}
+				/>
 			{/if}
 		{/if}
 	</Card>
@@ -162,10 +138,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

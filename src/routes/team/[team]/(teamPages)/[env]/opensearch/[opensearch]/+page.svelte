@@ -2,11 +2,11 @@
 	import { OpenSearchAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -94,37 +94,13 @@
 					</Tbody>
 				</Table>
 				{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
-					<div class="pagination">
-						<span>
-							{#if instance.access.pageInfo.pageStart !== instance.access.pageInfo.pageEnd}
-								{instance.access.pageInfo.pageStart} - {instance.access.pageInfo.pageEnd}
-							{:else}
-								{instance.access.pageInfo.pageStart}
-							{/if}
-							of {instance.access.pageInfo.totalCount}
-						</span>
-
-						<span style="padding-left: 1rem;">
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!instance.access.pageInfo.hasPreviousPage}
-								onclick={async () => {
-									return await OpenSearchInstance.loadPreviousPage();
-								}}><ChevronLeftIcon /></Button
-							>
-							<Button
-								size="small"
-								variant="secondary"
-								disabled={!instance.access.pageInfo.hasNextPage}
-								onclick={async () => {
-									return await OpenSearchInstance.loadNextPage();
-								}}
-							>
-								<ChevronRightIcon /></Button
-							>
-						</span>
-					</div>
+					<Pagination
+						page={instance.access.pageInfo}
+						loaders={{
+							loadPreviousPage: () => OpenSearchInstance.loadPreviousPage(),
+							loadNextPage: () => OpenSearchInstance.loadNextPage()
+						}}
+					/>
 				{/if}
 			{:else}
 				<p>No workloads with configured access</p>
@@ -153,10 +129,5 @@
 	}
 	code {
 		font-size: 0.8em;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

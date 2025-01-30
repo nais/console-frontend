@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { BodyLong, Box, Button, Heading, Search } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		tenantName: string;
@@ -151,38 +152,13 @@
 						</Box>
 					{/each}
 					{#if $teams.data.teams.pageInfo.hasPreviousPage || $teams.data.teams.pageInfo.hasNextPage}
-						<div class="pagination">
-							<span>
-								{#if $teams.data.teams.pageInfo.pageStart !== $teams.data.teams.pageInfo.pageEnd}
-									{$teams.data.teams.pageInfo.pageStart} - {$teams.data.teams.pageInfo.pageEnd}
-								{:else}
-									{$teams.data.teams.pageInfo.pageStart}
-								{/if}
-
-								of {$teams.data.teams.pageInfo.totalCount}
-							</span>
-
-							<span style="padding-left: 1rem;">
-								<Button
-									size="small"
-									variant="secondary"
-									disabled={!$teams.data.teams.pageInfo.hasPreviousPage}
-									onclick={async () => {
-										return await teams.loadPreviousPage();
-									}}><ChevronLeftIcon /></Button
-								>
-								<Button
-									size="small"
-									variant="secondary"
-									disabled={!$teams.pageInfo.hasNextPage}
-									onclick={async () => {
-										return await teams.loadNextPage();
-									}}
-								>
-									<ChevronRightIcon /></Button
-								>
-							</span>
-						</div>
+						<Pagination
+							page={$teams.data.teams.pageInfo}
+							loaders={{
+								loadPreviousPage: () => teams.loadPreviousPage(),
+								loadNextPage: () => teams.loadNextPage()
+							}}
+						/>
 					{/if}
 				</div>
 			{/if}
@@ -191,12 +167,6 @@
 </Card>
 
 <style>
-	/*.split {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 2rem;
-		padding-top: 2rem;
-	}*/
 	.create {
 		padding-top: 2rem;
 	}
@@ -240,9 +210,5 @@
 				background-color: var(--a-surface-subtle);
 			}
 		}
-	}
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -38,39 +38,13 @@
 		</Tbody>
 	</Table>
 	{#if $ReconcilerLogs.data.node.errors.pageInfo.hasPreviousPage || $ReconcilerLogs.data.node.errors.pageInfo.hasNextPage}
-		<div class="pagination">
-			<span>
-				{#if $ReconcilerLogs.data.node.errors.pageInfo.pageStart !== $ReconcilerLogs.data.node.errors.pageInfo.pageEnd}
-					{$ReconcilerLogs.data.node.errors.pageInfo.pageStart} - {$ReconcilerLogs.data.node.errors
-						.pageInfo.pageEnd}
-				{:else}
-					{$ReconcilerLogs.data.node.errors.pageInfo.pageStart}
-				{/if}
-
-				of {$ReconcilerLogs.data.node.errors.pageInfo.totalCount}
-			</span>
-
-			<span style="padding-left: 1rem;">
-				<Button
-					size="small"
-					variant="secondary"
-					disabled={!$ReconcilerLogs.data.node.errors.pageInfo.hasPreviousPage}
-					onclick={async () => {
-						return await ReconcilerLogs.loadPreviousPage();
-					}}><ChevronLeftIcon /></Button
-				>
-				<Button
-					size="small"
-					variant="secondary"
-					disabled={!$ReconcilerLogs.data.node.errors.pageInfo.hasNextPage}
-					onclick={async () => {
-						return await ReconcilerLogs.loadNextPage();
-					}}
-				>
-					<ChevronRightIcon /></Button
-				>
-			</span>
-		</div>
+		<Pagination
+			page={$ReconcilerLogs.data.node.errors.pageInfo}
+			loaders={{
+				loadPreviousPage: () => ReconcilerLogs.loadPreviousPage(),
+				loadNextPage: () => ReconcilerLogs.loadNextPage()
+			}}
+		/>
 	{/if}
 {/if}
 
@@ -78,9 +52,5 @@
 	.message {
 		word-break: break-word;
 		white-space: pre-line;
-	}
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

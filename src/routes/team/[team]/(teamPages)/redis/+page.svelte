@@ -6,9 +6,10 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -118,38 +119,13 @@
 		</Table>
 		{#if redis.pageInfo !== PendingValue}
 			{#if redis.pageInfo.hasPreviousPage || redis.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if redis.pageInfo.pageStart !== redis.pageInfo.pageEnd}
-							{redis.pageInfo.pageStart} - {redis.pageInfo.pageEnd}
-						{:else}
-							{redis.pageInfo.pageStart}
-						{/if}
-
-						of {redis.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!redis.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await Redis.loadPreviousPage();
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!redis.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await Redis.loadNextPage();
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
+				<Pagination
+					page={redis.pageInfo}
+					loaders={{
+						loadPreviousPage: () => Redis.loadPreviousPage(),
+						loadNextPage: () => Redis.loadNextPage()
+					}}
+				/>
 			{/if}
 		{/if}
 	</Card>
@@ -162,10 +138,5 @@
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>
