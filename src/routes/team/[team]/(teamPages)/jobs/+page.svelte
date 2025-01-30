@@ -31,6 +31,7 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
+	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		data: PageData;
@@ -377,40 +378,13 @@
 					</div>
 				{/each}
 			</div>
-			{#if jobs.pageInfo.hasPreviousPage || jobs.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if jobs.pageInfo.pageStart !== jobs.pageInfo.pageEnd}
-							{jobs.pageInfo.pageStart} - {jobs.pageInfo.pageEnd}
-						{:else}
-							{jobs.pageInfo.pageStart}
-						{/if}
-
-						of {jobs.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!jobs.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await Jobs.loadPreviousPage({ last: rows });
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!jobs.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await Jobs.loadNextPage({ first: rows });
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
-			{/if}
+			<Pagination
+				page={jobs.pageInfo}
+				loaders={{
+					loadPreviousPage: () => Jobs.loadPreviousPage({ last: rows }),
+					loadNextPage: () => Jobs.loadNextPage({ first: rows })
+				}}
+			/>
 		{:else if $Jobs.data.team.totalJobs.pageInfo.totalCount == 0}
 			<BodyLong
 				><strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
@@ -499,10 +473,5 @@
 			gap: 4px;
 			align-items: center;
 		}
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>

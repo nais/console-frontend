@@ -10,7 +10,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, Button, Detail, Search, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Button, Detail, Search, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -29,6 +29,7 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
+	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		data: PageData;
@@ -337,40 +338,13 @@
 					</div>
 				{/each}
 			</div>
-			{#if apps.pageInfo.hasPreviousPage || apps.pageInfo.hasNextPage}
-				<div class="pagination">
-					<span>
-						{#if apps.pageInfo.pageStart !== apps.pageInfo.pageEnd}
-							{apps.pageInfo.pageStart} - {apps.pageInfo.pageEnd}
-						{:else}
-							{apps.pageInfo.pageStart}
-						{/if}
-
-						of {apps.pageInfo.totalCount}
-					</span>
-
-					<span style="padding-left: 1rem;">
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!apps.pageInfo.hasPreviousPage}
-							onclick={async () => {
-								return await Applications.loadPreviousPage({ last: rows });
-							}}><ChevronLeftIcon /></Button
-						>
-						<Button
-							size="small"
-							variant="secondary"
-							disabled={!apps.pageInfo.hasNextPage}
-							onclick={async () => {
-								return await Applications.loadNextPage({ first: rows });
-							}}
-						>
-							<ChevronRightIcon /></Button
-						>
-					</span>
-				</div>
-			{/if}
+			<Pagination
+				page={apps.pageInfo}
+				loaders={{
+					loadPreviousPage: () => Applications.loadPreviousPage({ last: rows }),
+					loadNextPage: () => Applications.loadNextPage({ first: rows })
+				}}
+			/>
 		{:else if $Applications.data.team.totalApplications.pageInfo.totalCount == 0}
 			<BodyLong
 				><strong>No applications found.</strong> Applications are long-running processes designed to
@@ -460,10 +434,5 @@
 			gap: 4px;
 			align-items: center;
 		}
-	}
-
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
 	}
 </style>
