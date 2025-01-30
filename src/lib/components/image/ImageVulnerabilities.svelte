@@ -3,15 +3,12 @@
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkIcon,
-		ChevronLeftIcon,
-		ChevronRightIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import { untrack } from 'svelte';
 	import type { ImageVulnerabilitiesVariables } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		authorized: boolean | typeof PendingValue;
@@ -244,40 +241,14 @@
 	</Tbody>
 </Table>
 {#if image}
-	{#if image.vulnerabilities.pageInfo !== PendingValue && (image.vulnerabilities.pageInfo.hasPreviousPage || image.vulnerabilities.pageInfo.hasNextPage)}
-		<div class="pagination">
-			<span>
-				{#if image.vulnerabilities.pageInfo.pageStart !== image.vulnerabilities.pageInfo.pageEnd}
-					{image.vulnerabilities.pageInfo.pageStart} -
-					{image.vulnerabilities.pageInfo.pageEnd}
-				{:else}
-					{image.vulnerabilities.pageInfo.pageStart}
-				{/if}
-
-				of {image.vulnerabilities.pageInfo.totalCount}
-			</span>
-
-			<span style="padding-left: 1rem;">
-				<Button
-					size="small"
-					variant="secondary"
-					disabled={!image.vulnerabilities.pageInfo.hasPreviousPage}
-					onclick={async () => {
-						return await vulnerabilities.loadPreviousPage();
-					}}><ChevronLeftIcon /></Button
-				>
-				<Button
-					size="small"
-					variant="secondary"
-					disabled={!image.vulnerabilities.pageInfo.hasNextPage}
-					onclick={() => {
-						vulnerabilities.loadNextPage();
-					}}
-				>
-					<ChevronRightIcon /></Button
-				>
-			</span>
-		</div>
+	{#if image.vulnerabilities.pageInfo !== PendingValue}
+		<Pagination
+			page={image.vulnerabilities.pageInfo}
+			loaders={{
+				loadPreviousPage: () => vulnerabilities.loadPreviousPage(),
+				loadNextPage: () => vulnerabilities.loadNextPage()
+			}}
+		/>
 	{/if}
 
 	{#if findingToSuppress && authorized !== PendingValue && authorized && image.workloadReferences && image.workloadReferences !== PendingValue}
@@ -307,11 +278,6 @@
 {/if}
 
 <style>
-	.pagination {
-		text-align: right;
-		padding: 0.5rem;
-	}
-
 	code {
 		font-size: 0.8rem;
 	}
