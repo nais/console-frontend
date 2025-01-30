@@ -44,17 +44,19 @@
 	let rows: number = $state(10);
 
 	let views: { [key: string]: boolean } = $state({});
-	let filteredEnvs = $derived(initialEnvironments.split(','));
+	let filteredEnvs = $derived(initialEnvironments?.split(','));
 
 	let appOrderField: keyof typeof JobOrderField = $state(ApplicationOrderField.NAME);
 	let appOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.ASC);
 
-	$Applications.data?.team.environments.forEach((env) => {
-		if (filteredEnvs.includes(env.name) || filteredEnvs[0] === '') {
-			views[env.name] = true;
-		} else {
-			views[env.name] = false;
-		}
+	$effect(() => {
+		$Applications.data?.team.environments.forEach((env) => {
+			if (!filteredEnvs || filteredEnvs.includes(env.name)) {
+				views[env.name] = true;
+			} else {
+				views[env.name] = false;
+			}
+		});
 	});
 
 	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {

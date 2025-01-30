@@ -46,17 +46,19 @@
 	let rows: number = $state(10);
 
 	let views: { [key: string]: boolean } = $state({});
-	let filteredEnvs = $derived(initialEnvironments.split(','));
+	let filteredEnvs = $derived(initialEnvironments?.split(','));
 
 	let jobOrderField: keyof typeof JobOrderField = $state(JobOrderField.NAME);
 	let jobOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.ASC);
 
-	$Jobs.data?.team.environments.forEach((env) => {
-		if (filteredEnvs.includes(env.name) || filteredEnvs[0] === '') {
-			views[env.name] = true;
-		} else {
-			views[env.name] = false;
-		}
+	$effect(() => {
+		$Jobs.data?.team.environments.forEach((env) => {
+			if (!filteredEnvs || filteredEnvs.includes(env.name)) {
+				views[env.name] = true;
+			} else {
+				views[env.name] = false;
+			}
+		});
 	});
 
 	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
