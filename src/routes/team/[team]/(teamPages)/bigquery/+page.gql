@@ -1,12 +1,32 @@
-query BigQuery($team: Slug!, $orderBy: BigQueryDatasetOrder, $from: Date!, $to: Date!) {
-	team(slug: $team) @loading {
-		cost @loading {
+query BigQuery(
+	$team: Slug!
+	$orderBy: BigQueryDatasetOrder
+	$from: Date!
+	$to: Date!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
+	team(slug: $team) {
+		cost {
 			daily(from: $from, to: $to, filter: { services: ["BigQuery"] }) {
 				sum
 			}
 		}
-		bigQueryDatasets(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
-			pageInfo @loading {
+		environments {
+			name
+		}
+
+		totalCount: bigQueryDatasets {
+			pageInfo {
+				totalCount
+			}
+		}
+
+		bigQueryDatasets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				pageStart
@@ -15,7 +35,7 @@ query BigQuery($team: Slug!, $orderBy: BigQueryDatasetOrder, $from: Date!, $to: 
 				startCursor
 				endCursor
 			}
-			nodes @loading {
+			nodes {
 				name
 				environment {
 					name
