@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { replaceState } from '$app/navigation';
-	import { page } from '$app/state';
 	import { JobOrderField, OrderDirection, WorkloadState } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -56,6 +54,16 @@
 		rows = data.initialRows;
 	});
 
+	let after: string = $state(data.initialAfter);
+	$effect(() => {
+		after = data.initialAfter;
+	});
+
+	let before: string = $state(data.initialBefore);
+	$effect(() => {
+		before = data.initialBefore;
+	});
+
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments?.split(','));
 
@@ -80,26 +88,27 @@
 		} else {
 			views[checkboxId] = checked;
 		}
-		handleFilter();
+		changeQuery();
 	};
 
 	const handleSortDirection = (key: string) => {
 		jobOrderDirection = key as keyof typeof OrderDirection;
-		handleFilter();
+		changeQuery();
 	};
 
 	const handleSortField = (key: string) => {
 		jobOrderField = JobOrderField[key as keyof typeof JobOrderField];
-		handleFilter();
+		changeQuery();
 	};
 
 	const handleNumberOfRows = (value: number) => {
 		rows = Number(value);
-		handleFilter();
+		changeQuery();
 	};
 
-	const handleFilter = () => {
-		replaceState(page.url.toString(), {});
+	const changeQuery = (params: { after?: string; before?: string } = {}) => {
+		after = params.after ?? '';
+		before = params.before ?? '';
 		const environments: string[] = Object.keys(views).filter((key) => {
 			return views[key];
 		});
@@ -109,7 +118,9 @@
 			field: jobOrderField,
 			environments: environments.length > 0 ? environments.join(',') : '',
 			filter: filter,
-			rows: rows.toString()
+			rows: rows.toString(),
+			before,
+			after
 		});
 	};
 </script>
@@ -134,7 +145,7 @@
 				<form
 					onsubmit={(e) => {
 						e.preventDefault();
-						handleFilter();
+						changeQuery();
 					}}
 				>
 					<Search
@@ -150,7 +161,7 @@
 						bind:value={filter}
 						onclear={() => {
 							filter = '';
-							handleFilter();
+							changeQuery();
 						}}
 					/>
 				</form>
@@ -392,8 +403,14 @@
 			<Pagination
 				page={jobs.pageInfo}
 				loaders={{
-					loadPreviousPage: () => Jobs.loadPreviousPage({ last: rows }),
-					loadNextPage: () => Jobs.loadNextPage({ first: rows })
+					loadPreviousPage: () => {
+						changeQuery({ before: jobs.pageInfo.startCursor ?? '' });
+						Jobs.loadPreviousPage({ last: rows });
+					},
+					loadNextPage: () => {
+						changeQuery({ after: jobs.pageInfo.endCursor ?? '' });
+						Jobs.loadNextPage({ first: rows });
+					}
 				}}
 			/>
 		{:else if $Jobs.data.team.totalJobs.pageInfo.totalCount == 0}

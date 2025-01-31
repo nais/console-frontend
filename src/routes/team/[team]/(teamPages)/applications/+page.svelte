@@ -38,14 +38,17 @@
 	$effect(() => {
 		filter = data.initialFilter;
 	});
+
 	let rows: number = $state(data.initialRows);
 	$effect(() => {
 		rows = data.initialRows;
 	});
+
 	let after: string = $state(data.initialAfter);
 	$effect(() => {
 		after = data.initialAfter;
 	});
+
 	let before: string = $state(data.initialBefore);
 	$effect(() => {
 		before = data.initialBefore;
