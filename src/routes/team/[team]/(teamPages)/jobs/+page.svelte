@@ -453,7 +453,7 @@
 		/*overflow: hidden;*/
 
 		.jobs-header {
-			background-color: var(--a-surface-subtle);
+			background-color: var(--active-color);
 			border-radius: 4px 4px 0 0;
 			border-bottom: 1px solid var(--a-border-default);
 			display: flex;
@@ -475,6 +475,10 @@
 			padding: 8px 12px;
 			&:not(:last-of-type) {
 				border-bottom: 1px solid var(--a-border-default);
+			}
+
+			&:hover {
+				background-color: var(--a-surface-subtle);
 			}
 
 			.job-link {
