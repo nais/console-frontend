@@ -13,7 +13,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyShort, Button, Detail } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Button, Detail } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -225,6 +225,14 @@
 					}}
 				/>
 			{/if}
+		{:else}
+			<BodyLong
+				><strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
+				data in the cloud.
+				<a href="https://docs.nais.io/persistence/buckets"
+					>Learn more about Buckets and how to get started.</a
+				>
+			</BodyLong>
 		{/if}
 	</Card>
 {/if}
