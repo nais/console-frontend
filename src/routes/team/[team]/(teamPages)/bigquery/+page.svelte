@@ -31,7 +31,7 @@
 
 	let { data }: Props = $props();
 
-	let { BigQuery /*, teamSlug*/ } = $derived(data);
+	let { BigQuery, teamSlug } = $derived(data);
 
 	let rows: number = $derived.by(
 		() => $BigQuery.variables?.first ?? $BigQuery.variables?.last ?? 10
@@ -175,10 +175,6 @@
 							{#key rows}
 								<ActionMenuRadioGroup value={rows} label="Rows per page">
 									<ActionMenuRadioItem
-										value="1"
-										onselect={(value) => handleNumberOfRows(value as number)}>1</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
 										value="5"
 										onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
 									>
@@ -207,7 +203,9 @@
 				<div class="list-item">
 					<div class="activity-link-wrapper">
 						<div class="list-link">
-							{ds.name}
+							<a href="/team/{teamSlug}/{ds.environment.name}/bigquery/{ds.name}">
+								{ds.name}
+							</a>
 							<Detail>{ds.environment.name}</Detail>
 						</div>
 					</div>
@@ -216,48 +214,7 @@
 				<p>No BigQuery datasets</p>
 			{/each}
 		</div>
-		<!--Table
-			size="small"
-			zebraStripes
-			sort={{
-				orderBy: tableSort.orderBy || BigQueryDatasetOrderField.NAME,
-				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-			}}
-			onsortchange={tableSortChange}
-		>
-			<Thead>
-				<Tr>
-					<Th sortable={true} sortKey={BigQueryDatasetOrderField.NAME}>Name</Th>
-					<Th sortable={true} sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Environment</Th>
-					<Th>Owner</Th>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#each datasets.nodes as ds}
-					<Tr>
-						<Td>
-							<a href={resourceLink(ds.environment.name, teamSlug, 'bigquery', ds.name)}>
-								{ds.name}
-							</a>
-						</Td>
-						<Td>
-							{ds.environment.name}
-						</Td>
-						<Td>
-							{#if ds.workload}
-								<WorkloadLink workload={ds.workload} showIcon={true} />
-							{:else}
-								<em>No owner</em>
-							{/if}
-						</Td>
-					</Tr>
-				{:else}
-					<Tr>
-						<Td colspan={999}>No BigQuery datasets found</Td>
-					</Tr>
-				{/each}
-			</Tbody>
-		</Table-->
+
 		{#if datasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
 			<Pagination
 				page={datasets.pageInfo}
