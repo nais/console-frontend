@@ -87,9 +87,9 @@
 		{#if viewerIsMember}
 			{#if $ActivityLog.data}
 				{@const ae = $ActivityLog.data}
-				<div class="activities-list">
-					<div class="activities-header">
-						<div class="activities-count">
+				<div class="list">
+					<div class="list-header">
+						<div class="count">
 							<BodyShort size="small" style="font-weight: bold;">
 								{ae.team.activityLog.pageInfo.totalCount} entries
 							</BodyShort>
@@ -135,8 +135,8 @@
 						</div>
 					</div>
 					{#each ae.team.activityLog.edges as edge}
-						<div class="activities-list-item">
-							<div class="activity-link-wrapper">
+						<div class="list-item">
+							<div>
 								<BodyShort size="small" spacing>
 									{#if edge.node.__typename === 'SecretValueAddedActivityLogEntry'}
 										{edge.node.message}
@@ -280,11 +280,11 @@
 		}
 	}
 
-	.activities-list {
+	.list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
 
-		.activities-header {
+		.list-header {
 			background-color: var(--active-color);
 			border-radius: 4px 4px 0 0;
 			border-bottom: 1px solid var(--a-border-default);
@@ -293,10 +293,10 @@
 			align-items: center;
 			padding: 8px 12px;
 		}
-		.activities-count {
+		.count {
 			font-weight: bold;
 		}
-		.activities-list-item {
+		.list-item {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
