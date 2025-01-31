@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { ApplicationOrderField, OrderDirection, WorkloadState } from '$houdini';
+	import {
+		ApplicationOrderField,
+		OrderDirection,
+		WorkloadState,
+		type ApplicationOrderField$options,
+		type OrderDirection$options
+	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -34,31 +40,25 @@
 	let { data }: Props = $props();
 	let { Applications, initialEnvironments } = $derived(data);
 
-	let filter: string = $state(data.initialFilter);
-	$effect(() => {
-		filter = data.initialFilter;
-	});
+	let filter = $state($Applications.variables?.filter?.name ?? '');
 
-	let rows: number = $state(data.initialRows);
-	$effect(() => {
-		rows = data.initialRows;
-	});
+	let rows: number = $derived.by(
+		() => $Applications.variables?.first ?? $Applications.variables?.last ?? 10
+	);
 
-	let after: string = $state(data.initialAfter);
-	$effect(() => {
-		after = data.initialAfter;
-	});
-
-	let before: string = $state(data.initialBefore);
-	$effect(() => {
-		before = data.initialBefore;
-	});
+	let after: string = $derived($Applications.variables?.after ?? '');
+	let before: string = $derived($Applications.variables?.before ?? '');
 
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments?.split(','));
 
-	let appOrderField: keyof typeof ApplicationOrderField = $state(ApplicationOrderField.NAME);
-	let appOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.ASC);
+	let orderField: keyof typeof ApplicationOrderField = $derived(
+		$Applications.variables?.orderBy?.field ?? ApplicationOrderField.NAME
+	);
+
+	let orderDirection: keyof typeof OrderDirection = $derived(
+		$Applications.variables?.orderBy?.direction ?? OrderDirection.ASC
+	);
 
 	$effect(() => {
 		$Applications.data?.team.environments.forEach((env) => {
@@ -82,35 +82,42 @@
 	};
 
 	const handleSortDirection = (key: string) => {
-		appOrderDirection = key as keyof typeof OrderDirection;
-		changeQuery();
+		changeQuery({ direction: key as OrderDirection$options });
 	};
 
 	const handleSortField = (key: string) => {
-		appOrderField = ApplicationOrderField[key as keyof typeof ApplicationOrderField];
-		changeQuery();
+		changeQuery({
+			field: key as keyof typeof ApplicationOrderField
+		});
 	};
 
 	const handleNumberOfRows = (value: number) => {
-		rows = Number(value);
-		changeQuery();
+		changeQuery({ newRows: value, resetPagination: true });
 	};
 
-	const changeQuery = (params: { after?: string; before?: string } = {}) => {
-		after = params.after ?? '';
-		before = params.before ?? '';
-		const environments: string[] = Object.keys(views).filter((key) => {
-			return views[key];
-		});
-
+	const changeQuery = (
+		params: {
+			field?: ApplicationOrderField$options;
+			direction?: OrderDirection$options;
+			newRows?: number;
+			after?: string;
+			before?: string;
+			resetPagination?: boolean;
+			newFilter?: string;
+		} = {}
+	) => {
 		changeParams({
-			direction: appOrderDirection,
-			field: appOrderField,
-			environments: environments.length > 0 ? environments.join(',') : '',
-			filter: filter,
-			rows: rows.toString(),
-			before,
-			after
+			direction: params.direction || orderDirection,
+			field: params.field || orderField,
+			rows: params.newRows?.toString() || rows.toString(),
+			before: params.resetPagination ? '' : (params.before ?? before),
+			after: params.resetPagination ? '' : (params.after ?? after),
+			filter: params.newFilter ?? filter,
+			environments: Object.keys(views)
+				.filter((key) => {
+					return views[key];
+				})
+				.join(',')
 		});
 	};
 </script>
@@ -136,7 +143,7 @@
 				<form
 					onsubmit={(e) => {
 						e.preventDefault();
-						changeQuery();
+						changeQuery({ newFilter: filter });
 					}}
 				>
 					<Search
@@ -152,7 +159,7 @@
 						bind:value={filter}
 						onclear={() => {
 							filter = '';
-							changeQuery();
+							changeQuery({ newFilter: '' });
 						}}
 					/>
 				</form>
@@ -205,101 +212,111 @@
 							{#snippet trigger(props)}
 								<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
 									{#snippet icon()}
-										{#if appOrderDirection === OrderDirection.ASC}
+										{#if orderDirection === OrderDirection.ASC}
 											<SortAscendingIcon size="1rem" />
 										{:else}
 											<SortDescendingIcon size="1rem" />
 										{/if}
 									{/snippet}
 									<span style="display: flex; align-items: center; gap: 8px;">
-										{appOrderField === ApplicationOrderField.NAME
+										{orderField === ApplicationOrderField.NAME
 											? 'Name'
-											: appOrderField === ApplicationOrderField.STATUS
+											: orderField === ApplicationOrderField.STATUS
 												? 'Status'
-												: appOrderField === ApplicationOrderField.ENVIRONMENT
+												: orderField === ApplicationOrderField.ENVIRONMENT
 													? 'Environment'
 													: 'Deployed'}
 										<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
 									</span>
 								</Button>
 							{/snippet}
-							<ActionMenuRadioGroup bind:value={appOrderField} label="Order by">
-								<ActionMenuRadioItem
-									value={ApplicationOrderField.NAME}
-									onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value={ApplicationOrderField.STATUS}
-									onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value={ApplicationOrderField.ENVIRONMENT}
-									onselect={(value) => handleSortField(value as string)}
-									>Environment</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value={ApplicationOrderField.DEPLOYMENT_TIME}
-									onselect={(value) => handleSortField(value as string)}
-									>Deployed</ActionMenuRadioItem
-								>
-							</ActionMenuRadioGroup>
+							{#key orderField}
+								<ActionMenuRadioGroup value={orderField} label="Order by">
+									<ActionMenuRadioItem
+										value={ApplicationOrderField.NAME}
+										onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={ApplicationOrderField.STATUS}
+										onselect={(value) => handleSortField(value as string)}
+										>Status</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={ApplicationOrderField.ENVIRONMENT}
+										onselect={(value) => handleSortField(value as string)}
+										>Environment</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={ApplicationOrderField.DEPLOYMENT_TIME}
+										onselect={(value) => handleSortField(value as string)}
+										>Deployed</ActionMenuRadioItem
+									>
+								</ActionMenuRadioGroup>
+							{/key}
 							<ActionMenuDivider />
-							<ActionMenuRadioGroup bind:value={appOrderDirection} label="Sort direction">
-								{#if appOrderField === ApplicationOrderField.DEPLOYMENT_TIME}
-									<ActionMenuRadioItem
-										value={OrderDirection.DESC}
-										onselect={(value) => handleSortDirection(value as string)}
-									>
-										<div class="icon">
-											<SortDescendingIcon size="1rem" />Newest
-										</div>
-									</ActionMenuRadioItem>
-									<ActionMenuRadioItem
-										value={OrderDirection.ASC}
-										onselect={(value) => handleSortDirection(value as string)}
-									>
-										<div class="icon">
-											<SortAscendingIcon size="1rem" />Oldest
-										</div>
-									</ActionMenuRadioItem>
-								{:else}
-									<ActionMenuRadioItem
-										value={OrderDirection.ASC}
-										onselect={(value) => handleSortDirection(value as string)}
-									>
-										<div class="icon">
-											<SortAscendingIcon size="1rem" />Ascending
-										</div>
-									</ActionMenuRadioItem>
-									<ActionMenuRadioItem
-										value={OrderDirection.DESC}
-										onselect={(value) => handleSortDirection(value as string)}
-									>
-										<div class="icon">
-											<SortDescendingIcon size="1rem" />Descending
-										</div>
-									</ActionMenuRadioItem>
-								{/if}
-							</ActionMenuRadioGroup>
+							{#key orderDirection}
+								<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
+									{#if orderField === ApplicationOrderField.DEPLOYMENT_TIME}
+										<ActionMenuRadioItem
+											value={OrderDirection.DESC}
+											onselect={(value) => handleSortDirection(value as string)}
+										>
+											<div class="icon">
+												<SortDescendingIcon size="1rem" />Newest
+											</div>
+										</ActionMenuRadioItem>
+										<ActionMenuRadioItem
+											value={OrderDirection.ASC}
+											onselect={(value) => handleSortDirection(value as string)}
+										>
+											<div class="icon">
+												<SortAscendingIcon size="1rem" />Oldest
+											</div>
+										</ActionMenuRadioItem>
+									{:else}
+										<ActionMenuRadioItem
+											value={OrderDirection.ASC}
+											onselect={(value) => handleSortDirection(value as string)}
+										>
+											<div class="icon">
+												<SortAscendingIcon size="1rem" />Ascending
+											</div>
+										</ActionMenuRadioItem>
+										<ActionMenuRadioItem
+											value={OrderDirection.DESC}
+											onselect={(value) => handleSortDirection(value as string)}
+										>
+											<div class="icon">
+												<SortDescendingIcon size="1rem" />Descending
+											</div>
+										</ActionMenuRadioItem>
+									{/if}
+								</ActionMenuRadioGroup>
+							{/key}
 							<ActionMenuDivider />
-							<ActionMenuRadioGroup bind:value={rows} label="Rows per page">
-								<ActionMenuRadioItem
-									value="5"
-									onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value="10"
-									onselect={(value) => handleNumberOfRows(value as number)}>10</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value="25"
-									onselect={(value) => handleNumberOfRows(value as number)}>25</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem
-									value="50"
-									onselect={(value) => handleNumberOfRows(value as number)}>50</ActionMenuRadioItem
-								>
-							</ActionMenuRadioGroup>
+							{#key rows}
+								<ActionMenuRadioGroup value={rows} label="Rows per page">
+									<ActionMenuRadioItem
+										value="5"
+										onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value="10"
+										onselect={(value) => handleNumberOfRows(value as number)}
+										>10</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value="25"
+										onselect={(value) => handleNumberOfRows(value as number)}
+										>25</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value="50"
+										onselect={(value) => handleNumberOfRows(value as number)}
+										>50</ActionMenuRadioItem
+									>
+								</ActionMenuRadioGroup>
+							{/key}
 						</ActionMenu>
 					</div>
 				</div>
