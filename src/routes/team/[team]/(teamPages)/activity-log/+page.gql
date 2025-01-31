@@ -1,8 +1,8 @@
 query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
-	team(slug: $team) @loading {
+	team(slug: $team) {
 		slug
-		activityLog(first: 10) @paginate(mode: SinglePage) @loading {
-			pageInfo @loading {
+		activityLog(first: 10) @paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				pageEnd
@@ -11,10 +11,10 @@ query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
 				startCursor
 				endCursor
 			}
-			edges @loading(count: 10) {
-				node @loading {
+			edges {
+				node {
 					__typename
-					createdAt @loading
+					createdAt
 					actor
 					createdAt
 					environmentName

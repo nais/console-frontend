@@ -1,13 +1,19 @@
 <script lang="ts">
 	import {
 		ActivityLogEntryResourceType,
-		type ActivityLogEntryResourceType$options,
-		PendingValue
+		type ActivityLogEntryResourceType$options
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort, Skeleton } from '@nais/ds-svelte-community';
+	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { BodyShort, Button } from '@nais/ds-svelte-community';
+	import {
+		ActionMenu,
+		ActionMenuRadioGroup,
+		ActionMenuRadioItem
+	} from '@nais/ds-svelte-community/experimental.js';
+	import { ChevronDownIcon, ShieldLockIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -16,6 +22,37 @@
 
 	let { data }: Props = $props();
 	let { ActivityLog, viewerIsMember, teamSlug } = $derived(data);
+
+	let rows: number = $state(data.initialRows);
+	$effect(() => {
+		rows = data.initialRows;
+	});
+
+	let after: string = $state(data.initialAfter);
+	$effect(() => {
+		after = data.initialAfter;
+	});
+
+	let before: string = $state(data.initialBefore);
+	$effect(() => {
+		before = data.initialBefore;
+	});
+
+	const handleNumberOfRows = (value: number) => {
+		rows = Number(value);
+		changeQuery();
+	};
+
+	const changeQuery = (params: { after?: string; before?: string } = {}) => {
+		after = params.after ?? '';
+		before = params.before ?? '';
+
+		changeParams({
+			rows: rows.toString(),
+			before,
+			after
+		});
+	};
 
 	const resourceLink = (
 		environmentName: string,
@@ -41,24 +78,65 @@
 
 <div class="grid">
 	<Card columns={12}>
-		<h4>Activity log</h4>
+		<div class="header">
+			<div class="heading">
+				<ShieldLockIcon width="32px" height="32px" />
+				<h3>Activity log</h3>
+			</div>
+		</div>
 		{#if viewerIsMember}
 			{#if $ActivityLog.data}
 				{@const ae = $ActivityLog.data}
-
-				{#each ae.team.activityLog.edges as edge}
-					{#if edge.node.createdAt === PendingValue}
-						<div class="line">
-							<BodyShort size="small" spacing>
-								<Skeleton variant="rounded" />
-							</BodyShort>
-							<BodyShort size="small">
-								<Skeleton variant="rounded" />
+				<div class="activities-list">
+					<div class="activities-header">
+						<div class="activities-count">
+							<BodyShort size="small" style="font-weight: bold;">
+								{ae.team.activityLog.pageInfo.totalCount} entries
 							</BodyShort>
 						</div>
-					{:else}
-						<div class="line">
-							<div style="width: 85%">
+						<div style="display: flex; gap: 1rem;">
+							<div style="display: flex; gap: 1rem;">
+								<ActionMenu>
+									{#snippet trigger(props)}
+										<Button
+											variant="tertiary-neutral"
+											size="small"
+											iconPosition="right"
+											{...props}
+											icon={ChevronDownIcon}
+										>
+											<span style="font-weight: normal"># of rows</span>
+										</Button>
+									{/snippet}
+									<ActionMenuRadioGroup bind:value={rows} label="Rows per page">
+										<ActionMenuRadioItem
+											value="5"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>5</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value="10"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>10</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value="25"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>25</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value="50"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>50</ActionMenuRadioItem
+										>
+									</ActionMenuRadioGroup>
+								</ActionMenu>
+							</div>
+						</div>
+					</div>
+					{#each ae.team.activityLog.edges as edge}
+						<div class="activities-list-item">
+							<div class="activity-link-wrapper">
 								<BodyShort size="small" spacing>
 									{#if edge.node.__typename === 'SecretValueAddedActivityLogEntry'}
 										{edge.node.message}
@@ -154,27 +232,28 @@
 										in {edge.node.environmentName}
 									{/if}
 								</BodyShort>
+								<BodyShort size="small" style="color: var(--a-text-subtle)">
+									<Time time={edge.node.createdAt} distance={true} />
+									by {edge.node.actor}
+								</BodyShort>
 							</div>
-							<BodyShort size="small" style="color: var(--a-text-subtle)">
-								{edge.node.actor}
-							</BodyShort>
-							<BodyShort
-								size="small"
-								style="color: var(--a-text-subtle); position: absolute; top: 0; right: 0"
-							>
-								<Time time={edge.node.createdAt} distance={true} />
-							</BodyShort>
 						</div>
-					{/if}
-				{:else}
-					<p>No events</p>
-				{/each}
-				{#if ae.team.activityLog.pageInfo !== PendingValue && (ae.team.activityLog.pageInfo.hasPreviousPage || ae.team.activityLog.pageInfo.hasNextPage)}
+					{:else}
+						<p>No events</p>
+					{/each}
+				</div>
+				{#if ae.team.activityLog.pageInfo.hasPreviousPage || ae.team.activityLog.pageInfo.hasNextPage}
 					<Pagination
 						page={ae.team.activityLog.pageInfo}
 						loaders={{
-							loadPreviousPage: () => ActivityLog.loadPreviousPage(),
-							loadNextPage: () => ActivityLog.loadNextPage()
+							loadPreviousPage: () => {
+								changeQuery({ before: ae.team.activityLog.pageInfo.startCursor ?? '' });
+								ActivityLog.loadPreviousPage({ last: rows });
+							},
+							loadNextPage: () => {
+								changeQuery({ after: ae.team.activityLog.pageInfo.endCursor ?? '' });
+								ActivityLog.loadNextPage({ first: rows });
+							}
 						}}
 					/>
 				{/if}
@@ -184,13 +263,52 @@
 </div>
 
 <style>
-	.line {
-		position: relative;
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin: 1rem 0;
+		.heading {
+			display: flex;
+			align-items: center;
+			width: 50%;
+			gap: 4px;
+			h3 {
+				margin: 0;
+			}
+		}
 	}
 
-	.line:is(:global(:not(:last-child))) {
-		border-bottom: 1px solid var(--a-border-divider);
-		padding-bottom: 1rem;
-		margin-bottom: 1rem;
+	.activities-list {
+		border: 1px solid var(--a-border-default);
+		border-radius: 4px;
+
+		.activities-header {
+			background-color: var(--active-color);
+			border-radius: 4px 4px 0 0;
+			border-bottom: 1px solid var(--a-border-default);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+		}
+		.activities-count {
+			font-weight: bold;
+		}
+		.activities-list-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+
+			&:not(:last-of-type) {
+				border-bottom: 1px solid var(--a-border-default);
+			}
+
+			&:hover {
+				background-color: var(--a-surface-subtle);
+			}
+		}
 	}
 </style>
