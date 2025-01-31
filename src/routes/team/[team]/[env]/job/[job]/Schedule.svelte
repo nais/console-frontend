@@ -64,7 +64,7 @@
 		{#if runConfig.error}
 			<p style="color: red;">Error: {runConfig.error}</p>
 		{:else}
-			<dl>
+			<dl style="margin: 0">
 				<dt>Schedule</dt>
 				<dd style="margin: 0">{runConfig.description}</dd>
 				<dt>Next run</dt>

@@ -231,6 +231,12 @@
 		margin-bottom: 0.5rem;
 	}
 
+	hr {
+		border: 0;
+		border-top: 1px solid var(--a-border-default);
+		margin: 1.5rem 0.125rem;
+	}
+
 	.modal-content {
 		width: 500px;
 	}

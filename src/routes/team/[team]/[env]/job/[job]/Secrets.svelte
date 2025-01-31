@@ -48,7 +48,7 @@
 				{/each}
 			</ul>
 		{:else}
-			<p>No secrets</p>
+			No secrets
 		{/if}
 	</div>
 {/if}

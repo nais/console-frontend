@@ -96,5 +96,7 @@
 	.container {
 		display: flex;
 		justify-content: space-between;
+		font-weight: 400;
+		margin-bottom: 0.5rem;
 	}
 </style>
