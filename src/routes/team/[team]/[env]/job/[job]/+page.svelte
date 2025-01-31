@@ -6,12 +6,13 @@
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
+	import TriggerRunModal from './TriggerRunModal.svelte';
 
 	interface Props {
 		data: PageData;
@@ -50,10 +51,8 @@
 	let environment = $derived(page.params.env);
 
 	let open = $state(false);
-	let runName = $state('');
-	let errors: string[] = $state([]);
 
-	const submit = () => {
+	const submit = (runName: string) => {
 		triggerRun.mutate({
 			jobName,
 			environment,
@@ -62,65 +61,6 @@
 			jobId: $Job.data!.team.environment.job.id
 		});
 	};
-
-	const cancel = () => {
-		runName = '';
-		errors = [];
-		open = false;
-	};
-
-	const confirm = () => {
-		let valid = validateJobName(runName);
-		if (!valid.isValid) {
-			open = true;
-			errors = valid.errors;
-			return;
-		} else if (runName !== '') {
-			open = false;
-			submit();
-		} else {
-			open = true;
-			errors = ['The run name cannot be empty.'];
-		}
-	};
-
-	type ValidationResult = {
-		isValid: boolean;
-		errors: string[];
-	};
-
-	function close() {
-		open = false;
-	}
-
-	function validateJobName(input: string): ValidationResult {
-		const errors: string[] = [];
-
-		// Kubernetes resource name regex and length constraint
-		const k8sNameRegex = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
-		const maxNameLength = 63;
-
-		// Validate jobName
-		if (!input) {
-			errors.push('Run name is required.');
-		} else {
-			if (!k8sNameRegex.test(input)) {
-				errors.push(
-					'Run name must be a valid Kubernetes resource name (lowercase alphanumeric and hyphens).'
-				);
-			}
-			if (input.length > maxNameLength) {
-				errors.push(
-					`Run name must not exceed ${maxNameLength} characters. Current length: ${input.length}.`
-				);
-			}
-		}
-
-		return {
-			isValid: errors.length === 0,
-			errors
-		};
-	}
 </script>
 
 <GraphErrors errors={$Job.errors} />
@@ -171,41 +111,9 @@
 		</div>
 	</div>
 
-	<Modal bind:open onclose={close}>
-		{#snippet header()}
-			<h3>Trigger run of {jobName}</h3>
-		{/snippet}
-		<div class="modal-content">
-			This will trigger a new run of
-			<strong>{jobName}</strong> in
-			<strong>{environment}</strong>.
-			<br />
-			Please provide a name for the run.
-			<br />
-			<br />
-			<TextField type="text" bind:value={runName}>
-				{#snippet label()}
-					Run name:
-				{/snippet}
-			</TextField>
-
-			{#if $triggerRun.errors?.length ?? 0 > 0}
-				<GraphErrors errors={$triggerRun.errors} />
-			{/if}
-			{#if errors.length > 0}
-				<div class="errors">
-					{#each errors as error}
-						<span>{error}</span><br />
-					{/each}
-				</div>
-			{/if}
-		</div>
-
-		{#snippet footer()}
-			<Button variant="primary" type="submit" onclick={confirm}>Confirm</Button>
-			<Button variant="tertiary" type="reset" onclick={cancel}>Cancel</Button>
-		{/snippet}
-	</Modal>
+	{#if open}
+		<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
+	{/if}
 {/if}
 
 <style>
@@ -230,13 +138,5 @@
 		border: 0;
 		border-top: 1px solid var(--a-border-default);
 		margin: 1.5rem 0.125rem;
-	}
-
-	.modal-content {
-		width: 500px;
-	}
-	.errors {
-		margin-top: 1rem;
-		color: var(--a-text-danger);
 	}
 </style>
