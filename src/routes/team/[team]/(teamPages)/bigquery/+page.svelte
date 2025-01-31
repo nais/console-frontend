@@ -59,7 +59,6 @@
 	};
 
 	const handleNumberOfRows = (value: number) => {
-		console.log(value);
 		changeQuery({ newRows: value, resetPagination: true });
 	};
 
