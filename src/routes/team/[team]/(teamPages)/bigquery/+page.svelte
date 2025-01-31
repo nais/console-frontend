@@ -15,7 +15,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyShort, Button, Detail } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Button, Detail } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -108,127 +108,136 @@
 		</Card>
 	</div>
 	<Card columns={12}>
-		<div class="list">
-			<div class="list-header">
-				<div class="count">
-					<BodyShort size="small" style="font-weight: bold;">
-						{datasets.pageInfo.totalCount} entries
-					</BodyShort>
-				</div>
-				<div style="display: flex; gap: 1rem;">
-					<div style="display: flex; gap: 1rem;">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal"># of rows</span>
-								</Button>
-							{/snippet}
-							{#key orderField}
-								<ActionMenuRadioGroup value={orderField} label="Order by">
-									<ActionMenuRadioItem
-										value={BigQueryDatasetOrderField.NAME}
-										onselect={(value) => {
-											handleSortField(value as string);
-										}}>Name</ActionMenuRadioItem
-									>
-
-									<ActionMenuRadioItem
-										value={BigQueryDatasetOrderField.ENVIRONMENT}
-										onselect={(value) => {
-											handleSortField(value as string);
-										}}>Environment</ActionMenuRadioItem
-									>
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key orderDirection}
-								<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
-									<ActionMenuRadioItem
-										value={OrderDirection.ASC}
-										onselect={(value) => {
-											handleSortDirection(value as string);
-										}}
-									>
-										<div class="icon">
-											<SortAscendingIcon size="1rem" />Ascending
-										</div>
-									</ActionMenuRadioItem>
-									<ActionMenuRadioItem
-										value={OrderDirection.DESC}
-										onselect={(value) => {
-											handleSortDirection(value as string);
-										}}
-									>
-										<div class="icon">
-											<SortDescendingIcon size="1rem" />Descending
-										</div>
-									</ActionMenuRadioItem>
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key rows}
-								<ActionMenuRadioGroup value={rows} label="Rows per page">
-									<ActionMenuRadioItem
-										value="5"
-										onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="10"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>10</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="25"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>25</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="50"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>50</ActionMenuRadioItem
-									>
-								</ActionMenuRadioGroup>
-							{/key}
-						</ActionMenu>
+		{#if datasets.nodes.length > 0 || $BigQuery.data.team.totalCount.pageInfo.totalCount > 0}
+			<div class="list">
+				<div class="list-header">
+					<div class="count">
+						<BodyShort size="small" style="font-weight: bold;">
+							{datasets.pageInfo.totalCount} entries
+						</BodyShort>
 					</div>
-				</div>
-			</div>
-			{#each datasets.nodes as ds}
-				<div class="list-item">
-					<div class="activity-link-wrapper">
-						<div class="list-link">
-							<a href="/team/{teamSlug}/{ds.environment.name}/bigquery/{ds.name}">
-								{ds.name}
-							</a>
-							<Detail>{ds.environment.name}</Detail>
+					<div style="display: flex; gap: 1rem;">
+						<div style="display: flex; gap: 1rem;">
+							<ActionMenu>
+								{#snippet trigger(props)}
+									<Button
+										variant="tertiary-neutral"
+										size="small"
+										iconPosition="right"
+										{...props}
+										icon={ChevronDownIcon}
+									>
+										<span style="font-weight: normal"># of rows</span>
+									</Button>
+								{/snippet}
+								{#key orderField}
+									<ActionMenuRadioGroup value={orderField} label="Order by">
+										<ActionMenuRadioItem
+											value={BigQueryDatasetOrderField.NAME}
+											onselect={(value) => {
+												handleSortField(value as string);
+											}}>Name</ActionMenuRadioItem
+										>
+
+										<ActionMenuRadioItem
+											value={BigQueryDatasetOrderField.ENVIRONMENT}
+											onselect={(value) => {
+												handleSortField(value as string);
+											}}>Environment</ActionMenuRadioItem
+										>
+									</ActionMenuRadioGroup>
+								{/key}
+								<ActionMenuDivider />
+								{#key orderDirection}
+									<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
+										<ActionMenuRadioItem
+											value={OrderDirection.ASC}
+											onselect={(value) => {
+												handleSortDirection(value as string);
+											}}
+										>
+											<div class="icon">
+												<SortAscendingIcon size="1rem" />Ascending
+											</div>
+										</ActionMenuRadioItem>
+										<ActionMenuRadioItem
+											value={OrderDirection.DESC}
+											onselect={(value) => {
+												handleSortDirection(value as string);
+											}}
+										>
+											<div class="icon">
+												<SortDescendingIcon size="1rem" />Descending
+											</div>
+										</ActionMenuRadioItem>
+									</ActionMenuRadioGroup>
+								{/key}
+								<ActionMenuDivider />
+								{#key rows}
+									<ActionMenuRadioGroup value={rows} label="Rows per page">
+										<ActionMenuRadioItem
+											value="5"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>5</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value="10"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>10</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value="25"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>25</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value="50"
+											onselect={(value) => handleNumberOfRows(value as number)}
+											>50</ActionMenuRadioItem
+										>
+									</ActionMenuRadioGroup>
+								{/key}
+							</ActionMenu>
 						</div>
 					</div>
 				</div>
-			{:else}
-				<p>No BigQuery datasets</p>
-			{/each}
-		</div>
+				{#each datasets.nodes as ds}
+					<div class="list-item">
+						<div class="activity-link-wrapper">
+							<div class="list-link">
+								<a href="/team/{teamSlug}/{ds.environment.name}/bigquery/{ds.name}">
+									{ds.name}
+								</a>
+								<Detail>{ds.environment.name}</Detail>
+							</div>
+						</div>
+					</div>
+				{/each}
+			</div>
 
-		{#if datasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
-			<Pagination
-				page={datasets.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
-						BigQuery.loadPreviousPage({ last: rows });
-					},
-					loadNextPage: () => {
-						changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
-						BigQuery.loadNextPage({ first: rows });
-					}
-				}}
-			/>
+			{#if datasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
+				<Pagination
+					page={datasets.pageInfo}
+					loaders={{
+						loadPreviousPage: () => {
+							changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
+							BigQuery.loadPreviousPage({ last: rows });
+						},
+						loadNextPage: () => {
+							changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
+							BigQuery.loadNextPage({ first: rows });
+						}
+					}}
+				/>
+			{/if}
+		{:else}
+			<BodyLong
+				><strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
+				optimized for analytical workloads.
+				<a href="https://docs.nais.io/persistence/bigquery"
+					>Learn more about BigQuery datasets and how to get started.</a
+				>
+			</BodyLong>
 		{/if}
 	</Card>
 {/if}
