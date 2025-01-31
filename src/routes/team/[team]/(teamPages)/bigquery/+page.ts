@@ -4,7 +4,6 @@ import {
 	type BigQueryDatasetOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { AfterLoadEvent } from '../jobs/$houdini';
 import type { BigQueryVariables } from './$houdini';
 
 export const _BigQueryVariables: BigQueryVariables = ({ url }) => {
@@ -31,16 +30,3 @@ export const _BigQueryVariables: BigQueryVariables = ({ url }) => {
 		to
 	};
 };
-
-export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
-	return {
-		data,
-		initialRows: parseInt(url.searchParams.get('rows') || '10'),
-		initialAfter: url.searchParams.get('after') || '',
-		initialBefore: url.searchParams.get('before') || ''
-		/*initialField:
-			(url.searchParams.get('field') as keyof typeof BigQueryDatasetOrderField) ||
-			BigQueryDatasetOrderField.NAME,
-		initialDirection: (url.searchParams.get('direction') as keyof typeof OrderDirection) || 'ASC'*/
-	};
-}
