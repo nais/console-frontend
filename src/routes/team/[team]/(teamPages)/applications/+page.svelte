@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ApplicationOrderField, JobOrderField, OrderDirection, WorkloadState } from '$houdini';
+	import { ApplicationOrderField, OrderDirection, WorkloadState } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -57,7 +57,7 @@
 	let views: { [key: string]: boolean } = $state({});
 	let filteredEnvs = $derived(initialEnvironments?.split(','));
 
-	let appOrderField: keyof typeof JobOrderField = $state(ApplicationOrderField.NAME);
+	let appOrderField: keyof typeof ApplicationOrderField = $state(ApplicationOrderField.NAME);
 	let appOrderDirection: keyof typeof OrderDirection = $state(OrderDirection.ASC);
 
 	$effect(() => {
@@ -87,7 +87,7 @@
 	};
 
 	const handleSortField = (key: string) => {
-		appOrderField = JobOrderField[key as keyof typeof JobOrderField];
+		appOrderField = ApplicationOrderField[key as keyof typeof ApplicationOrderField];
 		changeQuery();
 	};
 
@@ -212,11 +212,11 @@
 										{/if}
 									{/snippet}
 									<span style="display: flex; align-items: center; gap: 8px;">
-										{appOrderField === JobOrderField.NAME
+										{appOrderField === ApplicationOrderField.NAME
 											? 'Name'
-											: appOrderField === JobOrderField.STATUS
+											: appOrderField === ApplicationOrderField.STATUS
 												? 'Status'
-												: appOrderField === JobOrderField.ENVIRONMENT
+												: appOrderField === ApplicationOrderField.ENVIRONMENT
 													? 'Environment'
 													: 'Deployed'}
 										<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
@@ -225,27 +225,27 @@
 							{/snippet}
 							<ActionMenuRadioGroup bind:value={appOrderField} label="Order by">
 								<ActionMenuRadioItem
-									value={JobOrderField.NAME}
+									value={ApplicationOrderField.NAME}
 									onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
 								>
 								<ActionMenuRadioItem
-									value={JobOrderField.STATUS}
+									value={ApplicationOrderField.STATUS}
 									onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
 								>
 								<ActionMenuRadioItem
-									value={JobOrderField.ENVIRONMENT}
+									value={ApplicationOrderField.ENVIRONMENT}
 									onselect={(value) => handleSortField(value as string)}
 									>Environment</ActionMenuRadioItem
 								>
 								<ActionMenuRadioItem
-									value={JobOrderField.DEPLOYMENT_TIME}
+									value={ApplicationOrderField.DEPLOYMENT_TIME}
 									onselect={(value) => handleSortField(value as string)}
 									>Deployed</ActionMenuRadioItem
 								>
 							</ActionMenuRadioGroup>
 							<ActionMenuDivider />
 							<ActionMenuRadioGroup bind:value={appOrderDirection} label="Sort direction">
-								{#if appOrderField === JobOrderField.DEPLOYMENT_TIME}
+								{#if appOrderField === ApplicationOrderField.DEPLOYMENT_TIME}
 									<ActionMenuRadioItem
 										value={OrderDirection.DESC}
 										onselect={(value) => handleSortDirection(value as string)}
@@ -308,7 +308,7 @@
 						<div class="application-link-wrapper">
 							<div>
 								{#if app.status.state === WorkloadState.NAIS}
-									<Tooltip content="Job is NAIS">
+									<Tooltip content="Application is NAIS">
 										<CircleFillIcon
 											style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
 											height="0.5rem"
@@ -316,7 +316,7 @@
 										/>
 									</Tooltip>
 								{:else if app.status.state === WorkloadState.NOT_NAIS}
-									<Tooltip content="Job is not NAIS">
+									<Tooltip content="Application is not NAIS">
 										<CircleFillIcon
 											style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
 											height="0.5rem"
@@ -324,7 +324,7 @@
 										/>
 									</Tooltip>
 								{:else if app.status.state === WorkloadState.FAILING}
-									<Tooltip content="Job is failing">
+									<Tooltip content="Application is failing">
 										<CircleFillIcon
 											style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
 											height="0.5rem"
@@ -332,7 +332,7 @@
 										/>
 									</Tooltip>
 								{:else}
-									<Tooltip content="Job status is UNKNOWN">
+									<Tooltip content="Application status is UNKNOWN">
 										<CircleFillIcon
 											style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
 											height="0.5rem"
