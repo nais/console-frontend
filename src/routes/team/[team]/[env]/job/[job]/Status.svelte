@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { fragment, graphql, WorkloadState, type JobStatus } from '$houdini';
-	import Nais from '$lib/icons/Nais.svelte';
 	import {
 		CheckmarkCircleFillIcon,
 		ExclamationmarkTriangleFillIcon,

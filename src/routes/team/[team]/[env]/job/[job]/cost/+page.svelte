@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import {
