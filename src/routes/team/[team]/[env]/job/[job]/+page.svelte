@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
@@ -46,10 +45,6 @@
 		`);
 
 	let triggerRun = $state(triggerRunMutation());
-
-	onNavigate(() => {
-		triggerRun = triggerRunMutation();
-	});
 
 	let jobName = $derived(page.params.job);
 	let environment = $derived(page.params.env);
