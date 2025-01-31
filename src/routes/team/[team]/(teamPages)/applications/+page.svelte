@@ -359,7 +359,7 @@
 									</div>
 								</Tooltip>
 							{/if}
-							<InstanceStatus class="wat" {app} />
+							<InstanceStatus {app} />
 						</div>
 					</div>
 				{/each}
@@ -470,10 +470,6 @@
 			grid-template-columns: 20px 1fr;
 			min-width: 114px;
 			gap: 4px;
-
-			:global(.wat) {
-				grid-column: 2;
-			}
 		}
 		.application-detail {
 			display: flex;
