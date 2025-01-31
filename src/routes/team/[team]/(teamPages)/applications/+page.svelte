@@ -359,7 +359,7 @@
 									</div>
 								</Tooltip>
 							{/if}
-							<InstanceStatus {app} />
+							<InstanceStatus {app} class="instance-status" />
 						</div>
 					</div>
 				{/each}
@@ -470,6 +470,10 @@
 			grid-template-columns: 20px 1fr;
 			min-width: 114px;
 			gap: 4px;
+
+			:global(.instance-status) {
+				grid-column: 2;
+			}
 		}
 		.application-detail {
 			display: flex;

@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { AppInstancesStatus } from '$houdini';
 	import { fragment, graphql } from '$houdini';
+	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props {
+	interface Props extends HTMLAttributes<HTMLDivElement> {
 		app: AppInstancesStatus;
 	}
 
-	let { app }: Props = $props();
+	let { app, ...rest }: Props = $props();
 	let data = $derived(
 		fragment(
 			app,
@@ -33,7 +34,7 @@
 
 {#if $data.instances}
 	{@const i = $data.instances}
-	<div>
+	<div {...rest}>
 		{#if i.pageInfo.totalCount === 0}
 			No instances
 		{:else}
