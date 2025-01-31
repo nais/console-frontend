@@ -185,12 +185,24 @@ type Application implements Node & Workload {
   """The cost for the application."""
   cost: WorkloadCost!
 
-  """
-  Deployment information for the application.
-  DO NOT USE
-  This is a work in progress, and will be changed in the future.
-  """
-  deploymentInfo: DeploymentInfo!
+  """List of deployments for the application."""
+  deployments(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentConnection!
 
   """The environment the application is deployed in."""
   environment: TeamEnvironment!
@@ -844,19 +856,69 @@ type DeleteSecretPayload {
   secretDeleted: Boolean
 }
 
-"""
-Description of a deployment.
-DO NOT USE
-This type is a work in progress, and will be changed in the future.
-"""
+"""Description of a deployment."""
 type Deployment implements Node {
-  created: Time!
-  environment: TeamEnvironment!
+  """The git commit SHA that was deployed."""
+  commitSha: String
+
+  """Creation timestamp of the deployment."""
+  createdAt: Time!
+
+  """Username of the actor who initiated the deployment."""
+  deployerUsername: String
+
+  """Name of the environment that the deployment belongs to."""
+  environmentName: String!
+
+  """ID of the deployment."""
   id: ID!
-  repository: String!
-  resources: [DeploymentResource!]!
-  statuses: [DeploymentStatus!]!
-  team: Team!
+
+  """The repository that triggered the deployment."""
+  repository: String
+
+  """Resources that were deployed."""
+  resources(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentResourceConnection!
+
+  """Statuses of the deployment."""
+  statuses(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentStatusConnection!
+
+  """Team slug that the deployment belongs to."""
+  teamSlug: Slug!
+
+  """The URL of the workflow that triggered the deployment."""
+  triggerUrl: String
 }
 
 type DeploymentConnection {
@@ -878,35 +940,6 @@ type DeploymentEdge {
   node: Deployment!
 }
 
-"""
-Deployment information for a workload.
-DO NOT USE
-This is a work in progress, and will be changed in the future.
-"""
-type DeploymentInfo {
-  commitSha: String
-  deployer: String
-  history(
-    """Get items after this cursor."""
-    after: Cursor
-
-    """Get items before this cursor."""
-    before: Cursor
-
-    """
-    Get the first n items in the connection. This can be used in combination with the after parameter.
-    """
-    first: Int
-
-    """
-    Get the last n items in the connection. This can be used in combination with the before parameter.
-    """
-    last: Int
-  ): DeploymentConnection!
-  timestamp: Time
-  url: String
-}
-
 """Deployment key type."""
 type DeploymentKey implements Node {
   """The date the deployment key was created."""
@@ -922,26 +955,80 @@ type DeploymentKey implements Node {
   key: String!
 }
 
-"""
-DO NOT USE
-This type is a work in progress, and will be changed in the future.
-"""
-type DeploymentResource {
-  group: String!
+"""Resource connected to a deployment."""
+type DeploymentResource implements Node {
+  """Globally unique ID of the deployment resource."""
+  id: ID!
+
+  """Deployment resource kind."""
   kind: String!
+
+  """The name of the resource."""
   name: String!
-  namespace: String!
-  version: String!
 }
 
-"""
-DO NOT USE
-This type is a work in progress, and will be changed in the future.
-"""
-type DeploymentStatus {
-  created: Time!
-  message: String
-  status: String!
+type DeploymentResourceConnection {
+  """List of edges."""
+  edges: [DeploymentResourceEdge!]!
+
+  """List of nodes."""
+  nodes: [DeploymentResource!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type DeploymentResourceEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The deployment resource."""
+  node: DeploymentResource!
+}
+
+"""Resource connected to a deployment."""
+type DeploymentStatus implements Node {
+  """Creation timestamp of the deployment status."""
+  createdAt: Time!
+
+  """Globally unique ID of the deployment resource."""
+  id: ID!
+
+  """Message describing the deployment status."""
+  message: String!
+
+  """State of the deployment."""
+  state: DeploymentStatusState!
+}
+
+type DeploymentStatusConnection {
+  """List of edges."""
+  edges: [DeploymentStatusEdge!]!
+
+  """List of nodes."""
+  nodes: [DeploymentStatus!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type DeploymentStatusEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The deployment status."""
+  node: DeploymentStatus!
+}
+
+"""Possible states of a deployment status."""
+enum DeploymentStatusState {
+  ERROR
+  FAILURE
+  INACTIVE
+  IN_PROGRESS
+  PENDING
+  QUEUED
+  SUCCESS
 }
 
 input DisableReconcilerInput {
@@ -1252,12 +1339,24 @@ type Job implements Node & Workload {
   """The cost for the job."""
   cost: WorkloadCost!
 
-  """
-  Deployment information for the job.
-  DO NOT USE
-  This is a work in progress, and will be changed in the future.
-  """
-  deploymentInfo: DeploymentInfo!
+  """List of deployments for the job."""
+  deployments(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentConnection!
 
   """The environment the job is deployed in."""
   environment: TeamEnvironment!
@@ -3353,11 +3452,7 @@ type Team implements Node {
   """Deployment key for the team."""
   deploymentKey: DeploymentKey
 
-  """
-  List of deployments for the team.
-  DO NOT USE
-  This is a work in progress, and will be changed in the future.
-  """
+  """List deployments for a team."""
   deployments(
     """Get items after this cursor."""
     after: Cursor
@@ -5024,12 +5119,24 @@ interface Workload {
   """The cost for a workload."""
   cost: WorkloadCost!
 
-  """
-  Deployment information for the job.
-  DO NOT USE
-  This is a work in progress, and will be changed in the future.
-  """
-  deploymentInfo: DeploymentInfo!
+  """List of deployments for the workload."""
+  deployments(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentConnection!
 
   """The environment the workload is deployed in."""
   environment: TeamEnvironment!

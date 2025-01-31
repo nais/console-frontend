@@ -364,15 +364,16 @@
 							</div>
 						</div>
 						<div class="application-info">
-							{#if app.deploymentInfo.timestamp}
+							{#if app.deployments.nodes.length > 0}
+								{@const timestamp = app.deployments.nodes[0].createdAt}
 								<RocketIcon style="font-size: 1.25rem" />
 								<Tooltip
-									content="Last deploy - {format(app.deploymentInfo.timestamp, 'PPPP', {
+									content="Last deploy - {format(timestamp, 'PPPP', {
 										locale: enGB
 									})}"
 								>
 									<div class="application-detail">
-										<Detail><Time time={app.deploymentInfo.timestamp} distance={true} /></Detail>
+										<Detail><Time time={timestamp} distance={true} /></Detail>
 									</div>
 								</Tooltip>
 							{/if}

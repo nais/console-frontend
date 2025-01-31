@@ -35,10 +35,12 @@
 							riskScore
 						}
 					}
-					deploymentInfo {
-						deployer
-						timestamp
-						url
+					deployments(first: 1) {
+						nodes {
+							deployerUsername
+							createdAt
+							triggerUrl
+						}
 					}
 				}
 			`)
@@ -49,6 +51,9 @@
 	let workloadType = $derived($data.__typename === 'Application' ? 'app' : 'job');
 	let env = $derived(page.params.env);
 	let team = $derived(page.params.team);
+	let deploymentInfo = $derived(
+		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
+	);
 
 	const notificationBadgeSize = '42';
 
@@ -94,18 +99,18 @@
 	</h4>
 
 	<p class="lastActivity">
-		{#if $data.deploymentInfo.url}
-			<a href={$data.deploymentInfo.url}>Deployed</a>
+		{#if deploymentInfo?.triggerUrl}
+			<a href={deploymentInfo.triggerUrl}>Deployed</a>
 		{:else}
 			Deployed
 		{/if}
-		{#if $data.deploymentInfo.timestamp}
-			<Time time={$data.deploymentInfo.timestamp} distance={true} />
+		{#if deploymentInfo?.createdAt}
+			<Time time={deploymentInfo.createdAt} distance={true} />
 		{/if}
-		{#if $data.deploymentInfo.deployer}
+		{#if deploymentInfo?.deployerUsername}
 			by
-			<a href="https://github.com/{$data.deploymentInfo.deployer}" target="_blank"
-				>{$data.deploymentInfo.deployer}</a
+			<a href="https://github.com/{deploymentInfo.deployerUsername}" target="_blank"
+				>{deploymentInfo.deployerUsername}</a
 			>.
 		{/if}
 	</p>

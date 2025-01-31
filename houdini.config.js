@@ -4,6 +4,7 @@
 const config = {
 	defaultPaginateMode: 'SinglePage',
 	watchSchema: {
+		interval: 0,
 		url: 'http://127.0.0.1:3000/graphql',
 		headers: {
 			'x-user-email': 'dev.usersen@example.com'
