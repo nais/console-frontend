@@ -66,9 +66,9 @@
 		{:else}
 			<dl>
 				<dt>Schedule</dt>
-				<dd>{runConfig.description}</dd>
+				<dd style="margin: 0">{runConfig.description}</dd>
 				<dt>Next run</dt>
-				<dd>{runConfig.nextRun}</dd>
+				<dd style="margin: 0">{runConfig.nextRun}</dd>
 			</dl>
 		{/if}
 	{:else}

@@ -43,14 +43,14 @@
 	}
 </script>
 
-<GraphErrors errors={$JobCost.errors} />
+<div style="display: flex; flex-direction: column; gap: var(--a-spacing-4);">
+	<GraphErrors errors={$JobCost.errors} />
 
-<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
+	<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
 
-{#if $JobCost.data}
-	{@const d = $JobCost.data.team.environment.job.cost.daily}
-	<div class="grid">
-		<Card columns={12}>
+	{#if $JobCost.data}
+		{@const d = $JobCost.data.team.environment.job.cost.daily}
+		<div>
 			<h4>Total cost for job {job} from {from} to {to}</h4>
 			<label for="from">From:</label>
 			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} onchange={update} />
@@ -64,16 +64,6 @@
 				onchange={update}
 			/>
 			<EChart options={echartOptionsStackedColumnChart(d)} style="height: 400px" />
-		</Card>
-	</div>
-{/if}
-
-<style>
-	.grid {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-</style>
+		</div>
+	{/if}
+</div>

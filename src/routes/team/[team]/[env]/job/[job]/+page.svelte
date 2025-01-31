@@ -2,16 +2,13 @@
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Traffic from '$lib/components/Traffic.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Button, Modal, TextField } from '@nais/ds-svelte-community';
-	import { TimerStartIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import Authentications from './Authentications.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import Secrets from './Secrets.svelte';
@@ -135,64 +132,55 @@
 
 {#if $Job.data}
 	{@const job = $Job.data.team.environment.job}
-	<div class="grid">
-		<Status {job} />
-
-		<Card columns={3}>
-			<Image workload={job} />
-		</Card>
-
-		<Card columns={3} rows={1}>
-			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
-		</Card>
-
-		<Card columns={3}>
+	<div class="job-content">
+		<div style="display:flex; flex-direction: column; gap: 1rem;">
+			<div style="display:flex; flex-direction: column; gap:0.5rem;">
+				<div class="runs-header">
+					<Heading level="2" size="medium">Runs</Heading>
+					{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
+						<Button variant="secondary" size="small" onclick={() => (open = true)}>
+							Trigger run
+						</Button>
+					{/if}
+				</div>
+				<!-- <p>
+					Showing current run and the last 2 successful and 1 failed runs, as configured by
+					successfulJobsHistoryLimit and failedJobsHistoryLimit (default: 3).
+				</p> -->
+				<Runs {job} />
+			</div>
+			<div>
+				<Heading level="2" size="medium">Traffic policies</Heading>
+				<Traffic workload={job} />
+			</div>
+			<div>
+				<Heading level="2" size="medium">Persistence</Heading>
+				<Persistence workload={job} />
+			</div>
+		</div>
+		<div>
+			<h4>Status</h4>
+			<Status {job} />
+			<hr />
 			<h4>Run configuration</h4>
 			<Schedule schedule={job.schedule} />
-		</Card>
-		<Card columns={12}>
-			<div class="heading">
-				<h4>Runs</h4>
-				{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
-					<Button
-						variant="secondary"
-						size="small"
-						onclick={() => {
-							open = true;
-						}}
-						icon={TimerStartIcon}
-					>
-						Trigger run
-					</Button>
-				{/if}
-			</div>
-			<Runs {job} />
-		</Card>
-		<Card columns={12}>
-			<h4>Traffic policies</h4>
-			<Traffic workload={job} />
-		</Card>
-
-		<Card columns={4}>
-			<h4>Persistence</h4>
-			<Persistence workload={job} />
-		</Card>
-		<Card columns={4}>
-			<h4>Authentications</h4>
-			<Authentications {job} />
-		</Card>
-		{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
-			<Card columns={4}>
+			<hr />
+			<Image workload={job} />
+			<hr />
+			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
+			{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
+				<hr />
 				<h4>Secrets</h4>
 				<Secrets />
-			</Card>
-		{/if}
+			{/if}
+		</div>
 	</div>
+
 	<Modal bind:open onclose={close}>
 		{#snippet header()}
 			<h3>Trigger run of {jobName}</h3>
 		{/snippet}
-		<div class="wrapper">
+		<div class="modal-content">
 			This will trigger a new run of
 			<strong>{jobName}</strong> in
 			<strong>{environment}</strong>.
@@ -226,21 +214,24 @@
 {/if}
 
 <style>
-	.grid {
+	.job-content {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 239px;
+		gap: 1rem;
 	}
+
+	.runs-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
 	}
-	.heading {
-		display: flex;
-		justify-content: space-between;
-	}
-	.wrapper {
+
+	.modal-content {
 		width: 500px;
 	}
 	.errors {

@@ -10,6 +10,7 @@
 	import '../styles/colors.css';
 	import type { LayoutData } from './$houdini';
 	import Login from './Login.svelte';
+	import { page } from '$app/stores';
 
 	interface Props {
 		data: LayoutData;
@@ -68,7 +69,7 @@
 	});
 </script>
 
-<div class="full-wrapper {activeColor()}">
+<div class="full-wrapper {activeColor()} {$page.route.id?.includes('/job/') ? 'job-page' : ''}">
 	{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
 		<!-- logged out. We check both to support both  -->
 		<Login />
@@ -98,5 +99,9 @@
 		background: var(--a-bg-default);
 		background: linear-gradient(135deg, var(--a-bg-default) 0%, var(--active-color) 100%);
 		padding-bottom: 1rem;
+	}
+
+	.full-wrapper.job-page {
+		background: none;
 	}
 </style>

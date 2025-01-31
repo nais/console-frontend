@@ -27,22 +27,20 @@
 	);
 </script>
 
-<Card>
-	{#if manifest}
-		<h3>
-			Manifest for {$manifest.name}
-			<CopyButton
-				text="Copy manifest"
-				activeText="Manifest copied"
-				variant="action"
-				copyText={$manifest.manifest.content}
-			/>
-		</h3>
-		<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
-			<LineNumbers {highlighted} hideBorder />
-		</Highlight>
-	{/if}
-</Card>
+{#if manifest}
+	<h3>
+		Manifest for {$manifest.name}
+		<CopyButton
+			text="Copy manifest"
+			activeText="Manifest copied"
+			variant="action"
+			copyText={$manifest.manifest.content}
+		/>
+	</h3>
+	<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
+		<LineNumbers {highlighted} hideBorder />
+	</Highlight>
+{/if}
 
 <style>
 	h3 {

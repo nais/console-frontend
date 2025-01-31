@@ -67,104 +67,102 @@
 
 {#if $DeleteJobPage?.data?.team.environment.job}
 	{@const job = $DeleteJobPage?.data?.team.environment.job}
-	<Card borderColor="var(--a-border-danger)">
-		<h3>Delete {job.name}</h3>
+	<h3>Delete {job.name}</h3>
 
-		{#if hasResourcesToDelete(job)}
-			<p>
-				In addition to the application the following resources
-				<strong>will be permanently deleted</strong>:
-			</p>
-		{/if}
+	{#if hasResourcesToDelete(job)}
+		<p>
+			In addition to the application the following resources
+			<strong>will be permanently deleted</strong>:
+		</p>
+	{/if}
+	<div>
+		{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
+			<PersistenceList persistence={node}>
+				This will be deleted because <code>cascadingDelete</code>
+				is set to
+				<code>true</code>
+				in the manifest.
+			</PersistenceList>
+		{/each}
+		{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
+			<PersistenceList persistence={node}>
+				This will be deleted because <code>cascadingDelete</code>
+				is set to
+				<code>true</code>
+				in the manifest.
+			</PersistenceList>
+		{/each}
+		{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node}
+			<PersistenceList persistence={node}
+				>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
+				manifest.
+			</PersistenceList>
+		{/each}
+		{#each job.redisInstances.nodes as node}
+			<PersistenceList persistence={node}
+				>If this Redis instance is defined on team level, it won't be deleted. If it's created by
+				the app, it will be permanently deleted.
+			</PersistenceList>
+		{/each}
+		{#each job.valkeyInstances.nodes as node}
+			<PersistenceList persistence={node}
+				>If this Valkey instance is defined on team level, it won't be deleted. If it's created by
+				the app, it will be permanently deleted.
+			</PersistenceList>
+		{/each}
+	</div>
+
+	{#if hasOrphans(job)}
+		<br />
 		<div>
-			{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
-				<PersistenceList persistence={node}>
-					This will be deleted because <code>cascadingDelete</code>
-					is set to
-					<code>true</code>
-					in the manifest.
-				</PersistenceList>
+			In addition to deleting the application the following resources <strong
+				>may be orphaned</strong
+			>:
+			<HelpText title="Why orphaned?">
+				The resource may still exist after the app has been deleted and you will have to manually
+				delete it.
+			</HelpText>
+		</div>
+		<div>
+			{#each job.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
+				<PersistenceList persistence={node} />
 			{/each}
-			{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
-				<PersistenceList persistence={node}>
-					This will be deleted because <code>cascadingDelete</code>
-					is set to
-					<code>true</code>
-					in the manifest.
-				</PersistenceList>
+			{#each job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
+				<PersistenceList persistence={node} />
 			{/each}
-			{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node}
-				<PersistenceList persistence={node}
-					>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
-					manifest.
-				</PersistenceList>
-			{/each}
-			{#each job.redisInstances.nodes as node}
-				<PersistenceList persistence={node}
-					>If this Redis instance is defined on team level, it won't be deleted. If it's created by
-					the app, it will be permanently deleted.
-				</PersistenceList>
-			{/each}
-			{#each job.valkeyInstances.nodes as node}
-				<PersistenceList persistence={node}
-					>If this Valkey instance is defined on team level, it won't be deleted. If it's created by
-					the app, it will be permanently deleted.
-				</PersistenceList>
+			{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
+				<PersistenceList persistence={node} />
 			{/each}
 		</div>
+	{/if}
 
-		{#if hasOrphans(job)}
-			<br />
-			<div>
-				In addition to deleting the application the following resources <strong
-					>may be orphaned</strong
-				>:
-				<HelpText title="Why orphaned?">
-					The resource may still exist after the app has been deleted and you will have to manually
-					delete it.
-				</HelpText>
-			</div>
-			<div>
-				{#each job.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
-					<PersistenceList persistence={node} />
-				{/each}
-				{#each job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
-					<PersistenceList persistence={node} />
-				{/each}
-				{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
-					<PersistenceList persistence={node} />
-				{/each}
-			</div>
-		{/if}
-
-		{@const expected = job.environment.name + '/' + job.name}
-		<p>
-			Confirm deletion by writing <strong>{expected}</strong> in the box below and click
-			<em>Delete</em>
-		</p>
-		{#if $deleteJob.errors}
-			<GraphErrors errors={$deleteJob.errors} />
-		{/if}
-		{#if $deleteJob.errors}
-			<Alert variant="error">
-				Error occured while deleting app:<br />
-				{#each $deleteJob.errors as error}
-					{error.message}<br />
-				{/each}
-			</Alert>
-		{/if}
-		<form
-			onsubmit={(e: SubmitEvent) => {
-				e.preventDefault();
-				submit();
-			}}
-		>
-			<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
-			<Button disabled={confirmation !== expected} variant="danger" loading={$deleteJob.fetching}>
-				Delete
-			</Button>
-		</form>
-	</Card>
+	{@const expected = job.environment.name + '/' + job.name}
+	<p>
+		Confirm deletion by writing <strong>{expected}</strong> in the box below and click
+		<em>Delete</em>
+	</p>
+	{#if $deleteJob.errors}
+		<GraphErrors errors={$deleteJob.errors} />
+	{/if}
+	{#if $deleteJob.errors}
+		<Alert variant="error">
+			Error occured while deleting app:<br />
+			{#each $deleteJob.errors as error}
+				{error.message}<br />
+			{/each}
+		</Alert>
+	{/if}
+	<form
+		onsubmit={(e: SubmitEvent) => {
+			e.preventDefault();
+			submit();
+		}}
+	>
+		<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
+		<Button disabled={confirmation !== expected} variant="danger" loading={$deleteJob.fetching}>
+			Delete
+		</Button>
+	</form>
 {/if}
 
 <style>

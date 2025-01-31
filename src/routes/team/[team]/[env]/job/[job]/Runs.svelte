@@ -1,11 +1,14 @@
 <script lang="ts">
 	import type { JobRuns } from '$houdini';
-	import { fragment, graphql, JobRunState } from '$houdini';
+	import { fragment, graphql } from '$houdini';
 	import Time from '$lib/Time.svelte';
-	import Nais from '$lib/icons/Nais.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepathIcon, QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		CheckmarkCircleFillIcon,
+		QuestionmarkIcon,
+		TimerIcon,
+		XMarkOctagonFillIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		job: JobRuns;
@@ -62,72 +65,127 @@
 	};
 </script>
 
-<Table size="small" zebraStripes>
-	<Thead>
-		<Tr>
-			<Th style="width: 4rem;">Status</Th>
-			<Th>Name</Th>
-			<Th>Started</Th>
-			<Th>Duration</Th>
-			<Th>Message</Th>
-		</Tr>
-	</Thead>
-	<Tbody>
+{#if $data.runs.edges.length === 0}
+	<div>No runs found</div>
+{:else}
+	<div class="runs-list">
+		<div class="runs-header">
+			<div class="runs-count">
+				<BodyShort size="small" style="font-weight: bold;">
+					{$data.runs.edges.length} job runs
+				</BodyShort>
+			</div>
+		</div>
 		{#each $data.runs.edges as run}
-			<Tr>
-				<Td style="text-align: center;">
-					{#if run.node.status.state === JobRunState.RUNNING}
-						<Tooltip content="Run in progress" placement="right">
-							<ArrowsCirclepathIcon
-								width="1.5rem"
-								height="1.5rem"
-								style="color: var(--a-icon-success)"
-							/>
-						</Tooltip>
-					{:else if run.node.status.state === JobRunState.PENDING}
-						<Tooltip content="Run is pending" placement="right">
-							<ArrowsCirclepathIcon width="1.5rem" height="1.5rem" style="color: inherit" />
-						</Tooltip>
-					{:else if run.node.status.state === JobRunState.SUCCEEDED}
-						<Tooltip content="Run completed successfully" placement="right"
-							><Nais size="1.5rem" style="color: var(--a-icon-success)" />
-						</Tooltip>
-					{:else if run.node.status.state === JobRunState.UNKNOWN}
-						<Tooltip content="Run status unknown" placement="right">
-							<span style="font-size: 1.5rem;">
-								<QuestionmarkIcon style="color: var(--a-icon-warning)" />
-							</span>
-						</Tooltip>
-					{:else}
-						<Tooltip content="Run failed" placement="right">
-							<WarningIcon size="1.5rem" style="color: var(--a-icon-danger)" />
-						</Tooltip>
-					{/if}
-				</Td>
-				<Td
-					><a
-						href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/logs?name={run
-							.node.name}">{run.node.name}</a
-					></Td
-				>
-				<Td>
-					{#if run.node.startTime}
-						<Time time={run.node.startTime} dateFormat="dd.MM.yyyy HH:mm:ss" distance={true} />
-					{:else}
-						Not started
-					{/if}
-				</Td>
-				<Td>{formatDuration(run.node.duration)}</Td>
-				{#if run.node.status.message}
-					<Td>{run.node.status.message}</Td>
-				{:else}
-					<Td />
-				{/if}
-			</Tr>
-		{:else}
-			<Tr>
-				<Td colspan={5}>No job instances found</Td>
-			</Tr>
+			<div class="runs-list-item">
+				<div class="run-link-wrapper">
+					<div style="height: 23.98px; display: flex; align-items: center; line-height: 0">
+						{#if run.node.status.state === 'RUNNING'}
+							<Tooltip content="Job is running">
+								<Loader size="xsmall" variant="interaction" />
+							</Tooltip>
+						{:else if run.node.status.state === 'PENDING'}
+							<Tooltip content="Job run pending">
+								<Loader size="xsmall" variant="interaction" />
+							</Tooltip>
+						{:else if run.node.status.state === 'SUCCEEDED'}
+							<Tooltip content="Job ran successfully">
+								<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+							</Tooltip>
+						{:else if run.node.status.state === 'FAILED'}
+							<Tooltip content="Job run failed">
+								<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+							</Tooltip>
+						{:else}
+							<Tooltip content="Job run status is unknown">
+								<QuestionmarkIcon />
+							</Tooltip>
+						{/if}
+					</div>
+					<div class="run-link">
+						<a
+							href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/logs?name={run
+								.node.name}"
+						>
+							{run.node.name}
+						</a>
+						<Detail>
+							Triggered
+							{#if run.node.startTime}
+								<Time time={run.node.startTime} distance={true} />
+							{/if}
+						</Detail>
+					</div>
+				</div>
+				<div class="run-info">
+					<div class="run-detail">
+						<TimerIcon /><Detail>{formatDuration(run.node.duration)}</Detail>
+					</div>
+					<Detail>{run.node.status.message}</Detail>
+				</div>
+			</div>
 		{/each}
-	</Tbody>
-</Table>
+	</div>
+{/if}
+
+<style>
+	.runs-list {
+		border: 1px solid var(--a-border-default);
+		border-radius: 4px;
+
+		.runs-header {
+			background-color: var(--active-color);
+			border-radius: 4px 4px 0 0;
+			border-bottom: 1px solid var(--a-border-default);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+		}
+		.runs-count {
+			font-weight: bold;
+		}
+		.runs-list-item {
+			.run-link-wrapper {
+				display: flex;
+				gap: 0.3rem;
+			}
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+			&:not(:last-of-type) {
+				border-bottom: 1px solid var(--a-border-default);
+			}
+
+			&:hover {
+				background-color: var(--a-surface-subtle);
+			}
+
+			.run-link {
+				:global(a) {
+					font-weight: var(--a-font-weight-bold);
+					&:not(:active) {
+						color: var(--a-text-defualt);
+					}
+					text-decoration: none;
+					&:hover {
+						text-decoration: underline;
+					}
+				}
+			}
+		}
+		.run-info {
+			display: flex;
+			align-items: flex-end;
+			gap: 4px;
+			flex-direction: column;
+		}
+
+		.run-detail {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+	}
+</style>

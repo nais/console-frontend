@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
 	import Deployments from '$lib/components/Deployments.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { PageData } from './$houdini';
@@ -15,9 +14,5 @@
 <GraphErrors errors={$JobDeploys.errors} />
 
 {#if $JobDeploys.data}
-	<Card>
-		<Card>
-			<Deployments workload={$JobDeploys.data.team.environment.workload} />
-		</Card>
-	</Card>
+	<Deployments workload={$JobDeploys.data.team.environment.workload} />
 {/if}
