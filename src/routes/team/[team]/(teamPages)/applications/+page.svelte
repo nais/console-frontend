@@ -347,11 +347,8 @@
 							</div>
 						</div>
 						<div class="application-info">
-							<div></div>
-							<div><InstanceStatus {app} /></div>
 							{#if app.deploymentInfo.timestamp}
-								<div><RocketIcon /></div>
-
+								<RocketIcon style="font-size: 1.25rem" />
 								<Tooltip
 									content="Last deploy - {format(app.deploymentInfo.timestamp, 'PPPP', {
 										locale: enGB
@@ -362,6 +359,7 @@
 									</div>
 								</Tooltip>
 							{/if}
+							<InstanceStatus class="wat" {app} />
 						</div>
 					</div>
 				{/each}
@@ -423,7 +421,6 @@
 	.applications-list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
-		/*overflow: hidden;*/
 
 		.applications-header {
 			background-color: var(--active-color);
@@ -473,7 +470,10 @@
 			grid-template-columns: 20px 1fr;
 			min-width: 114px;
 			gap: 4px;
-			flex-direction: column;
+
+			:global(.wat) {
+				grid-column: 2;
+			}
 		}
 		.application-detail {
 			display: flex;

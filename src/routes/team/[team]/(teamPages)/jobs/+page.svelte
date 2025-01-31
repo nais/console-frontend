@@ -343,7 +343,19 @@
 							</div>
 						</div>
 						<div class="job-info">
-							<div style="display: flex; gap: 4px; align-items: center; ">
+							{#if job.deploymentInfo.timestamp}
+								<Tooltip
+									content="Last deploy - {format(job.deploymentInfo.timestamp, 'PPPP', {
+										locale: enGB
+									})}"
+								>
+									<div class="job-detail">
+										<RocketIcon />
+										<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
+									</div>
+								</Tooltip>
+							{/if}
+							<div style="display: flex; gap: 4px; align-items: center; line-height: 0;">
 								{#if job.runs.nodes[0]?.status}
 									{#if job.runs.nodes[0].status.state === 'RUNNING'}
 										<Tooltip content="Job is running">
@@ -383,19 +395,6 @@
 									<Detail>No runs</Detail>
 								{/if}
 							</div>
-
-							{#if job.deploymentInfo.timestamp}
-								<Tooltip
-									content="Last deploy - {format(job.deploymentInfo.timestamp, 'PPPP', {
-										locale: enGB
-									})}"
-								>
-									<div class="job-detail">
-										<RocketIcon />
-										<Detail><Time time={job.deploymentInfo.timestamp} distance={true} /></Detail>
-									</div>
-								</Tooltip>
-							{/if}
 						</div>
 					</div>
 				{/each}
