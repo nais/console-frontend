@@ -217,6 +217,12 @@
 												{data.revokedTeamSlug}
 											</a> to the instance.
 										{/if}
+									{:else if edge.node.__typename === 'RepositoryRemovedActivityLogEntry'}
+										{edge.node.actor} removed repository
+										{edge.node.resourceName} from team {edge.node.teamSlug}.
+									{:else if edge.node.__typename === 'RepositoryAddedActivityLogEntry'}
+										{edge.node.actor} added repository {edge.node.resourceName} to team {edge.node
+											.teamSlug}.
 									{:else}
 										{edge.node.message}
 										{@const link = resourceLink(

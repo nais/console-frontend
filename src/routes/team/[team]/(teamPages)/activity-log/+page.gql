@@ -22,6 +22,22 @@ query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
 					resourceName
 					resourceType
 
+					... on RepositoryAddedActivityLogEntry {
+						actor
+						message
+						resourceName
+						resourceType
+						teamSlug
+					}
+
+					... on RepositoryRemovedActivityLogEntry {
+						actor
+						message
+						resourceName
+						resourceType
+						teamSlug
+					}
+
 					... on SecretValueAddedActivityLogEntry {
 						secretValueAdded: data {
 							valueName
