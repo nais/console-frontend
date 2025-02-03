@@ -57,8 +57,13 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	let views: { [key: string]: boolean } = $state({});
-	let filteredEnvs = $derived(initialEnvironments?.split(','));
+	let filteredEnvs = $derived(
+		initialEnvironments === 'none'
+			? []
+			: (initialEnvironments?.split(',') ??
+					$Jobs.data?.team.environments.map((env) => env.name) ??
+					[])
+	);
 
 	let orderField: keyof typeof JobOrderField = $derived(
 		$Jobs.variables?.orderBy?.field ?? JobOrderField.NAME
@@ -68,25 +73,17 @@
 		$Jobs.variables?.orderBy?.direction ?? OrderDirection.ASC
 	);
 
-	$effect(() => {
-		$Jobs.data?.team.environments.forEach((env) => {
-			if (!filteredEnvs || filteredEnvs.includes(env.name)) {
-				views[env.name] = true;
-			} else {
-				views[env.name] = false;
-			}
-		});
-	});
-
 	const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
-		if (checkboxId === '*') {
-			Object.keys(views).forEach((key) => {
-				views[key] = checked;
-			});
-		} else {
-			views[checkboxId] = checked;
-		}
-		changeQuery();
+		changeQuery({
+			environments:
+				checkboxId === '*'
+					? checked
+						? ($Jobs.data?.team.environments.map((env) => env.name) ?? [])
+						: []
+					: checked
+						? [...filteredEnvs, checkboxId]
+						: filteredEnvs.filter((env) => env !== checkboxId)
+		});
 	};
 
 	const handleSortDirection = (key: string) => {
@@ -112,6 +109,7 @@
 			before?: string;
 			resetPagination?: boolean;
 			newFilter?: string;
+			environments?: string[];
 		} = {}
 	) => {
 		changeParams({
@@ -121,11 +119,10 @@
 			before: params.resetPagination ? '' : (params.before ?? before),
 			after: params.resetPagination ? '' : (params.after ?? after),
 			filter: params.newFilter ?? filter,
-			environments: Object.keys(views)
-				.filter((key) => {
-					return views[key];
-				})
-				.join(',')
+			environments:
+				params.environments?.length === 0
+					? 'none'
+					: (params.environments?.join(',') ?? filteredEnvs.join(','))
 		});
 	};
 </script>
@@ -195,9 +192,11 @@
 								</Button>
 							{/snippet}
 							<ActionMenuCheckboxItem
-								checked={Object.values(views).length > 0 && Object.values(views).every(Boolean)
+								checked={$Jobs.data.team.environments.every((env) =>
+									filteredEnvs.includes(env.name)
+								)
 									? true
-									: Object.values(views).some(Boolean)
+									: filteredEnvs.length > 0
 										? 'indeterminate'
 										: false}
 								onchange={(checked) => handleCheckboxChange('*', checked)}
@@ -206,7 +205,7 @@
 							</ActionMenuCheckboxItem>
 							{#each $Jobs.data.team.environments as env}
 								<ActionMenuCheckboxItem
-									checked={views[env.name]}
+									checked={filteredEnvs.includes(env.name)}
 									onchange={(checked) => handleCheckboxChange(env.name, checked)}
 								>
 									{env.name}

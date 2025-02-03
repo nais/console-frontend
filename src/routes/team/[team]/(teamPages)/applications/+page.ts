@@ -8,7 +8,10 @@ import {
 import type { AfterLoadEvent, ApplicationsVariables } from './$houdini';
 export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 	const filter: string = url.searchParams.get('filter') || '';
-	const environments: string[] = url.searchParams.get('environments')?.split(',') || [];
+	const environments: string[] | undefined =
+		url.searchParams.get('environments') === 'none'
+			? undefined
+			: url.searchParams.get('environments')?.split(',') || [];
 	const field: string = (url.searchParams.get('field') ||
 		ApplicationOrderField.NAME) as ApplicationOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
