@@ -201,7 +201,7 @@
 					<div class="list-item">
 						<div class="activity-link-wrapper">
 							<div class="list-link">
-								<a href="/team/{teamSlug}/{b.environment.name}/bigquery/{b.name}">
+								<a href="/team/{teamSlug}/{b.environment.name}/bucket/{b.name}">
 									{b.name}
 								</a>
 								<Detail>{b.environment.name}</Detail>
