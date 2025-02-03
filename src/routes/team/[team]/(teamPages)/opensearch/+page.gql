@@ -1,12 +1,34 @@
-query OpenSearch($team: Slug!, $orderBy: OpenSearchOrder, $from: Date!, $to: Date!) {
-	team(slug: $team) @loading {
-		cost @loading {
+query OpenSearch(
+	$team: Slug!
+	$orderBy: OpenSearchOrder
+	$from: Date!
+	$to: Date!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
+	team(slug: $team) {
+		cost {
 			daily(from: $from, to: $to, filter: { services: ["OpenSearch"] }) {
 				sum
 			}
 		}
-		openSearchInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
-			pageInfo @loading {
+
+		totalCount: openSearchInstances {
+			pageInfo {
+				totalCount
+			}
+		}
+
+		openSearchInstances(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				totalCount
@@ -15,7 +37,7 @@ query OpenSearch($team: Slug!, $orderBy: OpenSearchOrder, $from: Date!, $to: Dat
 				startCursor
 				endCursor
 			}
-			nodes @loading {
+			nodes {
 				__typename
 				name
 				environment {

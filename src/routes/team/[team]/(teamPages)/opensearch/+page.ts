@@ -1,6 +1,7 @@
 import {
 	load_OpenSearch,
 	OpenSearchOrderField,
+	type OpenSearchOrder,
 	type OpenSearchOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
@@ -18,6 +19,10 @@ export const load: PageLoad = async (event) => {
 	const field = (url.searchParams.get('field') ||
 		OpenSearchOrderField.NAME) as OpenSearchOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const rows: number = parseInt(url.searchParams.get('rows') || '10');
+
+	const after = url.searchParams.get('after') || '';
+	const before = url.searchParams.get('before') || '';
 
 	// Date 30 days ago
 	const from = new Date();
@@ -32,7 +37,8 @@ export const load: PageLoad = async (event) => {
 			event,
 			variables: {
 				team: event.params.team,
-				orderBy: { field: field, direction: direction },
+				orderBy: { field: field, direction: direction } as OpenSearchOrder,
+				...(before ? { before, last: rows } : { after, first: rows }),
 				from,
 				to
 			}
