@@ -1,6 +1,7 @@
 import {
 	KafkaTopicOrderField,
 	load_KafkaTopics,
+	type KafkaTopicOrder,
 	type KafkaTopicOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
@@ -18,13 +19,18 @@ export const load: PageLoad = async (event) => {
 	const field = (url.searchParams.get('field') ||
 		KafkaTopicOrderField.NAME) as KafkaTopicOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const rows: number = parseInt(url.searchParams.get('rows') || '10');
+
+	const after = url.searchParams.get('after') || '';
+	const before = url.searchParams.get('before') || '';
 
 	return {
 		...(await load_KafkaTopics({
 			event,
 			variables: {
 				team: event.params.team,
-				orderBy: { field: field, direction: direction }
+				orderBy: { field: field, direction: direction } as KafkaTopicOrder,
+				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))
 	};

@@ -9,6 +9,7 @@
 	import Cost from '$lib/components/Cost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
@@ -90,6 +91,12 @@
 			<h3>Buckets</h3>
 		</div>
 	</div>
+	<BodyLong style="margin-bottom: 1rem;">
+		Storage buckets are containers for storing and managing data in the cloud.
+		<a href="https://docs.nais.io/persistence/buckets"
+			>Learn more about Buckets and how to get started.</a
+		>
+	</BodyLong>
 	<div class="summary-grid">
 		<Card columns={3}>
 			<SummaryCard
@@ -198,13 +205,19 @@
 						</div>
 					</div>
 				</div>
-				{#each buckets.nodes as b}
+				{#each buckets.nodes as instance}
 					<div class="list-item">
-						<div class="activity-link-wrapper">
-							<div class="list-link">
-								<PersistenceLink instance={b} />
-								<Detail>{b.environment.name}</Detail>
+						<div class="link-wrapper">
+							<div class="link">
+								<PersistenceLink {instance} />
+								<Detail>{instance.environment.name}</Detail>
 							</div>
+						</div>
+						<div class="info">
+							{#if instance.workload}
+								{@const workload = instance.workload}
+								Owner: <WorkloadLink {workload} showIcon={true} />
+							{/if}
 						</div>
 					</div>
 				{/each}
@@ -271,6 +284,10 @@
 			font-weight: bold;
 		}
 		.list-item {
+			.link-wrapper {
+				display: flex;
+				gap: 0.3rem;
+			}
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -284,7 +301,7 @@
 				background-color: var(--a-surface-subtle);
 			}
 
-			.list-link {
+			.link {
 				:global(a) {
 					font-weight: var(--a-font-weight-bold);
 					&:not(:active) {
@@ -295,6 +312,13 @@
 						text-decoration: underline;
 					}
 				}
+			}
+			.info {
+				display: flex;
+				gap: var(--a-spacing-1-alt);
+				align-items: center;
+				font-size: 0.875rem;
+				white-space: nowrap;
 			}
 		}
 	}

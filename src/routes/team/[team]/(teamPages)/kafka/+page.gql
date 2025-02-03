@@ -1,7 +1,20 @@
-query KafkaTopics($team: Slug!, $orderBy: KafkaTopicOrder) {
-	team(slug: $team) @loading {
-		kafkaTopics(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
-			pageInfo @loading {
+query KafkaTopics(
+	$team: Slug!
+	$orderBy: KafkaTopicOrder
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
+	team(slug: $team) {
+		totalCount: kafkaTopics {
+			pageInfo {
+				totalCount
+			}
+		}
+		kafkaTopics(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				pageStart
@@ -10,7 +23,8 @@ query KafkaTopics($team: Slug!, $orderBy: KafkaTopicOrder) {
 				startCursor
 				endCursor
 			}
-			nodes @loading {
+
+			nodes {
 				__typename
 				name
 				team {

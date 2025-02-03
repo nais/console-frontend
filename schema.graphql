@@ -3,6 +3,11 @@ The @defer directive may be specified on a fragment spread to imply de-prioritiz
 """
 directive @defer(if: Boolean = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
+"""
+The `@oneOf` _built-in directive_ is used within the type system definition language to indicate an Input Object is a OneOf Input Object.
+"""
+directive @oneOf on INPUT_OBJECT
+
 """Interface for activity log entries."""
 interface ActivityLogEntry {
   """
