@@ -2,11 +2,11 @@
 	import { OpenSearchOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { resourceLink } from '$lib/utils/links';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { WalletIcon } from '@nais/ds-svelte-community/icons';
@@ -18,7 +18,7 @@
 
 	let { data }: Props = $props();
 
-	let { OpenSearch, teamSlug } = $derived(data);
+	let { OpenSearch } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $OpenSearch.variables?.orderBy?.field,
@@ -83,9 +83,7 @@
 						<Tr>
 							<!-- TODO: show warning if no workload uses this instance -->
 							<Td>
-								<a href={resourceLink(o.environment.name, teamSlug, 'opensearch', o.name)}
-									>{o.name}</a
-								>
+								<PersistenceLink instance={o} />
 							</Td>
 							<Td>
 								{o.environment.name}

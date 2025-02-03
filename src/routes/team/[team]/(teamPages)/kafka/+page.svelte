@@ -2,6 +2,7 @@
 	import { KafkaTopicOrderField, PendingValue } from '$houdini';
 	import Card from '$lib/Card.svelte';
 
+	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
@@ -14,7 +15,7 @@
 
 	let { data }: Props = $props();
 
-	let { KafkaTopics, teamSlug } = $derived(data);
+	let { KafkaTopics } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $KafkaTopics.variables?.orderBy?.field,
@@ -62,7 +63,7 @@
 					{#if t !== PendingValue}
 						<Tr>
 							<Td>
-								<a href="/team/{teamSlug}/{t.environment.name}/kafka/{t.name}">{t.name}</a>
+								<PersistenceLink instance={t} />
 							</Td>
 							<Td>
 								{t.environment.name}

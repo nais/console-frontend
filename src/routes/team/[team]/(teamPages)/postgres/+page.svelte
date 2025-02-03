@@ -11,6 +11,7 @@
 
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -24,7 +25,7 @@
 
 	let { data }: Props = $props();
 
-	let { SqlInstances, teamSlug } = $derived(data);
+	let { SqlInstances } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $SqlInstances.variables?.orderBy?.field,
@@ -188,7 +189,7 @@
 								{/if}
 							</Td>
 							<Td>
-								<a href="/team/{teamSlug}/{i.environment.name}/postgres/{i.name}">{i.name}</a>
+								<PersistenceLink instance={i} />
 							</Td>
 							<Td>
 								{i.version}

@@ -16,7 +16,11 @@ query Valkey($team: Slug!, $orderBy: ValkeyInstanceOrder, $from: Date!, $to: Dat
 				endCursor
 			}
 			nodes @loading {
+				__typename
 				name
+				team {
+					slug
+				}
 				environment {
 					name
 				}

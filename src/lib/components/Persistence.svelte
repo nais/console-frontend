@@ -4,8 +4,8 @@
 	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
 	import Kafka from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import Redis from '$lib/icons/RedisIcon.svelte';
+	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {

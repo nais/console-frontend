@@ -11,7 +11,11 @@ query KafkaTopics($team: Slug!, $orderBy: KafkaTopicOrder) {
 				endCursor
 			}
 			nodes @loading {
+				__typename
 				name
+				team {
+					slug
+				}
 				environment {
 					name
 				}

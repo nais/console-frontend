@@ -8,6 +8,7 @@
 		type OrderDirection$options
 	} from '$houdini';
 	import Cost from '$lib/components/Cost.svelte';
+	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
@@ -31,7 +32,7 @@
 
 	let { data }: Props = $props();
 
-	let { BigQuery, teamSlug } = $derived(data);
+	let { BigQuery } = $derived(data);
 
 	let rows: number = $derived.by(
 		() => $BigQuery.variables?.first ?? $BigQuery.variables?.last ?? 10
@@ -205,9 +206,7 @@
 					<div class="list-item">
 						<div class="activity-link-wrapper">
 							<div class="list-link">
-								<a href="/team/{teamSlug}/{ds.environment.name}/bigquery/{ds.name}">
-									{ds.name}
-								</a>
+								<PersistenceLink instance={ds} />
 								<Detail>{ds.environment.name}</Detail>
 							</div>
 						</div>

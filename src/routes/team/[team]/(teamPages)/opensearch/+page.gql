@@ -16,9 +16,13 @@ query OpenSearch($team: Slug!, $orderBy: OpenSearchOrder, $from: Date!, $to: Dat
 				endCursor
 			}
 			nodes @loading {
+				__typename
 				name
 				environment {
 					name
+				}
+				team {
+					slug
 				}
 				workload {
 					__typename

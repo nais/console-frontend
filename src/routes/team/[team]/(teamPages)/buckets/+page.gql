@@ -33,9 +33,13 @@ query Buckets(
 				endCursor
 			}
 			nodes {
+				__typename
 				name
 				environment {
 					name
+				}
+				team {
+					slug
 				}
 				workload {
 					__typename

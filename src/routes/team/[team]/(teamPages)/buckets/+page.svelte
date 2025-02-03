@@ -7,6 +7,7 @@
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -29,7 +30,7 @@
 
 	let { data }: Props = $props();
 
-	let { Buckets, teamSlug } = $derived(data);
+	let { Buckets } = $derived(data);
 
 	let rows: number = $derived.by(() => $Buckets.variables?.first ?? $Buckets.variables?.last ?? 10);
 
@@ -201,9 +202,7 @@
 					<div class="list-item">
 						<div class="activity-link-wrapper">
 							<div class="list-link">
-								<a href="/team/{teamSlug}/{b.environment.name}/bucket/{b.name}">
-									{b.name}
-								</a>
+								<PersistenceLink instance={b} />
 								<Detail>{b.environment.name}</Detail>
 							</div>
 						</div>

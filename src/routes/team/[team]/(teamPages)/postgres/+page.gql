@@ -32,11 +32,14 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				endCursor
 			}
 			nodes @loading {
+				__typename
 				name
 				environment {
 					name
 				}
-
+				team {
+					slug
+				}
 				connectionName
 				state
 				version

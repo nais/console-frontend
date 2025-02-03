@@ -16,7 +16,11 @@ query Redis($team: Slug!, $orderBy: RedisInstanceOrder, $from: Date!, $to: Date!
 				endCursor
 			}
 			nodes @loading {
+				__typename
 				name
+				team {
+					slug
+				}
 				environment {
 					name
 				}

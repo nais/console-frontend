@@ -3,6 +3,7 @@
 
 	import { PendingValue, ValkeyInstanceOrderField } from '$houdini';
 	import Cost from '$lib/components/Cost.svelte';
+	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -18,7 +19,7 @@
 
 	let { data }: Props = $props();
 
-	let { Valkey, teamSlug } = $derived(data);
+	let { Valkey } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Valkey.variables?.orderBy?.field,
@@ -82,9 +83,7 @@
 					{#if r !== PendingValue}
 						<Tr>
 							<Td>
-								<a href="/team/{teamSlug}/{r.environment.name}/valkey/{r.name}">
-									{r.name}
-								</a>
+								<PersistenceLink instance={r} />
 							</Td>
 							<Td>
 								{r.environment.name}
