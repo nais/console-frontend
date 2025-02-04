@@ -11,6 +11,8 @@
 	import type { LayoutData } from './$houdini';
 	import Login from './Login.svelte';
 	import { page } from '$app/stores';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import ProgressBar from '$lib/ProgressBar.svelte';
 
 	interface Props {
 		data: LayoutData;
@@ -67,9 +69,23 @@
 			1000 * 60 * 10
 		);
 	});
+
+	let loading = $state(false);
+
+	beforeNavigate(() => {
+		loading = true;
+	});
+
+	afterNavigate(async () => {
+		loading = false;
+	});
 </script>
 
 <div class="full-wrapper {activeColor()} {$page.route.id?.includes('/job/') ? 'job-page' : ''}">
+	{#if loading}
+		<ProgressBar />
+	{/if}
+
 	{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
 		<!-- logged out. We check both to support both  -->
 		<Login />

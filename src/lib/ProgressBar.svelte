@@ -36,7 +36,7 @@
 		top: 0;
 		left: 0;
 		height: 3px;
-		background: #0076ff;
+		background: var(--active-color-strong);
 		z-index: 2147483647;
 		transition: width 300ms ease-out;
 	}
