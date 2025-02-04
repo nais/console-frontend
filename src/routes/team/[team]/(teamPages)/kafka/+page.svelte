@@ -87,7 +87,7 @@
 	{@const topics = $KafkaTopics.data.team.kafkaTopics}
 	<div class="header">
 		<div class="heading">
-			<KafkaIcon height="32px" width="32px" />
+			<KafkaIcon size="32px" />
 			<h3>Kafka topics</h3>
 		</div>
 	</div>

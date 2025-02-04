@@ -90,8 +90,8 @@
 	{@const instances = $OpenSearch.data.team.openSearchInstances}
 	<div class="header">
 		<div class="heading">
-			<OpenSearchIcon height="32px" width="32px" />
-			<h3>OpenSearch</h3>
+			<OpenSearchIcon size="32px" />
+			<h3>OpenSearch instances</h3>
 		</div>
 	</div>
 	<BodyLong style="margin-bottom: 1rem;">

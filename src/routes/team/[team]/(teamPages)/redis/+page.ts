@@ -2,6 +2,7 @@ import {
 	load_Redis,
 	RedisInstanceOrderField,
 	type OrderDirection$options,
+	type RedisInstanceOrder,
 	type RedisInstanceOrderField$options
 } from '$houdini';
 import { error } from '@sveltejs/kit';
@@ -18,6 +19,10 @@ export const load: PageLoad = async (event) => {
 	const field = (url.searchParams.get('field') ||
 		RedisInstanceOrderField.NAME) as RedisInstanceOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const rows: number = parseInt(url.searchParams.get('rows') || '10');
+
+	const after = url.searchParams.get('after') || '';
+	const before = url.searchParams.get('before') || '';
 
 	// Date 30 days ago
 	const from = new Date();
@@ -32,7 +37,8 @@ export const load: PageLoad = async (event) => {
 			event,
 			variables: {
 				team: event.params.team,
-				orderBy: { field: field, direction: direction },
+				orderBy: { field: field, direction: direction } as RedisInstanceOrder,
+				...(before ? { before, last: rows } : { after, first: rows }),
 				to,
 				from
 			}
