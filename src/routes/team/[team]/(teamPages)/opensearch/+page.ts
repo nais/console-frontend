@@ -6,7 +6,7 @@ import {
 	type OrderDirection$options
 } from '$houdini';
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$houdini';
+import type { AfterLoadEvent, PageLoad } from './$houdini';
 
 export const load: PageLoad = async (event) => {
 	const { url } = event;
@@ -45,3 +45,9 @@ export const load: PageLoad = async (event) => {
 		}))
 	};
 };
+
+export function _houdini_afterLoad({ data }: AfterLoadEvent) {
+	return {
+		data
+	};
+}

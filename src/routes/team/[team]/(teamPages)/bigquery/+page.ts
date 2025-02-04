@@ -4,7 +4,7 @@ import {
 	type BigQueryDatasetOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { BigQueryVariables } from './$houdini';
+import type { AfterLoadEvent, BigQueryVariables } from './$houdini';
 
 export const _BigQueryVariables: BigQueryVariables = ({ url }) => {
 	const field = (url.searchParams.get('field') ||
@@ -30,3 +30,9 @@ export const _BigQueryVariables: BigQueryVariables = ({ url }) => {
 		to
 	};
 };
+
+export function _houdini_afterLoad({ data }: AfterLoadEvent) {
+	return {
+		data
+	};
+}

@@ -4,7 +4,7 @@ import {
 	type BucketOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { BucketsVariables } from './$houdini';
+import type { AfterLoadEvent, BucketsVariables } from './$houdini';
 
 export const _BucketsVariables: BucketsVariables = ({ url }) => {
 	const field = (url.searchParams.get('field') ||
@@ -30,3 +30,9 @@ export const _BucketsVariables: BucketsVariables = ({ url }) => {
 		to
 	};
 };
+
+export function _houdini_afterLoad({ data }: AfterLoadEvent) {
+	return {
+		data
+	};
+}
