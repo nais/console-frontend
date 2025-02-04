@@ -39,6 +39,10 @@
 									message
 									state
 								}
+								trigger {
+									type
+									actor
+								}
 							}
 						}
 					}
@@ -110,9 +114,18 @@
 							{run.node.name}
 						</a>
 						<Detail>
-							Triggered
+							{#if run.node.trigger.type === 'MANUAL'}
+								Manually triggered
+							{:else}
+								Automatically triggered
+							{/if}
 							{#if run.node.startTime}
 								<Time time={run.node.startTime} distance={true} />
+							{/if}
+							{#if run.node.trigger.actor}
+								by {run.node.trigger.actor}.
+							{:else}
+								by cron schedule.
 							{/if}
 						</Detail>
 					</div>

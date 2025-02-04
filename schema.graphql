@@ -1588,6 +1588,7 @@ type JobRun implements Node {
 
   """The status of the job run."""
   status: JobRunStatus!
+  trigger: JobRunTrigger!
 }
 
 type JobRunConnection {
@@ -1659,6 +1660,19 @@ type JobRunStatus {
 
   """The state of the job run."""
   state: JobRunState!
+}
+
+type JobRunTrigger {
+  """The actor/user who triggered the job run manually, if applicable."""
+  actor: String
+
+  """The type of trigger that started the job."""
+  type: JobRunTriggerType!
+}
+
+enum JobRunTriggerType {
+  AUTOMATIC
+  MANUAL
 }
 
 type JobSchedule {
