@@ -217,12 +217,11 @@
 								<Detail>{instance.environment.name}</Detail>
 							</div>
 						</div>
-						<div class="info">
-							{#if instance.workload}
-								{@const workload = instance.workload}
-								Owner: <WorkloadLink {workload} showIcon={true} />
-							{/if}
-						</div>
+						{#if instance.workload}
+							<div class="info">
+								Owner: <WorkloadLink workload={instance.workload} showIcon={true} />
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>
