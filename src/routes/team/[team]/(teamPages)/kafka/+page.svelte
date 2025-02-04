@@ -91,16 +91,16 @@
 			<h3>Kafka topics</h3>
 		</div>
 	</div>
-	<BodyLong style="margin-bottom: 1rem;">
-		Kafka topics are categories where messages are published and consumed, acting as distributed
-		logs for event streaming.
+	{#if topics.nodes.length > 0 || $KafkaTopics.data.team.totalCount.pageInfo.totalCount > 0}
+		<BodyLong style="margin-bottom: 1rem;">
+			Kafka topics are categories where messages are published and consumed, acting as distributed
+			logs for event streaming.
 
-		<a href="https://docs.nais.io/persistence/kafka"
-			>Learn more about Kafka and how to get started.</a
-		>
-	</BodyLong>
-	<Card columns={12}>
-		{#if topics.nodes.length > 0 || $KafkaTopics.data.team.totalCount.pageInfo.totalCount > 0}
+			<a href="https://docs.nais.io/persistence/kafka"
+				>Learn more about Kafka and how to get started.</a
+			>
+		</BodyLong>
+		<Card columns={12}>
 			<div class="list">
 				<div class="list-header">
 					<div class="count">
@@ -213,17 +213,17 @@
 					}}
 				/>
 			{/if}
-		{:else}
-			<BodyLong
-				><strong>No Kafka topics found.</strong> Kafka topics are categories where messages are
-				published and consumed, acting as distributed logs for event streaming.
+		</Card>
+	{:else}
+		<BodyLong
+			><strong>No Kafka topics found.</strong> Kafka topics are categories where messages are
+			published and consumed, acting as distributed logs for event streaming.
 
-				<a href="https://docs.nais.io/persistence/kafka"
-					>Learn more about Kafka and how to get started.</a
-				>
-			</BodyLong>
-		{/if}
-	</Card>
+			<a href="https://docs.nais.io/persistence/kafka"
+				>Learn more about Kafka and how to get started.</a
+			>
+		</BodyLong>
+	{/if}
 {/if}
 
 <style>

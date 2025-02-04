@@ -94,24 +94,28 @@
 			<h3>OpenSearch instances</h3>
 		</div>
 	</div>
-	<BodyLong style="margin-bottom: 1rem;">
-		OpenSearch is a distributed search and analytics engine.
-		<a href="https://docs.nais.io/persistence/opensearch/"
-			>Learn more about OpenSearch and how to get started.</a
-		>
-	</BodyLong>
-	<div class="summary-grid">
-		<Card columns={3}>
-			<SummaryCard title="Cost" helpText="Total OpenSearch cost for the last 30 days" color="green">
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				<Cost cost={cost.daily.sum} />
-			</SummaryCard>
-		</Card>
-	</div>
-	<Card columns={12}>
-		{#if instances.nodes.length > 0 || $OpenSearch.data.team.totalCount.pageInfo.totalCount > 0}
+	{#if instances.nodes.length > 0 || $OpenSearch.data.team.totalCount.pageInfo.totalCount > 0}
+		<BodyLong style="margin-bottom: 1rem;">
+			OpenSearch is a distributed search and analytics engine.
+			<a href="https://docs.nais.io/persistence/opensearch/"
+				>Learn more about OpenSearch and how to get started.</a
+			>
+		</BodyLong>
+		<div class="summary-grid">
+			<Card columns={3}>
+				<SummaryCard
+					title="Cost"
+					helpText="Total OpenSearch cost for the last 30 days"
+					color="green"
+				>
+					{#snippet icon({ color })}
+						<WalletIcon height="32px" width="32px" {color} />
+					{/snippet}
+					<Cost cost={cost.daily.sum} />
+				</SummaryCard>
+			</Card>
+		</div>
+		<Card columns={12}>
 			<div class="list">
 				<div class="list-header">
 					<div class="count">
@@ -236,16 +240,16 @@
 					}}
 				/>
 			{/if}
-		{:else}
-			<BodyLong
-				><strong>No OpenSearch found.</strong> OpenSearch is a distributed search and analytics
-				engine.
-				<a href="https://docs.nais.io/persistence/opensearch/"
-					>Learn more about OpenSearch and how to get started.</a
-				>
-			</BodyLong>
-		{/if}
-	</Card>
+		</Card>
+	{:else}
+		<BodyLong
+			><strong>No OpenSearch found.</strong> OpenSearch is a distributed search and analytics
+			engine.
+			<a href="https://docs.nais.io/persistence/opensearch/"
+				>Learn more about OpenSearch and how to get started.</a
+			>
+		</BodyLong>
+	{/if}
 {/if}
 
 <style>

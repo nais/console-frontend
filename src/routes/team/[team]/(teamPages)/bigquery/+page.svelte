@@ -95,28 +95,28 @@
 			<h3>BigQuery datasets</h3>
 		</div>
 	</div>
-	<BodyLong style="margin-bottom: 1rem;">
-		BigQuery datasets store structured data optimized for analytical workloads.
-		<a href="https://docs.nais.io/persistence/bigquery"
-			>Learn more about BigQuery datasets and how to get started.</a
-		>
-	</BodyLong>
-	<div class="summary-grid">
-		<Card columns={3}>
-			<SummaryCard
-				title="Cost"
-				helpText="Total Big Query cost for team for the last 30 days."
-				color="green"
+	{#if datasets.nodes.length > 0 || $BigQuery.data.team.totalCount.pageInfo.totalCount > 0}
+		<BodyLong style="margin-bottom: 1rem;">
+			BigQuery datasets store structured data optimized for analytical workloads.
+			<a href="https://docs.nais.io/persistence/bigquery"
+				>Learn more about BigQuery datasets and how to get started.</a
 			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				<Cost cost={cost.daily.sum} />
-			</SummaryCard>
-		</Card>
-	</div>
-	<Card columns={12}>
-		{#if datasets.nodes.length > 0 || $BigQuery.data.team.totalCount.pageInfo.totalCount > 0}
+		</BodyLong>
+		<div class="summary-grid">
+			<Card columns={3}>
+				<SummaryCard
+					title="Cost"
+					helpText="Total Big Query cost for team for the last 30 days."
+					color="green"
+				>
+					{#snippet icon({ color })}
+						<WalletIcon height="32px" width="32px" {color} />
+					{/snippet}
+					<Cost cost={cost.daily.sum} />
+				</SummaryCard>
+			</Card>
+		</div>
+		<Card columns={12}>
 			<div class="list">
 				<div class="list-header">
 					<div class="count">
@@ -242,16 +242,16 @@
 					}}
 				/>
 			{/if}
-		{:else}
-			<BodyLong
-				><strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
-				optimized for analytical workloads.
-				<a href="https://docs.nais.io/persistence/bigquery"
-					>Learn more about BigQuery datasets and how to get started.</a
-				>
-			</BodyLong>
-		{/if}
-	</Card>
+		</Card>
+	{:else}
+		<BodyLong
+			><strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
+			optimized for analytical workloads.
+			<a href="https://docs.nais.io/persistence/bigquery"
+				>Learn more about BigQuery datasets and how to get started.</a
+			>
+		</BodyLong>
+	{/if}
 {/if}
 
 <style>
