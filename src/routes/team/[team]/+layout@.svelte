@@ -50,43 +50,43 @@
 		jobs: { name: 'Jobs', icon: BriefcaseClockIcon },
 		deploy: { name: 'Deployments', icon: RocketIcon },
 		cost: { name: 'Cost', icon: WalletIcon },
-		utilization: { name: 'utilization', icon: LineGraphStackedIcon },
-		members: { name: 'members', icon: PersonIcon },
-		repositories: { name: 'repositories', icon: BranchingIcon },
-		settings: { name: 'settings', icon: CogIcon },
-		'activity-log': { name: 'activity log', icon: ShieldLockIcon },
-		secrets: { name: 'secrets', icon: PadlockLockedIcon },
-		postgres: { name: 'postgres', icon: DatabaseIcon },
-		buckets: { name: 'buckets', icon: BucketIcon },
-		redis: { name: 'redis', icon: RedisIcon },
-		valkey: { name: 'valkey', icon: ValkeyIcon },
-		opensearch: { name: 'opensearch', icon: OpenSearchIcon },
-		kafka: { name: 'kafka topics', icon: KafkaIcon },
-		bigquery: { name: 'bigquery', icon: BigQueryIcon },
-		unleash: { name: 'unleash', icon: UnleashIcon },
-		vulnerabilities: { name: 'vulnerabilities', icon: VirusIcon }
+		utilization: { name: 'Utilization', icon: LineGraphStackedIcon },
+		members: { name: 'Members', icon: PersonIcon },
+		repositories: { name: 'Repositories', icon: BranchingIcon },
+		settings: { name: 'Settings', icon: CogIcon },
+		'activity-log': { name: 'Activity log', icon: ShieldLockIcon },
+		secrets: { name: 'Secrets', icon: PadlockLockedIcon },
+		postgres: { name: 'Postgres', icon: DatabaseIcon },
+		buckets: { name: 'Buckets', icon: BucketIcon },
+		redis: { name: 'Redis', icon: RedisIcon },
+		valkey: { name: 'Valkey', icon: ValkeyIcon },
+		opensearch: { name: 'OpenSearch', icon: OpenSearchIcon },
+		kafka: { name: 'Kafka topics', icon: KafkaIcon },
+		bigquery: { name: 'BigQuery', icon: BigQueryIcon },
+		unleash: { name: 'Unleash', icon: UnleashIcon },
+		vulnerabilities: { name: 'Vulnerabilities', icon: VirusIcon }
 	};
 
 	const simpleJobPages: { [key: string]: { name: string; icon?: Component } } = {
 		'': { name: '' }, // overview
-		status: { name: 'status', icon: BellIcon },
-		deploys: { name: 'deployments', icon: RocketIcon },
-		cost: { name: 'cost', icon: WalletIcon },
-		logs: { name: 'logs', icon: Density3Icon },
-		manifest: { name: 'manifest', icon: FileTextIcon },
-		delete: { name: 'delete', icon: TrashIcon },
-		image: { name: 'image details', icon: ImageIcon }
+		status: { name: 'Status', icon: BellIcon },
+		deploys: { name: 'Deployments', icon: RocketIcon },
+		cost: { name: 'Cost', icon: WalletIcon },
+		logs: { name: 'Logs', icon: Density3Icon },
+		manifest: { name: 'Manifest', icon: FileTextIcon },
+		delete: { name: 'Delete', icon: TrashIcon },
+		image: { name: 'Image details', icon: ImageIcon }
 	};
 	const simpleAppPages: { [key: string]: { name: string; icon?: Component } } = {
 		'': { name: '' }, // overview
-		status: { name: 'status', icon: BellIcon },
-		deploys: { name: 'deployments', icon: RocketIcon },
-		cost: { name: 'cost', icon: WalletIcon },
-		utilization: { name: 'utilization', icon: LineGraphStackedIcon },
-		logs: { name: 'logs', icon: Density3Icon },
-		manifest: { name: 'manifest', icon: FileTextIcon },
-		delete: { name: 'delete', icon: TrashIcon },
-		image: { name: 'image details', icon: ImageIcon }
+		status: { name: 'Status', icon: BellIcon },
+		deploys: { name: 'Deployments', icon: RocketIcon },
+		cost: { name: 'Cost', icon: WalletIcon },
+		utilization: { name: 'Utilization', icon: LineGraphStackedIcon },
+		logs: { name: 'Logs', icon: Density3Icon },
+		manifest: { name: 'Manifest', icon: FileTextIcon },
+		delete: { name: 'Delete', icon: TrashIcon },
+		image: { name: 'Image details', icon: ImageIcon }
 	};
 
 	const pages: {
@@ -97,7 +97,7 @@
 		'/team/[team]/(teamPages)/[env]/secret/[secret]': (params: Data) => {
 			return [
 				{
-					name: 'secrets',
+					name: 'Secrets',
 					path: replacer('/team/[team]/(teamPages)/secrets', params),
 					icon: PadlockLockedIcon
 				},
@@ -111,7 +111,7 @@
 		'/team/[team]/(teamPages)/[env]/postgres/[postgres]': (params: Data) => {
 			return [
 				{
-					name: 'postgres',
+					name: 'Postgres',
 					path: replacer('/team/[team]/(teamPages)/postgres', params),
 					icon: DatabaseIcon
 				},
@@ -125,7 +125,7 @@
 		'/team/[team]/(teamPages)/[env]/bucket/[bucket]': (params: Data) => {
 			return [
 				{
-					name: 'buckets',
+					name: 'Buckets',
 					path: replacer('/team/[team]/(teamPages)/buckets', params),
 					icon: BucketIcon
 				},
@@ -139,7 +139,7 @@
 		'/team/[team]/(teamPages)/[env]/redis/[redis]': (params: Data) => {
 			return [
 				{
-					name: 'redis',
+					name: 'Redis',
 					icon: RedisIcon,
 					path: replacer('/team/[team]/(teamPages)/redis', params)
 				},
@@ -153,7 +153,7 @@
 		'/team/[team]/(teamPages)/[env]/valkey/[valkey]': (params: Data) => {
 			return [
 				{
-					name: 'valkey',
+					name: 'Valkey',
 					path: replacer('/team/[team]/(teamPages)/valkey', params),
 					icon: ValkeyIcon
 				},
@@ -167,7 +167,7 @@
 		'/team/[team]/(teamPages)/[env]/opensearch/[opensearch]': (params: Data) => {
 			return [
 				{
-					name: 'opensearch',
+					name: 'OpenSearch',
 					path: replacer('/team/[team]/(teamPages)/opensearch', params),
 					icon: OpenSearchIcon
 				},
@@ -181,7 +181,7 @@
 		'/team/[team]/(teamPages)/[env]/kafka/[kafka]': (params: Data) => {
 			return [
 				{
-					name: 'kafka topic',
+					name: 'Kafka topic',
 					path: replacer('/team/[team]/(teamPages)/kafka', params),
 					icon: KafkaIcon
 				},
@@ -195,7 +195,7 @@
 		'/team/[team]/(teamPages)/[env]/bigquery/[bigquery]': (params: Data) => {
 			return [
 				{
-					name: 'bigquery',
+					name: 'BigQuery',
 					path: replacer('/team/[team]/(teamPages)/bigquery', params),
 					icon: BigQueryIcon
 				},
@@ -212,7 +212,7 @@
 		pages[`/team/[team]/[env]/job/[job]${key ? '/' + key : ''}`] = (params: Data) => {
 			const ret = [
 				{
-					name: 'jobs',
+					name: 'Jobs',
 					path: replacer('/team/[team]/jobs', params),
 					icon: BriefcaseClockIcon
 				},
@@ -242,7 +242,7 @@
 		pages[`/team/[team]/[env]/app/[app]${key ? '/' + key : ''}`] = (params: Data) => {
 			const ret = [
 				{
-					name: 'applications',
+					name: 'Applications',
 					path: replacer('/team/[team]/applications', params),
 					icon: PackageIcon
 				},
