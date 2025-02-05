@@ -405,12 +405,6 @@
 		font-size: 1rem;
 	}
 
-	.type-icon {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-
 	.type-icon-header {
 		display: flex;
 		flex-direction: row;
