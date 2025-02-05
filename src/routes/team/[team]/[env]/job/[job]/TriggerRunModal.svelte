@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BodyShort, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Modal, TextField } from '@nais/ds-svelte-community';
 
 	interface Props {
 		jobName: string;
