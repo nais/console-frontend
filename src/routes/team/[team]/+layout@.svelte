@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
@@ -32,7 +33,6 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import type { LayoutData } from './$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 
 	interface Props {
 		data: LayoutData;
@@ -320,20 +320,17 @@
 				<IconWithText text={teamSlug} size="medium" icon={PersonGroupIcon} />
 			</a>
 
-			{#each crumbs($page.route.id, $page.params) as item, index (item)}
+			{#each crumbs($page.route.id, $page.params) as item}
 				<BodyLong style="height: 28px; width: 28px; text-align: center; color: var(--a-gray-500);"
 					>/</BodyLong
 				>
-				{#if item.path && !item.isHeader}
+				{#if item.path}
 					<a class="unstyled" href={item.path}>
-						{#if item.icon || (item.isHeader && index !== crumbs($page.route.id, $page.params).length - 1)}
-							<div class="type-icon">
-								<item.icon />
-							</div>
+						{#if item.icon && !item.isHeader}
+							<IconWithText text={item.name} size="medium" icon={item.icon} />
+						{:else}
+							<IconWithText text={item.name} size="medium" />
 						{/if}
-						<div>
-							{item.name}
-						</div>
 					</a>
 				{:else}
 					<span>{item.name}</span>
