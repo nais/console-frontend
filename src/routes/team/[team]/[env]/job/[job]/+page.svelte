@@ -4,7 +4,7 @@
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
-	import Traffic from '$lib/components/Traffic.svelte';
+	import TrafficV2 from '$lib/components/TrafficV2.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -85,8 +85,7 @@
 				<Runs {job} />
 			</div>
 			<div>
-				<Heading level="2" size="medium">Traffic policies</Heading>
-				<Traffic workload={job} />
+				<TrafficV2 workload={job} />
 			</div>
 			<div>
 				<Heading level="2" size="medium">Persistence</Heading>

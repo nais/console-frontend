@@ -13,9 +13,20 @@
 			};
 		};
 		showIcon?: boolean;
+		//iconSize?: string;
+		size?: 'small' | 'medium' | 'large';
 	}
 
-	let { workload, showIcon }: Props = $props();
+	var iconSize: string;
+
+	let { workload, showIcon, size = 'medium' }: Props = $props();
+	if (size === 'small') {
+		iconSize = '18px';
+	} else if (size === 'medium') {
+		iconSize = '24px';
+	} else {
+		iconSize = '32px';
+	}
 </script>
 
 <a
@@ -23,12 +34,4 @@
 		? 'job'
 		: 'app'}/{workload.name}"
 >
-	{#if showIcon}
-		{#if workload.__typename === 'Job'}
-			<BriefcaseClockIcon />
-		{:else}
-			<PackageIcon />
-		{/if}
-	{/if}
-	{workload.name}
 </a>
