@@ -32,6 +32,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import type { LayoutData } from './$houdini';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 
 	interface Props {
 		data: LayoutData;
@@ -315,13 +316,8 @@
 <div class="breadcrumbs">
 	<div class="page">
 		<nav>
-			<a class="unstyled" href="/team/{teamSlug}"
-				><div class="type-icon">
-					<PersonGroupIcon />
-				</div>
-				<div>
-					{teamSlug}
-				</div>
+			<a class="unstyled" href="/team/{teamSlug}">
+				<IconWithText text={teamSlug} size="medium" icon={PersonGroupIcon} />
 			</a>
 
 			{#each crumbs($page.route.id, $page.params) as item, index (item)}

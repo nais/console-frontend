@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import IconWithText from './IconWithText.svelte';
 
 	interface Props {
 		workload: {
@@ -16,17 +17,7 @@
 		//iconSize?: string;
 		size?: 'small' | 'medium' | 'large';
 	}
-
-	var iconSize: string;
-
 	let { workload, showIcon, size = 'medium' }: Props = $props();
-	if (size === 'small') {
-		iconSize = '18px';
-	} else if (size === 'medium') {
-		iconSize = '24px';
-	} else {
-		iconSize = '32px';
-	}
 </script>
 
 <a
@@ -34,4 +25,15 @@
 		? 'job'
 		: 'app'}/{workload.name}"
 >
+	<IconWithText text={workload.name} {size}>
+		{#snippet icon()}
+			{#if showIcon}
+				{#if workload.__typename === 'Job'}
+					<BriefcaseClockIcon />
+				{:else}
+					<PackageIcon />
+				{/if}
+			{/if}
+		{/snippet}
+	</IconWithText>
 </a>
