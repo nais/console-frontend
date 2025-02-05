@@ -3,6 +3,7 @@
 	import Globe from '$lib/icons/Globe.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
+	import IconWithText from './IconWithText.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
@@ -178,13 +179,11 @@
 				{#each $traffic.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external}
 					{#each external.ports as port}
 						<li>
-							<Globe size="24px" />
-							<!--a href="{external.target}:{port}"-->{external.target}:{port}<!--/a><br /-->
+							<IconWithText text={`https://${external.target}:${port}`} size="large" icon={Globe} />
 						</li>
 					{:else}
 						<li>
-							<Globe size="24px" />
-							<!--a href="https://{external.target}"-->https://{external.target}<!--/a><br /-->
+							<IconWithText text={`https://${external.target}`} size="large" icon={Globe} />
 						</li>
 					{/each}
 				{/each}
@@ -192,10 +191,10 @@
 				{#each $traffic.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external}
 					{#each external.ports as port}
 						<li>
-							<Globe size="24px" />{external.target}:{port}<br />
+							<IconWithText text={`${external.target}:${port}`} size="large" icon={Globe} />
 						</li>
 					{:else}
-						<li><Globe size="24px" />{external.target}<br /></li>
+						<li><IconWithText text={`${external.target}`} size="large" icon={Globe} /></li>
 					{/each}
 				{/each}
 			</ul>
@@ -222,7 +221,7 @@
 
 						in {$traffic.environment.name}
 					{:else if rule.targetWorkload}
-						<WorkloadLink workload={rule.targetWorkload} showIcon={true} iconSize="24px" />
+						<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="large" />
 					{/if}
 				</li>
 			{/each}

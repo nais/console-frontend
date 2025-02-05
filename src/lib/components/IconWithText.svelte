@@ -39,7 +39,7 @@
 		gap: var(--a-spacing-1);
 	}
 	.icon-with-text--medium {
-		font-size: 1rem;
+		font-size: 1.125rem;
 		gap: var(--a-spacing-1-alt);
 	}
 	.icon-with-text--large {

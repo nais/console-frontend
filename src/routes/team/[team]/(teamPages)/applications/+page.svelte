@@ -24,9 +24,9 @@
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
 	import {
-		BriefcaseClockIcon,
 		ChevronDownIcon,
 		CircleFillIcon,
+		PackageIcon,
 		RocketIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
@@ -126,7 +126,7 @@
 	<Card columns={12}>
 		<div class="header">
 			<div class="heading">
-				<BriefcaseClockIcon width="32px" height="32px" />
+				<PackageIcon width="32px" height="32px" />
 				<h3>Applications</h3>
 			</div>
 		</div>

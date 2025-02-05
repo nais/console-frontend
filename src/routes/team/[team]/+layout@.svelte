@@ -46,10 +46,10 @@
 
 	// /team/[team]/(teamPages)/{KEY IN MAP}: name of crumb
 	const simpleTeamPages: { [key: string]: { name: string; icon?: Component } } = {
-		applications: { name: 'applications', icon: PackageIcon },
-		jobs: { name: 'jobs', icon: BriefcaseClockIcon },
-		deploy: { name: 'deployments', icon: RocketIcon },
-		cost: { name: 'cost', icon: WalletIcon },
+		applications: { name: 'Applications', icon: PackageIcon },
+		jobs: { name: 'Jobs', icon: BriefcaseClockIcon },
+		deploy: { name: 'Deployments', icon: RocketIcon },
+		cost: { name: 'Cost', icon: WalletIcon },
 		utilization: { name: 'utilization', icon: LineGraphStackedIcon },
 		members: { name: 'members', icon: PersonIcon },
 		repositories: { name: 'repositories', icon: BranchingIcon },
