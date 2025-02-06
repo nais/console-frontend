@@ -88,7 +88,6 @@
 				<TrafficV2 workload={job} />
 			</div>
 			<div>
-				<Heading level="2" size="medium">Persistence</Heading>
 				<Persistence workload={job} />
 			</div>
 		</div>

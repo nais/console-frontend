@@ -108,7 +108,6 @@
 			<Traffic workload={app} />
 		</Card>
 		<Card columns={4}>
-			<h4>Persistence</h4>
 			<Persistence workload={app} />
 		</Card>
 		<Card columns={4}>
