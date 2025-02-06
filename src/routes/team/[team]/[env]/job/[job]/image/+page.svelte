@@ -5,12 +5,14 @@
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import { ImageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -50,10 +52,12 @@
 
 {#if $JobImageDetails.data}
 	{@const image = $JobImageDetails.data.team.environment.workload.image}
+	<div class="header">
+		<IconWithText icon={ImageIcon} text="Image details" size="large" />
+	</div>
 	<div class="grid">
 		<Card columns={8}>
-			<h4 class="imageHeader">
-				Image details
+			<div class="copy">
 				<CopyButton
 					size="xsmall"
 					variant="action"
@@ -61,7 +65,7 @@
 					activeText="Image name copied"
 					copyText={image.name + ':' + image.tag}
 				/>
-			</h4>
+			</div>
 			<div class="imageGrid">
 				<div class="registry">
 					<h5>Registry</h5>
@@ -150,19 +154,22 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
+	}
 	.circles {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		margin: 2rem;
 	}
-
-	.imageHeader {
+	.copy {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 8px;
-		gap: 0.5rem;
+		justify-content: flex-end;
 	}
 
 	code {
