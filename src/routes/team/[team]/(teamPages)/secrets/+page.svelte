@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { PendingValue, SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -101,20 +102,15 @@
 	<GraphErrors errors={$Secrets.errors} />
 {:else if $Secrets.data}
 	{@const secrets = $Secrets.data.team.secrets}
+	<div class="header">
+		<IconWithText text="Secrets" icon={PadlockLockedIcon} size="large" />
+
+		<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
+			Create Secret
+		</Button>
+	</div>
 	<div class="grid">
 		<Card columns={12}>
-			<div class="header">
-				<div style="display: flex; align-items: center; width: 50%; gap: 4px;">
-					<PadlockLockedIcon width="32px" height="32px" />
-					<h3 style="margin: 0px;">Secrets</h3>
-				</div>
-				<div>
-					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
-						Create Secret
-					</Button>
-				</div>
-			</div>
-
 			<div>
 				<div style="padding-bottom: 1rem;">
 					<ToggleGroup
@@ -225,13 +221,6 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		margin-bottom: 1rem;
-		gap: 1rem;
+		margin-bottom: var(--a-spacing-3);
 	}
 </style>

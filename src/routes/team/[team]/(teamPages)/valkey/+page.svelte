@@ -8,6 +8,7 @@
 		type ValkeyInstanceOrderField$options
 	} from '$houdini';
 	import Cost from '$lib/components/Cost.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -83,16 +84,13 @@
 </script>
 
 <GraphErrors errors={$Valkey.errors} />
-
+<div class="header">
+	<IconWithText icon={ValkeyIcon} text="Valkey instances" size="large" />
+</div>
 {#if $Valkey.data}
 	{@const cost = $Valkey.data.team.cost}
 	{@const instances = $Valkey.data.team.valkeyInstances}
-	<div class="header">
-		<div class="heading">
-			<ValkeyIcon size="32px" />
-			<h3>Valkey instances</h3>
-		</div>
-	</div>
+
 	{#if instances.nodes.length > 0 || $Valkey.data.team.totalCount.pageInfo.totalCount > 0}
 		<BodyLong style="margin-bottom: 1rem;">
 			Valkey is a key value database that is used for storing and querying data. It is a good choice
@@ -255,16 +253,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 
 	.list {

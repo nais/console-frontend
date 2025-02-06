@@ -8,6 +8,7 @@
 		type OrderDirection$options
 	} from '$houdini';
 	import Cost from '$lib/components/Cost.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -90,10 +91,7 @@
 	{@const cost = $BigQuery.data.team.cost}
 	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
 	<div class="header">
-		<div class="heading">
-			<BigQueryIcon size="32px" />
-			<h3>BigQuery datasets</h3>
-		</div>
+		<IconWithText text="BigQuery datasets" icon={BigQueryIcon} size="large" />
 	</div>
 	{#if datasets.nodes.length > 0 || $BigQuery.data.team.totalCount.pageInfo.totalCount > 0}
 		<BodyLong style="margin-bottom: 1rem;">
@@ -259,16 +257,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 
 	.list {

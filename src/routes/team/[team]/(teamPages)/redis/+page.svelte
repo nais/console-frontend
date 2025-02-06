@@ -8,6 +8,7 @@
 		type RedisInstanceOrderField$options
 	} from '$houdini';
 	import Cost from '$lib/components/Cost.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -88,10 +89,7 @@
 	{@const cost = $Redis.data.team.cost}
 	{@const instances = $Redis.data.team.redisInstances}
 	<div class="header">
-		<div class="heading">
-			<RedisIcon size="32px" />
-			<h3>Redis instances</h3>
-		</div>
+		<IconWithText text="Redis instances" icon={RedisIcon} size="large" />
 	</div>
 	{#if instances.nodes.length > 0 || $Redis.data.team.totalCount.pageInfo.totalCount > 0}
 		<BodyLong style="margin-bottom: 1rem;">
@@ -253,16 +251,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 
 	.list {

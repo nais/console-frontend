@@ -3,7 +3,6 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
@@ -42,8 +41,6 @@
 		)
 	);
 </script>
-
-<h4 class="heading"><RocketIcon />Deployments</h4>
 
 <Table size="small" zebraStripes>
 	<Thead>
@@ -124,11 +121,3 @@
 		{/if}
 	</Tbody>
 </Table>
-
-<style>
-	.heading {
-		display: flex;
-		gap: 0.3rem;
-		align-items: center;
-	}
-</style>

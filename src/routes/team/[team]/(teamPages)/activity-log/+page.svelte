@@ -4,6 +4,7 @@
 		type ActivityLogEntryResourceType$options
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
@@ -76,14 +77,11 @@
 	};
 </script>
 
+<div class="header">
+	<IconWithText text="Activity log" icon={ShieldLockIcon} size="large" />
+</div>
 <div class="grid">
 	<Card columns={12}>
-		<div class="header">
-			<div class="heading">
-				<ShieldLockIcon width="32px" height="32px" />
-				<h3>Activity log</h3>
-			</div>
-		</div>
 		{#if viewerIsMember}
 			{#if $ActivityLog.data}
 				{@const ae = $ActivityLog.data}
@@ -274,16 +272,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 
 	.list {

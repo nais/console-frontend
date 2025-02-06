@@ -3,8 +3,10 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import {
 		Alert,
@@ -183,6 +185,10 @@
 
 <GraphErrors errors={$Unleash.errors} />
 <GraphErrors errors={$createUnleashForTeam.errors} />
+
+<div class="header">
+	<IconWithText text="Unleash" icon={UnleashIcon} size="large" />
+</div>
 
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
@@ -380,7 +386,6 @@
 	</div>
 {:else}
 	<div style="">
-		<h2>Unleash Feature Toggles</h2>
 		<p>
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
@@ -392,6 +397,13 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
+	}
 	.modal-overrider :global(.navds-modal) {
 		overflow: visible;
 	}
