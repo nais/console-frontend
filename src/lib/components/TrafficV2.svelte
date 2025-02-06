@@ -75,13 +75,13 @@
 							<li>
 								<IconWithText
 									text={`https://${external.target}:${port}`}
-									size="large"
+									size="medium"
 									icon={Globe}
 								/>
 							</li>
 						{:else}
 							<li>
-								<IconWithText text={`https://${external.target}`} size="large" icon={Globe} />
+								<IconWithText text={`https://${external.target}`} size="medium" icon={Globe} />
 							</li>
 						{/each}
 					{/each}
@@ -89,10 +89,10 @@
 					{#each $traffic.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external}
 						{#each external.ports as port}
 							<li>
-								<IconWithText text={`${external.target}:${port}`} size="large" icon={Globe} />
+								<IconWithText text={`${external.target}:${port}`} size="medium" icon={Globe} />
 							</li>
 						{:else}
-							<li><IconWithText text={`${external.target}`} size="large" icon={Globe} /></li>
+							<li><IconWithText text={`${external.target}`} size="medium" icon={Globe} /></li>
 						{/each}
 					{/each}
 				</ul>
