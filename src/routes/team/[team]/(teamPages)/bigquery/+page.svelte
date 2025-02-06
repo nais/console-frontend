@@ -94,7 +94,7 @@
 		<IconWithText text="BigQuery datasets" icon={BigQueryIcon} size="large" />
 	</div>
 	{#if datasets.nodes.length > 0 || $BigQuery.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			BigQuery datasets store structured data optimized for analytical workloads.
 			<a href="https://docs.nais.io/persistence/bigquery"
 				>Learn more about BigQuery datasets and how to get started.</a

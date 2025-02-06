@@ -90,7 +90,7 @@
 		<IconWithText text="Buckets" icon={BucketIcon} size="large" />
 	</div>
 	{#if buckets.nodes.length > 0 || $Buckets.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			Storage buckets are containers for storing and managing data in the cloud.
 			<a href="https://docs.nais.io/persistence/buckets"
 				>Learn more about Buckets and how to get started.</a

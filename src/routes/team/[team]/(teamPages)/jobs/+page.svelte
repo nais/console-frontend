@@ -132,7 +132,7 @@
 	<IconWithText text="Jobs" icon={BriefcaseClockIcon} size="large" />
 </div>
 
-<BodyLong>
+<BodyLong spacing>
 	{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}
 		<strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
 		completion and then exit.

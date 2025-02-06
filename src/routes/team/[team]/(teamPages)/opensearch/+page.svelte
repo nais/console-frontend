@@ -93,7 +93,7 @@
 		<IconWithText text="OpenSearch instances" icon={OpenSearchIcon} size="large" />
 	</div>
 	{#if instances.nodes.length > 0 || $OpenSearch.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			OpenSearch is a distributed search and analytics engine.
 			<a href="https://docs.nais.io/persistence/opensearch/"
 				>Learn more about OpenSearch and how to get started.</a

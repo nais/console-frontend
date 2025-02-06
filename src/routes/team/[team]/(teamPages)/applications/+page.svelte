@@ -124,7 +124,7 @@
 	<IconWithText text="Applications" icon={PackageIcon} size="large" />
 </div>
 
-<BodyLong>
+<BodyLong spacing>
 	{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
 		<strong>No applications found.</strong> Applications are long-running processes designed to
 		handle continuous workloads and remain active until stopped or restarted.

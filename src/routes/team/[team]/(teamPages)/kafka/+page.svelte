@@ -90,7 +90,7 @@
 		<IconWithText text="Kafka topics" icon={KafkaIcon} size="large" />
 	</div>
 	{#if topics.nodes.length > 0 || $KafkaTopics.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			Kafka topics are categories where messages are published and consumed, acting as distributed
 			logs for event streaming.
 

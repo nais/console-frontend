@@ -92,7 +92,7 @@
 		<IconWithText text="Redis instances" icon={RedisIcon} size="large" />
 	</div>
 	{#if instances.nodes.length > 0 || $Redis.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			Redis is a key value database that is used for storing and querying data.
 			<a href="https://docs.nais.io/persistence/redis/"
 				>Learn more about Redis and how to get started.</a

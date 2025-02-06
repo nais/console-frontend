@@ -92,7 +92,7 @@
 	{@const instances = $Valkey.data.team.valkeyInstances}
 
 	{#if instances.nodes.length > 0 || $Valkey.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			Valkey is a key value database that is used for storing and querying data. It is a good choice
 			for storing data that is not relational in nature and often used for caching.
 			<a href="https://docs.nais.io/persistence/valkey"
