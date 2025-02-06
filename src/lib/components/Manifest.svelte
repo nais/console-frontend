@@ -37,6 +37,7 @@
 			activeText="Manifest copied"
 			variant="action"
 			copyText={$manifest.manifest.content}
+			size="xsmall"
 		/>
 	</div>
 
