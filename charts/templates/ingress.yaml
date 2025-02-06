@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "X-Robots-Tag: noindex";
 spec:
-  ingressClassName: '{{ .Values.ingressClass }}'
+  ingressClassName: 'nais-ingress-external'
   rules:
     - host: '{{ .Values.host }}'
       http:
