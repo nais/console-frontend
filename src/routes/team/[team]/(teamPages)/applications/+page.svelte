@@ -7,6 +7,7 @@
 		type OrderDirection$options
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -32,7 +33,6 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 
 	interface Props {
 		data: PageData;
@@ -130,7 +130,7 @@
 
 <GraphErrors errors={$Applications.errors} />
 
-{#if $Applications.data}
+{#if $Applications.data && $Applications.data.team.applications.nodes.length > 0}
 	{@const apps = $Applications.data.team.applications}
 	<Card columns={12}>
 		{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}

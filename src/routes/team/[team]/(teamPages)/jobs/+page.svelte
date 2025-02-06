@@ -135,7 +135,7 @@
 	{/if}
 </BodyLong>
 
-{#if $Jobs.data}
+{#if $Jobs.data && $Jobs.data.team.jobs.nodes.length > 0}
 	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>
 		{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
