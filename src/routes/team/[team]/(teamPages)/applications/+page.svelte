@@ -38,13 +38,9 @@
 	}
 
 	let { data }: Props = $props();
-	let { Applications, initialEnvironments } = $derived(data);
+	let { Applications, initialEnvironments, rows } = $derived(data);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
-
-	let rows: number = $derived.by(
-		() => $Applications.variables?.first ?? $Applications.variables?.last ?? 10
-	);
 
 	let after: string = $derived($Applications.variables?.after ?? '');
 	let before: string = $derived($Applications.variables?.before ?? '');
@@ -88,15 +84,10 @@
 		});
 	};
 
-	const handleNumberOfRows = (value: number) => {
-		changeQuery({ newRows: value, resetPagination: true });
-	};
-
 	const changeQuery = (
 		params: {
 			field?: ApplicationOrderField$options;
 			direction?: OrderDirection$options;
-			newRows?: number;
 			after?: string;
 			before?: string;
 			resetPagination?: boolean;
@@ -107,7 +98,6 @@
 		changeParams({
 			direction: params.direction || orderDirection,
 			field: params.field || orderField,
-			rows: params.newRows?.toString() || rows.toString(),
 			before: params.resetPagination ? '' : (params.before ?? before),
 			after: params.resetPagination ? '' : (params.after ?? after),
 			filter: params.newFilter ?? filter,
@@ -292,30 +282,6 @@
 											</div>
 										</ActionMenuRadioItem>
 									{/if}
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key rows}
-								<ActionMenuRadioGroup value={rows} label="Rows per page">
-									<ActionMenuRadioItem
-										value="5"
-										onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="10"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>10</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="25"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>25</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="50"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>50</ActionMenuRadioItem
-									>
 								</ActionMenuRadioGroup>
 							{/key}
 						</ActionMenu>

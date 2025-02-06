@@ -7,6 +7,8 @@ import {
 } from '$houdini';
 import type { AfterLoadEvent, JobsVariables } from './$houdini';
 
+const rows = 25;
+
 export const _JobsVariables: JobsVariables = ({ url }) => {
 	const filter: string = url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
@@ -15,7 +17,6 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 			: url.searchParams.get('environments')?.split(',') || [];
 	const field = (url.searchParams.get('field') || JobOrderField.NAME) as JobOrderField$options;
 	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
-	const rows: number = parseInt(url.searchParams.get('rows') || '10');
 
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';
@@ -28,5 +29,5 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 };
 
 export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-	return { data };
+	return { data, rows };
 }

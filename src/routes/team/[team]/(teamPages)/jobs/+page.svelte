@@ -49,11 +49,9 @@
 	}
 
 	let { data }: Props = $props();
-	let { Jobs } = $derived(data);
+	let { Jobs, rows } = $derived(data);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');
-
-	let rows: number = $derived.by(() => $Jobs.variables?.first ?? $Jobs.variables?.last ?? 10);
 
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
@@ -97,15 +95,10 @@
 		});
 	};
 
-	const handleNumberOfRows = (value: number) => {
-		changeQuery({ newRows: value, resetPagination: true });
-	};
-
 	const changeQuery = (
 		params: {
 			field?: JobOrderField$options;
 			direction?: OrderDirection$options;
-			newRows?: number;
 			after?: string;
 			before?: string;
 			resetPagination?: boolean;
@@ -116,7 +109,6 @@
 		changeParams({
 			direction: params.direction || orderDirection,
 			field: params.field || orderField,
-			rows: params.newRows?.toString() || rows.toString(),
 			before: params.resetPagination ? '' : (params.before ?? before),
 			after: params.resetPagination ? '' : (params.after ?? after),
 			filter: params.newFilter ?? filter,
@@ -285,30 +277,6 @@
 											>Descending</ActionMenuRadioItem
 										>
 									{/if}
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key rows}
-								<ActionMenuRadioGroup value={rows} label="Rows per page">
-									<ActionMenuRadioItem
-										value="5"
-										onselect={(value) => handleNumberOfRows(value as number)}>5</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="10"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>10</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="25"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>25</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value="50"
-										onselect={(value) => handleNumberOfRows(value as number)}
-										>50</ActionMenuRadioItem
-									>
 								</ActionMenuRadioGroup>
 							{/key}
 						</ActionMenu>
