@@ -49,12 +49,11 @@
 </script>
 
 <GraphErrors errors={$JobImageDetails.errors} />
-
+<div class="header">
+	<IconWithText icon={ImageIcon} text="Image details" size="large" />
+</div>
 {#if $JobImageDetails.data}
 	{@const image = $JobImageDetails.data.team.environment.workload.image}
-	<div class="header">
-		<IconWithText icon={ImageIcon} text="Image details" size="large" />
-	</div>
 	<div class="grid">
 		<Card columns={8}>
 			<div class="copy">

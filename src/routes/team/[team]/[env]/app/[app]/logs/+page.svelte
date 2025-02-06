@@ -1,6 +1,8 @@
 <script lang="ts">
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import LogViewer from '$lib/LogViewer.svelte';
 	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
+	import { Density3Icon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
 
@@ -43,6 +45,9 @@
 	}
 </script>
 
+<div class="header">
+	<IconWithText icon={Density3Icon} text="Logs" size="large" />
+</div>
 {#if $Instances.data}
 	{@const instances = $Instances.data.team.environment.application.instances.nodes}
 	<div class="topbar">
@@ -140,6 +145,13 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
+	}
 	.topbar {
 		display: flex;
 		flex-direction: row;

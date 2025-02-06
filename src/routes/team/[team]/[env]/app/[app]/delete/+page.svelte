@@ -2,9 +2,11 @@
 	import { goto } from '$app/navigation';
 	import { type DeleteAppPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert, Button, HelpText, TextField } from '@nais/ds-svelte-community';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
@@ -64,9 +66,11 @@
 
 {#if $DeleteAppPage?.data?.team.environment.application}
 	{@const app = $DeleteAppPage?.data?.team.environment.application}
-	<Card borderColor="var(--a-border-danger)">
-		<h3>Delete {app.name}</h3>
+	<div class="header">
+		<IconWithText icon={TrashIcon} text="Delete {app.name}" size="large" />
+	</div>
 
+	<Card borderColor="var(--a-border-danger)">
 		{#if hasResourcesToDelete(app)}
 			<p>
 				In addition to the application the following resources
@@ -165,6 +169,13 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
+	}
 	code {
 		font-size: 1rem;
 	}
