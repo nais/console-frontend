@@ -214,25 +214,27 @@
 
 						<ActionMenu>
 							{#snippet trigger(props)}
-								<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
-									{#snippet icon()}
-										{#if orderDirection === OrderDirection.ASC}
-											<SortAscendingIcon size="1rem" />
-										{:else}
-											<SortDescendingIcon size="1rem" />
-										{/if}
-									{/snippet}
-									<span style="display: flex; align-items: center; gap: 8px;">
-										{orderField === JobOrderField.NAME
-											? 'Name'
-											: orderField === JobOrderField.STATUS
-												? 'Status'
-												: orderField === JobOrderField.ENVIRONMENT
-													? 'Environment'
-													: 'Deployed'}
-										<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
-									</span>
-								</Button>
+								<div style="min-width: 164px;">
+									<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
+										{#snippet icon()}
+											{#if orderDirection === OrderDirection.ASC}
+												<SortAscendingIcon size="1rem" />
+											{:else}
+												<SortDescendingIcon size="1rem" />
+											{/if}
+										{/snippet}
+										<span style="display: flex; align-items: center; gap: 8px;">
+											{orderField === JobOrderField.NAME
+												? 'Name'
+												: orderField === JobOrderField.STATUS
+													? 'Status'
+													: orderField === JobOrderField.ENVIRONMENT
+														? 'Environment'
+														: 'Deployed'}
+											<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
+										</span>
+									</Button>
+								</div>
 							{/snippet}
 							{#key orderField}
 								<ActionMenuRadioGroup value={orderField} label="Order by">
@@ -262,14 +264,14 @@
 								<ActionMenuRadioGroup value={orderDirection} label="Direction">
 									{#if orderField === JobOrderField.DEPLOYMENT_TIME}
 										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Newest</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
 											value={OrderDirection.ASC}
 											onselect={(value) => handleSortDirection(value as string)}
 											>Oldest</ActionMenuRadioItem
+										>
+										<ActionMenuRadioItem
+											value={OrderDirection.DESC}
+											onselect={(value) => handleSortDirection(value as string)}
+											>Newest</ActionMenuRadioItem
 										>
 									{:else}
 										<ActionMenuRadioItem
