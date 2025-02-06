@@ -5,6 +5,7 @@
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
 	import Cost from '$lib/components/Cost.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -26,7 +27,7 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community/components/Table/index.js';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { LineGraphStackedIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -209,6 +210,10 @@
 		);
 	});
 </script>
+
+<div class="header">
+	<IconWithText text="Resource utilization" icon={LineGraphStackedIcon} size="large" />
+</div>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
 
@@ -411,6 +416,13 @@
 </div>
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

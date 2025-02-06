@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import {
 		JobOrderField,
 		OrderDirection,
@@ -7,6 +8,7 @@
 		type OrderDirection$options
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -42,7 +44,6 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
-	import { page } from '$app/state';
 
 	interface Props {
 		data: PageData;
@@ -119,20 +120,25 @@
 
 <GraphErrors errors={$Jobs.errors} />
 
+<div class="header">
+	<IconWithText text="Jobs" icon={BriefcaseClockIcon} size="large" />
+</div>
+
+<BodyLong spacing>
+	{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}
+		<strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
+		completion and then exit.
+		<a href="https://doc.nais.io/workloads/job/">Learn more about jobs and how to get started.</a>
+	{:else}
+		Jobs are used for one-time or scheduled tasks that run to completion and then exit.
+		<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
+	{/if}
+</BodyLong>
+
 {#if $Jobs.data}
 	{@const jobs = $Jobs.data.team.jobs}
 	<Card columns={12}>
-		<div class="header">
-			<div class="heading">
-				<BriefcaseClockIcon width="32px" height="32px" />
-				<h3>Jobs</h3>
-			</div>
-		</div>
 		{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
-			<BodyLong style="margin-bottom: 1rem;">
-				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
-				<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
-			</BodyLong>
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -396,14 +402,6 @@
 					}
 				}}
 			/>
-		{:else if $Jobs.data.team.totalJobs.pageInfo.totalCount == 0}
-			<BodyLong
-				><strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
-				completion and then exit.
-				<a href="https://doc.nais.io/workloads/job/"
-					>Learn more about jobs and how to get started.</a
-				></BodyLong
-			>
 		{/if}
 	</Card>
 {/if}
@@ -414,16 +412,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 	.search {
 		display: flex;

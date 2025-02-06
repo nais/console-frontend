@@ -32,6 +32,7 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import type { PageData } from './$houdini';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 
 	interface Props {
 		data: PageData;
@@ -109,23 +110,30 @@
 	};
 </script>
 
+<div class="header">
+	<IconWithText text="Applications" icon={PackageIcon} size="large" />
+</div>
+
+<BodyLong spacing>
+	{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
+		<strong>No applications found.</strong> Applications are long-running processes designed to
+		handle continuous workloads and remain active until stopped or restarted.
+		<a href="https://doc.nais.io/workloads/application"
+			>Learn more about applications and how to get started.</a
+		>
+	{:else}
+		Applications are long-running processes designed to handle continuous workloads and remain
+		active until stopped or restarted.
+		<a href="https://doc.nais.io/workloads/application">Learn more about applications.</a>
+	{/if}
+</BodyLong>
+
 <GraphErrors errors={$Applications.errors} />
 
 {#if $Applications.data}
 	{@const apps = $Applications.data.team.applications}
 	<Card columns={12}>
-		<div class="header">
-			<div class="heading">
-				<PackageIcon width="32px" height="32px" />
-				<h3>Applications</h3>
-			</div>
-		</div>
 		{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}
-			<BodyLong style="margin-bottom: 1rem;">
-				Applications are long-running processes designed to handle continuous workloads and remain
-				active until stopped or restarted.
-				<a href="https://doc.nais.io/workloads/application">Learn more about applications.</a>
-			</BodyLong>
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -362,14 +370,6 @@
 					}
 				}}
 			/>
-		{:else if $Applications.data.team.totalApplications.pageInfo.totalCount == 0}
-			<BodyLong
-				><strong>No applications found.</strong> Applications are long-running processes designed to
-				handle continuous workloads and remain active until stopped or restarted.
-				<a href="https://doc.nais.io/workloads/application"
-					>Learn more about applications and how to get started.</a
-				>
-			</BodyLong>
 		{/if}
 	</Card>
 {/if}
@@ -380,16 +380,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 	.search {
 		display: flex;

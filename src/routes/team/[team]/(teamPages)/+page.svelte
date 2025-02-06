@@ -8,6 +8,8 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 
+	import IconWithText from '$lib/components/IconWithText.svelte';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -25,7 +27,9 @@
 		{msgParts[1]}.
 	</Alert>
 {/if}
-
+<div class="header">
+	<IconWithText icon={PersonGroupIcon} text={teamSlug} size="large" />
+</div>
 <div class="grid">
 	<Card rows={2} columns={3}>
 		<TeamInfo {teamSlug} />

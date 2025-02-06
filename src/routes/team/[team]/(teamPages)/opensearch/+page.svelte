@@ -7,6 +7,7 @@
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -89,13 +90,10 @@
 	{@const cost = $OpenSearch.data.team.cost}
 	{@const instances = $OpenSearch.data.team.openSearchInstances}
 	<div class="header">
-		<div class="heading">
-			<OpenSearchIcon size="32px" />
-			<h3>OpenSearch instances</h3>
-		</div>
+		<IconWithText text="OpenSearch instances" icon={OpenSearchIcon} size="large" />
 	</div>
 	{#if instances.nodes.length > 0 || $OpenSearch.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			OpenSearch is a distributed search and analytics engine.
 			<a href="https://docs.nais.io/persistence/opensearch/"
 				>Learn more about OpenSearch and how to get started.</a
@@ -258,16 +256,7 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
 
 	.list {

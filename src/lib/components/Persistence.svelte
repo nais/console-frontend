@@ -6,7 +6,9 @@
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import Redis from '$lib/icons/RedisIcon.svelte';
 	import Valkey from '$lib/icons/ValkeyIcon.svelte';
+	import { Heading } from '@nais/ds-svelte-community';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
+	import IconWithText from './IconWithText.svelte';
 
 	interface Props {
 		workload: Persistence;
@@ -98,10 +100,12 @@
 	let team = $derived(page.params.team);
 </script>
 
+<Heading level="2" size="medium">Persistence</Heading>
+
 <div class="persistence">
 	<div class="persistenceContent">
 		{#if $data.buckets.edges.length > 0}
-			<h5><BucketIcon />Buckets</h5>
+			<IconWithText text="Buckets" icon={BucketIcon} size="medium" />
 			<ul>
 				{#each $data.buckets.edges as bucket}
 					<li>
@@ -111,7 +115,7 @@
 			</ul>
 		{/if}
 		{#if $data.bigQueryDatasets.edges.length > 0}
-			<h5><BigQuery />BigQuery</h5>
+			<IconWithText text="BigQuery" icon={BigQuery} size="medium" />
 			<ul>
 				{#each $data.bigQueryDatasets.edges as bq}
 					<li>
@@ -121,7 +125,7 @@
 			</ul>
 		{/if}
 		{#if $data.sqlInstances.edges.length > 0}
-			<h5><DatabaseIcon />Postgres</h5>
+			<IconWithText text="Postgres" icon={DatabaseIcon} size="medium" />
 			<ul>
 				{#each $data.sqlInstances.edges as sql}
 					<li>
@@ -131,7 +135,7 @@
 			</ul>
 		{/if}
 		{#if $data.kafkaTopicAcls.edges.length > 0}
-			<h5><Kafka />Kafka</h5>
+			<IconWithText text="Kafka topics" icon={Kafka} size="medium" />
 			<ul>
 				{#each $data.kafkaTopicAcls.edges as acl}
 					{#if acl.node.teamName !== '*'}
@@ -147,7 +151,7 @@
 			</ul>
 		{/if}
 		{#if $data.openSearch}
-			<h5><OpenSearchIcon />OpenSearch</h5>
+			<IconWithText text="OpenSearch" icon={OpenSearchIcon} size="medium" />
 			<ul>
 				<li>
 					<a href={`/team/${team}/${env}/opensearch/${$data.openSearch.name}`}
@@ -163,7 +167,7 @@
 		{/if}
 
 		{#if $data.redisInstances.edges.length > 0}
-			<h5><Redis />Redis</h5>
+			<IconWithText text="Redis" icon={Redis} size="medium" />
 			<ul>
 				{#each $data.redisInstances.edges as redis}
 					<li>
@@ -174,7 +178,7 @@
 		{/if}
 
 		{#if $data.valkeyInstances.edges.length > 0}
-			<h5><Valkey />Valkey</h5>
+			<IconWithText text="Valkey" icon={Valkey} size="medium" />
 			<ul>
 				{#each $data.valkeyInstances.edges as valkey}
 					<li>
@@ -197,13 +201,7 @@
 	.persistenceContent {
 		padding: 1rem 0;
 	}
-	h5 {
-		display: flex;
-		align-items: center;
-		margin-top: 0px;
-		align-self: start;
-		font-size: 1.2rem;
-	}
+
 	ul {
 		margin: 0;
 		list-style: none;

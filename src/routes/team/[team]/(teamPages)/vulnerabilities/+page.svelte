@@ -6,6 +6,7 @@
 
 	import { page } from '$app/stores';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
@@ -16,6 +17,7 @@
 		TrendDownIcon,
 		TrendFlatIcon,
 		TrendUpIcon,
+		VirusIcon,
 		XMarkOctagonIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
@@ -35,6 +37,9 @@
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
+<div class="header">
+	<IconWithText icon={VirusIcon} text="Vulnerabilities" size="large" />
+</div>
 
 {#if $TeamVulnerabilities.data}
 	{@const team = $TeamVulnerabilities.data.team}
@@ -219,6 +224,13 @@
 {/if}
 
 <style>
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

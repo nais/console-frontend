@@ -7,6 +7,7 @@
 		type KafkaTopicOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
@@ -86,13 +87,10 @@
 {#if $KafkaTopics.data}
 	{@const topics = $KafkaTopics.data.team.kafkaTopics}
 	<div class="header">
-		<div class="heading">
-			<KafkaIcon size="32px" />
-			<h3>Kafka topics</h3>
-		</div>
+		<IconWithText text="Kafka topics" icon={KafkaIcon} size="large" />
 	</div>
 	{#if topics.nodes.length > 0 || $KafkaTopics.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong spacing>
 			Kafka topics are categories where messages are published and consumed, acting as distributed
 			logs for event streaming.
 
@@ -232,18 +230,8 @@
 		justify-content: space-between;
 		align-items: center;
 		align-self: stretch;
-		margin: 1rem 0;
-		.heading {
-			display: flex;
-			align-items: center;
-			width: 50%;
-			gap: 4px;
-			h3 {
-				margin: 0;
-			}
-		}
+		margin-bottom: var(--a-spacing-3);
 	}
-
 	.list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;
