@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BodyShort, Detail } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { Component, Snippet } from 'svelte';
 
 	interface Props {
@@ -10,7 +10,7 @@
 
 	let { icon, size = 'medium', text }: Props = $props();
 
-	const TextComponent = size === 'small' ? Detail : BodyShort;
+	const TextComponent = size === 'small' ? Detail : size === 'large' ? Heading : BodyShort;
 
 	const isSnippet = (value: Component | Snippet): value is Snippet => value.length === 1;
 </script>
@@ -43,7 +43,7 @@
 		gap: var(--a-spacing-1-alt);
 	}
 	.icon-with-text--large {
-		font-size: 1.25rem;
+		font-size: 2rem;
 		gap: var(--a-spacing-2);
 	}
 </style>
