@@ -4,6 +4,7 @@
 	import Time from '$lib/Time.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import IconWithText from './IconWithText.svelte';
 
 	interface Props {
 		workload: WorkloadDeployments;
@@ -54,7 +55,9 @@
 	);
 </script>
 
-<h4 class="heading"><RocketIcon /> Deployments - {$data.environment.name}/{$data.name}</h4>
+<div class="header">
+	<IconWithText icon={RocketIcon} text="Deployments" size="large" />
+</div>
 {#if $data !== null}
 	<Table size="small" zebraStripes>
 		<Thead>
@@ -114,9 +117,11 @@
 {/if}
 
 <style>
-	.heading {
+	.header {
 		display: flex;
-		gap: 0.3rem;
+		justify-content: space-between;
 		align-items: center;
+		align-self: stretch;
+		margin-bottom: var(--a-spacing-3);
 	}
 </style>
