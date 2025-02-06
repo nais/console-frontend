@@ -2,17 +2,17 @@
 	import '@nais/ds-svelte-community/css';
 	import Header from './Header.svelte';
 	//import '../styles/vars_dark.css';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
+	import ProgressBar from '$lib/ProgressBar.svelte';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { LayoutData } from './$houdini';
 	import Login from './Login.svelte';
-	import { page } from '$app/stores';
-	import { afterNavigate, beforeNavigate } from '$app/navigation';
-	import ProgressBar from '$lib/ProgressBar.svelte';
 
 	interface Props {
 		data: LayoutData;
