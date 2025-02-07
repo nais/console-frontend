@@ -1,14 +1,15 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import {
 		BucketOrderField,
 		OrderDirection,
 		type BucketOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
+	import EChart from '$lib/chart/EChart.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -22,16 +23,10 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { BucketIcon, ChevronDownIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
-	import { page } from '$app/state';
-	import {
-		costTransformColumnChartTeamCostEnv,
-		type TeamCostEnvType
-	} from '$lib/chart/cost_transformer';
-	import EChart from '$lib/chart/EChart.svelte';
-	import type { EChartsOption } from 'echarts';
+	import { BucketIcon, ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
+	import type { EChartsOption } from 'echarts';
+	import type { PageData } from './$houdini';
 
 	interface Props {
 		data: PageData;
