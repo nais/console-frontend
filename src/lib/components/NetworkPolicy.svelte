@@ -84,7 +84,7 @@
 {#if $np.networkPolicy.inbound.rules.length > 0 || $np.networkPolicy.outbound.rules.length > 0 || $np.networkPolicy.outbound.external.length > 0}
 	<Heading level="2" size="medium" spacing>Network policy</Heading>
 
-	<div class="traffic">
+	<div class="grid">
 		{#if $np.networkPolicy.inbound.rules.length > 0}
 			<div class="direction-content">
 				<Heading level="3" size="small" spacing>Inbound</Heading>
@@ -214,7 +214,7 @@
 {/if}
 
 <style>
-	.traffic {
+	.grid {
 		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
