@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { Box, Button } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Deploys from './Deploys.svelte';
 	import Onboarding from './Onboarding.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 
 	let feedbackOpen = $state(false);
 
@@ -47,7 +47,7 @@
 						My teams
 					</h2>
 					<Button as="a" size="small" href="/team/create" variant="primary" icon={PlusIcon}>
-						Create team
+						Create teamsasf
 					</Button>
 				</div>
 				{#if $UserTeams.data}
