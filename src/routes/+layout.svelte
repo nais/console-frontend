@@ -86,7 +86,9 @@
 		'full-wrapper',
 		activeColor(),
 		{
-			['white-page']: ['/job/', '/buckets'].some((s) => $page.route.id?.includes(s))
+			['white-page']: ['/jobs', '/job/', '/buckets', '/applications'].some((s) =>
+				$page.route.id?.includes(s)
+			)
 		}
 	]}
 >

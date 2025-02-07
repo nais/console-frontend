@@ -7,7 +7,6 @@
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -137,273 +136,270 @@
 
 {#if $Jobs.data && $Jobs.data.team.jobs.nodes.length > 0}
 	{@const jobs = $Jobs.data.team.jobs}
-	<Card columns={12}>
-		{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
+	{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
+		<div class="search">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					changeQuery({ newFilter: filter });
+				}}
+			>
+				<Search
+					clearButton={true}
+					clearButtonLabel="Clear"
+					label="filter jobs"
+					placeholder="Filter by name"
+					hideLabel={true}
+					size="small"
+					variant="simple"
+					width="100%"
+					autocomplete="off"
+					bind:value={filter}
+					onclear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
 					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter jobs"
-						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				</form>
-			</div>
-			<div class="jobs-list">
-				<div class="jobs-header">
-					<div class="jobs-count">
-						<BodyShort size="small" style="font-weight: bold;">
-							{jobs.pageInfo.totalCount} jobs
-							{jobs.pageInfo.totalCount !== $Jobs.data.team.totalJobs.pageInfo.totalCount
-								? `(of total ${$Jobs.data.team.totalJobs.pageInfo.totalCount})`
-								: ''}
-						</BodyShort>
-					</div>
-					<div style="display: flex; gap: 1rem;">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Environment</span>
-								</Button>
-							{/snippet}
-							<ActionMenuCheckboxItem
-								checked={allEnvs.length === filteredEnvs.length
-									? true
-									: filteredEnvs.length > 0
-										? 'indeterminate'
-										: false}
-								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-							>
-								All environments
-							</ActionMenuCheckboxItem>
-							{#each $Jobs.data.team.environments as { name }}
-								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(name)}
-									onchange={(checked) =>
-										(filteredEnvs = checked
-											? [...filteredEnvs, name]
-											: filteredEnvs.filter((env) => env !== name))}
-								>
-									{name}
-								</ActionMenuCheckboxItem>
-							{/each}
-						</ActionMenu>
-
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<div style="min-width: 164px;">
-									<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
-										{#snippet icon()}
-											{#if orderDirection === OrderDirection.ASC}
-												<SortAscendingIcon size="1rem" />
-											{:else}
-												<SortDescendingIcon size="1rem" />
-											{/if}
-										{/snippet}
-										<span style="display: flex; align-items: center; gap: 8px;">
-											{orderField === JobOrderField.NAME
-												? 'Name'
-												: orderField === JobOrderField.STATUS
-													? 'Status'
-													: orderField === JobOrderField.ENVIRONMENT
-														? 'Environment'
-														: 'Deployed'}
-											<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
-										</span>
-									</Button>
-								</div>
-							{/snippet}
-							{#key orderField}
-								<ActionMenuRadioGroup value={orderField} label="Order by">
-									<ActionMenuRadioItem
-										value={JobOrderField.NAME}
-										onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={JobOrderField.STATUS}
-										onselect={(value) => handleSortField(value as string)}
-										>Status</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={JobOrderField.ENVIRONMENT}
-										onselect={(value) => handleSortField(value as string)}
-										>Environment</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={JobOrderField.DEPLOYMENT_TIME}
-										onselect={(value) => handleSortField(value as string)}
-										>Deployed</ActionMenuRadioItem
-									>
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key orderDirection}
-								<ActionMenuRadioGroup value={orderDirection} label="Direction">
-									{#if orderField === JobOrderField.DEPLOYMENT_TIME}
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Oldest</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Newest</ActionMenuRadioItem
-										>
-									{:else}
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Ascending</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Descending</ActionMenuRadioItem
-										>
-									{/if}
-								</ActionMenuRadioGroup>
-							{/key}
-						</ActionMenu>
-					</div>
+				/>
+			</form>
+		</div>
+		<div class="jobs-list">
+			<div class="jobs-header">
+				<div class="jobs-count">
+					<BodyShort size="small" style="font-weight: bold;">
+						{jobs.pageInfo.totalCount} jobs
+						{jobs.pageInfo.totalCount !== $Jobs.data.team.totalJobs.pageInfo.totalCount
+							? `(of total ${$Jobs.data.team.totalJobs.pageInfo.totalCount})`
+							: ''}
+					</BodyShort>
 				</div>
-				{#each jobs.nodes as job}
-					<div class="jobs-list-item">
-						<div class="job-link-wrapper">
-							<div>
-								{#if job.status.state === WorkloadState.NAIS}
-									<Tooltip content="Job is NAIS">
-										<CircleFillIcon
-											style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{:else if job.status.state === WorkloadState.NOT_NAIS}
-									<Tooltip content="Job is not NAIS">
-										<CircleFillIcon
-											style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{:else if job.status.state === WorkloadState.FAILING}
-									<Tooltip content="Job is failing">
-										<CircleFillIcon
-											style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{:else}
-									<Tooltip content="Job status is UNKNOWN">
-										<CircleFillIcon
-											style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{/if}
+				<div style="display: flex; gap: 1rem;">
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								iconPosition="right"
+								{...props}
+								icon={ChevronDownIcon}
+							>
+								<span style="font-weight: normal">Environment</span>
+							</Button>
+						{/snippet}
+						<ActionMenuCheckboxItem
+							checked={allEnvs.length === filteredEnvs.length
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $Jobs.data.team.environments as { name }}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(name)}
+								onchange={(checked) =>
+									(filteredEnvs = checked
+										? [...filteredEnvs, name]
+										: filteredEnvs.filter((env) => env !== name))}
+							>
+								{name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenu>
+
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<div style="min-width: 164px;">
+								<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
+									{#snippet icon()}
+										{#if orderDirection === OrderDirection.ASC}
+											<SortAscendingIcon size="1rem" />
+										{:else}
+											<SortDescendingIcon size="1rem" />
+										{/if}
+									{/snippet}
+									<span style="display: flex; align-items: center; gap: 8px;">
+										{orderField === JobOrderField.NAME
+											? 'Name'
+											: orderField === JobOrderField.STATUS
+												? 'Status'
+												: orderField === JobOrderField.ENVIRONMENT
+													? 'Environment'
+													: 'Deployed'}
+										<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
+									</span>
+								</Button>
 							</div>
-							<div class="job-link">
-								<WorkloadLink workload={job} />
-								<Detail>{job.environment.name}</Detail>
-							</div>
-						</div>
-						<div class="job-info">
-							{#if job.deployments.nodes.length > 0}
-								{@const timestamp = job.deployments.nodes[0].createdAt}
-								<Tooltip
-									content="Last deploy - {format(timestamp, 'PPPP', {
-										locale: enGB
-									})}"
+						{/snippet}
+						{#key orderField}
+							<ActionMenuRadioGroup value={orderField} label="Order by">
+								<ActionMenuRadioItem
+									value={JobOrderField.NAME}
+									onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
 								>
-									<div class="job-detail">
-										<RocketIcon />
-										<Detail><Time time={timestamp} distance={true} /></Detail>
-									</div>
+								<ActionMenuRadioItem
+									value={JobOrderField.STATUS}
+									onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={JobOrderField.ENVIRONMENT}
+									onselect={(value) => handleSortField(value as string)}
+									>Environment</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={JobOrderField.DEPLOYMENT_TIME}
+									onselect={(value) => handleSortField(value as string)}
+									>Deployed</ActionMenuRadioItem
+								>
+							</ActionMenuRadioGroup>
+						{/key}
+						<ActionMenuDivider />
+						{#key orderDirection}
+							<ActionMenuRadioGroup value={orderDirection} label="Direction">
+								{#if orderField === JobOrderField.DEPLOYMENT_TIME}
+									<ActionMenuRadioItem
+										value={OrderDirection.ASC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Oldest</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={OrderDirection.DESC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Newest</ActionMenuRadioItem
+									>
+								{:else}
+									<ActionMenuRadioItem
+										value={OrderDirection.ASC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Ascending</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem
+										value={OrderDirection.DESC}
+										onselect={(value) => handleSortDirection(value as string)}
+										>Descending</ActionMenuRadioItem
+									>
+								{/if}
+							</ActionMenuRadioGroup>
+						{/key}
+					</ActionMenu>
+				</div>
+			</div>
+			{#each jobs.nodes as job}
+				<div class="jobs-list-item">
+					<div class="job-link-wrapper">
+						<div>
+							{#if job.status.state === WorkloadState.NAIS}
+								<Tooltip content="Job is NAIS">
+									<CircleFillIcon
+										style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
+								</Tooltip>
+							{:else if job.status.state === WorkloadState.NOT_NAIS}
+								<Tooltip content="Job is not NAIS">
+									<CircleFillIcon
+										style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
+								</Tooltip>
+							{:else if job.status.state === WorkloadState.FAILING}
+								<Tooltip content="Job is failing">
+									<CircleFillIcon
+										style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
+								</Tooltip>
+							{:else}
+								<Tooltip content="Job status is UNKNOWN">
+									<CircleFillIcon
+										style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
 								</Tooltip>
 							{/if}
-							<div style="display: flex; gap: 4px; align-items: center; line-height: 0;">
-								{#if job.runs.nodes[0]?.status}
-									{#if job.runs.nodes[0].status.state === 'RUNNING'}
-										<Tooltip content="Job is running">
-											<Loader size="xsmall" variant="interaction" />
-										</Tooltip>
-									{:else if job.runs.nodes[0].status.state === 'PENDING'}
-										<Tooltip content="Job run pending">
-											<Loader size="xsmall" variant="interaction" />
-										</Tooltip>
-									{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
-										<Tooltip content="Last job ran successfully">
-											<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
-										</Tooltip>
-									{:else if job.runs.nodes[0].status.state === 'FAILED'}
-										<Tooltip content="Last job run failed">
-											<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
-										</Tooltip>
-									{:else}
-										<Tooltip content="Job run status is unknown">
-											<QuestionmarkIcon />
-										</Tooltip>
-									{/if}
+						</div>
+						<div class="job-link">
+							<WorkloadLink workload={job} />
+							<Detail>{job.environment.name}</Detail>
+						</div>
+					</div>
+					<div class="job-info">
+						{#if job.deployments.nodes.length > 0}
+							{@const timestamp = job.deployments.nodes[0].createdAt}
+							<Tooltip
+								content="Last deploy - {format(timestamp, 'PPPP', {
+									locale: enGB
+								})}"
+							>
+								<div class="job-detail">
+									<RocketIcon />
+									<Detail><Time time={timestamp} distance={true} /></Detail>
+								</div>
+							</Tooltip>
+						{/if}
+						<div style="display: flex; gap: 4px; align-items: center; line-height: 0;">
+							{#if job.runs.nodes[0]?.status}
+								{#if job.runs.nodes[0].status.state === 'RUNNING'}
+									<Tooltip content="Job is running">
+										<Loader size="xsmall" variant="interaction" />
+									</Tooltip>
+								{:else if job.runs.nodes[0].status.state === 'PENDING'}
+									<Tooltip content="Job run pending">
+										<Loader size="xsmall" variant="interaction" />
+									</Tooltip>
+								{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
+									<Tooltip content="Last job ran successfully">
+										<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+									</Tooltip>
+								{:else if job.runs.nodes[0].status.state === 'FAILED'}
+									<Tooltip content="Last job run failed">
+										<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+									</Tooltip>
 								{:else}
 									<Tooltip content="Job run status is unknown">
 										<QuestionmarkIcon />
 									</Tooltip>
 								{/if}
-								{#if job.runs.nodes[0]?.startTime}
-									<Tooltip
-										content="Last run - {format(job.runs.nodes[0].startTime, 'PPPP', {
-											locale: enGB
-										})}"
-									>
-										<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
-									</Tooltip>
-								{:else}
-									<Detail>No runs</Detail>
-								{/if}
-							</div>
+							{:else}
+								<Tooltip content="Job run status is unknown">
+									<QuestionmarkIcon />
+								</Tooltip>
+							{/if}
+							{#if job.runs.nodes[0]?.startTime}
+								<Tooltip
+									content="Last run - {format(job.runs.nodes[0].startTime, 'PPPP', {
+										locale: enGB
+									})}"
+								>
+									<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
+								</Tooltip>
+							{:else}
+								<Detail>No runs</Detail>
+							{/if}
 						</div>
 					</div>
-				{/each}
-			</div>
-			<Pagination
-				page={jobs.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						changeQuery({ before: jobs.pageInfo.startCursor ?? '' });
-						Jobs.loadPreviousPage({ last: rows });
-					},
-					loadNextPage: () => {
-						changeQuery({ after: jobs.pageInfo.endCursor ?? '' });
-						Jobs.loadNextPage({ first: rows });
-					}
-				}}
-			/>
-		{/if}
-	</Card>
+				</div>
+			{/each}
+		</div>
+		<Pagination
+			page={jobs.pageInfo}
+			loaders={{
+				loadPreviousPage: () => {
+					changeQuery({ before: jobs.pageInfo.startCursor ?? '' });
+					Jobs.loadPreviousPage({ last: rows });
+				},
+				loadNextPage: () => {
+					changeQuery({ after: jobs.pageInfo.endCursor ?? '' });
+					Jobs.loadNextPage({ first: rows });
+				}
+			}}
+		/>
+	{/if}
 {/if}
 
 <style>

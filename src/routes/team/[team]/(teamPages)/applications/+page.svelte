@@ -6,7 +6,6 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -132,246 +131,243 @@
 
 {#if $Applications.data && $Applications.data.team.applications.nodes.length > 0}
 	{@const apps = $Applications.data.team.applications}
-	<Card columns={12}>
-		{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
+	{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}
+		<div class="search">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					changeQuery({ newFilter: filter });
+				}}
+			>
+				<Search
+					clearButton={true}
+					clearButtonLabel="Clear"
+					label="filter applications"
+					placeholder="Filter by name"
+					hideLabel={true}
+					size="small"
+					variant="simple"
+					width="100%"
+					autocomplete="off"
+					bind:value={filter}
+					onclear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
 					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter applications"
-						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				</form>
-			</div>
-			<div class="applications-list">
-				<div class="applications-header">
-					<div class="applications-count">
-						<BodyShort size="small" style="font-weight: bold;">
-							{apps.pageInfo.totalCount} applications
-							{apps.pageInfo.totalCount !==
-							$Applications.data.team.totalApplications.pageInfo.totalCount
-								? `(of total ${$Applications.data.team.totalApplications.pageInfo.totalCount})`
-								: ''}</BodyShort
-						>
-					</div>
-					<div style="display: flex; gap: 1rem;">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Environment</span>
-								</Button>
-							{/snippet}
-							<ActionMenuCheckboxItem
-								checked={$Applications.data.team.environments.every((env) =>
-									filteredEnvs.includes(env.name)
-								)
-									? true
-									: filteredEnvs.length > 0
-										? 'indeterminate'
-										: false}
-								onchange={(checked) => handleCheckboxChange('*', checked)}
-							>
-								All environments
-							</ActionMenuCheckboxItem>
-							{#each $Applications.data.team.environments as env}
-								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(env.name)}
-									onchange={(checked) => handleCheckboxChange(env.name, checked)}
-								>
-									{env.name}
-								</ActionMenuCheckboxItem>
-							{/each}
-						</ActionMenu>
-
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<div style="min-width: 164px">
-									<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
-										{#snippet icon()}
-											{#if orderDirection === OrderDirection.ASC}
-												<SortAscendingIcon size="1rem" />
-											{:else}
-												<SortDescendingIcon size="1rem" />
-											{/if}
-										{/snippet}
-										<span style="display: flex; align-items: center; gap: 8px;">
-											{orderField === ApplicationOrderField.NAME
-												? 'Name'
-												: orderField === ApplicationOrderField.STATUS
-													? 'Status'
-													: orderField === ApplicationOrderField.ENVIRONMENT
-														? 'Environment'
-														: 'Deployed'}
-											<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
-										</span>
-									</Button>
-								</div>
-							{/snippet}
-							{#key orderField}
-								<ActionMenuRadioGroup value={orderField} label="Order by">
-									<ActionMenuRadioItem
-										value={ApplicationOrderField.NAME}
-										onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={ApplicationOrderField.STATUS}
-										onselect={(value) => handleSortField(value as string)}
-										>Status</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={ApplicationOrderField.ENVIRONMENT}
-										onselect={(value) => handleSortField(value as string)}
-										>Environment</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={ApplicationOrderField.DEPLOYMENT_TIME}
-										onselect={(value) => handleSortField(value as string)}
-										>Deployed</ActionMenuRadioItem
-									>
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key orderDirection}
-								<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
-									{#if orderField === ApplicationOrderField.DEPLOYMENT_TIME}
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => handleSortDirection(value as string)}
-										>
-											<div class="icon">
-												<SortAscendingIcon size="1rem" />Oldest
-											</div>
-										</ActionMenuRadioItem>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-										>
-											<div class="icon">
-												<SortDescendingIcon size="1rem" />Newest
-											</div>
-										</ActionMenuRadioItem>
-									{:else}
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => handleSortDirection(value as string)}
-										>
-											<div class="icon">
-												<SortAscendingIcon size="1rem" />Ascending
-											</div>
-										</ActionMenuRadioItem>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-										>
-											<div class="icon">
-												<SortDescendingIcon size="1rem" />Descending
-											</div>
-										</ActionMenuRadioItem>
-									{/if}
-								</ActionMenuRadioGroup>
-							{/key}
-						</ActionMenu>
-					</div>
+				/>
+			</form>
+		</div>
+		<div class="applications-list">
+			<div class="applications-header">
+				<div class="applications-count">
+					<BodyShort size="small" style="font-weight: bold;">
+						{apps.pageInfo.totalCount} applications
+						{apps.pageInfo.totalCount !==
+						$Applications.data.team.totalApplications.pageInfo.totalCount
+							? `(of total ${$Applications.data.team.totalApplications.pageInfo.totalCount})`
+							: ''}</BodyShort
+					>
 				</div>
-				{#each apps.nodes as app}
-					<div class="applications-list-item">
-						<div class="application-link-wrapper">
-							<div>
-								{#if app.status.state === WorkloadState.NAIS}
-									<Tooltip content="Application is NAIS">
-										<CircleFillIcon
-											style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{:else if app.status.state === WorkloadState.NOT_NAIS}
-									<Tooltip content="Application is not NAIS">
-										<CircleFillIcon
-											style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{:else if app.status.state === WorkloadState.FAILING}
-									<Tooltip content="Application is failing">
-										<CircleFillIcon
-											style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{:else}
-									<Tooltip content="Application status is UNKNOWN">
-										<CircleFillIcon
-											style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
-											height="0.5rem"
-											width="0.5rem"
-										/>
-									</Tooltip>
-								{/if}
+				<div style="display: flex; gap: 1rem;">
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								iconPosition="right"
+								{...props}
+								icon={ChevronDownIcon}
+							>
+								<span style="font-weight: normal">Environment</span>
+							</Button>
+						{/snippet}
+						<ActionMenuCheckboxItem
+							checked={$Applications.data.team.environments.every((env) =>
+								filteredEnvs.includes(env.name)
+							)
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => handleCheckboxChange('*', checked)}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $Applications.data.team.environments as env}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(env.name)}
+								onchange={(checked) => handleCheckboxChange(env.name, checked)}
+							>
+								{env.name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenu>
+
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<div style="min-width: 164px">
+								<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
+									{#snippet icon()}
+										{#if orderDirection === OrderDirection.ASC}
+											<SortAscendingIcon size="1rem" />
+										{:else}
+											<SortDescendingIcon size="1rem" />
+										{/if}
+									{/snippet}
+									<span style="display: flex; align-items: center; gap: 8px;">
+										{orderField === ApplicationOrderField.NAME
+											? 'Name'
+											: orderField === ApplicationOrderField.STATUS
+												? 'Status'
+												: orderField === ApplicationOrderField.ENVIRONMENT
+													? 'Environment'
+													: 'Deployed'}
+										<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
+									</span>
+								</Button>
 							</div>
-							<div class="application-link">
-								<WorkloadLink workload={app} />
-								<Detail>{app.environment.name}</Detail>
-							</div>
-						</div>
-						<div class="application-info">
-							{#if app.deployments.nodes.length > 0}
-								{@const timestamp = app.deployments.nodes[0].createdAt}
-								<RocketIcon style="font-size: 1.25rem" />
-								<Tooltip
-									content="Last deploy - {format(timestamp, 'PPPP', {
-										locale: enGB
-									})}"
+						{/snippet}
+						{#key orderField}
+							<ActionMenuRadioGroup value={orderField} label="Order by">
+								<ActionMenuRadioItem
+									value={ApplicationOrderField.NAME}
+									onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
 								>
-									<div class="application-detail">
-										<Detail><Time time={timestamp} distance={true} /></Detail>
-									</div>
+								<ActionMenuRadioItem
+									value={ApplicationOrderField.STATUS}
+									onselect={(value) => handleSortField(value as string)}>Status</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={ApplicationOrderField.ENVIRONMENT}
+									onselect={(value) => handleSortField(value as string)}
+									>Environment</ActionMenuRadioItem
+								>
+								<ActionMenuRadioItem
+									value={ApplicationOrderField.DEPLOYMENT_TIME}
+									onselect={(value) => handleSortField(value as string)}
+									>Deployed</ActionMenuRadioItem
+								>
+							</ActionMenuRadioGroup>
+						{/key}
+						<ActionMenuDivider />
+						{#key orderDirection}
+							<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
+								{#if orderField === ApplicationOrderField.DEPLOYMENT_TIME}
+									<ActionMenuRadioItem
+										value={OrderDirection.ASC}
+										onselect={(value) => handleSortDirection(value as string)}
+									>
+										<div class="icon">
+											<SortAscendingIcon size="1rem" />Oldest
+										</div>
+									</ActionMenuRadioItem>
+									<ActionMenuRadioItem
+										value={OrderDirection.DESC}
+										onselect={(value) => handleSortDirection(value as string)}
+									>
+										<div class="icon">
+											<SortDescendingIcon size="1rem" />Newest
+										</div>
+									</ActionMenuRadioItem>
+								{:else}
+									<ActionMenuRadioItem
+										value={OrderDirection.ASC}
+										onselect={(value) => handleSortDirection(value as string)}
+									>
+										<div class="icon">
+											<SortAscendingIcon size="1rem" />Ascending
+										</div>
+									</ActionMenuRadioItem>
+									<ActionMenuRadioItem
+										value={OrderDirection.DESC}
+										onselect={(value) => handleSortDirection(value as string)}
+									>
+										<div class="icon">
+											<SortDescendingIcon size="1rem" />Descending
+										</div>
+									</ActionMenuRadioItem>
+								{/if}
+							</ActionMenuRadioGroup>
+						{/key}
+					</ActionMenu>
+				</div>
+			</div>
+			{#each apps.nodes as app}
+				<div class="applications-list-item">
+					<div class="application-link-wrapper">
+						<div>
+							{#if app.status.state === WorkloadState.NAIS}
+								<Tooltip content="Application is NAIS">
+									<CircleFillIcon
+										style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
+								</Tooltip>
+							{:else if app.status.state === WorkloadState.NOT_NAIS}
+								<Tooltip content="Application is not NAIS">
+									<CircleFillIcon
+										style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
+								</Tooltip>
+							{:else if app.status.state === WorkloadState.FAILING}
+								<Tooltip content="Application is failing">
+									<CircleFillIcon
+										style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
+								</Tooltip>
+							{:else}
+								<Tooltip content="Application status is UNKNOWN">
+									<CircleFillIcon
+										style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
+										height="0.5rem"
+										width="0.5rem"
+									/>
 								</Tooltip>
 							{/if}
-							<InstanceStatus {app} class="instance-status" />
+						</div>
+						<div class="application-link">
+							<WorkloadLink workload={app} />
+							<Detail>{app.environment.name}</Detail>
 						</div>
 					</div>
-				{/each}
-			</div>
-			<Pagination
-				page={apps.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						changeQuery({ before: apps.pageInfo.startCursor ?? '' });
-						Applications.loadPreviousPage({ last: rows });
-					},
-					loadNextPage: () => {
-						changeQuery({ after: apps.pageInfo.endCursor ?? '' });
-						Applications.loadNextPage({ first: rows });
-					}
-				}}
-			/>
-		{/if}
-	</Card>
+					<div class="application-info">
+						{#if app.deployments.nodes.length > 0}
+							{@const timestamp = app.deployments.nodes[0].createdAt}
+							<RocketIcon style="font-size: 1.25rem" />
+							<Tooltip
+								content="Last deploy - {format(timestamp, 'PPPP', {
+									locale: enGB
+								})}"
+							>
+								<div class="application-detail">
+									<Detail><Time time={timestamp} distance={true} /></Detail>
+								</div>
+							</Tooltip>
+						{/if}
+						<InstanceStatus {app} class="instance-status" />
+					</div>
+				</div>
+			{/each}
+		</div>
+		<Pagination
+			page={apps.pageInfo}
+			loaders={{
+				loadPreviousPage: () => {
+					changeQuery({ before: apps.pageInfo.startCursor ?? '' });
+					Applications.loadPreviousPage({ last: rows });
+				},
+				loadNextPage: () => {
+					changeQuery({ after: apps.pageInfo.endCursor ?? '' });
+					Applications.loadNextPage({ first: rows });
+				}
+			}}
+		/>
+	{/if}
 {/if}
 
 <style>
