@@ -5,7 +5,6 @@
 		type BucketOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
@@ -16,7 +15,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, BodyShort, Button, Detail } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Button, Detail, Heading } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -25,6 +24,14 @@
 	} from '@nais/ds-svelte-community/experimental.js';
 	import { BucketIcon, ChevronDownIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
+	import { page } from '$app/state';
+	import {
+		costTransformColumnChartTeamCostEnv,
+		type TeamCostEnvType
+	} from '$lib/chart/cost_transformer';
+	import EChart from '$lib/chart/EChart.svelte';
+	import type { EChartsOption } from 'echarts';
+	import { format } from 'date-fns';
 
 	interface Props {
 		data: PageData;
@@ -79,6 +86,42 @@
 			after: params.resetPagination ? '' : (params.after ?? after)
 		});
 	};
+
+	let team = $derived(page.params.team);
+
+	const costTransform = (
+		data: {
+			readonly date: Date;
+			readonly sum: number;
+		}[]
+	): EChartsOption => {
+		return {
+			tooltip: {
+				trigger: 'item',
+				valueFormatter(value: any) {
+					return value.toLocaleString('en-GB', {
+						style: 'currency',
+						currency: 'EUR',
+						maximumFractionDigits: 2
+					});
+				}
+			},
+			xAxis: {
+				data: data.map((entry) => format(entry.date, 'dd.MM'))
+			},
+			yAxis: {
+				axisLabel: {
+					formatter: (value: number) => value.toFixed(1)
+				}
+			},
+			series: {
+				name: 'bucket cost',
+				type: 'line',
+				emphasis: { focus: 'series' },
+				data: data.map(({ sum }) => sum)
+			}
+		};
+	};
 </script>
 
 <GraphErrors errors={$Buckets.errors} />
@@ -90,152 +133,148 @@
 		<IconWithText text="Buckets" icon={BucketIcon} size="large" />
 	</div>
 	{#if buckets.nodes.length > 0 || $Buckets.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong spacing>
-			Storage buckets are containers for storing and managing data in the cloud.
-			<a href="https://docs.nais.io/persistence/buckets"
-				>Learn more about Buckets and how to get started.</a
-			>
-		</BodyLong>
-		<div class="summary-grid">
-			<Card columns={3}>
-				<SummaryCard
-					title="Cost"
-					helpText="Total SQL instance cost for the last 30 days"
-					color="green"
-				>
-					{#snippet icon({ color })}
-						<WalletIcon height="32px" width="32px" {color} />
-					{/snippet}
-					<Cost cost={cost.daily.sum} />
-				</SummaryCard>
-			</Card>
-		</div>
-		<Card columns={12}>
-			<div class="list">
-				<div class="list-header">
-					<div class="count">
-						<BodyShort size="small" style="font-weight: bold;">
-							{buckets.pageInfo.totalCount} entries
-						</BodyShort>
-					</div>
-					<div style="display: flex; gap: 1rem;">
-						<div style="display: flex; gap: 1rem;">
-							<ActionMenu>
-								{#snippet trigger(props)}
-									<Button
-										variant="tertiary-neutral"
-										size="small"
-										iconPosition="right"
-										{...props}
-										icon={ChevronDownIcon}
-									>
-										<span style="font-weight: normal"># of rows</span>
-									</Button>
-								{/snippet}
-								{#key orderField}
-									<ActionMenuRadioGroup value={orderField} label="Order by">
-										<ActionMenuRadioItem
-											value={BucketOrderField.NAME}
-											onselect={(value) => {
-												handleSortField(value as string);
-											}}>Name</ActionMenuRadioItem
-										>
-
-										<ActionMenuRadioItem
-											value={BucketOrderField.ENVIRONMENT}
-											onselect={(value) => {
-												handleSortField(value as string);
-											}}>Environment</ActionMenuRadioItem
-										>
-									</ActionMenuRadioGroup>
-								{/key}
-								<ActionMenuDivider />
-								{#key orderDirection}
-									<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => {
-												handleSortDirection(value as string);
-											}}
-										>
-											<div class="icon">
-												<SortAscendingIcon size="1rem" />Ascending
-											</div>
-										</ActionMenuRadioItem>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => {
-												handleSortDirection(value as string);
-											}}
-										>
-											<div class="icon">
-												<SortDescendingIcon size="1rem" />Descending
-											</div>
-										</ActionMenuRadioItem>
-									</ActionMenuRadioGroup>
-								{/key}
-								<ActionMenuDivider />
-								{#key rows}
-									<ActionMenuRadioGroup value={rows} label="Rows per page">
-										<ActionMenuRadioItem
-											value="5"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>5</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="10"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>10</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="25"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>25</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="50"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>50</ActionMenuRadioItem
-										>
-									</ActionMenuRadioGroup>
-								{/key}
-							</ActionMenu>
+		<div class="content-wrapper">
+			<div>
+				<BodyLong spacing>
+					Storage buckets are containers for storing and managing data in the cloud.
+					<a href="https://docs.nais.io/persistence/buckets"
+						>Learn more about Buckets and how to get started.</a
+					>
+				</BodyLong>
+				<div class="list">
+					<div class="list-header">
+						<div class="count">
+							<BodyShort size="small" style="font-weight: bold;">
+								{buckets.pageInfo.totalCount} entries
+							</BodyShort>
 						</div>
-					</div>
-				</div>
-				{#each buckets.nodes as instance}
-					<div class="list-item">
-						<div class="link-wrapper">
-							<div class="link">
-								<PersistenceLink {instance} />
-								<Detail>{instance.environment.name}</Detail>
+						<div style="display: flex; gap: 1rem;">
+							<div style="display: flex; gap: 1rem;">
+								<ActionMenu>
+									{#snippet trigger(props)}
+										<Button
+											variant="tertiary-neutral"
+											size="small"
+											iconPosition="right"
+											{...props}
+											icon={ChevronDownIcon}
+										>
+											<span style="font-weight: normal"># of rows</span>
+										</Button>
+									{/snippet}
+									{#key orderField}
+										<ActionMenuRadioGroup value={orderField} label="Order by">
+											<ActionMenuRadioItem
+												value={BucketOrderField.NAME}
+												onselect={(value) => {
+													handleSortField(value as string);
+												}}>Name</ActionMenuRadioItem
+											>
+
+											<ActionMenuRadioItem
+												value={BucketOrderField.ENVIRONMENT}
+												onselect={(value) => {
+													handleSortField(value as string);
+												}}>Environment</ActionMenuRadioItem
+											>
+										</ActionMenuRadioGroup>
+									{/key}
+									<ActionMenuDivider />
+									{#key orderDirection}
+										<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
+											<ActionMenuRadioItem
+												value={OrderDirection.ASC}
+												onselect={(value) => {
+													handleSortDirection(value as string);
+												}}
+											>
+												<div class="icon">
+													<SortAscendingIcon size="1rem" />Ascending
+												</div>
+											</ActionMenuRadioItem>
+											<ActionMenuRadioItem
+												value={OrderDirection.DESC}
+												onselect={(value) => {
+													handleSortDirection(value as string);
+												}}
+											>
+												<div class="icon">
+													<SortDescendingIcon size="1rem" />Descending
+												</div>
+											</ActionMenuRadioItem>
+										</ActionMenuRadioGroup>
+									{/key}
+									<ActionMenuDivider />
+									{#key rows}
+										<ActionMenuRadioGroup value={rows} label="Rows per page">
+											<ActionMenuRadioItem
+												value="5"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>5</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="10"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>10</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="25"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>25</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="50"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>50</ActionMenuRadioItem
+											>
+										</ActionMenuRadioGroup>
+									{/key}
+								</ActionMenu>
 							</div>
 						</div>
-						<div class="info">
-							{#if instance.workload}
-								{@const workload = instance.workload}
-								Owner: <WorkloadLink {workload} showIcon={true} />
-							{/if}
-						</div>
 					</div>
-				{/each}
+					{#each buckets.nodes as instance}
+						<div class="list-item">
+							<div class="link-wrapper">
+								<div class="link">
+									<PersistenceLink {instance} />
+									<Detail>{instance.environment.name}</Detail>
+								</div>
+							</div>
+							<div class="info">
+								{#if instance.workload}
+									{@const workload = instance.workload}
+									Owner: <WorkloadLink {workload} showIcon={true} />
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
+				{#if buckets.pageInfo.hasPreviousPage || buckets.pageInfo.hasNextPage}
+					<Pagination
+						page={buckets.pageInfo}
+						loaders={{
+							loadPreviousPage: () => {
+								changeQuery({ before: buckets.pageInfo.startCursor ?? '' });
+								Buckets.loadPreviousPage({ last: rows });
+							},
+							loadNextPage: () => {
+								changeQuery({ after: buckets.pageInfo.endCursor ?? '' });
+								Buckets.loadNextPage({ first: rows });
+							}
+						}}
+					/>
+				{/if}
 			</div>
-			{#if buckets.pageInfo.hasPreviousPage || buckets.pageInfo.hasNextPage}
-				<Pagination
-					page={buckets.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({ before: buckets.pageInfo.startCursor ?? '' });
-							Buckets.loadPreviousPage({ last: rows });
-						},
-						loadNextPage: () => {
-							changeQuery({ after: buckets.pageInfo.endCursor ?? '' });
-							Buckets.loadNextPage({ first: rows });
-						}
-					}}
-				/>
-			{/if}
-		</Card>
+			<div>
+				<div>
+					<Heading size="small" level="3">Bucket cost (last 30 days)</Heading>
+					Sum: <Cost cost={cost.daily.sum} />
+					<EChart options={costTransform(cost.daily.series)} />
+					<a href="/team/{team}/cost">See cost details</a>
+				</div>
+			</div>
+		</div>
 	{:else}
 		<BodyLong
 			><strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
@@ -311,12 +350,9 @@
 			}
 		}
 	}
-
-	.summary-grid {
+	.content-wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
+		gap: var(--a-spacing-6);
+		grid-template-columns: 1fr 300px;
 	}
 </style>

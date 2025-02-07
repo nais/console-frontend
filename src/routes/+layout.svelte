@@ -81,7 +81,15 @@
 	});
 </script>
 
-<div class="full-wrapper {activeColor()} {$page.route.id?.includes('/job/') ? 'job-page' : ''}">
+<div
+	class={[
+		'full-wrapper',
+		activeColor(),
+		{
+			['white-page']: ['/job/', '/buckets'].some((s) => $page.route.id?.includes(s))
+		}
+	]}
+>
 	{#if loading}
 		<ProgressBar />
 	{/if}
@@ -117,7 +125,7 @@
 		padding-bottom: 1rem;
 	}
 
-	.full-wrapper.job-page {
+	.full-wrapper.white-page {
 		background: none;
 	}
 </style>
