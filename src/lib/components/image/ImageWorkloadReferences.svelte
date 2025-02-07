@@ -2,7 +2,8 @@
 	import { fragment, graphql, PendingValue, type ImageWorkloadReferences } from '$houdini';
 	import Time from '$lib/Time.svelte';
 
-	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Heading, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import WorkloadLink from '../WorkloadLink.svelte';
 
 	interface Props {
 		image: ImageWorkloadReferences;
@@ -42,12 +43,10 @@
 </script>
 
 <div class="workloads">
-	<h4>Workloads using image</h4>
+	<Heading level="4" size="small" spacing>Workloads using image</Heading>
 	<Table size="small" zebraStripes>
 		<Thead>
 			<Tr>
-				<Th>Team</Th>
-				<Th>Environment</Th>
 				<Th>Workload</Th>
 				<Th>Deploy ref</Th>
 				<Th>Age</Th>
@@ -61,23 +60,7 @@
 						workload.deployments.nodes.length > 0 ? workload.deployments.nodes[0] : null}
 					<Tr>
 						<Td>
-							<a href={`/team/${workload.team.slug}`}>{workload.team.slug}</a>
-						</Td>
-						<Td>
-							{workload.environment.name}
-						</Td>
-						<Td>
-							{#if workload.__typename === 'Application'}
-								<a
-									href={`/team/${workload.team.slug}/${workload.environment.name}/app/${workload.name}`}
-									>{workload.name}</a
-								>
-							{:else if workload.__typename === 'Job'}
-								<a
-									href={`/team/${workload.team.slug}/${workload.environment.name}/job/${workload.name}`}
-									>{workload.name}</a
-								>
-							{/if}
+							<WorkloadLink {workload} showIcon />
 						</Td>
 						<Td>
 							{#if deployInfo?.triggerUrl}
@@ -92,8 +75,6 @@
 					</Tr>
 				{:else}
 					<Tr>
-						<Td><Skeleton variant="text" /></Td>
-						<Td><Skeleton variant="text" /></Td>
 						<Td><Skeleton variant="text" /></Td>
 						<Td><Skeleton variant="text" /></Td>
 						<Td><Skeleton variant="text" /></Td>
