@@ -3,8 +3,8 @@
 	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Image from '$lib/components/Image.svelte';
+	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
-	import TrafficV2 from '$lib/components/TrafficV2.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -85,7 +85,7 @@
 				<Runs {job} />
 			</div>
 			<div>
-				<TrafficV2 workload={job} />
+				<NetworkPolicy workload={job} />
 			</div>
 			<div>
 				<Persistence workload={job} />

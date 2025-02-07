@@ -76,7 +76,7 @@
 		<div class="runs-header">
 			<div class="runs-count">
 				<BodyShort size="small" style="font-weight: bold;">
-					{$data.runs.edges.length} job runs
+					{$data.runs.edges.length + ' job run' + ($data.runs.edges.length > 1 ? 's' : '')}
 				</BodyShort>
 			</div>
 		</div>
