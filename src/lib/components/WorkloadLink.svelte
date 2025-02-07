@@ -25,7 +25,7 @@
 		? 'job'
 		: 'app'}/{workload.name}"
 >
-	<IconWithText text={workload.name} {size}>
+	<IconWithText {size} description="{workload.team.slug} / {workload.environment.name}">
 		{#snippet icon()}
 			{#if showIcon}
 				{#if workload.__typename === 'Job'}
@@ -35,5 +35,21 @@
 				{/if}
 			{/if}
 		{/snippet}
+		{#snippet text()}
+			<span class="workload-name">{workload.name}</span>
+		{/snippet}
 	</IconWithText>
 </a>
+
+<style>
+	a {
+		font-weight: var(--a-font-weight-bold);
+		&:not(:active) {
+			color: var(--a-text-defualt);
+		}
+		text-decoration: none;
+		&:hover .workload-name {
+			text-decoration: underline;
+		}
+	}
+</style>

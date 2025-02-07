@@ -3,31 +3,63 @@
 	import type { Component, Snippet } from 'svelte';
 
 	interface Props {
-		text: string;
+		text: string | Snippet;
+		description?: string | Snippet;
 		icon?: Snippet | Component;
 		size?: 'small' | 'medium' | 'large';
 	}
 
-	let { icon, size = 'medium', text }: Props = $props();
+	let { icon, size = 'medium', text, description }: Props = $props();
 
 	const TextComponent = size === 'small' ? Detail : size === 'large' ? Heading : BodyShort;
 
 	const isSnippet = (value: Component | Snippet): value is Snippet => value.length === 1;
 </script>
 
-<div class="icon-with-text icon-with-text--{size}">
-	{#if icon}
-		{#if isSnippet(icon)}
-			{@render icon()}
-		{:else}
-			{@const Icon = icon}
-			<Icon />
+{#if description}
+	<div class="icon-with-text icon-with-text--{size}">
+		{#if icon}
+			{#if isSnippet(icon)}
+				{@render icon()}
+			{:else}
+				{@const Icon = icon}
+				<Icon />
+			{/if}
 		{/if}
-	{/if}
-	<TextComponent>
-		{text}
-	</TextComponent>
-</div>
+		<div>
+			<TextComponent>
+				{#if typeof text === 'string'}
+					{text}
+				{:else}
+					{@render text()}
+				{/if}
+			</TextComponent>
+			{#if typeof description === 'string'}
+				<Detail style="font-weight: normal; color: var(--a-text-subtle);">{description}</Detail>
+			{:else}
+				{@render description()}
+			{/if}
+		</div>
+	</div>
+{:else}
+	<div class="icon-with-text icon-with-text--{size}">
+		{#if icon}
+			{#if isSnippet(icon)}
+				{@render icon()}
+			{:else}
+				{@const Icon = icon}
+				<Icon />
+			{/if}
+		{/if}
+		<TextComponent>
+			{#if typeof text === 'string'}
+				{text}
+			{:else}
+				{@render text()}
+			{/if}
+		</TextComponent>
+	</div>
+{/if}
 
 <style>
 	.icon-with-text {
@@ -39,7 +71,7 @@
 		gap: var(--a-spacing-1);
 	}
 	.icon-with-text--medium {
-		font-size: 1.125rem;
+		font-size: 1.5rem;
 		gap: var(--a-spacing-1-alt);
 	}
 	.icon-with-text--large {
