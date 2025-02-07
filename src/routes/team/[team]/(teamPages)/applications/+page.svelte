@@ -332,7 +332,6 @@
 						</div>
 						<div class="application-link">
 							<WorkloadLink workload={app} />
-							<Detail>{app.environment.name}</Detail>
 						</div>
 					</div>
 					<div class="application-info">

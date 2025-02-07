@@ -325,7 +325,6 @@
 						</div>
 						<div class="job-link">
 							<WorkloadLink workload={job} />
-							<Detail>{job.environment.name}</Detail>
 						</div>
 					</div>
 					<div class="job-info">
