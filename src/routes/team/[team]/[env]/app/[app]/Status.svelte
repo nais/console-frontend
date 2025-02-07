@@ -55,7 +55,7 @@
 		{/if}
 	</div>
 	{#if nErrors > 0}
-		<a href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/status">
+		<a href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/status">
 			{nErrors}
 			{`${state === WorkloadState.NAIS ? 'todo' : 'issue'}${nErrors > 1 ? 's' : ''}`}
 		</a>
