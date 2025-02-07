@@ -126,11 +126,6 @@
 		align-items: center;
 	}
 
-	h4 {
-		font-weight: 400;
-		margin-bottom: 0.5rem;
-	}
-
 	hr {
 		border: 0;
 		border-top: 1px solid var(--a-border-default);

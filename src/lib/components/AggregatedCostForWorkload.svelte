@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { HelpText } from '@nais/ds-svelte-community';
+	import { Heading, HelpText } from '@nais/ds-svelte-community';
 	import type { AggregatedCostVariables } from './$houdini';
 	import Cost from './Cost.svelte';
 
@@ -58,11 +58,12 @@
 	}
 </script>
 
-<h4 class="container">
-	Cost<HelpText title="Aggregated workload cost"
+<div class="container">
+	<Heading level="3" size="small" spacing>Cost</Heading>
+	<HelpText title="Aggregated workload cost"
 		>Aggregated cost for workload. Current month is estimated.</HelpText
 	>
-</h4>
+</div>
 
 <GraphErrors errors={$costQuery.errors} />
 

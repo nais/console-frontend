@@ -95,10 +95,10 @@
 			</div>
 		</div>
 		<div>
-			<h4>Status</h4>
+			<Heading level="3" size="small" spacing>Status</Heading>
 			<Status {app} />
 			<hr />
-			<h4>Utilization</h4>
+			<Heading level="3" size="small" spacing>Utilization</Heading>
 			<Utilization {app} />
 			<hr />
 			<Image workload={app} />
@@ -109,66 +109,6 @@
 				<Secrets workload={app.name} {environment} {teamSlug} />
 			{/if}
 		</div>
-		<!--Status {app} />
-
-		<Card columns={4}>
-			<Image workload={app} />
-		</Card>
-		<Card columns={4} rows={1}>
-			<AggregatedCostForWorkload {teamSlug} workload={application} {environment} />
-		</Card>
-		<Card columns={12}>
-			<div class="heading">
-				<h4>Instances</h4>
-				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
-					<Button
-						variant="secondary"
-						size="small"
-						onclick={() => {
-							restart = true;
-						}}
-						icon={ArrowCirclepathIcon}
-					>
-						Restart
-					</Button>
-				{/if}
-			</div>
-			{#if $restartApp.data}
-				<div class="marginbox">
-					{#if !$restartApp.errors}
-						<Alert size="small" variant="success">All instances restarting</Alert>
-					{:else}
-						{#each $restartApp.errors as error}
-							<Alert size="small" variant="error">{error.message}</Alert>
-						{/each}
-					{/if}
-				</div>
-			{/if}
-			<div class="utilAndScaling">
-				<Utilization {app} />
-
-				<Scaling {app} />
-			</div>
-
-			<Instances {teamSlug} {app} />
-		</Card>
-		<Card columns={12}>
-			<h4>Traffic policies</h4>
-			<Traffic workload={app} />
-		</Card>
-		<Card columns={4}>
-			<Persistence workload={app} />
-		</Card>
-		<Card columns={4}>
-			<h4>Authentications</h4>
-			<Authentications {app} />
-		</Card>
-		{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
-			<Card columns={4}>
-				<h4>Secrets</h4>
-				<Secrets />
-			</Card>
-		{/if}-->
 	</div>
 	<Confirm bind:open={restart} onconfirm={submit}>
 		{#snippet header()}
@@ -183,11 +123,6 @@
 {/if}
 
 <style>
-	h4 {
-		font-weight: 400;
-		margin-bottom: 0.5rem;
-	}
-
 	.app-content {
 		display: grid;
 		grid-template-columns: 1fr 250px;
@@ -198,11 +133,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-	}
-
-	h4 {
-		font-weight: 400;
-		margin-bottom: 0.5rem;
 	}
 
 	hr {
