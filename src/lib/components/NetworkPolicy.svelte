@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fragment, graphql, type TrafficV2 } from '$houdini';
+	import { fragment, graphql, type NetworkPolicy } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
 	import { Heading, Label } from '@nais/ds-svelte-community';
 	import {
@@ -10,16 +10,16 @@
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
-		workload: TrafficV2;
+		workload: NetworkPolicy;
 	}
 
 	let { workload }: Props = $props();
 
-	let traffic = $derived(
+	let np = $derived(
 		fragment(
 			workload,
 			graphql(`
-				fragment TrafficV2 on Workload {
+				fragment NetworkPolicy on Workload {
 					__typename
 					name
 					environment {
@@ -81,15 +81,15 @@
 	);
 </script>
 
-{#if $traffic.networkPolicy.inbound.rules.length > 0 || $traffic.networkPolicy.outbound.rules.length > 0 || $traffic.networkPolicy.outbound.external.length > 0}
+{#if $np.networkPolicy.inbound.rules.length > 0 || $np.networkPolicy.outbound.rules.length > 0 || $np.networkPolicy.outbound.external.length > 0}
 	<Heading level="2" size="medium" spacing>Network policy</Heading>
 
 	<div class="traffic">
-		{#if $traffic.networkPolicy.inbound.rules.length > 0}
+		{#if $np.networkPolicy.inbound.rules.length > 0}
 			<div class="direction-content">
 				<Heading level="3" size="small" spacing>Inbound</Heading>
 				<ul>
-					{#each $traffic.networkPolicy.inbound.rules.filter((rule) => rule.targetWorkload) as rule}
+					{#each $np.networkPolicy.inbound.rules.filter((rule) => rule.targetWorkload) as rule}
 						<li>
 							{#if rule.targetWorkloadName == '*'}
 								Any app
@@ -99,7 +99,7 @@
 									in {rule.targetTeamSlug}
 								{/if}
 
-								in {$traffic.environment.name}
+								in {$np.environment.name}
 							{:else if rule.targetWorkload}
 								<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
 							{:else}
@@ -108,7 +108,7 @@
 						</li>
 					{/each}
 				</ul>
-				{#if $traffic.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload || rule.mutual).length > 0}
+				{#if $np.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload || rule.mutual).length > 0}
 					<div class="header">
 						<div class="type-icon-header">
 							<ExclamationmarkTriangleFillIcon />
@@ -118,14 +118,14 @@
 						</div>
 					</div>
 
-					{#if $traffic.networkPolicy.inbound.rules
+					{#if $np.networkPolicy.inbound.rules
 						.filter((rule) => !rule.mutual)
 						.filter((rule) => rule.targetWorkload).length > 0}
 						<Label size="small">
-							These workloads are missing an outbound policy to {$traffic.name}</Label
+							These workloads are missing an outbound policy to {$np.name}</Label
 						>
 						<ul>
-							{#each $traffic.networkPolicy.inbound.rules.filter((rule) => !rule.mutual) as rule}
+							{#each $np.networkPolicy.inbound.rules.filter((rule) => !rule.mutual) as rule}
 								<li>
 									{#if rule.targetWorkload}
 										<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
@@ -134,16 +134,16 @@
 							{/each}
 						</ul>
 					{/if}
-					{#if $traffic.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload).length > 0}
+					{#if $np.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload).length > 0}
 						<Label size="small"
-							>Invalid workload reference{$traffic.networkPolicy.inbound.rules.filter(
+							>Invalid workload reference{$np.networkPolicy.inbound.rules.filter(
 								(rule) => !rule.targetWorkload
 							).length > 1
 								? 's'
 								: ''}
 						</Label>
 						<ul>
-							{#each $traffic.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload) as rule}
+							{#each $np.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload) as rule}
 								<li>
 									<IconWithText text={rule.targetWorkloadName} icon={QuestionmarkIcon}
 									></IconWithText>
@@ -154,13 +154,13 @@
 				{/if}
 			</div>
 		{/if}
-		{#if $traffic.networkPolicy.outbound.rules.length > 0 || $traffic.networkPolicy.outbound.external.length > 0}
+		{#if $np.networkPolicy.outbound.rules.length > 0 || $np.networkPolicy.outbound.external.length > 0}
 			<div class="direction-content">
 				<Heading level="3" size="small" spacing>Outbound</Heading>
-				{#if $traffic.networkPolicy.outbound.external.length > 0}
+				{#if $np.networkPolicy.outbound.external.length > 0}
 					<Heading level="4" size="xsmall" spacing>External</Heading>
 					<ul>
-						{#each $traffic.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external}
+						{#each $np.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external}
 							{#each external.ports as port}
 								<li>
 									<IconWithText
@@ -176,7 +176,7 @@
 							{/each}
 						{/each}
 
-						{#each $traffic.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external}
+						{#each $np.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external}
 							{#each external.ports as port}
 								<li>
 									<IconWithText text={`${external.target}:${port}`} size="medium" icon={Globe} />
@@ -189,7 +189,7 @@
 				{/if}
 				<Heading level="4" size="xsmall" spacing>Workloads</Heading>
 				<ul>
-					{#each $traffic.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload) as rule}
+					{#each $np.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload) as rule}
 						<li>
 							{#if rule.targetWorkloadName == '*'}
 								Any app
@@ -199,7 +199,7 @@
 									in {rule.targetTeamSlug}
 								{/if}
 
-								in {$traffic.environment.name}
+								in {$np.environment.name}
 							{:else if rule.targetWorkload}
 								<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
 							{:else}
