@@ -6,6 +6,7 @@
 		type BucketOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import Cost from '$lib/components/Cost.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
@@ -92,30 +93,33 @@
 	): EChartsOption => {
 		return {
 			tooltip: {
-				trigger: 'item',
-				valueFormatter(value: any) {
-					return value.toLocaleString('en-GB', {
-						style: 'currency',
-						currency: 'EUR',
-						maximumFractionDigits: 2
-					});
+				trigger: data.length > 10 ? 'item' : 'axis',
+				axisPointer: {
+					type: 'shadow'
+				},
+				valueFormatter(value: number) {
+					return euroValueFormatter(value);
 				}
+			},
+			grid: {
+				left: '1%',
+				containLabel: true
 			},
 			xAxis: {
 				data: data.map((entry) => format(entry.date, 'dd.MM'))
 			},
 			yAxis: {
 				axisLabel: {
-					formatter: (value: number) => value.toFixed(1)
+					formatter: (value: number) => euroValueFormatter(value)
 				}
 			},
 			series: {
-				name: 'bucket cost',
+				name: 'Bucket cost',
 				type: 'line',
 				emphasis: { focus: 'series' },
 				data: data.map(({ sum }) => sum)
 			}
-		};
+		} as EChartsOption;
 	};
 </script>
 

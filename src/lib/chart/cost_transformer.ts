@@ -1,6 +1,6 @@
 import type { EChartsOption } from 'echarts';
 
-function euroValueFormatter(value: number): string {
+export function euroValueFormatter(value: number): string {
 	return value.toLocaleString('en-GB', {
 		style: 'currency',
 		currency: 'EUR',
