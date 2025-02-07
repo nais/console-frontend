@@ -5,12 +5,12 @@
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
+	import Secrets from '$lib/components/Secrets.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
-	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 	import TriggerRunModal from './TriggerRunModal.svelte';
 
@@ -92,10 +92,10 @@
 			</div>
 		</div>
 		<div>
-			<h4>Status</h4>
+			<Heading level="3" size="small" spacing>Status</Heading>
 			<Status {job} />
 			<hr />
-			<h4>Run configuration</h4>
+			<Heading level="3" size="small" spacing>Run configuration</Heading>
 			<Schedule schedule={job.schedule} />
 			<hr />
 			<Image workload={job} />
@@ -103,8 +103,7 @@
 			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 			{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
 				<hr />
-				<h4>Secrets</h4>
-				<Secrets />
+				<Secrets workload={jobName} {environment} {teamSlug} />
 			{/if}
 		</div>
 	</div>
@@ -117,7 +116,7 @@
 <style>
 	.job-content {
 		display: grid;
-		grid-template-columns: 1fr 239px;
+		grid-template-columns: 1fr 250px;
 		gap: 1rem;
 	}
 

@@ -2,19 +2,17 @@
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import Image from '$lib/components/Image.svelte';
+	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
-	import Traffic from '$lib/components/Traffic.svelte';
-	import { Alert, Button } from '@nais/ds-svelte-community';
+	import Secrets from '$lib/components/Secrets.svelte';
+	import { Button, Heading } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
-	import Authentications from './Authentications.svelte';
+	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
-	import Scaling from './Scaling.svelte';
-	import Secrets from './Secrets.svelte';
 	import Status from './Status.svelte';
 	import Utilization from './Utilization.svelte';
 
@@ -59,8 +57,59 @@
 
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
-	<div class="grid">
-		<Status {app} />
+	<div class="app-content">
+		<div style="display:flex; flex-direction: column; gap: 1rem;">
+			<div style="display:flex; flex-direction: column; gap:0.5rem;">
+				<div class="instances-header">
+					<Heading level="2" size="medium">Instances</Heading>
+					{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+						<Button
+							variant="secondary"
+							size="small"
+							onclick={() => {
+								restart = true;
+							}}
+							icon={ArrowCirclepathIcon}
+						>
+							Restart app
+						</Button>
+					{/if}
+				</div>
+				<Instances {app} />
+			</div>
+			<div
+				style="display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem; margin-bottom: 1rem;"
+			>
+				<div>
+					<Ingresses {app} />
+				</div>
+				<div>
+					<Persistence workload={app} />
+				</div>
+			</div>
+
+			<div>
+				<NetworkPolicy workload={app} />
+			</div>
+		</div>
+		<div>
+			<h4>Status</h4>
+			<Status {app} />
+			<hr />
+			<h4>Utilization</h4>
+			<Utilization {app} />
+			<hr />
+			<Image workload={app} />
+			<hr />
+			<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+			{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+				<hr />
+				<Secrets workload={app.name} {environment} {teamSlug} />
+			{/if}
+		</div>
+		<!--Status {app} />
 
 		<Card columns={4}>
 			<Image workload={app} />
@@ -119,7 +168,7 @@
 				<h4>Secrets</h4>
 				<Secrets />
 			</Card>
-		{/if}
+		{/if}-->
 	</div>
 	<Confirm bind:open={restart} onconfirm={submit}>
 		{#snippet header()}
@@ -134,28 +183,31 @@
 {/if}
 
 <style>
-	.grid {
+	h4 {
+		font-weight: 400;
+		margin-bottom: 0.5rem;
+	}
+
+	.app-content {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 250px;
+		gap: 1rem;
+	}
+
+	.instances-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 
 	h4 {
 		font-weight: 400;
 		margin-bottom: 0.5rem;
 	}
-	.heading {
-		display: flex;
-		justify-content: space-between;
-	}
-	.marginbox {
-		margin: 0.5rem 0;
-	}
-	.utilAndScaling {
-		display: flex;
-		gap: 1rem;
-		justify-content: space-between;
-		margin: 1rem 0;
+
+	hr {
+		border: 0;
+		border-top: 1px solid var(--a-border-default);
+		margin: 1.5rem 0.125rem;
 	}
 </style>

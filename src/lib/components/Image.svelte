@@ -7,7 +7,7 @@
 	import Time from '$lib/Time.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 
-	import { Button, Tooltip } from '@nais/ds-svelte-community';
+	import { Button, Heading, Tooltip } from '@nais/ds-svelte-community';
 
 	interface Props {
 		workload: WorkloadImage;
@@ -86,9 +86,8 @@
 
 {#if $data.image}
 	{@const image = $data.image}
-	<h4 class="imageHeader">
-		Image
-
+	<div class="imageHeader">
+		<Heading level="3" size="small" spacing>Image</Heading>
 		<Button
 			as="a"
 			variant="secondary"
@@ -96,7 +95,7 @@
 			href="/team/{team}/{env}/{workloadType}/{workloadName}/image"
 			>Details
 		</Button>
-	</h4>
+	</div>
 
 	<p class="lastActivity">
 		{#if deploymentInfo?.triggerUrl}

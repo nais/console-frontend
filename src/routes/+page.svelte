@@ -47,7 +47,7 @@
 						My teams
 					</h2>
 					<Button as="a" size="small" href="/team/create" variant="primary" icon={PlusIcon}>
-						Create teamsasf
+						Create teams
 					</Button>
 				</div>
 				{#if $UserTeams.data}
