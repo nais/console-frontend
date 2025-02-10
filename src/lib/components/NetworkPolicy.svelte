@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy } from '$houdini';
 	import Globe from '$lib/icons/Globe.svelte';
-	import { Heading, Label } from '@nais/ds-svelte-community';
-	import {
-		ExclamationmarkTriangleFillIcon,
-		QuestionmarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import IconWithText from './IconWithText.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -82,7 +79,7 @@
 			<Heading level="3" size="small" spacing>Inbound</Heading>
 			{#if $data.networkPolicy.inbound.rules.length > 0}
 				<ul>
-					{#each $data.networkPolicy.inbound.rules.filter((rule) => rule.targetWorkload && rule.mutual) as rule}
+					{#each $data.networkPolicy.inbound.rules as rule}
 						<li>
 							{#if rule.targetWorkloadName == '*'}
 								Any app
@@ -93,6 +90,24 @@
 								{/if}
 
 								in {$data.environment.name}
+							{:else if !rule.mutual && rule.targetWorkload}
+								<WorkloadLink
+									workload={rule.targetWorkload}
+									showIcon={true}
+									size="medium"
+									warningMessage="Workload is missing outbound policy to {$data.name}"
+								/>
+							{:else if !rule.mutual && !rule.targetWorkload}
+								<Tooltip content="Invalid workload reference">
+									<IconWithText size="medium" description={rule.targetTeamSlug}>
+										{#snippet icon()}
+											<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+										{/snippet}
+										{#snippet text()}
+											<span>{rule.targetWorkloadName}</span>
+										{/snippet}
+									</IconWithText>
+								</Tooltip>
 							{:else if rule.targetWorkload}
 								<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
 							{:else}
@@ -101,52 +116,8 @@
 						</li>
 					{/each}
 				</ul>
-				{#if $data.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload || !rule.mutual).length > 0}
-					<div class="header">
-						<div class="type-icon-header">
-							<ExclamationmarkTriangleFillIcon />
-						</div>
-						<div>
-							<Heading level="4" size="xsmall">Inbound rule warnings</Heading>
-						</div>
-					</div>
-
-					{#if $data.networkPolicy.inbound.rules
-						.filter((rule) => !rule.mutual)
-						.filter((rule) => rule.targetWorkload).length > 0}
-						<Label size="small">
-							These workloads are missing an outbound policy to {$data.name}</Label
-						>
-						<ul>
-							{#each $data.networkPolicy.inbound.rules.filter((rule) => !rule.mutual) as rule}
-								<li>
-									{#if rule.targetWorkload}
-										<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
-									{/if}
-								</li>
-							{/each}
-						</ul>
-					{/if}
-					{#if $data.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload).length > 0}
-						<Label size="small"
-							>Invalid workload reference{$data.networkPolicy.inbound.rules.filter(
-								(rule) => !rule.targetWorkload
-							).length > 1
-								? 's'
-								: ''}
-						</Label>
-						<ul>
-							{#each $data.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload) as rule}
-								<li>
-									<IconWithText text={rule.targetWorkloadName} icon={QuestionmarkIcon}
-									></IconWithText>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				{/if}
 			{:else}
-				No inbound network policies configured for this app.
+				<li>No inbound network policies configured for this app.</li>
 			{/if}
 		</div>
 
@@ -183,10 +154,10 @@
 						{/each}
 					</ul>
 				{/if}
-				{#if $data.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload).length > 0}
+				{#if $data.networkPolicy.outbound.rules.length > 0}
 					<Heading level="4" size="xsmall" spacing>Workloads</Heading>
 					<ul>
-						{#each $data.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload) as rule}
+						{#each $data.networkPolicy.outbound.rules as rule}
 							<li>
 								{#if rule.targetWorkloadName == '*'}
 									Any app
@@ -197,6 +168,24 @@
 									{/if}
 
 									in {$data.environment.name}
+								{:else if !rule.mutual && rule.targetWorkload}
+									<WorkloadLink
+										workload={rule.targetWorkload}
+										showIcon={true}
+										size="medium"
+										warningMessage="Workload is missing outbound policy to {$data.name}"
+									/>
+								{:else if !rule.mutual && !rule.targetWorkload}
+									<Tooltip content="Invalid workload reference">
+										<IconWithText size="medium" description={rule.targetTeamSlug}>
+											{#snippet icon()}
+												<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+											{/snippet}
+											{#snippet text()}
+												<span>{rule.targetWorkloadName}</span>
+											{/snippet}
+										</IconWithText>
+									</Tooltip>
 								{:else if rule.targetWorkload}
 									<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
 								{:else}
@@ -224,18 +213,6 @@
 	}
 	.direction-content {
 		padding: 1rem;
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		font-size: 1.25rem;
-		gap: var(--a-spacing-1-alt);
-	}
-
-	.type-icon-header {
-		display: flex;
-		flex-direction: row;
 	}
 
 	.direction-content,
