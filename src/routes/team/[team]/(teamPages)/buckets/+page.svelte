@@ -28,6 +28,8 @@
 	import { format } from 'date-fns';
 	import type { EChartsOption } from 'echarts';
 	import type { PageData } from './$houdini';
+	import type { CallbackDataParams, TopLevelFormatterParams } from 'echarts/types/dist/shared';
+	import { parseImage } from '$lib/utils/image';
 
 	interface Props {
 		data: PageData;
@@ -93,16 +95,15 @@
 	): EChartsOption => {
 		return {
 			tooltip: {
-				trigger: data.length > 10 ? 'item' : 'axis',
-				axisPointer: {
-					type: 'shadow'
-				},
-				valueFormatter(value: number) {
-					return euroValueFormatter(value);
-				}
+				// axisPointer: {
+				// 	type: 'shadow'
+				// },
+				trigger: 'axis',
+				formatter: (params: CallbackDataParams[]) =>
+					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
 			},
 			grid: {
-				left: '1%',
+				left: '0',
 				containLabel: true
 			},
 			xAxis: {
@@ -117,6 +118,7 @@
 				name: 'Bucket cost',
 				type: 'line',
 				emphasis: { focus: 'series' },
+				symbol: 'none',
 				data: data.map(({ sum }) => sum)
 			}
 		} as EChartsOption;

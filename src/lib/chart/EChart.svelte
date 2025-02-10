@@ -50,7 +50,7 @@
 		let ins: EChartsType | undefined;
 
 		options = { ...defaultOptions, ...options };
-		options.tooltip = { ...options.tooltip, ...defaultOptions.tooltip };
+		options.tooltip = { ...defaultOptions.tooltip, ...options.tooltip };
 
 		const resize = () => {
 			ins?.resize();
