@@ -77,7 +77,7 @@
 								<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
 							</Tooltip>
 						{:else}
-							<Tooltip content="Job run status is unknown">
+							<Tooltip content="Application instance status is unknown">
 								<QuestionmarkIcon />
 							</Tooltip>
 						{/if}
@@ -85,7 +85,7 @@
 					<div class="log-link">
 						<a
 							href="/team/{$data.team.slug}/{$data.environment
-								.name}/job/{$data.name}/logs?name={instance.name}"
+								.name}/app/{$data.name}/logs?name={instance.name}"
 						>
 							{instance.name}
 						</a>
