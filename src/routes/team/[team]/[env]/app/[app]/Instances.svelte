@@ -59,8 +59,9 @@
 		<div class="header">
 			<div class="count">
 				<BodyShort size="small" style="font-weight: bold;">
-					{$data.instances.edges.length} application instance
-					{#if $data.instances.edges.length > 1}s{/if}
+					{$data.instances.edges.length} application instance{$data.instances.edges.length > 1
+						? 's'
+						: ''}
 				</BodyShort>
 			</div>
 		</div>
