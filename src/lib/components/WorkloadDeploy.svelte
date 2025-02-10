@@ -32,14 +32,13 @@
 		)
 	);
 
-	//let workloadName = $derived($data.name);
-	//let workloadType = $derived($data.__typename === 'Application' ? 'app' : 'job');
-
 	let deploymentInfo = $derived(
 		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
 	);
 
-	//const githubOrganization = get(page).data.githubOrganization;
+	function isValidSha(sha: string): boolean {
+		return /^[0-9a-f]{40}$/i.test(sha);
+	}
 </script>
 
 <div>
@@ -54,15 +53,13 @@
 		<div><a href={deploymentInfo.triggerUrl}>Github action <ExternalLinkIcon /></a></div>
 	{/if}
 
-	<!-- TODO: Put back when commitSha is available from API -->
-	<!--{#if deploymentInfo?.commitSha}
-	<div>
-		<a
-			href="https://github.com/{githubOrganization}/{deploymentInfo?.repository}/commit/{deploymentInfo?.repository}"
-			>Commit {deploymentInfo?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
-		>
-	</div>
-{/if}-->
+	{#if deploymentInfo?.commitSha && isValidSha(deploymentInfo?.commitSha)}
+		<div>
+			<a href="https://github.com/{deploymentInfo?.repository}/commit/{deploymentInfo?.commitSha}"
+				>Commit {deploymentInfo?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
+			>
+		</div>
+	{/if}
 {:else}
 	No deployments
 {/if}
