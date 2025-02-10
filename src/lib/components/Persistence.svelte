@@ -102,15 +102,19 @@
 	if ($data.buckets.edges.length > 0) persistenceCount++;
 	if ($data.bigQueryDatasets.edges.length > 0) persistenceCount++;
 	if ($data.sqlInstances.edges.length > 0) persistenceCount++;
-	if ($data.kafkaTopicAcls.edges.length > 0) persistenceCount++;
+	if (
+		$data.kafkaTopicAcls.edges.length > 0 &&
+		$data.kafkaTopicAcls.edges.filter((acl) => acl.node.teamName !== '*').length > 0
+	)
+		persistenceCount++;
 	if ($data.openSearch) persistenceCount++;
 	if ($data.redisInstances.edges.length > 0) persistenceCount++;
 	if ($data.valkeyInstances.edges.length > 0) persistenceCount++;
 </script>
 
-{#if persistenceCount > 0}
-	<Heading level="2" size="medium" spacing>Persistence</Heading>
+<Heading level="2" size="medium" spacing>Persistence</Heading>
 
+{#if persistenceCount > 0}
 	<div class="content">
 		{#if $data.buckets.edges.length > 0}
 			{#each $data.buckets.edges as bucket}
@@ -208,6 +212,8 @@
 			{/each}
 		{/if}
 	</div>
+{:else}
+	No persistence configured for this app.
 {/if}
 
 <style>

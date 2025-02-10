@@ -192,6 +192,13 @@
 	}
 </script>
 
+<!--p>
+	<a
+		href="https://grafana.nav.cloud.nais.io/a/grafana-lokiexplore-app/explore/service_namespace/{team}/logs?from=now-15m&to=now&var-ds={env}-loki&var-filters=service_namespace%7C%3D%7C{team}&var-filters=service_name%7C%3D%7C{app}&var-fields=&var-levels=&patterns=%5B%5D&var-metadata=&var-patterns=&var-lineFilterV2=&var-lineFilters=&timezone=browser&urlColumns=%5B%5D&visualizationType=%22logs%22&displayedFields=%5B%5D&sortOrder=%22Descending%22&wrapLogMessage=false"
+		>Explore logs in Grafana</a
+	>
+</p-->
+
 {#if $updates.errors && $updates.errors.length > 0}
 	<div class="line">
 		<br /><br />
