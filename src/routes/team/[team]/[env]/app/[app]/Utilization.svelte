@@ -60,9 +60,11 @@
 				size="medium"
 			/>
 		</div>
-		<a href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/utilization">
-			View details
-		</a>
+		<div style="margin-top: var(--a-spacing-2)">
+			<a href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/utilization">
+				View details
+			</a>
+		</div>
 	{/if}
 </div>
 

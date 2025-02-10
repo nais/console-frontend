@@ -92,7 +92,6 @@
 			</div>
 		</div>
 		<div>
-			<Heading level="3" size="small" spacing>Status</Heading>
 			<Status {job} />
 			<hr />
 			<Heading level="3" size="small" spacing>Run configuration</Heading>
@@ -116,7 +115,7 @@
 <style>
 	.job-content {
 		display: grid;
-		grid-template-columns: 1fr 250px;
+		grid-template-columns: 1fr 300px;
 		gap: 1rem;
 	}
 

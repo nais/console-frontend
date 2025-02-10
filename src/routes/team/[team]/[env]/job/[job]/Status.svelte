@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, WorkloadState, type JobStatus } from '$houdini';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkCircleFillIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -39,7 +40,11 @@
 {#if $data.status}
 	{@const state = $data.status.state}
 	{@const nErrors = $data.status.errors.length}
-	<div style="display: flex; gap: var(--a-spacing-1);">
+	<Heading level="3" size="small">Status</Heading>
+	{#if nErrors > 0}
+		<Detail>{nErrors} issue{nErrors > 1 ? 's' : ''}</Detail>
+	{/if}
+	<div style="display: flex; gap: var(--a-spacing-1); margin-top: var(--a-spacing-3);">
 		{#if state === WorkloadState.NAIS}
 			<CheckmarkCircleFillIcon style="color: var(--a-icon-success); font-size: 1.25rem" />
 			Job is nais.
@@ -55,9 +60,10 @@
 		{/if}
 	</div>
 	{#if nErrors > 0}
-		<a href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/status">
-			{nErrors}
-			{`${state === WorkloadState.NAIS ? 'todo' : 'issue'}${nErrors > 1 ? 's' : ''}`}
-		</a>
+		<div style="margin-top: var(--a-spacing-2)">
+			<a href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/status">
+				View details
+			</a>
+		</div>
 	{/if}
 {/if}

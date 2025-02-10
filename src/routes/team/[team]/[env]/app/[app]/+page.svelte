@@ -95,7 +95,6 @@
 			</div>
 		</div>
 		<div>
-			<Heading level="3" size="small" spacing>Status</Heading>
 			<Status {app} />
 			<hr />
 			<Heading level="3" size="small" spacing>Utilization</Heading>
@@ -125,7 +124,7 @@
 <style>
 	.app-content {
 		display: grid;
-		grid-template-columns: 1fr 250px;
+		grid-template-columns: 1fr 300px;
 		gap: 1rem;
 	}
 

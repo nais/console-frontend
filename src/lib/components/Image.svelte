@@ -7,7 +7,7 @@
 	import Time from '$lib/Time.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 
-	import { Button, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { Heading, Tooltip } from '@nais/ds-svelte-community';
 
 	interface Props {
 		workload: WorkloadImage;
@@ -88,13 +88,6 @@
 	{@const image = $data.image}
 	<div class="imageHeader">
 		<Heading level="3" size="small" spacing>Image</Heading>
-		<Button
-			as="a"
-			variant="secondary"
-			size="small"
-			href="/team/{team}/{env}/{workloadType}/{workloadName}/image"
-			>Details
-		</Button>
 	</div>
 
 	<p class="lastActivity">
@@ -173,6 +166,10 @@
 			{:else if image.hasSBOM}
 				<code class="check">&check;</code> No vulnerabilities found. Good work!
 			{/if}
+
+			<div style="margin-top: var(--a-spacing-2)">
+				<a href="/team/{team}/{env}/{workloadType}/{workloadName}/image">View details</a>
+			</div>
 		{/if}
 	</div>
 {/if}

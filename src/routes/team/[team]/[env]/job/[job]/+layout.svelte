@@ -43,7 +43,7 @@
 		{
 			items: [
 				{
-					name: 'Image details',
+					name: 'Image',
 					routeId: '/team/[team]/[env]/job/[job]/image',
 					icon: ImageIcon
 				},

@@ -50,7 +50,7 @@
 
 <GraphErrors errors={$ApplicationImageDetails.errors} />
 <div class="header">
-	<IconWithText icon={ImageIcon} text="Image details" size="large" />
+	<IconWithText icon={ImageIcon} text="Image" size="large" />
 </div>
 {#if $ApplicationImageDetails.data}
 	{@const image = $ApplicationImageDetails.data.team.environment.workload.image}

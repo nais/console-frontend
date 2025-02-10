@@ -50,7 +50,7 @@
 
 <GraphErrors errors={$JobImageDetails.errors} />
 <div class="header">
-	<IconWithText icon={ImageIcon} text="Image details" size="large" />
+	<IconWithText icon={ImageIcon} text="Image" size="large" />
 </div>
 {#if $JobImageDetails.data}
 	{@const image = $JobImageDetails.data.team.environment.workload.image}

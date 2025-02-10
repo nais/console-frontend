@@ -75,7 +75,7 @@
 		logs: { name: 'Logs', icon: Density3Icon },
 		manifest: { name: 'Manifest', icon: FileTextIcon },
 		delete: { name: 'Delete', icon: TrashIcon },
-		image: { name: 'Image details', icon: ImageIcon }
+		image: { name: 'Image', icon: ImageIcon }
 	};
 	const simpleAppPages: { [key: string]: { name: string; icon?: Component } } = {
 		'': { name: '' }, // overview
@@ -86,7 +86,7 @@
 		logs: { name: 'Logs', icon: Density3Icon },
 		manifest: { name: 'Manifest', icon: FileTextIcon },
 		delete: { name: 'Delete', icon: TrashIcon },
-		image: { name: 'Image details', icon: ImageIcon }
+		image: { name: 'Image', icon: ImageIcon }
 	};
 
 	const pages: {

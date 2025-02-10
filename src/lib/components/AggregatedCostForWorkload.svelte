@@ -12,8 +12,12 @@
 	const costQuery = graphql(`
 		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) @load {
 			team(slug: $team) {
+				slug
 				environment(name: $environment) {
+					name
 					workload(name: $workload) {
+						__typename
+						name
 						cost {
 							monthly {
 								sum
@@ -90,6 +94,14 @@
 		{:else}
 			No cost data available
 		{/each}
+	</div>
+	<div style="margin-top: var(--a-spacing-2)">
+		<a
+			href="/team/{$costQuery.data.team.slug}/{$costQuery.data.team.environment.name}/{$costQuery
+				.data.team.environment.workload.__typename === 'Job'
+				? 'job'
+				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</a
+		>
 	</div>
 {/if}
 
