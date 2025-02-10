@@ -102,7 +102,7 @@
 						</li>
 					{/each}
 				</ul>
-				{#if $data.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload || rule.mutual).length > 0}
+				{#if $data.networkPolicy.inbound.rules.filter((rule) => !rule.targetWorkload || !rule.mutual).length > 0}
 					<div class="header">
 						<div class="type-icon-header">
 							<ExclamationmarkTriangleFillIcon />
@@ -181,27 +181,29 @@
 						{/each}
 					</ul>
 				{/if}
-				<Heading level="4" size="xsmall" spacing>Workloads</Heading>
-				<ul>
-					{#each $data.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload) as rule}
-						<li>
-							{#if rule.targetWorkloadName == '*'}
-								Any app
+				{#if $data.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload).length > 0}
+					<Heading level="4" size="xsmall" spacing>Workloads</Heading>
+					<ul>
+						{#each $data.networkPolicy.outbound.rules.filter((rule) => rule.targetWorkload) as rule}
+							<li>
 								{#if rule.targetWorkloadName == '*'}
-									from any namespace
-								{:else}
-									in {rule.targetTeamSlug}
-								{/if}
+									Any app
+									{#if rule.targetWorkloadName == '*'}
+										from any namespace
+									{:else}
+										in {rule.targetTeamSlug}
+									{/if}
 
-								in {$data.environment.name}
-							{:else if rule.targetWorkload}
-								<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
-							{:else}
-								<span>{rule.targetWorkloadName}</span>
-							{/if}
-						</li>
-					{/each}
-				</ul>
+									in {$data.environment.name}
+								{:else if rule.targetWorkload}
+									<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
+								{:else}
+									<span>{rule.targetWorkloadName}</span>
+								{/if}
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</div>
 		{/if}
 	</div>
