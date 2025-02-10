@@ -75,13 +75,12 @@
 	);
 </script>
 
+<Heading level="2" size="medium" spacing>Network policy</Heading>
 {#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-	<Heading level="2" size="medium" spacing>Network policy</Heading>
-
 	<div class="grid">
-		{#if $data.networkPolicy.inbound.rules.length > 0}
-			<div class="direction-content">
-				<Heading level="3" size="small" spacing>Inbound</Heading>
+		<div class="direction-content">
+			<Heading level="3" size="small" spacing>Inbound</Heading>
+			{#if $data.networkPolicy.inbound.rules.length > 0}
 				<ul>
 					{#each $data.networkPolicy.inbound.rules.filter((rule) => rule.targetWorkload) as rule}
 						<li>
@@ -146,11 +145,14 @@
 						</ul>
 					{/if}
 				{/if}
-			</div>
-		{/if}
-		{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-			<div class="direction-content">
-				<Heading level="3" size="small" spacing>Outbound</Heading>
+			{:else}
+				No inbound network policies configured for this app.
+			{/if}
+		</div>
+
+		<div class="direction-content">
+			<Heading level="3" size="small" spacing>Outbound</Heading>
+			{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
 				{#if $data.networkPolicy.outbound.external.length > 0}
 					<Heading level="4" size="xsmall" spacing>External</Heading>
 					<ul>
@@ -204,9 +206,13 @@
 						{/each}
 					</ul>
 				{/if}
-			</div>
-		{/if}
+			{:else}
+				No outbound network policies configured for this app.
+			{/if}
+		</div>
 	</div>
+{:else}
+	No network policies configured for this app.
 {/if}
 
 <style>
