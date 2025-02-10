@@ -324,7 +324,7 @@
 							{/if}
 						</div>
 						<div class="job-link">
-							<WorkloadLink workload={job} />
+							<WorkloadLink workload={job} hideTeam />
 						</div>
 					</div>
 					<div class="job-info">

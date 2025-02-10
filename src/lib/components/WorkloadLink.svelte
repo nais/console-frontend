@@ -16,8 +16,17 @@
 		showIcon?: boolean;
 		//iconSize?: string;
 		size?: 'small' | 'medium' | 'large';
+		hideTeam?: boolean;
+		hideEnv?: boolean;
 	}
-	let { workload, showIcon, size = 'medium' }: Props = $props();
+	let { workload, showIcon, size = 'medium', hideTeam, hideEnv }: Props = $props();
+
+	const description = [
+		hideTeam ? undefined : workload.team.slug,
+		hideEnv ? undefined : workload.environment.name
+	]
+		.filter(Boolean)
+		.join(' / ');
 </script>
 
 <a
@@ -25,7 +34,7 @@
 		? 'job'
 		: 'app'}/{workload.name}"
 >
-	<IconWithText {size} description="{workload.team.slug} / {workload.environment.name}">
+	<IconWithText {size} {description}>
 		{#snippet icon()}
 			{#if showIcon}
 				{#if workload.__typename === 'Job'}

@@ -331,7 +331,7 @@
 							{/if}
 						</div>
 						<div class="application-link">
-							<WorkloadLink workload={app} />
+							<WorkloadLink workload={app} hideTeam />
 						</div>
 					</div>
 					<div class="application-info">
