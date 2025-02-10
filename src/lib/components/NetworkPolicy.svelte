@@ -82,7 +82,7 @@
 			<Heading level="3" size="small" spacing>Inbound</Heading>
 			{#if $data.networkPolicy.inbound.rules.length > 0}
 				<ul>
-					{#each $data.networkPolicy.inbound.rules.filter((rule) => rule.targetWorkload) as rule}
+					{#each $data.networkPolicy.inbound.rules.filter((rule) => rule.targetWorkload && rule.mutual) as rule}
 						<li>
 							{#if rule.targetWorkloadName == '*'}
 								Any app
