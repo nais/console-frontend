@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Heading } from '@nais/ds-svelte-community';
 	import cronParser from 'cron-parser';
 	import cronstrue from 'cronstrue';
 	import { DateTime } from 'luxon';
@@ -58,6 +59,7 @@
 	}
 </script>
 
+<Heading level="3" size="small">Run configuration</Heading>
 <div>
 	{#if schedule}
 		{@const runConfig = getLocalizedCronDescription(schedule.expression, schedule.timeZone)}

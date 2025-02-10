@@ -8,6 +8,7 @@
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
+	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -97,8 +98,9 @@
 		<div>
 			<Status {app} />
 			<hr />
-			<Heading level="3" size="small" spacing>Utilization</Heading>
 			<Utilization {app} />
+			<hr />
+			<WorkloadDeploy workload={app} />
 			<hr />
 			<Image workload={app} />
 			<hr />

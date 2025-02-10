@@ -13,6 +13,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...AppUtilization
 				...Persistence
 				...Scaling
+				...WorkloadDeploy
 				...WorkloadImage
 				...NetworkPolicy
 				...Manifest

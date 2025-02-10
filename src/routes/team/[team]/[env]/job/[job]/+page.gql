@@ -12,6 +12,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				...JobRuns
 				...JobStatus
 				...Persistence
+				...WorkloadDeploy
 				...WorkloadImage
 				...NetworkPolicy
 				...Manifest

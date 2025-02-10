@@ -6,6 +6,7 @@
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
+	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -94,8 +95,9 @@
 		<div>
 			<Status {job} />
 			<hr />
-			<Heading level="3" size="small" spacing>Run configuration</Heading>
 			<Schedule schedule={job.schedule} />
+			<hr />
+			<WorkloadDeploy workload={job} />
 			<hr />
 			<Image workload={job} />
 			<hr />

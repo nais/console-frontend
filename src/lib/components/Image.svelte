@@ -4,7 +4,6 @@
 	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import Time from '$lib/Time.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
@@ -51,9 +50,6 @@
 	let workloadType = $derived($data.__typename === 'Application' ? 'app' : 'job');
 	let env = $derived(page.params.env);
 	let team = $derived(page.params.team);
-	let deploymentInfo = $derived(
-		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
-	);
 
 	const notificationBadgeSize = '42';
 
@@ -87,25 +83,8 @@
 {#if $data.image}
 	{@const image = $data.image}
 	<div class="imageHeader">
-		<Heading level="3" size="small" spacing>Image</Heading>
+		<Heading level="3" size="small" spacing>Vulnerabilities</Heading>
 	</div>
-
-	<p class="lastActivity">
-		{#if deploymentInfo?.triggerUrl}
-			<a href={deploymentInfo.triggerUrl}>Deployed</a>
-		{:else}
-			Deployed
-		{/if}
-		{#if deploymentInfo?.createdAt}
-			<Time time={deploymentInfo.createdAt} distance={true} />
-		{/if}
-		{#if deploymentInfo?.deployerUsername}
-			by
-			<a href="https://github.com/{deploymentInfo.deployerUsername}" target="_blank"
-				>{deploymentInfo.deployerUsername}</a
-			>.
-		{/if}
-	</p>
 
 	<div class="vulnerabilities">
 		<h5>
@@ -175,10 +154,6 @@
 {/if}
 
 <style>
-	.lastActivity {
-		margin-top: 0px;
-	}
-
 	.imageHeader {
 		display: flex;
 		align-items: center;

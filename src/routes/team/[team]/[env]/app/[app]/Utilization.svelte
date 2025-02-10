@@ -5,6 +5,7 @@
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { cpuUtilization, memoryUtilization } from '$lib/utils/resources';
+	import { Heading } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 
 	interface Props {
@@ -36,6 +37,7 @@
 	);
 </script>
 
+<Heading level="3" size="small" spacing>Utilization</Heading>
 <div class="wrapper">
 	{#if $data.utilization}
 		{@const cpu = $data.utilization.cpuRequests}
