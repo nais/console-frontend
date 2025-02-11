@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { BodyLong, Detail, Heading } from '@nais/ds-svelte-community';
+	import { Detail, Heading, HelpText } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import type { EChartsOption } from 'echarts';
@@ -110,7 +110,12 @@
 </script>
 
 <div>
-	<Heading size="small" level="3">{title}</Heading>
+	<div class="heading">
+		<Heading size="small" level="3">{title}</Heading>
+		<HelpText title="Cost description"
+			>Total cost for the previous month and a projected estimate for this month.</HelpText
+		>
+	</div>
 
 	<Detail>
 		<div class="cost-summary">
@@ -134,13 +139,15 @@
 
 	<EChart options={costTransform(costData.daily.series)} />
 
-	<BodyLong size="small" spacing>
-		Total cost for the previous month and a projected estimate for this month.
-	</BodyLong>
 	<a href="/team/{teamSlug}/cost">See cost details</a>
 </div>
 
 <style>
+	.heading {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
 	.cost-summary {
 		gap: var(--a-spacing-1-alt);
 		.estimated-cost {
