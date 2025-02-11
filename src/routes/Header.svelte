@@ -264,17 +264,14 @@
 	<div class="header-content">
 		<div class="header-left">
 			<a href="/" class="logo">
-				<Logo
-					height="2rem"
-					fill="gradient"
-					gradientColors={['var(--active-color-strong)', '#ffffff']}
-					gradientDirection={{ x1: '0%', y1: '100%', x2: '100%', y2: '0%' }}
-				/>
+				<Logo height="2rem" />
 				<span class="nais-console">Nais Console</span>
 			</a>
+		</div>
+		<div class="right">
 			<div class="search">
 				<Search
-					placeholder="Search for applications, jobs, teams and more..."
+					placeholder="Search for apps, jobs, teams and more"
 					bind:value={query}
 					label="search"
 					variant="simple"
@@ -325,8 +322,6 @@
 					</ul>
 				{/if}
 			</div>
-		</div>
-		<div class="right">
 			<nav>
 				<ul>
 					<li>
@@ -352,6 +347,7 @@
 	.right {
 		display: flex;
 		gap: 2rem;
+		align-items: center;
 	}
 	.helpText {
 		z-index: 1000;
@@ -397,15 +393,14 @@
 	}
 	.search {
 		position: relative;
-		width: 350px;
+		width: 320px;
 		color: black;
 	}
 	.header {
 		background: var(--a-surface-inverted);
 		color: var(--a-text-on-inverted);
-		height: 3rem;
 		display: flex;
-		padding: 0 2rem;
+		padding: 0.75rem 2rem;
 		min-width: 1000px;
 	}
 	.header-content {

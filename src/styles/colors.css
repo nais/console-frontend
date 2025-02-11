@@ -1,4 +1,6 @@
 :root {
+	--brand-color: #ff3377;
+
 	--active-color: var(--a-deepblue-50);
 	--active-color-strong: var(--a-deepblue-100);
 }

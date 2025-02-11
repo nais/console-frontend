@@ -21,7 +21,7 @@
 <div class="wrapper">
 	<div class="login">
 		<h1>
-			<Logo height=".8em" fill="currentColor" />
+			<Logo height=".8em" />
 			Nais Console
 		</h1>
 
