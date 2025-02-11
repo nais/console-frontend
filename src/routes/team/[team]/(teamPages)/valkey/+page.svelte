@@ -315,11 +315,4 @@
 			}
 		}
 	}
-	.summary-grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
-	}
 </style>
