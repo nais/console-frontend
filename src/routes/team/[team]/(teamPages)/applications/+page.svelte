@@ -292,7 +292,7 @@
 					</ActionMenu>
 				</div>
 			</div>
-			{#each apps.nodes as app}
+			{#each apps.nodes as app (app)}
 				<div class="applications-list-item">
 					<div class="application-link-wrapper">
 						<div>

@@ -285,7 +285,7 @@
 					</ActionMenu>
 				</div>
 			</div>
-			{#each jobs.nodes as job}
+			{#each jobs.nodes as job (job)}
 				<div class="jobs-list-item">
 					<div class="job-link-wrapper">
 						<div>

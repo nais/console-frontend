@@ -19,7 +19,6 @@
 			};
 		};
 		showIcon?: boolean;
-		//iconSize?: string;
 		size?: 'small' | 'medium' | 'large';
 		hideTeam?: boolean;
 		hideEnv?: boolean;
