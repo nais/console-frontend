@@ -151,7 +151,7 @@
 					unsupportedFilter = false;
 				} else if (query.startsWith('valkey:')) {
 					store.fetch({
-						variables: { query: query.slice(6).trim(), type: 'VALKEY_INSTANCE' }
+						variables: { query: query.slice(7).trim(), type: 'VALKEY_INSTANCE' }
 					});
 					unsupportedFilter = false;
 				} else if (query.startsWith('bq:')) {

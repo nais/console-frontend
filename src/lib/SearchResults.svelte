@@ -195,7 +195,7 @@
 			<li>
 				<a
 					class={selected == i ? 'selected' : ''}
-					href="/team/{node.team.slug}/{node.environment.name}/redis/{node.name}"
+					href="/team/{node.team.slug}/{node.environment.name}/valkey/{node.name}"
 					onclick={onSelected.bind({}, node)}
 				>
 					<div class="typeIcon">
