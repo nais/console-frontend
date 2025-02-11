@@ -1,16 +1,13 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
-
 	import {
 		OrderDirection,
 		ValkeyInstanceOrderField,
 		type OrderDirection$options,
 		type ValkeyInstanceOrderField$options
 	} from '$houdini';
-	import Cost from '$lib/components/Cost.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -25,7 +22,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { ChevronDownIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -92,149 +89,151 @@
 	{@const instances = $Valkey.data.team.valkeyInstances}
 
 	{#if instances.nodes.length > 0 || $Valkey.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong spacing>
-			Valkey is a key value database that is used for storing and querying data. It is a good choice
-			for storing data that is not relational in nature and often used for caching.
-			<a href="https://docs.nais.io/persistence/valkey"
-				>Learn more about Valkey and how to get started.</a
-			>
-		</BodyLong>
-		<div class="summary-grid">
-			<Card columns={3}>
-				<SummaryCard title="Cost" helpText="Total Valkey cost for the last 30 days" color="green">
-					{#snippet icon({ color })}
-						<WalletIcon height="32px" width="32px" {color} />
-					{/snippet}
-					<Cost cost={cost.daily.sum} />
-				</SummaryCard>
-			</Card>
-		</div>
-		<Card columns={12}>
-			<div class="list">
-				<div class="list-header">
-					<div class="count">
-						<BodyShort size="small" style="font-weight: bold;">
-							{instances.pageInfo.totalCount} entries
-						</BodyShort>
-					</div>
-					<div style="display: flex; gap: 1rem;">
-						<div style="display: flex; gap: 1rem;">
-							<ActionMenu>
-								{#snippet trigger(props)}
-									<Button
-										variant="tertiary-neutral"
-										size="small"
-										iconPosition="right"
-										{...props}
-										icon={ChevronDownIcon}
-									>
-										<span style="font-weight: normal"># of rows</span>
-									</Button>
-								{/snippet}
-								{#key orderField}
-									<ActionMenuRadioGroup value={orderField} label="Order by">
-										<ActionMenuRadioItem
-											value={ValkeyInstanceOrderField.NAME}
-											onselect={(value) => {
-												handleSortField(value as string);
-											}}>Name</ActionMenuRadioItem
-										>
+		<div class="content-wrapper">
+			<div>
+				<BodyLong spacing>
+					Valkey is a key value database that is used for storing and querying data. It is a good
+					choice for storing data that is not relational in nature and often used for caching.
+					<a href="https://docs.nais.io/persistence/valkey"
+						>Learn more about Valkey and how to get started.</a
+					>
+				</BodyLong>
 
-										<ActionMenuRadioItem
-											value={ValkeyInstanceOrderField.ENVIRONMENT}
-											onselect={(value) => {
-												handleSortField(value as string);
-											}}>Environment</ActionMenuRadioItem
-										>
-									</ActionMenuRadioGroup>
-								{/key}
-								<ActionMenuDivider />
-								{#key orderDirection}
-									<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => {
-												handleSortDirection(value as string);
-											}}
-										>
-											<div class="icon">
-												<SortAscendingIcon size="1rem" />Ascending
-											</div>
-										</ActionMenuRadioItem>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => {
-												handleSortDirection(value as string);
-											}}
-										>
-											<div class="icon">
-												<SortDescendingIcon size="1rem" />Descending
-											</div>
-										</ActionMenuRadioItem>
-									</ActionMenuRadioGroup>
-								{/key}
-								<ActionMenuDivider />
-								{#key rows}
-									<ActionMenuRadioGroup value={rows} label="Rows per page">
-										<ActionMenuRadioItem
-											value="5"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>5</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="10"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>10</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="25"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>25</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="50"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>50</ActionMenuRadioItem
-										>
-									</ActionMenuRadioGroup>
-								{/key}
-							</ActionMenu>
+				<div class="list">
+					<div class="list-header">
+						<div class="count">
+							<BodyShort size="small" style="font-weight: bold;">
+								{instances.pageInfo.totalCount} entries
+							</BodyShort>
 						</div>
-					</div>
-				</div>
-				{#each instances.nodes as instance}
-					<div class="list-item">
-						<div class="link-wrapper">
-							<div class="link">
-								<PersistenceLink {instance} />
-								<Detail>{instance.environment.name}</Detail>
+						<div style="display: flex; gap: 1rem;">
+							<div style="display: flex; gap: 1rem;">
+								<ActionMenu>
+									{#snippet trigger(props)}
+										<Button
+											variant="tertiary-neutral"
+											size="small"
+											iconPosition="right"
+											{...props}
+											icon={ChevronDownIcon}
+										>
+											<span style="font-weight: normal"># of rows</span>
+										</Button>
+									{/snippet}
+									{#key orderField}
+										<ActionMenuRadioGroup value={orderField} label="Order by">
+											<ActionMenuRadioItem
+												value={ValkeyInstanceOrderField.NAME}
+												onselect={(value) => {
+													handleSortField(value as string);
+												}}>Name</ActionMenuRadioItem
+											>
+
+											<ActionMenuRadioItem
+												value={ValkeyInstanceOrderField.ENVIRONMENT}
+												onselect={(value) => {
+													handleSortField(value as string);
+												}}>Environment</ActionMenuRadioItem
+											>
+										</ActionMenuRadioGroup>
+									{/key}
+									<ActionMenuDivider />
+									{#key orderDirection}
+										<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
+											<ActionMenuRadioItem
+												value={OrderDirection.ASC}
+												onselect={(value) => {
+													handleSortDirection(value as string);
+												}}
+											>
+												<div class="icon">
+													<SortAscendingIcon size="1rem" />Ascending
+												</div>
+											</ActionMenuRadioItem>
+											<ActionMenuRadioItem
+												value={OrderDirection.DESC}
+												onselect={(value) => {
+													handleSortDirection(value as string);
+												}}
+											>
+												<div class="icon">
+													<SortDescendingIcon size="1rem" />Descending
+												</div>
+											</ActionMenuRadioItem>
+										</ActionMenuRadioGroup>
+									{/key}
+									<ActionMenuDivider />
+									{#key rows}
+										<ActionMenuRadioGroup value={rows} label="Rows per page">
+											<ActionMenuRadioItem
+												value="5"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>5</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="10"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>10</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="25"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>25</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="50"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>50</ActionMenuRadioItem
+											>
+										</ActionMenuRadioGroup>
+									{/key}
+								</ActionMenu>
 							</div>
 						</div>
-						<div class="info">
-							{#if instance.workload}
-								{@const workload = instance.workload}
-								Owner: <WorkloadLink {workload} showIcon={true} />
-							{/if}
-						</div>
 					</div>
-				{/each}
+					{#each instances.nodes as instance}
+						<div class="list-item">
+							<div class="link-wrapper">
+								<div class="link">
+									<PersistenceLink {instance} />
+									<Detail>{instance.environment.name}</Detail>
+								</div>
+							</div>
+							<div class="info">
+								{#if instance.workload}
+									{@const workload = instance.workload}
+									Owner: <WorkloadLink {workload} showIcon={true} />
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
+				{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
+					<Pagination
+						page={instances.pageInfo}
+						loaders={{
+							loadPreviousPage: () => {
+								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
+								Valkey.loadPreviousPage({ last: rows });
+							},
+							loadNextPage: () => {
+								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
+								Valkey.loadNextPage({ first: rows });
+							}
+						}}
+					/>
+				{/if}
 			</div>
-			{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
-				<Pagination
-					page={instances.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-							Valkey.loadPreviousPage({ last: rows });
-						},
-						loadNextPage: () => {
-							changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-							Valkey.loadNextPage({ first: rows });
-						}
-					}}
+			<div>
+				<PersistenceCost
+					title="Valkey cost"
+					costData={cost}
+					from={$Valkey.variables?.from ?? new Date()}
+					to={$Valkey.variables?.to ?? new Date()}
+					teamSlug={$Valkey.data?.team.slug}
 				/>
-			{/if}
-		</Card>
+			</div>
+		</div>
 	{:else}
 		<BodyLong
 			><strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
@@ -248,6 +247,11 @@
 {/if}
 
 <style>
+	.content-wrapper {
+		display: grid;
+		gap: var(--a-spacing-6);
+		grid-template-columns: 1fr 300px;
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;

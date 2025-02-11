@@ -5,11 +5,9 @@
 		type OpenSearchOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import Card from '$lib/Card.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
@@ -24,7 +22,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { ChevronDownIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -93,13 +91,15 @@
 		<IconWithText text="OpenSearch instances" icon={OpenSearchIcon} size="large" />
 	</div>
 	{#if instances.nodes.length > 0 || $OpenSearch.data.team.totalCount.pageInfo.totalCount > 0}
-		<BodyLong spacing>
-			OpenSearch is a distributed search and analytics engine.
-			<a href="https://docs.nais.io/persistence/opensearch/"
-				>Learn more about OpenSearch and how to get started.</a
-			>
-		</BodyLong>
-		<div class="summary-grid">
+		<div class="content-wrapper">
+			<div>
+				<BodyLong spacing>
+					OpenSearch is a distributed search and analytics engine.
+					<a href="https://docs.nais.io/persistence/opensearch/"
+						>Learn more about OpenSearch and how to get started.</a
+					>
+				</BodyLong>
+				<!--div class="summary-grid">
 			<Card columns={3}>
 				<SummaryCard
 					title="Cost"
@@ -112,133 +112,144 @@
 					<Cost cost={cost.daily.sum} />
 				</SummaryCard>
 			</Card>
-		</div>
-		<Card columns={12}>
-			<div class="list">
-				<div class="list-header">
-					<div class="count">
-						<BodyShort size="small" style="font-weight: bold;">
-							{instances.pageInfo.totalCount} entries
-						</BodyShort>
-					</div>
-					<div style="display: flex; gap: 1rem;">
-						<div style="display: flex; gap: 1rem;">
-							<ActionMenu>
-								{#snippet trigger(props)}
-									<Button
-										variant="tertiary-neutral"
-										size="small"
-										iconPosition="right"
-										{...props}
-										icon={ChevronDownIcon}
-									>
-										<span style="font-weight: normal"># of rows</span>
-									</Button>
-								{/snippet}
-								{#key orderField}
-									<ActionMenuRadioGroup value={orderField} label="Order by">
-										<ActionMenuRadioItem
-											value={OpenSearchOrderField.NAME}
-											onselect={(value) => {
-												handleSortField(value as string);
-											}}>Name</ActionMenuRadioItem
-										>
-
-										<ActionMenuRadioItem
-											value={OpenSearchOrderField.ENVIRONMENT}
-											onselect={(value) => {
-												handleSortField(value as string);
-											}}>Environment</ActionMenuRadioItem
-										>
-									</ActionMenuRadioGroup>
-								{/key}
-								<ActionMenuDivider />
-								{#key orderDirection}
-									<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => {
-												handleSortDirection(value as string);
-											}}
-										>
-											<div class="icon">
-												<SortAscendingIcon size="1rem" />Ascending
-											</div>
-										</ActionMenuRadioItem>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => {
-												handleSortDirection(value as string);
-											}}
-										>
-											<div class="icon">
-												<SortDescendingIcon size="1rem" />Descending
-											</div>
-										</ActionMenuRadioItem>
-									</ActionMenuRadioGroup>
-								{/key}
-								<ActionMenuDivider />
-								{#key rows}
-									<ActionMenuRadioGroup value={rows} label="Rows per page">
-										<ActionMenuRadioItem
-											value="5"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>5</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="10"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>10</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="25"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>25</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value="50"
-											onselect={(value) => handleNumberOfRows(value as number)}
-											>50</ActionMenuRadioItem
-										>
-									</ActionMenuRadioGroup>
-								{/key}
-							</ActionMenu>
+		</div-->
+				<!--Card columns={12}-->
+				<div class="list">
+					<div class="list-header">
+						<div class="count">
+							<BodyShort size="small" style="font-weight: bold;">
+								{instances.pageInfo.totalCount} entries
+							</BodyShort>
 						</div>
-					</div>
-				</div>
-				{#each instances.nodes as instance}
-					<div class="list-item">
-						<div class="link-wrapper">
-							<div class="link">
-								<PersistenceLink {instance} />
-								<Detail>{instance.environment.name}</Detail>
+						<div style="display: flex; gap: 1rem;">
+							<div style="display: flex; gap: 1rem;">
+								<ActionMenu>
+									{#snippet trigger(props)}
+										<Button
+											variant="tertiary-neutral"
+											size="small"
+											iconPosition="right"
+											{...props}
+											icon={ChevronDownIcon}
+										>
+											<span style="font-weight: normal"># of rows</span>
+										</Button>
+									{/snippet}
+									{#key orderField}
+										<ActionMenuRadioGroup value={orderField} label="Order by">
+											<ActionMenuRadioItem
+												value={OpenSearchOrderField.NAME}
+												onselect={(value) => {
+													handleSortField(value as string);
+												}}>Name</ActionMenuRadioItem
+											>
+
+											<ActionMenuRadioItem
+												value={OpenSearchOrderField.ENVIRONMENT}
+												onselect={(value) => {
+													handleSortField(value as string);
+												}}>Environment</ActionMenuRadioItem
+											>
+										</ActionMenuRadioGroup>
+									{/key}
+									<ActionMenuDivider />
+									{#key orderDirection}
+										<ActionMenuRadioGroup value={orderDirection} label="Sort direction">
+											<ActionMenuRadioItem
+												value={OrderDirection.ASC}
+												onselect={(value) => {
+													handleSortDirection(value as string);
+												}}
+											>
+												<div class="icon">
+													<SortAscendingIcon size="1rem" />Ascending
+												</div>
+											</ActionMenuRadioItem>
+											<ActionMenuRadioItem
+												value={OrderDirection.DESC}
+												onselect={(value) => {
+													handleSortDirection(value as string);
+												}}
+											>
+												<div class="icon">
+													<SortDescendingIcon size="1rem" />Descending
+												</div>
+											</ActionMenuRadioItem>
+										</ActionMenuRadioGroup>
+									{/key}
+									<ActionMenuDivider />
+									{#key rows}
+										<ActionMenuRadioGroup value={rows} label="Rows per page">
+											<ActionMenuRadioItem
+												value="5"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>5</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="10"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>10</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="25"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>25</ActionMenuRadioItem
+											>
+											<ActionMenuRadioItem
+												value="50"
+												onselect={(value) => handleNumberOfRows(value as number)}
+												>50</ActionMenuRadioItem
+											>
+										</ActionMenuRadioGroup>
+									{/key}
+								</ActionMenu>
 							</div>
 						</div>
-						<div class="info">
-							{#if instance.workload}
-								{@const workload = instance.workload}
-								Owner: <WorkloadLink {workload} showIcon={true} />
-							{/if}
-						</div>
 					</div>
-				{/each}
+					{#each instances.nodes as instance}
+						<div class="list-item">
+							<div class="link-wrapper">
+								<div class="link">
+									<PersistenceLink {instance} />
+									<Detail>{instance.environment.name}</Detail>
+								</div>
+							</div>
+							<div class="info">
+								{#if instance.workload}
+									{@const workload = instance.workload}
+									Owner: <WorkloadLink {workload} showIcon={true} />
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
+				{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
+					<Pagination
+						page={instances.pageInfo}
+						loaders={{
+							loadPreviousPage: () => {
+								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
+								OpenSearch.loadPreviousPage({ last: rows });
+							},
+							loadNextPage: () => {
+								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
+								OpenSearch.loadNextPage({ first: rows });
+							}
+						}}
+					/>
+				{/if}
 			</div>
-			{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
-				<Pagination
-					page={instances.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-							OpenSearch.loadPreviousPage({ last: rows });
-						},
-						loadNextPage: () => {
-							changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-							OpenSearch.loadNextPage({ first: rows });
-						}
-					}}
+			<div>
+				<PersistenceCost
+					title="OpenSearch cost"
+					costData={cost}
+					from={$OpenSearch.variables?.from ?? new Date()}
+					to={$OpenSearch.variables?.to ?? new Date()}
+					teamSlug={$OpenSearch.data?.team.slug}
 				/>
-			{/if}
-		</Card>
+			</div>
+			<!--/Card-->
+		</div>
 	{:else}
 		<BodyLong
 			><strong>No OpenSearch found.</strong> OpenSearch is a distributed search and analytics
@@ -251,6 +262,11 @@
 {/if}
 
 <style>
+	.content-wrapper {
+		display: grid;
+		gap: var(--a-spacing-6);
+		grid-template-columns: 1fr 300px;
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;
@@ -313,13 +329,5 @@
 				white-space: nowrap;
 			}
 		}
-	}
-
-	.summary-grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
 	}
 </style>

@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import {
 		BucketOrderField,
 		OrderDirection,
 		type BucketOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
-	import EChart from '$lib/chart/EChart.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -17,7 +14,7 @@
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, BodyShort, Button, Detail, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Button, Detail } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -25,11 +22,7 @@
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
 	import { BucketIcon, ChevronDownIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import type { EChartsOption } from 'echarts';
 	import type { PageData } from './$houdini';
-	import type { CallbackDataParams, TopLevelFormatterParams } from 'echarts/types/dist/shared';
-	import { parseImage } from '$lib/utils/image';
 
 	interface Props {
 		data: PageData;
@@ -84,45 +77,6 @@
 			after: params.resetPagination ? '' : (params.after ?? after)
 		});
 	};
-
-	let team = $derived(page.params.team);
-
-	const costTransform = (
-		data: {
-			readonly date: Date;
-			readonly sum: number;
-		}[]
-	): EChartsOption => {
-		return {
-			tooltip: {
-				// axisPointer: {
-				// 	type: 'shadow'
-				// },
-				trigger: 'axis',
-				formatter: (params: CallbackDataParams[]) =>
-					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
-			},
-			grid: {
-				left: '0',
-				containLabel: true
-			},
-			xAxis: {
-				data: data.map((entry) => format(entry.date, 'dd.MM'))
-			},
-			yAxis: {
-				axisLabel: {
-					formatter: (value: number) => euroValueFormatter(value)
-				}
-			},
-			series: {
-				name: 'Bucket cost',
-				type: 'line',
-				emphasis: { focus: 'series' },
-				symbol: 'none',
-				data: data.map(({ sum }) => sum)
-			}
-		} as EChartsOption;
-	};
 </script>
 
 <GraphErrors errors={$Buckets.errors} />
@@ -133,6 +87,7 @@
 	<div class="header">
 		<IconWithText text="Buckets" icon={BucketIcon} size="large" />
 	</div>
+
 	{#if buckets.nodes.length > 0 || $Buckets.data.team.totalCount.pageInfo.totalCount > 0}
 		<div class="content-wrapper">
 			<div>
@@ -267,14 +222,13 @@
 					/>
 				{/if}
 			</div>
-			<div>
-				<div>
-					<Heading size="small" level="3">Bucket cost (last 30 days)</Heading>
-					Sum: <Cost cost={cost.daily.sum} />
-					<EChart options={costTransform(cost.daily.series)} />
-					<a href="/team/{team}/cost">See cost details</a>
-				</div>
-			</div>
+			<PersistenceCost
+				costData={cost}
+				title="Bucket cost"
+				from={$Buckets.variables?.from ?? new Date()}
+				to={$Buckets.variables?.to ?? new Date()}
+				teamSlug={$Buckets.data?.team.slug}
+			/>
 		</div>
 	{:else}
 		<BodyLong
@@ -288,6 +242,11 @@
 {/if}
 
 <style>
+	.content-wrapper {
+		display: grid;
+		gap: var(--a-spacing-6);
+		grid-template-columns: 1fr 300px;
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;
@@ -350,10 +309,5 @@
 				white-space: nowrap;
 			}
 		}
-	}
-	.content-wrapper {
-		display: grid;
-		gap: var(--a-spacing-6);
-		grid-template-columns: 1fr 300px;
 	}
 </style>

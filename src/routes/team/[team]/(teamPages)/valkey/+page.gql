@@ -9,9 +9,13 @@ query Valkey(
 	$after: Cursor
 ) {
 	team(slug: $team) {
+		slug
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["Valkey"] }) {
-				sum
+				series {
+					date
+					sum
+				}
 			}
 		}
 

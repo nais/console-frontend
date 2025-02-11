@@ -9,9 +9,13 @@ query Redis(
 	$after: Cursor
 ) {
 	team(slug: $team) {
+		slug
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["Redis"] }) {
-				sum
+				series {
+					date
+					sum
+				}
 			}
 		}
 

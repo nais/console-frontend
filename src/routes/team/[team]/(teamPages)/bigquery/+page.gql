@@ -9,9 +9,13 @@ query BigQuery(
 	$after: Cursor
 ) {
 	team(slug: $team) {
+		slug
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["BigQuery"] }) {
-				sum
+				series {
+					date
+					sum
+				}
 			}
 		}
 		environments {

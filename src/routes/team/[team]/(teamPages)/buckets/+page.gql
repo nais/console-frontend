@@ -9,9 +9,9 @@ query Buckets(
 	$to: Date!
 ) {
 	team(slug: $team) {
+		slug
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["Cloud Storage"] }) {
-				sum
 				series {
 					date
 					sum

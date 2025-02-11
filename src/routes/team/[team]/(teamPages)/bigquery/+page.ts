@@ -15,14 +15,15 @@ export const _BigQueryVariables: BigQueryVariables = ({ url }) => {
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';
 
-	// Date 30 days ago
+	// First day of previous month
 	const from = new Date();
-	from.setDate(from.getDate() - 30);
+	from.setMonth(from.getMonth() - 1, 1); // Set to first day of previous month
+	from.setHours(0, 0, 0, 0); // Reset time to start of the day
 
 	// Date yesterday
 	const to = new Date();
 	to.setDate(to.getDate() - 1);
-
+	to.setHours(23, 59, 59, 999); // Set time to end of the day
 	return {
 		orderBy: { field: field, direction: direction } as BigQueryDatasetOrder,
 		...(before ? { before, last: rows } : { after, first: rows }),

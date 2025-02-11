@@ -9,9 +9,14 @@ query OpenSearch(
 	$after: Cursor
 ) {
 	team(slug: $team) {
+		slug
+
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["OpenSearch"] }) {
-				sum
+				series {
+					date
+					sum
+				}
 			}
 		}
 
