@@ -195,7 +195,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Jobs.data.team.environments as { name }}
+						{#each $Jobs.data.team.environments as { name, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(name)}
 								onchange={(checked) =>
