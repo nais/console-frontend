@@ -24,7 +24,6 @@
 					team {
 						slug
 					}
-
 					ingresses {
 						url
 						type
@@ -66,7 +65,7 @@
 	<Heading level="2" size="medium" spacing>Ingresses</Heading>
 
 	<div class="content">
-		{#each externalIngresses($data.ingresses) as ingress}
+		{#each externalIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
 			<Tooltip content="External ingress"
 				><a href={ingress.url}
 					><IconWithText icon={Globe} size="medium">
@@ -78,7 +77,7 @@
 			>
 		{/each}
 
-		{#each internalIngresses($data.ingresses) as ingress}
+		{#each internalIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
 			<Tooltip content="Internal ingress"
 				><a href={ingress.url}
 					><IconWithText icon={HouseIcon} size="medium">
@@ -90,7 +89,7 @@
 			</Tooltip>
 		{/each}
 
-		{#each authenticatedIngresses($data.ingresses) as ingress}
+		{#each authenticatedIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
 			<Tooltip content="Authenticated ingress">
 				<a href={ingress.url}
 					><IconWithText icon={PadlockLockedIcon} size="medium">

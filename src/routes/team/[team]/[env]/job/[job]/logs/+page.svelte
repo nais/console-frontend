@@ -29,7 +29,6 @@
 	let pods: Set<string> = $state(new Set([selected]));
 	let selectedRun: string = $state('');
 	function setSelected(name: string) {
-		console.log('set selected', name, $RunsWithPodNames.data);
 		pods = new Set(
 			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
 				.filter((run) => run.name === name)

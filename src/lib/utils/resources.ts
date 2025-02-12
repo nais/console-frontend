@@ -64,6 +64,7 @@ export function teamUtilization(data: utilization | undefined) {
 }
 
 export type TeamOverageData = {
+	id: string;
 	name: string;
 	env: string;
 	unusedMem: number;
@@ -116,6 +117,7 @@ export function mergeCalculateAndSortOverageData(
 
 			// Combine the memory and CPU data into one object
 			return {
+				id: memItem.workload.id,
 				name: memItem.workload.name,
 				env: memItem.workload.environment.name,
 				unusedMem: memItem.requested - memItem.used,

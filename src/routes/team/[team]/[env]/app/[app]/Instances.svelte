@@ -29,6 +29,7 @@
 					instances {
 						edges {
 							node {
+								id
 								name
 								restarts
 								status {
@@ -65,7 +66,7 @@
 				</BodyShort>
 			</div>
 		</div>
-		{#each instances as instance}
+		{#each instances as instance (instance.id)}
 			<div class="list-item">
 				<div class="run-link-wrapper">
 					<div style="height: 23.98px; display: flex; align-items: center; line-height: 0">

@@ -10,6 +10,7 @@ query TeamSettings($team: Slug!) {
 			key
 		}
 		environments {
+			id
 			name
 			gcpProjectID
 			slackAlertsChannel

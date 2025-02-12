@@ -92,7 +92,7 @@
 	const pages: {
 		[key: string]: (
 			params: Data
-		) => { name: string; path?: string; icon?: Component; showEnv?: boolean; isHeader?: boolean }[];
+		) => { name: string; path: string; icon?: Component; showEnv?: boolean; isHeader?: boolean }[];
 	} = {
 		'/team/[team]/(teamPages)/[env]/secret/[secret]': (params: Data) => {
 			return [
@@ -320,7 +320,7 @@
 				<IconWithText text={teamSlug} size="medium" icon={PersonGroupIcon} />
 			</a>
 
-			{#each crumbs($page.route.id, $page.params) as item}
+			{#each crumbs($page.route.id, $page.params) as item (item.path)}
 				<BodyLong style="height: 28px; width: 28px; text-align: center; color: var(--a-gray-500);"
 					>/</BodyLong
 				>
