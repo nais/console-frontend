@@ -206,7 +206,7 @@
 							</div>
 						</div>
 					</div>
-					{#each instances.nodes as instance}
+					{#each instances.nodes as instance (instance.id)}
 						<div class="list-item">
 							<div class="link-wrapper">
 								<div class="link">
@@ -223,21 +223,19 @@
 						</div>
 					{/each}
 				</div>
-				{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
-					<Pagination
-						page={instances.pageInfo}
-						loaders={{
-							loadPreviousPage: () => {
-								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-								OpenSearch.loadPreviousPage({ last: rows });
-							},
-							loadNextPage: () => {
-								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-								OpenSearch.loadNextPage({ first: rows });
-							}
-						}}
-					/>
-				{/if}
+				<Pagination
+					page={instances.pageInfo}
+					loaders={{
+						loadPreviousPage: async () => {
+							changeQuery({ before: instances.pageInfo.startCursor ?? '' });
+							await OpenSearch.loadPreviousPage({ last: rows });
+						},
+						loadNextPage: async () => {
+							changeQuery({ after: instances.pageInfo.endCursor ?? '' });
+							await OpenSearch.loadNextPage({ first: rows });
+						}
+					}}
+				/>
 			</div>
 			<div>
 				<PersistenceCost
