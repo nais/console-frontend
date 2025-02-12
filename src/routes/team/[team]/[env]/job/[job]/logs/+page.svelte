@@ -23,6 +23,8 @@
 
 	let { RunsWithPodNames, selected, teamSlug } = $derived(data);
 
+	let result = $derived($RunsWithPodNames.data);
+
 	// svelte-ignore state_referenced_locally
 	let pods: Set<string> = $state(new Set([selected]));
 	let selectedRun: string = $state('');
@@ -67,13 +69,13 @@
 <div class="header">
 	<IconWithText icon={Density3Icon} text="Logs" size="large" />
 </div>
-{#if $RunsWithPodNames.data}
-	{@const runs = $RunsWithPodNames.data.team.environment.job.runs.nodes}
+{#if result}
+	{@const runs = result.team.environment.job.runs.nodes}
 	<div class="topbar">
 		<div class="instances">
 			{#if runs.length > 0}
 				<ToggleGroup size="small" bind:value={selectedRun} onchange={setSelected}>
-					{#each runs as run}
+					{#each runs as run (run.id)}
 						{#if run.instances.nodes.length > 0}
 							{@const name = run.name}
 							<ToggleGroupItem value={name}>{renderRunName(name)}</ToggleGroupItem>
@@ -99,10 +101,10 @@
 		</div>
 	</div>
 	{#if fetching}
-		<div style="font-size: 12px; text-align:right; width: 100%">Streaming logs...</div>
+		<div style:font-size="12px" style:text-align="right" style:width="100%">Streaming logs...</div>
 	{/if}
 	<Chips size="small">
-		{#each viewOptions as option}
+		{#each viewOptions as option (option)}
 			<ToggleChip
 				value={option}
 				selected={selectedViewOptions.has(option)}
@@ -111,8 +113,8 @@
 		{/each}
 	</Chips>
 	<LogViewer
-		job={$RunsWithPodNames.data?.team.environment.job.name}
-		env={$RunsWithPodNames.data?.team.environment.name}
+		job={result.team.environment.job.name}
+		env={result.team.environment.name}
 		team={teamSlug}
 		{running}
 		showName={selectedViewOptions.has('Name')}

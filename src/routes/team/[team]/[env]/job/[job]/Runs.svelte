@@ -31,6 +31,7 @@
 					runs(first: 20) @list(name: "All_Runs") {
 						edges {
 							node {
+								id
 								name
 								startTime
 								completionTime
@@ -80,7 +81,7 @@
 				</BodyShort>
 			</div>
 		</div>
-		{#each $data.runs.edges as run}
+		{#each $data.runs.edges as run (run.node.id)}
 			<div class="runs-list-item">
 				<div class="run-link-wrapper">
 					<div style="height: 23.98px; display: flex; align-items: center; line-height: 0">

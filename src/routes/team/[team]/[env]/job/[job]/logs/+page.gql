@@ -7,6 +7,7 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 				name
 				runs {
 					nodes {
+						id
 						name
 						instances {
 							nodes {

@@ -13,19 +13,21 @@
 	let { data }: Props = $props();
 
 	let { JobStatusDetailed } = $derived(data);
+	let result = $derived($JobStatusDetailed.data);
+	let errors = $derived($JobStatusDetailed.errors);
 </script>
 
-<GraphErrors errors={$JobStatusDetailed.errors} />
+<GraphErrors {errors} />
 
-{#if $JobStatusDetailed.data}
-	{@const job = $JobStatusDetailed.data.team.environment.job}
+{#if result}
+	{@const job = result.team.environment.job}
 	<div class="header">
 		<IconWithText icon={BellIcon} text="Status" size="large" />
 	</div>
 
 	<div>
 		{#if job.status.errors && job.status.errors.length > 0}
-			{#each job.status.errors as error}
+			{#each job.status.errors as error (error)}
 				<JobErrorTypeToMessage {error} />
 			{/each}
 		{:else}

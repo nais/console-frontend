@@ -4,7 +4,7 @@
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Alert, Button, HelpText, TextField } from '@nais/ds-svelte-community';
+	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -17,6 +17,8 @@
 
 	let { DeleteJobPage } = $derived(data);
 
+	let result = $derived($DeleteJobPage.data);
+
 	const deleteJob = graphql(`
 		mutation DeleteJob($team: Slug!, $env: String!, $job: String!) {
 			deleteJob(input: { teamSlug: $team, environmentName: $env, name: $job }) {
@@ -27,6 +29,9 @@
 			}
 		}
 	`);
+
+	let deleteJobErrors = $derived($deleteJob.errors);
+	let deleteJobFetching = $derived($deleteJob.fetching);
 
 	let confirmation = $state('');
 
@@ -66,8 +71,8 @@
 	}
 </script>
 
-{#if $DeleteJobPage?.data?.team.environment.job}
-	{@const job = $DeleteJobPage?.data?.team.environment.job}
+{#if result?.team.environment.job}
+	{@const job = result.team.environment.job}
 	<div class="header">
 		<IconWithText icon={TrashIcon} text="Delete {job.name}" size="large" />
 	</div>
@@ -79,7 +84,7 @@
 		</p>
 	{/if}
 	<div>
-		{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
+		{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 			<PersistenceList persistence={node}>
 				This will be deleted because <code>cascadingDelete</code>
 				is set to
@@ -87,7 +92,7 @@
 				in the manifest.
 			</PersistenceList>
 		{/each}
-		{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
+		{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 			<PersistenceList persistence={node}>
 				This will be deleted because <code>cascadingDelete</code>
 				is set to
@@ -95,19 +100,19 @@
 				in the manifest.
 			</PersistenceList>
 		{/each}
-		{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node}
+		{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 			<PersistenceList persistence={node}
 				>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
 				manifest.
 			</PersistenceList>
 		{/each}
-		{#each job.redisInstances.nodes as node}
+		{#each job.redisInstances.nodes as node (node.id)}
 			<PersistenceList persistence={node}
 				>If this Redis instance is defined on team level, it won't be deleted. If it's created by
 				the app, it will be permanently deleted.
 			</PersistenceList>
 		{/each}
-		{#each job.valkeyInstances.nodes as node}
+		{#each job.valkeyInstances.nodes as node (node.id)}
 			<PersistenceList persistence={node}
 				>If this Valkey instance is defined on team level, it won't be deleted. If it's created by
 				the app, it will be permanently deleted.
@@ -127,13 +132,13 @@
 			</HelpText>
 		</div>
 		<div>
-			{#each job.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
+			{#each job.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 				<PersistenceList persistence={node} />
 			{/each}
-			{#each job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
+			{#each job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 				<PersistenceList persistence={node} />
 			{/each}
-			{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
+			{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 				<PersistenceList persistence={node} />
 			{/each}
 		</div>
@@ -144,17 +149,10 @@
 		Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 		<em>Delete</em>
 	</p>
-	{#if $deleteJob.errors}
-		<GraphErrors errors={$deleteJob.errors} />
+	{#if deleteJobErrors}
+		<GraphErrors errors={deleteJobErrors} />
 	{/if}
-	{#if $deleteJob.errors}
-		<Alert variant="error">
-			Error occured while deleting app:<br />
-			{#each $deleteJob.errors as error}
-				{error.message}<br />
-			{/each}
-		</Alert>
-	{/if}
+
 	<form
 		onsubmit={(e: SubmitEvent) => {
 			e.preventDefault();
@@ -162,7 +160,7 @@
 		}}
 	>
 		<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
-		<Button disabled={confirmation !== expected} variant="danger" loading={$deleteJob.fetching}>
+		<Button disabled={confirmation !== expected} variant="danger" loading={deleteJobFetching}>
 			Delete
 		</Button>
 	</form>

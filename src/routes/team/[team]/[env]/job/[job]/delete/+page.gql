@@ -4,6 +4,7 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 		environment(name: $env) {
 			name
 			job(name: $job) {
+				id
 				name
 				environment {
 					name
@@ -13,39 +14,45 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 				}
 				bigQueryDatasets {
 					nodes {
-						type: __typename
+						id
+						__typename
 						name
 						cascadingDelete
 					}
 				}
 				buckets {
 					nodes {
-						type: __typename
+						id
+						__typename
 						name
 						cascadingDelete
 					}
 				}
 				redisInstances {
 					nodes {
-						type: __typename
+						id
+						__typename
 						name
 					}
 				}
 				valkeyInstances {
 					nodes {
-						type: __typename
+						id
+						__typename
 						name
 					}
 				}
 				sqlInstances {
 					nodes {
-						type: __typename
+						id
+						__typename
 						name
 						cascadingDelete
 					}
 				}
 				openSearch {
-					type: __typename
+					id
+					__typename
 					name
 				}
 			}
