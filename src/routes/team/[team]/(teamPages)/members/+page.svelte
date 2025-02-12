@@ -105,7 +105,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each team.members.edges as edge}
+				{#each team.members.edges as edge (edge.node.user.id)}
 					<Tr>
 						<Td>{capitalizeFirstLetterInEachWord(edge.node.user.name.toString())}</Td>
 						<Td>{edge.node.user.email}</Td>

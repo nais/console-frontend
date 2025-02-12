@@ -106,7 +106,7 @@
 		<Heading>Add member to {team}</Heading>
 	{/snippet}
 
-	{#each errors as error}
+	{#each errors as error (error)}
 		<Alert variant="error">{error}</Alert>
 	{/each}
 
@@ -124,7 +124,7 @@
 			{/snippet}
 		</TextField>
 		<datalist id="add-member-email">
-			{#each emails as email}
+			{#each emails as email (email)}
 				<option value={email}>{email}</option>
 			{/each}
 		</datalist>
