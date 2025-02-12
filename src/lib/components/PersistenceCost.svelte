@@ -117,9 +117,9 @@
 		>
 	</div>
 
-	<Detail>
-		<div class="cost-summary">
-			<div class="estimated-cost">
+	<div class="cost-summary">
+		<div class="estimated-cost">
+			<Detail>
 				{new Date(to ?? '').toLocaleString('en-US', {
 					month: 'long'
 				})}: {euroValueFormatter(estimatedSecondMonthSum)}
@@ -128,14 +128,16 @@
 				{:else}
 					<CaretDownFillIcon style="color: var(--a-surface-success);" />
 				{/if}
-			</div>
-			<div>
+			</Detail>
+		</div>
+		<div>
+			<Detail>
 				{new Date(from ?? '').toLocaleString('en-US', {
 					month: 'long'
 				})}: {euroValueFormatter(firstMonthSum)}
-			</div>
+			</Detail>
 		</div>
-	</Detail>
+	</div>
 
 	<EChart options={costTransform(costData.daily.series)} />
 
