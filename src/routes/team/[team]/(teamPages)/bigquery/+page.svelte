@@ -192,7 +192,7 @@
 							</div>
 						</div>
 					</div>
-					{#each datasets.nodes as instance}
+					{#each datasets.nodes as instance (instance.id)}
 						<div class="list-item">
 							<div class="link-wrapper">
 								<div class="link">
@@ -209,21 +209,19 @@
 					{/each}
 				</div>
 
-				{#if datasets.pageInfo.hasPreviousPage || datasets.pageInfo.hasNextPage}
-					<Pagination
-						page={datasets.pageInfo}
-						loaders={{
-							loadPreviousPage: () => {
-								changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
-								BigQuery.loadPreviousPage({ last: rows });
-							},
-							loadNextPage: () => {
-								changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
-								BigQuery.loadNextPage({ first: rows });
-							}
-						}}
-					/>
-				{/if}
+				<Pagination
+					page={datasets.pageInfo}
+					loaders={{
+						loadPreviousPage: async () => {
+							changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
+							await BigQuery.loadPreviousPage({ last: rows });
+						},
+						loadNextPage: async () => {
+							changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
+							await BigQuery.loadNextPage({ first: rows });
+						}
+					}}
+				/>
 			</div>
 			<PersistenceCost
 				title="BigQuery cost"

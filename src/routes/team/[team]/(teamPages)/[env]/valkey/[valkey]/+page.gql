@@ -42,6 +42,7 @@ query ValkeyInstance(
 						node {
 							access
 							workload {
+								id
 								name
 								environment {
 									name

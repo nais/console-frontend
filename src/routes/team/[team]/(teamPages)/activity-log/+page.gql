@@ -13,6 +13,7 @@ query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 			edges {
 				node {
+					id
 					__typename
 					createdAt
 					actor

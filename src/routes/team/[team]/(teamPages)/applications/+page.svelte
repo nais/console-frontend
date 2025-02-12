@@ -193,7 +193,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Applications.data.team.environments as env}
+						{#each $Applications.data.team.environments as env (env.id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(env.name)}
 								onchange={(checked) => handleCheckboxChange(env.name, checked)}
@@ -356,13 +356,13 @@
 		<Pagination
 			page={apps.pageInfo}
 			loaders={{
-				loadPreviousPage: () => {
+				loadPreviousPage: async () => {
 					changeQuery({ before: apps.pageInfo.startCursor ?? '' });
-					Applications.loadPreviousPage({ last: rows });
+					await Applications.loadPreviousPage({ last: rows });
 				},
-				loadNextPage: () => {
+				loadNextPage: async () => {
 					changeQuery({ after: apps.pageInfo.endCursor ?? '' });
-					Applications.loadNextPage({ first: rows });
+					await Applications.loadNextPage({ first: rows });
 				}
 			}}
 		/>

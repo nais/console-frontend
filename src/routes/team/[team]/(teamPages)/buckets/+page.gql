@@ -37,6 +37,7 @@ query Buckets(
 				endCursor
 			}
 			nodes {
+				id
 				__typename
 				name
 				environment {

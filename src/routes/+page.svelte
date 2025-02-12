@@ -53,7 +53,7 @@
 				{#if $UserTeams.data}
 					{#if $UserTeams.data.me.__typename == 'User'}
 						<div class="teams">
-							{#each $UserTeams.data.me.teams.nodes as node}
+							{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
 								<Box
 									as="a"
 									background="surface-default"
@@ -78,8 +78,8 @@
 						<Pagination
 							page={$UserTeams.data.me.teams.pageInfo}
 							loaders={{
-								loadPreviousPage: () => UserTeams.loadPreviousPage(),
-								loadNextPage: () => UserTeams.loadNextPage()
+								loadPreviousPage: async () => await UserTeams.loadPreviousPage(),
+								loadNextPage: async () => await UserTeams.loadNextPage()
 							}}
 						/>
 					{/if}
