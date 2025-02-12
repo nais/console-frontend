@@ -20,7 +20,7 @@
 {#if workloads.nodes.length > 0}
 	<h5>Workloads</h5>
 	<ul>
-		{#each workloads.nodes as workload}
+		{#each workloads.nodes as workload (workload.id)}
 			<li><WorkloadLink {workload} showIcon={true} /></li>
 		{/each}
 	</ul>
