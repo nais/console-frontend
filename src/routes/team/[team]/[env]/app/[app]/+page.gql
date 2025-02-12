@@ -17,7 +17,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...WorkloadImage
 				...NetworkPolicy
 				...Manifest
-				...AppAuthIntegrations
 				...Ingresses
 			}
 		}
