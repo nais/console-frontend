@@ -5,7 +5,7 @@
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Alert, Button, HelpText, TextField } from '@nais/ds-svelte-community';
+	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -79,7 +79,7 @@
 		{/if}
 
 		<div>
-			{#each app.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each app.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 				<PersistenceList persistence={node}>
 					This will be deleted because <code>cascadingDelete</code>
 					is set to
@@ -87,7 +87,7 @@
 					in the manifest.
 				</PersistenceList>
 			{/each}
-			{#each app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 				<PersistenceList persistence={node}>
 					This will be deleted because <code>cascadingDelete</code>
 					is set to
@@ -95,19 +95,19 @@
 					in the manifest.
 				</PersistenceList>
 			{/each}
-			{#each app.buckets.nodes.filter((s) => s.cascadingDelete) as node}
+			{#each app.buckets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 				<PersistenceList persistence={node}
 					>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
 					manifest.
 				</PersistenceList>
 			{/each}
-			{#each app.redisInstances.nodes as node}
+			{#each app.redisInstances.nodes as node (node.id)}
 				<PersistenceList persistence={node}
 					>If this Redis instance is defined on team level, it won't be deleted. If it's created by
 					the app, it will be permanently deleted.
 				</PersistenceList>
 			{/each}
-			{#each app.valkeyInstances.nodes as node}
+			{#each app.valkeyInstances.nodes as node (node.id)}
 				<PersistenceList persistence={node}
 					>If this Valkey instance is defined on team level, it won't be deleted. If it's created by
 					the app, it will be permanently deleted.
@@ -127,13 +127,13 @@
 				</HelpText>
 			</div>
 			<div>
-				{#each app.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each app.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 					<PersistenceList persistence={node} />
 				{/each}
-				{#each app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 					<PersistenceList persistence={node} />
 				{/each}
-				{#each app.buckets.nodes.filter((s) => !s.cascadingDelete) as node}
+				{#each app.buckets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 					<PersistenceList persistence={node} />
 				{/each}
 			</div>
@@ -146,14 +146,7 @@
 		{#if $deleteApp.errors}
 			<GraphErrors errors={$deleteApp.errors} />
 		{/if}
-		{#if $deleteApp.errors}
-			<Alert variant="error">
-				Error occured while deleting app:<br />
-				{#each $deleteApp.errors as error}
-					{error.message}<br />
-				{/each}
-			</Alert>
-		{/if}
+
 		<form
 			onsubmit={(e: SubmitEvent) => {
 				e.preventDefault();

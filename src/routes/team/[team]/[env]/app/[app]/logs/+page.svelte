@@ -59,7 +59,7 @@
 					{/snippet}
 					<div class="instance-button">
 						<Chips>
-							{#each instances as instance}
+							{#each instances as instance (instance.id)}
 								{@const name = instance.name}
 								<ToggleChip
 									value={renderInstanceName(name)}
@@ -116,7 +116,7 @@
 	<div class="chips">
 		Columns:
 		<Chips size="small">
-			{#each viewOptions as option}
+			{#each viewOptions as option (option)}
 				<ToggleChip
 					value={option}
 					selected={selectedViewOptions.has(option)}
