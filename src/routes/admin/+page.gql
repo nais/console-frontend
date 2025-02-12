@@ -1,6 +1,7 @@
 query AdminUsers {
 	users(first: 20) @paginate(mode: SinglePage) {
 		nodes {
+			id
 			name
 			email
 			externalID

@@ -27,7 +27,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each $AdminUsers.data.users.nodes || [] as user}
+				{#each $AdminUsers.data.users.nodes || [] as user (user.id)}
 					<Tr>
 						<Td>{user.name}</Td>
 						<Td>{user.email}</Td>

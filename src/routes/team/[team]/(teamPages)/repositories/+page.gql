@@ -1,10 +1,8 @@
 query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamRepositoryFilter)
 @cache(policy: NetworkOnly) {
-	team(slug: $team) @loading {
-		repositories(first: 20, orderBy: $orderBy, filter: $filter)
-			@paginate(mode: SinglePage)
-			@loading {
-			pageInfo @loading {
+	team(slug: $team) {
+		repositories(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				pageStart
@@ -13,14 +11,15 @@ query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamReposit
 				startCursor
 				endCursor
 			}
-			nodes @loading {
+			nodes {
+				id
 				name
 				team {
 					slug
 				}
 			}
 		}
-		viewerIsOwner @loading
-		viewerIsMember @loading
+		viewerIsOwner
+		viewerIsMember
 	}
 }

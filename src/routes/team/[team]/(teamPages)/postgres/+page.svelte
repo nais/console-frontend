@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { PendingValue, SqlInstanceOrderField } from '$houdini';
+	import { SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import { Skeleton, Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		DatabaseIcon,
@@ -70,11 +70,7 @@
 				{#snippet icon({ color })}
 					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
-				{#if cost !== PendingValue}
-					<Cost cost={cost.daily.sum} />
-				{:else}
-					<Skeleton variant="text" />
-				{/if}
+				<Cost cost={cost.daily.sum} />
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>
@@ -85,22 +81,13 @@
 				styled={false}
 			>
 				{#snippet icon()}
-					{#if utilization.sqlInstances !== PendingValue}
-						<CircleProgressBar progress={utilization.sqlInstances.cpu.utilization} />
-					{:else}
-						<Skeleton height="50px" width="50px" variant="circle" />
-					{/if}
+					<CircleProgressBar progress={utilization.sqlInstances.cpu.utilization} />
 				{/snippet}
-
-				{#if utilization.sqlInstances !== PendingValue}
-					{(utilization.sqlInstances.cpu.utilization * 100).toFixed(1)}% of
-					{utilization.sqlInstances.cpu.requested.toFixed(0)} core{utilization.sqlInstances.cpu
-						.requested > 1
-						? 's'
-						: ''}
-				{:else}
-					<Skeleton variant="text" />
-				{/if}
+				{(utilization.sqlInstances.cpu.utilization * 100).toFixed(1)}% of
+				{utilization.sqlInstances.cpu.requested.toFixed(0)} core{utilization.sqlInstances.cpu
+					.requested > 1
+					? 's'
+					: ''}
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>
@@ -111,19 +98,11 @@
 				styled={false}
 			>
 				{#snippet icon()}
-					{#if utilization.sqlInstances !== PendingValue}
-						<CircleProgressBar progress={utilization.sqlInstances.memory.utilization} />
-					{:else}
-						<Skeleton height="50px" width="50px" variant="circle" />
-					{/if}
+					<CircleProgressBar progress={utilization.sqlInstances.memory.utilization} />
 				{/snippet}
 
-				{#if utilization.sqlInstances !== PendingValue}
-					{(utilization.sqlInstances.memory.utilization * 100).toFixed(1)}% of
-					{prettyBytes(utilization.sqlInstances.memory.requested)}
-				{:else}
-					<Skeleton variant="text" />
-				{/if}
+				{(utilization.sqlInstances.memory.utilization * 100).toFixed(1)}% of
+				{prettyBytes(utilization.sqlInstances.memory.requested)}
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>
@@ -134,19 +113,10 @@
 				styled={false}
 			>
 				{#snippet icon()}
-					{#if utilization.sqlInstances !== PendingValue}
-						<CircleProgressBar progress={utilization.sqlInstances.disk.utilization} />
-					{:else}
-						<Skeleton height="50px" width="50px" variant="circle" />
-					{/if}
+					<CircleProgressBar progress={utilization.sqlInstances.disk.utilization} />
 				{/snippet}
-
-				{#if utilization.sqlInstances !== PendingValue}
-					{(utilization.sqlInstances.disk.utilization * 100).toFixed(1)}% of
-					{prettyBytes(utilization.sqlInstances.disk.requested)}
-				{:else}
-					<Skeleton variant="text" />
-				{/if}
+				{(utilization.sqlInstances.disk.utilization * 100).toFixed(1)}% of
+				{prettyBytes(utilization.sqlInstances.disk.requested)}
 			</SummaryCard>
 		</Card>
 	</div>
@@ -180,111 +150,79 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each instances.nodes as i}
-					{#if i !== PendingValue}
-						<Tr>
-							<Td>
-								{#if !i.workload?.name}
-									<Tooltip content="The SQL instance does not belong to any workload">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="The SQL instance does not belong to any workload"
-										/>
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
-								<PersistenceLink instance={i} />
-							</Td>
-							<Td>
-								{i.version}
-							</Td>
-							<Td>
-								{i.environment.name}
-							</Td>
+				{#each instances.nodes as i (i.id)}
+					<Tr>
+						<Td>
+							{#if !i.workload?.name}
+								<Tooltip content="The SQL instance does not belong to any workload">
+									<ExclamationmarkTriangleFillIcon
+										style="color: var(--a-icon-warning)"
+										title="The SQL instance does not belong to any workload"
+									/>
+								</Tooltip>
+							{/if}
+						</Td>
+						<Td>
+							<PersistenceLink instance={i} />
+						</Td>
+						<Td>
+							{i.version}
+						</Td>
+						<Td>
+							{i.environment.name}
+						</Td>
 
-							<Td>
-								{#if i.state === 'RUNNABLE'}
-									<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-								{:else}
-									<Tooltip content="Unhealthy state: {i.state}" placement="right">
-										<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-									</Tooltip>
-								{/if}
-							</Td>
-							<Td>
-								{#if i.cost.sum > 0}
-									€{Math.round(i.cost.sum)}
-								{:else}
-									-
-								{/if}
-							</Td>
-							<Td>
-								{#if i.metrics.cpu.utilization}
-									<span
-										title="{i.metrics.cpu.utilization.toFixed(1)}% of {i.metrics.cpu.cores} core{i
-											.metrics.cpu.cores > 1
-											? 's'
-											: ''}"
-									>
-										{i.metrics.cpu.utilization.toFixed(1)}%
-									</span>
-								{/if}
-							</Td>
-							<Td>
-								{#if i.metrics.memory.utilization}
-									<span
-										title="{i.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-											i.metrics.memory.quotaBytes
-										)}"
-									>
-										{i.metrics.memory.utilization.toFixed(1)}%
-									</span>
-								{/if}
-							</Td>
-							<Td>
-								{#if i.metrics.disk.utilization}
-									<span
-										title="{i.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-											i.metrics.disk.quotaBytes
-										)}"
-									>
-										{i.metrics.disk.utilization.toFixed(1)}%
-									</span>
-								{/if}
-							</Td>
-						</Tr>
-					{:else}
-						<Tr>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-							<Td>
-								<Skeleton variant="text" />
-							</Td>
-						</Tr>
-					{/if}
+						<Td>
+							{#if i.state === 'RUNNABLE'}
+								<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
+							{:else}
+								<Tooltip content="Unhealthy state: {i.state}" placement="right">
+									<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+								</Tooltip>
+							{/if}
+						</Td>
+						<Td>
+							{#if i.cost.sum > 0}
+								€{Math.round(i.cost.sum)}
+							{:else}
+								-
+							{/if}
+						</Td>
+						<Td>
+							{#if i.metrics.cpu.utilization}
+								<span
+									title="{i.metrics.cpu.utilization.toFixed(1)}% of {i.metrics.cpu.cores} core{i
+										.metrics.cpu.cores > 1
+										? 's'
+										: ''}"
+								>
+									{i.metrics.cpu.utilization.toFixed(1)}%
+								</span>
+							{/if}
+						</Td>
+						<Td>
+							{#if i.metrics.memory.utilization}
+								<span
+									title="{i.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
+										i.metrics.memory.quotaBytes
+									)}"
+								>
+									{i.metrics.memory.utilization.toFixed(1)}%
+								</span>
+							{/if}
+						</Td>
+						<Td>
+							{#if i.metrics.disk.utilization}
+								<span
+									title="{i.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
+										i.metrics.disk.quotaBytes
+									)}"
+								>
+									{i.metrics.disk.utilization.toFixed(1)}%
+								</span>
+							{/if}
+						</Td>
+					</Tr>
 				{:else}
 					<Tr>
 						<Td colspan={999}>No SQL instances found</Td>
@@ -292,17 +230,17 @@
 				{/each}
 			</Tbody>
 		</Table>
-		{#if instances.pageInfo !== PendingValue}
-			{#if instances.pageInfo.hasPreviousPage || instances.pageInfo.hasNextPage}
-				<Pagination
-					page={instances.pageInfo}
-					loaders={{
-						loadPreviousPage: () => SqlInstances.loadPreviousPage(),
-						loadNextPage: () => SqlInstances.loadNextPage()
-					}}
-				/>
-			{/if}
-		{/if}
+		<Pagination
+			page={instances.pageInfo}
+			loaders={{
+				loadNextPage: async () => {
+					await SqlInstances.loadNextPage();
+				},
+				loadPreviousPage: async () => {
+					await SqlInstances.loadPreviousPage();
+				}
+			}}
+		/>
 	</Card>
 {/if}
 

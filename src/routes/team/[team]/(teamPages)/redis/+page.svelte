@@ -190,7 +190,7 @@
 							</div>
 						</div>
 					</div>
-					{#each instances.nodes as instance}
+					{#each instances.nodes as instance (instance.id)}
 						<div class="list-item">
 							<div class="link-wrapper">
 								<div class="link">

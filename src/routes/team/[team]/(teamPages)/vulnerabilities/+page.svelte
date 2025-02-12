@@ -174,7 +174,7 @@
 				</Select>
 			</div>
 			{#key selectedEnvironment}
-				<WorkloadsWithSbom team={teamSlug} environment={selectedEnvironment} />
+				<WorkloadsWithSbom team={teamSlug} bind:environment={selectedEnvironment} />
 			{/key}
 		</Card>
 	</div>

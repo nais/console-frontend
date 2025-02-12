@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql, ImageVulnerabilityOrderField, PendingValue } from '$houdini';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
@@ -8,7 +9,6 @@
 	import type { ImageVulnerabilitiesVariables } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		authorized: boolean | typeof PendingValue;
@@ -175,7 +175,7 @@
 	<Tbody>
 		{#if $vulnerabilities.data}
 			{@const vulnz = $vulnerabilities.data.team.environment.workload.image.vulnerabilities.nodes}
-			{#each vulnz as v}
+			{#each vulnz as v (v.description)}
 				{#if v !== PendingValue}
 					<Tr>
 						<Td>

@@ -9,7 +9,6 @@
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
 		Button,
-		Skeleton,
 		Table,
 		Tbody,
 		Td,
@@ -143,63 +142,47 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each secrets.nodes as secret}
-							{#if secret === PendingValue}
-								<Tr>
-									<Td><Skeleton variant="text" /></Td>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-									<Td><Skeleton variant="circle" /></Td>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-								</Tr>
-							{:else}
-								<Tr>
-									<Td>
-										<a href="/team/{teamSlug}/{secret.environment.name}/secret/{secret.name}"
-											>{secret.name}</a
-										>
-									</Td>
-									<Td>{secret.environment.name}</Td>
-									<Td>
-										{#if secret.workloads.pageInfo.totalCount > 0}
-											<CheckmarkIcon
-												style="color: var(--a-surface-success)"
-												title="{secret.workloads.pageInfo
-													.totalCount} workloads are using this secret"
-											/>
-										{:else}
-											<XMarkIcon
-												style="color: var(--a-surface-danger)"
-												title="No workloads are using this secret"
-											/>
-										{/if}
-									</Td>
-									<Td align="right">
-										{#if secret.lastModifiedAt}
-											<Time time={secret.lastModifiedAt} distance />
-										{:else}
-											<code>n/a</code>
-										{/if}
-									</Td>
-								</Tr>
-							{/if}
+						{#each secrets.nodes as secret (secret.id)}
+							<Tr>
+								<Td>
+									<a href="/team/{teamSlug}/{secret.environment.name}/secret/{secret.name}"
+										>{secret.name}</a
+									>
+								</Td>
+								<Td>{secret.environment.name}</Td>
+								<Td>
+									{#if secret.workloads.pageInfo.totalCount > 0}
+										<CheckmarkIcon
+											style="color: var(--a-surface-success)"
+											title="{secret.workloads.pageInfo.totalCount} workloads are using this secret"
+										/>
+									{:else}
+										<XMarkIcon
+											style="color: var(--a-surface-danger)"
+											title="No workloads are using this secret"
+										/>
+									{/if}
+								</Td>
+								<Td align="right">
+									{#if secret.lastModifiedAt}
+										<Time time={secret.lastModifiedAt} distance />
+									{:else}
+										<code>n/a</code>
+									{/if}
+								</Td>
+							</Tr>
 						{:else}
 							<Tr><Td colspan={99}>No secrets for team</Td></Tr>
 						{/each}
 					</Tbody>
 				</Table>
-				{#if secrets.pageInfo !== PendingValue && (secrets.pageInfo.hasPreviousPage || secrets.pageInfo.hasNextPage)}
-					<Pagination
-						page={secrets.pageInfo}
-						loaders={{
-							loadPreviousPage: () => Secrets.loadPreviousPage(),
-							loadNextPage: () => Secrets.loadNextPage()
-						}}
-					/>
-				{/if}
+				<Pagination
+					page={secrets.pageInfo}
+					loaders={{
+						loadPreviousPage: () => Secrets.loadPreviousPage(),
+						loadNextPage: () => Secrets.loadNextPage()
+					}}
+				/>
 			</div></Card
 		>
 		{#if createSecretOpen}
