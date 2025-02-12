@@ -42,7 +42,7 @@
 </script>
 
 {#if $SqlInstance.errors}
-	{#each distinctErrors($SqlInstance.errors) as error}
+	{#each distinctErrors($SqlInstance.errors) as error (error)}
 		<Alert style="margin-bottom: 1rem;" variant="error">
 			{error}
 		</Alert>
@@ -390,7 +390,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each instance.flags.edges as edge}
+						{#each instance.flags.edges as edge (edge.node.name)}
 							<Tr>
 								<Td>{edge.node.name}</Td>
 								<Td>{edge.node.value}</Td>
@@ -421,7 +421,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each instance.users.edges as edge}
+						{#each instance.users.edges as edge (edge.node.name + edge.node.authentication)}
 							<Tr>
 								<Td>{edge.node.name}</Td>
 								<Td>{edge.node.authentication}</Td>
