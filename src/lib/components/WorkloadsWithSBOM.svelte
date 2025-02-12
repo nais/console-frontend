@@ -2,17 +2,16 @@
 	import { page } from '$app/state';
 	import {
 		graphql,
-		PendingValue,
 		WorkloadOrderField,
 		type OrderDirection$options,
 		type WorkloadOrderField$options
 	} from '$houdini';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 
 	interface Props {
 		team: string;
@@ -51,12 +50,10 @@
 	const query = graphql(`
 		query WorkloadsWithSbom($team: Slug!, $orderBy: WorkloadOrder, $filter: TeamWorkloadsFilter)
 		@load {
-			team(slug: $team) @loading {
-				workloads(first: 10, orderBy: $orderBy, filter: $filter)
-					@paginate(mode: SinglePage)
-					@loading {
-					pageInfo @loading {
-						totalCount @loading
+			team(slug: $team) {
+				workloads(first: 10, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+					pageInfo {
+						totalCount
 						pageStart
 						pageEnd
 						hasNextPage
@@ -64,26 +61,28 @@
 						startCursor
 						endCursor
 					}
-					nodes @loading {
-						__typename @loading
+					nodes {
+						__typename
+						id
 						name
 						environment {
+							id
 							name
 						}
 						team {
 							slug
 						}
-						image @loading {
+						image {
 							name
 							tag
 							hasSBOM
-							vulnerabilitySummary @loading {
-								critical @loading
-								high @loading
-								medium @loading
-								low @loading
-								unassigned @loading
-								riskScore @loading
+							vulnerabilitySummary {
+								critical
+								high
+								medium
+								low
+								unassigned
+								riskScore
 							}
 						}
 					}
@@ -122,7 +121,6 @@
 
 {#if $query.data?.team}
 	{@const team = $query.data.team}
-
 	<Table
 		zebraStripes
 		size="small"
@@ -151,21 +149,13 @@
 		<Tbody>
 			{#if team.workloads.nodes.length > 0}
 				{@const workloads = team.workloads.nodes}
-				{#each workloads as workload}
+				{#each workloads as workload (workload.id)}
 					<Tr>
 						<Td>
-							{#if workload.__typename !== PendingValue}
-								<WorkloadLink {workload} showIcon={true} />
-							{:else}
-								<Skeleton variant="text" />
-							{/if}
+							<WorkloadLink {workload} showIcon={true} />
 						</Td>
 						<Td>
-							{#if workload.__typename !== PendingValue}
-								{workload.environment.name}
-							{:else}
-								<Skeleton variant="text" />
-							{/if}
+							{workload.environment.name}
 						</Td>
 						<Td>
 							<div class="vulnerability">
@@ -224,15 +214,11 @@
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								{#if workload.image.vulnerabilitySummary?.riskScore !== PendingValue}
-									<span class="align-center"
-										>{workload.image.vulnerabilitySummary
-											? workload.image.vulnerabilitySummary.riskScore
-											: '-'}</span
-									>
-								{:else}
-									<Skeleton variant="text" width="32px" />
-								{/if}
+								<span class="align-center"
+									>{workload.image.vulnerabilitySummary
+										? workload.image.vulnerabilitySummary.riskScore
+										: '-'}</span
+								>
 							</div>
 						</Td>
 					</Tr>
@@ -244,15 +230,18 @@
 			{/if}
 		</Tbody>
 	</Table>
-	{#if $query.data?.team.workloads.pageInfo.totalCount !== PendingValue}
-		<Pagination
-			page={$query.data?.team.workloads.pageInfo}
-			loaders={{
-				loadPreviousPage: () => query.loadPreviousPage(),
-				loadNextPage: () => query.loadNextPage()
-			}}
-		/>
-	{/if}
+
+	<Pagination
+		page={$query.data?.team.workloads.pageInfo}
+		loaders={{
+			loadNextPage: async () => {
+				await query.loadNextPage();
+			},
+			loadPreviousPage: async () => {
+				await query.loadPreviousPage();
+			}
+		}}
+	/>
 {/if}
 
 <style>
