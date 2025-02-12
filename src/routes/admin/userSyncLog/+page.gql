@@ -1,6 +1,7 @@
 query UserSyncLogs {
 	userSyncLog(first: 20) @paginate(mode: SinglePage) {
 		nodes {
+			id
 			__typename
 			createdAt
 			message
