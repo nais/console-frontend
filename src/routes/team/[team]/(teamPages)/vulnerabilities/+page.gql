@@ -1,29 +1,30 @@
 query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
 @cache(policy: CacheAndNetwork) {
-	team(slug: $team) @loading {
-		environments @loading {
-			name @loading
+	team(slug: $team) {
+		environments {
+			id
+			name
 		}
-		vulnerabilitySummary(filter: $filter) @loading {
-			bomCount @loading
-			coverage @loading
-			critical @loading
-			high @loading
-			low @loading
-			medium @loading
-			ranking @loading
-			riskScore @loading
-			riskScoreTrend @loading
+		vulnerabilitySummary(filter: $filter) {
+			bomCount
+			coverage
+			critical
+			high
+			low
+			medium
+			ranking
+			riskScore
+			riskScoreTrend
 			unassigned
-			status @loading {
+			status {
 				state
 				title
 				description
 			}
 		}
-		workloads @loading {
-			pageInfo @loading {
-				totalCount @loading
+		workloads {
+			pageInfo {
+				totalCount
 			}
 		}
 	}
