@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { graphql, PendingValue, type UserDeploys$result } from '$houdini';
+	import { graphql, type UserDeploys$result } from '$houdini';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 
 	const store = graphql(`
 		query UserDeploys @load {
-			me @loading {
+			me {
 				__typename
 				... on User {
 					teams {
@@ -24,6 +24,7 @@
 										teamSlug
 										resources {
 											nodes {
+												id
 												kind
 												name
 											}
@@ -44,8 +45,6 @@
 	`);
 
 	const sortTeamDeploys = (userDeploys: UserDeploys$result['me']) => {
-		if (userDeploys === PendingValue)
-			return Array(20).fill(PendingValue) as (typeof PendingValue)[];
 		if (userDeploys.__typename !== 'User') return [];
 
 		let retval = userDeploys.teams.nodes
@@ -78,65 +77,55 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#each sortTeamDeploys($store.data.me) as deploy}
-				{#if deploy == PendingValue}
-					<Tr>
-						{#each new Array(5).fill('text') as variant}
-							<Td>
-								<Skeleton {variant} />
-							</Td>
-						{/each}
-					</Tr>
-				{:else}
-					<Tr>
-						<Td>
-							{#each deploy.resources.nodes as resource}
-								{#if resource.kind === 'Application'}
-									<WorkloadLink
-										workload={{
-											__typename: 'App',
-											environment: { name: deploy.environmentName },
-											team: { slug: deploy.teamSlug },
-											name: resource.name
-										}}
-										showIcon={true}
-									/>
-								{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
-									<WorkloadLink
-										workload={{
-											__typename: 'Job',
-											environment: { name: deploy.environmentName },
-											team: { slug: deploy.teamSlug },
-											name: resource.name
-										}}
-										showIcon={true}
-									/>
-								{:else}
-									<span style="color:var(--a-gray-600)">{resource.kind}:</span>
-									{resource.name}
-								{/if}
-								<br />
-							{/each}
-						</Td>
-						<Td>
-							<a href="/team/{deploy.teamSlug}">{deploy.teamSlug}</a>
-						</Td>
-						<Td>
-							{deploy.environmentName}
-						</Td>
-
-						<Td>
-							<Time time={deploy.createdAt} distance={true} />
-						</Td>
-						<Td>
-							{#if deploy.statuses.nodes.length === 0}
-								<DeploymentStatus status={'UNKNOWN'} />
+			{#each sortTeamDeploys($store.data.me) as deploy (deploy.id)}
+				<Tr>
+					<Td>
+						{#each deploy.resources.nodes as resource (resource.id)}
+							{#if resource.kind === 'Application'}
+								<WorkloadLink
+									workload={{
+										__typename: 'App',
+										environment: { name: deploy.environmentName },
+										team: { slug: deploy.teamSlug },
+										name: resource.name
+									}}
+									showIcon={true}
+								/>
+							{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
+								<WorkloadLink
+									workload={{
+										__typename: 'Job',
+										environment: { name: deploy.environmentName },
+										team: { slug: deploy.teamSlug },
+										name: resource.name
+									}}
+									showIcon={true}
+								/>
 							{:else}
-								<DeploymentStatus status={deploy.statuses.nodes[0].state} />
+								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
+								{resource.name}
 							{/if}
-						</Td>
-					</Tr>
-				{/if}
+							<br />
+						{/each}
+					</Td>
+					<Td>
+						<a href="/team/{deploy.teamSlug}">{deploy.teamSlug}</a>
+					</Td>
+					<Td>
+						{deploy.environmentName}
+					</Td>
+
+					<Td>
+						<Time time={deploy.createdAt} distance={true} />
+					</Td>
+					<Td>
+						{#if deploy.statuses.nodes.length === 0}
+							<DeploymentStatus status={'UNKNOWN'} />
+						{:else}
+							<DeploymentStatus status={deploy.statuses.nodes[0].state} />
+						{/if}
+					</Td>
+				</Tr>
 			{:else}
 				<Tr>
 					<Td colspan={999}>No deployments found</Td>

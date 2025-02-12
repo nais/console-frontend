@@ -12,7 +12,7 @@
 	let reconcilers = $derived($AdminReconcilers.data?.reconcilers.nodes);
 </script>
 
-{#each reconcilers || [] as r}
+{#each reconcilers || [] as r (r.id)}
 	<Reconciler reconciler={r} />
 {:else}
 	<p>No reconcilers registered</p>

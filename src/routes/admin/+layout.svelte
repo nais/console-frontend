@@ -46,7 +46,7 @@
 		<h2>Admin</h2>
 	</div>
 	<Tabs>
-		{#each nav as { tab, routeId, withSubRoutes }}
+		{#each nav as { tab, routeId, withSubRoutes } (routeId)}
 			<Tab
 				href={replacer(routeId, {})}
 				active={isActive(currentRoute, routeId, withSubRoutes)}
