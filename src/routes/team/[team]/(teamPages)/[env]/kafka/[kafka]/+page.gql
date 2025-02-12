@@ -8,6 +8,7 @@ query KafkaTopic(
 		slug
 		environment(name: $environment) {
 			kafkaTopic(name: $name) {
+				id
 				__typename
 				name
 				environment {
@@ -37,6 +38,7 @@ query KafkaTopic(
 						workloadName
 						teamName
 						workload {
+							id
 							environment {
 								name
 							}
