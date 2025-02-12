@@ -83,6 +83,7 @@
 							workloadReferences @loading {
 								nodes {
 									workload {
+										id
 										__typename
 										team {
 											slug

@@ -20,6 +20,7 @@
 		open: boolean;
 		finding: FindingType;
 		workloads: {
+			readonly id: string;
 			readonly __typename: string | null;
 			readonly team: {
 				readonly slug: string;
@@ -74,7 +75,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each workloads as workload}
+					{#each workloads as workload (workload.id)}
 						<Tr>
 							<Td>{workload.environment.name}</Td>
 							<Td>{workload.team.slug}</Td>
@@ -98,7 +99,52 @@
 				</Thead>
 				<Tbody>
 					{#if finding.analysisTrail.comments.nodes}
-						{#each finding.analysisTrail.comments.nodes as node}
+						{#each finding.analysisTrail.comments.nodes as node (node.timestamp + node.onBehalfOf + node.state + node.suppressed + node.comment)}
+							{#if node}
+								<Tr>
+									<Td>{node.onBehalfOf}</Td>
+									<Td>{node.state}</Td>
+									<Td>{node.suppressed}</Td>
+									<Td>{node.comment}</Td>
+									<Td><Time time={node.timestamp} distance={true} /></Td>
+								</Tr>
+							{/if}
+							{#if node}
+								<Tr>
+									<Td>{node.onBehalfOf}</Td>
+									<Td>{node.state}</Td>
+									<Td>{node.suppressed}</Td>
+									<Td>{node.comment}</Td>
+									<Td><Time time={node.timestamp} distance={true} /></Td>
+								</Tr>
+							{/if}
+							{#if node}
+								<Tr>
+									<Td>{node.onBehalfOf}</Td>
+									<Td>{node.state}</Td>
+									<Td>{node.suppressed}</Td>
+									<Td>{node.comment}</Td>
+									<Td><Time time={node.timestamp} distance={true} /></Td>
+								</Tr>
+							{/if}
+							{#if node}
+								<Tr>
+									<Td>{node.onBehalfOf}</Td>
+									<Td>{node.state}</Td>
+									<Td>{node.suppressed}</Td>
+									<Td>{node.comment}</Td>
+									<Td><Time time={node.timestamp} distance={true} /></Td>
+								</Tr>
+							{/if}
+							{#if node}
+								<Tr>
+									<Td>{node.onBehalfOf}</Td>
+									<Td>{node.state}</Td>
+									<Td>{node.suppressed}</Td>
+									<Td>{node.comment}</Td>
+									<Td><Time time={node.timestamp} distance={true} /></Td>
+								</Tr>
+							{/if}
 							{#if node}
 								<Tr>
 									<Td>{node.onBehalfOf}</Td>

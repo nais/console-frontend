@@ -86,7 +86,7 @@
 		</p>
 		<div class="wrapper">
 			<Select size="small" label="Type" bind:value={type}>
-				{#each FEEDBACK_TYPE as option}
+				{#each FEEDBACK_TYPE as option (option.value)}
 					<option value={option.value}>{option.text}</option>
 				{/each}
 			</Select>

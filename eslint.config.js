@@ -8,9 +8,9 @@ import globals from 'globals';
 export default [
 	js.configs.recommended,
 	...ts.configs.recommended,
-	...svelte.configs['flat/recommended'],
 	prettier,
 	...svelte.configs['flat/prettier'],
+	...svelte.configs['flat/recommended'],
 	{
 		languageOptions: {
 			globals: {
@@ -40,17 +40,17 @@ export default [
 
 /*
 'svelte/prefer-destructured-store-props': 'error',
-			'svelte/no-target-blank': 'error',
-			'svelte/no-immutable-reactive-statements': 'error',
-			'svelte/prefer-style-directive': 'error',
-			'svelte/no-reactive-literals': 'error'
+'svelte/no-target-blank': 'error',
+'svelte/no-immutable-reactive-statements': 'error',
+'svelte/prefer-style-directive': 'error',
+'svelte/no-reactive-literals': 'error'
 'svelte/no-useless-mustaches': 'error',
 'svelte/no-goto-without-base': 'error',
-			'svelte/sort-attributes': 'error',
-			'svelte/prefer-destructured-store-props': 'error',
-			'svelte/html-closing-bracket-new-line': 'error',
-			'svelte/prefer-style-directive': 'error',
-			'svelte/no-useless-mustaches': 'error',
-			'svelte/no-inline-styles': 'error',
-			'svelte/html-closing-bracket-new-line': 'error',
-			'svelte/prefer-style-directive': 'error'*/
+'svelte/sort-attributes': 'error',
+'svelte/prefer-destructured-store-props': 'error',
+'svelte/html-closing-bracket-new-line': 'error',
+'svelte/prefer-style-directive': 'error',
+'svelte/no-useless-mustaches': 'error',
+'svelte/no-inline-styles': 'error',
+'svelte/html-closing-bracket-new-line': 'error',
+'svelte/prefer-style-directive': 'error'*/

@@ -30,6 +30,7 @@
 					bigQueryDatasets {
 						edges {
 							node {
+								id
 								name
 							}
 						}
@@ -37,6 +38,7 @@
 					buckets {
 						edges {
 							node {
+								id
 								name
 							}
 						}
@@ -66,6 +68,7 @@
 								node {
 									access
 									workload {
+										id
 										name
 									}
 								}
@@ -75,6 +78,7 @@
 					redisInstances {
 						edges {
 							node {
+								id
 								name
 							}
 						}
@@ -82,6 +86,7 @@
 					valkeyInstances {
 						edges {
 							node {
+								id
 								name
 							}
 						}
@@ -89,6 +94,7 @@
 					sqlInstances {
 						edges {
 							node {
+								id
 								name
 							}
 						}
@@ -117,7 +123,7 @@
 {#if persistenceCount > 0}
 	<div class="content">
 		{#if $data.buckets.edges.length > 0}
-			{#each $data.buckets.edges as bucket}
+			{#each $data.buckets.edges as bucket (bucket.node.id)}
 				<a href={`/team/${$data.team.slug}/${$data.environment.name}/bucket/${bucket.node.name}`}
 					><IconWithText icon={BucketIcon} size="medium">
 						{#snippet text()}
@@ -128,7 +134,7 @@
 			{/each}
 		{/if}
 		{#if $data.bigQueryDatasets.edges.length > 0}
-			{#each $data.bigQueryDatasets.edges as bq}
+			{#each $data.bigQueryDatasets.edges as bq (bq.node.id)}
 				<a href={`/team/${$data.team.slug}/${$data.environment.name}/bigquery/${bq.node.name}`}
 					><IconWithText icon={BigQuery} size="medium">
 						{#snippet text()}
@@ -139,7 +145,7 @@
 			{/each}
 		{/if}
 		{#if $data.sqlInstances.edges.length > 0}
-			{#each $data.sqlInstances.edges as sql}
+			{#each $data.sqlInstances.edges as sql (sql.node.id)}
 				<a href={`/team/${$data.team.slug}/${$data.environment.name}/postgres/${sql.node.name}`}
 					><IconWithText icon={DatabaseIcon} size="medium">
 						{#snippet text()}
@@ -150,7 +156,7 @@
 			{/each}
 		{/if}
 		{#if $data.kafkaTopicAcls.edges.length > 0}
-			{#each $data.kafkaTopicAcls.edges as acl}
+			{#each $data.kafkaTopicAcls.edges as acl (acl.node.topic.name + acl.node.workloadName + acl.node.access + acl.node.teamName + acl.node.topic.environment.name)}
 				{#if acl.node.teamName !== '*'}
 					<a
 						href={`/team/${acl.node.topic.team.slug}/${acl.node.topic.environment.name === 'prod-fss' ? 'prod-gcp' : acl.node.topic.environment.name === 'dev-fss' ? 'dev-gcp' : acl.node.topic.environment.name}/kafka/${acl.node.topic.name}`}
@@ -175,7 +181,7 @@
 
 					{#snippet description()}
 						{#if $data.openSearch?.access.edges}
-							{#each $data.openSearch?.access.edges as access}
+							{#each $data.openSearch?.access.edges as access (access.node.access + access.node.workload.id)}
 								{#if access.node.workload.name == $data.name}
 									<Detail style="font-weight: normal; color: var(--a-text-subtle);"
 										>{access.node.access}</Detail
@@ -189,7 +195,7 @@
 		{/if}
 
 		{#if $data.redisInstances.edges.length > 0}
-			{#each $data.redisInstances.edges as redis}
+			{#each $data.redisInstances.edges as redis (redis.node.id)}
 				<a href={`/team/${$data.team.slug}/${$data.environment.name}/redis/${redis.node.name}`}
 					><IconWithText icon={Redis} size="medium">
 						{#snippet text()}
@@ -201,7 +207,7 @@
 		{/if}
 
 		{#if $data.valkeyInstances.edges.length > 0}
-			{#each $data.valkeyInstances.edges as valkey}
+			{#each $data.valkeyInstances.edges as valkey (valkey.node.id)}
 				<a href={`/team/${$data.team.slug}/${$data.environment.name}/valkey/${valkey.node.name}`}
 					><IconWithText icon={Valkey} size="medium">
 						{#snippet text()}

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { fragment, graphql, PendingValue, type ImageWorkloadReferences } from '$houdini';
+	import { fragment, graphql, type ImageWorkloadReferences } from '$houdini';
 	import Time from '$lib/Time.svelte';
 
-	import { Heading, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import WorkloadLink from '../WorkloadLink.svelte';
 
 	interface Props {
@@ -16,9 +16,10 @@
 			image,
 			graphql(`
 				fragment ImageWorkloadReferences on ContainerImage {
-					workloadReferences @loading {
-						nodes @loading {
+					workloadReferences {
+						nodes {
 							workload {
+								id
 								__typename
 								team {
 									slug
@@ -53,33 +54,25 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#each $workloadRefs.workloadReferences.nodes as node}
-				{#if node !== PendingValue}
-					{@const { workload } = node}
-					{@const deployInfo =
-						workload.deployments.nodes.length > 0 ? workload.deployments.nodes[0] : null}
-					<Tr>
-						<Td>
-							<WorkloadLink {workload} showIcon />
-						</Td>
-						<Td>
-							{#if deployInfo?.triggerUrl}
-								<a href={deployInfo?.triggerUrl} target="_blank">Run</a>
-							{/if}
-						</Td>
-						<Td
-							>{#if deployInfo?.createdAt}
-								<Time distance time={deployInfo.createdAt} />
-							{/if}
-						</Td>
-					</Tr>
-				{:else}
-					<Tr>
-						<Td><Skeleton variant="text" /></Td>
-						<Td><Skeleton variant="text" /></Td>
-						<Td><Skeleton variant="text" /></Td>
-					</Tr>
-				{/if}
+			{#each $workloadRefs.workloadReferences.nodes as node (node.workload.id)}
+				{@const { workload } = node}
+				{@const deployInfo =
+					workload.deployments.nodes.length > 0 ? workload.deployments.nodes[0] : null}
+				<Tr>
+					<Td>
+						<WorkloadLink {workload} showIcon />
+					</Td>
+					<Td>
+						{#if deployInfo?.triggerUrl}
+							<a href={deployInfo?.triggerUrl} target="_blank">Run</a>
+						{/if}
+					</Td>
+					<Td
+						>{#if deployInfo?.createdAt}
+							<Time distance time={deployInfo.createdAt} />
+						{/if}
+					</Td>
+				</Tr>
 			{:else}
 				<Tr>
 					<Td colspan={5}>No workloads found using this image in Dependency-Track</Td>
