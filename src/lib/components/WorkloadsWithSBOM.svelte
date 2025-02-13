@@ -9,9 +9,20 @@
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import {
+		BodyShort,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tooltip,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
-	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
@@ -190,66 +201,133 @@
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								<Vulnerability
-									severity="critical"
-									count={workload.image.vulnerabilitySummary
-										? workload.image.vulnerabilitySummary.critical
-										: undefined}
-									size="32px"
-								/>
+								<div class="vulnerability-summary">
+									<Tooltip content={'critical'}>
+										{#if workload.image.vulnerabilitySummary}
+											{#if workload.image.vulnerabilitySummary.critical > 0}
+												<BodyShort
+													class="vulnerability-count"
+													style="background-color: {severityToColor('critical')}"
+												>
+													{workload.image.vulnerabilitySummary
+														? workload.image.vulnerabilitySummary.critical
+														: '-'}
+												</BodyShort>
+											{:else}
+												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+											{/if}
+										{:else}
+											-
+										{/if}
+									</Tooltip>
+								</div>
 							</div>
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								<Vulnerability
-									severity="high"
-									count={workload.image.vulnerabilitySummary
-										? workload.image.vulnerabilitySummary.high
-										: undefined}
-									size="32px"
-								/>
+								<div class="vulnerability-summary">
+									<Tooltip content={'high'}>
+										{#if workload.image.vulnerabilitySummary}
+											{#if workload.image.vulnerabilitySummary.high > 0}
+												<BodyShort
+													class="vulnerability-count"
+													style="background-color: {severityToColor('high')}"
+												>
+													{workload.image.vulnerabilitySummary
+														? workload.image.vulnerabilitySummary.high
+														: '-'}
+												</BodyShort>
+											{:else}
+												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+											{/if}
+										{:else}
+											-
+										{/if}
+									</Tooltip>
+								</div>
 							</div>
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								<Vulnerability
-									severity="medium"
-									count={workload.image.vulnerabilitySummary
-										? workload.image.vulnerabilitySummary.medium
-										: undefined}
-									size="32px"
-								/>
+								<div class="vulnerability-summary">
+									<Tooltip content={'medium'}>
+										{#if workload.image.vulnerabilitySummary}
+											{#if workload.image.vulnerabilitySummary.medium > 0}
+												<BodyShort
+													class="vulnerability-count"
+													style="background-color: {severityToColor('medium')}"
+												>
+													{workload.image.vulnerabilitySummary
+														? workload.image.vulnerabilitySummary.medium
+														: '-'}
+												</BodyShort>
+											{:else}
+												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+											{/if}
+										{:else}
+											-
+										{/if}
+									</Tooltip>
+								</div>
 							</div>
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								<Vulnerability
-									severity="low"
-									count={workload.image.vulnerabilitySummary
-										? workload.image.vulnerabilitySummary.low
-										: undefined}
-									size="32px"
-								/>
+								<div class="vulnerability-summary">
+									<Tooltip content={'low'}>
+										{#if workload.image.vulnerabilitySummary}
+											{#if workload.image.vulnerabilitySummary.low > 0}
+												<BodyShort
+													class="vulnerability-count"
+													style="background-color: {severityToColor('low')}"
+												>
+													{workload.image.vulnerabilitySummary
+														? workload.image.vulnerabilitySummary.low
+														: '-'}
+												</BodyShort>
+											{:else}
+												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+											{/if}
+										{:else}
+											-
+										{/if}
+									</Tooltip>
+								</div>
 							</div>
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								<Vulnerability
-									severity="unassigned"
-									count={workload.image.vulnerabilitySummary
-										? workload.image.vulnerabilitySummary.unassigned
-										: undefined}
-									size="32px"
-								/>
+								<div class="vulnerability-summary">
+									<Tooltip content={'unassigned'}>
+										{#if workload.image.vulnerabilitySummary}
+											{#if workload.image.vulnerabilitySummary.unassigned > 0}
+												<BodyShort
+													class="vulnerability-count"
+													style="background-color: {severityToColor('unassigned')}"
+												>
+													{workload.image.vulnerabilitySummary.unassigned}
+												</BodyShort>
+											{:else}
+												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+											{/if}
+										{:else}
+											-
+										{/if}
+									</Tooltip>
+								</div>
 							</div>
 						</Td>
 						<Td>
 							<div class="vulnerability">
-								<span class="align-center"
-									>{workload.image.vulnerabilitySummary
-										? workload.image.vulnerabilitySummary.riskScore
-										: '-'}</span
-								>
+								<div class="vulnerability-summary">
+									<Tooltip content={'risk score'}>
+										<BodyShort class="vulnerability-count">
+											{workload.image.vulnerabilitySummary
+												? workload.image.vulnerabilitySummary.riskScore
+												: '-'}
+										</BodyShort>
+									</Tooltip>
+								</div>
 							</div>
 						</Td>
 					</Tr>
@@ -279,12 +357,33 @@
 {/if}
 
 <style>
+	.vulnerability-summary {
+		display: flex;
+		gap: 1px;
+
+		:global(.vulnerability-count) {
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+
+		:global(.vulnerability-count) {
+			padding: 4px 10px;
+		}
+
+		:global(.vulnerability-count) {
+			padding: 4px 10px;
+		}
+	}
 	.vulnerability {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
-	.align-center {
-		text-align: center;
+	.checkmark {
+		color: var(--a-icon-success);
+		font-size: 1.5rem;
 	}
 </style>
