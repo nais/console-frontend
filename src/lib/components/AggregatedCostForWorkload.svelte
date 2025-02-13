@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Heading, HelpText } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
 	import type { AggregatedCostVariables } from './$houdini';
 	import Cost from './Cost.svelte';
 
@@ -62,54 +62,65 @@
 	}
 </script>
 
-<div class="container">
-	<Heading level="3" size="small" spacing>Cost</Heading>
-	<HelpText title="Aggregated workload cost"
-		>Aggregated cost for workload. Current month is estimated.</HelpText
-	>
-</div>
+<div class="wrapper">
+	<div class="container">
+		<Heading level="3" size="small">Cost</Heading>
+		<HelpText title="Aggregated workload cost"
+			>Aggregated cost for workload. Current month is estimated.</HelpText
+		>
+	</div>
 
-<GraphErrors errors={$costQuery.errors} />
+	<GraphErrors errors={$costQuery.errors} />
 
-{#if $costQuery.data !== null}
-	{@const cost = $costQuery.data.team.environment.workload.cost}
-	{@const factor = getFactor(cost.monthly.series)}
-	<div>
+	{#if $costQuery.data !== null}
+		{@const cost = $costQuery.data.team.environment.workload.cost}
+		{@const factor = getFactor(cost.monthly.series)}
+
 		{#each cost.monthly.series.slice(0, 2) as item (item)}
 			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.sum} />
+				<BodyShort
+					>{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
+						cost={item.sum}
+					/></BodyShort
+				>
 			{:else}
-				{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
-					cost={getEstimateForMonth(item.sum, item.date)}
-				/>
-				{#if cost.monthly.series.length > 1}
-					{#if factor > 1.0}
-						(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
-					{:else}
-						(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+				<BodyShort
+					>{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
+						cost={getEstimateForMonth(item.sum, item.date)}
+					/>
+					{#if cost.monthly.series.length > 1}
+						{#if factor > 1.0}
+							(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+						{:else}
+							(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+						{/if}
 					{/if}
-				{/if}
+				</BodyShort>
 			{/if}
-			<br />
 		{:else}
-			No cost data available
+			<BodyShort>No cost data available</BodyShort>
 		{/each}
-	</div>
-	<div style="margin-top: var(--a-spacing-2)">
-		<a
+
+		<Link
 			href="/team/{$costQuery.data.team.slug}/{$costQuery.data.team.environment.name}/{$costQuery
 				.data.team.environment.workload.__typename === 'Job'
 				? 'job'
-				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</a
+				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</Link
 		>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: start;
+		gap: var(--a-spacing-1);
+	}
+
 	.container {
 		display: flex;
-		justify-content: space-between;
-		font-weight: 400;
-		margin-bottom: 0.5rem;
+		align-items: center;
+		gap: var(--a-spacing-1);
 	}
 </style>

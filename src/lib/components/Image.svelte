@@ -51,8 +51,6 @@
 		`/team/${page.params.team}/${page.params.env}/${$data.__typename === 'Application' ? 'app' : 'job'}/${$data.name}/image`
 	);
 
-	const notificationBadgeSize = '42';
-
 	const categories = ['critical', 'high', 'medium', 'low', 'unassigned'] as const;
 	const hasFindings = categories.some(
 		(severity) => ($data.image.vulnerabilitySummary?.[severity] ?? 0) > 0
@@ -61,55 +59,59 @@
 
 {#if $data.image}
 	{@const image = $data.image}
-	<Heading level="3" size="small" spacing>Vulnerabilities</Heading>
+	<div class="wrapper">
+		<Heading level="3" size="small">Vulnerabilities</Heading>
 
-	{#if !image.hasSBOM}
-		<BodyShort spacing>
-			<ExclamationmarkTriangleFillIcon
-				class="text-aligned-icon"
-				style="color: var(--a-icon-warning)"
-			/> Data was discovered, but the SBOM was not rendered. Please refer to the <Link
-				href={docURL('/services/vulnerabilities/')}>NAIS documentation</Link
-			> for further assistance.
-		</BodyShort>
-	{:else if image.vulnerabilitySummary === null}
-		<BodyShort spacing>
-			<ExclamationmarkTriangleFillIcon
-				class="text-aligned-icon"
-				style="color: var(--a-icon-warning)"
-			/> No data found. <Link
-				href={docURL('/services/vulnerabilities/how-to/sbom/')}
-				target="_blank">How to fix</Link
-			>
-		</BodyShort>
-	{:else if image.hasSBOM && image.vulnerabilitySummary && hasFindings}
-		<BodyShort spacing>Risk score: {image.vulnerabilitySummary.riskScore}</BodyShort>
-		<div class="vulnerability-summary">
-			{#each categories as category}
-				<Tooltip content={category}>
-					<BodyShort
-						class="vulnerability-count"
-						style="background-color: {severityToColor(category)}"
-					>
-						{image.vulnerabilitySummary[category]}
-					</BodyShort>
-				</Tooltip>
-			{/each}
-		</div>
-	{:else if image.hasSBOM}
-		<BodyShort spacing>
-			<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> No vulnerabilities
-			found. Good work!
-		</BodyShort>
-	{/if}
+		{#if !image.hasSBOM}
+			<BodyShort>
+				<ExclamationmarkTriangleFillIcon
+					class="text-aligned-icon"
+					style="color: var(--a-icon-warning)"
+				/> Data was discovered, but the SBOM was not rendered. Please refer to the <Link
+					href={docURL('/services/vulnerabilities/')}>NAIS documentation</Link
+				> for further assistance.
+			</BodyShort>
+		{:else if image.vulnerabilitySummary === null}
+			<BodyShort>
+				<ExclamationmarkTriangleFillIcon
+					class="text-aligned-icon"
+					style="color: var(--a-icon-warning)"
+				/> No data found. <Link
+					href={docURL('/services/vulnerabilities/how-to/sbom/')}
+					target="_blank">How to fix</Link
+				>
+			</BodyShort>
+		{:else if image.hasSBOM && image.vulnerabilitySummary && hasFindings}
+			<BodyShort>Risk score: {image.vulnerabilitySummary.riskScore}</BodyShort>
+			<div class="vulnerability-summary">
+				{#each categories as category}
+					<Tooltip content={category}>
+						<BodyShort
+							class="vulnerability-count"
+							style="background-color: {severityToColor(category)}"
+						>
+							{image.vulnerabilitySummary[category]}
+						</BodyShort>
+					</Tooltip>
+				{/each}
+			</div>
+		{:else if image.hasSBOM}
+			<BodyShort>
+				<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> No
+				vulnerabilities found. Good work!
+			</BodyShort>
+		{/if}
 
-	<Link href={imageDetailsUrl}>View image details</Link>
+		<Link href={imageDetailsUrl}>View image details</Link>
+	</div>
 {/if}
 
 <style>
-	:global(.text-aligned-icon) {
-		height: var(--a-font-line-height-large);
-		vertical-align: bottom;
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1);
+		align-items: start;
 	}
 
 	.vulnerability-summary {

@@ -9,8 +9,8 @@
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import { Button, Heading } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
@@ -58,76 +58,96 @@
 
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
-	<div class="app-content">
-		<div style="display:flex; flex-direction: column; gap: 1rem;">
-			<div style="display:flex; flex-direction: column; gap:0.5rem;">
-				<div class="instances-header">
-					<Heading level="2" size="medium">Instances</Heading>
-					{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
-						<Button
-							variant="secondary"
-							size="small"
-							onclick={() => {
-								restart = true;
-							}}
-							icon={ArrowCirclepathIcon}
-						>
-							Restart app
-						</Button>
-					{/if}
-				</div>
-				<Instances {app} />
+	<div class="wrapper">
+		<div class="header">
+			<PackageIcon style="font-size: 2.5rem" />
+			<div>
+				<Heading level="2" size="xlarge">{application}</Heading>
+				<BodyShort>{environment}</BodyShort>
 			</div>
-			<div
-				style="display: grid;
+		</div>
+		<div class="app-content">
+			<div class="main-section">
+				<div style="display:flex; flex-direction: column; gap:0.5rem;">
+					<div class="instances-header">
+						<Heading level="3" size="medium">Instances</Heading>
+						{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+							<Button
+								variant="secondary"
+								size="small"
+								onclick={() => (restart = true)}
+								icon={ArrowCirclepathIcon}
+							>
+								Restart app
+							</Button>
+						{/if}
+					</div>
+					<Instances {app} />
+				</div>
+				<div
+					style="display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 2rem; margin-bottom: 1rem;"
-			>
-				<div>
-					<Ingresses {app} />
+				>
+					<div>
+						<Ingresses {app} />
+					</div>
+					<div>
+						<Persistence workload={app} />
+					</div>
 				</div>
-				<div>
-					<Persistence workload={app} />
-				</div>
-			</div>
 
-			<div>
-				<NetworkPolicy workload={app} />
+				<div>
+					<NetworkPolicy workload={app} />
+				</div>
+			</div>
+			<div class="sidebar">
+				<Status {app} />
+				<Utilization {app} />
+				<WorkloadDeploy workload={app} />
+				<Image workload={app} />
+				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+					<Secrets workload={app.name} {environment} {teamSlug} />
+				{/if}
 			</div>
 		</div>
-		<div>
-			<Status {app} />
-			<hr />
-			<Utilization {app} />
-			<hr />
-			<WorkloadDeploy workload={app} />
-			<hr />
-			<Image workload={app} />
-			<hr />
-			<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
-			{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
-				<hr />
-				<Secrets workload={app.name} {environment} {teamSlug} />
-			{/if}
-		</div>
+		<Confirm bind:open={restart} onconfirm={submit}>
+			{#snippet header()}
+				<h3>Restart {application}</h3>
+			{/snippet}
+			This will restart all instances of
+			<strong>{application}</strong> in
+			<strong>{environment}</strong>.
+			<br />
+			Are you sure?
+		</Confirm>
 	</div>
-	<Confirm bind:open={restart} onconfirm={submit}>
-		{#snippet header()}
-			<h3>Restart {application}</h3>
-		{/snippet}
-		This will restart all instances of
-		<strong>{application}</strong> in
-		<strong>{environment}</strong>.
-		<br />
-		Are you sure?
-	</Confirm>
 {/if}
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-12);
+	}
+
+	.main-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-12);
+	}
+
+	.header {
+		display: flex;
+		align-items: center;
+		gap: var(--a-spacing-4);
+	}
+
 	.app-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: 1rem;
+		gap: var(--a-spacing-12);
 	}
 
 	.instances-header {
@@ -136,9 +156,9 @@
 		align-items: center;
 	}
 
-	hr {
-		border: 0;
-		border-top: 1px solid var(--a-border-default);
-		margin: 1.5rem 0.125rem;
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-10);
 	}
 </style>

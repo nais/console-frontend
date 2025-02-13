@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import Time from '$lib/Time.svelte';
-
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Link, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -41,25 +40,32 @@
 	}
 </script>
 
-<div>
-	<Heading level="3" size="small" spacing>Deploy</Heading>
-</div>
-{#if deploymentInfo}
-	{#if deploymentInfo.createdAt}
-		Last deployed <Time time={deploymentInfo.createdAt} distance={true} />.
-	{/if}
+<div class="wrapper">
+	<Heading level="3" size="small">Deploy</Heading>
+	{#if deploymentInfo}
+		{#if deploymentInfo.createdAt}
+			<BodyShort>Last deployed <Time time={deploymentInfo.createdAt} distance={true} />.</BodyShort>
+		{/if}
 
-	{#if deploymentInfo.triggerUrl}
-		<div><a href={deploymentInfo.triggerUrl}>Github action <ExternalLinkIcon /></a></div>
-	{/if}
+		{#if deploymentInfo.triggerUrl}
+			<Link href={deploymentInfo.triggerUrl}>Github action <ExternalLinkIcon /></Link>
+		{/if}
 
-	{#if deploymentInfo?.commitSha && isValidSha(deploymentInfo?.commitSha)}
-		<div>
-			<a href="https://github.com/{deploymentInfo?.repository}/commit/{deploymentInfo?.commitSha}"
-				>Commit {deploymentInfo?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
+		{#if deploymentInfo.commitSha && isValidSha(deploymentInfo.commitSha)}
+			<Link
+				href="https://github.com/{deploymentInfo?.repository}/commit/{deploymentInfo?.commitSha}"
+				>Commit {deploymentInfo?.commitSha.slice(0, 7)} <ExternalLinkIcon /></Link
 			>
-		</div>
+		{/if}
+	{:else}
+		<BodyShort>No deployments</BodyShort>
 	{/if}
-{:else}
-	No deployments
-{/if}
+</div>
+
+<style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1);
+	}
+</style>

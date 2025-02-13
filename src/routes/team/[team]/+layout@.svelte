@@ -361,24 +361,6 @@
 			about 15 minutes.</Alert
 		>
 	{/if}
-	{#if header($page.route.id, $page.params)?.isHeader}
-		{@const item = header($page.route.id, $page.params)}
-		<div class="header">
-			{#if item?.icon}
-				<div class="type-icon-header">
-					<item.icon height={'48px'} width={'48px'} />
-				</div>
-			{/if}
-			<div>
-				<h2>{header($page.route.id, $page.params)?.name}</h2>
-				{#if item?.showEnv}
-					<div class="env-header">
-						{$page.params.env}
-					</div>
-				{/if}
-			</div>
-		</div>
-	{/if}
 
 	{@render children?.()}
 </div>
@@ -391,23 +373,6 @@
 	.page {
 		margin-top: 1rem;
 		width: 100%;
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		margin-bottom: 1rem;
-		gap: 1rem;
-	}
-
-	.env-header {
-		color: var(--a-text-subtle);
-		font-size: 1rem;
-	}
-
-	.type-icon-header {
-		display: flex;
-		flex-direction: row;
 	}
 
 	.breadcrumbs {

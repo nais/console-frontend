@@ -50,3 +50,8 @@ h5 {
 	color: var(--color-text-subtle);
 	margin: 0;
 }
+
+.text-aligned-icon {
+	height: var(--a-font-line-height-large);
+	vertical-align: bottom;
+}

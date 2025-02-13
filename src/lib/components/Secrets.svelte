@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Link, Loader } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import type { WorkloadSecretsVariables } from './$houdini';
 
@@ -40,20 +40,31 @@
 	let { environment, workload, teamSlug }: Props = $props();
 </script>
 
-<GraphErrors errors={$secrets.errors} />
+<div class="wrapper">
+	<Heading level="3" size="small">Secrets</Heading>
+	<GraphErrors errors={$secrets.errors} />
 
-{#if $secrets.fetching}
-	<Loader />
-{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
-	<Heading size="small" spacing>Secrets</Heading>
-	<div>
+	{#if $secrets.fetching}
+		<Loader />
+	{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
 		{#if $secrets.data.team.environment.workload.secrets.edges.length > 0}
 			{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
-				<a
+				<Link
 					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.name}/secret/{secret
-						.node.name}"><IconWithText icon={PadlockLockedIcon} text={secret.node.name} /></a
+						.node.name}"><IconWithText icon={PadlockLockedIcon} text={secret.node.name} /></Link
 				>
 			{/each}
 		{/if}
-	</div>
-{/if}
+	{:else}
+		<BodyShort>No secrets referenced in nais.yaml.</BodyShort>
+	{/if}
+</div>
+
+<style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1);
+		align-items: start;
+	}
+</style>

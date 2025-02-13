@@ -118,7 +118,7 @@
 	}
 
 	.main {
-		gap: 1rem;
+		gap: var(--a-spacing-12);
 		display: grid;
 		grid-template-columns: 200px 1fr;
 	}
