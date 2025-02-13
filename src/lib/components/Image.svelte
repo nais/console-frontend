@@ -84,7 +84,7 @@
 		{:else if image.hasSBOM && image.vulnerabilitySummary && hasFindings}
 			<BodyShort>Risk score: {image.vulnerabilitySummary.riskScore}</BodyShort>
 			<div class="vulnerability-summary">
-				{#each categories as category}
+				{#each categories as category (category)}
 					<Tooltip content={category}>
 						<BodyShort
 							class="vulnerability-count"

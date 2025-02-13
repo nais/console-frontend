@@ -290,27 +290,6 @@
 		}
 		return [];
 	}
-
-	function header(
-		routeId: string | null,
-		params: Data
-	): {
-		name: string;
-		path?: string;
-		icon?: Component;
-		showEnv?: boolean;
-		isHeader?: boolean;
-	} | null {
-		if (!routeId) {
-			return null;
-		}
-		const found = pages[routeId];
-		if (found) {
-			const items = found(params);
-			return items.find((item) => item.isHeader) || null;
-		}
-		return null;
-	}
 </script>
 
 <div class="breadcrumbs">
