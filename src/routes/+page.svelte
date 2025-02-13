@@ -60,7 +60,7 @@
 			{#if $UserTeams.data}
 				{#if $UserTeams.data.me.__typename == 'User'}
 					<div class="teams">
-						{#each $UserTeams.data.me.teams.nodes as node}
+						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
 							<Box
 								as="a"
 								background="surface-subtle"
