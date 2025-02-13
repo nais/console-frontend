@@ -86,17 +86,18 @@
 		'full-wrapper',
 		activeColor(),
 		{
-			['white-page']: [
-				'/app/',
-				'/applications',
-				'/bigquery',
-				'/buckets',
-				'/jobs',
-				'/job/',
-				'/opensearch',
-				'/redis',
-				'/valkey'
-			].some((s) => $page.route.id?.includes(s))
+			['white-page']:
+				[
+					'/app/',
+					'/applications',
+					'/bigquery',
+					'/buckets',
+					'/jobs',
+					'/job/',
+					'/opensearch',
+					'/redis',
+					'/valkey'
+				].some((s) => $page.route.id?.includes(s)) || $page.route.id === '/'
 		}
 	]}
 >
@@ -122,6 +123,7 @@
 		min-width: 1000px;
 		max-width: 1432px;
 	}
+
 	@media (max-width: 1464px) {
 		:global(.page) {
 			padding: 0 2rem;
