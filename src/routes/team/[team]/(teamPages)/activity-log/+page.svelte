@@ -132,7 +132,7 @@
 							</div>
 						</div>
 					</div>
-					{#each ae.team.activityLog.edges as edge}
+					{#each ae.team.activityLog.edges as edge (edge.node.id)}
 						<div class="list-item">
 							<div>
 								<BodyShort size="small" spacing>
@@ -172,7 +172,7 @@
 									{:else if edge.node.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamEnvironmentUpdated.updatedFields.length > 0}
-											{#each edge.node.teamEnvironmentUpdated.updatedFields as field}
+											{#each edge.node.teamEnvironmentUpdated.updatedFields as field (field)}
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}
@@ -199,7 +199,7 @@
 									{:else if edge.node.__typename === 'TeamUpdatedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamUpdated?.updatedFields.length}
-											{#each edge.node.teamUpdated?.updatedFields as field}
+											{#each edge.node.teamUpdated?.updatedFields as field (field)}
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}
@@ -252,11 +252,9 @@
 						loaders={{
 							loadPreviousPage: () => {
 								changeQuery({ before: ae.team.activityLog.pageInfo.startCursor ?? '' });
-								ActivityLog.loadPreviousPage({ last: rows });
 							},
 							loadNextPage: () => {
 								changeQuery({ after: ae.team.activityLog.pageInfo.endCursor ?? '' });
-								ActivityLog.loadNextPage({ first: rows });
 							}
 						}}
 					/>

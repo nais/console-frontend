@@ -25,8 +25,10 @@
 					}
 					deployments {
 						nodes {
+							id
 							resources {
 								nodes {
+									id
 									kind
 									name
 								}
@@ -65,12 +67,12 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#each deploysOrderedByDate as deploy}
+			{#each deploysOrderedByDate as deploy (deploy.id)}
 				<Tr>
 					<Td>{$data.team.slug}</Td>
 					<Td>{$data.environment.name}</Td>
 					<Td>
-						{#each deploy.resources.nodes as resource}
+						{#each deploy.resources.nodes as resource (resource.id)}
 							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
 							{#if resource.kind === 'Application'}
 								<a

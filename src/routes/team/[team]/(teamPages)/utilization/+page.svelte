@@ -377,7 +377,7 @@
 					</Thead>
 					<Tbody>
 						{#if resourceUtilization !== PendingValue}
-							{#each overageTable as overage}
+							{#each overageTable as overage (overage.id)}
 								<Tr>
 									<Td>
 										<WorkloadLink

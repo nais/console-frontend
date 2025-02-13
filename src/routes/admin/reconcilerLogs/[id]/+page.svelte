@@ -25,7 +25,7 @@
 		</Thead>
 		<Tbody>
 			{#if $ReconcilerLogs.data}
-				{#each $ReconcilerLogs.data.node.errors.nodes as error}
+				{#each $ReconcilerLogs.data.node.errors.nodes as error (error.correlationID)}
 					<Tr>
 						<Td><span class="message">{error.message}</span></Td>
 						<Td><a href="/team/{error.team.slug}">{error.team.slug}</a></Td>
@@ -41,8 +41,12 @@
 		<Pagination
 			page={$ReconcilerLogs.data.node.errors.pageInfo}
 			loaders={{
-				loadPreviousPage: () => ReconcilerLogs.loadPreviousPage(),
-				loadNextPage: () => ReconcilerLogs.loadNextPage()
+				loadPreviousPage: () => {
+					ReconcilerLogs.loadPreviousPage();
+				},
+				loadNextPage: () => {
+					ReconcilerLogs.loadNextPage();
+				}
 			}}
 		/>
 	{/if}

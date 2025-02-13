@@ -137,7 +137,7 @@
 	{/if}
 	<p>{$r.description}</p>
 
-	{#each errors as error}
+	{#each errors as error (error)}
 		<Alert variant="error">{error}</Alert>
 	{/each}
 
@@ -161,11 +161,11 @@
 						saveConfig();
 					}}
 				>
-					{#each configErrors as error}
+					{#each configErrors as error (error)}
 						<Alert variant="error">{error}</Alert>
 					{/each}
 
-					{#each $r.config as c, i}
+					{#each $r.config as c, i (c.key)}
 						<TextField bind:value={config[i].value} style="width:400px">
 							{#snippet label()}
 								{c.displayName}

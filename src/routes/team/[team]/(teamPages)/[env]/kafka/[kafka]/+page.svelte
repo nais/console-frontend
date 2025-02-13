@@ -71,7 +71,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each topic.acl.nodes as a}
+					{#each topic.acl.nodes as a (a)}
 						<Tr>
 							<Td>
 								{#if a.teamName === '*'}
@@ -103,22 +103,24 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{#if topic.acl.pageInfo.hasPreviousPage || topic.acl.pageInfo.hasNextPage}
-				<Pagination
-					page={topic.acl.pageInfo}
-					loaders={{
-						loadPreviousPage: () => KafkaTopic.loadPreviousPage(),
-						loadNextPage: () => KafkaTopic.loadNextPage()
-					}}
-				/>
-			{/if}
+			<Pagination
+				page={topic.acl.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						KafkaTopic.loadPreviousPage();
+					},
+					loadNextPage: () => {
+						KafkaTopic.loadNextPage();
+					}
+				}}
+			/>
 		</Card>
 		{#if topic.configuration}
 			<Card columns={12}>
 				<h3>Topic configuration</h3>
 				<dl class="status">
 					{#if topic.configuration}
-						{#each Object.entries(topic.configuration) as [key, value]}
+						{#each Object.entries(topic.configuration) as [key, value] (key)}
 							<dt>{key}</dt>
 							<dd>{value}</dd>
 						{/each}

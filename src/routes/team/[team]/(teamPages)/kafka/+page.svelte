@@ -191,7 +191,7 @@
 						</div>
 					</div>
 				</div>
-				{#each topics.nodes as instance}
+				{#each topics.nodes as instance (instance.id)}
 					<div class="list-item">
 						<div class="link-wrapper">
 							<div class="link">
@@ -206,8 +206,12 @@
 				<Pagination
 					page={topics.pageInfo}
 					loaders={{
-						loadPreviousPage: () => KafkaTopics.loadPreviousPage(),
-						loadNextPage: () => KafkaTopics.loadNextPage()
+						loadPreviousPage: () => {
+							changeQuery({ before: topics.pageInfo.startCursor ?? '' });
+						},
+						loadNextPage: () => {
+							changeQuery({ after: topics.pageInfo.endCursor ?? '' });
+						}
 					}}
 				/>
 			{/if}

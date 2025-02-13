@@ -105,7 +105,7 @@
 
 			{#if $teamSearch.data && teamSearchQuery !== ''}
 				<div class="teams">
-					{#each $teamSearch.data.search.edges as { node }}
+					{#each $teamSearch.data.search.edges.filter((n) => n.node.__typename === 'Team') as { node } (node.__typename === 'Team' ? node.slug : node)}
 						{#if node.__typename === 'Team'}
 							<Box
 								as="a"
@@ -136,7 +136,7 @@
 				</div>
 			{:else if $teams.data}
 				<div class="teams">
-					{#each $teams.data.teams.nodes as team}
+					{#each $teams.data.teams.nodes as team (team.slug)}
 						<Box
 							as="a"
 							background="surface-default"
@@ -155,8 +155,12 @@
 						<Pagination
 							page={$teams.data.teams.pageInfo}
 							loaders={{
-								loadPreviousPage: () => teams.loadPreviousPage(),
-								loadNextPage: () => teams.loadNextPage()
+								loadPreviousPage: () => {
+									teams.loadPreviousPage();
+								},
+								loadNextPage: () => {
+									teams.loadNextPage();
+								}
 							}}
 						/>
 					{/if}

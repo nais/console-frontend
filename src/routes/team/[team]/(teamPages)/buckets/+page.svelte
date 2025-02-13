@@ -189,7 +189,7 @@
 							</div>
 						</div>
 					</div>
-					{#each buckets.nodes as instance}
+					{#each buckets.nodes as instance (instance.id)}
 						<div class="list-item">
 							<div class="link-wrapper">
 								<div class="link">
@@ -206,21 +206,17 @@
 						</div>
 					{/each}
 				</div>
-				{#if buckets.pageInfo.hasPreviousPage || buckets.pageInfo.hasNextPage}
-					<Pagination
-						page={buckets.pageInfo}
-						loaders={{
-							loadPreviousPage: () => {
-								changeQuery({ before: buckets.pageInfo.startCursor ?? '' });
-								Buckets.loadPreviousPage({ last: rows });
-							},
-							loadNextPage: () => {
-								changeQuery({ after: buckets.pageInfo.endCursor ?? '' });
-								Buckets.loadNextPage({ first: rows });
-							}
-						}}
-					/>
-				{/if}
+				<Pagination
+					page={buckets.pageInfo}
+					loaders={{
+						loadPreviousPage: () => {
+							changeQuery({ before: buckets.pageInfo.startCursor ?? '' });
+						},
+						loadNextPage: () => {
+							changeQuery({ after: buckets.pageInfo.endCursor ?? '' });
+						}
+					}}
+				/>
 			</div>
 			<PersistenceCost
 				costData={cost}

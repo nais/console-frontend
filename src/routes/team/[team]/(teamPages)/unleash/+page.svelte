@@ -348,7 +348,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each unleash.allowedTeams.nodes as team}
+					{#each unleash.allowedTeams.nodes as team (team.slug)}
 						<Tr>
 							<Td>
 								<a href="/team/{team.slug}">{team.slug}</a>

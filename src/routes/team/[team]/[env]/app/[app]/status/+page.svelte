@@ -29,7 +29,7 @@
 
 		<div>
 			{#if app.status.errors && app.status.errors.length > 0}
-				{#each app.status.errors as error}
+				{#each app.status.errors as error (error)}
 					<AppErrorTypeToMessage {error} />
 				{/each}
 			{:else}

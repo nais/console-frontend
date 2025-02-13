@@ -1,12 +1,12 @@
 query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: Date!) {
-	team(slug: $team) @loading {
-		cost @loading {
+	team(slug: $team) {
+		cost {
 			daily(from: $from, to: $to, filter: { services: ["Cloud SQL"] }) {
 				sum
 			}
 		}
-		serviceUtilization @loading {
-			sqlInstances @loading {
+		serviceUtilization {
+			sqlInstances {
 				cpu {
 					requested
 					utilization
@@ -21,8 +21,8 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				}
 			}
 		}
-		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) @loading {
-			pageInfo @loading {
+		sqlInstances(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+			pageInfo {
 				hasNextPage
 				hasPreviousPage
 				pageStart
@@ -31,7 +31,8 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				startCursor
 				endCursor
 			}
-			nodes @loading {
+			nodes {
+				id
 				__typename
 				name
 				environment {

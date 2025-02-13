@@ -3,10 +3,10 @@
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: WorkloadImage;
@@ -96,12 +96,20 @@
 
 		{#if image !== null}
 			{#if !image.hasSBOM}
-				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
-				Data was discovered, but the SBOM was not rendered. Please refer to the
-				<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
-				for further assistance.
+				<div style="display: flex; align-items: center;">
+					<ExclamationmarkTriangleFillIcon
+						size="1rem"
+						style="color: var(--a-icon-warning); margin-right: 0.5rem"
+					/>
+					Data was discovered, but the SBOM was not rendered. Please refer to the
+					<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
+					for further assistance.
+				</div>
 			{:else if image.vulnerabilitySummary === null}
-				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				<ExclamationmarkTriangleFillIcon
+					size="1rem"
+					style="color: var(--a-icon-warning); margin-right: 0.5rem"
+				/>
 				No data found.
 				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} target="_blank">How to fix</a>
 			{:else if image.hasSBOM && image.vulnerabilitySummary && isFindings(image.vulnerabilitySummary)}

@@ -352,7 +352,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each overageTable as overage}
+						{#each overageTable as overage (overage)}
 							<Tr>
 								<Td>
 									<a href={`/team/${overage.team}/utilization`}>

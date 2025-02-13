@@ -132,7 +132,7 @@
 				{#if app}
 					New instances of <strong>{app}</strong> in <strong>{env}</strong> are failing. Check logs
 					for one or more of the instances:
-					{#each $data.failingInstances as instance}
+					{#each $data.failingInstances as instance (instance)}
 						<br /><a href="/team/{team}/{env}/app/{app}/logs?name={instance}">{instance}</a>
 					{/each}
 				{/if}

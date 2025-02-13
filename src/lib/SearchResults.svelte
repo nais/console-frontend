@@ -42,7 +42,7 @@
 			No results matching "{query}"
 		</li>
 	{/if}
-	{#each data.search.nodes as node, i}
+	{#each data.search.nodes as node, i (node)}
 		{#if node.__typename === 'Application'}
 			<li>
 				<a

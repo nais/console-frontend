@@ -42,6 +42,7 @@ query RedisInstance(
 						node {
 							access
 							workload {
+								id
 								name
 								environment {
 									name

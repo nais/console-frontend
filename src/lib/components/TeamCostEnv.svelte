@@ -16,6 +16,7 @@
 		query TeamCostEnv($team: Slug!, $from: Date!, $to: Date!) @load @cache(policy: NetworkOnly) {
 			team(slug: $team) {
 				environments {
+					id
 					name
 					cost {
 						daily(from: $from, to: $to) {
@@ -62,13 +63,13 @@
 </script>
 
 {#if $costQuery.errors}
-	{#each $costQuery.errors as error}
+	{#each $costQuery.errors as error (error)}
 		{error.message}
 	{/each}
 {/if}
 
 {#if $costQuery.data !== null}
-	{#each $costQuery.data.team.environments as environment}
+	{#each $costQuery.data.team.environments as environment (environment.id)}
 		{#if environment.cost.daily.series[0] && environment.cost.daily.series[0].workloads.length > 0}
 			<Card columns={12}>
 				<h4>

@@ -25,6 +25,7 @@
 					environment {
 						name
 					}
+
 					utilization {
 						cpuUsage: current(resourceType: CPU)
 						cpuRequests: requested(resourceType: CPU)
@@ -46,6 +47,7 @@
 		{@const memUsage = $data.utilization.memoryUsage}
 		{@const cpuUtil = cpuUtilization(cpu, cpuUsage)}
 		{@const memUtil = memoryUtilization(mem, memUsage)}
+
 		<div>
 			<IconWithText
 				icon={CpuIcon}
@@ -62,6 +64,7 @@
 				size="medium"
 			/>
 		</div>
+
 		<div style="margin-top: var(--a-spacing-2)">
 			<a href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/utilization">
 				View details
@@ -75,5 +78,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--a-spacing-2);
+		color: var(--a-text-subtle);
 	}
 </style>

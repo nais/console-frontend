@@ -9,6 +9,7 @@ query Jobs(
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environments {
+			id
 			name
 		}
 		totalJobs: jobs {

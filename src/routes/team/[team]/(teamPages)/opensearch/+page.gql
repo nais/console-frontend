@@ -43,6 +43,7 @@ query OpenSearch(
 				endCursor
 			}
 			nodes {
+				id
 				__typename
 				name
 				environment {

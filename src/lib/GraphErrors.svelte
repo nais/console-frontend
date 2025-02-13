@@ -18,7 +18,7 @@
 
 {#if errors && errors.length > 0}
 	<Alert variant="error" {size}>
-		{#each pick(errors) as error}
+		{#each pick(errors) as error (error)}
 			{error}<br />
 		{/each}
 		{#if dismissable}

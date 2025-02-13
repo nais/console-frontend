@@ -16,7 +16,7 @@
 		{params[0].name}
 	</div>
 
-	{#each params as param}
+	{#each params as param (param)}
 		<Legend params={param} {activeSeries} {valueFormatter} />
 	{/each}
 </div>

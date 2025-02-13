@@ -112,7 +112,7 @@
 			{#snippet description()}
 				The environment in which the secret will be created.
 			{/snippet}
-			{#each environments as option}
+			{#each environments as option (option.name)}
 				<option value={option.name}>{option.name}</option>
 			{/each}
 		</Select>

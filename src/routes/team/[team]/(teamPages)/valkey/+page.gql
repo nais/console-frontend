@@ -37,6 +37,7 @@ query Valkey(
 				endCursor
 			}
 			nodes {
+				id
 				__typename
 				name
 				team {

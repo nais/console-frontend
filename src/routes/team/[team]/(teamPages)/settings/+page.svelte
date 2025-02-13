@@ -185,7 +185,7 @@
 			{#if teamSettings.environments && teamSettings.environments.length > 0}
 				<div>
 					Per-environment slack-channels to be used for alerts sent by the platform.
-					{#each teamSettings.environments as env}
+					{#each teamSettings.environments as env (env.id)}
 						<div class="channel">
 							<b>{env.name}:</b>
 							<EditText
@@ -257,10 +257,10 @@
 				{/if}
 			</dl>
 
-			{#each teamSettings.environments as env}
+			{#each teamSettings.environments as env (env.id)}
 				<h4>{env.name}</h4>
 				<dl>
-					{#each envResources(env) as { key, value }}
+					{#each envResources(env) as { key, value } (key)}
 						<dt>{key}:</dt>
 						<dd>{value}</dd>
 					{:else}

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy } from '$houdini';
-	import Globe from '$lib/icons/Globe.svelte';
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon, GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconWithText from './IconWithText.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -79,7 +78,7 @@
 			<Heading level="3" size="small" spacing>Inbound</Heading>
 			{#if $data.networkPolicy.inbound.rules.length > 0}
 				<ul>
-					{#each $data.networkPolicy.inbound.rules as rule}
+					{#each $data.networkPolicy.inbound.rules as rule (rule)}
 						<li>
 							{#if rule.targetWorkloadName == '*'}
 								Any app
@@ -127,29 +126,37 @@
 				{#if $data.networkPolicy.outbound.external.length > 0}
 					<Heading level="4" size="xsmall" spacing>External</Heading>
 					<ul>
-						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external}
-							{#each external.ports as port}
+						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external (external)}
+							{#each external.ports as port (port)}
 								<li>
 									<IconWithText
 										text={`https://${external.target}:${port}`}
 										size="medium"
-										icon={Globe}
+										icon={GlobeIcon}
 									/>
 								</li>
 							{:else}
 								<li>
-									<IconWithText text={`https://${external.target}`} size="medium" icon={Globe} />
+									<IconWithText
+										text={`https://${external.target}`}
+										size="medium"
+										icon={GlobeIcon}
+									/>
 								</li>
 							{/each}
 						{/each}
 
-						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external}
-							{#each external.ports as port}
+						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external (external)}
+							{#each external.ports as port (port)}
 								<li>
-									<IconWithText text={`${external.target}:${port}`} size="medium" icon={Globe} />
+									<IconWithText
+										text={`${external.target}:${port}`}
+										size="medium"
+										icon={GlobeIcon}
+									/>
 								</li>
 							{:else}
-								<li><IconWithText text={`${external.target}`} size="medium" icon={Globe} /></li>
+								<li><IconWithText text={`${external.target}`} size="medium" icon={GlobeIcon} /></li>
 							{/each}
 						{/each}
 					</ul>
@@ -157,7 +164,7 @@
 				{#if $data.networkPolicy.outbound.rules.length > 0}
 					<Heading level="4" size="xsmall" spacing>Workloads</Heading>
 					<ul>
-						{#each $data.networkPolicy.outbound.rules as rule}
+						{#each $data.networkPolicy.outbound.rules as rule (rule)}
 							<li>
 								{#if rule.targetWorkloadName == '*'}
 									Any app

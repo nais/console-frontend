@@ -190,7 +190,7 @@
 							</div>
 						</div>
 					</div>
-					{#each instances.nodes as instance}
+					{#each instances.nodes as instance (instance.id)}
 						<div class="list-item">
 							<div class="link-wrapper">
 								<div class="link">
@@ -213,11 +213,9 @@
 						loaders={{
 							loadPreviousPage: () => {
 								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-								Redis.loadPreviousPage({ last: rows });
 							},
 							loadNextPage: () => {
 								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-								Redis.loadNextPage({ first: rows });
 							}
 						}}
 					/>

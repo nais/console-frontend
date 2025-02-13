@@ -81,7 +81,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each instance.access.edges as edge}
+						{#each instance.access.edges as edge (edge)}
 							{@const access = edge.node}
 							<Tr>
 								<Td>
@@ -97,8 +97,12 @@
 					<Pagination
 						page={instance.access.pageInfo}
 						loaders={{
-							loadPreviousPage: () => OpenSearchInstance.loadPreviousPage(),
-							loadNextPage: () => OpenSearchInstance.loadNextPage()
+							loadPreviousPage: () => {
+								OpenSearchInstance.loadPreviousPage();
+							},
+							loadNextPage: () => {
+								OpenSearchInstance.loadNextPage();
+							}
 						}}
 					/>
 				{/if}

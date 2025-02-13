@@ -3,7 +3,7 @@
 
 	interface Props {
 		persistence: {
-			type: string | null;
+			__typename: string | null;
 			name: string;
 		};
 		children?: import('svelte').Snippet;
@@ -11,8 +11,8 @@
 
 	let { persistence, children }: Props = $props();
 
-	const persistenceTypeToName = (typ: string | null) => {
-		switch (typ) {
+	const persistenceTypeToName = (type: string | null) => {
+		switch (type) {
 			case 'BigQueryDataset':
 				return 'BigQuery';
 			case 'SqlInstance':
@@ -22,17 +22,17 @@
 			case 'ValkeyInstance':
 				return 'Valkey';
 			default:
-				return typ;
+				return type;
 		}
 	};
 </script>
 
 <div class="persistence permanent">
 	<div class="icon">
-		<PersistenceIcon type={persistence.type || ''} size="2rem" />
+		<PersistenceIcon type={persistence.__typename || ''} size="2rem" />
 	</div>
 	<div class="name">
-		<span>{persistenceTypeToName(persistence.type)}</span>
+		<span>{persistenceTypeToName(persistence.__typename)}</span>
 		<strong>{persistence.name}</strong>
 	</div>
 	<div class="content">

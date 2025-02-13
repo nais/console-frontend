@@ -45,11 +45,11 @@
 
 <div class="sidemenu">
 	<ul>
-		{#each nav as { items }, i}
+		{#each nav as { items }, i (items)}
 			{#if i > 0}
 				<hr />
 			{/if}
-			{#each items as item}
+			{#each items as item (item.routeId)}
 				{#if item.featureToggle !== false}
 					<li class:active={isActive(item, page.route.id)}>
 						<a class="unstyled" href={replacer(item.routeId, page.params)}>

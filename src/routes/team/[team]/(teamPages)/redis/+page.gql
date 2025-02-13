@@ -37,6 +37,7 @@ query Redis(
 				endCursor
 			}
 			nodes {
+				id
 				__typename
 				name
 				team {

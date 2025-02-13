@@ -1,12 +1,12 @@
 <script lang="ts">
+	import IconWithText from '$lib/components/IconWithText.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { Box, Button, Heading } from '@nais/ds-svelte-community';
-	import { PersonGroupIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Box, Button } from '@nais/ds-svelte-community';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 	import type { PageData } from './$houdini';
 	import Onboarding from './Onboarding.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 
 	let feedbackOpen = $state(false);
 
@@ -60,7 +60,7 @@
 			{#if $UserTeams.data}
 				{#if $UserTeams.data.me.__typename == 'User'}
 					<div class="teams">
-						{#each $UserTeams.data.me.teams.nodes as node}
+						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
 							<Box
 								as="a"
 								background="surface-subtle"

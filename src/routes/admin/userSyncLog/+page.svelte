@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import Time from '$lib/Time.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
-	import Time from '$lib/Time.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
 
 	interface Props {
 		data: PageData;
@@ -29,7 +29,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each $UserSyncLogs.data.userSyncLog.nodes || [] as entry}
+				{#each $UserSyncLogs.data.userSyncLog.nodes || [] as entry (entry.id)}
 					<Tr>
 						<Td>
 							{#if entry.__typename === 'RoleAssignedUserSyncLogEntry'}
@@ -65,11 +65,11 @@
 		<Pagination
 			page={$UserSyncLogs.data.userSyncLog.pageInfo}
 			loaders={{
-				loadNextPage: async () => {
-					await UserSyncLogs.loadNextPage();
+				loadNextPage: () => {
+					UserSyncLogs.loadNextPage();
 				},
-				loadPreviousPage: async () => {
-					await UserSyncLogs.loadPreviousPage();
+				loadPreviousPage: () => {
+					UserSyncLogs.loadPreviousPage();
 				}
 			}}
 		/>

@@ -81,7 +81,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each instance.access.edges as edge}
+					{#each instance.access.edges as edge (edge)}
 						{@const access = edge.node}
 						<Tr>
 							<Td>
@@ -98,15 +98,17 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
-				<Pagination
-					page={instance.access.pageInfo}
-					loaders={{
-						loadPreviousPage: () => RedisInstance.loadPreviousPage(),
-						loadNextPage: () => RedisInstance.loadNextPage()
-					}}
-				/>
-			{/if}
+			<Pagination
+				page={instance.access.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						RedisInstance.loadPreviousPage();
+					},
+					loadNextPage: () => {
+						RedisInstance.loadNextPage();
+					}
+				}}
+			/>
 		</Card>
 	</div>
 {/if}

@@ -1,21 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql, PendingValue, RepositoryOrderField } from '$houdini';
+	import { graphql, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import {
-		Button,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		TextField,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { BranchingIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -141,7 +131,7 @@
 	<div class="grid">
 		{#if $Repositories.data.team}
 			{@const team = $Repositories.data.team}
-			{#if (team.viewerIsOwner !== PendingValue && team.viewerIsOwner) || (team.viewerIsMember !== PendingValue && team.viewerIsMember)}
+			{#if team.viewerIsOwner || team.viewerIsMember}
 				<Card>
 					<div class="repository">
 						<h3>Add repository</h3>
@@ -214,48 +204,35 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each team.repositories.nodes as repo}
-							{#if repo === PendingValue}
-								<Tr>
-									<Td>
-										<Skeleton variant="text" />
-									</Td>
-									<Td>
-										<Button variant="secondary" size="small" disabled={true} icon={TrashIcon}>
-											Remove
-										</Button>
-									</Td>
-								</Tr>
-							{:else}
-								<Tr>
-									<Td><a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a></Td>
-									<Td>
-										<Button
-											variant="secondary"
-											size="small"
-											disabled={!team.viewerIsOwner && !team.viewerIsMember}
-											onclick={() => removeRepository(repo.team.slug, repo.name)}
-											icon={TrashIcon}
-										>
-											Remove
-										</Button>
-									</Td>
-								</Tr>
-							{/if}
+						{#each team.repositories.nodes as repo (repo.id)}
+							<Tr>
+								<Td><a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a></Td>
+								<Td>
+									<Button
+										variant="secondary"
+										size="small"
+										disabled={!team.viewerIsOwner && !team.viewerIsMember}
+										onclick={() => removeRepository(repo.team.slug, repo.name)}
+										icon={TrashIcon}
+									>
+										Remove
+									</Button>
+								</Td>
+							</Tr>
 						{/each}
 					</Tbody>
 				</Table>
-				{#if team.repositories.pageInfo !== PendingValue}
-					{#if team.repositories.pageInfo.hasPreviousPage || team.repositories.pageInfo.hasNextPage}
-						<Pagination
-							page={team.repositories.pageInfo}
-							loaders={{
-								loadPreviousPage: () => Repositories.loadPreviousPage(),
-								loadNextPage: () => Repositories.loadNextPage()
-							}}
-						/>
-					{/if}
-				{/if}
+				<Pagination
+					page={team.repositories.pageInfo}
+					loaders={{
+						loadNextPage: () => {
+							Repositories.loadNextPage();
+						},
+						loadPreviousPage: () => {
+							Repositories.loadPreviousPage();
+						}
+					}}
+				/>
 			</Card>
 		{/if}
 	</div>

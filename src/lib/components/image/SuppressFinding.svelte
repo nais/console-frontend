@@ -56,6 +56,7 @@
 		open: boolean;
 		finding: FindingType;
 		workloads: {
+			readonly id: string;
 			readonly __typename: string | null;
 			readonly team: {
 				readonly slug: string;
@@ -217,7 +218,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each workloads as workload}
+				{#each workloads as workload (workload.id)}
 					<Tr>
 						<Td>{workload.environment.name}</Td>
 						<Td>{workload.team.slug}</Td>
@@ -239,7 +240,7 @@
 			audit log. Suppression will be in effect for all workloads using this image.
 		</p>
 		<Select size="small" label="Analysis" bind:value={selectedReason}>
-			{#each SUPPRESS_OPTIONS as option}
+			{#each SUPPRESS_OPTIONS as option (option)}
 				{#if option.value === finding.state}
 					<option value={option.value}>{option.text} </option>
 				{:else}

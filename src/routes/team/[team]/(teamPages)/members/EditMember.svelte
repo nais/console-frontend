@@ -70,7 +70,7 @@
 	{#if $store.data}
 		{@const member = $store.data.team.member}
 
-		{#each errors as error}
+		{#each errors as error (error)}
 			<Alert variant="error">{error}</Alert>
 		{/each}
 

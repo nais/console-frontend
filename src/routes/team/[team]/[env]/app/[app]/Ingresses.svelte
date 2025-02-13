@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { fragment, graphql, IngressType, type Ingresses, type ValueOf } from '$houdini';
 	import IconWithText from '$lib/components/IconWithText.svelte';
-	import Globe from '$lib/icons/Globe.svelte';
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		app: Ingresses;
@@ -24,7 +23,6 @@
 					team {
 						slug
 					}
-
 					ingresses {
 						url
 						type
@@ -66,10 +64,10 @@
 	<Heading level="2" size="medium" spacing>Ingresses</Heading>
 
 	<div class="content">
-		{#each externalIngresses($data.ingresses) as ingress}
+		{#each externalIngresses($data.ingresses) as ingress (ingress)}
 			<Tooltip content="External ingress"
 				><a href={ingress.url}
-					><IconWithText icon={Globe} size="medium">
+					><IconWithText icon={GlobeIcon} size="medium">
 						{#snippet text()}
 							<span class="workload-name">{ingress.url}</span>
 						{/snippet}
@@ -78,7 +76,7 @@
 			>
 		{/each}
 
-		{#each internalIngresses($data.ingresses) as ingress}
+		{#each internalIngresses($data.ingresses) as ingress (ingress)}
 			<Tooltip content="Internal ingress"
 				><a href={ingress.url}
 					><IconWithText icon={HouseIcon} size="medium">
@@ -90,7 +88,7 @@
 			</Tooltip>
 		{/each}
 
-		{#each authenticatedIngresses($data.ingresses) as ingress}
+		{#each authenticatedIngresses($data.ingresses) as ingress (ingress)}
 			<Tooltip content="Authenticated ingress">
 				<a href={ingress.url}
 					><IconWithText icon={PadlockLockedIcon} size="medium">

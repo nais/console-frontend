@@ -81,7 +81,7 @@
 			<Card columns={12}>
 				<h3>Errors</h3>
 				<div>
-					{#each bucket.status.errors as error}
+					{#each bucket.status.errors as error (error)}
 						<details>
 							<summary>{error.message}</summary>
 							<p>{error.details}</p>

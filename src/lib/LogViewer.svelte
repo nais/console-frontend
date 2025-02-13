@@ -204,7 +204,7 @@
 		<br /><br />
 		<code>Failed to fetch logs: Event error(s): </code>
 	</div>
-	{#each $updates.errors as error}
+	{#each $updates.errors as error (error)}
 		<div class="line"><code>{error.message}</code></div>
 	{/each}
 {:else if instances.size === 0 && job !== undefined}
@@ -217,7 +217,7 @@
 	</div>
 {:else}
 	<div id="log" bind:this={logview}>
-		{#each logs as log}
+		{#each logs as log (log)}
 			<div class="logline {getLogLevel(log.message)}">
 				{#if showTime}
 					<span class="timestamp">
@@ -250,8 +250,8 @@
 		border: 1px solid var(--a-border-subtle);
 		background-color: var(--a-surface-default);
 		display: block;
-		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-			monospace;
+		font-family:
+			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 		font-size: 12px;
 		line-height: 1rem;
 		margin-top: 1rem;

@@ -49,7 +49,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Jobs, rows } = $derived(data);
+	let { Jobs } = $derived(data);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');
 
@@ -195,7 +195,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Jobs.data.team.environments as { name }}
+						{#each $Jobs.data.team.environments as { name, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(name)}
 								onchange={(checked) =>
@@ -390,11 +390,9 @@
 			loaders={{
 				loadPreviousPage: () => {
 					changeQuery({ before: jobs.pageInfo.startCursor ?? '' });
-					Jobs.loadPreviousPage({ last: rows });
 				},
 				loadNextPage: () => {
 					changeQuery({ after: jobs.pageInfo.endCursor ?? '' });
-					Jobs.loadNextPage({ first: rows });
 				}
 			}}
 		/>

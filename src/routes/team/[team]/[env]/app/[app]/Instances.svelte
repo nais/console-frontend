@@ -26,9 +26,27 @@
 					environment {
 						name
 					}
+					resources {
+						scaling {
+							maxInstances
+							minInstances
+							strategies {
+								__typename
+								... on KafkaLagScalingStrategy {
+									consumerGroup
+									threshold
+									topicName
+								}
+								... on CPUScalingStrategy {
+									threshold
+								}
+							}
+						}
+					}
 					instances {
 						edges {
 							node {
+								id
 								name
 								restarts
 								status {
@@ -49,8 +67,41 @@
 			`)
 		)
 	);
+
+	const renameStrategy = (type: string) => {
+		if (type === 'CPUScalingStrategy') {
+			return 'CPU usage';
+		} else if (type === 'KafkaLagScalingStrategy') {
+			return 'Kafka Lag';
+		} else {
+			return 'Unknown';
+		}
+	};
 </script>
 
+{#if $data.resources.scaling}
+	{@const scaling = $data.resources.scaling}
+	{#if scaling.minInstances !== scaling.maxInstances}
+		<div>
+			<strong>Scaling configuration:</strong>
+			{scaling.minInstances} - {scaling.maxInstances} instances based on
+			{#if scaling.strategies && scaling.strategies.length > 0}
+				{#each scaling.strategies as strategy, i (strategy)}
+					{#if i > 0}
+						<br />and{/if}
+					<b>{renameStrategy(strategy.__typename)}</b>
+					{#if strategy.__typename === 'KafkaLagScalingStrategy'}
+						(threshold: {strategy.threshold})
+					{:else}
+						(threshold: {strategy.threshold}%)
+					{/if}
+				{/each}
+			{:else}
+				<b>CPU usage</b> (threshold: 50%)
+			{/if}
+		</div>
+	{/if}
+{/if}
 {#if $data.instances.edges.length === 0}
 	<div>No instances found</div>
 {:else}
@@ -65,7 +116,8 @@
 				</BodyShort>
 			</div>
 		</div>
-		{#each instances as instance}
+
+		{#each instances as instance (instance.id)}
 			<div class="list-item">
 				<div class="run-link-wrapper">
 					<div style="height: 23.98px; display: flex; align-items: center; line-height: 0">

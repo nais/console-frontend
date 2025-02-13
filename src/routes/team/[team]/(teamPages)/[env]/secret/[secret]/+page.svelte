@@ -205,7 +205,7 @@
 		{#if secret.workloads.nodes.length > 0}
 			<p>These workloads still reference the secret:</p>
 			<ul>
-				{#each secret.workloads.nodes as workload}
+				{#each secret.workloads.nodes as workload (workload.id)}
 					<li>
 						<WorkloadLink {workload} showIcon={true} />
 					</li>
@@ -233,7 +233,7 @@
 		{#if secret.workloads.nodes.length > 0}
 			<p>These workloads reference the secret:</p>
 			<ul>
-				{#each secret.workloads.nodes as workload}
+				{#each secret.workloads.nodes as workload (workload.id)}
 					<li>
 						<WorkloadLink {workload} showIcon={true} />
 					</li>
@@ -244,38 +244,6 @@
 
 		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
 	</Confirm>
-
-	<!--div class="header">
-		<div class="heading">
-			<div style="display: flex; flex-type: column; align-items: center; gap: 4px;">
-				<a href="/team/{teamSlug}/secrets">
-					<ArrowLeftIcon /> All secrets
-				</a>
-			</div>
-			<div class="type-icon-header">
-				<PadlockLockedIcon height={'32px'} width={'32px'} />
-			</div>
-			<div>
-				<h3 style="margin: 0;">{secret.name}</h3>
-
-				<div class="env-header">
-					{secret.environment.name}
-				</div>
-			</div>
-		</div>
-		<div>
-			<Button
-				class="delete-secret"
-				title="Delete secret from environment"
-				variant="danger"
-				size="small"
-				onclick={openDeleteModal}
-				icon={TrashIcon}
-			>
-				Delete
-			</Button>
-		</div>
-	</div-->
 
 	<div style="display: flex; flex-direction: row; justify-content: space-between;">
 		<div style="display: flex; flex-direction: column; align-items: left; ">
@@ -336,7 +304,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each secret.values as value}
+					{#each secret.values as value (value.name)}
 						<Tr>
 							<Td>
 								<p class="key">
