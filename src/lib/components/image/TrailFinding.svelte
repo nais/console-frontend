@@ -99,7 +99,7 @@
 				</Thead>
 				<Tbody>
 					{#if finding.analysisTrail.comments.nodes}
-						{#each finding.analysisTrail.comments.nodes as node (node.timestamp + node.onBehalfOf + node.state + node.suppressed + node.comment)}
+						{#each finding.analysisTrail.comments.nodes as node (node)}
 							{#if node}
 								<Tr>
 									<Td>{node.onBehalfOf}</Td>

@@ -240,7 +240,7 @@
 			audit log. Suppression will be in effect for all workloads using this image.
 		</p>
 		<Select size="small" label="Analysis" bind:value={selectedReason}>
-			{#each SUPPRESS_OPTIONS as option (option.value)}
+			{#each SUPPRESS_OPTIONS as option (option)}
 				{#if option.value === finding.state}
 					<option value={option.value}>{option.text} </option>
 				{:else}

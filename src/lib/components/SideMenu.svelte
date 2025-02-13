@@ -45,7 +45,7 @@
 
 <div class="sidemenu">
 	<ul>
-		{#each nav as { items }, i (i)}
+		{#each nav as { items }, i (items)}
 			{#if i > 0}
 				<hr />
 			{/if}

@@ -98,7 +98,7 @@
 					<div>
 						{scaling.minInstances} - {scaling.maxInstances} instances based on
 						{#if scaling.strategies && scaling.strategies.length > 0}
-							{#each scaling.strategies as strategy, i (strategy.__typename + i)}
+							{#each scaling.strategies as strategy, i (strategy)}
 								{#if i > 0}
 									<br />and{/if}
 								<b>{renameStrategy(strategy.__typename)}</b>

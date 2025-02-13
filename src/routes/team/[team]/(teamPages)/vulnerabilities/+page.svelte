@@ -71,7 +71,7 @@
 									<summary style="font-size: 1rem; var(--color-text-secondary);"
 										>Show details</summary
 									>
-									{#each team?.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK) as status (status.state + status.title)}
+									{#each team?.vulnerabilitySummary.status.filter((status) => status.state !== TeamVulnerabilityState.OK) as status (status)}
 										<div class="wrapper">
 											<Alert variant="error">
 												<h4>{status.title}</h4>

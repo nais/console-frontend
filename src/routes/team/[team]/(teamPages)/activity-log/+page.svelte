@@ -172,7 +172,7 @@
 									{:else if edge.node.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamEnvironmentUpdated.updatedFields.length > 0}
-											{#each edge.node.teamEnvironmentUpdated.updatedFields as field (field.field + field.oldValue + field.newValue)}
+											{#each edge.node.teamEnvironmentUpdated.updatedFields as field (field)}
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}
@@ -199,7 +199,7 @@
 									{:else if edge.node.__typename === 'TeamUpdatedActivityLogEntry'}
 										{edge.node.message}
 										{#if edge.node.teamUpdated?.updatedFields.length}
-											{#each edge.node.teamUpdated?.updatedFields as field (field.field + field.oldValue + field.newValue)}
+											{#each edge.node.teamUpdated?.updatedFields as field (field)}
 												{field.field}. Changed from {field.oldValue} to {field.newValue}.
 											{/each}
 										{/if}

@@ -64,7 +64,7 @@
 	<Heading level="2" size="medium" spacing>Ingresses</Heading>
 
 	<div class="content">
-		{#each externalIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
+		{#each externalIngresses($data.ingresses) as ingress (ingress)}
 			<Tooltip content="External ingress"
 				><a href={ingress.url}
 					><IconWithText icon={GlobeIcon} size="medium">
@@ -76,7 +76,7 @@
 			>
 		{/each}
 
-		{#each internalIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
+		{#each internalIngresses($data.ingresses) as ingress (ingress)}
 			<Tooltip content="Internal ingress"
 				><a href={ingress.url}
 					><IconWithText icon={HouseIcon} size="medium">
@@ -88,7 +88,7 @@
 			</Tooltip>
 		{/each}
 
-		{#each authenticatedIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
+		{#each authenticatedIngresses($data.ingresses) as ingress (ingress)}
 			<Tooltip content="Authenticated ingress">
 				<a href={ingress.url}
 					><IconWithText icon={PadlockLockedIcon} size="medium">

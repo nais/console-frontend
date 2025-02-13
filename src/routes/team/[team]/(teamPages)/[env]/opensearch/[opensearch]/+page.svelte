@@ -81,7 +81,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each instance.access.edges as edge (edge.node.access + edge.node.workload.id)}
+						{#each instance.access.edges as edge (edge)}
 							{@const access = edge.node}
 							<Tr>
 								<Td>

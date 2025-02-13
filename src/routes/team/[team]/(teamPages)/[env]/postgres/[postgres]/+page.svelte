@@ -421,7 +421,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each instance.users.edges as edge (edge.node.name + edge.node.authentication)}
+						{#each instance.users.edges as edge (edge)}
 							<Tr>
 								<Td>{edge.node.name}</Td>
 								<Td>{edge.node.authentication}</Td>

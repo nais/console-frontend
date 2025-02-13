@@ -71,7 +71,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each topic.acl.nodes as a (a.access + a.teamName + a.workloadName)}
+					{#each topic.acl.nodes as a (a)}
 						<Tr>
 							<Td>
 								{#if a.teamName === '*'}

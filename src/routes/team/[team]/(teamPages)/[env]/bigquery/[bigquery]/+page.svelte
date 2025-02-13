@@ -106,7 +106,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each bq.access.edges as edge (edge.node.email + edge.node.role)}
+						{#each bq.access.edges as edge (edge)}
 							<Tr>
 								<Td>{edge.node.role}</Td>
 								<Td

@@ -156,7 +156,7 @@
 			{/each}
 		{/if}
 		{#if $data.kafkaTopicAcls.edges.length > 0}
-			{#each $data.kafkaTopicAcls.edges as acl (acl.node.topic.name + acl.node.workloadName + acl.node.access + acl.node.teamName + acl.node.topic.environment.name)}
+			{#each $data.kafkaTopicAcls.edges as acl (acl)}
 				{#if acl.node.teamName !== '*'}
 					<a
 						href={`/team/${acl.node.topic.team.slug}/${acl.node.topic.environment.name === 'prod-fss' ? 'prod-gcp' : acl.node.topic.environment.name === 'dev-fss' ? 'dev-gcp' : acl.node.topic.environment.name}/kafka/${acl.node.topic.name}`}
@@ -181,7 +181,7 @@
 
 					{#snippet description()}
 						{#if $data.openSearch?.access.edges}
-							{#each $data.openSearch?.access.edges as access (access.node.access + access.node.workload.id)}
+							{#each $data.openSearch?.access.edges as access (access)}
 								{#if access.node.workload.name == $data.name}
 									<Detail style="font-weight: normal; color: var(--a-text-subtle);"
 										>{access.node.access}</Detail
