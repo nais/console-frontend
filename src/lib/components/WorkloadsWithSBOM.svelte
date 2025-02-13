@@ -10,7 +10,6 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { untrack } from 'svelte';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
@@ -24,31 +23,29 @@
 	let { team, environment = $bindable() }: Props = $props();
 
 	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
-		return untrack(() => {
-			const env = environment;
-			const field = tableSort.orderBy
-				? tableSort.orderBy
-				: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL;
-			const direction = tableSort.direction ? tableSort.direction : 'DESC';
+		const env = environment;
+		const field = tableSort.orderBy
+			? tableSort.orderBy
+			: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL;
+		const direction = tableSort.direction ? tableSort.direction : 'DESC';
 
-			if (env !== '') {
-				return {
-					team: team,
-					orderBy: {
-						field,
-						direction
-					},
-					filter: { environments: [env] }
-				};
-			}
+		if (env !== '') {
 			return {
 				team: team,
 				orderBy: {
 					field,
 					direction
-				}
+				},
+				filter: { environments: [env] }
 			};
-		});
+		}
+		return {
+			team: team,
+			orderBy: {
+				field,
+				direction
+			}
+		};
 	};
 
 	const query = graphql(`
