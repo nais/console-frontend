@@ -226,13 +226,11 @@
 				<Pagination
 					page={instances.pageInfo}
 					loaders={{
-						loadPreviousPage: async () => {
+						loadPreviousPage: () => {
 							changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-							await OpenSearch.loadPreviousPage({ last: rows });
 						},
-						loadNextPage: async () => {
+						loadNextPage: () => {
 							changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-							await OpenSearch.loadNextPage({ first: rows });
 						}
 					}}
 				/>

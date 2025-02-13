@@ -231,8 +231,8 @@
 	<Pagination
 		page={image.vulnerabilities.pageInfo}
 		loaders={{
-			loadPreviousPage: async () => await vulnerabilities.loadPreviousPage(),
-			loadNextPage: async () => await vulnerabilities.loadNextPage()
+			loadPreviousPage: vulnerabilities.loadPreviousPage,
+			loadNextPage: vulnerabilities.loadNextPage
 		}}
 	/>
 

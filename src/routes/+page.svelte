@@ -78,8 +78,8 @@
 						<Pagination
 							page={$UserTeams.data.me.teams.pageInfo}
 							loaders={{
-								loadPreviousPage: async () => await UserTeams.loadPreviousPage(),
-								loadNextPage: async () => await UserTeams.loadNextPage()
+								loadPreviousPage: UserTeams.loadPreviousPage,
+								loadNextPage: UserTeams.loadNextPage
 							}}
 						/>
 					{/if}

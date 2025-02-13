@@ -106,8 +106,8 @@
 			<Pagination
 				page={topic.acl.pageInfo}
 				loaders={{
-					loadPreviousPage: async () => await KafkaTopic.loadPreviousPage(),
-					loadNextPage: async () => await KafkaTopic.loadNextPage()
+					loadPreviousPage: KafkaTopic.loadPreviousPage,
+					loadNextPage: KafkaTopic.loadNextPage
 				}}
 			/>
 		</Card>

@@ -212,13 +212,11 @@
 				<Pagination
 					page={datasets.pageInfo}
 					loaders={{
-						loadPreviousPage: async () => {
+						loadPreviousPage: () => {
 							changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
-							await BigQuery.loadPreviousPage({ last: rows });
 						},
 						loadNextPage: async () => {
 							changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
-							await BigQuery.loadNextPage({ first: rows });
 						}
 					}}
 				/>

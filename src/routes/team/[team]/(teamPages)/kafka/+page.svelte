@@ -206,8 +206,8 @@
 				<Pagination
 					page={topics.pageInfo}
 					loaders={{
-						loadPreviousPage: () => KafkaTopics.loadPreviousPage(),
-						loadNextPage: () => KafkaTopics.loadNextPage()
+						loadPreviousPage: KafkaTopics.loadPreviousPage,
+						loadNextPage: KafkaTopics.loadNextPage
 					}}
 				/>
 			{/if}

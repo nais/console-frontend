@@ -173,8 +173,8 @@
 				<Pagination
 					page={secrets.pageInfo}
 					loaders={{
-						loadPreviousPage: async () => await Secrets.loadPreviousPage(),
-						loadNextPage: async () => await Secrets.loadNextPage()
+						loadPreviousPage: Secrets.loadPreviousPage,
+						loadNextPage: Secrets.loadNextPage
 					}}
 				/>
 			</div></Card

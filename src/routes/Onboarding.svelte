@@ -155,8 +155,8 @@
 						<Pagination
 							page={$teams.data.teams.pageInfo}
 							loaders={{
-								loadPreviousPage: () => teams.loadPreviousPage(),
-								loadNextPage: () => teams.loadNextPage()
+								loadPreviousPage: teams.loadPreviousPage,
+								loadNextPage: teams.loadNextPage
 							}}
 						/>
 					{/if}

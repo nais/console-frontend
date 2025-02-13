@@ -41,8 +41,8 @@
 		<Pagination
 			page={$ReconcilerLogs.data.node.errors.pageInfo}
 			loaders={{
-				loadPreviousPage: () => ReconcilerLogs.loadPreviousPage(),
-				loadNextPage: () => ReconcilerLogs.loadNextPage()
+				loadPreviousPage: ReconcilerLogs.loadPreviousPage,
+				loadNextPage: ReconcilerLogs.loadNextPage
 			}}
 		/>
 	{/if}

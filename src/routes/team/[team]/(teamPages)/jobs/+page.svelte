@@ -49,7 +49,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Jobs, rows } = $derived(data);
+	let { Jobs } = $derived(data);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');
 
@@ -390,11 +390,9 @@
 			loaders={{
 				loadPreviousPage: () => {
 					changeQuery({ before: jobs.pageInfo.startCursor ?? '' });
-					Jobs.loadPreviousPage({ last: rows });
 				},
 				loadNextPage: () => {
 					changeQuery({ after: jobs.pageInfo.endCursor ?? '' });
-					Jobs.loadNextPage({ first: rows });
 				}
 			}}
 		/>

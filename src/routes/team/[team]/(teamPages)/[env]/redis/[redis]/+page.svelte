@@ -101,8 +101,8 @@
 			<Pagination
 				page={instance.access.pageInfo}
 				loaders={{
-					loadPreviousPage: async () => await RedisInstance.loadPreviousPage(),
-					loadNextPage: async () => await RedisInstance.loadNextPage()
+					loadPreviousPage: RedisInstance.loadPreviousPage,
+					loadNextPage: RedisInstance.loadNextPage
 				}}
 			/>
 		</Card>

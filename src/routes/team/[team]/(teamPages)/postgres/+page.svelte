@@ -233,12 +233,8 @@
 		<Pagination
 			page={instances.pageInfo}
 			loaders={{
-				loadNextPage: async () => {
-					await SqlInstances.loadNextPage();
-				},
-				loadPreviousPage: async () => {
-					await SqlInstances.loadPreviousPage();
-				}
+				loadNextPage: SqlInstances.loadNextPage,
+				loadPreviousPage: SqlInstances.loadPreviousPage
 			}}
 		/>
 	</Card>

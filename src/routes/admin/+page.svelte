@@ -45,12 +45,8 @@
 		<Pagination
 			page={$AdminUsers.data.users.pageInfo}
 			loaders={{
-				loadNextPage: async () => {
-					await AdminUsers.loadNextPage();
-				},
-				loadPreviousPage: async () => {
-					await AdminUsers.loadPreviousPage();
-				}
+				loadNextPage: AdminUsers.loadNextPage,
+				loadPreviousPage: AdminUsers.loadPreviousPage
 			}}
 		/>
 	{/if}

@@ -38,7 +38,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Applications, initialEnvironments, rows } = $derived(data);
+	let { Applications, initialEnvironments } = $derived(data);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
 
@@ -356,13 +356,11 @@
 		<Pagination
 			page={apps.pageInfo}
 			loaders={{
-				loadPreviousPage: async () => {
+				loadPreviousPage: () => {
 					changeQuery({ before: apps.pageInfo.startCursor ?? '' });
-					await Applications.loadPreviousPage({ last: rows });
 				},
-				loadNextPage: async () => {
+				loadNextPage: () => {
 					changeQuery({ after: apps.pageInfo.endCursor ?? '' });
-					await Applications.loadNextPage({ first: rows });
 				}
 			}}
 		/>

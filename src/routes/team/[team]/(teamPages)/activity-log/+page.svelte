@@ -252,11 +252,9 @@
 						loaders={{
 							loadPreviousPage: () => {
 								changeQuery({ before: ae.team.activityLog.pageInfo.startCursor ?? '' });
-								ActivityLog.loadPreviousPage({ last: rows });
 							},
 							loadNextPage: () => {
 								changeQuery({ after: ae.team.activityLog.pageInfo.endCursor ?? '' });
-								ActivityLog.loadNextPage({ first: rows });
 							}
 						}}
 					/>

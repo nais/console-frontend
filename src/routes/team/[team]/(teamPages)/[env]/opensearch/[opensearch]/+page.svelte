@@ -97,8 +97,8 @@
 					<Pagination
 						page={instance.access.pageInfo}
 						loaders={{
-							loadPreviousPage: () => OpenSearchInstance.loadPreviousPage(),
-							loadNextPage: () => OpenSearchInstance.loadNextPage()
+							loadPreviousPage: OpenSearchInstance.loadPreviousPage,
+							loadNextPage: OpenSearchInstance.loadNextPage
 						}}
 					/>
 				{/if}

@@ -214,11 +214,9 @@
 						loaders={{
 							loadPreviousPage: () => {
 								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-								Valkey.loadPreviousPage({ last: rows });
 							},
 							loadNextPage: () => {
 								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-								Valkey.loadNextPage({ first: rows });
 							}
 						}}
 					/>

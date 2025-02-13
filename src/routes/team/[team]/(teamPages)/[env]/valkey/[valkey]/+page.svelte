@@ -101,8 +101,8 @@
 			<Pagination
 				page={instance.access.pageInfo}
 				loaders={{
-					loadPreviousPage: async () => await ValkeyInstance.loadPreviousPage(),
-					loadNextPage: async () => await ValkeyInstance.loadNextPage()
+					loadPreviousPage: ValkeyInstance.loadPreviousPage,
+					loadNextPage: ValkeyInstance.loadNextPage
 				}}
 			/>
 		</Card>

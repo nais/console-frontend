@@ -213,11 +213,9 @@
 						loaders={{
 							loadPreviousPage: () => {
 								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
-								Redis.loadPreviousPage({ last: rows });
 							},
 							loadNextPage: () => {
 								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
-								Redis.loadNextPage({ first: rows });
 							}
 						}}
 					/>

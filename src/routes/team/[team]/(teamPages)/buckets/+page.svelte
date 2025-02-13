@@ -209,13 +209,11 @@
 				<Pagination
 					page={buckets.pageInfo}
 					loaders={{
-						loadPreviousPage: async () => {
+						loadPreviousPage: () => {
 							changeQuery({ before: buckets.pageInfo.startCursor ?? '' });
-							await Buckets.loadPreviousPage({ last: rows });
 						},
-						loadNextPage: async () => {
+						loadNextPage: () => {
 							changeQuery({ after: buckets.pageInfo.endCursor ?? '' });
-							await Buckets.loadNextPage({ first: rows });
 						}
 					}}
 				/>
