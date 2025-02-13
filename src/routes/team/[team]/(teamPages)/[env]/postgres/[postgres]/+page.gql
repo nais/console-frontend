@@ -63,14 +63,6 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 					charset
 					collation
 					healthy
-
-					#conditions {
-					#	type
-					#	status
-					#	reason
-					#	message
-					#	lastTransitionTime
-					#}
 				}
 				flags {
 					pageInfo {
