@@ -2,13 +2,14 @@
 	import { page } from '$app/state';
 	import {
 		graphql,
+		PendingValue,
 		WorkloadOrderField,
 		type OrderDirection$options,
 		type WorkloadOrderField$options
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { untrack } from 'svelte';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import Vulnerability from './Vulnerability.svelte';
@@ -53,8 +54,10 @@
 	const query = graphql(`
 		query WorkloadsWithSbom($team: Slug!, $orderBy: WorkloadOrder, $filter: TeamWorkloadsFilter)
 		@load {
-			team(slug: $team) {
-				workloads(first: 10, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+			team(slug: $team) @loading {
+				workloads(first: 10, orderBy: $orderBy, filter: $filter)
+					@paginate(mode: SinglePage)
+					@loading(count: 10) {
 					pageInfo {
 						totalCount
 						pageStart
@@ -150,7 +153,13 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#if team.workloads.nodes.length > 0}
+			{#if team.workloads === PendingValue}
+				{#each new Array(10).fill('text') as type, i (i)}
+					<Tr>
+						<Td colspan={999}><Skeleton variant={type} style="min-height: 44px;" /></Td>
+					</Tr>
+				{/each}
+			{:else if team.workloads.nodes.length > 0}
 				{@const workloads = team.workloads.nodes}
 				{#each workloads as workload (workload.id)}
 					<Tr>
@@ -233,18 +242,21 @@
 			{/if}
 		</Tbody>
 	</Table>
-
-	<Pagination
-		page={$query.data?.team.workloads.pageInfo}
-		loaders={{
-			loadNextPage: () => {
-				query.loadNextPage();
-			},
-			loadPreviousPage: () => {
-				query.loadPreviousPage();
-			}
-		}}
-	/>
+	{#if $query.data?.team.workloads !== PendingValue}
+		<div>
+			<Pagination
+				page={$query.data?.team.workloads.pageInfo}
+				loaders={{
+					loadNextPage: () => {
+						query.loadNextPage();
+					},
+					loadPreviousPage: () => {
+						query.loadPreviousPage();
+					}
+				}}
+			/>
+		</div>
+	{/if}
 {/if}
 
 <style>
