@@ -136,17 +136,39 @@
 		<Thead>
 			<Tr>
 				<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT}>Environment</Th>
-				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
-					>Critical</Th
+				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT} style="width: 142px;"
+					>Environment</Th
 				>
-				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}>High</Th>
-				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}>Medium</Th>
-				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}>Low</Th>
-				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
-					>Unassigned</Th
+				<Th
+					sortable={true}
+					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
+					style="width: 102px;">Critical</Th
 				>
-				<Th sortable={true} sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}>Risk Score</Th>
+				<Th
+					sortable={true}
+					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}
+					style="width: 86px;">High</Th
+				>
+				<Th
+					sortable={true}
+					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}
+					style="width: 108px;">Medium</Th
+				>
+				<Th
+					sortable={true}
+					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}
+					style="width: 82px;">Low</Th
+				>
+				<Th
+					sortable={true}
+					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
+					style="width: 134px;">Unassigned</Th
+				>
+				<Th
+					sortable={true}
+					sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}
+					style="width: 124px;">Risk Score</Th
+				>
 			</Tr>
 		</Thead>
 		<Tbody>

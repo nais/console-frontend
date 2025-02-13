@@ -1,6 +1,6 @@
 query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
 @cache(policy: CacheAndNetwork) {
-	team(slug: $team) {
+	team(slug: $team) @loading {
 		environments {
 			id
 			name
