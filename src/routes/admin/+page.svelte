@@ -45,8 +45,12 @@
 		<Pagination
 			page={$AdminUsers.data.users.pageInfo}
 			loaders={{
-				loadNextPage: AdminUsers.loadNextPage,
-				loadPreviousPage: AdminUsers.loadPreviousPage
+				loadNextPage: () => {
+					AdminUsers.loadNextPage();
+				},
+				loadPreviousPage: () => {
+					AdminUsers.loadPreviousPage();
+				}
 			}}
 		/>
 	{/if}

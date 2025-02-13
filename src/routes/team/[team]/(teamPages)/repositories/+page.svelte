@@ -225,8 +225,12 @@
 				<Pagination
 					page={team.repositories.pageInfo}
 					loaders={{
-						loadNextPage: Repositories.loadNextPage,
-						loadPreviousPage: await Repositories.loadPreviousPage
+						loadNextPage: () => {
+							Repositories.loadNextPage();
+						},
+						loadPreviousPage: () => {
+							Repositories.loadPreviousPage();
+						}
 					}}
 				/>
 			</Card>

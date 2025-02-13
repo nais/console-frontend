@@ -231,8 +231,12 @@
 	<Pagination
 		page={image.vulnerabilities.pageInfo}
 		loaders={{
-			loadPreviousPage: vulnerabilities.loadPreviousPage,
-			loadNextPage: vulnerabilities.loadNextPage
+			loadPreviousPage: () => {
+				vulnerabilities.loadPreviousPage();
+			},
+			loadNextPage: () => {
+				vulnerabilities.loadNextPage();
+			}
 		}}
 	/>
 

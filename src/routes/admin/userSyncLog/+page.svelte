@@ -65,8 +65,12 @@
 		<Pagination
 			page={$UserSyncLogs.data.userSyncLog.pageInfo}
 			loaders={{
-				loadNextPage: UserSyncLogs.loadNextPage,
-				loadPreviousPage: UserSyncLogs.loadPreviousPage
+				loadNextPage: () => {
+					UserSyncLogs.loadNextPage();
+				},
+				loadPreviousPage: () => {
+					UserSyncLogs.loadPreviousPage();
+				}
 			}}
 		/>
 	{/if}

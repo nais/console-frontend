@@ -206,8 +206,12 @@
 				<Pagination
 					page={topics.pageInfo}
 					loaders={{
-						loadPreviousPage: KafkaTopics.loadPreviousPage,
-						loadNextPage: KafkaTopics.loadNextPage
+						loadPreviousPage: () => {
+							changeQuery({ before: topics.pageInfo.startCursor ?? '' });
+						},
+						loadNextPage: () => {
+							changeQuery({ after: topics.pageInfo.endCursor ?? '' });
+						}
 					}}
 				/>
 			{/if}

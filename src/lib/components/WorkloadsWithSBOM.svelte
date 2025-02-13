@@ -237,8 +237,12 @@
 	<Pagination
 		page={$query.data?.team.workloads.pageInfo}
 		loaders={{
-			loadNextPage: query.loadNextPage,
-			loadPreviousPage: query.loadPreviousPage
+			loadNextPage: () => {
+				query.loadNextPage();
+			},
+			loadPreviousPage: () => {
+				query.loadPreviousPage();
+			}
 		}}
 	/>
 {/if}

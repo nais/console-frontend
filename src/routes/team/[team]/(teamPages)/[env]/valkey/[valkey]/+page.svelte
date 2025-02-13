@@ -101,8 +101,12 @@
 			<Pagination
 				page={instance.access.pageInfo}
 				loaders={{
-					loadPreviousPage: ValkeyInstance.loadPreviousPage,
-					loadNextPage: ValkeyInstance.loadNextPage
+					loadPreviousPage: () => {
+						ValkeyInstance.loadPreviousPage();
+					},
+					loadNextPage: () => {
+						ValkeyInstance.loadNextPage();
+					}
 				}}
 			/>
 		</Card>

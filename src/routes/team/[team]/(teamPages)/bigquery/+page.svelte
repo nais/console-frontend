@@ -215,7 +215,7 @@
 						loadPreviousPage: () => {
 							changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
 						},
-						loadNextPage: async () => {
+						loadNextPage: () => {
 							changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
 						}
 					}}
