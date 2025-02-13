@@ -129,7 +129,7 @@
 
 <GraphErrors errors={$Applications.errors} />
 
-{#if $Applications.data && $Applications.data.team.applications.nodes.length > 0}
+{#if $Applications.data && ($Applications.data.team.applications.nodes.length > 0 || filter !== '')}
 	{@const apps = $Applications.data.team.applications}
 	{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}
 		<div class="search">

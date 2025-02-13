@@ -134,7 +134,7 @@
 	{/if}
 </BodyLong>
 
-{#if $Jobs.data && $Jobs.data.team.jobs.nodes.length > 0}
+{#if $Jobs.data && ($Jobs.data.team.jobs.nodes.length > 0 || filter !== '')}
 	{@const jobs = $Jobs.data.team.jobs}
 	{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
 		<div class="search">
