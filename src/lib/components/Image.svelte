@@ -2,11 +2,12 @@
 	import { page } from '$app/state';
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-
-	import { Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Heading, Link, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		CheckmarkCircleFillIcon,
+		ExclamationmarkTriangleFillIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: WorkloadImage;
@@ -46,155 +47,88 @@
 		)
 	);
 
-	let workloadName = $derived($data.name);
-	let workloadType = $derived($data.__typename === 'Application' ? 'app' : 'job');
-	let env = $derived(page.params.env);
-	let team = $derived(page.params.team);
+	const imageDetailsUrl = $derived(
+		`/team/${page.params.team}/${page.params.env}/${$data.__typename === 'Application' ? 'app' : 'job'}/${$data.name}/image`
+	);
 
 	const notificationBadgeSize = '42';
 
-	const isFindings = (summary: {
-		readonly critical: number;
-		readonly high: number;
-		readonly medium: number;
-		readonly low: number;
-		readonly unassigned: number;
-	}): boolean => {
-		if (summary.critical > 0) {
-			return true;
-		}
-		if (summary.high > 0) {
-			return true;
-		}
-		if (summary.medium > 0) {
-			return true;
-		}
-		if (summary.low > 0) {
-			return true;
-		}
-		if (summary.unassigned > 0) {
-			return true;
-		}
-
-		return false;
-	};
+	const categories = ['critical', 'high', 'medium', 'low', 'unassigned'] as const;
+	const hasFindings = categories.some(
+		(severity) => ($data.image.vulnerabilitySummary?.[severity] ?? 0) > 0
+	);
 </script>
 
 {#if $data.image}
 	{@const image = $data.image}
-	<div class="imageHeader">
-		<Heading level="3" size="small" spacing>Vulnerabilities</Heading>
-	</div>
+	<Heading level="3" size="small" spacing>Vulnerabilities</Heading>
 
-	<div class="vulnerabilities">
-		<h5>
-			Vulnerabilities
-			<span style="font-weight: normal;">
-				(Risk score: {image.vulnerabilitySummary?.riskScore})
-			</span>
-		</h5>
+	{#if !image.hasSBOM}
+		<BodyShort spacing>
+			<ExclamationmarkTriangleFillIcon
+				class="text-aligned-icon"
+				style="color: var(--a-icon-warning)"
+			/> Data was discovered, but the SBOM was not rendered. Please refer to the <Link
+				href={docURL('/services/vulnerabilities/')}>NAIS documentation</Link
+			> for further assistance.
+		</BodyShort>
+	{:else if image.vulnerabilitySummary === null}
+		<BodyShort spacing>
+			<ExclamationmarkTriangleFillIcon
+				class="text-aligned-icon"
+				style="color: var(--a-icon-warning)"
+			/> No data found. <Link
+				href={docURL('/services/vulnerabilities/how-to/sbom/')}
+				target="_blank">How to fix</Link
+			>
+		</BodyShort>
+	{:else if image.hasSBOM && image.vulnerabilitySummary && hasFindings}
+		<BodyShort spacing>Risk score: {image.vulnerabilitySummary.riskScore}</BodyShort>
+		<div class="vulnerability-summary">
+			{#each categories as category}
+				<Tooltip content={category}>
+					<BodyShort
+						class="vulnerability-count"
+						style="background-color: {severityToColor(category)}"
+					>
+						{image.vulnerabilitySummary[category]}
+					</BodyShort>
+				</Tooltip>
+			{/each}
+		</div>
+	{:else if image.hasSBOM}
+		<BodyShort spacing>
+			<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> No vulnerabilities
+			found. Good work!
+		</BodyShort>
+	{/if}
 
-		{#if image !== null}
-			{#if !image.hasSBOM}
-				<div style="display: flex; align-items: center;">
-					<ExclamationmarkTriangleFillIcon
-						size="1rem"
-						style="color: var(--a-icon-warning); margin-right: 0.5rem"
-					/>
-					Data was discovered, but the SBOM was not rendered. Please refer to the
-					<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
-					for further assistance.
-				</div>
-			{:else if image.vulnerabilitySummary === null}
-				<ExclamationmarkTriangleFillIcon
-					size="1rem"
-					style="color: var(--a-icon-warning); margin-right: 0.5rem"
-				/>
-				No data found.
-				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} target="_blank">How to fix</a>
-			{:else if image.hasSBOM && image.vulnerabilitySummary && isFindings(image.vulnerabilitySummary)}
-				<div class="circles">
-					<Tooltip placement="right" content="severity: CRITICAL">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.critical)}
-							color={severityToColor('critical')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: HIGH">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.high)}
-							color={severityToColor('high')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: MEDIUM">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.medium)}
-							color={severityToColor('medium')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: LOW">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.low)}
-							color={severityToColor('low')}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-					<Tooltip placement="right" content="severity: UNASSIGNED">
-						<VulnerabilityBadge
-							text={String(image.vulnerabilitySummary.unassigned)}
-							color={'#6e6e6e'}
-							size={notificationBadgeSize}
-						/>
-					</Tooltip>
-				</div>
-			{:else if image.hasSBOM}
-				<code class="check">&check;</code> No vulnerabilities found. Good work!
-			{/if}
-
-			<div style="margin-top: var(--a-spacing-2)">
-				<a href="/team/{team}/{env}/{workloadType}/{workloadName}/image">View details</a>
-			</div>
-		{/if}
-	</div>
+	<Link href={imageDetailsUrl}>View image details</Link>
 {/if}
 
 <style>
-	.imageHeader {
+	:global(.text-aligned-icon) {
+		height: var(--a-font-line-height-large);
+		vertical-align: bottom;
+	}
+
+	.vulnerability-summary {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 8px;
-		gap: 0.5rem;
-	}
+		gap: 1px;
+		margin-bottom: var(--a-spacing-3);
 
-	.vulnerabilities {
-		margin-top: 0.5rem;
-		grid-column: 1 / span 2;
-		grid-row: 3;
-	}
+		:global(:first-child > .vulnerability-count) {
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+		}
 
-	.vulnerabilities h5 {
-		margin-bottom: 0.5rem;
-	}
+		:global(:last-child > .vulnerability-count) {
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
 
-	code {
-		font-size: 1rem;
-	}
-
-	.check {
-		font-size: 2rem;
-		color: #4dbd74;
-		text-align: center;
-		padding-left: 4px;
-	}
-	.circles {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		gap: 0.5rem;
+		:global(.vulnerability-count) {
+			padding: 4px 10px;
+		}
 	}
 </style>

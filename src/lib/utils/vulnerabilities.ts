@@ -1,15 +1,15 @@
 export function severityToColor(severity: string): string {
 	switch (severity) {
 		case 'critical':
-			return '#f86c6b';
+			return '#F68282';
 		case 'high':
-			return '#fd8b00';
+			return '#FFC166';
 		case 'medium':
-			return '#ffc107';
+			return '#FFD799';
 		case 'low':
-			return '#4dbd74';
-		case 'unnasigned':
-			return '#6e6e6e';
+			return '#99DEAD';
+		case 'unassigned':
+			return '#E0E3E6';
 		default:
 			return '#777777';
 	}
