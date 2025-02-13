@@ -402,6 +402,7 @@
 		display: flex;
 		padding: 0.75rem 2rem;
 		min-width: 1000px;
+		position: relative;
 	}
 	.header-content {
 		display: flex;

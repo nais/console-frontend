@@ -2,7 +2,7 @@ query UserTeams {
 	me {
 		__typename
 		... on User {
-			teams(first: 10) @paginate(mode: SinglePage) {
+			teams(first: 25) @paginate(mode: SinglePage) {
 				pageInfo {
 					hasNextPage
 					hasPreviousPage

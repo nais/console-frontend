@@ -71,11 +71,11 @@
 		gap: var(--a-spacing-1);
 	}
 	.icon-with-text--medium {
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 		gap: var(--a-spacing-1-alt);
 	}
 	.icon-with-text--large {
-		font-size: 2rem;
-		gap: var(--a-spacing-2);
+		font-size: 1.5rem;
+		gap: var(--a-spacing-3);
 	}
 </style>
