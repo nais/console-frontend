@@ -67,7 +67,7 @@
 		align-items: center;
 	}
 	.icon-with-text--small {
-		font-size: 0.75rem;
+		font-size: 0.875rem;
 		gap: var(--a-spacing-1);
 	}
 	.icon-with-text--medium {
