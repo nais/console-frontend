@@ -382,8 +382,4 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.checkmark {
-		color: var(--a-icon-success);
-		font-size: 1.5rem;
-	}
 </style>
