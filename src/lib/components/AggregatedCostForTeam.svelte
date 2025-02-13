@@ -59,7 +59,7 @@
 		{#if cost.monthlySummary !== PendingValue}
 			{#if cost.monthlySummary.series.length > 1}
 				{@const factor = getFactor(cost.monthlySummary.series)}
-				{#each cost.monthlySummary.series.slice(0, 2) as item}
+				{#each cost.monthlySummary.series.slice(0, 2) as item (item)}
 					{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
 						{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost cost={item.cost} />
 					{:else}

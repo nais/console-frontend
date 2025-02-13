@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { PendingValue, SecretOrderField } from '$houdini';
+	import { SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -54,18 +54,12 @@
 		if ($Secrets.data) {
 			environments = $Secrets.data?.team.environments
 				.map((env) => {
-					if (env == PendingValue) {
-						return;
-					}
 					return {
 						name: env.name,
 						secrets:
 							$Secrets.data?.team.secrets.nodes
-								.filter((node) => node !== PendingValue && node.environment.name === env.name)
+								.filter((node) => node.environment.name === env.name)
 								.map((node) => {
-									if (node === PendingValue) {
-										return;
-									}
 									return {
 										name: node.name,
 										lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
@@ -179,8 +173,8 @@
 				<Pagination
 					page={secrets.pageInfo}
 					loaders={{
-						loadPreviousPage: () => Secrets.loadPreviousPage(),
-						loadNextPage: () => Secrets.loadNextPage()
+						loadPreviousPage: async () => await Secrets.loadPreviousPage(),
+						loadNextPage: async () => await Secrets.loadNextPage()
 					}}
 				/>
 			</div></Card
