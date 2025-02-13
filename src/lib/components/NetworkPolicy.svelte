@@ -79,7 +79,7 @@
 			<Heading level="3" size="small" spacing>Inbound</Heading>
 			{#if $data.networkPolicy.inbound.rules.length > 0}
 				<ul>
-					{#each $data.networkPolicy.inbound.rules as rule}
+					{#each $data.networkPolicy.inbound.rules as rule (rule.targetWorkloadName + rule.targetTeamSlug)}
 						<li>
 							{#if rule.targetWorkloadName == '*'}
 								Any app
@@ -127,8 +127,8 @@
 				{#if $data.networkPolicy.outbound.external.length > 0}
 					<Heading level="4" size="xsmall" spacing>External</Heading>
 					<ul>
-						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external}
-							{#each external.ports as port}
+						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external (external.__typename + external.target + external.ports)}
+							{#each external.ports as port (port)}
 								<li>
 									<IconWithText
 										text={`https://${external.target}:${port}`}
@@ -143,8 +143,8 @@
 							{/each}
 						{/each}
 
-						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external}
-							{#each external.ports as port}
+						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external (external.__typename + external.target + external.ports)}
+							{#each external.ports as port (port)}
 								<li>
 									<IconWithText text={`${external.target}:${port}`} size="medium" icon={Globe} />
 								</li>
@@ -157,7 +157,7 @@
 				{#if $data.networkPolicy.outbound.rules.length > 0}
 					<Heading level="4" size="xsmall" spacing>Workloads</Heading>
 					<ul>
-						{#each $data.networkPolicy.outbound.rules as rule}
+						{#each $data.networkPolicy.outbound.rules as rule (rule.targetWorkloadName + rule.targetTeamSlug)}
 							<li>
 								{#if rule.targetWorkloadName == '*'}
 									Any app

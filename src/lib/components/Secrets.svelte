@@ -20,6 +20,7 @@
 						secrets {
 							edges {
 								node {
+									id
 									name
 								}
 							}
@@ -47,7 +48,7 @@
 	<Heading size="small" spacing>Secrets</Heading>
 	<div>
 		{#if $secrets.data.team.environment.workload.secrets.edges.length > 0}
-			{#each $secrets.data.team.environment.workload.secrets.edges as secret}
+			{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
 				<a
 					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.name}/secret/{secret
 						.node.name}"><IconWithText icon={PadlockLockedIcon} text={secret.node.name} /></a
