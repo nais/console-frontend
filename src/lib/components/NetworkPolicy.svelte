@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy } from '$houdini';
-	import Globe from '$lib/icons/Globe.svelte';
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon, GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconWithText from './IconWithText.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -133,12 +132,16 @@
 									<IconWithText
 										text={`https://${external.target}:${port}`}
 										size="medium"
-										icon={Globe}
+										icon={GlobeIcon}
 									/>
 								</li>
 							{:else}
 								<li>
-									<IconWithText text={`https://${external.target}`} size="medium" icon={Globe} />
+									<IconWithText
+										text={`https://${external.target}`}
+										size="medium"
+										icon={GlobeIcon}
+									/>
 								</li>
 							{/each}
 						{/each}
@@ -146,10 +149,14 @@
 						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external (external.__typename + external.target + external.ports)}
 							{#each external.ports as port (port)}
 								<li>
-									<IconWithText text={`${external.target}:${port}`} size="medium" icon={Globe} />
+									<IconWithText
+										text={`${external.target}:${port}`}
+										size="medium"
+										icon={GlobeIcon}
+									/>
 								</li>
 							{:else}
-								<li><IconWithText text={`${external.target}`} size="medium" icon={Globe} /></li>
+								<li><IconWithText text={`${external.target}`} size="medium" icon={GlobeIcon} /></li>
 							{/each}
 						{/each}
 					</ul>

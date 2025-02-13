@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { fragment, graphql, IngressType, type Ingresses, type ValueOf } from '$houdini';
 	import IconWithText from '$lib/components/IconWithText.svelte';
-	import Globe from '$lib/icons/Globe.svelte';
 	import { Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		app: Ingresses;
@@ -68,7 +67,7 @@
 		{#each externalIngresses($data.ingresses) as ingress (ingress.url + ingress.type)}
 			<Tooltip content="External ingress"
 				><a href={ingress.url}
-					><IconWithText icon={Globe} size="medium">
+					><IconWithText icon={GlobeIcon} size="medium">
 						{#snippet text()}
 							<span class="workload-name">{ingress.url}</span>
 						{/snippet}

@@ -3,7 +3,6 @@
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 	import VulnerabilityBadge from '$lib/icons/VulnerabilityBadge.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
@@ -12,7 +11,7 @@
 	import { parseImage } from '$lib/utils/image';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
-	import { ImageIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon, ImageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -129,12 +128,18 @@
 				</div>
 				Risk score: {image.vulnerabilitySummary.riskScore} <br />
 			{:else if !image.hasSBOM}
-				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				<ExclamationmarkTriangleFillIcon
+					size="1rem"
+					style="color: var(--a-icon-warning); margin-right: 0.5rem"
+				/>
 				Data was discovered, but the SBOM was not rendered. Please refer to the
 				<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
 				for further assistance.
 			{:else}
-				<WarningIcon size="1rem" style="color: var(--a-icon-warning); margin-right: 0.5rem" />
+				<ExclamationmarkTriangleFillIcon
+					size="1rem"
+					style="color: var(--a-icon-warning); margin-right: 0.5rem"
+				/>
 				No data found.
 				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} {onclick}> How to fix</a>
 			{/if}

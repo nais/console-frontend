@@ -2,9 +2,8 @@
 	import { enhance } from '$app/forms';
 	import Card from '$lib/Card.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
-	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon, FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
 
 	interface Props {
@@ -182,8 +181,8 @@
 				{/snippet}
 				{#snippet description()}
 					Example: my-team-name<br />
-					<WarningIcon style="color:var(--a-icon-warning)" /> It is not possible to change the identifier
-					after creation, so choose wisely.
+					<ExclamationmarkTriangleFillIcon style="color:var(--a-icon-warning)" /> It is not possible
+					to change the identifier after creation, so choose wisely.
 				{/snippet}
 			</TextField>
 			{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
