@@ -1,5 +1,36 @@
-query Deployments($team: Slug!) {
+query Deployments($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after: Cursor) {
 	team(slug: $team) {
-		...TeamDeployments
+		deployments(first: $first, last: $last, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				endCursor
+				hasPreviousPage
+				pageEnd
+				pageStart
+				startCursor
+				totalCount
+			}
+			nodes {
+				id
+				statuses {
+					nodes {
+						state
+						message
+						createdAt
+					}
+				}
+				resources {
+					nodes {
+						id
+						kind
+						name
+					}
+				}
+				environmentName
+				createdAt
+				teamSlug
+			}
+		}
 	}
 }
