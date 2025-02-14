@@ -15,6 +15,5 @@ $houdini
 /.direnv/
 
 values.json
-/.vscode/
 
 *storybook.log
