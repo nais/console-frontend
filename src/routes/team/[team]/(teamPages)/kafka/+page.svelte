@@ -207,10 +207,10 @@
 					page={topics.pageInfo}
 					loaders={{
 						loadPreviousPage: () => {
-							changeQuery({ before: topics.pageInfo.startCursor ?? '' });
+							changeQuery({ after: '', before: topics.pageInfo.startCursor ?? '' });
 						},
 						loadNextPage: () => {
-							changeQuery({ after: topics.pageInfo.endCursor ?? '' });
+							changeQuery({ before: '', after: topics.pageInfo.endCursor ?? '' });
 						}
 					}}
 				/>

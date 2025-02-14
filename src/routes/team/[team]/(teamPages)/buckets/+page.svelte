@@ -210,10 +210,10 @@
 					page={buckets.pageInfo}
 					loaders={{
 						loadPreviousPage: () => {
-							changeQuery({ before: buckets.pageInfo.startCursor ?? '' });
+							changeQuery({ after: '', before: buckets.pageInfo.startCursor ?? '' });
 						},
 						loadNextPage: () => {
-							changeQuery({ after: buckets.pageInfo.endCursor ?? '' });
+							changeQuery({ before: '', after: buckets.pageInfo.endCursor ?? '' });
 						}
 					}}
 				/>

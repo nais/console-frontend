@@ -213,10 +213,10 @@
 					page={datasets.pageInfo}
 					loaders={{
 						loadPreviousPage: () => {
-							changeQuery({ before: datasets.pageInfo.startCursor ?? '' });
+							changeQuery({ after: '', before: datasets.pageInfo.startCursor ?? '' });
 						},
 						loadNextPage: () => {
-							changeQuery({ after: datasets.pageInfo.endCursor ?? '' });
+							changeQuery({ before: '', after: datasets.pageInfo.endCursor ?? '' });
 						}
 					}}
 				/>

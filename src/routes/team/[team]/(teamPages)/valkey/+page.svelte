@@ -213,10 +213,10 @@
 						page={instances.pageInfo}
 						loaders={{
 							loadPreviousPage: () => {
-								changeQuery({ before: instances.pageInfo.startCursor ?? '' });
+								changeQuery({ after: '', before: instances.pageInfo.startCursor ?? '' });
 							},
 							loadNextPage: () => {
-								changeQuery({ after: instances.pageInfo.endCursor ?? '' });
+								changeQuery({ before: '', after: instances.pageInfo.endCursor ?? '' });
 							}
 						}}
 					/>
