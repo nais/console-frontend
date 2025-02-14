@@ -63,7 +63,8 @@
 
 <style>
 	.icon-with-text {
-		display: flex;
+		display: grid;
+		grid-auto-flow: column;
 		align-items: center;
 	}
 	.icon-with-text--small {

@@ -5,7 +5,7 @@
 	const { title, children, menu }: { title?: string; children: Snippet; menu?: Snippet } = $props();
 </script>
 
-<div class="wrapper">
+<div class="list">
 	{#if title}
 		<div class="header">
 			<Heading size="small" level="3">{title}</Heading>
@@ -18,7 +18,7 @@
 </div>
 
 <style>
-	.wrapper {
+	.list {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;

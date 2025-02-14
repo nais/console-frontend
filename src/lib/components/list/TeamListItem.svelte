@@ -11,7 +11,7 @@
 	<IconWithText size="large" icon={PersonGroupIcon} description={team.purpose}>
 		{#snippet text()}
 			<Heading level="4" size="xsmall">
-				<Link href="#">{team.slug}</Link>
+				<Link href="/team/{team.slug}">{team.slug}</Link>
 			</Heading>
 		{/snippet}
 	</IconWithText>

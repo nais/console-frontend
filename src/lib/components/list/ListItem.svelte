@@ -29,8 +29,8 @@
 			}
 
 			&:active,
-			&:focus {
-				color: var(--a-text-on-inverted);
+			&:focus-visible {
+				color: var(--ac-link-focus-text, var(--a-text-on-action));
 			}
 		}
 	}

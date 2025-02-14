@@ -1,9 +1,9 @@
 <script lang="ts">
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { Box, Button } from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import type { PageData } from './$houdini';
 	import Onboarding from './Onboarding.svelte';
@@ -59,30 +59,17 @@
 			</div>
 			{#if $UserTeams.data}
 				{#if $UserTeams.data.me.__typename == 'User'}
-					<div class="teams">
+					<List>
 						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
-							<Box
-								as="a"
-								background="surface-subtle"
-								padding="4"
-								borderRadius="medium"
-								href={`/team/${node.team.slug}`}
-								class="box"
-							>
-								<IconWithText size="large" icon={PersonGroupIcon} description={node.team.purpose}>
-									{#snippet text()}
-										<h3>{node.team.slug}</h3>
-									{/snippet}
-								</IconWithText>
-							</Box>
+							<TeamListItem team={node.team} />
 						{:else}
-							<p>
+							<BodyLong>
 								You don't seem to belong to any teams at the moment. You can create a new team or
 								search for the team you'd like to join. Once you find it, locate one of the owners
 								in the members list on the team page to request membership.
-							</p>
+							</BodyLong>
 						{/each}
-					</div>
+					</List>
 					<Pagination
 						page={$UserTeams.data.me.teams.pageInfo}
 						loaders={{
@@ -133,10 +120,7 @@
 		align-items: center;
 		justify-content: center;
 	}
-	h3 {
-		font-weight: 600;
-		margin-bottom: 0;
-	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
@@ -154,43 +138,11 @@
 		align-items: center;
 		gap: 0.5rem;
 	}
-	.teams {
-		display: flex;
-		flex-direction: column;
-		border-radius: 12px;
-		overflow: hidden;
-		gap: 2px;
-
-		:global(.box) {
-			border-radius: 0;
-			text-decoration: none;
-			color: var(--a-text-default);
-			display: grid;
-			grid-template-columns: auto 1fr;
-			gap: 12px;
-
-			> * {
-				text-decoration: none;
-				color: var(--a-text-default);
-			}
-			&:hover {
-				h3 {
-					text-decoration: underline;
-					color: var(--a-text-action-hover);
-				}
-				background-color: var(--a-gray-200);
-			}
-			&:active,
-			&:focus {
-				background-color: var(--a-surface-subtle);
-			}
-		}
-	}
 
 	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 1.5rem;
+		margin-bottom: var(--a-spacing-4);
 	}
 </style>
