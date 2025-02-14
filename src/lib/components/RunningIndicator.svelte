@@ -7,10 +7,11 @@
 	@keyframes pulse {
 		0% {
 			transform: translate(12px, 12px) scale(1);
+			opacity: 1;
 		}
-		40% {
-			transform: translate(12px, 12px) scale(2);
-			opacity: 0;
+		50% {
+			transform: translate(12px, 12px) scale(1);
+			opacity: 1;
 		}
 		100% {
 			transform: translate(12px, 12px) scale(2);
