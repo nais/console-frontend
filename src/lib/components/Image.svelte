@@ -2,12 +2,12 @@
 	import { page } from '$app/state';
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { BodyShort, Heading, Link, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkCircleFillIcon,
 		ExclamationmarkTriangleFillIcon
 	} from '@nais/ds-svelte-community/icons';
+	import VulnerabilityBadges from './VulnerabilityBadges.svelte';
 
 	interface Props {
 		workload: WorkloadImage;
@@ -82,19 +82,7 @@
 				>
 			</BodyShort>
 		{:else if image.hasSBOM && image.vulnerabilitySummary && hasFindings}
-			<BodyShort>Risk score: {image.vulnerabilitySummary.riskScore}</BodyShort>
-			<div class="vulnerability-summary">
-				{#each categories as category (category)}
-					<Tooltip content={category}>
-						<BodyShort
-							class="vulnerability-count"
-							style="background-color: {severityToColor(category)}"
-						>
-							{image.vulnerabilitySummary[category]}
-						</BodyShort>
-					</Tooltip>
-				{/each}
-			</div>
+			<VulnerabilityBadges summary={image.vulnerabilitySummary} />
 		{:else if image.hasSBOM}
 			<BodyShort>
 				<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> No
@@ -112,25 +100,5 @@
 		flex-direction: column;
 		gap: var(--a-spacing-1);
 		align-items: start;
-	}
-
-	.vulnerability-summary {
-		display: flex;
-		gap: 1px;
-		margin-bottom: var(--a-spacing-3);
-
-		:global(:first-child > .vulnerability-count) {
-			border-top-left-radius: 4px;
-			border-bottom-left-radius: 4px;
-		}
-
-		:global(:last-child > .vulnerability-count) {
-			border-top-right-radius: 4px;
-			border-bottom-right-radius: 4px;
-		}
-
-		:global(.vulnerability-count) {
-			padding: 4px 10px;
-		}
 	}
 </style>
