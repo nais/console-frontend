@@ -251,10 +251,10 @@
 						page={ae.team.activityLog.pageInfo}
 						loaders={{
 							loadPreviousPage: () => {
-								changeQuery({ before: ae.team.activityLog.pageInfo.startCursor ?? '' });
+								changeQuery({ after: '', before: ae.team.activityLog.pageInfo.startCursor ?? '' });
 							},
 							loadNextPage: () => {
-								changeQuery({ after: ae.team.activityLog.pageInfo.endCursor ?? '' });
+								changeQuery({ before: '', after: ae.team.activityLog.pageInfo.endCursor ?? '' });
 							}
 						}}
 					/>

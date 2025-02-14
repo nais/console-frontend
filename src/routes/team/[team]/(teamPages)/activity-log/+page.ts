@@ -3,7 +3,7 @@ import type { AfterLoadEvent } from '../jobs/$houdini';
 import type { ActivityLogVariables, BeforeLoadEvent } from './$houdini';
 
 export const _ActivityLogVariables: ActivityLogVariables = ({ url }) => {
-	const rows: number = parseInt(url.searchParams.get('rows') || '10');
+	const rows: number = parseInt(url.searchParams.get('rows') || '25');
 
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';
@@ -16,7 +16,7 @@ export const _ActivityLogVariables: ActivityLogVariables = ({ url }) => {
 export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
 	return {
 		data,
-		initialRows: parseInt(url.searchParams.get('rows') || '10'),
+		initialRows: parseInt(url.searchParams.get('rows') || '25'),
 		initialAfter: url.searchParams.get('after') || '',
 		initialBefore: url.searchParams.get('before') || ''
 	};
