@@ -8,6 +8,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import IconWithText from '../IconWithText.svelte';
 	import ListItem from './ListItem.svelte';
+	import RunningIndicator from '../RunningIndicator.svelte';
 
 	const {
 		instance,
@@ -35,7 +36,7 @@
 			<div class="tooltip-icon-hack">
 				{#if instance.status.state === 'RUNNING'}
 					<Tooltip content="Instance is running">
-						<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+						<RunningIndicator />
 					</Tooltip>
 				{:else if instance.status.state === 'FAILING'}
 					<Tooltip content="Instance is failing">
