@@ -3,9 +3,9 @@
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
 	import Kafka from '$lib/icons/KafkaIcon.svelte';
-	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import Redis from '$lib/icons/RedisIcon.svelte';
 	import Unleash from '$lib/icons/UnleashIcon.svelte';
+	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import {
 		BranchingIcon,
 		BriefcaseClockIcon,
@@ -246,8 +246,8 @@
 	}
 
 	.main {
-		gap: 1rem;
 		display: grid;
 		grid-template-columns: 200px 1fr;
+		gap: var(--a-spacing-12);
 	}
 </style>

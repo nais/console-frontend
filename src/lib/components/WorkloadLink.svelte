@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tooltip } from '@nais/ds-svelte-community';
+	import { Heading, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -54,26 +54,29 @@
 		</a>
 	</Tooltip>
 {:else}
-	<a
-		href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename === 'Job'
-			? 'job'
-			: 'app'}/{workload.name}"
-	>
-		<IconWithText {size} {description}>
-			{#snippet icon()}
-				{#if showIcon}
-					{#if workload.__typename === 'Job'}
-						<BriefcaseClockIcon />
-					{:else}
-						<PackageIcon />
-					{/if}
+	<IconWithText {size} {description}>
+		{#snippet icon()}
+			{#if showIcon}
+				{#if workload.__typename === 'Job'}
+					<BriefcaseClockIcon />
+				{:else}
+					<PackageIcon />
 				{/if}
-			{/snippet}
-			{#snippet text()}
-				<span class="workload-name">{workload.name}</span>
-			{/snippet}
-		</IconWithText>
-	</a>
+			{/if}
+		{/snippet}
+		{#snippet text()}
+			<Heading level="4" size="xsmall">
+				<a
+					href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename ===
+					'Job'
+						? 'job'
+						: 'app'}/{workload.name}"
+				>
+					<span class="workload-name">{workload.name}</span>
+				</a>
+			</Heading>
+		{/snippet}
+	</IconWithText>
 {/if}
 
 <style>

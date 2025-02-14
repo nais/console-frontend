@@ -10,7 +10,7 @@
 		<div class="header">
 			<Heading size="small" level="3">{title}</Heading>
 			{#if menu}
-				<div>{@render menu()}</div>
+				<div class="menu">{@render menu()}</div>
 			{/if}
 		</div>
 	{/if}
@@ -42,5 +42,10 @@
 				border-bottom-right-radius: 12px;
 			}
 		}
+	}
+
+	.menu {
+		display: flex;
+		gap: var(--a-spacing-2);
 	}
 </style>

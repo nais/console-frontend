@@ -74,6 +74,7 @@
 
 	const apps = [
 		{
+			__typename: 'Application',
 			name: 'behovsakkumulator',
 			environment: { name: 'prod-gcp' },
 			team: { slug: 'tbd' },
@@ -90,6 +91,8 @@
 			}
 		},
 		{
+			__typename: 'Application',
+
 			name: 'behovsakkumulator',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -101,6 +104,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'dataprodukt-annulleringer',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -112,6 +116,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'dataprodukt-annulleringer',
 			environment: { name: 'prod-gcp' },
 			team: { slug: 'tbd' },
@@ -123,6 +128,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'dataprodukt-arbeidsgiveropplysninger',
 			environment: { name: 'prod-gcp' },
 			team: { slug: 'tbd' },
@@ -134,6 +140,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'dataprodukt-arbeidsgiveropplysninger',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -145,6 +152,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'dataprodukt-forstegangsbehandling',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -156,6 +164,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'dataprodukt-forstegangsbehandling',
 			environment: { name: 'prod-gcp' },
 			team: { slug: 'tbd' },
@@ -167,6 +176,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'helse-spane',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -178,6 +188,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'helse-spleis',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -189,6 +200,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'red-team',
 			environment: { name: 'prod-gcp' },
 			team: { slug: 'tbd' },
@@ -200,6 +212,7 @@
 			}
 		},
 		{
+			__typename: 'Application',
 			name: 'risk-mock',
 			environment: { name: 'dev-gcp' },
 			team: { slug: 'tbd' },
@@ -313,6 +326,20 @@
 						{...props}
 					>
 						<span style="font-weight: normal">Environment</span>
+					</Button>
+				{/snippet}
+				<ActionMenuCheckboxItem>All environments</ActionMenuCheckboxItem>
+			</ActionMenu>
+			<ActionMenu>
+				{#snippet trigger(props)}
+					<Button
+						variant="tertiary-neutral"
+						size="small"
+						iconPosition="right"
+						icon={ChevronDownIcon}
+						{...props}
+					>
+						Name
 					</Button>
 				{/snippet}
 				<ActionMenuCheckboxItem>All environments</ActionMenuCheckboxItem>

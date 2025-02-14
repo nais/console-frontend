@@ -36,6 +36,7 @@ query Applications(
 			}
 			nodes {
 				__typename
+				id
 				name
 				environment {
 					name
@@ -51,7 +52,19 @@ query Applications(
 						createdAt
 					}
 				}
-				...AppInstancesStatus
+				instances {
+					pageInfo {
+						totalCount
+					}
+					edges {
+						node {
+							status {
+								message
+								state
+							}
+						}
+					}
+				}
 			}
 		}
 	}

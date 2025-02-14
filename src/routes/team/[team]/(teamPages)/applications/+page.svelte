@@ -2,20 +2,18 @@
 	import {
 		ApplicationOrderField,
 		OrderDirection,
-		WorkloadState,
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
 	import IconWithText from '$lib/components/IconWithText.svelte';
-	import InstanceStatus from '$lib/components/InstanceStatus.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import AppListItem from '$lib/components/list/AppListItem.svelte';
+	import List from '$lib/components/list/List.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { BodyLong, BodyShort, Button, Detail, Search, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -23,14 +21,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import {
-		ChevronDownIcon,
-		CircleFillIcon,
-		PackageIcon,
-		RocketIcon
-	} from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import { enGB } from 'date-fns/locale';
+	import { ChevronDownIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -41,9 +32,6 @@
 	let { Applications, initialEnvironments } = $derived(data);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
-
-	let after: string = $derived($Applications.variables?.after ?? '');
-	let before: string = $derived($Applications.variables?.before ?? '');
 
 	let filteredEnvs = $derived(
 		initialEnvironments === 'none'
@@ -90,7 +78,6 @@
 			direction?: OrderDirection$options;
 			after?: string;
 			before?: string;
-			resetPagination?: boolean;
 			newFilter?: string;
 			environments?: string[];
 		} = {}
@@ -98,8 +85,8 @@
 		changeParams({
 			direction: params.direction || orderDirection,
 			field: params.field || orderField,
-			before: params.resetPagination ? '' : (params.before ?? before),
-			after: params.resetPagination ? '' : (params.after ?? after),
+			before: params.before ?? '',
+			after: params.after ?? '',
 			filter: params.newFilter ?? filter,
 			environments:
 				params.environments?.length === 0
@@ -109,66 +96,62 @@
 	};
 </script>
 
-<div class="header">
-	<IconWithText text="Applications" icon={PackageIcon} size="large" />
-</div>
-
-<BodyLong spacing>
-	{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
-		<strong>No applications found.</strong> Applications are long-running processes designed to
-		handle continuous workloads and remain active until stopped or restarted.
-		<a href="https://doc.nais.io/workloads/application"
-			>Learn more about applications and how to get started.</a
-		>
-	{:else}
-		Applications are long-running processes designed to handle continuous workloads and remain
-		active until stopped or restarted.
-		<a href="https://doc.nais.io/workloads/application">Learn more about applications.</a>
-	{/if}
-</BodyLong>
-
-<GraphErrors errors={$Applications.errors} />
-
-{#if $Applications.data && ($Applications.data.team.applications.nodes.length > 0 || filter !== '')}
-	{@const apps = $Applications.data.team.applications}
-	{#if apps.nodes.length > 0 || $Applications.data.team.totalApplications.pageInfo.totalCount > 0}
-		<div class="search">
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					changeQuery({ newFilter: filter });
-				}}
-			>
-				<Search
-					clearButton={true}
-					clearButtonLabel="Clear"
-					label="filter applications"
-					placeholder="Filter by name"
-					hideLabel={true}
-					size="small"
-					variant="simple"
-					width="100%"
-					autocomplete="off"
-					bind:value={filter}
-					onclear={() => {
-						filter = '';
-						changeQuery({ newFilter: '' });
-					}}
-				/>
-			</form>
+<div class="wrapper">
+	<div class="content">
+		<div class="header">
+			<IconWithText text="Applications" icon={PackageIcon} size="large" />
 		</div>
-		<div class="applications-list">
-			<div class="applications-header">
-				<div class="applications-count">
-					<BodyShort size="small" style="font-weight: bold;">
-						{apps.pageInfo.totalCount} applications
-						{apps.pageInfo.totalCount !==
-						$Applications.data.team.totalApplications.pageInfo.totalCount
-							? `(of total ${$Applications.data.team.totalApplications.pageInfo.totalCount})`
-							: ''}</BodyShort
-					>
-				</div>
-				<div style="display: flex; gap: 1rem;">
+
+		<BodyLong spacing>
+			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
+				<strong>No applications found.</strong> Applications are long-running processes designed to
+				handle continuous workloads and remain active until stopped or restarted.
+				<a href="https://doc.nais.io/workloads/application"
+					>Learn more about applications and how to get started.</a
+				>
+			{:else}
+				Applications are long-running processes designed to handle continuous workloads and remain
+				active until stopped or restarted.
+				<a href="https://doc.nais.io/workloads/application">Learn more about applications.</a>
+			{/if}
+		</BodyLong>
+
+		<GraphErrors errors={$Applications.errors} />
+
+		{#if $Applications.data && $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
+			{@const apps = $Applications.data.team.applications}
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						changeQuery({ newFilter: filter });
+					}}
+				>
+					<Search
+						clearButton={true}
+						clearButtonLabel="Clear"
+						label="filter applications"
+						placeholder="Filter by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							changeQuery({ newFilter: '' });
+						}}
+					/>
+				</form>
+			</div>
+			<List
+				title="{apps.pageInfo.totalCount} application{apps.pageInfo.totalCount !== 1 ? 's' : ''}
+						{apps.pageInfo.totalCount !== $Applications.data.team.totalApplications.pageInfo.totalCount
+					? `(of total ${$Applications.data.team.totalApplications.pageInfo.totalCount})`
+					: ''}"
+			>
+				{#snippet menu()}
 					<ActionMenu>
 						{#snippet trigger(props)}
 							<Button
@@ -182,7 +165,7 @@
 							</Button>
 						{/snippet}
 						<ActionMenuCheckboxItem
-							checked={$Applications.data.team.environments.every((env) =>
+							checked={$Applications.data?.team.environments.every((env) =>
 								filteredEnvs.includes(env.name)
 							)
 								? true
@@ -193,7 +176,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Applications.data.team.environments as env (env.id)}
+						{#each $Applications.data?.team.environments ?? [] as env (env.id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(env.name)}
 								onchange={(checked) => handleCheckboxChange(env.name, checked)}
@@ -202,7 +185,6 @@
 							</ActionMenuCheckboxItem>
 						{/each}
 					</ActionMenu>
-
 					<ActionMenu>
 						{#snippet trigger(props)}
 							<div style="min-width: 164px">
@@ -290,84 +272,32 @@
 							</ActionMenuRadioGroup>
 						{/key}
 					</ActionMenu>
-				</div>
-			</div>
-			{#each apps.nodes as app (app)}
-				<div class="applications-list-item">
-					<div class="application-link-wrapper">
-						<div>
-							{#if app.status.state === WorkloadState.NAIS}
-								<Tooltip content="Application is NAIS">
-									<CircleFillIcon
-										style="color: var(--a-icon-success); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-									/>
-								</Tooltip>
-							{:else if app.status.state === WorkloadState.NOT_NAIS}
-								<Tooltip content="Application is not NAIS">
-									<CircleFillIcon
-										style="color: var(--a-icon-warning); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-									/>
-								</Tooltip>
-							{:else if app.status.state === WorkloadState.FAILING}
-								<Tooltip content="Application is failing">
-									<CircleFillIcon
-										style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-									/>
-								</Tooltip>
-							{:else}
-								<Tooltip content="Application status is UNKNOWN">
-									<CircleFillIcon
-										style="color: var(--a-icon-neutral); align-self: flex-start; margin-left: -5px;"
-										height="0.5rem"
-										width="0.5rem"
-									/>
-								</Tooltip>
-							{/if}
-						</div>
-						<div class="application-link">
-							<WorkloadLink workload={app} hideTeam />
-						</div>
-					</div>
-					<div class="application-info">
-						{#if app.deployments.nodes.length > 0}
-							{@const timestamp = app.deployments.nodes[0].createdAt}
-							<RocketIcon style="font-size: 1.25rem" />
-							<Tooltip
-								content="Last deploy - {format(timestamp, 'PPPP', {
-									locale: enGB
-								})}"
-							>
-								<div class="application-detail">
-									<Detail><Time time={timestamp} distance={true} /></Detail>
-								</div>
-							</Tooltip>
-						{/if}
-						<InstanceStatus {app} class="instance-status" />
-					</div>
-				</div>
-			{/each}
-		</div>
-		<Pagination
-			page={apps.pageInfo}
-			loaders={{
-				loadPreviousPage: () => {
-					changeQuery({ after: '', before: apps.pageInfo.startCursor ?? '' });
-				},
-				loadNextPage: () => {
-					changeQuery({ before: '', after: apps.pageInfo.endCursor ?? '' });
-				}
-			}}
-		/>
-	{/if}
-{/if}
+				{/snippet}
+				{#each apps.nodes as app (app.id)}
+					<AppListItem {app} />
+				{/each}
+			</List>
+			<Pagination
+				page={apps.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						changeQuery({ before: apps.pageInfo.startCursor ?? '' });
+					},
+					loadNextPage: () => {
+						changeQuery({ after: apps.pageInfo.endCursor ?? '' });
+					}
+				}}
+			/>
+		{/if}
+	</div>
+</div>
 
 <style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;
@@ -386,68 +316,5 @@
 		align-items: center;
 		gap: 4px;
 		margin-left: 4px;
-	}
-	.applications-list {
-		border: 1px solid var(--a-border-default);
-		border-radius: 4px;
-
-		.applications-header {
-			background-color: var(--active-color);
-			border-radius: 4px 4px 0 0;
-			border-bottom: 1px solid var(--a-border-default);
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 8px 12px;
-		}
-		.applications-count {
-			font-weight: bold;
-		}
-		.applications-list-item {
-			.application-link-wrapper {
-				display: flex;
-				gap: 0.3rem;
-			}
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 8px 12px;
-
-			&:not(:last-of-type) {
-				border-bottom: 1px solid var(--a-border-default);
-			}
-
-			&:hover {
-				background-color: var(--a-surface-subtle);
-			}
-
-			.application-link {
-				:global(a) {
-					font-weight: var(--a-font-weight-bold);
-					&:not(:active) {
-						color: var(--a-text-defualt);
-					}
-					text-decoration: none;
-					&:hover {
-						text-decoration: underline;
-					}
-				}
-			}
-		}
-		.application-info {
-			display: grid;
-			grid-template-columns: 20px 1fr;
-			min-width: 114px;
-			gap: 4px;
-
-			:global(.instance-status) {
-				grid-column: 2;
-			}
-		}
-		.application-detail {
-			display: flex;
-			gap: 4px;
-			align-items: center;
-		}
 	}
 </style>

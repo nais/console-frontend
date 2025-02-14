@@ -1,16 +1,18 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
-	import { Detail, Heading, Link, Tooltip } from '@nais/ds-svelte-community';
+	import { Detail, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import IconWithText from '../IconWithText.svelte';
+	import WorkloadLink from '../WorkloadLink.svelte';
 	import ListItem from './ListItem.svelte';
 
 	const {
 		app
 	}: {
 		app: {
+			__typename: string | null;
 			name: string;
 			environment: { name: string };
 			team: { slug: string };
@@ -25,7 +27,7 @@
 </script>
 
 <ListItem>
-	<IconWithText size="large" description={app.environment.name}>
+	<IconWithText size="large">
 		{#snippet icon()}
 			<Tooltip
 				content={{
@@ -46,9 +48,7 @@
 			</Tooltip>
 		{/snippet}
 		{#snippet text()}
-			<Heading level="4" size="xsmall">
-				<Link href="#">{app.name}</Link>
-			</Heading>
+			<WorkloadLink workload={app} hideTeam />
 		{/snippet}
 	</IconWithText>
 	<div class="right">
