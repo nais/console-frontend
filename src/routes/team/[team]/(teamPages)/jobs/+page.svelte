@@ -101,7 +101,6 @@
 			direction?: OrderDirection$options;
 			after?: string;
 			before?: string;
-			resetPagination?: boolean;
 			newFilter?: string;
 			environments?: string;
 		} = {}
@@ -109,8 +108,8 @@
 		changeParams({
 			direction: params.direction || orderDirection,
 			field: params.field || orderField,
-			before: params.resetPagination ? '' : (params.before ?? before),
-			after: params.resetPagination ? '' : (params.after ?? after),
+			before: params.before ?? before,
+			after: params.after ?? after,
 			filter: params.newFilter ?? filter,
 			environments: params.environments ?? ''
 		});
@@ -389,10 +388,10 @@
 			page={jobs.pageInfo}
 			loaders={{
 				loadPreviousPage: () => {
-					changeQuery({ before: jobs.pageInfo.startCursor ?? '' });
+					changeQuery({ after: '', before: jobs.pageInfo.startCursor ?? '' });
 				},
 				loadNextPage: () => {
-					changeQuery({ after: jobs.pageInfo.endCursor ?? '' });
+					changeQuery({ before: '', after: jobs.pageInfo.endCursor ?? '' });
 				}
 			}}
 		/>
