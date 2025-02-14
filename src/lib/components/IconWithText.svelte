@@ -37,7 +37,9 @@
 			{#if typeof description === 'string'}
 				<Detail style="font-weight: normal; color: var(--a-text-subtle);">{description}</Detail>
 			{:else}
-				{@render description()}
+				<Detail style="font-weight: normal; color: var(--a-text-subtle);">
+					{@render description()}
+				</Detail>
 			{/if}
 		</div>
 	</div>

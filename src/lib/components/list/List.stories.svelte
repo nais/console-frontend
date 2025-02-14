@@ -16,6 +16,7 @@
 	import AppListItem from './AppListItem.svelte';
 	import JobRunListItem from './JobRunListItem.svelte';
 	import TeamListItem from './TeamListItem.svelte';
+	import AppInstanceListItem from './AppInstanceListItem.svelte';
 
 	const teams = [
 		{
@@ -215,62 +216,62 @@
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-2gmhx',
 			restarts: 0,
-			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T09:59:36Z'
+			status: { state: 'FAILING', message: 'Failing' },
+			created: new Date('2025-02-12T09:59:36Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-2rdm5',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T09:58:04Z'
+			created: new Date('2025-02-12T09:58:04Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-4k47z',
 			restarts: 0,
-			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T15:34:13Z'
+			status: { state: 'UNKNOWN', message: 'Unknown' },
+			created: new Date('2025-02-12T15:34:13Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-5qg2r',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T16:23:28Z'
+			created: new Date('2025-02-12T16:23:28Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-bpxtx',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T15:09:46Z'
+			created: new Date('2025-02-12T15:09:46Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-fg4c6',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T12:14:10Z'
+			created: new Date('2025-02-12T12:14:10Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-jnzb4',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T16:06:57Z'
+			created: new Date('2025-02-12T16:06:57Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-km9p5',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T15:30:13Z'
+			created: new Date('2025-02-12T15:30:13Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-mfsgp',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T13:35:53Z'
+			created: new Date('2025-02-12T13:35:53Z')
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-xb4st',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: '2025-02-12T12:31:14Z'
+			created: new Date('2025-02-12T12:31:14Z')
 		}
 	];
 </script>
@@ -287,6 +288,14 @@
 	<List title="4 job runs">
 		{#each runs as jobRun}
 			<JobRunListItem run={jobRun} urlBase="/" />
+		{/each}
+	</List>
+</Story>
+
+<Story name="App instances">
+	<List title="{instances.length} application instances">
+		{#each instances as instance}
+			<AppInstanceListItem {instance} urlBase="/" />
 		{/each}
 	</List>
 </Story>

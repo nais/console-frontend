@@ -45,44 +45,44 @@
 <ListItem>
 	<IconWithText size="large">
 		{#snippet description()}
-			<Detail>
-				{#if run.trigger.type === 'MANUAL'}
-					Manually triggered
-					{#if run.startTime}
-						<Time time={run.startTime} distance={true} />
-					{/if}
-					by {run.trigger.actor}.
-				{:else}
-					Automatically triggered
-					{#if run.startTime}
-						<Time time={run.startTime} distance={true} />
-					{/if}
-					by cron schedule.
+			{#if run.trigger.type === 'MANUAL'}
+				Manually triggered
+				{#if run.startTime}
+					<Time time={run.startTime} distance={true} />
 				{/if}
-			</Detail>
+				by {run.trigger.actor}.
+			{:else}
+				Automatically triggered
+				{#if run.startTime}
+					<Time time={run.startTime} distance={true} />
+				{/if}
+				by cron schedule.
+			{/if}
 		{/snippet}
 		{#snippet icon()}
-			{#if run.status.state === 'RUNNING'}
-				<Tooltip content="Job is running">
-					<Loader size="small" variant="interaction" />
-				</Tooltip>
-			{:else if run.status.state === 'PENDING'}
-				<Tooltip content="Job run pending">
-					<Loader size="small" variant="interaction" />
-				</Tooltip>
-			{:else if run.status.state === 'SUCCEEDED'}
-				<Tooltip content="Job ran successfully">
-					<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
-				</Tooltip>
-			{:else if run.status.state === 'FAILED'}
-				<Tooltip content="Job run failed">
-					<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
-				</Tooltip>
-			{:else}
-				<Tooltip content="Job run status is unknown">
-					<QuestionmarkIcon />
-				</Tooltip>
-			{/if}
+			<div class="tooltip-icon-hack">
+				{#if run.status.state === 'RUNNING'}
+					<Tooltip content="Job is running">
+						<Loader size="small" variant="interaction" />
+					</Tooltip>
+				{:else if run.status.state === 'PENDING'}
+					<Tooltip content="Job run pending">
+						<Loader size="small" variant="interaction" />
+					</Tooltip>
+				{:else if run.status.state === 'SUCCEEDED'}
+					<Tooltip content="Job ran successfully">
+						<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+					</Tooltip>
+				{:else if run.status.state === 'FAILED'}
+					<Tooltip content="Job run failed">
+						<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+					</Tooltip>
+				{:else}
+					<Tooltip content="Job run status is unknown">
+						<QuestionmarkIcon />
+					</Tooltip>
+				{/if}
+			</div>
 		{/snippet}
 		{#snippet text()}
 			<Heading level="4" size="xsmall">
@@ -97,6 +97,11 @@
 </ListItem>
 
 <style>
+	.tooltip-icon-hack {
+		display: contents;
+		line-height: 0;
+	}
+
 	.right {
 		display: flex;
 		flex-direction: column;
