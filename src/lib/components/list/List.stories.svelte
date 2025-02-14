@@ -13,10 +13,10 @@
 <script lang="ts">
 	import Pagination from '$lib/Pagination.svelte';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
+	import AppInstanceListItem from './AppInstanceListItem.svelte';
 	import AppListItem from './AppListItem.svelte';
 	import JobRunListItem from './JobRunListItem.svelte';
 	import TeamListItem from './TeamListItem.svelte';
-	import AppInstanceListItem from './AppInstanceListItem.svelte';
 
 	const teams = [
 		{
@@ -278,7 +278,7 @@
 
 <Story name="Teams">
 	<List>
-		{#each teams as team}
+		{#each teams as team (team.slug)}
 			<TeamListItem {team} />
 		{/each}
 	</List>
@@ -286,7 +286,7 @@
 
 <Story name="Job runs">
 	<List title="4 job runs">
-		{#each runs as jobRun}
+		{#each runs as jobRun (jobRun)}
 			<JobRunListItem run={jobRun} urlBase="/" />
 		{/each}
 	</List>
@@ -294,7 +294,7 @@
 
 <Story name="App instances">
 	<List title="{instances.length} application instances">
-		{#each instances as instance}
+		{#each instances as instance (instance)}
 			<AppInstanceListItem {instance} urlBase="/" />
 		{/each}
 	</List>
@@ -318,7 +318,7 @@
 				<ActionMenuCheckboxItem>All environments</ActionMenuCheckboxItem>
 			</ActionMenu>
 		{/snippet}
-		{#each apps as app}
+		{#each apps as app (app)}
 			<AppListItem {app} />
 		{/each}
 	</List>

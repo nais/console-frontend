@@ -1,14 +1,10 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
 	import { Detail, Heading, Link, Tooltip } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkCircleFillIcon,
-		QuestionmarkIcon,
-		XMarkOctagonFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkIcon, XMarkOctagonFillIcon } from '@nais/ds-svelte-community/icons';
 	import IconWithText from '../IconWithText.svelte';
-	import ListItem from './ListItem.svelte';
 	import RunningIndicator from '../RunningIndicator.svelte';
+	import ListItem from './ListItem.svelte';
 
 	const {
 		instance,
