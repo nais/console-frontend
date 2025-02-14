@@ -63,7 +63,7 @@
 
 <style>
 	.icon-with-text {
-		display: grid;
+		display: inline-grid;
 		grid-auto-flow: column;
 		align-items: center;
 	}
