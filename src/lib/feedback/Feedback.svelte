@@ -16,6 +16,7 @@
 	let anonymous: boolean = $state(false);
 	let uri = '';
 
+	let loading = $state(false);
 	let feedbackSent: boolean = $state(false);
 
 	let errorMessage: string = '';
@@ -45,6 +46,7 @@
 	};
 
 	const submitFeedback = async () => {
+		loading = true;
 		let response = '';
 		try {
 			const result = await fetch('/api/send-feedback', {
@@ -59,7 +61,7 @@
 					anonymous: anonymous
 				})
 			});
-
+			loading = false;
 			const data = await result.json();
 
 			response = data.ok ? 'Message sent!' : 'Failed to send message.';
@@ -137,7 +139,7 @@
 		{#if feedbackSent}
 			<Button variant="primary" size="small" onclick={close}>Close</Button>
 		{:else}
-			<Button variant="primary" size="small" onclick={submitFeedback}>Submit</Button>
+			<Button variant="primary" size="small" {loading} onclick={submitFeedback}>Submit</Button>
 			<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 		{/if}
 	{/snippet}
