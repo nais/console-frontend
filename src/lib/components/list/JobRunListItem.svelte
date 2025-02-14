@@ -86,7 +86,7 @@
 		{/snippet}
 		{#snippet text()}
 			<Heading level="4" size="xsmall">
-				<Link href="{urlBase}{run.name}">slack-teams-notification-28855320</Link>
+				<Link href="{urlBase}{run.name}">{run.name}</Link>
 			</Heading>
 		{/snippet}
 	</IconWithText>
