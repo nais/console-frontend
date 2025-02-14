@@ -11,15 +11,17 @@
 	import ListItem from './ListItem.svelte';
 
 	const {
-		jobRun
+		run,
+		urlBase
 	}: {
-		jobRun: {
+		run: {
 			name: string;
-			startTime: Date;
+			startTime: Date | null;
 			duration: number;
 			status: { state: string; message: string };
-			trigger: { type: 'MANUAL'; actor: string } | { type: 'AUTOMATIC' };
+			trigger: { type: 'MANUAL' | 'AUTOMATIC'; actor: string | null };
 		};
+		urlBase: string;
 	} = $props();
 
 	const formatDuration = (duration: number) => {
@@ -44,35 +46,35 @@
 	<IconWithText size="large">
 		{#snippet description()}
 			<Detail>
-				{#if jobRun.trigger.type === 'MANUAL'}
+				{#if run.trigger.type === 'MANUAL'}
 					Manually triggered
-					{#if jobRun.startTime}
-						<Time time={jobRun.startTime} distance={true} />
+					{#if run.startTime}
+						<Time time={run.startTime} distance={true} />
 					{/if}
-					by {jobRun.trigger.actor}.
+					by {run.trigger.actor}.
 				{:else}
 					Automatically triggered
-					{#if jobRun.startTime}
-						<Time time={jobRun.startTime} distance={true} />
+					{#if run.startTime}
+						<Time time={run.startTime} distance={true} />
 					{/if}
 					by cron schedule.
 				{/if}
 			</Detail>
 		{/snippet}
 		{#snippet icon()}
-			{#if jobRun.status.state === 'RUNNING'}
+			{#if run.status.state === 'RUNNING'}
 				<Tooltip content="Job is running">
 					<Loader size="small" variant="interaction" />
 				</Tooltip>
-			{:else if jobRun.status.state === 'PENDING'}
+			{:else if run.status.state === 'PENDING'}
 				<Tooltip content="Job run pending">
 					<Loader size="small" variant="interaction" />
 				</Tooltip>
-			{:else if jobRun.status.state === 'SUCCEEDED'}
+			{:else if run.status.state === 'SUCCEEDED'}
 				<Tooltip content="Job ran successfully">
 					<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
 				</Tooltip>
-			{:else if jobRun.status.state === 'FAILED'}
+			{:else if run.status.state === 'FAILED'}
 				<Tooltip content="Job run failed">
 					<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
 				</Tooltip>
@@ -84,13 +86,13 @@
 		{/snippet}
 		{#snippet text()}
 			<Heading level="4" size="xsmall">
-				<Link href="#">slack-teams-notification-28855320</Link>
+				<Link href="{urlBase}{run.name}">slack-teams-notification-28855320</Link>
 			</Heading>
 		{/snippet}
 	</IconWithText>
 	<div class="right">
-		<IconWithText size="small" text={formatDuration(jobRun.duration)} icon={TimerIcon} />
-		<Detail>{jobRun.status.message}</Detail>
+		<IconWithText size="small" text={formatDuration(run.duration)} icon={TimerIcon} />
+		<Detail>{run.status.message}</Detail>
 	</div>
 </ListItem>
 

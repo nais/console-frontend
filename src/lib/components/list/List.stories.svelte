@@ -46,7 +46,7 @@
 			startTime: new Date('2022-02-22T09:00:00Z'),
 			duration: 1185,
 			status: { state: 'RUNNING', message: 'Running' },
-			trigger: { type: 'AUTOMATIC' }
+			trigger: { type: 'AUTOMATIC', actor: null }
 		},
 		{
 			name: 'fix-nais-api-path',
@@ -67,7 +67,7 @@
 			startTime: new Date('2022-02-22T09:00:00Z'),
 			duration: 1048,
 			status: { state: 'SUCCEEDED', message: 'Succeeded' },
-			trigger: { type: 'AUTOMATIC' }
+			trigger: { type: 'AUTOMATIC', actor: null }
 		}
 	] as const;
 
@@ -223,7 +223,7 @@
 <Story name="Job runs">
 	<List title="4 job runs">
 		{#each runs as jobRun}
-			<JobRunListItem {jobRun} />
+			<JobRunListItem run={jobRun} urlBase="/" />
 		{/each}
 	</List>
 </Story>
