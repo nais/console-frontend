@@ -38,6 +38,6 @@ describe('urlToBreadcrumbs', () => {
 			]
 		]
 	])('%s', (url, expected) => {
-		expect(urlToBreadcrumbs(url)).toEqual(expected);
+		expect(urlToBreadcrumbs(new URL(url))).toEqual(expected);
 	});
 });

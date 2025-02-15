@@ -17,23 +17,24 @@ const worloadLabels = (workloadType: string) => {
 	}
 };
 
-export const urlToBreadcrumbs = (url: string): { label: string; href: string }[] => {
-	const split = new URL(url).pathname.split('/');
+export const urlToBreadcrumbs = ({ pathname }: URL): { label: string; href: string }[] => {
+	const split = pathname.split('/');
 
 	if (split.length < 4) {
 		return [];
 	}
 
-	let res = [{ label: split[2], href: split.slice(0, 3).join('/') }];
+	const [_0, _1, team, env, workloadType, workload] = split;
+
+	let res = [{ label: team, href: `/team/${team}` }];
 
 	if (split.length === 4) {
 		return res;
 	}
 
-	const [_0, _1, team, env, workloadType, workload] = split;
 	const { pageName, plural, singular } = worloadLabels(workloadType);
 
-	res.push({ label: pageName, href: `/team/${team}/${plural}` });
+	res = [...res, { label: pageName, href: `/team/${team}/${plural}` }];
 
 	if (split.length === 6) {
 		return res;
