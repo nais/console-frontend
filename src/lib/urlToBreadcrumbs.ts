@@ -24,7 +24,7 @@ export const urlToBreadcrumbs = ({ pathname }: URL): { label: string; href: stri
 		return [];
 	}
 
-	const [_0, _1, team, env, workloadType, workload] = split;
+	const [, , team, env, workloadType, workload] = split;
 
 	let res = [{ label: team, href: `/team/${team}` }];
 
