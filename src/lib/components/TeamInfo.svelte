@@ -2,10 +2,14 @@
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, WorkloadState, type ValueOf } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
-	import { Skeleton } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Heading, Skeleton } from '@nais/ds-svelte-community';
+	import {
+		ExclamationmarkTriangleFillIcon,
+		QuestionmarkIcon
+	} from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { TeamInfoVariables } from './$houdini';
+	import IconWithText from './IconWithText.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -66,7 +70,8 @@
 	});
 </script>
 
-<h4>Team summary</h4>
+<Heading level="4" size="small" spacing>Team summary</Heading>
+
 {#if $teamInfo.data}
 	{@const t = $teamInfo.data.team}
 	{#if t.purpose !== PendingValue}
@@ -99,46 +104,29 @@
 		{/if}
 		<br />
 	{/if}
-
-	{#if status == 'NAIS'}
-		<div class="nais">
-			<Nais
-				size="3rem"
-				style="color: var(--a-icon-success)"
-				aria-label="All workloads are Nais"
-				role="image"
+	<div class="nais">
+		{#if status == 'NAIS'}
+			<IconWithText icon={Nais} text="All workloads are Nais" size="medium" />
+		{:else if status === 'FAILING'}
+			<IconWithText
+				icon={ExclamationmarkTriangleFillIcon}
+				text="One or more workloads are failing"
+				size="medium"
 			/>
-			<p>Keep up the good work!</p>
-		</div>
-	{:else if status == 'FAILING'}
-		<div class="nais">
-			<ExclamationmarkTriangleFillIcon
-				height="3em"
-				width="3em"
-				style="color: var(--a-icon-danger)"
+		{:else if status === 'NOT_NAIS'}
+			<IconWithText
+				icon={ExclamationmarkTriangleFillIcon}
+				text="One or more workloads are having issues"
+				size="medium"
 			/>
-			<p>One or more workloads are failing</p>
-		</div>
-	{:else if status == 'NOT_NAIS'}
-		<div class="nais">
-			<ExclamationmarkTriangleFillIcon
-				height="3em"
-				width="3em"
-				style="color: var(--a-icon-warning)"
-			/>
-			<p>One or more workloads are having issues</p>
-		</div>
-	{:else}
-		<p>Team status is unknown</p>
-	{/if}
+		{:else}
+			<IconWithText icon={QuestionmarkIcon} text="Team status is unknown" size="medium" />
+		{/if}
+	</div>
 {/if}
 
 <style>
 	.nais {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		margin-top: 1rem;
+		padding-top: 1rem;
 	}
 </style>

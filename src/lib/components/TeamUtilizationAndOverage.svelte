@@ -2,7 +2,7 @@
 	import { graphql, PendingValue, UtilizationResourceType } from '$houdini';
 	import { percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
-	import { HelpText, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Heading, Skeleton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { AggregatedTeamUtilizationVariables } from './$houdini';
 	import Cost from './Cost.svelte';
 
@@ -70,12 +70,13 @@
 	);
 </script>
 
-<h4 class="container">
+<!--h4 class="container">
 	Utilization<HelpText title="Current team utilization"
 		>Current CPU and memory utilization for the team's application.<br />Overage cost is an annual
 		estimate based on current utilization.</HelpText
 	>
-</h4>
+</h4-->
+<Heading level="4" size="small" spacing>Utilization</Heading>
 <Table size="small" zebraStripes>
 	<Thead>
 		<Tr>
@@ -124,10 +125,3 @@
 	{/if}
 </p>
 <a href="/team/{teamSlug}/utilization">View team utilization</a>
-
-<style>
-	.container {
-		display: flex;
-		justify-content: space-between;
-	}
-</style>

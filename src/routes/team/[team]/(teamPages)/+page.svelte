@@ -6,7 +6,7 @@
 	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	import IconWithText from '$lib/components/IconWithText.svelte';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
@@ -47,6 +47,7 @@
 	</Card>
 
 	<Card rows={1} columns={12}>
+		<Heading level="4" size="small" spacing>Deployments</Heading>
 		{#if $TeamOverview.data}
 			<Deploys team={$TeamOverview.data.team} />
 		{/if}

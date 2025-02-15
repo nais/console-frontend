@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql, PendingValue } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { HelpText, Skeleton } from '@nais/ds-svelte-community';
+	import { Heading, HelpText, Skeleton } from '@nais/ds-svelte-community';
 	import type { AggregatedTeamCostVariables } from './$houdini';
 	import Cost from './Cost.svelte';
 
@@ -45,12 +45,12 @@
 	}
 </script>
 
-<h4 class="container">
-	Cost<HelpText title="Aggregated team cost"
+<div class="header">
+	<Heading level="4" size="small" spacing>Cost</Heading>
+	<HelpText title="Aggregated team cost"
 		>Aggregated cost for team. Current month is estimated.</HelpText
 	>
-</h4>
-
+</div>
 <GraphErrors errors={$costQuery.errors} />
 
 {#if $costQuery.data !== null}
@@ -92,8 +92,9 @@
 {/if}
 
 <style>
-	.container {
+	.header {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 	}
 </style>

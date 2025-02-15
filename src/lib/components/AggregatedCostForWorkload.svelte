@@ -107,6 +107,8 @@
 				? 'job'
 				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</Link
 		>
+	{:else}
+		No cost data available
 	{/if}
 </div>
 

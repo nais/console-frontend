@@ -3,7 +3,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import { untrack } from 'svelte';
 	import type { ImageVulnerabilitiesVariables } from './$houdini';
@@ -146,7 +146,7 @@
 	};
 </script>
 
-<h4>Vulnerabilities</h4>
+<Heading level="4" size="small">Vulnerabilities</Heading>
 <Table
 	zebraStripes
 	size="small"
