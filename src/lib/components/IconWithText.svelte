@@ -65,9 +65,12 @@
 
 <style>
 	.icon-with-text {
-		display: inline-grid;
-		grid-auto-flow: column;
+		display: flex;
 		align-items: center;
+
+		> * {
+			flex: 1 1 0;
+		}
 	}
 	.icon-with-text--small {
 		font-size: 0.875rem;

@@ -1,7 +1,7 @@
 <script lang="ts">
+	import SearchButton from '$lib/components/search/SearchButton.svelte';
 	import { docURL } from '$lib/doc';
 	import Logo from '../Logo.svelte';
-	import Search from './Search.svelte';
 
 	interface Props {
 		user:
@@ -24,7 +24,7 @@
 			</a>
 		</div>
 		<div class="right">
-			<Search />
+			<SearchButton />
 			<nav>
 				<ul>
 					<li>

@@ -11,8 +11,8 @@
 
 <div class="page-header">
 	<div class="breadcrumbs">
-		{#each breadcrumbs as { label, href } (href)}
-			<Link {href} class="link">{label}</Link>
+		{#each breadcrumbs as breadcrumb (breadcrumb)}
+			<Link href={breadcrumb.href} class="link">{breadcrumb.label}</Link>
 			<span class="divider">/</span>
 		{/each}
 	</div>
