@@ -13,7 +13,10 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.tenantName = env.TENANT_NAME || '';
 	event.locals.githubOrganization = env.GITHUB_ORGANIZATION || '';
-	return await resolve(event, {
+	const response = await resolve(event, {
 		filterSerializedResponseHeaders: () => true
 	});
+
+	response.headers.delete('link');
+	return response;
 };
