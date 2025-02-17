@@ -78,9 +78,7 @@
 			<div class="summary">
 				<Heading level="4" size="small" spacing>Summary</Heading>
 				{#if image.vulnerabilitySummary}
-					<div class="badges">
-						<VulnerabilityBadges summary={image.vulnerabilitySummary} />
-					</div>
+					<VulnerabilityBadges summary={image.vulnerabilitySummary} />
 				{:else if !image.hasSBOM}
 					<ExclamationmarkTriangleFillIcon
 						size="1rem"
@@ -115,11 +113,6 @@
 {/if}
 
 <style>
-	.badges {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
 	.header {
 		display: flex;
 		justify-content: space-between;

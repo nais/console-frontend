@@ -31,18 +31,18 @@
 	<IconWithText icon={PersonGroupIcon} text={teamSlug} size="large" />
 </div>
 <div class="grid">
-	<Card rows={2} columns={3}>
+	<Card rows={1} columns={3}>
 		<TeamInfo {teamSlug} />
 	</Card>
 
-	<Card rows={2} columns={3}>
+	<Card rows={1} columns={3}>
 		<VulnerabilitySummary {teamSlug} />
 	</Card>
 
-	<Card rows={2} columns={3}>
+	<Card rows={1} columns={3}>
 		<TeamUtilizationAndOverage {teamSlug} />
 	</Card>
-	<Card rows={2} columns={3}>
+	<Card rows={1} columns={3}>
 		<AggregatedCostForTeam {teamSlug} />
 	</Card>
 
