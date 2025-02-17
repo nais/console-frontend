@@ -15,12 +15,22 @@
 	}: {
 		query: string;
 		loading?: boolean;
-		results?: {
-			icon: Component;
-			title: string;
-			description?: string;
-			href: string;
-		}[];
+		results?:
+			| {
+					icon: Component;
+					title: string;
+					description: string;
+					type: 'link';
+					href: string;
+			  }[]
+			| {
+					icon: Component;
+					title: string;
+					description: string;
+					type: 'button';
+					action: () => Promise<any> | void;
+					buttonText: string;
+			  }[];
 		close: () => void;
 	} = $props();
 
@@ -44,7 +54,10 @@
 						selected = Math.max(0, selected - 1);
 						e.preventDefault();
 					} else if (e.key === 'Enter') {
-						goto(results[selected].href);
+						const s = results[selected];
+						if (s.type === 'link') {
+							goto(s.href);
+						}
 						close();
 					}
 				}
@@ -58,13 +71,20 @@
 				<ResultSkeleton />
 			{/each}
 		{:else if results}
-			{#each results as { icon, title, description, href }, i}
-				<div class={['result', { selected: i === selected }]}>
+			{#each results as { icon, description, title, ...rest }, i (icon + title + i)}
+				<div class={['result', { selected: i === selected && rest.type === 'link' }]}>
 					<IconWithText {icon} {description}>
 						{#snippet text()}
-							<Link {href} onclick={close}>{title}</Link>
+							{#if rest.type === 'button'}
+								{title}
+							{:else}
+								<Link href={rest.href} onclick={close}>{title}</Link>
+							{/if}
 						{/snippet}
 					</IconWithText>
+					{#if rest.type === 'button'}
+						<Button onclick={rest.action} size="small">{rest.buttonText}</Button>
+					{/if}
 				</div>
 			{:else}
 				<div class="no-results">
@@ -113,6 +133,10 @@
 		}
 
 		.result {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: var(--a-spacing-4);
+			align-items: center;
 			border-radius: 4px;
 			padding: var(--a-spacing-1);
 

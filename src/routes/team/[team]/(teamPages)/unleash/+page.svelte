@@ -213,7 +213,7 @@
 	</Confirm>
 
 	<div class="modal-overrider">
-		<Modal bind:open={addTeamModalOpen} width="small">
+		<Modal bind:open={addTeamModalOpen} width="medium">
 			{#snippet header()}
 				<Heading>Give team access to this Unleash</Heading>
 			{/snippet}

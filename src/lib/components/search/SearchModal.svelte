@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { logEvent } from '$lib/amplitude';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
@@ -25,6 +24,7 @@
 					__typename
 					... on Team {
 						slug
+						purpose
 					}
 					... on Application {
 						name
@@ -184,8 +184,6 @@
 				const category = Object.values(categories).find((c) => c.prefix === prefix);
 				const type = q ? category?.type : undefined;
 				store.fetch({ variables: { query: type ? q.trim() : query, type } });
-
-				logEvent('search');
 			}, 300);
 
 			return () => clearTimeout(timeout);
@@ -206,7 +204,9 @@
 						return {
 							icon,
 							title: result.slug,
-							href: `/team/${result.slug}`
+							description: result.purpose,
+							href: `/team/${result.slug}`,
+							type: 'link'
 						};
 					}
 
@@ -214,7 +214,8 @@
 						icon,
 						title: result.name,
 						description: `${result.team.slug} / ${result.environment.name}`,
-						href: `/team/${result.team.slug}/${result.environment.name}/${urlName}/${result.name}`
+						href: `/team/${result.team.slug}/${result.environment.name}/${urlName}/${result.name}`,
+						type: 'link'
 					};
 				})
 			: undefined}

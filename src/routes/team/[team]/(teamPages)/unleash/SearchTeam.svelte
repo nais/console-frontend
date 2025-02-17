@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, type SearchQuery$result, type TeamSearchQuery$result } from '$houdini';
-	import SearchResults from '$lib/SearchResults.svelte';
+	// import SearchResults from '$lib/components/search/SearchResults.svelte';
 	import { Search } from '@nais/ds-svelte-community';
 
 	const store = graphql(`
@@ -112,7 +112,7 @@
 		oninput={searchTeam}
 	/>
 	{#if $store.data && showSearch}
-		<SearchResults {showSearch} data={hack($store.data)} {onSelected} bind:query {selected} />
+		<!-- <SearchResults {showSearch} data={hack($store.data)} {onSelected} bind:query {selected} /> -->
 	{/if}
 </div>
 

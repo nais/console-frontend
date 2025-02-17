@@ -26,7 +26,7 @@
 
 <svelte:head><title>Console</title></svelte:head>
 
-{#if userTeams !== false && userTeams === 0}
+{#if userTeams === 0}
 	<div class="page">
 		<div class="feedback">
 			<Button
@@ -37,9 +37,7 @@
 				}}>Feedback</Button
 			>
 		</div>
-		<div class="grid">
-			<Onboarding {tenantName} />
-		</div>
+		<Onboarding {tenantName} />
 	</div>
 {:else}
 	<div class="hero">
@@ -119,13 +117,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
 	}
 	.feedback {
 		display: flex;
