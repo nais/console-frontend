@@ -32,7 +32,6 @@
 		type ImageVulnerabilityState,
 		type ValueOf
 	} from '$houdini';
-	import { logEvent } from '$lib/amplitude';
 	import {
 		Alert,
 		Button,
@@ -124,7 +123,6 @@
 			return;
 		}
 
-		logEvent('suppressFinding');
 		errormessage = '';
 		const imagePage = '/team/' + team + '/' + env + '/' + workload + '/image';
 		close();

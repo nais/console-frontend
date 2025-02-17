@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { afterNavigate, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { graphql } from '$houdini';
-	import { logEvent } from '$lib/amplitude';
 	import { docURL } from '$lib/doc';
 	import SearchResults from '$lib/SearchResults.svelte';
 	import { Search } from '@nais/ds-svelte-community';
@@ -176,7 +175,6 @@
 					store.fetch({ variables: { query, type: null } });
 					unsupportedFilter = false;
 				}
-				logEvent('search');
 			}, 500);
 		}
 	}
@@ -250,14 +248,6 @@
 				break;
 		}
 	}
-
-	afterNavigate((nav) => {
-		let props = {};
-		if (nav.to?.route.id != null) {
-			props = { routeID: nav.to.route.id };
-		}
-		logEvent('pageview', props);
-	});
 </script>
 
 <div class="header">

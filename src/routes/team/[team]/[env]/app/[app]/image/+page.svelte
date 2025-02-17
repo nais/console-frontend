@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { logEvent } from '$lib/amplitude';
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 
@@ -34,14 +33,6 @@
 			));
 		}
 	});
-
-	const onclick = () => {
-		let props = {};
-		props = {
-			routeID: '/dependencytrack/app/findings'
-		};
-		logEvent('pageview', props);
-	};
 </script>
 
 <GraphErrors errors={$ApplicationImageDetails.errors} />
@@ -101,7 +92,7 @@
 						style="color: var(--a-icon-warning); margin-right: 0.5rem"
 					/>
 					No data found.
-					<a href={docURL('/services/vulnerabilities/how-to/sbom/')} {onclick}> How to fix</a>
+					<a href={docURL('/services/vulnerabilities/how-to/sbom/')}> How to fix</a>
 				{/if}
 			</div>
 		</Card>

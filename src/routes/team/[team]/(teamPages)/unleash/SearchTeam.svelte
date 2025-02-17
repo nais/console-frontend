@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { graphql, type SearchQuery$result, type TeamSearchQuery$result } from '$houdini';
 	import SearchResults from '$lib/SearchResults.svelte';
-	import { logEvent } from '$lib/amplitude';
 	import { Search } from '@nais/ds-svelte-community';
 
 	const store = graphql(`
@@ -46,7 +45,6 @@
 			showSearch = true;
 			timeout = setTimeout(() => {
 				store.fetch({ variables: { query: query } });
-				logEvent('search');
 			}, 500);
 		}
 	}
