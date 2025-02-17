@@ -73,18 +73,51 @@
 
 		if (series.length === 0) return { firstMonthSum: 0, estimatedSecondMonthSum: 0 };
 
-		// Extract the first date to determine the first month
-		const firstEntryDate = new Date(series[0].date);
+		// Sort dataset by date to ensure first entry is truly the earliest
+		const sortedSeries = [...series].sort(
+			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+		);
+
+		// Extract unique months from dataset
+		const uniqueMonths = new Set(
+			sortedSeries.map((entry) => {
+				const date = new Date(entry.date);
+				return `${date.getFullYear()}-${date.getMonth()}`;
+			})
+		);
+
+		// If there's only one month in the dataset, estimate that month and return 0 for the previous
+		if (uniqueMonths.size === 1) {
+			const firstEntryDate = new Date(sortedSeries[0].date);
+			const currentMonth = firstEntryDate.getMonth();
+			const currentYear = firstEntryDate.getFullYear();
+			const totalDaysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+			let currentMonthSum = 0;
+			let currentMonthDays = 0;
+
+			for (const entry of series) {
+				currentMonthSum += entry.sum;
+				currentMonthDays++;
+			}
+
+			const estimatedCurrentMonthSum =
+				currentMonthDays > 0 ? (currentMonthSum / currentMonthDays) * totalDaysInCurrentMonth : 0;
+
+			return { firstMonthSum: 0, estimatedSecondMonthSum: estimatedCurrentMonthSum };
+		}
+
+		// Otherwise, proceed with normal calculations for first and second month
+		const firstEntryDate = new Date(sortedSeries[0].date);
 		const firstMonth = firstEntryDate.getMonth();
 		const firstYear = firstEntryDate.getFullYear();
-
 		const secondMonth = (firstMonth + 1) % 12;
-		const secondYear = firstMonth === 11 ? firstYear + 1 : firstYear; // Handle December -> January transition
+		const secondYear = firstMonth === 11 ? firstYear + 1 : firstYear;
+		const totalDaysInSecondMonth = new Date(secondYear, secondMonth + 1, 0).getDate();
 
 		let firstMonthSum = 0;
 		let secondMonthSum = 0;
 		let secondMonthDays = 0;
-		let totalDaysInSecondMonth = new Date(secondYear, secondMonth + 1, 0).getDate(); // Get total days in second month
 
 		for (const entry of series) {
 			const entryDate = new Date(entry.date);
@@ -99,9 +132,8 @@
 			}
 		}
 
-		// Estimate second month's total based on available data
-		const averageDailyCost = secondMonthDays > 0 ? secondMonthSum / secondMonthDays : 0;
-		const estimatedSecondMonthSum = averageDailyCost * totalDaysInSecondMonth;
+		const estimatedSecondMonthSum =
+			secondMonthDays > 0 ? (secondMonthSum / secondMonthDays) * totalDaysInSecondMonth : 0;
 
 		return { firstMonthSum, estimatedSecondMonthSum };
 	}
