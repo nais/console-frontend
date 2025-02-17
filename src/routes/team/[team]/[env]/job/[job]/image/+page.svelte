@@ -43,7 +43,8 @@
 	{@const image = $JobImageDetails.data.team.environment.workload.image}
 	<div class="grid">
 		<Card columns={8}>
-			<div class="copy">
+			<div class="details">
+				<Heading level="4" size="small" spacing>Details</Heading>
 				<CopyButton
 					size="xsmall"
 					variant="action"
@@ -72,11 +73,13 @@
 			</div>
 		</Card>
 
-		<Card columns={2}>
+		<Card columns={3}>
 			<div class="summary">
 				<Heading level="4" size="small" spacing>Summary</Heading>
 				{#if image.vulnerabilitySummary}
-					<VulnerabilityBadges summary={image.vulnerabilitySummary} />
+					<div class="badges">
+						<VulnerabilityBadges summary={image.vulnerabilitySummary} />
+					</div>
 				{:else if !image.hasSBOM}
 					<ExclamationmarkTriangleFillIcon
 						size="1rem"
@@ -95,7 +98,7 @@
 				{/if}
 			</div></Card
 		>
-		<Card columns={12}>
+		<Card columns={11}>
 			<ImageVulnerabilities
 				team={$JobImageDetails.data?.team.slug}
 				environment={$JobImageDetails.data?.team.environment.name}
@@ -104,13 +107,18 @@
 			/>
 		</Card>
 
-		<Card columns={12}>
+		<Card columns={11}>
 			<ImageWorkloadReferences {image} />
 		</Card>
 	</div>
 {/if}
 
 <style>
+	.badges {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 	.header {
 		display: flex;
 		justify-content: space-between;
@@ -119,9 +127,9 @@
 		margin-bottom: var(--a-spacing-3);
 	}
 
-	.copy {
+	.details {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: space-between;
 	}
 
 	code {
