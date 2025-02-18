@@ -2,11 +2,12 @@
 	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { BranchingIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -123,10 +124,7 @@
 	const errorMessage = `Invalid input`;
 </script>
 
-<div class="header">
-	<IconWithText text="Repositories" icon={BranchingIcon} size="large" />
-</div>
-
+<PageHeader {...urlToPageHeader(page.url)} />
 {#if $Repositories.data}
 	<div class="grid">
 		{#if $Repositories.data.team}
@@ -239,13 +237,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.input {
 		font-size: 1rem;
 		margin: 1rem 0;

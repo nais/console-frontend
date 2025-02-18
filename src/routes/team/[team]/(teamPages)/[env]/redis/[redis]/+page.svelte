@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { RedisInstanceAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -38,18 +40,14 @@
 	};
 </script>
 
+<PageHeader {...urlToPageHeader(page.url)} />
+
 {#if $RedisInstance.errors}
 	<GraphErrors errors={$RedisInstance.errors} />
 {/if}
 {#if $RedisInstance.data}
 	{@const instance = $RedisInstance.data.team.environment.redisInstance}
-	<PersistenceHeader
-		type={instance.__typename}
-		name={instance.name}
-		environment={instance.environment.name}
-		text="All Redis instances"
-		path="/team/{$RedisInstance.data?.team.slug}/redis"
-	/>
+
 	<div class="grid">
 		<Card columns={12}>
 			<h3>Redis details</h3>

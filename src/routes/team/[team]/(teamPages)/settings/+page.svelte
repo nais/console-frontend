@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/state';
 	import {
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
@@ -7,14 +8,14 @@
 		type QueryResult
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
 		ChatExclamationmarkIcon,
-		CogIcon,
 		EyeIcon,
 		EyeSlashIcon,
 		TrashIcon
@@ -126,10 +127,7 @@
 	//let rotateClicked = false;
 </script>
 
-<div class="header">
-	<IconWithText text="Team settings" icon={CogIcon} size="large" />
-</div>
-
+<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$TeamSettings.errors} />
 
 {#if teamSettings}
@@ -478,13 +476,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	dl {
 		display: block;
 		margin-block-start: 0.2em;

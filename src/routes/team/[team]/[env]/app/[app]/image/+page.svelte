@@ -2,14 +2,16 @@
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import { page } from '$app/state';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import VulnerabilityBadges from '$lib/components/VulnerabilityBadges.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { parseImage } from '$lib/utils/image';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon, ImageIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -35,10 +37,9 @@
 	});
 </script>
 
+<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$ApplicationImageDetails.errors} />
-<div class="header">
-	<IconWithText icon={ImageIcon} text="Image" size="large" />
-</div>
+
 {#if $ApplicationImageDetails.data}
 	{@const image = $ApplicationImageDetails.data.team.environment.workload.image}
 

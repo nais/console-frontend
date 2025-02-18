@@ -3,10 +3,11 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import {
 		Alert,
 		CopyButton,
@@ -41,6 +42,8 @@
 	const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 </script>
 
+<PageHeader {...urlToPageHeader(page.url)} />
+
 {#if $SqlInstance.errors}
 	{#each distinctErrors($SqlInstance.errors) as error (error)}
 		<Alert style="margin-bottom: 1rem;" variant="error">
@@ -48,13 +51,6 @@
 		</Alert>
 	{/each}
 {:else if instance}
-	<PersistenceHeader
-		type={instance.__typename}
-		name={instance.name}
-		environment={instance.environment.name}
-		text="All Postgres instances"
-		path="/team/{$SqlInstance.data?.team.slug}/postgres"
-	/>
 	<div class="summary-grid">
 		<Card columns={3}>
 			<SummaryCard
