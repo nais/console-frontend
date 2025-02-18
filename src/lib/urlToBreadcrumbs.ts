@@ -1,44 +1,87 @@
-const worloadLabels = (workloadType: string) => {
-	switch (workloadType) {
+const label = (type: string) => {
+	switch (type) {
 		case 'job':
 			return {
 				pageName: 'Jobs',
-				singular: 'job',
 				plural: 'jobs'
 			};
 		case 'app':
 			return {
 				pageName: 'Applications',
-				singular: 'app',
 				plural: 'applications'
 			};
+		case 'secret':
+			return {
+				pageName: 'Secrets',
+				plural: 'secrets'
+			};
+		case 'postgres':
+			return {
+				pageName: 'Postgres instances',
+				plural: 'postgres'
+			};
+		case 'bucket':
+			return {
+				pageName: 'Buckets',
+				plural: 'buckets'
+			};
+		case 'redis':
+			return {
+				pageName: 'Redis instances',
+				plural: 'redis'
+			};
+		case 'valkey':
+			return {
+				pageName: 'Valkey instances',
+				plural: 'valkey'
+			};
+		case 'opensearch':
+			return {
+				pageName: 'OpenSearch instances',
+				plural: 'opensearch'
+			};
+		case 'kafka':
+			return {
+				pageName: 'Kafka topics',
+				plural: 'kafka'
+			};
+		case 'bigquery':
+			return {
+				pageName: 'BigQuery datasets',
+				plural: 'bigquery'
+			};
 		default:
-			throw new Error(`Unknown workload type: ${workloadType}`);
+			throw new Error(`Unknown resource type ${type}`);
 	}
 };
 
-export const urlToBreadcrumbs = ({ pathname }: URL): { label: string; href: string }[] => {
+type Result = {
+	label: string;
+	href?: string;
+};
+
+export const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 	const split = pathname.split('/');
 
 	if (split.length < 4) {
 		return [];
 	}
 
-	const [, , team, env, workloadType, workload] = split;
+	const [, , team, env, type, resource] = split;
 
-	let res = [{ label: team, href: `/team/${team}` }];
+	let res: Result[] = [{ label: team, href: `/team/${team}` }];
 
 	if (split.length === 4) {
 		return res;
 	}
 
-	const { pageName, plural, singular } = worloadLabels(workloadType);
+	const { pageName, plural } = label(type);
 
-	res = [...res, { label: pageName, href: `/team/${team}/${plural}` }];
+	res = [...res, { label: env }, { label: pageName, href: `/team/${team}/${plural}` }];
 
 	if (split.length === 6) {
 		return res;
 	}
 
-	return [...res, { label: workload, href: `/team/${team}/${env}/${singular}/${workload}` }];
+	return [...res, { label: resource, href: `/team/${team}/${env}/${type}/${resource}` }];
 };

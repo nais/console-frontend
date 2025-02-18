@@ -3,25 +3,25 @@
 
 	const {
 		breadcrumbs,
-		heading,
-		subheading
-	}: { breadcrumbs: { label: string; href: string }[]; heading: string; subheading?: string } =
-		$props();
+		heading
+	}: {
+		breadcrumbs: { label: string; href?: string }[];
+		heading: string;
+	} = $props();
 </script>
 
 <div class="page-header">
 	<div class="breadcrumbs">
 		{#each breadcrumbs as breadcrumb (breadcrumb)}
-			<Link href={breadcrumb.href} class="link">{breadcrumb.label}</Link>
+			{#if breadcrumb.href}
+				<Link href={breadcrumb.href} class="link">{breadcrumb.label}</Link>
+			{:else}
+				{breadcrumb.label}
+			{/if}
 			<span class="divider">/</span>
 		{/each}
 	</div>
-	<div class="heading">
-		<Heading level="1" size="xlarge">{heading}</Heading>
-		{#if subheading}
-			<div class="subheading">{subheading}</div>
-		{/if}
-	</div>
+	<Heading level="1" size="xlarge">{heading}</Heading>
 </div>
 
 <style>
@@ -43,17 +43,6 @@
 			}
 
 			.divider {
-				color: var(--a-text-subtle);
-			}
-		}
-
-		.heading {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: var(--a-spacing-1);
-
-			.subheading {
 				color: var(--a-text-subtle);
 			}
 		}
