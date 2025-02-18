@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
-	import { Detail, Heading, Link, Tooltip } from '@nais/ds-svelte-community';
+	import { Detail, Heading, Link } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon, XMarkOctagonFillIcon } from '@nais/ds-svelte-community/icons';
 	import IconWithText from '../IconWithText.svelte';
 	import RunningIndicator from '../RunningIndicator.svelte';
+	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
 	const {
@@ -29,21 +30,19 @@
 			Created <Time time={instance.created} distance={true} />
 		{/snippet}
 		{#snippet icon()}
-			<div class="tooltip-icon-hack">
-				{#if instance.status.state === 'RUNNING'}
-					<Tooltip content="Instance is running">
-						<RunningIndicator />
-					</Tooltip>
-				{:else if instance.status.state === 'FAILING'}
-					<Tooltip content="Instance is failing">
-						<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
-					</Tooltip>
-				{:else}
-					<Tooltip content="Application instance status is unknown">
-						<QuestionmarkIcon />
-					</Tooltip>
-				{/if}
-			</div>
+			{#if instance.status.state === 'RUNNING'}
+				<TooltipAlignHack content="Instance is running">
+					<RunningIndicator />
+				</TooltipAlignHack>
+			{:else if instance.status.state === 'FAILING'}
+				<TooltipAlignHack content="Instance is failing">
+					<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+				</TooltipAlignHack>
+			{:else}
+				<TooltipAlignHack content="Application instance status is unknown">
+					<QuestionmarkIcon />
+				</TooltipAlignHack>
+			{/if}
 		{/snippet}
 		{#snippet text()}
 			<Heading level="4" size="xsmall">
@@ -58,11 +57,6 @@
 </ListItem>
 
 <style>
-	.tooltip-icon-hack {
-		display: contents;
-		line-height: 0;
-	}
-
 	.right {
 		display: flex;
 		flex-direction: column;

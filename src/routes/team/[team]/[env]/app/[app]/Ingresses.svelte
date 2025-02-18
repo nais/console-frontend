@@ -1,8 +1,14 @@
 <script lang="ts">
-	import { fragment, graphql, IngressType, type Ingresses, type ValueOf } from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
-	import { Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { fragment, graphql, type Ingresses } from '$houdini';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import {
+		GlobeIcon,
+		HouseIcon,
+		PadlockLockedIcon,
+		QuestionmarkIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		app: Ingresses;
@@ -15,14 +21,6 @@
 			app,
 			graphql(`
 				fragment Ingresses on Application {
-					__typename
-					name
-					environment {
-						name
-					}
-					team {
-						slug
-					}
 					ingresses {
 						url
 						type
@@ -31,76 +29,33 @@
 			`)
 		)
 	);
-
-	const externalIngresses = (
-		ingresses: {
-			readonly url: string;
-			readonly type: ValueOf<typeof IngressType>;
-		}[]
-	) => {
-		return ingresses.filter((ingress) => ingress.type === IngressType.EXTERNAL);
-	};
-
-	const internalIngresses = (
-		ingresses: {
-			readonly url: string;
-			readonly type: ValueOf<typeof IngressType>;
-		}[]
-	) => {
-		return ingresses.filter((ingress) => ingress.type === IngressType.INTERNAL);
-	};
-
-	const authenticatedIngresses = (
-		ingresses: {
-			readonly url: string;
-			readonly type: ValueOf<typeof IngressType>;
-		}[]
-	) => {
-		return ingresses.filter((ingress) => ingress.type === IngressType.AUTHENTICATED);
-	};
 </script>
 
-{#if $data.ingresses.length > 0}
-	<Heading level="2" size="medium" spacing>Ingresses</Heading>
+<Heading level="2" size="medium" spacing>Ingresses</Heading>
 
-	<div class="content">
-		{#each externalIngresses($data.ingresses) as ingress (ingress)}
-			<Tooltip content="External ingress"
-				><a href={ingress.url}
-					><IconWithText icon={GlobeIcon} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{ingress.url}</span>
-						{/snippet}
-					</IconWithText></a
-				></Tooltip
-			>
+<div class="content">
+	{#each Object.entries(Object.groupBy($data.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
+		{#each ingresses as ingress (ingress)}
+			<IconLabel size="medium" label={ingress.url} href={ingress.url}>
+				{#snippet icon()}
+					<TooltipAlignHack content="{group[0] + group.slice(1).toLowerCase()} ingress">
+						{#if group === 'EXTERNAL'}
+							<GlobeIcon />
+						{:else if group === 'INTERNAL'}
+							<HouseIcon />
+						{:else if group === 'AUTHENTICATED'}
+							<PadlockLockedIcon />
+						{:else}
+							<QuestionmarkIcon />
+						{/if}
+					</TooltipAlignHack>
+				{/snippet}
+			</IconLabel>
 		{/each}
-
-		{#each internalIngresses($data.ingresses) as ingress (ingress)}
-			<Tooltip content="Internal ingress"
-				><a href={ingress.url}
-					><IconWithText icon={HouseIcon} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{ingress.url}</span>
-						{/snippet}
-					</IconWithText></a
-				>
-			</Tooltip>
-		{/each}
-
-		{#each authenticatedIngresses($data.ingresses) as ingress (ingress)}
-			<Tooltip content="Authenticated ingress">
-				<a href={ingress.url}
-					><IconWithText icon={PadlockLockedIcon} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{ingress.url}</span>
-						{/snippet}
-					</IconWithText></a
-				>
-			</Tooltip>
-		{/each}
-	</div>
-{/if}
+	{:else}
+		<BodyShort>No ingresses configured for this app.</BodyShort>
+	{/each}
+</div>
 
 <style>
 	.content {

@@ -7,6 +7,7 @@
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -334,46 +335,47 @@
 								</div>
 							</Tooltip>
 						{/if}
-						<div style="display: flex; gap: 4px; align-items: center; line-height: 0;">
-							{#if job.runs.nodes[0]?.status}
-								{#if job.runs.nodes[0].status.state === 'RUNNING'}
-									<Tooltip content="Job is running">
-										<Loader size="xsmall" variant="interaction" />
-									</Tooltip>
-								{:else if job.runs.nodes[0].status.state === 'PENDING'}
-									<Tooltip content="Job run pending">
-										<Loader size="xsmall" variant="interaction" />
-									</Tooltip>
-								{:else if job.runs.nodes[0].status.state === 'SUCCEEDED'}
-									<Tooltip content="Last job ran successfully">
-										<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
-									</Tooltip>
-								{:else if job.runs.nodes[0].status.state === 'FAILED'}
-									<Tooltip content="Last job run failed">
-										<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
-									</Tooltip>
+						{#if job.runs.nodes.length}
+							{@const lastRun = job.runs.nodes[0]}
+							<div style="display: flex; gap: 4px; align-items: center;">
+								{#if lastRun.status}
+									{#if lastRun.status.state === 'RUNNING'}
+										<TooltipAlignHack content="Job is running">
+											<Loader size="xsmall" variant="interaction" />
+										</TooltipAlignHack>
+									{:else if lastRun.status.state === 'PENDING'}
+										<TooltipAlignHack content="Job run pending">
+											<Loader size="xsmall" variant="interaction" />
+										</TooltipAlignHack>
+									{:else if lastRun.status.state === 'SUCCEEDED'}
+										<TooltipAlignHack content="Last job ran successfully">
+											<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+										</TooltipAlignHack>
+									{:else if lastRun.status.state === 'FAILED'}
+										<TooltipAlignHack content="Last job run failed">
+											<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+										</TooltipAlignHack>
+									{:else}
+										<TooltipAlignHack content="Job run status is unknown">
+											<QuestionmarkIcon />
+										</TooltipAlignHack>
+									{/if}
 								{:else}
-									<Tooltip content="Job run status is unknown">
+									<TooltipAlignHack content="Job run status is unknown">
 										<QuestionmarkIcon />
-									</Tooltip>
+									</TooltipAlignHack>
 								{/if}
-							{:else}
-								<Tooltip content="Job run status is unknown">
-									<QuestionmarkIcon />
-								</Tooltip>
-							{/if}
-							{#if job.runs.nodes[0]?.startTime}
-								<Tooltip
-									content="Last run - {format(job.runs.nodes[0].startTime, 'PPPP', {
-										locale: enGB
-									})}"
-								>
-									<Detail><Time time={job.runs.nodes[0].startTime} distance={true} /></Detail>
-								</Tooltip>
-							{:else}
-								<Detail>No runs</Detail>
-							{/if}
-						</div>
+								{#if lastRun.startTime}
+									<TooltipAlignHack
+										content="Last run - {format(lastRun.startTime, 'PPPP', { locale: enGB })}"
+									>
+										<Detail><Time time={lastRun.startTime} distance={true} /></Detail>
+									</TooltipAlignHack>
+								{/if}
+							</div>
+						{:else}
+							<Detail>No runs</Detail>
+						{/if}
 					</div>
 				</div>
 			{/each}

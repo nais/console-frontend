@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
-	import { Detail, Heading, Link, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Detail, Heading, Link, Loader } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkCircleFillIcon,
 		QuestionmarkIcon,
@@ -8,6 +8,7 @@
 		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
 	import IconWithText from '../IconWithText.svelte';
+	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
 	const {
@@ -60,29 +61,27 @@
 			{/if}
 		{/snippet}
 		{#snippet icon()}
-			<div class="tooltip-icon-hack">
-				{#if run.status.state === 'RUNNING'}
-					<Tooltip content="Job is running">
-						<Loader size="small" variant="interaction" />
-					</Tooltip>
-				{:else if run.status.state === 'PENDING'}
-					<Tooltip content="Job run pending">
-						<Loader size="small" variant="interaction" />
-					</Tooltip>
-				{:else if run.status.state === 'SUCCEEDED'}
-					<Tooltip content="Job ran successfully">
-						<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
-					</Tooltip>
-				{:else if run.status.state === 'FAILED'}
-					<Tooltip content="Job run failed">
-						<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
-					</Tooltip>
-				{:else}
-					<Tooltip content="Job run status is unknown">
-						<QuestionmarkIcon />
-					</Tooltip>
-				{/if}
-			</div>
+			{#if run.status.state === 'RUNNING'}
+				<TooltipAlignHack content="Job is running">
+					<Loader size="small" variant="interaction" />
+				</TooltipAlignHack>
+			{:else if run.status.state === 'PENDING'}
+				<TooltipAlignHack content="Job run pending">
+					<Loader size="small" variant="interaction" />
+				</TooltipAlignHack>
+			{:else if run.status.state === 'SUCCEEDED'}
+				<TooltipAlignHack content="Job ran successfully">
+					<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+				</TooltipAlignHack>
+			{:else if run.status.state === 'FAILED'}
+				<TooltipAlignHack content="Job run failed">
+					<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+				</TooltipAlignHack>
+			{:else}
+				<TooltipAlignHack content="Job run status is unknown">
+					<QuestionmarkIcon />
+				</TooltipAlignHack>
+			{/if}
 		{/snippet}
 		{#snippet text()}
 			<Heading level="4" size="xsmall">
@@ -97,11 +96,6 @@
 </ListItem>
 
 <style>
-	.tooltip-icon-hack {
-		display: contents;
-		line-height: 0;
-	}
-
 	.right {
 		display: flex;
 		flex-direction: column;

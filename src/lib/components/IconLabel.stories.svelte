@@ -1,5 +1,6 @@
 <script module>
 	import {
+		GlobeIcon,
 		PackageIcon,
 		PersonGroupIcon,
 		RocketIcon,
@@ -7,6 +8,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import IconLabel from './IconLabel.svelte';
+	import TooltipAlignHack from './TooltipAlignHack.svelte';
 
 	const { Story } = defineMeta({
 		component: IconLabel,
@@ -16,6 +18,20 @@
 
 <Story name="Menu item">
 	<IconLabel label="Cost" icon={WalletIcon} />
+</Story>
+
+<Story name="Ingress">
+	<IconLabel
+		size="medium"
+		label="https://storageapp.eksternius.example.com"
+		href="https://storageapp.eksternius.example.com"
+	>
+		{#snippet icon()}
+			<TooltipAlignHack content="External ingress">
+				<GlobeIcon />
+			</TooltipAlignHack>
+		{/snippet}
+	</IconLabel>
 </Story>
 
 <Story name="Team without desc">
