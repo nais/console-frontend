@@ -1,40 +1,40 @@
 <script lang="ts">
-	import { graphql, type SearchQuery$result, type TeamSearchQuery$result } from '$houdini';
-	// import SearchResults from '$lib/components/search/SearchResults.svelte';
-	import { Search } from '@nais/ds-svelte-community';
+	import { graphql } from '$houdini';
 
-	const store = graphql(`
+	const teamSearch = graphql(`
 		query TeamSearchQuery($query: String!) @loading(cascade: true) {
 			search(first: 10, filter: { query: $query, type: TEAM }) {
-				nodes @loading(count: 10) {
+				nodes {
 					__typename
 					... on Team {
 						slug
+						purpose
 					}
 				}
 			}
 		}
 	`);
 
-	let selected = $state(-1);
-	let showSearch = $state(false);
-	let timeout: ReturnType<typeof setTimeout> | null = $state(null);
-
-	interface Props {
-		query?: string;
-		onSelected?: (
-			node: SearchQuery$result['search']['nodes'][0],
-			e: MouseEvent | KeyboardEvent
-		) => void;
-	}
+	const teamsQuery = graphql(`
+		query Teams {
+			teams(first: 25) {
+				nodes {
+					slug
+					purpose
+				}
+			}
+		}
+	`);
 
 	let {
-		query = $bindable(''),
-		onSelected = () => {
-			query = '';
-			showSearch = false;
-		}
-	}: Props = $props();
+		open = $bindable(),
+		addTeam,
+		removeTeam
+	}: {
+		open: boolean;
+		addTeam: (teamname: string) => Promise<void>;
+		removeTeam: (teamname: string) => Promise<void>;
+	} = $props();
 
 	function searchTeam() {
 		if (timeout) {

@@ -11,8 +11,12 @@
 		query = $bindable(),
 		loading = false,
 		results,
-		close
+		close,
+		suggestions = true,
+		placeholder = 'Search for teams, workloads, or services'
 	}: {
+		placeholder?: string;
+		suggestions?: boolean;
 		query: string;
 		loading?: boolean;
 		results?:
@@ -28,8 +32,19 @@
 					title: string;
 					description: string;
 					type: 'button';
-					action: () => Promise<any> | void;
-					buttonText: string;
+					button: {
+						onclick: () => void;
+						label: string;
+						variant:
+							| 'primary'
+							| 'secondary'
+							| 'tertiary'
+							| 'primary-neutral'
+							| 'secondary-neutral'
+							| 'tertiary-neutral'
+							| 'danger';
+						loading?: boolean;
+					};
 			  }[];
 		close: () => void;
 	} = $props();
@@ -44,7 +59,7 @@
 			oninput={() => (selected = 0)}
 			label="Search"
 			hideLabel
-			placeholder="Search apps, jobs, teams and more"
+			{placeholder}
 			onkeydown={(e) => {
 				if (results) {
 					if (e.key === 'ArrowDown') {
@@ -57,8 +72,8 @@
 						const s = results[selected];
 						if (s.type === 'link') {
 							goto(s.href);
+							close();
 						}
-						close();
 					}
 				}
 			}}
@@ -83,18 +98,19 @@
 						{/snippet}
 					</IconWithText>
 					{#if rest.type === 'button'}
-						<Button onclick={rest.action} size="small">{rest.buttonText}</Button>
+						{@const button = rest.button}
+						<Button {...button} size="small">{button.label}</Button>
 					{/if}
 				</div>
 			{:else}
 				<div class="no-results">
 					<div>No results matching "{query}"</div>
-					{#if query.includes(':')}
+					{#if query.includes(':') && suggestions}
 						<Suggestions />
 					{/if}
 				</div>
 			{/each}
-		{:else}
+		{:else if suggestions}
 			<Suggestions />
 		{/if}
 	</div>

@@ -79,8 +79,11 @@
 				title: 'aura',
 				description: 'Not the Nais platform team any more, check out Nais instead.',
 				type: 'button',
-				action: () => console.log('aura'),
-				buttonText: 'Add'
+				button: {
+					onclick: () => console.log('aura'),
+					label: 'Add',
+					variant: 'primary'
+				}
 			},
 			{
 				icon: PersonGroupIcon,
@@ -88,32 +91,45 @@
 				description:
 					'Rekruttering og profileringssiden for NAV IT - blir liggende på detsombetyrnoe.no. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.',
 				type: 'button',
-				action: () => console.log('detsombetyrnoe'),
-				buttonText: 'Add'
+				button: {
+					onclick: () => console.log('detsombetyrnoe'),
+					label: 'Add',
+					variant: 'primary',
+					loading: true
+				}
 			},
 			{
 				icon: PersonGroupIcon,
 				title: 'frontend-golden-path',
 				description: 'Teste greier for den gyldne sti',
 				type: 'button',
-				action: () => console.log('frontend-golden-path'),
-				buttonText: 'Add'
+				button: {
+					onclick: () => console.log('frontend-golden-path'),
+					label: 'Remove',
+					variant: 'danger'
+				}
 			},
 			{
 				icon: PersonGroupIcon,
 				title: 'frontendplattform',
 				description: 'Frontendplattform',
 				type: 'button',
-				action: () => console.log('frontendplattform'),
-				buttonText: 'Add'
+				button: {
+					onclick: () => console.log('frontendplattform'),
+					label: 'Add',
+					variant: 'primary'
+				}
 			},
 			{
 				icon: PersonGroupIcon,
 				title: 'nais',
 				description: 'The Nais platform team',
 				type: 'button',
-				action: () => console.log('nais'),
-				buttonText: 'Add'
+				button: {
+					onclick: () => console.log('nais'),
+					label: 'Add',
+					variant: 'primary'
+				}
 			}
 		]}
 		close={() => {}}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, type SearchQuery$result } from '$houdini';
+	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
@@ -10,10 +10,11 @@
 	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import {
 		Alert,
+		BodyLong,
 		Button,
 		CopyButton,
 		Heading,
-		Modal,
+		Link,
 		Table,
 		Tbody,
 		Td,
@@ -34,7 +35,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
-	import SearchTeam from './SearchTeam.svelte';
+	import TeamSearchModal from './TeamSearchModal.svelte';
 
 	interface Props {
 		data: PageData;
@@ -116,14 +117,13 @@
 	let removeTeamName = $state('');
 	let removeTeamConfirmOpen = $state(false);
 
-	const removeTeam = async () => {
-		await revokeTeamAccess.mutate({
-			team: teamSlug,
-			revokedTeamSlug: removeTeamName
-		});
-
-		Unleash.fetch({ policy: 'CacheAndNetwork' });
-	};
+	const removeTeam = (removeTeamName: string) =>
+		revokeTeamAccess
+			.mutate({
+				team: teamSlug,
+				revokedTeamSlug: removeTeamName
+			})
+			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 
 	const removeTeamClickHandler = async (teamName: string) => {
 		removeTeamName = teamName;
@@ -131,56 +131,14 @@
 	};
 
 	let addTeamModalOpen = $state(false);
-	let addTeamInput = $state('');
 
-	const validateTeam = (team: string) => {
-		if (team.length === 0) {
-			return 'Team name cannot be empty';
-		}
-		return '';
-	};
-
-	const addTeamClickHandler = async () => {
-		addTeamModalOpen = true;
-	};
-
-	const onTeamSelected = (
-		node: SearchQuery$result['search']['nodes'][0],
-		event: MouseEvent | KeyboardEvent
-	) => {
-		event.preventDefault();
-		switch (node.__typename) {
-			case 'Team':
-				addTeamInput = node.slug;
-				break;
-		}
-	};
-
-	const addTeam = async () => {
-		if (validateTeam(addTeamInput).length > 0) {
-			return;
-		}
-
-		const teamName = addTeamInput;
-		addTeamInput = '';
-		addTeamModalOpen = false;
-
-		if (unleash?.allowedTeams.nodes.find((team) => team.slug === teamName)) {
-			return;
-		}
-
-		await allowTeamAccess.mutate({
-			team: teamSlug,
-			allowedTeamSlug: teamName
-		});
-
-		Unleash.fetch({ policy: 'CacheAndNetwork' });
-	};
-
-	const addTeamClose = () => {
-		addTeamModalOpen = false;
-		addTeamInput = '';
-	};
+	const addTeam = (teamName: string) =>
+		allowTeamAccess
+			.mutate({
+				team: teamSlug,
+				allowedTeamSlug: teamName
+			})
+			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 </script>
 
 <GraphErrors errors={$Unleash.errors} />
@@ -199,7 +157,7 @@
 		confirmText="Delete"
 		variant="danger"
 		bind:open={removeTeamConfirmOpen}
-		onconfirm={removeTeam}
+		onconfirm={() => removeTeam(removeTeamName)}
 	>
 		{#snippet header()}
 			<Heading>Remove team</Heading>
@@ -212,18 +170,15 @@
 		Are you sure you want to remove this team?
 	</Confirm>
 
-	<div class="modal-overrider">
-		<Modal bind:open={addTeamModalOpen} width="medium">
-			{#snippet header()}
-				<Heading>Give team access to this Unleash</Heading>
-			{/snippet}
-			<div class="search-container">
-				<SearchTeam bind:query={addTeamInput} onSelected={onTeamSelected} />
-				<Button variant="primary" size="small" onclick={addTeam}>Add</Button>
-				<Button variant="secondary" size="small" onclick={addTeamClose}>Cancel</Button>
-			</div>
-		</Modal>
-	</div>
+	{#if addTeamModalOpen}
+		<TeamSearchModal
+			bind:open={addTeamModalOpen}
+			{addTeam}
+			{removeTeam}
+			currentTeam={teamSlug}
+			teamsWithAccess={unleash.allowedTeams.nodes.map((t) => t.slug)}
+		/>
+	{/if}
 
 	<div class="summary-grid">
 		<Card columns={3}>
@@ -351,20 +306,24 @@
 					{#each unleash.allowedTeams.nodes as team (team.slug)}
 						<Tr>
 							<Td>
-								<a href="/team/{team.slug}">{team.slug}</a>
+								<BodyLong>
+									<Link href="/team/{team.slug}">{team.slug}</Link>
+								</BodyLong>
 							</Td>
 							<Td style="width:100px;" align="right">
-								<Button
-									size="small"
-									disabled={unleash.ready === false}
-									variant="tertiary-neutral"
-									title="Delete key and value"
-									onclick={() => removeTeamClickHandler(team.slug)}
-								>
-									{#snippet icon()}
-										<TrashIcon style="color:var(--a-icon-danger)!important" />
-									{/snippet}
-								</Button>
+								{#if team.slug !== teamSlug}
+									<Button
+										size="small"
+										disabled={unleash.ready === false}
+										variant="tertiary-neutral"
+										title="Delete key and value"
+										onclick={() => removeTeamClickHandler(team.slug)}
+									>
+										{#snippet icon()}
+											<TrashIcon style="color:var(--a-icon-danger)!important" />
+										{/snippet}
+									</Button>
+								{/if}
 							</Td>
 						</Tr>
 					{/each}
@@ -376,7 +335,7 @@
 					variant="tertiary"
 					disabled={unleash.ready === false}
 					size="small"
-					onclick={addTeamClickHandler}
+					onclick={() => (addTeamModalOpen = true)}
 					icon={PlusCircleFillIcon}
 				>
 					Add team
