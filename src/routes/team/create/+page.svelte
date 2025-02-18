@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Card from '$lib/Card.svelte';
-	import Feedback from '$lib/feedback/Feedback.svelte';
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon, FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
@@ -11,7 +9,6 @@
 	}
 
 	let { form = $bindable() }: Props = $props();
-	let feedbackOpen = $state(false);
 	let saving = $state(false);
 	let slackChannelError = $state('');
 
@@ -140,100 +137,81 @@
 </script>
 
 <div class="container">
-	<div class="feedback">
-		<Button
-			variant="secondary"
-			size="xsmall"
-			onclick={() => {
-				feedbackOpen = true;
-			}}>Feedback</Button
-		>
-	</div>
-	<Card>
-		<h1>Create new team</h1>
-		{#if form?.errors && form.errors.length > 0}
-			<ErrorSummary heading="Error creating team">
-				{#each form.errors as error (error)}
-					<li style="color:inherit!important">{error.message}</li>
-				{/each}
-			</ErrorSummary>
+	<h1>Create new team</h1>
+	{#if form?.errors && form.errors.length > 0}
+		<ErrorSummary heading="Error creating team">
+			{#each form.errors as error (error)}
+				<li style="color:inherit!important">{error.message}</li>
+			{/each}
+		</ErrorSummary>
+	{/if}
+	<p>
+		Creating a team in NAIS Teams will grant access to certain NAIS features, such as Google Cloud
+		projects, Kubernetes namespaces, or your own GitHub team. After the team is created, you will
+		become the administrator of that team, granting privileges to add and remove team members. The
+		identifier is the primary key, and will be used across systems so that they are easily
+		recognizable.
+	</p>
+	<form
+		method="POST"
+		use:enhance={() => {
+			saving = true;
+			return async ({ update }) => {
+				saving = false;
+				update({ reset: false });
+			};
+		}}
+	>
+		<TextField name="name" value={form?.input.slug} oninput={handleTeamSlugInput}>
+			{#snippet label()}
+				Identifier / Name
+			{/snippet}
+			{#snippet description()}
+				Example: my-team-name<br />
+				<ExclamationmarkTriangleFillIcon style="color:var(--a-icon-warning)" /> It is not possible to
+				change the identifier after creation, so choose wisely.
+			{/snippet}
+		</TextField>
+		{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
+			<p style:color="var(--a-text-danger)">{teamSlugError}</p>
 		{/if}
-		<p>
-			Creating a team in NAIS Teams will grant access to certain NAIS features, such as Google Cloud
-			projects, Kubernetes namespaces, or your own GitHub team. After the team is created, you will
-			become the administrator of that team, granting privileges to add and remove team members. The
-			identifier is the primary key, and will be used across systems so that they are easily
-			recognizable.
-		</p>
-		<form
-			method="POST"
-			use:enhance={() => {
-				saving = true;
-				return async ({ update }) => {
-					saving = false;
-					update({ reset: false });
-				};
-			}}
+		<br />
+		<TextField name="description" value={form?.input.purpose} oninput={handlePurposeInput}>
+			{#snippet label()}
+				Purpose of the team
+			{/snippet}
+			{#snippet description()}
+				Example: Making sure users have a good experience
+			{/snippet}
+		</TextField>
+		{#if purposeError !== 'no_error' && purposeError !== ''}
+			<p style:color="var(--a-text-danger)">{purposeError}</p>
+		{/if}
+		<br />
+		<TextField
+			name="slackChannel"
+			value={form?.input.slackChannel}
+			oninput={handleSlackChannelInput}
 		>
-			<TextField name="name" value={form?.input.slug} oninput={handleTeamSlugInput}>
-				{#snippet label()}
-					Identifier / Name
-				{/snippet}
-				{#snippet description()}
-					Example: my-team-name<br />
-					<ExclamationmarkTriangleFillIcon style="color:var(--a-icon-warning)" /> It is not possible
-					to change the identifier after creation, so choose wisely.
-				{/snippet}
-			</TextField>
-			{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
-				<p style:color="var(--a-text-danger)">{teamSlugError}</p>
-			{/if}
-			<br />
-			<TextField name="description" value={form?.input.purpose} oninput={handlePurposeInput}>
-				{#snippet label()}
-					Purpose of the team
-				{/snippet}
-				{#snippet description()}
-					Example: Making sure users have a good experience
-				{/snippet}
-			</TextField>
-			{#if purposeError !== 'no_error' && purposeError !== ''}
-				<p style:color="var(--a-text-danger)">{purposeError}</p>
-			{/if}
-			<br />
-			<TextField
-				name="slackChannel"
-				value={form?.input.slackChannel}
-				oninput={handleSlackChannelInput}
-			>
-				{#snippet label()}
-					Slack channel
-				{/snippet}
-				{#snippet description()}
-					Example: #my-team-slack
-				{/snippet}
-			</TextField>
-			{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
-				<p style:color="var(--a-text-danger)">{slackChannelError}</p>
-			{/if}
-			<br />
-			<Button loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>
-		</form>
-	</Card>
+			{#snippet label()}
+				Slack channel
+			{/snippet}
+			{#snippet description()}
+				Example: #my-team-slack
+			{/snippet}
+		</TextField>
+		{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
+			<p style:color="var(--a-text-danger)">{slackChannelError}</p>
+		{/if}
+		<br />
+		<Button loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>
+	</form>
 </div>
-
-{#if feedbackOpen}
-	<Feedback bind:open={feedbackOpen} />
-{/if}
 
 <style>
 	.container {
-		margin: auto;
-		max-width: 1432px;
-	}
-	.feedback {
-		display: flex;
-		justify-content: flex-end;
-		padding: 0.5rem 0;
+		padding-top: 4rem;
+		margin-inline: auto;
+		max-width: 620px;
 	}
 </style>
