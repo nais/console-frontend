@@ -173,7 +173,7 @@
 					{/if}
 				</Select>
 			</div>
-			<WorkloadsWithSbom team={teamSlug} bind:environment={selectedEnvironment} />
+			<WorkloadsWithSbom team={teamSlug} environment={selectedEnvironment} />
 		</Card>
 	</div>
 {/if}

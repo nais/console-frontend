@@ -31,7 +31,7 @@
 		[key: string]: unknown;
 	}
 
-	let { team, environment = $bindable() }: Props = $props();
+	let { team, environment }: Props = $props();
 
 	export const _WorkloadsWithSbomVariables: WorkloadsWithSbomVariables = () => {
 		const env = environment;
@@ -39,14 +39,17 @@
 			? tableSort.orderBy
 			: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL;
 		const direction = tableSort.direction ? tableSort.direction : 'DESC';
-		if (env && env !== '') {
+		if (env) {
 			return {
 				team: team,
 				orderBy: {
 					field,
 					direction
 				},
-				filter: { environments: [env] }
+				filter: { environments: [env] },
+
+				after: null,
+				before: null
 			};
 		}
 		return {
@@ -60,10 +63,15 @@
 	};
 
 	const query = graphql(`
-		query WorkloadsWithSbom($team: Slug!, $orderBy: WorkloadOrder, $filter: TeamWorkloadsFilter)
-		@load {
+		query WorkloadsWithSbom(
+			$team: Slug!
+			$orderBy: WorkloadOrder
+			$filter: TeamWorkloadsFilter
+			$after: Cursor
+			$before: Cursor
+		) @load {
 			team(slug: $team) @loading {
-				workloads(first: 10, orderBy: $orderBy, filter: $filter)
+				workloads(first: 10, orderBy: $orderBy, filter: $filter, after: $after, before: $before)
 					@paginate(mode: SinglePage)
 					@loading(count: 10) {
 					pageInfo {
