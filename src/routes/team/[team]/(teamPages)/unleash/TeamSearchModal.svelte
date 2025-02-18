@@ -63,7 +63,7 @@
 	});
 </script>
 
-<Modal width="medium" bind:open class="search-modal">
+<Modal width="small" bind:open class="search-modal">
 	<Search
 		close={() => (open = false)}
 		placeholder="Search for teams to add"
@@ -79,7 +79,7 @@
 				(result) =>
 					({
 						icon: PersonGroupIcon,
-						title: result.slug,
+						label: result.slug,
 						description: result.purpose,
 						type: 'button',
 						button: teamsWithAccess.includes(result.slug)

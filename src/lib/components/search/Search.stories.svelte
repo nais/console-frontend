@@ -31,21 +31,21 @@
 		results={[
 			{
 				icon: PackageIcon,
-				title: 'watson',
+				label: 'watson',
 				description: 'ibm / prod',
 				type: 'link',
 				href: '/team/ibm/prod/app/watson'
 			},
 			{
 				icon: PackageIcon,
-				title: 'watson',
+				label: 'watson',
 				description: 'ibm / dev',
 				type: 'link',
 				href: '/team/ibm/dev/app/watson'
 			},
 			{
 				icon: PersonGroupIcon,
-				title: 'ibm',
+				label: 'ibm',
 				description:
 					'Builds watson. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.',
 				type: 'link',
@@ -53,14 +53,14 @@
 			},
 			{
 				icon: DatabaseIcon,
-				title: 'watsons-brother',
+				label: 'watsons-brother',
 				description: 'ibm / prod',
 				type: 'link',
 				href: '/team/ibm/prod/app/watsons-brother'
 			},
 			{
 				icon: DatabaseIcon,
-				title: 'watsons-brother',
+				label: 'watsons-brother',
 				description: 'ibm / dev',
 				type: 'link',
 				href: '/team/ibm/dev/app/watsons-brother'
@@ -76,7 +76,7 @@
 		results={[
 			{
 				icon: PersonGroupIcon,
-				title: 'aura',
+				label: 'aura',
 				description: 'Not the Nais platform team any more, check out Nais instead.',
 				type: 'button',
 				button: {
@@ -87,7 +87,7 @@
 			},
 			{
 				icon: PersonGroupIcon,
-				title: 'detsombetyrnoe',
+				label: 'detsombetyrnoe',
 				description:
 					'Rekruttering og profileringssiden for NAV IT - blir liggende på detsombetyrnoe.no. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.',
 				type: 'button',
@@ -100,7 +100,7 @@
 			},
 			{
 				icon: PersonGroupIcon,
-				title: 'frontend-golden-path',
+				label: 'frontend-golden-path',
 				description: 'Teste greier for den gyldne sti',
 				type: 'button',
 				button: {
@@ -111,7 +111,7 @@
 			},
 			{
 				icon: PersonGroupIcon,
-				title: 'frontendplattform',
+				label: 'frontendplattform',
 				description: 'Frontendplattform',
 				type: 'button',
 				button: {
@@ -122,7 +122,7 @@
 			},
 			{
 				icon: PersonGroupIcon,
-				title: 'nais',
+				label: 'nais',
 				description: 'The Nais platform team',
 				type: 'button',
 				button: {

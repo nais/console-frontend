@@ -203,7 +203,7 @@
 					if (result.__typename === 'Team') {
 						return {
 							icon,
-							title: result.slug,
+							label: result.slug,
 							description: result.purpose,
 							href: `/team/${result.slug}`,
 							type: 'link'
@@ -212,7 +212,7 @@
 
 					return {
 						icon,
-						title: result.name,
+						label: result.name,
 						description: `${result.team.slug} / ${result.environment.name}`,
 						href: `/team/${result.team.slug}/${result.environment.name}/${urlName}/${result.name}`,
 						type: 'link'

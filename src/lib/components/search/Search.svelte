@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button, Link, TextField } from '@nais/ds-svelte-community';
+	import { Button, TextField } from '@nais/ds-svelte-community';
 	import { XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-	import IconWithText from '../IconWithText.svelte';
+	import IconLabel from '../IconLabel.svelte';
 	import ResultSkeleton from './ResultSkeleton.svelte';
 	import Suggestions from './Suggestions.svelte';
 
@@ -22,14 +22,14 @@
 		results?:
 			| {
 					icon: Component;
-					title: string;
+					label: string;
 					description: string;
 					type: 'link';
 					href: string;
 			  }[]
 			| {
 					icon: Component;
-					title: string;
+					label: string;
 					description: string;
 					type: 'button';
 					button: {
@@ -86,17 +86,14 @@
 				<ResultSkeleton />
 			{/each}
 		{:else if results}
-			{#each results as { icon, description, title, ...rest }, i (icon + title + i)}
+			{#each results as { icon, description, label, ...rest }, i (icon + label + i)}
 				<div class={['result', { selected: i === selected && rest.type === 'link' }]}>
-					<IconWithText {icon} {description}>
-						{#snippet text()}
-							{#if rest.type === 'button'}
-								{title}
-							{:else}
-								<Link href={rest.href} onclick={close}>{title}</Link>
-							{/if}
-						{/snippet}
-					</IconWithText>
+					<IconLabel
+						{icon}
+						{label}
+						{description}
+						href={rest.type === 'link' ? rest.href : undefined}
+					/>
 					{#if rest.type === 'button'}
 						{@const button = rest.button}
 						<Button {...button} size="small">{button.label}</Button>
