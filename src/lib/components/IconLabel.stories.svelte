@@ -1,4 +1,6 @@
 <script module>
+	import Time from '$lib/Time.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import {
 		GlobeIcon,
 		PackageIcon,
@@ -15,6 +17,24 @@
 		tags: ['autodocs']
 	});
 </script>
+
+<Story name="Job run">
+	<IconLabel
+		label="dataproduct-apps-topics-28896705"
+		href="/team/devteam/dev/job/dataproduct-apps-topics/logs?name=dataproduct-apps-topics-28896705"
+		size="large"
+		level="4"
+	>
+		{#snippet description()}
+			Manually triggered <Time time={new Date()} distance={true} /> by Roger Bjørnstad
+		{/snippet}
+		{#snippet icon()}
+			<TooltipAlignHack content="Job is running">
+				<Loader size="small" variant="interaction" />
+			</TooltipAlignHack>
+		{/snippet}
+	</IconLabel>
+</Story>
 
 <Story name="Menu item">
 	<IconLabel label="Cost" icon={WalletIcon} />

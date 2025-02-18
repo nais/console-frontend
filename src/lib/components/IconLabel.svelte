@@ -13,7 +13,7 @@
 		label: string;
 		href?: string;
 		icon: Component;
-		description?: string;
+		description?: Component | string;
 	} & (
 		| {
 				size?: 'small' | 'medium';
@@ -60,7 +60,14 @@
 			</BodyShort>
 		{/if}
 		{#if description}
-			<Detail>{description}</Detail>
+			<Detail>
+				{#if typeof description === 'string'}
+					{description}
+				{:else}
+					{@const Description = description}
+					<Description />
+				{/if}
+			</Detail>
 		{/if}
 	</div>
 </div>

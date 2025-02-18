@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
-	import { Detail, Heading, Link, Loader } from '@nais/ds-svelte-community';
+	import { Detail, Loader } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkCircleFillIcon,
 		QuestionmarkIcon,
 		TimerIcon,
 		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
-	import IconWithText from '../IconWithText.svelte';
+	import IconLabel from '../IconLabel.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -44,7 +44,7 @@
 </script>
 
 <ListItem>
-	<IconWithText size="large">
+	<IconLabel size="large" label={run.name} href="{urlBase}{run.name}" level="4">
 		{#snippet description()}
 			{#if run.trigger.type === 'MANUAL'}
 				Manually triggered
@@ -83,14 +83,9 @@
 				</TooltipAlignHack>
 			{/if}
 		{/snippet}
-		{#snippet text()}
-			<Heading level="4" size="xsmall">
-				<Link href="{urlBase}{run.name}">{run.name}</Link>
-			</Heading>
-		{/snippet}
-	</IconWithText>
+	</IconLabel>
 	<div class="right">
-		<IconWithText size="small" text={formatDuration(run.duration)} icon={TimerIcon} />
+		<IconLabel size="small" label={formatDuration(run.duration)} icon={TimerIcon} />
 		<Detail>{run.status.message}</Detail>
 	</div>
 </ListItem>

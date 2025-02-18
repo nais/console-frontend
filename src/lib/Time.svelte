@@ -29,7 +29,7 @@
 		time;
 		untrack(() => {
 			if (distance) {
-				if (!interval) interval = setInterval(() => (text = distanceText()), 1000 * 60);
+				if (!interval) interval = setInterval(() => (text = distanceText()), 60);
 				text = distanceText();
 			} else {
 				if (interval) {
