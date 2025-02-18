@@ -39,8 +39,7 @@
 			? tableSort.orderBy
 			: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL;
 		const direction = tableSort.direction ? tableSort.direction : 'DESC';
-
-		if (env !== '') {
+		if (env && env !== '') {
 			return {
 				team: team,
 				orderBy: {
@@ -55,7 +54,8 @@
 			orderBy: {
 				field,
 				direction
-			}
+			},
+			filter: { environments: [] }
 		};
 	};
 

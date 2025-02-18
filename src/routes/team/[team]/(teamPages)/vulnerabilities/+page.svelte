@@ -12,7 +12,6 @@
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { urlToPageHeader } from '$lib/urlToPageHeader';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
 		TrendDownIcon,
@@ -161,17 +160,7 @@
 		<Card columns={12}>
 			<h4>Workloads with SBOM</h4>
 			<div class="env-filter">
-				<Select
-					size="small"
-					hideLabel={true}
-					bind:value={selectedEnvironment}
-					onchange={() => {
-						changeParams({
-							environment: selectedEnvironment
-						});
-					}}
-					label="Environment"
-				>
+				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">
 					<option value="">All environments</option>
 					{#if team !== PendingValue && team.environments}
 						{#each team.environments as env (env.id)}
@@ -184,9 +173,7 @@
 					{/if}
 				</Select>
 			</div>
-			{#key selectedEnvironment}
-				<WorkloadsWithSbom team={teamSlug} bind:environment={selectedEnvironment} />
-			{/key}
+			<WorkloadsWithSbom team={teamSlug} bind:environment={selectedEnvironment} />
 		</Card>
 	</div>
 {/if}
