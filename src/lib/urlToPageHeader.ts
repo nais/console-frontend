@@ -1,5 +1,4 @@
 const label = (type: string) => {
-	console.log(type);
 	switch (type) {
 		case 'job':
 			return {
