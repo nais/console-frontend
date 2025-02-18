@@ -25,6 +25,14 @@
 	) = $props();
 </script>
 
+{#snippet linkOrText()}
+	{#if href}
+		<Link {href}>{label}</Link>
+	{:else}
+		{label}
+	{/if}
+{/snippet}
+
 <div
 	class={[
 		'icon-label',
@@ -35,29 +43,11 @@
 	<Icon />
 	<div>
 		{#if rest.size === 'small'}
-			<Detail>
-				{#if href}
-					<Link {href}>{label}</Link>
-				{:else}
-					{label}
-				{/if}
-			</Detail>
+			<Detail>{@render linkOrText()}</Detail>
 		{:else if rest.size === 'large'}
-			<Heading size="small" level={rest.level}>
-				{#if href}
-					<Link {href}>{label}</Link>
-				{:else}
-					{label}
-				{/if}
-			</Heading>
+			<Heading size="small" level={rest.level}>{@render linkOrText()}</Heading>
 		{:else}
-			<BodyShort>
-				{#if href}
-					<Link {href}>{label}</Link>
-				{:else}
-					{label}
-				{/if}
-			</BodyShort>
+			<BodyShort>{@render linkOrText()}</BodyShort>
 		{/if}
 		{#if description}
 			<Detail>
