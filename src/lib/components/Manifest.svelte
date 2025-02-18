@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { fragment, graphql, type Manifest } from '$houdini';
 	import { CopyButton } from '@nais/ds-svelte-community';
-	import { FileTextIcon } from '@nais/ds-svelte-community/icons';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { yaml } from 'svelte-highlight/languages';
 	import 'svelte-highlight/styles/github.css';
-	import IconWithText from './IconWithText.svelte';
 
 	interface Props {
 		workload: Manifest;
@@ -29,9 +27,7 @@
 </script>
 
 {#if manifest}
-	<div class="header">
-		<IconWithText icon={FileTextIcon} text="Manifest for {$manifest.name}" size="large" />
-
+	<div class="copy-button">
 		<CopyButton
 			text="Copy manifest"
 			activeText="Manifest copied"
@@ -47,9 +43,9 @@
 {/if}
 
 <style>
-	.header {
+	.copy-button {
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-end;
 		align-items: center;
 		align-self: stretch;
 		margin-bottom: var(--a-spacing-3);

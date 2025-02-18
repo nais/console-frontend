@@ -4,13 +4,14 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
-	import { LineGraphStackedIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -80,10 +81,7 @@
 	}
 </script>
 
-<div class="header">
-	<IconWithText icon={LineGraphStackedIcon} text="Utilization" size="large" />
-</div>
-
+<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
 {#if $ResourceUtilizationForApp.data}
@@ -203,13 +201,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.grid {
 		margin-top: 1rem;
 		display: grid;

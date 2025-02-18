@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import AppErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import Card from '$lib/Card.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert } from '@nais/ds-svelte-community';
-	import { BellIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -16,9 +17,7 @@
 	let { AppNotificationState } = $derived(data);
 </script>
 
-<div class="header">
-	<IconWithText icon={BellIcon} text="Status" size="large" />
-</div>
+<PageHeader {...urlToPageHeader(page.url)} />
 
 <Card>
 	<div>
@@ -38,13 +37,3 @@
 		</div>
 	{/if}
 </Card>
-
-<style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-</style>
