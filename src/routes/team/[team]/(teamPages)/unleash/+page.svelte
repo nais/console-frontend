@@ -1,13 +1,14 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import {
 		Alert,
 		BodyLong,
@@ -144,9 +145,7 @@
 <GraphErrors errors={$Unleash.errors} />
 <GraphErrors errors={$createUnleashForTeam.errors} />
 
-<div class="header">
-	<IconWithText text="Unleash" icon={UnleashIcon} size="large" />
-</div>
+<PageHeader {...urlToPageHeader(page.url)} />
 
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
@@ -356,13 +355,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.grid {
 		display: grid;
 		column-gap: 0.5rem;

@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert } from '@nais/ds-svelte-community';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -49,9 +50,7 @@
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
 </script>
 
-<div class="header">
-	<IconWithText icon={WalletIcon} text="Cost" size="large" />
-</div>
+<PageHeader {...urlToPageHeader(page.url)} />
 
 <GraphErrors errors={$TeamCost.errors} />
 
@@ -85,13 +84,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.grid {
 		margin-top: 1rem;
 		display: grid;

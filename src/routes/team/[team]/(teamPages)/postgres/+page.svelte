@@ -4,19 +4,20 @@
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
-		DatabaseIcon,
 		ExclamationmarkTriangleFillIcon,
 		WalletIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 
+	import { page } from '$app/state';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
@@ -52,9 +53,7 @@
 
 <GraphErrors errors={$SqlInstances.errors} />
 
-<div class="header">
-	<IconWithText icon={DatabaseIcon} text="SQL instances" size="large" />
-</div>
+<PageHeader {...urlToPageHeader(page.url)} />
 {#if $SqlInstances.data}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const instances = $SqlInstances.data.team.sqlInstances}

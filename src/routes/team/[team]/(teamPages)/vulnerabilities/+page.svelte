@@ -4,23 +4,22 @@
 	import { PendingValue, TeamVulnerabilityRiskScoreTrend, TeamVulnerabilityState } from '$houdini';
 	import Nais from '$lib/icons/Nais.svelte';
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
 		TrendDownIcon,
 		TrendFlatIcon,
 		TrendUpIcon,
-		VirusIcon,
 		XMarkOctagonIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -30,16 +29,13 @@
 	let { data }: Props = $props();
 	let { teamSlug } = $derived(data);
 
-	let selectedEnvironment: string = $state('');
-	selectedEnvironment = get(page).url.searchParams.get('environment') || '';
+	let selectedEnvironment: string = $state(page.url.searchParams.get('environment') || '');
 
 	let { TeamVulnerabilities } = $derived(data);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
-<div class="header">
-	<IconWithText icon={VirusIcon} text="Vulnerabilities" size="large" />
-</div>
+<PageHeader {...urlToPageHeader(page.url)} />
 
 {#if $TeamVulnerabilities.data}
 	{@const team = $TeamVulnerabilities.data.team}
@@ -196,13 +192,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);
