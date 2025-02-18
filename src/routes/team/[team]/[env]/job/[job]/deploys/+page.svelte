@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Deployments from '$lib/components/Deployments.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import type { PageData } from './$houdini';
 	interface Props {
 		data: PageData;
@@ -13,21 +14,9 @@
 	let { JobDeploys } = $derived(data);
 </script>
 
+<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$JobDeploys.errors} />
 
-<div class="header">
-	<IconWithText icon={RocketIcon} text="Deployments" size="large" />
-</div>
 {#if $JobDeploys.data}
 	<Deployments workload={$JobDeploys.data.team.environment.workload} />
 {/if}
-
-<style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-</style>

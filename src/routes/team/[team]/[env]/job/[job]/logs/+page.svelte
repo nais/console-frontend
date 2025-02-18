@@ -1,6 +1,8 @@
 <script lang="ts">
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import { page } from '$app/state';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import LogViewer from '$lib/LogViewer.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import {
 		Button,
 		Chips,
@@ -8,7 +10,6 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
-	import { Density3Icon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
 
@@ -65,9 +66,7 @@
 	}
 </script>
 
-<div class="header">
-	<IconWithText icon={Density3Icon} text="Logs" size="large" />
-</div>
+<PageHeader {...urlToPageHeader(page.url)} />
 {#if result}
 	{@const runs = result.team.environment.job.runs.nodes}
 	<div class="topbar">

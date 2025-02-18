@@ -1,9 +1,10 @@
 <script lang="ts">
-	import IconWithText from '$lib/components/IconWithText.svelte';
+	import { page } from '$app/state';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
+	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert } from '@nais/ds-svelte-community';
-	import { BellIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -17,13 +18,12 @@
 	let errors = $derived($JobStatusDetailed.errors);
 </script>
 
+<PageHeader {...urlToPageHeader(page.url)} />
+
 <GraphErrors {errors} />
 
 {#if result}
 	{@const job = result.team.environment.job}
-	<div class="header">
-		<IconWithText icon={BellIcon} text="Status" size="large" />
-	</div>
 
 	<div>
 		{#if job.status.errors && job.status.errors.length > 0}
@@ -35,13 +35,3 @@
 		{/if}
 	</div>
 {/if}
-
-<style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-</style>
