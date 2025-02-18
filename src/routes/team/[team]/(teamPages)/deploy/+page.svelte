@@ -1,13 +1,11 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -35,9 +33,7 @@
 </script>
 
 <GraphErrors errors={$Deployments.errors} />
-<div class="header">
-	<IconWithText icon={RocketIcon} text="Deployments" size="large" />
-</div>
+
 {#if $Deployments.data}
 	<Card>
 		<Table size="small" zebraStripes>
@@ -127,12 +123,5 @@
 	}
 	dd {
 		margin-inline-start: 20px;
-	}
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
 	}
 </style>

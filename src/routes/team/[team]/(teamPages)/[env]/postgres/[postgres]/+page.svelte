@@ -6,7 +6,6 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import {
 		Alert,
 		CopyButton,
@@ -48,13 +47,6 @@
 		</Alert>
 	{/each}
 {:else if instance}
-	<PersistenceHeader
-		type={instance.__typename}
-		name={instance.name}
-		environment={instance.environment.name}
-		text="All Postgres instances"
-		path="/team/{$SqlInstance.data?.team.slug}/postgres"
-	/>
 	<div class="summary-grid">
 		<Card columns={3}>
 			<SummaryCard

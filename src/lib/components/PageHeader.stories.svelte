@@ -1,5 +1,4 @@
 <script module>
-	import { urlToBreadcrumbs } from '$lib/urlToBreadcrumbs';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import PageHeader from './PageHeader.svelte';
 
@@ -11,32 +10,31 @@
 
 <Story name="Manifest">
 	<PageHeader
-		breadcrumbs={urlToBreadcrumbs(
-			new URL('http://localhost/team/nais/dev/app/app-w-all-storage/manifest')
-		)}
+		breadcrumbs={[
+			{ label: 'nais', href: '/team/nais' },
+			{ label: 'dev' },
+			{ label: 'Jobs', href: '/team/nais/jobs' },
+			{ label: 'slack-teams-notification', href: '/team/nais/dev/job/slack-teams-notification' }
+		]}
 		heading="Manifest"
 	/>
 </Story>
 
 <Story name="Job">
 	<PageHeader
-		breadcrumbs={urlToBreadcrumbs(
-			new URL('http://localhost/team/nais/dev/job/slack-teams-notification')
-		)}
+		breadcrumbs={[
+			{ label: 'nais', href: '/team/nais' },
+			{ label: 'dev' },
+			{ label: 'Jobs', href: '/team/nais/jobs' }
+		]}
 		heading="slack-teams-notification"
 	/>
 </Story>
 
 <Story name="Jobs">
-	<PageHeader
-		breadcrumbs={urlToBreadcrumbs(new URL('http://localhost/team/nais/jobs'))}
-		heading="Jobs"
-	/>
+	<PageHeader breadcrumbs={[{ label: 'nais', href: '/team/nais' }]} heading="Jobs" />
 </Story>
 
 <Story name="Team">
-	<PageHeader
-		breadcrumbs={urlToBreadcrumbs(new URL('http://localhost/team/nais'))}
-		heading="nais"
-	/>
+	<PageHeader heading="nais" />
 </Story>

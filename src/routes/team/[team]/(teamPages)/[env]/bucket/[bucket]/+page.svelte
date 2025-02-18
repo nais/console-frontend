@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import {
@@ -22,13 +21,7 @@
 	<GraphErrors errors={$Bucket.errors} />
 {:else if $Bucket.data}
 	{@const bucket = $Bucket.data.team.environment.bucket}
-	<PersistenceHeader
-		environment={bucket.environment.name}
-		type={bucket.__typename}
-		name={bucket.name}
-		path={`/team/${$Bucket.data.team.slug}/buckets`}
-		text="All buckets"
-	/>
+
 	<div class="grid">
 		<Card columns={12}>
 			<div>

@@ -2,12 +2,11 @@
 	import { graphql, TeamMemberOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { PencilIcon, PersonIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
@@ -74,19 +73,18 @@
 
 <GraphErrors errors={$Members.errors} />
 {#if team}
-	<div class="header">
-		<IconWithText text="Members" icon={PersonIcon} size="large" />
-		{#if canEdit}
-			<Button
-				size="small"
-				onclick={() => {
-					addMemberOpen = !addMemberOpen;
-				}}
-				icon={PlusIcon}>Add member</Button
-			>
-		{/if}
-	</div>
 	<Card>
+		{#if canEdit}
+			<div class="button">
+				<Button
+					size="small"
+					onclick={() => {
+						addMemberOpen = !addMemberOpen;
+					}}
+					icon={PlusIcon}>Add member</Button
+				>
+			</div>
+		{/if}
 		<Table
 			size="small"
 			zebraStripes
@@ -194,11 +192,8 @@
 {/if}
 
 <style>
-	.header {
+	.button {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
+		justify-content: flex-end;
 	}
 </style>

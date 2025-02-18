@@ -5,7 +5,6 @@
 		type BucketOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -21,7 +20,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { BucketIcon, ChevronDownIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -84,9 +83,6 @@
 {#if $Buckets.data}
 	{@const cost = $Buckets.data.team.cost}
 	{@const buckets = $Buckets.data.team.buckets}
-	<div class="header">
-		<IconWithText text="Buckets" icon={BucketIcon} size="large" />
-	</div>
 
 	{#if buckets.nodes.length > 0 || $Buckets.data.team.totalCount.pageInfo.totalCount > 0}
 		<div class="content-wrapper">
@@ -243,14 +239,6 @@
 		gap: var(--a-spacing-6);
 		grid-template-columns: 1fr 300px;
 	}
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-
 	.list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;

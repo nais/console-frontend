@@ -4,7 +4,6 @@
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
-		DatabaseIcon,
 		ExclamationmarkTriangleFillIcon,
 		WalletIcon,
 		XMarkIcon
@@ -12,7 +11,6 @@
 
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -52,9 +50,6 @@
 
 <GraphErrors errors={$SqlInstances.errors} />
 
-<div class="header">
-	<IconWithText icon={DatabaseIcon} text="SQL instances" size="large" />
-</div>
 {#if $SqlInstances.data}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const instances = $SqlInstances.data.team.sqlInstances}
@@ -245,13 +240,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.summary-grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

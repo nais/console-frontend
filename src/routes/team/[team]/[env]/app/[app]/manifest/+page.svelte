@@ -16,6 +16,3 @@
 {#if $AppManifest.data}
 	<Manifest workload={$AppManifest.data.team.environment.application} />
 {/if}
-
-<style>
-</style>

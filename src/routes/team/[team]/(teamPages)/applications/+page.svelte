@@ -5,7 +5,6 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -21,7 +20,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { ChevronDownIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -98,10 +97,6 @@
 
 <div class="wrapper">
 	<div class="content">
-		<div class="header">
-			<IconWithText text="Applications" icon={PackageIcon} size="large" />
-		</div>
-
 		<BodyLong spacing>
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
 				<strong>No applications found.</strong> Applications are long-running processes designed to
@@ -298,13 +293,7 @@
 		grid-template-columns: 1fr 300px;
 		gap: var(--a-spacing-12);
 	}
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
+
 	.search {
 		display: flex;
 		justify-content: flex-end;

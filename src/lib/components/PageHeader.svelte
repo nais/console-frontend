@@ -2,10 +2,10 @@
 	import { Heading, Link } from '@nais/ds-svelte-community';
 
 	const {
-		breadcrumbs,
+		breadcrumbs = [],
 		heading
 	}: {
-		breadcrumbs: { label: string; href?: string }[];
+		breadcrumbs?: { label: string; href?: string }[];
 		heading: string;
 	} = $props();
 </script>

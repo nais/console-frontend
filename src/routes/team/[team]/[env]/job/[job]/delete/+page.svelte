@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { type DeleteJobPage$result, graphql } from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
 
@@ -73,9 +71,6 @@
 
 {#if result?.team.environment.job}
 	{@const job = result.team.environment.job}
-	<div class="header">
-		<IconWithText icon={TrashIcon} text="Delete {job.name}" size="large" />
-	</div>
 
 	{#if hasResourcesToDelete(job)}
 		<p>
@@ -167,13 +162,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	code {
 		font-size: 1rem;
 	}

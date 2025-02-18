@@ -22,12 +22,7 @@
 
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import {
-		ArrowLeftIcon,
-		DocPencilIcon,
-		PadlockLockedIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
@@ -245,28 +240,7 @@
 		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
 	</Confirm>
 
-	<div style="display: flex; flex-direction: row; justify-content: space-between;">
-		<div style="display: flex; flex-direction: column; align-items: left; ">
-			<span
-				><a href="/team/{teamSlug}/secrets">
-					<ArrowLeftIcon /> All secrets
-				</a>
-			</span>
-			<div style="display: flex; align-items: center; gap: 4px;">
-				<div
-					style="display: flex;
-		flex-direction: row;"
-				>
-					<PadlockLockedIcon height={'32px'} width={'32px'} />
-				</div>
-				<div>
-					<h3 style="margin: 0;">{secret.name}</h3>
-					<div style="color: var(--a-text-subtle);	font-size: 1rem;">
-						{secret.environment.name}
-					</div>
-				</div>
-			</div>
-		</div>
+	<div style="display: flex; flex-direction: row; justify-content: flex-end;">
 		<div>
 			<Button
 				class="delete-secret"

@@ -9,9 +9,7 @@
 		getMinToDate,
 		type DailCostType
 	} from '$lib/chart/cost_transformer';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	interface Props {
 		data: PageData;
@@ -44,10 +42,6 @@
 	}
 </script>
 
-<div class="header">
-	<IconWithText icon={WalletIcon} text="Cost" size="large" />
-</div>
-
 <div style="display: flex; flex-direction: column; gap: var(--a-spacing-4);">
 	<GraphErrors errors={$JobCost.errors} />
 
@@ -72,13 +66,3 @@
 		</div>
 	{/if}
 </div>
-
-<style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-</style>

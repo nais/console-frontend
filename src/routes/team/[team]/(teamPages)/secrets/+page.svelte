@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { SecretOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -18,12 +17,7 @@
 		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import {
-		CheckmarkIcon,
-		PadlockLockedIcon,
-		PlusIcon,
-		XMarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, PlusIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
@@ -96,8 +90,6 @@
 {:else if $Secrets.data}
 	{@const secrets = $Secrets.data.team.secrets}
 	<div class="header">
-		<IconWithText text="Secrets" icon={PadlockLockedIcon} size="large" />
-
 		<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
 			Create Secret
 		</Button>

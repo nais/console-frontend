@@ -4,10 +4,8 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -49,10 +47,6 @@
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
 </script>
 
-<div class="header">
-	<IconWithText icon={WalletIcon} text="Cost" size="large" />
-</div>
-
 <GraphErrors errors={$TeamCost.errors} />
 
 <Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
@@ -85,13 +79,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.grid {
 		margin-top: 1rem;
 		display: grid;

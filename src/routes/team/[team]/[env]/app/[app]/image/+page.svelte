@@ -2,14 +2,13 @@
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
 	import VulnerabilityBadges from '$lib/components/VulnerabilityBadges.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon, ImageIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -36,9 +35,7 @@
 </script>
 
 <GraphErrors errors={$ApplicationImageDetails.errors} />
-<div class="header">
-	<IconWithText icon={ImageIcon} text="Image" size="large" />
-</div>
+
 {#if $ApplicationImageDetails.data}
 	{@const image = $ApplicationImageDetails.data.team.environment.workload.image}
 
@@ -113,14 +110,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-
 	.details {
 		display: flex;
 		justify-content: space-between;

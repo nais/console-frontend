@@ -7,7 +7,6 @@
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -32,7 +31,6 @@
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
 	import {
-		BriefcaseClockIcon,
 		CheckmarkCircleFillIcon,
 		ChevronDownIcon,
 		CircleFillIcon,
@@ -117,10 +115,6 @@
 </script>
 
 <GraphErrors errors={$Jobs.errors} />
-
-<div class="header">
-	<IconWithText text="Jobs" icon={BriefcaseClockIcon} size="large" />
-</div>
 
 <BodyLong spacing>
 	{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}
@@ -399,13 +393,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
 	.search {
 		display: flex;
 		justify-content: flex-end;

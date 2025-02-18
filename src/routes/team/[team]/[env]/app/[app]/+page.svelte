@@ -9,8 +9,8 @@
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Heading } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
@@ -59,18 +59,6 @@
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
 	<div class="wrapper">
-		<!-- <PageHeader
-			breadcrumbs={urlToBreadcrumbs(page.url)}
-			heading={application}
-			subheading={environment}
-		/> -->
-		<div class="header">
-			<PackageIcon style="font-size: 2.5rem" />
-			<div>
-				<Heading level="2" size="xlarge">{application}</Heading>
-				<BodyShort>{environment}</BodyShort>
-			</div>
-		</div>
 		<div class="app-content">
 			<div class="main-section">
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
@@ -141,12 +129,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--a-spacing-12);
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		gap: var(--a-spacing-4);
 	}
 
 	.app-content {

@@ -3,7 +3,6 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
@@ -43,13 +42,7 @@
 {/if}
 {#if $ValkeyInstance.data}
 	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
-	<PersistenceHeader
-		type={instance.__typename}
-		name={instance.name}
-		environment={instance.environment.name}
-		text="All Valkey instances"
-		path="/team/{$ValkeyInstance.data?.team.slug}/valkey"
-	/>
+
 	<div class="grid">
 		<Card columns={12}>
 			<h3>Valkey details</h3>

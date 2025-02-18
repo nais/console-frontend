@@ -4,7 +4,6 @@
 		type ActivityLogEntryResourceType$options
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
@@ -14,7 +13,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { ChevronDownIcon, ShieldLockIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -77,9 +76,6 @@
 	};
 </script>
 
-<div class="header">
-	<IconWithText text="Activity log" icon={ShieldLockIcon} size="large" />
-</div>
 <div class="grid">
 	<Card columns={12}>
 		{#if viewerIsMember}
@@ -265,14 +261,6 @@
 </div>
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-
 	.list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;

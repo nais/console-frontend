@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SideMenu, { type menuItem } from '$lib/components/SideMenu.svelte';
+	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import {
 		BellIcon,
 		Density3Icon,
@@ -108,13 +109,17 @@
 <div class="main">
 	<SideMenu nav={memberOnly(nav, data)} />
 	<div class="container">
-		{@render children?.()}
+		<PageHeader />
+		<div>{@render children?.()}</div>
 	</div>
 </div>
 
 <style>
 	.container {
 		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-12);
 	}
 
 	.main {

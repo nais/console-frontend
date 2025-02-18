@@ -8,8 +8,7 @@
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
-	import { BriefcaseClockIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -71,13 +70,6 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
-			<div class="header">
-				<BriefcaseClockIcon style="font-size: 2.5rem" />
-				<div>
-					<Heading level="2" size="xlarge">{jobName}</Heading>
-					<BodyShort>{environment}</BodyShort>
-				</div>
-			</div>
 			<div style="display:flex; flex-direction: column; gap:0.5rem;">
 				<div class="runs-header">
 					<Heading level="2" size="medium">Runs</Heading>
@@ -123,12 +115,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		align-items: center;
-		gap: var(--a-spacing-4);
-	}
-
 	.job-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;

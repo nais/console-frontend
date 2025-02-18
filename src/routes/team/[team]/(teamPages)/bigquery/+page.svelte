@@ -5,12 +5,10 @@
 		type BigQueryDatasetOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -87,9 +85,7 @@
 {#if $BigQuery.data}
 	{@const cost = $BigQuery.data.team.cost}
 	{@const datasets = $BigQuery.data.team.bigQueryDatasets}
-	<div class="header">
-		<IconWithText text="BigQuery datasets" icon={BigQueryIcon} size="large" />
-	</div>
+
 	{#if datasets.nodes.length > 0 || $BigQuery.data.team.totalCount.pageInfo.totalCount > 0}
 		<div class="content-wrapper">
 			<div>
@@ -241,14 +237,6 @@
 {/if}
 
 <style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-
 	.list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;

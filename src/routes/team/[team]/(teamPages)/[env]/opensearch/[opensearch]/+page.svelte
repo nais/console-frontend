@@ -3,7 +3,6 @@
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import PersistenceHeader from '$lib/PersistenceHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
@@ -42,13 +41,7 @@
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}
 	{@const instance = $OpenSearchInstance.data.team.environment.openSearchInstance}
-	<PersistenceHeader
-		type={instance.__typename}
-		name={instance.name}
-		environment={instance.environment.name}
-		text="All OpenSearch instances"
-		path="/team/{$OpenSearchInstance.data.team.slug}/opensearch"
-	/>
+
 	<div class="grid">
 		<Card columns={12}>
 			<h3>OpenSearch instance details</h3>

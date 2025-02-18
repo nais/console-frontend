@@ -5,14 +5,12 @@
 		type OrderDirection$options,
 		type ValkeyInstanceOrderField$options
 	} from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, BodyShort, Button, Detail } from '@nais/ds-svelte-community';
@@ -81,9 +79,7 @@
 </script>
 
 <GraphErrors errors={$Valkey.errors} />
-<div class="header">
-	<IconWithText icon={ValkeyIcon} text="Valkey instances" size="large" />
-</div>
+
 {#if $Valkey.data}
 	{@const cost = $Valkey.data.team.cost}
 	{@const instances = $Valkey.data.team.valkeyInstances}
@@ -250,14 +246,6 @@
 		gap: var(--a-spacing-6);
 		grid-template-columns: 1fr 300px;
 	}
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
-	}
-
 	.list {
 		border: 1px solid var(--a-border-default);
 		border-radius: 4px;

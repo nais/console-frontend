@@ -96,7 +96,8 @@
 					'/job/',
 					'/opensearch',
 					'/redis',
-					'/valkey'
+					'/valkey',
+					'/team/create'
 				].some((s) => $page.route.id?.includes(s)) || $page.route.id === '/'
 		}
 	]}

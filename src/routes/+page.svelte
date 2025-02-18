@@ -1,14 +1,11 @@
 <script lang="ts">
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
-	import Feedback from '$lib/feedback/Feedback.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import type { PageData } from './$houdini';
 	import Onboarding from './Onboarding.svelte';
-
-	let feedbackOpen = $state(false);
 
 	interface Props {
 		data: PageData;
@@ -28,15 +25,6 @@
 
 {#if userTeams === 0}
 	<div class="page">
-		<div class="feedback">
-			<Button
-				variant="secondary"
-				size="xsmall"
-				onclick={() => {
-					feedbackOpen = true;
-				}}>Feedback</Button
-			>
-		</div>
 		<Onboarding {tenantName} />
 	</div>
 {:else}
@@ -81,11 +69,10 @@
 	</div>
 {/if}
 
-{#if feedbackOpen}
-	<Feedback bind:open={feedbackOpen} />
-{/if}
-
 <style>
+	.page {
+		padding-top: 4rem;
+	}
 	.content-wrapper {
 		background: var(--a-surface-default);
 		position: relative;
@@ -118,12 +105,6 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.feedback {
-		display: flex;
-		justify-content: flex-end;
-		padding: 0.5rem 0;
-	}
-
 	h2 {
 		display: flex;
 		align-items: center;
