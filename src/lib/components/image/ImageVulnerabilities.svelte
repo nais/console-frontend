@@ -158,12 +158,10 @@
 >
 	<Thead>
 		<Tr>
-			<Th style="width: 12rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
+			<Th style="width: 13rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
 				>ID</Th
 			>
-			<Th style="width: 38rem" sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}
-				>Package</Th
-			>
+			<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
 			<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
 				>Severity</Th
 			>
