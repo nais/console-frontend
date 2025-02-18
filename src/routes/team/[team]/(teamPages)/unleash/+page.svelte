@@ -363,19 +363,6 @@
 		align-self: stretch;
 		margin-bottom: var(--a-spacing-3);
 	}
-	.modal-overrider :global(.navds-modal) {
-		overflow: visible;
-	}
-
-	.modal-overrider :global(.navds-modal__body) {
-		overflow: visible;
-	}
-
-	.search-container {
-		display: flex;
-		gap: 0 0.5rem;
-	}
-
 	.grid {
 		display: grid;
 		column-gap: 0.5rem;
