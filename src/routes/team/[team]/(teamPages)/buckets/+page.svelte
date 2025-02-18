@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import {
 		BucketOrderField,
 		OrderDirection,
 		type BucketOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import PersistenceCost from '$lib/components/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -14,7 +12,6 @@
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, BodyShort, Button, Detail } from '@nais/ds-svelte-community';
 	import {
@@ -86,7 +83,6 @@
 {#if $Buckets.data}
 	{@const cost = $Buckets.data.team.cost}
 	{@const buckets = $Buckets.data.team.buckets}
-	<PageHeader {...urlToPageHeader(page.url)} />
 
 	{#if buckets.nodes.length > 0 || $Buckets.data.team.totalCount.pageInfo.totalCount > 0}
 		<div class="content-wrapper">

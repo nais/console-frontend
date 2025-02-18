@@ -7,14 +7,12 @@
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import {
 		BodyLong,
@@ -117,8 +115,6 @@
 </script>
 
 <GraphErrors errors={$Jobs.errors} />
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <BodyLong spacing>
 	{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}

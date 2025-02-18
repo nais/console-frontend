@@ -4,12 +4,10 @@
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Persistence from '$lib/components/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
@@ -66,7 +64,6 @@
 	};
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$Job.errors} />
 
 {#if $Job.data}

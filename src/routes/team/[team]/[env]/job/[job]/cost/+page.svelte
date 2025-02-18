@@ -9,8 +9,6 @@
 		getMinToDate,
 		type DailCostType
 	} from '$lib/chart/cost_transformer';
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	interface Props {
@@ -43,8 +41,6 @@
 		goto(`?${params.toString()}`, { replaceState: true });
 	}
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <div style="display: flex; flex-direction: column; gap: var(--a-spacing-4);">
 	<GraphErrors errors={$JobCost.errors} />

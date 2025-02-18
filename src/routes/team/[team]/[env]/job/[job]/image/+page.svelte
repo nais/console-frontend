@@ -2,13 +2,10 @@
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 
-	import { page } from '$app/state';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import VulnerabilityBadges from '$lib/components/VulnerabilityBadges.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { parseImage } from '$lib/utils/image';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -36,8 +33,6 @@
 		}
 	});
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <GraphErrors errors={$JobImageDetails.errors} />
 {#if $JobImageDetails.data}

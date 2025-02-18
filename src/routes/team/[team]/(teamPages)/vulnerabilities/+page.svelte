@@ -6,12 +6,10 @@
 
 	import { page } from '$app/state';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
 		TrendDownIcon,
@@ -34,7 +32,6 @@
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
-<PageHeader {...urlToPageHeader(page.url)} />
 
 {#if $TeamVulnerabilities.data}
 	{@const team = $TeamVulnerabilities.data.team}

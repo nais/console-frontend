@@ -10,8 +10,6 @@
 		getMinToDate,
 		type DailCostType
 	} from '$lib/chart/cost_transformer';
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	interface Props {
@@ -42,8 +40,6 @@
 	today.setDate(today.getDate() - 2);
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <GraphErrors errors={$AppCost.errors} />
 

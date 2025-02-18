@@ -4,12 +4,10 @@
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
@@ -81,7 +79,6 @@
 	}
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
 {#if $ResourceUtilizationForApp.data}

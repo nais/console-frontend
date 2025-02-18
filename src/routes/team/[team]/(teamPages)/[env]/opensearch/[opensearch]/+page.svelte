@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { OpenSearchAccessOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -40,7 +37,6 @@
 	};
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $OpenSearchInstance.errors}
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}

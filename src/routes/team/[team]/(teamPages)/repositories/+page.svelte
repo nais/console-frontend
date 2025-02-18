@@ -2,9 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -124,7 +122,6 @@
 	const errorMessage = `Invalid input`;
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $Repositories.data}
 	<div class="grid">
 		{#if $Repositories.data.team}

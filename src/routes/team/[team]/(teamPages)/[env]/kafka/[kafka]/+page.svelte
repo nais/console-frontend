@@ -3,11 +3,8 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
-	import { page } from '$app/state';
 	import { KafkaTopicAclOrderField } from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -41,7 +38,6 @@
 	};
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $KafkaTopic.errors}
 	<GraphErrors errors={$KafkaTopic.errors} />
 {:else if $KafkaTopic.data}

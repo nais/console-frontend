@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import AppErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import Card from '$lib/Card.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -16,8 +13,6 @@
 
 	let { AppNotificationState } = $derived(data);
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <Card>
 	<div>

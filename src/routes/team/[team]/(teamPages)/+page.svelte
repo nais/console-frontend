@@ -8,8 +8,6 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -27,7 +25,7 @@
 		{msgParts[1]}.
 	</Alert>
 {/if}
-<PageHeader {...urlToPageHeader(page.url)} />
+
 <div class="grid">
 	<Card rows={1} columns={3}>
 		<TeamInfo {teamSlug} />

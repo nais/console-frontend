@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { page } from '$app/state';
 	import {
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
@@ -8,10 +7,8 @@
 		type QueryResult
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
@@ -127,7 +124,6 @@
 	//let rotateClicked = false;
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$TeamSettings.errors} />
 
 {#if teamSettings}

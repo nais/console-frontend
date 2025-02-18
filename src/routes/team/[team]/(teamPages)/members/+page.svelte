@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { graphql, TeamMemberOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -74,7 +71,6 @@
 	};
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$Members.errors} />
 {#if team}
 	<Card>

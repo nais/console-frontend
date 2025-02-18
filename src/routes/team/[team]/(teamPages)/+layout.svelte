@@ -24,6 +24,7 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	import { PendingValue } from '$houdini';
+	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import type { LayoutData } from './$houdini';
 
@@ -236,13 +237,17 @@
 <div class="main">
 	<SideMenu nav={memberOnly(nav, data)} />
 	<div class="container">
-		{@render children?.()}
+		<PageHeader />
+		<div>{@render children?.()}</div>
 	</div>
 </div>
 
 <style>
 	.container {
 		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-12);
 	}
 
 	.main {

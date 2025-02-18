@@ -20,10 +20,8 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
@@ -182,7 +180,6 @@
 	};
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 <GraphErrors errors={$Secret.errors} />
 
 {#if $Secret.fetching}

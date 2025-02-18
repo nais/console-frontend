@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { type DeleteAppPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -65,7 +62,6 @@
 	}
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $DeleteAppPage?.data?.team.environment.application}
 	{@const app = $DeleteAppPage?.data?.team.environment.application}
 	<Card borderColor="var(--a-border-danger)">

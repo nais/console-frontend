@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import LogViewer from '$lib/LogViewer.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import {
 		Button,
 		Chips,
@@ -66,7 +63,6 @@
 	}
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if result}
 	{@const runs = result.team.environment.job.runs.nodes}
 	<div class="topbar">

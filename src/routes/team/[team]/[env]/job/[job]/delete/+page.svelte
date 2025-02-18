@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { type DeleteJobPage$result, graphql } from '$houdini';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import PersistenceList from '$lib/components/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageData } from './$houdini';
@@ -72,7 +69,6 @@
 	}
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if result?.team.environment.job}
 	{@const job = result.team.environment.job}
 

@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import {
 		ExclamationmarkTriangleFillIcon,
@@ -20,7 +17,6 @@
 	let { Bucket } = $derived(data);
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $Bucket.errors}
 	<GraphErrors errors={$Bucket.errors} />
 {:else if $Bucket.data}

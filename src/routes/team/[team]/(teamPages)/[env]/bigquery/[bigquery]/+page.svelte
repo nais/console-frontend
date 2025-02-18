@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import {
 		CopyButton,
 		HelpText,
@@ -33,7 +30,6 @@
 	let { BigQueryDataset: BigQueryDatasetInstance } = $derived(data);
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $BigQueryDatasetInstance.errors}
 	<GraphErrors errors={$BigQueryDatasetInstance.errors} />
 {/if}

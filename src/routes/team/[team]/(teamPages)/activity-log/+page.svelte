@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import {
 		ActivityLogEntryResourceType,
 		type ActivityLogEntryResourceType$options
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyShort, Button } from '@nais/ds-svelte-community';
 	import {
@@ -78,8 +75,6 @@
 		}
 	};
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <div class="grid">
 	<Card columns={12}>

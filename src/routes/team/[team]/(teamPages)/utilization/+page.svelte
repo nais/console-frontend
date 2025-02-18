@@ -1,18 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
 	import Cost from '$lib/components/Cost.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { percentageFormatter } from '$lib/utils/formatters';
 	import {
 		mergeCalculateAndSortOverageData,
@@ -212,8 +209,6 @@
 		);
 	});
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
 

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import SearchButton from '$lib/components/search/SearchButton.svelte';
 	import { docURL } from '$lib/doc';
+	import Feedback from '$lib/feedback/Feedback.svelte';
+	import { Button } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 
 	interface Props {
@@ -13,6 +15,8 @@
 	}
 
 	let { user }: Props = $props();
+
+	let feedbackOpen = $state(false);
 </script>
 
 <div class="header">
@@ -42,6 +46,12 @@
 				{user ? user.name : 'unauthorized'}
 				- <a href="/oauth2/logout">Logout</a>
 			</div>
+			<Button variant="primary-neutral" size="small" onclick={() => (feedbackOpen = true)}
+				>Feedback</Button
+			>
+			{#if feedbackOpen}
+				<Feedback bind:open={feedbackOpen} />
+			{/if}
 		</div>
 	</div>
 </div>

@@ -1,4 +1,5 @@
 const label = (type: string) => {
+	console.log(type);
 	switch (type) {
 		case 'job':
 			return {
@@ -51,6 +52,7 @@ const label = (type: string) => {
 				plural: 'bigquery'
 			};
 		case 'deploy':
+		case 'deploys':
 			return {
 				pageName: 'Deployments'
 			};

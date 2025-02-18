@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import {
 		ApplicationOrderField,
 		OrderDirection,
@@ -8,12 +7,10 @@
 	} from '$houdini';
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import {
@@ -100,8 +97,6 @@
 
 <div class="wrapper">
 	<div class="content">
-		<PageHeader {...urlToPageHeader(page.url)} />
-
 		<BodyLong spacing>
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
 				<strong>No applications found.</strong> Applications are long-running processes designed to

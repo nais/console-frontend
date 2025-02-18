@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import LogViewer from '$lib/LogViewer.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
@@ -46,7 +43,6 @@
 	}
 </script>
 
-<PageHeader {...urlToPageHeader(page.url)} />
 {#if $Instances.data}
 	{@const instances = $Instances.data.team.environment.application.instances.nodes}
 	<div class="topbar">

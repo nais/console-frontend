@@ -3,11 +3,9 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import {
 		Alert,
 		CopyButton,
@@ -41,8 +39,6 @@
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 	const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 </script>
-
-<PageHeader {...urlToPageHeader(page.url)} />
 
 {#if $SqlInstance.errors}
 	{#each distinctErrors($SqlInstance.errors) as error (error)}

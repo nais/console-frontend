@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -36,7 +33,7 @@
 </script>
 
 <GraphErrors errors={$Deployments.errors} />
-<PageHeader {...urlToPageHeader(page.url)} />
+
 {#if $Deployments.data}
 	<Card>
 		<Table size="small" zebraStripes>
