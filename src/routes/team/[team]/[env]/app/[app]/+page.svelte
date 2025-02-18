@@ -59,6 +59,11 @@
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
 	<div class="wrapper">
+		<!-- <PageHeader
+			breadcrumbs={urlToBreadcrumbs(page.url)}
+			heading={application}
+			subheading={environment}
+		/> -->
 		<div class="header">
 			<PackageIcon style="font-size: 2.5rem" />
 			<div>
