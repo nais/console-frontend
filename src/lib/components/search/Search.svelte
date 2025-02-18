@@ -82,7 +82,7 @@
 	</div>
 	<div class="results">
 		{#if loading}
-			{#each { length: 5 }}
+			{#each [0, 1, 2, 3, 4] as i (i)}
 				<ResultSkeleton />
 			{/each}
 		{:else if results}
