@@ -89,13 +89,14 @@
 	<GraphErrors errors={$Secrets.errors} />
 {:else if $Secrets.data}
 	{@const secrets = $Secrets.data.team.secrets}
-	<div class="header">
-		<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
-			Create Secret
-		</Button>
-	</div>
+
 	<div class="grid">
 		<Card columns={12}>
+			<div class="button">
+				<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
+					Create Secret
+				</Button>
+			</div>
 			<div>
 				<div style="padding-bottom: 1rem;">
 					<ToggleGroup
@@ -189,11 +190,8 @@
 		row-gap: 1rem;
 	}
 
-	.header {
+	.button {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		align-self: stretch;
-		margin-bottom: var(--a-spacing-3);
+		justify-content: flex-end;
 	}
 </style>
