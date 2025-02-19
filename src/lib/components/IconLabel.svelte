@@ -10,7 +10,7 @@
 		description,
 		...rest
 	}: {
-		label: string;
+		label: Component | string;
 		href?: string;
 		icon: Component;
 		description?: Component | string;
@@ -27,9 +27,17 @@
 
 {#snippet linkOrText()}
 	{#if href}
-		<Link {href}>{label}</Link>
+		<Link {href}>{@render componentOrString(label)}</Link>
 	{:else}
-		{label}
+		{@render componentOrString(label)}
+	{/if}
+{/snippet}
+
+{#snippet componentOrString(Value: Component | string)}
+	{#if typeof Value === 'string'}
+		{Value}
+	{:else}
+		<Value />
 	{/if}
 {/snippet}
 
@@ -50,14 +58,7 @@
 			<BodyShort>{@render linkOrText()}</BodyShort>
 		{/if}
 		{#if description}
-			<Detail>
-				{#if typeof description === 'string'}
-					{description}
-				{:else}
-					{@const Description = description}
-					<Description />
-				{/if}
-			</Detail>
+			<Detail>{@render componentOrString(description)}</Detail>
 		{/if}
 	</div>
 </div>

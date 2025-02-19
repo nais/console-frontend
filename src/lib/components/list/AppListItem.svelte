@@ -4,8 +4,7 @@
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
-	import IconWithText from '../IconWithText.svelte';
-	import WorkloadLink from '../WorkloadLink.svelte';
+	import IconLabel from '../IconLabel.svelte';
 	import ListItem from './ListItem.svelte';
 
 	const {
@@ -27,7 +26,13 @@
 </script>
 
 <ListItem>
-	<IconWithText size="large">
+	<IconLabel
+		level="4"
+		label={app.name}
+		href="/team/{app.team.slug}/{app.environment.name}/app/{app.name}"
+		description={app.environment.name}
+		size="large"
+	>
 		{#snippet icon()}
 			<Tooltip
 				content={{
@@ -47,10 +52,7 @@
 				/>
 			</Tooltip>
 		{/snippet}
-		{#snippet text()}
-			<WorkloadLink workload={app} hideTeam />
-		{/snippet}
-	</IconWithText>
+	</IconLabel>
 	<div class="right">
 		{#if app.deployments.nodes.length > 0}
 			{@const timestamp = app.deployments.nodes[0].createdAt}
@@ -59,11 +61,11 @@
 					locale: enGB
 				})}"
 			>
-				<IconWithText size="small" icon={RocketIcon}>
-					{#snippet text()}
+				<IconLabel size="small" icon={RocketIcon}>
+					{#snippet label()}
 						<Time time={timestamp} distance={true} />
 					{/snippet}
-				</IconWithText>
+				</IconLabel>
 			</Tooltip>
 		{/if}
 		<Detail>
