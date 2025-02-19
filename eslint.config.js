@@ -31,6 +31,7 @@ export default [
 		rules: {
 			'svelte/require-each-key': 'error',
 			'svelte/valid-each-key': 'error'
+			/*'svelte/no-unused-class-name': 'error'*/
 		}
 	},
 	{

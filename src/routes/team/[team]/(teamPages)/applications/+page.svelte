@@ -5,6 +5,7 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
+	import AggregatedCostForWorkloads from '$lib/components/AggregatedCostForWorkloads.svelte';
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -98,7 +99,7 @@
 <GraphErrors errors={$Applications.errors} />
 
 <div class="wrapper">
-	<div class="content">
+	<div>
 		<BodyLong spacing>
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
 				<strong>No applications found.</strong> Applications are long-running processes designed to
@@ -283,6 +284,17 @@
 					}
 				}}
 			/>
+		{/if}
+	</div>
+	<div>
+		{#if $Applications.data?.team.slug}
+			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
+				{@const teamSlug = $Applications.data.team.slug}
+				<AggregatedCostForWorkloads
+					{teamSlug}
+					totalCount={$Applications.data?.team.totalApplications.pageInfo.totalCount}
+				/>
+			{/if}
 		{/if}
 	</div>
 </div>

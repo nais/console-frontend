@@ -179,7 +179,7 @@
 <style>
 	.heading {
 		display: flex;
-		justify-content: space-between;
+		gap: var(--a-spacing-2);
 		align-items: center;
 	}
 	.cost-summary {

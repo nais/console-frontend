@@ -8,6 +8,7 @@ query Applications(
 	$after: Cursor
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
+		slug
 		environments {
 			id
 			name
