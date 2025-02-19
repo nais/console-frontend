@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, WorkloadState, type ValueOf } from '$houdini';
-	import Nais from '$lib/icons/Nais.svelte';
 	import { Heading, Skeleton } from '@nais/ds-svelte-community';
 	import {
+		CheckmarkCircleFillIcon,
 		ExclamationmarkTriangleFillIcon,
-		QuestionmarkIcon
+		QuestionmarkDiamondFillIcon,
+		XMarkOctagonFillIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 	import type { TeamInfoVariables } from './$houdini';
-	import IconWithText from './IconWithText.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -106,21 +106,19 @@
 	{/if}
 	<div class="nais">
 		{#if status == 'NAIS'}
-			<IconWithText icon={Nais} text="All workloads are Nais" size="medium" />
+			<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> All
+			workloads are Nais.
 		{:else if status === 'FAILING'}
-			<IconWithText
-				icon={ExclamationmarkTriangleFillIcon}
-				text="One or more workloads are failing"
-				size="medium"
-			/>
+			<XMarkOctagonFillIcon class="text-aligned-icon" style="color: var(--a-icon-danger)" /> One or more
+			workloads are failing.
 		{:else if status === 'NOT_NAIS'}
-			<IconWithText
-				icon={ExclamationmarkTriangleFillIcon}
-				text="One or more workloads are having issues"
-				size="medium"
-			/>
+			<ExclamationmarkTriangleFillIcon
+				class="text-aligned-icon"
+				style="color: var(--a-icon-warning)"
+			/> One or more workloads are having issues.
 		{:else}
-			<IconWithText icon={QuestionmarkIcon} text="Team status is unknown" size="medium" />
+			<QuestionmarkDiamondFillIcon class="text-aligned-icon" style="color: var(--a-icon-action)" /> Team
+			status is unknown.
 		{/if}
 	</div>
 {/if}

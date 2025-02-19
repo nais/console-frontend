@@ -58,8 +58,7 @@
 				<QuestionmarkDiamondFillIcon
 					class="text-aligned-icon"
 					style="color: var(--a-icon-action)"
-				/>
-				Application status unknown.
+				/> Application status unknown.
 			{/if}
 		</BodyShort>
 		{#if nErrors > 0}
