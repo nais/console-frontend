@@ -3,7 +3,6 @@
 	import { Heading } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon, GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
-	import IconWithText from './IconWithText.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -76,108 +75,76 @@
 <Heading level="2" size="medium" spacing>Network policy</Heading>
 {#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
 	<div class="grid">
-		<div class="direction-content">
+		<div>
 			<Heading level="3" size="small" spacing>Inbound</Heading>
-			{#if $data.networkPolicy.inbound.rules.length > 0}
-				<ul>
-					{#each $data.networkPolicy.inbound.rules as rule (rule)}
-						<li>
-							{#if rule.targetWorkloadName == '*'}
-								Any app
-								{#if rule.targetWorkloadName == '*'}
-									from any namespace
-								{:else}
-									in {rule.targetTeamSlug}
-								{/if}
-
-								in {$data.environment.name}
-							{:else if !rule.mutual && rule.targetWorkload}
-								<WorkloadLink
-									workload={rule.targetWorkload}
-									warning="Workload is missing outbound policy to {$data.name}"
-								/>
-							{:else if !rule.mutual && !rule.targetWorkload}
-								<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
-									{#snippet icon()}
-										<TooltipAlignHack content="Invalid workload reference">
-											<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
-										</TooltipAlignHack>
-									{/snippet}
-								</IconLabel>
-							{:else if rule.targetWorkload}
-								<WorkloadLink workload={rule.targetWorkload} />
+			<ul>
+				{#each $data.networkPolicy.inbound.rules as rule (rule)}
+					<li>
+						{#if rule.targetWorkloadName == '*'}
+							Any app {#if rule.targetWorkloadName == '*'}
+								from any namespace
 							{:else}
-								<span>{rule.targetWorkloadName}</span>
-							{/if}
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<li>No inbound network policies configured for this app.</li>
-			{/if}
+								in {rule.targetTeamSlug}
+							{/if} in {$data.environment.name}
+						{:else if !rule.mutual && rule.targetWorkload}
+							<WorkloadLink
+								workload={rule.targetWorkload}
+								warning="Workload is missing outbound policy to {$data.name}"
+							/>
+						{:else if rule.targetWorkload}
+							<WorkloadLink workload={rule.targetWorkload} />
+						{:else}
+							<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
+								{#snippet icon()}
+									<TooltipAlignHack content="Invalid workload reference">
+										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+									</TooltipAlignHack>
+								{/snippet}
+							</IconLabel>
+						{/if}
+					</li>
+				{:else}
+					<li>No inbound network policies configured for this app.</li>
+				{/each}
+			</ul>
 		</div>
 
-		<div class="direction-content">
+		<div>
 			<Heading level="3" size="small" spacing>Outbound</Heading>
-			{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-				{#if $data.networkPolicy.outbound.external.length > 0}
-					<Heading level="4" size="xsmall" spacing>External</Heading>
-					<ul>
-						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyHost') as external (external)}
+			{#if $data.networkPolicy.outbound.rules.length > 0 && $data.networkPolicy.outbound.external.length > 0}
+				<Heading level="4" size="xsmall" spacing>External</Heading>
+				<ul>
+					{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
+						{#each list as external (external)}
 							{#each external.ports as port (port)}
-								<li>
-									<IconWithText
-										text={`https://${external.target}:${port}`}
-										size="medium"
-										icon={GlobeIcon}
-									/>
-								</li>
+								<li><IconLabel label="https://{external.target}:{port}" icon={GlobeIcon} /></li>
 							{:else}
-								<li>
-									<IconWithText
-										text={`https://${external.target}`}
-										size="medium"
-										icon={GlobeIcon}
-									/>
-								</li>
+								<li><IconLabel label="https://{external.target}" icon={GlobeIcon} /></li>
 							{/each}
 						{/each}
-
-						{#each $data.networkPolicy.outbound.external.filter((e) => e.__typename === 'ExternalNetworkPolicyIpv4') as external (external)}
-							{#each external.ports as port (port)}
-								<li>
-									<IconWithText
-										text={`${external.target}:${port}`}
-										size="medium"
-										icon={GlobeIcon}
-									/>
-								</li>
-							{:else}
-								<li><IconWithText text={`${external.target}`} size="medium" icon={GlobeIcon} /></li>
-							{/each}
-						{/each}
-					</ul>
-				{/if}
+					{:else}
+						<li>No external outbound network policies configured for this app.</li>
+					{/each}
+				</ul>
 				{#if $data.networkPolicy.outbound.rules.length > 0}
 					<Heading level="4" size="xsmall" spacing>Workloads</Heading>
 					<ul>
 						{#each $data.networkPolicy.outbound.rules as rule (rule)}
 							<li>
 								{#if rule.targetWorkloadName == '*'}
-									Any app
-									{#if rule.targetWorkloadName == '*'}
+									Any app {#if rule.targetWorkloadName == '*'}
 										from any namespace
 									{:else}
 										in {rule.targetTeamSlug}
-									{/if}
-
-									in {$data.environment.name}
+									{/if} in {$data.environment.name}
 								{:else if !rule.mutual && rule.targetWorkload}
 									<WorkloadLink
 										workload={rule.targetWorkload}
 										warning="Workload is missing outbound policy to {$data.name}"
 									/>
-								{:else if !rule.mutual && !rule.targetWorkload}
+								{:else if rule.targetWorkload}
+									<WorkloadLink workload={rule.targetWorkload} />
+								{:else}
 									<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
 										{#snippet icon()}
 											<TooltipAlignHack content="Invalid workload reference">
@@ -185,10 +152,6 @@
 											</TooltipAlignHack>
 										{/snippet}
 									</IconLabel>
-								{:else if rule.targetWorkload}
-									<WorkloadLink workload={rule.targetWorkload} />
-								{:else}
-									<span>{rule.targetWorkloadName}</span>
 								{/if}
 							</li>
 						{/each}
@@ -210,21 +173,10 @@
 		grid-template-columns: 1fr 1fr;
 		gap: 2rem;
 	}
-	.direction-content {
-		padding: 1rem;
-	}
 
-	.direction-content,
 	ul {
 		list-style: none;
 		margin: 0;
 		padding: 0 0 1rem 0;
-	}
-	li {
-		display: flex;
-		align-items: center;
-		gap: var(--a-spacing-1);
-		flex-direction: row;
-		padding: 2px 4px;
 	}
 </style>
