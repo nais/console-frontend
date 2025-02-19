@@ -9,19 +9,12 @@
 	import AggregatedCostForJobs from '$lib/components/AggregatedCostForJobs.svelte';
 	import JobListItem from '$lib/components/list/JobListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
-	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
-	import {
-		ActionMenu,
-		ActionMenuCheckboxItem,
-		ActionMenuDivider,
-		ActionMenuRadioGroup,
-		ActionMenuRadioItem
-	} from '@nais/ds-svelte-community/experimental.js';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -65,16 +58,6 @@
 			changeQuery({ environments });
 		}
 	});
-
-	const handleSortDirection = (key: string) => {
-		changeQuery({ direction: key as OrderDirection$options });
-	};
-
-	const handleSortField = (key: string) => {
-		changeQuery({
-			field: key as keyof typeof JobOrderField
-		});
-	};
 
 	const changeQuery = (
 		params: {
@@ -183,83 +166,7 @@
 								</ActionMenuCheckboxItem>
 							{/each}
 						</ActionMenu>
-
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<div style="min-width: 164px;">
-									<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
-										{#snippet icon()}
-											{#if orderDirection === OrderDirection.ASC}
-												<SortAscendingIcon size="1rem" />
-											{:else}
-												<SortDescendingIcon size="1rem" />
-											{/if}
-										{/snippet}
-										<span style="display: flex; align-items: center; gap: 8px;">
-											{orderField === JobOrderField.NAME
-												? 'Name'
-												: orderField === JobOrderField.STATUS
-													? 'Status'
-													: orderField === JobOrderField.ENVIRONMENT
-														? 'Environment'
-														: 'Deployed'}
-											<ChevronDownIcon aria-hidden="true" height="20px" width="20px" />
-										</span>
-									</Button>
-								</div>
-							{/snippet}
-							{#key orderField}
-								<ActionMenuRadioGroup value={orderField} label="Order by">
-									<ActionMenuRadioItem
-										value={JobOrderField.NAME}
-										onselect={(value) => handleSortField(value as string)}>Name</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={JobOrderField.STATUS}
-										onselect={(value) => handleSortField(value as string)}
-										>Status</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={JobOrderField.ENVIRONMENT}
-										onselect={(value) => handleSortField(value as string)}
-										>Environment</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem
-										value={JobOrderField.DEPLOYMENT_TIME}
-										onselect={(value) => handleSortField(value as string)}
-										>Deployed</ActionMenuRadioItem
-									>
-								</ActionMenuRadioGroup>
-							{/key}
-							<ActionMenuDivider />
-							{#key orderDirection}
-								<ActionMenuRadioGroup value={orderDirection} label="Direction">
-									{#if orderField === JobOrderField.DEPLOYMENT_TIME}
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Oldest</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Newest</ActionMenuRadioItem
-										>
-									{:else}
-										<ActionMenuRadioItem
-											value={OrderDirection.ASC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Ascending</ActionMenuRadioItem
-										>
-										<ActionMenuRadioItem
-											value={OrderDirection.DESC}
-											onselect={(value) => handleSortDirection(value as string)}
-											>Descending</ActionMenuRadioItem
-										>
-									{/if}
-								</ActionMenuRadioGroup>
-							{/key}
-						</ActionMenu>
+						<OrderByMenu OrderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
 					{/snippet}
 					{#each jobs.nodes as job (job.id)}
 						<JobListItem {job} />
