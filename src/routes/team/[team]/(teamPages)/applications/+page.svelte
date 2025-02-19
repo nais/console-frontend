@@ -5,7 +5,7 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import AggregatedCostForWorkloads from '$lib/components/AggregatedCostForWorkloads.svelte';
+	import AggregatedCostForApplications from '$lib/components/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -290,7 +290,7 @@
 		{#if $Applications.data?.team.slug}
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
 				{@const teamSlug = $Applications.data.team.slug}
-				<AggregatedCostForWorkloads
+				<AggregatedCostForApplications
 					{teamSlug}
 					totalCount={$Applications.data?.team.totalApplications.pageInfo.totalCount}
 				/>

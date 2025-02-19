@@ -1,45 +1,26 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Detail, Heading, HelpText } from '@nais/ds-svelte-community';
+	import { Detail } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format, lastDayOfMonth } from 'date-fns';
 	import type { EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
-	import type { AggregatedCostForWorkloadsVariables } from './$houdini';
-
-	export const _AggregatedCostForWorkloadsVariables: AggregatedCostForWorkloadsVariables = () => {
-		return { team: teamSlug, totalCount: totalCount };
-	};
-
-	const costQuery = graphql(`
-		query AggregatedCostForWorkloads($team: Slug!, $totalCount: Int) @load {
-			team(slug: $team) {
-				slug
-				applications(first: $totalCount) {
-					nodes {
-						cost {
-							monthly {
-								series {
-									date
-									sum
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
 
 	interface Props {
-		teamSlug: string;
-		totalCount: number;
+		readonly nodes: {
+			readonly cost: {
+				readonly monthly: {
+					readonly series: {
+						readonly date: Date;
+						readonly sum: number;
+					}[];
+				};
+			};
+		}[];
 	}
 
-	let { teamSlug, totalCount }: Props = $props();
+	let { nodes }: Props = $props();
 
 	function getEstimateForMonth(month: { sum: number; date: Date }): number {
 		const daysKnown = month.date.getDate();
@@ -106,19 +87,17 @@
 		}
 		let data = aggregateAndSortCostByDate(series);
 		let estimateCurrentMonth = getEstimateForMonth(data[data.length - 1]);
-		console.log(data[data.length - 1]);
 		data.pop(); // Remove current month
 
 		data.push({
 			date: lastDayOfMonth(new Date()),
 			sum: estimateCurrentMonth
 		});
-		console.log('primeData', data);
 		return data;
 	};
 
 	let data = $derived.by(() => {
-		return primeData($costQuery.data?.team.applications.nodes);
+		return primeData(nodes);
 	});
 
 	const costTransform = (
@@ -167,54 +146,29 @@
 	};
 </script>
 
-<GraphErrors errors={$costQuery.errors} />
-<div class="wrapper">
-	<div class="heading">
-		<Heading level="3">Applications cost</Heading>
-
-		<HelpText title="Aggregated workloads cost"
-			>Aggregated cost for workloads. Current month is estimated.</HelpText
-		>
-	</div>
-	{#if $costQuery.data}
-		{@const options = costTransform(data)}
-		<div class="cost-summary">
-			<div class="estimated-cost">
-				<Detail>
-					{data[data.length - 1].date.toLocaleString('en-US', {
-						month: 'long'
-					})}: {euroValueFormatter(data[data.length - 1].sum)}
-					{#if data[data.length - 1].sum > data[data.length - 2].sum}
-						<CaretUpFillIcon style="color: var(--a-surface-danger);" />
-					{:else}
-						<CaretDownFillIcon style="color: var(--a-surface-success);" />
-					{/if}
-				</Detail>
-			</div>
-			<div>
-				<Detail>
-					{data[data.length - 2].date.toLocaleString('en-US', {
-						month: 'long'
-					})}: {euroValueFormatter(data[data.length - 2].sum)}
-				</Detail>
-			</div>
+{#if data}
+	{@const options = costTransform(data)}
+	<div class="cost-summary">
+		<div class="estimated-cost">
+			<Detail>
+				{data[data.length - 1].date.toLocaleString('en-US', {
+					month: 'long'
+				})}: {euroValueFormatter(data[data.length - 1].sum)}
+				{#if data[data.length - 1].sum > data[data.length - 2].sum}
+					<CaretUpFillIcon style="color: var(--a-surface-danger);" />
+				{:else}
+					<CaretDownFillIcon style="color: var(--a-surface-success);" />
+				{/if}
+			</Detail>
 		</div>
+		<div>
+			<Detail>
+				{data[data.length - 2].date.toLocaleString('en-US', {
+					month: 'long'
+				})}: {euroValueFormatter(data[data.length - 2].sum)}
+			</Detail>
+		</div>
+	</div>
 
-		<EChart {options} />
-	{/if}
-</div>
-
-<style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		gap: var(--a-spacing-1);
-	}
-
-	.heading {
-		display: flex;
-		gap: var(--a-spacing-2);
-		align-items: center;
-	}
-</style>
+	<EChart {options} />
+{/if}

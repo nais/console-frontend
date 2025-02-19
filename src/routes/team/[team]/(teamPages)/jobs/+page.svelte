@@ -6,6 +6,7 @@
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
+	import AggregatedCostForJobs from '$lib/components/AggregatedCostForJobs.svelte';
 	import JobListItem from '$lib/components/list/JobListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -274,6 +275,17 @@
 							changeQuery({ before: '', after: jobs.pageInfo.endCursor ?? '' });
 						}
 					}}
+				/>
+			{/if}
+		{/if}
+	</div>
+	<div>
+		{#if $Jobs.data?.team.slug}
+			{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount > 0}
+				{@const teamSlug = $Jobs.data.team.slug}
+				<AggregatedCostForJobs
+					{teamSlug}
+					totalCount={$Jobs.data?.team.totalJobs.pageInfo.totalCount}
 				/>
 			{/if}
 		{/if}
