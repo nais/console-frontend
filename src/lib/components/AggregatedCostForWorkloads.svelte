@@ -148,8 +148,8 @@
 
 {#if data}
 	{@const options = costTransform(data)}
-	<div class="cost-summary">
-		<div class="estimated-cost">
+	<div>
+		<div>
 			<Detail>
 				{data[data.length - 1].date.toLocaleString('en-US', {
 					month: 'long'
