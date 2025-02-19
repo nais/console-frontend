@@ -136,7 +136,7 @@
 			No cost data available
 		{/if}
 	</div>
-	<div style="height: 200px;">
+	<div style="height: 200px; overflow: hidden;">
 		<EChart
 			options={costTransform(
 				cost.monthlySummary.series,
