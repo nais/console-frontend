@@ -5,6 +5,7 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import IconLabel from '../IconLabel.svelte';
+	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
 	const {
@@ -34,7 +35,7 @@
 		size="large"
 	>
 		{#snippet icon()}
-			<Tooltip
+			<TooltipAlignHack
 				content={{
 					NAIS: 'Application is Nais',
 					FAILING: 'Application is failing',
@@ -50,7 +51,7 @@
 						UNKNOWN: 'info'
 					}[app.status.state] ?? 'info'}); font-size: 0.5rem"
 				/>
-			</Tooltip>
+			</TooltipAlignHack>
 		{/snippet}
 	</IconLabel>
 	<div class="right">

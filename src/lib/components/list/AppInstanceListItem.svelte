@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
-	import { Detail, Heading, Link } from '@nais/ds-svelte-community';
+	import { Detail } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon, XMarkOctagonFillIcon } from '@nais/ds-svelte-community/icons';
-	import IconWithText from '../IconWithText.svelte';
+	import IconLabel from '../IconLabel.svelte';
 	import RunningIndicator from '../RunningIndicator.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
@@ -25,7 +25,7 @@
 </script>
 
 <ListItem>
-	<IconWithText size="large">
+	<IconLabel size="large" href="{urlBase}{instance.name}" label={instance.name} level="4">
 		{#snippet description()}
 			Created <Time time={instance.created} distance={true} />
 		{/snippet}
@@ -44,12 +44,7 @@
 				</TooltipAlignHack>
 			{/if}
 		{/snippet}
-		{#snippet text()}
-			<Heading level="4" size="xsmall">
-				<Link href="{urlBase}{instance.name}">{instance.name}</Link>
-			</Heading>
-		{/snippet}
-	</IconWithText>
+	</IconLabel>
 	<div class="right">
 		<Detail>{instance.restarts + ' restart' + (instance.restarts === 1 ? '' : 's')}</Detail>
 		<Detail>{instance.status.state}: {instance.status.message}</Detail>
