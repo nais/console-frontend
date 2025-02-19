@@ -77,11 +77,7 @@
 					</div>
 					<Instances {app} />
 				</div>
-				<div
-					style="display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 2rem; margin-bottom: 1rem;"
-				>
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1rem;">
 					<div>
 						<Ingresses {app} />
 					</div>
@@ -96,10 +92,10 @@
 			</div>
 			<div class="sidebar">
 				<Status {app} />
+				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+				<Image workload={app} />
 				<Utilization {app} />
 				<WorkloadDeploy workload={app} />
-				<Image workload={app} />
-				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}

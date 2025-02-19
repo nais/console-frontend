@@ -59,27 +59,35 @@
 	}
 </script>
 
-<Heading level="3" size="small">Run configuration</Heading>
-<div>
-	{#if schedule}
-		{@const runConfig = getLocalizedCronDescription(schedule.expression, schedule.timeZone)}
-		{#if runConfig.error}
-			<p style="color: red;">Error: {runConfig.error}</p>
+<div class="wrapper">
+	<Heading level="3" size="small">Run configuration</Heading>
+	<div>
+		{#if schedule}
+			{@const runConfig = getLocalizedCronDescription(schedule.expression, schedule.timeZone)}
+			{#if runConfig.error}
+				<p style="color: red;">Error: {runConfig.error}</p>
+			{:else}
+				<dl style="margin: 0">
+					<dt>Schedule</dt>
+					<dd style="margin: 0">{runConfig.description}</dd>
+					<dt>Next run</dt>
+					<dd style="margin: 0">{runConfig.nextRun}</dd>
+				</dl>
+			{/if}
 		{:else}
-			<dl style="margin: 0">
-				<dt>Schedule</dt>
-				<dd style="margin: 0">{runConfig.description}</dd>
-				<dt>Next run</dt>
-				<dd style="margin: 0">{runConfig.nextRun}</dd>
-			</dl>
+			<p>No schedule</p>
 		{/if}
-	{:else}
-		<p>No schedule</p>
-	{/if}
+	</div>
 </div>
 
 <style>
 	dt {
 		font-weight: bold;
+	}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1);
+		align-items: start;
 	}
 </style>

@@ -87,6 +87,7 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to secrets will use this resource type.
   """
   SECRET
+  SERVICE_ACCOUNT
 
   """All activity log entries related to teams will use this resource type."""
   TEAM
@@ -163,9 +164,9 @@ type AllowTeamAccessToUnleashPayload {
 }
 
 """
-An application lets you run one or more instances of a container image on the [NAIS platform](https://nais.io/).
+An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
 
-Learn more about how to create and configure your applications in the [NAIS documentation](https://docs.nais.io/workloads/application/).
+Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 """
 type Application implements Node & Workload {
   """List of authentication and authorization for the application."""
@@ -247,6 +248,9 @@ type Application implements Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: KafkaTopicAclOrder
   ): KafkaTopicAclConnection!
+
+  """List of log destinations for the application."""
+  logDestinations: [LogDestination!]!
 
   """The application manifest."""
   manifest: ApplicationManifest!
@@ -486,10 +490,23 @@ type ApplicationScaling {
   strategies: [ScalingStrategy!]!
 }
 
+input AssignRoleToServiceAccountInput {
+  """The name of the role to assign."""
+  roleName: String!
+
+  """The ID of the service account to assign the role to."""
+  serviceAccountID: ID!
+}
+
+type AssignRoleToServiceAccountPayload {
+  """The service account that had a role assigned."""
+  serviceAccount: ServiceAccount
+}
+
 """
 Interface for authentication and authorization integrations.
 
-Read more about this topic in the [NAIS documentation](https://docs.nais.io/auth/).
+Read more about this topic in the [Nais documentation](https://docs.nais.io/auth/).
 """
 interface AuthIntegration {
   """The name of the integration."""
@@ -759,6 +776,61 @@ type CreateSecretPayload {
   secret: Secret
 }
 
+input CreateServiceAccountInput {
+  """A description of the service account."""
+  description: String!
+
+  """The name of the service account."""
+  name: String!
+
+  """The team slug that the service account belongs to."""
+  teamSlug: Slug
+}
+
+type CreateServiceAccountPayload {
+  """The created service account."""
+  serviceAccount: ServiceAccount
+}
+
+input CreateServiceAccountTokenInput {
+  """The description of the service account token."""
+  description: String!
+
+  """
+  Optional expiry date of the token.
+  
+  If not specified, the token will never expire.
+  """
+  expiresAt: Date
+
+  """The name of the service account token."""
+  name: String!
+
+  """The ID of the service account to create the token for."""
+  serviceAccountID: ID!
+}
+
+type CreateServiceAccountTokenPayload {
+  """
+  The secret of the service account token.
+  
+  This value is only returned once, and can not be retrieved at a later stage. If the secret is lost, a new token must be created.
+  
+  Once obtained, the secret can be used to authenticate as the service account using the HTTP `Authorization` request header:
+  
+  ```
+  Authorization: Bearer <secret>
+  ```
+  """
+  secret: String
+
+  """The service account that the token belongs to."""
+  serviceAccount: ServiceAccount
+
+  """The created service account token."""
+  serviceAccountToken: ServiceAccountToken
+}
+
 input CreateTeamInput {
   """
   The purpose / description of the team.
@@ -859,6 +931,29 @@ input DeleteSecretInput {
 type DeleteSecretPayload {
   """The deleted secret."""
   secretDeleted: Boolean
+}
+
+input DeleteServiceAccountInput {
+  """The ID of the service account to delete."""
+  serviceAccountID: ID!
+}
+
+type DeleteServiceAccountPayload {
+  """Whether or not the service account was deleted."""
+  serviceAccountDeleted: Boolean
+}
+
+input DeleteServiceAccountTokenInput {
+  """The ID of the service account token to delete."""
+  serviceAccountTokenID: ID!
+}
+
+type DeleteServiceAccountTokenPayload {
+  """The service account that the token belonged to."""
+  serviceAccount: ServiceAccount
+
+  """Whether or not the service account token was deleted."""
+  serviceAccountTokenDeleted: Boolean
 }
 
 """Description of a deployment."""
@@ -1380,6 +1475,9 @@ type Job implements Node & Workload {
     orderBy: KafkaTopicAclOrder
   ): KafkaTopicAclConnection!
 
+  """List of log destinations for the job."""
+  logDestinations: [LogDestination!]!
+
   """The job manifest."""
   manifest: JobManifest!
 
@@ -1801,6 +1899,24 @@ enum KafkaTopicOrderField {
   NAME
 }
 
+interface LogDestination {
+  """The globally unique ID of the log destination."""
+  id: ID!
+}
+
+type LogDestinationLoki implements LogDestination & Node {
+  """Grafana URL to view the logs."""
+  grafanaURL: String!
+
+  """The globally unique ID of the log destination."""
+  id: ID!
+}
+
+type LogDestinationSecureLogs implements LogDestination & Node {
+  """The globally unique ID of the log destination."""
+  id: ID!
+}
+
 """
 Maskinporten authentication.
 
@@ -1811,7 +1927,7 @@ type MaskinportenAuthIntegration implements AuthIntegration {
   name: String!
 }
 
-"""The mutation root for the NAIS GraphQL API."""
+"""The mutation root for the Nais GraphQL API."""
 type Mutation {
   """Add a team repository."""
   addRepositoryToTeam(input: AddRepositoryToTeamInput!): AddRepositoryToTeamPayload!
@@ -1829,6 +1945,9 @@ type Mutation {
   """Add team to the list of teams that can access the Unleash instance."""
   allowTeamAccessToUnleash(input: AllowTeamAccessToUnleashInput!): AllowTeamAccessToUnleashPayload!
 
+  """Assign a role to a service account."""
+  assignRoleToServiceAccount(input: AssignRoleToServiceAccountInput!): AssignRoleToServiceAccountPayload!
+
   """Update the deploy key of a team. Returns the updated deploy key."""
   changeDeploymentKey(input: ChangeDeploymentKeyInput!): ChangeDeploymentKeyPayload!
 
@@ -1839,7 +1958,7 @@ type Mutation {
   Confirm a team deletion
   
   This will start the actual team deletion process, which will be done in an asynchronous manner. All external
-  entities controlled by NAIS will also be deleted.
+  entities controlled by Nais will also be deleted.
   
   WARNING: There is no going back after starting this process.
   
@@ -1850,17 +1969,30 @@ type Mutation {
   """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
 
+  """Create a service account."""
+  createServiceAccount(input: CreateServiceAccountInput!): CreateServiceAccountPayload!
+
   """
-  Create a new NAIS team
+  Create a service account token.
+  
+  The secret is automatically generated, and is returned as a part of the payload for this mutation. The secret can
+  not be retrieved at a later stage.
+  
+  A service account can have multiple active tokens at the same time.
+  """
+  createServiceAccountToken(input: CreateServiceAccountTokenInput!): CreateServiceAccountTokenPayload!
+
+  """
+  Create a new Nais team
   
   The user creating the team will be granted team ownership, unless the user is a service account, in which case the
   team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
   
-  Creation of a team will also create external resources for the team, which will be managed by the NAIS API
+  Creation of a team will also create external resources for the team, which will be managed by the Nais API
   reconcilers. This will be done asynchronously.
   
-  Refer to the [official NAIS documentation](https://docs.nais.io/explanations/team/) for more information regarding
-  NAIS teams.
+  Refer to the [official Nais documentation](https://docs.nais.io/explanations/team/) for more information regarding
+  Nais teams.
   """
   createTeam(input: CreateTeamInput!): CreateTeamPayload!
 
@@ -1883,6 +2015,12 @@ type Mutation {
 
   """Delete a secret, and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
+
+  """Delete a service account."""
+  deleteServiceAccount(input: DeleteServiceAccountInput!): DeleteServiceAccountPayload!
+
+  """Delete a service account token."""
+  deleteServiceAccountToken(input: DeleteServiceAccountTokenInput!): DeleteServiceAccountTokenPayload!
 
   """
   Disable a reconciler
@@ -1929,6 +2067,9 @@ type Mutation {
     input: RestartApplicationInput!
   ): RestartApplicationPayload!
 
+  """Revoke a role from a service account."""
+  revokeRoleFromServiceAccount(input: RevokeRoleFromServiceAccountInput!): RevokeRoleFromServiceAccountPayload!
+
   """
   Remove team from the list of teams that can access the Unleash instance.
   """
@@ -1953,8 +2094,18 @@ type Mutation {
   """Update a secret value within a secret."""
   updateSecretValue(input: UpdateSecretValueInput!): UpdateSecretValuePayload!
 
+  """Update a service account."""
+  updateServiceAccount(input: UpdateServiceAccountInput!): UpdateServiceAccountPayload!
+
   """
-  Update an existing NAIS team
+  Update a service account token.
+  
+  Note that the secret itself can not be updated, only the metadata.
+  """
+  updateServiceAccountToken(input: UpdateServiceAccountTokenInput!): UpdateServiceAccountTokenPayload!
+
+  """
+  Update an existing Nais team
   
   This mutation can be used to update the team purpose and the main Slack channel. It is not possible to update the
   team slug.
@@ -2105,7 +2256,7 @@ interface Persistence {
   team: Team!
 }
 
-"""The query root for the NAIS GraphQL API."""
+"""The query root for the Nais GraphQL API."""
 type Query {
   """Feature flags."""
   features: Features!
@@ -2137,6 +2288,23 @@ type Query {
     """
     last: Int
   ): ReconcilerConnection!
+  roles(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): RoleConnection!
 
   """Search for entities."""
   search(
@@ -2159,6 +2327,31 @@ type Query {
     """
     last: Int
   ): SearchNodeConnection!
+
+  """Returns a service account by its ID."""
+  serviceAccount(
+    """ID of the service account."""
+    id: ID!
+  ): ServiceAccount!
+
+  """Get a list of service accounts."""
+  serviceAccounts(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ServiceAccountConnection!
 
   """Get a team by its slug."""
   team(slug: Slug!): Team!
@@ -2708,6 +2901,19 @@ type RestartApplicationPayload {
   application: Application
 }
 
+input RevokeRoleFromServiceAccountInput {
+  """The name of the role to revoke."""
+  roleName: String!
+
+  """The ID of the service account to revoke the role from."""
+  serviceAccountID: ID!
+}
+
+type RevokeRoleFromServiceAccountPayload {
+  """The service account that had a role revoked."""
+  serviceAccount: ServiceAccount
+}
+
 input RevokeTeamAccessToUnleashInput {
   revokedTeamSlug: Slug!
   teamSlug: Slug!
@@ -2715,6 +2921,53 @@ input RevokeTeamAccessToUnleashInput {
 
 type RevokeTeamAccessToUnleashPayload {
   unleash: UnleashInstance
+}
+
+type Role implements Node {
+  """Description of the role."""
+  description: String!
+
+  """The globally unique ID of the role."""
+  id: ID!
+
+  """Name of the role."""
+  name: String!
+}
+
+type RoleAssignedToServiceAccountActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: RoleAssignedToServiceAccountActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type RoleAssignedToServiceAccountActivityLogEntryData {
+  """The added role."""
+  roleName: String!
 }
 
 """Assigned role to user log entry."""
@@ -2739,6 +2992,61 @@ type RoleAssignedUserSyncLogEntry implements Node & UserSyncLogEntry {
 
   """The name of the user that was assigned a role."""
   userName: String!
+}
+
+type RoleConnection {
+  """A list of role edges."""
+  edges: [RoleEdge!]!
+
+  """A list of roles."""
+  nodes: [Role!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type RoleEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The role."""
+  node: Role!
+}
+
+type RoleRevokedFromServiceAccountActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: RoleRevokedFromServiceAccountActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type RoleRevokedFromServiceAccountActivityLogEntryData {
+  """The removed role."""
+  roleName: String!
 }
 
 """Revoked role from user log entry."""
@@ -3126,16 +3434,356 @@ type SecretValueUpdatedActivityLogEntryData {
 }
 
 """
-Service account type.
+The service account type represents machine-users of the Nais API.
 
-This is a work in progress, and will be changed in the future.
+These types of users can be used to automate certain parts of the API, for instance team creation and managing team members.
+
+Service accounts are created using the `createServiceAccount` mutation, and authenticate using tokens generated by the `createServiceAccountToken` mutation.
 """
 type ServiceAccount implements Node {
+  """Creation time of the service account."""
+  createdAt: Time!
+
+  """The description of the service account."""
+  description: String!
+
   """The globally unique ID of the service account."""
   id: ID!
 
+  """When the service account was last used for authentication."""
+  lastUsedAt: Time
+
   """The name of the service account."""
   name: String!
+
+  """The roles that are assigned to the service account."""
+  roles(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): RoleConnection!
+
+  """The team that the service account belongs to."""
+  team: Team
+
+  """The service account tokens."""
+  tokens(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ServiceAccountTokenConnection!
+
+  """When the service account was last updated."""
+  updatedAt: Time!
+}
+
+type ServiceAccountConnection {
+  """A list of edges."""
+  edges: [ServiceAccountEdge!]!
+
+  """A list of service accounts."""
+  nodes: [ServiceAccount!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type ServiceAccountCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type ServiceAccountDeletedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type ServiceAccountEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The service account."""
+  node: ServiceAccount!
+}
+
+type ServiceAccountToken implements Node {
+  """When the service account token was created."""
+  createdAt: Time!
+
+  """The description of the service account token."""
+  description: String!
+
+  """
+  Expiry date of the token. If this value is empty the token never expires.
+  """
+  expiresAt: Date
+
+  """The globally unique ID of the service account token."""
+  id: ID!
+
+  """When the service account token was last used for authentication."""
+  lastUsedAt: Time
+
+  """The name of the service account token."""
+  name: String!
+
+  """When the service account token was last updated."""
+  updatedAt: Time!
+}
+
+type ServiceAccountTokenConnection {
+  """A list of edges."""
+  edges: [ServiceAccountTokenEdge!]!
+
+  """A list of service accounts tokens."""
+  nodes: [ServiceAccountToken!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type ServiceAccountTokenCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: ServiceAccountTokenCreatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type ServiceAccountTokenCreatedActivityLogEntryData {
+  """The name of the service account token."""
+  tokenName: String!
+}
+
+type ServiceAccountTokenDeletedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: ServiceAccountTokenDeletedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type ServiceAccountTokenDeletedActivityLogEntryData {
+  """The name of the service account token."""
+  tokenName: String!
+}
+
+type ServiceAccountTokenEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The service account token."""
+  node: ServiceAccountToken!
+}
+
+type ServiceAccountTokenUpdatedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: ServiceAccountTokenUpdatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type ServiceAccountTokenUpdatedActivityLogEntryData {
+  """Fields that were updated."""
+  updatedFields: [ServiceAccountTokenUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type ServiceAccountTokenUpdatedActivityLogEntryDataUpdatedField {
+  """The name of the field."""
+  field: String!
+
+  """The new value of the field."""
+  newValue: String
+
+  """The old value of the field."""
+  oldValue: String
+}
+
+type ServiceAccountUpdatedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: ServiceAccountUpdatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug
+}
+
+type ServiceAccountUpdatedActivityLogEntryData {
+  """Fields that were updated."""
+  updatedFields: [ServiceAccountUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type ServiceAccountUpdatedActivityLogEntryDataUpdatedField {
+  """The name of the field."""
+  field: String!
+
+  """The new value of the field."""
+  newValue: String
+
+  """The old value of the field."""
+  oldValue: String
 }
 
 type ServiceCostSample {
@@ -3364,11 +4012,11 @@ type Subscription {
 }
 
 """
-The team type represents a team on the [NAIS platform](https://nais.io/).
+The team type represents a team on the [Nais platform](https://nais.io/).
 
-Learn more about what NAIS teams are and what they can be used for in the [official NAIS documentation](https://docs.nais.io/explanations/team/).
+Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 
-External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [NAIS API reconcilers](https://github.com/nais/api-reconcilers).
+External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
 """
 type Team implements Node {
   """Activity log associated with the team."""
@@ -3390,7 +4038,7 @@ type Team implements Node {
     last: Int
   ): ActivityLogEntryConnection!
 
-  """NAIS applications owned by the team."""
+  """Nais applications owned by the team."""
   applications(
     """Get items after this cursor."""
     after: Cursor
@@ -3505,7 +4153,7 @@ type Team implements Node {
   """Overall inventory of resources for the team."""
   inventoryCounts: TeamInventoryCounts!
 
-  """NAIS jobs owned by the team."""
+  """Nais jobs owned by the team."""
   jobs(
     """Get items after this cursor."""
     after: Cursor
@@ -3733,7 +4381,7 @@ type Team implements Node {
   vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
-  """NAIS Workloads owned by the team."""
+  """Nais workloads owned by the team."""
   workloads(
     """Get items after this cursor."""
     after: Cursor
@@ -3970,7 +4618,7 @@ type TeamEntraIDGroup {
 }
 
 type TeamEnvironment implements Node {
-  """NAIS application in the team environment."""
+  """Nais application in the team environment."""
   application(
     """The name of the application."""
     name: String!
@@ -3991,7 +4639,7 @@ type TeamEnvironment implements Node {
   """The globally unique ID of the team environment."""
   id: ID!
 
-  """NAIS job in the team environment."""
+  """Nais job in the team environment."""
   job(name: String!): Job!
 
   """Kafka topic in the team environment."""
@@ -4129,7 +4777,7 @@ type TeamGoogleGroup {
 type TeamInventoryCountApplications {
   """
   Number of applications considered "not nais". When an application is considered "not nais", it means that the
-  application might not be working as expected, or that it is not following the NAIS guidelines.
+  application might not be working as expected, or that it is not following the Nais guidelines.
   """
   notNais: Int!
 
@@ -4757,6 +5405,50 @@ type UpdateSecretValuePayload {
   secret: Secret
 }
 
+input UpdateServiceAccountInput {
+  """
+  The new description of the service account.
+  
+  If not specified, the description will remain unchanged.
+  """
+  description: String
+
+  """The ID of the service account to update."""
+  serviceAccountID: ID!
+}
+
+type UpdateServiceAccountPayload {
+  """The updated service account."""
+  serviceAccount: ServiceAccount
+}
+
+input UpdateServiceAccountTokenInput {
+  """
+  The new description of the service account token.
+  
+  If not specified, the description will remain unchanged.
+  """
+  description: String
+
+  """
+  The new name of the service account token.
+  
+  If not specified, the name will remain unchanged.
+  """
+  name: String
+
+  """The ID of the service account token to update."""
+  serviceAccountTokenID: ID!
+}
+
+type UpdateServiceAccountTokenPayload {
+  """The service account that the token belongs to."""
+  serviceAccount: ServiceAccount
+
+  """The updated service account token."""
+  serviceAccountToken: ServiceAccountToken
+}
+
 input UpdateTeamEnvironmentInput {
   """Name of the environment to update."""
   environmentName: String!
@@ -4800,14 +5492,14 @@ type UpdateTeamPayload {
 }
 
 """
-The user type represents a user of the NAIS platform and the NAIS GraphQL API.
+The user type represents a user of the Nais platform and the Nais GraphQL API.
 """
 type User implements Node {
   """The email address of the user."""
   email: String!
 
   """
-  The external ID of the user. This value is managed by the NAIS API user synchronization.
+  The external ID of the user. This value is managed by the Nais API user synchronization.
   """
   externalID: String!
 
@@ -5173,6 +5865,9 @@ interface Workload {
     """Ordering options for items returned from the connection."""
     orderBy: KafkaTopicAclOrder
   ): KafkaTopicAclConnection!
+
+  """List of log destinations for the workload."""
+  logDestinations: [LogDestination!]!
 
   """The workload manifest."""
   manifest: WorkloadManifest!

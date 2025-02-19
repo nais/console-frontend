@@ -92,18 +92,14 @@
 				<Persistence workload={job} />
 			</div>
 		</div>
-		<div>
+		<div class="sidebar">
 			<Status {job} />
-			<hr />
 			<Schedule schedule={job.schedule} />
-			<hr />
-			<WorkloadDeploy workload={job} />
-			<hr />
-			<Image workload={job} />
-			<hr />
 			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
+			<Image workload={job} />
+			<WorkloadDeploy workload={job} />
+
 			{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
-				<hr />
 				<Secrets workload={jobName} {environment} {teamSlug} />
 			{/if}
 		</div>
@@ -127,9 +123,9 @@
 		align-items: center;
 	}
 
-	hr {
-		border: 0;
-		border-top: 1px solid var(--a-border-default);
-		margin: 1.5rem 0.125rem;
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-10);
 	}
 </style>

@@ -19,6 +19,13 @@
 			graphql(`
 				fragment AppStatus on Application {
 					name
+					logDestinations {
+						id
+						__typename
+						... on LogDestinationLoki {
+							grafanaURL
+						}
+					}
 					team {
 						slug
 					}
@@ -61,6 +68,13 @@
 				/> Application status unknown.
 			{/if}
 		</BodyShort>
+		{#if $data.logDestinations}
+			{#each $data.logDestinations as logDestination (logDestination.id)}
+				{#if logDestination.__typename === 'LogDestinationLoki'}
+					<Link href={logDestination.grafanaURL}>View logs in Grafana</Link>
+				{/if}
+			{/each}
+		{/if}
 		{#if nErrors > 0}
 			<Link href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/status">
 				View {nErrors} issue{nErrors > 1 ? 's' : ''}
