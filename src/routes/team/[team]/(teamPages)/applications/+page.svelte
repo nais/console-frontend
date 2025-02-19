@@ -95,6 +95,8 @@
 	};
 </script>
 
+<GraphErrors errors={$Applications.errors} />
+
 <div class="wrapper">
 	<div class="content">
 		<BodyLong spacing>
@@ -110,8 +112,6 @@
 				<a href="https://doc.nais.io/workloads/application">Learn more about applications.</a>
 			{/if}
 		</BodyLong>
-
-		<GraphErrors errors={$Applications.errors} />
 
 		{#if $Applications.data && $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
 			{@const apps = $Applications.data.team.applications}
