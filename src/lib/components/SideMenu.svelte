@@ -4,7 +4,7 @@
 		name: string;
 		routeId: string;
 		withSubRoutes?: boolean;
-		icon?: Component;
+		icon: Component;
 		iconColor?: string;
 		extraRoutes?: string[];
 		inventoryCount?: number | typeof PendingValue;
@@ -21,7 +21,7 @@
 	import { PendingValue } from '$houdini';
 	import { replacer } from '$lib/replacer';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
-	import IconWithText from './IconWithText.svelte';
+	import IconLabel from './IconLabel.svelte';
 	interface Props {
 		nav: menuGroup[];
 	}
@@ -55,7 +55,7 @@
 						<a class="unstyled" href={replacer(item.routeId, page.params)}>
 							<div class="item-container">
 								<div class="left-content">
-									<IconWithText text={item.name} icon={item.icon} size="medium" />
+									<IconLabel label={item.name} icon={item.icon} />
 									{#if item.notNais}
 										<CircleFillIcon
 											style="color: var(--a-icon-danger); align-self: flex-start; margin-left: -5px;"
