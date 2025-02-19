@@ -38,6 +38,7 @@ query Jobs(
 
 			nodes {
 				__typename
+				id
 				name
 				environment {
 					name
@@ -46,10 +47,17 @@ query Jobs(
 					slug
 				}
 				runs(first: 1) {
-					nodes {
-						startTime
-						status {
-							state
+					pageInfo {
+						totalCount
+					}
+
+					edges {
+						node {
+							startTime
+							status {
+								state
+								message
+							}
 						}
 					}
 				}
