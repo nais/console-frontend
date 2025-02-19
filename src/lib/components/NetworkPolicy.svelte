@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy } from '$houdini';
-	import { Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { Heading } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon, GlobeIcon } from '@nais/ds-svelte-community/icons';
+	import IconLabel from './IconLabel.svelte';
 	import IconWithText from './IconWithText.svelte';
+	import TooltipAlignHack from './TooltipAlignHack.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
@@ -92,23 +94,18 @@
 							{:else if !rule.mutual && rule.targetWorkload}
 								<WorkloadLink
 									workload={rule.targetWorkload}
-									showIcon={true}
-									size="medium"
-									warningMessage="Workload is missing outbound policy to {$data.name}"
+									warning="Workload is missing outbound policy to {$data.name}"
 								/>
 							{:else if !rule.mutual && !rule.targetWorkload}
-								<Tooltip content="Invalid workload reference">
-									<IconWithText size="medium" description={rule.targetTeamSlug}>
-										{#snippet icon()}
+								<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
+									{#snippet icon()}
+										<TooltipAlignHack content="Invalid workload reference">
 											<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
-										{/snippet}
-										{#snippet text()}
-											<span>{rule.targetWorkloadName}</span>
-										{/snippet}
-									</IconWithText>
-								</Tooltip>
+										</TooltipAlignHack>
+									{/snippet}
+								</IconLabel>
 							{:else if rule.targetWorkload}
-								<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
+								<WorkloadLink workload={rule.targetWorkload} />
 							{:else}
 								<span>{rule.targetWorkloadName}</span>
 							{/if}
@@ -178,23 +175,18 @@
 								{:else if !rule.mutual && rule.targetWorkload}
 									<WorkloadLink
 										workload={rule.targetWorkload}
-										showIcon={true}
-										size="medium"
-										warningMessage="Workload is missing outbound policy to {$data.name}"
+										warning="Workload is missing outbound policy to {$data.name}"
 									/>
 								{:else if !rule.mutual && !rule.targetWorkload}
-									<Tooltip content="Invalid workload reference">
-										<IconWithText size="medium" description={rule.targetTeamSlug}>
-											{#snippet icon()}
+									<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
+										{#snippet icon()}
+											<TooltipAlignHack content="Invalid workload reference">
 												<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
-											{/snippet}
-											{#snippet text()}
-												<span>{rule.targetWorkloadName}</span>
-											{/snippet}
-										</IconWithText>
-									</Tooltip>
+											</TooltipAlignHack>
+										{/snippet}
+									</IconLabel>
 								{:else if rule.targetWorkload}
-									<WorkloadLink workload={rule.targetWorkload} showIcon={true} size="medium" />
+									<WorkloadLink workload={rule.targetWorkload} />
 								{:else}
 									<span>{rule.targetWorkloadName}</span>
 								{/if}

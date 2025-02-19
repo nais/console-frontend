@@ -1,30 +1,24 @@
 <script lang="ts">
-	import { Heading, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		ExclamationmarkTriangleFillIcon,
 		PackageIcon
 	} from '@nais/ds-svelte-community/icons';
-	import IconWithText from './IconWithText.svelte';
+	import IconLabel from './IconLabel.svelte';
+	import TooltipAlignHack from './TooltipAlignHack.svelte';
 
 	interface Props {
 		workload: {
-			readonly name: string;
-			readonly __typename: string | null;
-			readonly environment: {
-				readonly name: string;
-			};
-			readonly team: {
-				readonly slug: string;
-			};
+			name: string;
+			__typename: string | null;
+			environment: { name: string };
+			team: { slug: string };
 		};
-		showIcon?: boolean;
-		size?: 'small' | 'medium' | 'large';
 		hideTeam?: boolean;
 		hideEnv?: boolean;
-		warningMessage?: string;
+		warning?: string;
 	}
-	let { workload, showIcon, size = 'medium', hideTeam, hideEnv, warningMessage }: Props = $props();
+	let { workload, hideTeam, hideEnv, warning }: Props = $props();
 
 	const description = [
 		hideTeam ? undefined : workload.team.slug,
@@ -34,60 +28,22 @@
 		.join(' / ');
 </script>
 
-{#if warningMessage}
-	<Tooltip content={warningMessage}>
-		<a
-			href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename === 'Job'
-				? 'job'
-				: 'app'}/{workload.name}"
-		>
-			<IconWithText {size} {description}>
-				{#snippet icon()}
-					{#if showIcon}
-						<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
-					{/if}
-				{/snippet}
-				{#snippet text()}
-					<span class="workload-name">{workload.name}</span>
-				{/snippet}
-			</IconWithText>
-		</a>
-	</Tooltip>
-{:else}
-	<IconWithText {size} {description}>
-		{#snippet icon()}
-			{#if showIcon}
-				{#if workload.__typename === 'Job'}
-					<BriefcaseClockIcon />
-				{:else}
-					<PackageIcon />
-				{/if}
-			{/if}
-		{/snippet}
-		{#snippet text()}
-			<Heading level="4" size="xsmall">
-				<a
-					href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename ===
-					'Job'
-						? 'job'
-						: 'app'}/{workload.name}"
-				>
-					<span class="workload-name">{workload.name}</span>
-				</a>
-			</Heading>
-		{/snippet}
-	</IconWithText>
-{/if}
-
-<style>
-	a {
-		font-weight: var(--a-font-weight-bold);
-		&:not(:active) {
-			color: var(--a-text-defualt);
-		}
-		text-decoration: none;
-		&:hover .workload-name {
-			text-decoration: underline;
-		}
-	}
-</style>
+<IconLabel
+	label={workload.name}
+	{description}
+	href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename === 'Job'
+		? 'job'
+		: 'app'}/{workload.name}"
+>
+	{#snippet icon()}
+		{#if warning}
+			<TooltipAlignHack content={warning}>
+				<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+			</TooltipAlignHack>
+		{:else if workload.__typename === 'Job'}
+			<BriefcaseClockIcon />
+		{:else}
+			<PackageIcon />
+		{/if}
+	{/snippet}
+</IconLabel>

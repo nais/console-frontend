@@ -202,7 +202,7 @@
 				{#each workloads as workload (workload.id)}
 					<Tr>
 						<Td>
-							<WorkloadLink {workload} showIcon={true} />
+							<WorkloadLink {workload} />
 						</Td>
 						<Td>
 							{workload.environment.name}

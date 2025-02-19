@@ -49,7 +49,7 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<div style="margin-left: 1em; margin-top: 0;">
 				{#if bq.workload}
-					<WorkloadLink workload={bq.workload} showIcon={true} />
+					<WorkloadLink workload={bq.workload} />
 				{:else}
 					<div class="inline">
 						<i>No owner</i>

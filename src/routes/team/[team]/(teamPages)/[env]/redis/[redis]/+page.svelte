@@ -49,7 +49,7 @@
 			<h4 style="margin-bottom: 0;">Owner</h4>
 			<div style="margin-left: 1em; margin-top: 0;">
 				{#if instance.workload}
-					<WorkloadLink workload={instance.workload} showIcon={true} />
+					<WorkloadLink workload={instance.workload} />
 				{:else}
 					<div class="inline">
 						<i>This Redis instance does not belong to any workload</i>
@@ -78,7 +78,7 @@
 						{@const access = edge.node}
 						<Tr>
 							<Td>
-								<WorkloadLink workload={access.workload} showIcon={true} />
+								<WorkloadLink workload={access.workload} />
 							</Td>
 							<Td>{access.access}</Td>
 

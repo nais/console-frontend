@@ -89,7 +89,6 @@
 										team: { slug: deploy.teamSlug },
 										name: resource.name
 									}}
-									showIcon={true}
 								/>
 							{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
 								<WorkloadLink
@@ -99,7 +98,6 @@
 										team: { slug: deploy.teamSlug },
 										name: resource.name
 									}}
-									showIcon={true}
 								/>
 							{:else}
 								<span style="color:var(--a-gray-600)">{resource.kind}:</span>

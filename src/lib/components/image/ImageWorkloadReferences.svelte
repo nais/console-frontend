@@ -60,7 +60,7 @@
 					workload.deployments.nodes.length > 0 ? workload.deployments.nodes[0] : null}
 				<Tr>
 					<Td>
-						<WorkloadLink {workload} showIcon />
+						<WorkloadLink {workload} />
 					</Td>
 					<Td>
 						{#if deployInfo?.triggerUrl}

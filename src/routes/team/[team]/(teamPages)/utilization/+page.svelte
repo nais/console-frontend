@@ -382,7 +382,6 @@
 												team: { slug: teamSlug },
 												name: overage.name
 											}}
-											showIcon={true}
 										/>
 									</Td>
 									<Td>{overage.env}</Td>

@@ -213,7 +213,7 @@
 							<div class="info">
 								{#if instance.workload}
 									{@const workload = instance.workload}
-									Owner: <WorkloadLink {workload} showIcon={true} />
+									Owner: <WorkloadLink {workload} />
 								{/if}
 							</div>
 						</div>
