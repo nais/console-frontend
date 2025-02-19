@@ -5,9 +5,10 @@
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import Redis from '$lib/icons/RedisIcon.svelte';
 	import Valkey from '$lib/icons/ValkeyIcon.svelte';
-	import { Detail, Heading } from '@nais/ds-svelte-community';
+	import { Heading } from '@nais/ds-svelte-community';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
-	import IconWithText from './IconWithText.svelte';
+	import type { Component } from 'svelte';
+	import IconLabel from './IconLabel.svelte';
 
 	interface Props {
 		workload: Persistence;
@@ -104,135 +105,57 @@
 		)
 	);
 
-	let persistenceCount = $state(0);
-	if ($data.buckets.edges.length > 0) persistenceCount++;
-	if ($data.bigQueryDatasets.edges.length > 0) persistenceCount++;
-	if ($data.sqlInstances.edges.length > 0) persistenceCount++;
-	if (
-		$data.kafkaTopicAcls.edges.length > 0 &&
-		$data.kafkaTopicAcls.edges.filter((acl) => acl.node.teamName !== '*').length > 0
-	)
-		persistenceCount++;
-	if ($data.openSearch) persistenceCount++;
-	if ($data.redisInstances.edges.length > 0) persistenceCount++;
-	if ($data.valkeyInstances.edges.length > 0) persistenceCount++;
+	const toIconLabel =
+		(urlName: string, icon: Component) =>
+		(persistence: { node: { id: string; name: string } }) => ({
+			id: persistence.node.id,
+			label: persistence.node.name,
+			href: `/team/${$data.team.slug}/${$data.environment.name}/${urlName}/${persistence.node.name}`,
+			icon
+		});
+
+	const persistence = $derived({
+		buckets: $data.buckets.edges.map(toIconLabel('bucket', BucketIcon)),
+		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', BigQuery)),
+		postgres: $data.sqlInstances.edges.map(toIconLabel('postgres', DatabaseIcon)),
+		kafka: $data.kafkaTopicAcls.edges
+			.filter((acl) => acl.node.teamName !== '*')
+			.map((e) => e.node)
+			.map((acl) => ({
+				id: acl,
+				label: acl.topic.name,
+				href: `/team/${acl.topic.team.slug}/${acl.topic.environment.name}/kafka/${acl.topic.name}`,
+				icon: Kafka,
+				description: acl.access
+			})),
+		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
+			id: os,
+			label: os.name,
+			href: `/team/${$data.team.slug}/${$data.environment.name}/opensearch/${os.name}`,
+			icon: OpenSearchIcon,
+			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
+				.access
+		})),
+		redis: $data.redisInstances.edges.map(toIconLabel('redis', Redis)),
+		valkey: $data.valkeyInstances.edges.map(toIconLabel('valkey', Valkey))
+	});
 </script>
 
 <Heading level="2" size="medium" spacing>Persistence</Heading>
 
-{#if persistenceCount > 0}
+{#if Object.values(persistence).some((p) => p.length)}
 	<div class="content">
-		{#if $data.buckets.edges.length > 0}
-			{#each $data.buckets.edges as bucket (bucket.node.id)}
-				<a href={`/team/${$data.team.slug}/${$data.environment.name}/bucket/${bucket.node.name}`}
-					><IconWithText icon={BucketIcon} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{bucket.node.name}</span>
-						{/snippet}
-					</IconWithText></a
-				>
+		{#each Object.entries(persistence) as [type, list] (type)}
+			{#each list as persistence (persistence.id)}
+				<IconLabel {...persistence} />
 			{/each}
-		{/if}
-		{#if $data.bigQueryDatasets.edges.length > 0}
-			{#each $data.bigQueryDatasets.edges as bq (bq.node.id)}
-				<a href={`/team/${$data.team.slug}/${$data.environment.name}/bigquery/${bq.node.name}`}
-					><IconWithText icon={BigQuery} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{bq.node.name}</span>
-						{/snippet}
-					</IconWithText></a
-				>
-			{/each}
-		{/if}
-		{#if $data.sqlInstances.edges.length > 0}
-			{#each $data.sqlInstances.edges as sql (sql.node.id)}
-				<a href={`/team/${$data.team.slug}/${$data.environment.name}/postgres/${sql.node.name}`}
-					><IconWithText icon={DatabaseIcon} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{sql.node.name}</span>
-						{/snippet}
-					</IconWithText></a
-				>
-			{/each}
-		{/if}
-		{#if $data.kafkaTopicAcls.edges.length > 0}
-			{#each $data.kafkaTopicAcls.edges as acl (acl)}
-				{#if acl.node.teamName !== '*'}
-					<a
-						href={`/team/${acl.node.topic.team.slug}/${acl.node.topic.environment.name === 'prod-fss' ? 'prod-gcp' : acl.node.topic.environment.name === 'dev-fss' ? 'dev-gcp' : acl.node.topic.environment.name}/kafka/${acl.node.topic.name}`}
-					>
-						<IconWithText icon={Kafka} size="medium" description={acl.node.access}>
-							{#snippet text()}
-								<span class="workload-name">{acl.node.topic.name}</span>
-							{/snippet}
-						</IconWithText>
-					</a>
-				{/if}
-			{/each}
-		{/if}
-		{#if $data.openSearch}
-			<a
-				href={`/team/${$data.team.slug}/${$data.environment.name}/opensearch/${$data.openSearch.name}`}
-			>
-				<IconWithText icon={OpenSearchIcon} size="medium">
-					{#snippet text()}
-						<span class="workload-name">{$data.openSearch?.name}</span>
-					{/snippet}
-
-					{#snippet description()}
-						{#if $data.openSearch?.access.edges}
-							{#each $data.openSearch?.access.edges as access (access)}
-								{#if access.node.workload.name == $data.name}
-									<Detail style="font-weight: normal; color: var(--a-text-subtle);"
-										>{access.node.access}</Detail
-									>
-								{/if}
-							{/each}
-						{/if}
-					{/snippet}
-				</IconWithText>
-			</a>
-		{/if}
-
-		{#if $data.redisInstances.edges.length > 0}
-			{#each $data.redisInstances.edges as redis (redis.node.id)}
-				<a href={`/team/${$data.team.slug}/${$data.environment.name}/redis/${redis.node.name}`}
-					><IconWithText icon={Redis} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{redis.node.name}</span>
-						{/snippet}
-					</IconWithText></a
-				>
-			{/each}
-		{/if}
-
-		{#if $data.valkeyInstances.edges.length > 0}
-			{#each $data.valkeyInstances.edges as valkey (valkey.node.id)}
-				<a href={`/team/${$data.team.slug}/${$data.environment.name}/valkey/${valkey.node.name}`}
-					><IconWithText icon={Valkey} size="medium">
-						{#snippet text()}
-							<span class="workload-name">{valkey.node.name}</span>
-						{/snippet}
-					</IconWithText></a
-				>
-			{/each}
-		{/if}
+		{/each}
 	</div>
 {:else}
 	No persistence configured for this app.
 {/if}
 
 <style>
-	a {
-		font-weight: var(--a-font-weight-bold);
-		&:not(:active) {
-			color: var(--a-text-defualt);
-		}
-		text-decoration: none;
-		&:hover .workload-name {
-			text-decoration: underline;
-		}
-	}
 	.content {
 		display: grid;
 		grid-template-columns: 1fr;
