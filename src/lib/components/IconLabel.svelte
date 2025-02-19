@@ -93,7 +93,7 @@
 		font-size: var(--a-font-size-small);
 	}
 	.icon-label--medium {
-		gap: var(--a-spacing-2);
+		gap: var(--a-spacing-1-alt);
 	}
 	.icon-label--large {
 		gap: var(--a-spacing-2);

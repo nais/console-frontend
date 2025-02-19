@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import IconWithText from '$lib/components/IconWithText.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { BodyShort, Heading, Link, Loader } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import type { WorkloadSecretsVariables } from './$houdini';
+	import IconLabel from './IconLabel.svelte';
 
 	export const _WorkloadSecretsVariables: WorkloadSecretsVariables = () => {
 		return { name: workload, team: teamSlug, env: environment };
@@ -49,10 +49,12 @@
 	{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
 		{#if $secrets.data.team.environment.workload.secrets.edges.length > 0}
 			{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
-				<Link
+				<IconLabel
+					label={secret.node.name}
+					icon={PadlockLockedIcon}
 					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.name}/secret/{secret
-						.node.name}"><IconWithText icon={PadlockLockedIcon} text={secret.node.name} /></Link
-				>
+						.node.name}"
+				/>
 			{/each}
 		{/if}
 	{:else}
