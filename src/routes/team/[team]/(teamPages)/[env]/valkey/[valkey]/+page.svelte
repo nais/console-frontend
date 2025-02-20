@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { ValkeyInstanceAccessOrderField } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -43,20 +43,9 @@
 {#if $ValkeyInstance.data}
 	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
 
-	<div class="grid">
-		<Card columns={12}>
-			<h3>Valkey details</h3>
-			<h4 style="margin-bottom: 0;">Owner</h4>
-			<div style="margin-left: 1em; margin-top: 0;">
-				{#if instance.workload}
-					<WorkloadLink workload={instance.workload} />
-				{:else}
-					<div class="inline">
-						<i>This Valkey instance does not belong to any workload</i>
-					</div>
-				{/if}
-			</div>
-			<h4 class="access">Access</h4>
+	<div class="wrapper">
+		<div>
+			<Heading level="3" spacing>Valkey instance access list</Heading>
 			<Table
 				size="small"
 				sort={{
@@ -101,26 +90,40 @@
 					}
 				}}
 			/>
-		</Card>
+		</div>
+		<div class="sidebar">
+			<div>
+				<Heading level="3">Owner</Heading>
+				{#if instance.workload}
+					<WorkloadLink workload={instance.workload} />
+				{:else}
+					<div class="inline">
+						<i>No owner</i>
+						<ExclamationmarkTriangleFillIcon
+							style="color: var(--a-icon-warning)"
+							title="This Big Query instance does not belong to any workload"
+						/>
+					</div>
+				{/if}
+			</div>
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.status.state}</BodyShort>
+			</div>
+		</div>
 	</div>
 {/if}
 
 <style>
-	.grid {
+	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
 	}
 
-	h4.access {
-		margin-top: 1em;
-		margin-bottom: 0;
-	}
-
-	.inline {
+	.sidebar {
 		display: flex;
-		align-items: center;
-		gap: 0.5rem;
+		flex-direction: column;
+		gap: var(--a-spacing-10);
 	}
 </style>

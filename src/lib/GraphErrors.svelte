@@ -17,12 +17,14 @@
 </script>
 
 {#if errors && errors.length > 0}
-	<Alert variant="error" {size}>
-		{#each pick(errors) as error (error)}
-			{error}<br />
-		{/each}
-		{#if dismissable}
-			<Button variant="tertiary" size="small" onclick={() => (errors = [])}>Dismiss</Button>
-		{/if}
-	</Alert>
+	<div>
+		<Alert variant="error" {size} style="margin-bottom: 1rem;">
+			{#each pick(errors) as error (error)}
+				{error}<br />
+			{/each}
+			{#if dismissable}
+				<Button variant="tertiary" size="small" onclick={() => (errors = [])}>Dismiss</Button>
+			{/if}
+		</Alert>
+	</div>
 {/if}
