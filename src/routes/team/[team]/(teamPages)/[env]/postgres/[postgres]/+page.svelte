@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
@@ -57,7 +57,7 @@
 				{#snippet icon({ color })}
 					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
-				<Cost cost={Math.round(instance.cost.sum)} />
+				{euroValueFormatter(instance.cost.sum)}
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>

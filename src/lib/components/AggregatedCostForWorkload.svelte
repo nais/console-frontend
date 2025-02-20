@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
 	import type { AggregatedCostVariables } from './$houdini';
-	import Cost from './Cost.svelte';
 
 	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
 		return { workload: workload, environment: environment, team: teamSlug };
@@ -78,16 +78,15 @@
 
 		{#each cost.monthly.series.slice(0, 2) as item (item)}
 			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-				<BodyShort
-					>{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
-						cost={item.sum}
-					/></BodyShort
-				>
+				<BodyShort>
+					{item.date.toLocaleString('en-GB', { month: 'long' })}:
+					{euroValueFormatter(item.sum)}
+				</BodyShort>
 			{:else}
-				<BodyShort
-					>{item.date.toLocaleString('en-GB', { month: 'long' })}: <Cost
-						cost={getEstimateForMonth(item.sum, item.date)}
-					/>
+				<BodyShort>
+					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(
+						getEstimateForMonth(item.sum, item.date)
+					)}
 					{#if cost.monthly.series.length > 1}
 						{#if factor > 1.0}
 							(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)

@@ -9,8 +9,8 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -65,7 +65,7 @@
 				{#snippet icon({ color })}
 					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
-				<Cost cost={cost.daily.sum} />
+				{euroValueFormatter(cost.daily.sum)}
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>

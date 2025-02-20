@@ -2,9 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
-	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -392,7 +392,7 @@
 									>
 									<Td>{prettyBytes(overage.unusedMem)}</Td>
 									<Td>
-										<Cost cost={overage.estimatedAnnualOverageCost} />
+										{euroValueFormatter(overage.estimatedAnnualOverageCost)}
 									</Td>
 								</Tr>
 							{:else}

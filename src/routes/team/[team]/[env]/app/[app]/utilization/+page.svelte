@@ -2,8 +2,8 @@
 	import { page } from '$app/state';
 	import { UtilizationResourceType } from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
-	import Cost from '$lib/components/Cost.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
@@ -135,13 +135,13 @@
 					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 
-				<Cost
-					cost={yearlyOverageCost(
+				{euroValueFormatter(
+					yearlyOverageCost(
 						UtilizationResourceType.CPU,
 						utilization.requested_cpu,
 						cpuUtilization(utilization.requested_cpu, utilization.current_cpu)
-					)}
-				/>
+					)
+				)}
 			</SummaryCard>
 		</Card>
 		<Card columns={3} borderColor="#91dc75">
@@ -154,13 +154,14 @@
 				{#snippet icon({ color })}
 					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
-				<Cost
-					cost={yearlyOverageCost(
+
+				{euroValueFormatter(
+					yearlyOverageCost(
 						UtilizationResourceType.MEMORY,
 						utilization.requested_memory,
 						memoryUtilization(utilization.requested_memory, utilization.current_memory)
-					)}
-				/>
+					)
+				)}
 			</SummaryCard>
 		</Card>
 		<Card columns={12} borderColor="var(--a-gray-200)">
