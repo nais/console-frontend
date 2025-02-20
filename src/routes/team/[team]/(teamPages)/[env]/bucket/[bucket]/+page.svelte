@@ -3,7 +3,7 @@
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import { CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
@@ -28,8 +28,6 @@
 		<div>
 			<Heading level="2">Bucket details</Heading>
 			<dl>
-				<dt>Status</dt>
-				<dd>{bucket.status.state}</dd>
 				<dt>Bucket</dt>
 				<dd>
 					<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
@@ -48,14 +46,17 @@
 						>
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
-									<CheckmarkIcon style="color: var(--a-surface-success)" title="CascadingDelete" />
+									<CheckmarkIcon
+										style="color: var(--a-surface-success)"
+										title="Cascading delete: true"
+									/>
 								</TooltipAlignHack>
 							{/snippet}
 						</IconLabel>
 					{:else}
 						<IconLabel label={'Deleting the application will NOT remove the bucket.'}>
 							{#snippet icon()}
-								<TooltipAlignHack content="Cascading delete">
+								<TooltipAlignHack content="Cascading delete: false">
 									<XMarkIcon style="color: var(--a-icon-danger);" />
 								</TooltipAlignHack>
 							{/snippet}
@@ -105,6 +106,10 @@
 					</div>
 				{/if}
 			</div>
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{bucket.status.state}</BodyShort>
+			</div>
 		</div>
 	</div>
 {/if}
@@ -114,6 +119,12 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--a-spacing-12);
+	}
+
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-10);
 	}
 
 	dl {
