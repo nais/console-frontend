@@ -1,10 +1,12 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
+		BodyShort,
 		CopyButton,
+		Heading,
 		HelpText,
 		Table,
 		Tbody,
@@ -17,7 +19,6 @@
 	import {
 		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
-		WalletIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -30,36 +31,15 @@
 	let { BigQueryDataset: BigQueryDatasetInstance } = $derived(data);
 </script>
 
-{#if $BigQueryDatasetInstance.errors}
-	<GraphErrors errors={$BigQueryDatasetInstance.errors} />
-{/if}
-
+<GraphErrors errors={$BigQueryDatasetInstance.errors} />
 {#if $BigQueryDatasetInstance.data}
 	{@const bq = $BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
-	<div class="grid">
-		<Card columns={12}>
-			<h3>Information</h3>
 
-			<em>{bq.description ? bq.description : 'No description'}</em>
+	<div class="wrapper">
+		<div>
+			<Heading level="2" spacing>Dataset description</Heading>
 
-			<h4 style="margin: 1em 0 0 0;"><WalletIcon height="16px" width="16px" /> Cost</h4>
-			<p style="margin-left: 1em; margin-top: 0;">
-				€{Math.round(bq.cost.sum)} last 30 days
-			</p>
-			<h4 style="margin-bottom: 0;">Owner</h4>
-			<div style="margin-left: 1em; margin-top: 0;">
-				{#if bq.workload}
-					<WorkloadLink workload={bq.workload} />
-				{:else}
-					<div class="inline">
-						<i>No owner</i>
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="This Big Query instance does not belong to any workload"
-						/>
-					</div>
-				{/if}
-			</div>
+			<BodyShort spacing>{bq.description ? bq.description : 'No description'}</BodyShort>
 
 			<dl class="status">
 				<dt>Created</dt>
@@ -86,9 +66,7 @@
 					{/if}
 				</dd>
 			</dl>
-		</Card>
-		<Card columns={12}>
-			<h3>Access</h3>
+			<Heading level="3" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
 				<Table size="small">
@@ -113,14 +91,34 @@
 					</Tbody>
 				</Table>
 			{:else}
-				<p>no workloads with configured access</p>
+				<BodyShort>No workloads with configured access</BodyShort>
 			{/if}
-		</Card>
+		</div>
+		<div class="sidebar">
+			<div>
+				<Heading level="3">Cost</Heading>
+				{euroValueFormatter(bq.cost.sum)} last 30 days
+			</div>
+			<div>
+				<Heading level="3">Owner</Heading>
+				{#if bq.workload}
+					<WorkloadLink workload={bq.workload} />
+				{:else}
+					<div class="inline">
+						<i>No owner</i>
+						<ExclamationmarkTriangleFillIcon
+							style="color: var(--a-icon-warning)"
+							title="This Big Query instance does not belong to any workload"
+						/>
+					</div>
+				{/if}
+			</div>
+		</div>
 	</div>
 {/if}
 
 <style>
-	.email {
+	/*.email {
 		display: grid;
 		grid-template-columns: 1fr 60px;
 	}
@@ -136,6 +134,37 @@
 		row-gap: 1rem;
 	}
 
+
+
+*/
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
+	}
+
+	*.email {
+		display: grid;
+		grid-template-columns: 1fr 60px;
+	}
+	.email span {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-10);
+	}
+
+	.inline {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
 	dl.status {
 		display: grid;
 		align-items: center;
@@ -149,14 +178,8 @@
 	}
 
 	dt {
-		font-weight: bold;
 		display: flex;
 		gap: 0.5em;
 		align-items: center;
-	}
-	.inline {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
 	}
 </style>
