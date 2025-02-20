@@ -22,12 +22,6 @@ query BigQuery(
 			name
 		}
 
-		totalCount: bigQueryDatasets {
-			pageInfo {
-				totalCount
-			}
-		}
-
 		bigQueryDatasets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
 			pageInfo {
