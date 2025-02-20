@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { RedisInstanceOrderField } from '$houdini';
 	import PersistencePage from '$lib/components/PersistencePage.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -12,7 +13,7 @@
 	let { Redis } = $derived(data);
 </script>
 
-<!-- <GraphErrors errors={$Redis.errors} /> -->
+<GraphErrors errors={$Redis.errors} />
 
 {#if $Redis.data}
 	<PersistencePage
