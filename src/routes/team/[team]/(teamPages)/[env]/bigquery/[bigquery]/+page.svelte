@@ -41,7 +41,7 @@
 
 			<BodyShort spacing>{bq.description ? bq.description : 'No description'}</BodyShort>
 
-			<dl class="status">
+			<dl>
 				<dt>Created</dt>
 				<dd><Time time={bq.status.creationTime} /></dd>
 
@@ -146,21 +146,19 @@
 		gap: 0.5rem;
 	}
 
-	dl.status {
+	dl {
 		display: grid;
-		align-items: center;
-		grid-template-columns: 30% 70%;
-	}
-
-	.status {
-		display: flex;
-		align-items: center;
-		gap: 0.5em;
+		grid-template-columns: 35% 65%;
 	}
 
 	dt {
+		font-weight: bold;
 		display: flex;
-		gap: 0.5em;
 		align-items: center;
+		gap: 0.5em;
+	}
+
+	dd {
+		margin-inline-start: 0;
 	}
 </style>

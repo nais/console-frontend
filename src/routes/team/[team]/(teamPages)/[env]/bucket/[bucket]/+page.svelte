@@ -1,8 +1,7 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import { CopyButton } from '@nais/ds-svelte-community';
+	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 	import {
 		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon
@@ -17,89 +16,83 @@
 	let { Bucket } = $derived(data);
 </script>
 
-{#if $Bucket.errors}
-	<GraphErrors errors={$Bucket.errors} />
-{:else if $Bucket.data}
+<GraphErrors errors={$Bucket.errors} />
+{#if $Bucket.data}
 	{@const bucket = $Bucket.data.team.environment.bucket}
 
-	<div class="grid">
-		<Card columns={12}>
-			<div>
-				<h3>Bucket details</h3>
-				<dl class="config">
-					<dt>Status</dt>
-					<dd>{bucket.status.state}</dd>
-					<dt>Bucket</dt>
-					<dd>
-						<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
-							>Google Cloud Console<ExternalLinkIcon title="Google Cloud Console" /></a
-						>
-					</dd>
-					<dt>Public access prevention</dt>
-					<dd>{bucket.publicAccessPrevention}</dd>
-					<dt>Uniform bucket level access</dt>
-					<dd>{bucket.uniformBucketLevelAccess}</dd>
-					<dt>Owner</dt>
-					<dd>
-						{#if bucket.workload}
-							<WorkloadLink workload={bucket.workload} />
-						{:else}
-							<div class="inline">
-								<i>No owner</i>
-								<ExclamationmarkTriangleFillIcon
-									style="color: var(--a-icon-warning)"
-									title="The bucket does not belong to any workload"
-								/>
-							</div>
-						{/if}
-					</dd>
-					<dt>Self link</dt>
-					<dd style="display: flex; align-items: center;">
-						<span
-							style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
-							title="https://storage.googleapis.com/{bucket.name}"
-							>https://storage.googleapis.com/{bucket.name}</span
-						>
-						<CopyButton
-							size="xsmall"
-							variant="action"
-							copyText="https://storage.googleapis.com/{bucket.name}"
-						/>
-					</dd>
-				</dl>
-			</div>
-		</Card>
+	<div class="wrapper">
+		<div>
+			<Heading level="2">Bucket details</Heading>
+			<dl>
+				<dt>Status</dt>
+				<dd>{bucket.status.state}</dd>
+				<dt>Bucket</dt>
+				<dd>
+					<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
+						>Google Cloud Console<ExternalLinkIcon title="Google Cloud Console" /></a
+					>
+				</dd>
+				<dt>Public access prevention</dt>
+				<dd>{bucket.publicAccessPrevention}</dd>
+				<dt>Uniform bucket level access</dt>
+				<dd>{bucket.uniformBucketLevelAccess}</dd>
 
-		{#if bucket.status.errors.length > 0}
-			<Card columns={12}>
-				<h3>Errors</h3>
+				<dt>Self link</dt>
+				<dd style="display: flex; align-items: center;">
+					<span
+						style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden"
+						title="https://storage.googleapis.com/{bucket.name}"
+						>https://storage.googleapis.com/{bucket.name}</span
+					>
+					<CopyButton
+						size="xsmall"
+						variant="action"
+						copyText="https://storage.googleapis.com/{bucket.name}"
+					/>
+				</dd>
+			</dl>
+			{#if bucket.status.errors.length > 0}
 				<div>
-					{#each bucket.status.errors as error (error)}
-						<details>
-							<summary>{error.message}</summary>
-							<p>{error.details}</p>
-						</details>
-					{/each}
+					<Heading level="3">Errors</Heading>
+					<div>
+						{#each bucket.status.errors as error (error)}
+							<details>
+								<summary>{error.message}</summary>
+								<p>{error.details}</p>
+							</details>
+						{/each}
+					</div>
 				</div>
-			</Card>
-		{/if}
+			{/if}
+		</div>
+		<div class="sidebar">
+			<div>
+				<Heading level="3">Owner</Heading>
+				{#if bucket.workload}
+					<WorkloadLink workload={bucket.workload} />
+				{:else}
+					<div class="inline">
+						<i>No owner</i>
+						<ExclamationmarkTriangleFillIcon
+							style="color: var(--a-icon-warning)"
+							title="This Big Query instance does not belong to any workload"
+						/>
+					</div>
+				{/if}
+			</div>
+		</div>
 	</div>
 {/if}
 
 <style>
-	.grid {
+	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
 	}
 
 	dl {
 		display: grid;
-		align-items: center;
-	}
-
-	dl.config {
 		grid-template-columns: 35% 65%;
 	}
 
