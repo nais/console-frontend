@@ -1,7 +1,6 @@
 <script lang="ts">
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -102,10 +101,6 @@
 			{/if}
 		</div>
 		<div class="sidebar">
-			<div>
-				<Heading level="3">Cost</Heading>
-				{euroValueFormatter(bq.cost.sum)} last 30 days
-			</div>
 			<div>
 				<Heading level="3">Owner</Heading>
 				{#if bq.workload}
