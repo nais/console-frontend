@@ -34,13 +34,12 @@
 	} from '@nais/ds-svelte-community/experimental.js';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 
-	const {
-		orderField,
-		defaultOrderField
-	}: {
+	interface Props {
 		orderField: T;
 		defaultOrderField: ValueOf<T>;
-	} = $props();
+	}
+
+	const { orderField, defaultOrderField }: Props = $props();
 
 	const currentOrderField = $derived(
 		Object.values(orderField).find((field) =>
