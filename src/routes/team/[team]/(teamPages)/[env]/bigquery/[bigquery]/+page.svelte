@@ -2,18 +2,18 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import {
 		BodyShort,
 		CopyButton,
 		Heading,
-		HelpText,
 		Table,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
@@ -37,7 +37,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2" spacing>Dataset description</Heading>
+			<Heading level="2" spacing>Dataset details</Heading>
 
 			<BodyShort spacing>{bq.description ? bq.description : 'No description'}</BodyShort>
 
@@ -50,23 +50,30 @@
 					<Time time={bq.status.lastModifiedTime || bq.status.creationTime} />
 				</dd>
 
-				<dt>
-					Cascading delete
-					<HelpText title="Cascading delete"
-						>if true, deleting the application will also delete the dataset and all its tables.
-					</HelpText>
-				</dt>
+				<dt>Cascading delete</dt>
 				<dd>
 					{#if bq.cascadingDelete}
-						<CheckmarkIcon style="color: var(--a-surface-success)" title="CascadingDelete" />
+						<IconLabel
+							label={'Deleting the application will also remove the dataset and all its tables.'}
+						>
+							{#snippet icon()}
+								<TooltipAlignHack content="Cascading delete">
+									<CheckmarkIcon style="color: var(--a-surface-success)" title="CascadingDelete" />
+								</TooltipAlignHack>
+							{/snippet}
+						</IconLabel>
 					{:else}
-						<Tooltip content={bq.cascadingDelete.toString()} placement="right">
-							<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-						</Tooltip>
+						<IconLabel label={'Deleting the application will NOT remove the dataset.'}>
+							{#snippet icon()}
+								<TooltipAlignHack content="Cascading delete">
+									<XMarkIcon style="color: var(--a-icon-danger);" />
+								</TooltipAlignHack>
+							{/snippet}
+						</IconLabel>
 					{/if}
 				</dd>
 			</dl>
-			<Heading level="3" spacing>Access</Heading>
+			<Heading level="3" size="small" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
 				<Table size="small">

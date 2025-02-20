@@ -4,8 +4,10 @@ query Bucket($team: Slug!, $name: String!, $environment: String!) {
 		environment(name: $environment) {
 			bucket(name: $name) {
 				__typename
+				cascadingDelete
 				publicAccessPrevention
 				uniformBucketLevelAccess
+
 				status {
 					state
 					errors {

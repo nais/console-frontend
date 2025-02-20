@@ -1,10 +1,14 @@
 <script lang="ts">
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 	import {
+		CheckmarkIcon,
 		ExclamationmarkTriangleFillIcon,
-		ExternalLinkIcon
+		ExternalLinkIcon,
+		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -36,7 +40,28 @@
 				<dd>{bucket.publicAccessPrevention}</dd>
 				<dt>Uniform bucket level access</dt>
 				<dd>{bucket.uniformBucketLevelAccess}</dd>
-
+				<dt>Cascading delete</dt>
+				<dd>
+					{#if bucket.cascadingDelete}
+						<IconLabel
+							label={'Deleting the application will also remove the bucket and all its contents.'}
+						>
+							{#snippet icon()}
+								<TooltipAlignHack content="Cascading delete">
+									<CheckmarkIcon style="color: var(--a-surface-success)" title="CascadingDelete" />
+								</TooltipAlignHack>
+							{/snippet}
+						</IconLabel>
+					{:else}
+						<IconLabel label={'Deleting the application will NOT remove the bucket.'}>
+							{#snippet icon()}
+								<TooltipAlignHack content="Cascading delete">
+									<XMarkIcon style="color: var(--a-icon-danger);" />
+								</TooltipAlignHack>
+							{/snippet}
+						</IconLabel>
+					{/if}
+				</dd>
 				<dt>Self link</dt>
 				<dd style="display: flex; align-items: center;">
 					<span
