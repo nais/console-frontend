@@ -17,6 +17,7 @@ query OpenSearchInstance(
 				status {
 					state
 				}
+
 				workload {
 					name
 					environment {

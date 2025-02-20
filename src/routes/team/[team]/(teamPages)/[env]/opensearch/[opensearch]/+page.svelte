@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { OpenSearchAccessOrderField } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -42,20 +41,10 @@
 {:else if $OpenSearchInstance.data}
 	{@const instance = $OpenSearchInstance.data.team.environment.openSearchInstance}
 
-	<div class="grid">
-		<Card columns={12}>
-			<h3>OpenSearch instance details</h3>
-			<h4 style="margin-bottom: 0;">Owner</h4>
-			<div style="margin-left: 1em; margin-top: 0;">
-				{#if instance.workload}
-					<WorkloadLink workload={instance.workload} />
-				{:else}
-					<div class="inline">
-						<i>This OpenSearch instance does not belong to any workload</i>
-					</div>
-				{/if}
-			</div>
-			<h4 class="access">Access</h4>
+	<div class="wrapper">
+		<div>
+			<Heading level="2" spacing>OpenSearch instance access list</Heading>
+
 			{#if instance.access.edges.length > 0}
 				<Table
 					size="small"
@@ -101,29 +90,26 @@
 			{:else}
 				<p>No workloads with configured access</p>
 			{/if}
-		</Card>
+		</div>
+		<div class="sidebar">
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.status.state}</BodyShort>
+			</div>
+		</div>
 	</div>
 {/if}
 
 <style>
-	.grid {
+	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
 	}
 
-	h4.access {
-		margin-top: 1em;
-		margin-bottom: 0;
-	}
-
-	.inline {
+	.sidebar {
 		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	code {
-		font-size: 0.8em;
+		flex-direction: column;
+		gap: var(--a-spacing-10);
 	}
 </style>
