@@ -9,8 +9,6 @@
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
-	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
@@ -21,7 +19,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon, SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -187,9 +185,9 @@
 								<Button variant="tertiary-neutral" size="small" iconPosition="left" {...props}>
 									{#snippet icon()}
 										{#if orderDirection === OrderDirection.ASC}
-											<SortAscendingIcon size="1rem" />
+											<SortUpIcon size="1rem" />
 										{:else}
-											<SortDescendingIcon size="1rem" />
+											<SortDownIcon size="1rem" />
 										{/if}
 									{/snippet}
 									<span style="display: flex; align-items: center; gap: 8px;">
@@ -236,7 +234,7 @@
 										onselect={(value) => handleSortDirection(value as string)}
 									>
 										<div class="icon">
-											<SortAscendingIcon size="1rem" />Oldest
+											<SortUpIcon size="1rem" />Oldest
 										</div>
 									</ActionMenuRadioItem>
 									<ActionMenuRadioItem
@@ -244,7 +242,7 @@
 										onselect={(value) => handleSortDirection(value as string)}
 									>
 										<div class="icon">
-											<SortDescendingIcon size="1rem" />Newest
+											<SortDownIcon size="1rem" />Newest
 										</div>
 									</ActionMenuRadioItem>
 								{:else}
@@ -253,7 +251,7 @@
 										onselect={(value) => handleSortDirection(value as string)}
 									>
 										<div class="icon">
-											<SortAscendingIcon size="1rem" />Ascending
+											<SortUpIcon size="1rem" />Ascending
 										</div>
 									</ActionMenuRadioItem>
 									<ActionMenuRadioItem
@@ -261,7 +259,7 @@
 										onselect={(value) => handleSortDirection(value as string)}
 									>
 										<div class="icon">
-											<SortDescendingIcon size="1rem" />Descending
+											<SortDownIcon size="1rem" />Descending
 										</div>
 									</ActionMenuRadioItem>
 								{/if}

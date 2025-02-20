@@ -22,8 +22,6 @@
 <script lang="ts" generics="T extends OrderField">
 	import { page } from '$app/state';
 	import { OrderDirection } from '$houdini';
-	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
-	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
@@ -32,7 +30,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental.js';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon, SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		orderField: T;
@@ -73,9 +71,9 @@
 		>
 			<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
 				{#if orderDirection === OrderDirection.ASC}
-					<SortAscendingIcon />
+					<SortUpIcon />
 				{:else}
-					<SortDescendingIcon />
+					<SortDownIcon />
 				{/if}
 				{fieldLabel(currentOrderField)}
 			</div>
@@ -102,9 +100,9 @@
 					onselect={(value) => changeParams({ sort: `${currentOrderField}-${value}` })}
 				>
 					{#if direction === OrderDirection.ASC}
-						<SortAscendingIcon /> Ascending
+						<SortUpIcon /> Ascending
 					{:else}
-						<SortDescendingIcon /> Descending
+						<SortDownIcon /> Descending
 					{/if}
 				</ActionMenuRadioItem>
 			{/each}
