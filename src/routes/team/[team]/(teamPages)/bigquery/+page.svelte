@@ -17,13 +17,15 @@
 
 {#if $BigQuery.data}
 	<PersistencePage
-		costData={$BigQuery.data.team.cost}
+		cost={{
+			costData: $BigQuery.data.team.cost,
+			teamSlug: $BigQuery.data.team.slug,
+			pageName: 'BigQuery'
+		}}
 		list={$BigQuery.data.team.bigQueryDatasets.nodes}
 		pageInfo={$BigQuery.data.team.bigQueryDatasets.pageInfo}
 		orderField={BigQueryDatasetOrderField}
 		defaultOrderField={BigQueryDatasetOrderField.NAME}
-		teamSlug={$BigQuery.data.team.slug}
-		pageName="BigQuery"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

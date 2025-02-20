@@ -7,11 +7,6 @@ query KafkaTopics(
 	$after: Cursor
 ) {
 	team(slug: $team) {
-		totalCount: kafkaTopics {
-			pageInfo {
-				totalCount
-			}
-		}
 		kafkaTopics(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
 			pageInfo {

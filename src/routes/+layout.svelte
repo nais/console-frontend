@@ -97,7 +97,8 @@
 					'/opensearch',
 					'/redis',
 					'/valkey',
-					'/team/create'
+					'/team/create',
+					'/kafka'
 				].some((s) => $page.route.id?.includes(s)) || $page.route.id === '/'
 		}
 	]}

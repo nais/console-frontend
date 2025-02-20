@@ -8,14 +8,14 @@
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 	interface Props {
-		title: string;
+		pageName: string;
 		costData: CostData;
 		from: Date;
 		to: Date;
 		teamSlug: string;
 	}
 
-	let { title, costData, from, to, teamSlug }: Props = $props();
+	let { pageName, costData, from, to, teamSlug }: Props = $props();
 
 	const costTransform = (
 		data: {
@@ -143,7 +143,7 @@
 
 <div>
 	<div class="heading">
-		<Heading size="small" level="3">{title}</Heading>
+		<Heading size="small" level="3">{pageName} cost</Heading>
 		<HelpText title="Cost description"
 			>Total cost for the previous month and a projected estimate for this month.</HelpText
 		>

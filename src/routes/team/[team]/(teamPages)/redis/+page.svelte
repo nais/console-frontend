@@ -17,13 +17,15 @@
 
 {#if $Redis.data}
 	<PersistencePage
-		costData={$Redis.data.team.cost}
+		cost={{
+			costData: $Redis.data.team.cost,
+			teamSlug: $Redis.data.team.slug,
+			pageName: 'Redis'
+		}}
 		list={$Redis.data.team.redisInstances.nodes}
 		pageInfo={$Redis.data.team.redisInstances.pageInfo}
 		orderField={RedisInstanceOrderField}
 		defaultOrderField={RedisInstanceOrderField.NAME}
-		teamSlug={$Redis.data.team.slug}
-		pageName="Redis"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

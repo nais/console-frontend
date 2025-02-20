@@ -16,17 +16,19 @@
 	let {
 		description,
 		notFound,
-		costData,
+		cost,
 		list,
 		pageInfo,
 		orderField,
-		defaultOrderField,
-		teamSlug,
-		pageName
+		defaultOrderField
 	}: {
 		description: Snippet;
 		notFound: Snippet;
-		costData: CostData;
+		cost?: {
+			costData: CostData;
+			teamSlug: string;
+			pageName: string;
+		};
 		list: {
 			readonly id: string;
 			readonly __typename: string | null;
@@ -37,7 +39,7 @@
 			readonly team: {
 				readonly slug: string;
 			};
-			readonly workload: {
+			readonly workload?: {
 				readonly __typename: string | null;
 				readonly name: string;
 				readonly environment: {
@@ -59,8 +61,6 @@
 		};
 		orderField: T;
 		defaultOrderField: T[keyof T];
-		teamSlug: string;
-		pageName: string;
 	} = $props();
 </script>
 
@@ -94,13 +94,13 @@
 				}}
 			/>
 		</div>
-		<PersistenceCost
-			{costData}
-			title="{pageName} cost"
-			from={startOfMonth(subMonths(new Date(), 1))}
-			to={endOfYesterday()}
-			{teamSlug}
-		/>
+		{#if cost}
+			<PersistenceCost
+				{...cost}
+				from={startOfMonth(subMonths(new Date(), 1))}
+				to={endOfYesterday()}
+			/>
+		{/if}
 	</div>
 {:else}
 	{@render notFound()}

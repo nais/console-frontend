@@ -17,13 +17,15 @@
 
 {#if $Buckets.data}
 	<PersistencePage
-		costData={$Buckets.data.team.cost}
+		cost={{
+			costData: $Buckets.data.team.cost,
+			teamSlug: $Buckets.data.team.slug,
+			pageName: 'Buckets'
+		}}
 		list={$Buckets.data.team.buckets.nodes}
 		pageInfo={$Buckets.data.team.buckets.pageInfo}
 		orderField={BucketOrderField}
 		defaultOrderField={BucketOrderField.NAME}
-		teamSlug={$Buckets.data.team.slug}
-		pageName="Buckets"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

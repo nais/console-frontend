@@ -17,13 +17,15 @@
 
 {#if $Valkey.data}
 	<PersistencePage
-		costData={$Valkey.data.team.cost}
+		cost={{
+			costData: $Valkey.data.team.cost,
+			teamSlug: $Valkey.data.team.slug,
+			pageName: 'Valkey'
+		}}
 		list={$Valkey.data.team.valkeyInstances.nodes}
 		pageInfo={$Valkey.data.team.valkeyInstances.pageInfo}
 		orderField={ValkeyInstanceOrderField}
 		defaultOrderField={ValkeyInstanceOrderField.NAME}
-		teamSlug={$Valkey.data.team.slug}
-		pageName="Valkey"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

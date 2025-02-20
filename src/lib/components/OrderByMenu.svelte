@@ -100,7 +100,7 @@
 			{#each Object.values(OrderDirection) as direction (direction)}
 				<ActionMenuRadioItem
 					value={direction}
-					onselect={(value) => changeParams({ sort: `${orderField}-${value}` })}
+					onselect={(value) => changeParams({ sort: `${currentOrderField}-${value}` })}
 				>
 					{#if direction === OrderDirection.ASC}
 						<SortAscendingIcon /> Ascending

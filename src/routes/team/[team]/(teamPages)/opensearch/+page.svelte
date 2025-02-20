@@ -17,13 +17,15 @@
 
 {#if $OpenSearch.data}
 	<PersistencePage
-		costData={$OpenSearch.data.team.cost}
+		cost={{
+			costData: $OpenSearch.data.team.cost,
+			teamSlug: $OpenSearch.data.team.slug,
+			pageName: 'OpenSearch'
+		}}
 		list={$OpenSearch.data.team.openSearchInstances.nodes}
 		pageInfo={$OpenSearch.data.team.openSearchInstances.pageInfo}
 		orderField={OpenSearchOrderField}
 		defaultOrderField={OpenSearchOrderField.NAME}
-		teamSlug={$OpenSearch.data.team.slug}
-		pageName="OpenSearch"
 	>
 		{#snippet description()}
 			<BodyLong spacing>
