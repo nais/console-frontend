@@ -118,25 +118,6 @@
 {/if}
 
 <style>
-	/*.email {
-		display: grid;
-		grid-template-columns: 1fr 60px;
-	}
-	.email span {
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-	}
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-
-
-
-*/
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
