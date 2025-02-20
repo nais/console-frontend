@@ -8,12 +8,14 @@
 		href,
 		icon: Icon,
 		description,
+		onclick,
 		...rest
 	}: {
 		label: Component | string;
 		href?: string;
 		icon: Component;
 		description?: Component | string;
+		onclick?: () => void;
 	} & (
 		| {
 				size?: 'small' | 'medium';
@@ -27,7 +29,7 @@
 
 {#snippet linkOrText()}
 	{#if href}
-		<Link {href}>{@render componentOrString(label)}</Link>
+		<Link {href} {onclick}>{@render componentOrString(label)}</Link>
 	{:else}
 		{@render componentOrString(label)}
 	{/if}

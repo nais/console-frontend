@@ -93,6 +93,7 @@
 						{label}
 						{description}
 						href={rest.type === 'link' ? rest.href : undefined}
+						onclick={close}
 					/>
 					{#if rest.type === 'button'}
 						{@const button = rest.button}
