@@ -1,7 +1,50 @@
 <script lang="ts">
+	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
+	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
+	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import RedisIcon from '$lib/icons/RedisIcon.svelte';
+	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
+	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import { Detail } from '@nais/ds-svelte-community';
-	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
-	import type { Component } from 'svelte';
+	import {
+		BellFillIcon,
+		BellIcon,
+		BranchingIcon,
+		BriefcaseClockFillIcon,
+		BriefcaseClockIcon,
+		BucketFillIcon,
+		BucketIcon,
+		CircleFillIcon,
+		CogFillIcon,
+		CogIcon,
+		DatabaseFillIcon,
+		DatabaseIcon,
+		Density3Icon,
+		FileTextFillIcon,
+		FileTextIcon,
+		HouseFillIcon,
+		HouseIcon,
+		ImageFillIcon,
+		ImageIcon,
+		LineGraphStackedIcon,
+		PackageFillIcon,
+		PackageIcon,
+		PadlockLockedFillIcon,
+		PadlockLockedIcon,
+		PersonGroupFillIcon,
+		PersonGroupIcon,
+		QuestionmarkIcon,
+		RocketFillIcon,
+		RocketIcon,
+		ShieldLockFillIcon,
+		ShieldLockIcon,
+		TrashFillIcon,
+		TrashIcon,
+		VirusFillIcon,
+		VirusIcon,
+		WalletFillIcon,
+		WalletIcon
+	} from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
 
 	const {
@@ -10,18 +53,75 @@
 		items: {
 			label: string;
 			href: string;
-			icon: Component;
 			active?: boolean;
 			count?: number;
 			badge?: boolean;
 		}[][];
 	} = $props();
+
+	const iconComponent = (label: string, active: boolean) => {
+		switch (label) {
+			case 'Overview':
+				return active ? HouseFillIcon : HouseIcon;
+			case 'Applications':
+				return active ? PackageFillIcon : PackageIcon;
+			case 'Jobs':
+				return active ? BriefcaseClockFillIcon : BriefcaseClockIcon;
+			case 'Secrets':
+				return active ? PadlockLockedFillIcon : PadlockLockedIcon;
+			case 'Postgres':
+				return active ? DatabaseFillIcon : DatabaseIcon;
+			case 'Buckets':
+				return active ? BucketFillIcon : BucketIcon;
+			case 'Redis':
+				return RedisIcon;
+			case 'Valkey':
+				return ValkeyIcon;
+			case 'OpenSearch':
+				return OpenSearchIcon;
+			case 'Kafka topics':
+				return KafkaIcon;
+			case 'BigQuery':
+				return BigQueryIcon;
+			case 'Unleash':
+				return UnleashIcon;
+			case 'Deployments':
+				return active ? RocketFillIcon : RocketIcon;
+			case 'Cost':
+				return active ? WalletFillIcon : WalletIcon;
+			case 'Utilization':
+				return active ? LineGraphStackedIcon : LineGraphStackedIcon;
+			case 'Vulnerabilities':
+				return active ? VirusFillIcon : VirusIcon;
+			case 'Members':
+				return active ? PersonGroupFillIcon : PersonGroupIcon;
+			case 'Repositories':
+				return BranchingIcon;
+			case 'Settings':
+				return active ? CogFillIcon : CogIcon;
+			case 'Activity log':
+				return active ? ShieldLockFillIcon : ShieldLockIcon;
+			case 'Status':
+				return active ? BellFillIcon : BellIcon;
+			case 'Image':
+				return active ? ImageFillIcon : ImageIcon;
+			case 'Logs':
+				return Density3Icon;
+			case 'Manifest':
+				return active ? FileTextFillIcon : FileTextIcon;
+			case 'Delete':
+				return active ? TrashFillIcon : TrashIcon;
+
+			default:
+				return QuestionmarkIcon;
+		}
+	};
 </script>
 
 <div class="menu">
-	{#each items as group, i (group)}
+	{#each items as group (group)}
 		<div class="list">
-			{#each group as { label: text, href, icon: Icon, active, count, badge } (href)}
+			{#each group as { label: text, href, active, count, badge } (href)}
 				<a {href} class:active>
 					<IconLabel>
 						{#snippet label()}
@@ -33,7 +133,8 @@
 							</span>
 						{/snippet}
 						{#snippet icon()}
-							<span class="icon"><Icon /></span>
+							{@const Comp = iconComponent(text, false)}
+							<span class="icon"><Comp /></span>
 						{/snippet}
 					</IconLabel>
 					{#if count}
@@ -64,25 +165,23 @@
 			padding: var(--a-spacing-1) var(--a-spacing-2);
 			text-decoration: none;
 			color: inherit;
-			transition: background-color 100ms;
+			transition: background-color 50ms;
 
 			&:focus-visible,
 			&:hover {
-				background-color: color-mix(in oklab, var(--brand-color) 12%, transparent);
+				background-color: color-mix(in oklab, var(--active-color) 60%, transparent);
 				box-shadow: none;
+				color: inherit;
 			}
 
 			&:active {
-				background-color: color-mix(in oklab, var(--brand-color) 36%, transparent);
+				background-color: var(--active-color-strong);
 				box-shadow: none;
+				color: inherit;
 			}
 
 			&.active {
-				background-color: color-mix(in oklab, var(--brand-color) 24%, transparent);
-
-				.label {
-					font-weight: var(--a-font-weight-bold);
-				}
+				background-color: var(--active-color);
 			}
 
 			.label {

@@ -1,17 +1,8 @@
 <script lang="ts">
-	import type { menuItem } from '$lib/components/SideMenu.svelte';
-	import SideMenu from '$lib/components/SideMenu.svelte';
+	import { page } from '$app/state';
+	import Menu from '$lib/components/Menu.svelte';
 	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
-	import {
-		BellIcon,
-		Density3Icon,
-		FileTextIcon,
-		HouseIcon,
-		ImageIcon,
-		RocketIcon,
-		TrashIcon,
-		WalletIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { menuItems } from '$lib/menuItems';
 	import type { LayoutData } from './$types';
 
 	interface Props {
@@ -21,87 +12,17 @@
 
 	let { data, children }: Props = $props();
 	let { teamSlug } = $derived(data);
-
-	type menuGroup = {
-		items: (menuItem & { memberOnly?: boolean })[];
-	};
-
-	const nav: menuGroup[] = [
-		{
-			items: [
-				{
-					name: 'Overview',
-					routeId: '/team/[team]/[env]/job/[job]',
-					icon: HouseIcon
-				},
-				{
-					name: 'Status',
-					routeId: '/team/[team]/[env]/job/[job]/status',
-					icon: BellIcon
-				}
-			]
-		},
-		{
-			items: [
-				{
-					name: 'Image',
-					routeId: '/team/[team]/[env]/job/[job]/image',
-					icon: ImageIcon
-				},
-				{
-					name: 'Deployments',
-					routeId: '/team/[team]/[env]/job/[job]/deploys',
-					icon: RocketIcon
-				},
-				{
-					name: 'Cost',
-					routeId: '/team/[team]/[env]/job/[job]/cost',
-					icon: WalletIcon
-				},
-				{
-					name: 'Logs',
-					routeId: '/team/[team]/[env]/job/[job]/logs',
-					icon: Density3Icon
-				}
-			]
-		},
-		{
-			items: [
-				{
-					name: 'Manifest',
-					routeId: '/team/[team]/[env]/job/[job]/manifest',
-					icon: FileTextIcon
-				}
-			]
-		},
-		{
-			items: [
-				{
-					name: 'Delete',
-					routeId: '/team/[team]/[env]/job/[job]/delete',
-					icon: TrashIcon,
-					memberOnly: true
-				}
-			]
-		}
-	];
-	function memberOnly(nav: menuGroup[], data: LayoutData) {
-		return nav
-			.map((group) => {
-				return {
-					items: group.items.filter((item) => {
-						return !item.memberOnly || data.viewerIsOwner || data.viewerIsMember;
-					})
-				};
-			})
-			.filter((group) => group.items.length > 0);
-	}
 </script>
 
 <svelte:head><title>{teamSlug} - Console</title></svelte:head>
 
 <div class="main">
-	<SideMenu nav={memberOnly(nav, data)} />
+	<Menu
+		items={menuItems({
+			path: page.url.pathname,
+			member: data.viewerIsMember
+		})}
+	/>
 	<div class="container">
 		<PageHeader />
 		<div>{@render children?.()}</div>
