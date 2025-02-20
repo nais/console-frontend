@@ -19,12 +19,6 @@ query Redis(
 			}
 		}
 
-		totalCount: redisInstances {
-			pageInfo {
-				totalCount
-			}
-		}
-
 		redisInstances(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
 			pageInfo {
