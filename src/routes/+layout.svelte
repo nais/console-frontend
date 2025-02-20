@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@nais/ds-svelte-community/css';
-	import Header from './Header.svelte';
+	import PageHeader from './PageHeader.svelte';
 	//import '../styles/vars_dark.css';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -91,6 +91,7 @@
 					'/app/',
 					'/applications',
 					'/bigquery',
+					'/bucket',
 					'/buckets',
 					'/jobs',
 					'/job/',
@@ -112,7 +113,7 @@
 		<Login />
 	{:else}
 		{#if user?.__typename === 'User'}
-			<Header {user} />
+			<PageHeader {user} />
 		{/if}
 
 		{@render children?.()}
