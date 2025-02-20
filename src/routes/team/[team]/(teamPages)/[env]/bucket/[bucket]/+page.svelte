@@ -98,8 +98,14 @@
 
 	dt {
 		font-weight: bold;
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
 	}
 
+	dd {
+		margin-inline-start: 0;
+	}
 	.inline {
 		display: flex;
 		align-items: center;
