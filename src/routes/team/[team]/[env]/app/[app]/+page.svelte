@@ -6,7 +6,7 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
-	import Persistence from '$lib/components/Persistence.svelte';
+	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import { Button, Heading } from '@nais/ds-svelte-community';

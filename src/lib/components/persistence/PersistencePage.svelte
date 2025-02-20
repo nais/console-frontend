@@ -2,8 +2,10 @@
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu, { type OrderField } from '$lib/components/OrderByMenu.svelte';
-	import PersistenceCost, { type CostData } from '$lib/components/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
+	import PersistenceCost, {
+		type CostData
+	} from '$lib/components/persistence/PersistenceCost.svelte';
+	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';

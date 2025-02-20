@@ -8,7 +8,7 @@
 	import { Heading } from '@nais/ds-svelte-community';
 	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-	import IconLabel from './IconLabel.svelte';
+	import IconLabel from '../IconLabel.svelte';
 
 	interface Props {
 		workload: Persistence;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { RedisInstanceOrderField } from '$houdini';
-	import PersistencePage from '$lib/components/PersistencePage.svelte';
+	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';

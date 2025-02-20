@@ -7,7 +7,7 @@
 		type KafkaTopicOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
+	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
 	import SortDescendingIcon from '$lib/icons/SortDescendingIcon.svelte';

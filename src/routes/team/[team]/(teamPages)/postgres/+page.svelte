@@ -11,7 +11,7 @@
 
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Cost from '$lib/components/Cost.svelte';
-	import PersistenceLink from '$lib/components/PersistenceLink.svelte';
+	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
