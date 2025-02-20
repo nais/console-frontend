@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { type DeleteAppPage$result, graphql } from '$houdini';
 	import Card from '$lib/Card.svelte';
-	import PersistenceList from '$lib/components/PersistenceList.svelte';
+	import PersistenceList from '$lib/components/persistence/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';

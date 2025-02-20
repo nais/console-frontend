@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { type DeleteJobPage$result, graphql } from '$houdini';
-	import PersistenceList from '$lib/components/PersistenceList.svelte';
+	import PersistenceList from '$lib/components/persistence/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Button, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
