@@ -20,12 +20,6 @@ query OpenSearch(
 			}
 		}
 
-		totalCount: openSearchInstances {
-			pageInfo {
-				totalCount
-			}
-		}
-
 		openSearchInstances(
 			first: $first
 			last: $last
