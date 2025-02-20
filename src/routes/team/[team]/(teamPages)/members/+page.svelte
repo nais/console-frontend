@@ -87,7 +87,6 @@
 		{/if}
 		<Table
 			size="small"
-			zebraStripes
 			sort={{
 				orderBy: tableSort.orderBy || TeamMemberOrderField.NAME,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

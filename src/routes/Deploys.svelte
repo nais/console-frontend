@@ -66,7 +66,7 @@
 		<RocketIcon size="1.5rem" />
 		My teams latest deployments
 	</h2>
-	<Table size="small" zebraStripes>
+	<Table size="small">
 		<Thead>
 			<Tr>
 				<Th>Resource(s)</Th>

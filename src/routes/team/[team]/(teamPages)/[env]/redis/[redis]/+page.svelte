@@ -59,7 +59,6 @@
 			<h4 class="access">Access</h4>
 			<Table
 				size="small"
-				zebraStripes
 				sort={{
 					orderBy: tableSort.orderBy || RedisInstanceAccessOrderField.WORKLOAD,
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

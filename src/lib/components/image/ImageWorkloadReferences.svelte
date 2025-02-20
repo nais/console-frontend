@@ -45,7 +45,7 @@
 
 <div class="workloads">
 	<Heading level="4" size="small" spacing>Workloads using image</Heading>
-	<Table size="small" zebraStripes>
+	<Table size="small">
 		<Thead>
 			<Tr>
 				<Th>Workload</Th>

@@ -17,7 +17,7 @@
 <Card>
 	<h2>Users</h2>
 	{#if $AdminUsers.data}
-		<Table zebraStripes size="small">
+		<Table size="small">
 			<Thead>
 				<Tr>
 					<Th>Name</Th>

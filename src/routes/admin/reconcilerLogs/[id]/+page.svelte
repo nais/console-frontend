@@ -15,7 +15,7 @@
 
 {#if $ReconcilerLogs.data && $ReconcilerLogs.data.node?.__typename === 'Reconciler'}
 	<Heading level="2">{$ReconcilerLogs.data.node.displayName} logs</Heading>
-	<Table size="small" zebraStripes>
+	<Table size="small">
 		<Thead>
 			<Tr>
 				<Th>Message</Th>

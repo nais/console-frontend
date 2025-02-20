@@ -270,7 +270,7 @@
 					</HelpText>
 				</h4>
 			</div>
-			<Table size="small" style="margin-top: 2rem" zebraStripes>
+			<Table size="small" style="margin-top: 2rem">
 				<Thead>
 					<Tr>
 						<Th>Key</Th>

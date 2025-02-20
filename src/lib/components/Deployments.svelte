@@ -56,7 +56,7 @@
 </script>
 
 {#if $data !== null}
-	<Table size="small" zebraStripes>
+	<Table size="small">
 		<Thead>
 			<Tr>
 				<Th>Team</Th>

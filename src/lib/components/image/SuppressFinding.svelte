@@ -207,7 +207,7 @@
 	</div>
 	<div class="workload">
 		<h5>Affected workloads</h5>
-		<Table size="small" zebraStripes>
+		<Table size="small">
 			<Thead>
 				<Tr>
 					<Th>Environment</Th>

@@ -289,7 +289,7 @@
 		</Card>
 		<Card columns={4}>
 			<h3>Team access</h3>
-			<Table size="small" style="margin-top: 2rem" zebraStripes>
+			<Table size="small" style="margin-top: 2rem">
 				<Thead>
 					<Tr>
 						<Th>Team</Th>

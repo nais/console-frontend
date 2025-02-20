@@ -117,7 +117,6 @@
 	</div>
 	<Card columns={12}>
 		<Table
-			zebraStripes
 			size="small"
 			sort={{
 				orderBy: tableSort.orderBy || SqlInstanceOrderField.NAME,

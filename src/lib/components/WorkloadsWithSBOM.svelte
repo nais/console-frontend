@@ -144,7 +144,6 @@
 {#if $query.data?.team}
 	{@const team = $query.data.team}
 	<Table
-		zebraStripes
 		size="small"
 		sort={{
 			orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,

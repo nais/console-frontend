@@ -317,7 +317,7 @@
 		<Card columns={6}>
 			<h3 style="margin-bottom: 0.5rem">Backup & Maintenance</h3>
 			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-				<Table zebraStripes size="small">
+				<Table size="small">
 					<Thead>
 						<Tr>
 							<Th>Name</Th>
@@ -374,7 +374,7 @@
 			</div>
 			<h3 style="margin-bottom: 0.5rem;">Instance flags</h3>
 			<div style="margin-bottom: 1.5rem;">
-				<Table zebraStripes size="small">
+				<Table size="small">
 					<Thead>
 						<Tr>
 							<Th>Name</Th>
@@ -395,7 +395,7 @@
 			</div>
 			<h3 style="margin-bottom: 0.5rem;">Users</h3>
 			<div style="grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem;">
-				<Table zebraStripes size="small">
+				<Table size="small">
 					<Thead>
 						<Tr>
 							<Th>Name</Th>

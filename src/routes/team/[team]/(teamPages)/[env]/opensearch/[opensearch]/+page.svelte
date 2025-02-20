@@ -59,7 +59,6 @@
 			{#if instance.access.edges.length > 0}
 				<Table
 					size="small"
-					zebraStripes
 					sort={{
 						orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

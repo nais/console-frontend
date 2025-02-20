@@ -148,7 +148,6 @@
 
 <Heading level="4" size="small">Vulnerabilities</Heading>
 <Table
-	zebraStripes
 	size="small"
 	sort={{
 		orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,

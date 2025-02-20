@@ -91,7 +91,7 @@
 			<h3>Access</h3>
 
 			{#if bq.access.edges.length > 0}
-				<Table size="small" zebraStripes>
+				<Table size="small">
 					<Thead>
 						<Tr>
 							<Th>Access</Th>

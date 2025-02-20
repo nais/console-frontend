@@ -48,7 +48,6 @@
 			<h3>Topic access control list</h3>
 			<Table
 				size="small"
-				zebraStripes
 				sort={{
 					orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
 					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

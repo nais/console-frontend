@@ -185,7 +185,6 @@
 
 				<Table
 					size="small"
-					zebraStripes
 					sort={{
 						orderBy: tableSort.orderBy || RepositoryOrderField.NAME,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

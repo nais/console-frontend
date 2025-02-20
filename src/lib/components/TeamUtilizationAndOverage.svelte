@@ -77,7 +77,7 @@
 	>
 </h4-->
 <Heading level="4" size="small" spacing>Utilization</Heading>
-<Table size="small" zebraStripes>
+<Table size="small">
 	<Thead>
 		<Tr>
 			<Th>Resource</Th>

@@ -19,7 +19,7 @@
 	<h2>User sync log</h2>
 	<GraphErrors errors={$UserSyncLogs.errors} />
 	{#if $UserSyncLogs.data}
-		<Table zebraStripes size="small">
+		<Table size="small">
 			<Thead>
 				<Tr>
 					<Th>Action</Th>

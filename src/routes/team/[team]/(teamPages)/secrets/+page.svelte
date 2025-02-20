@@ -111,7 +111,6 @@
 				</div>
 				<Table
 					size="small"
-					zebraStripes
 					sort={{
 						orderBy: tableSort.orderBy || SecretOrderField.NAME,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

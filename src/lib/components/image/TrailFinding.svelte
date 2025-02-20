@@ -66,7 +66,7 @@
 
 		<div class="workload">
 			<h5>Affected workloads</h5>
-			<Table size="small" zebraStripes>
+			<Table size="small">
 				<Thead>
 					<Tr>
 						<Th>Environment</Th>
@@ -87,7 +87,7 @@
 		</div>
 		<h5>Audit log</h5>
 		<div class="trail">
-			<Table size="small" zebraStripes>
+			<Table size="small">
 				<Thead>
 					<Tr>
 						<Th>Actor</Th>
