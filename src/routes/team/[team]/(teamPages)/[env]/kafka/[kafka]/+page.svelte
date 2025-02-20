@@ -1,12 +1,13 @@
 <script lang="ts">
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -38,77 +39,15 @@
 	};
 </script>
 
-{#if $KafkaTopic.errors}
-	<GraphErrors errors={$KafkaTopic.errors} />
-{:else if $KafkaTopic.data}
+<GraphErrors errors={$KafkaTopic.errors} />
+{#if $KafkaTopic.data}
 	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
 
-	<div class="grid">
-		<Card columns={12}>
-			<h3>Topic access control list</h3>
-			<Table
-				size="small"
-				sort={{
-					orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
-					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-				}}
-				onsortchange={tableSortChange}
-			>
-				<Thead>
-					<Tr>
-						<Th sortable={true} sortKey={KafkaTopicAclOrderField.TEAM_SLUG}>Team</Th>
-						<Th sortable={true} sortKey={KafkaTopicAclOrderField.CONSUMER}>Workload</Th>
-						<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
-					</Tr>
-				</Thead>
-				<Tbody>
-					{#each topic.acl.nodes as a (a)}
-						<Tr>
-							<Td>
-								{#if a.teamName === '*'}
-									All teams
-								{:else}
-									<a href="/team/{a.teamName}">{a.teamName}</a>
-								{/if}
-							</Td>
-							<Td>
-								{#if a.workloadName === '*'}
-									All workloads
-								{:else if a.workload}
-									<WorkloadLink workload={a.workload} />
-								{:else}
-									<div class="workloadNotFound">
-										<ExclamationmarkTriangleFillIcon
-											style="color: var(--a-icon-warning)"
-											title="Workload not found"
-										/>{a.workloadName}
-									</div>
-								{/if}
-							</Td>
-							<Td>{a.access}</Td>
-						</Tr>
-					{:else}
-						<Tr>
-							<Td colspan={999}><em>No ACLs found for the topic</em></Td>
-						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
-			<Pagination
-				page={topic.acl.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						KafkaTopic.loadPreviousPage();
-					},
-					loadNextPage: () => {
-						KafkaTopic.loadNextPage();
-					}
-				}}
-			/>
-		</Card>
-		{#if topic.configuration}
-			<Card columns={12}>
-				<h3>Topic configuration</h3>
+	<div class="wrapper">
+		<div>
+			{#if topic.configuration}
+				<Heading level="2" spacing>Topic configuration</Heading>
+
 				<dl class="status">
 					{#if topic.configuration}
 						{#each Object.entries(topic.configuration) as [key, value] (key)}
@@ -117,32 +56,96 @@
 						{/each}
 					{/if}
 				</dl>
-			</Card>
-		{/if}
+			{/if}
+			<Heading level="2" spacing>Topic access control list</Heading>
+			<div class="table">
+				<Table
+					size="small"
+					sort={{
+						orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
+						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+					}}
+					onsortchange={tableSortChange}
+				>
+					<Thead>
+						<Tr>
+							<Th sortable={true} sortKey={KafkaTopicAclOrderField.TEAM_SLUG}>Team</Th>
+							<Th sortable={true} sortKey={KafkaTopicAclOrderField.CONSUMER}>Workload</Th>
+							<Th sortable={true} sortKey={KafkaTopicAclOrderField.ACCESS}>Access</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each topic.acl.nodes as a (a)}
+							<Tr>
+								<Td>
+									{#if a.teamName === '*'}
+										All teams
+									{:else}
+										<a href="/team/{a.teamName}">{a.teamName}</a>
+									{/if}
+								</Td>
+								<Td>
+									{#if a.workloadName === '*'}
+										All workloads
+									{:else if a.workload}
+										<WorkloadLink workload={a.workload} />
+									{:else}
+										<IconLabel label={a.workloadName} description={a.teamName}>
+											{#snippet icon()}
+												<TooltipAlignHack content="Invalid workload reference">
+													<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+												</TooltipAlignHack>
+											{/snippet}
+										</IconLabel>
+									{/if}
+								</Td>
+								<Td>{a.access}</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td colspan={999}><em>No ACLs found for the topic</em></Td>
+							</Tr>
+						{/each}
+					</Tbody>
+				</Table>
+				<Pagination
+					page={topic.acl.pageInfo}
+					loaders={{
+						loadPreviousPage: () => {
+							KafkaTopic.loadPreviousPage();
+						},
+						loadNextPage: () => {
+							KafkaTopic.loadNextPage();
+						}
+					}}
+				/>
+			</div>
+		</div>
 	</div>
 {/if}
 
 <style>
-	.grid {
+	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
+	}
+	.table {
+		padding-bottom: var(--a-spacing-12);
+	}
+	dl {
+		display: grid;
+		grid-template-columns: 35% 65%;
 	}
 
 	dt {
 		font-weight: bold;
-	}
-
-	dl.status {
-		display: grid;
-		grid-template-columns: 28% 72%;
-		row-gap: 0.5em;
-	}
-
-	.workloadNotFound {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.5em;
+	}
+
+	dd {
+		margin-inline-start: 0;
 	}
 </style>
