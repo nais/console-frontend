@@ -1,19 +1,25 @@
 <script module>
-	export const urlToOrderField = <T extends { [key: string]: T[keyof T] }>(
+	type ValueOf<T> = T[keyof T];
+
+	export type OrderField = {
+		[s: string]: string;
+	};
+
+	export const urlToOrderField = <T extends OrderField>(
 		orderField: T,
-		defaultValue: T[keyof T],
+		defaultValue: ValueOf<T>,
 		url: URL
-	): T[keyof T] =>
-		Object.values(orderField).find((field) =>
-			url.searchParams.get('sort')?.startsWith(field as string)
-		) ?? defaultValue;
+	): ValueOf<T> =>
+		(Object.values(orderField).find((field) => url.searchParams.get('sort')?.startsWith(field)) as
+			| ValueOf<T>
+			| undefined) ?? defaultValue;
 
 	export const urlToOrderDirection = (url: URL) =>
 		Object.values(OrderDirection).find((dir) => url.searchParams.get('sort')?.endsWith(dir)) ??
 		OrderDirection.ASC;
 </script>
 
-<script lang="ts">
+<script lang="ts" generics="T extends OrderField">
 	import { page } from '$app/state';
 	import { OrderDirection } from '$houdini';
 	import SortAscendingIcon from '$lib/icons/SortAscendingIcon.svelte';
@@ -29,15 +35,15 @@
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 
 	const {
-		OrderField,
+		orderField,
 		defaultOrderField
 	}: {
-		OrderField: { [key: string]: string };
-		defaultOrderField: string;
+		orderField: T;
+		defaultOrderField: ValueOf<T>;
 	} = $props();
 
-	const orderField = $derived(
-		Object.values(OrderField).find((field) =>
+	const currentOrderField = $derived(
+		Object.values(orderField).find((field) =>
 			page.url.searchParams.get('sort')?.startsWith(field)
 		) ?? defaultOrderField
 	);
@@ -72,13 +78,13 @@
 				{:else}
 					<SortDescendingIcon />
 				{/if}
-				{fieldLabel(orderField)}
+				{fieldLabel(currentOrderField)}
 			</div>
 		</Button>
 	{/snippet}
 	{#key orderField}
-		<ActionMenuRadioGroup value={orderField} label="Order by">
-			{#each Object.values(OrderField).sort( (a) => (a === defaultOrderField ? -1 : 1) ) as field (field)}
+		<ActionMenuRadioGroup value={currentOrderField} label="Order by">
+			{#each Object.values(orderField).sort( (a) => (a === defaultOrderField ? -1 : 1) ) as field (field)}
 				<ActionMenuRadioItem
 					value={field}
 					onselect={(value) => changeParams({ sort: `${value}-${orderDirection}` })}

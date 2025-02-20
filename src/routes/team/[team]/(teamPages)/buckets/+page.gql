@@ -19,12 +19,6 @@ query Buckets(
 			}
 		}
 
-		totalCount: buckets {
-			pageInfo {
-				totalCount
-			}
-		}
-
 		buckets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
 			pageInfo {

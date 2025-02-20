@@ -166,7 +166,7 @@
 								</ActionMenuCheckboxItem>
 							{/each}
 						</ActionMenu>
-						<OrderByMenu OrderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
+						<OrderByMenu orderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
 					{/snippet}
 					{#each jobs.nodes as job (job.id)}
 						<JobListItem {job} />
