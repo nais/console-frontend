@@ -25,6 +25,5 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 				}
 			}
 		}
-		viewerIsMember
 	}
 }

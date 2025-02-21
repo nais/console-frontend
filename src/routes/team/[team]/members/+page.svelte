@@ -16,7 +16,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Members, UserInfo } = $derived(data);
+	let { Members, UserInfo, viewerIsOwner } = $derived(data);
 	let team = $derived($Members.data?.team);
 
 	function capitalizeFirstLetterInEachWord(str: string): string {
@@ -46,8 +46,7 @@
 	let deleteUserOpen = $state(false);
 
 	let canEdit = $derived(
-		team?.viewerIsOwner === true ||
-			(UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin)
+		viewerIsOwner === true || (UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin)
 	);
 
 	let tableSort = $derived({

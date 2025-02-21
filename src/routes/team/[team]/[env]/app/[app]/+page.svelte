@@ -22,7 +22,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { App, teamSlug } = $derived(data);
+	let { App, teamSlug, viewerIsMember } = $derived(data);
 
 	const restartAppMutation = () =>
 		graphql(`
@@ -64,7 +64,7 @@
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="instances-header">
 						<Heading level="3" size="medium">Instances</Heading>
-						{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+						{#if viewerIsMember}
 							<Button
 								variant="secondary"
 								size="small"
@@ -96,7 +96,7 @@
 				<Image workload={app} />
 				<Utilization {app} />
 				<WorkloadDeploy workload={app} />
-				{#if $App.data.team.viewerIsMember || $App.data.team.viewerIsOwner}
+				{#if viewerIsMember}
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>

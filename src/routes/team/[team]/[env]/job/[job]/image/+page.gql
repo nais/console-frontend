@@ -22,6 +22,5 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 				}
 			}
 		}
-		viewerIsMember
 	}
 }

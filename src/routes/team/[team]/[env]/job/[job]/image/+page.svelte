@@ -17,9 +17,7 @@
 
 	let { data }: Props = $props();
 
-	let { JobImageDetails } = $derived(data);
-
-	let authorized = $derived($JobImageDetails.data?.team.viewerIsMember ?? false);
+	let { JobImageDetails, viewerIsMember } = $derived(data);
 
 	let registry: string = $state('');
 	let repository: string = $state('');
@@ -97,7 +95,7 @@
 				team={$JobImageDetails.data?.team.slug}
 				environment={$JobImageDetails.data?.team.environment.name}
 				workload={$JobImageDetails.data?.team.environment.workload.name}
-				{authorized}
+				authorized={viewerIsMember}
 			/>
 		</Card>
 

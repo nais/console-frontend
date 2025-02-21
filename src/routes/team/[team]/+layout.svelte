@@ -11,7 +11,8 @@
 	}
 
 	let { data, children }: Props = $props();
-	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo } = $derived(data);
+	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo, viewerIsMember } =
+		$derived(data);
 </script>
 
 <svelte:head><title>{teamSlug} - Console</title></svelte:head>
@@ -30,7 +31,7 @@
 	{/if}
 
 	<div class="main">
-		<Menu features={UserInfo.data?.features} member={data.viewerIsMember} {teamSlug} />
+		<Menu features={UserInfo.data?.features} member={viewerIsMember} {teamSlug} />
 		<div class="container">
 			<PageHeader />
 			<div>{@render children?.()}</div>

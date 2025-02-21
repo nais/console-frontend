@@ -1,9 +1,11 @@
-import { load_TeamRoles } from '$houdini';
+import { load_TeamRoles, type TeamRoles$result } from '$houdini';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async (event) => {
+export const load: LayoutLoad = async (
+	event
+): Promise<TeamRoles$result['team'] & { teamSlug: string }> => {
 	const roles = await load_TeamRoles({
 		event,
 		variables: { team: event.params.team },
@@ -28,16 +30,15 @@ export const load: LayoutLoad = async (event) => {
 		error(500, 'Something went wrong when loading the page');
 	}
 
-	if (!current.data) {
-		return {
-			viewerIsMember: false,
-			viewerIsOwner: false,
-			teamSlug: event.params.team
-		};
-	}
-
 	return {
-		...current.data.team,
+		...(current.data
+			? current.data.team
+			: {
+					viewerIsOwner: false,
+					deletionInProgress: false,
+					lastSuccessfulSync: null,
+					viewerIsMember: false
+				}),
 		teamSlug: event.params.team
 	};
 };

@@ -19,7 +19,5 @@ query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamReposit
 				}
 			}
 		}
-		viewerIsOwner
-		viewerIsMember
 	}
 }

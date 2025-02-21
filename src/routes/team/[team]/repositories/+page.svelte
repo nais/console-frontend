@@ -25,7 +25,7 @@
 
 	let { data }: Props = $props();
 
-	let { Repositories, teamSlug } = $derived(data);
+	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
@@ -140,7 +140,7 @@
 		<div>
 			{#if $Repositories.data.team}
 				{@const team = $Repositories.data.team}
-				{#if team.viewerIsOwner || team.viewerIsMember}
+				{#if viewerIsMember}
 					<div class="repository">
 						<Heading level="2" size="small">Add repository</Heading>
 						<Detail>
@@ -216,7 +216,7 @@
 									<Button
 										variant="secondary"
 										size="small"
-										disabled={!team.viewerIsOwner && !team.viewerIsMember}
+										disabled={!viewerIsMember}
 										onclick={() => removeRepository(repo.team.slug, repo.name)}
 										icon={TrashIcon}
 									>

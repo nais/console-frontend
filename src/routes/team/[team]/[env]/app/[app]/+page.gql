@@ -20,7 +20,5 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...Ingresses
 			}
 		}
-		viewerIsMember
-		viewerIsOwner
 	}
 }

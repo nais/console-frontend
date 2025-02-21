@@ -20,7 +20,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { Job, teamSlug } = $derived(data);
+	let { Job, teamSlug, viewerIsMember } = $derived(data);
 
 	const triggerRunMutation = () =>
 		graphql(`
@@ -73,7 +73,7 @@
 			<div style="display:flex; flex-direction: column; gap:0.5rem;">
 				<div class="runs-header">
 					<Heading level="2" size="medium">Runs</Heading>
-					{#if ($Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner) && job.schedule}
+					{#if viewerIsMember && job.schedule}
 						<Button variant="secondary" size="small" onclick={() => (open = true)}>
 							Trigger run
 						</Button>
@@ -99,7 +99,7 @@
 			<Image workload={job} />
 			<WorkloadDeploy workload={job} />
 
-			{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
+			{#if viewerIsMember}
 				<Secrets workload={jobName} {environment} {teamSlug} />
 			{/if}
 		</div>
