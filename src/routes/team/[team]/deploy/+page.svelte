@@ -39,7 +39,8 @@
 		<Table size="small">
 			<Thead>
 				<Tr>
-					<Th>Resource(s)</Th>
+					<Th style="width: var(--a-spacing-32);">Resource(s)</Th>
+					<Th></Th>
 					<Th>Environment</Th>
 					<Th>Created</Th>
 					<Th>Status</Th>
@@ -50,28 +51,29 @@
 					{@const deploys = $Deployments.data.team.deployments.nodes}
 					{#each deploys as deploy (deploy.id)}
 						<Tr>
-							<Td
-								><dl>
-									{#each deploy.resources.nodes as resource (resource.id)}
-										<dt><span style="color:var(--a-gray-600)">{resource.kind}:</span></dt>
-										<dd>
-											{#if resource.kind === 'Application'}
-												<a
-													href="/team/{deploy.teamSlug}/{deploy.environmentName}/app/{resource.name}"
-													>{resource.name}</a
-												>
-											{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
-												<a
-													href="/team/{deploy.teamSlug}/{deploy.environmentName}/job/{resource.name}"
-													>{resource.name}</a
-												>
-											{:else}
-												{resource.name}
-											{/if}
-										</dd>
-									{/each}
-								</dl></Td
-							>
+							<Td>
+								{#each deploy.resources.nodes as resource (resource.id)}
+									<div style="color:var(--a-gray-600)">{resource.kind}:</div>
+								{/each}
+							</Td>
+							<Td>
+								{#each deploy.resources.nodes as resource (resource.id)}
+									<div>
+										{#if resource.kind === 'Application'}
+											<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/app/{resource.name}"
+												>{resource.name}</a
+											>
+										{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
+											<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/job/{resource.name}"
+												>{resource.name}</a
+											>
+										{:else}
+											{resource.name}
+										{/if}
+									</div>
+								{/each}
+							</Td>
+
 							<Td>
 								{deploy.environmentName}
 							</Td>
@@ -111,17 +113,3 @@
 		/>
 	</Card>
 {/if}
-
-<style>
-	dl {
-		display: grid;
-		grid-template-columns: 100px 1fr;
-		margin: 0;
-	}
-	dt {
-		font-weight: 400;
-	}
-	dd {
-		margin-inline-start: 20px;
-	}
-</style>

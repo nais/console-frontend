@@ -6,6 +6,7 @@
 	import { format, lastDayOfMonth } from 'date-fns';
 	import type { EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
+	import { aggregateAndSortCostByDate } from './cost';
 
 	interface Props {
 		readonly nodes: {
@@ -29,42 +30,6 @@
 		return costPerDay * daysInMonth;
 	}
 
-	function aggregateAndSortCostByDate(
-		series:
-			| {
-					readonly cost: {
-						readonly monthly: {
-							readonly series: {
-								readonly date: Date;
-								readonly sum: number;
-							}[];
-						};
-					};
-			  }[]
-			| undefined
-	): { date: Date; sum: number }[] {
-		const aggregated: Map<string, number> = new Map();
-		if (!series) {
-			return [];
-		}
-		const oneYearAgo = new Date();
-		oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-		series.forEach((entry) => {
-			entry.cost.monthly.series.forEach(({ date, sum }) => {
-				if (date >= oneYearAgo) {
-					const dateKey = date.toISOString().split('T')[0];
-					aggregated.set(dateKey, (aggregated.get(dateKey) || 0) + sum);
-				}
-			});
-		});
-
-		// Convert to an array and sort by date
-		return Array.from(aggregated.entries())
-			.map(([dateStr, sum]) => ({ date: new Date(dateStr), sum }))
-			.sort((a, b) => a.date.getTime() - b.date.getTime());
-	}
-
 	const primeData = (
 		series:
 			| {
@@ -86,6 +51,9 @@
 			return [];
 		}
 		let data = aggregateAndSortCostByDate(series);
+		if (data.length === 0) {
+			return [];
+		}
 		let estimateCurrentMonth = getEstimateForMonth(data[data.length - 1]);
 		data.pop(); // Remove current month
 
@@ -146,8 +114,9 @@
 	};
 </script>
 
-{#if data}
+{#if data.length}
 	{@const options = costTransform(data)}
+	{JSON.stringify(options)}
 	<div>
 		<div>
 			<Detail>
@@ -171,4 +140,6 @@
 	</div>
 
 	<EChart {options} />
+{:else}
+	<Detail>Insufficient data to display cost.</Detail>
 {/if}

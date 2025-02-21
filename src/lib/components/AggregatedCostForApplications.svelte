@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, PendingValue } from '$houdini';
+	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 	import type { AggregatedCostForApplicationsVariables } from './$houdini';
@@ -10,25 +10,27 @@
 			return { team: teamSlug, totalCount: totalCount };
 		};
 
-	const costQuery = graphql(`
-		query AggregatedCostForApplications($team: Slug!, $totalCount: Int) @load {
-			team(slug: $team) @loading {
-				slug
-				applications(first: $totalCount) {
-					nodes {
-						cost {
-							monthly {
-								series {
-									date
-									sum
+	const costQuery = $derived(
+		graphql(`
+			query AggregatedCostForApplications($team: Slug!, $totalCount: Int) @load {
+				team(slug: $team) {
+					slug
+					applications(first: $totalCount) {
+						nodes {
+							cost {
+								monthly {
+									series {
+										date
+										sum
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-		}
-	`);
+		`)
+	);
 
 	interface Props {
 		teamSlug: string;
@@ -47,14 +49,13 @@
 			>Aggregated cost for workloads. Current month is estimated.</HelpText
 		>
 	</div>
-	{#if $costQuery.data && $costQuery.data.team !== PendingValue}
-		{#if $costQuery.data.team.applications.nodes.length > 0}
-			<AggregatedCostForWorkloads nodes={$costQuery.data.team.applications.nodes} />
-		{/if}
-	{:else}
+
+	{#if $costQuery.fetching}
 		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>
+	{:else if $costQuery.data && $costQuery.data.team.applications.nodes.length > 0}
+		<AggregatedCostForWorkloads nodes={$costQuery.data.team.applications.nodes} />
 	{/if}
 </div>
 
