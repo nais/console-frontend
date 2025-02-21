@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, WorkloadState, type AppStatus } from '$houdini';
-	import SuccessIcon from '$lib/components/SuccessIcon.svelte';
 	import ErrorIcon from '$lib/components/icons/ErrorIcon.svelte';
+	import SuccessIcon from '$lib/components/icons/SuccessIcon.svelte';
 	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
 	import { QuestionmarkDiamondFillIcon } from '@nais/ds-svelte-community/icons';

@@ -4,7 +4,7 @@
 	import { QuestionmarkIcon, TimerIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '../IconLabel.svelte';
 	import ErrorIcon from '../icons/ErrorIcon.svelte';
-	import SuccessIcon from '../SuccessIcon.svelte';
+	import SuccessIcon from '../icons/SuccessIcon.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 

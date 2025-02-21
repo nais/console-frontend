@@ -3,9 +3,9 @@
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
-	import SuccessIcon from './SuccessIcon.svelte';
-	import VulnerabilityBadges from './VulnerabilityBadges.svelte';
+	import SuccessIcon from './icons/SuccessIcon.svelte';
 	import WarningIcon from './icons/WarningIcon.svelte';
+	import VulnerabilityBadges from './VulnerabilityBadges.svelte';
 
 	interface Props {
 		workload: WorkloadImage;
