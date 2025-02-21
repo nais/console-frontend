@@ -73,7 +73,7 @@
 			<div style="display:flex; flex-direction: column; gap:0.5rem;">
 				<div class="runs-header">
 					<Heading level="2" size="medium">Runs</Heading>
-					{#if $Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner}
+					{#if ($Job.data.team.viewerIsMember || $Job.data.team.viewerIsOwner) && job.schedule}
 						<Button variant="secondary" size="small" onclick={() => (open = true)}>
 							Trigger run
 						</Button>
