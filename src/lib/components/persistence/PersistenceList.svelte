@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
+	import Icon from '../Icon.svelte';
 
 	interface Props {
 		persistence: {
@@ -29,7 +29,7 @@
 
 <div class="persistence permanent">
 	<div class="icon">
-		<PersistenceIcon type={persistence.__typename || ''} size="2rem" />
+		<Icon icon={persistence.__typename} />
 	</div>
 	<div class="name">
 		<span>{persistenceTypeToName(persistence.__typename)}</span>

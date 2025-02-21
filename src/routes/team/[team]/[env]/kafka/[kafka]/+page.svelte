@@ -6,9 +6,9 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -93,7 +93,7 @@
 										<IconLabel label={a.workloadName} description={a.teamName}>
 											{#snippet icon()}
 												<TooltipAlignHack content="Invalid workload reference">
-													<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+													<WarningIcon />
 												</TooltipAlignHack>
 											{/snippet}
 										</IconLabel>

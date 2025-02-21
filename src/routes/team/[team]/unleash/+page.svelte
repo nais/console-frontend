@@ -3,9 +3,9 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import PersistenceIcon from '$lib/PersistenceIcon.svelte';
 	import {
 		Alert,
 		BodyLong,
@@ -231,9 +231,7 @@
 	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
 		<Card columns={8}>
 			<h3 class="heading">
-				{#if unleash.__typename}
-					<PersistenceIcon type={unleash.__typename} size="32px" />
-				{/if}
+				<Icon icon="Unleash" />
 				{unleash.name}
 			</h3>
 

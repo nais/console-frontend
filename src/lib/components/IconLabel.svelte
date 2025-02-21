@@ -2,18 +2,19 @@
 	import { BodyShort, Detail, Heading, Link } from '@nais/ds-svelte-community';
 	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
 	import type { Component } from 'svelte';
+	import Icon from './icons/Icon.svelte';
 
 	const {
 		label,
 		href,
-		icon: Icon,
+		icon,
 		description,
 		onclick,
 		...rest
 	}: {
 		label: Component | string;
 		href?: string;
-		icon: Component;
+		icon: Component | string;
 		description?: Component | string;
 		onclick?: () => void;
 	} & (
@@ -50,7 +51,12 @@
 		{ 'icon-label--with-desc': !!description }
 	]}
 >
-	<Icon />
+	{#if typeof icon === 'string'}
+		<Icon {icon} />
+	{:else}
+		{@const Icon = icon}
+		<Icon />
+	{/if}
 	<div>
 		{#if rest.size === 'small'}
 			<Detail>{@render linkOrText()}</Detail>

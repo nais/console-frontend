@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type Persistence } from '$houdini';
-	import BigQuery from '$lib/icons/BigQueryIcon.svelte';
-	import Kafka from '$lib/icons/KafkaIcon.svelte';
-	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import Redis from '$lib/icons/RedisIcon.svelte';
-	import Valkey from '$lib/icons/ValkeyIcon.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
-	import { BucketIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
-	import type { Component } from 'svelte';
 	import IconLabel from '../IconLabel.svelte';
 
 	interface Props {
@@ -106,18 +99,17 @@
 	);
 
 	const toIconLabel =
-		(urlName: string, icon: Component) =>
-		(persistence: { node: { id: string; name: string } }) => ({
+		(urlName: string) => (persistence: { node: { id: string; name: string } }) => ({
 			id: persistence.node.id,
 			label: persistence.node.name,
 			href: `/team/${$data.team.slug}/${$data.environment.name}/${urlName}/${persistence.node.name}`,
-			icon
+			icon: urlName
 		});
 
 	const persistence = $derived({
-		buckets: $data.buckets.edges.map(toIconLabel('bucket', BucketIcon)),
-		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', BigQuery)),
-		postgres: $data.sqlInstances.edges.map(toIconLabel('postgres', DatabaseIcon)),
+		buckets: $data.buckets.edges.map(toIconLabel('bucket')),
+		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery')),
+		postgres: $data.sqlInstances.edges.map(toIconLabel('postgres')),
 		kafka: $data.kafkaTopicAcls.edges
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
@@ -125,19 +117,19 @@
 				id: acl,
 				label: acl.topic.name,
 				href: `/team/${acl.topic.team.slug}/${acl.topic.environment.name}/kafka/${acl.topic.name}`,
-				icon: Kafka,
+				icon: 'kafka',
 				description: acl.access
 			})),
 		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
 			id: os,
 			label: os.name,
 			href: `/team/${$data.team.slug}/${$data.environment.name}/opensearch/${os.name}`,
-			icon: OpenSearchIcon,
+			icon: 'opensearch',
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		redis: $data.redisInstances.edges.map(toIconLabel('redis', Redis)),
-		valkey: $data.valkeyInstances.edges.map(toIconLabel('valkey', Valkey))
+		redis: $data.redisInstances.edges.map(toIconLabel('redis')),
+		valkey: $data.valkeyInstances.edges.map(toIconLabel('valkey'))
 	});
 </script>
 

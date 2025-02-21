@@ -3,11 +3,9 @@
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkCircleFillIcon,
-		ExclamationmarkTriangleFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import SuccessIcon from './SuccessIcon.svelte';
 	import VulnerabilityBadges from './VulnerabilityBadges.svelte';
+	import WarningIcon from './icons/WarningIcon.svelte';
 
 	interface Props {
 		workload: WorkloadImage;
@@ -64,19 +62,14 @@
 
 		{#if !image.hasSBOM}
 			<BodyShort>
-				<ExclamationmarkTriangleFillIcon
-					class="text-aligned-icon"
-					style="color: var(--a-icon-warning)"
-				/> Data was discovered, but the SBOM was not rendered. Please refer to the <Link
-					href={docURL('/services/vulnerabilities/')}>NAIS documentation</Link
+				<WarningIcon class="text-aligned-icon" /> Data was discovered, but the SBOM was not rendered.
+				Please refer to the <Link href={docURL('/services/vulnerabilities/')}
+					>NAIS documentation</Link
 				> for further assistance.
 			</BodyShort>
 		{:else if image.vulnerabilitySummary === null}
 			<BodyShort>
-				<ExclamationmarkTriangleFillIcon
-					class="text-aligned-icon"
-					style="color: var(--a-icon-warning)"
-				/> No data found. <Link
+				<WarningIcon class="text-aligned-icon" /> No data found. <Link
 					href={docURL('/services/vulnerabilities/how-to/sbom/')}
 					target="_blank">How to fix</Link
 				>
@@ -85,8 +78,7 @@
 			<VulnerabilityBadges summary={image.vulnerabilitySummary} />
 		{:else if image.hasSBOM}
 			<BodyShort>
-				<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> No
-				vulnerabilities found. Good work!
+				<SuccessIcon class="text-aligned-icon" /> No vulnerabilities found. Good work!
 			</BodyShort>
 		{/if}
 

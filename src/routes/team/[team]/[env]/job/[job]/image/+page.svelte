@@ -2,13 +2,13 @@
 	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
 	import VulnerabilityBadges from '$lib/components/VulnerabilityBadges.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -68,28 +68,20 @@
 		</Card>
 
 		<Card columns={3}>
-			<div class="summary">
-				<Heading level="4" size="small" spacing>Summary</Heading>
-				{#if image.vulnerabilitySummary}
-					<VulnerabilityBadges summary={image.vulnerabilitySummary} />
-				{:else if !image.hasSBOM}
-					<ExclamationmarkTriangleFillIcon
-						size="1rem"
-						style="color: var(--a-icon-warning); margin-right: 0.5rem"
-					/>
-					Data was discovered, but the SBOM was not rendered. Please refer to the
-					<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
-					for further assistance.
-				{:else}
-					<ExclamationmarkTriangleFillIcon
-						size="1rem"
-						style="color: var(--a-icon-warning); margin-right: 0.5rem"
-					/>
-					No data found.
-					<a href={docURL('/services/vulnerabilities/how-to/sbom/')}> How to fix</a>
-				{/if}
-			</div></Card
-		>
+			<Heading level="4" size="small" spacing>Summary</Heading>
+			{#if image.vulnerabilitySummary}
+				<VulnerabilityBadges summary={image.vulnerabilitySummary} />
+			{:else if !image.hasSBOM}
+				<WarningIcon class="text-aligned-icon" />
+				Data was discovered, but the SBOM was not rendered. Please refer to the
+				<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
+				for further assistance.
+			{:else}
+				<WarningIcon class="text-aligned-icon" />
+				No data found.
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}> How to fix</a>
+			{/if}
+		</Card>
 		<Card columns={11}>
 			<ImageVulnerabilities
 				team={$JobImageDetails.data?.team.slug}

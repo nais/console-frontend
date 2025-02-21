@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { RedisInstanceAccessOrderField } from '$houdini';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -97,10 +97,7 @@
 				{:else}
 					<div class="inline">
 						<i>No owner</i>
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="This Big Query instance does not belong to any workload"
-						/>
+						<WarningIcon title="This Big Query instance does not belong to any workload" />
 					</div>
 				{/if}
 			</div>

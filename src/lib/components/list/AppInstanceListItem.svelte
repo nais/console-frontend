@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
 	import { Detail } from '@nais/ds-svelte-community';
-	import { QuestionmarkIcon, XMarkOctagonFillIcon } from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '../IconLabel.svelte';
+	import ErrorIcon from '../icons/ErrorIcon.svelte';
 	import RunningIndicator from '../RunningIndicator.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
@@ -36,7 +37,7 @@
 				</TooltipAlignHack>
 			{:else if instance.status.state === 'FAILING'}
 				<TooltipAlignHack content="Instance is failing">
-					<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+					<ErrorIcon />
 				</TooltipAlignHack>
 			{:else}
 				<TooltipAlignHack content="Application instance status is unknown">

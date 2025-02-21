@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
@@ -19,7 +20,6 @@
 	} from '@nais/ds-svelte-community';
 	import {
 		CheckmarkIcon,
-		ExclamationmarkTriangleFillIcon,
 		ExternalLinkIcon,
 		WalletIcon,
 		XMarkIcon
@@ -137,10 +137,7 @@
 					{#if instance.workload}
 						<WorkloadLink workload={instance.workload} />
 					{:else}
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="The SQL instance does not belong to any workload"
-						/>
+						<WarningIcon title="The SQL instance does not belong to any workload" />
 						Instance does not belong to any workload
 					{/if}
 				</p>
@@ -262,10 +259,7 @@
 						{#if instance.database.healthy}
 							<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 						{:else}
-							<ExclamationmarkTriangleFillIcon
-								style="color: var(--a-icon-info)"
-								title="The database is not healthy"
-							/>
+							<WarningIcon title="The database is not healthy" />
 						{/if}
 					</p>
 					<p style="display: flex; align-items: center; gap: 0 1rem">Charset</p>

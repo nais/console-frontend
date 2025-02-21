@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { fragment, graphql, WorkloadState, type JobStatus } from '$houdini';
+	import SuccessIcon from '$lib/components/SuccessIcon.svelte';
+	import ErrorIcon from '$lib/components/icons/ErrorIcon.svelte';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import { Detail, Heading, Link } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkCircleFillIcon,
-		ExclamationmarkTriangleFillIcon,
-		QuestionmarkDiamondFillIcon,
-		XMarkOctagonFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkDiamondFillIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		job: JobStatus;
@@ -54,14 +52,11 @@
 		{/if}
 		<div style="display: flex; gap: var(--a-spacing-1); margin-top: var(--a-spacing-3);">
 			{#if state === WorkloadState.NAIS}
-				<CheckmarkCircleFillIcon style="color: var(--a-icon-success); font-size: 1.25rem" />
-				Job is nais.
+				<SuccessIcon class="text-aligned-icon" /> Job is nais.
 			{:else if state === WorkloadState.NOT_NAIS}
-				<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning); font-size: 1.25rem" />
-				Job is not nais.
+				<WarningIcon class="text-aligned-icon" /> Job is not nais.
 			{:else if state === WorkloadState.FAILING}
-				<XMarkOctagonFillIcon style="color: var(--a-icon-danger); font-size: 1.25rem" />
-				Job is failing.
+				<ErrorIcon class="text-aligned-icon" /> Job is failing.
 			{:else if state === WorkloadState.UNKNOWN}
 				<QuestionmarkDiamondFillIcon style="color: var(--a-icon-action); font-size: 1.25rem" />
 				Job status unknown.

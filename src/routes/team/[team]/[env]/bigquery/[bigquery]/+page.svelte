@@ -4,6 +4,7 @@
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import {
 		BodyShort,
 		CopyButton,
@@ -15,11 +16,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import {
-		CheckmarkIcon,
-		ExclamationmarkTriangleFillIcon,
-		XMarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -108,10 +105,7 @@
 				{:else}
 					<div class="inline">
 						<i>No owner</i>
-						<ExclamationmarkTriangleFillIcon
-							style="color: var(--a-icon-warning)"
-							title="This Big Query instance does not belong to any workload"
-						/>
+						<WarningIcon title="This Big Query instance does not belong to any workload" />
 					</div>
 				{/if}
 			</div>

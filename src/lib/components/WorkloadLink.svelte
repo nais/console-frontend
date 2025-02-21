@@ -1,11 +1,8 @@
 <script lang="ts">
-	import {
-		BriefcaseClockIcon,
-		ExclamationmarkTriangleFillIcon,
-		PackageIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
+	import WarningIcon from './icons/WarningIcon.svelte';
 
 	interface Props {
 		workload: {
@@ -38,7 +35,7 @@
 	{#snippet icon()}
 		{#if warning}
 			<TooltipAlignHack content={warning}>
-				<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+				<WarningIcon />
 			</TooltipAlignHack>
 		{:else if workload.__typename === 'Job'}
 			<BriefcaseClockIcon />

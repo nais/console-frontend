@@ -1,51 +1,8 @@
 <script lang="ts">
-	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
-	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
-	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import RedisIcon from '$lib/icons/RedisIcon.svelte';
-	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import { Detail } from '@nais/ds-svelte-community';
-	import {
-		BellFillIcon,
-		BellIcon,
-		BranchingIcon,
-		BriefcaseClockFillIcon,
-		BriefcaseClockIcon,
-		BucketFillIcon,
-		BucketIcon,
-		CircleFillIcon,
-		CogFillIcon,
-		CogIcon,
-		DatabaseFillIcon,
-		DatabaseIcon,
-		Density3Icon,
-		FileTextFillIcon,
-		FileTextIcon,
-		HouseFillIcon,
-		HouseIcon,
-		ImageFillIcon,
-		ImageIcon,
-		LineGraphStackedIcon,
-		PackageFillIcon,
-		PackageIcon,
-		PadlockLockedFillIcon,
-		PadlockLockedIcon,
-		PersonGroupFillIcon,
-		PersonGroupIcon,
-		QuestionmarkIcon,
-		RocketFillIcon,
-		RocketIcon,
-		ShieldLockFillIcon,
-		ShieldLockIcon,
-		TrashFillIcon,
-		TrashIcon,
-		VirusFillIcon,
-		VirusIcon,
-		WalletFillIcon,
-		WalletIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
+	import Icon from './icons/Icon.svelte';
 
 	const {
 		items
@@ -58,64 +15,6 @@
 			badge?: boolean;
 		}[][];
 	} = $props();
-
-	const iconComponent = (label: string, active: boolean) => {
-		switch (label) {
-			case 'Overview':
-				return active ? HouseFillIcon : HouseIcon;
-			case 'Applications':
-				return active ? PackageFillIcon : PackageIcon;
-			case 'Jobs':
-				return active ? BriefcaseClockFillIcon : BriefcaseClockIcon;
-			case 'Secrets':
-				return active ? PadlockLockedFillIcon : PadlockLockedIcon;
-			case 'Postgres':
-				return active ? DatabaseFillIcon : DatabaseIcon;
-			case 'Buckets':
-				return active ? BucketFillIcon : BucketIcon;
-			case 'Redis':
-				return RedisIcon;
-			case 'Valkey':
-				return ValkeyIcon;
-			case 'OpenSearch':
-				return OpenSearchIcon;
-			case 'Kafka topics':
-				return KafkaIcon;
-			case 'BigQuery':
-				return BigQueryIcon;
-			case 'Unleash':
-				return UnleashIcon;
-			case 'Deployments':
-				return active ? RocketFillIcon : RocketIcon;
-			case 'Cost':
-				return active ? WalletFillIcon : WalletIcon;
-			case 'Utilization':
-				return active ? LineGraphStackedIcon : LineGraphStackedIcon;
-			case 'Vulnerabilities':
-				return active ? VirusFillIcon : VirusIcon;
-			case 'Members':
-				return active ? PersonGroupFillIcon : PersonGroupIcon;
-			case 'Repositories':
-				return BranchingIcon;
-			case 'Settings':
-				return active ? CogFillIcon : CogIcon;
-			case 'Activity log':
-				return active ? ShieldLockFillIcon : ShieldLockIcon;
-			case 'Status':
-				return active ? BellFillIcon : BellIcon;
-			case 'Image':
-				return active ? ImageFillIcon : ImageIcon;
-			case 'Logs':
-				return Density3Icon;
-			case 'Manifest':
-				return active ? FileTextFillIcon : FileTextIcon;
-			case 'Delete':
-				return active ? TrashFillIcon : TrashIcon;
-
-			default:
-				return QuestionmarkIcon;
-		}
-	};
 </script>
 
 <div class="menu">
@@ -133,8 +32,7 @@
 							</span>
 						{/snippet}
 						{#snippet icon()}
-							{@const Comp = iconComponent(text, false)}
-							<span class="icon"><Comp /></span>
+							<span class="icon"><Icon icon={text} /></span>
 						{/snippet}
 					</IconLabel>
 					{#if count}

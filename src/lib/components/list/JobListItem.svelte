@@ -2,16 +2,12 @@
 	import type { JobRunState$options } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkCircleFillIcon,
-		CircleFillIcon,
-		QuestionmarkIcon,
-		RocketIcon,
-		XMarkOctagonFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CircleFillIcon, QuestionmarkIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import IconLabel from '../IconLabel.svelte';
+	import ErrorIcon from '../icons/ErrorIcon.svelte';
+	import SuccessIcon from '../SuccessIcon.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -93,11 +89,11 @@
 							</TooltipAlignHack>
 						{:else if lastRun.status.state === 'SUCCEEDED'}
 							<TooltipAlignHack content="Last job ran successfully">
-								<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+								<SuccessIcon />
 							</TooltipAlignHack>
 						{:else if lastRun.status.state === 'FAILED'}
 							<TooltipAlignHack content="Last job run failed">
-								<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+								<ErrorIcon />
 							</TooltipAlignHack>
 						{:else}
 							<TooltipAlignHack content="Job run status is unknown">

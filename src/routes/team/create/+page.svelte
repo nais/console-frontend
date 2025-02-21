@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon, FloppydiskIcon } from '@nais/ds-svelte-community/icons';
+	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';
 
 	interface Props {
@@ -168,8 +169,8 @@
 			{/snippet}
 			{#snippet description()}
 				Example: my-team-name<br />
-				<ExclamationmarkTriangleFillIcon style="color:var(--a-icon-warning)" /> It is not possible to
-				change the identifier after creation, so choose wisely.
+				<WarningIcon class="text-aligned-icon" /> It is not possible to change the identifier after creation,
+				so choose wisely.
 			{/snippet}
 		</TextField>
 		{#if teamSlugError !== 'no_error' && teamSlugError !== ''}

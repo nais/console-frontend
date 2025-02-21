@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { fragment, graphql, WorkloadState, type AppStatus } from '$houdini';
+	import SuccessIcon from '$lib/components/SuccessIcon.svelte';
+	import ErrorIcon from '$lib/components/icons/ErrorIcon.svelte';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkCircleFillIcon,
-		ExclamationmarkTriangleFillIcon,
-		QuestionmarkDiamondFillIcon,
-		XMarkOctagonFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkDiamondFillIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		app: AppStatus;
@@ -51,16 +49,11 @@
 		<Heading level="3" size="small">Status</Heading>
 		<BodyShort>
 			{#if state === WorkloadState.NAIS}
-				<CheckmarkCircleFillIcon class="text-aligned-icon" style="color: var(--a-icon-success)" /> Application
-				is nais.
+				<SuccessIcon class="text-aligned-icon" /> Application is nais.
 			{:else if state === WorkloadState.NOT_NAIS}
-				<ExclamationmarkTriangleFillIcon
-					class="text-aligned-icon"
-					style="color: var(--a-icon-warning)"
-				/> Application is not nais.
+				<WarningIcon class="text-aligned-icon" /> Application is not nais.
 			{:else if state === WorkloadState.FAILING}
-				<XMarkOctagonFillIcon class="text-aligned-icon" style="color: var(--a-icon-danger)" /> Application
-				is failing.
+				<ErrorIcon class="text-aligned-icon" /> Application is failing.
 			{:else if state === WorkloadState.UNKNOWN}
 				<QuestionmarkDiamondFillIcon
 					class="text-aligned-icon"

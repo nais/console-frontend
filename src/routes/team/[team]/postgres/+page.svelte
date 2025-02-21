@@ -2,15 +2,11 @@
 	import { SqlInstanceOrderField } from '$houdini';
 	import Card from '$lib/Card.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkIcon,
-		ExclamationmarkTriangleFillIcon,
-		WalletIcon,
-		XMarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, WalletIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -149,10 +145,7 @@
 						<Td>
 							{#if !i.workload?.name}
 								<Tooltip content="The SQL instance does not belong to any workload">
-									<ExclamationmarkTriangleFillIcon
-										style="color: var(--a-icon-warning)"
-										title="The SQL instance does not belong to any workload"
-									/>
+									<WarningIcon />
 								</Tooltip>
 							{/if}
 						</Td>

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy } from '$houdini';
 	import { Heading } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon, GlobeIcon } from '@nais/ds-svelte-community/icons';
+	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
+	import WarningIcon from './icons/WarningIcon.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -97,7 +98,7 @@
 							<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
 								{#snippet icon()}
 									<TooltipAlignHack content="Invalid workload reference">
-										<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+										<WarningIcon />
 									</TooltipAlignHack>
 								{/snippet}
 							</IconLabel>
@@ -148,7 +149,7 @@
 									<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
 										{#snippet icon()}
 											<TooltipAlignHack content="Invalid workload reference">
-												<ExclamationmarkTriangleFillIcon style="color: var(--a-icon-warning)" />
+												<WarningIcon />
 											</TooltipAlignHack>
 										{/snippet}
 									</IconLabel>

@@ -1,13 +1,10 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
 	import { Detail, Loader } from '@nais/ds-svelte-community';
-	import {
-		CheckmarkCircleFillIcon,
-		QuestionmarkIcon,
-		TimerIcon,
-		XMarkOctagonFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkIcon, TimerIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '../IconLabel.svelte';
+	import ErrorIcon from '../icons/ErrorIcon.svelte';
+	import SuccessIcon from '../SuccessIcon.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -71,11 +68,11 @@
 				</TooltipAlignHack>
 			{:else if run.status.state === 'SUCCEEDED'}
 				<TooltipAlignHack content="Job ran successfully">
-					<CheckmarkCircleFillIcon style="color: var(--a-icon-success)" />
+					<SuccessIcon />
 				</TooltipAlignHack>
 			{:else if run.status.state === 'FAILED'}
 				<TooltipAlignHack content="Job run failed">
-					<XMarkOctagonFillIcon style="color: var(--a-icon-danger)" />
+					<ErrorIcon />
 				</TooltipAlignHack>
 			{:else}
 				<TooltipAlignHack content="Job run status is unknown">
