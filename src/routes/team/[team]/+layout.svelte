@@ -1,14 +1,17 @@
 <script lang="ts">
+	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
+	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$houdini';
+	import Menu from './Menu.svelte';
 
 	interface Props {
 		data: LayoutData;
-		children?: import('svelte').Snippet;
+		children?: Snippet;
 	}
 
 	let { data, children }: Props = $props();
-	let { deletionInProgress, lastSuccessfulSync, teamSlug } = $derived(data);
+	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo } = $derived(data);
 </script>
 
 <svelte:head><title>{teamSlug} - Console</title></svelte:head>
@@ -26,12 +29,31 @@
 		>
 	{/if}
 
-	{@render children?.()}
+	<div class="main">
+		<Menu features={UserInfo.data?.features} member={data.viewerIsMember} {teamSlug} />
+		<div class="container">
+			<PageHeader />
+			<div>{@render children?.()}</div>
+		</div>
+	</div>
 </div>
 
 <style>
 	.page {
 		margin-top: 1rem;
 		width: 100%;
+	}
+
+	.main {
+		gap: 1rem;
+		display: grid;
+		grid-template-columns: 200px 1fr;
+	}
+
+	.container {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-12);
 	}
 </style>
