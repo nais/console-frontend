@@ -13,10 +13,8 @@
 
 	let { data, children }: Props = $props();
 
-	let { InventoryCounts, UserInfo, teamSlug } = $derived(data);
+	let { InventoryCounts, UserInfo } = $derived(data);
 </script>
-
-<svelte:head><title>{teamSlug} - Console</title></svelte:head>
 
 <div class="main">
 	<Menu
