@@ -116,7 +116,6 @@
 
 {#if data.length}
 	{@const options = costTransform(data)}
-	{JSON.stringify(options)}
 	<div>
 		<div>
 			<Detail>
