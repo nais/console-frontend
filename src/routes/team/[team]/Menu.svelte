@@ -70,10 +70,7 @@
 	items={menuItems({
 		path: page.url.pathname,
 		member,
-		inventory:
-			typeof $Inventory.data?.team.inventoryCounts.applications.total === 'number'
-				? ($Inventory.data.team.inventoryCounts as never)
-				: undefined,
+		inventory: $Inventory.fetching ? undefined : $Inventory.data?.team.inventoryCounts,
 		features
 	})}
 />
