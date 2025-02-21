@@ -144,9 +144,4 @@
 		grid-column: 2;
 		grid-row: 1;
 	}
-	.summary {
-		display: flex;
-		flex-direction: column;
-		gap: var(--a-spacing-1);
-	}
 </style>
