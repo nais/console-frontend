@@ -17,6 +17,7 @@ query ReconcilerLogs($id: ID!) {
 					pageEnd
 				}
 				nodes {
+					id
 					correlationID
 					createdAt
 					message

@@ -25,7 +25,7 @@
 		</Thead>
 		<Tbody>
 			{#if $ReconcilerLogs.data}
-				{#each $ReconcilerLogs.data.node.errors.nodes as error (error.correlationID)}
+				{#each $ReconcilerLogs.data.node.errors.nodes as error (error.id)}
 					<Tr>
 						<Td><span class="message">{error.message}</span></Td>
 						<Td><a href="/team/{error.team.slug}">{error.team.slug}</a></Td>
