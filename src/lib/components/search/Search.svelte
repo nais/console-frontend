@@ -86,20 +86,24 @@
 				<ResultSkeleton />
 			{/each}
 		{:else if results}
-			{#each results as { icon, description, label, ...rest }, i (icon + label + i)}
-				<div class={['result', { selected: i === selected && rest.type === 'link' }]}>
-					<IconLabel
-						{icon}
-						{label}
-						{description}
-						href={rest.type === 'link' ? rest.href : undefined}
-						onclick={close}
-					/>
-					{#if rest.type === 'button'}
-						{@const button = rest.button}
-						<Button {...button} size="small">{button.label}</Button>
-					{/if}
-				</div>
+			{#each results as { icon, description, label: text, ...rest }, i (icon + text + i)}
+				{#if rest.type === 'link'}
+					<a href={rest.href} class={['result', { selected: i === selected }]} onclick={close}>
+						<IconLabel {icon} {description}>
+							{#snippet label()}
+								<span class="label">{text}</span>
+							{/snippet}
+						</IconLabel>
+					</a>
+				{:else}
+					<div class="result">
+						<IconLabel {icon} label={text} {description} />
+						{#if rest.type === 'button'}
+							{@const button = rest.button}
+							<Button {...button} size="small">{button.label}</Button>
+						{/if}
+					</div>
+				{/if}
 			{:else}
 				<div class="no-results">
 					<div>No results matching "{query}"</div>
@@ -132,17 +136,30 @@
 		gap: var(--a-spacing-1);
 		overflow-y: auto;
 
-		:global(a) {
+		a.result {
 			color: inherit;
 			text-decoration: none;
+			transition:
+				background-color 50ms,
+				color 50ms;
 
 			&:hover {
-				text-decoration: underline;
-			}
+				background-color: var(--a-surface-action-subtle-hover);
+				text-decoration: none;
 
+				.label {
+					text-decoration: underline;
+				}
+			}
 			&:active,
 			&:focus-visible {
-				color: var(--ac-link-focus-text, var(--a-text-on-action));
+				background-color: var(--a-surface-action);
+				color: var(--a-text-on-action);
+				box-shadow: none;
+			}
+
+			&:active {
+				background-color: var(--a-surface-action-active);
 			}
 		}
 
