@@ -97,6 +97,7 @@
 					'/job/',
 					'/opensearch',
 					'/redis',
+					'/repositories',
 					'/valkey',
 					'/team/create',
 					'/kafka'

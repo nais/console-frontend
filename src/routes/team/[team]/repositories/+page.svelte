@@ -1,10 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
-	import Card from '$lib/Card.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Table, Tbody, Td, TextField, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Button,
+		Detail,
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		TextField,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -122,16 +133,18 @@
 	const errorMessage = `Invalid input`;
 </script>
 
+<GraphErrors errors={$Repositories.errors} />
+
 {#if $Repositories.data}
-	<div class="grid">
-		{#if $Repositories.data.team}
-			{@const team = $Repositories.data.team}
-			{#if team.viewerIsOwner || team.viewerIsMember}
-				<Card>
+	<div class="wrapper">
+		<div>
+			{#if $Repositories.data.team}
+				{@const team = $Repositories.data.team}
+				{#if team.viewerIsOwner || team.viewerIsMember}
 					<div class="repository">
-						<h3>Add repository</h3>
-						<em
-							>Adding a repository will grant it access to deployment actions on behalf of the team.</em
+						<Heading level="2" size="small">Add repository</Heading>
+						<Detail>
+							Adding a repository will grant it access to deployment actions on behalf of the team.</Detail
 						>
 						<form
 							onsubmit={(e: SubmitEvent) => {
@@ -162,11 +175,9 @@
 							</div>
 						</form>
 					</div>
-				</Card>
-			{/if}
+				{/if}
 
-			<Card>
-				<h3>Repositories</h3>
+				<Heading level="2" size="small">Authorized repositories</Heading>
 
 				<form class="input">
 					<TextField
@@ -213,6 +224,10 @@
 									</Button>
 								</Td>
 							</Tr>
+						{:else}
+							<Tr>
+								<Td colspan={999}>No repositories found</Td>
+							</Tr>
 						{/each}
 					</Tbody>
 				</Table>
@@ -227,23 +242,20 @@
 						}
 					}}
 				/>
-			</Card>
-		{/if}
+			{/if}
+		</div>
 	</div>
 {/if}
 
 <style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--a-spacing-12);
+	}
+
 	.input {
 		font-size: 1rem;
 		margin: 1rem 0;
-	}
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(1, 1fr);
-		gap: 1rem;
-	}
-	.repository > h3 {
-		display: flex;
-		gap: 1rem;
 	}
 </style>
