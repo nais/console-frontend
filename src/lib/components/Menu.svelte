@@ -162,7 +162,7 @@
 			display: grid;
 			grid-template-columns: 1fr auto;
 			border-radius: 4px;
-			padding: var(--a-spacing-1);
+			padding: var(--a-spacing-1) var(--a-spacing-3) var(--a-spacing-1) var(--a-spacing-2);
 			text-decoration: none;
 			color: inherit;
 			transition: background-color 50ms;
