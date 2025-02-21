@@ -1,7 +1,23 @@
-query Repositories($team: Slug!, $orderBy: RepositoryOrder, $filter: TeamRepositoryFilter)
-@cache(policy: NetworkOnly) {
+query Repositories(
+	$team: Slug!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$orderBy: RepositoryOrder
+	$filter: TeamRepositoryFilter
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		repositories(first: 20, orderBy: $orderBy, filter: $filter) @paginate(mode: SinglePage) {
+		viewerIsMember
+		viewerIsOwner
+		repositories(
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+			orderBy: $orderBy
+			filter: $filter
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
