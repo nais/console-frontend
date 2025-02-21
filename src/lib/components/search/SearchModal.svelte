@@ -182,7 +182,7 @@
 			const timeout = setTimeout(() => {
 				const [prefix, q] = query.split(':');
 				const category = Object.values(categories).find((c) => c.prefix === prefix);
-				const type = q ? category?.type : undefined;
+				const type = category?.type;
 				store.fetch({ variables: { query: type ? q.trim() : query, type } });
 			}, 300);
 
