@@ -1,21 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
+	import List from '$lib/components/list/List.svelte';
+	import ListItem from '$lib/components/list/ListItem.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import {
-		Button,
-		Detail,
-		Heading,
-		Table,
-		Tbody,
-		Td,
-		TextField,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 
@@ -107,26 +99,6 @@
 		}, 1000);
 	};
 
-	let tableSort = $derived({
-		orderBy: $Repositories.variables?.orderBy?.field,
-		direction: $Repositories.variables?.orderBy?.direction
-	});
-
-	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = RepositoryOrderField[key as keyof typeof RepositoryOrderField];
-			tableSort.direction = 'ASC';
-		}
-
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || RepositoryOrderField.NAME
-		});
-	};
-
 	let repoName = $state('');
 
 	let inputError = $state(false);
@@ -178,70 +150,75 @@
 				{/if}
 
 				<Heading level="2" size="small">Authorized repositories</Heading>
+				{#if team.repositories.pageInfo.totalCount === 0}
+					<BodyLong spacing>
+						{#if team.repositories.pageInfo.totalCount == 0}
+							<strong>No repositories are authorized for deployment.</strong>
+						{/if}
+						To enable GitHub Actions to deploy your application, add a repository to the list.
+						<a
+							href="https://docs.dev-nais.cloud.nais.io/tutorials/hello-nais/#authorize-the-repository-for-deployment"
+							>Learn more.</a
+						>
+					</BodyLong>
+				{:else}
+					<form class="input">
+						<TextField
+							size="small"
+							type="text"
+							id="filter"
+							style="width: 300px;"
+							bind:value={filter}
+							onkeyup={onKeyUp}
+						>
+							{#snippet label()}
+								Filter repositories
+							{/snippet}
+						</TextField>
+					</form>
 
-				<form class="input">
-					<TextField
-						size="small"
-						type="text"
-						id="filter"
-						style="width: 300px;"
-						bind:value={filter}
-						onkeyup={onKeyUp}
-					>
-						{#snippet label()}
-							Filter repositories
-						{/snippet}
-					</TextField>
-				</form>
+					<div class="content-wrapper">
+						<div>
+							<List title="{team.repositories.pageInfo.totalCount} entries">
+								{#snippet menu()}
+									<OrderByMenu
+										orderField={RepositoryOrderField}
+										defaultOrderField={RepositoryOrderField.NAME}
+									/>
+								{/snippet}
+								{#each team.repositories.nodes as repo (repo.id)}
+									<ListItem>
+										<a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a>
 
-				<Table
-					size="small"
-					sort={{
-						orderBy: tableSort.orderBy || RepositoryOrderField.NAME,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					onsortchange={tableSortChange}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey={RepositoryOrderField.NAME}>Name</Th>
-							<Th style="width:150px">Action</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each team.repositories.nodes as repo (repo.id)}
-							<Tr>
-								<Td><a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a></Td>
-								<Td>
-									<Button
-										variant="secondary"
-										size="small"
-										disabled={!viewerIsMember}
-										onclick={() => removeRepository(repo.team.slug, repo.name)}
-										icon={TrashIcon}
-									>
-										Remove
-									</Button>
-								</Td>
-							</Tr>
-						{:else}
-							<Tr>
-								<Td colspan={999}>No repositories found</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-				<Pagination
-					page={team.repositories.pageInfo}
-					loaders={{
-						loadNextPage: () => {
-							Repositories.loadNextPage();
-						},
-						loadPreviousPage: () => {
-							Repositories.loadPreviousPage();
-						}
-					}}
-				/>
+										<div class="right">
+											<Button
+												variant="danger"
+												size="xsmall"
+												disabled={!team.viewerIsOwner && !team.viewerIsMember}
+												onclick={() => removeRepository(repo.team.slug, repo.name)}
+												icon={TrashIcon}
+											>
+												Remove
+											</Button>
+										</div>
+									</ListItem>
+								{/each}
+							</List>
+							<Pagination
+								page={team.repositories.pageInfo}
+								loaders={{
+									loadPreviousPage: () =>
+										changeParams({
+											after: '',
+											before: team.repositories.pageInfo.startCursor ?? ''
+										}),
+									loadNextPage: () =>
+										changeParams({ before: '', after: team.repositories.pageInfo.endCursor ?? '' })
+								}}
+							/>
+						</div>
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</div>
@@ -257,5 +234,10 @@
 	.input {
 		font-size: 1rem;
 		margin: 1rem 0;
+	}
+	.right {
+		display: flex;
+		gap: var(--a-spacing-1-alt);
+		align-items: center;
 	}
 </style>

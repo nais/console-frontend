@@ -84,7 +84,8 @@
 			{#each Object.values(orderField).sort( (a) => (a === defaultOrderField ? -1 : 1) ) as field (field)}
 				<ActionMenuRadioItem
 					value={field}
-					onselect={(value) => changeParams({ sort: `${value}-${orderDirection}` })}
+					onselect={(value) =>
+						changeParams({ sort: `${value}-${orderDirection}`, after: '', before: '' })}
 				>
 					{fieldLabel(field)}
 				</ActionMenuRadioItem>
@@ -97,7 +98,8 @@
 			{#each Object.values(OrderDirection) as direction (direction)}
 				<ActionMenuRadioItem
 					value={direction}
-					onselect={(value) => changeParams({ sort: `${currentOrderField}-${value}` })}
+					onselect={(value) =>
+						changeParams({ sort: `${currentOrderField}-${value}`, after: '', before: '' })}
 				>
 					{#if direction === OrderDirection.ASC}
 						<SortUpIcon /> Ascending
