@@ -72,11 +72,13 @@
 
 	let loading = $state(false);
 
-	beforeNavigate(() => {
-		loading = true;
+	beforeNavigate((navigation) => {
+		if (navigation.from?.url.hostname === navigation.to?.url.hostname) {
+			loading = true;
+		}
 	});
 
-	afterNavigate(async () => {
+	afterNavigate(() => {
 		loading = false;
 	});
 </script>
