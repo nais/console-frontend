@@ -3,18 +3,16 @@
 	import Menu from '$lib/components/Menu.svelte';
 	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import { menuItems } from '$lib/menuItems';
-	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
+	import type { LayoutData } from './$houdini';
 
 	interface Props {
 		data: LayoutData;
-		children?: import('svelte').Snippet;
+		children?: Snippet;
 	}
 
-	let { data, children }: Props = $props();
-	let { teamSlug } = $derived(data);
+	const { data, children }: Props = $props();
 </script>
-
-<svelte:head><title>{teamSlug} - Console</title></svelte:head>
 
 <div class="main">
 	<Menu

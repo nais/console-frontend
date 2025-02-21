@@ -8,8 +8,10 @@
 	}
 
 	let { data, children }: Props = $props();
-	let { deletionInProgress, lastSuccessfulSync } = $derived(data);
+	let { deletionInProgress, lastSuccessfulSync, teamSlug } = $derived(data);
 </script>
+
+<svelte:head><title>{teamSlug} - Console</title></svelte:head>
 
 <div class="page">
 	{#if deletionInProgress}
