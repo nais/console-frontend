@@ -55,6 +55,10 @@ const label = (type: string) => {
 			return {
 				pageName: 'Deployments'
 			};
+		case 'activity-log':
+			return {
+				pageName: 'Activity log'
+			};
 		default:
 			return {
 				pageName: type ? type[0].toUpperCase() + type.slice(1) : ''
