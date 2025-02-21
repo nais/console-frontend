@@ -1,4 +1,4 @@
-<script module>
+<script module lang="ts">
 	type ValueOf<T> = T[keyof T];
 
 	export type OrderField = {
