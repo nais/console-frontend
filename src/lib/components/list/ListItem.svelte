@@ -19,19 +19,5 @@
 		&:hover {
 			background-color: var(--a-surface-subtle);
 		}
-
-		:global(a) {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				text-decoration: underline;
-			}
-
-			&:active,
-			&:focus-visible {
-				color: var(--ac-link-focus-text, var(--a-text-on-action));
-			}
-		}
 	}
 </style>

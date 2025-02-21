@@ -1,7 +1,9 @@
-query ActivityLog($team: Slug!) @cache(policy: NetworkOnly) {
+query ActivityLog($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after: Cursor)
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
-		activityLog(first: 25) @paginate(mode: SinglePage) {
+		activityLog(first: $first, last: $last, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage

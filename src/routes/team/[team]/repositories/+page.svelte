@@ -177,7 +177,7 @@
 						</TextField>
 					</form>
 
-					<div class="content-wrapper">
+					<div>
 						<div>
 							<List title="{team.repositories.pageInfo.totalCount} entries">
 								{#snippet menu()}

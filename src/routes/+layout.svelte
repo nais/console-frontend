@@ -90,6 +90,7 @@
 		{
 			['white-page']:
 				[
+					'/activity-log',
 					'/app/',
 					'/applications',
 					'/bigquery',
