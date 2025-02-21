@@ -25,7 +25,6 @@ export const load: LayoutLoad = async (event) => {
 				error(404, 'Team not found');
 			}
 		}
-		console.error('Error loading team roles: ', current.errors);
 		error(500, 'Something went wrong when loading the page');
 	}
 
