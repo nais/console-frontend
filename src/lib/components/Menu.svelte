@@ -150,19 +150,19 @@
 	.menu {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--a-spacing-5);
 
 		.list {
 			display: flex;
 			flex-direction: column;
-			gap: var(--a-spacing-1);
+			gap: var(--a-spacing-05);
 		}
 
 		a {
 			display: grid;
 			grid-template-columns: 1fr auto;
 			border-radius: 4px;
-			padding: var(--a-spacing-1) var(--a-spacing-2);
+			padding: var(--a-spacing-1);
 			text-decoration: none;
 			color: inherit;
 			transition: background-color 50ms;
@@ -185,14 +185,12 @@
 			}
 
 			.label {
-				position: relative;
-
 				:global(.badge) {
-					color: var(--a-icon-danger);
+					color: var(--a-red-300);
 					font-size: 0.5rem;
-					position: absolute;
-					top: 3px;
-					right: -5px;
+					position: relative;
+					top: -8px;
+					right: 2px;
 				}
 			}
 			&:not(.active) .icon {

@@ -14,10 +14,10 @@
 <Story name="Team menu">
 	<Menu
 		items={[
-			[{ label: 'Overview', href: '/team/devteam', active: true }],
+			[{ label: 'Overview', href: '/team/devteam' }],
 			[
 				{ label: 'Applications', href: '/team/devteam/applications', count: 42, badge: true },
-				{ label: 'Jobs', href: '/team/devteam/jobs', count: 1, badge: true }
+				{ label: 'Jobs', href: '/team/devteam/jobs', count: 1, badge: true, active: true }
 			],
 			[
 				{ label: 'Secrets', href: '/team/devteam/secrets' },
