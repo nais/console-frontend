@@ -7,9 +7,6 @@
 	import { truncateString } from '$lib/chart/util';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { percentageFormatter } from '$lib/utils/formatters';
 	import {
 		mergeCalculateAndSortOverageDataAllTeams,
 		round,
@@ -212,54 +209,6 @@
 		<Card columns={3} borderColor="#83bff6">
 			<SummaryCard
 				color="blue"
-				title="CPU utilization"
-				helpTextTitle="Current CPU utilization"
-				helpText="Current CPU utilization for tenant."
-			>
-				{#snippet icon({ color })}
-					<CpuIcon size="32" {color} />
-				{/snippet}
-				{#if resourceUtilization.cpuUtil.length > 0}
-					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-						(acc, { requested }) => acc + requested,
-						0
-					)}
-					{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
-					{percentageFormatter(round((cpuUsage / cpuRequested) * 100), 0)} of {round(
-						cpuRequested,
-						0
-					)} cores
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#91dc75">
-			<SummaryCard
-				color="green"
-				title="Memory utilization"
-				helpTextTitle="Current memory utilization"
-				helpText="Current memory utilization for tenant."
-			>
-				{#snippet icon({ color })}
-					<MemoryIcon size="32" {color} />
-				{/snippet}
-				{#if resourceUtilization.memUtil.length > 0}
-					{@const memoryRequested = resourceUtilization.memUtil.reduce(
-						(acc, { requested }) => acc + requested,
-						0
-					)}
-					{@const memoryUsage = resourceUtilization.memUtil.reduce(
-						(acc, { used }) => acc + used,
-						0
-					)}
-					{percentageFormatter(round((memoryUsage / memoryRequested) * 100), 0)} of {prettyBytes(
-						memoryRequested
-					)}
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#83bff6">
-			<SummaryCard
-				color="blue"
 				title="Unused CPU cost"
 				helpTextTitle="Annual cost of unused CPU"
 				helpText="Estimate of annual cost of unused CPU for tenant calculated from current utilization data."
@@ -273,7 +222,10 @@
 						0
 					)}
 					{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
-					€{round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0)}
+					{euroValueFormatter(
+						round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0),
+						{ maximumFractionDigits: 0 }
+					)}
 				{/if}
 			</SummaryCard>
 		</Card>
@@ -296,9 +248,9 @@
 						(acc, { used }) => acc + used,
 						0
 					)}
-					€{round(
+					{euroValueFormatter(
 						yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
-						0
+						{ maximumFractionDigits: 0 }
 					)}
 				{/if}
 			</SummaryCard>

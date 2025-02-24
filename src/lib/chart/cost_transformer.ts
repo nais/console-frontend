@@ -1,10 +1,13 @@
 import type { EChartsOption } from 'echarts';
 
-export function euroValueFormatter(value: number): string {
-	return value.toLocaleString('en-GB', {
+export function euroValueFormatter(
+	value: number,
+	{ maximumFractionDigits = 2 }: Intl.NumberFormatOptions = {}
+): string {
+	return value.toLocaleString('en', {
 		style: 'currency',
 		currency: 'EUR',
-		maximumFractionDigits: 2,
+		maximumFractionDigits,
 		maximumSignificantDigits: 2,
 		roundingPriority: 'morePrecision'
 	});
