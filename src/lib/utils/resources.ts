@@ -15,12 +15,12 @@ export function round(value: number, decimals: number = 0): number {
 export function yearlyOverageCost(
 	resourceType: UtilizationResourceType$options,
 	request: number,
-	utilization: number
+	currentUsage: number
 ) {
 	const costPerCpuCorePerYear = 136.69;
 	const costPerBytePerYear = 18.71 / 1024 / 1024 / 1024;
 
-	const overage = request - request * Math.abs(utilization);
+	const overage = request - currentUsage;
 
 	let cost = 0.0;
 
@@ -104,16 +104,8 @@ export function mergeCalculateAndSortOverageData(
 			}
 
 			const estimatedAnnualOverageCost =
-				yearlyOverageCost(
-					UtilizationResourceType.CPU,
-					cpuItem.requested,
-					cpuItem.used / cpuItem.requested
-				) +
-				yearlyOverageCost(
-					UtilizationResourceType.MEMORY,
-					memItem.requested,
-					memItem.used / memItem.requested
-				);
+				yearlyOverageCost(UtilizationResourceType.CPU, cpuItem.requested, cpuItem.used) +
+				yearlyOverageCost(UtilizationResourceType.MEMORY, memItem.requested, memItem.used);
 
 			// Combine the memory and CPU data into one object
 			return {
@@ -213,16 +205,8 @@ export function mergeCalculateAndSortOverageDataAllTeams(
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost:
-					yearlyOverageCost(
-						UtilizationResourceType.CPU,
-						cpuItem.requested,
-						cpuItem.used / cpuItem.requested
-					) +
-					yearlyOverageCost(
-						UtilizationResourceType.MEMORY,
-						memItem.requested,
-						memItem.used / memItem.requested
-					)
+					yearlyOverageCost(UtilizationResourceType.CPU, cpuItem.requested, cpuItem.used) +
+					yearlyOverageCost(UtilizationResourceType.MEMORY, memItem.requested, memItem.used)
 			};
 		})
 		.sort((a, b) => {
@@ -275,10 +259,10 @@ export function cpuUtilization(cpuRequest: number | undefined, totalUsage: numbe
 	if (!cpuRequest) return 0;
 	const totalCores = cpuRequest;
 	const utilization = (totalUsage / totalCores) * 100;
+	console.log('cpu utilization', utilization);
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
-export function memoryUtilization(memory: number, totalUsage: number): number {
-	const utilization = (totalUsage / memory) * 100;
-	return Math.round(utilization * 10 ** 2) / 10 ** 2;
+export function memoryUtilization(requestedMemory: number, currentMemoryUsage: number): number {
+	return currentMemoryUsage / requestedMemory;
 }

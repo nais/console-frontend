@@ -114,14 +114,13 @@
 				{#snippet icon({ color })}
 					<MemoryIcon size="32" {color} />
 				{/snippet}
-				{memoryUtilization(utilization.requested_memory, utilization.current_memory)}% of {prettyBytes(
-					utilization.requested_memory,
-					{
-						locale: 'en',
-						minimumFractionDigits: 2,
-						maximumFractionDigits: 2
-					}
-				)}
+				{(
+					memoryUtilization(utilization.requested_memory, utilization.current_memory) * 100
+				).toFixed(0)}% of {prettyBytes(utilization.requested_memory, {
+					locale: 'en',
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				})}
 			</SummaryCard>
 		</Card>
 		<Card columns={3} borderColor="#83bff6">
@@ -139,7 +138,7 @@
 					yearlyOverageCost(
 						UtilizationResourceType.CPU,
 						utilization.requested_cpu,
-						cpuUtilization(utilization.requested_cpu, utilization.current_cpu)
+						utilization.current_cpu
 					)
 				)}
 			</SummaryCard>
@@ -159,7 +158,7 @@
 					yearlyOverageCost(
 						UtilizationResourceType.MEMORY,
 						utilization.requested_memory,
-						memoryUtilization(utilization.requested_memory, utilization.current_memory)
+						utilization.current_memory
 					)
 				)}
 			</SummaryCard>

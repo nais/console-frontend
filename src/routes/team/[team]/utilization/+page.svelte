@@ -8,9 +8,6 @@
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import { percentageFormatter } from '$lib/utils/formatters';
 	import {
 		mergeCalculateAndSortOverageData,
 		round,
@@ -217,57 +214,6 @@
 		<Card columns={3} borderColor="#83bff6">
 			<SummaryCard
 				color="blue"
-				title="CPU utilization"
-				helpTextTitle="Current CPU utilization"
-				helpText="Current CPU utilization for team {teamSlug}."
-			>
-				{#snippet icon({ color })}
-					<CpuIcon size="32" {color} />
-				{/snippet}
-				{#if resourceUtilization !== PendingValue}
-					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-						(acc, item) => acc + (item ? item.requested : 0),
-						0
-					)}
-					{@const cpuUsage = resourceUtilization.cpuUtil.reduce(
-						(acc, item) => acc + (item ? item.used : 0),
-						0
-					)}
-					{percentageFormatter(round((cpuUsage / cpuRequested) * 100, 0))} of {round(
-						cpuRequested,
-						0
-					)} cores
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#91dc75">
-			<SummaryCard
-				color="green"
-				title="Memory utilization"
-				helpTextTitle="Current memory utilization"
-				helpText="Current memory utilization for team {teamSlug}."
-			>
-				{#snippet icon({ color })}
-					<MemoryIcon size="32" {color} />
-				{/snippet}
-				{#if resourceUtilization !== PendingValue}
-					{@const memoryRequested = resourceUtilization.memUtil.reduce(
-						(acc, item) => acc + (item ? item.requested : 0),
-						0
-					)}
-					{@const memoryUsage = resourceUtilization.memUtil.reduce(
-						(acc, item) => acc + (item ? item.used : 0),
-						0
-					)}
-					{percentageFormatter(round((memoryUsage / memoryRequested) * 100, 0))} of {prettyBytes(
-						memoryRequested
-					)}
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#83bff6">
-			<SummaryCard
-				color="blue"
 				title="Unused CPU cost"
 				helpTextTitle="Annual cost of unused CPU"
 				helpText="Estimate of annual cost of unused CPU for team {teamSlug} calculated from current utilization
@@ -285,10 +231,7 @@
 						0
 					)}
 					{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
-					€{round(
-						yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage / cpuRequested),
-						0
-					)}
+					€{round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0)}
 				{/if}
 			</SummaryCard>
 		</Card>
@@ -316,11 +259,7 @@
 						0
 					)}
 					€{round(
-						yearlyOverageCost(
-							UtilizationResourceType.MEMORY,
-							memoryRequested,
-							memoryUsage / memoryRequested
-						),
+						yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
 						0
 					)}
 				{/if}

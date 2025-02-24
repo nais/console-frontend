@@ -273,10 +273,7 @@
 						0
 					)}
 					{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
-					€{round(
-						yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage / cpuRequested),
-						0
-					)}
+					€{round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0)}
 				{/if}
 			</SummaryCard>
 		</Card>
@@ -300,11 +297,7 @@
 						0
 					)}
 					€{round(
-						yearlyOverageCost(
-							UtilizationResourceType.MEMORY,
-							memoryRequested,
-							memoryUsage / memoryRequested
-						),
+						yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
 						0
 					)}
 				{/if}
