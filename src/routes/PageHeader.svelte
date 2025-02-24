@@ -35,7 +35,7 @@
 						<a href="/utilization">Utilization</a>
 					</li>
 					<li>
-						<a href={docURL()}>Documentation</a>
+						<a href={docURL()}>Docs</a>
 					</li>
 					{#if user?.isAdmin}
 						<li><a href="/admin">Admin</a></li>
