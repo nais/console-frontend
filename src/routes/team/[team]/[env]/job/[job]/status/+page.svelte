@@ -1,5 +1,4 @@
 <script lang="ts">
-	import GraphErrors from '$lib/GraphErrors.svelte';
 	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -15,7 +14,7 @@
 	let errors = $derived($JobStatusDetailed.errors);
 </script>
 
-<GraphErrors {errors} />
+<!--GraphErrors {errors} /-->
 
 {#if result}
 	{@const job = result.team.environment.job}

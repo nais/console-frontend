@@ -1,6 +1,5 @@
 <script lang="ts">
 	import AppErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
@@ -13,7 +12,7 @@
 	let { AppNotificationState } = $derived(data);
 </script>
 
-<GraphErrors errors={$AppNotificationState.errors} />
+<!--GraphErrors errors={$AppNotificationState.errors} /-->
 
 {#if $AppNotificationState.data}
 	{@const app = $AppNotificationState.data.team.environment.application}
