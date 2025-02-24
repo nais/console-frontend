@@ -40,7 +40,7 @@
 <GraphErrors errors={$costQuery.errors} />
 <div class="wrapper">
 	<div class="heading">
-		<Heading level="3">Jobs cost</Heading>
+		<Heading level="3" size="small">Jobs cost</Heading>
 
 		<HelpText title="Aggregated jobs cost"
 			>Aggregated cost for jobs. Current month is estimated.</HelpText

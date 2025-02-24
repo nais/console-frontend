@@ -1,6 +1,7 @@
 <script lang="ts">
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -99,7 +100,7 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3">Owner</Heading>
+				<Heading level="3" size="small">Owner</Heading>
 				{#if bq.workload}
 					<WorkloadLink workload={bq.workload} />
 				{:else}
@@ -108,6 +109,12 @@
 						<WarningIcon title="This Big Query instance does not belong to any workload" />
 					</div>
 				{/if}
+			</div>
+			<div>
+				<Heading level="3" size="small">Cost last 30 days</Heading>
+				<BodyShort>
+					{bq.cost.sum ? euroValueFormatter(bq.cost.sum) : 'No cost data available'}
+				</BodyShort>
 			</div>
 		</div>
 	</div>

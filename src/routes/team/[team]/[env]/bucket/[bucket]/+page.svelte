@@ -89,7 +89,7 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3">Owner</Heading>
+				<Heading level="3" size="small">Owner</Heading>
 				{#if bucket.workload}
 					<WorkloadLink workload={bucket.workload} />
 				{:else}

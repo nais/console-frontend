@@ -17,6 +17,9 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 				environment {
 					name
 				}
+				cost {
+					sum
+				}
 				workload {
 					name
 					__typename
