@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import Time from '$lib/Time.svelte';
-	import { Link, BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -58,7 +58,7 @@
 			>
 		{/if}
 	{:else}
-		<BodyShort>No deployments</BodyShort>
+		<BodyShort>No deployment metadata found for workload.</BodyShort>
 	{/if}
 </div>
 
