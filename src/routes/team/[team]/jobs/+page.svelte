@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import {
-		JobOrderField,
-		OrderDirection,
-		type JobOrderField$options,
-		type OrderDirection$options
-	} from '$houdini';
+	import { JobOrderField } from '$houdini';
 	import AggregatedCostForJobs from '$lib/components/AggregatedCostForJobs.svelte';
 	import JobListItem from '$lib/components/list/JobListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -30,14 +25,6 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	let orderField: keyof typeof JobOrderField = $derived(
-		$Jobs.variables?.orderBy?.field ?? JobOrderField.NAME
-	);
-
-	let orderDirection: keyof typeof OrderDirection = $derived(
-		$Jobs.variables?.orderBy?.direction ?? OrderDirection.ASC
-	);
-
 	const allEnvs = $Jobs.data?.team.environments.map((env) => env.name) ?? [];
 
 	let filteredEnvs = $state(
@@ -61,8 +48,6 @@
 
 	const changeQuery = (
 		params: {
-			field?: JobOrderField$options;
-			direction?: OrderDirection$options;
 			after?: string;
 			before?: string;
 			newFilter?: string;
@@ -70,8 +55,6 @@
 		} = {}
 	) => {
 		changeParams({
-			direction: params.direction || orderDirection,
-			field: params.field || orderField,
 			before: params.before ?? before,
 			after: params.after ?? after,
 			filter: params.newFilter ?? filter,

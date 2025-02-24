@@ -1,10 +1,5 @@
-import {
-	ApplicationOrderField,
-	type ApplicationOrder,
-	type ApplicationOrderField$options,
-	type OrderDirection$options,
-	type TeamApplicationsFilter
-} from '$houdini';
+import { ApplicationOrderField, OrderDirection, type TeamApplicationsFilter } from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import type { AfterLoadEvent, ApplicationsVariables } from './$houdini';
 
 const rows = 25;
@@ -15,16 +10,16 @@ export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 		url.searchParams.get('environments') === 'none'
 			? undefined
 			: url.searchParams.get('environments')?.split(',') || [];
-	const field: string = (url.searchParams.get('field') ||
-		ApplicationOrderField.NAME) as ApplicationOrderField$options;
-	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
 
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';
 
 	return {
 		filter: { name: filter, environments } as TeamApplicationsFilter,
-		orderBy: { field: field, direction: direction } as ApplicationOrder,
+		orderBy: {
+			field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.STATUS, url),
+			direction: urlToOrderDirection(url, OrderDirection.DESC)
+		},
 		...(before ? { before, last: rows } : { after, first: rows })
 	};
 };
@@ -32,7 +27,8 @@ export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
 	return {
 		data,
-		rows,
-		initialEnvironments: url.searchParams.get('environments') ?? null
+		rows
+		/*,
+		initialEnvironments: url.searchParams.get('environments') ?? null*/
 	};
 }

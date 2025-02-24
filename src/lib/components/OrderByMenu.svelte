@@ -14,14 +14,17 @@
 			| ValueOf<T>
 			| undefined) ?? defaultValue;
 
-	export const urlToOrderDirection = (url: URL) =>
+	export const urlToOrderDirection = (
+		url: URL,
+		defaultDirection: OrderDirection$options = OrderDirection.ASC
+	) =>
 		Object.values(OrderDirection).find((dir) => url.searchParams.get('sort')?.endsWith(dir)) ??
-		OrderDirection.ASC;
+		defaultDirection;
 </script>
 
 <script lang="ts" generics="T extends OrderField">
 	import { page } from '$app/state';
-	import { OrderDirection } from '$houdini';
+	import { OrderDirection, type OrderDirection$options } from '$houdini';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
