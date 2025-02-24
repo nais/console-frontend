@@ -198,11 +198,4 @@
 		justify-content: flex-end;
 		margin-bottom: 1rem;
 	}
-
-	.icon {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		margin-left: 4px;
-	}
 </style>

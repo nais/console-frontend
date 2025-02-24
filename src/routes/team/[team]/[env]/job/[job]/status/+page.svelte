@@ -11,7 +11,7 @@
 
 	let { JobStatusDetailed } = $derived(data);
 	let result = $derived($JobStatusDetailed.data);
-	let errors = $derived($JobStatusDetailed.errors);
+	//let errors = $derived($JobStatusDetailed.errors);
 </script>
 
 <!--GraphErrors {errors} /-->

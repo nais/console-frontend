@@ -24,11 +24,8 @@ export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 	};
 };
 
-export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
+export function _houdini_afterLoad({ data }: AfterLoadEvent) {
 	return {
-		data,
-		rows
-		/*,
-		initialEnvironments: url.searchParams.get('environments') ?? null*/
+		data
 	};
 }
