@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LogViewer from '$lib/LogViewer.svelte';
 	import { Button, Chips, Fieldset, ToggleChip } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
 
@@ -43,8 +44,12 @@
 	}
 </script>
 
+<!--
+{
+-->
 {#if $Instances.data}
 	{@const instances = $Instances.data.team.environment.application.instances.nodes}
+
 	<div class="topbar">
 		<div class="instances">
 			{#if $Instances.data}
@@ -120,6 +125,16 @@
 			{/each}
 		</Chips>
 	</div>
+	<div>
+		{#if $Instances.data.team.environment.application.logDestinations}
+			{#each $Instances.data.team.environment.application.logDestinations as logDestination (logDestination.id)}
+				{#if logDestination.__typename === 'LogDestinationLoki'}
+					<a href={logDestination.grafanaURL}>View logs in Grafana <ExternalLinkIcon /></a>
+				{/if}
+			{/each}
+		{/if}
+	</div>
+
 	<LogViewer
 		{app}
 		{env}
@@ -159,7 +174,7 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.5rem;
-		padding-top: 0.8rem;
+		padding: var(--a-spacing-3) 0;
 	}
 
 	.instance-button {

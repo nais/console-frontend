@@ -5,6 +5,13 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 			name
 			job(name: $job) {
 				name
+				logDestinations {
+					id
+					__typename
+					... on LogDestinationLoki {
+						grafanaURL
+					}
+				}
 				runs {
 					nodes {
 						id

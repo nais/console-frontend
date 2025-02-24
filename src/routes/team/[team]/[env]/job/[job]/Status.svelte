@@ -3,7 +3,7 @@
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Detail, Heading, Link } from '@nais/ds-svelte-community';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import { QuestionmarkDiamondFillIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -22,13 +22,7 @@
 					environment {
 						name
 					}
-					logDestinations {
-						id
-						__typename
-						... on LogDestinationLoki {
-							grafanaURL
-						}
-					}
+
 					name
 					status {
 						state
@@ -62,13 +56,7 @@
 				Job status unknown.
 			{/if}
 		</div>
-		{#if $data.logDestinations}
-			{#each $data.logDestinations as logDestination (logDestination.id)}
-				{#if logDestination.__typename === 'LogDestinationLoki'}
-					<Link href={logDestination.grafanaURL}>View logs in Grafana</Link>
-				{/if}
-			{/each}
-		{/if}
+
 		{#if nErrors > 0}
 			<div style="margin-top: var(--a-spacing-2)">
 				<a href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/status">

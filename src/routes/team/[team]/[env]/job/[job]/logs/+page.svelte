@@ -7,6 +7,7 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageData } from './$houdini';
 
@@ -97,15 +98,27 @@
 	{#if fetching}
 		<div style:font-size="12px" style:text-align="right" style:width="100%">Streaming logs...</div>
 	{/if}
-	<Chips size="small">
-		{#each viewOptions as option (option)}
-			<ToggleChip
-				value={option}
-				selected={selectedViewOptions.has(option)}
-				onclick={() => toggleSelectedViewOptions(option)}
-			/>
-		{/each}
-	</Chips>
+	<div class="chips">
+		Columns:
+		<Chips size="small">
+			{#each viewOptions as option (option)}
+				<ToggleChip
+					value={option}
+					selected={selectedViewOptions.has(option)}
+					onclick={() => toggleSelectedViewOptions(option)}
+				/>
+			{/each}
+		</Chips>
+	</div>
+	<div>
+		{#if $RunsWithPodNames.data?.team.environment.job.logDestinations}
+			{#each $RunsWithPodNames.data?.team.environment.job.logDestinations as logDestination (logDestination.id)}
+				{#if logDestination.__typename === 'LogDestinationLoki'}
+					<a href={logDestination.grafanaURL}>View logs in Grafana <ExternalLinkIcon /></a>
+				{/if}
+			{/each}
+		{/if}
+	</div>
 	<LogViewer
 		job={result.team.environment.job.name}
 		env={result.team.environment.name}
@@ -135,5 +148,11 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
+	}
+	.chips {
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
+		padding: var(--a-spacing-3) 0;
 	}
 </style>
