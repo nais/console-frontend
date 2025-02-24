@@ -92,7 +92,7 @@
 		}
 	};
 
-	const Icon = getComponent(icon);
+	const Component = getComponent(icon);
 </script>
 
-<Icon />
+<Component />

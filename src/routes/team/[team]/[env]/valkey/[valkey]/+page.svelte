@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ValkeyInstanceAccessOrderField } from '$houdini';
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
@@ -115,12 +115,12 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-10);
+		gap: var(--spacing-layout);
 	}
 </style>

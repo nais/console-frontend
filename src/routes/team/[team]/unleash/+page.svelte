@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import Icon from '$lib/components/icons/Icon.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {

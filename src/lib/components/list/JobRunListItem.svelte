@@ -1,10 +1,10 @@
 <script lang="ts">
+	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Detail, Loader } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon, TimerIcon } from '@nais/ds-svelte-community/icons';
+	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 	import IconLabel from '../IconLabel.svelte';
-	import ErrorIcon from '../icons/ErrorIcon.svelte';
-	import SuccessIcon from '../icons/SuccessIcon.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 

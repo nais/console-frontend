@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { JobRunState$options } from '$houdini';
+	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, QuestionmarkIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
+	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 	import IconLabel from '../IconLabel.svelte';
-	import ErrorIcon from '../icons/ErrorIcon.svelte';
-	import SuccessIcon from '../icons/SuccessIcon.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 

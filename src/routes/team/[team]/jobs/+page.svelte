@@ -203,7 +203,7 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 	.search {
 		display: flex;

@@ -61,7 +61,7 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				<div style="display:flex; flex-direction: column; gap:0.5rem;">
+				<div style="display:flex; flex-direction: column; gap: var(--a-spacing-4);">
 					<div class="instances-header">
 						<Heading level="3" size="medium">Instances</Heading>
 						{#if viewerIsMember}
@@ -118,19 +118,19 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 
 	.main-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 
 	.app-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 
 	.instances-header {
@@ -142,6 +142,6 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-10);
+		gap: var(--spacing-layout);
 	}
 </style>

@@ -3,7 +3,7 @@
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExternalLinkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -111,13 +111,13 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-10);
+		gap: var(--spacing-layout);
 	}
 
 	dl {

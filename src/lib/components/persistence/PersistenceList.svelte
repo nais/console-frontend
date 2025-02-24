@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '../icons/Icon.svelte';
+	import Icon from '../Icon.svelte';
 
 	interface Props {
 		persistence: {

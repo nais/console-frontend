@@ -6,7 +6,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
@@ -128,10 +128,10 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 	.table {
-		padding-bottom: var(--a-spacing-12);
+		padding-bottom: var(--spacing-layout);
 	}
 	dl {
 		display: grid;

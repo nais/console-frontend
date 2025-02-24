@@ -11,16 +11,18 @@
 </script>
 
 <div class="page-header">
-	<div class="breadcrumbs">
-		{#each breadcrumbs as breadcrumb (breadcrumb)}
-			{#if breadcrumb.href}
-				<Link href={breadcrumb.href} class="link">{breadcrumb.label}</Link>
-			{:else}
-				{breadcrumb.label}
-			{/if}
-			<span class="divider">/</span>
-		{/each}
-	</div>
+	{#if breadcrumbs.length}
+		<div class="breadcrumbs">
+			{#each breadcrumbs as breadcrumb (breadcrumb)}
+				{#if breadcrumb.href}
+					<Link href={breadcrumb.href} class="link">{breadcrumb.label}</Link>
+				{:else}
+					{breadcrumb.label}
+				{/if}
+				<span class="divider">/</span>
+			{/each}
+		</div>
+	{/if}
 	<Heading level="1" size="xlarge">{heading}</Heading>
 </div>
 

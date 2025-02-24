@@ -2,9 +2,9 @@
 	import { page } from '$app/state';
 	import { fragment, graphql, type WorkloadImage } from '$houdini';
 	import { docURL } from '$lib/doc';
+	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
-	import SuccessIcon from './icons/SuccessIcon.svelte';
-	import WarningIcon from './icons/WarningIcon.svelte';
 	import VulnerabilityBadges from './VulnerabilityBadges.svelte';
 
 	interface Props {

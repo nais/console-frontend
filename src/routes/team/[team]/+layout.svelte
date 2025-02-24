@@ -41,12 +41,12 @@
 
 <style>
 	.page {
-		margin-top: 1rem;
+		margin-top: var(--spacing-layout);
 		width: 100%;
 	}
 
 	.main {
-		gap: 1rem;
+		gap: var(--spacing-layout);
 		display: grid;
 		grid-template-columns: 200px 1fr;
 	}
@@ -55,6 +55,6 @@
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 </style>

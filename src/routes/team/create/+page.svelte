@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { ActionData } from './$types';

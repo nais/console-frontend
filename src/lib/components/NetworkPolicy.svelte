@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy } from '$houdini';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
-	import WarningIcon from './icons/WarningIcon.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 

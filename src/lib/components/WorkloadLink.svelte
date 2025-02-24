@@ -1,8 +1,8 @@
 <script lang="ts">
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
-	import WarningIcon from './icons/WarningIcon.svelte';
 
 	interface Props {
 		workload: {

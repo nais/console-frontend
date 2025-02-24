@@ -104,12 +104,12 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--a-spacing-12);
+		gap: var(--spacing-layout);
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-10);
+		gap: var(--spacing-layout);
 	}
 </style>

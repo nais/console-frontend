@@ -3,7 +3,6 @@
 	import PageHeader from './PageHeader.svelte';
 	//import '../styles/vars_dark.css';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
@@ -83,31 +82,7 @@
 	});
 </script>
 
-<div
-	class={[
-		'full-wrapper',
-		activeColor(),
-		{
-			['white-page']:
-				[
-					'/activity-log',
-					'/app/',
-					'/applications',
-					'/bigquery',
-					'/bucket',
-					'/buckets',
-					'/jobs',
-					'/job/',
-					'/opensearch',
-					'/redis',
-					'/repositories',
-					'/valkey',
-					'/team/create',
-					'/kafka'
-				].some((s) => $page.route.id?.includes(s)) || $page.route.id === '/'
-		}
-	]}
->
+<div class={['full-wrapper', activeColor()]}>
 	{#if loading}
 		<ProgressBar />
 	{/if}
@@ -139,12 +114,6 @@
 
 	.full-wrapper {
 		min-height: 100vh;
-		background: var(--a-bg-default);
-		background: linear-gradient(135deg, var(--a-bg-default) 0%, var(--active-color) 100%);
 		padding-bottom: 1rem;
-	}
-
-	.full-wrapper.white-page {
-		background: none;
 	}
 </style>

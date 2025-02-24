@@ -6,10 +6,10 @@
 
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import prettyBytes from 'pretty-bytes';

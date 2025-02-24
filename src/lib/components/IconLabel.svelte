@@ -2,7 +2,7 @@
 	import { BodyShort, Detail, Heading, Link } from '@nais/ds-svelte-community';
 	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
 	import type { Component } from 'svelte';
-	import Icon from './icons/Icon.svelte';
+	import Icon from './Icon.svelte';
 
 	const {
 		label,
@@ -101,7 +101,7 @@
 		font-size: var(--a-font-size-small);
 	}
 	.icon-label--medium {
-		gap: var(--a-spacing-1-alt);
+		gap: var(--a-spacing-2);
 	}
 	.icon-label--large {
 		gap: var(--a-spacing-2);

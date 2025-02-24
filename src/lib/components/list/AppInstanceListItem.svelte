@@ -2,8 +2,8 @@
 	import Time from '$lib/Time.svelte';
 	import { Detail } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
+	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 	import IconLabel from '../IconLabel.svelte';
-	import ErrorIcon from '../icons/ErrorIcon.svelte';
 	import RunningIndicator from '../RunningIndicator.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';

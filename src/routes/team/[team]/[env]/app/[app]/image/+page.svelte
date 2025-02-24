@@ -1,12 +1,11 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { docURL } from '$lib/doc';
-
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import ImageVulnerabilities from '$lib/components/image/ImageVulnerabilities.svelte';
 	import ImageWorkloadReferences from '$lib/components/image/ImageWorkloadReferences.svelte';
 	import VulnerabilityBadges from '$lib/components/VulnerabilityBadges.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';

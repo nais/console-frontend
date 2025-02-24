@@ -126,6 +126,6 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-10);
+		gap: var(--spacing-layout);
 	}
 </style>

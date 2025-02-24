@@ -1,3 +1,7 @@
+:root {
+	--spacing-layout: var(--a-spacing-10);
+}
+
 html,
 body {
 	min-height: 100vh;

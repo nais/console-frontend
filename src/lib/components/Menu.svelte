@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Detail } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import Icon from './Icon.svelte';
 	import IconLabel from './IconLabel.svelte';
-	import Icon from './icons/Icon.svelte';
 
 	const {
 		items
@@ -53,7 +53,7 @@
 		.list {
 			display: flex;
 			flex-direction: column;
-			gap: var(--a-spacing-05);
+			gap: var(--a-spacing-1);
 		}
 
 		a {

@@ -3,10 +3,10 @@
 	import Card from '$lib/Card.svelte';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import WarningIcon from '$lib/components/icons/WarningIcon.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import {
 		Alert,
 		CopyButton,

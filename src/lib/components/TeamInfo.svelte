@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql, PendingValue, WorkloadState, type ValueOf } from '$houdini';
+	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Heading, Skeleton } from '@nais/ds-svelte-community';
 	import { QuestionmarkDiamondFillIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
+	import ErrorIcon from '../icons/ErrorIcon.svelte';
 	import type { TeamInfoVariables } from './$houdini';
-	import ErrorIcon from './icons/ErrorIcon.svelte';
-	import SuccessIcon from './icons/SuccessIcon.svelte';
-	import WarningIcon from './icons/WarningIcon.svelte';
 
 	interface Props {
 		teamSlug: string;
