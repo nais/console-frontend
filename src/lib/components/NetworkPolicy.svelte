@@ -179,5 +179,8 @@
 		list-style: none;
 		margin: 0;
 		padding: 0 0 1rem 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1);
 	}
 </style>
