@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { fragment, graphql, type JobErrorFragment } from '$houdini';
+	import {
+		fragment,
+		graphql,
+		type JobErrorFragment,
+		type ValueOf,
+		WorkloadStatusErrorLevel
+	} from '$houdini';
 	import { Alert } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
 
@@ -81,24 +87,36 @@
 	let team = $derived(page.params.team);
 	let env = $derived(page.params.env);
 	let job = $derived(page.params.job);
+
+	const variant = (level: ValueOf<typeof WorkloadStatusErrorLevel>) => {
+		switch (level) {
+			case 'WARNING':
+				return 'warning';
+			case 'ERROR':
+				return 'error';
+			case 'TODO':
+			default:
+				return 'info';
+		}
+	};
 </script>
 
 {#if $data}
 	{@const type = $data.__typename}
 	<div class="wrapper">
 		{#if type === 'WorkloadStatusDeprecatedRegistry'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				Deprecated image registry <strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
 				<a href={docURL('/how-to-guides/github-action/')}> docker-build-push</a> on how to migrate to
 				Google Artifact Registry.
 			</Alert>
 		{:else if type === 'WorkloadStatusInvalidNaisYaml'}
-			<Alert variant="error">
+			<Alert variant={variant($data.level)}>
 				Nais-yaml might be invalid for application <strong>{job}</strong>.
 			</Alert>
 		{:else if type === 'WorkloadStatusInboundNetwork'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				{#if $data.policy.targetWorkload}
 					Traffic from <a
 						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
@@ -129,7 +147,7 @@
 				>.
 			</Alert>
 		{:else if type === 'WorkloadStatusOutboundNetwork'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				{#if $data.policy.targetWorkload}
 					Traffic to <a
 						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
@@ -160,14 +178,14 @@
 				>.
 			</Alert>
 		{:else if type === 'WorkloadStatusMissingSBOM'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				<h4>Missing SBOM</h4>
 				The workload does not have a registered Software Bill of Materials (SBOM). Refer to the
 				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>NAIS documentation</a>
 				for instructions on how to resolve this.
 			</Alert>
 		{:else if type === 'WorkloadStatusVulnerable'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				<h4>Workload is vulnerable</h4>
 				{#if $data.summary && $data.summary.riskScore > 100}
 					The workload is considered vulnerable with a risk score of {$data.summary.riskScore},
@@ -180,7 +198,7 @@
 				<a href="/team/{team}/{env}/app/{job}/image">image details</a> for more details.
 			</Alert>
 		{:else if type === 'WorkloadStatusFailedRun'}
-			<Alert variant="error">
+			<Alert variant={variant($data.level)}>
 				<h4>Failed to run job</h4>
 				{$data.detail}
 			</Alert>

@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { fragment, graphql, type AppErrorFragment } from '$houdini';
+	import {
+		fragment,
+		graphql,
+		WorkloadStatusErrorLevel,
+		type AppErrorFragment,
+		type ValueOf
+	} from '$houdini';
 	import { Alert } from '@nais/ds-svelte-community';
 	import { docURL } from './doc';
 
@@ -91,14 +97,28 @@
 	let team = $derived(page.params.team);
 	let env = $derived(page.params.env);
 	let app = $derived(page.params.app);
+
+	const variant = (level: ValueOf<typeof WorkloadStatusErrorLevel>) => {
+		switch (level) {
+			case 'WARNING':
+				return 'warning';
+			case 'ERROR':
+				return 'error';
+			case 'TODO':
+			default:
+				return 'info';
+		}
+	};
+
+	const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 </script>
 
 {#if $data}
 	{@const type = $data.__typename}
 	<div class="wrapper">
 		{#if type === 'WorkloadStatusDeprecatedRegistry'}
-			<Alert variant="info">
-				<h4>Todo</h4>
+			<Alert variant={variant($data.level)}>
+				<h4>{capitalize($data.level)}</h4>
 				Deprecated image registry
 				<strong>{$data.registry}</strong> for image
 				<strong>{$data.name}</strong>. See
@@ -106,29 +126,29 @@
 				Google Artifact Registry.
 			</Alert>
 		{:else if type === 'WorkloadStatusNoRunningInstances'}
-			<Alert variant="error">
+			<Alert variant={variant($data.level)}>
 				No running instances of <strong>{app}</strong> in <strong>{env}</strong>.
 			</Alert>
 		{:else if type === 'WorkloadStatusDeprecatedIngress'}
-			<Alert variant="info">
-				<h4>Todo</h4>
+			<Alert variant={variant($data.level)}>
+				<h4>{capitalize($data.level)}</h4>
 				Deprecated ingress
 				<strong>{$data.ingress}</strong>. See
 				<a href={docURL('/reference/environments/?h=#' + env)}> ingress documentation</a>
 				for available ingress domains.
 			</Alert>
 		{:else if type === 'WorkloadStatusInvalidNaisYaml'}
-			<Alert variant="error">
+			<Alert variant={variant($data.level)}>
 				The <em>nais.yaml</em> configuration is invalid for application <strong>{app}</strong>:
 				<br />{$data.detail}
 			</Alert>
 		{:else if type === 'WorkloadStatusSynchronizationFailing'}
-			<Alert variant="error">
+			<Alert variant={variant($data.level)}>
 				Application <strong>{app}</strong> failed to synchronize properly.
 				<br />{$data.detail}
 			</Alert>
 		{:else if type === 'WorkloadStatusNewInstancesFailing'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				{#if app}
 					New instances of <strong>{app}</strong> in <strong>{env}</strong> are failing. Check logs
 					for one or more of the instances:
@@ -138,7 +158,7 @@
 				{/if}
 			</Alert>
 		{:else if type === 'WorkloadStatusInboundNetwork'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				{#if $data.policy.targetWorkload}
 					Traffic from <a
 						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
@@ -169,7 +189,7 @@
 				>.
 			</Alert>
 		{:else if type === 'WorkloadStatusOutboundNetwork'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				{#if $data.policy.targetWorkload}
 					Traffic to <a
 						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
@@ -200,14 +220,14 @@
 				>.
 			</Alert>
 		{:else if type === 'WorkloadStatusMissingSBOM'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				<h4>Missing SBOM</h4>
 				The workload does not have a registered Software Bill of Materials (SBOM). Refer to the
 				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>NAIS documentation</a>
 				for instructions on how to resolve this.
 			</Alert>
 		{:else if type === 'WorkloadStatusVulnerable'}
-			<Alert variant="warning">
+			<Alert variant={variant($data.level)}>
 				<h4>Workload is vulnerable</h4>
 				{#if $data.summary && $data.summary.riskScore > 100}
 					The workload is considered vulnerable with a risk score of {$data.summary.riskScore},
