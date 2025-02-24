@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BodyShort, Detail, Heading, Link } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
 	import type { Component } from 'svelte';
 	import Icon from './Icon.svelte';
@@ -30,7 +30,7 @@
 
 {#snippet linkOrText()}
 	{#if href}
-		<Link {href} {onclick}>{@render componentOrString(label)}</Link>
+		<a {href} {onclick}>{@render componentOrString(label)}</a>
 	{:else}
 		{@render componentOrString(label)}
 	{/if}
@@ -82,7 +82,7 @@
 			flex: 1 1 0;
 		}
 
-		:global(a) {
+		a {
 			color: inherit;
 			text-decoration: none;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Heading, Link } from '@nais/ds-svelte-community';
+	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		instance: {
@@ -39,7 +39,23 @@
 </script>
 
 <Heading size="small" level="4">
-	<Link href="/team/{instance.team.slug}/{instance.environment.name}/{urlName()}/{instance.name}">
+	<a href="/team/{instance.team.slug}/{instance.environment.name}/{urlName()}/{instance.name}">
 		{instance.name}
-	</Link>
+	</a>
 </Heading>
+
+<style>
+	a {
+		color: inherit;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:active,
+		&:focus-visible {
+			color: var(--ac-link-focus-text, var(--a-text-on-action));
+		}
+	}
+</style>
