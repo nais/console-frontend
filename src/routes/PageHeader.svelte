@@ -53,7 +53,7 @@
 						<ChevronDownIcon />
 					</button>
 				{/snippet}
-				{#if !user?.isAdmin}
+				{#if user?.isAdmin}
 					<a href="/admin" class="unstyled action-menu-link">
 						<ActionMenuItem>🕴️Admin</ActionMenuItem>
 					</a>
