@@ -53,17 +53,33 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/secret/github-backup-config',
-					features: {
-						redis: { enabled: true },
-						valkey: { enabled: true },
-						openSearch: { enabled: true },
-						kafka: { enabled: true },
-						unleash: { enabled: true }
-					},
 					member: true
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Secrets')?.active
+			).toBe(true);
+		});
+
+		test('postgres active for sub-pages', () => {
+			expect(
+				menuItems({
+					path: '/team/nais/prod-gcp/postgres/gemini',
+					member: true
+				})
+					.flatMap((g) => g)
+					.find((i) => i.label === 'Postgres')?.active
+			).toBe(true);
+		});
+
+		test('valkey active for sub-pages with feature toogling', () => {
+			expect(
+				menuItems({
+					path: '/team/nais/prod-gcp/valkey/gemini',
+					features,
+					member: true
+				})
+					.flatMap((g) => g)
+					.find((i) => i.label === 'Valkey')?.active
 			).toBe(true);
 		});
 

@@ -55,10 +55,13 @@ export const menuItems = ({
 
 	const item =
 		(baseUrl: string, page: string) =>
-		(label: string, pageName?: string, matcher?: (url: string) => boolean) => {
+		(label: string, pageName?: string, matchSubPath?: string) => {
 			const href = pageName ? `${baseUrl}/${pageName}` : baseUrl;
 			const { count, badge } = getInventory(pageName);
-			const active = matcher?.(path) || pageName === page;
+			const active =
+				(matchSubPath && path.startsWith(`/team/${team}/${page}/${matchSubPath}/`)) ||
+				pageName === page;
+
 			return {
 				label,
 				href,
@@ -89,15 +92,14 @@ export const menuItems = ({
 		[menuItem('Overview')],
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
-			member &&
-				menuItem('Secrets', 'secrets', (url) => url.startsWith(`/team/${team}/${page}/secret/`)),
-			menuItem('Postgres', 'postgres'),
-			menuItem('Buckets', 'buckets'),
-			features?.redis && menuItem('Redis', 'redis'),
-			features?.valkey && menuItem('Valkey', 'valkey'),
-			features?.openSearch && menuItem('OpenSearch', 'opensearch'),
-			features?.kafka && menuItem('Kafka topics', 'kafka'),
-			menuItem('BigQuery', 'bigquery'),
+			member && menuItem('Secrets', 'secrets', 'secret'),
+			menuItem('Postgres', 'postgres', 'postgres'),
+			menuItem('Buckets', 'buckets', 'bucket'),
+			features?.redis && menuItem('Redis', 'redis', 'redis'),
+			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
+			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),
+			features?.kafka && menuItem('Kafka topics', 'kafka', 'kafka'),
+			menuItem('BigQuery', 'bigquery', 'bigquery'),
 			features?.unleash && menuItem('Unleash', 'unleash')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[],
 		[
