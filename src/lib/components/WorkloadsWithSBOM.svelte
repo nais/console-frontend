@@ -443,10 +443,4 @@
 		align-items: center;
 		justify-content: center;
 	}
-
-	.image-url {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
 </style>
