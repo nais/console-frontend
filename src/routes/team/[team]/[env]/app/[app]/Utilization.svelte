@@ -48,13 +48,23 @@
 		<Heading level="3" size="small">Utilization</Heading>
 		<BodyShort>
 			<CpuIcon class="text-aligned-icon" />
-			{cpuUtil}% of {$data.utilization.cpuRequests.toLocaleString('en-GB', {
-				maximumFractionDigits: 2
-			})}CPUs
+			{cpuUtilization($data.utilization.cpuRequests, $data.utilization.cpuUsage)}% of {$data.utilization.cpuRequests.toLocaleString(
+				'en-GB',
+				{
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				}
+			)} CPUs
 		</BodyShort>
 		<BodyShort>
 			<FileIcon class="text-aligned-icon" />
-			{memUtil}% of {prettyBytes($data.utilization.memoryRequests)} of memory
+			{(
+				memoryUtilization($data.utilization.memoryRequests, $data.utilization.memoryUsage) * 100
+			).toFixed(0)}% of {prettyBytes($data.utilization.memoryRequests, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
+			})}
 		</BodyShort>
 		<Link href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/utilization">
 			View details

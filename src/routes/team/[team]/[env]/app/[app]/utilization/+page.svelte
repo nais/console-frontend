@@ -101,7 +101,7 @@
 						minimumFractionDigits: 2,
 						maximumFractionDigits: 2
 					}
-				)} cores
+				)} CPUs
 			</SummaryCard>
 		</Card>
 		<Card columns={3} borderColor="#91dc75">
@@ -145,7 +145,7 @@
 		</Card>
 		<Card columns={3} borderColor="#91dc75">
 			<SummaryCard
-				title="Unused memory cost"
+				title="Unused mem cost"
 				helpTextTitle="Annual cost of unused memory"
 				helpText="Estimate of annual cost of unused memory calculated based on current utilization."
 				color="green"

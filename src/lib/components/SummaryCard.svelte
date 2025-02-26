@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { HelpText } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, HelpText } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	const colors = {
@@ -40,15 +40,17 @@
 		{@render icon({ color })}
 	</div>
 	<div class="summary">
-		<h4>
-			{title}
+		<div class="heading">
+			<Heading level="2" size="xsmall">
+				{title}
+			</Heading>
 			{#if helpText}
 				<HelpText title={helpTextTitle ? helpTextTitle : ''}>{helpText}</HelpText>
 			{/if}
-		</h4>
-		<p class="metric">
+		</div>
+		<BodyShort>
 			{@render children()}
-		</p>
+		</BodyShort>
 	</div>
 </div>
 
@@ -76,15 +78,11 @@
 	.summary {
 		width: 100%;
 	}
-	.summary > h4 {
+	.heading {
 		display: flex;
 		justify-content: space-between;
 		margin: 0;
 		font-size: 1rem;
 		color: var(--color-text-secondary);
-	}
-	.metric {
-		font-size: 1.5rem;
-		margin: 0;
 	}
 </style>

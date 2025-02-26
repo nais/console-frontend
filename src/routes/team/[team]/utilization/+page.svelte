@@ -211,7 +211,7 @@
 
 <div class="grid">
 	{#if resourceUtilization}
-		<Card columns={3} borderColor="#83bff6">
+		<Card columns={4} borderColor="#83bff6">
 			<SummaryCard
 				color="blue"
 				title="Unused CPU cost"
@@ -235,7 +235,7 @@
 				{/if}
 			</SummaryCard>
 		</Card>
-		<Card columns={3} borderColor="#91dc75">
+		<Card columns={4} borderColor="#91dc75">
 			<SummaryCard
 				color="green"
 				title="Unused memory cost"

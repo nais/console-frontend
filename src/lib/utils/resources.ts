@@ -259,7 +259,6 @@ export function cpuUtilization(cpuRequest: number | undefined, totalUsage: numbe
 	if (!cpuRequest) return 0;
 	const totalCores = cpuRequest;
 	const utilization = (totalUsage / totalCores) * 100;
-	console.log('cpu utilization', utilization);
 	return Math.round(utilization * 10 ** 2) / 10 ** 2;
 }
 
