@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-const GRAPHQL_API_URL = process.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
+const GRAPHQL_API_URL = import.meta.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
 
 async function checkGraphQLAPI() {
 	try {
