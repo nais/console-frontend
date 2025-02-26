@@ -1,3 +1,4 @@
+import { building } from '$app/environment';
 import { json } from '@sveltejs/kit';
 
 const GRAPHQL_API_URL = import.meta.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
@@ -23,10 +24,12 @@ let isAppReady = false;
 
 async function ready() {
 	isAppReady = await checkGraphQLAPI();
-	setTimeout(ready, 1000);
+	setTimeout(ready, 3000);
 }
 
-ready();
+if (!building) {
+	ready();
+}
 
 export async function GET() {
 	return json(
