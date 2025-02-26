@@ -21,7 +21,7 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, LinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -71,6 +71,7 @@
 			$before: Cursor
 		) @load {
 			team(slug: $team) @loading {
+				slug
 				workloads(first: 10, orderBy: $orderBy, filter: $filter, after: $after, before: $before)
 					@paginate(mode: SinglePage)
 					@loading(count: 10) {
@@ -139,6 +140,21 @@
 			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL
 		});
 	};
+
+	const imageUrl = (workload: {
+		readonly __typename: string | null;
+		readonly id: string;
+		readonly name: string;
+		readonly environment: {
+			readonly id: string;
+			readonly name: string;
+		};
+		readonly team: {
+			readonly slug: string;
+		};
+	}) => {
+		return `/team/${workload.team.slug}/${workload.environment.name}/${workload.__typename === 'Application' ? 'app' : 'job'}/${workload.name}/image`;
+	};
 </script>
 
 {#if $query.data?.team}
@@ -154,6 +170,7 @@
 		<Thead>
 			<Tr>
 				<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
+				<Th>Details</Th>
 				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT} style="width: 142px;"
 					>Environment</Th
 				>
@@ -203,6 +220,7 @@
 						<Td>
 							<WorkloadLink {workload} />
 						</Td>
+						<Td><div class="image-url"><a href={imageUrl(workload)}><LinkIcon /></a></div></Td>
 						<Td>
 							{workload.environment.name}
 						</Td>
@@ -385,6 +403,11 @@
 		}
 	}
 	.vulnerability {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.image-url {
 		display: flex;
 		align-items: center;
 		justify-content: center;

@@ -10,7 +10,7 @@
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
 	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Alert, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
+	import { Alert, Heading, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
 		TrendDownIcon,
 		TrendFlatIcon,
@@ -52,13 +52,14 @@
 				{/if}
 
 				<div class="summary">
-					<h4>
-						<span>Vulnerability issues</span>
+					<div class="heading">
+						<Heading level="2" size="xsmall">Vulnerability summary</Heading>
 						<HelpText title="Current team vulnerability status"
 							>If any of the workloads have any vulnerability issues, the icon will show a warning
 							sign and a details link will show.
 						</HelpText>
-					</h4>
+					</div>
+
 					<div style="margin-top: 0.5rem;">
 						{#if team === PendingValue}
 							<Skeleton variant="text" style="min-height: 1rem; width: 10%;" />
@@ -87,7 +88,7 @@
 				</div>
 			</div>
 		</Card>
-		<Card columns={3} style="display: flex; align-items:center;">
+		<Card columns={3}>
 			<SummaryCard title="SBOM coverage" color="grey" styled={false}>
 				{#snippet icon()}
 					{#if team === PendingValue}
@@ -112,7 +113,7 @@
 				{/if}
 			</SummaryCard>
 		</Card>
-		<Card columns={3} style="display: flex; align-items:center;">
+		<Card columns={3}>
 			<SummaryCard title="Critical vulnerabilities" color={'grey'} styled={false}>
 				{#snippet icon()}
 					{#if team === PendingValue}
@@ -155,7 +156,8 @@
 			</SummaryCard>
 		</Card>
 		<Card columns={12}>
-			<h4>Workloads with SBOM</h4>
+			<Heading level="3" size="small">Workloads with SBOM</Heading>
+
 			<div class="env-filter">
 				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">
 					<option value="">All environments</option>
@@ -200,13 +202,12 @@
 		width: 100%;
 		min-height: 80px;
 	}
-	.summary > h4 {
+
+	.heading {
 		display: flex;
 		justify-content: space-between;
 		margin: 0;
-		font-size: 1rem;
 		color: var(--color-text-secondary);
-		font-weight: bold;
 	}
 
 	.vulnerabilitySummary {
