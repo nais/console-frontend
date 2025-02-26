@@ -1,16 +1,16 @@
 export function severityToColor(severity: string): string {
 	switch (severity) {
 		case 'critical':
-			return '#F68282';
+			return 'var(--a-red-200)';
 		case 'high':
-			return '#FFC166';
+			return 'var(--a-orange-200)';
 		case 'medium':
-			return '#FFD799';
+			return 'var(--a-orange-200)';
 		case 'low':
-			return '#99DEAD';
+			return 'var(--a-green-200)';
 		case 'unassigned':
-			return '#E0E3E6';
+			return 'var(--a-gray-200)';
 		default:
-			return '#777777';
+			return 'var(--a-gray-200)';
 	}
 }

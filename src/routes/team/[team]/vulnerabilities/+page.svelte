@@ -156,7 +156,7 @@
 			</SummaryCard>
 		</Card>
 		<Card columns={12}>
-			<Heading level="3" size="small">Workloads with SBOM</Heading>
+			<Heading level="3" size="small" spacing>Workloads with SBOM</Heading>
 
 			<div class="env-filter">
 				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">

@@ -9,7 +9,6 @@
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
 		BodyShort,
 		Skeleton,
@@ -21,7 +20,7 @@
 		Tooltip,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, LinkIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { WorkloadsWithSbomVariables } from './$houdini';
 	import WorkloadLink from './WorkloadLink.svelte';
 
@@ -155,6 +154,23 @@
 	}) => {
 		return `/team/${workload.team.slug}/${workload.environment.name}/${workload.__typename === 'Application' ? 'app' : 'job'}/${workload.name}/image`;
 	};
+
+	export function severityToColorWithHover(severity: string): string {
+		switch (severity) {
+			case 'critical':
+				return 'var(--a-red-200)';
+			case 'high':
+				return 'var(--a-orange-200)';
+			case 'medium':
+				return 'var(--a-orange-200)';
+			case 'low':
+				return 'var(--a-green-200)';
+			case 'unassigned':
+				return 'var(--a-gray-200)';
+			default:
+				return 'var(--a-gray-200)';
+		}
+	}
 </script>
 
 {#if $query.data?.team}
@@ -170,7 +186,7 @@
 		<Thead>
 			<Tr>
 				<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-				<Th>Details</Th>
+
 				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT} style="width: 142px;"
 					>Environment</Th
 				>
@@ -220,7 +236,6 @@
 						<Td>
 							<WorkloadLink {workload} />
 						</Td>
-						<Td><div class="image-url"><a href={imageUrl(workload)}><LinkIcon /></a></div></Td>
 						<Td>
 							{workload.environment.name}
 						</Td>
@@ -230,14 +245,11 @@
 									<Tooltip content={'critical'}>
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.critical > 0}
-												<BodyShort
-													class="vulnerability-count"
-													style="background-color: {severityToColor('critical')}"
-												>
+												<a href={imageUrl(workload)} class="vulnerability-count CRITICAL">
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.critical
 														: '-'}
-												</BodyShort>
+												</a>
 											{:else}
 												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
 											{/if}
@@ -254,14 +266,11 @@
 									<Tooltip content={'high'}>
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.high > 0}
-												<BodyShort
-													class="vulnerability-count"
-													style="background-color: {severityToColor('high')}"
-												>
+												<a href={imageUrl(workload)} class="vulnerability-count HIGH">
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.high
 														: '-'}
-												</BodyShort>
+												</a>
 											{:else}
 												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
 											{/if}
@@ -278,14 +287,11 @@
 									<Tooltip content={'medium'}>
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.medium > 0}
-												<BodyShort
-													class="vulnerability-count"
-													style="background-color: {severityToColor('medium')}"
-												>
+												<a href={imageUrl(workload)} class="vulnerability-count MEDIUM">
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.medium
 														: '-'}
-												</BodyShort>
+												</a>
 											{:else}
 												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
 											{/if}
@@ -302,14 +308,11 @@
 									<Tooltip content={'low'}>
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.low > 0}
-												<BodyShort
-													class="vulnerability-count"
-													style="background-color: {severityToColor('low')}"
-												>
+												<a href={imageUrl(workload)} class="vulnerability-count LOW">
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.low
 														: '-'}
-												</BodyShort>
+												</a>
 											{:else}
 												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
 											{/if}
@@ -326,12 +329,9 @@
 									<Tooltip content={'unassigned'}>
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.unassigned > 0}
-												<BodyShort
-													class="vulnerability-count"
-													style="background-color: {severityToColor('unassigned')}"
-												>
+												<a href={imageUrl(workload)} class="vulnerability-count UNASSIGNED">
 													{workload.image.vulnerabilitySummary.unassigned}
-												</BodyShort>
+												</a>
 											{:else}
 												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
 											{/if}
@@ -347,9 +347,11 @@
 								<div class="vulnerability-summary">
 									<Tooltip content={'risk score'}>
 										<BodyShort class="vulnerability-count">
-											{workload.image.vulnerabilitySummary
-												? workload.image.vulnerabilitySummary.riskScore
-												: '-'}
+											<a href={imageUrl(workload)} class="vulnerability-count RISK_SCORE">
+												{workload.image.vulnerabilitySummary
+													? workload.image.vulnerabilitySummary.riskScore
+													: '-'}
+											</a>
 										</BodyShort>
 									</Tooltip>
 								</div>
@@ -386,20 +388,54 @@
 		display: flex;
 		gap: 1px;
 
-		:global(.vulnerability-count) {
+		.vulnerability-count {
 			border-top-left-radius: 4px;
 			border-bottom-left-radius: 4px;
 
 			border-top-right-radius: 4px;
 			border-bottom-right-radius: 4px;
-		}
 
-		:global(.vulnerability-count) {
 			padding: 4px 10px;
-		}
 
-		:global(.vulnerability-count) {
-			padding: 4px 10px;
+			color: inherit;
+			text-decoration: none;
+
+			&.CRITICAL {
+				background-color: var(--a-red-200);
+				&:hover {
+					background-color: var(--a-red-300);
+				}
+			}
+			&.HIGH {
+				background-color: var(--a-orange-200);
+				&:hover {
+					background-color: var(--a-orange-300);
+				}
+			}
+			&.MEDIUM {
+				background-color: var(--a-orange-200);
+				&:hover {
+					background-color: var(--a-orange-300);
+				}
+			}
+			&.LOW {
+				background-color: var(--a-green-200);
+				&:hover {
+					background-color: var(--a-green-300);
+				}
+			}
+			&.UNASSIGNED {
+				background-color: var(--a-gray-200);
+				&:hover {
+					background-color: var(--a-gray-300);
+				}
+			}
+
+			&.RISK_SCORE {
+				&:hover {
+					background-color: var(--a-gray-300);
+				}
+			}
 		}
 	}
 	.vulnerability {
@@ -407,6 +443,7 @@
 		align-items: center;
 		justify-content: center;
 	}
+
 	.image-url {
 		display: flex;
 		align-items: center;
