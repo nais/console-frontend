@@ -27,7 +27,6 @@
 			before?: string;
 		} = {}
 	) => {
-		console.log('changeQuery', params);
 		changeParams({
 			before: params.before ?? before,
 			after: params.after ?? after
