@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { graphql, TeamMemberOrderField } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import ListItem from '$lib/components/list/ListItem.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import AddMember from './AddMember.svelte';
@@ -49,111 +51,122 @@
 		viewerIsOwner === true || (UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin)
 	);
 
-	let tableSort = $derived({
-		orderBy: $Members.variables?.orderBy?.field,
-		direction: $Members.variables?.orderBy?.direction
-	});
+	let after: string = $state($Members.variables?.after ?? '');
+	let before: string = $state($Members.variables?.before ?? '');
 
-	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = TeamMemberOrderField[key as keyof typeof TeamMemberOrderField];
-			tableSort.direction = 'ASC';
-		}
-
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+		} = {}
+	) => {
 		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || TeamMemberOrderField.NAME
+			before: params.before ?? before,
+			after: params.after ?? after
 		});
 	};
 </script>
 
 <GraphErrors errors={$Members.errors} />
 {#if team}
-	<Card>
-		{#if canEdit}
-			<div class="button">
-				<Button
-					size="small"
-					onclick={() => {
-						addMemberOpen = !addMemberOpen;
-					}}
-					icon={PlusIcon}>Add member</Button
-				>
-			</div>
-		{/if}
-		<Table
-			size="small"
-			sort={{
-				orderBy: tableSort.orderBy || TeamMemberOrderField.NAME,
-				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-			}}
-			onsortchange={tableSortChange}
-		>
-			<Thead>
-				<Tr>
-					<Th sortable={true} sortKey={TeamMemberOrderField.NAME}>Name</Th>
-					<Th sortable={true} sortKey={TeamMemberOrderField.EMAIL}>E-mail</Th>
-					<Th sortable={true} sortKey={TeamMemberOrderField.ROLE}>Role</Th>
-					<Th style="width:100px">&nbsp;</Th>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#each team.members.edges as edge (edge.node.user.id)}
-					<Tr>
-						<Td>{capitalizeFirstLetterInEachWord(edge.node.user.name.toString())}</Td>
-						<Td>{edge.node.user.email}</Td>
-						<Td>{edge.node.role.toString().toLowerCase()}</Td>
-						<Td>
-							{#if canEdit}
-								<Button
-									title="Edit member"
-									size="small"
-									variant="tertiary"
-									onclick={() => {
-										editUser = edge.node.user.email.toString();
-										editUserOpen = true;
-									}}
-									icon={PencilIcon}
-								/>
-								<Button
-									title="Delete member"
-									size="small"
-									variant="tertiary-neutral"
-									onclick={() => {
-										deleteUser = {
-											email: edge.node.user.email.toString(),
-											name: edge.node.user.name.toString()
-										};
-										deleteUserOpen = true;
-									}}
-								>
-									{#snippet icon()}
-										<TrashIcon style="color:var(--a-icon-danger)!important" />
-									{/snippet}
-								</Button>
-							{/if}
-						</Td>
-					</Tr>
-				{/each}
-			</Tbody>
-		</Table>
-		{#if $Members.data?.team.members.pageInfo.hasPreviousPage || $Members.data?.team.members.pageInfo.hasNextPage}
+	<div class="content-wrapper">
+		<div>
+			{#if canEdit}
+				<div class="button">
+					<Button
+						size="small"
+						onclick={() => {
+							addMemberOpen = !addMemberOpen;
+						}}
+						icon={PlusIcon}>Add member</Button
+					>
+				</div>
+			{/if}
+			<List
+				title="{$Members.data?.team.members.pageInfo.totalCount} user{$Members.data?.team.members
+					.pageInfo.totalCount !== 1
+					? 's'
+					: ''}"
+			>
+				{#snippet menu()}
+					<OrderByMenu
+						orderField={TeamMemberOrderField}
+						defaultOrderField={TeamMemberOrderField.NAME}
+					/>
+				{/snippet}
+				{#if $Members.data?.team.members.edges}
+					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
+						<ListItem>
+							<div class="item">
+								<div>
+									<BodyShort size="small">
+										{capitalizeFirstLetterInEachWord(edge.node.user.name)}
+									</BodyShort>
+									<BodyShort size="small">
+										<span style="color: var(--a-text-subtle);">{edge.node.user.email}</span>
+									</BodyShort>
+								</div>
+
+								<div class="role-and-buttons">
+									<div class="role">
+										<BodyShort size="small">{edge.node.role}</BodyShort>
+									</div>
+									{#if canEdit}
+										<div>
+											<Button
+												title="Edit member"
+												size="small"
+												variant="tertiary"
+												onclick={() => {
+													editUser = edge.node.user.email;
+													editUserOpen = true;
+												}}
+												icon={PencilIcon}
+											/>
+											<Button
+												title="Delete member"
+												size="small"
+												variant="tertiary-neutral"
+												onclick={() => {
+													deleteUser = {
+														email: edge.node.user.email,
+														name: edge.node.user.name
+													};
+													deleteUserOpen = true;
+												}}
+											>
+												{#snippet icon()}
+													<TrashIcon style="color:var(--a-icon-danger)!important" />
+												{/snippet}
+											</Button>
+										</div>
+									{/if}
+								</div>
+							</div>
+						</ListItem>
+					{/each}
+				{/if}
+			</List>
 			<Pagination
-				page={$Members.data.team.members.pageInfo}
+				page={$Members.data?.team.members.pageInfo}
 				loaders={{
 					loadPreviousPage: () => {
-						Members.loadPreviousPage();
+						changeQuery({
+							before: $Members.data?.team.members.pageInfo.startCursor ?? '',
+							after: ''
+						});
 					},
 					loadNextPage: () => {
-						Members.loadNextPage();
+						changeQuery({
+							after: $Members.data?.team.members.pageInfo.endCursor ?? '',
+							before: ''
+						});
 					}
 				}}
 			/>
-		{/if}
-	</Card>
+		</div>
+		<!--div>Here be documentation of teams, members and roles</div-->
+	</div>
 	{#if team}
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
 
@@ -193,5 +206,30 @@
 	.button {
 		display: flex;
 		justify-content: flex-end;
+		margin-bottom: var(--a-spacing-6);
+	}
+	.content-wrapper {
+		display: grid;
+		gap: var(--a-spacing-6);
+		grid-template-columns: 1fr 300px;
+	}
+
+	.item {
+		display: grid;
+		grid-template-columns: 600px 1fr;
+	}
+	.role-and-buttons {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		width: 200px;
+	}
+	.role {
+		color: var(--a-text-subtle);
+		text-transform: lowercase;
+	}
+	.role::first-letter {
+		text-transform: uppercase;
 	}
 </style>

@@ -1,7 +1,15 @@
-query Members($team: Slug!, $orderBy: TeamMemberOrder!) {
+query Members(
+	$team: Slug!
+	$after: Cursor
+	$before: Cursor
+	$first: Int
+	$last: Int
+	$orderBy: TeamMemberOrder!
+) {
 	team(slug: $team) {
 		slug
-		members(first: 20, orderBy: $orderBy) @paginate(mode: SinglePage) {
+		members(after: $after, before: $before, first: $first, last: $last, orderBy: $orderBy)
+			@paginate(mode: SinglePage) {
 			pageInfo {
 				totalCount
 				hasNextPage
@@ -18,7 +26,6 @@ query Members($team: Slug!, $orderBy: TeamMemberOrder!) {
 						email
 						name
 					}
-
 					role
 				}
 			}
