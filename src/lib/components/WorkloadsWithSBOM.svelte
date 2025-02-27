@@ -36,7 +36,7 @@
 		const env = environment;
 		const field = tableSort.orderBy
 			? tableSort.orderBy
-			: WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL;
+			: WorkloadOrderField.VULNERABILITY_RISK_SCORE;
 		const direction = tableSort.direction ? tableSort.direction : 'DESC';
 		if (env) {
 			return {
@@ -136,7 +136,7 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL
+			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_RISK_SCORE
 		});
 	};
 
@@ -178,7 +178,7 @@
 	<Table
 		size="small"
 		sort={{
-			orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL,
+			orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_RISK_SCORE,
 			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 		}}
 		onsortchange={tableSortChange}
