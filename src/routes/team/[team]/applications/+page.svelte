@@ -164,10 +164,10 @@
 				page={apps.pageInfo}
 				loaders={{
 					loadPreviousPage: () => {
-						changeQuery({ before: apps.pageInfo.startCursor ?? '' });
+						changeQuery({ before: apps.pageInfo.startCursor ?? '', after: '' });
 					},
 					loadNextPage: () => {
-						changeQuery({ after: apps.pageInfo.endCursor ?? '' });
+						changeQuery({ after: apps.pageInfo.endCursor ?? '', before: '' });
 					}
 				}}
 			/>
