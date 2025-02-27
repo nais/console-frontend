@@ -15,7 +15,7 @@
 	}
 
 	let { data }: Props = $props();
-	let { TeamOverview, teamSlug } = $derived(data);
+	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -28,7 +28,7 @@
 
 <div class="grid">
 	<Card rows={1} columns={3}>
-		<TeamInfo {teamSlug} />
+		<TeamInfo {teamSlug} {viewerIsMember} />
 	</Card>
 
 	<Card rows={1} columns={3}>

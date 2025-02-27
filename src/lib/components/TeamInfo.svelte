@@ -1,19 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { graphql, PendingValue, WorkloadState, type ValueOf } from '$houdini';
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import { graphql, PendingValue } from '$houdini';
 	import { Heading, Skeleton } from '@nais/ds-svelte-community';
-	import { QuestionmarkDiamondFillIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
-	import ErrorIcon from '../icons/ErrorIcon.svelte';
 	import type { TeamInfoVariables } from './$houdini';
 
 	interface Props {
 		teamSlug: string;
+		viewerIsMember: boolean;
 	}
 
-	let { teamSlug }: Props = $props();
+	let { teamSlug, viewerIsMember }: Props = $props();
 
 	export const _TeamInfoVariables: TeamInfoVariables = () => {
 		return { team: teamSlug };
@@ -29,43 +26,10 @@
 				}
 				purpose @loading
 				slackChannel @loading
-				workloads @loading {
-					nodes {
-						status {
-							state
-						}
-					}
-				}
 			}
 		}
 	`);
 	const githubOrganization = get(page).data.githubOrganization;
-	let status: string | undefined = $state(undefined);
-	$effect(() => {
-		if ($teamInfo.data?.team.workloads !== PendingValue) {
-			let states: ValueOf<typeof WorkloadState>[] = [];
-			states =
-				$teamInfo.data?.team.workloads.nodes?.map((node) => node.status.state) ??
-				[].filter((state) => {
-					if (state) {
-						return true;
-					}
-					return false;
-				});
-
-			if (states.includes(WorkloadState.FAILING)) {
-				status = 'FAILING';
-			} else if (states?.includes(WorkloadState.NOT_NAIS)) {
-				status = 'NOT_NAIS';
-			} else if (states?.includes(WorkloadState.NAIS)) {
-				status = 'NAIS';
-			} else if (states?.includes(WorkloadState.UNKNOWN)) {
-				status = 'UNKNOWN';
-			} else {
-				status = 'NAIS';
-			}
-		}
-	});
 </script>
 
 <Heading level="4" size="small" spacing>Team summary</Heading>
@@ -102,22 +66,7 @@
 		{/if}
 		<br />
 	{/if}
-	<div class="nais">
-		{#if status == 'NAIS'}
-			<SuccessIcon class="text-aligned-icon" /> All workloads are Nais.
-		{:else if status === 'FAILING'}
-			<ErrorIcon class="text-aligned-icon" /> One or more workloads are failing.
-		{:else if status === 'NOT_NAIS'}
-			<WarningIcon class="text-aligned-icon" /> One or more workloads are having issues.
-		{:else}
-			<QuestionmarkDiamondFillIcon class="text-aligned-icon" style="color: var(--a-icon-action)" /> Team
-			status is unknown.
-		{/if}
-	</div>
+	{#if viewerIsMember}
+		<a href="/team/{teamSlug}/settings">View team settings</a>
+	{/if}
 {/if}
-
-<style>
-	.nais {
-		padding-top: 1rem;
-	}
-</style>
