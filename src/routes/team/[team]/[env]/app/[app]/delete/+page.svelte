@@ -143,7 +143,7 @@
 			{@const expected = app.environment.name + '/' + app.name}
 			<p>
 				Confirm deletion by writing <strong>{expected}</strong> in the box below and click
-				<em>Delete</em>
+				<em>Delete</em>.
 			</p>
 			{#if $deleteApp.errors}
 				<GraphErrors errors={$deleteApp.errors} />
