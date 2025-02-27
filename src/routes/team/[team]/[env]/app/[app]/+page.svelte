@@ -9,7 +9,8 @@
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import { Button, Heading } from '@nais/ds-svelte-community';
+	import Time from '$lib/Time.svelte';
+	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
@@ -61,6 +62,14 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				{#if app.deletionStartedAt}
+					<Alert variant="info" size="small" fullWidth={false}>
+						This application is being deleted. Deletion started <Time
+							time={app.deletionStartedAt}
+							distance
+						/>. If the deletion is taking too long, please contact the Nais team.
+					</Alert>
+				{/if}
 				<div style="display:flex; flex-direction: column; gap: var(--a-spacing-4);">
 					<div class="instances-header">
 						<Heading level="3" size="medium">Instances</Heading>
@@ -70,6 +79,7 @@
 								size="small"
 								onclick={() => (restart = true)}
 								icon={ArrowCirclepathIcon}
+								disabled={app.deletionStartedAt !== null}
 							>
 								Restart app
 							</Button>

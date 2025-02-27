@@ -5,6 +5,7 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 			name
 			application(name: $app) {
 				name
+				deletionStartedAt
 				environment {
 					name
 				}

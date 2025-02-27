@@ -191,6 +191,9 @@ type Application implements Node & Workload {
   """The cost for the application."""
   cost: WorkloadCost!
 
+  """If set, when the application was marked for deletion."""
+  deletionStartedAt: Time
+
   """List of deployments for the application."""
   deployments(
     """Get items after this cursor."""
@@ -1438,6 +1441,9 @@ type Job implements Node & Workload {
 
   """The cost for the job."""
   cost: WorkloadCost!
+
+  """If set, when the job was marked for deletion."""
+  deletionStartedAt: Time
 
   """List of deployments for the job."""
   deployments(
@@ -5839,6 +5845,9 @@ interface Workload {
 
   """The cost for a workload."""
   cost: WorkloadCost!
+
+  """If set, when the workload was marked for deletion."""
+  deletionStartedAt: Time
 
   """List of deployments for the workload."""
   deployments(
