@@ -8,7 +8,8 @@
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Button, Heading } from '@nais/ds-svelte-community';
+	import Time from '$lib/Time.svelte';
+	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -70,11 +71,25 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
+			{#if job.deletionStartedAt}
+				<Alert variant="info" size="small" fullWidth={false}>
+					This job is being deleted. Deletion started <Time
+						time={job.deletionStartedAt}
+						distance
+					/>. If the deletion is taking too long, please contact the Nais team.
+				</Alert>
+			{/if}
+
 			<div style="display:flex; flex-direction: column; gap:0.5rem;">
 				<div class="runs-header">
 					<Heading level="2" size="medium">Runs</Heading>
 					{#if viewerIsMember && job.schedule}
-						<Button variant="secondary" size="small" onclick={() => (open = true)}>
+						<Button
+							variant="secondary"
+							size="small"
+							onclick={() => (open = true)}
+							disabled={job.deletionStartedAt !== null}
+						>
 							Trigger run
 						</Button>
 					{/if}

@@ -6,6 +6,7 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 			job(name: $job) {
 				id
 				name
+				deletionStartedAt
 				environment {
 					name
 				}

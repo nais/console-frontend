@@ -4,6 +4,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 			job(name: $job) {
 				id
 				name
+				deletionStartedAt
 				schedule {
 					expression
 					timeZone
