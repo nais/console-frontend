@@ -16,7 +16,7 @@
 	let { teamSlug, env, app } = $derived(data);
 
 	let Instances = $derived(data.Instances);
-	let instanceNames: Set<string> = data.instanceNames;
+	let instanceNames: SvelteSet<string> = data.instanceNames;
 
 	function toggleInstance(i: string) {
 		if (instanceNames.has(i)) {
@@ -44,9 +44,6 @@
 	}
 </script>
 
-<!--
-{
--->
 {#if $Instances.data}
 	{@const instances = $Instances.data.team.environment.application.instances.nodes}
 

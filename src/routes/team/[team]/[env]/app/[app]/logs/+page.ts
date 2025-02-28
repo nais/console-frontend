@@ -18,7 +18,7 @@ export function _houdini_afterLoad({ data, event: { url } }: AfterLoadEvent) {
 	return {
 		env,
 		app,
-		instanceNames: new Set(
+		instanceNames: new SvelteSet(
 			data.Instances.team.environment.application.instances.nodes
 				.map((instance) => instance.name)
 				.slice(0, 1)
