@@ -38,10 +38,6 @@
 </script>
 
 {#if $data.utilization}
-	{@const cpu = $data.utilization.cpuRequests}
-	{@const mem = $data.utilization.memoryRequests}
-	{@const cpuUsage = $data.utilization.cpuUsage}
-	{@const memUsage = $data.utilization.memoryUsage}
 	<div class="wrapper">
 		<Heading level="3" size="small">Utilization</Heading>
 		<BodyShort>
