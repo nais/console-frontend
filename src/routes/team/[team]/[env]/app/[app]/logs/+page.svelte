@@ -26,6 +26,7 @@
 		}
 		if (!running) {
 			running = true;
+			fetching = true;
 		}
 	}
 
@@ -87,6 +88,7 @@
 			{#if fetching}
 				<Button
 					onclick={() => {
+						console.log('pause');
 						running = false;
 					}}
 				>
@@ -95,6 +97,7 @@
 			{:else}
 				<Button
 					onclick={() => {
+						console.log('restart');
 						running = true;
 					}}
 				>
