@@ -49,7 +49,7 @@
 						FAILING: 'danger',
 						NOT_NAIS: 'warning',
 						UNKNOWN: 'info'
-					}[app.status.state] ?? 'info'}); font-size: 0.5rem"
+					}[app.status.state] ?? 'info'}); font-size: 0.6rem"
 				/>
 			</TooltipAlignHack>
 		{/snippet}
