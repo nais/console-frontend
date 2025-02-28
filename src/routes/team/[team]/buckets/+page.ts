@@ -1,7 +1,7 @@
 import { BucketOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
-import type { AfterLoadEvent, BucketsVariables } from './$houdini';
+import type { BucketsVariables } from './$houdini';
 
 const rows = 25;
 
@@ -19,7 +19,3 @@ export const _BucketsVariables: BucketsVariables = ({ url }) => {
 		to: endOfYesterday()
 	};
 };
-
-export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-	return { data };
-}

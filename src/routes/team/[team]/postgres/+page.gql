@@ -1,4 +1,4 @@
-query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: Date!) {
+query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: Date!) @blocking {
 	team(slug: $team) {
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["Cloud SQL"] }) {

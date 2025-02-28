@@ -5,7 +5,7 @@ query KafkaTopics(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) {
+) @blocking {
 	team(slug: $team) {
 		kafkaTopics(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {

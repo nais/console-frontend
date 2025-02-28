@@ -1,6 +1,6 @@
 import { ApplicationOrderField, OrderDirection, type TeamApplicationsFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { AfterLoadEvent, ApplicationsVariables } from './$houdini';
+import type { ApplicationsVariables } from './$houdini';
 
 const rows = 25;
 
@@ -23,9 +23,3 @@ export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
 		...(before ? { before, last: rows } : { after, first: rows })
 	};
 };
-
-export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-	return {
-		data
-	};
-}

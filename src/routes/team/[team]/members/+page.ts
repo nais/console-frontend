@@ -1,6 +1,6 @@
 import { OrderDirection, TeamMemberOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { AfterLoadEvent, MembersVariables } from './$houdini';
+import type { MembersVariables } from './$houdini';
 
 const rows = 10;
 
@@ -16,9 +16,3 @@ export const _MembersVariables: MembersVariables = ({ url }) => {
 		...(before ? { before, last: rows } : { after, first: rows })
 	};
 };
-
-export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-	return {
-		data
-	};
-}

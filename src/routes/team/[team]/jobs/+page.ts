@@ -1,6 +1,6 @@
 import { JobOrderField, type TeamJobsFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { AfterLoadEvent, JobsVariables } from './$houdini';
+import type { JobsVariables } from './$houdini';
 
 const rows = 25;
 
@@ -23,7 +23,3 @@ export const _JobsVariables: JobsVariables = ({ url }) => {
 		...(before ? { before, last: rows } : { after, first: rows })
 	};
 };
-
-export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-	return { data, rows };
-}

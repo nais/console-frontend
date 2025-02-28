@@ -6,7 +6,7 @@ query Jobs(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: NetworkOnly) {
+) @blocking @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
 		environments {

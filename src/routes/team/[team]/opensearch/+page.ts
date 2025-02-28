@@ -2,7 +2,7 @@ import { OpenSearchOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { error } from '@sveltejs/kit';
 import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
-import type { AfterLoadEvent, PageLoad } from './$houdini';
+import type { PageLoad } from './$houdini';
 
 const rows = 25;
 
@@ -27,7 +27,3 @@ export const _OpenSearchVariables: PageLoad = async (event) => {
 		to: endOfYesterday()
 	};
 };
-
-export function _houdini_afterLoad({ data }: AfterLoadEvent) {
-	return { data };
-}
