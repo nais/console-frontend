@@ -3,6 +3,7 @@
 	import { graphql, type WorkloadLogSubscriptionFilter } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { createEventDispatcher, onDestroy, tick, untrack } from 'svelte';
+	import type { SvelteSet } from 'svelte/reactivity';
 	import { get } from 'svelte/store';
 
 	interface Props {
@@ -10,7 +11,7 @@
 		job?: string | undefined;
 		team: string;
 		env: string;
-		instances: Set<string>;
+		instances: SvelteSet<string>;
 		running?: boolean;
 		showName?: boolean;
 		showTime?: boolean;
