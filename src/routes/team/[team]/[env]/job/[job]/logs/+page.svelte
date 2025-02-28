@@ -25,10 +25,10 @@
 	let result = $derived($RunsWithPodNames.data);
 
 	// svelte-ignore state_referenced_locally
-	let pods: Set<string> = $state(new Set([selected]));
+	let pods: SvelteSet<string> = $state(new SvelteSet([selected]));
 	let selectedRun: string = $state('');
 	function setSelected(name: string) {
-		pods = new Set(
+		pods = new SvelteSet(
 			$RunsWithPodNames.data?.team.environment.job?.runs.nodes
 				.filter((run) => run.name === name)
 				.map((run) => run.instances.nodes.map((instance) => instance.name))
