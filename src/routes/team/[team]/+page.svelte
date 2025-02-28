@@ -41,13 +41,12 @@
 	<Card rows={1} columns={3}>
 		<AggregatedCostForTeam {teamSlug} />
 	</Card>
-
-	<Card rows={1} columns={12}>
-		<Heading level="4" size="small" spacing>Deployments</Heading>
+	<div class="deployments">
+		<Heading level="4" size="small" spacing>Last team deployments</Heading>
 		{#if $TeamOverview.data}
 			<Deploys team={$TeamOverview.data.team} />
 		{/if}
-	</Card>
+	</div>
 </div>
 
 <style>
@@ -59,5 +58,9 @@
 	}
 	.grid:not(:first-child) {
 		margin-top: 1rem;
+	}
+	.deployments {
+		grid-column: span 12;
+		grid-row: span 1;
 	}
 </style>

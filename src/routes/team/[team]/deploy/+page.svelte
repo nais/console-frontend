@@ -3,6 +3,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import { isValidSha } from '$lib/utils/isValidSha';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
@@ -30,10 +31,6 @@
 			after: params.after ?? after
 		});
 	};
-
-	function isValidSha(sha: string): boolean {
-		return /^[0-9a-f]{40}$/i.test(sha);
-	}
 </script>
 
 <GraphErrors errors={$Deployments.errors} />

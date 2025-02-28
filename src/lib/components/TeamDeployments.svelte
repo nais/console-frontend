@@ -2,7 +2,9 @@
 	import { fragment, graphql, type TeamDeployments } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
+	import { isValidSha } from '$lib/utils/isValidSha';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		team: TeamDeployments;
@@ -35,6 +37,10 @@
 							environmentName
 							createdAt
 							teamSlug
+							commitSha
+							repository
+							deployerUsername
+							triggerUrl
 						}
 					}
 				}
@@ -46,7 +52,11 @@
 <Table size="small">
 	<Thead>
 		<Tr>
-			<Th>Resource(s)</Th>
+			<Th style="width: var(--a-spacing-32);">Resource(s)</Th>
+			<Th></Th>
+			<Th>Commit</Th>
+			<Th>Run</Th>
+			<Th>Actor</Th>
 			<Th>Environment</Th>
 			<Th>Created</Th>
 			<Th>Status</Th>
@@ -57,31 +67,52 @@
 			{@const deploys = $data.deployments.nodes}
 			{#each deploys as deploy (deploy.id)}
 				<Tr>
-					<Td
-						><dl>
-							{#each deploy.resources.nodes as resource (resource.id)}
-								<dt><span style="color:var(--a-gray-600)">{resource.kind}:</span></dt>
-								<dd>
-									{#if resource.kind === 'Application'}
-										<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/app/{resource.name}"
-											>{resource.name}</a
-										>
-									{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
-										<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/job/{resource.name}"
-											>{resource.name}</a
-										>
-									{:else}
-										{resource.name}
-									{/if}
-								</dd>
-							{/each}
-						</dl></Td
-					>
+					<Td>
+						{#each deploy.resources.nodes as resource (resource.id)}
+							<div style="color:var(--a-gray-600)">{resource.kind}:</div>
+						{/each}
+					</Td>
+					<Td>
+						{#each deploy.resources.nodes as resource (resource.id)}
+							<div>
+								{#if resource.kind === 'Application'}
+									<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/app/{resource.name}"
+										>{resource.name}</a
+									>
+								{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
+									<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/job/{resource.name}"
+										>{resource.name}</a
+									>
+								{:else}
+									{resource.name}
+								{/if}
+							</div>
+						{/each}
+					</Td>
+					<Td>
+						{#if deploy.commitSha && isValidSha(deploy.commitSha)}
+							<span style="font-family: monospace; font-size: var(--a-font-size-small)">
+								<a href="https://github.com/{deploy.repository}/commit/{deploy.commitSha}"
+									>{deploy?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
+								>
+							</span>
+						{/if}
+					</Td>
+					<Td>
+						{#if deploy.triggerUrl}
+							<span style=" font-size: var(--a-font-size-small)">
+								<a href={deploy.triggerUrl}>Github action <ExternalLinkIcon /></a>
+							</span>
+						{/if}
+					</Td>
+					<Td>
+						{deploy.deployerUsername}
+					</Td>
+
 					<Td>
 						{deploy.environmentName}
 					</Td>
 					<Td><Time time={deploy.createdAt} distance={true} /></Td>
-
 					<Td
 						>{#if deploy.statuses.nodes.length === 0}<DeploymentStatus
 								status={'UNKNOWN'}
@@ -96,17 +127,3 @@
 		{/if}
 	</Tbody>
 </Table>
-
-<style>
-	dl {
-		display: grid;
-		grid-template-columns: 100px 1fr;
-		margin: 0;
-	}
-	dt {
-		font-weight: 400;
-	}
-	dd {
-		margin-inline-start: 20px;
-	}
-</style>

@@ -2,6 +2,7 @@
 	import { fragment, graphql, type WorkloadDeployments } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
+	import { isValidSha } from '$lib/utils/isValidSha';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
@@ -59,10 +60,6 @@
 			return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 		})
 	);
-
-	function isValidSha(sha: string): boolean {
-		return /^[0-9a-f]{40}$/i.test(sha);
-	}
 </script>
 
 {#if $data !== null}

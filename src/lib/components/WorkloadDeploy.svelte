@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import Time from '$lib/Time.svelte';
+	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
@@ -34,10 +35,6 @@
 	let deploymentInfo = $derived(
 		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
 	);
-
-	function isValidSha(sha: string): boolean {
-		return /^[0-9a-f]{40}$/i.test(sha);
-	}
 </script>
 
 <div class="wrapper">
