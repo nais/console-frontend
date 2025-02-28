@@ -237,7 +237,8 @@
 		}
 
 		> :global(.navds-modal__body) {
-			padding: var(--a-spacing-6);
+			padding: 0;
+			height: 100%;
 		}
 	}
 </style>
