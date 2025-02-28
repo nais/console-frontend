@@ -9,6 +9,7 @@
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
@@ -56,6 +57,8 @@
 		});
 	};
 </script>
+
+<GraphErrors errors={$App.errors} />
 
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
