@@ -30,6 +30,10 @@ query Deployments($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after
 				environmentName
 				createdAt
 				teamSlug
+				repository
+				commitSha
+				deployerUsername
+				triggerUrl
 			}
 		}
 	}

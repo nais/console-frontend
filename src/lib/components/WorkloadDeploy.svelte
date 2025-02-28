@@ -52,9 +52,8 @@
 		{/if}
 
 		{#if deploymentInfo.commitSha && isValidSha(deploymentInfo.commitSha)}
-			<Link
-				href="https://github.com/{deploymentInfo?.repository}/commit/{deploymentInfo?.commitSha}"
-				>Commit {deploymentInfo?.commitSha.slice(0, 7)} <ExternalLinkIcon /></Link
+			<a href="https://github.com/{deploymentInfo.repository}/commit/{deploymentInfo.commitSha}"
+				>Commit {deploymentInfo.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
 			>
 		{/if}
 	{:else}

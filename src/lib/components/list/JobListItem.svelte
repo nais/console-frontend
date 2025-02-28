@@ -54,7 +54,7 @@
 						FAILING: 'danger',
 						NOT_NAIS: 'warning',
 						UNKNOWN: 'info'
-					}[job.status.state] ?? 'info'}); font-size: 0.5rem"
+					}[job.status.state] ?? 'info'}); font-size: 0.7rem"
 				/>
 			</TooltipAlignHack>
 		{/snippet}
