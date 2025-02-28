@@ -3,6 +3,7 @@
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: WorkloadDeployments;
@@ -40,8 +41,13 @@
 									createdAt
 								}
 							}
+							environmentName
+							teamSlug
+							triggerUrl
 							createdAt
 							repository
+							commitSha
+							deployerUsername
 						}
 					}
 				}
@@ -53,15 +59,22 @@
 			return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 		})
 	);
+
+	function isValidSha(sha: string): boolean {
+		return /^[0-9a-f]{40}$/i.test(sha);
+	}
 </script>
 
 {#if $data !== null}
 	<Table size="small">
 		<Thead>
 			<Tr>
-				<Th>Team</Th>
+				<Th style="width: var(--a-spacing-32);">Resource(s)</Th>
+				<Th></Th>
+				<Th>Commit</Th>
+				<Th>Run</Th>
+				<Th>Actor</Th>
 				<Th>Environment</Th>
-				<Th>Resource(s)</Th>
 				<Th>Created</Th>
 				<Th>Status</Th>
 			</Tr>
@@ -69,40 +82,57 @@
 		<Tbody>
 			{#each deploysOrderedByDate as deploy (deploy.id)}
 				<Tr>
-					<Td>{$data.team.slug}</Td>
-					<Td>{$data.environment.name}</Td>
 					<Td>
 						{#each deploy.resources.nodes as resource (resource.id)}
-							<span style="color:var(--a-gray-600)">{resource.kind}:</span>
-							{#if resource.kind === 'Application'}
-								<a
-									href="/team/{$data.team.slug}/{$data.environment
-										.name}/app/{resource.name}/deploys">{resource.name}</a
-								>
-							{:else if resource.kind === 'Job'}
-								<a
-									href="/team/{$data.team.slug}/{$data.environment
-										.name}/job/{resource.name}/deploys">{resource.name}</a
-								>
-							{:else if resource.kind === 'Topic'}
-								<a
-									href="/team/{$data.team.slug}/{$data.environment
-										.name}/kafka/{resource.name}/deploys">{resource.name}</a
-								>
-							{:else}
-								{resource.name}
-							{/if}
-							<br />
+							<div style="color:var(--a-gray-600)">{resource.kind}:</div>
 						{/each}
 					</Td>
-					<Td><Time time={deploy.createdAt} distance={true} /></Td>
 					<Td>
-						{#if deploy.statuses.nodes.length === 0}
-							<DeploymentStatus status={'UNKNOWN'} />
-						{:else}
-							<DeploymentStatus status={deploy.statuses.nodes[0].state} />
+						{#each deploy.resources.nodes as resource (resource.id)}
+							<div>
+								{#if resource.kind === 'Application'}
+									<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/app/{resource.name}"
+										>{resource.name}</a
+									>
+								{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
+									<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/job/{resource.name}"
+										>{resource.name}</a
+									>
+								{:else}
+									{resource.name}
+								{/if}
+							</div>
+						{/each}
+					</Td>
+					<Td>
+						{#if deploy.commitSha && isValidSha(deploy.commitSha)}
+							<span style="font-family: monospace; font-size: var(--a-font-size-small)">
+								<a href="https://github.com/{deploy.repository}/commit/{deploy.commitSha}"
+									>{deploy?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
+								>
+							</span>
 						{/if}
 					</Td>
+					<Td>
+						{#if deploy.triggerUrl}
+							<span style=" font-size: var(--a-font-size-small)">
+								<a href={deploy.triggerUrl}>Github action <ExternalLinkIcon /></a>
+							</span>
+						{/if}
+					</Td>
+					<Td>
+						{deploy.deployerUsername}
+					</Td>
+
+					<Td>
+						{deploy.environmentName}
+					</Td>
+					<Td><Time time={deploy.createdAt} distance={true} /></Td>
+					<Td
+						>{#if deploy.statuses.nodes.length === 0}<DeploymentStatus
+								status={'UNKNOWN'}
+							/>{:else}<DeploymentStatus status={deploy.statuses.nodes[0].state} />{/if}</Td
+					>
 				</Tr>
 			{:else}
 				<Tr>
