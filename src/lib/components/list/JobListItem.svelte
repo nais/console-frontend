@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { JobRunState$options } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
@@ -36,8 +37,11 @@
 		level="4"
 		label={job.name}
 		href="/team/{job.team.slug}/{job.environment.name}/job/{job.name}"
-		description={job.environment.name}
 		size="large"
+		tag={{
+			label: job.environment.name,
+			variant: envTagVariant(job.environment.name)
+		}}
 	>
 		{#snippet icon()}
 			<TooltipAlignHack

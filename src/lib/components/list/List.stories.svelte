@@ -77,7 +77,7 @@
 		{
 			__typename: 'Application',
 			name: 'behovsakkumulator',
-			environment: { name: 'prod-gcp' },
+			environment: { name: 'prod-fss' },
 			team: { slug: 'tbd' },
 			status: { state: 'NAIS' },
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:22:24.210001Z') }] },
@@ -119,7 +119,7 @@
 		{
 			__typename: 'Application',
 			name: 'dataprodukt-annulleringer',
-			environment: { name: 'prod-gcp' },
+			environment: { name: 'prod-fss' },
 			team: { slug: 'tbd' },
 			status: { state: 'UNKNOWN' },
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:20.156954Z') }] },
@@ -143,7 +143,7 @@
 		{
 			__typename: 'Application',
 			name: 'dataprodukt-arbeidsgiveropplysninger',
-			environment: { name: 'dev-gcp' },
+			environment: { name: 'dev-fss' },
 			team: { slug: 'tbd' },
 			status: { state: 'NAIS' },
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:28.74535Z') }] },
@@ -155,7 +155,7 @@
 		{
 			__typename: 'Application',
 			name: 'dataprodukt-forstegangsbehandling',
-			environment: { name: 'dev-gcp' },
+			environment: { name: 'dev-fss' },
 			team: { slug: 'tbd' },
 			status: { state: 'NAIS' },
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:38.095107Z') }] },
@@ -167,7 +167,7 @@
 		{
 			__typename: 'Application',
 			name: 'dataprodukt-forstegangsbehandling',
-			environment: { name: 'prod-gcp' },
+			environment: { name: 'prod-fss' },
 			team: { slug: 'tbd' },
 			status: { state: 'NAIS' },
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:44.186683Z') }] },
@@ -179,7 +179,7 @@
 		{
 			__typename: 'Application',
 			name: 'helse-spane',
-			environment: { name: 'dev-gcp' },
+			environment: { name: 'dev-fss' },
 			team: { slug: 'tbd' },
 			status: { state: 'NAIS' },
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T20:37:08.725562Z') }] },

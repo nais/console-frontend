@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
@@ -213,7 +214,11 @@
 					return {
 						icon,
 						label: result.name,
-						description: `${result.team.slug} / ${result.environment.name}`,
+						description: result.team.slug,
+						tag: {
+							label: result.environment.name,
+							variant: envTagVariant(result.environment.name)
+						},
 						href: `/team/${result.team.slug}/${result.environment.name}/${urlName}/${result.name}`,
 						type: 'link'
 					};

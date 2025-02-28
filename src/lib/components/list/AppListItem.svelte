@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { Detail, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
@@ -29,10 +30,13 @@
 <ListItem>
 	<IconLabel
 		level="4"
-		label={app.name}
 		href="/team/{app.team.slug}/{app.environment.name}/app/{app.name}"
-		description={app.environment.name}
 		size="large"
+		label={app.name}
+		tag={{
+			label: app.environment.name,
+			variant: envTagVariant(app.environment.name)
+		}}
 	>
 		{#snippet icon()}
 			<TooltipAlignHack

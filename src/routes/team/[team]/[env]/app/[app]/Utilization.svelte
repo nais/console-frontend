@@ -42,8 +42,6 @@
 	{@const mem = $data.utilization.memoryRequests}
 	{@const cpuUsage = $data.utilization.cpuUsage}
 	{@const memUsage = $data.utilization.memoryUsage}
-	{@const cpuUtil = cpuUtilization(cpu, cpuUsage)}
-	{@const memUtil = memoryUtilization(mem, memUsage)}
 	<div class="wrapper">
 		<Heading level="3" size="small">Utilization</Heading>
 		<BodyShort>

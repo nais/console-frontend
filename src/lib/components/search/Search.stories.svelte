@@ -1,4 +1,5 @@
 <script module>
+	import { envTagVariant } from '$lib/envTagVariant';
 	import { DatabaseIcon, PackageIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import Search from './Search.svelte';
@@ -32,16 +33,46 @@
 			{
 				icon: PackageIcon,
 				label: 'watson',
-				description: 'ibm / prod',
+				tag: {
+					label: 'prod',
+					variant: envTagVariant('prod')
+				},
+				description: 'ibm',
 				type: 'link',
 				href: '/team/ibm/prod/app/watson'
 			},
 			{
 				icon: PackageIcon,
 				label: 'watson',
-				description: 'ibm / dev',
+				tag: {
+					label: 'dev',
+					variant: envTagVariant('dev')
+				},
+				description: 'ibm',
 				type: 'link',
 				href: '/team/ibm/dev/app/watson'
+			},
+			{
+				icon: DatabaseIcon,
+				label: 'watsons-brother',
+				tag: {
+					label: 'prod',
+					variant: envTagVariant('prod')
+				},
+				description: 'ibm',
+				type: 'link',
+				href: '/team/ibm/prod/app/watsons-brother'
+			},
+			{
+				icon: DatabaseIcon,
+				label: 'watsons-brother',
+				tag: {
+					label: 'dev',
+					variant: envTagVariant('dev')
+				},
+				description: 'ibm',
+				type: 'link',
+				href: '/team/ibm/dev/app/watsons-brother'
 			},
 			{
 				icon: PersonGroupIcon,
@@ -50,20 +81,6 @@
 					'Builds watson. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.',
 				type: 'link',
 				href: '/team/ibm'
-			},
-			{
-				icon: DatabaseIcon,
-				label: 'watsons-brother',
-				description: 'ibm / prod',
-				type: 'link',
-				href: '/team/ibm/prod/app/watsons-brother'
-			},
-			{
-				icon: DatabaseIcon,
-				label: 'watsons-brother',
-				description: 'ibm / dev',
-				type: 'link',
-				href: '/team/ibm/dev/app/watsons-brother'
 			}
 		]}
 		close={() => {}}

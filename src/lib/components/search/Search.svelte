@@ -1,11 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button, TextField } from '@nais/ds-svelte-community';
+	import { Button, Tag, TextField } from '@nais/ds-svelte-community';
+	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 	import { XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import IconLabel from '../IconLabel.svelte';
 	import ResultSkeleton from './ResultSkeleton.svelte';
 	import Suggestions from './Suggestions.svelte';
+
+	type TagType = {
+		label: string;
+		variant: TagProps['variant'];
+	};
 
 	let {
 		query = $bindable(),
@@ -24,13 +30,6 @@
 					icon: Component;
 					label: string;
 					description: string;
-					type: 'link';
-					href: string;
-			  }[]
-			| {
-					icon: Component;
-					label: string;
-					description: string;
 					type: 'button';
 					button: {
 						onclick: () => void;
@@ -45,6 +44,14 @@
 							| 'danger';
 						loading?: boolean;
 					};
+			  }[]
+			| {
+					icon: Component;
+					label: string;
+					description: string;
+					tag?: TagType;
+					type: 'link';
+					href: string;
 			  }[];
 		close: () => void;
 	} = $props();
@@ -86,21 +93,34 @@
 				<ResultSkeleton />
 			{/each}
 		{:else if results}
-			{#each results as { icon, description, label: text, ...rest }, i (icon + text + i)}
-				{#if rest.type === 'link'}
-					<a href={rest.href} class={['result', { selected: i === selected }]} onclick={close}>
-						<IconLabel {icon} {description}>
+			{#each results as result, i (result)}
+				{#if result.type === 'link'}
+					<a href={result.href} class={['result', { selected: i === selected }]} onclick={close}>
+						<IconLabel icon={result.icon}>
 							{#snippet label()}
-								<span class="label">{text}</span>
+								<span class="label">{result.label}</span>
+							{/snippet}
+							{#snippet description()}
+								{#if result.tag}
+									<div class="description-wrapper">
+										<Tag size="xsmall" variant={result.tag.variant}>{result.tag.label}</Tag>
+										{result.description}
+									</div>
+								{:else}
+									{result.description}
+								{/if}
 							{/snippet}
 						</IconLabel>
 					</a>
 				{:else}
 					<div class="result">
-						<IconLabel {icon} label={text} {description} />
-						{#if rest.type === 'button'}
-							{@const button = rest.button}
-							<Button {...button} size="small">{button.label}</Button>
+						<IconLabel icon={result.icon} description={result.description}>
+							{#snippet label()}
+								<span class="label">{result.label}</span>
+							{/snippet}
+						</IconLabel>
+						{#if result.type === 'button'}
+							<Button {...result.button} size="small">{result.button.label}</Button>
 						{/if}
 					</div>
 				{/if}
@@ -119,6 +139,11 @@
 </div>
 
 <style>
+	.description-wrapper {
+		display: flex;
+		gap: var(--a-spacing-1-alt);
+		align-items: center;
+	}
 	.search {
 		display: flex;
 		flex-direction: column;

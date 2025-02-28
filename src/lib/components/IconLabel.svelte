@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { BodyShort, Detail, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail, Heading, Tag } from '@nais/ds-svelte-community';
+	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
 	import type { Component } from 'svelte';
 	import Icon from './Icon.svelte';
@@ -9,6 +10,7 @@
 		href,
 		icon,
 		description,
+		tag,
 		onclick,
 		...rest
 	}: {
@@ -16,6 +18,10 @@
 		href?: string;
 		icon: Component | string;
 		description?: Component | string;
+		tag?: {
+			label: string;
+			variant: TagProps['variant'];
+		};
 		onclick?: () => void;
 	} & (
 		| {
@@ -57,7 +63,7 @@
 		{@const Icon = icon}
 		<Icon />
 	{/if}
-	<div>
+	<div class="content">
 		{#if rest.size === 'small'}
 			<Detail>{@render linkOrText()}</Detail>
 		{:else if rest.size === 'large'}
@@ -65,13 +71,34 @@
 		{:else}
 			<BodyShort>{@render linkOrText()}</BodyShort>
 		{/if}
-		{#if description}
-			<Detail>{@render componentOrString(description)}</Detail>
-		{/if}
+		<div class="desc">
+			{#if tag}
+				<Tag size="small" variant={tag.variant}>{tag.label}</Tag>
+			{/if}
+			{#if description}
+				<Detail>{@render componentOrString(description)}</Detail>
+			{/if}
+		</div>
 	</div>
 </div>
 
 <style>
+	.desc {
+		display: flex;
+		gap: var(--a-spacing-1);
+		align-items: center;
+	}
+	.content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-05);
+	}
+	.label-tag-wrapper {
+		display: flex;
+		align-items: center;
+		gap: var(--a-spacing-2);
+	}
+
 	.icon-label {
 		display: flex;
 		align-items: center;

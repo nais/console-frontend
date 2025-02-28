@@ -1,3 +1,6 @@
+import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
+import { envTagVariant } from './envTagVariant';
+
 const label = (type: string) => {
 	switch (type) {
 		case 'job':
@@ -88,7 +91,7 @@ const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 
 	const { pageName, plural } = label(type);
 
-	res = [...res, { label: env }, { label: pageName, href: `/team/${team}/${plural}` }];
+	res = [...res, { label: pageName, href: `/team/${team}/${plural}` }];
 
 	if (split.length === 6) {
 		return res;
@@ -97,12 +100,19 @@ const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 	return [...res, { label: resource, href: `/team/${team}/${env}/${type}/${resource}` }];
 };
 
-export const urlToPageHeader = (url: URL): { breadcrumbs: Result[]; heading: string } => {
+export const urlToPageHeader = (
+	url: URL
+): {
+	breadcrumbs: Result[];
+	heading: string;
+	tag?: { label: string; variant: TagProps['variant'] };
+} => {
 	const split = url.pathname.split('/');
 
 	return {
 		breadcrumbs: urlToBreadcrumbs(url),
 		heading:
-			([3, 6].includes(split.length) ? split.at(-1) : label(split.at(-1) ?? '').pageName) ?? ''
+			([3, 6].includes(split.length) ? split.at(-1) : label(split.at(-1) ?? '').pageName) ?? '',
+		...(split.length > 5 ? { tag: { label: split[3], variant: envTagVariant(split[3]) } } : {})
 	};
 };

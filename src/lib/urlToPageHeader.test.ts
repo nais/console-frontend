@@ -13,10 +13,10 @@ describe('urlToBreadcrumbs', () => {
 			{
 				breadcrumbs: [
 					{ label: 'devteam', href: '/team/devteam' },
-					{ label: 'prod' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' }
 				],
-				heading: 'backup'
+				heading: 'backup',
+				tag: { label: 'prod', variant: 'info-moderate' }
 			}
 		],
 		[
@@ -24,10 +24,10 @@ describe('urlToBreadcrumbs', () => {
 			{
 				breadcrumbs: [
 					{ label: 'devteam', href: '/team/devteam' },
-					{ label: 'prod' },
 					{ label: 'Jobs', href: '/team/devteam/jobs' }
 				],
-				heading: 'dataproduct-apps-topics'
+				heading: 'dataproduct-apps-topics',
+				tag: { label: 'prod', variant: 'info-moderate' }
 			}
 		],
 		[
@@ -35,10 +35,10 @@ describe('urlToBreadcrumbs', () => {
 			{
 				breadcrumbs: [
 					{ label: 'devteam', href: '/team/devteam' },
-					{ label: 'dev' },
 					{ label: 'Applications', href: '/team/devteam/applications' }
 				],
-				heading: 'app-w-all-storage'
+				heading: 'app-w-all-storage',
+				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
 		],
 		[
@@ -46,14 +46,14 @@ describe('urlToBreadcrumbs', () => {
 			{
 				breadcrumbs: [
 					{ label: 'devteam', href: '/team/devteam' },
-					{ label: 'dev' },
 					{ label: 'Jobs', href: '/team/devteam/jobs' },
 					{
 						label: 'dataproduct-apps-topics',
 						href: '/team/devteam/dev/job/dataproduct-apps-topics'
 					}
 				],
-				heading: 'Logs'
+				heading: 'Logs',
+				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
 		],
 		[
@@ -61,11 +61,11 @@ describe('urlToBreadcrumbs', () => {
 			{
 				breadcrumbs: [
 					{ label: 'devteam', href: '/team/devteam' },
-					{ label: 'dev' },
 					{ label: 'Applications', href: '/team/devteam/applications' },
 					{ label: 'app-w-all-storage', href: '/team/devteam/dev/app/app-w-all-storage' }
 				],
-				heading: 'Manifest'
+				heading: 'Manifest',
+				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
 		]
 	])('%s', (url, expected) => {

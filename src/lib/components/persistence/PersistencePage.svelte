@@ -7,9 +7,10 @@
 	} from '$lib/components/persistence/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams.svelte';
-	import { Detail } from '@nais/ds-svelte-community';
+	import { Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { Snippet } from 'svelte';
 
@@ -76,7 +77,9 @@
 					<ListItem>
 						<div>
 							<PersistenceLink {instance} />
-							<Detail>{instance.environment.name}</Detail>
+							<Tag size="small" variant={envTagVariant(instance.environment.name)}
+								>{instance.environment.name}</Tag
+							>
 						</div>
 						{#if instance.workload}
 							<div class="right">
