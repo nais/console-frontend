@@ -50,10 +50,6 @@
 						level
 						ingress
 					}
-					... on WorkloadStatusNewInstancesFailing {
-						failingInstances
-						level
-					}
 					... on WorkloadStatusNoRunningInstances {
 						level
 					}
@@ -120,16 +116,6 @@
 			<Alert variant={variant($data.level)}>
 				Application <strong>{app}</strong> failed to synchronize properly.
 				<br />{$data.detail}
-			</Alert>
-		{:else if type === 'WorkloadStatusNewInstancesFailing'}
-			<Alert variant={variant($data.level)}>
-				{#if app}
-					New instances of <strong>{app}</strong> in <strong>{env}</strong> are failing. Check logs
-					for one or more of the instances:
-					{#each $data.failingInstances as instance (instance)}
-						<br /><a href="/team/{team}/{env}/app/{app}/logs?name={instance}">{instance}</a>
-					{/each}
-				{/if}
 			</Alert>
 		{:else if type === 'WorkloadStatusMissingSBOM'}
 			<Alert variant={variant($data.level)}>
