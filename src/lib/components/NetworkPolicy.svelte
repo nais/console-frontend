@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from './IconLabel.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
@@ -76,12 +77,16 @@
 </script>
 
 {#snippet networkPolicyRule(rule: NetworkPolicyRule)}
-	{#if rule.targetWorkloadName == '*'}
-		Any app {#if rule.targetWorkloadName == '*'}
-			from any namespace
+	{#if rule.targetWorkloadName === '*'}
+		Any workload
+		{#if rule.targetTeamSlug === '*'}
+			in any namespace
 		{:else}
 			in {rule.targetTeamSlug}
-		{/if} in {$data.environment.name}
+		{/if}
+		in <Tag size="small" variant={envTagVariant($data.environment.name)}
+			>{$data.environment.name}</Tag
+		> can access {$data.name}.
 	{:else if !rule.mutual && rule.targetWorkload}
 		<WorkloadLink
 			workload={rule.targetWorkload}
