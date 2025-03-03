@@ -263,5 +263,6 @@ export function cpuUtilization(cpuRequest: number | undefined, totalUsage: numbe
 }
 
 export function memoryUtilization(requestedMemory: number, currentMemoryUsage: number): number {
+	if (!requestedMemory) return 0;
 	return currentMemoryUsage / requestedMemory;
 }
