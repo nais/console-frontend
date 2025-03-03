@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fragment, graphql, type NetworkPolicy } from '$houdini';
+	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
@@ -72,8 +72,33 @@
 		)
 	);
 
-	$inspect($data.networkPolicy.outbound);
+	type NetworkPolicyRule = NetworkPolicy$data['networkPolicy']['inbound' | 'outbound']['rules'][0];
 </script>
+
+{#snippet networkPolicyRule(rule: NetworkPolicyRule)}
+	{#if rule.targetWorkloadName == '*'}
+		Any app {#if rule.targetWorkloadName == '*'}
+			from any namespace
+		{:else}
+			in {rule.targetTeamSlug}
+		{/if} in {$data.environment.name}
+	{:else if !rule.mutual && rule.targetWorkload}
+		<WorkloadLink
+			workload={rule.targetWorkload}
+			warning="{rule.targetWorkloadName} is missing outbound policy to {$data.name}"
+		/>
+	{:else if rule.targetWorkload}
+		<WorkloadLink workload={rule.targetWorkload} />
+	{:else}
+		<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
+			{#snippet icon()}
+				<TooltipAlignHack content="Invalid workload reference">
+					<WarningIcon />
+				</TooltipAlignHack>
+			{/snippet}
+		</IconLabel>
+	{/if}
+{/snippet}
 
 <Heading level="2" size="medium" spacing>Network policy</Heading>
 {#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
@@ -83,31 +108,12 @@
 			<ul>
 				{#each $data.networkPolicy.inbound.rules as rule (rule)}
 					<li>
-						{#if rule.targetWorkloadName == '*'}
-							Any app {#if rule.targetWorkloadName == '*'}
-								from any namespace
-							{:else}
-								in {rule.targetTeamSlug}
-							{/if} in {$data.environment.name}
-						{:else if !rule.mutual && rule.targetWorkload}
-							<WorkloadLink
-								workload={rule.targetWorkload}
-								warning="Workload is missing outbound policy to {$data.name}"
-							/>
-						{:else if rule.targetWorkload}
-							<WorkloadLink workload={rule.targetWorkload} />
-						{:else}
-							<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
-								{#snippet icon()}
-									<TooltipAlignHack content="Invalid workload reference">
-										<WarningIcon />
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
-						{/if}
+						{@render networkPolicyRule(rule)}
 					</li>
 				{:else}
-					<li>No inbound network policies configured for this app.</li>
+					<li>
+						No inbound network policies configured for this {$data.__typename?.toLowerCase()}.
+					</li>
 				{/each}
 			</ul>
 		</div>
@@ -126,7 +132,9 @@
 							{/each}
 						{/each}
 					{:else}
-						<li>No external outbound network policies configured for this app.</li>
+						<li>
+							No external outbound network policies configured for this {$data.__typename?.toLowerCase()}.
+						</li>
 					{/each}
 				</ul>
 				{#if $data.networkPolicy.outbound.rules.length > 0}
@@ -134,39 +142,18 @@
 					<ul>
 						{#each $data.networkPolicy.outbound.rules as rule (rule)}
 							<li>
-								{#if rule.targetWorkloadName == '*'}
-									Any app {#if rule.targetWorkloadName == '*'}
-										from any namespace
-									{:else}
-										in {rule.targetTeamSlug}
-									{/if} in {$data.environment.name}
-								{:else if !rule.mutual && rule.targetWorkload}
-									<WorkloadLink
-										workload={rule.targetWorkload}
-										warning="Workload is missing outbound policy to {$data.name}"
-									/>
-								{:else if rule.targetWorkload}
-									<WorkloadLink workload={rule.targetWorkload} />
-								{:else}
-									<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
-										{#snippet icon()}
-											<TooltipAlignHack content="Invalid workload reference">
-												<WarningIcon />
-											</TooltipAlignHack>
-										{/snippet}
-									</IconLabel>
-								{/if}
+								{@render networkPolicyRule(rule)}
 							</li>
 						{/each}
 					</ul>
 				{/if}
 			{:else}
-				No outbound network policies configured for this app.
+				No outbound network policies configured for this {$data.__typename?.toLowerCase()}.
 			{/if}
 		</div>
 	</div>
 {:else}
-	No network policies configured for this app.
+	No network policies configured for this {$data.__typename?.toLowerCase()}.
 {/if}
 
 <style>
