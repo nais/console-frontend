@@ -71,6 +71,8 @@
 			`)
 		)
 	);
+
+	$inspect($data.networkPolicy.outbound);
 </script>
 
 <Heading level="2" size="medium" spacing>Network policy</Heading>
@@ -112,7 +114,7 @@
 
 		<div>
 			<Heading level="3" size="small" spacing>Outbound</Heading>
-			{#if $data.networkPolicy.outbound.rules.length > 0 && $data.networkPolicy.outbound.external.length > 0}
+			{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
 				<Heading level="4" size="xsmall" spacing>External</Heading>
 				<ul>
 					{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
