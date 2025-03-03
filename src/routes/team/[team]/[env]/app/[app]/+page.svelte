@@ -11,8 +11,8 @@
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon, ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
@@ -56,6 +56,11 @@
 			team: teamSlug
 		});
 	};
+
+	let deployFailed = $derived(
+		$App.data?.team.environment.application.deployments.nodes[0].statuses.nodes[0].state ===
+			'FAILURE'
+	);
 </script>
 
 <GraphErrors errors={$App.errors} />
@@ -73,6 +78,22 @@
 						/>. If the deletion is taking too long, please contact the Nais team.
 					</Alert>
 				{/if}
+				{#if deployFailed}
+					<Alert variant="error" fullWidth={false}>
+						<Heading level="2" size="small" spacing>Last deployment failed</Heading>
+						<BodyShort spacing>
+							<strong>Error message:</strong>
+							{$App.data?.team.environment.application.deployments.nodes[0].statuses.nodes[0]
+								.message}
+						</BodyShort>
+						{#if $App.data?.team.environment.application.deployments.nodes[0].triggerUrl}
+							<a href={$App.data?.team.environment.application.deployments.nodes[0].triggerUrl}
+								>Github action <ExternalLinkIcon /></a
+							>
+						{/if}
+					</Alert>
+				{/if}
+
 				<div style="display:flex; flex-direction: column; gap: var(--a-spacing-4);">
 					<div class="instances-header">
 						<Heading level="3" size="medium">Instances</Heading>

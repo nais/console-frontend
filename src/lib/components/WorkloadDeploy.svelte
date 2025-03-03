@@ -2,7 +2,7 @@
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
-	import { BodyShort, Heading, Link } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Link, Tag } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -25,6 +25,11 @@
 							triggerUrl
 							commitSha
 							repository
+							statuses {
+								nodes {
+									state
+								}
+							}
 						}
 					}
 				}
@@ -38,7 +43,14 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Deploy</Heading>
+	<Heading level="3" size="small">
+		<div style="display: flex; gap: var(--a-spacing-2);">
+			Deployment
+			{#if deploymentInfo?.statuses.nodes[0].state === 'FAILURE'}
+				<Tag variant="error" size="small">Failed</Tag>
+			{/if}
+		</div>
+	</Heading>
 	{#if deploymentInfo}
 		{#if deploymentInfo.createdAt}
 			<BodyShort>Last deployed <Time time={deploymentInfo.createdAt} distance={true} />.</BodyShort>

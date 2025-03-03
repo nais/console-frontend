@@ -8,7 +8,31 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				team {
 					slug
 				}
+				image {
+					tag
+				}
+				instances {
+					nodes {
+						image {
+							name
+							tag
+						}
+					}
+				}
 				deletionStartedAt
+				deployments(first: 1) {
+					nodes {
+						triggerUrl
+						statuses {
+							nodes {
+								state
+								message
+
+								createdAt
+							}
+						}
+					}
+				}
 
 				...AppInstances
 				...AppStatus
