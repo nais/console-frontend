@@ -2,13 +2,9 @@
 	import { fragment, graphql, type Ingresses } from '$houdini';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
-	import {
-		GlobeIcon,
-		HouseIcon,
-		PadlockLockedIcon,
-		QuestionmarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		app: Ingresses;
@@ -38,7 +34,11 @@
 		{#each ingresses as ingress (ingress)}
 			<IconLabel size="medium" label={ingress.url} href={ingress.url}>
 				{#snippet icon()}
-					<TooltipAlignHack content="{group[0] + group.slice(1).toLowerCase()} ingress">
+					<TooltipAlignHack
+						content={group === 'UNKNOWN'
+							? 'Ingress not found'
+							: `${group[0]}${group.slice(1).toLowerCase()} ingress`}
+					>
 						{#if group === 'EXTERNAL'}
 							<GlobeIcon />
 						{:else if group === 'INTERNAL'}
@@ -46,7 +46,7 @@
 						{:else if group === 'AUTHENTICATED'}
 							<PadlockLockedIcon />
 						{:else}
-							<QuestionmarkIcon />
+							<WarningIcon />
 						{/if}
 					</TooltipAlignHack>
 				{/snippet}
