@@ -90,69 +90,6 @@
 				The manifest for <strong>{job}</strong> includes invalid configuration:
 				<br />{$data.detail}
 			</Alert>
-			<!--{:else if type === 'WorkloadStatusInboundNetwork'}
-			<Alert variant={variant($data.level)}>
-				{#if $data.policy.targetWorkload}
-					Traffic from <a
-						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
-							.environment
-							? $data.policy.targetWorkload.environment.name
-							: env}/app/{$data.policy.targetWorkloadName}">{$data.policy.targetWorkloadName}</a
-					>
-					in namespace {$data.policy.targetTeamSlug || team} ({$data.policy.targetWorkload
-						.environment
-						? $data.policy.targetWorkload.environment.name
-						: env}) is allowed by access policy, but
-					<a
-						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
-							.environment
-							? $data.policy.targetWorkload.environment.name
-							: env}/app/{$data.policy.targetWorkloadName}">{$data.policy.targetWorkloadName}</a
-					>
-					does not have an outbound rule for {job}.
-				{:else}
-					Traffic from <strong>{$data.policy.targetWorkloadName}</strong> from team
-					<strong>{$data.policy.targetTeamSlug}</strong>
-					({env}) is allowed by access policy, but application is not found.
-				{/if}
-				<br />
-				Consult
-				<a href={docURL('/how-to-guides/access-policies/')}
-					>Nais Application reference - accessPolicy</a
-				>.
-			</Alert>
-		{:else if type === 'WorkloadStatusOutboundNetwork'}
-			<Alert variant={variant($data.level)}>
-				{#if $data.policy.targetWorkload}
-					Traffic to <a
-						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
-							.environment
-							? $data.policy.targetWorkload.environment.name
-							: env}/app/{$data.policy.targetWorkloadName}">{$data.policy.targetWorkloadName}</a
-					>
-					in namespace {$data.policy.targetTeamSlug || team} ({$data.policy.targetWorkload
-						.environment
-						? $data.policy.targetWorkload.environment.name
-						: env}) is allowed by access policy, but
-					<a
-						href="/team/{$data.policy.targetTeamSlug || team}/{$data.policy.targetWorkload
-							.environment
-							? $data.policy.targetWorkload.environment.name
-							: env}/app/{$data.policy.targetWorkloadName}">{$data.policy.targetWorkloadName}</a
-					>
-					does not have an inbound rule for {job}.
-				{:else}
-					Traffic to <strong>{$data.policy.targetWorkloadName}</strong> from team
-					<strong>{$data.policy.targetTeamSlug}</strong>
-					({env}) is allowed by access policy, but application is not found.
-				{/if}
-				<br />
-				Consult
-				<a href={docURL('/how-to-guides/access-policies/')}
-					>Nais Application reference - accessPolicy</a
-				>.
-			</Alert>
-		-->
 		{:else if type === 'WorkloadStatusMissingSBOM'}
 			<Alert variant={variant($data.level)}>
 				<h4>Missing SBOM</h4>
