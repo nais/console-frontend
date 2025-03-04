@@ -80,8 +80,10 @@
 	}
 
 	const teams = $derived(
-		$teamSearch.data?.search.edges.map((e) => e.node).filter((n) => n.__typename === 'Team') ??
-			$teamsQuery.data?.teams.nodes
+		teamSearchQuery === ''
+			? $teamsQuery.data?.teams.nodes
+			: ($teamSearch.data?.search.edges.map((e) => e.node).filter((n) => n.__typename === 'Team') ??
+					$teamsQuery.data?.teams.nodes)
 	);
 
 	const pagination = $derived(
