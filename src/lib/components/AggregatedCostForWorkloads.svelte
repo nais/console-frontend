@@ -54,7 +54,7 @@
 		if (data.length === 0) {
 			return [];
 		}
-		let estimateCurrentMonth = getEstimateForMonth(data[data.length - 1]);
+		let estimateCurrentMonth = getEstimateForMonth(data.at(-1)!);
 		data.pop(); // Remove current month
 
 		data.push({
@@ -119,10 +119,10 @@
 	<div>
 		<div>
 			<Detail>
-				{data[data.length - 1].date.toLocaleString('en-US', {
+				{data.at(-1)?.date.toLocaleString('en-US', {
 					month: 'long'
-				})}: {euroValueFormatter(data[data.length - 1].sum)}
-				{#if data[data.length - 1].sum > data[data.length - 2].sum}
+				})}: {euroValueFormatter(data.at(-1)?.sum)}
+				{#if (data.at(-1)?.sum ?? 0) > (data.at(-2)?.sum ?? 0)}
 					<CaretUpFillIcon style="color: var(--a-surface-danger);" />
 				{:else}
 					<CaretDownFillIcon style="color: var(--a-surface-success);" />
@@ -131,9 +131,9 @@
 		</div>
 		<div>
 			<Detail>
-				{data[data.length - 2].date.toLocaleString('en-US', {
+				{data.at(-2)?.date.toLocaleString('en-US', {
 					month: 'long'
-				})}: {euroValueFormatter(data[data.length - 2].sum)}
+				})}: {euroValueFormatter(data.at(-2)?.sum)}
 			</Detail>
 		</div>
 	</div>

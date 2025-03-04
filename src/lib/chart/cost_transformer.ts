@@ -1,9 +1,13 @@
 import type { EChartsOption } from 'echarts';
 
 export function euroValueFormatter(
-	value: number,
+	value?: number,
 	{ maximumFractionDigits = 2 }: Intl.NumberFormatOptions = {}
 ): string {
+	if (value === undefined) {
+		return '';
+	}
+
 	return value.toLocaleString('en', {
 		style: 'currency',
 		currency: 'EUR',

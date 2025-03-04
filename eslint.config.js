@@ -5,6 +5,7 @@ import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript-eslint';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default ts.config(
@@ -14,6 +15,7 @@ export default ts.config(
 	...svelte.configs['flat/recommended'],
 	prettier,
 	...svelte.configs['flat/prettier'],
+	{ plugins: { unicorn: eslintPluginUnicorn } },
 	{
 		languageOptions: {
 			globals: {
@@ -37,7 +39,8 @@ export default ts.config(
 	{
 		rules: {
 			'svelte/require-each-key': 'error',
-			'svelte/valid-each-key': 'error'
+			'svelte/valid-each-key': 'error',
+			'unicorn/prefer-at': 'error'
 			/*'svelte/no-unused-class-name': 'error'*/
 		}
 	}
