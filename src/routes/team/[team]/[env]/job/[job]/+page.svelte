@@ -9,7 +9,8 @@
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -63,6 +64,11 @@
 			jobId: $Job.data!.team.environment.job.id
 		});
 	};
+
+	let deployFailed = $derived(
+		$Job.data?.team.environment.job.deployments.nodes.at(0)?.statuses.nodes.at(0)?.state ===
+			'FAILURE'
+	);
 </script>
 
 <GraphErrors errors={$Job.errors} />
@@ -77,6 +83,21 @@
 						time={job.deletionStartedAt}
 						distance
 					/>. If the deletion is taking too long, please contact the Nais team.
+				</Alert>
+			{/if}
+
+			{#if deployFailed}
+				<Alert variant="error" fullWidth={false}>
+					<Heading level="2" size="small" spacing>Last deployment failed</Heading>
+					<BodyShort spacing>
+						<strong>Error message:</strong>
+						{$Job.data?.team.environment.job.deployments.nodes.at(0)?.statuses.nodes.at(0)?.message}
+					</BodyShort>
+					{#if $Job.data?.team.environment.job.deployments.nodes[0].triggerUrl}
+						<a href={$Job.data?.team.environment.job.deployments.nodes.at(0)?.triggerUrl}
+							>Github action <ExternalLinkIcon /></a
+						>
+					{/if}
 				</Alert>
 			{/if}
 

@@ -9,6 +9,18 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 					expression
 					timeZone
 				}
+				deployments(first: 1) {
+					nodes {
+						triggerUrl
+						statuses {
+							nodes {
+								state
+								message
+								createdAt
+							}
+						}
+					}
+				}
 				...JobRuns
 				...JobStatus
 				...Persistence

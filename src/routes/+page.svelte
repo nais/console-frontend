@@ -23,6 +23,8 @@
 
 <svelte:head><title>Console</title></svelte:head>
 
+<!-- ?naisdevice=connected -->
+
 {#if userTeams === 0}
 	<div class="page">
 		<Onboarding {tenantName} />

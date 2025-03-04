@@ -58,7 +58,7 @@
 	};
 
 	let deployFailed = $derived(
-		$App.data?.team.environment.application.deployments.nodes[0].statuses.nodes[0].state ===
+		$App.data?.team.environment.application.deployments.nodes.at(0)?.statuses.nodes.at(0)?.state ===
 			'FAILURE'
 	);
 </script>
@@ -83,11 +83,11 @@
 						<Heading level="2" size="small" spacing>Last deployment failed</Heading>
 						<BodyShort spacing>
 							<strong>Error message:</strong>
-							{$App.data?.team.environment.application.deployments.nodes[0].statuses.nodes[0]
-								.message}
+							{$App.data?.team.environment.application.deployments.nodes.at(0)?.statuses.nodes.at(0)
+								?.message}
 						</BodyShort>
-						{#if $App.data?.team.environment.application.deployments.nodes[0].triggerUrl}
-							<a href={$App.data?.team.environment.application.deployments.nodes[0].triggerUrl}
+						{#if $App.data?.team.environment.application.deployments.nodes.at(0)?.triggerUrl}
+							<a href={$App.data?.team.environment.application.deployments.nodes.at(0)?.triggerUrl}
 								>Github action <ExternalLinkIcon /></a
 							>
 						{/if}
