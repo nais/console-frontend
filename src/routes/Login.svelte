@@ -18,8 +18,6 @@
 	</style>
 </svelte:head>
 
-<!-- ?naisdevice=connected -->
-
 <div class="wrapper">
 	<div class="login">
 		<h1>

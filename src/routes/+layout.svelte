@@ -7,7 +7,9 @@
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
 	import ProgressBar from '$lib/ProgressBar.svelte';
+	import { Alert } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { LayoutData } from './$houdini';
@@ -19,7 +21,7 @@
 	}
 
 	let { data, children }: Props = $props();
-	let { UserInfo } = $derived(data);
+	let { UserInfo, connected } = $derived(data);
 
 	let user = $derived(
 		UserInfo.data?.me as
@@ -80,6 +82,8 @@
 	afterNavigate(() => {
 		loading = false;
 	});
+
+	let open = $state(true);
 </script>
 
 <div class={['full-wrapper', activeColor()]}>
@@ -97,9 +101,23 @@
 
 		{@render children?.()}
 	{/if}
+	{#if connected && open}
+		<div class="naisdevice" out:fade>
+			<Alert variant="success" closeButton onclose={() => (open = false)}>
+				Naisdevice successfully connected.
+			</Alert>
+		</div>
+	{/if}
 </div>
 
 <style>
+	.naisdevice {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		padding: var(--a-spacing-2);
+	}
+
 	:global(.page) {
 		margin: 0 auto 0 auto;
 		min-width: 1000px;

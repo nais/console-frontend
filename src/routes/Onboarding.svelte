@@ -103,8 +103,6 @@
 	);
 </script>
 
-<!--- ?naisdevice=connected -->
-
 <div class="onboarding">
 	<Heading level="1" size="xlarge" spacing>Welcome to Nais Console! 🎉</Heading>
 	{#if $teamsQuery.fetching}

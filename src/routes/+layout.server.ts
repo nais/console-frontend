@@ -6,6 +6,7 @@ export const load: LayoutServerLoad = async (event) => {
 	const userInfo = await ui.fetch({ event });
 
 	return {
+		connected: event.url.searchParams.get('naisdevice') === 'connected',
 		UserInfo: userInfo,
 		tenantName: event.locals.tenantName,
 		githubOrganization: event.locals.githubOrganization
