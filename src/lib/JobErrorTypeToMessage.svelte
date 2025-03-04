@@ -33,38 +33,6 @@
 						level
 						detail
 					}
-					... on WorkloadStatusInboundNetwork {
-						level
-						policy {
-							targetWorkload {
-								name
-								environment {
-									name
-								}
-							}
-							targetTeam {
-								slug
-							}
-							targetTeamSlug
-							targetWorkloadName
-						}
-					}
-					... on WorkloadStatusOutboundNetwork {
-						level
-						policy {
-							targetWorkload {
-								name
-								environment {
-									name
-								}
-							}
-							targetTeam {
-								slug
-							}
-							targetTeamSlug
-							targetWorkloadName
-						}
-					}
 					... on WorkloadStatusMissingSBOM {
 						level
 					}
@@ -115,7 +83,7 @@
 			<Alert variant={variant($data.level)}>
 				Nais-yaml might be invalid for application <strong>{job}</strong>.
 			</Alert>
-		{:else if type === 'WorkloadStatusInboundNetwork'}
+			<!--{:else if type === 'WorkloadStatusInboundNetwork'}
 			<Alert variant={variant($data.level)}>
 				{#if $data.policy.targetWorkload}
 					Traffic from <a
@@ -177,6 +145,7 @@
 					>Nais Application reference - accessPolicy</a
 				>.
 			</Alert>
+		-->
 		{:else if type === 'WorkloadStatusMissingSBOM'}
 			<Alert variant={variant($data.level)}>
 				<h4>Missing SBOM</h4>
