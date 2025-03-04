@@ -27,7 +27,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 							nodes {
 								state
 								message
-
 								createdAt
 							}
 						}
