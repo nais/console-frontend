@@ -57,6 +57,12 @@
 					... on WorkloadStatusNoRunningInstances {
 						level
 					}
+					... on WorkloadStatusOutboundNetwork {
+						level
+					}
+					... on WorkloadStatusInboundNetwork {
+						level
+					}
 				}
 			`)
 		)
@@ -107,7 +113,7 @@
 			</Alert>
 		{:else if type === 'WorkloadStatusInvalidNaisYaml'}
 			<Alert variant={variant($data.level)}>
-				The <em>nais.yaml</em> configuration is invalid for application <strong>{app}</strong>:
+				The manifest for <strong>{app}</strong> includes invalid configuration:
 				<br />{$data.detail}
 			</Alert>
 		{:else if type === 'WorkloadStatusSynchronizationFailing'}
@@ -207,7 +213,7 @@
 				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
 				<a href="/team/{team}/{env}/app/{app}/image">image details</a> for more details.
 			</Alert>
-		{:else}
+		{:else if type !== 'WorkloadStatusOutboundNetwork' && type !== 'WorkloadStatusInboundNetwork'}
 			<Alert variant="error">Unkown error</Alert>
 		{/if}
 	</div>

@@ -47,6 +47,12 @@
 						detail
 						name
 					}
+					... on WorkloadStatusOutboundNetwork {
+						level
+					}
+					... on WorkloadStatusInboundNetwork {
+						level
+					}
 				}
 			`)
 		)
@@ -81,7 +87,8 @@
 			</Alert>
 		{:else if type === 'WorkloadStatusInvalidNaisYaml'}
 			<Alert variant={variant($data.level)}>
-				Nais-yaml might be invalid for application <strong>{job}</strong>.
+				The manifest for <strong>{job}</strong> includes invalid configuration:
+				<br />{$data.detail}
 			</Alert>
 			<!--{:else if type === 'WorkloadStatusInboundNetwork'}
 			<Alert variant={variant($data.level)}>
@@ -171,7 +178,7 @@
 				<h4>Failed to run job</h4>
 				{$data.detail}
 			</Alert>
-		{:else}
+		{:else if type !== 'WorkloadStatusOutboundNetwork' && type !== 'WorkloadStatusInboundNetwork'}
 			<Alert variant="error">Unkown error</Alert>
 		{/if}
 	</div>
