@@ -407,9 +407,9 @@
 				}
 			}
 			&.HIGH {
-				background-color: var(--a-orange-200);
+				background-color: color-mix(in oklab, var(--a-red-200), var(--a-orange-200));
 				&:hover {
-					background-color: var(--a-orange-300);
+					background-color: color-mix(in oklab, var(--a-red-300), var(--a-orange-300));
 				}
 			}
 			&.MEDIUM {

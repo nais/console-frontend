@@ -3,7 +3,7 @@ export function severityToColor(severity: string): string {
 		case 'critical':
 			return 'var(--a-red-200)';
 		case 'high':
-			return 'var(--a-orange-200)';
+			return 'color-mix(in oklab, var(--a-red-200), var(--a-orange-200))';
 		case 'medium':
 			return 'var(--a-orange-200)';
 		case 'low':
