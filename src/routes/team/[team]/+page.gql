@@ -35,9 +35,15 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 
 						errors {
 							__typename
+							... on WorkloadStatusVulnerable {
+								summary {
+									riskScore
+								}
+							}
 							...AppErrorFragment
 						}
 					}
+
 					... on Application {
 						instances {
 							pageInfo {
