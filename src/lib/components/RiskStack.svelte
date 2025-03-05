@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { percentageFormatter } from '$lib/utils/formatters';
+	import { capitalizeFirstLetter, percentageFormatter } from '$lib/utils/formatters';
 
 	type VulnerabilitySummary = {
 		critical: number;
@@ -54,7 +54,7 @@
 			{#if scores[level as keyof typeof scores] > 0}
 				<div class="label-item">
 					<span class="label-dot {level}"></span>
-					{level}: {summary[level as keyof typeof summary]}
+					{capitalizeFirstLetter(level)}: {summary[level as keyof typeof summary]}
 				</div>
 			{/if}
 		{/each}

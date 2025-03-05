@@ -7,6 +7,7 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import type { PageData } from './$houdini';
 
 	function numberToWords(num: number): string {
@@ -52,10 +53,6 @@
 		return `${hundredPart} and ${numberToWords(remainder)}`;
 	}
 
-	function capitalizeFirstLetter(sentence: string): string {
-		return sentence.length ? sentence.charAt(0).toUpperCase() + sentence.slice(1) : sentence;
-	}
-
 	interface Props {
 		data: PageData;
 	}
@@ -67,7 +64,9 @@
 		$TeamOverview.data?.team.workloads.edges
 			.map((workload) => workload.node)
 			.filter((node) =>
-				node.status.errors.some((error) => error.__typename === 'WorkloadStatusMissingSBOM')
+				node.status.errors.some(
+					(error: { __typename: string }) => error.__typename === 'WorkloadStatusMissingSBOM'
+				)
 			)
 	);
 
