@@ -1,5 +1,77 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		...TeamDeployments
+		workloads(first: 9999, orderBy: { field: STATUS, direction: DESC }) {
+			pageInfo {
+				endCursor
+				hasNextPage
+				hasPreviousPage
+				pageEnd
+				pageStart
+				startCursor
+				totalCount
+			}
+
+			edges {
+				node {
+					id
+					__typename
+					name
+					status {
+						state
+					}
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+					deployments {
+						nodes {
+							createdAt
+						}
+					}
+					status {
+						state
+
+						errors {
+							__typename
+							...AppErrorFragment
+						}
+					}
+					... on Application {
+						instances {
+							pageInfo {
+								totalCount
+							}
+							edges {
+								node {
+									status {
+										state
+										message
+									}
+								}
+							}
+						}
+					}
+					... on Job {
+						runs {
+							pageInfo {
+								totalCount
+							}
+							edges {
+								node {
+									startTime
+									status {
+										state
+										message
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		#...TeamDeployments
 	}
 }
