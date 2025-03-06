@@ -11,7 +11,9 @@ const config = {
 		}
 	},
 	plugins: {
-		'houdini-svelte': {}
+		'houdini-svelte': {
+			forceRunesMode: true
+		}
 	},
 	scalars: {
 		Slug: { type: 'string' },

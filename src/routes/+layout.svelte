@@ -2,22 +2,20 @@
 	import '@nais/ds-svelte-community/css';
 	import PageHeader from './PageHeader.svelte';
 	//import '../styles/vars_dark.css';
-	import { afterNavigate, beforeNavigate, replaceState } from '$app/navigation';
-	import { page } from '$app/state';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
 	import ProgressBar from '$lib/ProgressBar.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { LayoutProps } from './$houdini';
 	import Login from './Login.svelte';
+	import Naisdevice from './Naisdevice.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { UserInfo, connected } = $derived(data);
+	let { UserInfo } = $derived(data);
 
 	let user = $derived(
 		UserInfo.data?.me as
@@ -78,8 +76,6 @@
 	afterNavigate(() => {
 		loading = false;
 	});
-
-	let open = $state(true);
 </script>
 
 <div class={['full-wrapper', activeColor()]}>
@@ -97,31 +93,11 @@
 
 		{@render children?.()}
 	{/if}
-	{#if connected && open}
-		<div class="naisdevice" out:fade>
-			<Alert
-				variant="success"
-				closeButton
-				onclose={() => {
-					open = false;
-					replaceState(page.url.pathname, { replaceState: true });
-					/*history.replaceState({}, '', page.url.toString());*/
-				}}
-			>
-				Naisdevice successfully connected.
-			</Alert>
-		</div>
-	{/if}
+
+	<Naisdevice />
 </div>
 
 <style>
-	.naisdevice {
-		position: fixed;
-		bottom: 0;
-		right: 0;
-		padding: var(--a-spacing-2);
-	}
-
 	:global(.page) {
 		margin: 0 auto 0 auto;
 		min-width: 1000px;
