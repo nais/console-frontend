@@ -2,7 +2,8 @@
 	import '@nais/ds-svelte-community/css';
 	import PageHeader from './PageHeader.svelte';
 	//import '../styles/vars_dark.css';
-	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, replaceState } from '$app/navigation';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
@@ -12,15 +13,10 @@
 	import { fade } from 'svelte/transition';
 	import '../styles/app.css';
 	import '../styles/colors.css';
-	import type { LayoutData } from './$houdini';
+	import type { LayoutProps } from './$houdini';
 	import Login from './Login.svelte';
 
-	interface Props {
-		data: LayoutData;
-		children?: import('svelte').Snippet;
-	}
-
-	let { data, children }: Props = $props();
+	let { data, children }: LayoutProps = $props();
 	let { UserInfo, connected } = $derived(data);
 
 	let user = $derived(
@@ -103,7 +99,15 @@
 	{/if}
 	{#if connected && open}
 		<div class="naisdevice" out:fade>
-			<Alert variant="success" closeButton onclose={() => (open = false)}>
+			<Alert
+				variant="success"
+				closeButton
+				onclose={() => {
+					open = false;
+					replaceState(page.url.pathname, { replaceState: true });
+					/*history.replaceState({}, '', page.url.toString());*/
+				}}
+			>
 				Naisdevice successfully connected.
 			</Alert>
 		</div>
