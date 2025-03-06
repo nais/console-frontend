@@ -15,12 +15,16 @@
 
 	function getNextRunTime(expression: string, cronTimeZone: string, localTimeZone: string): string {
 		try {
-			const interval = cronParser.parseExpression(expression, {
+			const interval = cronParser.parse(expression, {
 				currentDate: new Date(),
 				tz: cronTimeZone
 			});
 
 			const nextRunInCronTZ = interval.next().toISOString();
+
+			if (!nextRunInCronTZ) {
+				throw new Error('Invalid cron expression');
+			}
 
 			const nextRunInLocalTZ = DateTime.fromISO(nextRunInCronTZ, { zone: 'utc' }).setZone(
 				localTimeZone
