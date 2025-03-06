@@ -8,7 +8,7 @@
 		type WorkloadOrderField$options
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyShort,
 		Skeleton,
@@ -242,7 +242,7 @@
 						<Td>
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
-									<Tooltip content={'critical'}>
+									<Tooltip content="critical">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.critical > 0}
 												<a href={imageUrl(workload)} class="vulnerability-count CRITICAL">
@@ -263,7 +263,7 @@
 						<Td>
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
-									<Tooltip content={'high'}>
+									<Tooltip content="high">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.high > 0}
 												<a href={imageUrl(workload)} class="vulnerability-count HIGH">
@@ -284,7 +284,7 @@
 						<Td>
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
-									<Tooltip content={'medium'}>
+									<Tooltip content="medium">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.medium > 0}
 												<a href={imageUrl(workload)} class="vulnerability-count MEDIUM">
@@ -305,7 +305,7 @@
 						<Td>
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
-									<Tooltip content={'low'}>
+									<Tooltip content="low">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.low > 0}
 												<a href={imageUrl(workload)} class="vulnerability-count LOW">
@@ -326,7 +326,7 @@
 						<Td>
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
-									<Tooltip content={'unassigned'}>
+									<Tooltip content="unassigned">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.unassigned > 0}
 												<a href={imageUrl(workload)} class="vulnerability-count UNASSIGNED">
@@ -345,7 +345,7 @@
 						<Td>
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
-									<Tooltip content={'risk score'}>
+									<Tooltip content="risk score">
 										<BodyShort class="vulnerability-count">
 											<a href={imageUrl(workload)} class="vulnerability-count RISK_SCORE">
 												{workload.image.vulnerabilitySummary

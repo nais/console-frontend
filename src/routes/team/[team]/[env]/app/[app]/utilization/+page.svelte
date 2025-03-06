@@ -12,15 +12,11 @@
 	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageData } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
+	import type { PageProps } from './$houdini';
 
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { ResourceUtilizationForApp } = $derived(data);
-	export const start = new Date();
 
 	type resourceUsage = {
 		readonly timestamp: Date;
@@ -165,7 +161,7 @@
 		</Card>
 		<Card columns={12} borderColor="var(--a-gray-200)">
 			<span class="graphHeader">
-				<h3 style={'margin-bottom: 0'}>Memory usage</h3>
+				<h3 style="margin-bottom: 0">Memory usage</h3>
 				<span class="intervalPicker">
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
 						<a
@@ -187,7 +183,7 @@
 			/>
 
 			<span class="graphHeader">
-				<h3 style={'margin-bottom: 0'}>CPU usage</h3>
+				<h3 style="margin-bottom: 0">CPU usage</h3>
 			</span>
 			<EChart
 				options={options(utilization.cpu_series, utilization.requested_cpu, 'rgb(131, 191, 246)')}

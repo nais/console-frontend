@@ -51,7 +51,7 @@
 				<dd>
 					{#if bq.cascadingDelete}
 						<IconLabel
-							label={'Deleting the application will also remove the dataset and all its tables.'}
+							label="Deleting the application will also remove the dataset and all its tables."
 						>
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
@@ -60,7 +60,7 @@
 							{/snippet}
 						</IconLabel>
 					{:else}
-						<IconLabel label={'Deleting the application will NOT remove the dataset.'}>
+						<IconLabel label="Deleting the application will NOT remove the dataset.">
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
 									<XMarkIcon style="color: var(--a-icon-danger);" />
