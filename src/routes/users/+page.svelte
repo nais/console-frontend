@@ -5,7 +5,7 @@
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';

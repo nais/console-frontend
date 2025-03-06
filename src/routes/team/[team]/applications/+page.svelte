@@ -7,7 +7,7 @@
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';

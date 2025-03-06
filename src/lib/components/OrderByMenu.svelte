@@ -25,7 +25,7 @@
 <script lang="ts" generics="T extends OrderField">
 	import { page } from '$app/state';
 	import { OrderDirection, type OrderDirection$options } from '$houdini';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,

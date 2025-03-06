@@ -9,7 +9,7 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { Snippet } from 'svelte';

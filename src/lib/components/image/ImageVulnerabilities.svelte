@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql, ImageVulnerabilityOrderField, PendingValue } from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
@@ -198,7 +198,7 @@
 					>
 					<Td style="text-align: center">
 						{#if v.analysisTrail.suppressed}
-							<CheckmarkIcon width={'18px'} height={'18px'} />
+							<CheckmarkIcon width="18px" height="18px" />
 						{/if}
 					</Td>
 					<Td>
