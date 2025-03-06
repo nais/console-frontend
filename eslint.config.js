@@ -11,7 +11,7 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 export default ts.config(
 	includeIgnoreFile(gitignorePath),
 	js.configs.recommended,
-	...ts.configs.recommended,
+	...ts.configs.recommendedTypeChecked,
 	...svelte.configs['flat/recommended'],
 	prettier,
 	...svelte.configs['flat/prettier'],
@@ -21,6 +21,13 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node
+			},
+			parserOptions: {
+				projectService: {
+					allowDefaultProject: ['.storybook/*.ts']
+				},
+				tsconfigRootDir: import.meta.dirname,
+				extraFileExtensions: ['.svelte']
 			}
 		}
 	},
@@ -34,6 +41,12 @@ export default ts.config(
 					experimentalGenerics: true
 				}
 			}
+		},
+		rules: {
+			'@typescript-eslint/no-floating-promises': 'off',
+			'@typescript-eslint/no-unsafe-assignment': 'off',
+			'@typescript-eslint/no-unsafe-call': 'off',
+			'@typescript-eslint/no-deprecated': 'error'
 		}
 	},
 	{
@@ -43,5 +56,12 @@ export default ts.config(
 			'unicorn/prefer-at': 'error'
 			/*'svelte/no-unused-class-name': 'error'*/
 		}
+	},
+	{
+		files: ['**/*.js'],
+		...ts.configs.disableTypeChecked
+	},
+	{
+		ignores: ['build/', '.svelte-kit/', 'dist/', '.yarn/', 'node_modules/']
 	}
 );
