@@ -115,7 +115,7 @@
 					<Td><Time time={deploy.createdAt} distance={true} /></Td>
 					<Td
 						>{#if deploy.statuses.nodes.length === 0}<DeploymentStatus
-								status={'UNKNOWN'}
+								status="UNKNOWN"
 							/>{:else}<DeploymentStatus status={deploy.statuses.nodes[0].state} />{/if}</Td
 					>
 				</Tr>

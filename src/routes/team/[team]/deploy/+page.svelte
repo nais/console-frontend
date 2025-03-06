@@ -4,7 +4,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
@@ -102,7 +102,7 @@
 						<Td><Time time={deploy.createdAt} distance={true} /></Td>
 						<Td
 							>{#if deploy.statuses.nodes.length === 0}<DeploymentStatus
-									status={'UNKNOWN'}
+									status="UNKNOWN"
 								/>{:else}<DeploymentStatus status={deploy.statuses.nodes[0].state} />{/if}</Td
 						>
 					</Tr>

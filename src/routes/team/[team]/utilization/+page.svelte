@@ -293,7 +293,7 @@
 			<div>
 				<h4>All applications</h4>
 				<Table
-					size={'small'}
+					size="small"
 					sort={sortState}
 					onsortchange={(key) => {
 						sortState = sortTable(key, sortState);

@@ -6,7 +6,7 @@
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';

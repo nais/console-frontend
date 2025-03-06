@@ -114,7 +114,7 @@
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<SummaryCard title="Critical vulnerabilities" color={'grey'} styled={false}>
+			<SummaryCard title="Critical vulnerabilities" color="grey" styled={false}>
 				{#snippet icon()}
 					{#if team === PendingValue}
 						<Skeleton variant="circle" style="min-height: 66px; min-width: 66px;" />
@@ -122,7 +122,7 @@
 						<Vulnerability
 							count={team.vulnerabilitySummary.critical}
 							severity="critical"
-							size={'66px'}
+							size="66px"
 						/>
 					{:else}
 						<code class="check">&check;</code>
@@ -136,7 +136,7 @@
 			</SummaryCard>
 		</Card>
 		<Card columns={3}>
-			<SummaryCard title="Total risk score" color={'grey'} styled={false}>
+			<SummaryCard title="Total risk score" color="grey" styled={false}>
 				{#snippet icon()}
 					{#if team === PendingValue}
 						<Skeleton variant="rectangle" style="min-height: 80px; min-width: 50px;" />

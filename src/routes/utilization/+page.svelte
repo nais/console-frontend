@@ -281,7 +281,7 @@
 			<div>
 				<h4>All teams</h4>
 				<Table
-					size={'small'}
+					size="small"
 					sort={sortState}
 					onsortchange={(key) => {
 						sortState = sortTable(key, sortState);

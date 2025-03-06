@@ -11,7 +11,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageData } from './$houdini';
 

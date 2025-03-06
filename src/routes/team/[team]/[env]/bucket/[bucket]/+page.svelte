@@ -38,7 +38,7 @@
 				<dd>
 					{#if bucket.cascadingDelete}
 						<IconLabel
-							label={'Deleting the application will also remove the bucket and all its contents.'}
+							label="Deleting the application will also remove the bucket and all its contents."
 						>
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
@@ -50,7 +50,7 @@
 							{/snippet}
 						</IconLabel>
 					{:else}
-						<IconLabel label={'Deleting the application will NOT remove the bucket.'}>
+						<IconLabel label="Deleting the application will NOT remove the bucket.">
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete: false">
 									<XMarkIcon style="color: var(--a-icon-danger);" />

@@ -4,7 +4,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageData } from './$houdini';
 
