@@ -175,20 +175,20 @@
 			{#each vulnz as v (v)}
 				<Tr>
 					<Td>
-						{#if authorized}
-							<Button
-								variant="tertiary"
-								size="xsmall"
-								onclick={() => {
-									findingToSuppress = v;
-									suppressOpen = true;
-								}}
-							>
-								<code>{v.identifier}</code>
-							</Button>
-						{:else}
+						<!--{#if authorized}-->
+						<Button
+							variant="tertiary"
+							size="xsmall"
+							onclick={() => {
+								findingToSuppress = v;
+								suppressOpen = true;
+							}}
+						>
 							<code>{v.identifier}</code>
-						{/if}
+						</Button>
+						<!--{:else}
+							<code>{v.identifier}</code>
+						{/if}-->
 					</Td>
 					<Td><code>{v.package}</code></Td>
 					<Td
@@ -236,7 +236,7 @@
 		}}
 	/>
 
-	{#if findingToSuppress && authorized !== PendingValue && authorized && image.workloadReferences}
+	{#if findingToSuppress && authorized !== PendingValue && image.workloadReferences}
 		{#key findingToSuppress.id}
 			<SuppressFinding
 				bind:open={suppressOpen}

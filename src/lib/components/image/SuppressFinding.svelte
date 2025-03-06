@@ -226,39 +226,44 @@
 			</Tbody>
 		</Table>
 	</div>
+	{#if authorized}
+		<div class="wrapper">
+			{#if errormessage !== ''}
+				<Alert variant="error">
+					{errormessage}
+				</Alert>
+			{/if}
+			<p>
+				Please provide a reason for suppressing this finding. This will be recorded in the analysis
+				audit log. Suppression will be in effect for all workloads using this image.
+			</p>
+			<Select size="small" label="Analysis" bind:value={selectedReason}>
+				{#each SUPPRESS_OPTIONS as option (option)}
+					{#if option.value === finding.state}
+						<option value={option.value}>{option.text} </option>
+					{:else}
+						<option value={option.value}>{option.text}</option>
+					{/if}
+				{/each}
+			</Select>
 
-	<div class="wrapper">
-		{#if errormessage !== ''}
-			<Alert variant="error">
-				{errormessage}
-			</Alert>
-		{/if}
-		<p>
-			Please provide a reason for suppressing this finding. This will be recorded in the analysis
-			audit log. Suppression will be in effect for all workloads using this image.
-		</p>
-		<Select size="small" label="Analysis" bind:value={selectedReason}>
-			{#each SUPPRESS_OPTIONS as option (option)}
-				{#if option.value === finding.state}
-					<option value={option.value}>{option.text} </option>
-				{:else}
-					<option value={option.value}>{option.text}</option>
-				{/if}
-			{/each}
-		</Select>
-
-		<TextField type="text" bind:value={inputText}>
-			{#snippet label()}
-				Comment
-			{/snippet}
-		</TextField>
-		<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
-	</div>
+			<TextField type="text" bind:value={inputText}>
+				{#snippet label()}
+					Comment
+				{/snippet}
+			</TextField>
+			<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
+		</div>
+	{/if}
 	{#snippet footer()}
-		<Button variant="primary" size="small" onclick={triggerSuppress} disabled={!authorized}
-			>Update</Button
-		>
-		<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
+		{#if authorized}
+			<Button variant="primary" size="small" onclick={triggerSuppress} disabled={!authorized}
+				>Update</Button
+			>
+			<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
+		{:else}
+			<Button variant="secondary" size="small" onclick={close}>Close</Button>
+		{/if}
 	{/snippet}
 </Modal>
 
