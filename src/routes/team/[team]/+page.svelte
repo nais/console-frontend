@@ -34,8 +34,6 @@
 				node.status.errors.some((error) => error.__typename === 'WorkloadStatusVulnerable')
 			)
 	);
-
-	$inspect(workloadWithoutSbom, 'workloadWithoutSbom');
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -49,6 +47,7 @@
 <div class="wrapper">
 	<div>
 		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
+
 		<div class="two-columns">
 			<VulnerabilitySummary {teamSlug} />
 			<div class="todo">
@@ -66,14 +65,21 @@
 								<Tag size="small" variant={envTagVariant(workload.environment.name)}
 									>{workload.environment.name}</Tag
 								>
-								has a risk score of {workload.status.errors.map((error) =>
-									error.__typename === 'WorkloadStatusVulnerable' ? error.summary.riskScore : 0
-								)}.
-								<a href="/">Go to image details</a>
+								has a risk score of {workload.status.errors.map((error) => {
+									if (error.__typename === 'WorkloadStatusVulnerable') {
+										return error.summary.riskScore;
+									}
+								})}.
+								<a
+									href="/team/{teamSlug}/{workload.environment.name}/{workload.__typename === 'Job'
+										? 'job'
+										: 'app'}/{workload.name}/image">Go to image details</a
+								>
 							</li>
 						{/each}
 					</ul>
 				{/if}
+
 				{#if workloadWithoutSbom?.length}
 					<BodyShort>
 						{capitalizeFirstLetter(numberToWords(workloadWithoutSbom?.length))} of your workloads does

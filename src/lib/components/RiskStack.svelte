@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { capitalizeFirstLetter, percentageFormatter } from '$lib/utils/formatters';
+	import { BodyShort } from '@nais/ds-svelte-community';
 
 	type VulnerabilitySummary = {
 		critical: number;
@@ -39,6 +40,16 @@
 </script>
 
 <div class="stack-container">
+	<div class="risk-score-label">
+		{#if summary.riskScore}
+			<dl>
+				<dt>Risk score:</dt>
+				<dd>
+					<span class={summary['riskScore'] > 100 ? 'red' : 'green'}>{summary['riskScore']}</span>
+				</dd>
+			</dl>
+		{/if}
+	</div>
 	<div class="stack">
 		{#each Object.keys(scores) as level (level)}
 			{#if scores[level as keyof typeof scores] > 0}
@@ -62,20 +73,6 @@
 </div>
 <div class="container">
 	<dl>
-		{#if summary['riskScore']}
-			<dt>Risk score:</dt>
-			<dd>
-				<span class={summary['riskScore'] > 100 ? 'red' : 'green'}>{summary['riskScore']}</span>
-			</dd>
-			<!--HelpText title="Risk score"
-				>The risk score is a calculated value based on the severity of the vulnerabilities
-				discovered within the workloads. A higher risk score indicates a higher risk of
-				exploitation. Algorithms may vary, but a common approach is to assign a score based on the
-				severity of the vulnerabilities found. The Score is calculated: "((critical * 10) + (high *
-				5) + (medium * 3) + (low * 1) + (unassigned * 5))".
-			</HelpText-->
-		{/if}
-
 		{#if summary['coverage']}
 			<dt>Coverage:</dt>
 			<dd>
@@ -86,6 +83,18 @@
 		{/if}
 	</dl>
 </div>
+
+<details>
+	<summary>Risk Score Breakdown</summary>
+	<BodyShort style="margin-bottom: var(--spacing-layout)">
+		The stacked chart visualizes the risk score composition based on detected vulnerabilities. Each
+		segment represents a severity level—Critical, High, Medium, Low, and Unassigned—weighted
+		according to impact. The total risk score is calculated as: (Critical * 10) + (High * 5) +
+		(Medium * 3) + (Low * 1) + (Unassigned * 5) Higher sections indicate a greater contribution to
+		the overall risk. The color intensity reflects severity, helping to quickly assess risk
+		distribution.
+	</BodyShort>
+</details>
 
 <style>
 	.stack-container {
@@ -117,7 +126,7 @@
 		flex-direction: column;
 		width: 64px;
 		height: 256px;
-		row-gap: 1px;
+		/*row-gap: 1px;*/
 
 		:global(.segment:first-of-type) {
 			border-top-left-radius: 8px;
@@ -128,15 +137,23 @@
 			border-bottom-right-radius: 8px;
 			border-bottom-left-radius: 8px;
 		}
-		:global(.segment) {
-			padding: 4px 10px;
-			text-align: center;
-		}
+	}
+
+	.risk-score-label {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 16px;
+		height: 256px;
+		font-weight: bold;
+		transform: rotate(-90deg);
+		white-space: nowrap;
+		z-index: 1;
 	}
 
 	.segment {
 		width: 100%;
-		transition: height 0.3s ease-in-out;
+		transition: height 5s ease-in-out;
 	}
 
 	.critical {
