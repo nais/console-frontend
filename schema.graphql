@@ -214,7 +214,7 @@ type Application implements Node & Workload {
   ): DeploymentConnection!
 
   """The environment the application is deployed in."""
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The globally unique ID of the application."""
   id: ID!
@@ -310,6 +310,9 @@ type Application implements Node & Workload {
 
   """The team that owns the application."""
   team: Team!
+
+  """The team environment for the application."""
+  teamEnvironment: TeamEnvironment!
   utilization: WorkloadUtilization!
 
   """
@@ -524,11 +527,12 @@ type BigQueryDataset implements Node & Persistence {
   cascadingDelete: Boolean!
   cost: BigQueryDatasetCost!
   description: String
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   status: BigQueryDatasetStatus!
   team: Team!
+  teamEnvironment: TeamEnvironment!
   workload: Workload
 }
 
@@ -590,12 +594,13 @@ type BigQueryDatasetStatus {
 
 type Bucket implements Node & Persistence {
   cascadingDelete: Boolean!
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   publicAccessPrevention: String!
   status: BucketStatus!
   team: Team!
+  teamEnvironment: TeamEnvironment!
   uniformBucketLevelAccess: Boolean!
   workload: Workload
 }
@@ -1154,6 +1159,101 @@ type EntraIDAuthIntegration implements AuthIntegration {
   name: String!
 }
 
+"""
+An environment represents a runtime environment for workloads.
+
+Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+"""
+type Environment implements Node {
+  """The globally unique ID of the team."""
+  id: ID!
+
+  """Unique name of the environment."""
+  name: String!
+
+  """Nais workloads in the environment."""
+  workloads(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: EnvironmentWorkloadOrder
+  ): WorkloadConnection!
+}
+
+"""Environment connection."""
+type EnvironmentConnection {
+  """List of edges."""
+  edges: [EnvironmentEdge!]!
+
+  """List of nodes."""
+  nodes: [Environment!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+"""Environment edge."""
+type EnvironmentEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The Environment."""
+  node: Environment!
+}
+
+"""Ordering options when fetching environments."""
+input EnvironmentOrder {
+  """The direction to order in."""
+  direction: OrderDirection!
+
+  """The field to order by."""
+  field: EnvironmentOrderField!
+}
+
+"""Fields to order environments by."""
+enum EnvironmentOrderField {
+  """Order by name."""
+  NAME
+}
+
+"""Ordering options when fetching workloads in an environment."""
+input EnvironmentWorkloadOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: EnvironmentWorkloadOrderField!
+}
+
+"""Fields to order workloads in an environment by."""
+enum EnvironmentWorkloadOrderField {
+  """Order by the deployment time."""
+  DEPLOYMENT_TIME
+
+  """Order by name."""
+  NAME
+
+  """Order by status."""
+  STATUS
+
+  """Order by team slug."""
+  TEAM_SLUG
+}
+
 type ExternalNetworkPolicyHost implements ExternalNetworkPolicyTarget {
   ports: [Int!]!
   target: String!
@@ -1465,7 +1565,7 @@ type Job implements Node & Workload {
   ): DeploymentConnection!
 
   """The environment the job is deployed in."""
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The globally unique ID of the job."""
   id: ID!
@@ -1561,6 +1661,9 @@ type Job implements Node & Workload {
 
   """The team that owns the job."""
   team: Team!
+
+  """The team environment for the job."""
+  teamEnvironment: TeamEnvironment!
 
   """
   Valkey instances referenced by the job. This does not currently support pagination, but will return all available Valkey instances.
@@ -1829,11 +1932,12 @@ type KafkaLagScalingStrategy {
 type KafkaTopic implements Node & Persistence {
   acl(after: Cursor, before: Cursor, filter: KafkaTopicAclFilter, first: Int, last: Int, orderBy: KafkaTopicAclOrder): KafkaTopicAclConnection!
   configuration: KafkaTopicConfiguration
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   pool: String!
   team: Team!
+  teamEnvironment: TeamEnvironment!
 }
 
 type KafkaTopicAcl {
@@ -1858,6 +1962,7 @@ type KafkaTopicAclEdge {
 
 input KafkaTopicAclFilter {
   team: Slug
+  validWorkloads: Boolean
   workload: String
 }
 
@@ -2146,11 +2251,12 @@ interface Node {
 type OpenSearch implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: OpenSearchAccessOrder): OpenSearchAccessConnection!
   cost: OpenSearchCost!
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   status: OpenSearchStatus!
   team: Team!
+  teamEnvironment: TeamEnvironment!
   workload: Workload
 }
 
@@ -2256,14 +2362,27 @@ type PageInfo {
 }
 
 interface Persistence {
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   team: Team!
+  teamEnvironment: TeamEnvironment!
 }
 
 """The query root for the Nais GraphQL API."""
 type Query {
+  """Get a single environment."""
+  environment(
+    """The name of the environment to get."""
+    name: String!
+  ): Environment!
+
+  """Get a list of environments."""
+  environments(
+    """Ordering options for environments."""
+    orderBy: EnvironmentOrder
+  ): EnvironmentConnection!
+
   """Feature flags."""
   features: Features!
 
@@ -2678,11 +2797,12 @@ type ReconcilerErrorEdge {
 type RedisInstance implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: RedisInstanceAccessOrder): RedisInstanceAccessConnection!
   cost: RedisInstanceCost! @deprecated(reason: "We are switching to Valkey")
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   status: RedisInstanceStatus!
   team: Team!
+  teamEnvironment: TeamEnvironment!
   workload: Workload
 }
 
@@ -3166,7 +3286,7 @@ type Secret implements Node {
   ): ApplicationConnection!
 
   """The environment the secret exists in."""
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The globally unique ID of the secret."""
   id: ID!
@@ -3201,6 +3321,9 @@ type Secret implements Node {
 
   """The team that owns the secret."""
   team: Team!
+
+  """The environment the secret exists in."""
+  teamEnvironment: TeamEnvironment!
 
   """The secret values contained within the secret."""
   values: [SecretValue!]!
@@ -3860,11 +3983,12 @@ type SqlDatabase implements Node & Persistence {
   charset: String
   collation: String
   deletionPolicy: String
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   healthy: Boolean!
   id: ID!
   name: String!
   team: Team!
+  teamEnvironment: TeamEnvironment!
 }
 
 type SqlInstance implements Node & Persistence {
@@ -3875,7 +3999,7 @@ type SqlInstance implements Node & Persistence {
   database: SqlDatabase
   diskAutoresize: Boolean
   diskAutoresizeLimit: Int
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   flags(after: Cursor, before: Cursor, first: Int, last: Int): SqlInstanceFlagConnection!
   healthy: Boolean!
   highAvailability: Boolean!
@@ -3888,6 +4012,7 @@ type SqlInstance implements Node & Persistence {
   state: SqlInstanceState!
   status: SqlInstanceStatus!
   team: Team!
+  teamEnvironment: TeamEnvironment!
   tier: String!
   users(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: SqlInstanceUserOrder): SqlInstanceUserConnection!
   version: String
@@ -4649,6 +4774,9 @@ type TeamEnvironment implements Node {
   """The cost for the team environment."""
   cost: TeamEnvironmentCost!
 
+  """Get the environment."""
+  environment: Environment!
+
   """The GCP project ID for the team environment."""
   gcpProjectID: String
 
@@ -4662,7 +4790,7 @@ type TeamEnvironment implements Node {
   kafkaTopic(name: String!): KafkaTopic!
 
   """Name of the team environment."""
-  name: String!
+  name: String! @deprecated(reason: "Use the `environment` field to get the environment name.")
 
   """OpenSearch instance in the team environment."""
   openSearchInstance(name: String!): OpenSearch!
@@ -5145,13 +5273,16 @@ type TeamUpdatedActivityLogEntryDataUpdatedField {
 
 type TeamUtilizationData {
   """The environment for the utilization data."""
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The requested amount of resources"""
   requested: Float!
 
   """The team."""
   team: Team!
+
+  """The environment for the utilization data."""
+  teamEnvironment: TeamEnvironment!
 
   """The current resource usage."""
   used: Float!
@@ -5480,7 +5611,10 @@ input UpdateTeamEnvironmentInput {
 
 type UpdateTeamEnvironmentPayload {
   """The updated team environment."""
-  environment: TeamEnvironment
+  environment: TeamEnvironment @deprecated(reason: "Use the `teamEnvironment` field instead.")
+
+  """The updated team environment."""
+  teamEnvironment: TeamEnvironment
 }
 
 input UpdateTeamInput {
@@ -5734,11 +5868,12 @@ type UtilizationSample {
 type ValkeyInstance implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: ValkeyInstanceAccessOrder): ValkeyInstanceAccessConnection!
   cost: ValkeyInstanceCost!
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
   status: ValkeyInstanceStatus!
   team: Team!
+  teamEnvironment: TeamEnvironment!
   workload: Workload
 }
 
@@ -5869,7 +6004,7 @@ interface Workload {
   ): DeploymentConnection!
 
   """The environment the workload is deployed in."""
-  environment: TeamEnvironment!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The globally unique ID of the workload."""
   id: ID!
@@ -5943,6 +6078,9 @@ interface Workload {
 
   """The team that owns the workload."""
   team: Team!
+
+  """The team environment for the workload."""
+  teamEnvironment: TeamEnvironment!
 
   """
   Valkey instances referenced by the workload. This does not currently support pagination, but will return all available Valkey instances.
