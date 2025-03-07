@@ -65,7 +65,9 @@
 			{#if scores[level as keyof typeof scores] > 0}
 				<div class="label-item">
 					<span class="label-dot {level}"></span>
-					{capitalizeFirstLetter(level)}: {summary[level as keyof typeof summary]}
+					{capitalizeFirstLetter(level)}: {summary[
+						level as keyof typeof summary
+					]}&NonBreakingSpace;(x5)
 				</div>
 			{/if}
 		{/each}
@@ -112,6 +114,7 @@
 	.label-item {
 		display: flex;
 		align-items: center;
+
 		font-size: 0.9rem;
 	}
 

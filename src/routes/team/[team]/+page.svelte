@@ -97,6 +97,10 @@
 						</ul>
 					</BodyShort>
 				{/if}
+
+				{#if workloadsVulnerable?.length === 0 && workloadWithoutSbom?.length === 0}
+					<BodyShort>All workloads have a registered SBOM and an acceptable risk score.</BodyShort>
+				{/if}
 				<!--{#if $TeamOverview.data?.team.workloads.edges}
 				{#each $TeamOverview.data.team.workloads.edges as workload (workload.node.id)}
 					{#if workload.node.status.errors.length > 0}
@@ -190,7 +194,7 @@
 	}
 	.two-columns {
 		display: grid;
-		grid-template-columns: 200px 1fr;
+		grid-template-columns: 270px 1fr;
 		gap: var(--spacing-layout);
 	}
 	/*.workloads-grid {
