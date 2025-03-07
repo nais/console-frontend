@@ -159,7 +159,7 @@
 				)}
 			</SummaryCard>
 		</Card>
-		<Card columns={12} borderColor="var(--a-gray-200)">
+		<Card columns={12} borderColor="var(--a-gray-100)">
 			<span class="graphHeader">
 				<h3 style="margin-bottom: 0">Memory usage</h3>
 				<span class="intervalPicker">

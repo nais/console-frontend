@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { graphql, PendingValue } from '$houdini';
-	import { Heading, Skeleton } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Skeleton } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { TeamInfoVariables } from './$houdini';
 
@@ -32,41 +32,54 @@
 	const githubOrganization = get(page).data.githubOrganization;
 </script>
 
-<Heading level="4" size="small" spacing>Team summary</Heading>
+<div class="wrapper">
+	<Heading level="4" size="small">Team summary</Heading>
 
-{#if $teamInfo.data}
-	{@const t = $teamInfo.data.team}
-	{#if t.purpose !== PendingValue}
-		<p>{t.purpose}</p>
-	{:else}
-		<Skeleton variant="text" />
-	{/if}
-
-	{#if t.externalResources.gitHubTeam}
-		<strong>GitHub team:</strong>
-		{#if t.externalResources.gitHubTeam?.slug !== PendingValue}
-			<a
-				href="https://github.com/orgs/{githubOrganization}/teams/{t.externalResources.gitHubTeam
-					.slug}"
-			>
-				{t.externalResources.gitHubTeam?.slug}
-			</a>
+	{#if $teamInfo.data}
+		{@const t = $teamInfo.data.team}
+		{#if t.purpose !== PendingValue}
+			<BodyShort>{t.purpose}</BodyShort>
 		{:else}
 			<Skeleton variant="text" />
 		{/if}
-		<br />
-	{/if}
 
-	{#if t.slackChannel}
-		<strong>Slack channel:</strong>
-		{#if t.slackChannel !== PendingValue}
-			{t.slackChannel}
-		{:else}
-			<Skeleton variant="text" />
+		{#if t.externalResources.gitHubTeam}
+			<BodyShort
+				><strong>GitHub team:</strong>
+				{#if t.externalResources.gitHubTeam?.slug !== PendingValue}
+					<a
+						href="https://github.com/orgs/{githubOrganization}/teams/{t.externalResources.gitHubTeam
+							.slug}"
+					>
+						{t.externalResources.gitHubTeam?.slug}
+					</a>
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+			</BodyShort>
 		{/if}
-		<br />
+		<BodyShort>
+			{#if t.slackChannel}
+				<strong>Slack channel:</strong>
+				{#if t.slackChannel !== PendingValue}
+					{t.slackChannel}
+				{:else}
+					<Skeleton variant="text" />
+				{/if}
+				<br />
+			{/if}
+			{#if viewerIsMember}
+				<a href="/team/{teamSlug}/settings">View team settings</a>
+			{/if}
+		</BodyShort>
 	{/if}
-	{#if viewerIsMember}
-		<a href="/team/{teamSlug}/settings">View team settings</a>
-	{/if}
-{/if}
+</div>
+
+<style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1);
+		align-items: start;
+	}
+</style>
