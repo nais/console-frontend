@@ -1962,6 +1962,7 @@ type KafkaTopicAclEdge {
 
 input KafkaTopicAclFilter {
   team: Slug
+  validWorkloads: Boolean
   workload: String
 }
 
