@@ -60,7 +60,7 @@
 	<div class="wrapper">
 		<Heading level="3" size="small">Vulnerabilities</Heading>
 
-		{#if !image.hasSBOM}
+		{#if !image.hasSBOM && image.vulnerabilitySummary !== null}
 			<BodyShort>
 				<WarningIcon class="text-aligned-icon" /> Data was discovered, but the SBOM was not rendered.
 				Please refer to the <Link href={docURL('/services/vulnerabilities/')}

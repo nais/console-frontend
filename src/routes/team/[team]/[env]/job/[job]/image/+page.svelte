@@ -70,7 +70,7 @@
 			<Heading level="4" size="small" spacing>Summary</Heading>
 			{#if image.vulnerabilitySummary}
 				<VulnerabilityBadges summary={image.vulnerabilitySummary} />
-			{:else if !image.hasSBOM}
+			{:else if !image.hasSBOM && image.vulnerabilitySummary !== null}
 				<WarningIcon class="text-aligned-icon" />
 				Data was discovered, but the SBOM was not rendered. Please refer to the
 				<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
