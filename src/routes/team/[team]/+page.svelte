@@ -33,9 +33,9 @@
 
 {#if deprecatedImages?.length}
 	<Alert variant="error">
-		Starting from April 1st, applications and jobs on Nais must use images from Google Artifact
-		Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub
-		Actions in the workflow. <a
+		Starting April 1st, applications and jobs on Nais must use images from Google Artifact Registry
+		(GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in
+		the workflow. <a
 			href="https://nais.io/log/#2025-02-24-image-policy"
 			target="_blank"
 			rel="noopener noreferrer">Read more in Nais announcement</a
