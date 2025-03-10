@@ -4,14 +4,10 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import Onboarding from './Onboarding.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let UserTeams = $derived(data.UserTeams);
 	let tenantName = $derived(data.tenantName);
@@ -47,7 +43,12 @@
 				{#if $UserTeams.data.me.__typename == 'User'}
 					<List>
 						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
-							<TeamListItem team={node.team} />
+							<TeamListItem
+								team={node.team}
+								errors={node.team.workloads.nodes.filter((w) =>
+									w.status.errors.some((e) => e.__typename === 'WorkloadStatusDeprecatedRegistry')
+								).length}
+							/>
 						{:else}
 							<BodyLong>
 								You don't seem to belong to any teams at the moment. You can create a new team or

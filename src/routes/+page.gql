@@ -17,6 +17,15 @@ query UserTeams @cache(policy: CacheAndNetwork) {
 						id
 						slug
 						purpose
+						workloads(first: 1000) {
+							nodes {
+								status {
+									errors {
+										__typename
+									}
+								}
+							}
+						}
 					}
 				}
 			}

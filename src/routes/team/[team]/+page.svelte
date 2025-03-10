@@ -41,7 +41,7 @@
 			rel="noopener noreferrer">Read more in Nais announcement</a
 		>.
 		<p>
-			{teamSlug} currently has {deprecatedImages.length}
+			{teamSlug} currently has <strong>{deprecatedImages.length}</strong>
 			workload{deprecatedImages.length === 1 ? '' : 's'} using
 			{deprecatedImages.length === 1
 				? 'a deprecated image registry'

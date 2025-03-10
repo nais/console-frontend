@@ -11,9 +11,10 @@
 <style>
 	.list-item {
 		background-color: #f7f8f9;
-		display: flex;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: 1fr auto;
 		align-items: center;
+		column-gap: var(--a-spacing-4);
 		padding: var(--a-spacing-4) var(--a-spacing-6);
 
 		&:hover {
