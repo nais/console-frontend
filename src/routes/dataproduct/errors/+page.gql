@@ -1,0 +1,36 @@
+query AllIngresses {
+	teams(first: 500) {
+		nodes {
+			slug
+			workloads(first: 1000) {
+				nodes {
+					__typename
+					id
+					name
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+
+					status {
+						errors {
+							level
+							... on WorkloadStatusDeprecatedIngress {
+								ingress
+							}
+							... on WorkloadStatusSynchronizationFailing {
+								detail
+							}
+							... on WorkloadStatusFailedRun {
+								detail
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
