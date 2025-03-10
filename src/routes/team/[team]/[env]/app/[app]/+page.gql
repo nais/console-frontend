@@ -33,6 +33,15 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 
+				status {
+					errors {
+						__typename
+						... on WorkloadStatusDeprecatedRegistry {
+							registry
+						}
+					}
+				}
+
 				...AppInstances
 				...AppStatus
 				...AppUtilization
