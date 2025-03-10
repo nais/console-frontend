@@ -40,6 +40,9 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						... on WorkloadStatusDeprecatedRegistry {
 							registry
 						}
+						... on WorkloadStatusSynchronizationFailing {
+							detail
+						}
 					}
 				}
 

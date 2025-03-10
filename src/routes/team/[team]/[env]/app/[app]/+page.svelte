@@ -12,7 +12,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
@@ -56,11 +56,6 @@
 		});
 	};
 
-	let deployFailed = $derived(
-		$App.data?.team.environment.application.deployments.nodes.at(0)?.statuses.nodes.at(0)?.state ===
-			'FAILURE'
-	);
-
 	const levelVariant = (level?: WorkloadStatusErrorLevel$options) => {
 		switch (level) {
 			case 'ERROR':
@@ -82,6 +77,30 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusSynchronizationFailing')}
+					<Alert
+						variant={levelVariant(
+							app.status.errors.find(
+								(error) => error.__typename === 'WorkloadStatusSynchronizationFailing'
+							)?.level
+						)}
+					>
+						<Heading level="2" size="small" spacing>Synchronization failing</Heading>
+						<BodyLong spacing>
+							The rollout of the application is failing, meaning it is not in sync with the latest
+							deployment. This may be due to a misconfiguration or a temporary issue, so try again
+							in a few minutes. If the problem persists, please contact the Nais team.
+						</BodyLong>
+
+						<Heading level="3" size="xsmall" spacing>Error details</Heading>
+
+						<code style="font-size: 0.8rem; line-height: 1;"
+							>{app.status.errors.find(
+								(error) => error.__typename === 'WorkloadStatusSynchronizationFailing'
+							)?.detail}</code
+						>
+					</Alert>
+				{/if}
 				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusDeprecatedRegistry')}
 					<Alert
 						variant={levelVariant(
@@ -107,27 +126,13 @@
 						</BodyLong>
 					</Alert>
 				{/if}
+
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This application is being deleted. Deletion started <Time
 							time={app.deletionStartedAt}
 							distance
 						/>. If the deletion is taking too long, please contact the Nais team.
-					</Alert>
-				{/if}
-				{#if deployFailed}
-					<Alert variant="error" fullWidth={false}>
-						<Heading level="2" size="small" spacing>Last deployment failed</Heading>
-						<BodyShort spacing>
-							<strong>Error message:</strong>
-							{$App.data?.team.environment.application.deployments.nodes.at(0)?.statuses.nodes.at(0)
-								?.message}
-						</BodyShort>
-						{#if $App.data?.team.environment.application.deployments.nodes.at(0)?.triggerUrl}
-							<a href={$App.data?.team.environment.application.deployments.nodes.at(0)?.triggerUrl}
-								>Github action <ExternalLinkIcon /></a
-							>
-						{/if}
 					</Alert>
 				{/if}
 
