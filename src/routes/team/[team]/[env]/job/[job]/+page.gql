@@ -21,6 +21,16 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 						}
 					}
 				}
+
+				status {
+					errors {
+						__typename
+						... on WorkloadStatusDeprecatedRegistry {
+							registry
+						}
+					}
+				}
+
 				...JobRuns
 				...JobStatus
 				...Persistence

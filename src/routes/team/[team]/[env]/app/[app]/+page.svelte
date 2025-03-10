@@ -16,7 +16,6 @@
 	import type { PageData } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
-	import Status from './Status.svelte';
 	import Utilization from './Utilization.svelte';
 
 	interface Props {
@@ -145,7 +144,7 @@
 				</div>
 			</div>
 			<div class="sidebar">
-				<Status {app} />
+				<!-- <Status {app} /> -->
 				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				<Image workload={app} />
 				<Utilization {app} />

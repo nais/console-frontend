@@ -74,7 +74,7 @@ export const menuItems = ({
 		const [, , team, env, workloadType, name, page] = split;
 		const menuItem = item(`/team/${team}/${env}/${workloadType}/${name}`, page);
 		return [
-			[menuItem('Overview'), menuItem('Status', 'status')],
+			[menuItem('Overview')],
 			[
 				menuItem('Image', 'image'),
 				menuItem('Deployments', 'deploys'),

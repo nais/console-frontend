@@ -9,12 +9,11 @@
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageData } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
-	import Status from './Status.svelte';
 	import TriggerRunModal from './TriggerRunModal.svelte';
 
 	interface Props {
@@ -77,6 +76,26 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
+			{#if job.status.errors.some((error) => error.__typename === 'WorkloadStatusDeprecatedRegistry')}
+				<Alert variant="error">
+					<BodyShort spacing
+						>This job is using a deprecated image registry ({job.status.errors.find(
+							(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
+						)?.registry}).</BodyShort
+					>
+
+					<BodyLong
+						>Starting April 1st, applications and jobs on Nais must use images from Google Artifact
+						Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais'
+						GitHub Actions in the workflow. <a
+							href="https://nais.io/log/#2025-02-24-image-policy"
+							target="_blank"
+							rel="noopener noreferrer">Read more in Nais announcement</a
+						>.
+					</BodyLong>
+				</Alert>
+			{/if}
+
 			{#if job.deletionStartedAt}
 				<Alert variant="info" size="small" fullWidth={false}>
 					This job is being deleted. Deletion started <Time
@@ -129,7 +148,7 @@
 			</div>
 		</div>
 		<div class="sidebar">
-			<Status {job} />
+			<!-- <Status {job} /> -->
 			<Schedule schedule={job.schedule} />
 			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 			<Image workload={job} />

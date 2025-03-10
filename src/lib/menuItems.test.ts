@@ -155,10 +155,7 @@ describe('menuItems', () => {
 					member: true
 				})
 			).toEqual([
-				[
-					{ label: 'Overview', href: '/team/devteam/dev/app/app-w-all-storage' },
-					{ label: 'Status', href: '/team/devteam/dev/app/app-w-all-storage/status' }
-				],
+				[{ label: 'Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 				[
 					{ label: 'Image', href: '/team/devteam/dev/app/app-w-all-storage/image' },
 					{
