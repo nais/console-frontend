@@ -40,8 +40,11 @@
 			See Nais annoncement.</a
 		>
 		<p>
-			You currently have {numberToWords(deprecatedImages.length)}
-			workload{deprecatedImages.length === 1 ? '' : 's'} using deprecated image registries.
+			{teamSlug} currently has {numberToWords(deprecatedImages.length)}
+			workload{deprecatedImages.length === 1 ? '' : 's'} using
+			{deprecatedImages.length === 1
+				? 'a deprecated image registry'
+				: 'deprecated image registries'}.
 		</p>
 
 		{#if deprecatedImages.length < 5}
