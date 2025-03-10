@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - main
-      - refactor_migration
+    paths-ignore: scripts/tunnel.sh
+
 env:
   NAME: console-frontend
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
@@ -18,9 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
-      - name: npm run check
-        run: |-
-          npm install && npm run build && npm run check
+      - run: npm install && npm run lint && npm run build && npm run check
       - uses: nais/platform-build-push-sign@main # ratchet:nais/platform-build-push-sign@main
         id: build-push-sign
         with:
