@@ -19,7 +19,7 @@
 			team: { slug: string };
 			status: {
 				state: string;
-				errors: {
+				errors?: {
 					__typename: string | null;
 					level: 'ERROR' | 'WARNING' | 'TODO';
 				}[];

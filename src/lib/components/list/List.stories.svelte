@@ -292,8 +292,8 @@
 
 <Story name="Teams">
 	<List>
-		{#each teams as team, i (team.slug)}
-			<TeamListItem {team} errors={i} />
+		{#each teams as team (team.slug)}
+			<TeamListItem {team} />
 		{/each}
 	</List>
 </Story>
