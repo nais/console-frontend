@@ -1,5 +1,29 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
+		workloads(first: 600) {
+			nodes {
+				__typename
+				id
+				name
+				team {
+					slug
+				}
+				environment {
+					name
+				}
+
+				status {
+					errors {
+						... on WorkloadStatusDeprecatedRegistry {
+							name
+							registry
+							repository
+							tag
+						}
+					}
+				}
+			}
+		}
 		...TeamDeployments
 	}
 }

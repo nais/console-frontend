@@ -8,14 +8,20 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
-	import type { PageData } from './$houdini';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import { numberToWords } from '$lib/utils/formatters';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
+
+	const deprecatedImages = $derived(
+		$TeamOverview.data?.team.workloads.nodes.filter((workload) =>
+			workload.status.errors.some(
+				(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
+			)
+		)
+	);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -26,6 +32,32 @@
 	</Alert>
 {/if}
 
+{#if deprecatedImages?.length}
+	<Alert variant="error">
+		Starting from April 1st, applications and jobs on Nais must use images from the team's own
+		repository in GAR. The easiest way to ensure that images are stored in GAR is to use Nais'
+		GitHub Actions in the workflow. <a href="https://nais.io/log/#2025-02-24-image-policy">
+			See Nais annoncement.</a
+		>
+		<p>
+			You currently have {numberToWords(deprecatedImages.length)}
+			workload{deprecatedImages.length === 1 ? '' : 's'} using deprecated image registries.
+		</p>
+
+		{#if deprecatedImages.length < 5}
+			{#each deprecatedImages as workload (workload.id)}
+				<WorkloadLink {workload} />
+			{/each}
+		{:else}
+			<details>
+				<summary>Workloads with deprecated image registries</summary>
+				{#each deprecatedImages as workload (workload.id)}
+					<WorkloadLink {workload} />
+				{/each}
+			</details>
+		{/if}
+	</Alert>
+{/if}
 <div class="grid">
 	<Card rows={1} columns={3}>
 		<TeamInfo {teamSlug} {viewerIsMember} />
