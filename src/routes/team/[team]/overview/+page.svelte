@@ -7,7 +7,6 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummaryNew from '$lib/components/VulnerabilitySummaryNew.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import { capitalizeFirstLetter, numberToWords } from '$lib/utils/formatters';
 	import type { PageData } from './$houdini';
 
 	interface Props {
@@ -54,8 +53,10 @@
 				<Heading level="4" size="small" spacing>Todos</Heading>
 				{#if workloadsVulnerable?.length}
 					<BodyShort>
-						{capitalizeFirstLetter(numberToWords(workloadsVulnerable?.length))} of your workload's risk
-						score exceeds the acceptable threshold of 100. Please keep your dependencies up to date.
+						{workloadsVulnerable?.length} of your workload's risk scores exceed{workloadsVulnerable?.length ===
+						0
+							? ''
+							: 's'} the acceptable threshold of 100. Please keep your dependencies up to date.
 					</BodyShort>
 					<ul>
 						{#each workloadsVulnerable as workload (workload.id)}
@@ -80,7 +81,9 @@
 
 				{#if workloadWithoutSbom?.length}
 					<BodyShort>
-						{capitalizeFirstLetter(numberToWords(workloadWithoutSbom?.length))} of your workloads does
+						{workloadWithoutSbom?.length} of your workloads {workloadWithoutSbom?.length === 1
+							? 'does'
+							: 'do'}
 						not have a registered Software Bill of Materials (SBOM). Refer to the Nais documentation
 						for instructions on how to resolve this.
 						<ul>

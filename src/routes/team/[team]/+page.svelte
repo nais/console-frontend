@@ -9,7 +9,6 @@
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import { numberToWords } from '$lib/utils/formatters';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -42,7 +41,7 @@
 			rel="noopener noreferrer">Read more in Nais announcement</a
 		>.
 		<p>
-			{teamSlug} currently has {numberToWords(deprecatedImages.length)}
+			{teamSlug} currently has {deprecatedImages.length}
 			workload{deprecatedImages.length === 1 ? '' : 's'} using
 			{deprecatedImages.length === 1
 				? 'a deprecated image registry'
