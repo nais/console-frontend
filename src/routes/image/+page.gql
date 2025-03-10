@@ -1,0 +1,31 @@
+query AllImages {
+	teams(first: 500) {
+		nodes {
+			slug
+			workloads(first: 1000) {
+				nodes {
+					__typename
+					id
+					name
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+
+					status {
+						errors {
+							... on WorkloadStatusDeprecatedRegistry {
+								name
+								registry
+								repository
+								tag
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
