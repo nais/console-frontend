@@ -46,9 +46,9 @@
 		{#snippet icon()}
 			<TooltipAlignHack
 				content={{
-					NAIS: 'Job is Nais',
+					NAIS: 'Job is healthy',
 					FAILING: 'Job is failing',
-					NOT_NAIS: 'Job is not Nais',
+					NOT_NAIS: 'Job has issues',
 					UNKNOWN: 'Job status is unknown'
 				}[job.status.state] ?? ''}
 			>

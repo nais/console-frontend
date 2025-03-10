@@ -1,9 +1,16 @@
 <script lang="ts">
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import Badge, { type BadgeProps } from '../Badge.svelte';
 	import IconLabel from '../IconLabel.svelte';
 	import ListItem from './ListItem.svelte';
 
-	const { team, errors }: { team: { slug: string; purpose: string }; errors: number } = $props();
+	const {
+		team,
+		badge
+	}: {
+		team: { slug: string; purpose: string };
+		badge?: BadgeProps;
+	} = $props();
 </script>
 
 <ListItem>
@@ -15,27 +22,7 @@
 		level="3"
 		href="/team/{team.slug}"
 	/>
-	{#if errors}
-		<div class={['errors', { 'errors--long': `${errors}`.length > 2 }]}>
-			{errors}
-		</div>
+	{#if badge}
+		<Badge {...badge} />
 	{/if}
 </ListItem>
-
-<style>
-	.errors {
-		height: 2rem;
-		width: 2rem;
-		border-radius: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: var(--a-font-weight-bold);
-		background-color: var(--a-surface-danger);
-		color: var(--a-text-on-danger);
-
-		&.errors--long {
-			font-size: var(--a-font-size-medium);
-		}
-	}
-</style>

@@ -22,6 +22,7 @@ query UserTeams @cache(policy: CacheAndNetwork) {
 								status {
 									errors {
 										__typename
+										level
 									}
 								}
 							}

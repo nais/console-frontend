@@ -32,7 +32,7 @@
 {/if}
 
 {#if deprecatedImages?.length}
-	<Alert variant="error">
+	<Alert variant="warning">
 		Starting April 1st, applications and jobs on Nais must use images from Google Artifact Registry
 		(GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in
 		the workflow. <a

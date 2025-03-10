@@ -12,7 +12,8 @@
 	.list-item {
 		background-color: #f7f8f9;
 		display: grid;
-		grid-template-columns: 1fr auto;
+		grid-template-columns: 1fr;
+		grid-auto-flow: column;
 		align-items: center;
 		column-gap: var(--a-spacing-4);
 		padding: var(--a-spacing-4) var(--a-spacing-6);

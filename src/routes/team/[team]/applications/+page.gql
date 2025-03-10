@@ -47,6 +47,10 @@ query Applications(
 				}
 				status {
 					state
+					errors {
+						__typename
+						level
+					}
 				}
 				deployments(first: 1) {
 					nodes {

@@ -43,12 +43,11 @@
 				{#if $UserTeams.data.me.__typename == 'User'}
 					<List>
 						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
-							<TeamListItem
-								team={node.team}
-								errors={node.team.workloads.nodes.filter((w) =>
-									w.status.errors.some((e) => e.__typename === 'WorkloadStatusDeprecatedRegistry')
-								).length}
-							/>
+							<TeamListItem team={node.team} />
+							<!-- badge={{
+									count: node.team.workloads.nodes.length,
+									level: badgeLevel(node.team.workloads.nodes.flatMap((w) => w.status.errors))
+								}} -->
 						{:else}
 							<BodyLong>
 								You don't seem to belong to any teams at the moment. You can create a new team or

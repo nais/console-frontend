@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { graphql, type WorkloadStatusErrorLevel$options } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import Image from '$lib/components/Image.svelte';
@@ -60,6 +60,18 @@
 		$App.data?.team.environment.application.deployments.nodes.at(0)?.statuses.nodes.at(0)?.state ===
 			'FAILURE'
 	);
+
+	const levelVariant = (level?: WorkloadStatusErrorLevel$options) => {
+		switch (level) {
+			case 'ERROR':
+				return 'error';
+			case 'WARNING':
+				return 'warning';
+			case 'TODO':
+			default:
+				return 'info';
+		}
+	};
 </script>
 
 <GraphErrors errors={$App.errors} />
@@ -71,7 +83,13 @@
 		<div class="app-content">
 			<div class="main-section">
 				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusDeprecatedRegistry')}
-					<Alert variant="error">
+					<Alert
+						variant={levelVariant(
+							app.status.errors.find(
+								(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
+							)?.level
+						)}
+					>
 						<BodyShort spacing
 							>This application is using a deprecated image registry ({app.status.errors.find(
 								(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'

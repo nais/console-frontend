@@ -17,7 +17,13 @@
 			name: string;
 			environment: { name: string };
 			team: { slug: string };
-			status: { state: string };
+			status: {
+				state: string;
+				errors: {
+					__typename: string | null;
+					level: 'ERROR' | 'WARNING' | 'TODO';
+				}[];
+			};
 			deployments: { nodes: { createdAt: Date }[] };
 			instances: {
 				pageInfo: { totalCount: number };
@@ -39,11 +45,12 @@
 		}}
 	>
 		{#snippet icon()}
+			<!-- <Badge count={app.status.errors.length} level={badgeLevel(app.status.errors)} /> -->
 			<TooltipAlignHack
 				content={{
-					NAIS: 'Application is Nais',
+					NAIS: 'Application is healthy',
 					FAILING: 'Application is failing',
-					NOT_NAIS: 'Application is not Nais',
+					NOT_NAIS: 'Application has issues',
 					UNKNOWN: 'Application status is unknown'
 				}[app.status.state] ?? ''}
 			>
