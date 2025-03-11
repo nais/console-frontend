@@ -3,13 +3,9 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
-	import type { ActionData } from './$types';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		form: ActionData;
-	}
-
-	let { form = $bindable() }: Props = $props();
+	let { form = $bindable() }: PageProps = $props();
 	let saving = $state(false);
 	let slackChannelError = $state('');
 

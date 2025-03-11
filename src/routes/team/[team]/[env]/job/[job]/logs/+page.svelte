@@ -9,16 +9,12 @@
 	} from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
 	let running = $state(true);
 	let fetching = $state(false);
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { RunsWithPodNames, selected, teamSlug } = $derived(data);
 

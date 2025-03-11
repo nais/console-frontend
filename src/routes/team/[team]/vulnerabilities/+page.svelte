@@ -17,13 +17,9 @@
 		TrendUpIcon,
 		XMarkOctagonIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { teamSlug } = $derived(data);
 
 	let selectedEnvironment: string = $state(page.url.searchParams.get('environment') || '');

@@ -7,13 +7,9 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { Deployments } = $derived(data);
 

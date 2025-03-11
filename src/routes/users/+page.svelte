@@ -8,13 +8,9 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { People } = $derived(data);
 

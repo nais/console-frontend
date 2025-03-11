@@ -9,15 +9,11 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
 	let team = $derived($Members.data?.team);
 

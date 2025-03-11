@@ -11,13 +11,9 @@
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { Jobs } = $derived(data);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');

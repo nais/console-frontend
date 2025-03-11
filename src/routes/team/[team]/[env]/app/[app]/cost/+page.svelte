@@ -11,12 +11,9 @@
 		type DailCostType
 	} from '$lib/chart/cost_transformer';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
-	interface Props {
-		data: PageData;
-	}
+	import type { PageProps } from './$houdini';
 
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { AppCost } = $derived(data);
 

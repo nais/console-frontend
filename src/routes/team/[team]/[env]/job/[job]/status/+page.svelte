@@ -1,13 +1,9 @@
 <script lang="ts">
 	import JobErrorTypeToMessage from '$lib/JobErrorTypeToMessage.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { JobStatusDetailed } = $derived(data);
 	let result = $derived($JobStatusDetailed.data);

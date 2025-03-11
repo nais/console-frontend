@@ -13,16 +13,12 @@
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
 	import Utilization from './Utilization.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
 
 	const restartAppMutation = () =>

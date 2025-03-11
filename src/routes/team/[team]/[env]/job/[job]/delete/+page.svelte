@@ -7,13 +7,9 @@
 	import Time from '$lib/Time.svelte';
 	import { Button, Heading, HelpText, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { DeleteJobPage } = $derived(data);
 

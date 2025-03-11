@@ -3,11 +3,9 @@
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
 	import { replacer } from '$lib/replacer';
-	interface Props {
-		children?: import('svelte').Snippet;
-	}
+	import type { LayoutProps } from './$houdini';
 
-	let { children }: Props = $props();
+	let { children }: LayoutProps = $props();
 
 	let currentRoute = $derived(page.route.id);
 	const nav = [

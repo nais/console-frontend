@@ -6,13 +6,9 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, ExternalLinkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { Bucket } = $derived(data);
 </script>
 

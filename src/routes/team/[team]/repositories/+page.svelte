@@ -9,13 +9,9 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
 

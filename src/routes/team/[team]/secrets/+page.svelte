@@ -18,14 +18,10 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, PlusIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
 
 	const handleInUse = (value: string) => {

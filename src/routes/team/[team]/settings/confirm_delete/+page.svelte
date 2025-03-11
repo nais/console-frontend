@@ -11,13 +11,9 @@
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { TeamDeleteKey, UserInfo } = $derived(data);
 

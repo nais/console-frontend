@@ -23,18 +23,14 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
 	import Textarea from './Textarea.svelte';
 	import Workloads from './Workloads.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);

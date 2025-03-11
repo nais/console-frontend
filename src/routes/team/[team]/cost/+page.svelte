@@ -6,13 +6,9 @@
 	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
 	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { TeamCost, teamSlug } = $derived(data);
 
 	let from = $state(data.fromDate?.toISOString().split('T')[0]);

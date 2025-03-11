@@ -1,13 +1,9 @@
 <script lang="ts">
 	import AppErrorTypeToMessage from '$lib/AppErrorTypeToMessage.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { AppNotificationState } = $derived(data);
 </script>

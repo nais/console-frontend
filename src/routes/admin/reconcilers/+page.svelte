@@ -1,12 +1,8 @@
 <script lang="ts">
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import Reconciler from './Reconciler.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { AdminReconcilers } = $derived(data);
 	let reconcilers = $derived($AdminReconcilers.data?.reconcilers.nodes);

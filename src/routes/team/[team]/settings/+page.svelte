@@ -17,14 +17,10 @@
 		EyeSlashIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import EditText from './EditText.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { teamSlug } = $derived(data);
 
 	const rotateKey = graphql(`

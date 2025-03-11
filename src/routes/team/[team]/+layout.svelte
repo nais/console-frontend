@@ -1,16 +1,10 @@
 <script lang="ts">
 	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { Snippet } from 'svelte';
-	import type { LayoutData } from './$houdini';
+	import type { LayoutProps } from './$houdini';
 	import Menu from './Menu.svelte';
 
-	interface Props {
-		data: LayoutData;
-		children?: Snippet;
-	}
-
-	let { data, children }: Props = $props();
+	let { data, children }: LayoutProps = $props();
 	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo, viewerIsMember } =
 		$derived(data);
 </script>

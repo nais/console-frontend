@@ -32,14 +32,10 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import TeamSearchModal from './TeamSearchModal.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { Unleash, teamSlug } = $derived(data);
 	let unleash = $derived($Unleash.data?.team?.unleash);
 	let metrics = $derived(

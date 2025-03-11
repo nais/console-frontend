@@ -7,13 +7,9 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummaryNew from '$lib/components/VulnerabilitySummaryNew.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { TeamOverview2, teamSlug, viewerIsMember } = $derived(data);
 
 	let workloadWithoutSbom = $derived(

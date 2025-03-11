@@ -10,16 +10,12 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import TriggerRunModal from './TriggerRunModal.svelte';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { Job, teamSlug, viewerIsMember } = $derived(data);
 
 	const triggerRunMutation = () =>

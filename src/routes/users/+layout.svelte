@@ -1,9 +1,7 @@
 <script lang="ts">
-	interface Props {
-		children?: import('svelte').Snippet;
-	}
+	import type { LayoutProps } from './$houdini';
 
-	let { children }: Props = $props();
+	let { children }: LayoutProps = $props();
 </script>
 
 <div class="page">

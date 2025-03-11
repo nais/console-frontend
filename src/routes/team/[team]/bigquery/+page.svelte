@@ -3,13 +3,9 @@
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { BigQuery } = $derived(data);
 </script>
 

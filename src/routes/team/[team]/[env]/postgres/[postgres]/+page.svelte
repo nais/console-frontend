@@ -25,13 +25,9 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { SqlInstance } = $derived(data);
 	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
 	let postgres = $derived(page.params.postgres);

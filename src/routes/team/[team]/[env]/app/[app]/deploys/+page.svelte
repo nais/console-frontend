@@ -1,12 +1,9 @@
 <script lang="ts">
 	import Deployments from '$lib/components/Deployments.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import type { PageData } from './$houdini';
-	interface Props {
-		data: PageData;
-	}
+	import type { PageProps } from './$houdini';
 
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let { AppDeploys } = $derived(data);
 </script>

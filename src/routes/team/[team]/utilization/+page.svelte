@@ -26,13 +26,9 @@
 	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageData } from './$houdini';
+	import type { PageProps } from './$houdini';
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 	let { teamSlug } = $derived(data);
 
 	type OverageData = {
