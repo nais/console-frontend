@@ -16,6 +16,19 @@ query AllIngresses {
 						}
 					}
 
+					... on Application {
+						instances {
+							nodes {
+								id
+								name
+								status {
+									state
+									message
+								}
+							}
+						}
+					}
+
 					status {
 						errors {
 							level

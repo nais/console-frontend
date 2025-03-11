@@ -31,6 +31,10 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 						... on WorkloadStatusNoRunningInstances {
 							level
 						}
+						... on WorkloadStatusFailedRun {
+							detail
+							name
+						}
 					}
 				}
 			}

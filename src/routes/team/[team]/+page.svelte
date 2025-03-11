@@ -31,11 +31,9 @@
 	{#if (getErrors('WorkloadStatusNoRunningInstances') ?? []).length > 0}
 		{@const noRunningInstances = getErrors('WorkloadStatusNoRunningInstances')!}
 		<Alert variant="error">
-			<Heading level="2" size="small">No running instances</Heading>
-			<BodyShort>
-				There are no running instances of the following application{noRunningInstances.length === 1
-					? ''
-					: 's'}.
+			<Heading level="2" size="small" spacing>No Running Instances</Heading>
+			<BodyShort spacing>
+				The following application{noRunningInstances.length === 1 ? ' has' : 's have'} no running instances.
 			</BodyShort>
 			<div>
 				{#each noRunningInstances as workload (workload.id)}

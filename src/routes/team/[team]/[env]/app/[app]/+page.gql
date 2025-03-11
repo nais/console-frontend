@@ -13,9 +13,15 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				}
 				instances {
 					nodes {
+						id
+						name
 						image {
 							name
 							tag
+						}
+						status {
+							state
+							message
 						}
 					}
 				}
@@ -36,15 +42,20 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				status {
 					errors {
 						__typename
-						level
 						... on WorkloadStatusDeprecatedRegistry {
+							level
 							registry
 						}
 						... on WorkloadStatusSynchronizationFailing {
+							level
 							detail
 						}
 						... on WorkloadStatusInvalidNaisYaml {
+							level
 							detail
+						}
+						... on WorkloadStatusNoRunningInstances {
+							level
 						}
 					}
 				}

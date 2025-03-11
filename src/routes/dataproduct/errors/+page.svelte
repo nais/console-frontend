@@ -32,6 +32,13 @@
 					null,
 					2
 				)}
+				{#if workload.__typename === 'Application'}
+					{#each workload.instances.nodes as instance (instance.id)}
+						{#if instance.status.state !== 'RUNNING'}
+							{JSON.stringify(instance.status, null, 2)}
+						{/if}
+					{/each}
+				{/if}
 			</div>
 		{/each}
 	{/if}

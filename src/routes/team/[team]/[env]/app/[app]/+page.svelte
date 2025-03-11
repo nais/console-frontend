@@ -74,6 +74,34 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusNoRunningInstances')}
+					<Alert
+						variant={levelVariant(
+							app.status.errors.find(
+								(error) => error.__typename === 'WorkloadStatusNoRunningInstances'
+							)?.level
+						)}
+					>
+						<div style="display: grid; gap: var(--a-spacing-3);">
+							<Heading level="2" size="small">No Running Instances</Heading>
+							<BodyShort>The application has no running instances.</BodyShort>
+
+							<Heading level="3" size="xsmall">Failing instances:</Heading>
+							<ul style="margin: 0;">
+								{#each app.instances.nodes as instance (instance.id)}
+									<li>
+										<code style="font-size: 1rem; line-height: 1.75;">{instance.name}</code>:
+										<strong>{instance.status.message}</strong>
+									</li>
+								{/each}
+							</ul>
+							<BodyLong>
+								Check logs if available. If this is unexpected and you cannot resolve the issue,
+								please contact the Nais team.
+							</BodyLong>
+						</div>
+					</Alert>
+				{/if}
 				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusInvalidNaisYaml')}
 					<Alert
 						variant={levelVariant(
