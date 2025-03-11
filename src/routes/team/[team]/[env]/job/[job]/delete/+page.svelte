@@ -73,7 +73,7 @@
 		{#if job.deletionStartedAt}
 			<Heading level="2">Deletion in progress</Heading>
 			This job is being deleted. Deletion started <Time time={job.deletionStartedAt} distance />. If
-			the deletion is taking too long, please contact the Nais team.
+			the deletion is taking too long, contact the Nais team.
 		{:else}
 			{#if hasResourcesToDelete(job)}
 				<p>

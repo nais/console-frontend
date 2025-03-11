@@ -149,8 +149,7 @@
 					<HelpText title="Status of the sql instance">
 						The status reflects the health of the instance and its configuration. If the instance is
 						healthy and running with the correct configuration, a checkmark will be displayed. Most
-						common issues are misconfigurations. Please consult the 'Conditions' for further
-						details.
+						common issues are misconfigurations. Consult the 'Conditions' for further details.
 					</HelpText>
 				</p>
 				<p style="display: flex; align-items: center;">

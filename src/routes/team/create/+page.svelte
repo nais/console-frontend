@@ -38,14 +38,14 @@
 
 			// Check if the slug is reserved
 			if (reservedSlugs.includes(slug)) {
-				teamSlugError = 'This slug is reserved by NAIS.';
+				teamSlugError = 'This slug is reserved.';
 				return;
 			}
 
 			// Check if the slug starts with "nais"
 			if (slug.startsWith('nais')) {
 				teamSlugError =
-					"The name prefix 'nais' is reserved by NAIS. Try again with a different name, perhaps just removing the prefix?";
+					"The name prefix 'nais' is reserved. Try again with a different name, perhaps just removing the prefix?";
 				return;
 			}
 
@@ -143,7 +143,7 @@
 		</ErrorSummary>
 	{/if}
 	<p>
-		Creating a team in NAIS Teams will grant access to certain NAIS features, such as Google Cloud
+		Creating a team in Nais will grant access to certain Nais features, such as Google Cloud
 		projects, Kubernetes namespaces, or your own GitHub team. After the team is created, you will
 		become the administrator of that team, granting privileges to add and remove team members. The
 		identifier is the primary key, and will be used across systems so that they are easily

@@ -97,12 +97,12 @@
 		errormessage = '';
 
 		if (selectedReason === '') {
-			errormessage += 'Please select a suppress reason from the Analysis dropdown.';
+			errormessage += 'Select a suppress reason from the Analysis dropdown.';
 			return;
 		}
 
 		if (inputText === '') {
-			errormessage += 'Please provide a comment before suppressing the finding. ';
+			errormessage += 'Provide a comment before suppressing the finding. ';
 			return;
 		}
 
@@ -232,8 +232,8 @@
 				</Alert>
 			{/if}
 			<p>
-				Please provide a reason for suppressing this finding. This will be recorded in the analysis
-				audit log. Suppression will be in effect for all workloads using this image.
+				Provide a reason for suppressing this finding. This will be recorded in the analysis audit
+				log. Suppression will be in effect for all workloads using this image.
 			</p>
 			<Select size="small" label="Analysis" bind:value={selectedReason}>
 				{#each SUPPRESS_OPTIONS as option (option)}

@@ -140,7 +140,7 @@
 
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
-		Unleash is not enabled for this tenant. Please contact your administrator.
+		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
 	<Confirm

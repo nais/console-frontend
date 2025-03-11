@@ -330,7 +330,7 @@
 					</div>
 				</div>
 			{:else}
-				<Alert variant="error">Error getting deploy key. Please try again later.</Alert>
+				<Alert variant="error">Error getting deploy key. Try again later.</Alert>
 			{/if}
 		</Card>
 		{#if browser}
@@ -397,8 +397,8 @@
 
 					{#if !deleteKeyResp?.data}
 						<BodyLong>
-							Please confirm that you intend to delete <strong>{teamSlug}</strong> and all resources
-							related to it.
+							Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related
+							to it.
 						</BodyLong>
 					{/if}
 

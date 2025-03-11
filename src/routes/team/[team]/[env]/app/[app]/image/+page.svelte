@@ -72,8 +72,8 @@
 					<VulnerabilityBadges summary={image.vulnerabilitySummary} />
 				{:else if !image.hasSBOM && image.vulnerabilitySummary !== null}
 					<WarningIcon class="text-aligned-icon" />
-					Data was discovered, but the SBOM was not rendered. Please refer to the
-					<a href={docURL('/services/vulnerabilities/')}>NAIS documentation</a>
+					Data was discovered, but the SBOM was not rendered. Refer to the
+					<a href={docURL('/services/vulnerabilities/')}>Nais documentation</a>
 					for further assistance.
 				{:else}
 					<WarningIcon class="text-aligned-icon" />

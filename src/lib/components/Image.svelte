@@ -63,9 +63,8 @@
 		{#if !image.hasSBOM && image.vulnerabilitySummary !== null}
 			<BodyShort>
 				<WarningIcon class="text-aligned-icon" /> Data was discovered, but the SBOM was not rendered.
-				Please refer to the <Link href={docURL('/services/vulnerabilities/')}
-					>NAIS documentation</Link
-				> for further assistance.
+				Refer to the <Link href={docURL('/services/vulnerabilities/')}>Nais documentation</Link> for
+				further assistance.
 			</BodyShort>
 		{:else if image.vulnerabilitySummary === null}
 			<BodyShort>

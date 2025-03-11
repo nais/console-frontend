@@ -79,6 +79,30 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
+			{#if job.status.errors.some((error) => error.__typename === 'WorkloadStatusFailedRun')}
+				<Alert
+					variant={levelVariant(
+						job.status.errors.find((error) => error.__typename === 'WorkloadStatusFailedRun')?.level
+					)}
+				>
+					<div style="display: grid; gap: var(--a-spacing-3);">
+						<Heading level="2" size="small">Job Failed</Heading>
+						<BodyLong>The last run of this job failed.</BodyLong>
+						<div>
+							<code>
+								{job.status.errors.find((error) => error.__typename === 'WorkloadStatusFailedRun')
+									?.name}
+							</code>:
+							{job.status.errors.find((error) => error.__typename === 'WorkloadStatusFailedRun')
+								?.detail}
+						</div>
+						<BodyLong>
+							Check logs if available. If you're unable to resolve the issue, contact the Nais team.
+						</BodyLong>
+					</div>
+				</Alert>
+			{/if}
+
 			{#if job.status.errors.some((error) => error.__typename === 'WorkloadStatusInvalidNaisYaml')}
 				<Alert
 					variant={levelVariant(
@@ -122,7 +146,7 @@
 					<BodyLong spacing>
 						The rollout of the job is failing, meaning it is not in sync with the latest deployment.
 						This may be due to a misconfiguration or a temporary issue, so try again in a few
-						minutes. If the problem persists, please contact the Nais team.
+						minutes. If the problem persists, contact the Nais team.
 					</BodyLong>
 
 					<Heading level="3" size="xsmall" spacing>Error details</Heading>
@@ -165,7 +189,7 @@
 					This job is being deleted. Deletion started <Time
 						time={job.deletionStartedAt}
 						distance
-					/>. If the deletion is taking too long, please contact the Nais team.
+					/>. If the deletion is taking too long, contact the Nais team.
 				</Alert>
 			{/if}
 

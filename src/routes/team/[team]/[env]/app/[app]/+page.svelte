@@ -97,7 +97,7 @@
 							</ul>
 							<BodyLong>
 								Check logs if available. If this is unexpected and you cannot resolve the issue,
-								please contact the Nais team.
+								contact the Nais team.
 							</BodyLong>
 						</div>
 					</Alert>
@@ -149,7 +149,7 @@
 						<BodyLong spacing>
 							The rollout of the application is failing, meaning it is not in sync with the latest
 							deployment. This may be due to a misconfiguration or a temporary issue, so try again
-							in a few minutes. If the problem persists, please contact the Nais team.
+							in a few minutes. If the problem persists, contact the Nais team.
 						</BodyLong>
 
 						<Heading level="3" size="xsmall" spacing>Error details</Heading>
@@ -192,7 +192,7 @@
 						This application is being deleted. Deletion started <Time
 							time={app.deletionStartedAt}
 							distance
-						/>. If the deletion is taking too long, please contact the Nais team.
+						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
 

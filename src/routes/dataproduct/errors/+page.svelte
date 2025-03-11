@@ -38,6 +38,12 @@
 							{JSON.stringify(instance.status, null, 2)}
 						{/if}
 					{/each}
+				{:else if workload.__typename === 'Job'}
+					{#each workload.runs.nodes as run (run.id)}
+						{#if run.status.state !== 'SUCCEEDED'}
+							{JSON.stringify(run.status, null, 2)}
+						{/if}
+					{/each}
 				{/if}
 			</div>
 		{/each}

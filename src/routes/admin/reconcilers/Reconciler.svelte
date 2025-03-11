@@ -132,7 +132,7 @@
 	{#if $r.errors.pageInfo.totalCount}
 		<span class="reconciler-error">
 			Reconciler has {$r.errors.pageInfo.totalCount} errors. Please consult the
-			<a href="/admin/reconcilerLogs/{$r.id}">logs</a>.
+			<a href="/admin/reconcilerLogs/{$r.id}">logs</a> 🙏
 		</span>
 	{/if}
 	<p>{$r.description}</p>

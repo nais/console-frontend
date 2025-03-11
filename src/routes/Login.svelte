@@ -29,7 +29,7 @@
 			{@const error = $page.url.searchParams.get('error')}
 			<Alert variant="error">
 				{#if error == 'unknown-user'}
-					Error during login. The user is not known in the system.<br />
+					Error during login: Unknown user.<br />
 					Please contact the system administrator.
 				{:else}
 					<!-- "unable-to-create-session", "invalid-state", and "unauthenticated" are known. -->

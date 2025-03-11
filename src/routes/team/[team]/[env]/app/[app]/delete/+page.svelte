@@ -67,7 +67,7 @@
 			This application is being deleted. Deletion started <Time
 				time={app.deletionStartedAt}
 				distance
-			/>. If the deletion is taking too long, please contact the Nais team.
+			/>. If the deletion is taking too long, contact the Nais team.
 		{:else}
 			{#if hasResourcesToDelete(app)}
 				<p>

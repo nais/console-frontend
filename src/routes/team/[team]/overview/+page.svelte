@@ -52,7 +52,7 @@
 						{workloadsVulnerable?.length} of your workload's risk scores exceed{workloadsVulnerable?.length ===
 						0
 							? ''
-							: 's'} the acceptable threshold of 100. Please keep your dependencies up to date.
+							: 's'} the acceptable threshold of 100. Keep your dependencies up to date.
 					</BodyShort>
 					<ul>
 						{#each workloadsVulnerable as workload (workload.id)}

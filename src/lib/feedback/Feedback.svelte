@@ -84,7 +84,7 @@
 	{:else}
 		<p>
 			Help us improve Console! We value your input. Feedback will be associated with your logged-in
-			email address. To provide feedback anonymously, please check the box below.
+			email address. To provide feedback anonymously, check the box below.
 		</p>
 		<div class="wrapper">
 			<Select size="small" label="Type" bind:value={type}>
@@ -93,9 +93,7 @@
 				{/each}
 			</Select>
 			{#if errorType}
-				<p class="navds-error-message navds-label navds-label--small">
-					Please provide type of feedback
-				</p>
+				<p class="navds-error-message navds-label navds-label--small">Feedback type required</p>
 			{/if}
 
 			<label class="navds-form-field__label navds-label navds-label--small" for="details">
@@ -125,7 +123,7 @@
 			>
 				{#if errorDetails}
 					<p class="navds-error-message navds-label navds-label--small">
-						Please provide feedback details
+						Feedback details required
 					</p>
 				{/if}
 			</div>

@@ -121,7 +121,7 @@
 			<Alert variant={variant($data.level)}>
 				<h4>Missing SBOM</h4>
 				The workload does not have a registered Software Bill of Materials (SBOM). Refer to the
-				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>NAIS documentation</a>
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>Nais documentation</a>
 				for instructions on how to resolve this.
 			</Alert>
 		{:else if type === 'WorkloadStatusVulnerable'}

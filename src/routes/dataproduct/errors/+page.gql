@@ -2,7 +2,7 @@ query AllIngresses {
 	teams(first: 500) {
 		nodes {
 			slug
-			workloads(first: 1000) {
+			workloads(first: 500) {
 				nodes {
 					__typename
 					id
@@ -18,6 +18,19 @@ query AllIngresses {
 
 					... on Application {
 						instances {
+							nodes {
+								id
+								name
+								status {
+									state
+									message
+								}
+							}
+						}
+					}
+
+					... on Job {
+						runs {
 							nodes {
 								id
 								name

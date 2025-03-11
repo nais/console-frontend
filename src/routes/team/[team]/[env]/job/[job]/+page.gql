@@ -35,6 +35,10 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 						... on WorkloadStatusInvalidNaisYaml {
 							detail
 						}
+						... on WorkloadStatusFailedRun {
+							detail
+							name
+						}
 					}
 				}
 
