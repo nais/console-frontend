@@ -18,8 +18,10 @@
 					team {
 						slug
 					}
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					bigQueryDatasets {
 						edges {
@@ -48,8 +50,10 @@
 									team {
 										slug
 									}
-									environment {
-										name
+									teamEnvironment {
+										environment {
+											name
+										}
 									}
 								}
 							}
@@ -102,7 +106,7 @@
 		(urlName: string) => (persistence: { node: { id: string; name: string } }) => ({
 			id: persistence.node.id,
 			label: persistence.node.name,
-			href: `/team/${$data.team.slug}/${$data.environment.name}/${urlName}/${persistence.node.name}`,
+			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/${urlName}/${persistence.node.name}`,
 			icon: urlName
 		});
 
@@ -116,14 +120,14 @@
 			.map((acl) => ({
 				id: acl,
 				label: acl.topic.name,
-				href: `/team/${acl.topic.team.slug}/${acl.topic.environment.name}/kafka/${acl.topic.name}`,
+				href: `/team/${acl.topic.team.slug}/${acl.topic.teamEnvironment.environment.name}/kafka/${acl.topic.name}`,
 				icon: 'kafka',
 				description: acl.access
 			})),
 		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
 			id: os,
 			label: os.name,
-			href: `/team/${$data.team.slug}/${$data.environment.name}/opensearch/${os.name}`,
+			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/opensearch/${os.name}`,
 			icon: 'opensearch',
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access

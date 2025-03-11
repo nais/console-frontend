@@ -1,15 +1,18 @@
 query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
+
 		environment(name: $env) {
-			name
 			job(name: $job) {
 				id
 				name
 				deletionStartedAt
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
+
 				team {
 					slug
 				}

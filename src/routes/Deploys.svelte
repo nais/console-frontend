@@ -85,7 +85,9 @@
 								<WorkloadLink
 									workload={{
 										__typename: 'App',
-										environment: { name: deploy.environmentName },
+										teamEnvironment: {
+											environment: { name: deploy.environmentName }
+										},
 										team: { slug: deploy.teamSlug },
 										name: resource.name
 									}}
@@ -94,7 +96,9 @@
 								<WorkloadLink
 									workload={{
 										__typename: 'Job',
-										environment: { name: deploy.environmentName },
+										teamEnvironment: {
+											environment: { name: deploy.environmentName }
+										},
 										team: { slug: deploy.teamSlug },
 										name: resource.name
 									}}

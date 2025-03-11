@@ -34,8 +34,10 @@
 	type OverageData = {
 		readonly workload: {
 			readonly name: string;
-			readonly environment: {
-				readonly name: string;
+			readonly teamEnvironment: {
+				readonly environment: {
+					readonly name: string;
+				};
 			};
 		};
 		readonly requested: number;
@@ -61,7 +63,7 @@
 		const overage = tmp.map((s) => {
 			return {
 				name: s.workload.name,
-				env: s.workload.environment.name,
+				env: s.workload.teamEnvironment.environment.name,
 				overage: s.requested - s.used
 			};
 		});
@@ -109,7 +111,7 @@
 		const overage = tmp.map((s) => {
 			return {
 				name: s.workload.name,
-				env: s.workload.environment.name,
+				env: s.workload.teamEnvironment.environment.name,
 				overage: s.requested - s.used
 			};
 		});
@@ -312,7 +314,7 @@
 										<WorkloadLink
 											workload={{
 												__typename: overage.type,
-												environment: { name: overage.env },
+												teamEnvironment: { environment: { name: overage.env } },
 												team: { slug: teamSlug },
 												name: overage.name
 											}}

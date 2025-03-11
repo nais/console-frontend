@@ -15,7 +15,9 @@
 		app: {
 			__typename: string | null;
 			name: string;
-			environment: { name: string };
+			teamEnvironment: {
+				environment: { name: string };
+			};
 			team: { slug: string };
 			status: {
 				state: string;
@@ -36,12 +38,12 @@
 <ListItem>
 	<IconLabel
 		level="4"
-		href="/team/{app.team.slug}/{app.environment.name}/app/{app.name}"
+		href="/team/{app.team.slug}/{app.teamEnvironment.environment.name}/app/{app.name}"
 		size="large"
 		label={app.name}
 		tag={{
-			label: app.environment.name,
-			variant: envTagVariant(app.environment.name)
+			label: app.teamEnvironment.environment.name,
+			variant: envTagVariant(app.teamEnvironment.environment.name)
 		}}
 	>
 		{#snippet icon()}

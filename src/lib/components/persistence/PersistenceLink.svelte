@@ -5,8 +5,10 @@
 		instance: {
 			readonly name: string;
 			readonly __typename: string | null;
-			readonly environment: {
-				readonly name: string;
+			readonly teamEnvironment: {
+				readonly environment: {
+					readonly name: string;
+				};
 			};
 			readonly team: {
 				readonly slug: string;
@@ -39,7 +41,10 @@
 </script>
 
 <Heading size="small" level="4">
-	<a href="/team/{instance.team.slug}/{instance.environment.name}/{urlName()}/{instance.name}">
+	<a
+		href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+			.name}/{urlName()}/{instance.name}"
+	>
 		{instance.name}
 	</a>
 </Heading>

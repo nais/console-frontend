@@ -39,7 +39,7 @@
 
 		const resp = await deleteJob.mutate({
 			job: job.name,
-			env: job.environment.name,
+			env: job.teamEnvironment.environment.name,
 			team: job.team.slug
 		});
 
@@ -142,7 +142,7 @@
 				</div>
 			{/if}
 
-			{@const expected = job.environment.name + '/' + job.name}
+			{@const expected = job.teamEnvironment.environment.name + '/' + job.name}
 			<p>
 				Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 				<em>Delete</em>.

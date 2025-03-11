@@ -24,8 +24,10 @@
 								team {
 									slug
 								}
-								environment {
-									name
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 								name
 								deployments(first: 1) {

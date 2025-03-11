@@ -45,10 +45,10 @@
 			environments = $Secrets.data?.team.environments
 				.map((env) => {
 					return {
-						name: env.name,
+						name: env.environment.name,
 						secrets:
 							$Secrets.data?.team.secrets.nodes
-								.filter((node) => node.environment.name === env.name)
+								.filter((node) => node.teamEnvironment.environment.name === env.environment.name)
 								.map((node) => {
 									return {
 										name: node.name,
@@ -127,11 +127,12 @@
 						{#each secrets.nodes as secret (secret.id)}
 							<Tr>
 								<Td>
-									<a href="/team/{teamSlug}/{secret.environment.name}/secret/{secret.name}"
-										>{secret.name}</a
+									<a
+										href="/team/{teamSlug}/{secret.teamEnvironment.environment
+											.name}/secret/{secret.name}">{secret.name}</a
 									>
 								</Td>
-								<Td>{secret.environment.name}</Td>
+								<Td>{secret.teamEnvironment.environment.name}</Td>
 								<Td>
 									{#if secret.workloads.pageInfo.totalCount > 0}
 										<CheckmarkIcon

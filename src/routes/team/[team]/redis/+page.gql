@@ -37,14 +37,18 @@ query Redis(
 				team {
 					slug
 				}
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				workload {
 					__typename
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug

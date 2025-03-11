@@ -18,7 +18,7 @@
 		job: {
 			__typename: string | null;
 			name: string;
-			environment: { name: string };
+			teamEnvironment: { environment: { name: string } };
 			team: { slug: string };
 			status: { state: string };
 			deployments: { nodes: { createdAt: Date }[] };
@@ -36,11 +36,11 @@
 	<IconLabel
 		level="4"
 		label={job.name}
-		href="/team/{job.team.slug}/{job.environment.name}/job/{job.name}"
+		href="/team/{job.team.slug}/{job.teamEnvironment.environment.name}/job/{job.name}"
 		size="large"
 		tag={{
-			label: job.environment.name,
-			variant: envTagVariant(job.environment.name)
+			label: job.teamEnvironment.environment.name,
+			variant: envTagVariant(job.teamEnvironment.environment.name)
 		}}
 	>
 		{#snippet icon()}

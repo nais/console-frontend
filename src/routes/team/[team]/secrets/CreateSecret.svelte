@@ -39,8 +39,10 @@
 				secret {
 					id
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 				}
 			}

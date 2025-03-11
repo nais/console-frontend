@@ -19,8 +19,10 @@
 						slug
 					}
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					resources {
 						scaling {
@@ -107,7 +109,8 @@
 		{#each instances as instance (instance.id)}
 			<AppInstanceListItem
 				{instance}
-				urlBase="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/logs?name="
+				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+					.name}/app/{$data.name}/logs?name="
 			/>
 		{/each}
 	</List>

@@ -152,7 +152,7 @@
 							{i.version}
 						</Td>
 						<Td>
-							{i.environment.name}
+							{i.teamEnvironment.environment.name}
 						</Td>
 
 						<Td>

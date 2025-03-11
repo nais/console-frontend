@@ -29,8 +29,10 @@
 					used
 					workload {
 						name
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 				}
@@ -39,8 +41,10 @@
 					used
 					workload {
 						name
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 				}

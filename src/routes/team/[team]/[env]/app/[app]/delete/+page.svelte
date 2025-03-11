@@ -31,7 +31,7 @@
 
 		const resp = await deleteApp.mutate({
 			app: app.name,
-			env: app.environment.name,
+			env: app.teamEnvironment.environment.name,
 			team: app.team.slug
 		});
 
@@ -136,7 +136,7 @@
 					{/each}
 				</div>
 			{/if}
-			{@const expected = app.environment.name + '/' + app.name}
+			{@const expected = app.teamEnvironment.environment.name + '/' + app.name}
 			<p>
 				Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 				<em>Delete</em>.

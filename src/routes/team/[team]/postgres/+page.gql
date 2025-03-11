@@ -35,8 +35,10 @@ query SqlInstances($team: Slug!, $orderBy: SqlInstanceOrder, $from: Date!, $to: 
 				id
 				__typename
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				team {
 					slug

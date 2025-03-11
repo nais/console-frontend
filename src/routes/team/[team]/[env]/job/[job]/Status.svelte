@@ -19,8 +19,10 @@
 					team {
 						slug
 					}
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 
 					name
@@ -59,7 +61,10 @@
 
 		{#if nErrors > 0}
 			<div style="margin-top: var(--a-spacing-2)">
-				<a href="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/status">
+				<a
+					href="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+						.name}/job/{$data.name}/status"
+				>
 					View details
 				</a>
 			</div>

@@ -32,8 +32,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on Job {
@@ -41,8 +43,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on SqlInstance {
@@ -50,8 +54,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on RedisInstance {
@@ -59,8 +65,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on ValkeyInstance {
@@ -68,8 +76,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on OpenSearch {
@@ -77,8 +87,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on BigQueryDataset {
@@ -86,8 +98,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on Bucket {
@@ -95,8 +109,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 					... on KafkaTopic {
@@ -104,8 +120,10 @@
 						team {
 							slug
 						}
-						environment {
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 					}
 				}
@@ -216,10 +234,10 @@
 						label: result.name,
 						description: result.team.slug,
 						tag: {
-							label: result.environment.name,
-							variant: envTagVariant(result.environment.name)
+							label: result.teamEnvironment.environment.name,
+							variant: envTagVariant(result.teamEnvironment.environment.name)
 						},
-						href: `/team/${result.team.slug}/${result.environment.name}/${urlName}/${result.name}`,
+						href: `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`,
 						type: 'link'
 					};
 				})

@@ -88,8 +88,10 @@
 										team {
 											slug
 										}
-										environment {
-											name
+										teamEnvironment {
+											environment {
+												name
+											}
 										}
 										name
 									}

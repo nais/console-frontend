@@ -40,8 +40,10 @@ export type utilization = (
 			readonly used: number;
 			readonly workload: {
 				readonly name: string;
-				readonly environment: {
-					readonly name: string;
+				readonly teamEnvironment: {
+					readonly environment: {
+						readonly name: string;
+					};
 				};
 			};
 	  }
@@ -96,7 +98,8 @@ export function mergeCalculateAndSortOverageData(
 				(cpu) =>
 					cpu &&
 					cpu.workload.name === memItem.workload.name &&
-					cpu.workload.environment.name === memItem.workload.environment.name
+					cpu.workload.teamEnvironment.environment.name ===
+						memItem.workload.teamEnvironment.environment.name
 			);
 
 			if (!cpuItem) {
@@ -111,7 +114,7 @@ export function mergeCalculateAndSortOverageData(
 			return {
 				id: memItem.workload.id,
 				name: memItem.workload.name,
-				env: memItem.workload.environment.name,
+				env: memItem.workload.teamEnvironment.environment.name,
 				unusedMem: memItem.requested - memItem.used,
 				unusedCpu: cpuItem.requested - cpuItem.used,
 				estimatedAnnualOverageCost: estimatedAnnualOverageCost,

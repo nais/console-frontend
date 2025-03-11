@@ -87,9 +87,10 @@
 						__typename
 						id
 						name
-						environment {
-							id
-							name
+						teamEnvironment {
+							environment {
+								name
+							}
 						}
 						team {
 							slug
@@ -144,15 +145,16 @@
 		readonly __typename: string | null;
 		readonly id: string;
 		readonly name: string;
-		readonly environment: {
-			readonly id: string;
-			readonly name: string;
+		readonly teamEnvironment: {
+			readonly environment: {
+				readonly name: string;
+			};
 		};
 		readonly team: {
 			readonly slug: string;
 		};
 	}) => {
-		return `/team/${workload.team.slug}/${workload.environment.name}/${workload.__typename === 'Application' ? 'app' : 'job'}/${workload.name}/image`;
+		return `/team/${workload.team.slug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Application' ? 'app' : 'job'}/${workload.name}/image`;
 	};
 
 	export function severityToColorWithHover(severity: string): string {
@@ -237,7 +239,7 @@
 							<WorkloadLink {workload} />
 						</Td>
 						<Td>
-							{workload.environment.name}
+							{workload.teamEnvironment.environment.name}
 						</Td>
 						<Td>
 							<div class="vulnerability">

@@ -21,8 +21,10 @@
 					team {
 						slug
 					}
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 
 					utilization {
@@ -60,7 +62,10 @@
 				maximumFractionDigits: 2
 			})}
 		</BodyShort>
-		<Link href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/utilization">
+		<Link
+			href="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+				.name}/app/{$data.name}/utilization"
+		>
 			View details
 		</Link>
 	</div>

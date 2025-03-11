@@ -11,8 +11,10 @@ query OpenSearchInstance(
 				__typename
 				id
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				status {
 					state
@@ -20,8 +22,10 @@ query OpenSearchInstance(
 
 				workload {
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					__typename
 					team {
@@ -45,8 +49,10 @@ query OpenSearchInstance(
 							workload {
 								id
 								name
-								environment {
-									name
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 								__typename
 								team {

@@ -40,8 +40,10 @@ query OpenSearch(
 				id
 				__typename
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				team {
 					slug
@@ -49,8 +51,10 @@ query OpenSearch(
 				workload {
 					__typename
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug

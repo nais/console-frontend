@@ -5,8 +5,10 @@ query TeamResourceUsage($team: Slug!) {
 				id
 				name
 				__typename
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 			}
 			requested
@@ -18,8 +20,10 @@ query TeamResourceUsage($team: Slug!) {
 				id
 				name
 				__typename
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 			}
 			requested

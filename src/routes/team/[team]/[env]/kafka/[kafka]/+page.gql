@@ -11,8 +11,10 @@ query KafkaTopic(
 				id
 				__typename
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				configuration {
 					cleanupPolicy
@@ -39,8 +41,10 @@ query KafkaTopic(
 						teamName
 						workload {
 							id
-							environment {
-								name
+							teamEnvironment {
+								environment {
+									name
+								}
 							}
 							name
 							__typename

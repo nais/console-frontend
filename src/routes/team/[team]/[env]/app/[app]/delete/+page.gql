@@ -2,12 +2,13 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 	team(slug: $team) {
 		slug
 		environment(name: $env) {
-			name
 			application(name: $app) {
 				name
 				deletionStartedAt
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				team {
 					slug

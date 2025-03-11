@@ -11,8 +11,10 @@ query ValkeyInstance(
 				__typename
 				id
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				status {
 					state
@@ -20,8 +22,10 @@ query ValkeyInstance(
 				workload {
 					name
 					__typename
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug
@@ -44,8 +48,10 @@ query ValkeyInstance(
 							workload {
 								id
 								name
-								environment {
-									name
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 								__typename
 								team {

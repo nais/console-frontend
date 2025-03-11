@@ -2,7 +2,6 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 	team(slug: $team) {
 		slug
 		environment(name: $environment) {
-			name
 			bigQueryDataset(name: $name) {
 				__typename
 				cascadingDelete
@@ -14,8 +13,10 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 					creationTime
 					lastModifiedTime
 				}
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				cost {
 					sum
@@ -23,8 +24,10 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 				workload {
 					name
 					__typename
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug

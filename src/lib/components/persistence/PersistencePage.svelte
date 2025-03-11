@@ -34,8 +34,10 @@
 			readonly id: string;
 			readonly __typename: string | null;
 			readonly name: string;
-			readonly environment: {
-				readonly name: string;
+			readonly teamEnvironment: {
+				readonly environment: {
+					readonly name: string;
+				};
 			};
 			readonly team: {
 				readonly slug: string;
@@ -43,8 +45,10 @@
 			readonly workload?: {
 				readonly __typename: string | null;
 				readonly name: string;
-				readonly environment: {
-					readonly name: string;
+				readonly teamEnvironment: {
+					readonly environment: {
+						readonly name: string;
+					};
 				};
 				readonly team: {
 					readonly slug: string;
@@ -77,8 +81,8 @@
 					<ListItem>
 						<div>
 							<PersistenceLink {instance} />
-							<Tag size="small" variant={envTagVariant(instance.environment.name)}
-								>{instance.environment.name}</Tag
+							<Tag size="small" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+								>{instance.teamEnvironment.environment.name}</Tag
 							>
 						</div>
 						{#if instance.workload}

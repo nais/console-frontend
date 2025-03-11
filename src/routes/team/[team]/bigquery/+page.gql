@@ -37,8 +37,10 @@ query BigQuery(
 				id
 				__typename
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				team {
 					slug
@@ -46,8 +48,10 @@ query BigQuery(
 				workload {
 					__typename
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug

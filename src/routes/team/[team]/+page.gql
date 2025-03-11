@@ -8,8 +8,10 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 				team {
 					slug
 				}
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 
 				status {

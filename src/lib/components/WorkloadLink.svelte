@@ -9,7 +9,9 @@
 		workload: {
 			name: string;
 			__typename: string | null;
-			environment: { name: string };
+			teamEnvironment: {
+				environment: { name: string };
+			};
 			team: { slug: string };
 		};
 		hideTeam?: boolean;
@@ -25,12 +27,11 @@
 	tag={hideEnv
 		? undefined
 		: {
-				label: workload.environment.name,
-				variant: envTagVariant(workload.environment.name)
+				label: workload.teamEnvironment.environment.name,
+				variant: envTagVariant(workload.teamEnvironment.environment.name)
 			}}
-	href="/team/{workload.team.slug}/{workload.environment.name}/{workload.__typename === 'Job'
-		? 'job'
-		: 'app'}/{workload.name}"
+	href="/team/{workload.team.slug}/{workload.teamEnvironment.environment
+		.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
 >
 	{#snippet icon()}
 		{#if warning}

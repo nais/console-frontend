@@ -41,8 +41,10 @@ query Jobs(
 				__typename
 				id
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				team {
 					slug

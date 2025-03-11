@@ -21,8 +21,10 @@
 					team {
 						slug
 					}
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					status {
 						state
@@ -57,7 +59,10 @@
 		</BodyShort>
 
 		{#if nErrors > 0}
-			<Link href="/team/{$data.team.slug}/{$data.environment.name}/app/{$data.name}/status">
+			<Link
+				href="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+					.name}/app/{$data.name}/status"
+			>
 				View {nErrors} issue{nErrors > 1 ? 's' : ''}
 			</Link>
 		{/if}

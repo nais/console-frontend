@@ -60,9 +60,7 @@
 			readonly team: {
 				readonly slug: string;
 			};
-			readonly environment: {
-				readonly name: string;
-			};
+			readonly teamEnvironment: { readonly environment: { readonly name: string } };
 			readonly name: string;
 		}[];
 		authorized: boolean;
@@ -218,7 +216,7 @@
 			<Tbody>
 				{#each workloads as workload (workload.id)}
 					<Tr>
-						<Td>{workload.environment.name}</Td>
+						<Td>{workload.teamEnvironment.environment.name}</Td>
 						<Td>{workload.team.slug}</Td>
 						<Td>{workload.name}</Td>
 					</Tr>

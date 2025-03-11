@@ -19,10 +19,13 @@
 					team {
 						slug
 					}
-					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
+					name
+
 					runs(first: 20) @list(name: "All_Runs") {
 						edges {
 							node {
@@ -55,7 +58,8 @@
 		{#each $data.runs.edges as run (run.node.id)}
 			<JobRunListItem
 				run={run.node}
-				urlBase="/team/{$data.team.slug}/{$data.environment.name}/job/{$data.name}/logs?name="
+				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+					.name}/job/{$data.name}/logs?name="
 			/>
 		{/each}
 	</List>

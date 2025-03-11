@@ -34,8 +34,10 @@ query Buckets(
 				id
 				__typename
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				team {
 					slug
@@ -43,8 +45,10 @@ query Buckets(
 				workload {
 					__typename
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug

@@ -21,8 +21,10 @@
 				fragment NetworkPolicy on Workload {
 					__typename
 					name
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug
@@ -39,8 +41,10 @@
 									team {
 										slug
 									}
-									environment {
-										name
+									teamEnvironment {
+										environment {
+											name
+										}
 									}
 								}
 							}
@@ -56,8 +60,10 @@
 									team {
 										slug
 									}
-									environment {
-										name
+									teamEnvironment {
+										environment {
+											name
+										}
 									}
 								}
 							}
@@ -84,8 +90,8 @@
 		{:else}
 			in {rule.targetTeamSlug}
 		{/if}
-		in <Tag size="small" variant={envTagVariant($data.environment.name)}
-			>{$data.environment.name}</Tag
+		in <Tag size="small" variant={envTagVariant($data.teamEnvironment.environment.name)}
+			>{$data.teamEnvironment.environment.name}</Tag
 		> can access {$data.name}.
 	{:else if !rule.mutual && rule.targetWorkload}
 		<WorkloadLink

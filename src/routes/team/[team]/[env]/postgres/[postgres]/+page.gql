@@ -6,8 +6,10 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 				__typename
 				id
 				name
-				environment {
-					name
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 				cascadingDelete
 				healthy
@@ -18,8 +20,10 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 				workload {
 					name
 					__typename
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 					team {
 						slug
