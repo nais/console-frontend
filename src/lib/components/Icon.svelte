@@ -32,10 +32,12 @@
 
 	const getComponent = (icon: string) => {
 		switch (icon.toLocaleLowerCase()) {
-			case 'overview':
+			case 'team overview':
 				return HouseIcon;
+			case 'app overview':
 			case 'applications':
 				return PackageIcon;
+			case 'job overview':
 			case 'jobs':
 				return BriefcaseClockIcon;
 			case 'secrets':

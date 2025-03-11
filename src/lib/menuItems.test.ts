@@ -18,7 +18,7 @@ describe('menuItems', () => {
 					member: true
 				})
 			).toEqual([
-				[{ label: 'Overview', href: '/team/devteam', active: true }],
+				[{ label: 'Team overview', href: '/team/devteam', active: true }],
 				[
 					{ label: 'Applications', href: '/team/devteam/applications' },
 					{ label: 'Jobs', href: '/team/devteam/jobs' }
@@ -155,7 +155,7 @@ describe('menuItems', () => {
 					member: true
 				})
 			).toEqual([
-				[{ label: 'Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
+				[{ label: 'App overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 				[
 					{ label: 'Image', href: '/team/devteam/dev/app/app-w-all-storage/image' },
 					{

@@ -74,7 +74,7 @@ export const menuItems = ({
 		const [, , team, env, workloadType, name, page] = split;
 		const menuItem = item(`/team/${team}/${env}/${workloadType}/${name}`, page);
 		return [
-			[menuItem('Overview')],
+			[menuItem(`${workloadType === 'app' ? 'App' : 'Job'} overview`)],
 			[
 				menuItem('Image', 'image'),
 				menuItem('Deployments', 'deploys'),
@@ -89,7 +89,7 @@ export const menuItems = ({
 	const [, , team, page] = split;
 	const menuItem = item(`/team/${team}`, page);
 	return [
-		[menuItem('Overview')],
+		[menuItem('Team overview')],
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
 			member && menuItem('Secrets', 'secrets', 'secret'),

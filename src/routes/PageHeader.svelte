@@ -30,8 +30,8 @@
 	<div class="header-content">
 		<div class="header-left">
 			<a href="/" class="logo">
-				<Logo height="2rem" />
-				<span class="nais-console">Nais Console</span>
+				<Logo height="1.8rem" />
+				<span>Console</span>
 			</a>
 			<nav>
 				<a href="/utilization" class:active={page.url.pathname === '/utilization'}>Utilization</a>
@@ -144,12 +144,5 @@
 		&:hover {
 			background-color: var(--a-surface-inverted-hover);
 		}
-	}
-
-	.nais-console {
-		background: linear-gradient(to left, var(--active-color-strong), #ffffff);
-		background-clip: text;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
 	}
 </style>

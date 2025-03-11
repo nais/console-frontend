@@ -27,26 +27,6 @@
 			| undefined
 	);
 
-	let activeColor = () => {
-		const now = new Date();
-		// Winter
-		if (now.getMonth() === 11 || now.getMonth() < 2) {
-			return 'winter';
-		}
-		// Spring
-		if (now.getMonth() > 1 && now.getMonth() < 5) {
-			return 'spring';
-		}
-		// Summer
-		if (now.getMonth() > 4 && now.getMonth() < 8) {
-			return 'summer';
-		}
-		// Autumn
-		if (now.getMonth() > 7 && now.getMonth() < 11) {
-			return 'autumn';
-		}
-	};
-
 	const refreshCookie = graphql(`
 		query RefreshCookie {
 			me {
@@ -78,7 +58,7 @@
 	});
 </script>
 
-<div class={['full-wrapper', activeColor()]}>
+<div class="full-wrapper">
 	{#if loading}
 		<ProgressBar />
 	{/if}
