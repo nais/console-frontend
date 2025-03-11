@@ -135,7 +135,13 @@
 				</Alert>
 			{/if}
 			{#if job.status.errors.some((error) => error.__typename === 'WorkloadStatusDeprecatedRegistry')}
-				<Alert variant="error">
+				<Alert
+					variant={levelVariant(
+						job.status.errors.find(
+							(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
+						)?.level
+					)}
+				>
 					<BodyShort spacing
 						>This job is using a deprecated image registry ({job.status.errors.find(
 							(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'

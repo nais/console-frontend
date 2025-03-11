@@ -32,6 +32,10 @@ query AllIngresses {
 							... on WorkloadStatusInvalidNaisYaml {
 								detail
 							}
+							... on WorkloadStatusFailedRun {
+								detail
+								name
+							}
 						}
 					}
 				}
