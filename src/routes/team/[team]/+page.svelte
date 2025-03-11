@@ -6,7 +6,7 @@
 	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
-	import { Alert, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
 
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import type { PageProps } from './$houdini';
@@ -21,6 +21,14 @@
 			)
 		)
 	);
+
+	const syncFailed = $derived(
+		$TeamOverview.data?.team.workloads.nodes.filter((workload) =>
+			workload.status.errors.some(
+				(error) => error.__typename === 'WorkloadStatusSynchronizationFailing'
+			)
+		)
+	);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -30,38 +38,56 @@
 		{msgParts[1]}.
 	</Alert>
 {/if}
+<div class="alerts-wrapper">
+	{#if syncFailed?.length}
+		<Alert variant="error">
+			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
+				<Heading level="2" size="small">Synchronization failing</Heading>
+				<BodyShort>
+					The rollout of the following workload{syncFailed.length === 1 ? '' : 's'} failed because of
+					synchronization errors.
+				</BodyShort>
+				<div>
+					{#each syncFailed as workload (workload.id)}
+						<WorkloadLink {workload} hideTeam />
+					{/each}
+				</div>
+			</div>
+		</Alert>
+	{/if}
 
-{#if deprecatedImages?.length}
-	<Alert variant="warning">
-		Starting April 1st, applications and jobs on Nais must use images from Google Artifact Registry
-		(GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in
-		the workflow. <a
-			href="https://nais.io/log/#2025-02-24-image-policy"
-			target="_blank"
-			rel="noopener noreferrer">Read more in Nais announcement</a
-		>.
-		<p>
-			{teamSlug} currently has <strong>{deprecatedImages.length}</strong>
-			workload{deprecatedImages.length === 1 ? '' : 's'} using
-			{deprecatedImages.length === 1
-				? 'a deprecated image registry'
-				: 'deprecated image registries'}.
-		</p>
+	{#if deprecatedImages?.length}
+		<Alert variant="warning">
+			Starting April 1st, applications and jobs on Nais must use images from Google Artifact
+			Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub
+			Actions in the workflow. <a
+				href="https://nais.io/log/#2025-02-24-image-policy"
+				target="_blank"
+				rel="noopener noreferrer">Read more in Nais announcement</a
+			>.
+			<p>
+				{teamSlug} currently has <strong>{deprecatedImages.length}</strong>
+				workload{deprecatedImages.length === 1 ? '' : 's'} using
+				{deprecatedImages.length === 1
+					? 'a deprecated image registry'
+					: 'deprecated image registries'}.
+			</p>
 
-		{#if deprecatedImages.length < 5}
-			{#each deprecatedImages as workload (workload.id)}
-				<WorkloadLink {workload} />
-			{/each}
-		{:else}
-			<details>
-				<summary>Workloads with deprecated image registries</summary>
+			{#if deprecatedImages.length < 5}
 				{#each deprecatedImages as workload (workload.id)}
 					<WorkloadLink {workload} />
 				{/each}
-			</details>
-		{/if}
-	</Alert>
-{/if}
+			{:else}
+				<details>
+					<summary>Workloads with deprecated image registries</summary>
+					{#each deprecatedImages as workload (workload.id)}
+						<WorkloadLink {workload} />
+					{/each}
+				</details>
+			{/if}
+		</Alert>
+	{/if}
+</div>
 <div class="grid">
 	<Card rows={1} columns={3}>
 		<TeamInfo {teamSlug} {viewerIsMember} />
@@ -94,6 +120,12 @@
 	}
 	.grid:not(:first-child) {
 		margin-top: 1rem;
+	}
+
+	.alerts-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
 	}
 	.deployments {
 		grid-column: span 12;

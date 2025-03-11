@@ -22,6 +22,9 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 							repository
 							tag
 						}
+						... on WorkloadStatusSynchronizationFailing {
+							detail
+						}
 					}
 				}
 			}
