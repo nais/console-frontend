@@ -71,14 +71,16 @@
 		{:else}
 			<BodyShort>{@render linkOrText()}</BodyShort>
 		{/if}
-		<div class="desc">
-			{#if tag}
-				<Tag size="small" variant={tag.variant}>{tag.label}</Tag>
-			{/if}
-			{#if description}
-				<Detail>{@render componentOrString(description)}</Detail>
-			{/if}
-		</div>
+		{#if tag || description}
+			<div class="desc">
+				{#if tag}
+					<Tag size="small" variant={tag.variant}>{tag.label}</Tag>
+				{/if}
+				{#if description}
+					<Detail>{@render componentOrString(description)}</Detail>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </div>
 
