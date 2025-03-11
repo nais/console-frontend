@@ -33,7 +33,7 @@
 		<Alert variant="error">
 			<Heading level="2" size="small">No running instances</Heading>
 			<BodyShort>
-				There are no running instances of the following workload{noRunningInstances.length === 1
+				There are no running instances of the following application{noRunningInstances.length === 1
 					? ''
 					: 's'}.
 			</BodyShort>
