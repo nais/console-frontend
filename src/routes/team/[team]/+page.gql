@@ -28,6 +28,9 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 						... on WorkloadStatusInvalidNaisYaml {
 							detail
 						}
+						... on WorkloadStatusNoRunningInstances {
+							level
+						}
 					}
 				}
 			}

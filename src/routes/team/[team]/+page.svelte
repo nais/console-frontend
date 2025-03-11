@@ -28,7 +28,23 @@
 	</Alert>
 {/if}
 <div class="alerts-wrapper">
-	{#if getErrors('WorkloadStatusInvalidNaisYaml')}
+	{#if (getErrors('WorkloadStatusNoRunningInstances') ?? []).length > 0}
+		{@const noRunningInstances = getErrors('WorkloadStatusNoRunningInstances')!}
+		<Alert variant="error">
+			<Heading level="2" size="small">No running instances</Heading>
+			<BodyShort>
+				There are no running instances of the following workload{noRunningInstances.length === 1
+					? ''
+					: 's'}.
+			</BodyShort>
+			<div>
+				{#each noRunningInstances as workload (workload.id)}
+					<WorkloadLink {workload} hideTeam />
+				{/each}
+			</div>
+		</Alert>
+	{/if}
+	{#if (getErrors('WorkloadStatusInvalidNaisYaml') ?? []).length > 0}
 		{@const invalidYaml = getErrors('WorkloadStatusInvalidNaisYaml')!}
 		<Alert variant="error">
 			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
@@ -46,8 +62,7 @@
 			</div>
 		</Alert>
 	{/if}
-
-	{#if getErrors('WorkloadStatusSynchronizationFailing')}
+	{#if (getErrors('WorkloadStatusSynchronizationFailing') ?? []).length > 0}
 		{@const syncFailed = getErrors('WorkloadStatusSynchronizationFailing')!}
 		<Alert variant="error">
 			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
@@ -65,7 +80,7 @@
 		</Alert>
 	{/if}
 
-	{#if getErrors('WorkloadStatusDeprecatedRegistry')}
+	{#if (getErrors('WorkloadStatusDeprecatedRegistry') ?? []).length > 0}
 		{@const deprecatedImages = getErrors('WorkloadStatusDeprecatedRegistry')!}
 		<Alert variant="warning">
 			Starting April 1st, applications and jobs on Nais must use images from Google Artifact
