@@ -29,6 +29,9 @@ query AllIngresses {
 								detail
 								name
 							}
+							... on WorkloadStatusInvalidNaisYaml {
+								detail
+							}
 						}
 					}
 				}
