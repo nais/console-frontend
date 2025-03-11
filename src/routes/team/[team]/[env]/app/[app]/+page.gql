@@ -43,6 +43,9 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						... on WorkloadStatusSynchronizationFailing {
 							detail
 						}
+						... on WorkloadStatusInvalidNaisYaml {
+							detail
+						}
 					}
 				}
 

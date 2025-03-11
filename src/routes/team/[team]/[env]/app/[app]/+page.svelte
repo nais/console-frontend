@@ -9,6 +9,7 @@
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
@@ -73,6 +74,41 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusInvalidNaisYaml')}
+					<Alert
+						variant={levelVariant(
+							app.status.errors.find(
+								(error) => error.__typename === 'WorkloadStatusInvalidNaisYaml'
+							)?.level
+						)}
+					>
+						<div style="display: grid; gap: var(--a-spacing-3);">
+							<Heading level="2" size="small">Rollout Failed - Invalid Manifest</Heading>
+							<BodyLong>
+								The rollout of your application has failed due to an error in the application
+								manifest.
+							</BodyLong>
+
+							<Heading level="3" size="xsmall">Error details</Heading>
+
+							<code style="font-size: 0.8rem; line-height: 1.75;"
+								>{app.status.errors.find(
+									(error) => error.__typename === 'WorkloadStatusInvalidNaisYaml'
+								)?.detail}</code
+							>
+
+							<BodyLong>
+								To resolve this issue, review the application manifest and correct any errors.
+								Consult the <a
+									target="_blank"
+									rel="noopener noreferrer"
+									href={docURL('/workloads/application/reference/application-spec/')}
+									>Nais application reference</a
+								> for manifest requirements.
+							</BodyLong>
+						</div>
+					</Alert>
+				{/if}
 				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusSynchronizationFailing')}
 					<Alert
 						variant={levelVariant(
@@ -81,7 +117,7 @@
 							)?.level
 						)}
 					>
-						<Heading level="2" size="small" spacing>Synchronization failing</Heading>
+						<Heading level="2" size="small" spacing>Rollout Failed - Synchronization Error</Heading>
 						<BodyLong spacing>
 							The rollout of the application is failing, meaning it is not in sync with the latest
 							deployment. This may be due to a misconfiguration or a temporary issue, so try again

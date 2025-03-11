@@ -25,6 +25,9 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 						... on WorkloadStatusSynchronizationFailing {
 							detail
 						}
+						... on WorkloadStatusInvalidNaisYaml {
+							detail
+						}
 					}
 				}
 			}

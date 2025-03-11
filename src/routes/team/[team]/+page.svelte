@@ -14,21 +14,10 @@
 	let { data }: PageProps = $props();
 	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
 
-	const deprecatedImages = $derived(
+	const getErrors = (errorType: string) =>
 		$TeamOverview.data?.team.workloads.nodes.filter((workload) =>
-			workload.status.errors.some(
-				(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
-			)
-		)
-	);
-
-	const syncFailed = $derived(
-		$TeamOverview.data?.team.workloads.nodes.filter((workload) =>
-			workload.status.errors.some(
-				(error) => error.__typename === 'WorkloadStatusSynchronizationFailing'
-			)
-		)
-	);
+			workload.status.errors.some((error) => error.__typename === errorType)
+		);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -39,10 +28,30 @@
 	</Alert>
 {/if}
 <div class="alerts-wrapper">
-	{#if syncFailed?.length}
+	{#if getErrors('WorkloadStatusInvalidNaisYaml')}
+		{@const invalidYaml = getErrors('WorkloadStatusInvalidNaisYaml')!}
 		<Alert variant="error">
 			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
-				<Heading level="2" size="small">Synchronization failing</Heading>
+				<Heading level="2" size="small">Rollout Failed - Invalid Manifest</Heading>
+				<BodyShort>
+					The rollout of the following workload{invalidYaml.length === 1 ? '' : 's'} failed because of
+					{invalidYaml.length === 1 ? 'an' : ''}
+					invalid manifest{invalidYaml.length === 1 ? '' : 's'}.
+				</BodyShort>
+				<div>
+					{#each invalidYaml as workload (workload.id)}
+						<WorkloadLink {workload} hideTeam />
+					{/each}
+				</div>
+			</div>
+		</Alert>
+	{/if}
+
+	{#if getErrors('WorkloadStatusSynchronizationFailing')}
+		{@const syncFailed = getErrors('WorkloadStatusSynchronizationFailing')!}
+		<Alert variant="error">
+			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
+				<Heading level="2" size="small">Rollout Failed - Synchronization Error</Heading>
 				<BodyShort>
 					The rollout of the following workload{syncFailed.length === 1 ? '' : 's'} failed because of
 					synchronization errors.
@@ -56,7 +65,8 @@
 		</Alert>
 	{/if}
 
-	{#if deprecatedImages?.length}
+	{#if getErrors('WorkloadStatusDeprecatedRegistry')}
+		{@const deprecatedImages = getErrors('WorkloadStatusDeprecatedRegistry')!}
 		<Alert variant="warning">
 			Starting April 1st, applications and jobs on Nais must use images from Google Artifact
 			Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub
