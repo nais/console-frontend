@@ -6404,6 +6404,9 @@ type WorkloadUtilization {
   """Get the current usage for the requested resource type."""
   current(resourceType: UtilizationResourceType!): Float!
 
+  """Gets the limit of the resources for the requested resource type."""
+  limit(resourceType: UtilizationResourceType!): Float
+
   """
   Gets the requested amount of resources for the requested resource type.
   """

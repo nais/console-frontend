@@ -23,7 +23,12 @@
 		readonly value: number;
 	}[];
 
-	function options(data: resourceUsage, request: number, color: string = '#000000'): EChartsOption {
+	function options(
+		data: resourceUsage,
+		request: number,
+		limit?: number,
+		color: string = '#000000'
+	): EChartsOption {
 		const dates = data?.map((d) => d.timestamp) || [];
 		return {
 			tooltip: {
@@ -55,11 +60,18 @@
 					color
 				},
 				{
+					name: 'Limit',
+					type: 'line',
+					data: data?.map(() => limit) || [],
+					showSymbol: false,
+					color: '#C30000'
+				},
+				{
 					name: 'Requested',
 					type: 'line',
 					data: data?.map(() => request) || [],
 					showSymbol: false,
-					color: '#C30000'
+					color: '#00C300'
 				}
 			],
 
@@ -177,6 +189,7 @@
 						return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
 					}),
 					utilization.requested_memory / 1024 / 1024 / 1024,
+					utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
 					'rgb(145, 220, 117)'
 				)}
 				style="height: 400px"
@@ -186,7 +199,12 @@
 				<h3 style="margin-bottom: 0">CPU usage</h3>
 			</span>
 			<EChart
-				options={options(utilization.cpu_series, utilization.requested_cpu, 'rgb(131, 191, 246)')}
+				options={options(
+					utilization.cpu_series,
+					utilization.requested_cpu,
+					utilization.limit_cpu ? utilization.limit_cpu : undefined,
+					'rgb(131, 191, 246)'
+				)}
 				style="height: 400px"
 			/>
 		</Card>

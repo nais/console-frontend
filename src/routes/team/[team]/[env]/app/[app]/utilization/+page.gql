@@ -17,6 +17,8 @@ query ResourceUtilizationForApp(
 					current_memory: current(resourceType: MEMORY)
 					requested_cpu: requested(resourceType: CPU)
 					requested_memory: requested(resourceType: MEMORY)
+					limit_cpu: limit(resourceType: CPU)
+					limit_memory: limit(resourceType: MEMORY)
 					cpu_series: series(input: { start: $start, end: $end, resourceType: CPU }) {
 						timestamp
 						value
