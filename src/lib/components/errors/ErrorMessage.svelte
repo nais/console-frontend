@@ -4,12 +4,18 @@
 
 	const {
 		error,
+		workloadType,
+		instances,
 		docURL
 	}: {
+		workloadType: 'App' | 'Job';
+		instances?: {
+			name: string;
+			status: { message: string };
+		}[];
 		error:
 			| ({
 					level: ValueOf<typeof WorkloadStatusErrorLevel>;
-					workloadType: 'App' | 'Job';
 			  } & (
 					| {
 							__typename: 'WorkloadStatusInvalidNaisYaml' | 'WorkloadStatusSynchronizationFailing';
@@ -21,17 +27,11 @@
 					  }
 					| {
 							__typename: 'WorkloadStatusNoRunningInstances';
-							instances: {
-								name: string;
-								status: { message: string };
-							}[];
-							workloadType: 'App';
 					  }
 					| {
 							__typename: 'WorkloadStatusFailedRun';
 							name: string;
 							detail: string;
-							workloadType: 'Job';
 					  }
 			  ))
 			| { __typename: "non-exhaustive; don't match this" };
@@ -65,30 +65,30 @@
 			<Heading level="2" size="small">{heading[error.__typename]}</Heading>
 			{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
 				<BodyLong>
-					The rollout of your {error.workloadType === 'Job' ? 'job' : 'application'} has failed due to
-					an error in the {error.workloadType === 'Job' ? 'job' : 'application'} manifest.
+					The rollout of your {workloadType === 'Job' ? 'job' : 'application'} has failed due to an error
+					in the {workloadType === 'Job' ? 'job' : 'application'} manifest.
 				</BodyLong>
 
 				<Heading level="3" size="xsmall">Error details</Heading>
 				<code>{error.detail}</code>
 
 				<BodyLong>
-					To resolve this issue, review the {error.workloadType === 'Job' ? 'job' : 'application'} manifest
+					To resolve this issue, review the {workloadType === 'Job' ? 'job' : 'application'} manifest
 					and correct any errors. Consult the
 					<a
 						target="_blank"
 						rel="noopener noreferrer"
 						href={docURL(
-							error.workloadType === 'Job'
+							workloadType === 'Job'
 								? '/workloads/job/reference/naisjob-spec/'
 								: '/workloads/application/reference/application-spec/'
-						)}>Nais {error.workloadType === 'Job' ? 'job' : 'application'} reference</a
+						)}>Nais {workloadType === 'Job' ? 'job' : 'application'} reference</a
 					> for manifest requirements.
 				</BodyLong>
 			{:else if error.__typename === 'WorkloadStatusSynchronizationFailing'}
 				<BodyLong>
-					The rollout of the {error.workloadType === 'Job' ? 'job' : 'application'} is failing, meaning
-					it is not in sync with the latest deployment. This may be due to a misconfiguration or a temporary
+					The rollout of the {workloadType === 'Job' ? 'job' : 'application'} is failing, meaning it
+					is not in sync with the latest deployment. This may be due to a misconfiguration or a temporary
 					issue, so try again in a few minutes. If the problem persists, contact the Nais team.
 				</BodyLong>
 
@@ -96,7 +96,7 @@
 				<code>{error.detail}</code>
 			{:else if error.__typename === 'WorkloadStatusDeprecatedRegistry'}
 				<BodyLong>
-					This {error.workloadType === 'Job' ? 'job' : 'application'} is using a deprecated image registry
+					This {workloadType === 'Job' ? 'job' : 'application'} is using a deprecated image registry
 					({error.registry}).
 				</BodyLong>
 
@@ -112,10 +112,10 @@
 			{:else if error.__typename === 'WorkloadStatusNoRunningInstances'}
 				<BodyLong>The application has no running instances.</BodyLong>
 
-				{#if error.instances.length}
+				{#if instances?.length}
 					<Heading level="3" size="xsmall">Failing instances:</Heading>
 					<ul style="margin: 0;">
-						{#each error.instances as instance (instance.name)}
+						{#each instances as instance (instance.name)}
 							<li>
 								<code style="font-size: 1rem; line-height: 1.75;">{instance.name}</code>:
 								<strong>{instance.status.message}</strong>

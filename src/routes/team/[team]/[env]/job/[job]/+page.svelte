@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
-	import ErrorMessage from '$lib/components/ErrorMessage.svelte';
+	import ErrorMessage from '$lib/components/errors/ErrorMessage.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
@@ -61,12 +61,12 @@
 		});
 	};
 
-	const getError = (type: string) => {
-		const error = $Job.data?.team.environment.job.status.errors.find(
-			(error) => error.__typename === type
-		);
-		return error ? { ...error, workloadType: 'Job' as const } : undefined;
-	};
+	const supportedErrorTypes = [
+		'WorkloadStatusInvalidNaisYaml',
+		'WorkloadStatusSynchronizationFailing',
+		'WorkloadStatusDeprecatedRegistry',
+		'WorkloadStatusFailedRun'
+	];
 </script>
 
 <GraphErrors errors={$Job.errors} />
@@ -75,9 +75,9 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
-			{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusFailedRun', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error, i (i)}
-				{#if error}
-					<ErrorMessage {error} {docURL} />
+			{#each job.status.errors as error, i (i)}
+				{#if supportedErrorTypes.includes(error.__typename)}
+					<ErrorMessage {error} {docURL} workloadType="Job" />
 				{/if}
 			{/each}
 

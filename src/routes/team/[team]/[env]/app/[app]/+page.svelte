@@ -4,7 +4,7 @@
 	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import ErrorMessage from '$lib/components/ErrorMessage.svelte';
+	import ErrorMessage from '$lib/components/errors/ErrorMessage.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
@@ -54,21 +54,12 @@
 		});
 	};
 
-	const getError = (type: string) => {
-		const error = $App.data?.team.environment.application.status.errors.find(
-			(error) => error.__typename === type
-		);
-		switch (error?.__typename) {
-			case 'WorkloadStatusNoRunningInstances':
-				return {
-					...error,
-					instances: $App.data?.team.environment.application.instances.nodes ?? [],
-					workloadType: 'App' as const
-				};
-			default:
-				return error ? { ...error, workloadType: 'App' as const } : undefined;
-		}
-	};
+	const supportedErrorTypes = [
+		'WorkloadStatusInvalidNaisYaml',
+		'WorkloadStatusSynchronizationFailing',
+		'WorkloadStatusNoRunningInstances',
+		'WorkloadStatusDeprecatedRegistry'
+	];
 </script>
 
 <GraphErrors errors={$App.errors} />
@@ -79,9 +70,9 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error, i (i)}
-					{#if error}
-						<ErrorMessage {error} {docURL} />
+				{#each app.status.errors as error, i (i)}
+					{#if supportedErrorTypes.includes(error.__typename)}
+						<ErrorMessage {error} instances={app.instances.nodes} {docURL} workloadType="App" />
 					{/if}
 				{/each}
 

@@ -8,19 +8,20 @@
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
-	import TeamErrorMessage from '$lib/components/TeamErrorMessage.svelte';
+	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
 
-	const getWorkloadsWithError = (
-		errorType:
-			| 'WorkloadStatusNoRunningInstances'
-			| 'WorkloadStatusInvalidNaisYaml'
-			| 'WorkloadStatusSynchronizationFailing'
-			| 'WorkloadStatusDeprecatedRegistry'
-	) => {
+	const supportedErrorTypes = [
+		'WorkloadStatusNoRunningInstances',
+		'WorkloadStatusInvalidNaisYaml',
+		'WorkloadStatusSynchronizationFailing',
+		'WorkloadStatusDeprecatedRegistry'
+	] as const;
+
+	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
 		const workloads = $TeamOverview.data?.team.workloads.nodes.filter((workload) =>
 			workload.status.errors.some((error) => error.__typename === errorType)
 		);
@@ -46,7 +47,7 @@
 	</Alert>
 {/if}
 <div class="alerts-wrapper">
-	{#each (['WorkloadStatusNoRunningInstances', 'WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusDeprecatedRegistry'] as const).map(getWorkloadsWithError) as errors (errors.__typename)}
+	{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
 		{#if errors.workloads?.length && errors.level}
 			<TeamErrorMessage
 				error={{ __typename: errors.__typename, level: errors.level }}

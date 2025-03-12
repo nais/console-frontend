@@ -1,0 +1,82 @@
+<script module>
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import ErrorMessage from './ErrorMessage.svelte';
+	import TeamErrorMessage from './TeamErrorMessage.svelte';
+
+	const { Story } = defineMeta({
+		title: 'Errors/Deprecated Image Registry',
+		tags: ['autodocs']
+	});
+</script>
+
+<Story name="Workload">
+	<ErrorMessage
+		docURL={(p) => p}
+		error={{
+			__typename: 'WorkloadStatusDeprecatedRegistry',
+			level: 'WARNING',
+			registry: 'docker.pkg.github.com'
+		}}
+		workloadType="App"
+	/>
+</Story>
+
+<Story name="Team">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusDeprecatedRegistry',
+			level: 'WARNING'
+		}}
+		workloads={[
+			{
+				__typename: 'App',
+				name: 'ip-lookup-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'prod-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'prod-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'prod-gcp' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-preprod',
+				teamEnvironment: { environment: { name: 'dev-gcp' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-integration-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dust',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
+	/>
+</Story>

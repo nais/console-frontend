@@ -1,0 +1,49 @@
+<script module>
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import ErrorMessage from './ErrorMessage.svelte';
+	import TeamErrorMessage from './TeamErrorMessage.svelte';
+
+	const { Story } = defineMeta({
+		title: 'Errors/No Running Instances',
+		tags: ['autodocs']
+	});
+</script>
+
+<Story name="Workload">
+	<ErrorMessage
+		docURL={(p) => p}
+		error={{
+			__typename: 'WorkloadStatusNoRunningInstances',
+			level: 'ERROR'
+		}}
+		instances={[
+			{ name: 'bidrag-sak-675cdddb5-vcffp', status: { message: 'ImagePullBackOff' } },
+			{ name: 'bidrag-sak-675cdddb5-vpc6m', status: { message: 'ImagePullBackOff' } }
+		]}
+		workloadType="App"
+	/>
+</Story>
+
+<Story name="Team">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusNoRunningInstances',
+			level: 'ERROR'
+		}}
+		workloads={[
+			{
+				__typename: 'App',
+				name: 'ip-lookup-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
+	/>
+</Story>
