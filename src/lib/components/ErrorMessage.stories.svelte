@@ -1,6 +1,7 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import ErrorMessage from './ErrorMessage.svelte';
+	import TeamErrorMessage from './TeamErrorMessage.svelte';
 
 	const { Story } = defineMeta({
 		component: ErrorMessage,
@@ -21,6 +22,24 @@
 	/>
 </Story>
 
+<Story name="Team - Invalid Manifest">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusInvalidNaisYaml',
+			level: 'ERROR'
+		}}
+		workloads={[
+			{
+				__typename: 'App',
+				name: 'ip-lookup-prod',
+				teamEnvironment: { environment: { name: 'prod-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
+	/>
+</Story>
+
 <Story name="Synchronization Error">
 	<ErrorMessage
 		docURL={(p) => p}
@@ -34,6 +53,30 @@
 	/>
 </Story>
 
+<Story name="Team - Synchronization Error">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusSynchronizationFailing',
+			level: 'ERROR'
+		}}
+		workloads={[
+			{
+				__typename: 'App',
+				name: 'ip-lookup-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
+	/>
+</Story>
+
 <Story name="Deprecated Image Registry">
 	<ErrorMessage
 		docURL={(p) => p}
@@ -43,6 +86,66 @@
 			registry: 'docker.pkg.github.com',
 			workloadType: 'App'
 		}}
+	/>
+</Story>
+
+<Story name="Team - Deprecated Image Registry">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusDeprecatedRegistry',
+			level: 'WARNING'
+		}}
+		workloads={[
+			{
+				__typename: 'App',
+				name: 'ip-lookup-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'prod-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'prod-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'prod-gcp' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-preprod',
+				teamEnvironment: { environment: { name: 'dev-gcp' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-integration-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dust',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
 	/>
 </Story>
 
@@ -67,6 +170,30 @@
 	/>
 </Story>
 
+<Story name="Team - No Running Instances">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusNoRunningInstances',
+			level: 'ERROR'
+		}}
+		workloads={[
+			{
+				__typename: 'App',
+				name: 'ip-lookup-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'App',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
+	/>
+</Story>
+
 <Story name="Failed Run">
 	<ErrorMessage
 		docURL={(p) => p}
@@ -77,5 +204,29 @@
 			detail: 'Run failed after 7 attempts',
 			workloadType: 'Job'
 		}}
+	/>
+</Story>
+
+<Story name="Team - Failed Run">
+	<TeamErrorMessage
+		teamSlug="team-service-management"
+		error={{
+			__typename: 'WorkloadStatusFailedRun',
+			level: 'ERROR'
+		}}
+		workloads={[
+			{
+				__typename: 'Job',
+				name: 'ip-lookup-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			},
+			{
+				__typename: 'Job',
+				name: 'tsm-dustin-integration-preprod',
+				teamEnvironment: { environment: { name: 'dev-fss' } },
+				team: { slug: 'team-service-management' }
+			}
+		]}
 	/>
 </Story>

@@ -79,7 +79,7 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error}
+				{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error, i (i)}
 					{#if error}
 						<ErrorMessage {error} {docURL} />
 					{/if}

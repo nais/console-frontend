@@ -16,6 +16,7 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 
 				status {
 					errors {
+						level
 						... on WorkloadStatusDeprecatedRegistry {
 							name
 							registry

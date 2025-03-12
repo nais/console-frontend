@@ -75,7 +75,7 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
-			{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusFailedRun', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error}
+			{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusFailedRun', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error, i (i)}
 				{#if error}
 					<ErrorMessage {error} {docURL} />
 				{/if}

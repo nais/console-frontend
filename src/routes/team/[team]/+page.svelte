@@ -6,18 +6,36 @@
 	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
-	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import TeamErrorMessage from '$lib/components/TeamErrorMessage.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
 
-	const getErrors = (errorType: string) =>
-		$TeamOverview.data?.team.workloads.nodes.filter((workload) =>
+	const getWorkloadsWithError = (
+		errorType:
+			| 'WorkloadStatusNoRunningInstances'
+			| 'WorkloadStatusInvalidNaisYaml'
+			| 'WorkloadStatusSynchronizationFailing'
+			| 'WorkloadStatusDeprecatedRegistry'
+	) => {
+		const workloads = $TeamOverview.data?.team.workloads.nodes.filter((workload) =>
 			workload.status.errors.some((error) => error.__typename === errorType)
 		);
+		if (workloads?.length) {
+			return {
+				__typename: errorType,
+				level: workloads[0].status.errors.find((error) => error.__typename === errorType)?.level,
+				workloads
+			};
+		} else {
+			return {
+				__typename: errorType
+			};
+		}
+	};
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -28,88 +46,15 @@
 	</Alert>
 {/if}
 <div class="alerts-wrapper">
-	{#if (getErrors('WorkloadStatusNoRunningInstances') ?? []).length > 0}
-		{@const noRunningInstances = getErrors('WorkloadStatusNoRunningInstances')!}
-		<Alert variant="error">
-			<Heading level="2" size="small" spacing>No Running Instances</Heading>
-			<BodyShort spacing>
-				The following application{noRunningInstances.length === 1 ? ' has' : 's have'} no running instances.
-			</BodyShort>
-			<div>
-				{#each noRunningInstances as workload (workload.id)}
-					<WorkloadLink {workload} hideTeam />
-				{/each}
-			</div>
-		</Alert>
-	{/if}
-	{#if (getErrors('WorkloadStatusInvalidNaisYaml') ?? []).length > 0}
-		{@const invalidYaml = getErrors('WorkloadStatusInvalidNaisYaml')!}
-		<Alert variant="error">
-			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
-				<Heading level="2" size="small">Rollout Failed - Invalid Manifest</Heading>
-				<BodyShort>
-					The rollout of the following workload{invalidYaml.length === 1 ? '' : 's'} failed because of
-					{invalidYaml.length === 1 ? 'an' : ''}
-					invalid manifest{invalidYaml.length === 1 ? '' : 's'}.
-				</BodyShort>
-				<div>
-					{#each invalidYaml as workload (workload.id)}
-						<WorkloadLink {workload} hideTeam />
-					{/each}
-				</div>
-			</div>
-		</Alert>
-	{/if}
-	{#if (getErrors('WorkloadStatusSynchronizationFailing') ?? []).length > 0}
-		{@const syncFailed = getErrors('WorkloadStatusSynchronizationFailing')!}
-		<Alert variant="error">
-			<div style="display: flex; flex-direction: column; gap: var(--a-spacing-3)">
-				<Heading level="2" size="small">Rollout Failed - Synchronization Error</Heading>
-				<BodyShort>
-					The rollout of the following workload{syncFailed.length === 1 ? '' : 's'} failed because of
-					synchronization errors.
-				</BodyShort>
-				<div>
-					{#each syncFailed as workload (workload.id)}
-						<WorkloadLink {workload} hideTeam />
-					{/each}
-				</div>
-			</div>
-		</Alert>
-	{/if}
-
-	{#if (getErrors('WorkloadStatusDeprecatedRegistry') ?? []).length > 0}
-		{@const deprecatedImages = getErrors('WorkloadStatusDeprecatedRegistry')!}
-		<Alert variant="warning">
-			Starting April 1st, applications and jobs on Nais must use images from Google Artifact
-			Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais' GitHub
-			Actions in the workflow. <a
-				href="https://nais.io/log/#2025-02-24-image-policy"
-				target="_blank"
-				rel="noopener noreferrer">Read more in Nais announcement</a
-			>.
-			<p>
-				{teamSlug} currently has <strong>{deprecatedImages.length}</strong>
-				workload{deprecatedImages.length === 1 ? '' : 's'} using
-				{deprecatedImages.length === 1
-					? 'a deprecated image registry'
-					: 'deprecated image registries'}.
-			</p>
-
-			{#if deprecatedImages.length < 5}
-				{#each deprecatedImages as workload (workload.id)}
-					<WorkloadLink {workload} />
-				{/each}
-			{:else}
-				<details>
-					<summary>Workloads with deprecated image registries</summary>
-					{#each deprecatedImages as workload (workload.id)}
-						<WorkloadLink {workload} />
-					{/each}
-				</details>
-			{/if}
-		</Alert>
-	{/if}
+	{#each (['WorkloadStatusNoRunningInstances', 'WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusDeprecatedRegistry'] as const).map(getWorkloadsWithError) as errors (errors.__typename)}
+		{#if errors.workloads?.length && errors.level}
+			<TeamErrorMessage
+				error={{ __typename: errors.__typename, level: errors.level }}
+				{teamSlug}
+				workloads={errors.workloads}
+			/>
+		{/if}
+	{/each}
 </div>
 <div class="grid">
 	<Card rows={1} columns={3}>
