@@ -70,11 +70,15 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#each app.status.errors as error, i (i)}
-					{#if supportedErrorTypes.includes(error.__typename)}
-						<ErrorMessage {error} instances={app.instances.nodes} {docURL} workloadType="App" />
-					{/if}
-				{/each}
+				{#if app.status.errors.filter((e) => supportedErrorTypes.includes(e.__typename)).length}
+					<div style="display: flex; flex-direction: column; gap: var(--a-spacing-2);">
+						{#each app.status.errors as error, i (i)}
+							{#if supportedErrorTypes.includes(error.__typename)}
+								<ErrorMessage {error} instances={app.instances.nodes} {docURL} workloadType="App" />
+							{/if}
+						{/each}
+					</div>
+				{/if}
 
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
