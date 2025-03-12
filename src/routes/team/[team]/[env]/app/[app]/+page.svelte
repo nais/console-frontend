@@ -61,10 +61,11 @@
 			case 'WorkloadStatusNoRunningInstances':
 				return {
 					...error,
-					instances: $App.data?.team.environment.application.instances.nodes ?? []
+					instances: $App.data?.team.environment.application.instances.nodes ?? [],
+					workloadType: 'App' as const
 				};
 			default:
-				return error;
+				return error ? { ...error, workloadType: 'App' as const } : undefined;
 		}
 	};
 </script>

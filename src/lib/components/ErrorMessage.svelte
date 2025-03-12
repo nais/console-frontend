@@ -9,6 +9,7 @@
 		error:
 			| ({
 					level: ValueOf<typeof WorkloadStatusErrorLevel>;
+					workloadType: 'App' | 'Job';
 			  } & (
 					| {
 							__typename: 'WorkloadStatusInvalidNaisYaml' | 'WorkloadStatusSynchronizationFailing';
@@ -24,6 +25,13 @@
 								name: string;
 								status: { message: string };
 							}[];
+							workloadType: 'App';
+					  }
+					| {
+							__typename: 'WorkloadStatusFailedRun';
+							name: string;
+							detail: string;
+							workloadType: 'Job';
 					  }
 			  ))
 			| { __typename: "non-exhaustive; don't match this" };
@@ -46,7 +54,8 @@
 		WorkloadStatusInvalidNaisYaml: 'Rollout Failed - Invalid Manifest',
 		WorkloadStatusSynchronizationFailing: 'Rollout Failed - Synchronization Error',
 		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
-		WorkloadStatusNoRunningInstances: 'No Running Instances'
+		WorkloadStatusNoRunningInstances: 'No Running Instances',
+		WorkloadStatusFailedRun: 'Job Failed'
 	};
 </script>
 
@@ -56,32 +65,39 @@
 			<Heading level="2" size="small">{heading[error.__typename]}</Heading>
 			{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
 				<BodyLong>
-					The rollout of your application has failed due to an error in the application manifest.
+					The rollout of your {error.workloadType === 'Job' ? 'job' : 'application'} has failed due to
+					an error in the {error.workloadType === 'Job' ? 'job' : 'application'} manifest.
 				</BodyLong>
 
 				<Heading level="3" size="xsmall">Error details</Heading>
 				<code>{error.detail}</code>
 
 				<BodyLong>
-					To resolve this issue, review the application manifest and correct any errors. Consult the <a
+					To resolve this issue, review the {error.workloadType === 'Job' ? 'job' : 'application'} manifest
+					and correct any errors. Consult the
+					<a
 						target="_blank"
 						rel="noopener noreferrer"
-						href={docURL('/workloads/application/reference/application-spec/')}
-						>Nais application reference</a
+						href={docURL(
+							error.workloadType === 'Job'
+								? '/workloads/job/reference/naisjob-spec/'
+								: '/workloads/application/reference/application-spec/'
+						)}>Nais {error.workloadType === 'Job' ? 'job' : 'application'} reference</a
 					> for manifest requirements.
 				</BodyLong>
 			{:else if error.__typename === 'WorkloadStatusSynchronizationFailing'}
 				<BodyLong>
-					The rollout of the application is failing, meaning it is not in sync with the latest
-					deployment. This may be due to a misconfiguration or a temporary issue, so try again in a
-					few minutes. If the problem persists, contact the Nais team.
+					The rollout of the {error.workloadType === 'Job' ? 'job' : 'application'} is failing, meaning
+					it is not in sync with the latest deployment. This may be due to a misconfiguration or a temporary
+					issue, so try again in a few minutes. If the problem persists, contact the Nais team.
 				</BodyLong>
 
 				<Heading level="3" size="xsmall">Error details</Heading>
 				<code>{error.detail}</code>
 			{:else if error.__typename === 'WorkloadStatusDeprecatedRegistry'}
 				<BodyLong>
-					This application is using a deprecated image registry ({error.registry}).
+					This {error.workloadType === 'Job' ? 'job' : 'application'} is using a deprecated image registry
+					({error.registry}).
 				</BodyLong>
 
 				<BodyLong
@@ -111,6 +127,17 @@
 				<BodyLong>
 					Check logs if available. If this is unexpected and you cannot resolve the issue, contact
 					the Nais team.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusFailedRun'}
+				<BodyLong>The last run of this job failed.</BodyLong>
+
+				<div>
+					<code>{error.name}</code>:
+					{error.detail}
+				</div>
+
+				<BodyLong>
+					Check logs if available. If you're unable to resolve the issue, contact the Nais team.
 				</BodyLong>
 			{/if}
 		</div>
