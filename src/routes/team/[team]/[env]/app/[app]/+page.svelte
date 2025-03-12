@@ -10,6 +10,7 @@
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
@@ -80,7 +81,7 @@
 			<div class="main-section">
 				{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error}
 					{#if error}
-						<ErrorMessage {error} />
+						<ErrorMessage {error} {docURL} />
 					{/if}
 				{/each}
 

@@ -10,6 +10,7 @@
 
 <Story name="Invalid Manifest">
 	<ErrorMessage
+		docURL={(p) => p}
 		error={{
 			__typename: 'WorkloadStatusInvalidNaisYaml',
 			level: 'ERROR',
@@ -22,6 +23,7 @@
 
 <Story name="Synchronization Error">
 	<ErrorMessage
+		docURL={(p) => p}
 		error={{
 			__typename: 'WorkloadStatusSynchronizationFailing',
 			level: 'ERROR',
@@ -34,6 +36,7 @@
 
 <Story name="Deprecated Image Registry">
 	<ErrorMessage
+		docURL={(p) => p}
 		error={{
 			__typename: 'WorkloadStatusDeprecatedRegistry',
 			level: 'WARNING',
@@ -45,6 +48,7 @@
 
 <Story name="No Running Instances">
 	<ErrorMessage
+		docURL={(p) => p}
 		error={{
 			__typename: 'WorkloadStatusNoRunningInstances',
 			level: 'ERROR',
@@ -65,6 +69,7 @@
 
 <Story name="Failed Run">
 	<ErrorMessage
+		docURL={(p) => p}
 		error={{
 			__typename: 'WorkloadStatusFailedRun',
 			level: 'WARNING',

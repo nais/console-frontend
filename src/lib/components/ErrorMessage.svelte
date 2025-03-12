@@ -4,7 +4,7 @@
 
 	const {
 		error,
-		docURL = (p) => p
+		docURL
 	}: {
 		error:
 			| ({
@@ -35,7 +35,7 @@
 					  }
 			  ))
 			| { __typename: "non-exhaustive; don't match this" };
-		docURL?: (path: string) => string;
+		docURL: (path: string) => string;
 	} = $props();
 
 	const levelVariant = (level?: ValueOf<typeof WorkloadStatusErrorLevel>) => {
