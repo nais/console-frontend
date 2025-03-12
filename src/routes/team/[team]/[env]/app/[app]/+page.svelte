@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql, type WorkloadStatusErrorLevel$options } from '$houdini';
+	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import ErrorMessage from '$lib/components/ErrorMessage.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, BodyLong, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
@@ -53,15 +53,18 @@
 		});
 	};
 
-	const levelVariant = (level?: WorkloadStatusErrorLevel$options) => {
-		switch (level) {
-			case 'ERROR':
-				return 'error';
-			case 'WARNING':
-				return 'warning';
-			case 'TODO':
+	const getError = (type: string) => {
+		const error = $App.data?.team.environment.application.status.errors.find(
+			(error) => error.__typename === type
+		);
+		switch (error?.__typename) {
+			case 'WorkloadStatusNoRunningInstances':
+				return {
+					...error,
+					instances: $App.data?.team.environment.application.instances.nodes ?? []
+				};
 			default:
-				return 'info';
+				return error;
 		}
 	};
 </script>
@@ -74,118 +77,11 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusNoRunningInstances')}
-					<Alert
-						variant={levelVariant(
-							app.status.errors.find(
-								(error) => error.__typename === 'WorkloadStatusNoRunningInstances'
-							)?.level
-						)}
-					>
-						<div style="display: grid; gap: var(--a-spacing-3);">
-							<Heading level="2" size="small">No Running Instances</Heading>
-							<BodyShort>The application has no running instances.</BodyShort>
-
-							<Heading level="3" size="xsmall">Failing instances:</Heading>
-							<ul style="margin: 0;">
-								{#each app.instances.nodes as instance (instance.id)}
-									<li>
-										<code style="font-size: 1rem; line-height: 1.75;">{instance.name}</code>:
-										<strong>{instance.status.message}</strong>
-									</li>
-								{/each}
-							</ul>
-							<BodyLong>
-								Check logs if available. If this is unexpected and you cannot resolve the issue,
-								contact the Nais team.
-							</BodyLong>
-						</div>
-					</Alert>
-				{/if}
-				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusInvalidNaisYaml')}
-					<Alert
-						variant={levelVariant(
-							app.status.errors.find(
-								(error) => error.__typename === 'WorkloadStatusInvalidNaisYaml'
-							)?.level
-						)}
-					>
-						<div style="display: grid; gap: var(--a-spacing-3);">
-							<Heading level="2" size="small">Rollout Failed - Invalid Manifest</Heading>
-							<BodyLong>
-								The rollout of your application has failed due to an error in the application
-								manifest.
-							</BodyLong>
-
-							<Heading level="3" size="xsmall">Error details</Heading>
-
-							<code style="font-size: 0.8rem; line-height: 1.75;"
-								>{app.status.errors.find(
-									(error) => error.__typename === 'WorkloadStatusInvalidNaisYaml'
-								)?.detail}</code
-							>
-
-							<BodyLong>
-								To resolve this issue, review the application manifest and correct any errors.
-								Consult the <a
-									target="_blank"
-									rel="noopener noreferrer"
-									href={docURL('/workloads/application/reference/application-spec/')}
-									>Nais application reference</a
-								> for manifest requirements.
-							</BodyLong>
-						</div>
-					</Alert>
-				{/if}
-				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusSynchronizationFailing')}
-					<Alert
-						variant={levelVariant(
-							app.status.errors.find(
-								(error) => error.__typename === 'WorkloadStatusSynchronizationFailing'
-							)?.level
-						)}
-					>
-						<Heading level="2" size="small" spacing>Rollout Failed - Synchronization Error</Heading>
-						<BodyLong spacing>
-							The rollout of the application is failing, meaning it is not in sync with the latest
-							deployment. This may be due to a misconfiguration or a temporary issue, so try again
-							in a few minutes. If the problem persists, contact the Nais team.
-						</BodyLong>
-
-						<Heading level="3" size="xsmall" spacing>Error details</Heading>
-
-						<code style="font-size: 0.8rem; line-height: 1;"
-							>{app.status.errors.find(
-								(error) => error.__typename === 'WorkloadStatusSynchronizationFailing'
-							)?.detail}</code
-						>
-					</Alert>
-				{/if}
-				{#if app.status.errors.some((error) => error.__typename === 'WorkloadStatusDeprecatedRegistry')}
-					<Alert
-						variant={levelVariant(
-							app.status.errors.find(
-								(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
-							)?.level
-						)}
-					>
-						<BodyShort spacing
-							>This application is using a deprecated image registry ({app.status.errors.find(
-								(error) => error.__typename === 'WorkloadStatusDeprecatedRegistry'
-							)?.registry}).</BodyShort
-						>
-
-						<BodyLong
-							>Starting April 1st, applications and jobs on Nais must use images from Google
-							Artifact Registry (GAR). The easiest way to ensure that images are stored in GAR is to
-							use Nais' GitHub Actions in the workflow. <a
-								href="https://nais.io/log/#2025-02-24-image-policy"
-								target="_blank"
-								rel="noopener noreferrer">Read more in Nais announcement</a
-							>.
-						</BodyLong>
-					</Alert>
-				{/if}
+				{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusDeprecatedRegistry'].map(getError) as error}
+					{#if error}
+						<ErrorMessage {error} />
+					{/if}
+				{/each}
 
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
