@@ -5,14 +5,17 @@
 	import type { EChartsOption } from 'echarts';
 
 	import { UtilizationResourceType } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
-	import { Heading } from '@nais/ds-svelte-community';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { changeParams } from '$lib/utils/searchparams';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
+	import { format } from 'date-fns';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$houdini';
 
@@ -24,118 +27,105 @@
 		readonly value: number;
 	}[];
 
+	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
+
 	function options(
 		data: resourceUsage,
 		request: number,
 		limit?: number,
-		color: string = '#000000'
+		color: string = '#000000',
+		valueFormatter: (value: number) => string = (value: number) =>
+			value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 	): EChartsOption {
 		const safeData = data ?? [];
-		const dates = safeData.map((d) =>
-			d.timestamp.toLocaleString('en-GB', {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric',
-				hour: '2-digit',
-				minute: '2-digit'
-			})
-		);
-
-		const usageValues = safeData.map((d) => d.value);
-		const referenceValues = Array(safeData.length).fill(null);
-		const limitValues = limit !== undefined ? Array(safeData.length).fill(limit) : referenceValues;
-		const requestValues = Array(safeData.length).fill(request);
 
 		return {
+			animation: false,
 			tooltip: {
 				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
+				formatter: (value: any) => {
+					const dot = (color: string) =>
+						`<div style="height: 8px; width: 8px; border-radius: 50%; background-color: ${color};"></div>`;
+					const div = document.createElement('div');
+					div.innerHTML = `
+						<div>${format(value[0].axisValueLabel, 'dd/MM/yyyy HH:mm')}</div>
+						<hr style="border: none; height: 1px; background-color: var(--a-border-subtle);" />
+						<div style="display: grid; grid-template-columns: auto auto; column-gap: 0.5rem;">
+							<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(color)}${value[0].seriesName}:</div><div style="text-align: right;">${valueFormatter(value[0].value[1])}</div>
+							<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(requestColor)}${value[1].seriesName}:</div><div style="text-align: right;">${valueFormatter(value[1].value[1])}</div>
+							${value.at(2)?.seriesName ? `<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(limitColor)}${value[2].seriesName}:</div><div style="text-align: right;">${valueFormatter(value[2].value[1])}</div>` : ''}
+						</div>
+					`;
+					return div;
 				},
-				valueFormatter: (value: number) =>
-					value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+				axisPointer: {
+					animation: false
+				}
 			},
 			xAxis: {
-				type: 'category',
+				type: 'time',
 				boundaryGap: false,
-				data: dates
+				axisLabel: { formatter: { month: '{MMM} {d}', day: '{dd}.{MM}' } }
+			},
+			yAxis: {
+				type: 'value',
+				// name: 'Usage of requested resources',
+				axisLabel: {
+					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+				}
 			},
 			series: [
 				{
 					name: 'Usage',
 					type: 'line',
-					data: usageValues,
+					data: safeData.map((d) => [d.timestamp.getTime(), d.value]),
 					showSymbol: false,
 					color,
 					areaStyle: {
 						opacity: 0.2
 					}
 				},
-				...(limit !== undefined
-					? [
-							{
-								name: 'Limit',
-								type: 'line',
-								data: limitValues,
-								showSymbol: false,
-								color: limitColor,
-								markLine: {
-									symbol: ['none', 'none'],
-									data: [
-										{
-											yAxis: limit,
-											label: {
-												formatter: 'Limit',
-												position: 'end',
-												color: limitColor,
-												padding: [2, 5],
-												borderRadius: 3
-											}
-										}
-									],
-									lineStyle: {
-										type: 'solid',
-										color: limitColor
-									}
-								}
-							}
-						]
-					: []),
 				{
-					name: 'Requested',
+					data: safeData.map((d) => [d.timestamp.getTime(), request]),
 					type: 'line',
-					data: requestValues,
+					name: 'Requested',
 					showSymbol: false,
 					color: requestColor,
+					lineStyle: { color: requestColor },
 					markLine: {
-						symbol: ['none', 'none'],
+						symbol: 'none',
 						data: [
 							{
 								yAxis: request,
-								label: {
-									formatter: 'Requested',
-									position: 'end',
-									color: requestColor,
-									padding: [2, 5],
-									borderRadius: 3
+								label: { formatter: 'Requested', position: 'end', color: requestColor },
+								lineStyle: { type: 'solid', color: 'transparent' }
+							}
+						]
+					}
+				},
+				...(limit
+					? [
+							{
+								data: safeData.map((d) => [d.timestamp.getTime(), limit]),
+								type: 'line',
+								name: 'Limit',
+								showSymbol: false,
+								color: limitColor,
+								lineStyle: { color: limitColor },
+								markLine: {
+									symbol: 'none',
+									data: [
+										{
+											yAxis: limit,
+											label: { formatter: 'Limit', position: 'end', color: limitColor },
+											lineStyle: { type: 'solid', color: 'transparent' }
+										}
+									]
 								}
 							}
-						],
-						lineStyle: {
-							type: 'solid',
-							color: requestColor
-						}
-					}
-				}
-			],
-			yAxis: {
-				type: 'value',
-				name: 'Usage of requested resources',
-				axisLabel: {
-					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
-				},
-				scale: false
-			}
+						]
+					: [])
+			]
 		} as EChartsOption;
 	}
 
@@ -147,152 +137,147 @@
 
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
-{#if $ResourceUtilizationForApp.data}
-	{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
-	<div class="grid">
-		<Card columns={3} borderColor="#83bff6">
-			<SummaryCard
-				title="CPU utilization"
-				helpTextTitle="Current CPU utilization"
-				helpText="Current CPU utilization based on the total cores requested for all instances."
-				color="blue"
-			>
-				{#snippet icon({ color })}
-					<CpuIcon size="32" {color} />
-				{/snippet}
-				{cpuUtilization(utilization.requested_cpu, utilization.current_cpu)}% of {utilization.requested_cpu.toLocaleString(
-					'en-GB',
-					{
-						minimumFractionDigits: 2,
-						maximumFractionDigits: 2
-					}
-				)} CPUs
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#91dc75">
-			<SummaryCard
-				title="Memory utilization"
-				helpTextTitle="Current Memory utilization"
-				helpText="Current memory utilization based on the total memory requested for all instances."
-				color="green"
-			>
-				{#snippet icon({ color })}
-					<MemoryIcon size="32" {color} />
-				{/snippet}
-				{(
+<div class="wrapper">
+	<BodyLong>
+		These graphs help you analyze your app's CPU and memory usage over time.
+		<ul>
+			<li>Blue Line (Requests): The guaranteed CPU or memory allocation for your app.</li>
+			<li>Red Line (Limits, if present): The maximum allowed usage before restrictions apply.</li>
+			<li>Shaded Area: The actual resource consumption over time.</li>
+		</ul>
+		Your app can exceed the request line, which is expected if additional resources are available:
+		<ul>
+			<li>
+				For CPU: Exceeding requests may cause throttling, leading to reduced performance but no
+				crashes.
+			</li>
+			<li>
+				For Memory: Exceeding the limit causes termination (OOMKilled) because memory cannot be
+				throttled.
+			</li>
+		</ul>
+		<div>To optimize costs while maintaining performance:</div>
+		<div>✅ If usage is consistently below requests, consider lowering requests to save money.</div>
+		<div>✅ If CPU usage is frequently throttled, increasing requests may improve performance.</div>
+		<div>
+			✅ If memory usage hits the limit, increasing requests or optimizing memory use may prevent
+			crashes.
+		</div>
+	</BodyLong>
+	<div class="section">
+		<Heading level="2" size="medium" spacing>Memory usage</Heading>
+		{#if $ResourceUtilizationForApp.data}
+			{@const utilization =
+				$ResourceUtilizationForApp.data.team.environment.application.utilization}
+			<BodyLong spacing>
+				At the latest data point, usage is {(
 					memoryUtilization(utilization.requested_memory, utilization.current_memory) * 100
 				).toFixed(0)}% of {prettyBytes(utilization.requested_memory, {
 					locale: 'en',
 					minimumFractionDigits: 2,
 					maximumFractionDigits: 2
-				})}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#83bff6">
-			<SummaryCard
-				title="Unused CPU cost"
-				helpTextTitle="Annual cost of unused CPU"
-				helpText="Estimate of annual cost of unused CPU calculated based on current utilization."
-				color="blue"
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-
-				{euroValueFormatter(
-					yearlyOverageCost(
-						UtilizationResourceType.CPU,
-						utilization.requested_cpu,
-						utilization.current_cpu
-					)
-				)}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#91dc75">
-			<SummaryCard
-				title="Unused mem cost"
-				helpTextTitle="Annual cost of unused memory"
-				helpText="Estimate of annual cost of unused memory calculated based on current utilization."
-				color="green"
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-
+				})} requested memory. Based on this data point, the estimated annual cost of unused memory of
 				{euroValueFormatter(
 					yearlyOverageCost(
 						UtilizationResourceType.MEMORY,
 						utilization.requested_memory,
 						utilization.current_memory
 					)
-				)}
-			</SummaryCard>
-		</Card>
-	</div>
-	<span class="graphHeader">
-		<Heading level="2" size="medium">Memory usage</Heading>
-		<span class="intervalPicker">
-			{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
-				<a
-					class:active={(page.url.searchParams.get('interval') || '7d') == interval}
-					href="?interval={interval}">{interval}</a
+				)}.
+			</BodyLong>
+			<div style="justify-self: end;">
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
 				>
-			{/each}
-		</span>
-	</span>
-	<EChart
-		options={options(
-			utilization.memory_series.map((d) => {
-				return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
-			}),
-			utilization.requested_memory / 1024 / 1024 / 1024,
-			utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
-			usageMemColor
-		)}
-		style="height: 400px"
-	/>
-
-	<span class="graphHeader">
-		<Heading level="2" size="medium">CPU usage</Heading>
-	</span>
-	<EChart
-		options={options(
-			utilization.cpu_series,
-			utilization.requested_cpu,
-			utilization.limit_cpu ? utilization.limit_cpu : undefined,
-			usageCPUColor
-		)}
-		style="height: 400px"
-	/>
-{/if}
+					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
+			<EChart
+				options={options(
+					utilization.memory_series.map((d) => {
+						return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
+					}),
+					utilization.requested_memory / 1024 / 1024 / 1024,
+					utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
+					usageMemColor,
+					(value) =>
+						value == null
+							? '-'
+							: prettyBytes(value * 1024 ** 3, {
+									locale: 'en',
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})
+				)}
+				style="height: 400px"
+			/>
+		{:else}
+			<div style="height: 504px; display: flex; justify-content: center; align-items: center;">
+				<Loader size="3xlarge" />
+			</div>
+		{/if}
+	</div>
+	<div class="section">
+		<Heading level="2" size="medium" spacing>CPU usage</Heading>
+		{#if $ResourceUtilizationForApp.data}
+			{@const utilization =
+				$ResourceUtilizationForApp.data.team.environment.application.utilization}
+			<BodyLong spacing>
+				At the latest data point, usage is {cpuUtilization(
+					utilization.requested_cpu,
+					utilization.current_cpu
+				)}% of {utilization.requested_cpu.toLocaleString('en-GB', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				})} requested CPUs. Based on this data point, the estimated annual cost of unused CPU of {euroValueFormatter(
+					yearlyOverageCost(
+						UtilizationResourceType.CPU,
+						utilization.requested_cpu,
+						utilization.current_cpu
+					)
+				)}.
+			</BodyLong>
+			<div style="justify-self: end;">
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
+			<EChart
+				options={options(
+					utilization.cpu_series,
+					utilization.requested_cpu,
+					utilization.limit_cpu ? utilization.limit_cpu : undefined,
+					usageCPUColor,
+					(value: number) =>
+						value == null
+							? '-'
+							: `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} CPUs`
+				)}
+				style="height: 400px"
+			/>
+		{:else}
+			<div style="height: 504px; display: flex; justify-content: center; align-items: center;">
+				<Loader size="3xlarge" />
+			</div>
+		{/if}
+	</div>
+</div>
 
 <style>
-	.grid {
-		margin-top: 1rem;
-		margin-bottom: var(--a-spacing-6);
+	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		gap: var(--a-spacing-6);
 	}
-	.graphHeader {
-		display: flex;
-		justify-content: space-between;
-	}
-	a {
-		cursor: pointer;
-		text-decoration: none;
-		color: var(--a-text-default);
-	}
-	a.active {
-		font-weight: 600;
-		text-decoration: underline;
-	}
-	a:hover {
-		text-decoration: underline;
-	}
-	.intervalPicker {
-		display: flex;
-		gap: 1rem;
+
+	.section {
+		display: grid;
 	}
 </style>
