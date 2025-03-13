@@ -16,6 +16,7 @@
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
+	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$houdini';
 
@@ -43,19 +44,23 @@
 			animation: false,
 			tooltip: {
 				trigger: 'axis',
-				formatter: (value: any) => {
+				formatter: (value: CallbackDataParams[]) => {
 					const dot = (color: string) =>
 						`<div style="height: 8px; width: 8px; border-radius: 50%; background-color: ${color};"></div>`;
 					const div = document.createElement('div');
-					div.innerHTML = `
-						<div>${format(value[0].axisValueLabel, 'dd/MM/yyyy HH:mm')}</div>
-						<hr style="border: none; height: 1px; background-color: var(--a-border-subtle);" />
-						<div style="display: grid; grid-template-columns: auto auto; column-gap: 0.5rem;">
-							<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(color)}${value[0].seriesName}:</div><div style="text-align: right;">${valueFormatter(value[0].value[1])}</div>
-							<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(requestColor)}${value[1].seriesName}:</div><div style="text-align: right;">${valueFormatter(value[1].value[1])}</div>
-							${value.at(2)?.seriesName ? `<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(limitColor)}${value[2].seriesName}:</div><div style="text-align: right;">${valueFormatter(value[2].value[1])}</div>` : ''}
-						</div>
-					`;
+
+					const [usage, request, limit] = value;
+					if (Array.isArray(usage.value) && Array.isArray(request.value)) {
+						div.innerHTML = `
+							<div>${format(usage.value.at(0) as number, 'dd/MM/yyyy HH:mm')}</div>
+							<hr style="border: none; height: 1px; background-color: var(--a-border-subtle);" />
+							<div style="display: grid; grid-template-columns: auto auto; column-gap: 0.5rem;">
+								<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(color)}${usage.seriesName}:</div><div style="text-align: right;">${valueFormatter(usage.value.at(1) as number)}</div>
+								<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(requestColor)}${request.seriesName}:</div><div style="text-align: right;">${valueFormatter(request.value.at(1) as number)}</div>
+								${Array.isArray(limit?.value) ? `<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(limitColor)}${limit.seriesName}:</div><div style="text-align: right;">${valueFormatter(limit.value.at(1) as number)}</div>` : ''}
+							</div>
+						`;
+					}
 					return div;
 				},
 				axisPointer: {
