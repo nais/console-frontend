@@ -1,4 +1,4 @@
-query AllIngresses {
+query AllErrors {
 	teams(first: 500) {
 		nodes {
 			slug

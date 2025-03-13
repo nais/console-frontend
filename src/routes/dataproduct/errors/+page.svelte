@@ -4,10 +4,10 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { AllIngresses } = $derived(data);
+	let { AllErrors } = $derived(data);
 	let value = $state('WorkloadStatusDeprecatedIngress');
 	let workloads = $derived(
-		$AllIngresses.data?.teams.nodes.flatMap((team) =>
+		$AllErrors.data?.teams.nodes.flatMap((team) =>
 			team.workloads.nodes.filter((workload) =>
 				workload.status.errors.some((error) => error.__typename === value)
 			)
@@ -23,7 +23,7 @@
 
 <Heading level="1" size="large" spacing>{workloads.length}</Heading>
 <div class="grid">
-	{#if $AllIngresses.data}
+	{#if $AllErrors.data}
 		{#each workloads as workload (workload.id)}
 			<div><WorkloadLink {workload} /></div>
 			<div>
