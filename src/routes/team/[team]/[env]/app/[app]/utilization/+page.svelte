@@ -212,7 +212,8 @@
 				).toFixed(0)}% of {prettyBytes(utilization.requested_memory, {
 					locale: 'en',
 					minimumFractionDigits: 2,
-					maximumFractionDigits: 2
+					maximumFractionDigits: 2,
+					binary: true
 				})} requested memory. Based on this data point, the estimated annual cost of unused memory of
 				{euroValueFormatter(
 					yearlyOverageCost(
@@ -249,7 +250,8 @@
 							: prettyBytes(value * 1024 ** 3, {
 									locale: 'en',
 									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
+									maximumFractionDigits: 2,
+									binary: true
 								})
 				)}
 				style="height: 400px"
