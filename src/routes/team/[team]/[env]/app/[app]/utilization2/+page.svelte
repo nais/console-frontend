@@ -21,7 +21,7 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { ResourceUtilizationForApp } = $derived(data);
+	let { ResourceUtilizationForApp2 } = $derived(data);
 
 	type resourceUsage = {
 		readonly timestamp: Date;
@@ -157,12 +157,10 @@
 	}
 
 	const limitColor = '#DE2E2E';
-	// const usageMemColor = '#8269A2';
-	// const usageCPUColor = '#FF9100';
 	const requestColor = '#3386E0';
 </script>
 
-<GraphErrors errors={$ResourceUtilizationForApp.errors} />
+<GraphErrors errors={$ResourceUtilizationForApp2.errors} />
 
 <div class="wrapper">
 	<BodyLong>
@@ -193,9 +191,9 @@
 	</BodyLong>
 	<div class="section">
 		<Heading level="2" size="medium" spacing>Memory usage</Heading>
-		{#if $ResourceUtilizationForApp.data}
+		{#if $ResourceUtilizationForApp2.data}
 			{@const utilization =
-				$ResourceUtilizationForApp.data.team.environment.application.utilization}
+				$ResourceUtilizationForApp2.data.team.environment.application.utilization}
 			<BodyLong spacing>
 				At the latest data point, usage is {(
 					memoryUtilization(utilization.requested_memory, utilization.current_memory) * 100
@@ -252,9 +250,9 @@
 	</div>
 	<div class="section">
 		<Heading level="2" size="medium" spacing>CPU usage</Heading>
-		{#if $ResourceUtilizationForApp.data}
+		{#if $ResourceUtilizationForApp2.data}
 			{@const utilization =
-				$ResourceUtilizationForApp.data.team.environment.application.utilization}
+				$ResourceUtilizationForApp2.data.team.environment.application.utilization}
 			<BodyLong spacing>
 				At the latest data point, usage is {cpuUtilization(
 					utilization.requested_cpu,

@@ -1,4 +1,4 @@
-import { load_ResourceUtilizationForApp } from '$houdini';
+import { load_ResourceUtilizationForApp2 } from '$houdini';
 import type { PageLoad } from './$houdini';
 
 export const ssr = false;
@@ -23,7 +23,7 @@ export const load: PageLoad = async (event) => {
 
 	return {
 		interval,
-		...(await load_ResourceUtilizationForApp({
+		...(await load_ResourceUtilizationForApp2({
 			event,
 			variables: {
 				app: event.params.app,

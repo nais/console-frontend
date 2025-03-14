@@ -1,4 +1,4 @@
-query ResourceUtilizationForApp(
+query ResourceUtilizationForApp2(
 	$team: Slug!
 	$app: String!
 	$env: String!
