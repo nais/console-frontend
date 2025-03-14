@@ -94,7 +94,6 @@
 			},
 			yAxis: {
 				type: 'value',
-				// name: 'Usage of requested resources',
 				axisLabel: {
 					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 				}
@@ -115,7 +114,7 @@
 				{
 					data: uniqueTimestamps.map((timestamp) => [timestamp, request]),
 					type: 'line',
-					name: 'Requested',
+					name: 'Request',
 					showSymbol: false,
 					color: requestColor,
 					lineStyle: {
@@ -128,7 +127,7 @@
 							{
 								yAxis: request,
 								label: {
-									formatter: 'Requested',
+									formatter: 'Request',
 									position: 'end',
 									color: requestColor,
 									offset: request === limit ? [0, 8] : [0, 0]
