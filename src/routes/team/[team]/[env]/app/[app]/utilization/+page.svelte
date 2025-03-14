@@ -118,13 +118,21 @@
 					name: 'Requested',
 					showSymbol: false,
 					color: requestColor,
-					lineStyle: { color: requestColor },
+					lineStyle: {
+						color: requestColor,
+						type: request === limit ? 'solid' : 'dashed'
+					},
 					markLine: {
 						symbol: 'none',
 						data: [
 							{
 								yAxis: request,
-								label: { formatter: 'Requested', position: 'end', color: requestColor },
+								label: {
+									formatter: 'Requested',
+									position: 'end',
+									color: requestColor,
+									offset: request === limit ? [0, 8] : [0, 0]
+								},
 								lineStyle: { type: 'solid', color: 'transparent' }
 							}
 						]
@@ -137,13 +145,18 @@
 							name: 'Limit',
 							showSymbol: false,
 							color: limitColor,
-							lineStyle: { color: limitColor },
+							lineStyle: { color: limitColor, type: 'dashed' },
 							markLine: {
 								symbol: 'none',
 								data: [
 									{
 										yAxis: limit,
-										label: { formatter: 'Limit', position: 'end', color: limitColor },
+										label: {
+											formatter: 'Limit',
+											position: 'end',
+											color: limitColor,
+											offset: request === limit ? [0, -8] : [0, 0]
+										},
 										lineStyle: { type: 'solid', color: 'transparent' }
 									}
 								]
@@ -157,7 +170,7 @@
 	}
 
 	const limitColor = '#DE2E2E';
-	const requestColor = '#3386E0';
+	const requestColor = '#838C9A';
 </script>
 
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
