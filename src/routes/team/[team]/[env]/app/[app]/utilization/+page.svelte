@@ -26,9 +26,19 @@
 	type resourceUsage = {
 		readonly timestamp: Date;
 		readonly value: number;
+		readonly instance: string;
 	}[];
 
 	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
+
+	const visualizationColors: string[] = [
+		'#CCE1FF',
+		'#99C4DD',
+		'#FFC166',
+		'#66CBEC',
+		'#99DEAD',
+		'#C0B2D2'
+	];
 
 	function options(
 		data: resourceUsage,
@@ -39,6 +49,8 @@
 			value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 	): EChartsOption {
 		const safeData = data ?? [];
+
+		console.log(safeData);
 
 		return {
 			animation: false,
@@ -80,16 +92,18 @@
 				}
 			},
 			series: [
-				{
-					name: 'Usage',
+				...Array.from(new Set(safeData.map((d) => d.instance))).map((instance, index) => ({
+					name: `Usage - ${instance}`,
 					type: 'line',
-					data: safeData.map((d) => [d.timestamp.getTime(), d.value]),
+					data: safeData
+						.filter((d) => d.instance === instance)
+						.map((d) => [d.timestamp.getTime(), d.value]),
 					showSymbol: false,
-					color,
+					color: visualizationColors[index % visualizationColors.length],
 					areaStyle: {
 						opacity: 0.2
 					}
-				},
+				})),
 				{
 					data: safeData.map((d) => [d.timestamp.getTime(), request]),
 					type: 'line',
@@ -135,8 +149,8 @@
 	}
 
 	const limitColor = '#DE2E2E';
-	const usageMemColor = '#8269A2';
-	const usageCPUColor = '#FF9100';
+	// const usageMemColor = '#8269A2';
+	// const usageCPUColor = '#FF9100';
 	const requestColor = '#3386E0';
 </script>
 
@@ -203,11 +217,14 @@
 			<EChart
 				options={options(
 					utilization.memory_series.map((d) => {
-						return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
+						return {
+							timestamp: d.timestamp,
+							value: d.value / 1024 / 1024 / 1024,
+							instance: d.instance
+						};
 					}),
 					utilization.requested_memory / 1024 / 1024 / 1024,
 					utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
-					usageMemColor,
 					(value) =>
 						value == null
 							? '-'
@@ -260,7 +277,6 @@
 					utilization.cpu_series,
 					utilization.requested_cpu,
 					utilization.limit_cpu ? utilization.limit_cpu : undefined,
-					usageCPUColor,
 					(value: number) =>
 						value == null
 							? '-'

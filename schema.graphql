@@ -5858,6 +5858,9 @@ enum UtilizationResourceType {
 
 """Resource utilization type."""
 type UtilizationSample {
+  """The instance for the utilization data."""
+  instance: String!
+
   """Timestamp of the value."""
   timestamp: Time!
 

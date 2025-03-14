@@ -18,10 +18,12 @@ query ResourceUtilizationForApp(
 					cpu_series: series(input: { start: $start, end: $end, resourceType: CPU }) {
 						timestamp
 						value
+						instance
 					}
 					memory_series: series(input: { start: $start, end: $end, resourceType: MEMORY }) {
 						timestamp
 						value
+						instance
 					}
 				}
 			}
