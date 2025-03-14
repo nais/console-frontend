@@ -32,27 +32,26 @@
 	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
 
 	const visualizationColors: string[] = [
-		'#CCE1FF',
-		'#99C4DD',
 		'#FFC166',
-		'#66CBEC',
 		'#99DEAD',
-		'#C0B2D2'
+		'#CCE1FF',
+		'#C0B2D2',
+		'#66CBEC',
+		'#99C4DD'
 	];
 
 	function options(
 		data: resourceUsage,
 		request: number,
 		limit?: number,
-		color: string = '#000000',
 		valueFormatter: (value: number) => string = (value: number) =>
 			value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 	): EChartsOption {
 		const safeData = data ?? [];
 
-		console.log(safeData);
+		const uniqueTimestamps = Array.from(new Set(safeData.map((d) => d.timestamp.getTime())));
 
-		return {
+		const opts = {
 			animation: false,
 			tooltip: {
 				trigger: 'axis',
@@ -61,18 +60,27 @@
 						`<div style="height: 8px; width: 8px; border-radius: 50%; background-color: ${color};"></div>`;
 					const div = document.createElement('div');
 
-					const [usage, request, limit] = value;
-					if (Array.isArray(usage.value) && Array.isArray(request.value)) {
-						div.innerHTML = `
-							<div>${format(usage.value.at(0) as number, 'dd/MM/yyyy HH:mm')}</div>
+					div.innerHTML = `
+							<div>${format(
+								Array.isArray(value) && Array.isArray(value[0]?.value)
+									? (value[0].value[0] as number)
+									: 0,
+								'dd/MM/yyyy HH:mm'
+							)}</div>
 							<hr style="border: none; height: 1px; background-color: var(--a-border-subtle);" />
 							<div style="display: grid; grid-template-columns: auto auto; column-gap: 0.5rem;">
-								<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(color)}${usage.seriesName}:</div><div style="text-align: right;">${valueFormatter(usage.value.at(1) as number)}</div>
-								<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(requestColor)}${request.seriesName}:</div><div style="text-align: right;">${valueFormatter(request.value.at(1) as number)}</div>
-								${Array.isArray(limit?.value) ? `<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(limitColor)}${limit.seriesName}:</div><div style="text-align: right;">${valueFormatter(limit.value.at(1) as number)}</div>` : ''}
+								${value
+									.map(
+										(v) =>
+											`<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(
+												v.color?.toString() ?? ''
+											)}${v.seriesName}:</div><div style="text-align: right;">${valueFormatter(
+												(Array.isArray(v.value) ? v.value[1] : null) as number
+											)}</div>`
+									)
+									.join('')}
 							</div>
 						`;
-					}
 					return div;
 				},
 				axisPointer: {
@@ -105,7 +113,7 @@
 					}
 				})),
 				{
-					data: safeData.map((d) => [d.timestamp.getTime(), request]),
+					data: uniqueTimestamps.map((timestamp) => [timestamp, request]),
 					type: 'line',
 					name: 'Requested',
 					showSymbol: false,
@@ -122,30 +130,30 @@
 						]
 					}
 				},
-				...(limit
-					? [
-							{
-								data: safeData.map((d) => [d.timestamp.getTime(), limit]),
-								type: 'line',
-								name: 'Limit',
-								showSymbol: false,
-								color: limitColor,
-								lineStyle: { color: limitColor },
-								markLine: {
-									symbol: 'none',
-									data: [
-										{
-											yAxis: limit,
-											label: { formatter: 'Limit', position: 'end', color: limitColor },
-											lineStyle: { type: 'solid', color: 'transparent' }
-										}
-									]
-								}
+				limit
+					? {
+							data: uniqueTimestamps.map((timestamp) => [timestamp, limit]),
+							type: 'line',
+							name: 'Limit',
+							showSymbol: false,
+							color: limitColor,
+							lineStyle: { color: limitColor },
+							markLine: {
+								symbol: 'none',
+								data: [
+									{
+										yAxis: limit,
+										label: { formatter: 'Limit', position: 'end', color: limitColor },
+										lineStyle: { type: 'solid', color: 'transparent' }
+									}
+								]
 							}
-						]
-					: [])
+						}
+					: null
 			]
 		} as EChartsOption;
+
+		return opts;
 	}
 
 	const limitColor = '#DE2E2E';
