@@ -16,7 +16,8 @@
 				| 'WorkloadStatusSynchronizationFailing'
 				| 'WorkloadStatusDeprecatedRegistry'
 				| 'WorkloadStatusNoRunningInstances'
-				| 'WorkloadStatusFailedRun';
+				| 'WorkloadStatusFailedRun'
+				| 'WorkloadStatusVulnerable';
 		};
 		workloads: {
 			__typename: string | null;
@@ -43,14 +44,16 @@
 		WorkloadStatusSynchronizationFailing: 'Rollout Failed - Synchronization Error',
 		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
-		WorkloadStatusFailedRun: 'Job Failed'
+		WorkloadStatusFailedRun: 'Job Failed',
+		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected'
 	};
 	const summary = {
 		WorkloadStatusInvalidNaisYaml: 'Workloads with invalid manifests',
 		WorkloadStatusSynchronizationFailing: 'Workloads with synchronization errors',
 		WorkloadStatusDeprecatedRegistry: 'Workloads with deprecated image registries',
 		WorkloadStatusNoRunningInstances: 'Applications with no running instances',
-		WorkloadStatusFailedRun: 'Failed jobs'
+		WorkloadStatusFailedRun: 'Failed jobs',
+		WorkloadStatusVulnerable: 'High risk workloads'
 	};
 </script>
 
@@ -94,21 +97,51 @@
 			<BodyLong>
 				The following job{workloads.length === 1 ? ' has' : 's have'} failed.
 			</BodyLong>
+		{:else if error.__typename === 'WorkloadStatusVulnerable'}
+			<BodyLong>
+				The following
+				{#if workloads.length !== 1}
+					<strong>{workloads.length}</strong>
+				{/if}
+				workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
+				{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical vulnerabilities.
+			</BodyLong>
 		{/if}
 		<div>
 			{#if workloads.length < 5}
 				{#each workloads as workload (workload)}
-					<WorkloadLink {workload} />
+					<WorkloadLink {workload} hideTeam />
 				{/each}
 			{:else}
 				<details>
 					<summary>{summary[error.__typename]}</summary>
 					{#each workloads as workload (workload)}
-						<WorkloadLink {workload} />
+						<WorkloadLink {workload} hideTeam />
 					{/each}
 				</details>
 			{/if}
 		</div>
+
+		{#if error.__typename === 'WorkloadStatusVulnerable'}
+			<BodyLong>
+				Review detailed vulnerability information in
+				{#if workloads.length === 1}
+					{@const workload = workloads[0]}
+					your workload's
+					<a
+						href={`/team/${teamSlug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Job' ? 'job' : 'app'}/${workload.name}/vulnerability-report`}
+						>Vulnerability Report</a
+					>
+				{:else}
+					each workload's Vulnerability Report
+				{/if}
+				, and update affected dependencies to their latest patched versions.
+			</BodyLong>
+			<BodyLong>
+				Ignoring these vulnerabilities can expose your {workloads.length === 1 ? '' : 's'} to potential
+				security breaches.
+			</BodyLong>
+		{/if}
 	</div></Alert
 >
 

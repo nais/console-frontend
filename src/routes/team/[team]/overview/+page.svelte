@@ -67,8 +67,9 @@
 								})?.summary.riskScore}.
 								<a
 									href="/team/{teamSlug}/{workload.teamEnvironment.environment
-										.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}/image"
-									>Go to image details</a
+										.name}/{workload.__typename === 'Job'
+										? 'job'
+										: 'app'}/{workload.name}/vulnerability-report">Go to image details</a
 								>
 							</li>
 						{/each}

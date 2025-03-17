@@ -135,7 +135,7 @@
 				{/if}
 				The threshold is determined by either having more than one critical vulnerability or a combined
 				risk score of other severities exceeding 100. Please keep your dependencies up to date. See
-				<a href="/team/{team}/{env}/app/{app}/image">image details</a> for more details.
+				<a href="/team/{team}/{env}/app/{app}/vulnerability-report">image details</a> for more details.
 			</Alert>
 		{:else if type !== 'WorkloadStatusOutboundNetwork' && type !== 'WorkloadStatusInboundNetwork'}
 			<Alert variant="error">Unkown error</Alert>

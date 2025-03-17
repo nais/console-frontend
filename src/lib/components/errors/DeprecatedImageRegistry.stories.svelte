@@ -18,6 +18,9 @@
 			registry: 'docker.pkg.github.com'
 		}}
 		workloadType="App"
+		teamSlug="team-service-management"
+		workloadName="ip-lookup-preprod"
+		environment="dev-fss"
 	/>
 </Story>
 

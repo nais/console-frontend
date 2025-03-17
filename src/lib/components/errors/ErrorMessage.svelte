@@ -1,3 +1,14 @@
+<script module>
+	export const supportedErrorTypes = [
+		'WorkloadStatusInvalidNaisYaml',
+		'WorkloadStatusSynchronizationFailing',
+		'WorkloadStatusDeprecatedRegistry',
+		'WorkloadStatusNoRunningInstances',
+		'WorkloadStatusFailedRun',
+		'WorkloadStatusVulnerable'
+	] as const;
+</script>
+
 <script lang="ts">
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
@@ -6,9 +17,15 @@
 		error,
 		workloadType,
 		instances,
+		teamSlug,
+		workloadName,
+		environment,
 		docURL
 	}: {
 		workloadType: 'App' | 'Job';
+		teamSlug: string;
+		workloadName: string;
+		environment: string;
 		instances?: {
 			name: string;
 			status: { message: string };
@@ -33,6 +50,11 @@
 							name: string;
 							detail: string;
 					  }
+					| {
+							__typename: 'WorkloadStatusVulnerable';
+							riskScore: number;
+							critical: number;
+					  }
 			  ))
 			| { __typename: "non-exhaustive; don't match this" };
 		docURL: (path: string) => string;
@@ -55,7 +77,8 @@
 		WorkloadStatusSynchronizationFailing: 'Rollout Failed - Synchronization Error',
 		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
-		WorkloadStatusFailedRun: 'Job Failed'
+		WorkloadStatusFailedRun: 'Job Failed',
+		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected'
 	};
 </script>
 
@@ -138,6 +161,31 @@
 
 				<BodyLong>
 					Check logs if available. If you're unable to resolve the issue, contact the Nais team.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusVulnerable'}
+				<BodyLong>
+					{#if error.riskScore > 100}
+						<strong>Risk Score:</strong>
+						{error.riskScore} (Exceeds threshold of 100)<br />
+					{/if}
+					{#if error.critical > 0}
+						<strong>Critical Vulnerabilities:</strong>
+						{error.critical}
+					{/if}
+				</BodyLong>
+				<BodyLong>
+					Workloads are flagged as vulnerable if their dependencies have a high risk score or
+					critical vulnerabilities.
+				</BodyLong>
+				<BodyLong>
+					Review detailed vulnerability information in the <a
+						href="/team/{teamSlug}/{environment}/{workloadType === 'Job'
+							? 'job'
+							: 'app'}/{workloadName}/vulnerability-report">Vulnerability Report</a
+					>, and update affected dependencies to their latest patched versions.
+				</BodyLong>
+				<BodyLong>
+					Ignoring these vulnerabilities can expose your application to potential security breaches.
 				</BodyLong>
 			{/if}
 		</div>

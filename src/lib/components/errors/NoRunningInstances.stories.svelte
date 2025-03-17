@@ -21,6 +21,9 @@
 			{ name: 'bidrag-sak-675cdddb5-vpc6m', status: { message: 'ImagePullBackOff' } }
 		]}
 		workloadType="App"
+		teamSlug="team-service-management"
+		workloadName="ip-lookup-preprod"
+		environment="dev-fss"
 	/>
 </Story>
 
