@@ -54,7 +54,7 @@
 		const opts = {
 			grid: {
 				bottom: 20,
-				top: 8,
+				top: 16,
 				left: 40,
 				right: 51
 			},
