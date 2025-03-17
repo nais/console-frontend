@@ -37,7 +37,10 @@ export const load: LayoutLoad = async (
 					viewerIsOwner: false,
 					deletionInProgress: false,
 					lastSuccessfulSync: null,
-					viewerIsMember: false
+					viewerIsMember: false,
+					externalResources: { gitHubTeam: null },
+					purpose: '',
+					slackChannel: ''
 				}),
 		teamSlug: event.params.team
 	};
