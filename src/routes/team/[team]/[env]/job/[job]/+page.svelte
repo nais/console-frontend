@@ -67,7 +67,7 @@
 {#if $Job.data}
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
-		<div style="display:flex; flex-direction: column; gap: 1rem;">
+		<div style="display:flex; flex-direction: column; gap: var(--a-spacing-2);">
 			{#each job.status.errors as error, i (i)}
 				{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
 					<ErrorMessage

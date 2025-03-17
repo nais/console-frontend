@@ -90,7 +90,7 @@
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--a-spacing-2);
 	}
 	.deployments {
 		grid-column: span 12;

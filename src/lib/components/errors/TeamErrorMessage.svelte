@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import WorkloadLink from '../WorkloadLink.svelte';
 
 	const {
@@ -55,95 +55,104 @@
 		WorkloadStatusFailedRun: 'Failed jobs',
 		WorkloadStatusVulnerable: 'High risk workloads'
 	};
+
+	let open = $state(false);
 </script>
 
-<Alert variant={levelVariant(error.level)}>
+<Alert variant={levelVariant(error.level)} size="small">
 	<div class="content">
-		<Heading level="2" size="small">{heading[error.__typename]}</Heading>
-		{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
-			<BodyLong>
-				The rollout of the following workload{workloads.length === 1 ? '' : 's'} failed because of {workloads.length ===
-				1
-					? 'an'
-					: ''} invalid manifest{workloads.length === 1 ? '' : 's'}.
-			</BodyLong>
-		{:else if error.__typename === 'WorkloadStatusSynchronizationFailing'}
-			<BodyLong>
-				The rollout of the following workload{workloads.length === 1 ? '' : 's'} failed because of synchronization
-				errors.
-			</BodyLong>
-		{:else if error.__typename === 'WorkloadStatusDeprecatedRegistry'}
-			<BodyLong>
-				Starting April 1st, applications and jobs on Nais must use images from Google Artifact
-				Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais'
-				GitHub Actions in the workflow. <a
-					href="https://nais.io/log/#2025-02-24-image-policy"
-					target="_blank"
-					rel="noopener noreferrer">Read more in Nais announcement</a
-				>.
-			</BodyLong>
-			<BodyLong>
-				{teamSlug} currently has <strong>{workloads.length}</strong> workload{workloads.length === 1
-					? ''
-					: 's'} using {workloads.length === 1
-					? 'a deprecated image registry'
-					: 'deprecated image registries'}.
-			</BodyLong>
-		{:else if error.__typename === 'WorkloadStatusNoRunningInstances'}
-			<BodyLong>
-				The following application{workloads.length === 1 ? ' has' : 's have'} no running instances.
-			</BodyLong>
-		{:else if error.__typename === 'WorkloadStatusFailedRun'}
-			<BodyLong>
-				The following job{workloads.length === 1 ? ' has' : 's have'} failed.
-			</BodyLong>
-		{:else if error.__typename === 'WorkloadStatusVulnerable'}
-			<BodyLong>
-				The following
-				{#if workloads.length !== 1}
-					<strong>{workloads.length}</strong>
-				{/if}
-				workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
-				{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical vulnerabilities.
-			</BodyLong>
-		{/if}
-		<div>
-			{#if workloads.length < 5}
-				{#each workloads as workload (workload)}
-					<WorkloadLink {workload} hideTeam />
-				{/each}
-			{:else}
-				<details>
-					<summary>{summary[error.__typename]}</summary>
+		<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
+			<Heading level="2" size="small">{heading[error.__typename]}</Heading>
+			<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
+				{open ? 'Hide' : 'Show'} details
+			</Button>
+		</div>
+		{#if open}
+			{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
+				<BodyLong>
+					The rollout of the following workload{workloads.length === 1 ? '' : 's'} failed because of
+					{workloads.length === 1 ? 'an' : ''} invalid manifest{workloads.length === 1 ? '' : 's'}.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusSynchronizationFailing'}
+				<BodyLong>
+					The rollout of the following workload{workloads.length === 1 ? '' : 's'} failed because of
+					synchronization errors.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusDeprecatedRegistry'}
+				<BodyLong>
+					Starting April 1st, applications and jobs on Nais must use images from Google Artifact
+					Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais'
+					GitHub Actions in the workflow. <a
+						href="https://nais.io/log/#2025-02-24-image-policy"
+						target="_blank"
+						rel="noopener noreferrer">Read more in Nais announcement</a
+					>.
+				</BodyLong>
+				<BodyLong>
+					{teamSlug} currently has <strong>{workloads.length}</strong> workload{workloads.length ===
+					1
+						? ''
+						: 's'} using {workloads.length === 1
+						? 'a deprecated image registry'
+						: 'deprecated image registries'}.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusNoRunningInstances'}
+				<BodyLong>
+					The following application{workloads.length === 1 ? ' has' : 's have'} no running instances.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusFailedRun'}
+				<BodyLong>
+					The following job{workloads.length === 1 ? ' has' : 's have'} failed.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusVulnerable'}
+				<BodyLong>
+					The following
+					{#if workloads.length !== 1}
+						<strong>{workloads.length}</strong>
+					{/if}
+					workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
+					{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical
+					vulnerabilities.
+				</BodyLong>
+			{/if}
+			<div>
+				{#if workloads.length < 5}
 					{#each workloads as workload (workload)}
 						<WorkloadLink {workload} hideTeam />
 					{/each}
-				</details>
-			{/if}
-		</div>
-
-		{#if error.__typename === 'WorkloadStatusVulnerable'}
-			<BodyLong>
-				Review detailed vulnerability information in
-				{#if workloads.length === 1}
-					{@const workload = workloads[0]}
-					your workload's
-					<a
-						href={`/team/${teamSlug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Job' ? 'job' : 'app'}/${workload.name}/vulnerability-report`}
-						>Vulnerability Report</a
-					>
 				{:else}
-					each workload's Vulnerability Report
+					<details>
+						<summary>{summary[error.__typename]}</summary>
+						{#each workloads as workload (workload)}
+							<WorkloadLink {workload} hideTeam />
+						{/each}
+					</details>
 				{/if}
-				, and update affected dependencies to their latest patched versions.
-			</BodyLong>
-			<BodyLong>
-				Ignoring these vulnerabilities can expose your workload{workloads.length === 1 ? '' : 's'} to
-				potential security breaches.
-			</BodyLong>
+			</div>
+
+			{#if error.__typename === 'WorkloadStatusVulnerable'}
+				<BodyLong>
+					Review detailed vulnerability information in
+					{#if workloads.length === 1}
+						{@const workload = workloads[0]}
+						your workload's
+						<a
+							href={`/team/${teamSlug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Job' ? 'job' : 'app'}/${workload.name}/vulnerability-report`}
+							>Vulnerability Report</a
+						>
+					{:else}
+						each workload's Vulnerability Report
+					{/if}
+					, and update affected dependencies to their latest patched versions.
+				</BodyLong>
+				<BodyLong>
+					Ignoring these vulnerabilities can expose your workload{workloads.length === 1 ? '' : 's'}
+					to potential security breaches.
+				</BodyLong>
+			{/if}
 		{/if}
-	</div></Alert
->
+	</div>
+</Alert>
 
 <style>
 	.content {
