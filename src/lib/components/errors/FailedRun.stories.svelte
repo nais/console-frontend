@@ -19,6 +19,9 @@
 			detail: 'Run failed after 7 attempts'
 		}}
 		workloadType="Job"
+		teamSlug="team-service-management"
+		workloadName="aareg-sync-konkurser-q4-29028365"
+		environment="dev-fss"
 	/>
 </Story>
 

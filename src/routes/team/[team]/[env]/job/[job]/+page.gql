@@ -9,6 +9,11 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 					expression
 					timeZone
 				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 				deployments(first: 1) {
 					nodes {
 						triggerUrl

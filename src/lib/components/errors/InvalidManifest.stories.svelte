@@ -19,6 +19,9 @@
 				'the domain "roger.com" cannot be used in cluster "dev-gcp"; use one of dev.nav.cloud.nais.io, external.dev.nav.cloud.nais.io, authenticated.dev.nav.cloud.nais.io, .intern.dev.nav.no, .dev-gcp.nav.cloud.nais.io, .ekstern.dev.nav.no, .ansatt.dev.nav.no, .very.intern.dev.nav.no'
 		}}
 		workloadType="App"
+		teamSlug="team-service-management"
+		workloadName="ip-lookup-preprod"
+		environment="dev-fss"
 	/>
 </Story>
 

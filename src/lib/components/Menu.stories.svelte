@@ -54,7 +54,10 @@
 				{ label: 'Status', href: '/team/devteam/dev/app/app-w-all-storage/status' }
 			],
 			[
-				{ label: 'Image', href: '/team/devteam/dev/app/app-w-all-storage/image' },
+				{
+					label: 'Vulnerability Report',
+					href: '/team/devteam/dev/app/app-w-all-storage/vulnerability-report'
+				},
 				{ label: 'Deployments', href: '/team/devteam/dev/app/app-w-all-storage/deploys' },
 				{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
 				{

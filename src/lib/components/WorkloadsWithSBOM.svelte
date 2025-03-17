@@ -141,7 +141,7 @@
 		});
 	};
 
-	const imageUrl = (workload: {
+	const vulnerabilityReportUrl = (workload: {
 		readonly __typename: string | null;
 		readonly id: string;
 		readonly name: string;
@@ -154,7 +154,7 @@
 			readonly slug: string;
 		};
 	}) => {
-		return `/team/${workload.team.slug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Application' ? 'app' : 'job'}/${workload.name}/image`;
+		return `/team/${workload.team.slug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Application' ? 'app' : 'job'}/${workload.name}/vulnerability-report`;
 	};
 
 	export function severityToColorWithHover(severity: string): string {
@@ -247,7 +247,10 @@
 									<Tooltip content="critical">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.critical > 0}
-												<a href={imageUrl(workload)} class="vulnerability-count CRITICAL">
+												<a
+													href={vulnerabilityReportUrl(workload)}
+													class="vulnerability-count CRITICAL"
+												>
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.critical
 														: '-'}
@@ -268,7 +271,7 @@
 									<Tooltip content="high">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.high > 0}
-												<a href={imageUrl(workload)} class="vulnerability-count HIGH">
+												<a href={vulnerabilityReportUrl(workload)} class="vulnerability-count HIGH">
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.high
 														: '-'}
@@ -289,7 +292,10 @@
 									<Tooltip content="medium">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.medium > 0}
-												<a href={imageUrl(workload)} class="vulnerability-count MEDIUM">
+												<a
+													href={vulnerabilityReportUrl(workload)}
+													class="vulnerability-count MEDIUM"
+												>
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.medium
 														: '-'}
@@ -310,7 +316,7 @@
 									<Tooltip content="low">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.low > 0}
-												<a href={imageUrl(workload)} class="vulnerability-count LOW">
+												<a href={vulnerabilityReportUrl(workload)} class="vulnerability-count LOW">
 													{workload.image.vulnerabilitySummary
 														? workload.image.vulnerabilitySummary.low
 														: '-'}
@@ -331,7 +337,10 @@
 									<Tooltip content="unassigned">
 										{#if workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.unassigned > 0}
-												<a href={imageUrl(workload)} class="vulnerability-count UNASSIGNED">
+												<a
+													href={vulnerabilityReportUrl(workload)}
+													class="vulnerability-count UNASSIGNED"
+												>
 													{workload.image.vulnerabilitySummary.unassigned}
 												</a>
 											{:else}
@@ -349,7 +358,10 @@
 								<div class="vulnerability-summary">
 									<Tooltip content="risk score">
 										<BodyShort class="vulnerability-count">
-											<a href={imageUrl(workload)} class="vulnerability-count RISK_SCORE">
+											<a
+												href={vulnerabilityReportUrl(workload)}
+												class="vulnerability-count RISK_SCORE"
+											>
 												{workload.image.vulnerabilitySummary
 													? workload.image.vulnerabilitySummary.riskScore
 													: '-'}

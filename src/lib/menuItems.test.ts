@@ -157,7 +157,10 @@ describe('menuItems', () => {
 			).toEqual([
 				[{ label: 'App overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 				[
-					{ label: 'Image', href: '/team/devteam/dev/app/app-w-all-storage/image' },
+					{
+						label: 'Vulnerability Report',
+						href: '/team/devteam/dev/app/app-w-all-storage/vulnerability-report'
+					},
 					{
 						label: 'Deployments',
 						href: '/team/devteam/dev/app/app-w-all-storage/deploys'
@@ -183,7 +186,7 @@ describe('menuItems', () => {
 		test('when not member', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/image',
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerability-report',
 					member: false
 				})
 					.flatMap((g) => g)

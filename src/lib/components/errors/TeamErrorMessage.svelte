@@ -99,7 +99,11 @@
 			</BodyLong>
 		{:else if error.__typename === 'WorkloadStatusVulnerable'}
 			<BodyLong>
-				The following workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
+				The following
+				{#if workloads.length !== 1}
+					<strong>{workloads.length}</strong>
+				{/if}
+				workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
 				{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical vulnerabilities.
 			</BodyLong>
 		{/if}

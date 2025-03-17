@@ -76,7 +76,7 @@ export const menuItems = ({
 		return [
 			[menuItem(`${workloadType === 'app' ? 'App' : 'Job'} overview`)],
 			[
-				menuItem('Image', 'image'),
+				menuItem('Vulnerability Report', 'vulnerability-report'),
 				menuItem('Deployments', 'deploys'),
 				menuItem('Cost', 'cost'),
 				workloadType === 'app' && menuItem('Utilization', 'utilization'),

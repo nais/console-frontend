@@ -1,3 +1,14 @@
+<script module>
+	export const supportedErrorTypes = [
+		'WorkloadStatusInvalidNaisYaml',
+		'WorkloadStatusSynchronizationFailing',
+		'WorkloadStatusDeprecatedRegistry',
+		'WorkloadStatusNoRunningInstances',
+		'WorkloadStatusFailedRun',
+		'WorkloadStatusVulnerable'
+	] as const;
+</script>
+
 <script lang="ts">
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';

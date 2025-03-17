@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
-	import ErrorMessage from '$lib/components/errors/ErrorMessage.svelte';
+	import ErrorMessage, { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
@@ -60,13 +60,6 @@
 			jobId: $Job.data!.team.environment.job.id
 		});
 	};
-
-	const supportedErrorTypes = [
-		'WorkloadStatusInvalidNaisYaml',
-		'WorkloadStatusSynchronizationFailing',
-		'WorkloadStatusDeprecatedRegistry',
-		'WorkloadStatusFailedRun'
-	];
 </script>
 
 <GraphErrors errors={$Job.errors} />
@@ -76,8 +69,15 @@
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: 1rem;">
 			{#each job.status.errors as error, i (i)}
-				{#if supportedErrorTypes.includes(error.__typename)}
-					<ErrorMessage {error} {docURL} workloadType="Job" />
+				{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
+					<ErrorMessage
+						{error}
+						{docURL}
+						workloadType="Job"
+						{teamSlug}
+						workloadName={job.name}
+						environment={job.teamEnvironment.environment.name}
+					/>
 				{/if}
 			{/each}
 

@@ -42,7 +42,7 @@
 	.main {
 		gap: var(--spacing-layout);
 		display: grid;
-		grid-template-columns: 200px 1fr;
+		grid-template-columns: 202px 1fr;
 	}
 
 	.container {

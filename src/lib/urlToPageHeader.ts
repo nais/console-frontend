@@ -62,6 +62,10 @@ const label = (type: string) => {
 			return {
 				pageName: 'Activity log'
 			};
+		case 'vulnerability-report':
+			return {
+				pageName: 'Vulnerability Report'
+			};
 		default:
 			return {
 				pageName: type ? type[0].toUpperCase() + type.slice(1) : ''

@@ -122,9 +122,10 @@
 		}
 
 		errormessage = '';
-		const imagePage = '/team/' + team + '/' + env + '/' + workload + '/image';
+		const vulnerabilityReportUrl =
+			'/team/' + team + '/' + env + '/' + workload + '/vulnerability-report';
 		close();
-		await goto(imagePage, { replaceState: true });
+		await goto(vulnerabilityReportUrl, { replaceState: true });
 	};
 
 	// TODO: needs refresh

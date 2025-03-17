@@ -19,6 +19,9 @@
 				'persisting SQLInstance to Kubernetes: validation error: refusing to overwrite manually edited resource; please add the correct ownerReference in order to continue'
 		}}
 		workloadType="Job"
+		teamSlug="team-service-management"
+		workloadName="ip-lookup-preprod"
+		environment="dev-fss"
 	/>
 </Story>
 

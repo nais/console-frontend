@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { badgeLevel } from '$lib/components/Badge.svelte';
+	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -16,14 +17,6 @@
 	let userTeams = $derived(
 		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data?.me.teams?.nodes.length
 	);
-
-	const supportedErrorTypes = [
-		'WorkloadStatusNoRunningInstances',
-		'WorkloadStatusInvalidNaisYaml',
-		'WorkloadStatusSynchronizationFailing',
-		'WorkloadStatusDeprecatedRegistry',
-		'WorkloadStatusFailedRun'
-	];
 </script>
 
 <svelte:head><title>Console</title></svelte:head>
@@ -53,7 +46,9 @@
 					<List>
 						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
 							{@const errors = node.team.workloads.nodes.flatMap((w) =>
-								w.status.errors.filter((e) => supportedErrorTypes.includes(e.__typename ?? ''))
+								w.status.errors.filter((e) =>
+									supportedErrorTypes.some((errorType) => errorType === e.__typename)
+								)
 							)}
 							<TeamListItem
 								team={node.team}
