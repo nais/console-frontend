@@ -185,7 +185,9 @@
 					>, and update affected dependencies to their latest patched versions.
 				</BodyLong>
 				<BodyLong>
-					Ignoring these vulnerabilities can expose your application to potential security breaches.
+					Ignoring these vulnerabilities can expose your {workloadType === 'Job'
+						? 'job'
+						: 'application'} to potential security breaches.
 				</BodyLong>
 			{/if}
 		</div>

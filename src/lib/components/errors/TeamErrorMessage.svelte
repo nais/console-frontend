@@ -138,8 +138,8 @@
 				, and update affected dependencies to their latest patched versions.
 			</BodyLong>
 			<BodyLong>
-				Ignoring these vulnerabilities can expose your {workloads.length === 1 ? '' : 's'} to potential
-				security breaches.
+				Ignoring these vulnerabilities can expose your workload{workloads.length === 1 ? '' : 's'} to
+				potential security breaches.
 			</BodyLong>
 		{/if}
 	</div></Alert
