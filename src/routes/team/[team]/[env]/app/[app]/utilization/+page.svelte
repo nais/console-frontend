@@ -26,21 +26,38 @@
 	type resourceUsage = {
 		readonly timestamp: Date;
 		readonly value: number;
+		readonly instance: string;
 	}[];
 
 	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
+
+	const visualizationColors: string[] = [
+		'#FFC166',
+		'#99DEAD',
+		'#CCE1FF',
+		'#C0B2D2',
+		'#66CBEC',
+		'#99C4DD'
+	];
 
 	function options(
 		data: resourceUsage,
 		request: number,
 		limit?: number,
-		color: string = '#000000',
 		valueFormatter: (value: number) => string = (value: number) =>
 			value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 	): EChartsOption {
 		const safeData = data ?? [];
 
-		return {
+		const uniqueTimestamps = Array.from(new Set(safeData.map((d) => d.timestamp.getTime())));
+
+		const opts = {
+			grid: {
+				bottom: 20,
+				top: 8,
+				left: 40,
+				right: 51
+			},
 			animation: false,
 			tooltip: {
 				trigger: 'axis',
@@ -49,18 +66,27 @@
 						`<div style="height: 8px; width: 8px; border-radius: 50%; background-color: ${color};"></div>`;
 					const div = document.createElement('div');
 
-					const [usage, request, limit] = value;
-					if (Array.isArray(usage.value) && Array.isArray(request.value)) {
-						div.innerHTML = `
-							<div>${format(usage.value.at(0) as number, 'dd/MM/yyyy HH:mm')}</div>
+					div.innerHTML = `
+							<div>${format(
+								Array.isArray(value) && Array.isArray(value[0]?.value)
+									? (value[0].value[0] as number)
+									: 0,
+								'dd/MM/yyyy HH:mm'
+							)}</div>
 							<hr style="border: none; height: 1px; background-color: var(--a-border-subtle);" />
 							<div style="display: grid; grid-template-columns: auto auto; column-gap: 0.5rem;">
-								<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(color)}${usage.seriesName}:</div><div style="text-align: right;">${valueFormatter(usage.value.at(1) as number)}</div>
-								<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(requestColor)}${request.seriesName}:</div><div style="text-align: right;">${valueFormatter(request.value.at(1) as number)}</div>
-								${Array.isArray(limit?.value) ? `<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(limitColor)}${limit.seriesName}:</div><div style="text-align: right;">${valueFormatter(limit.value.at(1) as number)}</div>` : ''}
+								${value
+									.map(
+										(v) =>
+											`<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(
+												v.color?.toString() ?? ''
+											)}${v.seriesName}:</div><div style="text-align: right;">${valueFormatter(
+												(Array.isArray(v.value) ? v.value[1] : null) as number
+											)}</div>`
+									)
+									.join('')}
 							</div>
 						`;
-					}
 					return div;
 				},
 				axisPointer: {
@@ -74,70 +100,82 @@
 			},
 			yAxis: {
 				type: 'value',
-				// name: 'Usage of requested resources',
 				axisLabel: {
 					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 				}
 			},
 			series: [
-				{
-					name: 'Usage',
+				...Array.from(new Set(safeData.map((d) => d.instance))).map((instance, index) => ({
+					name: instance,
 					type: 'line',
-					data: safeData.map((d) => [d.timestamp.getTime(), d.value]),
+					data: safeData
+						.filter((d) => d.instance === instance)
+						.map((d) => [d.timestamp.getTime(), d.value]),
 					showSymbol: false,
-					color,
+					color: visualizationColors[index % visualizationColors.length],
 					areaStyle: {
 						opacity: 0.2
 					}
-				},
+				})),
 				{
-					data: safeData.map((d) => [d.timestamp.getTime(), request]),
+					data: uniqueTimestamps.map((timestamp) => [timestamp, request]),
 					type: 'line',
-					name: 'Requested',
+					name: 'Request',
 					showSymbol: false,
 					color: requestColor,
-					lineStyle: { color: requestColor },
+					lineStyle: {
+						color: requestColor,
+						type: request === limit ? 'solid' : 'dashed'
+					},
 					markLine: {
 						symbol: 'none',
 						data: [
 							{
 								yAxis: request,
-								label: { formatter: 'Requested', position: 'end', color: requestColor },
+								label: {
+									formatter: 'Request',
+									position: 'end',
+									color: requestColor,
+									offset: request === limit ? [0, 8] : [0, 0]
+								},
 								lineStyle: { type: 'solid', color: 'transparent' }
 							}
 						]
 					}
 				},
-				...(limit
-					? [
-							{
-								data: safeData.map((d) => [d.timestamp.getTime(), limit]),
-								type: 'line',
-								name: 'Limit',
-								showSymbol: false,
-								color: limitColor,
-								lineStyle: { color: limitColor },
-								markLine: {
-									symbol: 'none',
-									data: [
-										{
-											yAxis: limit,
-											label: { formatter: 'Limit', position: 'end', color: limitColor },
-											lineStyle: { type: 'solid', color: 'transparent' }
-										}
-									]
-								}
+				limit
+					? {
+							data: uniqueTimestamps.map((timestamp) => [timestamp, limit]),
+							type: 'line',
+							name: 'Limit',
+							showSymbol: false,
+							color: limitColor,
+							lineStyle: { color: limitColor, type: 'dashed' },
+							markLine: {
+								symbol: 'none',
+								data: [
+									{
+										yAxis: limit,
+										label: {
+											formatter: 'Limit',
+											position: 'end',
+											color: limitColor,
+											offset: request === limit ? [0, -8] : [0, 0]
+										},
+										lineStyle: { type: 'solid', color: 'transparent' }
+									}
+								]
 							}
-						]
-					: [])
+						}
+					: null
 			]
 		} as EChartsOption;
+
+		return opts;
 	}
 
 	const limitColor = '#DE2E2E';
-	const usageMemColor = '#8269A2';
-	const usageCPUColor = '#FF9100';
-	const requestColor = '#3386E0';
+	const requestColor = '#838C9A';
 </script>
 
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
@@ -180,7 +218,8 @@
 				).toFixed(0)}% of {prettyBytes(utilization.requested_memory, {
 					locale: 'en',
 					minimumFractionDigits: 2,
-					maximumFractionDigits: 2
+					maximumFractionDigits: 2,
+					binary: true
 				})} requested memory. Based on this data point, the estimated annual cost of unused memory of
 				{euroValueFormatter(
 					yearlyOverageCost(
@@ -200,27 +239,32 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<EChart
-				options={options(
-					utilization.memory_series.map((d) => {
-						return { timestamp: d.timestamp, value: d.value / 1024 / 1024 / 1024 };
-					}),
-					utilization.requested_memory / 1024 / 1024 / 1024,
-					utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
-					usageMemColor,
-					(value) =>
-						value == null
-							? '-'
-							: prettyBytes(value * 1024 ** 3, {
-									locale: 'en',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								})
-				)}
-				style="height: 400px"
-			/>
+			<div class="chart-wrapper">
+				<EChart
+					options={options(
+						utilization.memory_series.map((d) => {
+							return {
+								timestamp: d.timestamp,
+								value: d.value / 1024 / 1024 / 1024,
+								instance: d.instance
+							};
+						}),
+						utilization.requested_memory / 1024 / 1024 / 1024,
+						utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
+						(value) =>
+							value == null
+								? '-'
+								: prettyBytes(value * 1024 ** 3, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})
+					)}
+				/>
+			</div>
 		{:else}
-			<div style="height: 504px; display: flex; justify-content: center; align-items: center;">
+			<div style="height: 436px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
@@ -255,21 +299,21 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<EChart
-				options={options(
-					utilization.cpu_series,
-					utilization.requested_cpu,
-					utilization.limit_cpu ? utilization.limit_cpu : undefined,
-					usageCPUColor,
-					(value: number) =>
-						value == null
-							? '-'
-							: `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} CPUs`
-				)}
-				style="height: 400px"
-			/>
+			<div class="chart-wrapper">
+				<EChart
+					options={options(
+						utilization.cpu_series,
+						utilization.requested_cpu,
+						utilization.limit_cpu ? utilization.limit_cpu : undefined,
+						(value: number) =>
+							value == null
+								? '-'
+								: `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} CPUs`
+					)}
+				/>
+			</div>
 		{:else}
-			<div style="height: 504px; display: flex; justify-content: center; align-items: center;">
+			<div style="height: 436px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
@@ -284,5 +328,9 @@
 
 	.section {
 		display: grid;
+	}
+
+	.chart-wrapper {
+		padding-block: 1rem;
 	}
 </style>
