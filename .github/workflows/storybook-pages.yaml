@@ -1,3 +1,4 @@
+name: storybook-to-github-pages
 on:
   push:
     branches:
