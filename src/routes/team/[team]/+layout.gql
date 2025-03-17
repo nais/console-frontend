@@ -4,5 +4,12 @@ query TeamRoles($team: Slug!) {
 		viewerIsMember
 		deletionInProgress
 		lastSuccessfulSync
+		externalResources {
+			gitHubTeam {
+				slug
+			}
+		}
+		purpose
+		slackChannel
 	}
 }

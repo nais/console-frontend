@@ -1,5 +1,6 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
+		purpose
 		workloads(first: 600) {
 			nodes {
 				__typename

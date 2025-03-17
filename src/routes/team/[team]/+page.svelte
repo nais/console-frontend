@@ -3,7 +3,6 @@
 	import Card from '$lib/Card.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import Deploys from '$lib/components/TeamDeployments.svelte';
-	import TeamInfo from '$lib/components/TeamInfo.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
@@ -13,7 +12,7 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
+	let { TeamOverview, teamSlug } = $derived(data);
 
 	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
 		const workloads = $TeamOverview.data?.team.workloads.nodes.filter((workload) =>
@@ -55,9 +54,9 @@
 	{/each}
 </div>
 <div class="grid">
-	<Card rows={1} columns={3}>
+	<!--Card rows={1} columns={3}>
 		<TeamInfo {teamSlug} {viewerIsMember} />
-	</Card>
+	</Card-->
 
 	<Card rows={1} columns={3}>
 		<VulnerabilitySummary {teamSlug} />

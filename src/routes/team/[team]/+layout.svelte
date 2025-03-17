@@ -1,12 +1,24 @@
 <script lang="ts">
+	// import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$houdini';
 	import Menu from './Menu.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo, viewerIsMember } =
-		$derived(data);
+	let {
+		deletionInProgress,
+		lastSuccessfulSync,
+		teamSlug,
+		UserInfo,
+		viewerIsMember,
+		purpose,
+		externalResources,
+		slackChannel
+	} = $derived(data);
+	const gitHubOrganization = page.data.githubOrganization;
+	const gitHubTeam = $derived(externalResources.gitHubTeam?.slug);
 </script>
 
 <svelte:head><title>{teamSlug} - Console</title></svelte:head>
@@ -27,7 +39,8 @@
 	<div class="main">
 		<Menu features={UserInfo.data?.features} member={viewerIsMember} {teamSlug} />
 		<div class="container">
-			<PageHeader />
+			<PageHeader {gitHubOrganization} {gitHubTeam} {purpose} {slackChannel} />
+
 			<div>{@render children?.()}</div>
 		</div>
 	</div>
