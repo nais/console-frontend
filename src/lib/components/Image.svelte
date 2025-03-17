@@ -46,7 +46,7 @@
 	);
 
 	const imageDetailsUrl = $derived(
-		`/team/${page.params.team}/${page.params.env}/${$data.__typename === 'Application' ? 'app' : 'job'}/${$data.name}/image`
+		`/team/${page.params.team}/${page.params.env}/${$data.__typename === 'Application' ? 'app' : 'job'}/${$data.name}/vulnerability-report`
 	);
 
 	const categories = ['critical', 'high', 'medium', 'low', 'unassigned'] as const;
