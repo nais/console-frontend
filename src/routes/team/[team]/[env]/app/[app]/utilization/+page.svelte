@@ -52,6 +52,12 @@
 		const uniqueTimestamps = Array.from(new Set(safeData.map((d) => d.timestamp.getTime())));
 
 		const opts = {
+			grid: {
+				bottom: 20,
+				top: 8,
+				left: 40,
+				right: 51
+			},
 			animation: false,
 			tooltip: {
 				trigger: 'axis',
@@ -100,7 +106,7 @@
 			},
 			series: [
 				...Array.from(new Set(safeData.map((d) => d.instance))).map((instance, index) => ({
-					name: `Usage - ${instance}`,
+					name: instance,
 					type: 'line',
 					data: safeData
 						.filter((d) => d.instance === instance)
@@ -233,31 +239,32 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<EChart
-				options={options(
-					utilization.memory_series.map((d) => {
-						return {
-							timestamp: d.timestamp,
-							value: d.value / 1024 / 1024 / 1024,
-							instance: d.instance
-						};
-					}),
-					utilization.requested_memory / 1024 / 1024 / 1024,
-					utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
-					(value) =>
-						value == null
-							? '-'
-							: prettyBytes(value * 1024 ** 3, {
-									locale: 'en',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-									binary: true
-								})
-				)}
-				style="height: 400px"
-			/>
+			<div class="chart-wrapper">
+				<EChart
+					options={options(
+						utilization.memory_series.map((d) => {
+							return {
+								timestamp: d.timestamp,
+								value: d.value / 1024 / 1024 / 1024,
+								instance: d.instance
+							};
+						}),
+						utilization.requested_memory / 1024 / 1024 / 1024,
+						utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
+						(value) =>
+							value == null
+								? '-'
+								: prettyBytes(value * 1024 ** 3, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})
+					)}
+				/>
+			</div>
 		{:else}
-			<div style="height: 504px; display: flex; justify-content: center; align-items: center;">
+			<div style="height: 436px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
@@ -292,20 +299,21 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<EChart
-				options={options(
-					utilization.cpu_series,
-					utilization.requested_cpu,
-					utilization.limit_cpu ? utilization.limit_cpu : undefined,
-					(value: number) =>
-						value == null
-							? '-'
-							: `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} CPUs`
-				)}
-				style="height: 400px"
-			/>
+			<div class="chart-wrapper">
+				<EChart
+					options={options(
+						utilization.cpu_series,
+						utilization.requested_cpu,
+						utilization.limit_cpu ? utilization.limit_cpu : undefined,
+						(value: number) =>
+							value == null
+								? '-'
+								: `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} CPUs`
+					)}
+				/>
+			</div>
 		{:else}
-			<div style="height: 504px; display: flex; justify-content: center; align-items: center;">
+			<div style="height: 436px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
@@ -320,5 +328,9 @@
 
 	.section {
 		display: grid;
+	}
+
+	.chart-wrapper {
+		padding-block: 1rem;
 	}
 </style>
