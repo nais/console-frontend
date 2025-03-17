@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"prepare": "svelte-kit sync",
+		"prepare": "husky",
 		"dev": "vite dev",
 		"dev-live-share": "vite dev --host ::",
 		"build": "vite build",
@@ -15,7 +15,8 @@
 		"format": "prettier --write .",
 		"test": "vitest",
 		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build"
+		"build-storybook": "storybook build",
+		"lint-staged": "lint-staged"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^3.2.5",
@@ -43,6 +44,8 @@
 		"eslint-plugin-svelte": "^3.0.3",
 		"houdini": "^1.5.3",
 		"houdini-svelte": "^2.1.7",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.5.0",
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.3.3",
 		"storybook": "^8.6.4",
@@ -77,5 +80,12 @@
 		"@sveltejs/kit": {
 			"cookie": "^0.7.0"
 		}
+	},
+	"lint-staged": {
+		"*.{js,ts,svelte,css,md,json}": "prettier --write .",
+		"*.{js,ts,svelte}": [
+			"eslint --fix .",
+			"svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+		]
 	}
 }
