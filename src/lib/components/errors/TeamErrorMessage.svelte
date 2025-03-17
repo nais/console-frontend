@@ -120,11 +120,22 @@
 
 		{#if error.__typename === 'WorkloadStatusVulnerable'}
 			<BodyLong>
-				// TODO: fortsett her Review detailed vulnerability information in each workload's
-				Vulnerability Report, and update affected dependencies to their latest patched versions.
+				Review detailed vulnerability information in
+				{#if workloads.length === 1}
+					{@const workload = workloads[0]}
+					your workload's
+					<a
+						href={`/team/${teamSlug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Job' ? 'job' : 'app'}/${workload.name}/vulnerability-report`}
+						>Vulnerability Report</a
+					>
+				{:else}
+					each workload's Vulnerability Report
+				{/if}
+				, and update affected dependencies to their latest patched versions.
 			</BodyLong>
 			<BodyLong>
-				Ignoring these vulnerabilities can expose your workloads to potential security breaches.
+				Ignoring these vulnerabilities can expose your {workloads.length === 1 ? '' : 's'} to potential
+				security breaches.
 			</BodyLong>
 		{/if}
 	</div></Alert
