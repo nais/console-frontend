@@ -68,10 +68,8 @@
 			</BodyShort>
 		{:else if image.vulnerabilitySummary === null}
 			<BodyShort>
-				<WarningIcon class="text-aligned-icon" /> No data found. <Link
-					href={docURL('/services/vulnerabilities/how-to/sbom/')}
-					target="_blank">How to fix</Link
-				>
+				<WarningIcon class="text-aligned-icon" /> No data found.
+				<a href={docURL('/services/vulnerabilities/how-to/sbom/')} target="_blank">How to fix</a>
 			</BodyShort>
 		{:else if image.hasSBOM && image.vulnerabilitySummary && hasFindings}
 			<VulnerabilityBadges summary={image.vulnerabilitySummary} />
@@ -81,7 +79,7 @@
 			</BodyShort>
 		{/if}
 
-		<Link href={imageDetailsUrl}>View image details</Link>
+		<Link href={imageDetailsUrl}>View vulnerability report</Link>
 	</div>
 {/if}
 

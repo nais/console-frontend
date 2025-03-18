@@ -69,7 +69,7 @@
 									href="/team/{teamSlug}/{workload.teamEnvironment.environment
 										.name}/{workload.__typename === 'Job'
 										? 'job'
-										: 'app'}/{workload.name}/vulnerability-report">Go to image details</a
+										: 'app'}/{workload.name}/vulnerability-report">View vulnerability report</a
 								>
 							</li>
 						{/each}
