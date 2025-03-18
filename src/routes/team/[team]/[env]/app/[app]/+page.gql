@@ -61,7 +61,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				}
 
 				...AppInstances
-				...AppStatus
 				...AppUtilization
 				...Persistence
 				...WorkloadDeploy
