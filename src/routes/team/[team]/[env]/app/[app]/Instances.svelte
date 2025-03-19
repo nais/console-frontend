@@ -64,11 +64,11 @@
 							}
 						}
 					}
-					resources {
-						requests {
-							cpu
-							memory
-						}
+					utilization {
+						requested_cpu: requested(resourceType: CPU)
+						requested_memory: requested(resourceType: MEMORY)
+						limit_cpu: limit(resourceType: CPU)
+						limit_memory: limit(resourceType: MEMORY)
 					}
 				}
 			`)
@@ -98,11 +98,15 @@
 					<div class="resource-list-item">
 						<div>CPU:</div>
 						<div class="data">
-							{#if $data.resources.requests.cpu}
-								{$data.resources.requests.cpu?.toFixed(2)} cores
-							{:else}
-								Not set
-							{/if}
+							<code>
+								{#if $data.resources.requests.cpu}
+									{$data.resources.requests.cpu?.toFixed(2)} CPUs
+								{:else if $data.utilization.requested_cpu}
+									{$data.utilization.requested_cpu?.toFixed(2)} CPUs (default)
+								{:else}
+									Not set
+								{/if}
+							</code>
 						</div>
 					</div>
 				</li>
@@ -111,16 +115,25 @@
 					<div class="resource-list-item">
 						<div>Memory:</div>
 						<div class="data">
-							{#if $data.resources.requests.memory}
-								{prettyBytes($data.resources.requests.memory, {
-									locale: 'en',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-									binary: true
-								})}
-							{:else}
-								Not set
-							{/if}
+							<code>
+								{#if $data.resources.requests.memory}
+									{prettyBytes($data.resources.requests.memory, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})}
+								{:else if $data.utilization.requested_memory}
+									{prettyBytes($data.utilization.requested_memory, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})} (default)
+								{:else}
+									Not set
+								{/if}
+							</code>
 						</div>
 					</div>
 				</li>
@@ -133,10 +146,15 @@
 					<div class="resource-list-item">
 						<div>CPU:</div>
 						<div class="data">
-							{#if $data.resources.limits.cpu}{$data.resources.limits.cpu?.toFixed(2)} cores
-							{:else}
-								Not set
-							{/if}
+							<code>
+								{#if $data.resources.limits.cpu}
+									{$data.resources.limits.cpu?.toFixed(2)} CPUs
+								{:else if $data.utilization.limit_cpu}
+									{$data.utilization.limit_cpu?.toFixed(2)} CPUs (default)
+								{:else}
+									Not set
+								{/if}
+							</code>
 						</div>
 					</div>
 				</li>
@@ -145,16 +163,25 @@
 					<div class="resource-list-item">
 						<div>Memory:</div>
 						<div class="data">
-							{#if $data.resources.limits.memory}
-								{prettyBytes($data.resources.limits.memory, {
-									locale: 'en',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-									binary: true
-								})}
-							{:else}
-								Not set
-							{/if}
+							<code>
+								{#if $data.resources.limits.memory}
+									{prettyBytes($data.resources.limits.memory, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})}
+								{:else if $data.utilization.limit_memory}
+									{prettyBytes($data.utilization.limit_memory, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})} (default)
+								{:else}
+									Not set
+								{/if}
+							</code>
 						</div>
 					</div>
 				</li>
@@ -204,7 +231,7 @@
 	ul {
 		list-style-type: none;
 		padding: 0;
-		margin: 0 0 0 1rem;
+		margin: 0;
 	}
 
 	li ul {
@@ -218,9 +245,12 @@
 	}
 	.resource-list-item {
 		display: grid;
-		grid-template-columns: 80px 100px;
+		grid-template-columns: 1fr 1fr;
 	}
 	.data {
 		text-align: right;
+	}
+	code {
+		font-size: 1rem;
 	}
 </style>

@@ -3,7 +3,8 @@
 	import { fragment, graphql } from '$houdini';
 	import JobRunListItem from '$lib/components/list/JobRunListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import prettyBytes from 'pretty-bytes';
 
 	interface Props {
 		job: JobRuns;
@@ -25,6 +26,16 @@
 						}
 					}
 					name
+					resources {
+						requests {
+							cpu
+							memory
+						}
+						limits {
+							cpu
+							memory
+						}
+					}
 
 					runs(first: 20) @list(name: "All_Runs") {
 						edges {
@@ -51,6 +62,100 @@
 	);
 </script>
 
+<div>
+	<Heading level="4" size="small">Resources:</Heading>
+	<ul class="resource-list">
+		<li>
+			Requests:
+			<ul>
+				<li>
+					<div class="resource-list-item">
+						<div>CPU:</div>
+						<div class="data">
+							<code>
+								{#if $data.resources.requests.cpu}
+									{$data.resources.requests.cpu?.toFixed(2)} CPUs
+								{:else}
+									0.2 CPUs (default)
+								{/if}
+							</code>
+						</div>
+					</div>
+				</li>
+
+				<li>
+					<div class="resource-list-item">
+						<div>Memory:</div>
+						<div class="data">
+							<code>
+								{#if $data.resources.requests.memory}
+									{prettyBytes($data.resources.requests.memory, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})}
+								{:else}
+									{prettyBytes(268435456, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})} (default)
+								{/if}
+							</code>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</li>
+		<li>
+			Limits:
+			<ul>
+				<li>
+					<div class="resource-list-item">
+						<div>CPU:</div>
+						<div class="data">
+							<code>
+								{#if $data.resources.limits.cpu}
+									{$data.resources.limits.cpu?.toFixed(2)} CPUs
+								{:else}
+									0.5 CPUs (default)
+								{/if}
+							</code>
+						</div>
+					</div>
+				</li>
+
+				<li>
+					<div class="resource-list-item">
+						<div>Memory:</div>
+						<div class="data">
+							<code>
+								{#if $data.resources.limits.memory}
+									{prettyBytes($data.resources.limits.memory, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})}
+								{:else}
+									{prettyBytes(536870912, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})} (default)
+								{/if}
+							</code>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
 {#if $data.runs.edges.length === 0}
 	<BodyShort>No runs found</BodyShort>
 {:else}
@@ -64,3 +169,31 @@
 		{/each}
 	</List>
 {/if}
+
+<style>
+	ul {
+		list-style-type: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	li ul {
+		margin-left: 1rem;
+	}
+
+	.resource-list {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+	.resource-list-item {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+	.data {
+		text-align: right;
+	}
+	code {
+		font-size: 1rem;
+	}
+</style>
