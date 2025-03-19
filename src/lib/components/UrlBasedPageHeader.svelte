@@ -22,7 +22,8 @@
 <DumbPageHeader {...dumbPageHeaderProps} />
 
 <div class="team-info">
-	{#if dumbPageHeaderProps.heading === gitHubTeam}
+	{#if dumbPageHeaderProps.breadcrumbs.length === 0}
+		<!-- no breadcrumbs == on team page -->
 		<div>
 			<BodyShort>{purpose}</BodyShort>
 		</div>
