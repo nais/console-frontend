@@ -4,9 +4,6 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { EChartsOption } from 'echarts';
 
-	import { UtilizationResourceType } from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
-	import { cpuUtilization, memoryUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
@@ -181,54 +178,37 @@
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
 <div class="wrapper">
+	<Heading size="medium" level="2">Analyzing Your Resource Usage</Heading>
 	<BodyLong>
-		These graphs help you analyze your app's CPU and memory usage over time.
+		These graphs show your application's CPU and memory usage.
 		<ul>
-			<li>Blue Line (Requests): The guaranteed CPU or memory allocation for your app.</li>
-			<li>Red Line (Limits, if present): The maximum allowed usage before restrictions apply.</li>
-			<li>Shaded Area: The actual resource consumption over time.</li>
-		</ul>
-		Your app can exceed the request line, which is expected if additional resources are available:
-		<ul>
+			<li>Blue Line (Requests): The minimum CPU or memory guaranteed to your app.</li>
+			<li>Red Line (Limits, if present): The maximum CPU or memory your app can use.</li>
 			<li>
-				For CPU: Exceeding requests may cause throttling, leading to reduced performance but no
-				crashes.
-			</li>
-			<li>
-				For Memory: Exceeding the limit causes termination (OOMKilled) because memory cannot be
-				throttled.
+				Shaded Areas: The actual resource consumption over time for each running instance of your
+				app.
 			</li>
 		</ul>
-		<div>To optimize costs while maintaining performance:</div>
+		Your app can use more than its requested amount if resources are available.
+		<ul>
+			<li>
+				CPU: Exceeding requests might cause <strong>throttling</strong>, potentially reducing
+				performance.
+			</li>
+			<li>
+				Memory: Exceeding the limit will cause that specific app instance to be terminated
+				(OOMKilled).
+			</li>
+		</ul>
+		<div><strong>Optimize your resource settings:</strong></div>
 		<div>✅ If usage is consistently below requests, consider lowering requests to save money.</div>
 		<div>✅ If CPU usage is frequently throttled, increasing requests may improve performance.</div>
-		<div>
-			✅ If memory usage hits the limit, increasing requests or optimizing memory use may prevent
-			crashes.
-		</div>
 	</BodyLong>
 	<div class="section">
 		<Heading level="2" size="medium" spacing>Memory usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
-			<BodyLong spacing>
-				At the latest data point, usage is {(
-					memoryUtilization(utilization.requested_memory, utilization.current_memory) * 100
-				).toFixed(0)}% of {prettyBytes(utilization.requested_memory, {
-					locale: 'en',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-					binary: true
-				})} requested memory. Based on this data point, the estimated annual cost of unused memory of
-				{euroValueFormatter(
-					yearlyOverageCost(
-						UtilizationResourceType.MEMORY,
-						utilization.requested_memory,
-						utilization.current_memory
-					)
-				)}.
-			</BodyLong>
 			<div style="justify-self: end;">
 				<ToggleGroup
 					value={interval}
@@ -264,7 +244,7 @@
 				/>
 			</div>
 		{:else}
-			<div style="height: 436px; display: flex; justify-content: center; align-items: center;">
+			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
@@ -274,21 +254,6 @@
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
-			<BodyLong spacing>
-				At the latest data point, usage is {cpuUtilization(
-					utilization.requested_cpu,
-					utilization.current_cpu
-				)}% of {utilization.requested_cpu.toLocaleString('en-GB', {
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2
-				})} requested CPUs. Based on this data point, the estimated annual cost of unused CPU of {euroValueFormatter(
-					yearlyOverageCost(
-						UtilizationResourceType.CPU,
-						utilization.requested_cpu,
-						utilization.current_cpu
-					)
-				)}.
-			</BodyLong>
 			<div style="justify-self: end;">
 				<ToggleGroup
 					value={interval}
@@ -313,7 +278,7 @@
 				/>
 			</div>
 		{:else}
-			<div style="height: 436px; display: flex; justify-content: center; align-items: center;">
+			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
