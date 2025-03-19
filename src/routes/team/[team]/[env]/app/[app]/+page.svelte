@@ -18,7 +18,6 @@
 	import type { PageProps } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
-	import Utilization from './Utilization.svelte';
 
 	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
@@ -121,10 +120,8 @@
 				</div>
 			</div>
 			<div class="sidebar">
-				<!-- <Status {app} /> -->
 				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				<Image workload={app} />
-				<Utilization {app} />
 				<WorkloadDeploy workload={app} />
 				{#if viewerIsMember}
 					<Secrets workload={app.name} {environment} {teamSlug} />

@@ -230,62 +230,92 @@
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-2gmhx',
 			restarts: 0,
-			status: { state: 'FAILING', message: 'Failing' },
-			created: new Date('2025-02-12T09:59:36Z')
+			status: { state: 'FAILING', message: 'CrashLoopBackOff' },
+			created: new Date('2025-02-12T09:59:36Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-2rdm5',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T09:58:04Z')
+			created: new Date('2025-02-12T09:58:04Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-4k47z',
 			restarts: 0,
 			status: { state: 'UNKNOWN', message: 'Unknown' },
-			created: new Date('2025-02-12T15:34:13Z')
+			created: new Date('2025-02-12T15:34:13Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-5qg2r',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T16:23:28Z')
+			created: new Date('2025-02-12T16:23:28Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-bpxtx',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T15:09:46Z')
+			created: new Date('2025-02-12T15:09:46Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-fg4c6',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T12:14:10Z')
+			created: new Date('2025-02-12T12:14:10Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-jnzb4',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T16:06:57Z')
+			created: new Date('2025-02-12T16:06:57Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-km9p5',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T15:30:13Z')
+			created: new Date('2025-02-12T15:30:13Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-mfsgp',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T13:35:53Z')
+			created: new Date('2025-02-12T13:35:53Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		},
 		{
 			name: 'sparkiv-subsumsjon-77c799fccd-xb4st',
 			restarts: 0,
 			status: { state: 'RUNNING', message: 'Running' },
-			created: new Date('2025-02-12T12:31:14Z')
+			created: new Date('2025-02-12T12:31:14Z'),
+
+			cpu: { current: 0.0543 },
+			memory: { current: 234 }
 		}
 	];
 </script>
@@ -309,7 +339,14 @@
 <Story name="App instances">
 	<List title="{instances.length} application instances">
 		{#each instances as instance (instance)}
-			<AppInstanceListItem {instance} urlBase="/" />
+			<AppInstanceListItem
+				{instance}
+				urlBase="/"
+				utilization={{
+					requested_cpu: 0.32,
+					requested_memory: 234
+				}}
+			/>
 		{/each}
 	</List>
 </Story>

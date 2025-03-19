@@ -61,6 +61,12 @@
 									message
 								}
 								created
+								memory: instanceUtilization(resourceType: MEMORY) {
+									current
+								}
+								cpu: instanceUtilization(resourceType: CPU) {
+									current
+								}
 							}
 						}
 					}
@@ -116,22 +122,20 @@
 						<div>Memory:</div>
 						<div class="data">
 							<code>
-								{#if $data.resources.requests.memory}
+								{#if $data.resources.requests.memory !== null}
 									{prettyBytes($data.resources.requests.memory, {
 										locale: 'en',
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
 										binary: true
 									})}
-								{:else if $data.utilization.requested_memory}
+								{:else}
 									{prettyBytes($data.utilization.requested_memory, {
 										locale: 'en',
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
 										binary: true
 									})} (default)
-								{:else}
-									Not set
 								{/if}
 							</code>
 						</div>
@@ -148,9 +152,9 @@
 						<div class="data">
 							<code>
 								{#if $data.resources.limits.cpu}
-									{$data.resources.limits.cpu?.toFixed(2)} CPUs
+									{$data.resources.limits.cpu.toFixed(2)} CPUs
 								{:else if $data.utilization.limit_cpu}
-									{$data.utilization.limit_cpu?.toFixed(2)} CPUs (default)
+									{$data.utilization.limit_cpu.toFixed(2)} CPUs (default)
 								{:else}
 									Not set
 								{/if}
@@ -222,6 +226,7 @@
 				{instance}
 				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
 					.name}/app/{$data.name}/logs?name="
+				utilization={$data.utilization}
 			/>
 		{/each}
 	</List>

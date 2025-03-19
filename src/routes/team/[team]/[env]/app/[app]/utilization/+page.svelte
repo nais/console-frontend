@@ -77,7 +77,7 @@
 										(v) =>
 											`<div style="display: flex; align-items: center; gap: 0.25rem;">${dot(
 												v.color?.toString() ?? ''
-											)}${v.seriesName}:</div><div style="text-align: right;">${valueFormatter(
+											)}${v.seriesName}</div><div style="text-align: right;">${valueFormatter(
 												(Array.isArray(v.value) ? v.value[1] : null) as number
 											)}</div>`
 									)
