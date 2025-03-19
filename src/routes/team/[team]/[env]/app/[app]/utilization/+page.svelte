@@ -202,7 +202,10 @@
 		</ul>
 		<div><strong>Optimize your resource settings:</strong></div>
 		<div>✅ If usage is consistently below requests, consider lowering requests to save money.</div>
-		<div>✅ If CPU usage is frequently throttled, increasing requests may improve performance.</div>
+		<div>
+			✅ If CPU is frequently throttled, increasing the CPU limit may improve performance.
+			Alternatively, omitting a CPU limit allows unlimited usage, but may cause resource contention.
+		</div>
 	</BodyLong>
 	<div class="section">
 		<Heading level="2" size="medium" spacing>Memory usage</Heading>
