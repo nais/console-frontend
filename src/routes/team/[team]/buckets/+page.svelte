@@ -6,7 +6,7 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { Buckets } = $derived(data);
+	let { Buckets, viewerIsMember } = $derived(data);
 </script>
 
 <GraphErrors errors={$Buckets.errors} />
@@ -14,6 +14,7 @@
 {#if $Buckets.data}
 	<PersistencePage
 		cdnBucket={$Buckets.data.team.externalResources.cdn?.bucket}
+		{viewerIsMember}
 		cost={{
 			costData: $Buckets.data.team.cost,
 			teamSlug: $Buckets.data.team.slug,

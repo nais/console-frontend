@@ -23,11 +23,13 @@
 		list,
 		pageInfo,
 		orderField,
-		defaultOrderField
+		defaultOrderField,
+		viewerIsMember
 	}: {
 		description: Snippet;
 		notFound: Snippet;
 		cdnBucket?: string;
+		viewerIsMember?: boolean;
 		cost?: {
 			costData: CostData;
 			teamSlug: string;
@@ -114,7 +116,7 @@
 					/>
 				</div>
 			{/if}
-			{#if cdnBucket}
+			{#if cdnBucket && viewerIsMember}
 				<div>
 					<CdnBucket {cdnBucket} />
 				</div>
@@ -125,7 +127,7 @@
 	<div class="content-wrapper">
 		{@render notFound()}
 		<div class="right-column">
-			{#if cdnBucket}
+			{#if cdnBucket && viewerIsMember}
 				<div>
 					<CdnBucket {cdnBucket} />
 				</div>
