@@ -52,7 +52,7 @@
 			grid: {
 				bottom: 20,
 				top: 16,
-				left: 40,
+				left: 80,
 				right: 51
 			},
 			animation: false,
@@ -98,7 +98,7 @@
 			yAxis: {
 				type: 'value',
 				axisLabel: {
-					formatter: (value: number) => value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
+					formatter: valueFormatter
 				}
 			},
 			series: [
@@ -243,7 +243,7 @@
 								? '-'
 								: prettyBytes(value * 1024 ** 3, {
 										locale: 'en',
-										minimumFractionDigits: 2,
+										minimumFractionDigits: 0,
 										maximumFractionDigits: 2,
 										binary: true
 									})
