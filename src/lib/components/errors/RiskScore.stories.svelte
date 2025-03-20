@@ -15,8 +15,10 @@
 		error={{
 			__typename: 'WorkloadStatusVulnerable',
 			level: 'WARNING',
-			riskScore: 276,
-			critical: 0
+			summary: {
+				riskScore: 276,
+				critical: 0
+			}
 		}}
 		teamSlug="team-service-management"
 		workloadName="ip-lookup-preprod"
@@ -31,8 +33,10 @@
 		error={{
 			__typename: 'WorkloadStatusVulnerable',
 			level: 'WARNING',
-			riskScore: 70,
-			critical: 7
+			summary: {
+				riskScore: 70,
+				critical: 7
+			}
 		}}
 		teamSlug="team-service-management"
 		workloadName="ip-lookup-preprod"
@@ -47,8 +51,10 @@
 		error={{
 			__typename: 'WorkloadStatusVulnerable',
 			level: 'WARNING',
-			riskScore: 276,
-			critical: 1
+			summary: {
+				riskScore: 276,
+				critical: 1
+			}
 		}}
 		teamSlug="team-service-management"
 		workloadName="ip-lookup-preprod"

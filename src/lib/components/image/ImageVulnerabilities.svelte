@@ -147,7 +147,7 @@
 	};
 </script>
 
-<Heading level="4" size="small">Vulnerabilities</Heading>
+<Heading level="2" size="medium">Vulnerabilities</Heading>
 <Table
 	size="small"
 	sort={{
