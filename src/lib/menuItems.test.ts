@@ -15,7 +15,8 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/devteam',
 					features,
-					member: true
+					member: true,
+					isAdmin: false
 				})
 			).toEqual([
 				[{ label: 'Team overview', href: '/team/devteam', active: true }],
@@ -53,7 +54,8 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/secret/github-backup-config',
-					member: true
+					member: true,
+					isAdmin: false
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Secrets')?.active
@@ -64,7 +66,8 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/postgres/gemini',
-					member: true
+					member: true,
+					isAdmin: false
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Postgres')?.active
@@ -76,7 +79,8 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/nais/prod-gcp/valkey/gemini',
 					features,
-					member: true
+					member: true,
+					isAdmin: false
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Valkey')?.active
@@ -87,7 +91,8 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam/jobs',
-					member: true
+					member: true,
+					isAdmin: false
 				})
 					.flatMap((g) => g)
 					.find((i) =>
@@ -101,7 +106,8 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/tbd/jobs',
 					features,
-					member: false
+					member: false,
+					isAdmin: false
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Secrets', 'Activity log', 'Settings'].includes(i.label))
@@ -113,6 +119,7 @@ describe('menuItems', () => {
 				path: '/team/tbd/jobs',
 				features,
 				member: true,
+				isAdmin: false,
 				inventory: {
 					applications: { total: 42, notNais: 10 },
 					jobs: { total: 1, notNais: 1 },
@@ -145,6 +152,18 @@ describe('menuItems', () => {
 				{ label: 'BigQuery', count: 49 }
 			]);
 		});
+		test('show settings when admin', () => {
+			expect(
+				menuItems({
+					path: '/team/nais',
+					features,
+					member: false,
+					isAdmin: true
+				})
+					.flatMap((g) => g)
+					.find((i) => ['Settings'].includes(i.label))
+			).toBeDefined();
+		});
 	});
 
 	describe('workload menu', () => {
@@ -152,7 +171,8 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam/dev/app/app-w-all-storage/utilization',
-					member: true
+					member: true,
+					isAdmin: false
 				})
 			).toEqual([
 				[{ label: 'App overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
@@ -187,7 +207,8 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerability-report',
-					member: false
+					member: false,
+					isAdmin: false
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Delete'].includes(i.label))

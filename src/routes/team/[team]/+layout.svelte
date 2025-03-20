@@ -19,6 +19,10 @@
 	} = $derived(data);
 	const gitHubOrganization = page.data.githubOrganization;
 	const gitHubTeam = $derived(externalResources.gitHubTeam?.slug);
+
+	const isAdmin = $derived(
+		UserInfo.data?.me.__typename === 'User' ? UserInfo.data?.me.isAdmin : false
+	);
 </script>
 
 <svelte:head><title>{teamSlug} - Console</title></svelte:head>
@@ -37,7 +41,7 @@
 	{/if}
 
 	<div class="main">
-		<Menu features={UserInfo.data?.features} member={viewerIsMember} {teamSlug} />
+		<Menu features={UserInfo.data?.features} member={viewerIsMember} {teamSlug} {isAdmin} />
 		<div class="container">
 			<PageHeader {gitHubOrganization} {gitHubTeam} {purpose} {slackChannel} />
 

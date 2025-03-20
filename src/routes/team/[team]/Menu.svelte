@@ -7,10 +7,12 @@
 
 	const {
 		member,
+		isAdmin,
 		features,
 		teamSlug
 	}: {
 		member: boolean;
+		isAdmin: boolean;
 		features?: {
 			unleash: { enabled: boolean };
 			redis: { enabled: boolean };
@@ -71,6 +73,7 @@
 		path: page.url.pathname,
 		member,
 		inventory: $Inventory.fetching ? undefined : $Inventory.data?.team.inventoryCounts,
-		features
+		features,
+		isAdmin
 	})}
 />

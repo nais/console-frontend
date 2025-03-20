@@ -5,10 +5,11 @@
 
 	interface Props {
 		text: string;
+		isMember: boolean;
 		variant?: 'textfield' | 'textarea';
 	}
 
-	let { text, variant = 'textarea' }: Props = $props();
+	let { text, variant = 'textarea', isMember }: Props = $props();
 
 	const distpatch = createEventDispatcher<{ save: string }>();
 
@@ -37,7 +38,7 @@
 				bind:value={newText}
 			></textarea>
 		{/if}
-		<Button onclick={save} size="xsmall">Save</Button>
+		<Button onclick={save} size="xsmall" disabled={!isMember}>Save</Button>
 		<Button onclick={reset} size="xsmall" variant="secondary-neutral">Cancel</Button>
 	</div>
 {:else if height !== undefined}
