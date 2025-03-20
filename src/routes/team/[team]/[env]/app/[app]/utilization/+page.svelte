@@ -182,8 +182,12 @@
 	<BodyLong>
 		These graphs show your application's CPU and memory usage.
 		<ul>
-			<li>Blue Line (Requests): The minimum CPU or memory guaranteed to your app.</li>
-			<li>Red Line (Limits, if present): The maximum CPU or memory your app can use.</li>
+			<li>
+				<strong>Requests</strong> (grey line): The minimum CPU or memory guaranteed to your app.
+			</li>
+			<li>
+				<strong>Limits</strong> (red line, if present): The maximum CPU or memory your app can use.
+			</li>
 			<li>
 				Shaded Areas: The actual resource consumption over time for each running instance of your
 				app.
