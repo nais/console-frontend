@@ -8,3 +8,7 @@ export const parseImage = (image: string) => {
 	}
 	return { registry, repository, name, tag };
 };
+
+export const getImageDisplayName = (name: string): string => {
+	return name.split('/').slice(2).join('/');
+};

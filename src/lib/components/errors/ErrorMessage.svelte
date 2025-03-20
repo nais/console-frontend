@@ -2,9 +2,9 @@
 	export const supportedErrorTypes = [
 		'WorkloadStatusInvalidNaisYaml',
 		'WorkloadStatusSynchronizationFailing',
-		'WorkloadStatusDeprecatedRegistry',
 		'WorkloadStatusNoRunningInstances',
 		'WorkloadStatusFailedRun',
+		'WorkloadStatusDeprecatedRegistry',
 		'WorkloadStatusVulnerable'
 	] as const;
 </script>
