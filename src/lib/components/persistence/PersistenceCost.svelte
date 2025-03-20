@@ -27,15 +27,12 @@
 			height: '230px',
 			width: '300px',
 			tooltip: {
-				// axisPointer: {
-				// 	type: 'shadow'
-				// },
 				trigger: 'axis',
 				formatter: (params: CallbackDataParams[]) =>
 					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
 			},
 			grid: {
-				top: '50',
+				top: '20',
 				left: '0',
 				containLabel: true
 			},
@@ -170,8 +167,9 @@
 			</Detail>
 		</div>
 	</div>
-
-	<EChart options={costTransform(costData.daily.series)} />
+	<div style="height: 270px;">
+		<EChart options={costTransform(costData.daily.series)} />
+	</div>
 
 	<a href="/team/{teamSlug}/cost">See cost details</a>
 </div>

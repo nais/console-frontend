@@ -13,10 +13,12 @@
 	import { Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { Snippet } from 'svelte';
+	import CdnBucket from './CDNBucket.svelte';
 
 	let {
 		description,
 		notFound,
+		cdnBucket,
 		cost,
 		list,
 		pageInfo,
@@ -25,6 +27,7 @@
 	}: {
 		description: Snippet;
 		notFound: Snippet;
+		cdnBucket?: string;
 		cost?: {
 			costData: CostData;
 			teamSlug: string;
@@ -101,16 +104,34 @@
 				}}
 			/>
 		</div>
-		{#if cost}
-			<PersistenceCost
-				{...cost}
-				from={startOfMonth(subMonths(new Date(), 1))}
-				to={endOfYesterday()}
-			/>
-		{/if}
+		<div class="right-column">
+			{#if cost}
+				<div>
+					<PersistenceCost
+						{...cost}
+						from={startOfMonth(subMonths(new Date(), 1))}
+						to={endOfYesterday()}
+					/>
+				</div>
+			{/if}
+			{#if cdnBucket}
+				<div>
+					<CdnBucket {cdnBucket} />
+				</div>
+			{/if}
+		</div>
 	</div>
 {:else}
-	{@render notFound()}
+	<div class="content-wrapper">
+		{@render notFound()}
+		<div class="right-column">
+			{#if cdnBucket}
+				<div>
+					<CdnBucket {cdnBucket} />
+				</div>
+			{/if}
+		</div>
+	</div>
 {/if}
 
 <style>
@@ -123,5 +144,10 @@
 		display: flex;
 		gap: var(--a-spacing-1-alt);
 		align-items: center;
+	}
+
+	.right-column {
+		display: grid;
+		gap: var(--a-spacing-6);
 	}
 </style>

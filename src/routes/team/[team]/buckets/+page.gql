@@ -56,5 +56,11 @@ query Buckets(
 				}
 			}
 		}
+
+		externalResources {
+			cdn {
+				bucket
+			}
+		}
 	}
 }

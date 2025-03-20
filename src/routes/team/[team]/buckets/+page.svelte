@@ -13,6 +13,7 @@
 
 {#if $Buckets.data}
 	<PersistencePage
+		cdnBucket={$Buckets.data.team.externalResources.cdn?.bucket}
 		cost={{
 			costData: $Buckets.data.team.cost,
 			teamSlug: $Buckets.data.team.slug,
@@ -32,13 +33,15 @@
 			</BodyLong>
 		{/snippet}
 		{#snippet notFound()}
-			<BodyLong>
-				<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
-				data in the cloud.
-				<a href="https://docs.nais.io/persistence/buckets">
-					Learn more about Buckets and how to get started.
-				</a>
-			</BodyLong>
+			<div>
+				<BodyLong>
+					<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
+					data in the cloud.
+					<a href="https://docs.nais.io/persistence/buckets">
+						Learn more about Buckets and how to get started.
+					</a>
+				</BodyLong>
+			</div>
 		{/snippet}
 	</PersistencePage>
 {/if}
