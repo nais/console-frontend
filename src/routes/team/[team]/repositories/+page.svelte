@@ -7,7 +7,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
@@ -30,6 +30,11 @@
 			team
 		});
 		Repositories.fetch();
+		repositoryAdded = true;
+		repoOperatedOn = repository;
+		setTimeout(() => {
+			repositoryAdded = false;
+		}, 10000);
 	};
 
 	const removeRepositoryMutation = graphql(`
@@ -45,6 +50,11 @@
 			team
 		});
 		Repositories.fetch();
+		repositoryRemoved = true;
+		repoOperatedOn = repository;
+		setTimeout(() => {
+			repositoryRemoved = false;
+		}, 10000);
 	};
 
 	const validateRepo = (input: string) => {
@@ -63,6 +73,9 @@
 	};
 
 	let filter = $state('');
+	let repositoryAdded = $state(false);
+	let repositoryRemoved = $state(false);
+	let repoOperatedOn = $state('');
 
 	const handleFilter = () => {
 		if (filter === '') {
@@ -104,6 +117,23 @@
 <GraphErrors errors={$Repositories.errors} />
 
 {#if $Repositories.data}
+	{#if repositoryAdded}
+		<div style="margin-bottom: var(--spacing-layout)">
+			<Alert variant="success" size="small" fullWidth={true}
+				>Repository <code>{repoOperatedOn}</code> added successfully. It might take a couple of minutes
+				before the repository is authorized.</Alert
+			>
+		</div>
+	{/if}
+
+	{#if repositoryRemoved}
+		<div style="margin-bottom: var(--spacing-layout)">
+			<Alert variant="success" size="small" fullWidth={true}
+				>Repository <code>{repoOperatedOn}</code> removed successfully.</Alert
+			>
+		</div>
+	{/if}
+
 	<div class="wrapper">
 		<div>
 			{#if $Repositories.data.team}
@@ -146,7 +176,7 @@
 				{/if}
 
 				<Heading level="2" size="small">Authorized repositories</Heading>
-				{#if team.repositories.pageInfo.totalCount === 0}
+				{#if team.repositories.pageInfo.totalCount === 0 && filter === ''}
 					<BodyLong spacing>
 						{#if team.repositories.pageInfo.totalCount == 0}
 							<strong>No repositories are authorized for deployment.</strong>
@@ -235,5 +265,8 @@
 		display: flex;
 		gap: var(--a-spacing-1-alt);
 		align-items: center;
+	}
+	code {
+		font-size: 1rem;
 	}
 </style>
