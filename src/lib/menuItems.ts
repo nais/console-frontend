@@ -2,7 +2,8 @@ export const menuItems = ({
 	path,
 	features,
 	member,
-	inventory
+	inventory,
+	isAdmin
 }: {
 	path: string;
 	features?: {
@@ -24,6 +25,7 @@ export const menuItems = ({
 		kafkaTopics: { total: number };
 		bigQueryDatasets: { total: number };
 	};
+	isAdmin: boolean;
 }): { label: string; href: string; active?: boolean; count?: number; badge?: boolean }[][] => {
 	const split = path.split('/');
 
@@ -111,7 +113,7 @@ export const menuItems = ({
 		[
 			menuItem('Members', 'members'),
 			menuItem('Repositories', 'repositories'),
-			member && menuItem('Settings', 'settings'),
+			(member || isAdmin) && menuItem('Settings', 'settings'),
 			member && menuItem('Activity log', 'activity-log')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[]
 	];
