@@ -39,5 +39,8 @@ export const detailsUrl = (vulnId: string) => {
 	if (vulnId.startsWith('RUSTSEC')) {
 		return `https://rustsec.org/advisories/${vulnId}`;
 	}
+	if (vulnId.startsWith('UBUNTU')) {
+		return `https://ubuntu.com/security/${vulnId.replace(/^UBUNTU-/, '')}`;
+	}
 	return '';
 };
