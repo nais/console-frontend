@@ -16,7 +16,6 @@ export function severityToColor({
 			case 'low':
 				return 'var(--a-green-400)';
 			case 'unassigned':
-				return 'var(--a-gray-400)';
 			default:
 				return 'var(--a-gray-400)';
 		}
@@ -31,7 +30,6 @@ export function severityToColor({
 			case 'low':
 				return 'var(--a-green-200)';
 			case 'unassigned':
-				return 'var(--a-gray-200)';
 			default:
 				return 'var(--a-gray-200)';
 		}

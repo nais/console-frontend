@@ -206,7 +206,7 @@
 					<Td
 						><code
 							style="color: {severityToColor({
-								severity: v.severity.toLocaleLowerCase(),
+								severity: v.severity.toLowerCase(),
 								isText: true
 							})}">{v.severity}</code
 						></Td
