@@ -194,7 +194,7 @@
 					</Td>
 					<Td><code>{v.package}</code></Td>
 					<Td
-						><code style="color: {severityToColor(v.severity.toLocaleLowerCase())}"
+						><code style="color: {severityToColor(v.severity.toLocaleLowerCase(), true)}"
 							>{v.severity}</code
 						></Td
 					>
