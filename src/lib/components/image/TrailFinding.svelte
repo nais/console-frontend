@@ -111,51 +111,6 @@
 									<Td><Time time={node.timestamp} distance={true} /></Td>
 								</Tr>
 							{/if}
-							{#if node}
-								<Tr>
-									<Td>{node.onBehalfOf}</Td>
-									<Td>{node.state}</Td>
-									<Td>{node.suppressed}</Td>
-									<Td>{node.comment}</Td>
-									<Td><Time time={node.timestamp} distance={true} /></Td>
-								</Tr>
-							{/if}
-							{#if node}
-								<Tr>
-									<Td>{node.onBehalfOf}</Td>
-									<Td>{node.state}</Td>
-									<Td>{node.suppressed}</Td>
-									<Td>{node.comment}</Td>
-									<Td><Time time={node.timestamp} distance={true} /></Td>
-								</Tr>
-							{/if}
-							{#if node}
-								<Tr>
-									<Td>{node.onBehalfOf}</Td>
-									<Td>{node.state}</Td>
-									<Td>{node.suppressed}</Td>
-									<Td>{node.comment}</Td>
-									<Td><Time time={node.timestamp} distance={true} /></Td>
-								</Tr>
-							{/if}
-							{#if node}
-								<Tr>
-									<Td>{node.onBehalfOf}</Td>
-									<Td>{node.state}</Td>
-									<Td>{node.suppressed}</Td>
-									<Td>{node.comment}</Td>
-									<Td><Time time={node.timestamp} distance={true} /></Td>
-								</Tr>
-							{/if}
-							{#if node}
-								<Tr>
-									<Td>{node.onBehalfOf}</Td>
-									<Td>{node.state}</Td>
-									<Td>{node.suppressed}</Td>
-									<Td>{node.comment}</Td>
-									<Td><Time time={node.timestamp} distance={true} /></Td>
-								</Tr>
-							{/if}
 						{/each}
 					{/if}
 				</Tbody>

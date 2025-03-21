@@ -8,7 +8,7 @@
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import Vulnerability from '$lib/components/Vulnerability.svelte';
-	import WorkloadsWithSbom from '$lib/components/WorkloadsWithSBOM.svelte';
+	import WorkloadsWithVulnerabilities from '$lib/components/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert, Heading, HelpText, Select, Skeleton } from '@nais/ds-svelte-community';
 	import {
@@ -152,7 +152,7 @@
 			</SummaryCard>
 		</Card>
 		<Card columns={12}>
-			<Heading level="3" size="small" spacing>Workloads with SBOM</Heading>
+			<Heading level="3" size="medium" spacing>Workloads with vulnerabilities</Heading>
 
 			<div class="env-filter">
 				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">
@@ -168,7 +168,7 @@
 					{/if}
 				</Select>
 			</div>
-			<WorkloadsWithSbom team={teamSlug} environment={selectedEnvironment} />
+			<WorkloadsWithVulnerabilities team={teamSlug} environment={selectedEnvironment} />
 		</Card>
 	</div>
 {/if}

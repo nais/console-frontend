@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import Time from '$lib/Time.svelte';
+	import { getImageDisplayName } from '$lib/utils/image';
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyShort, Heading, Link, Tag } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
 		workload: WorkloadDeploy;
@@ -17,7 +19,29 @@
 			graphql(`
 				fragment WorkloadDeploy on Workload {
 					__typename
+					id
 					name
+					image {
+						name
+						tag
+						workloadReferences {
+							nodes {
+								workload {
+									id
+									__typename
+									team {
+										slug
+									}
+									teamEnvironment {
+										environment {
+											name
+										}
+									}
+									name
+								}
+							}
+						}
+					}
 					deployments(first: 1) {
 						nodes {
 							deployerUsername
@@ -39,6 +63,12 @@
 
 	let deploymentInfo = $derived(
 		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
+	);
+
+	const relatedWorkloads = $derived(
+		$data.image.workloadReferences.nodes
+			.map((node) => node.workload)
+			.filter((workload) => workload.id !== $data.id)
 	);
 </script>
 
@@ -67,6 +97,25 @@
 		{/if}
 	{:else}
 		<BodyShort>No deployment metadata found for workload.</BodyShort>
+	{/if}
+</div>
+<div class="wrapper">
+	<Heading level="3" size="small">Image</Heading>
+	{#if $data.image.name.startsWith('europe-north1-docker.pkg.dev')}
+		<a href="https://{$data.image.name + ':' + $data.image.tag}">
+			<span
+				>{getImageDisplayName($data.image.name)}:{$data.image.tag}
+				<ExternalLinkIcon /></span
+			>
+		</a>
+	{:else}
+		{$data.image.name}:{$data.image.tag}
+	{/if}
+	{#if relatedWorkloads.length > 0}
+		<Heading level="4" size="xsmall">Other workloads using this image</Heading>
+		{#each relatedWorkloads as workload (workload.id)}
+			<WorkloadLink {workload} />
+		{/each}
 	{/if}
 </div>
 

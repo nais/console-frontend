@@ -2,9 +2,9 @@
 	export const supportedErrorTypes = [
 		'WorkloadStatusInvalidNaisYaml',
 		'WorkloadStatusSynchronizationFailing',
-		'WorkloadStatusDeprecatedRegistry',
 		'WorkloadStatusNoRunningInstances',
 		'WorkloadStatusFailedRun',
+		'WorkloadStatusDeprecatedRegistry',
 		'WorkloadStatusVulnerable'
 	] as const;
 </script>
@@ -52,8 +52,10 @@
 					  }
 					| {
 							__typename: 'WorkloadStatusVulnerable';
-							riskScore: number;
-							critical: number;
+							summary: {
+								riskScore: number;
+								critical: number;
+							};
 					  }
 			  ))
 			| { __typename: "non-exhaustive; don't match this" };
@@ -172,13 +174,13 @@
 					</BodyLong>
 				{:else if error.__typename === 'WorkloadStatusVulnerable'}
 					<BodyLong>
-						{#if error.riskScore > 100}
+						{#if error.summary.riskScore > 100}
 							<strong>Risk Score:</strong>
-							{error.riskScore} (Exceeds threshold of 100)<br />
+							{error.summary.riskScore} (Exceeds threshold of 100)<br />
 						{/if}
-						{#if error.critical > 0}
+						{#if error.summary.critical > 0}
 							<strong>Critical Vulnerabilities:</strong>
-							{error.critical}
+							{error.summary.critical}
 						{/if}
 					</BodyLong>
 					<BodyLong>

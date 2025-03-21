@@ -5,11 +5,11 @@
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import ErrorMessage, { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
-	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/components/WorkloadVulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -121,7 +121,11 @@
 			</div>
 			<div class="sidebar">
 				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
-				<Image workload={app} />
+				<div>
+					<Heading level="2" size="small" spacing>Vulnerabilities</Heading>
+					<WorkloadVulnerabilitySummary workload={app} />
+				</div>
+
 				<WorkloadDeploy workload={app} />
 				{#if viewerIsMember}
 					<Secrets workload={app.name} {environment} {teamSlug} />

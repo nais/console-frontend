@@ -3,11 +3,11 @@
 	import { graphql } from '$houdini';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import ErrorMessage, { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
-	import Image from '$lib/components/Image.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/components/WorkloadVulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
@@ -121,7 +121,10 @@
 			<!-- <Status {job} /> -->
 			<Schedule schedule={job.schedule} />
 			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
-			<Image workload={job} />
+			<div>
+				<Heading level="2" size="small" spacing>Vulnerabilities</Heading>
+				<WorkloadVulnerabilitySummary workload={job} />
+			</div>
 			<WorkloadDeploy workload={job} />
 
 			{#if viewerIsMember}
