@@ -3,7 +3,17 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Button,
+		Heading,
+		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import { untrack } from 'svelte';
 	import type { ImageVulnerabilitiesVariables } from './$houdini';
@@ -147,32 +157,32 @@
 	};
 </script>
 
-<Heading level="2" size="medium">Vulnerabilities</Heading>
-<Table
-	size="small"
-	sort={{
-		orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
-		direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-	}}
-	onsortchange={tableSortChange}
->
-	<Thead>
-		<Tr>
-			<Th style="width: 13rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
-				>ID</Th
-			>
-			<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
-			<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
-				>Severity</Th
-			>
-			<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
-				>Suppressed</Th
-			>
-			<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
-		</Tr>
-	</Thead>
-	<Tbody>
-		{#if $vulnerabilities.data}
+<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
+{#if $vulnerabilities.data}
+	<Table
+		size="small"
+		sort={{
+			orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
+			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+		}}
+		onsortchange={tableSortChange}
+	>
+		<Thead>
+			<Tr>
+				<Th style="width: 13rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
+					>ID</Th
+				>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
+				<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
+					>Severity</Th
+				>
+				<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
+					>Suppressed</Th
+				>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
+			</Tr>
+		</Thead>
+		<Tbody>
 			{@const vulnz = $vulnerabilities.data.team.environment.workload.image.vulnerabilities.nodes}
 			{#each vulnz as v (v)}
 				<Tr>
@@ -222,9 +232,14 @@
 					<Td colspan={999}>No vulnerabilities</Td>
 				</Tr>
 			{/each}
-		{/if}
-	</Tbody>
-</Table>
+		</Tbody>
+	</Table>
+{:else}
+	<div style="display: flex; justify-content: center; align-items: center; height: 200px;">
+		<Loader size="2xlarge" />
+	</div>
+{/if}
+
 {#if image}
 	<Pagination
 		page={image.vulnerabilities.pageInfo}
