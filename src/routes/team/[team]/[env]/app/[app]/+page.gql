@@ -9,7 +9,15 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					slug
 				}
 				image {
-					tag
+					hasSBOM
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+					}
 				}
 				teamEnvironment {
 					environment {
@@ -63,7 +71,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...AppInstances
 				...Persistence
 				...WorkloadDeploy
-				...WorkloadImage
 				...NetworkPolicy
 				...Manifest
 				...Ingresses

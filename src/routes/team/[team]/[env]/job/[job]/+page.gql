@@ -2,9 +2,24 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {
+				__typename
 				id
 				name
 				deletionStartedAt
+				team {
+					slug
+				}
+				image {
+					hasSBOM
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+					}
+				}
 				schedule {
 					expression
 					timeZone
@@ -56,7 +71,6 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				...JobRuns
 				...Persistence
 				...WorkloadDeploy
-				...WorkloadImage
 				...NetworkPolicy
 				...Manifest
 			}

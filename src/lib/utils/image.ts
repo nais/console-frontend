@@ -1,4 +1,7 @@
-export const parseImage = (image: string) => {
+export const parseImage = (image?: string) => {
+	if (!image) {
+		return {};
+	}
 	const tag = image.split(':')[1];
 	const name = image.split(':')[0].split('/').pop();
 	const registry = image.split('/')[0];
