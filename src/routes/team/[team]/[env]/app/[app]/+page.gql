@@ -65,6 +65,12 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						... on WorkloadStatusInvalidNaisYaml {
 							detail
 						}
+						... on WorkloadStatusVulnerable {
+							summary {
+								critical
+								riskScore
+							}
+						}
 					}
 				}
 
