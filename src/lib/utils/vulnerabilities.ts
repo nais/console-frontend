@@ -1,4 +1,10 @@
-export function severityToColor(severity: string, isText?: boolean): string {
+export function severityToColor({
+	severity,
+	isText
+}: {
+	severity: string;
+	isText?: boolean;
+}): string {
 	if (isText) {
 		switch (severity) {
 			case 'critical':
