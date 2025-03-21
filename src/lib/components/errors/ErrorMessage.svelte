@@ -20,10 +20,8 @@
 		teamSlug,
 		workloadName,
 		environment,
-		docURL,
-		collapsible = true
+		docURL
 	}: {
-		collapsible?: boolean;
 		workloadType: 'App' | 'Job';
 		teamSlug: string;
 		workloadName: string;
@@ -93,13 +91,11 @@
 		<div class="content">
 			<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
 				<Heading level="2" size="small">{heading[error.__typename]}</Heading>
-				{#if collapsible}
-					<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
-						{open ? 'Hide' : 'Show'} details
-					</Button>
-				{/if}
+				<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
+					{open ? 'Hide' : 'Show'} details
+				</Button>
 			</div>
-			{#if open || !collapsible}
+			{#if open}
 				{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
 					<BodyLong>
 						The rollout of your {workloadType === 'Job' ? 'job' : 'application'} has failed due to an
