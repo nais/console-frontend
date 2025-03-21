@@ -4,11 +4,11 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import Deploys from '$lib/components/TeamDeployments.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
+	import TeamVulnerabilitySummary from '$lib/components/TeamVulnerabilitySummary.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -59,7 +59,7 @@
 	</Card-->
 
 	<Card rows={1} columns={3}>
-		<VulnerabilitySummary {teamSlug} />
+		<TeamVulnerabilitySummary {teamSlug} />
 	</Card>
 
 	<Card rows={1} columns={3}>
