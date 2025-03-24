@@ -41,6 +41,5 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 				}
 			}
 		}
-		...TeamDeployments
 	}
 }

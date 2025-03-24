@@ -2,9 +2,8 @@
 	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
-	import Deploys from '$lib/components/TeamDeployments.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import { Alert, Heading } from '@nais/ds-svelte-community';
+	import { Alert } from '@nais/ds-svelte-community';
 
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
@@ -54,10 +53,6 @@
 	{/each}
 </div>
 <div class="grid">
-	<!--Card rows={1} columns={3}>
-		<TeamInfo {teamSlug} {viewerIsMember} />
-	</Card-->
-
 	<Card rows={1} columns={3}>
 		<TeamVulnerabilitySummary {teamSlug} />
 	</Card>
@@ -68,12 +63,6 @@
 	<Card rows={1} columns={3}>
 		<AggregatedCostForTeam {teamSlug} />
 	</Card>
-	<div class="deployments">
-		<Heading level="4" size="small" spacing>Last team deployments</Heading>
-		{#if $TeamOverview.data}
-			<Deploys team={$TeamOverview.data.team} />
-		{/if}
-	</div>
 </div>
 
 <style>
@@ -91,9 +80,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--a-spacing-2);
-	}
-	.deployments {
-		grid-column: span 12;
-		grid-row: span 1;
 	}
 </style>
