@@ -12,9 +12,18 @@
 		gitHubOrganization?: string;
 		gitHubTeam?: string;
 		slackChannel?: string;
+		memberCount: number;
+		viewerIsMember: boolean;
 	}
 
-	const { purpose, gitHubOrganization, slackChannel, gitHubTeam }: Props = $props();
+	const {
+		purpose,
+		gitHubOrganization,
+		slackChannel,
+		gitHubTeam,
+		memberCount,
+		viewerIsMember
+	}: Props = $props();
 
 	const dumbPageHeaderProps = $derived(urlToPageHeader(page.url));
 </script>
@@ -25,7 +34,13 @@
 	{#if dumbPageHeaderProps.breadcrumbs.length === 0}
 		<!-- no breadcrumbs == on team page -->
 		<div>
-			<BodyShort>{purpose}</BodyShort>
+			<BodyShort spacing>{purpose}</BodyShort>
+			<BodyShort>
+				{memberCount} team member{memberCount === 1 ? '' : 's'}.
+				<a href="/team/{dumbPageHeaderProps.heading}/members">
+					{viewerIsMember ? 'Manage members' : 'View all'}
+				</a>
+			</BodyShort>
 		</div>
 		<div>
 			<IconLabel

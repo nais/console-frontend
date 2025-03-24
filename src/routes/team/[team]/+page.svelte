@@ -4,6 +4,7 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
+	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import TeamVulnerabilitySummary from '$lib/components/TeamVulnerabilitySummary.svelte';
@@ -52,49 +53,39 @@
 	{/each}
 </div>
 <div class="grid">
-	{#if $TeamOverview.data}
-		<div class="card members">
-			<Heading size="medium" level="2">
-				{$TeamOverview.data.team.members.pageInfo.totalCount} team members
-			</Heading>
-			<div class="names">
-				{#each $TeamOverview.data.team.members.nodes as member (member.user.id)}
-					<div>{member.user.name}</div>
-				{/each}
-			</div>
-			<a href="/team/{teamSlug}/members">
-				{viewerIsMember ? 'Manage team members' : 'View member details'}
-			</a>
+	<div class="card"><TeamVulnerabilitySummary {teamSlug} /></div>
+	<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
+	<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
+	{#if viewerIsMember}
+		<div class="card activity">
+			<Heading size="small" level="2" spacing>Latest activity</Heading>
+			{#if $TeamOverview.data}
+				<div class="raised">
+					<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} {teamSlug} />
+				</div>
+			{/if}
+			<a href="/team/{teamSlug}/activity-log">View all activity</a>
 		</div>
 	{/if}
-	<div class="card">
-		<TeamVulnerabilitySummary {teamSlug} />
-	</div>
-
-	<div class="card">
-		<TeamUtilizationAndOverage {teamSlug} />
-	</div>
-	<div class="card">
-		<AggregatedCostForTeam {teamSlug} />
-	</div>
 </div>
 
 <style>
-	.members {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		gap: var(--a-spacing-2);
+	.raised {
+		padding: var(--a-spacing-4) var(--a-spacing-5);
+		background-color: var(--a-surface-default);
+		border-radius: 8px;
+	}
+	.activity {
+		word-wrap: break-word;
+
+		> a {
+			margin-top: var(--a-spacing-4);
+		}
 	}
 	.card {
 		background-color: var(--a-surface-subtle);
-		padding: var(--a-spacing-5);
+		padding: var(--a-spacing-4) var(--a-spacing-5);
 		border-radius: 12px;
-	}
-
-	.names {
-		overflow-y: auto;
-		align-self: stretch;
 	}
 	.grid {
 		display: grid;

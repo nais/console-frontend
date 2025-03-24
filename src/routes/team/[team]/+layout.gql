@@ -1,5 +1,10 @@
 query TeamRoles($team: Slug!) {
 	team(slug: $team) {
+		members {
+			pageInfo {
+				totalCount
+			}
+		}
 		viewerIsOwner
 		viewerIsMember
 		deletionInProgress

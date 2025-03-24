@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import type { ActivityLogVariables, BeforeLoadEvent } from './$houdini';
 
 const rows = 25;
+
 export const _ActivityLogVariables: ActivityLogVariables = ({ url }) => {
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';

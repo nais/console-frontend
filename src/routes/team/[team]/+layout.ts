@@ -40,7 +40,8 @@ export const load: LayoutLoad = async (
 					viewerIsMember: false,
 					externalResources: { gitHubTeam: null },
 					purpose: '',
-					slackChannel: ''
+					slackChannel: '',
+					members: { pageInfo: { totalCount: 0 } }
 				}),
 		teamSlug: event.params.team
 	};
