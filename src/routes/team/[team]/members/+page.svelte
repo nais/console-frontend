@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql, TeamMemberOrderField } from '$houdini';
+	import Avatar from '$lib/components/Avatar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
@@ -93,6 +94,7 @@
 				{#if $Members.data?.team.members.edges}
 					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
 						<ListItem>
+							<Avatar name={edge.node.user.name} />
 							<div class="item">
 								<div>
 									<BodyShort size="small">
