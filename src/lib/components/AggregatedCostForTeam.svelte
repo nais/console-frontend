@@ -46,12 +46,8 @@
 
 		data.push({ date: lastDayOfMonth(new Date()), cost: lastMonthEstimate });
 		return {
-			width: '250px',
 			height: '150px',
 			tooltip: {
-				// axisPointer: {
-				// 	type: 'shadow'
-				// },
 				trigger: 'axis',
 				formatter: (params: CallbackDataParams[]) =>
 					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`

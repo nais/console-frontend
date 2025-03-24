@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Card from '$lib/Card.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
@@ -68,16 +67,16 @@
 			</a>
 		</div>
 	{/if}
-	<Card rows={1} columns={1}>
+	<div class="card">
 		<TeamVulnerabilitySummary {teamSlug} />
-	</Card>
+	</div>
 
-	<Card rows={1} columns={1}>
+	<div class="card">
 		<TeamUtilizationAndOverage {teamSlug} />
-	</Card>
-	<Card rows={1} columns={1}>
+	</div>
+	<div class="card">
 		<AggregatedCostForTeam {teamSlug} />
-	</Card>
+	</div>
 </div>
 
 <style>
@@ -99,7 +98,7 @@
 	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		grid-auto-rows: 350px;
 		gap: 1rem;
 	}
