@@ -2,7 +2,7 @@ import { OrderDirection, TeamMemberOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import type { MembersVariables } from './$houdini';
 
-const rows = 10;
+const rows = 25;
 
 export const _MembersVariables: MembersVariables = ({ url }) => {
 	const after = url.searchParams.get('after') || '';
