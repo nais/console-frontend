@@ -13,91 +13,9 @@ query ActivityLog($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after
 				startCursor
 				endCursor
 			}
-			edges {
-				node {
-					id
-					__typename
-					createdAt
-					actor
-					createdAt
-					environmentName
-					message
-					resourceName
-					resourceType
-
-					... on RepositoryAddedActivityLogEntry {
-						actor
-						message
-						resourceName
-						resourceType
-						teamSlug
-					}
-
-					... on RepositoryRemovedActivityLogEntry {
-						actor
-						message
-						resourceName
-						resourceType
-						teamSlug
-					}
-
-					... on SecretValueAddedActivityLogEntry {
-						secretValueAdded: data {
-							valueName
-						}
-					}
-					... on SecretValueRemovedActivityLogEntry {
-						secretValueRemoved: data {
-							valueName
-						}
-					}
-					... on SecretValueUpdatedActivityLogEntry {
-						secretValueUpdated: data {
-							valueName
-						}
-					}
-					... on TeamEnvironmentUpdatedActivityLogEntry {
-						teamEnvironmentUpdated: data {
-							updatedFields {
-								field
-								newValue
-								oldValue
-							}
-						}
-					}
-					... on TeamMemberAddedActivityLogEntry {
-						teamMemberAdded: data {
-							role
-							userEmail
-						}
-					}
-					... on TeamMemberRemovedActivityLogEntry {
-						teamMemberRemoved: data {
-							userEmail
-						}
-					}
-					... on TeamMemberSetRoleActivityLogEntry {
-						teamMemberSetRole: data {
-							role
-							userEmail
-						}
-					}
-					... on TeamUpdatedActivityLogEntry {
-						teamUpdated: data {
-							updatedFields {
-								field
-								newValue
-								oldValue
-							}
-						}
-					}
-					... on UnleashInstanceUpdatedActivityLogEntry {
-						unleashInstanceUpdated: data {
-							allowedTeamSlug
-							revokedTeamSlug
-						}
-					}
-				}
+			nodes {
+				id
+				...ActivityLogEntryFragment
 			}
 		}
 	}

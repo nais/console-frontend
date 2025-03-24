@@ -61,7 +61,7 @@
 			<Heading size="small" level="2" spacing>Latest activity</Heading>
 			{#if $TeamOverview.data}
 				<div class="raised">
-					<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} {teamSlug} />
+					<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} />
 				</div>
 			{/if}
 			<a href="/team/{teamSlug}/activity-log">View all activity</a>

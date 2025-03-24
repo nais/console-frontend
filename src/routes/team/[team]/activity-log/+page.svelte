@@ -7,34 +7,34 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { ActivityLog, viewerIsMember, teamSlug } = $derived(data);
+	let { ActivityLog, viewerIsMember } = $derived(data);
 </script>
 
 <div>
 	{#if viewerIsMember}
 		{#if $ActivityLog.data}
-			{@const ae = $ActivityLog.data}
+			{@const ae = $ActivityLog.data.team.activityLog}
 			<div class="wrapper">
 				<div>
-					<List title="{ae.team.activityLog.pageInfo.totalCount} entries">
-						{#each ae.team.activityLog.edges as edge (edge.node.id)}
+					<List title="{ae.pageInfo.totalCount} entries">
+						{#each ae.nodes || [] as item (item.id)}
 							<ListItem>
-								<ActivityLogItem item={edge.node} {teamSlug} />
+								<ActivityLogItem {item} />
 							</ListItem>
 						{/each}
 					</List>
 					<Pagination
-						page={ae.team.activityLog.pageInfo}
+						page={ae.pageInfo}
 						loaders={{
 							loadPreviousPage: () =>
 								changeParams({
 									after: '',
-									before: ae.team.activityLog.pageInfo.startCursor ?? ''
+									before: ae.pageInfo.startCursor ?? ''
 								}),
 							loadNextPage: () =>
 								changeParams({
 									before: '',
-									after: ae.team.activityLog.pageInfo.endCursor ?? ''
+									after: ae.pageInfo.endCursor ?? ''
 								})
 						}}
 					/>

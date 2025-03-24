@@ -1,24 +1,19 @@
 <script lang="ts">
 	import {
 		ActivityLogEntryResourceType,
-		type ActivityLog$result,
+		fragment,
+		graphql,
+		type ActivityLogEntryFragment,
 		type ActivityLogEntryResourceType$options
 	} from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 
-	const {
-		item,
-		teamSlug
-	}: {
-		item: ActivityLog$result['team']['activityLog']['edges'][number]['node'];
-		teamSlug: string;
-	} = $props();
-
 	const resourceLink = (
 		environmentName: string,
 		resourceType: ActivityLogEntryResourceType$options,
-		resourceName: string
+		resourceName: string,
+		teamSlug: string | null
 	) => {
 		switch (resourceType) {
 			case ActivityLogEntryResourceType.APP:
@@ -35,117 +30,213 @@
 				return null;
 		}
 	};
+
+	interface Props {
+		item: ActivityLogEntryFragment;
+	}
+
+	let { item }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			item,
+			graphql(`
+				fragment ActivityLogEntryFragment on ActivityLogEntry {
+					__typename
+					createdAt
+					actor
+					createdAt
+					environmentName
+					message
+					resourceName
+					resourceType
+					teamSlug
+					... on ApplicationDeletedActivityLogEntry {
+						__typename
+					}
+					... on RepositoryAddedActivityLogEntry {
+						__typename
+					}
+					... on RepositoryRemovedActivityLogEntry {
+						__typename
+					}
+					... on SecretValueAddedActivityLogEntry {
+						secretValueAdded: data {
+							valueName
+						}
+					}
+					... on SecretValueRemovedActivityLogEntry {
+						secretValueRemoved: data {
+							valueName
+						}
+					}
+					... on SecretValueUpdatedActivityLogEntry {
+						secretValueUpdated: data {
+							valueName
+						}
+					}
+					... on TeamEnvironmentUpdatedActivityLogEntry {
+						teamEnvironmentUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
+					... on TeamMemberAddedActivityLogEntry {
+						teamMemberAdded: data {
+							role
+							userEmail
+						}
+					}
+					... on TeamMemberRemovedActivityLogEntry {
+						teamMemberRemoved: data {
+							userEmail
+						}
+					}
+					... on TeamMemberSetRoleActivityLogEntry {
+						teamMemberSetRole: data {
+							role
+							userEmail
+						}
+					}
+					... on TeamUpdatedActivityLogEntry {
+						teamUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
+					... on UnleashInstanceUpdatedActivityLogEntry {
+						unleashInstanceUpdated: data {
+							allowedTeamSlug
+							revokedTeamSlug
+						}
+					}
+				}
+			`)
+		)
+	);
 </script>
 
 <div class="activity">
 	<div>
 		<BodyShort size="small" spacing>
-			{#if item.__typename === 'SecretValueAddedActivityLogEntry'}
-				{item.message}
-				<strong>{item.secretValueAdded?.valueName}</strong> from
+			{#if $data.__typename === 'SecretValueAddedActivityLogEntry'}
+				{$data.message}
+				<strong>{$data.secretValueAdded?.valueName}</strong> from
 				{@const link = resourceLink(
-					item.environmentName ? item.environmentName : '',
-					item.resourceType,
-					item.resourceName
+					$data.environmentName ? $data.environmentName : '',
+					$data.resourceType,
+					$data.resourceName,
+					$data.teamSlug
 				)}
 				{#if link}
-					<a href={link}>{item.resourceName}</a>
+					<a href={link}>{$data.resourceName}</a>
 				{/if}
-			{:else if item.__typename === 'SecretValueRemovedActivityLogEntry'}
-				{item.message}
-				<strong>{item.secretValueRemoved?.valueName}</strong> from
+			{:else if $data.__typename === 'SecretValueRemovedActivityLogEntry'}
+				{$data.message}
+				<strong>{$data.secretValueRemoved?.valueName}</strong> from
 				{@const link = resourceLink(
-					item.environmentName ? item.environmentName : '',
-					item.resourceType,
-					item.resourceName
+					$data.environmentName ? $data.environmentName : '',
+					$data.resourceType,
+					$data.resourceName,
+					$data.teamSlug
 				)}
 				{#if link}
-					<a href={link}>{item.resourceName}</a>
+					<a href={link}>{$data.resourceName}</a>
 				{/if}
-			{:else if item.__typename === 'SecretValueUpdatedActivityLogEntry'}
-				{item.message}
-				<strong>{item.secretValueUpdated?.valueName}</strong> from
+			{:else if $data.__typename === 'SecretValueUpdatedActivityLogEntry'}
+				{$data.message}
+				<strong>{$data.secretValueUpdated?.valueName}</strong> from
 				{@const link = resourceLink(
-					item.environmentName ? item.environmentName : '',
-					item.resourceType,
-					item.resourceName
+					$data.environmentName ? $data.environmentName : '',
+					$data.resourceType,
+					$data.resourceName,
+					$data.teamSlug
 				)}
 				{#if link}
-					<a href={link}>{item.resourceName}</a>
+					<a href={link}>{$data.resourceName}</a>
 				{/if}
-			{:else if item.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
-				{item.message}
-				{#if item.teamEnvironmentUpdated.updatedFields.length > 0}
-					{#each item.teamEnvironmentUpdated.updatedFields as field (field)}
+			{:else if $data.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
+				{$data.message}
+				{#if $data.teamEnvironmentUpdated.updatedFields.length > 0}
+					{#each $data.teamEnvironmentUpdated.updatedFields as field (field)}
 						{field.field}. Changed from {field.oldValue} to {field.newValue}.
 					{/each}
 				{/if}
-			{:else if item.__typename === 'TeamMemberAddedActivityLogEntry'}
-				{#if item.teamMemberAdded}
-					Added member {item.teamMemberAdded.userEmail !== ''
-						? item.teamMemberAdded.userEmail
-						: 'unknown email'} to team as {item.teamMemberAdded.role}.
+			{:else if $data.__typename === 'TeamMemberAddedActivityLogEntry'}
+				{#if $data.teamMemberAdded}
+					Added member {$data.teamMemberAdded.userEmail !== ''
+						? $data.teamMemberAdded.userEmail
+						: 'unknown email'} to team as {$data.teamMemberAdded.role}.
 				{/if}
-			{:else if item.__typename === 'TeamMemberRemovedActivityLogEntry'}
-				{#if item.teamMemberRemoved}
-					Removed {item.teamMemberRemoved.userEmail !== ''
-						? item.teamMemberRemoved.userEmail
+			{:else if $data.__typename === 'TeamMemberRemovedActivityLogEntry'}
+				{#if $data.teamMemberRemoved}
+					Removed {$data.teamMemberRemoved.userEmail !== ''
+						? $data.teamMemberRemoved.userEmail
 						: 'unknown email'}
 					from team.
 				{/if}
-			{:else if item.__typename === 'TeamMemberSetRoleActivityLogEntry'}
-				{#if item.teamMemberSetRole}
-					Set role to {item.teamMemberSetRole.role} for {item.teamMemberSetRole.userEmail !== ''
-						? item.teamMemberSetRole.userEmail
+			{:else if $data.__typename === 'TeamMemberSetRoleActivityLogEntry'}
+				{#if $data.teamMemberSetRole}
+					Set role to {$data.teamMemberSetRole.role} for {$data.teamMemberSetRole.userEmail !== ''
+						? $data.teamMemberSetRole.userEmail
 						: 'unknown email'}.
 				{/if}
-			{:else if item.__typename === 'TeamUpdatedActivityLogEntry'}
-				{item.message}
-				{#if item.teamUpdated?.updatedFields.length}
-					{#each item.teamUpdated?.updatedFields as field (field)}
+			{:else if $data.__typename === 'TeamUpdatedActivityLogEntry'}
+				{$data.message}
+				{#if $data.teamUpdated?.updatedFields.length}
+					{#each $data.teamUpdated?.updatedFields as field (field)}
 						{field.field}. Changed from {field.oldValue} to {field.newValue}.
 					{/each}
 				{/if}
-			{:else if item.__typename === 'UnleashInstanceUpdatedActivityLogEntry'}
-				{@const data = item.unleashInstanceUpdated}
-				{item.message}
-				{#if data?.allowedTeamSlug}
-					Allowed <a href="/team/{data.allowedTeamSlug}">
-						{data.allowedTeamSlug}
+			{:else if $data.__typename === 'UnleashInstanceUpdatedActivityLogEntry'}
+				{@const u = $data.unleashInstanceUpdated}
+				{$data.message}
+				{#if u.allowedTeamSlug}
+					Allowed <a href="/team/{u.allowedTeamSlug}">
+						{u.allowedTeamSlug}
 					</a> to access the instance.
-				{:else if data?.revokedTeamSlug}
-					Revoked access for <a href="/team/{data.revokedTeamSlug}">
-						{data.revokedTeamSlug}
+				{:else if u.revokedTeamSlug}
+					Revoked access for <a href="/team/{u.revokedTeamSlug}">
+						{u.revokedTeamSlug}
 					</a> to the instance.
 				{/if}
-			{:else if item.__typename === 'RepositoryRemovedActivityLogEntry'}
-				{item.actor} removed
-				<a href="/team/{teamSlug}/repositories">repository</a>
-				{item.resourceName} from team {item.teamSlug}.
-			{:else if item.__typename === 'RepositoryAddedActivityLogEntry'}
-				{item.actor} added
-				<a href="/team/{teamSlug}/repositories">repository</a>
-				{item.resourceName} to team {item.teamSlug}.
+			{:else if $data.__typename === 'RepositoryRemovedActivityLogEntry'}
+				{$data.actor} removed
+				<a href="/team/{$data.teamSlug}/repositories">repository</a>
+				{$data.resourceName} from team {$data.teamSlug}.
+			{:else if $data.__typename === 'RepositoryAddedActivityLogEntry'}
+				{$data.actor} added
+				<a href="/team/{$data.teamSlug}/repositories">repository</a>
+				{$data.resourceName} to team {$data.teamSlug}.
+			{:else if $data.__typename === 'ApplicationDeletedActivityLogEntry'}
+				Application <strong>{$data.resourceName}</strong> was deleted
 			{:else}
-				{item.message}
+				{$data.message}
 				{@const link = resourceLink(
-					item.environmentName ? item.environmentName : '',
-					item.resourceType,
-					item.resourceName
+					$data.environmentName ? $data.environmentName : '',
+					$data.resourceType,
+					$data.resourceName,
+					$data.teamSlug
 				)}
 				{#if link}
-					<a href={link}>{item.resourceName}</a>
+					<a href={link}>{$data.resourceName}</a>
 				{/if}
 			{/if}
-			{#if item.environmentName}
-				in {item.environmentName}
+			{#if $data.environmentName}
+				in {$data.environmentName}.
 			{/if}
 		</BodyShort>
 	</div>
 	<div>
 		<BodyShort size="small" style="color: var(--a-text-subtle)">
-			<Time time={item.createdAt} distance={true} />
-			by {item.actor}
+			<Time time={$data.createdAt} distance={true} />
+			by {$data.actor}
 		</BodyShort>
 	</div>
 </div>
