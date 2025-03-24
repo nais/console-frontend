@@ -257,14 +257,18 @@
 							<WarningIcon title="The database is not healthy" />
 						{/if}
 					</p>
-					<p style="display: flex; align-items: center; gap: 0 1rem">Charset</p>
-					<p style="display: flex; align-items: center; gap: 0 1rem">
-						{instance.database.charset}
-					</p>
-					<p style="display: flex; align-items: center; gap: 0 1rem">Collation</p>
-					<p style="display: flex; align-items: center; gap: 0 1rem">
-						{instance.database.collation}
-					</p>
+					{#if instance.database.charset}
+						<p style="display: flex; align-items: center; gap: 0 1rem">Charset</p>
+						<p style="display: flex; align-items: center; gap: 0 1rem">
+							{instance.database.charset}
+						</p>
+					{/if}
+					{#if instance.database.collation}
+						<p style="display: flex; align-items: center; gap: 0 1rem">Collation</p>
+						<p style="display: flex; align-items: center; gap: 0 1rem">
+							{instance.database.collation}
+						</p>
+					{/if}
 				</div>
 			{:else}
 				<p>Instance does not have a database</p>
