@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { graphql, TeamMemberOrderField } from '$houdini';
-	import Avatar from '$lib/components/Avatar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
@@ -17,10 +16,6 @@
 	let { data }: PageProps = $props();
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
 	let team = $derived($Members.data?.team);
-
-	function capitalizeFirstLetterInEachWord(str: string): string {
-		return str.replaceAll(/(^|\s)[\w]/g, (c) => c.toUpperCase());
-	}
 
 	const deleteTeamMember = graphql(`
 		mutation DeleteTeamMember($input: RemoveTeamMemberInput!) {
@@ -94,11 +89,10 @@
 				{#if $Members.data?.team.members.edges}
 					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
 						<ListItem>
-							<Avatar name={edge.node.user.name} />
 							<div class="item">
 								<div>
 									<BodyShort size="small">
-										{capitalizeFirstLetterInEachWord(edge.node.user.name)}
+										{edge.node.user.name}
 									</BodyShort>
 									<BodyShort size="small">
 										<span style="color: var(--a-text-subtle);">{edge.node.user.email}</span>

@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
@@ -11,7 +11,7 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { TeamOverview, teamSlug } = $derived(data);
+	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
 
 	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
 		const workloads = $TeamOverview.data?.team.workloads.nodes.filter((workload) =>
@@ -53,24 +53,55 @@
 	{/each}
 </div>
 <div class="grid">
-	<Card rows={1} columns={3}>
+	{#if $TeamOverview.data}
+		<div class="card members">
+			<Heading size="medium" level="2">
+				{$TeamOverview.data.team.members.pageInfo.totalCount} team members
+			</Heading>
+			<div class="names">
+				{#each $TeamOverview.data.team.members.nodes as member (member.user.id)}
+					<div>{member.user.name}</div>
+				{/each}
+			</div>
+			<a href="/team/{teamSlug}/members">
+				{viewerIsMember ? 'Manage team members' : 'View member details'}
+			</a>
+		</div>
+	{/if}
+	<Card rows={1} columns={1}>
 		<TeamVulnerabilitySummary {teamSlug} />
 	</Card>
 
-	<Card rows={1} columns={3}>
+	<Card rows={1} columns={1}>
 		<TeamUtilizationAndOverage {teamSlug} />
 	</Card>
-	<Card rows={1} columns={3}>
+	<Card rows={1} columns={1}>
 		<AggregatedCostForTeam {teamSlug} />
 	</Card>
 </div>
 
 <style>
+	.members {
+		display: flex;
+		flex-direction: column;
+		align-items: start;
+		gap: var(--a-spacing-2);
+	}
+	.card {
+		background-color: var(--a-surface-subtle);
+		padding: var(--a-spacing-5);
+		border-radius: 12px;
+	}
+
+	.names {
+		overflow-y: auto;
+		align-self: stretch;
+	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: repeat(4, 1fr);
+		grid-auto-rows: 350px;
+		gap: 1rem;
 	}
 	.grid:not(:first-child) {
 		margin-top: 1rem;

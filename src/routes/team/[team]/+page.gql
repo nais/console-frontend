@@ -1,6 +1,17 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		purpose
+		members(first: 100) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				user {
+					name
+					id
+				}
+			}
+		}
 		workloads(first: 600) {
 			nodes {
 				__typename
