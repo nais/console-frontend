@@ -144,11 +144,19 @@
 			/>
 		</div>
 
-		<a href="/team/{teamSlug}/cost">View team costs</a>
+		<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto"
+			>View team costs</a
+		>
 	{/if}
 </div>
 
 <style>
+	.wrapper {
+		min-height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
 	.header {
 		display: flex;
 		flex-direction: row;

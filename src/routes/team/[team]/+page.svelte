@@ -84,13 +84,17 @@
 		<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
 		{#if viewerIsMember}
 			<div class="card activity">
-				<Heading size="small" level="2" spacing>Latest activity</Heading>
+				<Heading size="small" level="2">Activity</Heading>
 				{#if $TeamOverview.data}
 					<div class="raised">
-						<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} />
+						{#each $TeamOverview.data.team.activityLog.nodes as item (item.id)}
+							<div><ActivityLogItem {item} /></div>
+						{/each}
 					</div>
 				{/if}
-				<a href="/team/{teamSlug}/activity-log">View all activity</a>
+				<a href="/team/{teamSlug}/activity-log" style:align-self="end" style:margin-top="auto"
+					>View Activity Log</a
+				>
 			</div>
 		{/if}
 	</div>
@@ -113,15 +117,38 @@
 		gap: var(--spacing-layout);
 	}
 	.raised {
-		padding: var(--a-spacing-4) var(--a-spacing-5);
-		background-color: var(--a-surface-default);
 		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+
+		> div {
+			background-color: var(--a-surface-default);
+			padding: var(--a-spacing-2) var(--a-spacing-5);
+		}
+
+		> div:first-child {
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+			padding-top: var(--a-spacing-3);
+		}
+
+		> div:last-child {
+			padding-bottom: var(--a-spacing-3);
+			border-bottom-left-radius: 8px;
+			border-bottom-right-radius: 8px;
+		}
 	}
 	.activity {
+		grid-column: span 2;
 		word-wrap: break-word;
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
+		min-height: 100%;
 
 		> a {
-			margin-top: var(--a-spacing-4);
+			align-self: end;
 		}
 	}
 	.card {
@@ -132,7 +159,6 @@
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		grid-auto-rows: 350px;
 		gap: 1rem;
 	}
 	.grid:not(:first-child) {

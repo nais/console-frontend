@@ -93,7 +93,7 @@
 			estimate based on current utilization.</HelpText
 		>
 	</div>
-	<Table size="small">
+	<Table>
 		<Thead>
 			<Tr>
 				<Th>Resource</Th>
@@ -140,14 +140,17 @@
 			)}
 		{/if}
 	</BodyShort>
-	<a href="/team/{teamSlug}/utilization">View team utilization</a>
+	<a href="/team/{teamSlug}/utilization" style:margin-top="auto" style:align-self="end"
+		>View team utilization</a
+	>
 </div>
 
 <style>
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-1);
+		gap: var(--a-spacing-2);
+		min-height: 100%;
 	}
 
 	.header {

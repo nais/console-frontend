@@ -1,7 +1,7 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		purpose
-		activityLog(first: 1) {
+		activityLog(first: 5) {
 			nodes {
 				id
 				...ActivityLogEntryFragment
