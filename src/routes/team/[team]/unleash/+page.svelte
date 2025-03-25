@@ -5,6 +5,7 @@
 	import Confirm from '$lib/components/Confirm.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
 		Alert,
@@ -272,12 +273,9 @@
 				</p>
 				<p>Documentation</p>
 				<p>
-					<a href="https://docs.nais.io/explanation/feature-toggling/"
-						>https://docs.nais.io/explanation/feature-toggling <ExternalLinkIcon
-							title="Unleash documentation"
-							font-size="1.5rem"
-						/></a
-					>
+					<a href={docURL('/explanation/feature-toggling')}
+						>{docURL('/explanation/feature-toggling')}
+					</a>
 				</p>
 			</div>
 		</Card>

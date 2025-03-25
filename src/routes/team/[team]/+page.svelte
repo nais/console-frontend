@@ -7,7 +7,7 @@
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import TeamVulnerabilitySummary from '$lib/components/TeamVulnerabilitySummary.svelte';
+	import VulnerabilityOverview from '$lib/components/VulnerabilityOverview.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -38,38 +38,53 @@
 		{msgParts[1]}.
 	</Alert>
 {/if}
-<div class="alerts-wrapper">
-	{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
-		{#if errors.workloads?.length && errors.level}
-			<TeamErrorMessage
-				error={{
-					__typename: errors.__typename,
-					level: errors.level
-				}}
-				{teamSlug}
-				workloads={errors.workloads}
-			/>
-		{/if}
-	{/each}
-</div>
-<div class="grid">
-	<div class="card"><TeamVulnerabilitySummary {teamSlug} /></div>
-	<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
-	<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
-	{#if viewerIsMember}
-		<div class="card activity">
-			<Heading size="small" level="2" spacing>Latest activity</Heading>
-			{#if $TeamOverview.data}
-				<div class="raised">
-					<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} />
-				</div>
+<div class="wrapper">
+	<div class="alerts-wrapper">
+		{#each supportedErrorTypes
+			.map(getWorkloadsWithError)
+			.filter((error) => error.__typename !== 'WorkloadStatusVulnerable') as errors (errors.__typename)}
+			{#if errors.workloads?.length && errors.level}
+				<TeamErrorMessage
+					error={{
+						__typename: errors.__typename,
+						level: errors.level
+					}}
+					{teamSlug}
+					workloads={errors.workloads}
+				/>
 			{/if}
-			<a href="/team/{teamSlug}/activity-log">View all activity</a>
-		</div>
-	{/if}
+		{/each}
+	</div>
+	<div class="grid">
+		<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
+		<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
+		{#if viewerIsMember}
+			<div class="card activity">
+				<Heading size="small" level="2" spacing>Latest activity</Heading>
+				{#if $TeamOverview.data}
+					<div class="raised">
+						<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} />
+					</div>
+				{/if}
+				<a href="/team/{teamSlug}/activity-log">View all activity</a>
+			</div>
+		{/if}
+	</div>
+	<div>
+		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
+
+		{#if $TeamOverview.data?.team}
+			<VulnerabilityOverview team={$TeamOverview.data.team} />
+		{/if}
+	</div>
 </div>
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
 	.raised {
 		padding: var(--a-spacing-4) var(--a-spacing-5);
 		background-color: var(--a-surface-default);

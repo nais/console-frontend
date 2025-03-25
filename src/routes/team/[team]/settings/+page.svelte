@@ -7,6 +7,7 @@
 		type QueryResult
 	} from '$houdini';
 	import Card from '$lib/Card.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
@@ -268,7 +269,9 @@
 			<p>
 				Deploy keys can be used to authenticate for deployments instead of using
 				<a
-					href="https://docs.nais.io/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment"
+					href={docURL(
+						'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
+					)}
 				>
 					repository authorization
 				</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from

@@ -2,6 +2,7 @@
 	import { BucketOrderField } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
+	import { docURL } from '$lib/doc';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
@@ -28,8 +29,7 @@
 		{#snippet description()}
 			<BodyLong spacing>
 				Storage buckets are containers for storing and managing data in the cloud.
-				<a href="https://docs.nais.io/persistence/buckets"
-					>Learn more about Buckets and how to get started.</a
+				<a href={docURL('/persistence/buckets')}>Learn more about Buckets and how to get started.</a
 				>
 			</BodyLong>
 		{/snippet}
@@ -38,7 +38,7 @@
 				<BodyLong>
 					<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
 					data in the cloud.
-					<a href="https://docs.nais.io/persistence/buckets">
+					<a href={docURL('/persistence/buckets')}>
 						Learn more about Buckets and how to get started.
 					</a>
 				</BodyLong>

@@ -7,7 +7,7 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 				...ActivityLogEntryFragment
 			}
 		}
-		workloads(first: 600) {
+		workloads(first: 999) {
 			nodes {
 				__typename
 				id
@@ -23,6 +23,7 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 
 				status {
 					errors {
+						__typename
 						level
 						... on WorkloadStatusDeprecatedRegistry {
 							name
@@ -47,5 +48,6 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 				}
 			}
 		}
+		...VulnerabilityOverviewFragment
 	}
 }

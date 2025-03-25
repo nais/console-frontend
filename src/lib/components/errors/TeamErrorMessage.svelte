@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import { Alert, BodyLong, Button, Heading } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import WorkloadLink from '../WorkloadLink.svelte';
 
 	const {
 		teamSlug,
 		error,
-		workloads
+		workloads,
+		collapsible = true
 	}: {
+		collapsible?: boolean;
 		teamSlug: string;
 		error: {
 			level: ValueOf<typeof WorkloadStatusErrorLevel>;
@@ -17,7 +21,8 @@
 				| 'WorkloadStatusDeprecatedRegistry'
 				| 'WorkloadStatusNoRunningInstances'
 				| 'WorkloadStatusFailedRun'
-				| 'WorkloadStatusVulnerable';
+				| 'WorkloadStatusVulnerable'
+				| 'WorkloadStatusMissingSBOM';
 		};
 		workloads: {
 			__typename: string | null;
@@ -45,7 +50,8 @@
 		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
 		WorkloadStatusFailedRun: 'Job Failed',
-		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected'
+		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected',
+		WorkloadStatusMissingSBOM: 'Missing Software Bill of Materials'
 	};
 	const summary = {
 		WorkloadStatusInvalidNaisYaml: 'Workloads with invalid manifests',
@@ -53,7 +59,8 @@
 		WorkloadStatusDeprecatedRegistry: 'Workloads with deprecated image registries',
 		WorkloadStatusNoRunningInstances: 'Applications with no running instances',
 		WorkloadStatusFailedRun: 'Failed jobs',
-		WorkloadStatusVulnerable: 'High risk workloads'
+		WorkloadStatusVulnerable: 'High risk workloads',
+		WorkloadStatusMissingSBOM: 'Workloads with missing Software Bill of Materials'
 	};
 
 	let open = $state(false);
@@ -63,11 +70,13 @@
 	<div class="content">
 		<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
 			<Heading level="2" size="small">{heading[error.__typename]}</Heading>
-			<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
-				{open ? 'Hide' : 'Show'} details
-			</Button>
+			{#if collapsible}
+				<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
+					{open ? 'Hide' : 'Show'} details
+				</Button>
+			{/if}
 		</div>
-		{#if open}
+		{#if open || !collapsible}
 			{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
 				<BodyLong>
 					The rollout of the following workload{workloads.length === 1 ? '' : 's'} failed because of
@@ -114,6 +123,21 @@
 					{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical
 					vulnerabilities.
 				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusMissingSBOM'}
+				<BodyLong>
+					The following {workloads?.length > 1 ? workloads?.length : ''} workload{workloads.length ===
+					1
+						? ' '
+						: 's'}
+					{workloads?.length === 1 ? 'does' : 'do'}
+					not have a registered Software Bill of Materials (SBOM). This can be resolved by utilizing
+					the
+					<a href="https://github.com/nais/docker-build-push"
+						>nais/docker-build-push<ExternalLinkIcon /></a
+					>
+					GitHub action. Read more in the
+					<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>Nais documentation</a>.
+				</BodyLong>
 			{/if}
 			<div>
 				{#if workloads.length < 5}
@@ -142,8 +166,7 @@
 						>
 					{:else}
 						each workload's Vulnerability Report
-					{/if}
-					, and update affected dependencies to their latest patched versions.
+					{/if}, and update affected dependencies to their latest patched versions.
 				</BodyLong>
 				<BodyLong>
 					Ignoring these vulnerabilities can expose your workload{workloads.length === 1 ? '' : 's'}

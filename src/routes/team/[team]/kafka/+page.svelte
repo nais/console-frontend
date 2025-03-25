@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { KafkaTopicOrderField } from '$houdini';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
@@ -23,9 +24,7 @@
 				Kafka topics are categories where messages are published and consumed, acting as distributed
 				logs for event streaming.
 
-				<a href="https://docs.nais.io/persistence/kafka"
-					>Learn more about Kafka and how to get started.</a
-				>
+				<a href={docURL('/persistence/kafka')}>Learn more about Kafka and how to get started.</a>
 			</BodyLong>
 		{/snippet}
 		{#snippet notFound()}
@@ -33,9 +32,7 @@
 				><strong>No Kafka topics found.</strong> Kafka topics are categories where messages are
 				published and consumed, acting as distributed logs for event streaming.
 
-				<a href="https://docs.nais.io/persistence/kafka"
-					>Learn more about Kafka and how to get started.</a
-				>
+				<a href={docURL('/persistence/kafka')}>Learn more about Kafka and how to get started.</a>
 			</BodyLong>
 		{/snippet}
 	</PersistencePage>

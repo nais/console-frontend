@@ -71,9 +71,9 @@
 		) @load {
 			team(slug: $team) @loading {
 				slug
-				workloads(first: 10, orderBy: $orderBy, filter: $filter, after: $after, before: $before)
+				workloads(first: 25, orderBy: $orderBy, filter: $filter, after: $after, before: $before)
 					@paginate(mode: SinglePage)
-					@loading(count: 10) {
+					@loading(count: 25) {
 					pageInfo {
 						totalCount
 						pageStart
