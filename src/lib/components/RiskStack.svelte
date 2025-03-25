@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { capitalizeFirstLetter, percentageFormatter } from '$lib/utils/formatters';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { percentageFormatter } from '$lib/utils/formatters';
 
 	type VulnerabilitySummary = {
 		critical: number;
@@ -18,63 +17,30 @@
 
 	let { summary }: Props = $props();
 
-	const weights = { critical: 10, high: 5, medium: 3, low: 1, unassigned: 5 };
-
 	const scores = {
-		critical: summary.critical * weights.critical,
-		high: summary.high * weights.high,
-		medium: summary.medium * weights.medium,
-		low: summary.low * weights.low,
-		unassigned: summary.unassigned * weights.unassigned
-	};
-
-	const totalScore = Object.values(scores).reduce((sum, value) => sum + value, 0);
-
-	const percentages = {
-		critical: (scores.critical / totalScore) * 100,
-		high: (scores.high / totalScore) * 100,
-		medium: (scores.medium / totalScore) * 100,
-		low: (scores.low / totalScore) * 100,
-		unassigned: (scores.unassigned / totalScore) * 100
+		critical: summary.critical,
+		high: summary.high,
+		medium: summary.medium,
+		low: summary.low,
+		unassigned: summary.unassigned
 	};
 </script>
 
 <div class="stack-container">
-	<div class="risk-score-label">
-		{#if summary.riskScore}
-			<dl>
-				<dt>Risk score:</dt>
-				<dd>
-					<span class={summary['riskScore'] > 100 ? 'red' : 'green'}>{summary['riskScore']}</span>
-				</dd>
-			</dl>
-		{/if}
-	</div>
 	<div class="stack">
 		{#each Object.keys(scores) as level (level)}
-			{#if scores[level as keyof typeof scores] > 0}
-				<div
-					class="segment {level}"
-					style="height: {percentages[level as keyof typeof percentages]}%;"
-				></div>
-			{/if}
-		{/each}
-	</div>
-	<div class="labels">
-		{#each Object.keys(scores) as level (level)}
-			{#if scores[level as keyof typeof scores] > 0}
-				<div class="label-item">
-					<span class="label-dot {level}"></span>
-					{capitalizeFirstLetter(level)}: {summary[
-						level as keyof typeof summary
-					]}&NonBreakingSpace;(x5)
-				</div>
-			{/if}
+			<div class="segment {level}">{summary[level as keyof VulnerabilitySummary]}</div>
 		{/each}
 	</div>
 </div>
 <div class="container">
 	<dl>
+		{#if summary.riskScore}
+			<dt>Risk score:</dt>
+			<dd>
+				<span class={summary['riskScore'] > 100 ? 'red' : 'green'}>{summary['riskScore']}</span>
+			</dd>
+		{/if}
 		{#if summary['coverage']}
 			<dt>Coverage:</dt>
 			<dd>
@@ -86,22 +52,11 @@
 	</dl>
 </div>
 
-<details>
-	<summary>Risk Score Breakdown</summary>
-	<BodyShort style="margin-bottom: var(--spacing-layout)">
-		The stacked chart visualizes the risk score composition based on detected vulnerabilities. Each
-		segment represents a severity level—Critical, High, Medium, Low, and Unassigned—weighted
-		according to impact. The total risk score is calculated as: (Critical * 10) + (High * 5) +
-		(Medium * 3) + (Low * 1) + (Unassigned * 5) Higher sections indicate a greater contribution to
-		the overall risk. The color intensity reflects severity, helping to quickly assess risk
-		distribution.
-	</BodyShort>
-</details>
-
 <style>
 	.stack-container {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 1rem;
 	}
 
@@ -149,14 +104,19 @@
 		width: 16px;
 		height: 256px;
 		font-weight: bold;
-		transform: rotate(-90deg);
+		/* transform: rotate(-90deg); */
 		white-space: nowrap;
 		z-index: 1;
 	}
 
 	.segment {
+		display: flex;
+		align-items: center;
+		color: var(--a-text-on-neutral);
+		font-weight: bold;
+		justify-content: center;
 		width: 100%;
-		transition: height 5s ease-in-out;
+		height: 20%;
 	}
 
 	.critical {

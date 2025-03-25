@@ -2,12 +2,13 @@
 	import { page } from '$app/state';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import { Alert, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Heading, Tag } from '@nais/ds-svelte-community';
 
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import TeamVulnerabilitySummary from '$lib/components/TeamVulnerabilitySummary.svelte';
+	import VulnerabilitySummaryNew from '$lib/components/VulnerabilitySummaryNew.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -29,6 +30,20 @@
 			};
 		}
 	};
+
+	let workloadsVulnerable = $derived(
+		$TeamOverview.data?.team.workloads.nodes.filter((node) =>
+			node.status.errors.some((error) => error.__typename === 'WorkloadStatusVulnerable')
+		)
+	);
+
+	let workloadWithoutSbom = $derived(
+		$TeamOverview.data?.team.workloads.nodes.filter((node) =>
+			node.status.errors.some(
+				(error: { __typename: string }) => error.__typename === 'WorkloadStatusMissingSBOM'
+			)
+		)
+	);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -53,7 +68,7 @@
 	{/each}
 </div>
 <div class="grid">
-	<div class="card"><TeamVulnerabilitySummary {teamSlug} /></div>
+	<!-- <div class="card"><TeamVulnerabilitySummary {teamSlug} /></div> -->
 	<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
 	<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
 	{#if viewerIsMember}
@@ -67,6 +82,84 @@
 			<a href="/team/{teamSlug}/activity-log">View all activity</a>
 		</div>
 	{/if}
+</div>
+<div class="wrapper">
+	<div>
+		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
+
+		<div class="two-columns">
+			<VulnerabilitySummaryNew {teamSlug} />
+			<div class="todo">
+				<Heading level="4" size="small" spacing>Todos</Heading>
+				{#if workloadsVulnerable?.length}
+					<BodyShort>
+						{workloadsVulnerable?.length} of your workload's risk scores exceed{workloadsVulnerable?.length ===
+						0
+							? ''
+							: 's'} the acceptable threshold of 100 and/or has one or more critical vulnerabilites.
+						Keep your dependencies up to date.
+					</BodyShort>
+					<ul>
+						{#each workloadsVulnerable as workload (workload.id)}
+							{@const vulnError = workload.status.errors.find((error) => {
+								return error.__typename === 'WorkloadStatusVulnerable';
+							})}
+							<li>
+								{workload.__typename === 'Job' ? 'Job' : 'Application'}
+								<a
+									href="/team/{teamSlug}/{workload.teamEnvironment.environment
+										.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
+									>{workload.name}</a
+								>
+								<Tag size="small" variant={envTagVariant(workload.teamEnvironment.environment.name)}
+									>{workload.teamEnvironment.environment.name}</Tag
+								>
+								has a risk score of {vulnError?.summary.riskScore} and {vulnError?.summary.critical}
+								critical vulnerabilit{(vulnError?.summary?.critical ?? 0) > 1 ? 'ies' : 'y'}.
+								<a
+									href="/team/{teamSlug}/{workload.teamEnvironment.environment
+										.name}/{workload.__typename === 'Job'
+										? 'job'
+										: 'app'}/{workload.name}/vulnerability-report">View vulnerability report</a
+								>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+
+				{#if workloadWithoutSbom?.length}
+					<BodyShort>
+						{workloadWithoutSbom?.length} of your workloads {workloadWithoutSbom?.length === 1
+							? 'does'
+							: 'do'}
+						not have a registered Software Bill of Materials (SBOM). Refer to the
+						<a href="https://docs.nais.io/services/vulnerabilities/">Nais documentation</a>
+						for instructions on how to resolve this.
+						<ul>
+							{#each workloadWithoutSbom as workload (workload.id)}
+								<li>
+									<a
+										href="/team/{teamSlug}/{workload.teamEnvironment.environment
+											.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
+										>{workload.name}</a
+									>
+									<Tag
+										size="small"
+										variant={envTagVariant(workload.teamEnvironment.environment.name)}
+										>{workload.teamEnvironment.environment.name}</Tag
+									>
+								</li>
+							{/each}
+						</ul>
+					</BodyShort>
+				{/if}
+
+				{#if workloadsVulnerable?.length === 0 && workloadWithoutSbom?.length === 0}
+					<BodyShort>All workloads have a registered SBOM and an acceptable risk score.</BodyShort>
+				{/if}
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -101,5 +194,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--a-spacing-2);
+	}
+	.two-columns {
+		display: grid;
+		grid-template-columns: 270px 1fr;
+		gap: var(--spacing-layout);
 	}
 </style>
