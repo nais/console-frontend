@@ -70,8 +70,11 @@
 			</div>
 		{/if}
 	</div>
-	<div>
-		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
+	<div style="display: grid; gap: var(--a-spacing-2);">
+		<div style="display: flex; align-items: center; gap: var(--a-spacing-4);">
+			<Heading level="2" size="medium">Vulnerabilities</Heading>
+			<a href="/team/{teamSlug}/vulnerabilities">View all vulnerabilities</a>
+		</div>
 
 		{#if $TeamOverview.data?.team}
 			<VulnerabilityOverview team={$TeamOverview.data.team} />
