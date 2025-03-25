@@ -45,7 +45,7 @@
 
 <div class="wrapper">
 	<div class="alerts-wrapper">
-		{#if redisInstances?.length === 0}
+		{#if redisInstances && redisInstances.length > 0}
 			<Alert variant="error" size="small">
 				<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
 					<Heading level="2" size="small">Action Required – Redis Shutdown Imminent</Heading>
