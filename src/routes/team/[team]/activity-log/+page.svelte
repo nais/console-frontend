@@ -4,6 +4,7 @@
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -16,6 +17,10 @@
 			{@const ae = $ActivityLog.data.team.activityLog}
 			<div class="wrapper">
 				<div>
+					<BodyLong spacing
+						>The Activity Log provides an overview of changes made to your team and its resources
+						within the Nais Console application.</BodyLong
+					>
 					<List title="{ae.pageInfo.totalCount} entries">
 						{#each ae.nodes || [] as item (item.id)}
 							<ListItem>
