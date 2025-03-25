@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { OpenSearchOrderField } from '$houdini';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
@@ -26,7 +27,7 @@
 		{#snippet description()}
 			<BodyLong spacing>
 				OpenSearch is a distributed search and analytics engine.
-				<a href="https://docs.nais.io/persistence/opensearch/"
+				<a href={docURL('/persistence/opensearch')}
 					>Learn more about OpenSearch and how to get started.</a
 				>
 			</BodyLong>
@@ -35,7 +36,7 @@
 			<BodyLong
 				><strong>No OpenSearch found.</strong> OpenSearch is a distributed search and analytics
 				engine.
-				<a href="https://docs.nais.io/persistence/opensearch/"
+				<a href={docURL('/persistence/opensearch')}
 					>Learn more about OpenSearch and how to get started.</a
 				>
 			</BodyLong>

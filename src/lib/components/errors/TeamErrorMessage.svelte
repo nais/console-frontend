@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import { Alert, BodyLong, Button, Heading } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import WorkloadLink from '../WorkloadLink.svelte';
 
 	const {
@@ -19,7 +21,8 @@
 				| 'WorkloadStatusDeprecatedRegistry'
 				| 'WorkloadStatusNoRunningInstances'
 				| 'WorkloadStatusFailedRun'
-				| 'WorkloadStatusVulnerable';
+				| 'WorkloadStatusVulnerable'
+				| 'WorkloadStatusMissingSBOM';
 		};
 		workloads: {
 			__typename: string | null;
@@ -47,7 +50,8 @@
 		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
 		WorkloadStatusFailedRun: 'Job Failed',
-		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected'
+		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected',
+		WorkloadStatusMissingSBOM: 'Missing Software Bill of Materials'
 	};
 	const summary = {
 		WorkloadStatusInvalidNaisYaml: 'Workloads with invalid manifests',
@@ -55,7 +59,8 @@
 		WorkloadStatusDeprecatedRegistry: 'Workloads with deprecated image registries',
 		WorkloadStatusNoRunningInstances: 'Applications with no running instances',
 		WorkloadStatusFailedRun: 'Failed jobs',
-		WorkloadStatusVulnerable: 'High risk workloads'
+		WorkloadStatusVulnerable: 'High risk workloads',
+		WorkloadStatusMissingSBOM: 'Workloads with missing Software Bill of Materials'
 	};
 
 	let open = $state(false);
@@ -117,6 +122,21 @@
 					workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
 					{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical
 					vulnerabilities.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusMissingSBOM'}
+				<BodyLong>
+					The following {workloads?.length > 1 ? workloads?.length : ''} workload{workloads.length ===
+					1
+						? ' '
+						: 's'}
+					{workloads?.length === 1 ? 'does' : 'do'}
+					not have a registered Software Bill of Materials (SBOM). This can be resolved by utilizing
+					the
+					<a href="https://github.com/nais/docker-build-push"
+						>nais/docker-build-push<ExternalLinkIcon /></a
+					>
+					GitHub action. Read more in the
+					<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>Nais documentation</a>.
 				</BodyLong>
 			{/if}
 			<div>

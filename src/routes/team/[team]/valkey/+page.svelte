@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ValkeyInstanceOrderField } from '$houdini';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
@@ -27,9 +28,7 @@
 			<BodyLong spacing>
 				Valkey is a key value database that is used for storing and querying data. It is a good
 				choice for storing data that is not relational in nature and often used for caching.
-				<a href="https://docs.nais.io/persistence/valkey"
-					>Learn more about Valkey and how to get started.</a
-				>
+				<a href={docURL('/persistence/valkey')}>Learn more about Valkey and how to get started.</a>
 			</BodyLong>
 		{/snippet}
 		{#snippet notFound()}
@@ -37,9 +36,7 @@
 				><strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
 				storing and querying data. It is a good choice for storing data that is not relational in
 				nature and often used for caching.
-				<a href="https://docs.nais.io/persistence/valkey"
-					>Learn more about Valkey and how to get started.</a
-				>
+				<a href={docURL('/persistence/valkey')}>Learn more about Valkey and how to get started.</a>
 			</BodyLong>
 		{/snippet}
 	</PersistencePage>

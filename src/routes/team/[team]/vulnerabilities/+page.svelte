@@ -12,25 +12,6 @@
 	let selectedEnvironment: string = $state(page.url.searchParams.get('environment') || '');
 
 	let { TeamVulnerabilities } = $derived(data);
-
-	export const supportedErrorTypes = ['WorkloadStatusVulnerable'] as const;
-
-	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
-		const workloads = $TeamVulnerabilities.data?.team.workloads.nodes.filter((workload) =>
-			workload.status.errors.some((error) => error.__typename === errorType)
-		);
-		if (workloads?.length) {
-			return {
-				__typename: errorType,
-				level: workloads[0].status.errors.find((error) => error.__typename === errorType)?.level,
-				workloads
-			};
-		} else {
-			return {
-				__typename: errorType
-			};
-		}
-	};
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -38,7 +19,7 @@
 {#if $TeamVulnerabilities.data}
 	{@const team = $TeamVulnerabilities.data.team}
 	<div class="wrapper">
-		<VulnerabilitiesOverview {teamSlug} />
+		<VulnerabilitiesOverview team={$TeamVulnerabilities.data.team} />
 		<div>
 			<Heading level="3" size="medium" spacing>Workloads with vulnerabilities</Heading>
 

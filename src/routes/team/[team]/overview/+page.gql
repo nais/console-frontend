@@ -1,6 +1,6 @@
 query TeamOverview2($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		workloads(first: 9999, orderBy: { field: STATUS, direction: DESC }) {
+		workloads(first: 999, orderBy: { field: STATUS, direction: DESC }) {
 			pageInfo {
 				endCursor
 				hasNextPage

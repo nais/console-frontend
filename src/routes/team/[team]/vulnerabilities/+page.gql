@@ -1,5 +1,4 @@
-query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
-@cache(policy: CacheAndNetwork) {
+query TeamVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		environments {
 			id
@@ -7,24 +6,8 @@ query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
 				name
 			}
 		}
-		vulnerabilitySummary(filter: $filter) {
-			bomCount
-			coverage
-			critical
-			high
-			low
-			medium
-			ranking
-			riskScore
-			riskScoreTrend
-			unassigned
-			status {
-				state
-				title
-				description
-			}
-		}
-		workloads {
+
+		workloads(first: 999) {
 			pageInfo {
 				totalCount
 			}
@@ -39,22 +22,23 @@ query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
 				team {
 					slug
 				}
-				status {
-					errors {
-						__typename
-						level
-						... on WorkloadStatusVulnerable {
-							summary {
-								riskScore
-								critical
-							}
-						}
-						... on WorkloadStatusMissingSBOM {
-							level
-						}
-					}
-				}
+				# status {
+				# 	errors {
+				# 		__typename
+				# 		level
+				# 		... on WorkloadStatusVulnerable {
+				# 			summary {
+				# 				riskScore
+				# 				critical
+				# 			}
+				# 		}
+				# 		... on WorkloadStatusMissingSBOM {
+				# 			level
+				# 		}
+				# 	}
+				# }
 			}
 		}
+		...VulnerabilityOverviewFragment
 	}
 }

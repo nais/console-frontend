@@ -29,8 +29,6 @@
 			};
 		}
 	};
-
-	$inspect($TeamOverview.data);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -40,118 +38,53 @@
 		{msgParts[1]}.
 	</Alert>
 {/if}
-<div class="alerts-wrapper">
-	{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
-		{#if errors.workloads?.length && errors.level}
-			<TeamErrorMessage
-				error={{
-					__typename: errors.__typename,
-					level: errors.level
-				}}
-				{teamSlug}
-				workloads={errors.workloads}
-			/>
-		{/if}
-	{/each}
-</div>
-<div class="grid">
-	<!-- <div class="card"><TeamVulnerabilitySummary {teamSlug} /></div> -->
-	<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
-	<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
-	{#if viewerIsMember}
-		<div class="card activity">
-			<Heading size="small" level="2" spacing>Latest activity</Heading>
-			{#if $TeamOverview.data}
-				<div class="raised">
-					<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} />
-				</div>
-			{/if}
-			<a href="/team/{teamSlug}/activity-log">View all activity</a>
-		</div>
-	{/if}
-</div>
 <div class="wrapper">
+	<div class="alerts-wrapper">
+		{#each supportedErrorTypes
+			.map(getWorkloadsWithError)
+			.filter((error) => error.__typename !== 'WorkloadStatusVulnerable') as errors (errors.__typename)}
+			{#if errors.workloads?.length && errors.level}
+				<TeamErrorMessage
+					error={{
+						__typename: errors.__typename,
+						level: errors.level
+					}}
+					{teamSlug}
+					workloads={errors.workloads}
+				/>
+			{/if}
+		{/each}
+	</div>
+	<div class="grid">
+		<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
+		<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
+		{#if viewerIsMember}
+			<div class="card activity">
+				<Heading size="small" level="2" spacing>Latest activity</Heading>
+				{#if $TeamOverview.data}
+					<div class="raised">
+						<ActivityLogItem item={$TeamOverview.data.team.activityLog.nodes[0]} />
+					</div>
+				{/if}
+				<a href="/team/{teamSlug}/activity-log">View all activity</a>
+			</div>
+		{/if}
+	</div>
 	<div>
 		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
 
-		<VulnerabilityOverview {teamSlug} />
-
-		<!-- <div class="two-columns">
-			<VulnerabilitySummaryFinal {teamSlug} />
-			<div class="todo">
-				<Heading level="4" size="small" spacing>Todos</Heading>
-				{#if workloadsVulnerable?.length}
-					<BodyShort>
-						{workloadsVulnerable?.length} of your workload's risk scores exceed{workloadsVulnerable?.length ===
-						0
-							? ''
-							: 's'} the acceptable threshold of 100 and/or has one or more critical vulnerabilites.
-						Keep your dependencies up to date.
-					</BodyShort>
-					<ul>
-						{#each workloadsVulnerable as workload (workload.id)}
-							{@const vulnError = workload.status.errors.find((error) => {
-								return error.__typename === 'WorkloadStatusVulnerable';
-							})}
-							<li>
-								{workload.__typename === 'Job' ? 'Job' : 'Application'}
-								<a
-									href="/team/{teamSlug}/{workload.teamEnvironment.environment
-										.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
-									>{workload.name}</a
-								>
-								<Tag size="small" variant={envTagVariant(workload.teamEnvironment.environment.name)}
-									>{workload.teamEnvironment.environment.name}</Tag
-								>
-								has a risk score of {vulnError?.summary.riskScore} and {vulnError?.summary.critical}
-								critical vulnerabilit{(vulnError?.summary?.critical ?? 0) > 1 ? 'ies' : 'y'}.
-								<a
-									href="/team/{teamSlug}/{workload.teamEnvironment.environment
-										.name}/{workload.__typename === 'Job'
-										? 'job'
-										: 'app'}/{workload.name}/vulnerability-report">View vulnerability report</a
-								>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-
-				{#if workloadWithoutSbom?.length}
-					<BodyShort>
-						{workloadWithoutSbom?.length} of your workloads {workloadWithoutSbom?.length === 1
-							? 'does'
-							: 'do'}
-						not have a registered Software Bill of Materials (SBOM). Refer to the
-						<a href="https://docs.nais.io/services/vulnerabilities/">Nais documentation</a>
-						for instructions on how to resolve this.
-						<ul>
-							{#each workloadWithoutSbom as workload (workload.id)}
-								<li>
-									<a
-										href="/team/{teamSlug}/{workload.teamEnvironment.environment
-											.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
-										>{workload.name}</a
-									>
-									<Tag
-										size="small"
-										variant={envTagVariant(workload.teamEnvironment.environment.name)}
-										>{workload.teamEnvironment.environment.name}</Tag
-									>
-								</li>
-							{/each}
-						</ul>
-					</BodyShort>
-				{/if}
-
-				{#if workloadsVulnerable?.length === 0 && workloadWithoutSbom?.length === 0}
-					<BodyShort>All workloads have a registered SBOM and an acceptable risk score.</BodyShort>
-				{/if}
-			</div>
-		</div> -->
+		{#if $TeamOverview.data?.team}
+			<VulnerabilityOverview team={$TeamOverview.data.team} />
+		{/if}
 	</div>
 </div>
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
 	.raised {
 		padding: var(--a-spacing-4) var(--a-spacing-5);
 		background-color: var(--a-surface-default);
@@ -183,11 +116,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--a-spacing-2);
-	}
-	.two-columns {
-		display: grid;
-		align-items: start;
-		grid-template-columns: 270px 1fr;
-		gap: var(--spacing-layout);
 	}
 </style>

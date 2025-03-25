@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { BigQueryDatasetOrderField } from '$houdini';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
@@ -26,7 +27,7 @@
 		{#snippet description()}
 			<BodyLong spacing>
 				BigQuery datasets store structured data optimized for analytical workloads.
-				<a href="https://docs.nais.io/persistence/bigquery"
+				<a href={docURL('/persistence/bigquery')}
 					>Learn more about BigQuery datasets and how to get started.</a
 				>
 			</BodyLong>
@@ -35,7 +36,7 @@
 			<BodyLong
 				><strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
 				optimized for analytical workloads.
-				<a href="https://docs.nais.io/persistence/bigquery"
+				<a href={docURL('/persistence/bigquery')}
 					>Learn more about BigQuery datasets and how to get started.</a
 				>
 			</BodyLong>
