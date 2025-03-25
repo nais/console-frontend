@@ -3,7 +3,9 @@ query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
 	team(slug: $team) {
 		environments {
 			id
-			name
+			environment {
+				name
+			}
 		}
 		vulnerabilitySummary(filter: $filter) {
 			bomCount
@@ -25,6 +27,33 @@ query TeamVulnerabilities($team: Slug!, $filter: TeamVulnerabilitySummaryFilter)
 		workloads {
 			pageInfo {
 				totalCount
+			}
+			nodes {
+				__typename
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				team {
+					slug
+				}
+				status {
+					errors {
+						__typename
+						level
+						... on WorkloadStatusVulnerable {
+							summary {
+								riskScore
+								critical
+							}
+						}
+						... on WorkloadStatusMissingSBOM {
+							level
+						}
+					}
+				}
 			}
 		}
 	}

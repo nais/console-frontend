@@ -2,13 +2,12 @@
 	import { page } from '$app/state';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import { Alert, BodyShort, Heading, Tag } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import VulnerabilitySummaryFinal from '$lib/components/VulnerabilitySummaryFinal.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
+	import VulnerabilityOverview from '$lib/components/VulnerabilityOverview.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -31,19 +30,7 @@
 		}
 	};
 
-	let workloadsVulnerable = $derived(
-		$TeamOverview.data?.team.workloads.nodes.filter((node) =>
-			node.status.errors.some((error) => error.__typename === 'WorkloadStatusVulnerable')
-		)
-	);
-
-	let workloadWithoutSbom = $derived(
-		$TeamOverview.data?.team.workloads.nodes.filter((node) =>
-			node.status.errors.some(
-				(error: { __typename: string }) => error.__typename === 'WorkloadStatusMissingSBOM'
-			)
-		)
-	);
+	$inspect($TeamOverview.data);
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -87,7 +74,9 @@
 	<div>
 		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
 
-		<div class="two-columns">
+		<VulnerabilityOverview {teamSlug} />
+
+		<!-- <div class="two-columns">
 			<VulnerabilitySummaryFinal {teamSlug} />
 			<div class="todo">
 				<Heading level="4" size="small" spacing>Todos</Heading>
@@ -158,7 +147,7 @@
 					<BodyShort>All workloads have a registered SBOM and an acceptable risk score.</BodyShort>
 				{/if}
 			</div>
-		</div>
+		</div> -->
 	</div>
 </div>
 

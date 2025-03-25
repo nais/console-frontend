@@ -6,8 +6,10 @@
 	const {
 		teamSlug,
 		error,
-		workloads
+		workloads,
+		collapsible = true
 	}: {
+		collapsible?: boolean;
 		teamSlug: string;
 		error: {
 			level: ValueOf<typeof WorkloadStatusErrorLevel>;
@@ -63,11 +65,13 @@
 	<div class="content">
 		<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
 			<Heading level="2" size="small">{heading[error.__typename]}</Heading>
-			<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
-				{open ? 'Hide' : 'Show'} details
-			</Button>
+			{#if collapsible}
+				<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
+					{open ? 'Hide' : 'Show'} details
+				</Button>
+			{/if}
 		</div>
-		{#if open}
+		{#if open || !collapsible}
 			{#if error.__typename === 'WorkloadStatusInvalidNaisYaml'}
 				<BodyLong>
 					The rollout of the following workload{workloads.length === 1 ? '' : 's'} failed because of
@@ -142,8 +146,7 @@
 						>
 					{:else}
 						each workload's Vulnerability Report
-					{/if}
-					, and update affected dependencies to their latest patched versions.
+					{/if}, and update affected dependencies to their latest patched versions.
 				</BodyLong>
 				<BodyLong>
 					Ignoring these vulnerabilities can expose your workload{workloads.length === 1 ? '' : 's'}

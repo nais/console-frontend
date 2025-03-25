@@ -23,6 +23,7 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 
 				status {
 					errors {
+						__typename
 						level
 						... on WorkloadStatusDeprecatedRegistry {
 							name
@@ -42,13 +43,6 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 						... on WorkloadStatusFailedRun {
 							detail
 							name
-						}
-						... on WorkloadStatusVulnerable {
-							__typename
-							summary {
-								riskScore
-								critical
-							}
 						}
 					}
 				}
