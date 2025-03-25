@@ -51,6 +51,9 @@
 					resourceName
 					resourceType
 					teamSlug
+					... on ApplicationRestartedActivityLogEntry {
+						__typename
+					}
 					... on ApplicationDeletedActivityLogEntry {
 						__typename
 					}
@@ -127,7 +130,7 @@
 		<BodyShort size="small" spacing>
 			{#if $data.__typename === 'SecretValueAddedActivityLogEntry'}
 				{$data.message}
-				<strong>{$data.secretValueAdded?.valueName}</strong> from
+				<strong>{$data.secretValueAdded?.valueName}</strong> to
 				{@const link = resourceLink(
 					$data.environmentName ? $data.environmentName : '',
 					$data.resourceType,
@@ -216,6 +219,8 @@
 				{$data.resourceName} to team {$data.teamSlug}.
 			{:else if $data.__typename === 'ApplicationDeletedActivityLogEntry'}
 				Application <strong>{$data.resourceName}</strong> was deleted
+			{:else if $data.__typename === 'ApplicationRestartedActivityLogEntry'}
+				Application <strong>{$data.resourceName}</strong> was restarted
 			{:else}
 				{$data.message}
 				{@const link = resourceLink(
