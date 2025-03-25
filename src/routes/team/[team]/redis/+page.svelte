@@ -3,7 +3,7 @@
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { BodyLong } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -25,6 +25,11 @@
 		defaultOrderField={RedisInstanceOrderField.NAME}
 	>
 		{#snippet description()}
+			<BodyShort spacing
+				><span style="font-weight: bold; color: var(--a-text-danger);"
+					>Aiven Redis will be shut down on March 31, 2025.</span
+				></BodyShort
+			>
 			<BodyLong spacing>
 				Redis is a key value database that is used for storing and querying data.
 				<a href={docURL('/persistence/redis')}>Learn more about Redis and how to get started.</a>

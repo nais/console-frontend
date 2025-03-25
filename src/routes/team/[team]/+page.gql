@@ -7,6 +7,25 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 				...ActivityLogEntryFragment
 			}
 		}
+
+		redisInstances(first: 20) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				id
+				__typename
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				team {
+					slug
+				}
+			}
+		}
 		workloads(first: 999) {
 			nodes {
 				__typename
