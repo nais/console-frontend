@@ -7,7 +7,7 @@
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import VulnerabilitySummaryNew from '$lib/components/VulnerabilitySummaryNew.svelte';
+	import VulnerabilitySummaryFinal from '$lib/components/VulnerabilitySummaryFinal.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import type { PageProps } from './$houdini';
 
@@ -88,7 +88,7 @@
 		<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
 
 		<div class="two-columns">
-			<VulnerabilitySummaryNew {teamSlug} />
+			<VulnerabilitySummaryFinal {teamSlug} />
 			<div class="todo">
 				<Heading level="4" size="small" spacing>Todos</Heading>
 				{#if workloadsVulnerable?.length}
@@ -197,6 +197,7 @@
 	}
 	.two-columns {
 		display: grid;
+		align-items: start;
 		grid-template-columns: 270px 1fr;
 		gap: var(--spacing-layout);
 	}
