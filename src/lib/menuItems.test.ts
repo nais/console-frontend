@@ -19,7 +19,7 @@ describe('menuItems', () => {
 					isAdmin: false
 				})
 			).toEqual([
-				[{ label: 'Team overview', href: '/team/devteam', active: true }],
+				[{ label: 'Team Overview', href: '/team/devteam', active: true }],
 				[
 					{ label: 'Applications', href: '/team/devteam/applications' },
 					{ label: 'Jobs', href: '/team/devteam/jobs' }
@@ -31,7 +31,7 @@ describe('menuItems', () => {
 					{ label: 'Redis', href: '/team/devteam/redis' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
-					{ label: 'Kafka topics', href: '/team/devteam/kafka' },
+					{ label: 'Kafka Topics', href: '/team/devteam/kafka' },
 					{ label: 'BigQuery', href: '/team/devteam/bigquery' },
 					{ label: 'Unleash', href: '/team/devteam/unleash' }
 				],
@@ -45,7 +45,7 @@ describe('menuItems', () => {
 					{ label: 'Members', href: '/team/devteam/members' },
 					{ label: 'Repositories', href: '/team/devteam/repositories' },
 					{ label: 'Settings', href: '/team/devteam/settings' },
-					{ label: 'Activity log', href: '/team/devteam/activity-log' }
+					{ label: 'Activity Log', href: '/team/devteam/activity-log' }
 				]
 			]);
 		});
@@ -96,7 +96,7 @@ describe('menuItems', () => {
 				})
 					.flatMap((g) => g)
 					.find((i) =>
-						['Redis', 'Valkey', 'OpenSearch', 'Kafka topics', 'Unleash'].includes(i.label)
+						['Redis', 'Valkey', 'OpenSearch', 'Kafka Topics', 'Unleash'].includes(i.label)
 					)
 			).toBeUndefined();
 		});
@@ -110,7 +110,7 @@ describe('menuItems', () => {
 					isAdmin: false
 				})
 					.flatMap((g) => g)
-					.find((i) => ['Secrets', 'Activity log', 'Settings'].includes(i.label))
+					.find((i) => ['Secrets', 'Activity Log', 'Settings'].includes(i.label))
 			).toBeUndefined();
 		});
 
@@ -148,7 +148,7 @@ describe('menuItems', () => {
 				{ label: 'Redis', count: 5 },
 				{ label: 'Valkey', count: 11 },
 				{ label: 'OpenSearch', count: 17 },
-				{ label: 'Kafka topics', count: 23 },
+				{ label: 'Kafka Topics', count: 23 },
 				{ label: 'BigQuery', count: 49 }
 			]);
 		});
@@ -175,7 +175,7 @@ describe('menuItems', () => {
 					isAdmin: false
 				})
 			).toEqual([
-				[{ label: 'App overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
+				[{ label: 'App Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 				[
 					{
 						label: 'Vulnerability Report',

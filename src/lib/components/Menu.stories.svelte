@@ -26,7 +26,7 @@
 				{ label: 'Redis', href: '/team/devteam/redis', count: 5 },
 				{ label: 'Valkey', href: '/team/devteam/valkey', count: 11 },
 				{ label: 'OpenSearch', href: '/team/devteam/opensearch', count: 17 },
-				{ label: 'Kafka topics', href: '/team/devteam/kafka', count: 23 },
+				{ label: 'Kafka Topics', href: '/team/devteam/kafka', count: 23 },
 				{ label: 'BigQuery', href: '/team/devteam/bigquery', count: 49 },
 				{ label: 'Unleash', href: '/team/devteam/unleash' }
 			],
@@ -40,7 +40,7 @@
 				{ label: 'Members', href: '/team/devteam/members' },
 				{ label: 'Repositories', href: '/team/devteam/repositories' },
 				{ label: 'Settings', href: '/team/devteam/settings' },
-				{ label: 'Activity log', href: '/team/devteam/activity-log' }
+				{ label: 'Activity Log', href: '/team/devteam/activity-log' }
 			]
 		]}
 	/>

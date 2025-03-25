@@ -20,7 +20,7 @@ const label = (type: string) => {
 			};
 		case 'postgres':
 			return {
-				pageName: 'Postgres instances',
+				pageName: 'Postgres Instances',
 				plural: 'postgres'
 			};
 		case 'bucket':
@@ -30,27 +30,27 @@ const label = (type: string) => {
 			};
 		case 'redis':
 			return {
-				pageName: 'Redis instances',
+				pageName: 'Redis Instances',
 				plural: 'redis'
 			};
 		case 'valkey':
 			return {
-				pageName: 'Valkey instances',
+				pageName: 'Valkey Instances',
 				plural: 'valkey'
 			};
 		case 'opensearch':
 			return {
-				pageName: 'OpenSearch instances',
+				pageName: 'OpenSearch Instances',
 				plural: 'opensearch'
 			};
 		case 'kafka':
 			return {
-				pageName: 'Kafka topics',
+				pageName: 'Kafka Topics',
 				plural: 'kafka'
 			};
 		case 'bigquery':
 			return {
-				pageName: 'BigQuery datasets',
+				pageName: 'BigQuery Datasets',
 				plural: 'bigquery'
 			};
 		case 'deploy':
@@ -60,7 +60,7 @@ const label = (type: string) => {
 			};
 		case 'activity-log':
 			return {
-				pageName: 'Activity log'
+				pageName: 'Activity Log'
 			};
 		case 'vulnerability-report':
 			return {
@@ -68,7 +68,12 @@ const label = (type: string) => {
 			};
 		default:
 			return {
-				pageName: type ? type[0].toUpperCase() + type.slice(1) : ''
+				pageName: type
+					? type
+							.split(' ')
+							.map((word) => word[0].toUpperCase() + word.slice(1))
+							.join(' ')
+					: ''
 			};
 	}
 };

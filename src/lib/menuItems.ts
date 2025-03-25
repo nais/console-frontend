@@ -76,7 +76,7 @@ export const menuItems = ({
 		const [, , team, env, workloadType, name, page] = split;
 		const menuItem = item(`/team/${team}/${env}/${workloadType}/${name}`, page);
 		return [
-			[menuItem(`${workloadType === 'app' ? 'App' : 'Job'} overview`)],
+			[menuItem(`${workloadType === 'app' ? 'App' : 'Job'} Overview`)],
 			[
 				menuItem('Vulnerability Report', 'vulnerability-report'),
 				menuItem('Deployments', 'deploys'),
@@ -91,7 +91,7 @@ export const menuItems = ({
 	const [, , team, page] = split;
 	const menuItem = item(`/team/${team}`, page);
 	return [
-		[menuItem('Team overview')],
+		[menuItem('Team Overview')],
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
 			member && menuItem('Secrets', 'secrets', 'secret'),
@@ -100,7 +100,7 @@ export const menuItems = ({
 			features?.redis && menuItem('Redis', 'redis', 'redis'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
 			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),
-			features?.kafka && menuItem('Kafka topics', 'kafka', 'kafka'),
+			features?.kafka && menuItem('Kafka Topics', 'kafka', 'kafka'),
 			menuItem('BigQuery', 'bigquery', 'bigquery'),
 			features?.unleash && menuItem('Unleash', 'unleash')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[],
@@ -114,7 +114,7 @@ export const menuItems = ({
 			menuItem('Members', 'members'),
 			menuItem('Repositories', 'repositories'),
 			(member || isAdmin) && menuItem('Settings', 'settings'),
-			member && menuItem('Activity log', 'activity-log')
+			member && menuItem('Activity Log', 'activity-log')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[]
 	];
 };
