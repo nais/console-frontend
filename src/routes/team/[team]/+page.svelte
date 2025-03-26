@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
-	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
-
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
+	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
+	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilityOverview from '$lib/components/VulnerabilityOverview.svelte';
+	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();

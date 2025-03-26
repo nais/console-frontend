@@ -85,5 +85,9 @@
 			"eslint --fix .",
 			"svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
 		]
+	},
+	"graphql": {
+		"schema": "https://localhost:3000/graphql",
+		"documents": "**/*.{graphql,js,ts,jsx,tsx,svelte}"
 	}
 }
