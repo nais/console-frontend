@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Nais Console - Log in</title>
+	<title>Log in - Nais Console</title>
 	<style>
 		body {
 			background: var(--a-bg-default);

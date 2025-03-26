@@ -26,8 +26,6 @@
 	);
 </script>
 
-<svelte:head><title>{teamSlug} - Console</title></svelte:head>
-
 <div class="page">
 	{#if deletionInProgress}
 		<Alert variant="warning" style="margin-bottom: 1rem;"

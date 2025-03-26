@@ -37,7 +37,7 @@
 	};
 </script>
 
-<svelte:head><title>Admin - Console</title></svelte:head>
+<svelte:head><title>Admin - Nais Console</title></svelte:head>
 
 <div class="page">
 	<div class="header">

@@ -28,6 +28,15 @@
 	const dumbPageHeaderProps = $derived(urlToPageHeader(page.url));
 </script>
 
+<svelte:head
+	><title
+		>{[
+			dumbPageHeaderProps.heading,
+			...dumbPageHeaderProps.breadcrumbs.toReversed().map((b) => b.label)
+		].join(' - ')} - Nais Console</title
+	></svelte:head
+>
+
 <DumbPageHeader {...dumbPageHeaderProps} />
 
 <div class="team-info">
