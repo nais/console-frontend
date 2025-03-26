@@ -296,113 +296,123 @@
 		{#if viewerIsOwner}
 			<div>
 				<Heading level="2"><WarningIcon /> Danger Zone</Heading>
-				<p>
-					Deleting the team will permanently delete all managed resources and all resources within
-					them. All applications, databases and jobs owned by the team will be irreversibly deleted.
-				</p>
-				<p>
-					When you request deletion a delete key will be generated for this team. It is valid for 1
-					hour. Another team-owner will have to confirm the deletion by using a generated link
-					before the team is irreversibly deleted.
-				</p>
+				<div class="danger-zone">
+					<BodyLong spacing>
+						Deleting the team will permanently delete all managed resources and all resources within
+						them. All applications, databases and jobs owned by the team will be irreversibly
+						deleted.
+					</BodyLong>
+					<BodyLong spacing>
+						When you request deletion a delete key will be generated for this team. It is valid for
+						1 hour. Another team-owner will have to confirm the deletion by using a generated link
+						before the team is irreversibly deleted.
+					</BodyLong>
 
-				<Button
-					variant="danger"
-					onclick={() => {
-						showDeleteTeam = !showDeleteTeam;
-						//deleteKeyResp = null;
-					}}
-					icon={TrashIcon}
-				>
-					Request team deletion</Button
-				>
-				<p class="last-sync">
-					{#if teamSettings.lastSuccessfulSync}
-						Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
-					{:else}
-						No successful syncs
-					{/if}
-				</p>
-				{#if browser}
-					<Modal bind:open={showDeleteTeam}>
-						{#snippet header()}
-							<h3>Request team deletion</h3>
-						{/snippet}
+					<Button
+						variant="danger"
+						onclick={() => {
+							showDeleteTeam = !showDeleteTeam;
+							//deleteKeyResp = null;
+						}}
+						icon={TrashIcon}
+					>
+						Request team deletion</Button
+					>
 
-						{#if !deleteKeyResp?.data}
-							<BodyLong>
-								Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related
-								to it.
-							</BodyLong>
-						{/if}
+					{#if browser}
+						<Modal bind:open={showDeleteTeam}>
+							{#snippet header()}
+								<h3>Request team deletion</h3>
+							{/snippet}
 
-						{#if deleteKeyResp?.errors}
-							<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
-						{:else if deleteKeyResp?.data}
-							{@const key =
-								window.location +
-								'/confirm_delete?key=' +
-								deleteKeyResp.data.requestTeamDeletion.key?.key}
-							<Alert>
-								Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion
-								send this link to another team owner and let them confirm the deletion.
-
-								<div class="deletewrapper">
-									<div>
-										<TextField
-											label="Sharable url"
-											hideLabel={true}
-											readonly={true}
-											size="small"
-											value={key}
-										></TextField>
-									</div>
-									<CopyButton
-										text="Copy URL"
-										activeText="URL copied"
-										variant="action"
-										copyText={key}
-										size="small"
-									/>
-								</div>
-							</Alert>
-						{/if}
-
-						{#snippet footer()}
 							{#if !deleteKeyResp?.data}
-								<Button
-									type="submit"
-									loading={deleteKeyLoading}
-									onclick={async () => {
-										deleteKeyLoading = true;
-										deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: teamSlug } });
-										deleteKeyLoading = false;
-									}}>Confirm</Button
-								>
-								<Button
-									variant="tertiary"
-									disabled={deleteKeyLoading}
-									type="reset"
-									onclick={() => {
-										showDeleteTeam = !showDeleteTeam;
-									}}>Cancel</Button
-								>
-							{:else}
-								<Button
-									onclick={() => {
-										showDeleteTeam = !showDeleteTeam;
-									}}>Close</Button
-								>
+								<BodyLong>
+									Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related
+									to it.
+								</BodyLong>
 							{/if}
-						{/snippet}
-					</Modal>
-				{/if}
+
+							{#if deleteKeyResp?.errors}
+								<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
+							{:else if deleteKeyResp?.data}
+								{@const key =
+									window.location +
+									'/confirm_delete?key=' +
+									deleteKeyResp.data.requestTeamDeletion.key?.key}
+								<Alert>
+									Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the
+									deletion send this link to another team owner and let them confirm the deletion.
+
+									<div class="deletewrapper">
+										<div>
+											<TextField
+												label="Sharable url"
+												hideLabel={true}
+												readonly={true}
+												size="small"
+												value={key}
+											></TextField>
+										</div>
+										<CopyButton
+											text="Copy URL"
+											activeText="URL copied"
+											variant="action"
+											copyText={key}
+											size="small"
+										/>
+									</div>
+								</Alert>
+							{/if}
+
+							{#snippet footer()}
+								{#if !deleteKeyResp?.data}
+									<Button
+										type="submit"
+										loading={deleteKeyLoading}
+										onclick={async () => {
+											deleteKeyLoading = true;
+											deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: teamSlug } });
+											deleteKeyLoading = false;
+										}}>Confirm</Button
+									>
+									<Button
+										variant="tertiary"
+										disabled={deleteKeyLoading}
+										type="reset"
+										onclick={() => {
+											showDeleteTeam = !showDeleteTeam;
+										}}>Cancel</Button
+									>
+								{:else}
+									<Button
+										onclick={() => {
+											showDeleteTeam = !showDeleteTeam;
+										}}>Close</Button
+									>
+								{/if}
+							{/snippet}
+						</Modal>
+					{/if}
+				</div>
 			</div>
 		{/if}
+
+		<p class="last-sync">
+			{#if teamSettings.lastSuccessfulSync}
+				Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
+			{:else}
+				No successful syncs
+			{/if}
+		</p>
 	</div>
 {/if}
 
 <style>
+	.danger-zone {
+		padding: var(--a-spacing-4);
+		border-radius: 8px;
+		border: 1px solid var(--a-border-danger);
+	}
 	.wrapper {
 		display: flex;
 		flex-direction: column;
