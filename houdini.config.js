@@ -7,7 +7,7 @@ const config = {
 		interval: 0,
 		url: 'http://127.0.0.1:3000/graphql',
 		headers: {
-			'x-user-email': 'dev.usersen@example.com'
+			'x-user-email': 'andreas@nais.io'
 			// cookie: 'session_id='
 		}
 	},
