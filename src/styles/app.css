@@ -59,3 +59,8 @@ h5 {
 	height: var(--a-font-line-height-large);
 	vertical-align: bottom;
 }
+
+.navds-heading--medium .heading-aligned-icon {
+	height: var(--a-font-line-height-heading-medium);
+	vertical-align: bottom;
+}

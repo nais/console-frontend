@@ -128,7 +128,7 @@
 		</div>
 
 		<div>
-			<Heading level="2"><SlackIcon /> Slack Channels</Heading>
+			<Heading level="2"><SlackIcon class="heading-aligned-icon" /> Slack Channels</Heading>
 			{#if teamSettings.slackChannel !== ''}
 				<p>
 					<b>Default slack-channel:</b>
@@ -295,7 +295,7 @@
 
 		{#if viewerIsOwner}
 			<div>
-				<Heading level="2"><WarningIcon /> Danger Zone</Heading>
+				<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 				<div class="danger-zone">
 					<BodyLong spacing>
 						Deleting the team will permanently delete all managed resources and all resources within
