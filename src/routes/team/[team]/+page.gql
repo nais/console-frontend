@@ -1,5 +1,29 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
+		externalResources {
+			entraIDGroup {
+				groupID
+			}
+			googleGroup {
+				email
+			}
+			googleArtifactRegistry {
+				repository
+			}
+			cdn {
+				bucket
+			}
+			gitHubTeam {
+				slug
+			}
+		}
+		environments {
+			id
+			gcpProjectID
+			environment {
+				name
+			}
+		}
 		purpose
 		activityLog(first: 5) {
 			nodes {

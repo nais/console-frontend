@@ -8,6 +8,7 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilityOverview from '$lib/components/VulnerabilityOverview.svelte';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -32,6 +33,11 @@
 	};
 
 	const redisInstances = $derived($TeamOverview.data?.team.redisInstances.nodes);
+
+	const formatGARRepo = (repo: string) => {
+		const [, projectId, , location, , repository] = repo.split('/');
+		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
+	};
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -107,9 +113,78 @@
 			<VulnerabilityOverview team={$TeamOverview.data.team} />
 		{/if}
 	</div>
+	<div class="grid">
+		<div class="card" style="grid-column: span 2;">
+			<Heading level="2" size="small">Managed resources</Heading>
+			<dl>
+				{#if $TeamOverview.data?.team.externalResources}
+					{@const external = $TeamOverview.data.team.externalResources}
+					{#if external.googleArtifactRegistry}
+						<dt>Google Artifact Registry:</dt>
+						<dd>
+							<a
+								href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
+								target="_blank"
+								rel="noopener noreferrer"
+								style:display="inline"
+							>
+								{formatGARRepo(external.googleArtifactRegistry.repository)}
+								<ExternalLinkIcon class="text-aligned-icon" />
+							</a>
+						</dd>
+					{/if}
+					{#if external.entraIDGroup}
+						<dt>Entra ID Group:</dt>
+						<dd>
+							<a
+								href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}"
+								target="_blank"
+								rel="noopener noreferrer"
+								style:display="inline"
+							>
+								{external.entraIDGroup.groupID}
+								<ExternalLinkIcon class="text-aligned-icon" />
+							</a>
+						</dd>
+					{/if}
+					{#if external.cdn}
+						<dt>Team CDN bucket:</dt>
+						<dd>
+							<a
+								href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}"
+								target="_blank"
+								rel="noopener noreferrer"
+								style:display="inline"
+							>
+								{external.cdn.bucket}
+								<ExternalLinkIcon class="text-aligned-icon" />
+							</a>
+						</dd>
+					{/if}
+				{/if}
+				{#each $TeamOverview.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
+					<dt>{teamEnvironment.environment.name}:</dt>
+					<dd>
+						<a
+							href="https://console.cloud.google.com/home/dashboard?project={teamEnvironment.gcpProjectID}"
+							target="_blank"
+							rel="noopener noreferrer"
+							style:display="inline"
+						>
+							{teamEnvironment.gcpProjectID}
+							<ExternalLinkIcon class="text-aligned-icon" />
+						</a>
+					</dd>
+				{/each}
+			</dl>
+		</div>
+	</div>
 </div>
 
 <style>
+	dd {
+		margin: 0;
+	}
 	.wrapper {
 		display: flex;
 		flex-direction: column;

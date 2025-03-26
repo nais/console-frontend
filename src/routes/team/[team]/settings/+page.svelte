@@ -6,14 +6,22 @@
 		graphql,
 		type QueryResult
 	} from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import SlackIcon from '$lib/icons/SlackIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, BodyLong, Button, CopyButton, Modal, TextField } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		BodyLong,
+		Button,
+		CopyButton,
+		Heading,
+		Modal,
+		TextField
+	} from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
-		ChatExclamationmarkIcon,
 		EyeIcon,
 		EyeSlashIcon,
 		TrashIcon
@@ -90,67 +98,37 @@
 	let descriptionErrors: { message: string }[] | undefined = $state();
 	let defaultSlackChannelErrors: { message: string }[] | undefined = $state();
 	let slackChannelsErrors: { message: string }[] | undefined = $state();
-
-	const hasGlobalAttributes = (obj: {
-		readonly entraIDGroup: unknown | null;
-		readonly gitHubTeam: unknown | null;
-		readonly googleGroup: unknown | null;
-		readonly googleArtifactRegistry: unknown | null;
-		readonly cdn: unknown | null;
-	}) =>
-		obj.entraIDGroup !== null ||
-		obj.gitHubTeam !== null ||
-		obj.googleGroup !== null ||
-		obj.googleArtifactRegistry !== null ||
-		obj.cdn !== null;
-
-	const envResources = (obj: { readonly gcpProjectID: string | null }) => {
-		const lines: { key: string; value: string }[] = [];
-
-		if (obj.gcpProjectID) {
-			lines.push({ key: 'GCP project ID', value: obj.gcpProjectID });
-		}
-		return lines;
-	};
-
-	const formatGARRepo = (repo: string) => {
-		const [, projectId, , location, , repository] = repo.split('/');
-		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
-	};
-
-	//let rotateClicked = false;
 </script>
 
 <GraphErrors errors={$TeamSettings.errors} />
 
 {#if teamSettings}
-	<div class="grid">
-		<Card columns={6}>
-			<h3>{teamSlug}</h3>
-
-			<i>
-				<EditText
-					text={teamSettings.purpose}
-					on:save={async (e) => {
-						descriptionErrors = undefined;
-						const data = await updateTeam.mutate({
-							input: {
-								slug: teamSlug,
-								purpose: e.detail
-							}
-						});
-
-						if (data.errors) {
-							descriptionErrors = data.errors;
+	<div class="wrapper">
+		<div>
+			<Heading level="2">Description</Heading>
+			<EditText
+				text={teamSettings.purpose}
+				on:save={async (e) => {
+					descriptionErrors = undefined;
+					const data = await updateTeam.mutate({
+						input: {
+							slug: teamSlug,
+							purpose: e.detail
 						}
-					}}
-					isMember={viewerIsMember}
-				/>
-			</i>
+					});
+
+					if (data.errors) {
+						descriptionErrors = data.errors;
+					}
+				}}
+				isMember={viewerIsMember}
+			/>
 
 			<GraphErrors errors={descriptionErrors} size="small" />
+		</div>
 
-			<h4><ChatExclamationmarkIcon /> Slack channels</h4>
+		<div>
+			<Heading level="2"><SlackIcon /> Slack Channels</Heading>
 			{#if teamSettings.slackChannel !== ''}
 				<p>
 					<b>Default slack-channel:</b>
@@ -210,62 +188,10 @@
 
 				<GraphErrors errors={slackChannelsErrors} size="small" />
 			{/if}
-		</Card>
-		<Card columns={6}>
-			<h3 class="with_button">Managed resources</h3>
+		</div>
 
-			<h4>Global</h4>
-			<dl>
-				{#if hasGlobalAttributes(teamSettings.externalResources)}
-					{@const external = teamSettings.externalResources}
-					{#if external.googleArtifactRegistry}
-						<dt>Artifact Registry repository</dt>
-						<dd>{formatGARRepo(external.googleArtifactRegistry.repository)}</dd>
-					{/if}
-					{#if external.gitHubTeam}
-						<dt>GitHub team</dt>
-						<dd>{external.gitHubTeam.slug}</dd>
-					{/if}
-					{#if external.googleGroup}
-						<dt>Google group email</dt>
-						<dd>{external.googleGroup.email}</dd>
-					{/if}
-					{#if external.cdn}
-						<dt>Team CDN bucket</dt>
-						<dd>
-							<a href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}">
-								{external.cdn.bucket}
-							</a>
-						</dd>
-					{/if}
-					{#if external.entraIDGroup}
-						<dt>Azure AD group ID</dt>
-						<dd>
-							<a href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}">
-								{external.entraIDGroup.groupID}
-							</a>
-						</dd>
-					{/if}
-				{:else}
-					<Alert variant="info" size="small">No managed resources</Alert>
-				{/if}
-			</dl>
-
-			{#each teamSettings.environments as env (env.id)}
-				<h4>{env.name}</h4>
-				<dl>
-					{#each envResources(env) as { key, value } (key)}
-						<dt>{key}:</dt>
-						<dd>{value}</dd>
-					{:else}
-						<Alert variant="info" size="small">No managed resources</Alert>
-					{/each}
-				</dl>
-			{/each}
-		</Card>
-
-		<Card columns={12}>
-			<h3>Deploy key</h3>
+		<div>
+			<Heading level="2">Deploy Key</Heading>
 			<p>
 				Deploy keys can be used to authenticate for deployments instead of using
 				<a
@@ -341,35 +267,35 @@
 			{:else}
 				<Alert variant="error">Error getting deploy key. Try again later.</Alert>
 			{/if}
-		</Card>
-		{#if browser}
-			<Modal bind:open={showRotateKey} closeButton={false}>
-				<h3>Rotate deploy key</h3>
-				<p>Are you sure you want to rotate the deploy key?</p>
-				<Button
-					onclick={() => {
-						showRotateKey = !showRotateKey;
-					}}
-				>
-					Cancel</Button
-				>
-				<Button
-					variant="danger"
-					onclick={async () => {
-						//rotateClicked = false;
-						showRotateKey = !showRotateKey;
-						await rotateKey.mutate({ team: teamSlug });
-						//rotateClicked = true;
-					}}
-				>
-					Rotate key</Button
-				>
-			</Modal>
-		{/if}
+			{#if browser}
+				<Modal bind:open={showRotateKey} closeButton={false}>
+					<h3>Rotate deploy key</h3>
+					<p>Are you sure you want to rotate the deploy key?</p>
+					<Button
+						onclick={() => {
+							showRotateKey = !showRotateKey;
+						}}
+					>
+						Cancel</Button
+					>
+					<Button
+						variant="danger"
+						onclick={async () => {
+							//rotateClicked = false;
+							showRotateKey = !showRotateKey;
+							await rotateKey.mutate({ team: teamSlug });
+							//rotateClicked = true;
+						}}
+					>
+						Rotate key</Button
+					>
+				</Modal>
+			{/if}
+		</div>
 
 		{#if viewerIsOwner}
-			<Card style="border: 1px solid var(--a-border-danger);" columns={12}>
-				<h3>Danger Zone</h3>
+			<div>
+				<Heading level="2"><WarningIcon /> Danger Zone</Heading>
 				<p>
 					Deleting the team will permanently delete all managed resources and all resources within
 					them. All applications, databases and jobs owned by the team will be irreversibly deleted.
@@ -390,93 +316,98 @@
 				>
 					Request team deletion</Button
 				>
-			</Card>
-			<p class="last-sync">
-				{#if teamSettings.lastSuccessfulSync}
-					Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
-				{:else}
-					No successful syncs
-				{/if}
-			</p>
-			{#if browser}
-				<Modal bind:open={showDeleteTeam}>
-					{#snippet header()}
-						<h3>Request team deletion</h3>
-					{/snippet}
-
-					{#if !deleteKeyResp?.data}
-						<BodyLong>
-							Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related
-							to it.
-						</BodyLong>
+				<p class="last-sync">
+					{#if teamSettings.lastSuccessfulSync}
+						Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
+					{:else}
+						No successful syncs
 					{/if}
+				</p>
+				{#if browser}
+					<Modal bind:open={showDeleteTeam}>
+						{#snippet header()}
+							<h3>Request team deletion</h3>
+						{/snippet}
 
-					{#if deleteKeyResp?.errors}
-						<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
-					{:else if deleteKeyResp?.data}
-						{@const key =
-							window.location +
-							'/confirm_delete?key=' +
-							deleteKeyResp.data.requestTeamDeletion.key?.key}
-						<Alert>
-							Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion
-							send this link to another team owner and let them confirm the deletion.
-
-							<div class="deletewrapper">
-								<div>
-									<TextField
-										label="Sharable url"
-										hideLabel={true}
-										readonly={true}
-										size="small"
-										value={key}
-									></TextField>
-								</div>
-								<CopyButton
-									text="Copy URL"
-									activeText="URL copied"
-									variant="action"
-									copyText={key}
-									size="small"
-								/>
-							</div>
-						</Alert>
-					{/if}
-
-					{#snippet footer()}
 						{#if !deleteKeyResp?.data}
-							<Button
-								type="submit"
-								loading={deleteKeyLoading}
-								onclick={async () => {
-									deleteKeyLoading = true;
-									deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: teamSlug } });
-									deleteKeyLoading = false;
-								}}>Confirm</Button
-							>
-							<Button
-								variant="tertiary"
-								disabled={deleteKeyLoading}
-								type="reset"
-								onclick={() => {
-									showDeleteTeam = !showDeleteTeam;
-								}}>Cancel</Button
-							>
-						{:else}
-							<Button
-								onclick={() => {
-									showDeleteTeam = !showDeleteTeam;
-								}}>Close</Button
-							>
+							<BodyLong>
+								Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related
+								to it.
+							</BodyLong>
 						{/if}
-					{/snippet}
-				</Modal>
-			{/if}
+
+						{#if deleteKeyResp?.errors}
+							<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
+						{:else if deleteKeyResp?.data}
+							{@const key =
+								window.location +
+								'/confirm_delete?key=' +
+								deleteKeyResp.data.requestTeamDeletion.key?.key}
+							<Alert>
+								Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion
+								send this link to another team owner and let them confirm the deletion.
+
+								<div class="deletewrapper">
+									<div>
+										<TextField
+											label="Sharable url"
+											hideLabel={true}
+											readonly={true}
+											size="small"
+											value={key}
+										></TextField>
+									</div>
+									<CopyButton
+										text="Copy URL"
+										activeText="URL copied"
+										variant="action"
+										copyText={key}
+										size="small"
+									/>
+								</div>
+							</Alert>
+						{/if}
+
+						{#snippet footer()}
+							{#if !deleteKeyResp?.data}
+								<Button
+									type="submit"
+									loading={deleteKeyLoading}
+									onclick={async () => {
+										deleteKeyLoading = true;
+										deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: teamSlug } });
+										deleteKeyLoading = false;
+									}}>Confirm</Button
+								>
+								<Button
+									variant="tertiary"
+									disabled={deleteKeyLoading}
+									type="reset"
+									onclick={() => {
+										showDeleteTeam = !showDeleteTeam;
+									}}>Cancel</Button
+								>
+							{:else}
+								<Button
+									onclick={() => {
+										showDeleteTeam = !showDeleteTeam;
+									}}>Close</Button
+								>
+							{/if}
+						{/snippet}
+					</Modal>
+				{/if}
+			</div>
 		{/if}
 	</div>
 {/if}
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
 	dl {
 		display: block;
 		margin-block-start: 0.2em;
@@ -499,12 +430,7 @@
 	h3 {
 		margin-bottom: 0.5rem;
 	}
-	h4 {
-		margin: 0.8rem 0rem 0.2rem 0;
-	}
-	i {
-		margin-bottom: 0.5rem;
-	}
+
 	.buttons {
 		display: flex;
 		flex-direction: row;
@@ -513,23 +439,11 @@
 	.button {
 		width: 130px;
 	}
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
 
 	.channel {
 		display: flex;
 		flex-direction: row;
 		gap: 0.5rem;
-	}
-
-	h3.with_button {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
 	}
 
 	.deletewrapper {
