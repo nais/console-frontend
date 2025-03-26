@@ -102,18 +102,16 @@
 				>
 			</div>
 		{/if}
-	</div>
-	<div style="display: grid; gap: var(--a-spacing-2);">
-		<div style="display: flex; align-items: center; gap: var(--a-spacing-4);">
-			<Heading level="2" size="medium">Vulnerabilities</Heading>
-			<a href="/team/{teamSlug}/vulnerabilities">View all vulnerabilities</a>
-		</div>
+		<div style:grid-column="span 4">
+			<div style="display: flex; align-items: center; gap: var(--a-spacing-4);">
+				<Heading level="2" size="medium">Vulnerabilities</Heading>
+				<a href="/team/{teamSlug}/vulnerabilities">View all vulnerabilities</a>
+			</div>
 
-		{#if $TeamOverview.data?.team}
-			<VulnerabilityOverview team={$TeamOverview.data.team} />
-		{/if}
-	</div>
-	<div class="grid">
+			{#if $TeamOverview.data?.team}
+				<VulnerabilityOverview team={$TeamOverview.data.team} />
+			{/if}
+		</div>
 		<div class="card" style="grid-column: span 2;">
 			<Heading level="2" size="small">Managed resources</Heading>
 			<dl>
@@ -234,11 +232,12 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		gap: 1rem;
+		row-gap: var(--spacing-layout);
+		grid-auto-flow: dense;
 	}
 	.grid:not(:first-child) {
 		margin-top: 1rem;
 	}
-
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;
