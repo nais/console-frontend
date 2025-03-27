@@ -2269,6 +2269,7 @@ type OpenSearch implements Node & Persistence {
   status: OpenSearchStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
+  terminationProtection: Boolean!
   workload: Workload
 }
 
@@ -5889,6 +5890,7 @@ type ValkeyInstance implements Node & Persistence {
   status: ValkeyInstanceStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
+  terminationProtection: Boolean!
   workload: Workload
 }
 
