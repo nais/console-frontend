@@ -5,6 +5,7 @@
 	import type { EChartsOption } from 'echarts';
 
 	import { changeParams } from '$lib/utils/searchparams';
+	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
 		Heading,
@@ -27,15 +28,6 @@
 	}[];
 
 	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
-
-	const visualizationColors: string[] = [
-		'#FFC166',
-		'#99DEAD',
-		'#CCE1FF',
-		'#C0B2D2',
-		'#66CBEC',
-		'#99C4DD'
-	];
 
 	function options(
 		data: resourceUsage,

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { format } from 'date-fns';
 	import type { DefaultLabelFormatterCallbackParams } from 'echarts';
 	import Legend from './Legend.svelte';
 
@@ -13,7 +14,7 @@
 
 <div style="margin: 0px 0 0;line-height:1;">
 	<div style="font-size:14px;color:#666;font-weight:400;line-height:1;">
-		{params[0].name}
+		{Array.isArray(params[0].data) ? format(params[0].data[0]!, 'dd/MM/yyyy') : params[0].name}
 	</div>
 
 	{#each params as param (param)}

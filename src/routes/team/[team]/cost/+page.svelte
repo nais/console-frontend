@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
+	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
 	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -13,13 +12,6 @@
 
 	let from = $state(data.fromDate?.toISOString().split('T')[0]);
 	let to = $state(data.toDate?.toISOString().split('T')[0]);
-
-	function echartOptionsStackedColumnChart(data: DailCostType) {
-		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 50 };
-		return opts;
-	}
 
 	let fromDate = $state(new Date());
 	let toDate = $state(new Date());
@@ -43,13 +35,13 @@
 	const todayMinusTwoDays = today.toISOString().split('T')[0];
 </script>
 
-<GraphErrors errors={$TeamCost.errors} />
+<div class="wrapper">
+	<GraphErrors errors={$TeamCost.errors} />
 
-<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
+	<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
 
-{#if $TeamCost.data}
-	<div class="grid">
-		<Card columns={4}>
+	{#if $TeamCost.data}
+		<div>
 			<label for="from">From:</label>
 			<input type="date" id="from" bind:value={from} onchange={update} />
 			<label for="to">To:</label>
@@ -61,25 +53,27 @@
 				bind:value={to}
 				onchange={update}
 			/>
-		</Card>
-		<Card columns={12}>
-			<h4>Total cost for team {teamSlug} from {from} to {to}</h4>
+		</div>
+		<div>
+			<Heading level="2" spacing>Cost by Service</Heading>
 			<EChart
-				options={echartOptionsStackedColumnChart($TeamCost.data.team.cost.daily)}
-				style="height: 400px"
+				options={costTransformStackedColumnChart(
+					new Date(from),
+					new Date(to),
+					$TeamCost.data.team.cost.daily
+				)}
+				style="height: 500px"
 			/>
-		</Card>
+		</div>
 
 		<TeamCostEnv team={teamSlug} from={fromDate} to={toDate} />
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style>
-	.grid {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
 	}
 </style>
