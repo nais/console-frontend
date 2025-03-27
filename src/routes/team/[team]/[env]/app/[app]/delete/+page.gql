@@ -41,6 +41,7 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 						id
 						__typename
 						name
+						terminationProtection
 					}
 				}
 				sqlInstances {
@@ -50,11 +51,6 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 						name
 						cascadingDelete
 					}
-				}
-				openSearch {
-					id
-					__typename
-					name
 				}
 			}
 		}
