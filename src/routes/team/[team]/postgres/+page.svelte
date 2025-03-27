@@ -9,11 +9,12 @@
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import prettyBytes from 'pretty-bytes';
@@ -26,12 +27,20 @@
 
 <GraphErrors errors={$SqlInstances.errors} />
 
-{#if $SqlInstances.data}
+{#if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const si = $SqlInstances.data.team.sqlInstances}
 	{@const u = $SqlInstances.data.team.serviceUtilization.sqlInstances}
+
 	<div class="content-wrapper">
 		<div>
+			<BodyLong spacing>
+				Postgres instances provide managed relational databases in the cloud.
+				<a href={docURL('/persistence/postgres')}
+					>Learn more about Postgres in Nais and how to get started.</a
+				>
+			</BodyLong>
+
 			<List
 				title="{si.pageInfo.totalCount} Postgres instance{si.pageInfo.totalCount !== 1 ? 's' : ''}"
 			>
@@ -155,6 +164,16 @@
 				</div>
 			</div>
 		</div>
+	</div>
+{:else}
+	<div class="content-wrapper">
+		<BodyLong>
+			<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
+			databases in the cloud.
+			<a href={docURL('/persistence/postgres')}
+				>Learn more about Postgres in Nais and how to get started.</a
+			>
+		</BodyLong>
 	</div>
 {/if}
 
