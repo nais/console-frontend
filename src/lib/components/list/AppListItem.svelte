@@ -47,7 +47,6 @@
 		}}
 	>
 		{#snippet icon()}
-			<!-- <Badge count={app.status.errors.length} level={badgeLevel(app.status.errors)} /> -->
 			<TooltipAlignHack
 				content={{
 					NAIS: 'Application is healthy',
