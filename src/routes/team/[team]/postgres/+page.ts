@@ -1,22 +1,21 @@
-import {
-	SqlInstanceOrderField,
-	type OrderDirection$options,
-	type SqlInstanceOrderField$options
-} from '$houdini';
+import { SqlInstanceOrderField } from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 import type { SqlInstancesVariables } from './$houdini';
 
+const rows = 25;
+
 export const _SqlInstancesVariables: SqlInstancesVariables = ({ url }) => {
-	const field = (url.searchParams.get('field') ||
-		SqlInstanceOrderField.NAME) as SqlInstanceOrderField$options;
-	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const after = url.searchParams.get('after') || '';
+	const before = url.searchParams.get('before') || '';
 
-	// Date 30 days ago
-	const from = new Date();
-	from.setDate(from.getDate() - 30);
-
-	// Date yesterday
-	const to = new Date();
-	to.setDate(to.getDate() - 1);
-
-	return { orderBy: { field: field, direction: direction }, from, to };
+	return {
+		orderBy: {
+			field: urlToOrderField(SqlInstanceOrderField, SqlInstanceOrderField.NAME, url),
+			direction: urlToOrderDirection(url)
+		},
+		...(before ? { before, last: rows } : { after, first: rows }),
+		from: startOfMonth(subMonths(new Date(), 1)),
+		to: endOfYesterday()
+	};
 };

@@ -1,238 +1,196 @@
 <script lang="ts">
-	import { SqlInstanceOrderField } from '$houdini';
-	import Card from '$lib/Card.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tooltip, Tr } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, WalletIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import List from '$lib/components/list/List.svelte';
+	import ListItem from '$lib/components/list/ListItem.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
+	import { SqlInstanceOrderField } from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 
 	let { SqlInstances } = $derived(data);
-
-	let tableSort = $derived({
-		orderBy: $SqlInstances.variables?.orderBy?.field,
-		direction: $SqlInstances.variables?.orderBy?.direction
-	});
-
-	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = SqlInstanceOrderField[key as keyof typeof SqlInstanceOrderField];
-			tableSort.direction = 'ASC';
-		}
-
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || SqlInstanceOrderField.NAME
-		});
-	};
 </script>
 
 <GraphErrors errors={$SqlInstances.errors} />
 
 {#if $SqlInstances.data}
 	{@const cost = $SqlInstances.data.team.cost}
-	{@const instances = $SqlInstances.data.team.sqlInstances}
-	{@const utilization = $SqlInstances.data.team.serviceUtilization}
+	{@const si = $SqlInstances.data.team.sqlInstances}
+	{@const u = $SqlInstances.data.team.serviceUtilization.sqlInstances}
+	<div class="content-wrapper">
+		<div>
+			<List
+				title="{si.pageInfo.totalCount} Postgres instance{si.pageInfo.totalCount !== 1 ? 's' : ''}"
+			>
+				{#snippet menu()}
+					<OrderByMenu
+						orderField={{
+							NAME: SqlInstanceOrderField.NAME,
+							ENVIRONMENT: SqlInstanceOrderField.ENVIRONMENT,
+							STATUS: SqlInstanceOrderField.STATUS,
+							VERSION: SqlInstanceOrderField.VERSION
+						}}
+						defaultOrderField={SqlInstanceOrderField.NAME}
+					/>
+				{/snippet}
+				{#each si.nodes as instance (instance.id)}
+					<ListItem>
+						<div>
+							<IconLabel
+								level="4"
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/postgres/{instance.name}"
+								size="large"
+								label={instance.name}
+								tag={{
+									label: instance.teamEnvironment.environment.name,
+									variant: envTagVariant(instance.teamEnvironment.environment.name)
+								}}
+							>
+								{#snippet icon()}
+									<TooltipAlignHack
+										content={{
+											FAILED: 'FAILED',
+											MAINTENANCE: 'MAINTENANCE',
+											PENDING_CREATE: 'PENDING_CREATE',
+											PENDING_DELETE: 'PENDING_DELETE',
+											RUNNABLE: 'RUNNABLE',
+											SUSPENDED: 'SUSPENDED',
+											UNSPECIFIED: 'UNSPECIFIED'
+										}[instance.state] ?? ''}
+									>
+										<CircleFillIcon
+											style="color: var(--a-icon-{{
+												RUNNABLE: 'success',
+												FAILED: 'danger',
+												MAINTENANCE: 'warning',
+												PENDING_CREATE: 'info',
+												PENDING_DELETE: 'info',
+												SUSPENDED: 'info',
+												UNSPECIFIED: 'info'
+											}[instance.state] ?? 'info'}); font-size: 0.7rem"
+										/>
+									</TooltipAlignHack>
+								{/snippet}
+							</IconLabel>
+						</div>
 
-	<div class="summary-grid">
-		<Card columns={3}>
-			<SummaryCard
-				title="Cost"
-				helpText="Total SQL instance cost for the last 30 days"
-				color="green"
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{euroValueFormatter(cost.daily.sum)}
-			</SummaryCard>
-		</Card>
-		<Card columns={3}>
-			<SummaryCard
-				title="CPU utilization"
-				helpText="Current CPU utilization"
-				color="blue"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={utilization.sqlInstances.cpu.utilization} />
-				{/snippet}
-				{(utilization.sqlInstances.cpu.utilization * 100).toFixed(1)}% of
-				{utilization.sqlInstances.cpu.requested.toFixed(0)} core{utilization.sqlInstances.cpu
-					.requested > 1
-					? 's'
-					: ''}
-			</SummaryCard>
-		</Card>
-		<Card columns={3}>
-			<SummaryCard
-				title="Memory utilization"
-				helpText="Memory utilization for the last elapsed hour."
-				color="blue"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={utilization.sqlInstances.memory.utilization} />
-				{/snippet}
-
-				{(utilization.sqlInstances.memory.utilization * 100).toFixed(1)}% of
-				{prettyBytes(utilization.sqlInstances.memory.requested)}
-			</SummaryCard>
-		</Card>
-		<Card columns={3}>
-			<SummaryCard
-				title="Disk utilization"
-				helpText="Disk utilization for the last elapsed hour."
-				color="blue"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={utilization.sqlInstances.disk.utilization} />
-				{/snippet}
-				{(utilization.sqlInstances.disk.utilization * 100).toFixed(1)}% of
-				{prettyBytes(utilization.sqlInstances.disk.requested)}
-			</SummaryCard>
-		</Card>
-	</div>
-	<Card columns={12}>
-		<Table
-			size="small"
-			sort={{
-				orderBy: tableSort.orderBy || SqlInstanceOrderField.NAME,
-				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-			}}
-			onsortchange={tableSortChange}
-		>
-			<Thead>
-				<Tr>
-					<Th style="width: 2rem"></Th>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.NAME}>Name</Th>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.ENVIRONMENT}>Environment</Th>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.STATUS}>Status</Th>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.COST}>Cost</Th>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.CPU_UTILIZATION}
-						><Tooltip content="CPU utilization for the last elapsed hour">CPU</Tooltip></Th
-					>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.MEMORY_UTILIZATION}
-						><Tooltip content="Memory utilization for the last elapsed hour">Memory</Tooltip></Th
-					>
-					<Th sortable={true} sortKey={SqlInstanceOrderField.DISK_UTILIZATION}
-						><Tooltip content="Disk utilization for the last elapsed hour">Disk</Tooltip></Th
-					>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#each instances.nodes as i (i.id)}
-					<Tr>
-						<Td>
-							{#if !i.workload?.name}
-								<Tooltip content="The SQL instance does not belong to any workload">
-									<WarningIcon />
-								</Tooltip>
-							{/if}
-						</Td>
-						<Td>
-							<PersistenceLink instance={i} />
-						</Td>
-						<Td>
-							{i.version}
-						</Td>
-						<Td>
-							{i.teamEnvironment.environment.name}
-						</Td>
-
-						<Td>
-							{#if i.state === 'RUNNABLE'}
-								<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.2rem" />
-							{:else}
-								<Tooltip content="Unhealthy state: {i.state}" placement="right">
-									<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
-								</Tooltip>
-							{/if}
-						</Td>
-						<Td>
-							{#if i.cost.sum > 0}
-								€{Math.round(i.cost.sum)}
-							{:else}
-								-
-							{/if}
-						</Td>
-						<Td>
-							{#if i.metrics.cpu.utilization}
-								<span
-									title="{i.metrics.cpu.utilization.toFixed(1)}% of {i.metrics.cpu.cores} core{i
-										.metrics.cpu.cores > 1
-										? 's'
-										: ''}"
-								>
-									{i.metrics.cpu.utilization.toFixed(1)}%
-								</span>
-							{/if}
-						</Td>
-						<Td>
-							{#if i.metrics.memory.utilization}
-								<span
-									title="{i.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-										i.metrics.memory.quotaBytes
-									)}"
-								>
-									{i.metrics.memory.utilization.toFixed(1)}%
-								</span>
-							{/if}
-						</Td>
-						<Td>
-							{#if i.metrics.disk.utilization}
-								<span
-									title="{i.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-										i.metrics.disk.quotaBytes
-									)}"
-								>
-									{i.metrics.disk.utilization.toFixed(1)}%
-								</span>
-							{/if}
-						</Td>
-					</Tr>
-				{:else}
-					<Tr>
-						<Td colspan={999}>No SQL instances found</Td>
-					</Tr>
+						{#if instance.workload}
+							<div class="right">
+								<div style:display="flex" style:gap="var(--a-spacing-1-alt)">
+									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
+								</div>
+								<div>Version: <code>{instance.version}</code></div>
+							</div>
+						{/if}
+					</ListItem>
 				{/each}
-			</Tbody>
-		</Table>
-		<Pagination
-			page={instances.pageInfo}
-			loaders={{
-				loadNextPage: () => {
-					SqlInstances.loadNextPage();
-				},
-				loadPreviousPage: () => {
-					SqlInstances.loadPreviousPage();
-				}
-			}}
-		/>
-	</Card>
+			</List>
+
+			<Pagination
+				page={si.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }),
+					loadNextPage: () => changeParams({ before: '', after: si.pageInfo.endCursor ?? '' })
+				}}
+			/>
+		</div>
+		<div class="right-column">
+			{#if cost}
+				<div>
+					<PersistenceCost
+						pageName="SQL Instances"
+						teamSlug={$SqlInstances.data.team.slug}
+						costData={cost}
+						from={startOfMonth(subMonths(new Date(), 1))}
+						to={endOfYesterday()}
+					/>
+				</div>
+			{/if}
+
+			<div class="utilization">
+				<Heading level="2" size="small">Utilization</Heading>
+				<BodyShort>Current utilization for all Postgres instances owned by the team.</BodyShort>
+
+				<div>
+					<BodyShort>Storage</BodyShort>
+					<div>
+						<CircleProgressBar size="1.5rem" progress={u.disk.utilization} />
+						{(u.disk.utilization * 100).toFixed(1)}% of
+						{prettyBytes(u.disk.requested)}
+					</div>
+				</div>
+				<div>
+					<BodyShort>CPU</BodyShort>
+					<div>
+						<CircleProgressBar size="1.5rem" progress={u.cpu.utilization} />
+						{(u.cpu.utilization * 100).toFixed(1)}% of
+						{u.cpu.requested.toFixed(0)} CPU{$SqlInstances.data.team.serviceUtilization.sqlInstances
+							.cpu.requested > 1
+							? 's'
+							: ''}
+					</div>
+				</div>
+				<div>
+					<BodyShort>Memory</BodyShort>
+					<div>
+						<CircleProgressBar size="1.5rem" progress={u.memory.utilization} />
+						{(u.memory.utilization * 100).toFixed(1)}% of
+						{prettyBytes(u.memory.requested)}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {/if}
 
 <style>
-	.summary-grid {
+	.content-wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
+		gap: var(--a-spacing-6);
+		grid-template-columns: 1fr 300px;
+		align-items: start;
+	}
+	.right {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-1-alt);
+		align-items: flex-end;
+	}
+
+	.right-column {
+		display: grid;
+		gap: var(--a-spacing-6);
+	}
+	code {
+		font-size: 0.9rem;
+	}
+
+	.utilization {
+		display: grid;
+		gap: var(--a-spacing-1-alt);
+		div {
+			display: grid;
+			gap: var(--a-spacing-1-alt);
+			div {
+				display: flex;
+				gap: var(--a-spacing-1-alt);
+				align-items: center;
+			}
+		}
 	}
 </style>
