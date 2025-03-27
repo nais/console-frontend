@@ -74,6 +74,7 @@
 			.filter((error) => error.__typename !== 'WorkloadStatusVulnerable') as errors (errors.__typename)}
 			{#if errors.workloads?.length && errors.level}
 				<TeamErrorMessage
+					collapsible={errors.__typename !== 'WorkloadStatusNoRunningInstances'}
 					error={{
 						__typename: errors.__typename,
 						level: errors.level
