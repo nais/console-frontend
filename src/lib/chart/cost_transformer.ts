@@ -239,3 +239,63 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 		}))
 	} as EChartsOption;
 }
+
+export function costTransformColumnChartTeamEnvironmentApplicationsCost(
+	series: {
+		name: string | undefined;
+		data: (number | undefined)[][];
+	}[]
+) {
+	return {
+		animation: false,
+		title: {},
+		legend: {
+			// bottom: 0,
+			width: '90%',
+			selector: [
+				{
+					title: 'Inverse selection',
+					type: 'inverse'
+				}
+			]
+		},
+
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'shadow'
+			},
+			valueFormatter(value: OptionDataValue[]) {
+				return euroValueFormatter(value[1] as number);
+			}
+		},
+		color: visualizationColors,
+
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis: [
+			{
+				type: 'time',
+				boundaryGap: false
+			}
+		],
+		yAxis: [
+			{
+				type: 'value',
+				axisLabel: {
+					formatter: (value: number) => euroValueFormatter(value)
+				}
+			}
+		],
+		series: series.map(({ name, data }) => ({
+			name,
+			type: 'line',
+			showSymbol: false,
+			data
+		}))
+	} as EChartsOption;
+}
