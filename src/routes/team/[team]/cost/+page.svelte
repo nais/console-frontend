@@ -4,7 +4,13 @@
 	import EChart from '$lib/chart/EChart.svelte';
 	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 	import TeamEnvironmentApplicationsCost from './TeamEnvironmentApplicationsCost.svelte';
 
@@ -17,7 +23,14 @@
 
 	<div class="graph">
 		<div class="heading">
-			<Heading level="2">Cost by Service</Heading>
+			<div class="content">
+				<Heading level="2" spacing>Cost by Service</Heading>
+				<BodyLong>
+					Distribution of team costs across various services. Some services, like Kafka, are missing
+					cost data per team. Cost information is best-effort and originates from Google Cloud and
+					Aiven.
+				</BodyLong>
+			</div>
 			<ToggleGroup
 				value={interval}
 				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -58,6 +71,11 @@
 	.heading {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-end;
+		gap: var(--spacing-layout);
+	}
+
+	.content {
+		max-width: 80ch;
 	}
 </style>

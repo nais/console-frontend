@@ -3,7 +3,13 @@
 	import { costTransformColumnChartTeamEnvironmentApplicationsCost } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { TeamEnvironmentApplicationsCostVariables } from './$houdini';
 
 	const {
@@ -52,7 +58,7 @@
 
 	const appsByEnv = $derived(
 		$costQuery.data?.team.environments
-			.filter((env) => env.cost.daily.series.length > 0)
+			.filter((env) => env?.cost.daily.series.length > 0)
 			.map((env) => ({
 				...env,
 				series: env.cost.daily.series
@@ -69,43 +75,62 @@
 								s.date.getTime(),
 								s.workloads.find((w) => w.workload?.name === name)?.cost
 							])
-							.filter(([, cost]) => cost !== undefined)
+							.filter(([, cost]) => cost !== undefined),
+						sum: env.cost.daily.series
+							.map((s) => s.workloads.find((w) => w.workload?.name === name)?.cost)
+							.filter((cost) => cost !== undefined)
+							.reduce((acc, cost) => acc + (cost ?? 0), 0)
 					}))
+					.sort((a, b) => b.sum - a.sum)
+					.slice(0, 10)
 			}))
 			.toReversed() ?? []
 	);
 </script>
 
-<Heading level="2">Cost by Environment</Heading>
-{#if $costQuery.fetching}
-	<div style="display: flex; justify-content: center; align-items: center; height: 200px;">
-		<Loader size="3xlarge" />
+<div>
+	<div class="content">
+		<Heading level="2" spacing>10 Most Expensive Applications by Environment</Heading>
+		<BodyLong spacing>
+			Accumulated cost for each application over time, including persistence, broken down by
+			environment. Displaying the 10 most expensive applications for the chosen time interval.
+		</BodyLong>
 	</div>
-{:else}
-	{#each appsByEnv as env (env.id)}
-		<div class="heading">
-			<Heading level="3" size="small">{env.environment.name}</Heading>
-			<ToggleGroup
-				value={interval}
-				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-			>
-				{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-				{/each}
-			</ToggleGroup>
+	{#if $costQuery.fetching}
+		<div style="display: flex; justify-content: center; align-items: center; height: 200px;">
+			<Loader size="3xlarge" />
 		</div>
+	{:else}
+		{#each appsByEnv as env (env.id)}
+			<div class="heading">
+				<Heading level="3" size="small">{env.environment.name}</Heading>
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
 
-		<EChart
-			options={costTransformColumnChartTeamEnvironmentApplicationsCost(env.series)}
-			style="height: 500px"
-		/>
-	{/each}
-{/if}
+			<EChart
+				options={costTransformColumnChartTeamEnvironmentApplicationsCost(env.series)}
+				style="height: 500px"
+			/>
+		{:else}
+			<BodyLong>No application cost data available</BodyLong>
+		{/each}
+	{/if}
+</div>
 
 <style>
 	.heading {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+	}
+	.content {
+		max-width: 80ch;
 	}
 </style>
