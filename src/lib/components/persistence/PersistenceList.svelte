@@ -17,8 +17,6 @@
 				return 'BigQuery';
 			case 'SqlInstance':
 				return 'Postgres';
-			case 'RedisInstance':
-				return 'Redis';
 			case 'ValkeyInstance':
 				return 'Valkey';
 			default:

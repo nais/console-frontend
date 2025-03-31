@@ -1,7 +1,6 @@
 import { menuItems } from './menuItems';
 
 const features = {
-	redis: { enabled: true },
 	valkey: { enabled: true },
 	openSearch: { enabled: true },
 	kafka: { enabled: true },
@@ -28,7 +27,6 @@ describe('menuItems', () => {
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
 					{ label: 'Postgres', href: '/team/devteam/postgres' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
-					{ label: 'Redis', href: '/team/devteam/redis' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
 					{ label: 'Kafka Topics', href: '/team/devteam/kafka' },
@@ -95,9 +93,7 @@ describe('menuItems', () => {
 					isAdmin: false
 				})
 					.flatMap((g) => g)
-					.find((i) =>
-						['Redis', 'Valkey', 'OpenSearch', 'Kafka Topics', 'Unleash'].includes(i.label)
-					)
+					.find((i) => ['Valkey', 'OpenSearch', 'Kafka Topics', 'Unleash'].includes(i.label))
 			).toBeUndefined();
 		});
 
@@ -125,7 +121,6 @@ describe('menuItems', () => {
 					jobs: { total: 1, notNais: 1 },
 					sqlInstances: { total: 7 },
 					buckets: { total: 1337 },
-					redisInstances: { total: 5 },
 					valkeyInstances: { total: 11 },
 					openSearchInstances: { total: 17 },
 					kafkaTopics: { total: 23 },
@@ -145,7 +140,6 @@ describe('menuItems', () => {
 				{ label: 'Jobs', count: 1 },
 				{ label: 'Postgres', count: 7 },
 				{ label: 'Buckets', count: 1337 },
-				{ label: 'Redis', count: 5 },
 				{ label: 'Valkey', count: 11 },
 				{ label: 'OpenSearch', count: 17 },
 				{ label: 'Kafka Topics', count: 23 },

@@ -28,11 +28,6 @@ const label = (type: string) => {
 				pageName: 'Buckets',
 				plural: 'buckets'
 			};
-		case 'redis':
-			return {
-				pageName: 'Redis Instances',
-				plural: 'redis'
-			};
 		case 'valkey':
 			return {
 				pageName: 'Valkey Instances',

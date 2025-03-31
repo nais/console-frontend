@@ -4,10 +4,9 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilityOverview from '$lib/components/VulnerabilityOverview.svelte';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
@@ -32,8 +31,6 @@
 		}
 	};
 
-	const redisInstances = $derived($TeamOverview.data?.team.redisInstances.nodes);
-
 	const formatGARRepo = (repo: string) => {
 		const [, projectId, , location, , repository] = repo.split('/');
 		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
@@ -50,25 +47,6 @@
 
 <div class="wrapper">
 	<div class="alerts-wrapper">
-		{#if redisInstances && redisInstances.length > 0}
-			<Alert variant="error" size="small">
-				<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
-					<Heading level="2" size="small">Action Required – Redis Shutdown Imminent</Heading>
-				</div>
-
-				<BodyLong>
-					Your team still has active Redis instances, but <strong
-						>Aiven Redis will be shut down on March 31, 2025.</strong
-					> Migrate your Redis instances to Valkey before the deadline to avoid service disruption.
-				</BodyLong>
-				<Heading level="3" size="xsmall">Redis instances:</Heading>
-				<ul>
-					{#each redisInstances as redis (redis.id)}
-						<li><PersistenceLink instance={redis} /></li>
-					{/each}
-				</ul>
-			</Alert>
-		{/if}
 		{#each supportedErrorTypes
 			.map(getWorkloadsWithError)
 			.filter((error) => error.__typename !== 'WorkloadStatusVulnerable') as errors (errors.__typename)}
@@ -243,14 +221,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--a-spacing-2);
-	}
-
-	ul {
-		padding: 0;
-		padding-left: 20px;
-		margin: 0;
-	}
-	ul li {
-		margin: var(--a-spacing-1);
 	}
 </style>

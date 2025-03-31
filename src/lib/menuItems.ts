@@ -8,7 +8,6 @@ export const menuItems = ({
 	path: string;
 	features?: {
 		unleash: { enabled: boolean };
-		redis: { enabled: boolean };
 		valkey: { enabled: boolean };
 		kafka: { enabled: boolean };
 		openSearch: { enabled: boolean };
@@ -19,7 +18,6 @@ export const menuItems = ({
 		jobs: { total: number; notNais: number };
 		sqlInstances: { total: number };
 		buckets: { total: number };
-		redisInstances: { total: number };
 		valkeyInstances: { total: number };
 		openSearchInstances: { total: number };
 		kafkaTopics: { total: number };
@@ -35,7 +33,6 @@ export const menuItems = ({
 			jobs: 'jobs',
 			postgres: 'sqlInstances',
 			buckets: 'buckets',
-			redis: 'redisInstances',
 			valkey: 'valkeyInstances',
 			opensearch: 'openSearchInstances',
 			kafka: 'kafkaTopics',
@@ -97,7 +94,6 @@ export const menuItems = ({
 			member && menuItem('Secrets', 'secrets', 'secret'),
 			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
-			features?.redis && menuItem('Redis', 'redis', 'redis'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
 			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),
 			features?.kafka && menuItem('Kafka Topics', 'kafka', 'kafka'),

@@ -29,13 +29,6 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 						cascadingDelete
 					}
 				}
-				redisInstances {
-					nodes {
-						id
-						__typename
-						name
-					}
-				}
 				valkeyInstances {
 					nodes {
 						id

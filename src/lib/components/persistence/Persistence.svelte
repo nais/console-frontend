@@ -73,14 +73,6 @@
 							}
 						}
 					}
-					redisInstances {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
 					valkeyInstances {
 						edges {
 							node {
@@ -132,7 +124,6 @@
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		redis: $data.redisInstances.edges.map(toIconLabel('redis')),
 		valkey: $data.valkeyInstances.edges.map(toIconLabel('valkey'))
 	});
 </script>

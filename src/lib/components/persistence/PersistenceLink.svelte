@@ -28,8 +28,6 @@
 				return 'kafka';
 			case 'OpenSearch':
 				return 'opensearch';
-			case 'RedisInstance':
-				return 'redis';
 			case 'SqlInstance':
 				return 'postgres';
 			case 'ValkeyInstance':

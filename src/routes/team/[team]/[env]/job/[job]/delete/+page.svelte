@@ -53,7 +53,6 @@
 			app.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			app.buckets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
-			app.redisInstances.nodes.length > 0 ||
 			app.valkeyInstances.nodes.length > 0
 		);
 	}
@@ -102,12 +101,6 @@
 					<PersistenceList persistence={node}
 						>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
 						the manifest.
-					</PersistenceList>
-				{/each}
-				{#each job.redisInstances.nodes as node (node.id)}
-					<PersistenceList persistence={node}
-						>If this Redis instance is defined on team level, it won't be deleted. If it's created
-						by the app, it will be permanently deleted.
 					</PersistenceList>
 				{/each}
 				{#each job.valkeyInstances.nodes as node (node.id)}

@@ -4,7 +4,6 @@
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import RedisIcon from '$lib/icons/RedisIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import { Modal } from '@nais/ds-svelte-community';
 	import {
@@ -156,12 +155,6 @@
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},
-		RedisInstance: {
-			icon: RedisIcon,
-			urlName: 'redis',
-			prefix: 'redis',
-			type: 'REDIS_INSTANCE'
-		},
 		ValkeyInstance: {
 			icon: ValkeyIcon,
 			urlName: 'valkey',
@@ -217,7 +210,7 @@
 		loading={$store.fetching}
 		results={query
 			? $store.data?.search.nodes.map((result) => {
-					const { icon, urlName } = categories[result.__typename];
+					const { icon, urlName } = categories[result.__typename as keyof typeof categories];
 
 					if (result.__typename === 'Team') {
 						return {
