@@ -46,7 +46,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading>Analysis trail for {finding.identifier}</Heading>
+		<Heading level="1" size="medium">Analysis trail for {finding.identifier}</Heading>
 	{/snippet}
 	{#if finding.analysisTrail}
 		<div class="info">
@@ -67,7 +67,7 @@
 		</div>
 
 		<div class="workload">
-			<h5>Affected workloads</h5>
+			<Heading level="2" size="small">Affected workloads</Heading>
 			<Table size="small">
 				<Thead>
 					<Tr>
@@ -87,7 +87,7 @@
 				</Tbody>
 			</Table>
 		</div>
-		<h5>Audit log</h5>
+		<Heading level="2" size="small">Audit log</Heading>
 		<div class="trail">
 			<Table size="small">
 				<Thead>
@@ -136,5 +136,8 @@
 
 	code {
 		font-size: 0.9rem;
+	}
+	dt {
+		font-weight: bold;
 	}
 </style>

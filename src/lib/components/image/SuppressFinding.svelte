@@ -34,6 +34,7 @@
 	} from '$houdini';
 	import {
 		Alert,
+		BodyShort,
 		Button,
 		Checkbox,
 		Heading,
@@ -184,7 +185,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading>Suppress finding for {finding.identifier}</Heading>
+		<Heading level="1" size="medium">Suppress finding for {finding.identifier}</Heading>
 	{/snippet}
 
 	<div class="info">
@@ -205,7 +206,7 @@
 		</dl>
 	</div>
 	<div class="workload">
-		<h5>Affected workloads</h5>
+		<Heading level="2" size="small">Affected workloads</Heading>
 		<Table size="small">
 			<Thead>
 				<Tr>
@@ -232,10 +233,10 @@
 					{errormessage}
 				</Alert>
 			{/if}
-			<p>
+			<BodyShort>
 				Provide a reason for suppressing this finding. This will be recorded in the analysis audit
 				log. Suppression will be in effect for all workloads using this image.
-			</p>
+			</BodyShort>
 			<Select size="small" label="Analysis" bind:value={selectedReason}>
 				{#each SUPPRESS_OPTIONS as option (option)}
 					{#if option.value === finding.state}
