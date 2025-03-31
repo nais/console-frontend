@@ -210,6 +210,7 @@
 		loading={$store.fetching}
 		results={query
 			? $store.data?.search.nodes.map((result) => {
+					// TODO: Fjerne `as keyof typeof categories` når Redis er borte fra schema
 					const { icon, urlName } = categories[result.__typename as keyof typeof categories];
 
 					if (result.__typename === 'Team') {
