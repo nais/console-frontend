@@ -9,7 +9,7 @@ export const load: PageLoad = async (event) => {
 	const toDate = to ? new Date(to) : new Date(Date.now() - 2 * 1000 * 24 * 60 * 60);
 
 	return {
-		fromDate,
+		fromDate: fromDate,
 		toDate,
 		...(await load_JobCost({
 			event,
