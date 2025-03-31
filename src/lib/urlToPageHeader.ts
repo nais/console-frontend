@@ -57,6 +57,10 @@ const label = (type: string) => {
 			return {
 				pageName: 'Activity Log'
 			};
+		case 'confirm_delete':
+			return {
+				pageName: 'Confirm Team Deletion'
+			};
 		case 'vulnerability-report':
 			return {
 				pageName: 'Vulnerability Report'
@@ -81,8 +85,15 @@ type Result = {
 const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 	const split = pathname.split('/');
 
+	console.log('split', split);
+
 	if (split.length < 4) {
 		return [];
+	}
+
+	// Hack to handle confirm_delete
+	if (split[3] == 'settings' && split[4] === 'confirm_delete') {
+		return [{ label: split[2], href: `/team/${split[2]}` }];
 	}
 
 	const [, , team, env, type, resource] = split;

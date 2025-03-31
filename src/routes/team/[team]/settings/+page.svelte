@@ -14,6 +14,7 @@
 	import {
 		Alert,
 		BodyLong,
+		BodyShort,
 		Button,
 		CopyButton,
 		Heading,
@@ -192,7 +193,7 @@
 
 		<div>
 			<Heading level="2">Deploy Key</Heading>
-			<p>
+			<BodyShort>
 				Deploy keys can be used to authenticate for deployments instead of using
 				<a
 					href={docURL(
@@ -202,7 +203,7 @@
 					repository authorization
 				</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from
 				local machines.
-			</p>
+			</BodyShort>
 
 			{#if teamSettings.deploymentKey}
 				{@const deployKey = teamSettings.deploymentKey}
@@ -269,8 +270,10 @@
 			{/if}
 			{#if browser}
 				<Modal bind:open={showRotateKey} closeButton={false}>
-					<h3>Rotate deploy key</h3>
-					<p>Are you sure you want to rotate the deploy key?</p>
+					<Heading level="1" size="medium"
+						><WarningIcon class="heading-aligned-icon" /> Rotate deploy key</Heading
+					>
+					<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
 					<Button
 						onclick={() => {
 							showRotateKey = !showRotateKey;
@@ -322,7 +325,7 @@
 					{#if browser}
 						<Modal bind:open={showDeleteTeam}>
 							{#snippet header()}
-								<h3>Request team deletion</h3>
+								<Heading level="1" size="medium">Request team deletion</Heading>
 							{/snippet}
 
 							{#if !deleteKeyResp?.data}
@@ -436,9 +439,6 @@
 	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
-	}
-	h3 {
-		margin-bottom: 0.5rem;
 	}
 
 	.buttons {
