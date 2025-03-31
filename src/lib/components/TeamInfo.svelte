@@ -33,7 +33,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="4" size="small">Team summary</Heading>
+	<Heading level="4" size="small">Team Summary</Heading>
 
 	{#if $teamInfo.data}
 		{@const t = $teamInfo.data.team}

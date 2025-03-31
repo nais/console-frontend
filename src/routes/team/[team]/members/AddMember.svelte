@@ -103,7 +103,7 @@
 
 <Modal bind:open>
 	{#snippet header()}
-		<Heading>Add member to {team}</Heading>
+		<Heading>Add Member to {team}</Heading>
 	{/snippet}
 
 	{#each errors as error (error)}

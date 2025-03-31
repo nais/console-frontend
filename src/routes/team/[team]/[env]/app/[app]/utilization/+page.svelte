@@ -204,7 +204,7 @@
 		</div>
 	</BodyLong>
 	<div class="section">
-		<Heading level="2" size="medium" spacing>Memory usage</Heading>
+		<Heading level="2" size="medium" spacing>Memory Usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
@@ -249,7 +249,7 @@
 		{/if}
 	</div>
 	<div class="section">
-		<Heading level="2" size="medium" spacing>CPU usage</Heading>
+		<Heading level="2" size="medium" spacing>CPU Usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}

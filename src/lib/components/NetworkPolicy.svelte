@@ -111,7 +111,7 @@
 	{/if}
 {/snippet}
 
-<Heading level="2" size="medium" spacing>Network policy</Heading>
+<Heading level="2" size="medium" spacing>Network Policy</Heading>
 {#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
 	<div class="grid">
 		<div>

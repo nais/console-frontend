@@ -64,7 +64,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Run configuration</Heading>
+	<Heading level="3" size="small">Run Configuration</Heading>
 	<div>
 		{#if schedule}
 			{@const runConfig = getLocalizedCronDescription(schedule.expression, schedule.timeZone)}

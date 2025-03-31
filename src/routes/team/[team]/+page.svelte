@@ -92,7 +92,7 @@
 			{/if}
 		</div>
 		<div class="card" style="grid-column: span 2;">
-			<Heading level="2" size="small">Managed resources</Heading>
+			<Heading level="2" size="small">Managed Resources</Heading>
 			<dl>
 				{#if $TeamOverview.data?.team.externalResources}
 					{@const external = $TeamOverview.data.team.externalResources}

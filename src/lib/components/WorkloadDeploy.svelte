@@ -112,7 +112,7 @@
 		{$data.image.name}:{$data.image.tag}
 	{/if}
 	{#if relatedWorkloads.length > 0}
-		<Heading level="4" size="xsmall">Other workloads using this image</Heading>
+		<Heading level="4" size="xsmall">Other Workloads Using This Image</Heading>
 		{#each relatedWorkloads as workload (workload.id)}
 			<WorkloadLink {workload} />
 		{/each}

@@ -62,7 +62,7 @@
 	{@const app = $DeleteAppPage?.data?.team.environment.application}
 	<Card borderColor="var(--a-border-danger)">
 		{#if app.deletionStartedAt}
-			<Heading level="2">Deletion in progress</Heading>
+			<Heading level="2">Deletion in Progress</Heading>
 			This application is being deleted. Deletion started <Time
 				time={app.deletionStartedAt}
 				distance

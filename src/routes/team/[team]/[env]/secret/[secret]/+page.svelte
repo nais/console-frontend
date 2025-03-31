@@ -187,7 +187,7 @@
 		onconfirm={deleteSecret}
 	>
 		{#snippet header()}
-			<Heading>Delete secret</Heading>
+			<Heading>Delete Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
@@ -213,7 +213,7 @@
 		onconfirm={deleteValueFromSecret}
 	>
 		{#snippet header()}
-			<Heading>Delete key from secret</Heading>
+			<Heading>Delete Key From Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the secret named
@@ -256,7 +256,7 @@
 				{/if}
 			</div>
 			<div class="data-heading">
-				<Heading level="2">Secret data</Heading>
+				<Heading level="2">Secret Data</Heading>
 				<HelpText title="Secret data" placement="right">
 					A secret contains a set of key-value pairs.
 				</HelpText>
@@ -323,7 +323,7 @@
 {/if}
 <Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}
-		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
+		<Heading>Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
 	<Alert variant="info" size="small">
 		Editing this secret will cause a restart of the applications listed below.

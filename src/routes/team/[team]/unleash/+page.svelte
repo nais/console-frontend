@@ -224,7 +224,7 @@
 				</p>
 			</div>
 			<div>
-				<Heading level="2" spacing>Team access</Heading>
+				<Heading level="2" spacing>Team Access</Heading>
 				<Table>
 					<Thead>
 						<Tr>

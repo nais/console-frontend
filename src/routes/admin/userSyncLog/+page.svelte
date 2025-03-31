@@ -9,7 +9,7 @@
 	let { UserSyncLogs } = $derived(data);
 </script>
 
-<Heading level="2" size="medium" spacing>User synchronization log</Heading>
+<Heading level="2" size="medium" spacing>User Synchronization Log</Heading>
 <GraphErrors errors={$UserSyncLogs.errors} />
 {#if $UserSyncLogs.data}
 	<Table size="small">

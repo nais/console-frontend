@@ -325,7 +325,7 @@
 					{#if browser}
 						<Modal bind:open={showDeleteTeam}>
 							{#snippet header()}
-								<Heading level="1" size="medium">Request team deletion</Heading>
+								<Heading level="1" size="medium">Request Team Deletion</Heading>
 							{/snippet}
 
 							{#if !deleteKeyResp?.data}

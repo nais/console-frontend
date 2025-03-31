@@ -21,7 +21,7 @@
 	<div class="wrapper">
 		<VulnerabilitiesOverview team={$TeamVulnerabilities.data.team} />
 		<div>
-			<Heading level="3" size="medium" spacing>Workloads with vulnerabilities</Heading>
+			<Heading level="3" size="medium" spacing>Workloads with Vulnerabilities</Heading>
 
 			<div class="env-filter">
 				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">

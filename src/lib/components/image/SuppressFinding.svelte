@@ -185,7 +185,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading level="1" size="medium">Suppress finding for {finding.identifier}</Heading>
+		<Heading level="1" size="medium">Suppress Finding for {finding.identifier}</Heading>
 	{/snippet}
 
 	<div class="info">
@@ -206,7 +206,7 @@
 		</dl>
 	</div>
 	<div class="workload">
-		<Heading level="2" size="small">Affected workloads</Heading>
+		<Heading level="2" size="small">Affected Workloads</Heading>
 		<Table size="small">
 			<Thead>
 				<Tr>

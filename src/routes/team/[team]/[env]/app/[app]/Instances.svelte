@@ -198,7 +198,7 @@
 	{@const scaling = $data.resources.scaling}
 	{#if scaling.minInstances !== scaling.maxInstances}
 		<div>
-			<Heading level="4" size="small">Scaling configuration</Heading>
+			<Heading level="4" size="small">Scaling Configuration</Heading>
 			{scaling.minInstances} - {scaling.maxInstances} instances based on
 			{#if scaling.strategies && scaling.strategies.length > 0}
 				{#each scaling.strategies as strategy, i (strategy)}

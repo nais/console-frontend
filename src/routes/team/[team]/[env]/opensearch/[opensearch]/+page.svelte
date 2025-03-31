@@ -39,7 +39,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2" spacing>OpenSearch instance access list</Heading>
+			<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
 
 			{#if instance.access.edges.length > 0}
 				<Table
