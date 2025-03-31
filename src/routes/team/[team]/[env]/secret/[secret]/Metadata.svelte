@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Time from '$lib/Time.svelte';
+	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		lastModifiedAt: Date | null;
@@ -12,36 +13,33 @@
 	let { lastModifiedAt, lastModifiedBy }: Props = $props();
 </script>
 
-<h4>Metadata</h4>
-<h5>Last modified</h5>
-<div class="value">
-	{#if lastModifiedAt}
-		<Time time={lastModifiedAt} distance />
-	{:else}
-		<code>n/a</code>
-	{/if}
-</div>
-<h5>Last modified by</h5>
-<div class="value">
-	{#if lastModifiedBy}
-		<span class="cap" title={lastModifiedBy.email}>{lastModifiedBy.name}</span>
-	{:else}
-		<code>n/a</code>
-	{/if}
+<div class="card">
+	<Heading level="2" size="medium" spacing>Metadata</Heading>
+	<Heading level="3" size="xsmall">Last modified</Heading>
+	<div class="value">
+		{#if lastModifiedAt}
+			<Time time={lastModifiedAt} distance />
+		{:else}
+			<code>n/a</code>
+		{/if}
+	</div>
+	<Heading level="3" size="xsmall">Last modified by</Heading>
+	<div class="value">
+		Last modified by
+		{#if lastModifiedBy}
+			<span class="cap" title={lastModifiedBy.email}>{lastModifiedBy.name}</span>
+		{:else}
+			<code>n/a</code>
+		{/if}
+	</div>
 </div>
 
 <style>
-	h4 {
-		display: flex;
-		margin-bottom: 0.5rem;
-		gap: 0.5rem;
+	.card {
+		background-color: var(--a-surface-subtle);
+		padding: var(--a-spacing-5) var(--a-spacing-5);
+		border-radius: 12px;
 	}
-
-	h5 {
-		margin-top: 1rem;
-		gap: 0.5rem;
-	}
-
 	code {
 		font-size: 1rem;
 	}
