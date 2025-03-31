@@ -13,7 +13,16 @@
 		yearlyOverageCost,
 		type TeamsOverageData
 	} from '$lib/utils/resources';
-	import { Table, Tbody, Td, Th, Thead, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import {
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community';
 	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
@@ -199,130 +208,133 @@
 </script>
 
 <GraphErrors errors={$TenantUtilization.errors} />
-
-<div class="grid">
+<div class="wrapper">
 	{#if resourceUtilization}
-		<Card columns={3} borderColor="#83bff6">
-			<SummaryCard
-				color="blue"
-				title="Unused CPU cost"
-				helpTextTitle="Annual cost of unused CPU"
-				helpText="Estimate of annual cost of unused CPU for tenant calculated from current utilization data."
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{#if resourceUtilization.cpuUtil.length > 0}
-					{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
-						(acc, { requested }) => acc + requested,
-						0
-					)}
-					{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
-					{euroValueFormatter(
-						round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0),
-						{ maximumFractionDigits: 0 }
-					)}
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={3} borderColor="#91dc75">
-			<SummaryCard
-				color="green"
-				title="Unused memory cost"
-				helpTextTitle="Annual cost of unused memory"
-				helpText="Estimate of annual cost of unused memory for tenant calculated from current utilization data."
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{#if resourceUtilization.memUtil.length > 0}
-					{@const memoryRequested = resourceUtilization.memUtil.reduce(
-						(acc, { requested }) => acc + requested,
-						0
-					)}
-					{@const memoryUsage = resourceUtilization.memUtil.reduce(
-						(acc, { used }) => acc + used,
-						0
-					)}
-					{euroValueFormatter(
-						yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
-						{ maximumFractionDigits: 0 }
-					)}
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={12} borderColor="var(--a-gray-200)">
-			<div style="display: flex; justify-content: space-between;">
-				<h3>Unused resources per team (top 10)</h3>
-			</div>
-
-			<div style="display: flex">
-				<EChart
-					options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
-					style="height: 350px; width: 50%;"
-					on:click={(e) => {
-						const team = e.detail.name;
-						goto(`/team/${team}/utilization`);
-					}}
-				/>
-				<EChart
-					options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
-					style="height: 350px; width: 50%;"
-					on:click={(e) => {
-						const team = e.detail.name;
-						goto(`/team/${team}/utilization`);
-					}}
-				/>
-			</div>
-			<div>
-				<h4>All teams</h4>
-				<Table
-					size="small"
-					sort={sortState}
-					onsortchange={(key) => {
-						sortState = sortTable(key, sortState);
-					}}
+		<div class="grid">
+			<Card columns={3} borderColor="#83bff6">
+				<SummaryCard
+					color="blue"
+					title="Unused CPU cost"
+					helpTextTitle="Annual cost of unused CPU"
+					helpText="Estimate of annual cost of unused CPU for tenant calculated from current utilization data."
 				>
-					<Thead>
+					{#snippet icon({ color })}
+						<WalletIcon height="32px" width="32px" {color} />
+					{/snippet}
+					{#if resourceUtilization.cpuUtil.length > 0}
+						{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
+							(acc, { requested }) => acc + requested,
+							0
+						)}
+						{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
+						{euroValueFormatter(
+							round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0),
+							{ maximumFractionDigits: 0 }
+						)}
+					{/if}
+				</SummaryCard>
+			</Card>
+			<Card columns={3} borderColor="#91dc75">
+				<SummaryCard
+					color="green"
+					title="Unused memory cost"
+					helpTextTitle="Annual cost of unused memory"
+					helpText="Estimate of annual cost of unused memory for tenant calculated from current utilization data."
+				>
+					{#snippet icon({ color })}
+						<WalletIcon height="32px" width="32px" {color} />
+					{/snippet}
+					{#if resourceUtilization.memUtil.length > 0}
+						{@const memoryRequested = resourceUtilization.memUtil.reduce(
+							(acc, { requested }) => acc + requested,
+							0
+						)}
+						{@const memoryUsage = resourceUtilization.memUtil.reduce(
+							(acc, { used }) => acc + used,
+							0
+						)}
+						{euroValueFormatter(
+							yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
+							{ maximumFractionDigits: 0 }
+						)}
+					{/if}
+				</SummaryCard>
+			</Card>
+		</div>
+
+		<Heading level="1" size="large">Top 10 Unused Resources per Team</Heading>
+
+		<div style="display: flex">
+			<EChart
+				options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
+				style="height: 350px; width: 50%;"
+				on:click={(e) => {
+					const team = e.detail.name;
+					goto(`/team/${team}/utilization`);
+				}}
+			/>
+			<EChart
+				options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+				style="height: 350px; width: 50%;"
+				on:click={(e) => {
+					const team = e.detail.name;
+					goto(`/team/${team}/utilization`);
+				}}
+			/>
+		</div>
+		<div>
+			<Heading level="2" spacing>All Teams</Heading>
+			<Table
+				size="small"
+				sort={sortState}
+				onsortchange={(key) => {
+					sortState = sortTable(key, sortState);
+				}}
+			>
+				<Thead>
+					<Tr>
+						<Th sortable={true} sortKey="TEAM">Team</Th>
+						<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+						<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+						<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#each overageTable as overage (overage)}
 						<Tr>
-							<Th sortable={true} sortKey="TEAM">Team</Th>
-							<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-							<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
-							<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+							<Td>
+								<a href={`/team/${overage.team}/utilization`}>
+									{overage.team}
+								</a>
+							</Td>
+							<Td>
+								{overage.unusedCpu.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}
+							</Td>
+							<Td>{prettyBytes(overage.unusedMem)}</Td>
+							<Td>
+								{euroValueFormatter(overage.estimatedAnnualOverageCost)}
+							</Td>
 						</Tr>
-					</Thead>
-					<Tbody>
-						{#each overageTable as overage (overage)}
-							<Tr>
-								<Td>
-									<a href={`/team/${overage.team}/utilization`}>
-										{overage.team}
-									</a>
-								</Td>
-								<Td>
-									{overage.unusedCpu.toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})}
-								</Td>
-								<Td>{prettyBytes(overage.unusedMem)}</Td>
-								<Td>
-									{euroValueFormatter(overage.estimatedAnnualOverageCost)}
-								</Td>
-							</Tr>
-						{:else}
-							<Tr>
-								<Td colspan={999}>No overage data for tenant.</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</div>
-		</Card>
+					{:else}
+						<Tr>
+							<Td colspan={999}>No overage data for tenant.</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
+		</div>
 	{/if}
 </div>
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
 	.grid {
 		margin-top: 1rem;
 		display: grid;
