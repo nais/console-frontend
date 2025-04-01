@@ -2269,6 +2269,7 @@ type OpenSearch implements Node & Persistence {
   status: OpenSearchStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
+  terminationProtection: Boolean!
   workload: Workload
 }
 
@@ -4531,6 +4532,31 @@ type Team implements Node {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
+
+  """Fetch vulnerability summaries for workloads in the team."""
+  vulnerabilitySummaries(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter the workloads by named environments."""
+    filter: TeamVulnerabilitySummaryFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: VulnerabilitySummaryOrder
+  ): WorkloadVulnerabilitySummaryConnection!
   vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
@@ -5889,6 +5915,7 @@ type ValkeyInstance implements Node & Persistence {
   status: ValkeyInstanceStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
+  terminationProtection: Boolean!
   workload: Workload
 }
 
@@ -5945,6 +5972,53 @@ enum ValkeyInstanceOrderField {
 
 type ValkeyInstanceStatus {
   state: String!
+}
+
+"""Ordering options when fetching vulnerability summaries for workloads."""
+input VulnerabilitySummaryOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: VulnerabilitySummaryOrderByField!
+}
+
+enum VulnerabilitySummaryOrderByField {
+  """Order by the name of the environment the workload is deployed in."""
+  ENVIRONMENT
+
+  """Order by name."""
+  NAME
+
+  """
+  Order by risk score"
+  """
+  VULNERABILITY_RISK_SCORE
+
+  """
+  Order by vulnerability severity critical"
+  """
+  VULNERABILITY_SEVERITY_CRITICAL
+
+  """
+  Order by vulnerability severity high"
+  """
+  VULNERABILITY_SEVERITY_HIGH
+
+  """
+  Order by vulnerability severity low"
+  """
+  VULNERABILITY_SEVERITY_LOW
+
+  """
+  Order by vulnerability severity medium"
+  """
+  VULNERABILITY_SEVERITY_MEDIUM
+
+  """
+  Order by vulnerability severity unassigned"
+  """
+  VULNERABILITY_SEVERITY_UNASSIGNED
 }
 
 type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
@@ -6451,4 +6525,37 @@ input WorkloadUtilizationSeriesInput {
 
   """Fetch resource usage from this timestamp."""
   start: Time!
+}
+
+type WorkloadVulnerabilitySummary implements Node {
+  """True if the workload has a software bill of materials (SBOM) attached."""
+  hasSBOM: Boolean!
+
+  """The globally unique ID of the workload vulnerability summary node."""
+  id: ID!
+
+  """The vulnerability summary for the workload."""
+  summary: ImageVulnerabilitySummary!
+
+  """The workload"""
+  workload: Workload!
+}
+
+type WorkloadVulnerabilitySummaryConnection {
+  """List of edges."""
+  edges: [WorkloadVulnerabilitySummaryEdge!]!
+
+  """List of nodes."""
+  nodes: [WorkloadVulnerabilitySummary!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type WorkloadVulnerabilitySummaryEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The workload vulnerability summary."""
+  node: WorkloadVulnerabilitySummary!
 }
