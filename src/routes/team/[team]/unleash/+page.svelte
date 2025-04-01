@@ -308,7 +308,7 @@
 								content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
 							>
 								<IconLabel
-									size="small"
+									size="medium"
 									icon={MemoryIcon}
 									label={`${metrics.memoryUtilization.toLocaleString('en', {
 										maximumSignificantDigits: 3
@@ -326,7 +326,7 @@
 								content={`CPU usage compared to the requested ${metrics.cpuRequests}.`}
 							>
 								<IconLabel
-									size="small"
+									size="medium"
 									icon={CpuIcon}
 									label={`${metrics.cpuUtilization.toLocaleString('en', {
 										maximumSignificantDigits: 3
