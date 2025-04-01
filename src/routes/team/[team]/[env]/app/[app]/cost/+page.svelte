@@ -34,17 +34,20 @@
 {#if $AppCost.data}
 	{@const d = $AppCost.data.team.environment.application.cost.daily}
 	<Heading level="2" spacing>Cost by Service for Application {app}</Heading>
-	<label for="from">From:</label>
-	<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} onchange={update} />
-	<label for="to">To:</label>
-	<input
-		type="date"
-		id="to"
-		min={getMinToDate(from)}
-		max={todayMinusTwoDays}
-		bind:value={to}
-		onchange={update}
-	/>
+	<div class="date-picker">
+		<label for="from">From:</label>
+		<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} onchange={update} />
+		<label for="to">To:</label>
+		<input
+			type="date"
+			id="to"
+			min={getMinToDate(from)}
+			max={todayMinusTwoDays}
+			bind:value={to}
+			onchange={update}
+		/>
+	</div>
+
 	<EChart
 		options={costTransformStackedColumnChart(new Date(from), new Date(to), d)}
 		style="height: 400px"
@@ -52,4 +55,9 @@
 {/if}
 
 <style>
+	.date-picker {
+		display: flex;
+		gap: var(--a-spacing-2);
+		margin-bottom: var(--spacing-layout);
+	}
 </style>
