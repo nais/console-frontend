@@ -85,8 +85,6 @@ type Result = {
 const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 	const split = pathname.split('/');
 
-	console.log('split', split);
-
 	if (split.length < 4) {
 		return [];
 	}
