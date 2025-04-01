@@ -204,11 +204,11 @@
 		</div>
 	</BodyLong>
 	<div class="section">
-		<Heading level="2" size="medium" spacing>Memory Usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
-			<div style="justify-self: end;">
+			<div class="heading-with-toggle">
+				<Heading level="2" size="medium" spacing>Memory Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -249,11 +249,11 @@
 		{/if}
 	</div>
 	<div class="section">
-		<Heading level="2" size="medium" spacing>CPU Usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
-			<div style="justify-self: end;">
+			<div class="heading-with-toggle">
+				<Heading level="2" size="medium" spacing>CPU Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -289,7 +289,11 @@
 		display: grid;
 		gap: var(--a-spacing-6);
 	}
-
+	.heading-with-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
 	.section {
 		display: grid;
 	}
