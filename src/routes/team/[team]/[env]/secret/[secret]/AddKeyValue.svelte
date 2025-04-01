@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, type SecretValueInput } from '$houdini';
-	import { Button, Modal, TextField } from '@nais/ds-svelte-community';
+	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Textarea from './Textarea.svelte';
 
@@ -111,8 +111,11 @@
 		Add key and value
 	</Button>
 </div>
-<Modal bind:open onclose={reset} width="medium" header="Add new key and value">
-	<div class="entry">
+<Modal bind:open onclose={reset} width="medium">
+	{#snippet header()}
+		<Heading level="1" size="large">Add new key and value</Heading>
+	{/snippet}
+	<div class="text-input">
 		<TextField
 			style="font-family: monospace; font-size: var(--a-font-size-small);"
 			size="small"
@@ -121,11 +124,10 @@
 			description="Examples: SOME_KEY, some.key, or some-key"
 			label="Key"
 		/>
-	</div>
 
-	<div class="entry">
 		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
+
 	{#snippet footer()}
 		{#if key === '' || value === ''}
 			<Button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</Button>
@@ -137,11 +139,12 @@
 </Modal>
 
 <style>
-	.buttons {
+	.text-input {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-3);
+	}
+	/* .buttons {
 		margin-top: 1rem;
-	}
-
-	.entry {
-		margin: 2rem 0;
-	}
+	} */
 </style>
