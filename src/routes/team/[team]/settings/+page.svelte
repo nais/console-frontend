@@ -32,7 +32,7 @@
 	import EditText from './EditText.svelte';
 
 	let { data }: PageProps = $props();
-	let { teamSlug, viewerIsMember } = $derived(data);
+	let { TeamSettings, viewerIsOwner, teamSlug, viewerIsMember } = $derived(data);
 
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
@@ -88,8 +88,6 @@
 	let deleteKeyLoading = $state(false);
 	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null =
 		$state(null);
-
-	let { TeamSettings, viewerIsOwner } = $derived(data);
 
 	let teamSettings = $derived($TeamSettings.data?.team);
 
@@ -543,7 +541,7 @@
 	.last-sync {
 		width: 100%;
 		color: var(--a-text-subtle);
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		text-align: right;
 	}
 </style>

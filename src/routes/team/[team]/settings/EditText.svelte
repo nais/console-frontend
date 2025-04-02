@@ -44,14 +44,16 @@
 {:else if height !== undefined}
 	<div bind:clientHeight={height} class:hidden={edit}>
 		<span class:tall={variant == 'textarea'}>{text}</span>
-		<Button
-			onclick={() => {
-				edit = true;
-			}}
-			size="xsmall"
-			variant="tertiary"
-			icon={PencilIcon}
-		/>
+		{#if isMember}
+			<Button
+				onclick={() => {
+					edit = true;
+				}}
+				size="xsmall"
+				variant="tertiary"
+				icon={PencilIcon}
+			/>
+		{/if}
 	</div>
 {:else}
 	<!--
