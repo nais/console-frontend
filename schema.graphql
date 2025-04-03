@@ -273,14 +273,6 @@ type Application implements Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Redis instances referenced by the application. This does not currently support pagination, but will return all available Redis instances.
-  """
-  redisInstances(
-    """Ordering options for items returned from the connection."""
-    orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
-
   """Resources for the application."""
   resources: ApplicationResources!
 
@@ -1297,14 +1289,6 @@ type FeatureOpenSearch implements Node {
   id: ID!
 }
 
-type FeatureRedis implements Node {
-  """Wether Redis is enabled or not."""
-  enabled: Boolean!
-
-  """Unique identifier for the feature."""
-  id: ID!
-}
-
 type FeatureUnleash implements Node {
   """Wether Unleash is enabled or not."""
   enabled: Boolean!
@@ -1330,9 +1314,6 @@ type Features implements Node {
 
   """Information about OpenSearch feature."""
   openSearch: FeatureOpenSearch!
-
-  """Information about Redis feature."""
-  redis: FeatureRedis! @deprecated(reason: "We are switching to Valkey")
 
   """Information about Unleash feature."""
   unleash: FeatureUnleash!
@@ -1607,14 +1588,6 @@ type Job implements Node & Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
-
-  """
-  Redis instances referenced by the job. This does not currently support pagination, but will return all available Redis instances.
-  """
-  redisInstances(
-    """Ordering options for items returned from the connection."""
-    orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """Resources for the job."""
   resources: JobResources!
@@ -2807,73 +2780,6 @@ type ReconcilerErrorEdge {
   node: ReconcilerError!
 }
 
-type RedisInstance implements Node & Persistence {
-  access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: RedisInstanceAccessOrder): RedisInstanceAccessConnection!
-  cost: RedisInstanceCost! @deprecated(reason: "We are switching to Valkey")
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-  id: ID!
-  name: String!
-  status: RedisInstanceStatus!
-  team: Team!
-  teamEnvironment: TeamEnvironment!
-  workload: Workload
-}
-
-type RedisInstanceAccess {
-  access: String!
-  workload: Workload!
-}
-
-type RedisInstanceAccessConnection {
-  edges: [RedisInstanceAccessEdge!]!
-  nodes: [RedisInstanceAccess!]!
-  pageInfo: PageInfo!
-}
-
-type RedisInstanceAccessEdge {
-  cursor: Cursor!
-  node: RedisInstanceAccess!
-}
-
-input RedisInstanceAccessOrder {
-  direction: OrderDirection!
-  field: RedisInstanceAccessOrderField!
-}
-
-enum RedisInstanceAccessOrderField {
-  ACCESS @deprecated(reason: "We are switching to Valkey")
-  WORKLOAD @deprecated(reason: "We are switching to Valkey")
-}
-
-type RedisInstanceConnection {
-  edges: [RedisInstanceEdge!]!
-  nodes: [RedisInstance!]!
-  pageInfo: PageInfo!
-}
-
-type RedisInstanceCost {
-  sum: Float! @deprecated(reason: "We are switching to Valkey")
-}
-
-type RedisInstanceEdge {
-  cursor: Cursor!
-  node: RedisInstance!
-}
-
-input RedisInstanceOrder {
-  direction: OrderDirection!
-  field: RedisInstanceOrderField!
-}
-
-enum RedisInstanceOrderField {
-  ENVIRONMENT @deprecated(reason: "We are switching to Valkey")
-  NAME @deprecated(reason: "We are switching to Valkey")
-}
-
-type RedisInstanceStatus {
-  state: String!
-}
-
 input RemoveRepositoryFromTeamInput {
   """Name of the repository, with the org prefix, for instance 'org/repo'."""
   repositoryName: String!
@@ -3237,7 +3143,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | RedisInstance | SqlInstance | Team | ValkeyInstance
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | Team | ValkeyInstance
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -3269,7 +3175,6 @@ enum SearchType {
   JOB
   KAFKA_TOPIC
   OPENSEARCH
-  REDIS_INSTANCE @deprecated(reason: "We are switching to Valkey")
   SQL_INSTANCE
 
   """Search for teams."""
@@ -4407,27 +4312,6 @@ type Team implements Node {
   """Purpose of the team."""
   purpose: String!
 
-  """Redis instances owned by the team."""
-  redisInstances(
-    """Get items after this cursor."""
-    after: Cursor
-
-    """Get items before this cursor."""
-    before: Cursor
-
-    """
-    Get the first n items in the connection. This can be used in combination with the after parameter.
-    """
-    first: Int
-
-    """
-    Get the last n items in the connection. This can be used in combination with the before parameter.
-    """
-    last: Int
-
-    """Ordering options for items returned from the connection."""
-    orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
   repositories(
     """Get items after this cursor."""
     after: Cursor
@@ -4833,9 +4717,6 @@ type TeamEnvironment implements Node {
   """OpenSearch instance in the team environment."""
   openSearchInstance(name: String!): OpenSearch!
 
-  """Redis instance in the team environment."""
-  redisInstance(name: String!): RedisInstance! @deprecated(reason: "We are switching to Valkey")
-
   """Get a secret by name."""
   secret(name: String!): Secret!
 
@@ -4995,11 +4876,6 @@ type TeamInventoryCountOpenSearchInstances {
   total: Int!
 }
 
-type TeamInventoryCountRedisInstances {
-  """Total number of Redis instances."""
-  total: Int!
-}
-
 type TeamInventoryCountSqlInstances {
   """Total number of SQL instances."""
   total: Int!
@@ -5018,7 +4894,6 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearchInstances: TeamInventoryCountOpenSearchInstances!
-  redisInstances: TeamInventoryCountRedisInstances! @deprecated(reason: "We are switching to Valkey")
   sqlInstances: TeamInventoryCountSqlInstances!
   valkeyInstances: TeamInventoryCountValkeyInstances!
 }
@@ -6123,14 +5998,6 @@ interface Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
-
-  """
-  Redis instances referenced by the workload. This does not currently support pagination, but will return all available Redis instances.
-  """
-  redisInstances(
-    """Ordering options for items returned from the connection."""
-    orderBy: RedisInstanceOrder
-  ): RedisInstanceConnection! @deprecated(reason: "We are switching to Valkey")
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!

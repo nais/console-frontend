@@ -59,17 +59,6 @@
 							}
 						}
 					}
-					... on RedisInstance {
-						name
-						team {
-							slug
-						}
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
 					... on ValkeyInstance {
 						name
 						team {
@@ -210,8 +199,7 @@
 		loading={$store.fetching}
 		results={query
 			? $store.data?.search.nodes.map((result) => {
-					// TODO: Fjerne `as keyof typeof categories` når Redis er borte fra schema
-					const { icon, urlName } = categories[result.__typename as keyof typeof categories];
+					const { icon, urlName } = categories[result.__typename];
 
 					if (result.__typename === 'Team') {
 						return {
