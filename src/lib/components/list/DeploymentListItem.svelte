@@ -1,14 +1,16 @@
 <script lang="ts">
 	import type { DeploymentStatusState, ValueOf } from '$houdini';
 	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import ListItem from './ListItem.svelte';
 
 	const {
-		deployment
+		deployment,
+		showEnv
 	}: {
 		deployment: {
 			id: string;
@@ -34,6 +36,7 @@
 			deployerUsername: string | null;
 			triggerUrl: string | null;
 		};
+		showEnv?: boolean;
 	} = $props();
 </script>
 
@@ -48,8 +51,22 @@
 				</span>
 				by {deployment.deployerUsername} triggered a
 				{#if deployment.triggerUrl}
-					<a href={deployment.triggerUrl}>Github action <ExternalLinkIcon /></a>
-					<Time time={deployment.createdAt} distance={true} /> to deploy:
+					{#if showEnv}
+						<a href={deployment.triggerUrl}>Github action <ExternalLinkIcon /></a>
+						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
+							.resources.nodes.length === 1
+							? ''
+							: 's'}
+						in <Tag size="small" variant={envTagVariant(deployment.environmentName)}>
+							{deployment.environmentName}
+						</Tag>:
+					{:else}
+						<a href={deployment.triggerUrl}>Github action <ExternalLinkIcon /></a>
+						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
+							.resources.nodes.length === 1
+							? ''
+							: 's'}:
+					{/if}
 				{/if}
 
 				{#if deployment.resources.nodes.length > 0}

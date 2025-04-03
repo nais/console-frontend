@@ -49,7 +49,7 @@
 					: ''}"
 			>
 				{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
-					<div><DeploymentListItem {deployment} /></div>
+					<div><DeploymentListItem {deployment} showEnv /></div>
 				{/each}
 			</List>
 
