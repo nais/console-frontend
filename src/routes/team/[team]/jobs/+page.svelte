@@ -5,6 +5,7 @@
 	import JobListItem from '$lib/components/list/JobListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -67,12 +68,10 @@
 			{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}
 				<strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
 				completion and then exit.
-				<a href="https://doc.nais.io/workloads/job/"
-					>Learn more about jobs and how to get started.</a
-				>
+				<a href={docURL('/workloads/job')}>Learn more about jobs and how to get started.</a>
 			{:else}
 				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
-				<a href="https://doc.nais.io/workloads/job/">Learn more about jobs.</a>
+				<a href={docURL('/workloads/job')}>Learn more about jobs.</a>
 			{/if}
 		</BodyLong>
 

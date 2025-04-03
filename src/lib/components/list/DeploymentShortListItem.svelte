@@ -4,7 +4,6 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		deployment: DeploymentItemFragment;
@@ -60,20 +59,17 @@
 		{#if $data.statuses.nodes.length === 0}
 			<DeploymentStatus status="UNKNOWN" />
 		{:else}<DeploymentStatus status={$data.statuses.nodes[0].state} />{/if}
-		{#if $data.triggerUrl}
-			<a href={$data.triggerUrl}>Github action <ExternalLinkIcon /></a>
-		{/if}
 	</div>
 </div>
 
 <style>
 	code {
-		font-size: 0.9rem;
+		font-size: 14px;
 	}
 	.deployment {
 		display: grid;
 		gap: var(--a-spacing-6);
-		grid-template-columns: 1fr 140px;
+		grid-template-columns: 1fr 100px;
 	}
 	.status {
 		display: flex;

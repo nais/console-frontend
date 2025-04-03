@@ -1,12 +1,11 @@
 <script lang="ts">
-	import DeploymentStatus from '$lib/DeploymentStatus.svelte';
+	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
-	import { isValidSha } from '$lib/utils/isValidSha';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -32,100 +31,53 @@
 <GraphErrors errors={$Deployments.errors} />
 
 {#if $Deployments.data}
-	<Table size="small">
-		<Thead>
-			<Tr>
-				<Th style="width: var(--a-spacing-32);">Resource(s)</Th>
-				<Th></Th>
-				<Th>Commit</Th>
-				<Th>Run</Th>
-				<Th>Actor</Th>
-				<Th>Environment</Th>
-				<Th>Created</Th>
-				<Th>Status</Th>
-			</Tr>
-		</Thead>
-		<Tbody>
-			{#if $Deployments.data !== null}
-				{@const deploys = $Deployments.data.team.deployments.nodes}
-				{#each deploys as deploy (deploy.id)}
-					<Tr>
-						<Td>
-							{#each deploy.resources.nodes as resource (resource.id)}
-								<div style="color:var(--a-gray-600)">{resource.kind}:</div>
-							{/each}
-						</Td>
-						<Td>
-							{#each deploy.resources.nodes as resource (resource.id)}
-								<div>
-									{#if resource.kind === 'Application'}
-										<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/app/{resource.name}"
-											>{resource.name}</a
-										>
-									{:else if resource.kind === 'Job' || resource.kind === 'Naisjob'}
-										<a href="/team/{deploy.teamSlug}/{deploy.environmentName}/job/{resource.name}"
-											>{resource.name}</a
-										>
-									{:else}
-										{resource.name}
-									{/if}
-								</div>
-							{/each}
-						</Td>
-						<Td>
-							{#if deploy.commitSha && isValidSha(deploy.commitSha)}
-								<span style="font-family: monospace; font-size: var(--a-font-size-small)">
-									<a href="https://github.com/{deploy.repository}/commit/{deploy.commitSha}"
-										>{deploy?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
-									>
-								</span>
-							{/if}
-						</Td>
-						<Td>
-							{#if deploy.triggerUrl}
-								<span style=" font-size: var(--a-font-size-small)">
-									<a href={deploy.triggerUrl}>Github action <ExternalLinkIcon /></a>
-								</span>
-							{/if}
-						</Td>
-						<Td>
-							{deploy.deployerUsername}
-						</Td>
-
-						<Td>
-							{deploy.environmentName}
-						</Td>
-						<Td><Time time={deploy.createdAt} distance={true} /></Td>
-						<Td
-							>{#if deploy.statuses.nodes.length === 0}<DeploymentStatus
-									status="UNKNOWN"
-								/>{:else}<DeploymentStatus status={deploy.statuses.nodes[0].state} />{/if}</Td
-						>
-					</Tr>
+	<div class="wrapper">
+		<div>
+			<BodyLong spacing>
+				{#if $Deployments.data?.team.deployments.pageInfo.totalCount == 0}
+					<strong>No deployments found.</strong>
+					<a href={docURL('/build/')}>Learn more about builds and deployments in Nais.</a>
 				{:else}
-					<Tr>
-						<Td colspan={999}>No deployments found</Td>
-					</Tr>
+					Overview of your team's deployments.
+					<a href={docURL('/build/')}>Learn more about builds and deployments in Nais.</a>
+				{/if}
+			</BodyLong>
+			<List
+				title="{$Deployments.data.team.deployments.pageInfo.totalCount} deployment{$Deployments.data
+					.team.deployments.pageInfo.totalCount !== 1
+					? 's'
+					: ''}"
+			>
+				{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
+					<div><DeploymentListItem {deployment} /></div>
 				{/each}
-			{/if}
-		</Tbody>
-	</Table>
+			</List>
 
-	<Pagination
-		page={$Deployments.data.team.deployments.pageInfo}
-		loaders={{
-			loadPreviousPage: () => {
-				changeQuery({
-					after: '',
-					before: $Deployments.data?.team.deployments.pageInfo.startCursor ?? ''
-				});
-			},
-			loadNextPage: () => {
-				changeQuery({
-					before: '',
-					after: $Deployments.data?.team.deployments.pageInfo.endCursor ?? ''
-				});
-			}
-		}}
-	/>
+			<Pagination
+				page={$Deployments.data.team.deployments.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						changeQuery({
+							after: '',
+							before: $Deployments.data?.team.deployments.pageInfo.startCursor ?? ''
+						});
+					},
+					loadNextPage: () => {
+						changeQuery({
+							before: '',
+							after: $Deployments.data?.team.deployments.pageInfo.endCursor ?? ''
+						});
+					}
+				}}
+			/>
+		</div>
+	</div>
 {/if}
+
+<style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+</style>

@@ -2,9 +2,9 @@
 	import { page } from '$app/state';
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
-	import DeploymentItemShort from '$lib/components/DeploymentItemShort.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
+	import DeploymentItemShort from '$lib/components/list/DeploymentShortListItem.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummaryFinal from '$lib/components/VulnerabilitySummaryFinal.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
@@ -80,21 +80,21 @@
 				>View Deployments</a
 			>
 		</div>
-		{#if viewerIsMember}
-			<div class="card activity">
-				<Heading size="small" level="2">Activity</Heading>
-				{#if $TeamOverview.data}
-					<div class="raised">
-						{#each $TeamOverview.data.team.activityLog.nodes as item (item.id)}
-							<div><ActivityLogItem {item} /></div>
-						{/each}
-					</div>
-				{/if}
+		<div class="card activity">
+			<Heading size="small" level="2">Activity</Heading>
+			{#if $TeamOverview.data}
+				<div class="raised">
+					{#each $TeamOverview.data.team.activityLog.nodes as item (item.id)}
+						<div><ActivityLogItem {item} /></div>
+					{/each}
+				</div>
+			{/if}
+			{#if viewerIsMember}
 				<a href="/team/{teamSlug}/activity-log" style:align-self="end" style:margin-top="auto"
 					>View Activity Log</a
 				>
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </div>
 

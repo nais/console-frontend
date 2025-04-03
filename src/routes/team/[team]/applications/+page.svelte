@@ -5,6 +5,7 @@
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -21,7 +22,7 @@
 	let after: string = $derived($Applications.variables?.after ?? '');
 	let before: string = $derived($Applications.variables?.before ?? '');
 
-	const allEnvs = $Applications.data?.team.environments.map((env) => env.name) ?? [];
+	const allEnvs = $Applications.data?.team.environments.map((env) => env.environment.name) ?? [];
 
 	let filteredEnvs = $state(
 		page.url.searchParams.get('environments') === 'none'
@@ -67,13 +68,13 @@
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
 				<strong>No applications found.</strong> Applications are long-running processes designed to
 				handle continuous workloads and remain active until stopped or restarted.
-				<a href="https://doc.nais.io/workloads/application"
+				<a href={docURL('/workloads/application')}
 					>Learn more about applications and how to get started.</a
 				>
 			{:else}
 				Applications are long-running processes designed to handle continuous workloads and remain
 				active until stopped or restarted.
-				<a href="https://doc.nais.io/workloads/application">Learn more about applications.</a>
+				<a href={docURL('/workloads/application')}>Learn more about applications.</a>
 			{/if}
 		</BodyLong>
 
@@ -125,7 +126,7 @@
 						{/snippet}
 						<ActionMenuCheckboxItem
 							checked={$Applications.data?.team.environments.every((env) =>
-								filteredEnvs.includes(env.name)
+								filteredEnvs.includes(env.environment.name)
 							)
 								? true
 								: filteredEnvs.length > 0
@@ -135,13 +136,13 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Applications.data?.team.environments ?? [] as { name, id } (id)}
+						{#each $Applications.data?.team.environments ?? [] as { environment, id } (id)}
 							<ActionMenuCheckboxItem
-								checked={filteredEnvs.includes(name)}
+								checked={filteredEnvs.includes(environment.name)}
 								onchange={(checked) =>
 									(filteredEnvs = checked
-										? [...filteredEnvs, name]
-										: filteredEnvs.filter((env) => env !== name))}
+										? [...filteredEnvs, environment.name]
+										: filteredEnvs.filter((env) => env !== environment.name))}
 							>
 								{name}
 							</ActionMenuCheckboxItem>

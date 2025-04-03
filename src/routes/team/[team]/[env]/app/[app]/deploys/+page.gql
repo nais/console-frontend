@@ -1,8 +1,61 @@
-query AppDeploys($app: String!, $team: Slug!, $env: String!) {
+query AppDeploys(
+	$app: String!
+	$team: Slug!
+	$env: String!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
 	team(slug: $team) {
 		environment(name: $env) {
-			workload(name: $app) {
-				...WorkloadDeployments
+			application(name: $app) {
+				__typename
+				name
+				team {
+					slug
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				deployments(first: $first, last: $last, before: $before, after: $after)
+					@paginate(mode: SinglePage) {
+					pageInfo {
+						totalCount
+						hasNextPage
+						hasPreviousPage
+						pageEnd
+						pageStart
+						startCursor
+						endCursor
+					}
+					nodes {
+						id
+						resources {
+							nodes {
+								id
+								kind
+								name
+							}
+						}
+						statuses {
+							nodes {
+								state
+								message
+								createdAt
+							}
+						}
+						environmentName
+						teamSlug
+						triggerUrl
+						createdAt
+						repository
+						commitSha
+						deployerUsername
+					}
+				}
 			}
 		}
 	}
