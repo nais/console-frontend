@@ -2,10 +2,11 @@
 	import { page } from '$app/state';
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
+	import DeploymentItemShort from '$lib/components/DeploymentItemShort.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import VulnerabilityOverview from '$lib/components/VulnerabilityOverview.svelte';
+	import VulnerabilitySummaryFinal from '$lib/components/VulnerabilitySummaryFinal.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
@@ -41,9 +42,7 @@
 
 <div class="wrapper">
 	<div class="alerts-wrapper">
-		{#each supportedErrorTypes
-			.map(getWorkloadsWithError)
-			.filter((error) => error.__typename !== 'WorkloadStatusVulnerable') as errors (errors.__typename)}
+		{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
 			{#if errors.workloads?.length && errors.level}
 				<TeamErrorMessage
 					collapsible={errors.__typename !== 'WorkloadStatusNoRunningInstances'}
@@ -58,8 +57,29 @@
 		{/each}
 	</div>
 	<div class="grid">
+		{#if $TeamOverview.data}
+			<div>
+				<VulnerabilitySummaryFinal
+					workloads={$TeamOverview.data.team.workloads}
+					vulnerabilitySummary={$TeamOverview.data.team.vulnerabilitySummary}
+				/>
+			</div>
+		{/if}
 		<div class="card"><TeamUtilizationAndOverage {teamSlug} /></div>
-		<div class="card"><AggregatedCostForTeam {teamSlug} /></div>
+		<div class="card" style:grid-column="span 2"><AggregatedCostForTeam {teamSlug} /></div>
+		<div class="card deployments">
+			<Heading size="small" level="2">Deployments</Heading>
+			{#if $TeamOverview.data}
+				<div class="raised">
+					{#each $TeamOverview.data.team.deployments.nodes as deployment (deployment.id)}
+						<div><DeploymentItemShort {deployment} /></div>
+					{/each}
+				</div>
+			{/if}
+			<a href="/team/{teamSlug}/deploy" style:align-self="end" style:margin-top="auto"
+				>View Deployments</a
+			>
+		</div>
 		{#if viewerIsMember}
 			<div class="card activity">
 				<Heading size="small" level="2">Activity</Heading>
@@ -75,17 +95,6 @@
 				>
 			</div>
 		{/if}
-
-		<div style:grid-column="span 4">
-			<div style="display: flex; align-items: center; gap: var(--a-spacing-4);">
-				<Heading level="2" size="medium">Vulnerabilities</Heading>
-				<a href="/team/{teamSlug}/vulnerabilities">View all vulnerabilities</a>
-			</div>
-
-			{#if $TeamOverview.data?.team}
-				<VulnerabilityOverview team={$TeamOverview.data.team} />
-			{/if}
-		</div>
 	</div>
 </div>
 
@@ -118,6 +127,13 @@
 			border-bottom-right-radius: 8px;
 		}
 	}
+
+	.card {
+		background-color: var(--a-surface-subtle);
+		padding: var(--a-spacing-4) var(--a-spacing-5);
+		border-radius: 12px;
+	}
+
 	.activity {
 		grid-column: span 2;
 		word-wrap: break-word;
@@ -125,21 +141,30 @@
 		flex-direction: column;
 		gap: var(--a-spacing-4);
 		min-height: 100%;
+		align-items: start;
 
 		> a {
 			align-self: end;
 		}
 	}
-	.card {
-		background-color: var(--a-surface-subtle);
-		padding: var(--a-spacing-4) var(--a-spacing-5);
-		border-radius: 12px;
+
+	.deployments {
+		grid-column: span 2;
+		word-wrap: break-word;
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
+		min-height: 100%;
+		align-self: start;
+
+		> a {
+			align-self: end;
+		}
 	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		gap: 1rem;
-		row-gap: var(--spacing-layout);
 		grid-auto-flow: dense;
 	}
 	.grid:not(:first-child) {

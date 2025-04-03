@@ -32,7 +32,17 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 
+		deployments(first: 5) {
+			nodes {
+				id
+				...DeploymentItemFragment
+			}
+		}
+
 		workloads(first: 999) {
+			pageInfo {
+				totalCount
+			}
 			nodes {
 				__typename
 				id
@@ -72,6 +82,14 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 					}
 				}
 			}
+		}
+		vulnerabilitySummary {
+			bomCount
+			coverage
+			critical
+			riskScore
+			riskScoreTrend
+			ranking
 		}
 		...VulnerabilityOverviewFragment
 	}
