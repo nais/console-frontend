@@ -144,7 +144,7 @@
 										? [...filteredEnvs, environment.name]
 										: filteredEnvs.filter((env) => env !== environment.name))}
 							>
-								{name}
+								{environment.name}
 							</ActionMenuCheckboxItem>
 						{/each}
 					</ActionMenu>
@@ -170,7 +170,7 @@
 			/>
 		{/if}
 	</div>
-	<div>
+	<div class="right-column">
 		{#if $Applications.data?.team.slug}
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
 				{@const teamSlug = $Applications.data.team.slug}
@@ -188,6 +188,11 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+
+	.right-column {
+		display: grid;
+		gap: var(--a-spacing-6);
 	}
 
 	.search {

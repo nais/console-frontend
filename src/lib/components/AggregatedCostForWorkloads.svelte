@@ -75,12 +75,10 @@
 		}[]
 	): EChartsOption => {
 		return {
-			width: '250px',
-			height: '150px',
+			animation: false,
+			height: '230px',
+			width: '280px',
 			tooltip: {
-				// axisPointer: {
-				// 	type: 'shadow'
-				// },
 				trigger: 'axis',
 				formatter: (params: CallbackDataParams[]) =>
 					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
@@ -116,8 +114,8 @@
 
 {#if data.length}
 	{@const options = costTransform(data)}
-	<div>
-		<div>
+	<div class="summary">
+		<div class="estimated-cost">
 			<Detail>
 				{data.at(-1)?.date.toLocaleString('en-US', {
 					month: 'long'
@@ -142,3 +140,14 @@
 {:else}
 	<Detail>Insufficient data to display cost.</Detail>
 {/if}
+
+<style>
+	.summary {
+		gap: var(--a-spacing-1-alt);
+		.estimated-cost {
+			display: flex;
+			align-items: center;
+			gap: var(--a-spacing-1);
+		}
+	}
+</style>

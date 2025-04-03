@@ -25,7 +25,8 @@
 	): EChartsOption => {
 		return {
 			height: '230px',
-			width: '300px',
+			width: '280px',
+			animation: false,
 			tooltip: {
 				trigger: 'axis',
 				formatter: (params: CallbackDataParams[]) =>
@@ -37,7 +38,7 @@
 				containLabel: true
 			},
 			xAxis: {
-				data: data.map((entry) => format(entry.date, 'dd.MM'))
+				data: data.map((entry) => format(entry.date, data.length > 60 ? 'MMM' : 'dd.MM'))
 			},
 			yAxis: {
 				axisLabel: {
@@ -167,7 +168,7 @@
 			</Detail>
 		</div>
 	</div>
-	<div style="height: 270px;">
+	<div>
 		<EChart options={costTransform(costData.daily.series)} />
 	</div>
 
