@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import {
 		graphql,
+		OrderDirection,
 		PendingValue,
 		WorkloadOrderField,
 		type OrderDirection$options,
@@ -115,8 +116,11 @@
 	`);
 
 	let tableSort = $derived({
-		orderBy: page.url.searchParams.get('field') as WorkloadOrderField$options | null,
-		direction: page.url.searchParams.get('direction') as OrderDirection$options | null
+		orderBy:
+			(page.url.searchParams.get('field') as WorkloadOrderField$options) ||
+			WorkloadOrderField.VULNERABILITY_RISK_SCORE,
+		direction:
+			(page.url.searchParams.get('direction') as OrderDirection$options) || OrderDirection.DESC
 	});
 
 	const tableSortChange = (key: string) => {
