@@ -302,7 +302,7 @@
 						<Heading level="2" size="xsmall" spacing>Utilization</Heading>
 						<HelpText title="Resource Utilization">Resource usage over the past hour</HelpText>
 					</div>
-					<BodyShort>
+					<div>
 						<div>
 							<TooltipAlignHack
 								content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
@@ -334,7 +334,7 @@
 								/>
 							</TooltipAlignHack>
 						</div>
-					</BodyShort>
+					</div>
 				</div>
 			</div>
 		</div>

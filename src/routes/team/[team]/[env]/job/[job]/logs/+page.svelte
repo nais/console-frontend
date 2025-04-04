@@ -21,6 +21,7 @@
 	let result = $derived($RunsWithPodNames.data);
 
 	// svelte-ignore state_referenced_locally
+	// eslint-disable-next-line svelte/no-unnecessary-state-wrap
 	let pods: SvelteSet<string> = $state(new SvelteSet([selected]));
 	let selectedRun: string = $state('');
 	function setSelected(name: string) {
