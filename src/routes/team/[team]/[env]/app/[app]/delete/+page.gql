@@ -44,11 +44,6 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 						cascadingDelete
 					}
 				}
-				openSearch {
-					id
-					__typename
-					name
-				}
 			}
 		}
 	}

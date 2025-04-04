@@ -132,6 +132,7 @@
 		background-color: var(--a-surface-subtle);
 		padding: var(--a-spacing-4) var(--a-spacing-5);
 		border-radius: 12px;
+		align-items: stretch;
 	}
 
 	.activity {
@@ -141,7 +142,6 @@
 		flex-direction: column;
 		gap: var(--a-spacing-4);
 		min-height: 100%;
-		align-items: start;
 
 		> a {
 			align-self: end;
