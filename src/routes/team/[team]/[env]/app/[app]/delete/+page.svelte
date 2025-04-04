@@ -1,17 +1,19 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { type DeleteAppPage$result, graphql } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import PersistenceList from '$lib/components/persistence/PersistenceList.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Button, Heading, HelpText, TextField } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 
 	let { DeleteAppPage } = $derived(data);
+
+	let result = $derived($DeleteAppPage.data);
 
 	const deleteApp = graphql(`
 		mutation DeleteApp($team: Slug!, $env: String!, $app: String!) {
@@ -58,38 +60,43 @@
 	}
 </script>
 
-{#if $DeleteAppPage?.data?.team.environment.application}
-	{@const app = $DeleteAppPage?.data?.team.environment.application}
-	<Card borderColor="var(--a-border-danger)">
+<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+<div class="danger-zone">
+	{#if result?.team.environment.application}
+		{@const app = result.team.environment.application}
 		{#if app.deletionStartedAt}
-			<Heading level="2">Deletion in Progress</Heading>
-			This application is being deleted. Deletion started <Time
-				time={app.deletionStartedAt}
-				distance
-			/>. If the deletion is taking too long, contact the Nais team.
+			<div class="heading-wrapper">
+				<Heading level="3" spacing>Deletion in Progress</Heading>
+			</div>
+			<BodyShort
+				>This application is being deleted. Deletion started <Time
+					time={app.deletionStartedAt}
+					distance
+				/>. If the deletion is taking too long, contact the Nais team.</BodyShort
+			>
 		{:else}
+			<div class="heading-wrapper">
+				<Heading level="3" spacing>Delete Application {app.name}</Heading>
+			</div>
+
 			{#if hasResourcesToDelete(app)}
-				<p>
+				<BodyShort>
 					In addition to the application the following resources
 					<strong>will be permanently deleted</strong>:
-				</p>
+				</BodyShort>
 			{/if}
 
 			<div>
 				{#each app.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 					<PersistenceList persistence={node}>
-						This will be deleted because <code>cascadingDelete</code>
-						is set to
-						<code>true</code>
-						in the manifest.
+						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
+						the manifest.
 					</PersistenceList>
 				{/each}
 				{#each app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 					<PersistenceList persistence={node}>
-						This will be deleted because <code>cascadingDelete</code>
-						is set to
-						<code>true</code>
-						in the manifest.
+						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
+						the manifest.
 					</PersistenceList>
 				{/each}
 				{#each app.buckets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
@@ -98,25 +105,20 @@
 						the manifest.
 					</PersistenceList>
 				{/each}
+
 				{#each app.valkeyInstances.nodes as node (node.id)}
-					<PersistenceList persistence={node}
-						>If this Valkey instance is defined on team level, it won't be deleted. If it's created
-						by the app, it will be permanently deleted.
+					<PersistenceList persistence={node}>
+						If this Valkey instance is defined at the team level, it won't be deleted. If it was
+						created by the application, it will be permanently deleted.
 					</PersistenceList>
 				{/each}
 			</div>
 
 			{#if hasOrphans(app)}
-				<br />
-				<div>
-					In addition to deleting the application the following resources <strong
-						>may be orphaned</strong
-					>:
-					<HelpText title="Why orphaned?">
-						The resource may still exist after the app has been deleted and you will have to
-						manually delete it.
-					</HelpText>
-				</div>
+				<BodyShort>
+					In addition to deleting the application, the following resources may be orphaned. These
+					resources may still exist after the app is deleted and will need to be manually removed:
+				</BodyShort>
 				<div>
 					{#each app.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 						<PersistenceList persistence={node} />
@@ -130,28 +132,34 @@
 				</div>
 			{/if}
 			{@const expected = app.teamEnvironment.environment.name + '/' + app.name}
-			<p>
-				Confirm deletion by writing <strong>{expected}</strong> in the box below and click
-				<em>Delete</em>.
-			</p>
-			{#if $deleteApp.errors}
-				<GraphErrors errors={$deleteApp.errors} />
-			{/if}
+			<div class="confirmation-wrapper">
+				<BodyShort spacing>
+					Confirm deletion by writing <strong>{expected}</strong> in the box below and click
+					<em>Delete</em>.
+				</BodyShort>
+				{#if $deleteApp.errors}
+					<GraphErrors errors={$deleteApp.errors} />
+				{/if}
 
-			<form
-				onsubmit={(e: SubmitEvent) => {
-					e.preventDefault();
-					submit();
-				}}
-			>
-				<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
-				<Button disabled={confirmation !== expected} variant="danger" loading={$deleteApp.fetching}>
-					Delete
-				</Button>
-			</form>
+				<form
+					onsubmit={(e: SubmitEvent) => {
+						e.preventDefault();
+						submit();
+					}}
+				>
+					<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
+					<Button
+						disabled={confirmation !== expected}
+						variant="danger"
+						loading={$DeleteAppPage.fetching}
+					>
+						Delete
+					</Button>
+				</form>
+			</div>
 		{/if}
-	</Card>
-{/if}
+	{/if}
+</div>
 
 <style>
 	code {
@@ -163,7 +171,21 @@
 		gap: 1rem;
 	}
 
-	div > :global(.navds-help-text) {
-		display: inline-block;
+	.heading-wrapper {
+		display: flex;
+		gap: var(--a-spacing-3);
+		align-items: baseline;
+	}
+
+	.confirmation-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-2);
+		margin-top: var(--a-spacing-4);
+	}
+	.danger-zone {
+		padding: var(--a-spacing-4);
+		border-radius: 8px;
+		border: 1px solid var(--a-border-danger);
 	}
 </style>
