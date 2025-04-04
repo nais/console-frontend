@@ -45,6 +45,7 @@
 			case 'postgres':
 				return DatabaseIcon;
 			case 'buckets':
+			case 'bucket':
 				return BucketIcon;
 			case 'valkey':
 			case 'valkeyinstance':
