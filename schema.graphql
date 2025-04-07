@@ -6335,7 +6335,9 @@ type WorkloadUtilization {
   """Gets the limit of the resources for the requested resource type."""
   limit(resourceType: UtilizationResourceType!): Float
 
-  """Gets the limit of the resources for the requested resource type."""
+  """
+  Gets the limit of the resources between start and end with step size for given resource type.
+  """
   limitSeries(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
 
   """
@@ -6344,7 +6346,7 @@ type WorkloadUtilization {
   requested(resourceType: UtilizationResourceType!): Float!
 
   """
-  Gets the requested amount of resources for the requested resource type.
+  Gets the requested amount of resources between start and end with step size for given resource type.
   """
   requestedSeries(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
 
