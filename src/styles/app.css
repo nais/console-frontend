@@ -17,39 +17,6 @@ html {
 	overflow-y: scroll;
 }
 
-h1 {
-	font-size: 40px;
-	line-height: 53px;
-	letter-spacing: 0.1rem;
-	margin: 0;
-}
-h2 {
-	font-size: 32px;
-	line-height: 40px;
-	letter-spacing: 0.08rem;
-	margin: 0;
-}
-h3 {
-	font-size: 24px;
-	line-height: 32px;
-	letter-spacing: 0.02rem;
-	font-weight: 200;
-	margin: 0 0 24px;
-}
-h4 {
-	font-size: 20px;
-	line-height: 28px;
-	letter-spacing: 0.01rem;
-	font-weight: 100;
-	margin: 0 0 24px;
-}
-h5 {
-	font-size: 16px;
-	line-height: 24px;
-	letter-spacing: 0;
-	margin: 0;
-}
-
 .text-aligned-icon {
 	height: var(--ax-font-line-height-large, --a-font-line-height-large);
 	vertical-align: bottom;
