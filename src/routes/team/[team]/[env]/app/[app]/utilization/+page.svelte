@@ -119,6 +119,7 @@
 						type: 'solid'
 					},
 					endLabel: {
+						offset: [0, safeRequest.at(-1)?.value === safeLimit.at(-1)?.value ? 6 : 0],
 						formatter: 'Request',
 						position: 'end',
 						color: requestColor,
@@ -135,6 +136,7 @@
 					color: limitColor,
 					lineStyle: { color: limitColor, type: 'dashed' },
 					endLabel: {
+						offset: [0, safeRequest.at(-1)?.value === safeLimit.at(-1)?.value ? -6 : 0],
 						formatter: 'Limit',
 						position: 'end',
 						color: limitColor,
