@@ -36,7 +36,6 @@
 		valueFormatter: (value: number) => string = (value: number) =>
 			value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 	): EChartsOption {
-		console.log('options', data, request, limit);
 		const safeData = data ?? [];
 		const safeRequest = request ?? [];
 		const safeLimit = limit ?? [];
@@ -220,7 +219,6 @@
 							};
 						}),
 						utilization.limit_memory_series.map((d) => {
-							console.log(d.value);
 							return {
 								timestamp: d.timestamp,
 								value: d.value / 1024 / 1024 / 1024
