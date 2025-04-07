@@ -120,9 +120,12 @@
 								getEstimateForMonth(item.cost, item.date)
 							)}
 							{#if factor > 1.0}
-								(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+								(<span style="color: var(--ax-bg-danger-moderate, --a-surface-danger);"
+									>+{factor.toFixed(2)}%</span
+								>)
 							{:else}
-								(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span
+								(<span style="color: var(--ax-bg-success-moderate, --a-surface-success);"
+									>-{(1.0 - factor).toFixed(2)}%</span
 								>)
 							{/if}
 						{/if}

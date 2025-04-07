@@ -139,17 +139,17 @@
 <style>
 	.content-wrapper {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 		grid-template-columns: 1fr 300px;
 	}
 	.right {
 		display: flex;
-		gap: var(--a-spacing-1-alt);
+		gap: var(--ax-space-6, --a-spacing-1-alt);
 		align-items: center;
 	}
 
 	.right-column {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 	}
 </style>

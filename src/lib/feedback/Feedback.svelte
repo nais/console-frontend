@@ -158,7 +158,7 @@
 	}
 	#charCount {
 		font-size: 0.75rem;
-		color: var(--a-text-subtle);
+		color: var(--ax-text-subtle, --a-text-subtle);
 		margin: 0;
 		padding-top: 0.2rem;
 	}

@@ -10,7 +10,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
@@ -192,7 +192,7 @@
 
 	.right-column {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 	}
 
 	.search {

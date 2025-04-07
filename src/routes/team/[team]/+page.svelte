@@ -111,26 +111,26 @@
 		gap: 2px;
 
 		> div {
-			background-color: var(--a-surface-default);
-			padding: var(--a-spacing-2) var(--a-spacing-5);
+			background-color: var(--ax-bg-default, --a-surface-default);
+			padding: var(--ax-space-8, --a-spacing-2) var(--ax-space-20, --a-spacing-5);
 		}
 
 		> div:first-child {
 			border-top-left-radius: 8px;
 			border-top-right-radius: 8px;
-			padding-top: var(--a-spacing-3);
+			padding-top: var(--ax-space-12, --a-spacing-3);
 		}
 
 		> div:last-child {
-			padding-bottom: var(--a-spacing-3);
+			padding-bottom: var(--ax-space-12, --a-spacing-3);
 			border-bottom-left-radius: 8px;
 			border-bottom-right-radius: 8px;
 		}
 	}
 
 	.card {
-		background-color: var(--a-surface-subtle);
-		padding: var(--a-spacing-4) var(--a-spacing-5);
+		background-color: var(--ax-bg-sunken, --a-surface-subtle);
+		padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-20, --a-spacing-5);
 		border-radius: 12px;
 		align-items: stretch;
 	}
@@ -140,7 +140,7 @@
 		word-wrap: break-word;
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 		min-height: 100%;
 
 		> a {
@@ -153,7 +153,7 @@
 		word-wrap: break-word;
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 		min-height: 100%;
 		align-self: start;
 
@@ -173,6 +173,6 @@
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8, --a-spacing-2);
 	}
 </style>

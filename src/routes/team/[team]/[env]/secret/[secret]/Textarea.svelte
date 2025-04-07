@@ -44,6 +44,6 @@
 		resize: vertical;
 		min-height: 2rem;
 		font-family: monospace;
-		font-size: var(--a-font-size-small);
+		font-size: var(--ax-font-size-small, --a-font-size-small);
 	}
 </style>

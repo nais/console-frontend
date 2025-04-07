@@ -166,18 +166,18 @@
 <style>
 	.description-wrapper {
 		display: flex;
-		gap: var(--a-spacing-1-alt);
+		gap: var(--ax-space-6, --a-spacing-1-alt);
 		align-items: center;
 	}
 	.helpers {
 		display: flex;
-		gap: var(--a-spacing-4);
-		padding: var(--a-spacing-3) var(--a-spacing-6);
-		background-color: var(--a-surface-subtle);
+		gap: var(--ax-space-16, --a-spacing-4);
+		padding: var(--ax-space-12, --a-spacing-3) var(--ax-space-24, --a-spacing-6);
+		background-color: var(--ax-bg-sunken, --a-surface-subtle);
 
 		> div {
 			display: flex;
-			gap: var(--a-spacing-2);
+			gap: var(--ax-space-8, --a-spacing-2);
 			align-items: center;
 
 			&:last-child {
@@ -194,7 +194,7 @@
 		background: linear-gradient(rgb(255, 255, 255), rgb(255, 255, 255), rgba(18, 43, 68, 0.08));
 		border: solid 1px rgb(35, 38, 42);
 		border-radius: 6px;
-		padding: var(--a-spacing-1);
+		padding: var(--ax-space-4, --a-spacing-1);
 		display: inline-flex;
 		justify-content: center;
 	}
@@ -214,15 +214,15 @@
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: center;
-		gap: var(--a-spacing-2);
-		padding: var(--a-spacing-6);
-		padding-bottom: var(--a-spacing-4);
+		gap: var(--ax-space-8, --a-spacing-2);
+		padding: var(--ax-space-24, --a-spacing-6);
+		padding-bottom: var(--ax-space-16, --a-spacing-4);
 	}
 	.results {
 		display: flex;
-		padding-inline: var(--a-spacing-6);
+		padding-inline: var(--ax-space-24, --a-spacing-6);
 		flex-direction: column;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 		overflow-y: auto;
 
 		a.result {
@@ -233,7 +233,7 @@
 				color 50ms;
 
 			&:hover {
-				background-color: var(--a-surface-action-subtle-hover);
+				background-color: var(--ax-bg-brand-blue-moderate-hover, --a-surface-action-subtle-hover);
 				text-decoration: none;
 
 				.label {
@@ -242,32 +242,32 @@
 			}
 			&:active,
 			&:focus-visible {
-				background-color: var(--a-surface-action);
-				color: var(--a-text-on-action);
+				background-color: var(--ax-bg-accent-strong, --a-surface-action);
+				color: var(--ax-text-neutral, --a-text-on-action);
 				box-shadow: none;
 			}
 
 			&:active {
-				background-color: var(--a-surface-action-active);
+				background-color: var(--ax-bg-accent-strong-hover, --a-surface-action-active);
 			}
 		}
 
 		.result {
 			display: grid;
 			grid-template-columns: 1fr auto;
-			gap: var(--a-spacing-4);
+			gap: var(--ax-space-16, --a-spacing-4);
 			align-items: center;
 			border-radius: 4px;
-			padding: var(--a-spacing-1);
+			padding: var(--ax-space-4, --a-spacing-1);
 
 			&.selected {
-				background-color: var(--a-surface-selected);
+				background-color: var(--ax-bg-accent-strong-pressed, --a-surface-selected);
 			}
 		}
 	}
 	.no-results {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 	}
 </style>

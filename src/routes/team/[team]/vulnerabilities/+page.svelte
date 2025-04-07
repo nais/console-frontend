@@ -45,7 +45,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 	}
 
 	.env-filter {

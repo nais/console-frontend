@@ -27,8 +27,8 @@
 
 <style>
 	.card {
-		background-color: var(--a-surface-subtle);
-		padding: var(--a-spacing-5) var(--a-spacing-5);
+		background-color: var(--ax-bg-sunken, --a-surface-subtle);
+		padding: var(--ax-space-20, --a-spacing-5) var(--ax-space-20, --a-spacing-5);
 		border-radius: 12px;
 	}
 	ul {

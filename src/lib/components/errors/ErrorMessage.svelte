@@ -89,7 +89,7 @@
 {#if error.__typename !== "non-exhaustive; don't match this"}
 	<Alert variant={levelVariant(error.level)} size="small">
 		<div class="content">
-			<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
+			<div style="display: flex; align-items: center; gap: var(--ax-space-8, --a-spacing-2);">
 				<Heading level="2" size="small">{heading[error.__typename]}</Heading>
 				<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
 					{open ? 'Hide' : 'Show'} details
@@ -208,7 +208,7 @@
 <style>
 	.content {
 		display: grid;
-		gap: var(--a-spacing-3);
+		gap: var(--ax-space-12, --a-spacing-3);
 	}
 
 	code {

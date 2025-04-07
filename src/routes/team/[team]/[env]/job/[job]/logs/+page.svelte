@@ -150,6 +150,6 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.5rem;
-		padding: var(--a-spacing-3) 0;
+		padding: var(--ax-space-12, --a-spacing-3) 0;
 	}
 </style>

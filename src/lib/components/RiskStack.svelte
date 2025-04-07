@@ -112,7 +112,7 @@
 	.segment {
 		display: flex;
 		align-items: center;
-		color: var(--a-text-on-neutral);
+		color: var(--ax-text-neutral, --a-text-on-neutral);
 		font-weight: bold;
 		justify-content: center;
 		width: 100%;
@@ -120,26 +120,30 @@
 	}
 
 	.critical {
-		background-color: var(--a-red-200);
+		background-color: var(--ax-danger-200, --a-red-200);
 	}
 	.high {
-		background-color: color-mix(in oklab, var(--a-red-200), var(--a-orange-200));
+		background-color: color-mix(
+			in oklab,
+			var(--ax-danger-200, --a-red-200),
+			var(--ax-warning-200, --a-orange-200)
+		);
 	}
 	.medium {
-		background-color: var(--a-orange-200);
+		background-color: var(--ax-warning-200, --a-orange-200);
 	}
 	.low {
-		background-color: var(--a-green-200);
+		background-color: var(--ax-success-200, --a-green-200);
 	}
 	.unassigned {
-		background-color: var(--a-gray-200);
+		background-color: var(--ax-neutral-200, --a-gray-200);
 	}
 	.red {
-		color: var(--a-surface-danger);
+		color: var(--ax-bg-danger-moderate, --a-surface-danger);
 	}
 
 	.green {
-		color: var(--a-surface-success);
+		color: var(--ax-bg-success-moderate, --a-surface-success);
 	}
 
 	dl {
@@ -147,7 +151,7 @@
 		grid-template-columns: 90px auto;
 		margin-block-start: 0;
 		margin-block-end: 0;
-		padding-top: var(--a-spacing-4);
+		padding-top: var(--ax-space-16, --a-spacing-4);
 	}
 
 	dt {

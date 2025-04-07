@@ -94,9 +94,13 @@
 					)}
 					{#if cost.monthly.series.length > 1}
 						{#if factor > 1.0}
-							(<span style="color: var(--a-surface-danger);">+{factor.toFixed(2)}%</span>)
+							(<span style="color: var(--ax-bg-danger-moderate, --a-surface-danger);"
+								>+{factor.toFixed(2)}%</span
+							>)
 						{:else}
-							(<span style="color: var(--a-surface-success);">-{(1.0 - factor).toFixed(2)}%</span>)
+							(<span style="color: var(--ax-bg-success-moderate, --a-surface-success);"
+								>-{(1.0 - factor).toFixed(2)}%</span
+							>)
 						{/if}
 					{/if}
 				</BodyShort>
@@ -121,12 +125,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: start;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 	}
 
 	.container {
 		display: flex;
 		align-items: center;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 	}
 </style>

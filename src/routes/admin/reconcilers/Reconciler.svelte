@@ -197,6 +197,6 @@
 
 <style>
 	.reconciler-error {
-		color: var(--a-text-danger);
+		color: var(--ax-text-danger, --a-text-danger);
 	}
 </style>

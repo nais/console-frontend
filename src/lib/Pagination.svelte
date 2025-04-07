@@ -59,9 +59,9 @@
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
-		gap: var(--a-spacing-4);
-		color: var(--a-text-subtle);
-		padding: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
+		color: var(--ax-text-subtle, --a-text-subtle);
+		padding: var(--ax-space-16, --a-spacing-4);
 
 		.active-range {
 			font-weight: bold;
@@ -69,7 +69,7 @@
 
 		.pagination-buttons {
 			display: flex;
-			gap: var(--a-spacing-1);
+			gap: var(--ax-space-4, --a-spacing-1);
 		}
 	}
 </style>

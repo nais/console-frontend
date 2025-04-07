@@ -1,5 +1,5 @@
 :root {
-	--spacing-layout: var(--a-spacing-10);
+	--spacing-layout: var(--ax-space-40, --a-spacing-10);
 }
 
 html,
@@ -21,14 +21,12 @@ h1 {
 	font-size: 40px;
 	line-height: 53px;
 	letter-spacing: 0.1rem;
-	color: var(--color-text-subtle);
 	margin: 0;
 }
 h2 {
 	font-size: 32px;
 	line-height: 40px;
 	letter-spacing: 0.08rem;
-	color: var(--color-text-subtle);
 	margin: 0;
 }
 h3 {
@@ -36,7 +34,6 @@ h3 {
 	line-height: 32px;
 	letter-spacing: 0.02rem;
 	font-weight: 200;
-	color: var(--color-text-subtle);
 	margin: 0 0 24px;
 }
 h4 {
@@ -44,24 +41,22 @@ h4 {
 	line-height: 28px;
 	letter-spacing: 0.01rem;
 	font-weight: 100;
-	color: var(--color-text-subtle);
 	margin: 0 0 24px;
 }
 h5 {
 	font-size: 16px;
 	line-height: 24px;
 	letter-spacing: 0;
-	color: var(--color-text-subtle);
 	margin: 0;
 }
 
 .text-aligned-icon {
-	height: var(--a-font-line-height-large);
+	height: var(--ax-font-line-height-large, --a-font-line-height-large);
 	vertical-align: bottom;
 }
 
 .navds-heading--medium .heading-aligned-icon {
-	height: var(--a-font-line-height-heading-medium);
+	height: var(--ax-font-line-height-heading-medium, --a-font-line-height-heading-medium);
 	vertical-align: bottom;
 }
 

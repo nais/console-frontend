@@ -1,18 +1,19 @@
 <script lang="ts">
-	import '@nais/ds-svelte-community/css';
-	import PageHeader from './PageHeader.svelte';
-	//import '../styles/vars_dark.css';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
 	import ProgressBar from '$lib/ProgressBar.svelte';
+	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import { Page, Theme } from '@nais/ds-svelte-community';
+	import '@nais/ds-svelte-community/css/darkside.css';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { LayoutProps } from './$houdini';
 	import Login from './Login.svelte';
 	import Naisdevice from './Naisdevice.svelte';
+	import PageHeader from './PageHeader.svelte';
 
 	let { data, children }: LayoutProps = $props();
 	let { UserInfo } = $derived(data);
@@ -58,24 +59,28 @@
 	});
 </script>
 
-<div class="full-wrapper">
-	{#if loading}
-		<ProgressBar />
-	{/if}
+<Theme theme={themeSwitch.theme}>
+	<Page>
+		<div class="full-wrapper">
+			{#if loading}
+				<ProgressBar />
+			{/if}
 
-	{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
-		<!-- logged out. We check both to support both  -->
-		<Login />
-	{:else}
-		{#if user?.__typename === 'User'}
-			<PageHeader {user} />
-		{/if}
+			{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
+				<!-- logged out. We check both to support both  -->
+				<Login />
+			{:else}
+				{#if user?.__typename === 'User'}
+					<PageHeader {user} />
+				{/if}
 
-		{@render children?.()}
-	{/if}
+				{@render children?.()}
+			{/if}
 
-	<Naisdevice />
-</div>
+			<Naisdevice />
+		</div>
+	</Page>
+</Theme>
 
 <style>
 	:global(.page) {
@@ -91,7 +96,6 @@
 	}
 
 	.full-wrapper {
-		min-height: 100vh;
 		padding-bottom: 1rem;
 	}
 </style>

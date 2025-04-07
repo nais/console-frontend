@@ -121,9 +121,9 @@
 					month: 'long'
 				})}: {euroValueFormatter(data.at(-1)?.sum)}
 				{#if (data.at(-1)?.sum ?? 0) > (data.at(-2)?.sum ?? 0)}
-					<CaretUpFillIcon style="color: var(--a-surface-danger);" />
+					<CaretUpFillIcon style="color: var(--ax-bg-danger-moderate, --a-surface-danger);" />
 				{:else}
-					<CaretDownFillIcon style="color: var(--a-surface-success);" />
+					<CaretDownFillIcon style="color: var(--ax-bg-success-moderate, --a-surface-success);" />
 				{/if}
 			</Detail>
 		</div>
@@ -143,11 +143,11 @@
 
 <style>
 	.summary {
-		gap: var(--a-spacing-1-alt);
+		gap: var(--ax-space-6, --a-spacing-1-alt);
 		.estimated-cost {
 			display: flex;
 			align-items: center;
-			gap: var(--a-spacing-1);
+			gap: var(--ax-space-4, --a-spacing-1);
 		}
 	}
 </style>

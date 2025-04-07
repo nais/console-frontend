@@ -304,7 +304,9 @@
 										}}
 									>
 										{#snippet icon()}
-											<TrashIcon style="color:var(--a-icon-danger)!important" />
+											<TrashIcon
+												style="color:var(--ax-text-danger-icon, --a-icon-danger)!important"
+											/>
 										{/snippet}
 									</Button>
 								</div>
@@ -357,7 +359,7 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 	}
 
 	.buttons {

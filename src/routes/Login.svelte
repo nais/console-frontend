@@ -12,8 +12,12 @@
 	<title>Log in - Nais Console</title>
 	<style>
 		body {
-			background: var(--a-bg-default);
-			background: linear-gradient(135deg, var(--a-bg-default) 0%, var(--active-color) 100%);
+			background: var(--ax-bg-default, --a-bg-default);
+			background: linear-gradient(
+				135deg,
+				var(--ax-bg-default, --a-bg-default) 0%,
+				var(--active-color) 100%
+			);
 		}
 	</style>
 </svelte:head>

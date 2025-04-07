@@ -52,7 +52,7 @@
 <Table size="small">
 	<Thead>
 		<Tr>
-			<Th style="width: var(--a-spacing-32);">Resource(s)</Th>
+			<Th style="width: var(--ax-space-128, --a-spacing-32);">Resource(s)</Th>
 			<Th></Th>
 			<Th>Commit</Th>
 			<Th>Run</Th>
@@ -69,7 +69,7 @@
 				<Tr>
 					<Td>
 						{#each deploy.resources.nodes as resource (resource.id)}
-							<div style="color:var(--a-gray-600)">{resource.kind}:</div>
+							<div style="color:var(--ax-neutral-600, --a-gray-600)">{resource.kind}:</div>
 						{/each}
 					</Td>
 					<Td>
@@ -91,7 +91,9 @@
 					</Td>
 					<Td>
 						{#if deploy.commitSha && isValidSha(deploy.commitSha)}
-							<span style="font-family: monospace; font-size: var(--a-font-size-small)">
+							<span
+								style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
+							>
 								<a href="https://github.com/{deploy.repository}/commit/{deploy.commitSha}"
 									>{deploy?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
 								>
@@ -100,7 +102,7 @@
 					</Td>
 					<Td>
 						{#if deploy.triggerUrl}
-							<span style=" font-size: var(--a-font-size-small)">
+							<span style=" font-size: var(--ax-font-size-small, --a-font-size-small)">
 								<a href={deploy.triggerUrl}>Github action <ExternalLinkIcon /></a>
 							</span>
 						{/if}

@@ -44,7 +44,9 @@
 	<div>
 		<BodyShort size="small">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
-				Commit <span style="font-family: monospace; font-size: var(--a-font-size-small)">
+				Commit <span
+					style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
+				>
 					<a href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
 						>{deployment?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
 					>
@@ -135,7 +137,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 		font-size: 16px;
 	}
 </style>

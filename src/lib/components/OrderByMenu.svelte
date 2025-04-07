@@ -32,7 +32,7 @@
 		ActionMenuDivider,
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
-	} from '@nais/ds-svelte-community/experimental.js';
+	} from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon, SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -72,7 +72,7 @@
 			icon={ChevronDownIcon}
 			{...props}
 		>
-			<div style="display: flex; align-items: center; gap: var(--a-spacing-2);">
+			<div style="display: flex; align-items: center; gap: var(--ax-space-8, --a-spacing-2);">
 				{#if orderDirection === OrderDirection.ASC}
 					<SortUpIcon />
 				{:else}
