@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 
 	const redirectPath = (url: URL) => {
@@ -20,11 +20,10 @@
 
 <div class="wrapper">
 	<div class="login">
-		<h1>
+		<Heading level="1" size="large" spacing>
 			<Logo height=".8em" />
 			Nais Console
-		</h1>
-
+		</Heading>
 		{#if $page.url.searchParams?.get('error')}
 			{@const error = $page.url.searchParams.get('error')}
 			<Alert variant="error">

@@ -15,7 +15,6 @@
 		isAdmin: boolean;
 		features?: {
 			unleash: { enabled: boolean };
-			redis: { enabled: boolean };
 			valkey: { enabled: boolean };
 			kafka: { enabled: boolean };
 			openSearch: { enabled: boolean };
@@ -44,9 +43,6 @@
 							total
 						}
 						buckets {
-							total
-						}
-						redisInstances {
 							total
 						}
 						valkeyInstances {

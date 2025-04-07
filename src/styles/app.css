@@ -64,3 +64,17 @@ h5 {
 	height: var(--a-font-line-height-heading-medium);
 	vertical-align: bottom;
 }
+
+.search-modal {
+	height: 90%;
+	max-height: 52rem;
+
+	> .navds-modal__header {
+		display: none;
+	}
+
+	> .navds-modal__body {
+		padding: 0;
+		height: 100%;
+	}
+}

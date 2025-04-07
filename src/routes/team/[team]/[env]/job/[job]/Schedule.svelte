@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Heading } from '@nais/ds-svelte-community';
-	import cronParser from 'cron-parser';
+	import { CronExpressionParser } from 'cron-parser';
 	import cronstrue from 'cronstrue';
 	import { DateTime } from 'luxon';
 
@@ -15,7 +15,7 @@
 
 	function getNextRunTime(expression: string, cronTimeZone: string, localTimeZone: string): string {
 		try {
-			const interval = cronParser.parse(expression, {
+			const interval = CronExpressionParser.parse(expression, {
 				currentDate: new Date(),
 				tz: cronTimeZone
 			});
@@ -64,7 +64,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Run configuration</Heading>
+	<Heading level="3" size="small">Run Configuration</Heading>
 	<div>
 		{#if schedule}
 			{@const runConfig = getLocalizedCronDescription(schedule.expression, schedule.timeZone)}

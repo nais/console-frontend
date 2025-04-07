@@ -4,7 +4,7 @@
 	import TeamErrorMessage from './TeamErrorMessage.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Errors/Deprecated Image Registry',
+		title: 'Errors/Unsupported Image Registry',
 		tags: ['autodocs']
 	});
 </script>
@@ -14,7 +14,7 @@
 		docURL={(p) => p}
 		error={{
 			__typename: 'WorkloadStatusDeprecatedRegistry',
-			level: 'WARNING',
+			level: 'ERROR',
 			registry: 'docker.pkg.github.com'
 		}}
 		workloadType="App"
@@ -29,7 +29,7 @@
 		teamSlug="team-service-management"
 		error={{
 			__typename: 'WorkloadStatusDeprecatedRegistry',
-			level: 'WARNING'
+			level: 'ERROR'
 		}}
 		workloads={[
 			{

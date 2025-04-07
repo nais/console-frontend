@@ -97,18 +97,3 @@
 			)}
 	/>
 </Modal>
-
-<style>
-	:global(.search-modal) {
-		height: 90%;
-		max-height: 52rem;
-
-		> :global(.navds-modal__header) {
-			display: none;
-		}
-
-		> :global(.navds-modal__body) {
-			padding: var(--a-spacing-6);
-		}
-	}
-</style>

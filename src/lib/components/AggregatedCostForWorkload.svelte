@@ -14,7 +14,9 @@
 			team(slug: $team) {
 				slug
 				environment(name: $environment) {
-					name
+					environment {
+						name
+					}
 					workload(name: $workload) {
 						__typename
 						name
@@ -49,6 +51,9 @@
 	}
 
 	function getFactor(cost: { date: Date; sum: number }[]): number {
+		if (cost.length < 1) {
+			return 0;
+		}
 		const daysKnown = cost[0].date.getDate();
 		const estCostPerDay = cost[0].sum / daysKnown;
 		if (cost.length < 2) {
@@ -101,8 +106,8 @@
 		{/each}
 
 		<Link
-			href="/team/{$costQuery.data.team.slug}/{$costQuery.data.team.environment.name}/{$costQuery
-				.data.team.environment.workload.__typename === 'Job'
+			href="/team/{$costQuery.data.team.slug}/{$costQuery.data.team.environment.environment
+				.name}/{$costQuery.data.team.environment.workload.__typename === 'Job'
 				? 'job'
 				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</Link
 		>

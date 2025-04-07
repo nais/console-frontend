@@ -3,6 +3,7 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 		slug
 		environment(name: $env) {
 			application(name: $app) {
+				id
 				name
 				deletionStartedAt
 				teamEnvironment {
@@ -27,13 +28,6 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 						__typename
 						name
 						cascadingDelete
-					}
-				}
-				redisInstances {
-					nodes {
-						id
-						__typename
-						name
 					}
 				}
 				valkeyInstances {

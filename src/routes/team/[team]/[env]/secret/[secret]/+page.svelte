@@ -2,10 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Alert,
+		BodyShort,
 		Button,
 		CopyButton,
 		Heading,
@@ -188,7 +188,7 @@
 		onconfirm={deleteSecret}
 	>
 		{#snippet header()}
-			<Heading>Delete secret</Heading>
+			<Heading level="1" size="large">Delete Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
@@ -214,7 +214,7 @@
 		onconfirm={deleteValueFromSecret}
 	>
 		{#snippet header()}
-			<Heading>Delete key from secret</Heading>
+			<Heading level="1" size="large">Delete Key From Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the secret named
@@ -235,36 +235,32 @@
 
 		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
 	</Confirm>
-
-	<div style="display: flex; flex-direction: row; justify-content: flex-end;">
+	<div
+		style="display: flex; flex-direction: row; justify-content: flex-end; padding-bottom: var(--spacing-layout);"
+	>
+		<Button
+			class="delete-secret"
+			title="Delete secret from environment"
+			variant="danger"
+			size="small"
+			onclick={openDeleteModal}
+			icon={TrashIcon}
+		>
+			Delete
+		</Button>
+	</div>
+	<div class="wrapper">
 		<div>
-			<Button
-				class="delete-secret"
-				title="Delete secret from environment"
-				variant="danger"
-				size="small"
-				onclick={openDeleteModal}
-				icon={TrashIcon}
-			>
-				Delete
-			</Button>
-		</div>
-	</div>
-
-	<div class="alerts">
-		{#if $deleteMutation.errors}
-			<GraphErrors errors={$deleteMutation.errors} />
-		{/if}
-	</div>
-	<div class="grid">
-		<Card columns={8} rows={3}>
+			<div class="alerts">
+				{#if $deleteMutation.errors}
+					<GraphErrors errors={$deleteMutation.errors} />
+				{/if}
+			</div>
 			<div class="data-heading">
-				<h4>
-					Secret data
-					<HelpText title="Secret data" placement="right">
-						A secret contains a set of key-value pairs.
-					</HelpText>
-				</h4>
+				<Heading level="2">Secret Data</Heading>
+				<HelpText title="Secret data" placement="right">
+					A secret contains a set of key-value pairs.
+				</HelpText>
 			</div>
 			<Table size="small" style="margin-top: 2rem">
 				<Thead>
@@ -318,25 +314,30 @@
 				</Tbody>
 			</Table>
 			<AddKeyValue initial={secret.values} {teamSlug} {env} {secretName} />
-		</Card>
-		<Card columns={4} rows={1}>
+		</div>
+		<div class="sidebar">
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
-		</Card>
-		<Card columns={4} rows={1}>
 			<Workloads workloads={secret.workloads} />
-		</Card>
-		<Card columns={4} rows={1}>
 			<Manifest {secretName} />
-		</Card>
+		</div>
 	</div>
 {/if}
 <Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}
-		<Heading>Editing value of key <i>{keyToEdit}</i></Heading>
+		<Heading level="1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
-	<Alert variant="info" size="small">
-		Editing this secret will cause a restart of the applications listed below.
-	</Alert>
+	{#if ($Secret.data?.team.environment.secret.workloads.nodes ?? []).length > 0}
+		<Alert variant="info" size="small">
+			<BodyShort
+				>Editing this secret will cause a restart of the applications listed below.</BodyShort
+			>
+			<ul>
+				{#each $Secret.data?.team.environment.secret.workloads.nodes ?? [] as workload (workload.id)}
+					<li><WorkloadLink {workload} /></li>
+				{/each}
+			</ul>
+		</Alert>
+	{/if}
 	<div class="entry">
 		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
 	</div>
@@ -347,21 +348,20 @@
 </Modal>
 
 <style>
-	.grid {
+	.wrapper {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
 	}
 
 	.buttons {
 		display: flex;
-	}
-	h4 {
-		display: flex;
-		font-weight: 400;
-		margin-bottom: 0.5rem;
-		gap: 0.5rem;
 	}
 
 	.alerts {
@@ -373,7 +373,12 @@
 
 	.data-heading {
 		display: flex;
-		justify-content: space-between;
-		margin: 1rem 0;
+		gap: 0.5rem;
+	}
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0 0 0 1rem;
 	}
 </style>

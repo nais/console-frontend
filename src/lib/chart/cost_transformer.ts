@@ -1,4 +1,6 @@
+import { visualizationColors } from '$lib/visualizationColors';
 import type { EChartsOption } from 'echarts';
+import type { OptionDataValue } from 'echarts/types/src/util/types.js';
 
 export function euroValueFormatter(
 	value?: number,
@@ -46,7 +48,7 @@ export function costTransformStackedColumnChart(
 	data: DailCostType
 ): EChartsOption {
 	const dates: string[] = [];
-	const seriesData: { [service: string]: (number | string)[] } = {};
+	const seriesData: { [service: string]: [number, number][] } = {};
 	const allServices = new Set<string>();
 
 	// First pass to identify all possible services
@@ -70,7 +72,7 @@ export function costTransformStackedColumnChart(
 					if (!seriesData[service]) {
 						seriesData[service] = [];
 					}
-					seriesData[service].push(0);
+					seriesData[service].push([entryDate.getTime(), 0]);
 				});
 			} else {
 				// Process each service for this day
@@ -78,7 +80,7 @@ export function costTransformStackedColumnChart(
 					if (!seriesData[service.service]) {
 						seriesData[service.service] = [];
 					}
-					seriesData[service.service].push(service.cost);
+					seriesData[service.service].push([entryDate.getTime(), service.cost]);
 				});
 
 				// Add 0 for missing services on this day
@@ -87,7 +89,7 @@ export function costTransformStackedColumnChart(
 						if (!seriesData[service]) {
 							seriesData[service] = [];
 						}
-						seriesData[service].push(0);
+						seriesData[service].push([entryDate.getTime(), 0]);
 					}
 				});
 			}
@@ -99,15 +101,16 @@ export function costTransformStackedColumnChart(
 		name: serviceName,
 		type: 'line',
 		stack: 'Cost',
-		emphasis: {
-			focus: 'series'
+		areaStyle: {
+			opacity: 1
 		},
-		areaStyle: {},
+		showSymbol: false,
 		data: seriesData[serviceName]
 	}));
 
 	// Return the ECharts option object
 	return {
+		animation: false,
 		title:
 			series.length === 0
 				? {
@@ -120,24 +123,17 @@ export function costTransformStackedColumnChart(
 					}
 				: {},
 		tooltip: {
-			trigger: data.series.length > 10 ? 'item' : 'axis',
+			trigger: series.length > 10 ? 'item' : 'axis',
 			axisPointer: {
 				type: 'shadow'
 			},
-			valueFormatter(value: number) {
-				return euroValueFormatter(value);
+			valueFormatter(value: OptionDataValue[]) {
+				return euroValueFormatter(value[1] as number);
 			}
 		},
-		color: ['#3386E0', '#005B82', '#C77300', '#368DA8', '#33AA5F', '#8269A2'].reverse(),
+		color: visualizationColors,
 		legend: {
-			bottom: 0,
-			width: '90%',
-			selector: [
-				{
-					title: 'Inverse selection',
-					type: 'inverse'
-				}
-			],
+			selector: [{ title: 'Inverse selection', type: 'inverse' }],
 			data: Array.from(allServices)
 		},
 		grid: {
@@ -148,9 +144,8 @@ export function costTransformStackedColumnChart(
 		},
 		xAxis: [
 			{
-				type: 'category',
-				boundaryGap: false,
-				data: dates.map((date) => date)
+				type: 'time',
+				boundaryGap: false
 			}
 		],
 		yAxis: [
@@ -241,6 +236,66 @@ export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
 				const workload = dateEntry.workloads.find((w) => w.workloadName === workloadName);
 				return workload?.cost || 0;
 			})
+		}))
+	} as EChartsOption;
+}
+
+export function costTransformColumnChartTeamEnvironmentApplicationsCost(
+	series: {
+		name: string | undefined;
+		data: (number | undefined)[][];
+	}[]
+) {
+	return {
+		animation: false,
+		title: {},
+		legend: {
+			// bottom: 0,
+			width: '90%',
+			selector: [
+				{
+					title: 'Inverse selection',
+					type: 'inverse'
+				}
+			]
+		},
+
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'shadow'
+			},
+			valueFormatter(value: OptionDataValue[]) {
+				return euroValueFormatter(value[1] as number);
+			}
+		},
+		color: visualizationColors,
+
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis: [
+			{
+				type: 'time',
+				boundaryGap: false
+			}
+		],
+		yAxis: [
+			{
+				type: 'value',
+				axisLabel: {
+					formatter: (value: number) => euroValueFormatter(value)
+				}
+			}
+		],
+		series: series.map(({ name, data }) => ({
+			name,
+			type: 'line',
+			showSymbol: false,
+			data
 		}))
 	} as EChartsOption;
 }

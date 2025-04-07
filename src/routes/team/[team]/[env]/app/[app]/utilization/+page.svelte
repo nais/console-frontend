@@ -5,6 +5,7 @@
 	import type { EChartsOption } from 'echarts';
 
 	import { changeParams } from '$lib/utils/searchparams';
+	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
 		Heading,
@@ -23,37 +24,29 @@
 	type resourceUsage = {
 		readonly timestamp: Date;
 		readonly value: number;
-		readonly instance: string;
+		readonly instance?: string;
 	}[];
 
 	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
 
-	const visualizationColors: string[] = [
-		'#FFC166',
-		'#99DEAD',
-		'#CCE1FF',
-		'#C0B2D2',
-		'#66CBEC',
-		'#99C4DD'
-	];
-
 	function options(
 		data: resourceUsage,
-		request: number,
-		limit?: number,
+		request: resourceUsage,
+		limit?: resourceUsage,
 		valueFormatter: (value: number) => string = (value: number) =>
 			value == null ? '-' : value.toLocaleString('en-GB', { maximumFractionDigits: 4 })
 	): EChartsOption {
+		console.log('options', data, request, limit);
 		const safeData = data ?? [];
-
-		const uniqueTimestamps = Array.from(new Set(safeData.map((d) => d.timestamp.getTime())));
+		const safeRequest = request ?? [];
+		const safeLimit = limit ?? [];
 
 		const opts = {
 			grid: {
 				bottom: 20,
 				top: 16,
 				left: 80,
-				right: 51
+				right: 60
 			},
 			animation: false,
 			tooltip: {
@@ -114,57 +107,41 @@
 						opacity: 0.2
 					}
 				})),
-				{
-					data: uniqueTimestamps.map((timestamp) => [timestamp, request]),
-					type: 'line',
+				...Array.from(new Set(safeRequest.map((d) => d.instance))).map((instance) => ({
 					name: 'Request',
+					type: 'line',
+					data: safeRequest
+						.filter((d) => d.instance === instance)
+						.map((d) => [d.timestamp.getTime(), d.value]),
 					showSymbol: false,
 					color: requestColor,
 					lineStyle: {
 						color: requestColor,
-						type: request === limit ? 'solid' : 'dashed'
+						type: 'solid'
 					},
-					markLine: {
-						symbol: 'none',
-						data: [
-							{
-								yAxis: request,
-								label: {
-									formatter: 'Request',
-									position: 'end',
-									color: requestColor,
-									offset: request === limit ? [0, 8] : [0, 0]
-								},
-								lineStyle: { type: 'solid', color: 'transparent' }
-							}
-						]
+					endLabel: {
+						formatter: 'Request',
+						position: 'end',
+						color: requestColor,
+						show: true
 					}
-				},
-				limit
-					? {
-							data: uniqueTimestamps.map((timestamp) => [timestamp, limit]),
-							type: 'line',
-							name: 'Limit',
-							showSymbol: false,
-							color: limitColor,
-							lineStyle: { color: limitColor, type: 'dashed' },
-							markLine: {
-								symbol: 'none',
-								data: [
-									{
-										yAxis: limit,
-										label: {
-											formatter: 'Limit',
-											position: 'end',
-											color: limitColor,
-											offset: request === limit ? [0, -8] : [0, 0]
-										},
-										lineStyle: { type: 'solid', color: 'transparent' }
-									}
-								]
-							}
-						}
-					: null
+				})),
+				...Array.from(new Set(safeLimit.map((d) => d.instance))).map((instance) => ({
+					name: 'Limit',
+					type: 'line',
+					data: safeLimit
+						.filter((d) => d.instance === instance)
+						.map((d) => [d.timestamp.getTime(), d.value]),
+					showSymbol: false,
+					color: limitColor,
+					lineStyle: { color: limitColor, type: 'dashed' },
+					endLabel: {
+						formatter: 'Limit',
+						position: 'end',
+						color: limitColor,
+						show: true
+					}
+				}))
 			]
 		} as EChartsOption;
 
@@ -212,11 +189,11 @@
 		</div>
 	</BodyLong>
 	<div class="section">
-		<Heading level="2" size="medium" spacing>Memory usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
-			<div style="justify-self: end;">
+			<div class="heading-with-toggle">
+				<Heading level="2" size="medium" spacing>Memory Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -236,8 +213,19 @@
 								instance: d.instance
 							};
 						}),
-						utilization.requested_memory / 1024 / 1024 / 1024,
-						utilization.limit_memory ? utilization.limit_memory / 1024 / 1024 / 1024 : undefined,
+						utilization.requested_memory_series.map((d) => {
+							return {
+								timestamp: d.timestamp,
+								value: d.value / 1024 / 1024 / 1024
+							};
+						}),
+						utilization.limit_memory_series.map((d) => {
+							console.log(d.value);
+							return {
+								timestamp: d.timestamp,
+								value: d.value / 1024 / 1024 / 1024
+							};
+						}),
 						(value) =>
 							value == null
 								? '-'
@@ -257,11 +245,11 @@
 		{/if}
 	</div>
 	<div class="section">
-		<Heading level="2" size="medium" spacing>CPU usage</Heading>
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
 				$ResourceUtilizationForApp.data.team.environment.application.utilization}
-			<div style="justify-self: end;">
+			<div class="heading-with-toggle">
+				<Heading level="2" size="medium" spacing>CPU Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -275,8 +263,8 @@
 				<EChart
 					options={options(
 						utilization.cpu_series,
-						utilization.requested_cpu,
-						utilization.limit_cpu ? utilization.limit_cpu : undefined,
+						utilization.requested_cpu_series,
+						utilization.limit_cpu_series,
 						(value: number) =>
 							value == null
 								? '-'
@@ -297,7 +285,11 @@
 		display: grid;
 		gap: var(--a-spacing-6);
 	}
-
+	.heading-with-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
 	.section {
 		display: grid;
 	}

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { replacer } from '$lib/replacer';
 	import Tab from '$lib/Tab.svelte';
 	import Tabs from '$lib/Tabs.svelte';
-	import { replacer } from '$lib/replacer';
 	import type { LayoutProps } from './$houdini';
 
 	let { children }: LayoutProps = $props();
@@ -15,7 +16,7 @@
 			withSubRoutes: false
 		},
 		{
-			tab: 'User sync log',
+			tab: 'User synchronization log',
 			routeId: '/admin/userSyncLog',
 			withSubRoutes: false
 		},
@@ -40,9 +41,7 @@
 <svelte:head><title>Admin - Nais Console</title></svelte:head>
 
 <div class="page">
-	<div class="header">
-		<h2>Admin</h2>
-	</div>
+	<PageHeader heading="Administration" />
 	<Tabs>
 		{#each nav as { tab, routeId, withSubRoutes } (routeId)}
 			<Tab
@@ -58,14 +57,13 @@
 </div>
 
 <style>
+	.page {
+		margin-top: var(--spacing-layout);
+		width: 100%;
+	}
 	.container {
 		margin: auto;
 		min-width: 1000px;
 		max-width: 1432px;
-	}
-
-	.header {
-		display: flex;
-		justify-content: space-between;
 	}
 </style>

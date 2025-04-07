@@ -1,7 +1,6 @@
 query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
-
 		environment(name: $env) {
 			job(name: $job) {
 				id
@@ -12,7 +11,6 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 						name
 					}
 				}
-
 				team {
 					slug
 				}
@@ -30,13 +28,6 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 						__typename
 						name
 						cascadingDelete
-					}
-				}
-				redisInstances {
-					nodes {
-						id
-						__typename
-						name
 					}
 				}
 				valkeyInstances {

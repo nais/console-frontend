@@ -1,6 +1,6 @@
 query TeamCost($team: Slug!, $from: Date!, $to: Date!) @cache(policy: NetworkOnly) {
-	team(slug: $team) {
-		cost {
+	team(slug: $team) @loading {
+		cost @loading {
 			daily(from: $from, to: $to) {
 				series {
 					date

@@ -76,7 +76,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading>Nais Console feedback</Heading>
+		<Heading level="1">Nais Console Feedback</Heading>
 	{/snippet}
 
 	{#if feedbackSent}

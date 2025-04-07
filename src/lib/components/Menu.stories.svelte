@@ -23,7 +23,6 @@
 				{ label: 'Secrets', href: '/team/devteam/secrets' },
 				{ label: 'Postgres', href: '/team/devteam/postgres', count: 7 },
 				{ label: 'Buckets', href: '/team/devteam/buckets', count: 1337 },
-				{ label: 'Redis', href: '/team/devteam/redis', count: 5 },
 				{ label: 'Valkey', href: '/team/devteam/valkey', count: 11 },
 				{ label: 'OpenSearch', href: '/team/devteam/opensearch', count: 17 },
 				{ label: 'Kafka Topics', href: '/team/devteam/kafka', count: 23 },

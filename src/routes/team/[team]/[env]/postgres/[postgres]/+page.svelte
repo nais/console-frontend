@@ -99,7 +99,7 @@
 		<dl>
 			<dt>Instance status:</dt>
 			<dd>
-				{#if instance.state === 'RUNNABLE' && instance.healthy && instance.database?.healthy}
+				{#if instance.state === 'RUNNABLE'}
 					<CheckmarkIcon style="color: var(--a-surface-success); font-size: 1.5rem" />
 				{:else}
 					<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink

@@ -40,7 +40,7 @@
 				team: team,
 				orderBy: {
 					field: tableSort.orderBy ? tableSort.orderBy : ImageVulnerabilityOrderField.SEVERITY,
-					direction: tableSort.direction ? tableSort.direction : 'DESC'
+					direction: tableSort.direction ? tableSort.direction : 'ASC'
 				}
 			};
 		});

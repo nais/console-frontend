@@ -22,21 +22,6 @@ query TeamVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
 				team {
 					slug
 				}
-				# status {
-				# 	errors {
-				# 		__typename
-				# 		level
-				# 		... on WorkloadStatusVulnerable {
-				# 			summary {
-				# 				riskScore
-				# 				critical
-				# 			}
-				# 		}
-				# 		... on WorkloadStatusMissingSBOM {
-				# 			level
-				# 		}
-				# 	}
-				# }
 			}
 		}
 		...VulnerabilityOverviewFragment

@@ -1,22 +1,5 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		externalResources {
-			entraIDGroup {
-				groupID
-			}
-			googleGroup {
-				email
-			}
-			googleArtifactRegistry {
-				repository
-			}
-			cdn {
-				bucket
-			}
-			gitHubTeam {
-				slug
-			}
-		}
 		environments {
 			id
 			gcpProjectID
@@ -32,25 +15,17 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 
-		redisInstances(first: 20) {
+		deployments(first: 5) {
+			nodes {
+				id
+				...DeploymentItemFragment
+			}
+		}
+
+		workloads(first: 999) {
 			pageInfo {
 				totalCount
 			}
-			nodes {
-				id
-				__typename
-				name
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-				team {
-					slug
-				}
-			}
-		}
-		workloads(first: 999) {
 			nodes {
 				__typename
 				id
@@ -90,6 +65,14 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 					}
 				}
 			}
+		}
+		vulnerabilitySummary {
+			bomCount
+			coverage
+			critical
+			riskScore
+			riskScoreTrend
+			ranking
 		}
 		...VulnerabilityOverviewFragment
 	}

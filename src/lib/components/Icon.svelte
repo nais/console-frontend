@@ -2,7 +2,6 @@
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import RedisIcon from '$lib/icons/RedisIcon.svelte';
 	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import {
@@ -46,10 +45,8 @@
 			case 'postgres':
 				return DatabaseIcon;
 			case 'buckets':
+			case 'bucket':
 				return BucketIcon;
-			case 'redis':
-			case 'redisinstance':
-				return RedisIcon;
 			case 'valkey':
 			case 'valkeyinstance':
 				return ValkeyIcon;

@@ -42,7 +42,7 @@
 	<div class="wrapper">
 		<div>
 			{#if topic.configuration}
-				<Heading level="2" spacing>Topic configuration</Heading>
+				<Heading level="2" spacing>Topic Configuration</Heading>
 
 				<dl class="status">
 					{#if topic.configuration}
@@ -53,7 +53,7 @@
 					{/if}
 				</dl>
 			{/if}
-			<Heading level="2" spacing>Topic access control list</Heading>
+			<Heading level="2" spacing>Topic Access Control List</Heading>
 			<div class="table">
 				<Table
 					size="small"

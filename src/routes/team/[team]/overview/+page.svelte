@@ -130,7 +130,7 @@
 	</Card>
 
 	<div class="deployments">
-		<Heading level="4" size="small" spacing>Last team deployments</Heading>
+		<Heading level="4" size="small" spacing>Last Team Deployments</Heading>
 		{#if $TeamOverview.data}
 			<Deploys team={$TeamOverview.data.team} />
 		{/if}

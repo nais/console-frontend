@@ -104,7 +104,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading>Create new secret</Heading>
+		<Heading level="1" size="large">Create New Secret</Heading>
 	{/snippet}
 	<div class="row">
 		<BodyShort size="medium" spacing>A secret is a named set of key-value pairs.</BodyShort>

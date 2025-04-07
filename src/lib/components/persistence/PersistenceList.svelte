@@ -17,8 +17,6 @@
 				return 'BigQuery';
 			case 'SqlInstance':
 				return 'Postgres';
-			case 'RedisInstance':
-				return 'Redis';
 			case 'ValkeyInstance':
 				return 'Valkey';
 			default:
@@ -27,7 +25,7 @@
 	};
 </script>
 
-<div class="persistence permanent">
+<div class="persistence">
 	<div class="icon">
 		<Icon icon={persistence.__typename} />
 	</div>
@@ -49,6 +47,7 @@
 
 	.persistence {
 		display: flex;
+		width: 850px;
 		flex-direction: row;
 		border-bottom: 1px solid var(--a-border-subtle);
 		align-items: center;
@@ -63,10 +62,11 @@
 	.name {
 		display: flex;
 		flex-direction: column;
-		min-width: 30%;
+		min-width: 15%;
 	}
 
 	.content {
 		margin: 0.5rem;
+		max-width: 80ch;
 	}
 </style>

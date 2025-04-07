@@ -18,16 +18,20 @@ export default defineConfig((mode) => {
 		};
 	};
 
+	const targetProxy = env.VITE_PROXY_ENDPOINT ?? 'http://127.0.0.1:3000';
+
 	return {
 		plugins: [houdini(), sveltekit()],
 		server: {
 			proxy: {
 				'/graphql': {
-					target: 'http://127.0.0.1:3000',
-					headers: headers()
+					target: targetProxy,
+					headers: headers(),
+					changeOrigin: targetProxy.indexOf('127.0.0.1') < 0
 				},
 				'/oauth2': {
-					target: 'http://127.0.0.1:3000'
+					target: targetProxy,
+					changeOrigin: targetProxy.indexOf('127.0.0.1') < 0
 				}
 			}
 		}

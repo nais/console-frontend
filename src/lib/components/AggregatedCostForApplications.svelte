@@ -41,10 +41,9 @@
 </script>
 
 <GraphErrors errors={$costQuery.errors} />
-<div class="wrapper">
+<div>
 	<div class="heading">
-		<Heading level="3" size="small">Applications cost</Heading>
-
+		<Heading size="small" level="3">Applications Cost</Heading>
 		<HelpText title="Aggregated workloads cost"
 			>Aggregated cost for workloads. Current month is estimated.</HelpText
 		>
@@ -56,17 +55,11 @@
 		</div>
 	{:else if $costQuery.data && $costQuery.data.team.applications.nodes.length > 0}
 		<AggregatedCostForWorkloads nodes={$costQuery.data.team.applications.nodes} />
+		<a href="/team/{teamSlug}/cost">See cost details</a>
 	{/if}
 </div>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		gap: var(--a-spacing-1);
-	}
-
 	.loading {
 		display: flex;
 		justify-content: center;

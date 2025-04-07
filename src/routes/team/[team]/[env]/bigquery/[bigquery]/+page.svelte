@@ -30,7 +30,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2" spacing>Dataset details</Heading>
+			<Heading level="2" spacing>Dataset Details</Heading>
 
 			<BodyShort spacing>{bq.description ? bq.description : 'No description'}</BodyShort>
 
@@ -107,7 +107,7 @@
 				{/if}
 			</div>
 			<div>
-				<Heading level="3" size="small">Cost last 30 days</Heading>
+				<Heading level="3" size="small">Cost Last 30 Days</Heading>
 				<BodyShort>
 					{bq.cost.sum ? euroValueFormatter(bq.cost.sum) : 'No cost data available'}
 				</BodyShort>

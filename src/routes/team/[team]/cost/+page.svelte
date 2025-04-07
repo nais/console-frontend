@@ -1,85 +1,81 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import Card from '$lib/Card.svelte';
+	import { PendingValue } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart, type DailCostType } from '$lib/chart/cost_transformer';
-	import TeamCostEnv from '$lib/components/TeamCostEnv.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import { changeParams } from '$lib/utils/searchparams';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+	import TeamEnvironmentApplicationsCost from './TeamEnvironmentApplicationsCost.svelte';
 
-	let { data }: PageProps = $props();
-	let { TeamCost, teamSlug } = $derived(data);
-
-	let from = $state(data.fromDate?.toISOString().split('T')[0]);
-	let to = $state(data.toDate?.toISOString().split('T')[0]);
-
-	function echartOptionsStackedColumnChart(data: DailCostType) {
-		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 50 };
-		return opts;
-	}
-
-	let fromDate = $state(new Date());
-	let toDate = $state(new Date());
-
-	$effect(() => {
-		fromDate = new Date(from);
-		toDate = new Date(to);
-	});
-
-	function update() {
-		const old = $TeamCost.variables!;
-		TeamCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
-		const params = new URLSearchParams({ from, to });
-		fromDate = new Date(from);
-		toDate = new Date(to);
-		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
-	}
-
-	const today = new Date();
-	today.setDate(today.getDate() - 2);
-	const todayMinusTwoDays = today.toISOString().split('T')[0];
+	const { data }: PageProps = $props();
+	const { TeamCost, interval, teamSlug, from, to } = $derived(data);
 </script>
 
-<GraphErrors errors={$TeamCost.errors} />
+<div class="wrapper">
+	<GraphErrors errors={$TeamCost.errors} />
 
-<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
-
-{#if $TeamCost.data}
-	<div class="grid">
-		<Card columns={4}>
-			<label for="from">From:</label>
-			<input type="date" id="from" bind:value={from} onchange={update} />
-			<label for="to">To:</label>
-			<input
-				type="date"
-				id="to"
-				min={from}
-				max={todayMinusTwoDays}
-				bind:value={to}
-				onchange={update}
-			/>
-		</Card>
-		<Card columns={12}>
-			<h4>Total cost for team {teamSlug} from {from} to {to}</h4>
+	<div class="graph">
+		<div class="heading">
+			<div class="content">
+				<Heading level="2" spacing>Cost by Service</Heading>
+				<BodyLong>
+					Distribution of team costs across various services. Some services, like Kafka, are missing
+					cost data per team. Cost information is best-effort and originates from Google Cloud and
+					Aiven.
+				</BodyLong>
+			</div>
+			<ToggleGroup
+				value={interval}
+				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+			>
+				{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+				{/each}
+			</ToggleGroup>
+		</div>
+		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
 			<EChart
-				options={echartOptionsStackedColumnChart($TeamCost.data.team.cost.daily)}
-				style="height: 400px"
+				options={costTransformStackedColumnChart(from, to, $TeamCost.data.team.cost.daily)}
+				style="height: 500px"
 			/>
-		</Card>
-
-		<TeamCostEnv team={teamSlug} from={fromDate} to={toDate} />
+		{:else}
+			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+				<Loader size="3xlarge" />
+			</div>
+		{/if}
 	</div>
-{/if}
+
+	<TeamEnvironmentApplicationsCost {teamSlug} {from} {to} {interval} />
+</div>
 
 <style>
-	.grid {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
+
+	.graph {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
+	}
+
+	.heading {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: var(--spacing-layout);
+	}
+
+	.content {
+		max-width: 80ch;
 	}
 </style>
