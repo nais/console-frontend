@@ -9,10 +9,6 @@ query ResourceUtilizationForApp(
 		environment(name: $env) {
 			application(name: $app) {
 				utilization {
-					# requested_cpu_series: requested(resourceType: CPU)
-					# requested_memory_series: requested(resourceType: MEMORY)
-					# limit_cpu: limit(resourceType: CPU)
-					# limit_memory: limit(resourceType: MEMORY)
 					requested_memory_series: requestedSeries(
 						input: { start: $start, end: $end, resourceType: MEMORY }
 					) {
