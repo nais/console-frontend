@@ -4311,7 +4311,6 @@ type Team implements Node {
 
   """Purpose of the team."""
   purpose: String!
-
   repositories(
     """Get items after this cursor."""
     after: Cursor
@@ -6288,15 +6287,6 @@ type WorkloadStatusFailedRun implements WorkloadStatusError {
   name: String!
 }
 
-"""An inbound network policies are not met"""
-type WorkloadStatusInboundNetwork implements WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-
-  """Network policy"""
-  policy: NetworkPolicyRule!
-}
-
 """The last deployed YAML is invalid"""
 type WorkloadStatusInvalidNaisYaml implements WorkloadStatusError {
   """Error message"""
@@ -6312,30 +6302,12 @@ type WorkloadStatusMissingSBOM implements WorkloadStatusError {
   level: WorkloadStatusErrorLevel!
 }
 
-"""Error describing that a workload has new instances that are failing"""
-type WorkloadStatusNewInstancesFailing implements WorkloadStatusError {
-  """Names of the failing instances"""
-  failingInstances: [String!]!
-
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
 """
 A workload does not have any active instances, but is requested to have some
 """
 type WorkloadStatusNoRunningInstances implements WorkloadStatusError {
   """Error level"""
   level: WorkloadStatusErrorLevel!
-}
-
-"""An outbound network policies are not met"""
-type WorkloadStatusOutboundNetwork implements WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-
-  """Network policy"""
-  policy: NetworkPolicyRule!
 }
 
 """Error describing that the workload is failing to synchronize"""
@@ -6363,10 +6335,18 @@ type WorkloadUtilization {
   """Gets the limit of the resources for the requested resource type."""
   limit(resourceType: UtilizationResourceType!): Float
 
+  """Gets the limit of the resources for the requested resource type."""
+  limitSeries(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
+
   """
   Gets the requested amount of resources for the requested resource type.
   """
   requested(resourceType: UtilizationResourceType!): Float!
+
+  """
+  Gets the requested amount of resources for the requested resource type.
+  """
+  requestedSeries(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
 
   """Usage between start and end with step size for given resource type."""
   series(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
