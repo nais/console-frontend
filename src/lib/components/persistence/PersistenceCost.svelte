@@ -154,9 +154,9 @@
 					month: 'long'
 				})}: {euroValueFormatter(estimatedSecondMonthSum)}
 				{#if estimatedSecondMonthSum > firstMonthSum}
-					<CaretUpFillIcon style="color: var(--ax-bg-danger-moderate, --a-surface-danger);" />
+					<CaretUpFillIcon style="color: var(--ax-bg-danger-strong, --a-surface-danger);" />
 				{:else}
-					<CaretDownFillIcon style="color: var(--ax-bg-success-moderate, --a-surface-success);" />
+					<CaretDownFillIcon style="color: var(--ax-bg-success-strong, --a-surface-success);" />
 				{/if}
 			</Detail>
 		</div>

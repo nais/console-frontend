@@ -139,7 +139,7 @@
 		background-color: var(--ax-neutral-200, --a-gray-200);
 	}
 	.red {
-		color: var(--ax-bg-danger-moderate, --a-surface-danger);
+		color: var(--ax-bg-danger-strong, --a-surface-danger);
 	}
 
 	.green {

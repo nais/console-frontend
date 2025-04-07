@@ -121,9 +121,9 @@
 					month: 'long'
 				})}: {euroValueFormatter(data.at(-1)?.sum)}
 				{#if (data.at(-1)?.sum ?? 0) > (data.at(-2)?.sum ?? 0)}
-					<CaretUpFillIcon style="color: var(--ax-bg-danger-moderate, --a-surface-danger);" />
+					<CaretUpFillIcon style="color: var(--ax-bg-danger-strong, --a-surface-danger);" />
 				{:else}
-					<CaretDownFillIcon style="color: var(--ax-bg-success-moderate, --a-surface-success);" />
+					<CaretDownFillIcon style="color: var(--ax-bg-success-strong, --a-surface-success);" />
 				{/if}
 			</Detail>
 		</div>
