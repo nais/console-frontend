@@ -173,7 +173,7 @@
 		display: flex;
 		gap: var(--ax-space-16, --a-spacing-4);
 		padding: var(--ax-space-12, --a-spacing-3) var(--ax-space-24, --a-spacing-6);
-		background-color: var(--ax-bg-sunken, --a-surface-subtle);
+		background-color: var(--ax-bg-default, --a-surface-subtle);
 
 		> div {
 			display: flex;
@@ -191,7 +191,11 @@
 	}
 	kbd {
 		font-size: 1rem;
-		background: linear-gradient(rgb(255, 255, 255), rgb(255, 255, 255), rgba(18, 43, 68, 0.08));
+		background: linear-gradient(
+			rgb(255, 255, 255, 0.1),
+			rgb(255, 255, 255, 0.1),
+			rgba(18, 43, 68, 0.08)
+		);
 		border: solid 1px rgb(35, 38, 42);
 		border-radius: 6px;
 		padding: var(--ax-space-4, --a-spacing-1);

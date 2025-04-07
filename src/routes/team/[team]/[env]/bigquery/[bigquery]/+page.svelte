@@ -52,7 +52,7 @@
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
 									<CheckmarkIcon
-										style="color: var(--ax-bg-success-moderate, --a-surface-success)"
+										style="color: var(--ax-text-success-subtle, --a-surface-success)"
 										title="CascadingDelete"
 									/>
 								</TooltipAlignHack>

@@ -133,7 +133,7 @@
 						<Td>
 							{#if secret.workloads.pageInfo.totalCount > 0}
 								<CheckmarkIcon
-									style="color: var(--ax-bg-success-moderate, --a-surface-success)"
+									style="color: var(--ax-text-success-subtle, --a-surface-success)"
 									title="{secret.workloads.pageInfo.totalCount} workloads are using this secret"
 								/>
 							{:else}

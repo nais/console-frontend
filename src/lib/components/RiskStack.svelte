@@ -120,12 +120,12 @@
 	}
 
 	.critical {
-		background-color: var(--ax-danger-200, --a-red-200);
+		background-color: var(--ax-danger-600, --a-red-200);
 	}
 	.high {
 		background-color: color-mix(
 			in oklab,
-			var(--ax-danger-200, --a-red-200),
+			var(--ax-danger-600, --a-red-200),
 			var(--ax-warning-200, --a-orange-200)
 		);
 	}
@@ -133,7 +133,7 @@
 		background-color: var(--ax-warning-200, --a-orange-200);
 	}
 	.low {
-		background-color: var(--ax-success-200, --a-green-200);
+		background-color: var(--ax-success-400, --a-green-200);
 	}
 	.unassigned {
 		background-color: var(--ax-neutral-200, --a-gray-200);
@@ -143,7 +143,7 @@
 	}
 
 	.green {
-		color: var(--ax-bg-success-moderate, --a-surface-success);
+		color: var(--ax-text-success-subtle, --a-surface-success);
 	}
 
 	dl {

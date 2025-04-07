@@ -124,7 +124,7 @@
 									>+{factor.toFixed(2)}%</span
 								>)
 							{:else}
-								(<span style="color: var(--ax-bg-success-moderate, --a-surface-success);"
+								(<span style="color: var(--ax-text-success-subtle, --a-surface-success);"
 									>-{(1.0 - factor).toFixed(2)}%</span
 								>)
 							{/if}

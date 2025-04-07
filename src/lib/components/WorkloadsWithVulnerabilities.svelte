@@ -164,13 +164,13 @@
 	export function severityToColorWithHover(severity: string): string {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-danger-200, --a-red-200)';
+				return 'var(--ax-danger-600, --a-red-200)';
 			case 'high':
 				return 'var(--ax-warning-200, --a-orange-200)';
 			case 'medium':
 				return 'var(--ax-warning-200, --a-orange-200)';
 			case 'low':
-				return 'var(--ax-success-200, --a-green-200)';
+				return 'var(--ax-success-400, --a-green-200)';
 			case 'unassigned':
 				return 'var(--ax-neutral-200, --a-gray-200)';
 			default:
@@ -427,7 +427,7 @@
 			text-decoration: none;
 
 			&.CRITICAL {
-				background-color: var(--ax-danger-200, --a-red-200);
+				background-color: var(--ax-danger-600, --a-red-200);
 				&:hover {
 					background-color: var(--ax-danger-300, --a-red-300);
 				}
@@ -435,7 +435,7 @@
 			&.HIGH {
 				background-color: color-mix(
 					in oklab,
-					var(--ax-danger-200, --a-red-200),
+					var(--ax-danger-600, --a-red-200),
 					var(--ax-warning-200, --a-orange-200)
 				);
 				&:hover {
@@ -453,7 +453,7 @@
 				}
 			}
 			&.LOW {
-				background-color: var(--ax-success-200, --a-green-200);
+				background-color: var(--ax-success-400, --a-green-200);
 				&:hover {
 					background-color: var(--ax-success-300, --a-green-300);
 				}

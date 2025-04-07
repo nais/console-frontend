@@ -101,7 +101,7 @@
 			<dd>
 				{#if instance.state === 'RUNNABLE'}
 					<CheckmarkIcon
-						style="color: var(--ax-bg-success-moderate, --a-surface-success); font-size: 1.5rem"
+						style="color: var(--ax-text-success-subtle, --a-surface-success); font-size: 1.5rem"
 					/>
 				{:else}
 					<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink
