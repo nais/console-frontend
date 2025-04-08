@@ -206,9 +206,8 @@
 		);
 	});
 
-	function handleChartClick(e: CustomEvent) {
-		const { name: team } = e.detail as { name: string };
-		goto(`/team/${team}/utilization`);
+	function handleChartClick(name: string) {
+		goto(`/team/${name}/utilization`);
 	}
 </script>
 
@@ -273,12 +272,12 @@
 			<EChart
 				options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
 				style="height: 350px; width: 50%;"
-				on:click={handleChartClick}
+				onclick={handleChartClick}
 			/>
 			<EChart
 				options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
 				style="height: 350px; width: 50%;"
-				on:click={handleChartClick}
+				onclick={handleChartClick}
 			/>
 		</div>
 		<div>
