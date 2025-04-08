@@ -184,13 +184,17 @@
 				<p style="display: flex; align-items: center; gap 0 1rem;"><strong>Status</strong></p>
 				<p style="padding-top: 4px;">
 					{#if unleash.ready}
-						<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.2rem" />
+						<CheckmarkIcon
+							style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.2rem"
+						/>
 					{:else}
 						<Tooltip
 							content="Unleash is not ready, new instances will be online after a minute."
 							placement="right"
 						>
-							<XMarkIcon style="color: var(--a-icon-danger); font-size: 1.2rem" />
+							<XMarkIcon
+								style="color: var(--ax-text-danger-icon, --a-icon-danger); font-size: 1.2rem"
+							/>
 						</Tooltip>
 					{/if}
 				</p>
@@ -248,7 +252,9 @@
 											onclick={() => removeTeamClickHandler(team.slug)}
 										>
 											{#snippet icon()}
-												<TrashIcon style="color:var(--a-icon-danger)!important" />
+												<TrashIcon
+													style="color:var(--ax-text-danger-icon, --a-icon-danger)!important"
+												/>
 											{/snippet}
 										</Button>
 									{/if}
@@ -361,7 +367,7 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 	}
 
 	.wrapper p {
@@ -378,8 +384,8 @@
 	}
 
 	.card {
-		background-color: var(--a-surface-subtle);
-		padding: var(--a-spacing-5);
+		background-color: var(--ax-bg-sunken, --a-surface-subtle);
+		padding: var(--ax-space-20, --a-spacing-5);
 		border-radius: 12px;
 	}
 	.summary {

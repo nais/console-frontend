@@ -181,6 +181,6 @@
 		padding: 0 0 1rem 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 	}
 </style>

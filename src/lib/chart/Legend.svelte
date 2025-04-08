@@ -14,9 +14,9 @@
 	<div style="margin: 0px 0 0;line-height:1;">
 		<div style="margin: 0px 0 0;line-height:1;">
 			<span class="marker" style="background-color:{params.color}"></span>
-			<span style="font-size:14px;color:#666;margin-left:2px">
+			<span style="font-size:14px;margin-left:2px">
 				{params.seriesName}
-			</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">
+			</span><span style="float:right;margin-left:20px;font-size:14px;font-weight:900">
 				{#if valueFormatter}
 					{valueFormatter(params.value)}
 				{:else}

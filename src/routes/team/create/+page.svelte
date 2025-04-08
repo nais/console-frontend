@@ -170,7 +170,7 @@
 			{/snippet}
 		</TextField>
 		{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
-			<p style:color="var(--a-text-danger)">{teamSlugError}</p>
+			<p style:color="var(--ax-text-danger, --a-text-danger)">{teamSlugError}</p>
 		{/if}
 		<br />
 		<TextField name="description" value={form?.input.purpose} oninput={handlePurposeInput}>
@@ -182,7 +182,7 @@
 			{/snippet}
 		</TextField>
 		{#if purposeError !== 'no_error' && purposeError !== ''}
-			<p style:color="var(--a-text-danger)">{purposeError}</p>
+			<p style:color="var(--ax-text-danger, --a-text-danger)">{purposeError}</p>
 		{/if}
 		<br />
 		<TextField
@@ -198,7 +198,7 @@
 			{/snippet}
 		</TextField>
 		{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
-			<p style:color="var(--a-text-danger)">{slackChannelError}</p>
+			<p style:color="var(--ax-text-danger, --a-text-danger)">{slackChannelError}</p>
 		{/if}
 		<br />
 		<Button loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>

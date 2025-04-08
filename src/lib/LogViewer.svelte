@@ -248,8 +248,8 @@
 		justify-content: space-between;
 	}
 	#log {
-		border: 1px solid var(--a-border-subtle);
-		background-color: var(--a-surface-default);
+		border: 1px solid var(--ax-border-subtle, --a-border-subtle);
+		background-color: var(--ax-bg-default, --a-surface-default);
 		display: block;
 		font-family:
 			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
@@ -273,13 +273,13 @@
 
 	.logline.WARN,
 	.logline.WARNING {
-		background-color: var(--a-surface-warning-subtle);
-		color: var(--a-text-on-warning);
+		background-color: var(--ax-bg-warning-moderate, --a-surface-warning-subtle);
+		color: var(--ax-text-neutral, --a-text-on-warning);
 	}
 
 	.logline.ERROR {
-		background-color: var(--a-surface-danger-subtle);
-		color: var(--a-text-danger);
+		background-color: var(--ax-bg-danger-moderate, --a-surface-danger-subtle);
+		color: var(--ax-text-danger, --a-text-danger);
 	}
 
 	.timestamp {

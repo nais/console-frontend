@@ -30,6 +30,6 @@
 		position: fixed;
 		bottom: 0;
 		right: 0;
-		padding: var(--a-spacing-2);
+		padding: var(--ax-space-8, --a-spacing-2);
 	}
 </style>

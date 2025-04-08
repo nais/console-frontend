@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { registerTheme } from '$lib/chart/theme';
 	import type {
 		DefaultLabelFormatterCallbackParams,
 		ECElementEvent,
@@ -10,11 +11,10 @@
 
 	interface Props {
 		options: EChartsOption;
-		theme?: string;
 		style?: string;
 	}
 
-	let { options, theme = 'london', style = '' }: Props = $props();
+	let { options, style = '' }: Props = $props();
 
 	const dispatcher = createEventDispatcher<{ click: ECElementEvent }>();
 
@@ -57,7 +57,8 @@
 		};
 
 		import('echarts').then((echarts) => {
-			ins = echarts.init(el, theme, { renderer: 'svg' });
+			registerTheme(echarts);
+			ins = echarts.init(el, 'aksel', { renderer: 'svg' });
 			ins.setOption(options);
 			ins.on('mouseover', (e) => {
 				activeSeries = e.seriesId;

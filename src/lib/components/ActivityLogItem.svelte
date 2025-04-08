@@ -261,7 +261,7 @@
 		</BodyShort>
 	</div>
 	<div>
-		<BodyShort size="small" style="color: var(--a-text-subtle)">
+		<BodyShort size="small" style="color: var(--ax-text-subtle, --a-text-subtle)">
 			<Time time={$data.createdAt} distance={true} />
 			by {$data.actor}
 		</BodyShort>

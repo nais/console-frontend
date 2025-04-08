@@ -146,6 +146,6 @@
 	.content {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 	}
 </style>

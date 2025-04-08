@@ -263,7 +263,7 @@
 	}
 	.right {
 		display: flex;
-		gap: var(--a-spacing-1-alt);
+		gap: var(--ax-space-6, --a-spacing-1-alt);
 		align-items: center;
 	}
 	code {

@@ -133,12 +133,12 @@
 						<Td>
 							{#if secret.workloads.pageInfo.totalCount > 0}
 								<CheckmarkIcon
-									style="color: var(--a-surface-success)"
+									style="color: var(--ax-text-success-subtle, --a-surface-success)"
 									title="{secret.workloads.pageInfo.totalCount} workloads are using this secret"
 								/>
 							{:else}
 								<XMarkIcon
-									style="color: var(--a-surface-danger)"
+									style="color: var(--ax-bg-danger-moderate, --a-surface-danger)"
 									title="No workloads are using this secret"
 								/>
 							{/if}

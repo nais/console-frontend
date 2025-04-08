@@ -34,7 +34,7 @@
 			<TextField label="" size="small" bind:value={newText} hideLabel={true} />
 		{:else}
 			<textarea
-				class="navds-text-field__input navds-body-short navds-body-short--medium"
+				class="aksel-text-field__input aksel-body-short aksel-body-short--medium"
 				bind:value={newText}
 			></textarea>
 		{/if}

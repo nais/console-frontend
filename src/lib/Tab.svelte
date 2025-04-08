@@ -15,15 +15,16 @@
 <style>
 	.tab {
 		text-decoration: none;
-		color: var(--a-text-subtle);
+		color: var(--ax-text-subtle, --a-text-subtle);
 		padding: 0.75rem 1rem;
 		border-bottom: 3px solid transparent;
 	}
 	.tab:hover {
-		border-bottom: 3px solid var(--a-border-subtle-hover);
+		/* TODO(thokra): What should this be? */
+		border-bottom: 3px solid var(--ax-border-subtle, --a-border-subtle-hover);
 	}
 	.tab.active {
-		color: var(--a-text-default);
-		border-bottom: 3px solid var(--a-border-action);
+		color: var(--ax-text-neutral, --a-text-default);
+		border-bottom: 3px solid var(--ax-border-accent-strong, --a-border-action);
 	}
 </style>

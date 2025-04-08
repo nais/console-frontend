@@ -1,6 +1,11 @@
 :root {
 	--brand-color: #ff4d89;
 
-	--active-color: var(--a-deepblue-50);
-	--active-color-strong: var(--a-deepblue-100);
+	--active-color: var(--ax-brand-blue-200, --a-deepblue-50);
+	--active-color-strong: var(--ax-brand-blue-400, --a-deepblue-100);
+}
+
+.dark {
+	--active-color: var(--ax-brand-blue-200, --a-deepblue-50);
+	--active-color-strong: var(--ax-brand-blue-600, --a-deepblue-100);
 }

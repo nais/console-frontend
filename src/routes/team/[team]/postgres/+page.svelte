@@ -82,7 +82,15 @@
 										}[instance.state] ?? ''}
 									>
 										<CircleFillIcon
-											style="color: var(--a-icon-{{
+											style="color: var(--ax-text-{{
+												RUNNABLE: 'success',
+												FAILED: 'danger',
+												MAINTENANCE: 'warning',
+												PENDING_CREATE: 'info',
+												PENDING_DELETE: 'info',
+												SUSPENDED: 'info',
+												UNSPECIFIED: 'info'
+											}[instance.state] ?? 'info'}-icon, --a-icon-{{
 												RUNNABLE: 'success',
 												FAILED: 'danger',
 												MAINTENANCE: 'warning',
@@ -99,7 +107,7 @@
 
 						{#if instance.workload}
 							<div class="right">
-								<div style:display="flex" style:gap="var(--a-spacing-1-alt)">
+								<div style:display="flex" style:gap="var(--ax-space-6, --a-spacing-1-alt)">
 									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 								</div>
 								<div>Version: <code>{instance.version}</code></div>
@@ -180,20 +188,20 @@
 <style>
 	.content-wrapper {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 		grid-template-columns: 1fr 300px;
 		align-items: start;
 	}
 	.right {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-1-alt);
+		gap: var(--ax-space-6, --a-spacing-1-alt);
 		align-items: flex-end;
 	}
 
 	.right-column {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 	}
 	code {
 		font-size: 0.9rem;
@@ -201,13 +209,13 @@
 
 	.utilization {
 		display: grid;
-		gap: var(--a-spacing-1-alt);
+		gap: var(--ax-space-6, --a-spacing-1-alt);
 		div {
 			display: grid;
-			gap: var(--a-spacing-1-alt);
+			gap: var(--ax-space-6, --a-spacing-1-alt);
 			div {
 				display: flex;
-				gap: var(--a-spacing-1-alt);
+				gap: var(--ax-space-6, --a-spacing-1-alt);
 				align-items: center;
 			}
 		}

@@ -63,7 +63,9 @@
 		<div class="app-content">
 			<div class="main-section">
 				{#if app.status.errors.filter( (e) => supportedErrorTypes.some((errorType) => errorType === e.__typename) ).length}
-					<div style="display: flex; flex-direction: column; gap: var(--a-spacing-2);">
+					<div
+						style="display: flex; flex-direction: column; gap: var(--ax-space-8, --a-spacing-2);"
+					>
 						{#each app.status.errors as error, i (i)}
 							{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
 								<ErrorMessage
@@ -89,7 +91,7 @@
 					</Alert>
 				{/if}
 
-				<div style="display:flex; flex-direction: column; gap: var(--a-spacing-4);">
+				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16, --a-spacing-4);">
 					<div class="instances-header">
 						<Heading level="3" size="medium">Instances</Heading>
 						{#if viewerIsMember}

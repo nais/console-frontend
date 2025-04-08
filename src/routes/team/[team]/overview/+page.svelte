@@ -157,9 +157,9 @@
 
 	.workload-card {
 		background-color: var(--a-background-surface);
-		border: 1px solid var(--a-gray-200);
+		border: 1px solid var(--ax-neutral-200, --a-gray-200);
 		border-radius: var(--a-border-radius-1);
-		padding: var(--a-spacing-2);
+		padding: var(--ax-space-8, --a-spacing-2);
 	}*/
 
 	.sidebar {

@@ -93,15 +93,15 @@
 				{/each}
 			</Select>
 			{#if errorType}
-				<p class="navds-error-message navds-label navds-label--small">Feedback type required</p>
+				<p class="aksel-error-message aksel-label aksel-label--small">Feedback type required</p>
 			{/if}
 
-			<label class="navds-form-field__label navds-label navds-label--small" for="details">
+			<label class="aksel-form-field__label aksel-label aksel-label--small" for="details">
 				Details
 			</label>
 			<div class="details">
 				<textarea
-					class="navds-textarea__input navds-body-short navds-body-short--small textarea"
+					class="aksel-textarea__input aksel-body-short aksel-body-short--small textarea"
 					id="details"
 					bind:value={details}
 					rows="5"
@@ -116,19 +116,19 @@
 				>
 			</div>
 			<div
-				class="navds-form-field__error"
+				class="aksel-form-field__error"
 				id="tf-uid-43"
 				aria-relevant="additions removals"
 				aria-live="polite"
 			>
 				{#if errorDetails}
-					<p class="navds-error-message navds-label navds-label--small">
+					<p class="aksel-error-message aksel-label aksel-label--small">
 						Feedback details required
 					</p>
 				{/if}
 			</div>
 			{#if errorMessage !== ''}
-				<p class="navds-error-message navds-label navds-label--small">{errorMessage}</p>
+				<p class="aksel-error-message aksel-label aksel-label--small">{errorMessage}</p>
 			{/if}
 		</div>
 		<Checkbox bind:checked={anonymous}>Anonymous feedback</Checkbox>
@@ -158,7 +158,7 @@
 	}
 	#charCount {
 		font-size: 0.75rem;
-		color: var(--a-text-subtle);
+		color: var(--ax-text-subtle, --a-text-subtle);
 		margin: 0;
 		padding-top: 0.2rem;
 	}

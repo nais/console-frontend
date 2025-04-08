@@ -10,16 +10,16 @@
 
 <style>
 	.list-item {
-		background-color: #f7f8f9;
+		background-color: var(--ax-accent-100, #f7f8f9);
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
 		align-items: center;
-		column-gap: var(--a-spacing-4);
-		padding: var(--a-spacing-4) var(--a-spacing-6);
+		column-gap: var(--ax-space-16, --a-spacing-4);
+		padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-24, --a-spacing-6);
 
 		&:hover {
-			background-color: var(--a-surface-subtle);
+			background-color: var(--ax-accent-300, --a-surface-subtle);
 		}
 	}
 </style>

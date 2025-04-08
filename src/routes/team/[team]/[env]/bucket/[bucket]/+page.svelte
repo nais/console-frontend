@@ -39,7 +39,7 @@
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
 									<CheckmarkIcon
-										style="color: var(--a-surface-success)"
+										style="color: var(--ax-text-success-subtle, --a-surface-success)"
 										title="Cascading delete: true"
 									/>
 								</TooltipAlignHack>
@@ -49,7 +49,7 @@
 						<IconLabel label="Deleting the application will NOT remove the bucket.">
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete: false">
-									<XMarkIcon style="color: var(--a-icon-danger);" />
+									<XMarkIcon style="color: var(--ax-text-danger-icon, --a-icon-danger);" />
 								</TooltipAlignHack>
 							{/snippet}
 						</IconLabel>

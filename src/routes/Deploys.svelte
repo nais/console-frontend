@@ -104,7 +104,7 @@
 									}}
 								/>
 							{:else}
-								<span style="color:var(--a-gray-600)">{resource.kind}:</span>
+								<span style="color:var(--ax-neutral-600, --a-gray-600)">{resource.kind}:</span>
 								{resource.name}
 							{/if}
 							<br />

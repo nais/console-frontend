@@ -74,7 +74,7 @@
 
 <div class="wrapper">
 	<Heading level="3" size="small">
-		<div style="display: flex; gap: var(--a-spacing-2);">
+		<div style="display: flex; gap: var(--ax-space-8, --a-spacing-2);">
 			Deployment
 			{#if deploymentInfo?.statuses.nodes[0].state === 'FAILURE'}
 				<Tag variant="error" size="small">Failed</Tag>
@@ -123,6 +123,6 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 	}
 </style>

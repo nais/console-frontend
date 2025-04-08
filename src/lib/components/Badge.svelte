@@ -39,25 +39,25 @@
 		justify-content: center;
 
 		&.badge--WARNING {
-			background-color: var(--a-surface-warning);
-			color: var(--a-text-on-warning);
-			border: 1px solid var(--a-border-warning);
+			background-color: var(--ax-bg-warning-moderate, --a-surface-warning);
+			color: var(--ax-text-neutral, --a-text-on-warning);
+			border: 1px solid var(--ax-border-warning, --a-border-warning);
 		}
 
 		&.badge--ERROR {
-			background-color: var(--a-surface-danger);
-			color: var(--a-text-on-danger);
-			border: 1px solid var(--a-border-danger);
+			background-color: var(--ax-bg-danger-moderate, --a-surface-danger);
+			color: var(--ax-text-neutral, --a-text-on-danger);
+			border: 1px solid var(--ax-border-danger, --a-border-danger);
 		}
 
 		&.badge--TODO {
-			background-color: var(--a-surface-info);
-			color: var(--a-text-on-info);
-			border: 1px solid var(--a-border-info);
+			background-color: var(--ax-bg-info-moderate, --a-surface-info);
+			color: var(--ax-text-neutral, --a-text-on-info);
+			border: 1px solid var(--ax-border-info, --a-border-info);
 		}
 
 		&.badge--long {
-			font-size: var(--a-font-size-medium);
+			font-size: var(--ax-font-size-medium, --a-font-size-medium);
 		}
 	}
 </style>

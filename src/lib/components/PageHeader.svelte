@@ -38,11 +38,11 @@
 	.page-header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 
 		.breadcrumbs {
 			display: flex;
-			gap: var(--a-spacing-2);
+			gap: var(--ax-space-8, --a-spacing-2);
 			align-items: center;
 
 			:global(.link) {
@@ -54,13 +54,13 @@
 			}
 
 			.divider {
-				color: var(--a-text-subtle);
+				color: var(--ax-text-subtle, --a-text-subtle);
 			}
 		}
 
 		.heading-wrapper {
 			display: flex;
-			gap: var(--a-spacing-3);
+			gap: var(--ax-space-12, --a-spacing-3);
 			align-items: center;
 		}
 	}

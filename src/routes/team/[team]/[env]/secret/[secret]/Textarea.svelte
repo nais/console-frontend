@@ -18,19 +18,19 @@
 	}: Props = $props();
 </script>
 
-<div class="navds-form-field">
+<div class="aksel-form-field">
 	{#if label}
-		<label class="navds-form-field__label navds-label navds-label--small" for="value">
+		<label class="aksel-form-field__label aksel-label aksel-label--small" for="value">
 			{label}
 		</label>
 	{/if}
 	{#if description}
-		<div class="navds-form-field__description navds-detail">
+		<div class="aksel-form-field__description aksel-detail">
 			<i>{description}</i>
 		</div>
 	{/if}
 	<textarea
-		class="navds-textarea__input navds-body-short navds-body-short--small textarea"
+		class="aksel-textarea__input aksel-body-short aksel-body-short--small textarea"
 		id="value"
 		{rows}
 		{cols}
@@ -44,6 +44,6 @@
 		resize: vertical;
 		min-height: 2rem;
 		font-family: monospace;
-		font-size: var(--a-font-size-small);
+		font-size: var(--ax-font-size-small, --a-font-size-small);
 	}
 </style>
