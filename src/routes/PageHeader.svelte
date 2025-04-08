@@ -53,7 +53,7 @@
 	{#if feedbackOpen}
 		<Feedback bind:open={feedbackOpen} />
 	{/if}
-	<div class="navds-stack__spacer aksel-stack__spacer"></div>
+	<div class="aksel-stack__spacer aksel-stack__spacer"></div>
 
 	<SearchButton />
 	<ActionMenu>

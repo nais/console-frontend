@@ -22,7 +22,7 @@ html {
 	vertical-align: bottom;
 }
 
-.navds-heading--medium .heading-aligned-icon {
+.aksel-heading--medium .heading-aligned-icon {
 	height: var(--ax-font-line-height-heading-medium, --a-font-line-height-heading-medium);
 	vertical-align: bottom;
 }
@@ -31,11 +31,11 @@ html {
 	height: 90%;
 	max-height: 52rem;
 
-	> .navds-modal__header {
+	> .aksel-modal__header {
 		display: none;
 	}
 
-	> .navds-modal__body {
+	> .aksel-modal__body {
 		padding: 0;
 		height: 100%;
 	}
