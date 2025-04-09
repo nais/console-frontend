@@ -6340,6 +6340,9 @@ type WorkloadUtilization {
   """
   limitSeries(input: WorkloadUtilizationSeriesInput!): [UtilizationSample!]!
 
+  """Gets the recommended amount of resources for the workload."""
+  recommendations: WorkloadUtilizationRecommendations!
+
   """
   Gets the requested amount of resources for the requested resource type.
   """
@@ -6363,6 +6366,12 @@ type WorkloadUtilizationData {
 
   """The workload."""
   workload: Workload!
+}
+
+type WorkloadUtilizationRecommendations {
+  cpuRequestCores: Float!
+  memoryLimitBytes: Int!
+  memoryRequestBytes: Int!
 }
 
 input WorkloadUtilizationSeriesInput {
