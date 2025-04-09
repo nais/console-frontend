@@ -4,14 +4,23 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { EChartsOption } from 'echarts';
 
+	import { docURL } from '$lib/doc';
+	import { formatKubernetesCPU, formatKubernetesMemory } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
+		ExpansionCard,
 		Heading,
 		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tr
 	} from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
@@ -151,44 +160,127 @@
 
 	const limitColor = '#DE2E2E';
 	const requestColor = '#838C9A';
+
+	// function isIn10PercentRange(n: number, target: number): boolean {
+	// 	const lowerBound = target * 0.9; // 10% less than the target
+	// 	const upperBound = target * 1.1; // 10% more than the target
+	// 	return n >= lowerBound && n <= upperBound;
+	// }
+
+	const cpuReqRecommendation = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
+			.cpuRequestCores ?? 0
+	);
+
+	const cpuReq = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.requests.cpu ?? 0
+	);
+
+	const cpuLimit = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.limits.cpu
+	);
+
+	const memReqRecommendation = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
+			.memoryRequestBytes ?? 0
+	);
+
+	const memReq = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.requests.memory ?? 0
+	);
+	const memLimit = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.limits.memory ?? 0
+	);
+	const memLimitRecommendation = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
+			.memoryLimitBytes ?? 0
+	);
 </script>
 
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
 <div class="wrapper">
-	<Heading size="medium" level="2">Analyzing Your Resource Usage</Heading>
-	<BodyLong>
-		These graphs show your application's CPU and memory usage.
-		<ul>
-			<li>
-				<strong>Requests</strong> (grey line): The minimum CPU or memory guaranteed to your app.
-			</li>
-			<li>
-				<strong>Limits</strong> (red line, if present): The maximum CPU or memory your app can use.
-			</li>
-			<li>
-				Shaded Areas: The actual resource consumption over time for each running instance of your
-				app.
-			</li>
-		</ul>
-		Your app can use more than its requested amount if resources are available.
-		<ul>
-			<li>
-				CPU: Exceeding requests might cause <strong>throttling</strong>, potentially reducing
-				performance.
-			</li>
-			<li>
-				Memory: Exceeding the limit will cause that specific app instance to be terminated
-				(OOMKilled).
-			</li>
-		</ul>
-		<div><strong>Optimize your resource settings:</strong></div>
-		<div>✅ If usage is consistently below requests, consider lowering requests to save money.</div>
-		<div>
-			✅ If CPU is frequently throttled, increasing the CPU limit may improve performance.
-			Alternatively, omitting a CPU limit allows unlimited usage, but may cause resource contention.
-		</div>
-	</BodyLong>
+	<ExpansionCard header="Analyzing Your Resource Usage">
+		<BodyLong>
+			These graphs show your application's CPU and memory usage.
+			<ul>
+				<li>
+					<strong>Requests</strong> (grey line): The minimum CPU or memory guaranteed to your app.
+				</li>
+				<li>
+					<strong>Limits</strong> (red line, if present): The maximum CPU or memory your app can use.
+				</li>
+				<li>
+					Shaded Areas: The actual resource consumption over time for each running instance of your
+					app.
+				</li>
+			</ul>
+			Your app can use more than its requested amount if resources are available.
+			<ul>
+				<li>
+					CPU: Exceeding requests might cause <strong>throttling</strong>, potentially reducing
+					performance.
+				</li>
+				<li>
+					Memory: Exceeding the limit will cause that specific app instance to be terminated
+					(OOMKilled).
+				</li>
+			</ul>
+			<div><strong>Optimize your resource settings:</strong></div>
+			<div>
+				✅ If usage is consistently below requests, consider lowering requests to save money.
+			</div>
+			<div>
+				✅ CPU throttling typically happens when a CPU limit is set. Omitting the CPU limit lets the
+				container burst beyond its request, which can improve performance, especially for
+				short-lived spikes.
+			</div>
+			<div>
+				Read more about setting resources in the
+				<a
+					href={docURL(
+						'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
+					)}>Nais documentation.</a
+				>
+			</div>
+		</BodyLong>
+	</ExpansionCard>
+
+	<Heading level="2" size="medium" spacing>Resource Settings and Recommendations</Heading>
+	<Table size="small">
+		<Thead>
+			<Tr>
+				<Th>Resource Type</Th>
+				<Th>Current Value</Th>
+				<Th>Recommended Value</Th>
+			</Tr>
+		</Thead>
+		<Tbody>
+			<Tr>
+				<Td>CPU Request</Td>
+				<Td>{cpuReq ? formatKubernetesCPU(cpuReq) : 'Using default (200m)'} ({cpuReq})</Td>
+				<Td>{formatKubernetesCPU(cpuReqRecommendation)}({cpuReqRecommendation})</Td>
+			</Tr>
+			<Tr>
+				<Td>CPU Limit</Td>
+				<Td>{cpuLimit ? formatKubernetesCPU(cpuLimit) : 'Using default (no limit)'} ({cpuLimit})</Td
+				>
+				<Td>CPU Limit is generally not recommended</Td>
+			</Tr>
+			<Tr>
+				<Td>Memory Request</Td>
+				<Td>{memReq ? formatKubernetesMemory(memReq) : 'Using default (256Mi)'} ({memReq})</Td>
+				<Td>{formatKubernetesMemory(memReqRecommendation)}({memReqRecommendation})</Td>
+			</Tr>
+			<Tr>
+				<Td>Memory Limits</Td>
+				<Td>{memLimit ? formatKubernetesMemory(memLimit) : 'Using default (512Mi)'} ({memLimit})</Td
+				>
+				<Td>{formatKubernetesMemory(memLimitRecommendation)}({memLimitRecommendation})</Td>
+			</Tr>
+		</Tbody>
+	</Table>
+
 	<div class="section">
 		{#if $ResourceUtilizationForApp.data}
 			{@const utilization =
@@ -204,6 +296,7 @@
 					{/each}
 				</ToggleGroup>
 			</div>
+
 			<div class="chart-wrapper">
 				<EChart
 					options={options(
