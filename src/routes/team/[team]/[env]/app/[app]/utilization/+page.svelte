@@ -269,9 +269,8 @@
 					<dl>
 						<dt><strong>CPU Request:</strong></dt>
 						<dd>
-							The highest average CPU usage (5-minute rate) across all 5-minute windows during the
-							selected timeframe. This helps ensure your app has enough CPU during peak usage,
-							without over-allocating.
+							The highest average CPU usage during the timeframe. This helps ensure your app has
+							enough CPU during peak usage, without over-allocating.
 						</dd>
 						<dt><strong>CPU Limit:</strong></dt>
 						<dd>
@@ -279,14 +278,15 @@
 						</dd>
 						<dt><strong>Memory Request:</strong></dt>
 						<dd>
-							The 80th percentile of memory usage, averaged over all 5-minute windows, then taking
-							the maximum observed value. This aims to strike a balance between stability and
-							efficient memory usage.
+							The 80th percentile of memory usage during the timeframe, then taking the maximum
+							observed value. This aims to strike a balance between stability and efficient memory
+							usage.
 						</dd>
 						<dt><strong>Memory Limit:</strong></dt>
 						<dd>
-							The 95th percentile of memory usage, using the maximum value seen across the week.
-							This is meant to cap usage at a safe level without risking unnecessary OOM kills.
+							The 95th percentile of memory usage during the timeframe, using the maximum value seen
+							across the week. This is meant to cap usage at a safe level without risking
+							unnecessary OOM kills.
 						</dd>
 					</dl>
 					Use these values as guidance when adjusting your resource settings. Properly tuned resource
@@ -355,9 +355,8 @@
 						</li>
 						<li>Shaded Areas: The actual memory usage of each running instance over time.</li>
 					</ul>
-					Your app can use more than its requested memory if available, but exceeding the memory<strong
-						>limit</strong
-					>
+					Your app can use more than its requested memory if available, but exceeding the memory
+					<strong>limit</strong>
 					will cause the instance to be terminated (<code>OOMKilled</code>).
 
 					<div><strong>Optimize your memory settings:</strong></div>
@@ -412,15 +411,21 @@
 						<li>
 							<strong>Requests</strong> (grey line): The minimum amount of CPU guaranteed to your app.
 						</li>
+						<li>
+							<strong>Limits</strong> (red line, if present): The maximum amount of CPU your app can
+							use.
+						</li>
 						<li>Shaded Areas: The actual CPU usage of each running instance over time.</li>
 					</ul>
 					Your app can use more than its requested CPU if available, but exceeding the request might
-					lead to<strong>CPU throttling</strong>, which can impact performance. However, this is
-					usually not a problem for most applications, as Kubernetes is designed to handle resource
+					lead to
+					<strong>CPU throttling</strong>, which can impact performance. However, this is usually
+					not a problem for most applications, as Kubernetes is designed to handle resource
 					contention gracefully. In many cases, workloads can burst beyond their requests when
 					resources are available, ensuring smooth operation during short spikes in demand.
-
-					<div><strong>Optimize your CPU settings:</strong></div>
+				</BodyLong>
+				<Heading level="3" size="small" spacing>Optimize your CPU settings</Heading>
+				<BodyLong>
 					<div>
 						✅ If CPU usage is consistently below the request, consider lowering the request to
 						reduce costs and resource waste.
