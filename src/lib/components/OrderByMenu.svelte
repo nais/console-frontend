@@ -32,7 +32,7 @@
 		ActionMenuDivider,
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
-	} from '@nais/ds-svelte-community/experimental.js';
+	} from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon, SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {

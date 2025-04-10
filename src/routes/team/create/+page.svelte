@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Button, ErrorSummary, TextField } from '@nais/ds-svelte-community';
+	import { Button, ErrorSummary, Heading, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
@@ -134,7 +134,7 @@
 </script>
 
 <div class="container">
-	<h1>Create new team</h1>
+	<Heading level="1" size="large" spacing>Create a New Team</Heading>
 	{#if form?.errors && form.errors.length > 0}
 		<ErrorSummary heading="Error creating team">
 			{#each form.errors as error (error)}

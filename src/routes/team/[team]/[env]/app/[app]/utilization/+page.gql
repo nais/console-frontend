@@ -8,13 +8,40 @@ query ResourceUtilizationForApp(
 	team(slug: $team) {
 		environment(name: $env) {
 			application(name: $app) {
+				resources {
+					limits {
+						cpu
+						memory
+					}
+					requests {
+						cpu
+						memory
+					}
+				}
 				utilization {
-					current_cpu: current(resourceType: CPU)
-					current_memory: current(resourceType: MEMORY)
-					requested_cpu: requested(resourceType: CPU)
-					requested_memory: requested(resourceType: MEMORY)
-					limit_cpu: limit(resourceType: CPU)
-					limit_memory: limit(resourceType: MEMORY)
+					requested_memory_series: requestedSeries(
+						input: { start: $start, end: $end, resourceType: MEMORY }
+					) {
+						timestamp
+						value
+					}
+					limit_memory_series: limitSeries(
+						input: { start: $start, end: $end, resourceType: MEMORY }
+					) {
+						timestamp
+						value
+					}
+
+					requested_cpu_series: requestedSeries(
+						input: { start: $start, end: $end, resourceType: CPU }
+					) {
+						timestamp
+						value
+					}
+					limit_cpu_series: limitSeries(input: { start: $start, end: $end, resourceType: CPU }) {
+						timestamp
+						value
+					}
 					cpu_series: series(input: { start: $start, end: $end, resourceType: CPU }) {
 						timestamp
 						value
@@ -24,6 +51,11 @@ query ResourceUtilizationForApp(
 						timestamp
 						value
 						instance
+					}
+					recommendations {
+						cpuRequestCores
+						memoryLimitBytes
+						memoryRequestBytes
 					}
 				}
 			}

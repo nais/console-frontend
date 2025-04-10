@@ -186,7 +186,7 @@
 				}}
 			>
 				{#snippet header()}
-					<Heading>Delete member</Heading>
+					<Heading>Delete Member</Heading>
 				{/snippet}
 				Are you sure you want to remove <b>{deleteUser.name}</b> from this team?
 			</Confirm>

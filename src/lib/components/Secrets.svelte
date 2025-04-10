@@ -15,7 +15,9 @@
 			team(slug: $team) {
 				slug
 				environment(name: $env) {
-					name
+					environment {
+						name
+					}
 					workload(name: $name) {
 						secrets {
 							edges {
@@ -52,8 +54,8 @@
 				<IconLabel
 					label={secret.node.name}
 					icon={PadlockLockedIcon}
-					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.name}/secret/{secret
-						.node.name}"
+					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
+						.name}/secret/{secret.node.name}"
 				/>
 			{/each}
 		{/if}

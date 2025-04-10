@@ -1,65 +1,74 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
+	import { PendingValue } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
-	import {
-		costTransformStackedColumnChart,
-		getMaxFromDate,
-		getMinToDate,
-		type DailCostType
-	} from '$lib/chart/cost_transformer';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import { changeParams } from '$lib/utils/searchparams';
+	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
-	let { data }: PageProps = $props();
-
-	let { JobCost } = $derived(data);
-
-	let job = page.params.job;
-	let from = $state(data.fromDate?.toISOString().split('T')[0]);
-	let to = $state(data.toDate?.toISOString().split('T')[0]);
-
-	const today = new Date();
-	today.setDate(today.getDate() - 2);
-	const todayMinusTwoDays = today.toISOString().split('T')[0];
-
-	function echartOptionsStackedColumnChart(data: DailCostType) {
-		const opts = costTransformStackedColumnChart(new Date(from), new Date(to), data);
-		opts.height = '250px';
-		opts.legend = { ...opts.legend, bottom: 50 };
-		return opts;
-	}
-
-	function update() {
-		const old = $JobCost.variables!;
-		JobCost.fetch({ variables: { ...old, from: new Date(from), to: new Date(to) } });
-		const params = new URLSearchParams({ from, to });
-		goto(`?${params.toString()}`, { replaceState: true });
-	}
+	const { data }: PageProps = $props();
+	const { JobCost, interval, from, to } = $derived(data);
 </script>
 
-<div style="display: flex; flex-direction: column; gap: var(--a-spacing-4);">
-	<GraphErrors errors={$JobCost.errors} />
+<GraphErrors errors={$JobCost.errors} />
 
-	<Alert variant="info">Work in progress. Some cost types might not be available.</Alert>
-
+<div class="wrapper">
 	{#if $JobCost.data}
-		{@const d = $JobCost.data.team.environment.job.cost.daily}
-		<div>
-			<h4>Total cost for job {job} from {from} to {to}</h4>
-			<label for="from">From:</label>
-			<input type="date" max={getMaxFromDate(to)} id="from" bind:value={from} onchange={update} />
-			<label for="to">To:</label>
-			<input
-				type="date"
-				min={getMinToDate(from)}
-				max={todayMinusTwoDays}
-				id="to"
-				bind:value={to}
-				onchange={update}
-			/>
-			<EChart options={echartOptionsStackedColumnChart(d)} style="height: 400px" />
+		<div class="graph">
+			<div class="heading">
+				<div class="content">
+					<BodyLong>
+						Distribution of job costs across various services. Some services, like Kafka, are
+						missing cost data. Cost information is best-effort and originates from Google Cloud and
+						Aiven.
+					</BodyLong>
+				</div>
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
+			{#if $JobCost.data && $JobCost.data.team.environment.job.cost.daily !== PendingValue}
+				{@const d = $JobCost.data.team.environment.job.cost.daily}
+				<EChart
+					options={costTransformStackedColumnChart(new Date(from), new Date(to), d)}
+					style="height: 400px"
+				/>
+			{:else}
+				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+					<Loader size="3xlarge" />
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>
+
+<style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
+
+	.graph {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
+	}
+
+	.heading {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: var(--spacing-layout);
+	}
+
+	.content {
+		max-width: 80ch;
+	}
+</style>

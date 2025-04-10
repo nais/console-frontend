@@ -6,8 +6,9 @@
 		type ActivityLogEntryFragment,
 		type ActivityLogEntryResourceType$options
 	} from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	const resourceLink = (
 		environmentName: string,
@@ -63,6 +64,9 @@
 					... on RepositoryRemovedActivityLogEntry {
 						__typename
 					}
+					... on SecretDeletedActivityLogEntry {
+						__typename
+					}
 					... on SecretValueAddedActivityLogEntry {
 						secretValueAdded: data {
 							valueName
@@ -86,6 +90,9 @@
 								oldValue
 							}
 						}
+					}
+					... on JobTriggeredActivityLogEntry {
+						__typename
 					}
 					... on TeamMemberAddedActivityLogEntry {
 						teamMemberAdded: data {
@@ -129,9 +136,8 @@
 	<div>
 		<BodyShort size="small" spacing>
 			{#if $data.__typename === 'SecretValueAddedActivityLogEntry'}
-				{$data.message}
-				<strong>{$data.secretValueAdded?.valueName}</strong> to
-				{@const link = resourceLink(
+				Added value of
+				<strong>{$data.secretValueAdded?.valueName}</strong> to secret {@const link = resourceLink(
 					$data.environmentName ? $data.environmentName : '',
 					$data.resourceType,
 					$data.resourceName,
@@ -141,8 +147,8 @@
 					<a href={link}>{$data.resourceName}</a>
 				{/if}
 			{:else if $data.__typename === 'SecretValueRemovedActivityLogEntry'}
-				{$data.message}
-				<strong>{$data.secretValueRemoved?.valueName}</strong> from
+				Removed value of
+				<strong>{$data.secretValueRemoved?.valueName}</strong> from secret
 				{@const link = resourceLink(
 					$data.environmentName ? $data.environmentName : '',
 					$data.resourceType,
@@ -153,17 +159,20 @@
 					<a href={link}>{$data.resourceName}</a>
 				{/if}
 			{:else if $data.__typename === 'SecretValueUpdatedActivityLogEntry'}
-				{$data.message}
-				<strong>{$data.secretValueUpdated?.valueName}</strong> from
-				{@const link = resourceLink(
-					$data.environmentName ? $data.environmentName : '',
-					$data.resourceType,
-					$data.resourceName,
-					$data.teamSlug
-				)}
+				Updated value of
+				<strong>{$data.secretValueUpdated?.valueName}</strong> in secret {@const link =
+					resourceLink(
+						$data.environmentName ? $data.environmentName : '',
+						$data.resourceType,
+						$data.resourceName,
+						$data.teamSlug
+					)}
 				{#if link}
 					<a href={link}>{$data.resourceName}</a>
 				{/if}
+			{:else if $data.__typename === 'SecretDeletedActivityLogEntry'}
+				{$data.message}
+				<strong>{$data.resourceName}</strong>
 			{:else if $data.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
 				{$data.message}
 				{#if $data.teamEnvironmentUpdated.updatedFields.length > 0}
@@ -179,14 +188,17 @@
 				{/if}
 			{:else if $data.__typename === 'TeamMemberRemovedActivityLogEntry'}
 				{#if $data.teamMemberRemoved}
-					Removed {$data.teamMemberRemoved.userEmail !== ''
-						? $data.teamMemberRemoved.userEmail
-						: 'unknown email'}
+					Removed <strong
+						>{$data.teamMemberRemoved.userEmail !== ''
+							? $data.teamMemberRemoved.userEmail
+							: 'unknown email'}</strong
+					>
 					from team.
 				{/if}
 			{:else if $data.__typename === 'TeamMemberSetRoleActivityLogEntry'}
 				{#if $data.teamMemberSetRole}
-					Set role to {$data.teamMemberSetRole.role} for {$data.teamMemberSetRole.userEmail !== ''
+					Set role to <strong>{$data.teamMemberSetRole.role}</strong> for user {$data
+						.teamMemberSetRole.userEmail !== ''
 						? $data.teamMemberSetRole.userEmail
 						: 'unknown email'}.
 				{/if}
@@ -194,7 +206,7 @@
 				{$data.message}
 				{#if $data.teamUpdated?.updatedFields.length}
 					{#each $data.teamUpdated?.updatedFields as field (field)}
-						{field.field}. Changed from {field.oldValue} to {field.newValue}.
+						{field.field}. Changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
 					{/each}
 				{/if}
 			{:else if $data.__typename === 'UnleashInstanceUpdatedActivityLogEntry'}
@@ -210,17 +222,25 @@
 					</a> to the instance.
 				{/if}
 			{:else if $data.__typename === 'RepositoryRemovedActivityLogEntry'}
-				{$data.actor} removed
-				<a href="/team/{$data.teamSlug}/repositories">repository</a>
-				{$data.resourceName} from team {$data.teamSlug}.
+				<a href="/team/{$data.teamSlug}/repositories">Repository</a>
+				<strong>{$data.resourceName}</strong> removed from team {$data.teamSlug}.
 			{:else if $data.__typename === 'RepositoryAddedActivityLogEntry'}
-				{$data.actor} added
-				<a href="/team/{$data.teamSlug}/repositories">repository</a>
-				{$data.resourceName} to team {$data.teamSlug}.
+				<a href="/team/{$data.teamSlug}/repositories">Repository</a>
+				<strong>{$data.resourceName}</strong> added to team {$data.teamSlug}.
 			{:else if $data.__typename === 'ApplicationDeletedActivityLogEntry'}
 				Application <strong>{$data.resourceName}</strong> was deleted
 			{:else if $data.__typename === 'ApplicationRestartedActivityLogEntry'}
 				Application <strong>{$data.resourceName}</strong> was restarted
+			{:else if $data.__typename === 'JobTriggeredActivityLogEntry'}
+				Job <a
+					href={resourceLink(
+						$data.environmentName ? $data.environmentName : '',
+						$data.resourceType,
+						$data.resourceName,
+						$data.teamSlug
+					)}>{$data.resourceName}</a
+				>
+				was triggered
 			{:else}
 				{$data.message}
 				{@const link = resourceLink(
@@ -234,7 +254,9 @@
 				{/if}
 			{/if}
 			{#if $data.environmentName}
-				in {$data.environmentName}.
+				in <Tag size="small" variant={envTagVariant($data.environmentName)}>
+					{$data.environmentName}
+				</Tag>.
 			{/if}
 		</BodyShort>
 	</div>

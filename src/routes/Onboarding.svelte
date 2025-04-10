@@ -121,7 +121,7 @@
 			</Button>
 
 			<div>
-				<Heading level="2" size="medium" spacing>Find a team</Heading>
+				<Heading level="2" size="medium" spacing>Find a Team</Heading>
 				<BodyShort spacing>
 					Once you've found your team, ask one of the team owners to add you as a member.
 				</BodyShort>

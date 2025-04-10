@@ -36,10 +36,11 @@
 			size="xsmall"
 		/>
 	</div>
-
-	<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
-		<LineNumbers {highlighted} hideBorder />
-	</Highlight>
+	<div>
+		<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
+			<LineNumbers {highlighted} hideBorder />
+		</Highlight>
+	</div>
 {/if}
 
 <style>

@@ -4,7 +4,7 @@
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import { BodyLong, Button } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import type { PageProps } from './$houdini';
 	import Onboarding from './Onboarding.svelte';
@@ -38,7 +38,7 @@
 	<div class="page">
 		<div class="content-wrapper">
 			<div class="header">
-				<h2>My teams</h2>
+				<Heading level="1" size="large">My Teams</Heading>
 				<Button as="a" size="medium" href="/team/create" variant="primary">Create team</Button>
 			</div>
 			{#if $UserTeams.data}
@@ -113,11 +113,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-	h2 {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
 	}
 
 	.header {

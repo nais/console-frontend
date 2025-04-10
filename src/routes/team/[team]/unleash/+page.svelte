@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import Card from '$lib/Card.svelte';
-	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import IconLabel from '$lib/components/IconLabel.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import CpuIcon from '$lib/icons/CpuIcon.svelte';
+	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import {
 		Alert,
-		BodyLong,
+		BodyShort,
 		Button,
 		CopyButton,
 		Heading,
-		Link,
+		HelpText,
 		Table,
 		Tbody,
 		Td,
@@ -151,14 +152,14 @@
 		onconfirm={() => removeTeam(removeTeamName)}
 	>
 		{#snippet header()}
-			<Heading>Remove team</Heading>
+			<Heading>Remove Team Access</Heading>
 		{/snippet}
-		<p>
+		<BodyShort>
 			This will permanently remove the team named <b>{removeTeamName}</b> from
 			<b>{unleash.name}</b>.
-		</p>
+		</BodyShort>
 
-		Are you sure you want to remove this team?
+		<BodyShort>Are you sure you want to remove this team?</BodyShort>
 	</Confirm>
 
 	{#if addTeamModalOpen}
@@ -171,72 +172,16 @@
 		/>
 	{/if}
 
-	<div class="summary-grid">
-		<Card columns={3}>
-			<SummaryCard
-				title="Toggles"
-				helpText="Number of feature toggles in the Unleash server"
-				color="grey"
-			>
-				{#snippet icon({ color })}
-					<BulletListIcon font-size="32" {color} />
-				{/snippet}
-				{metrics.toggles}
-			</SummaryCard>
-		</Card>
-		<Card columns={3}>
-			<SummaryCard
-				title="API clients"
-				helpText="Number of API clients that are using the Unleash server"
-				color="grey"
-			>
-				{#snippet icon({ color })}
-					<TokenIcon font-size="32" {color} />
-				{/snippet}
-				{metrics.apiTokens}
-			</SummaryCard>
-		</Card>
-		<Card columns={3}>
-			<SummaryCard
-				title="CPU utilization"
-				helpTextTitle="Current CPU utilization"
-				helpText="CPU utilization for the last elapsed hour."
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={metrics.cpuUtilization / 100} />
-				{/snippet}
-				{metrics.cpuUtilization.toFixed(1)}% of {metrics.cpuRequests} CPUs
-			</SummaryCard>
-		</Card>
-		<Card columns={3}>
-			<SummaryCard
-				title="Memory utilization"
-				helpTextTitle="Current memory utilization"
-				helpText="Memory utilization for the last elapsed hour."
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={metrics.memoryUtilization / 100} />
-				{/snippet}
-				{metrics.memoryUtilization.toFixed(1)}% of {prettyBytes(metrics.memoryRequests)}
-			</SummaryCard>
-		</Card>
-	</div>
-	<div style="display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr);">
-		<Card columns={8}>
-			<h3 class="heading">
-				<Icon icon="Unleash" />
-				{unleash.name}
-			</h3>
-
+	<Heading level="2" size="large" spacing>
+		{unleash.name}
+	</Heading>
+	<div class="wrapper">
+		<div style="display: grid; gap: var(--spacing-layout);">
 			<div class="grid" style="grid-template-columns: 20% 80%;">
-				<p>Name</p>
+				<p><strong>Name</strong></p>
 				<p>{unleash.name}</p>
 
-				<p style="display: flex; align-items: center; gap 0 1rem;">Status</p>
+				<p style="display: flex; align-items: center; gap 0 1rem;"><strong>Status</strong></p>
 				<p style="padding-top: 4px;">
 					{#if unleash.ready}
 						<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.2rem" />
@@ -249,7 +194,7 @@
 						</Tooltip>
 					{/if}
 				</p>
-				<p>Version</p>
+				<p><strong>Version</strong></p>
 				<p>
 					{#if unleash.version === ''}
 						version not available yet.
@@ -257,7 +202,7 @@
 						{unleash.version}
 					{/if}
 				</p>
-				<p>Web UI</p>
+				<p><strong>Web UI</strong></p>
 				<p>
 					<a href="https://{unleash.webIngress}"
 						>https://{unleash.webIngress}<ExternalLinkIcon
@@ -266,71 +211,136 @@
 						/></a
 					>
 				</p>
-				<p>API</p>
+				<p><strong>API</strong></p>
 				<p>
 					<span>https://{unleash.apiIngress}</span>
 					<CopyButton size="small" variant="action" copyText="https://{unleash.apiIngress}" />
 				</p>
-				<p>Documentation</p>
+				<p><strong>Documentation</strong></p>
 				<p>
 					<a href={docURL('/explanation/feature-toggling')}
 						>{docURL('/explanation/feature-toggling')}
 					</a>
 				</p>
 			</div>
-		</Card>
-		<Card columns={4}>
-			<h3>Team access</h3>
-			<Table size="small" style="margin-top: 2rem">
-				<Thead>
-					<Tr>
-						<Th>Team</Th>
-						<Th align="right"></Th>
-					</Tr>
-				</Thead>
-				<Tbody>
-					{#each unleash.allowedTeams.nodes as team (team.slug)}
+			<div>
+				<Heading level="2" spacing>Team Access</Heading>
+				<Table>
+					<Thead>
 						<Tr>
-							<Td>
-								<BodyLong>
-									<Link href="/team/{team.slug}">{team.slug}</Link>
-								</BodyLong>
-							</Td>
-							<Td style="width:100px;" align="right">
-								{#if team.slug !== teamSlug}
-									<Button
-										size="small"
-										disabled={unleash.ready === false}
-										variant="tertiary-neutral"
-										title="Delete key and value"
-										onclick={() => removeTeamClickHandler(team.slug)}
-									>
-										{#snippet icon()}
-											<TrashIcon style="color:var(--a-icon-danger)!important" />
-										{/snippet}
-									</Button>
-								{/if}
-							</Td>
+							<Th>Team</Th>
+							<Th align="right"></Th>
 						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
-			<p>
-				<Button
-					title="Add team"
-					variant="tertiary"
-					disabled={unleash.ready === false}
-					size="small"
-					onclick={() => (addTeamModalOpen = true)}
-					icon={PlusCircleFillIcon}
+					</Thead>
+					<Tbody>
+						{#each unleash.allowedTeams.nodes as team (team.slug)}
+							<Tr>
+								<Td>
+									<a href="/team/{team.slug}">{team.slug}</a>
+								</Td>
+								<Td align="right">
+									{#if team.slug !== teamSlug}
+										<Button
+											size="small"
+											disabled={unleash.ready === false}
+											variant="tertiary-neutral"
+											title="Delete key and value"
+											onclick={() => removeTeamClickHandler(team.slug)}
+										>
+											{#snippet icon()}
+												<TrashIcon style="color:var(--a-icon-danger)!important" />
+											{/snippet}
+										</Button>
+									{/if}
+								</Td>
+							</Tr>
+						{/each}
+					</Tbody>
+				</Table>
+				<p>
+					<Button
+						title="Add team"
+						variant="tertiary"
+						disabled={unleash.ready === false}
+						size="small"
+						onclick={() => (addTeamModalOpen = true)}
+						icon={PlusCircleFillIcon}
+					>
+						Add team
+					</Button>
+				</p>
+			</div>
+		</div>
+		<div class="sidebar">
+			<div class="card">
+				<SummaryCard
+					title="Toggles"
+					helpText="Number of feature toggles in the Unleash server"
+					color="grey"
 				>
-					Add team
-				</Button>
-			</p>
-		</Card>
+					{#snippet icon({ color })}
+						<BulletListIcon font-size="32" {color} />
+					{/snippet}
+					{metrics.toggles}
+				</SummaryCard>
+			</div>
+			<div class="card">
+				<SummaryCard
+					title="API clients"
+					helpText="Number of API clients that are using the Unleash server"
+					color="grey"
+				>
+					{#snippet icon({ color })}
+						<TokenIcon font-size="32" {color} />
+					{/snippet}
+					{metrics.apiTokens}
+				</SummaryCard>
+			</div>
+			<div class="card">
+				<div class="summary">
+					<div class="heading">
+						<Heading level="2" size="xsmall" spacing>Utilization</Heading>
+						<HelpText title="Resource Utilization">Resource usage over the past hour</HelpText>
+					</div>
+					<div>
+						<div>
+							<TooltipAlignHack
+								content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
+							>
+								<IconLabel
+									size="medium"
+									icon={MemoryIcon}
+									label={`${metrics.memoryUtilization.toLocaleString('en', {
+										maximumSignificantDigits: 3
+									})}% of ${prettyBytes(metrics.memoryRequests, {
+										locale: 'en',
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+										binary: true
+									})}`}
+								/>
+							</TooltipAlignHack>
+						</div>
+						<div>
+							<TooltipAlignHack
+								content={`CPU usage compared to the requested ${metrics.cpuRequests}.`}
+							>
+								<IconLabel
+									size="medium"
+									icon={CpuIcon}
+									label={`${metrics.cpuUtilization.toLocaleString('en', {
+										maximumSignificantDigits: 3
+									})}% of ${metrics.cpuRequests} CPUs`}
+								/>
+							</TooltipAlignHack>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 {:else}
-	<div style="">
+	<div>
 		<p>
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
@@ -342,6 +352,24 @@
 {/if}
 
 <style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--a-spacing-4);
+	}
+
+	.wrapper p {
+		margin: 0.2rem 0;
+		display: flex;
+		align-items: center;
+		gap: 0 0.5rem;
+	}
 	.grid {
 		display: grid;
 		column-gap: 0.5rem;
@@ -349,24 +377,19 @@
 		align-items: center;
 	}
 
-	.grid p {
-		margin: 0.2rem 0;
-		display: flex;
-		align-items: center;
-		gap: 0 0.5rem;
+	.card {
+		background-color: var(--a-surface-subtle);
+		padding: var(--a-spacing-5);
+		border-radius: 12px;
 	}
-
+	.summary {
+		width: 100%;
+	}
 	.heading {
 		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-	}
-
-	.summary-grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
+		justify-content: space-between;
+		margin: 0;
+		font-size: 1rem;
+		color: var(--color-text-secondary);
 	}
 </style>

@@ -28,11 +28,6 @@ const label = (type: string) => {
 				pageName: 'Buckets',
 				plural: 'buckets'
 			};
-		case 'redis':
-			return {
-				pageName: 'Redis Instances',
-				plural: 'redis'
-			};
 		case 'valkey':
 			return {
 				pageName: 'Valkey Instances',
@@ -62,6 +57,10 @@ const label = (type: string) => {
 			return {
 				pageName: 'Activity Log'
 			};
+		case 'confirm_delete':
+			return {
+				pageName: 'Confirm Team Deletion'
+			};
 		case 'vulnerability-report':
 			return {
 				pageName: 'Vulnerability Report'
@@ -88,6 +87,11 @@ const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 
 	if (split.length < 4) {
 		return [];
+	}
+
+	// Hack to handle confirm_delete
+	if (split[3] == 'settings' && split[4] === 'confirm_delete') {
+		return [{ label: split[2], href: `/team/${split[2]}` }];
 	}
 
 	const [, , team, env, type, resource] = split;

@@ -4,7 +4,6 @@
 	<code>job:myJob</code>
 	<code>team:myTeam</code>
 	<code>sql:mySqlinstance</code>
-	<code>redis:myRedisinstance</code>
 	<code>os:myOpenSearchInstance</code>
 	<code>kafka:myKafkaTopic</code>
 	<code>bq:myBigQueryDataSet</code>

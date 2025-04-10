@@ -5,7 +5,7 @@
 	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import IconLabel from './IconLabel.svelte';
-	import DumbPageHeader from './PageHeader.svelte';
+	import PageHeader from './PageHeader.svelte';
 
 	interface Props {
 		purpose?: string;
@@ -25,28 +25,28 @@
 		viewerIsMember
 	}: Props = $props();
 
-	const dumbPageHeaderProps = $derived(urlToPageHeader(page.url));
+	const pageHeaderProps = $derived(urlToPageHeader(page.url));
 </script>
 
 <svelte:head
 	><title
 		>{[
-			dumbPageHeaderProps.heading,
-			...dumbPageHeaderProps.breadcrumbs.toReversed().map((b) => b.label)
+			pageHeaderProps.heading,
+			...pageHeaderProps.breadcrumbs.toReversed().map((b) => b.label)
 		].join(' - ')} - Nais Console</title
 	></svelte:head
 >
 
-<DumbPageHeader {...dumbPageHeaderProps} />
+<PageHeader {...pageHeaderProps} />
 
 <div class="team-info">
-	{#if dumbPageHeaderProps.breadcrumbs.length === 0}
+	{#if pageHeaderProps.breadcrumbs.length === 0}
 		<!-- no breadcrumbs == on team page -->
 		<div>
 			<BodyShort spacing>{purpose}</BodyShort>
 			<BodyShort>
 				{memberCount} team member{memberCount === 1 ? '' : 's'}.
-				<a href="/team/{dumbPageHeaderProps.heading}/members">
+				<a href="/team/{pageHeaderProps.heading}/members">
 					{viewerIsMember ? 'Manage members' : 'View all'}
 				</a>
 			</BodyShort>

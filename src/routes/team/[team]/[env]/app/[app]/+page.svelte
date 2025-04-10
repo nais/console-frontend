@@ -134,7 +134,7 @@
 		</div>
 		<Confirm bind:open={restart} onconfirm={submit}>
 			{#snippet header()}
-				<h3>Restart {application}</h3>
+				<Heading level="1" size="medium">Restart {application}</Heading>
 			{/snippet}
 			This will restart all instances of
 			<strong>{application}</strong> in

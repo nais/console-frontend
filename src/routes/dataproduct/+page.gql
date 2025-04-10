@@ -20,9 +20,6 @@ query DataProduct {
 				openSearchInstances {
 					total
 				}
-				redisInstances {
-					total
-				}
 				valkeyInstances {
 					total
 				}

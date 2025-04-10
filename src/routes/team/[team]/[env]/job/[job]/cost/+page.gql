@@ -1,10 +1,10 @@
 query JobCost($job: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!)
 @cache(policy: NetworkOnly) {
-	team(slug: $team) {
-		environment(name: $env) {
-			job(name: $job) {
-				cost {
-					daily(from: $from, to: $to) {
+	team(slug: $team) @loading {
+		environment(name: $env) @loading {
+			job(name: $job) @loading {
+				cost @loading {
+					daily(from: $from, to: $to) @loading {
 						series {
 							date
 							services {

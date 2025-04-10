@@ -77,7 +77,7 @@
 	const heading = {
 		WorkloadStatusInvalidNaisYaml: 'Rollout Failed - Invalid Manifest',
 		WorkloadStatusSynchronizationFailing: 'Rollout Failed - Synchronization Error',
-		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
+		WorkloadStatusDeprecatedRegistry: 'Unsupported Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
 		WorkloadStatusFailedRun: 'Job Failed',
 		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected'
@@ -102,7 +102,7 @@
 						error in the {workloadType === 'Job' ? 'job' : 'application'} manifest.
 					</BodyLong>
 
-					<Heading level="3" size="xsmall">Error details</Heading>
+					<Heading level="3" size="xsmall">Error Details</Heading>
 					<code>{error.detail}</code>
 
 					<BodyLong>
@@ -125,18 +125,18 @@
 						issue, so try again in a few minutes. If the problem persists, contact the Nais team.
 					</BodyLong>
 
-					<Heading level="3" size="xsmall">Error details</Heading>
+					<Heading level="3" size="xsmall">Error Details</Heading>
 					<code>{error.detail}</code>
 				{:else if error.__typename === 'WorkloadStatusDeprecatedRegistry'}
 					<BodyLong>
-						This {workloadType === 'Job' ? 'job' : 'application'} is using a deprecated image registry
-						({error.registry}).
+						This {workloadType === 'Job' ? 'job' : 'application'} is using an unsupported image registry
+						({error.registry}) and will not run.
 					</BodyLong>
 
 					<BodyLong
-						>Starting April 1st, applications and jobs on Nais must use images from Google Artifact
-						Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais'
-						GitHub Actions in the workflow. <a
+						>Applications and jobs on Nais must use images from Google Artifact Registry (GAR). The
+						easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in
+						the workflow. <a
 							href="https://nais.io/log/#2025-02-24-image-policy"
 							target="_blank"
 							rel="noopener noreferrer">Read more in Nais announcement</a
@@ -146,7 +146,7 @@
 					<BodyLong>The application has no running instances.</BodyLong>
 
 					{#if instances?.length}
-						<Heading level="3" size="xsmall">Failing instances:</Heading>
+						<Heading level="3" size="xsmall">Failing Instances</Heading>
 						<ul style="margin: 0;">
 							{#each instances as instance (instance.name)}
 								<li>

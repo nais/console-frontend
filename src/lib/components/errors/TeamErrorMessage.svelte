@@ -47,7 +47,7 @@
 	const heading = {
 		WorkloadStatusInvalidNaisYaml: 'Rollout Failed - Invalid Manifest',
 		WorkloadStatusSynchronizationFailing: 'Rollout Failed - Synchronization Error',
-		WorkloadStatusDeprecatedRegistry: 'Deprecated Image Registry',
+		WorkloadStatusDeprecatedRegistry: 'Unsupported Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
 		WorkloadStatusFailedRun: 'Job Failed',
 		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected',
@@ -56,7 +56,7 @@
 	const summary = {
 		WorkloadStatusInvalidNaisYaml: 'Workloads with invalid manifests',
 		WorkloadStatusSynchronizationFailing: 'Workloads with synchronization errors',
-		WorkloadStatusDeprecatedRegistry: 'Workloads with deprecated image registries',
+		WorkloadStatusDeprecatedRegistry: 'Workloads with unsupported image registries',
 		WorkloadStatusNoRunningInstances: 'Applications with no running instances',
 		WorkloadStatusFailedRun: 'Failed jobs',
 		WorkloadStatusVulnerable: 'High risk workloads',
@@ -89,9 +89,9 @@
 				</BodyLong>
 			{:else if error.__typename === 'WorkloadStatusDeprecatedRegistry'}
 				<BodyLong>
-					Starting April 1st, applications and jobs on Nais must use images from Google Artifact
-					Registry (GAR). The easiest way to ensure that images are stored in GAR is to use Nais'
-					GitHub Actions in the workflow. <a
+					Applications and jobs on Nais must use images from Google Artifact Registry (GAR). The
+					easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in the
+					workflow. <a
 						href="https://nais.io/log/#2025-02-24-image-policy"
 						target="_blank"
 						rel="noopener noreferrer">Read more in Nais announcement</a
@@ -102,8 +102,8 @@
 					1
 						? ''
 						: 's'} using {workloads.length === 1
-						? 'a deprecated image registry'
-						: 'deprecated image registries'}.
+						? 'a unsupported image registry'
+						: 'unsupported image registries'}. These workloads will not run.
 				</BodyLong>
 			{:else if error.__typename === 'WorkloadStatusNoRunningInstances'}
 				<BodyLong>

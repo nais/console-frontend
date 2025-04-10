@@ -10,7 +10,7 @@
 </script>
 
 {#if $ReconcilerLogs.data && $ReconcilerLogs.data.node?.__typename === 'Reconciler'}
-	<Heading level="2">{$ReconcilerLogs.data.node.displayName} logs</Heading>
+	<Heading level="2" spacing>{$ReconcilerLogs.data.node.displayName} Logs</Heading>
 	<Table size="small">
 		<Thead>
 			<Tr>

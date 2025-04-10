@@ -11,7 +11,10 @@ query Applications(
 		slug
 		environments {
 			id
-			name
+
+			environment {
+				name
+			}
 		}
 		totalApplications: applications {
 			pageInfo {

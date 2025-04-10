@@ -8,7 +8,7 @@
 		ActionMenu,
 		ActionMenuDivider,
 		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental.js';
+	} from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon, LeaveIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { docURL } from '$lib/doc';
-	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import { CopyButton, Heading, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -14,39 +14,35 @@
     - secret: ${secretName}`;
 </script>
 
-<h4>Use this secret</h4>
+<div class="card">
+	<Heading level="2" size="medium" spacing>Use This Secret</Heading>
 
-<h5>Documentation</h5>
-<div class="value">
-	<a href={docURL('/services/secrets/how-to/workload/')} target="_blank"
-		>How-to guide
-		<ExternalLinkIcon title="How-to guide" font-size="1.5rem" />
-	</a>
+	<Heading level="3" size="xsmall">Documentation</Heading>
+	<div class="value">
+		<a href={docURL('/services/secrets/how-to/workload/')} target="_blank"
+			>How-to guide
+			<ExternalLinkIcon title="How-to guide" font-size="1.5rem" />
+		</a>
+	</div>
+
+	<Heading level="3" size="xsmall">Manifest</Heading>
+	<pre class="manifest">{workloadManifest()}</pre>
+	<Tooltip content="Copy manifest to clipboard">
+		<CopyButton
+			text="Copy manifest"
+			activeText="Manifest copied"
+			variant="action"
+			copyText={workloadManifest()}
+		></CopyButton>
+	</Tooltip>
 </div>
 
-<h5>Manifest</h5>
-<pre class="manifest">{workloadManifest()}</pre>
-<Tooltip content="Copy manifest to clipboard">
-	<CopyButton
-		text="Copy manifest"
-		activeText="Manifest copied"
-		variant="action"
-		copyText={workloadManifest()}
-	></CopyButton>
-</Tooltip>
-
 <style>
-	h4 {
-		display: flex;
-		margin-bottom: 0.5rem;
-		gap: 0.5rem;
+	.card {
+		background-color: var(--a-surface-subtle);
+		padding: var(--a-spacing-5) var(--a-spacing-5);
+		border-radius: 12px;
 	}
-
-	h5 {
-		margin-top: 1rem;
-		gap: 0.5rem;
-	}
-
 	.value {
 		margin: 0.5rem 1rem;
 	}

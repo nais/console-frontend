@@ -12,7 +12,7 @@
 
 <script lang="ts">
 	import Pagination from '$lib/Pagination.svelte';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental.js';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import AppInstanceListItem from './AppInstanceListItem.svelte';
 	import AppListItem from './AppListItem.svelte';
 	import JobRunListItem from './JobRunListItem.svelte';

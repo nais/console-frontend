@@ -25,7 +25,8 @@
 	): EChartsOption => {
 		return {
 			height: '230px',
-			width: '300px',
+			width: '280px',
+			animation: false,
 			tooltip: {
 				trigger: 'axis',
 				formatter: (params: CallbackDataParams[]) =>
@@ -37,7 +38,7 @@
 				containLabel: true
 			},
 			xAxis: {
-				data: data.map((entry) => format(entry.date, 'dd.MM'))
+				data: data.map((entry) => format(entry.date, data.length > 60 ? 'MMM' : 'dd.MM'))
 			},
 			yAxis: {
 				axisLabel: {
@@ -140,7 +141,7 @@
 
 <div>
 	<div class="heading">
-		<Heading size="small" level="3">{pageName} cost</Heading>
+		<Heading size="small" level="3">{pageName} Cost</Heading>
 		<HelpText title="Cost description"
 			>Total cost for the previous month and a projected estimate for this month.</HelpText
 		>
@@ -167,7 +168,7 @@
 			</Detail>
 		</div>
 	</div>
-	<div style="height: 270px;">
+	<div>
 		<EChart options={costTransform(costData.daily.series)} />
 	</div>
 

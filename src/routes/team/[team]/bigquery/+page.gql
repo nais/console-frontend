@@ -18,9 +18,6 @@ query BigQuery(
 				}
 			}
 		}
-		environments {
-			name
-		}
 
 		bigQueryDatasets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {

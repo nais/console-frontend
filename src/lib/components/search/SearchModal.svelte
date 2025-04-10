@@ -4,7 +4,6 @@
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import RedisIcon from '$lib/icons/RedisIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import { Modal } from '@nais/ds-svelte-community';
 	import {
@@ -50,17 +49,6 @@
 						}
 					}
 					... on SqlInstance {
-						name
-						team {
-							slug
-						}
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
-					... on RedisInstance {
 						name
 						team {
 							slug
@@ -156,12 +144,6 @@
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},
-		RedisInstance: {
-			icon: RedisIcon,
-			urlName: 'redis',
-			prefix: 'redis',
-			type: 'REDIS_INSTANCE'
-		},
 		ValkeyInstance: {
 			icon: ValkeyIcon,
 			urlName: 'valkey',
@@ -244,19 +226,3 @@
 			: undefined}
 	/>
 </Modal>
-
-<style>
-	:global(.search-modal) {
-		height: 90%;
-		max-height: 52rem;
-
-		> :global(.navds-modal__header) {
-			display: none;
-		}
-
-		> :global(.navds-modal__body) {
-			padding: 0;
-			height: 100%;
-		}
-	}
-</style>

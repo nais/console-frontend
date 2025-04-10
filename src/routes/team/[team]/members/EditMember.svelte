@@ -64,7 +64,7 @@
 
 <Modal bind:open>
 	{#snippet header()}
-		<Heading>Edit member</Heading>
+		<Heading>Edit Member</Heading>
 	{/snippet}
 
 	{#if $store.data}

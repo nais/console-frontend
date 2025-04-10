@@ -14,6 +14,7 @@
 	import {
 		Alert,
 		BodyLong,
+		BodyShort,
 		Button,
 		CopyButton,
 		Heading,
@@ -22,6 +23,7 @@
 	} from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
+		ExternalLinkIcon,
 		EyeIcon,
 		EyeSlashIcon,
 		TrashIcon
@@ -30,7 +32,7 @@
 	import EditText from './EditText.svelte';
 
 	let { data }: PageProps = $props();
-	let { teamSlug, viewerIsMember } = $derived(data);
+	let { TeamSettings, viewerIsOwner, teamSlug, viewerIsMember } = $derived(data);
 
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
@@ -87,8 +89,6 @@
 	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null =
 		$state(null);
 
-	let { TeamSettings, viewerIsOwner } = $derived(data);
-
 	let teamSettings = $derived($TeamSettings.data?.team);
 
 	let showKey = $state(false);
@@ -98,305 +98,278 @@
 	let descriptionErrors: { message: string }[] | undefined = $state();
 	let defaultSlackChannelErrors: { message: string }[] | undefined = $state();
 	let slackChannelsErrors: { message: string }[] | undefined = $state();
+
+	const formatGARRepo = (repo: string) => {
+		const [, projectId, , location, , repository] = repo.split('/');
+		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
+	};
 </script>
 
 <GraphErrors errors={$TeamSettings.errors} />
 
 {#if teamSettings}
 	<div class="wrapper">
-		<div>
-			<Heading level="2">Description</Heading>
-			<EditText
-				text={teamSettings.purpose}
-				on:save={async (e) => {
-					descriptionErrors = undefined;
-					const data = await updateTeam.mutate({
-						input: {
-							slug: teamSlug,
-							purpose: e.detail
-						}
-					});
-
-					if (data.errors) {
-						descriptionErrors = data.errors;
-					}
-				}}
-				isMember={viewerIsMember}
-			/>
-
-			<GraphErrors errors={descriptionErrors} size="small" />
-		</div>
-
-		<div>
-			<Heading level="2"><SlackIcon class="heading-aligned-icon" /> Slack Channels</Heading>
-			{#if teamSettings.slackChannel !== ''}
-				<p>
-					<b>Default slack-channel:</b>
-					<EditText
-						text={teamSettings.slackChannel}
-						variant="textfield"
-						on:save={async (e) => {
-							defaultSlackChannelErrors = undefined;
-							const data = await updateTeam.mutate({
-								input: {
-									slug: teamSlug,
-									slackChannel: e.detail
-								}
-							});
-
-							if (data.errors) {
-								defaultSlackChannelErrors = data.errors;
+		<div style="display: flex; flex-direction: column; gap: var(--spacing-layout)">
+			<div>
+				<Heading level="2">Description</Heading>
+				<EditText
+					text={teamSettings.purpose}
+					on:save={async (e) => {
+						descriptionErrors = undefined;
+						const data = await updateTeam.mutate({
+							input: {
+								slug: teamSlug,
+								purpose: e.detail
 							}
-						}}
-						isMember={viewerIsMember}
-					/>
-				</p>
-				<GraphErrors errors={defaultSlackChannelErrors} size="small" />
-			{/if}
-			{#if teamSettings.environments && teamSettings.environments.length > 0}
-				<div>
-					Per-environment slack-channels to be used for alerts sent by the platform.
-					{#each teamSettings.environments as env (env.id)}
-						<div class="channel">
-							<b>{env.name}:</b>
-							<EditText
-								text={env.slackAlertsChannel}
-								variant="textfield"
-								on:save={async (e) => {
-									slackChannelsErrors = undefined;
-									if (!teamSettings) {
-										return;
-									}
+						});
 
-									const data = await updateTeamSlackAlertsChannel.mutate({
-										input: {
-											slug: teamSlug,
-											environmentName: env.name,
-											slackAlertsChannel: e.detail
+						if (data.errors) {
+							descriptionErrors = data.errors;
+						}
+					}}
+					isMember={viewerIsMember}
+				/>
+
+				<GraphErrors errors={descriptionErrors} size="small" />
+			</div>
+
+			<div>
+				<Heading level="2"><SlackIcon class="heading-aligned-icon" /> Slack Channels</Heading>
+				{#if teamSettings.slackChannel !== ''}
+					<p>
+						<b>Default slack-channel:</b>
+						<EditText
+							text={teamSettings.slackChannel}
+							variant="textfield"
+							on:save={async (e) => {
+								defaultSlackChannelErrors = undefined;
+								const data = await updateTeam.mutate({
+									input: {
+										slug: teamSlug,
+										slackChannel: e.detail
+									}
+								});
+
+								if (data.errors) {
+									defaultSlackChannelErrors = data.errors;
+								}
+							}}
+							isMember={viewerIsMember}
+						/>
+					</p>
+					<GraphErrors errors={defaultSlackChannelErrors} size="small" />
+				{/if}
+				{#if teamSettings.environments && teamSettings.environments.length > 0}
+					<div>
+						Per-environment slack-channels to be used for alerts sent by the platform.
+						{#each teamSettings.environments as env (env.id)}
+							<div class="channel">
+								<b>{env.environment.name}:</b>
+								<EditText
+									text={env.slackAlertsChannel}
+									variant="textfield"
+									on:save={async (e) => {
+										slackChannelsErrors = undefined;
+										if (!teamSettings) {
+											return;
 										}
-									});
 
-									if (data.errors) {
-										slackChannelsErrors = data.errors;
-									}
-								}}
-								isMember={viewerIsMember}
+										const data = await updateTeamSlackAlertsChannel.mutate({
+											input: {
+												slug: teamSlug,
+												environmentName: env.environment.name,
+												slackAlertsChannel: e.detail
+											}
+										});
+
+										if (data.errors) {
+											slackChannelsErrors = data.errors;
+										}
+									}}
+									isMember={viewerIsMember}
+								/>
+							</div>
+						{/each}
+					</div>
+
+					<GraphErrors errors={slackChannelsErrors} size="small" />
+				{/if}
+			</div>
+
+			<div>
+				<Heading level="2">Deploy Key</Heading>
+				<BodyShort>
+					Deploy keys can be used to authenticate for deployments instead of using
+					<a
+						href={docURL(
+							'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
+						)}
+					>
+						repository authorization
+					</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from
+					local machines.
+				</BodyShort>
+
+				{#if teamSettings.deploymentKey}
+					{@const deployKey = teamSettings.deploymentKey}
+					<dl>
+						<dt>Created:</dt>
+						<dd><Time time={deployKey.created} distance={true} /></dd>
+						<dt>Expires:</dt>
+						<dd><Time time={deployKey.expires} distance={true} /></dd>
+						<dt>Key:</dt>
+						<dd>
+							<div class="deployKey">
+								{#if showKey}
+									{deployKey.key}
+									<Button
+										size="xsmall"
+										variant="tertiary"
+										onclick={() => {
+											showKey = !showKey;
+										}}
+										icon={EyeSlashIcon}
+									/>
+								{:else}
+									{deployKey.key.replaceAll(/./g, '*')}
+									<Button
+										size="xsmall"
+										variant="tertiary"
+										onclick={() => {
+											showKey = !showKey;
+										}}
+										icon={EyeIcon}
+										disabled={!viewerIsMember}
+									/>
+								{/if}
+							</div>
+						</dd>
+					</dl>
+					<div class="buttons">
+						<div class="button">
+							<CopyButton
+								text="Copy key"
+								activeText="Key copied"
+								variant="action"
+								copyText={deployKey.key}
+								size="small"
+								disabled={!viewerIsMember}
 							/>
 						</div>
-					{/each}
-				</div>
-
-				<GraphErrors errors={slackChannelsErrors} size="small" />
-			{/if}
-		</div>
-
-		<div>
-			<Heading level="2">Deploy Key</Heading>
-			<p>
-				Deploy keys can be used to authenticate for deployments instead of using
-				<a
-					href={docURL(
-						'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
-					)}
-				>
-					repository authorization
-				</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from
-				local machines.
-			</p>
-
-			{#if teamSettings.deploymentKey}
-				{@const deployKey = teamSettings.deploymentKey}
-				<dl>
-					<dt>Created:</dt>
-					<dd><Time time={deployKey.created} distance={true} /></dd>
-					<dt>Expires:</dt>
-					<dd><Time time={deployKey.expires} distance={true} /></dd>
-					<dt>Key:</dt>
-					<dd>
-						<div class="deployKey">
-							{#if showKey}
-								{deployKey.key}
-								<Button
-									size="xsmall"
-									variant="tertiary"
-									onclick={() => {
-										showKey = !showKey;
-									}}
-									icon={EyeSlashIcon}
-								/>
-							{:else}
-								{deployKey.key.replaceAll(/./g, '*')}
-								<Button
-									size="xsmall"
-									variant="tertiary"
-									onclick={() => {
-										showKey = !showKey;
-									}}
-									icon={EyeIcon}
-									disabled={!viewerIsMember}
-								/>
-							{/if}
+						<div class="button">
+							<Button
+								size="small"
+								variant="danger"
+								onclick={() => {
+									showRotateKey = !showRotateKey;
+								}}
+								icon={ArrowsCirclepathIcon}
+								disabled={!viewerIsMember}
+							>
+								Rotate key
+							</Button>
 						</div>
-					</dd>
-				</dl>
-				<div class="buttons">
-					<div class="button">
-						<CopyButton
-							text="Copy key"
-							activeText="Key copied"
-							variant="action"
-							copyText={deployKey.key}
-							size="small"
-							disabled={!viewerIsMember}
-						/>
 					</div>
-					<div class="button">
+				{:else}
+					<Alert variant="error">Error getting deploy key. Try again later.</Alert>
+				{/if}
+			</div>
+
+			{#if viewerIsOwner}
+				<div>
+					<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+					<div class="danger-zone">
+						<BodyLong spacing>
+							Deleting the team will permanently delete all managed resources and all resources
+							within them. All applications, databases and jobs owned by the team will be
+							irreversibly deleted.
+						</BodyLong>
+						<BodyLong spacing>
+							When you request deletion a delete key will be generated for this team. It is valid
+							for 1 hour. Another team-owner will have to confirm the deletion by using a generated
+							link before the team is irreversibly deleted.
+						</BodyLong>
+
 						<Button
-							size="small"
 							variant="danger"
 							onclick={() => {
-								showRotateKey = !showRotateKey;
+								showDeleteTeam = !showDeleteTeam;
+								//deleteKeyResp = null;
 							}}
-							icon={ArrowsCirclepathIcon}
-							disabled={!viewerIsMember}
+							icon={TrashIcon}
 						>
-							Rotate key
-						</Button>
+							Request team deletion</Button
+						>
 					</div>
 				</div>
-			{:else}
-				<Alert variant="error">Error getting deploy key. Try again later.</Alert>
-			{/if}
-			{#if browser}
-				<Modal bind:open={showRotateKey} closeButton={false}>
-					<h3>Rotate deploy key</h3>
-					<p>Are you sure you want to rotate the deploy key?</p>
-					<Button
-						onclick={() => {
-							showRotateKey = !showRotateKey;
-						}}
-					>
-						Cancel</Button
-					>
-					<Button
-						variant="danger"
-						onclick={async () => {
-							//rotateClicked = false;
-							showRotateKey = !showRotateKey;
-							await rotateKey.mutate({ team: teamSlug });
-							//rotateClicked = true;
-						}}
-					>
-						Rotate key</Button
-					>
-				</Modal>
 			{/if}
 		</div>
-
-		{#if viewerIsOwner}
-			<div>
-				<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
-				<div class="danger-zone">
-					<BodyLong spacing>
-						Deleting the team will permanently delete all managed resources and all resources within
-						them. All applications, databases and jobs owned by the team will be irreversibly
-						deleted.
-					</BodyLong>
-					<BodyLong spacing>
-						When you request deletion a delete key will be generated for this team. It is valid for
-						1 hour. Another team-owner will have to confirm the deletion by using a generated link
-						before the team is irreversibly deleted.
-					</BodyLong>
-
-					<Button
-						variant="danger"
-						onclick={() => {
-							showDeleteTeam = !showDeleteTeam;
-							//deleteKeyResp = null;
-						}}
-						icon={TrashIcon}
-					>
-						Request team deletion</Button
-					>
-
-					{#if browser}
-						<Modal bind:open={showDeleteTeam}>
-							{#snippet header()}
-								<h3>Request team deletion</h3>
-							{/snippet}
-
-							{#if !deleteKeyResp?.data}
-								<BodyLong>
-									Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related
-									to it.
-								</BodyLong>
-							{/if}
-
-							{#if deleteKeyResp?.errors}
-								<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
-							{:else if deleteKeyResp?.data}
-								{@const key =
-									window.location +
-									'/confirm_delete?key=' +
-									deleteKeyResp.data.requestTeamDeletion.key?.key}
-								<Alert>
-									Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the
-									deletion send this link to another team owner and let them confirm the deletion.
-
-									<div class="deletewrapper">
-										<div>
-											<TextField
-												label="Sharable url"
-												hideLabel={true}
-												readonly={true}
-												size="small"
-												value={key}
-											></TextField>
-										</div>
-										<CopyButton
-											text="Copy URL"
-											activeText="URL copied"
-											variant="action"
-											copyText={key}
-											size="small"
-										/>
-									</div>
-								</Alert>
-							{/if}
-
-							{#snippet footer()}
-								{#if !deleteKeyResp?.data}
-									<Button
-										type="submit"
-										loading={deleteKeyLoading}
-										onclick={async () => {
-											deleteKeyLoading = true;
-											deleteKeyResp = await getTeamDeleteKey.mutate({ input: { slug: teamSlug } });
-											deleteKeyLoading = false;
-										}}>Confirm</Button
-									>
-									<Button
-										variant="tertiary"
-										disabled={deleteKeyLoading}
-										type="reset"
-										onclick={() => {
-											showDeleteTeam = !showDeleteTeam;
-										}}>Cancel</Button
-									>
-								{:else}
-									<Button
-										onclick={() => {
-											showDeleteTeam = !showDeleteTeam;
-										}}>Close</Button
-									>
-								{/if}
-							{/snippet}
-						</Modal>
+		<div>
+			<div class="card">
+				<Heading level="2" size="small">Managed Resources</Heading>
+				<dl>
+					{#if $TeamSettings.data?.team.externalResources}
+						{@const external = $TeamSettings.data.team.externalResources}
+						{#if external.googleArtifactRegistry}
+							<dt>Google Artifact Registry:</dt>
+							<dd>
+								<a
+									href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
+									target="_blank"
+									rel="noopener noreferrer"
+									style:display="inline"
+								>
+									{formatGARRepo(external.googleArtifactRegistry.repository)}
+									<ExternalLinkIcon class="text-aligned-icon" />
+								</a>
+							</dd>
+						{/if}
+						{#if external.entraIDGroup}
+							<dt>Entra ID Group:</dt>
+							<dd>
+								<a
+									href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}"
+									target="_blank"
+									rel="noopener noreferrer"
+									style:display="inline"
+								>
+									{external.entraIDGroup.groupID}
+									<ExternalLinkIcon class="text-aligned-icon" />
+								</a>
+							</dd>
+						{/if}
+						{#if external.cdn}
+							<dt>Team CDN bucket:</dt>
+							<dd>
+								<a
+									href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}"
+									target="_blank"
+									rel="noopener noreferrer"
+									style:display="inline"
+								>
+									{external.cdn.bucket}
+									<ExternalLinkIcon class="text-aligned-icon" />
+								</a>
+							</dd>
+						{/if}
 					{/if}
-				</div>
+					{#each $TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
+						<dt>Team project in {teamEnvironment.environment.name}:</dt>
+						<dd>
+							<a
+								href="https://console.cloud.google.com/home/dashboard?project={teamEnvironment.gcpProjectID}"
+								target="_blank"
+								rel="noopener noreferrer"
+								style:display="inline"
+							>
+								{teamEnvironment.gcpProjectID}
+								<ExternalLinkIcon class="text-aligned-icon" />
+							</a>
+						</dd>
+					{/each}
+				</dl>
 			</div>
-		{/if}
-
+		</div>
 		<p class="last-sync">
 			{#if teamSettings.lastSuccessfulSync}
 				Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
@@ -406,18 +379,122 @@
 		</p>
 	</div>
 {/if}
+{#if browser}
+	<Modal bind:open={showRotateKey} closeButton={false}>
+		{#snippet header()}
+			<Heading level="1" size="medium">Rotate deploy key</Heading>
+		{/snippet}
+		<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
+
+		{#snippet footer()}
+			<Button
+				variant="danger"
+				onclick={async () => {
+					//rotateClicked = false;
+					showRotateKey = !showRotateKey;
+					await rotateKey.mutate({ team: teamSlug });
+					//rotateClicked = true;
+				}}>Rotate key</Button
+			>
+			<Button
+				onclick={() => {
+					showRotateKey = !showRotateKey;
+				}}>Cancel</Button
+			>
+		{/snippet}
+	</Modal>
+
+	<Modal bind:open={showDeleteTeam}>
+		{#snippet header()}
+			<Heading level="1" size="medium">Request Team Deletion</Heading>
+		{/snippet}
+
+		{#if !deleteKeyResp?.data}
+			<BodyLong>
+				Confirm that you intend to delete <strong>{teamSlug}</strong> and all resources related to it.
+			</BodyLong>
+		{/if}
+
+		{#if deleteKeyResp?.errors}
+			<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
+		{:else if deleteKeyResp?.data}
+			{@const key =
+				window.location + '/confirm_delete?key=' + deleteKeyResp.data.requestTeamDeletion.key?.key}
+			<Alert>
+				Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion send
+				this link to another team owner and let them confirm the deletion.
+
+				<div class="deletewrapper">
+					<div>
+						<TextField
+							label="Sharable url"
+							hideLabel={true}
+							readonly={true}
+							size="small"
+							value={key}
+						></TextField>
+					</div>
+					<CopyButton
+						text="Copy URL"
+						activeText="URL copied"
+						variant="action"
+						copyText={key}
+						size="small"
+					/>
+				</div>
+			</Alert>
+		{/if}
+
+		{#snippet footer()}
+			{#if !deleteKeyResp?.data}
+				<Button
+					type="submit"
+					loading={deleteKeyLoading}
+					onclick={async () => {
+						deleteKeyLoading = true;
+						deleteKeyResp = await getTeamDeleteKey.mutate({
+							input: { slug: teamSlug }
+						});
+						deleteKeyLoading = false;
+					}}>Confirm</Button
+				>
+				<Button
+					variant="tertiary"
+					disabled={deleteKeyLoading}
+					type="reset"
+					onclick={() => {
+						showDeleteTeam = !showDeleteTeam;
+					}}>Cancel</Button
+				>
+			{:else}
+				<Button
+					onclick={() => {
+						showDeleteTeam = !showDeleteTeam;
+					}}>Close</Button
+				>
+			{/if}
+		{/snippet}
+	</Modal>
+{/if}
 
 <style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+	.card {
+		background-color: var(--a-surface-subtle);
+		padding: var(--a-spacing-4) var(--a-spacing-5);
+		border-radius: 12px;
+		align-self: start;
+	}
 	.danger-zone {
 		padding: var(--a-spacing-4);
 		border-radius: 8px;
 		border: 1px solid var(--a-border-danger);
 	}
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
+
 	dl {
 		display: block;
 		margin-block-start: 0.2em;
@@ -436,9 +513,6 @@
 	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
-	}
-	h3 {
-		margin-bottom: 0.5rem;
 	}
 
 	.buttons {
@@ -466,9 +540,8 @@
 	}
 	.last-sync {
 		width: 100%;
-		grid-column: span 12;
 		color: var(--a-text-subtle);
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		text-align: right;
 	}
 </style>

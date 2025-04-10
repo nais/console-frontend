@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { SecretOrderField } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -86,106 +85,95 @@
 {:else if $Secrets.data}
 	{@const secrets = $Secrets.data.team.secrets}
 
-	<div class="grid">
-		<Card columns={12}>
-			<div class="button">
-				<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
-					Create Secret
-				</Button>
-			</div>
-			<div>
-				<div style="padding-bottom: 1rem;">
-					<ToggleGroup
-						value={page.url.searchParams.get('filter') || 'all'}
-						size="small"
-						onchange={handleInUse}
-					>
-						<ToggleGroupItem value="all">All</ToggleGroupItem>
-						<ToggleGroupItem value="inUse">In use</ToggleGroupItem>
-						<ToggleGroupItem value="notInUse">Not in use</ToggleGroupItem>
-					</ToggleGroup>
-				</div>
-				<Table
-					size="small"
-					sort={{
-						orderBy: tableSort.orderBy || SecretOrderField.NAME,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					onsortchange={tableSortChange}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
-							<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
-							<Th>In Use</Th>
-							<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
-								>Last Modified</Th
-							>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each secrets.nodes as secret (secret.id)}
-							<Tr>
-								<Td>
-									<a
-										href="/team/{teamSlug}/{secret.teamEnvironment.environment
-											.name}/secret/{secret.name}">{secret.name}</a
-									>
-								</Td>
-								<Td>{secret.teamEnvironment.environment.name}</Td>
-								<Td>
-									{#if secret.workloads.pageInfo.totalCount > 0}
-										<CheckmarkIcon
-											style="color: var(--a-surface-success)"
-											title="{secret.workloads.pageInfo.totalCount} workloads are using this secret"
-										/>
-									{:else}
-										<XMarkIcon
-											style="color: var(--a-surface-danger)"
-											title="No workloads are using this secret"
-										/>
-									{/if}
-								</Td>
-								<Td align="right">
-									{#if secret.lastModifiedAt}
-										<Time time={secret.lastModifiedAt} distance />
-									{:else}
-										<code>n/a</code>
-									{/if}
-								</Td>
-							</Tr>
-						{:else}
-							<Tr><Td colspan={99}>No secrets for team</Td></Tr>
-						{/each}
-					</Tbody>
-				</Table>
-				<Pagination
-					page={secrets.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							Secrets.loadPreviousPage();
-						},
-						loadNextPage: () => {
-							Secrets.loadNextPage();
-						}
-					}}
-				/>
-			</div></Card
-		>
-		{#if createSecretOpen}
-			<CreateSecret team={teamSlug} bind:open={createSecretOpen} {environments} />
-		{/if}
+	<div class="button">
+		<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
+			Create Secret
+		</Button>
 	</div>
+	<div>
+		<div style="padding-bottom: 1rem;">
+			<ToggleGroup
+				value={page.url.searchParams.get('filter') || 'all'}
+				size="small"
+				onchange={handleInUse}
+			>
+				<ToggleGroupItem value="all">All</ToggleGroupItem>
+				<ToggleGroupItem value="inUse">In use</ToggleGroupItem>
+				<ToggleGroupItem value="notInUse">Not in use</ToggleGroupItem>
+			</ToggleGroup>
+		</div>
+		<Table
+			size="small"
+			sort={{
+				orderBy: tableSort.orderBy || SecretOrderField.NAME,
+				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+			}}
+			onsortchange={tableSortChange}
+		>
+			<Thead>
+				<Tr>
+					<Th sortable={true} sortKey={SecretOrderField.NAME}>Name</Th>
+					<Th sortable={true} sortKey={SecretOrderField.ENVIRONMENT}>Environment</Th>
+					<Th>In Use</Th>
+					<Th align="right" sortable={true} sortKey={SecretOrderField.LAST_MODIFIED_AT}
+						>Last Modified</Th
+					>
+				</Tr>
+			</Thead>
+			<Tbody>
+				{#each secrets.nodes as secret (secret.id)}
+					<Tr>
+						<Td>
+							<a
+								href="/team/{teamSlug}/{secret.teamEnvironment.environment
+									.name}/secret/{secret.name}">{secret.name}</a
+							>
+						</Td>
+						<Td>{secret.teamEnvironment.environment.name}</Td>
+						<Td>
+							{#if secret.workloads.pageInfo.totalCount > 0}
+								<CheckmarkIcon
+									style="color: var(--a-surface-success)"
+									title="{secret.workloads.pageInfo.totalCount} workloads are using this secret"
+								/>
+							{:else}
+								<XMarkIcon
+									style="color: var(--a-surface-danger)"
+									title="No workloads are using this secret"
+								/>
+							{/if}
+						</Td>
+						<Td align="right">
+							{#if secret.lastModifiedAt}
+								<Time time={secret.lastModifiedAt} distance />
+							{:else}
+								<code>n/a</code>
+							{/if}
+						</Td>
+					</Tr>
+				{:else}
+					<Tr><Td colspan={99}>No secrets for team</Td></Tr>
+				{/each}
+			</Tbody>
+		</Table>
+		<Pagination
+			page={secrets.pageInfo}
+			loaders={{
+				loadPreviousPage: () => {
+					Secrets.loadPreviousPage();
+				},
+				loadNextPage: () => {
+					Secrets.loadNextPage();
+				}
+			}}
+		/>
+	</div>
+	{#if createSecretOpen}
+		<CreateSecret team={teamSlug} bind:open={createSecretOpen} {environments} />
+	{/if}
 {/if}
 
 <style>
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-
 	.button {
 		display: flex;
 		justify-content: flex-end;

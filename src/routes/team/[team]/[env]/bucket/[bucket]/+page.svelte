@@ -18,7 +18,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2">Bucket details</Heading>
+			<Heading level="2">Bucket Details</Heading>
 			<dl>
 				<dt>Bucket</dt>
 				<dd>

@@ -41,7 +41,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="3" spacing>Valkey instance access list</Heading>
+			<Heading level="3" spacing>Valkey Instance Access List</Heading>
 			<Table
 				size="small"
 				sort={{

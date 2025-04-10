@@ -140,7 +140,7 @@
 				{@const team = $Repositories.data.team}
 				{#if viewerIsMember}
 					<div class="repository">
-						<Heading level="2" size="small">Add repository</Heading>
+						<Heading level="2" size="small">Add Repository</Heading>
 						<Detail>
 							Adding a repository will grant it access to deployment actions on behalf of the team.</Detail
 						>
@@ -175,7 +175,7 @@
 					</div>
 				{/if}
 
-				<Heading level="2" size="small">Authorized repositories</Heading>
+				<Heading level="2" size="small">Authorized Repositories</Heading>
 				{#if team.repositories.pageInfo.totalCount === 0 && filter === ''}
 					<BodyLong spacing>
 						{#if team.repositories.pageInfo.totalCount == 0}

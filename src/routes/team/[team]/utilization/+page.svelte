@@ -14,6 +14,7 @@
 		yearlyOverageCost,
 		type TeamOverageData
 	} from '$lib/utils/resources';
+	import { Heading } from '@nais/ds-svelte-community';
 	import {
 		Table,
 		Tbody,
@@ -203,149 +204,155 @@
 			sortState.direction
 		);
 	});
+
+	function handleChartClick(name: string) {
+		const [env, app] = name.split(':');
+		goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
+	}
 </script>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
-
-<div class="grid">
+<div class="wrapper">
 	{#if resourceUtilization}
-		<Card columns={4} borderColor="#83bff6">
-			<SummaryCard
-				color="blue"
-				title="Unused CPU cost"
-				helpTextTitle="Annual cost of unused CPU"
-				helpText="Estimate of annual cost of unused CPU for team {teamSlug} calculated from current utilization
+		<div class="grid">
+			<Card columns={4} borderColor="#83bff6">
+				<SummaryCard
+					color="blue"
+					title="Unused CPU cost"
+					helpTextTitle="Annual cost of unused CPU"
+					helpText="Estimate of annual cost of unused CPU for team {teamSlug} calculated from current utilization
 							data."
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{#if resourceUtilization !== PendingValue}
-					{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
-						(item) => item && item.used < item.requested
-					)}
-					{@const cpuRequested = filteredCpuUtil.reduce(
-						(acc, item) => acc + (item ? item.requested : 0),
-						0
-					)}
-					{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
-					€{round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0)}
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={4} borderColor="#91dc75">
-			<SummaryCard
-				color="green"
-				title="Unused memory cost"
-				helpTextTitle="Annual cost of unused memory"
-				helpText="Estimate of annual cost of unused memory for team {teamSlug} calculated from current utilization
-							data."
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{#if resourceUtilization !== PendingValue}
-					{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
-						(item) => item && item.used < item.requested
-					)}
-					{@const memoryRequested = filtertedMemoryUtil.reduce(
-						(acc, item) => acc + (item ? item.requested : 0),
-						0
-					)}
-					{@const memoryUsage = filtertedMemoryUtil.reduce(
-						(acc, item) => acc + (item ? item.used : 0),
-						0
-					)}
-					€{round(
-						yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
-						0
-					)}
-				{/if}
-			</SummaryCard>
-		</Card>
-		<Card columns={12} borderColor="var(--a-gray-200)">
-			<div style="display: flex; justify-content: space-between;">
-				<h3>Unused resources per application</h3>
-			</div>
-
-			<div style="display: flex">
-				{#if resourceUtilization !== PendingValue}
-					<EChart
-						options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
-						style="height: 350px; width: 50%;"
-						on:click={(e) => {
-							const [env, app] = e.detail.name.split(':');
-							goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
-						}}
-					/>
-					<EChart
-						options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
-						style="height: 350px; width: 50%;"
-						on:click={(e) => {
-							const [env, app] = e.detail.name.split(':');
-							goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
-						}}
-					/>
-				{/if}
-			</div>
-			<div>
-				<h4>All applications</h4>
-				<Table
-					size="small"
-					sort={sortState}
-					onsortchange={(key) => {
-						sortState = sortTable(key, sortState);
-					}}
 				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey="APPLICATION">Application</Th>
-							<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
-							<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-							<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
-							<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#if resourceUtilization !== PendingValue}
-							{#each overageTable as overage (overage.id)}
-								<Tr>
-									<Td>
-										<WorkloadLink
-											workload={{
-												__typename: overage.type,
-												teamEnvironment: { environment: { name: overage.env } },
-												team: { slug: teamSlug },
-												name: overage.name
-											}}
-										/>
-									</Td>
-									<Td>{overage.env}</Td>
-									<Td
-										>{overage.unusedCpu.toLocaleString('en-GB', {
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2
-										})}</Td
-									>
-									<Td>{prettyBytes(overage.unusedMem)}</Td>
-									<Td>
-										{euroValueFormatter(overage.estimatedAnnualOverageCost)}
-									</Td>
-								</Tr>
-							{:else}
-								<Tr>
-									<Td colspan={999}>No overage data for team {teamSlug}</Td>
-								</Tr>
-							{/each}
-						{/if}
-					</Tbody>
-				</Table>
-			</div>
-		</Card>
+					{#snippet icon({ color })}
+						<WalletIcon height="32px" width="32px" {color} />
+					{/snippet}
+					{#if resourceUtilization !== PendingValue}
+						{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
+							(item) => item && item.used < item.requested
+						)}
+						{@const cpuRequested = filteredCpuUtil.reduce(
+							(acc, item) => acc + (item ? item.requested : 0),
+							0
+						)}
+						{@const cpuUsage = filteredCpuUtil.reduce(
+							(acc, item) => acc + (item ? item.used : 0),
+							0
+						)}
+						€{round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0)}
+					{/if}
+				</SummaryCard>
+			</Card>
+			<Card columns={4} borderColor="#91dc75">
+				<SummaryCard
+					color="green"
+					title="Unused memory cost"
+					helpTextTitle="Annual cost of unused memory"
+					helpText="Estimate of annual cost of unused memory for team {teamSlug} calculated from current utilization
+							data."
+				>
+					{#snippet icon({ color })}
+						<WalletIcon height="32px" width="32px" {color} />
+					{/snippet}
+					{#if resourceUtilization !== PendingValue}
+						{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
+							(item) => item && item.used < item.requested
+						)}
+						{@const memoryRequested = filtertedMemoryUtil.reduce(
+							(acc, item) => acc + (item ? item.requested : 0),
+							0
+						)}
+						{@const memoryUsage = filtertedMemoryUtil.reduce(
+							(acc, item) => acc + (item ? item.used : 0),
+							0
+						)}
+						€{round(
+							yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
+							0
+						)}
+					{/if}
+				</SummaryCard>
+			</Card>
+		</div>
+		<div style="display: flex; justify-content: space-between;">
+			<Heading level="2">Top 10 Unused Resources per Application</Heading>
+		</div>
+
+		<div style="display: flex">
+			{#if resourceUtilization !== PendingValue}
+				<EChart
+					options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
+					style="height: 350px; width: 50%;"
+					onclick={handleChartClick}
+				/>
+				<EChart
+					options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+					style="height: 350px; width: 50%;"
+					onclick={handleChartClick}
+				/>
+			{/if}
+		</div>
+		<div>
+			<Heading level="3" spacing>Unused Resources for All Applications</Heading>
+			<Table
+				size="small"
+				sort={sortState}
+				onsortchange={(key) => {
+					sortState = sortTable(key, sortState);
+				}}
+			>
+				<Thead>
+					<Tr>
+						<Th sortable={true} sortKey="APPLICATION">Application</Th>
+						<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+						<Th sortable={true} sortKey="CPU">Unused CPU</Th>
+						<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+						<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#if resourceUtilization !== PendingValue}
+						{#each overageTable as overage (overage.id)}
+							<Tr>
+								<Td>
+									<WorkloadLink
+										workload={{
+											__typename: overage.type,
+											teamEnvironment: { environment: { name: overage.env } },
+											team: { slug: teamSlug },
+											name: overage.name
+										}}
+									/>
+								</Td>
+								<Td>{overage.env}</Td>
+								<Td
+									>{overage.unusedCpu.toLocaleString('en-GB', {
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+									})}</Td
+								>
+								<Td>{prettyBytes(overage.unusedMem)}</Td>
+								<Td>
+									{euroValueFormatter(overage.estimatedAnnualOverageCost)}
+								</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td colspan={999}>No overage data for team {teamSlug}</Td>
+							</Tr>
+						{/each}
+					{/if}
+				</Tbody>
+			</Table>
+		</div>
 	{/if}
 </div>
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, 1fr);

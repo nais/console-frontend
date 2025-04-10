@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import {
 		graphql,
+		OrderDirection,
 		PendingValue,
 		WorkloadOrderField,
 		type OrderDirection$options,
@@ -115,8 +116,11 @@
 	`);
 
 	let tableSort = $derived({
-		orderBy: page.url.searchParams.get('field') as WorkloadOrderField$options | null,
-		direction: page.url.searchParams.get('direction') as OrderDirection$options | null
+		orderBy:
+			(page.url.searchParams.get('field') as WorkloadOrderField$options) ||
+			WorkloadOrderField.VULNERABILITY_RISK_SCORE,
+		direction:
+			(page.url.searchParams.get('direction') as OrderDirection$options) || OrderDirection.DESC
 	});
 
 	const tableSortChange = (key: string) => {
@@ -245,7 +249,7 @@
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
 									<Tooltip content="critical">
-										{#if workload.image.vulnerabilitySummary}
+										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.critical > 0}
 												<a
 													href={vulnerabilityReportUrl(workload)}
@@ -269,12 +273,10 @@
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
 									<Tooltip content="high">
-										{#if workload.image.vulnerabilitySummary}
-											{#if workload.image.vulnerabilitySummary.high > 0}
+										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary.high > 0}
 												<a href={vulnerabilityReportUrl(workload)} class="vulnerability-count HIGH">
-													{workload.image.vulnerabilitySummary
-														? workload.image.vulnerabilitySummary.high
-														: '-'}
+													{workload.image.vulnerabilitySummary.high}
 												</a>
 											{:else}
 												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
@@ -290,7 +292,7 @@
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
 									<Tooltip content="medium">
-										{#if workload.image.vulnerabilitySummary}
+										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.medium > 0}
 												<a
 													href={vulnerabilityReportUrl(workload)}
@@ -314,7 +316,7 @@
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
 									<Tooltip content="low">
-										{#if workload.image.vulnerabilitySummary}
+										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.low > 0}
 												<a href={vulnerabilityReportUrl(workload)} class="vulnerability-count LOW">
 													{workload.image.vulnerabilitySummary
@@ -335,7 +337,7 @@
 							<div class="vulnerability">
 								<div class="vulnerability-summary">
 									<Tooltip content="unassigned">
-										{#if workload.image.vulnerabilitySummary}
+										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
 											{#if workload.image.vulnerabilitySummary.unassigned > 0}
 												<a
 													href={vulnerabilityReportUrl(workload)}
@@ -362,7 +364,7 @@
 												href={vulnerabilityReportUrl(workload)}
 												class="vulnerability-count RISK_SCORE"
 											>
-												{workload.image.vulnerabilitySummary
+												{workload.image.vulnerabilitySummary && workload.image.hasSBOM
 													? workload.image.vulnerabilitySummary.riskScore
 													: '-'}
 											</a>
