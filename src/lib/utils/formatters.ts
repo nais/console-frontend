@@ -18,20 +18,17 @@ export function formatKubernetesMemory(bytes: number): string {
 	// Iterate through the units to find the appropriate one for the given byte size.
 	for (let i = 0; i < units.length; i++) {
 		const unitSize = Math.pow(factor, powers[i]);
-		console.log(`Unit: ${units[i]}, UnitSize: ${unitSize}, Bytes: ${bytes}`);
 
 		// Check if the byte size is greater than or equal to the current unit size.
 		if (bytes >= unitSize) {
 			// Ensure the smallest unit is used if no match
 			// Calculate the raw value in the current unit.
 			const raw = bytes / unitSize;
-			console.log(`Raw value: ${raw}`);
 
 			// Round the value based on its size:
 			// - If >= 10, round to the nearest integer.
 			// - Otherwise, round to two decimal places.
 			const rounded = raw >= 10 ? Math.floor(raw) : Math.round(raw * 100) / 100;
-			console.log(`Rounded value: ${rounded}`);
 
 			let str = rounded.toString();
 			if (str.includes('.')) {
@@ -40,7 +37,6 @@ export function formatKubernetesMemory(bytes: number): string {
 					str = str.slice(0, -1);
 				}
 			}
-			console.log(`Formatted value: ${str}${units[i]}`);
 
 			// Return the formatted string with the appropriate unit.
 			return `${str}${units[i]}`;
