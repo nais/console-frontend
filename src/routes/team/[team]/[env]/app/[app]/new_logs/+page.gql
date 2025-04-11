@@ -1,0 +1,18 @@
+query NewLogs($app: String!, $team: Slug!, $env: String!) {
+	team(slug: $team) {
+		slug
+		environment(name: $env) {
+			environment {
+				name
+			}
+			application(name: $app) {
+				name
+				instances {
+					nodes {
+						name
+					}
+				}
+			}
+		}
+	}
+}
