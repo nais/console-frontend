@@ -4,11 +4,13 @@
 	// Import necessary modules from Svelte and other libraries
 	import { graphql } from '$houdini';
 	// Houdini GraphQL client
-	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community'; // UI components
+	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
+	// UI components
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	// Date formatting library
 	import { onDestroy, onMount } from 'svelte'; // Svelte lifecycle hook
+	import { SvelteSet } from 'svelte/reactivity';
 
 	// Define the props for the component, including team information
 	const {
@@ -79,6 +81,10 @@
 					m = result.data.workloadLog.message;
 				}
 
+				if (m === undefined) {
+					m = result.data.workloadLog.message;
+				}
+
 				// Update the logs array with the new log
 				logs = [...logs, { ...result.data.workloadLog, m }];
 
@@ -140,6 +146,16 @@
 		store.unlisten();
 	});
 
+	const viewOptions = ['Time', 'Level', 'Instance'];
+	let selectedViewOptions = new SvelteSet(viewOptions);
+	function toggleSelectedViewOptions(option: string) {
+		if (selectedViewOptions.has(option)) {
+			selectedViewOptions.delete(option);
+		} else {
+			selectedViewOptions.add(option);
+		}
+	}
+
 	// Define an array of colors to use for different instances
 	const colors = ['blue', 'green', 'orange', 'purple', 'limegreen'];
 
@@ -155,6 +171,20 @@
 	function renderInstanceName(i: string) {
 		return i.slice(team.environment.application.name.length + 1);
 	}
+
+	let messageWidth = $derived.by(() => {
+		let width = 95;
+		if (!selectedViewOptions.has('Time')) {
+			width += 25;
+		}
+		if (!selectedViewOptions.has('Instance')) {
+			width += 15;
+		}
+		if (!selectedViewOptions.has('Level')) {
+			width += 7;
+		}
+		return width + 'ch';
+	});
 </script>
 
 <div class="wrapper">
@@ -258,13 +288,28 @@
 			</div>
 		{/if}
 	{:else}
+		<div>
+			<Chips size="small">
+				{#each viewOptions as option (option)}
+					<ToggleChip
+						value={option}
+						selected={selectedViewOptions.has(option)}
+						onclick={() => toggleSelectedViewOptions(option)}
+					/>
+				{/each}
+			</Chips>
+		</div>
 		<div class="log-wrapper">
 			{#each logs.toReversed() as log, i (i)}
 				<div class="log-line">
-					<div class="date">{format(log.time, 'yyyy-MM-dd HH:mm:ss.SSS')}</div>
-					<div class="instance">
-						{renderInstanceName(log.instance)}
-					</div>
+					{#if selectedViewOptions.has('Time')}
+						<div class="date">{format(log.time, 'yyyy-MM-dd HH:mm:ss.SSS')}</div>
+					{/if}
+					{#if selectedViewOptions.has('Instance')}
+						<div class="instance">
+							{renderInstanceName(log.instance)}
+						</div>
+					{/if}
 					<div
 						class="instance-color"
 						style:background-color="var(--a-{colors[
@@ -273,8 +318,13 @@
 							) % colors.length
 						]}-200)"
 					></div>
-					<div class="level">{getLogLevel(log.message)}</div>
-					<div class="message">{log.m}</div>
+					{#if selectedViewOptions.has('Level')}
+						<div class="level">{getLogLevel(log.message)}</div>
+					{/if}
+
+					<div class="message" style:max-width={messageWidth}>
+						{log.m}
+					</div>
 				</div>
 			{:else}
 				<BodyShort>Waiting for logs...</BodyShort>
@@ -343,7 +393,6 @@
 			white-space: normal;
 			overflow-wrap: break-word;
 			word-wrap: break-word;
-			max-width: 98ch;
 		}
 	}
 </style>
