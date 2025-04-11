@@ -1,12 +1,14 @@
 query Instances($app: String!, $team: Slug!, $env: String!) {
 	team(slug: $team) {
+		slug
 		environment(name: $env) {
-			name
+			environment {
+				name
+			}
 			application(name: $app) {
 				name
 				instances {
 					nodes {
-						id
 						name
 					}
 				}
