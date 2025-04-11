@@ -3,7 +3,7 @@
 	import { graphql } from '$houdini'; // Houdini GraphQL client
 	import { Button, Chips, ToggleChip } from '@nais/ds-svelte-community'; // UI components
 	import { format } from 'date-fns'; // Date formatting library
-	import { onDestroy } from 'svelte'; // Svelte lifecycle hook
+	import { onDestroy, onMount } from 'svelte'; // Svelte lifecycle hook
 
 	// Define the props for the component, including team information
 	const {
@@ -46,6 +46,24 @@
 	let pause: boolean = $state(false);
 
 	const MAX_LOG_LINES = 100;
+
+	onMount(() => {
+		selectedInstances = team.environment.application.instances.nodes.map((node) => node.name);
+
+		// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
+		store.unlisten().then(() => {
+			if (selectedInstances.length !== 0) {
+				store.listen({
+					filter: {
+						team: team.slug,
+						environment: team.environment.environment.name,
+						application: team.environment.application.name,
+						instances: selectedInstances
+					}
+				});
+			}
+		});
+	});
 
 	// Subscribe to the GraphQL subscription to receive new logs in real-time
 	store.subscribe((result) => {
@@ -95,97 +113,108 @@
 <div class="wrapper">
 	<div class="controls">
 		<Chips>
-			{#each team.environment.application.instances.nodes as instance, i (instance.name)}
-				{@const name = instance.name}
-				<ToggleChip
-					--ac-chip-toggle-bg="var(--a-{colors[i % colors.length]}-200)"
-					--ac-chip-toggle-hover-bg="var(--a-{colors[i % colors.length]}-300)"
-					--ac-chip-toggle-pressed-bg="var(--a-{colors[i % colors.length]}-500)"
-					--ac-chip-toggle-pressed-hover-bg="var(--a-{colors[i % colors.length]}-600)"
-					value={name}
-					selected={selectedInstances.includes(name)}
-					onclick={() => {
-						// Toggle the selected instance and update the logs
-						if (selectedInstances.includes(name)) {
-							selectedInstances = selectedInstances.filter((i) => i !== name);
-						} else {
-							selectedInstances = [...selectedInstances, name];
-						}
+			<div class="chips">
+				{#each team.environment.application.instances.nodes as instance, i (instance.name)}
+					{@const name = instance.name}
+					<ToggleChip
+						--ac-chip-toggle-bg="var(--a-{colors[i % colors.length]}-200)"
+						--ac-chip-toggle-hover-bg="var(--a-{colors[i % colors.length]}-300)"
+						--ac-chip-toggle-pressed-bg="var(--a-{colors[i % colors.length]}-500)"
+						--ac-chip-toggle-pressed-hover-bg="var(--a-{colors[i % colors.length]}-600)"
+						value={name}
+						selected={selectedInstances.includes(name)}
+						onclick={() => {
+							// Toggle the selected instance and update the logs
+							if (selectedInstances.includes(name)) {
+								selectedInstances = selectedInstances.filter((i) => i !== name);
+							} else {
+								selectedInstances = [...selectedInstances, name];
+							}
 
+							if (selectedInstances.length === 0) {
+								// If no instances are selected, unsubscribe from the current subscription
+								store.unlisten();
+								pause = true;
+							}
+
+							if (pause) {
+								return;
+							}
+
+							// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
+							store.unlisten().then(() => {
+								if (selectedInstances.length !== 0) {
+									store.listen({
+										filter: {
+											team: team.slug,
+											environment: team.environment.environment.name,
+											application: team.environment.application.name,
+											instances: selectedInstances
+										}
+									});
+								}
+							});
+						}}
+					/>
+				{/each}
+			</div>
+		</Chips>
+		<div class="buttons">
+			<div>
+				<Button
+					size="small"
+					variant="primary"
+					disabled={selectedInstances.length === 0}
+					onclick={() => {
+						if (pause) {
+							pause = false;
+							// Resume the subscription if it was paused
+							store.listen({
+								filter: {
+									team: team.slug,
+									environment: team.environment.environment.name,
+									application: team.environment.application.name,
+									instances: selectedInstances
+								}
+							});
+						} else {
+							pause = true;
+							// Pause the subscription
+							store.unlisten();
+						}
+					}}
+				>
+					{pause ? 'Resume' : 'Pause'}
+				</Button>
+				<Button
+					size="small"
+					variant="primary"
+					onclick={() => {
+						// Clear the logs and unsubscribe from the current subscription
+						logs = [];
 						if (pause) {
 							return;
 						}
+						if (selectedInstances.length === 0) {
+							return;
+						}
 
-						// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
 						store.unlisten().then(() => {
-							if (selectedInstances.length !== 0) {
-								store.listen({
-									filter: {
-										team: team.slug,
-										environment: team.environment.environment.name,
-										application: team.environment.application.name,
-										instances: selectedInstances
-									}
-								});
-							}
+							// Subscribe to a new one with an empty filter
+							store.listen({
+								filter: {
+									team: team.slug,
+									environment: team.environment.environment.name,
+									application: team.environment.application.name,
+									instances: selectedInstances
+								}
+							});
 						});
 					}}
-				/>
-			{/each}
-		</Chips>
-		<div class="buttons">
-			<Button
-				size="small"
-				variant="primary"
-				onclick={() => {
-					if (pause) {
-						pause = false;
-						// Resume the subscription if it was paused
-						store.listen({
-							filter: {
-								team: team.slug,
-								environment: team.environment.environment.name,
-								application: team.environment.application.name,
-								instances: selectedInstances
-							}
-						});
-					} else {
-						pause = true;
-						// Pause the subscription
-						store.unlisten();
-					}
-				}}
-			>
-				{pause ? 'Resume' : 'Pause'}
-			</Button>
-			<Button
-				size="small"
-				variant="primary"
-				onclick={() => {
-					// Clear the logs and unsubscribe from the current subscription
-					logs = [];
-					if (pause) {
-						return;
-					}
-					if (selectedInstances.length === 0) {
-						return;
-					}
-
-					store.unlisten().then(() => {
-						// Subscribe to a new one with an empty filter
-						store.listen({
-							filter: {
-								team: team.slug,
-								environment: team.environment.environment.name,
-								application: team.environment.application.name,
-								instances: selectedInstances
-							}
-						});
-					});
-				}}
-			>
-				Clear logs
-			</Button>
+				>
+					Clear logs
+				</Button>
+			</div>
 		</div>
 	</div>
 	<div class="log-wrapper">
@@ -205,7 +234,7 @@
 					style:max-width="4px"
 				></div>
 				<div class="level">{getLogLevel(log.message)}</div>
-				<div>{log.m}</div>
+				<div class="message">{log.m}</div>
 			</div>
 		{/each}
 	</div>
@@ -226,6 +255,11 @@
 			flex-direction: row;
 			gap: var(--a-spacing-2);
 		}
+	}
+	.chips {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: var(--a-spacing-2);
 	}
 	.log-wrapper {
 		display: flex;
@@ -252,6 +286,12 @@
 		.level {
 			text-align: center;
 			white-space: nowrap;
+		}
+		.message {
+			white-space: normal;
+			max-width: 50vw;
+			overflow-wrap: break-word;
+			word-wrap: break-word;
 		}
 	}
 </style>
