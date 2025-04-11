@@ -44,7 +44,8 @@
 	let selectedInstances: string[] = $state([]);
 
 	let pause: boolean = $state(false);
-	$inspect(pause, 'pause');
+
+	const MAX_LOG_LINES = 100;
 
 	// Subscribe to the GraphQL subscription to receive new logs in real-time
 	store.subscribe((result) => {
@@ -53,7 +54,7 @@
 		}
 		if (result.data) {
 			if (!selectedInstances.includes(result.data.workloadLog.instance)) {
-				console.log('wat', result);
+				console.log('Log received but not for selected instances:', result.data.workloadLog);
 			}
 			let m;
 			// Attempt to parse the log message as JSON, if it fails, use the original message
@@ -63,10 +64,13 @@
 				console.log('Error parsing JSON message: ', e);
 				m = result.data.workloadLog.message;
 			}
-			// Update the logs array with the new log, and sort by time
-			logs = [...logs, { ...result.data.workloadLog, m }].sort(
-				(a, b) => a.time.getTime() - b.time.getTime()
-			);
+			// Update the logs array with the new log
+			logs = [...logs, { ...result.data.workloadLog, m }];
+
+			// Keep only the latest MAX_LOG_LINES logs
+			if (logs.length > MAX_LOG_LINES) {
+				logs = logs.slice(-MAX_LOG_LINES); // Discard the oldest logs
+			}
 		}
 	});
 
@@ -108,6 +112,10 @@
 							selectedInstances = [...selectedInstances, name];
 						}
 
+						if (pause) {
+							return;
+						}
+
 						// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
 						store.unlisten().then(() => {
 							if (selectedInstances.length !== 0) {
@@ -125,58 +133,60 @@
 				/>
 			{/each}
 		</Chips>
-		<Button
-			size="small"
-			variant="primary"
-			onclick={() => {
-				if (pause) {
-					pause = false;
-					// Resume the subscription if it was paused
-					store.listen({
-						filter: {
-							team: team.slug,
-							environment: team.environment.environment.name,
-							application: team.environment.application.name,
-							instances: selectedInstances
-						}
-					});
-				} else {
-					pause = true;
-					// Pause the subscription
-					store.unlisten();
-				}
-			}}
-		>
-			{pause ? 'Resume' : 'Pause'}
-		</Button>
-		<Button
-			size="small"
-			variant="primary"
-			onclick={() => {
-				// Clear the logs and unsubscribe from the current subscription
-				logs = [];
-				if (pause) {
-					return;
-				}
-				if (selectedInstances.length === 0) {
-					return;
-				}
+		<div class="buttons">
+			<Button
+				size="small"
+				variant="primary"
+				onclick={() => {
+					if (pause) {
+						pause = false;
+						// Resume the subscription if it was paused
+						store.listen({
+							filter: {
+								team: team.slug,
+								environment: team.environment.environment.name,
+								application: team.environment.application.name,
+								instances: selectedInstances
+							}
+						});
+					} else {
+						pause = true;
+						// Pause the subscription
+						store.unlisten();
+					}
+				}}
+			>
+				{pause ? 'Resume' : 'Pause'}
+			</Button>
+			<Button
+				size="small"
+				variant="primary"
+				onclick={() => {
+					// Clear the logs and unsubscribe from the current subscription
+					logs = [];
+					if (pause) {
+						return;
+					}
+					if (selectedInstances.length === 0) {
+						return;
+					}
 
-				store.unlisten().then(() => {
-					// Subscribe to a new one with an empty filter
-					store.listen({
-						filter: {
-							team: team.slug,
-							environment: team.environment.environment.name,
-							application: team.environment.application.name,
-							instances: selectedInstances
-						}
+					store.unlisten().then(() => {
+						// Subscribe to a new one with an empty filter
+						store.listen({
+							filter: {
+								team: team.slug,
+								environment: team.environment.environment.name,
+								application: team.environment.application.name,
+								instances: selectedInstances
+							}
+						});
 					});
-				});
-			}}
-		>
-			Clear logs
-		</Button>
+				}}
+			>
+				Clear logs
+			</Button>
+		</div>
 	</div>
 	<div class="log-wrapper">
 		{#each logs.toReversed() as log, i (i)}
@@ -210,14 +220,19 @@
 	.controls {
 		display: flex;
 		flex-direction: row;
-		gap: var(--spacing-layout);
+		gap: var(--a-spacing-8);
+		.buttons {
+			display: flex;
+			flex-direction: row;
+			gap: var(--a-spacing-2);
+		}
 	}
 	.log-wrapper {
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
 		max-height: 70vh;
-		overflow-y: auto;
+		/* overflow-y: auto; */
 	}
 	.log-line {
 		display: flex;
@@ -239,10 +254,4 @@
 			white-space: nowrap;
 		}
 	}
-	/*
-	.log-frame > div {
-		padding: 0.5rem;
-		margin: 0.5rem;
-		border-radius: 0.5rem;
-	} */
 </style>
