@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/state';
+
 	// Import necessary modules from Svelte and other libraries
 	import { graphql } from '$houdini'; // Houdini GraphQL client
 	import { Button, Chips, ToggleChip } from '@nais/ds-svelte-community'; // UI components
@@ -43,26 +45,35 @@
 	// Initialize a reactive state variable to store the selected instances for filtering logs
 	let selectedInstances: string[] = $state([]);
 
-	let pause: boolean = $state(false);
+	let isStarted: boolean = $state(false);
+	let isPaused: boolean = $state(true);
 
-	const MAX_LOG_LINES = 100;
+	const MAX_LOG_LINES = 200;
 
 	onMount(() => {
-		selectedInstances = team.environment.application.instances.nodes.map((node) => node.name);
+		let instance = page.url.searchParams.get('instance');
+
+		if (instance) {
+			// If an instance is provided in the URL, set it as the selected instance
+			selectedInstances = [instance];
+		} else {
+			// Otherwise, select all instances by default
+			selectedInstances = team.environment.application.instances.nodes.map((node) => node.name);
+		}
 
 		// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
-		store.unlisten().then(() => {
-			if (selectedInstances.length !== 0) {
-				store.listen({
-					filter: {
-						team: team.slug,
-						environment: team.environment.environment.name,
-						application: team.environment.application.name,
-						instances: selectedInstances
-					}
-				});
-			}
-		});
+		// store.unlisten().then(() => {
+		// 	if (selectedInstances.length !== 0) {
+		// 		store.listen({
+		// 			filter: {
+		// 				team: team.slug,
+		// 				environment: team.environment.environment.name,
+		// 				application: team.environment.application.name,
+		// 				instances: selectedInstances
+		// 			}
+		// 		});
+		// 	}
+		// });
 	});
 
 	// Subscribe to the GraphQL subscription to receive new logs in real-time
@@ -134,10 +145,10 @@
 							if (selectedInstances.length === 0) {
 								// If no instances are selected, unsubscribe from the current subscription
 								store.unlisten();
-								pause = true;
+								isPaused = true;
 							}
 
-							if (pause) {
+							if (isPaused) {
 								return;
 							}
 
@@ -161,46 +172,68 @@
 		</Chips>
 		<div class="buttons">
 			<div>
-				<Button
-					size="small"
-					variant="primary"
-					disabled={selectedInstances.length === 0}
-					onclick={() => {
-						if (pause) {
-							pause = false;
-							// Resume the subscription if it was paused
-							store.listen({
-								filter: {
-									team: team.slug,
-									environment: team.environment.environment.name,
-									application: team.environment.application.name,
-									instances: selectedInstances
-								}
-							});
-						} else {
-							pause = true;
-							// Pause the subscription
-							store.unlisten();
-						}
-					}}
-				>
-					{pause ? 'Resume' : 'Pause'}
-				</Button>
-				<Button
-					size="small"
-					variant="primary"
-					onclick={() => {
-						// Clear the logs and unsubscribe from the current subscription
-						logs = [];
-						if (pause) {
-							return;
-						}
-						if (selectedInstances.length === 0) {
-							return;
-						}
+				{#if isStarted}
+					<Button
+						size="small"
+						variant="primary"
+						disabled={selectedInstances.length === 0}
+						onclick={() => {
+							if (isPaused) {
+								isPaused = false;
+								// Resume the subscription if it was paused
+								store.listen({
+									filter: {
+										team: team.slug,
+										environment: team.environment.environment.name,
+										application: team.environment.application.name,
+										instances: selectedInstances
+									}
+								});
+							} else {
+								isPaused = true;
+								// Pause the subscription
+								store.unlisten();
+							}
+						}}
+					>
+						{isPaused ? 'Resume' : 'Pause'}
+					</Button>
+					<Button
+						size="small"
+						variant="primary"
+						onclick={() => {
+							// Clear the logs and unsubscribe from the current subscription
+							logs = [];
+							if (isPaused) {
+								return;
+							}
+							if (selectedInstances.length === 0) {
+								return;
+							}
 
-						store.unlisten().then(() => {
-							// Subscribe to a new one with an empty filter
+							store.unlisten().then(() => {
+								// Subscribe to a new one with an empty filter
+								store.listen({
+									filter: {
+										team: team.slug,
+										environment: team.environment.environment.name,
+										application: team.environment.application.name,
+										instances: selectedInstances
+									}
+								});
+							});
+						}}
+					>
+						Clear logs
+					</Button>
+				{:else}
+					<Button
+						size="small"
+						variant="primary"
+						onclick={() => {
+							isStarted = true;
+							isPaused = false;
+							// Subscribe to the GraphQL subscription with the selected instances
 							store.listen({
 								filter: {
 									team: team.slug,
@@ -209,11 +242,11 @@
 									instances: selectedInstances
 								}
 							});
-						});
-					}}
-				>
-					Clear logs
-				</Button>
+						}}
+					>
+						Start
+					</Button>
+				{/if}
 			</div>
 		</div>
 	</div>
