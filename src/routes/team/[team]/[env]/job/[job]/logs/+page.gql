@@ -2,7 +2,9 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 	team(slug: $team) {
 		slug
 		environment(name: $env) {
-			name
+			environment {
+				name
+			}
 			job(name: $job) {
 				name
 				logDestinations {
@@ -18,8 +20,12 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 						name
 						instances {
 							nodes {
+								id
 								name
 							}
+						}
+						status {
+							state
 						}
 					}
 				}

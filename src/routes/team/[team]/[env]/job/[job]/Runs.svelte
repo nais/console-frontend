@@ -164,7 +164,7 @@
 			<JobRunListItem
 				run={run.node}
 				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
-					.name}/job/{$data.name}/logs?name="
+					.name}/job/{$data.name}/logs?instance="
 			/>
 		{/each}
 	</List>
