@@ -316,7 +316,7 @@
 							team.environment.application.instances.nodes.findIndex(
 								(instance) => instance.name === log.instance
 							) % colors.length
-						]}-200)"
+						]}-500)"
 					></div>
 					{#if selectedViewOptions.has('Level')}
 						<div class="level">{getLogLevel(log.message)}</div>
