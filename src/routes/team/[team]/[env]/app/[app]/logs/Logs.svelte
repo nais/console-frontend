@@ -19,7 +19,6 @@
 				};
 				application: {
 					name: string;
-
 					instances: {
 						nodes: {
 							name: string;
@@ -63,13 +62,13 @@
 
 			if (result.data) {
 				if (!selectedInstances.includes(result.data.workloadLog.instance)) {
-					console.log('Log received but not for selected instances:', result.data.workloadLog);
+					console.debug('Log received but not for selected instances:', result.data.workloadLog);
 				}
-				let m;
+				let m: string | undefined;
 				try {
 					m = JSON.parse(result.data.workloadLog.message).message;
 				} catch (e) {
-					console.log('Error parsing JSON message: ', e);
+					console.debug('Error parsing JSON message: ', e);
 					m = result.data.workloadLog.message;
 				}
 
@@ -77,11 +76,32 @@
 					m = result.data.workloadLog.message;
 				}
 
+				if (m === 'Subscription closed.' && result.data.workloadLog.instance === 'api') {
+					console.debug('Subscription closed');
+					isPaused = true;
+					store.unlisten();
+					isStarted = false;
+					return;
+				}
+
+				let level: string = getLogLevel(result.data.workloadLog.message);
+
+				if (!logLevels.has(level)) {
+					logLevels.add(level);
+					selectedLogLevels.add(level);
+				}
+
+				if (!selectedLogLevels.has(level)) {
+					return;
+				}
+
 				logs = [...logs, { ...result.data.workloadLog, m }];
 
-				if (logs.length > MAX_LOG_LINES) {
-					logs = logs.slice(-MAX_LOG_LINES);
-				}
+				logs = logs
+					.sort((a, b) => {
+						return new Date(a.time).getTime() - new Date(b.time).getTime();
+					})
+					.slice(-MAX_LOG_LINES);
 			}
 		});
 		return store;
@@ -141,9 +161,12 @@
 		}
 	}
 
+	let logLevels = new SvelteSet<string>();
+	let selectedLogLevels = new SvelteSet<string>();
+
 	const colors = ['blue', 'green', 'orange', 'purple', 'limegreen'];
 
-	function getLogLevel(message: string) {
+	function getLogLevel(message: string): string {
 		const logLevel = message.match(/"level":"(\w+)"/);
 		if (logLevel) {
 			return logLevel[1].toUpperCase();
@@ -198,7 +221,6 @@
 							if (isPaused) {
 								return;
 							}
-
 							store.unlisten().then(start);
 						}}
 					/>
@@ -256,6 +278,36 @@
 			</div>
 		</div>
 	</div>
+
+	<div>
+		<Chips size="small">
+			{#each viewOptions as option (option)}
+				<ToggleChip
+					value={option}
+					selected={selectedViewOptions.has(option)}
+					onclick={() => toggleSelectedViewOptions(option)}
+				/>
+			{/each}
+			{#if logLevels.size > 0}
+				<div class="divider"></div>
+			{/if}
+			{#each logLevels as level (level)}
+				<ToggleChip
+					value={level}
+					selected={selectedLogLevels.has(level)}
+					onclick={() => {
+						if (selectedLogLevels.has(level)) {
+							selectedLogLevels.delete(level);
+						} else {
+							selectedLogLevels.add(level);
+						}
+						store.unlisten().then(start);
+					}}
+				/>
+			{/each}
+		</Chips>
+	</div>
+
 	{#if isPaused && logs.length === 0}
 		{#if selectedInstances.length === 0}
 			<div class="paused">
@@ -266,48 +318,41 @@
 				<p>Logs are paused. Click "Start/Restart" to resume.</p>
 			</div>
 		{/if}
-	{:else}
-		<div>
-			<Chips size="small">
-				{#each viewOptions as option (option)}
-					<ToggleChip
-						value={option}
-						selected={selectedViewOptions.has(option)}
-						onclick={() => toggleSelectedViewOptions(option)}
-					/>
-				{/each}
-			</Chips>
-		</div>
-		<div class="log-wrapper">
-			{#each logs.toReversed() as log, i (i)}
-				<div class="log-line">
-					{#if selectedViewOptions.has('Time')}
-						<div class="date">{format(log.time, 'yyyy-MM-dd HH:mm:ss.SSS')}</div>
-					{/if}
-					{#if selectedViewOptions.has('Instance')}
-						<div class="instance">
-							{renderInstanceName(log.instance)}
-						</div>
-					{/if}
-					<div
-						class="instance-color"
-						style:background-color="var(--a-{colors[
-							team.environment.application.instances.nodes.findIndex(
-								(instance) => instance.name === log.instance
-							) % colors.length
-						]}-500)"
-					></div>
-					{#if selectedViewOptions.has('Level')}
-						<div class="level">{getLogLevel(log.message)}</div>
-					{/if}
+	{/if}
 
-					<div class="message" style:max-width={messageWidth}>
-						{log.m}
-					</div>
-				</div>
+	{#if logs.length > 0}
+		<div class="log-wrapper">
+			{#if logs.length === 0}
+				<BodyShort size="small">Waiting for logs...</BodyShort>
 			{:else}
-				<BodyShort>Waiting for logs...</BodyShort>
-			{/each}
+				{#each logs.toReversed() as log, i (i)}
+					<div class="log-line">
+						{#if selectedViewOptions.has('Time')}
+							<div class="date">{format(log.time, 'yyyy-MM-dd HH:mm:ss.SSS')}</div>
+						{/if}
+						{#if selectedViewOptions.has('Instance')}
+							<div class="instance">
+								{renderInstanceName(log.instance)}
+							</div>
+						{/if}
+						<div
+							class="instance-color"
+							style:background-color="var(--a-{colors[
+								team.environment.application.instances.nodes.findIndex(
+									(instance) => instance.name === log.instance
+								) % colors.length
+							]}-500)"
+						></div>
+						{#if selectedViewOptions.has('Level')}
+							<div class="level">{getLogLevel(log.message)}</div>
+						{/if}
+
+						<div class="message" style:max-width={messageWidth}>
+							{log.m}
+						</div>
+					</div>
+				{/each}
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -373,5 +418,11 @@
 			overflow-wrap: break-word;
 			word-wrap: break-word;
 		}
+	}
+	.divider {
+		background-color: var(--a-blue-200);
+		min-width: 4px;
+		max-width: 4px;
+		border-radius: 0.25rem;
 	}
 </style>
