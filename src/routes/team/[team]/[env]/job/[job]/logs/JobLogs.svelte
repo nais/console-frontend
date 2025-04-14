@@ -334,9 +334,13 @@
 	</div>
 
 	{#if isPaused && logs.length === 0}
-		{#if selectedInstances.length === 0}
+		{#if team.environment.job.runs.nodes.filter((run) => run.instances.nodes.length > 0).length === 0}
 			<div class="paused">
-				<p>No instances selected. Please select at least one instance to view logs.</p>
+				<p>No run instances.</p>
+			</div>
+		{:else if selectedInstances.length === 0}
+			<div class="paused">
+				<p>No run instances selected. Please select at least one instance to view logs.</p>
 			</div>
 		{:else}
 			<div class="paused">
