@@ -19,7 +19,7 @@
 			status: { state: string; message: string };
 			trigger: { type: 'MANUAL' | 'AUTOMATIC'; actor: string | null };
 		};
-		urlBase: string;
+		urlBase?: string;
 	} = $props();
 
 	const formatDuration = (duration: number) => {
@@ -41,7 +41,12 @@
 </script>
 
 <ListItem>
-	<IconLabel size="large" label={run.name} href="{urlBase}{run.name}" level="4">
+	<IconLabel
+		size="large"
+		label={run.name}
+		href={urlBase ? urlBase + run.name : undefined}
+		level="4"
+	>
 		{#snippet description()}
 			{#if run.trigger.type === 'MANUAL'}
 				Manually triggered

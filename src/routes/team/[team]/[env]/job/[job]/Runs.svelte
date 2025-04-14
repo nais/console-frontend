@@ -45,6 +45,11 @@
 								startTime
 								completionTime
 								duration
+								instances {
+									pageInfo {
+										totalCount
+									}
+								}
 								status {
 									message
 									state
@@ -161,11 +166,15 @@
 {:else}
 	<List title="{$data.runs.edges.length} job run{$data.runs.edges.length > 1 ? 's' : ''}">
 		{#each $data.runs.edges as run (run.node.id)}
-			<JobRunListItem
-				run={run.node}
-				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
-					.name}/job/{$data.name}/logs?instance="
-			/>
+			{#if run.node.instances.pageInfo.totalCount > 0}
+				<JobRunListItem
+					run={run.node}
+					urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+						.name}/job/{$data.name}/logs?instance="
+				/>
+			{:else}
+				<JobRunListItem run={run.node} />
+			{/if}
 		{/each}
 	</List>
 {/if}
