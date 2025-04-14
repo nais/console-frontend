@@ -150,10 +150,7 @@
 		if (instance) {
 			// If an instance is provided in the URL, set it as the selected instance
 			team.environment.job.runs.nodes.forEach((run) => {
-				console.log('run', run);
 				run.instances.nodes.forEach((node) => {
-					console.log('instance', node);
-					console.log(node.name, instance);
 					if (node.name.startsWith(instance)) {
 						selectedInstances = [node.name];
 					}
