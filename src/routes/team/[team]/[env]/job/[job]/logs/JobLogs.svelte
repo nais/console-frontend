@@ -50,7 +50,6 @@
 		};
 	} = $props();
 
-	// Define a GraphQL subscription to fetch new logs
 	const newstore = () => {
 		const store = graphql(`
 			subscription NewLogsSubscription2($filter: WorkloadLogSubscriptionFilter!) {
@@ -61,7 +60,6 @@
 				}
 			}
 		`);
-		// Subscribe to the GraphQL subscription to receive new logs in real-time
 		store.subscribe((result) => {
 			if (!result.fetching) {
 				return;
@@ -76,7 +74,6 @@
 					console.log('Log received but not for selected instances:', result.data.workloadLog);
 				}
 				let m: string | undefined;
-				// Attempt to parse the log message as JSON, if it fails, use the original message
 				try {
 					m = JSON.parse(result.data.workloadLog.message).message;
 				} catch (e) {
@@ -96,17 +93,14 @@
 					return;
 				}
 
-				// Update the logs array with the new log
 				logs = [...logs, { ...result.data.workloadLog, m }];
 
 				logs.sort((a, b) => {
-					// Sort logs by time in descending order
 					return new Date(a.time).getTime() - new Date(b.time).getTime();
 				});
 
-				// Keep only the latest MAX_LOG_LINES logs
 				if (logs.length > MAX_LOG_LINES) {
-					logs = logs.slice(-MAX_LOG_LINES); // Discard the oldest logs
+					logs = logs.slice(-MAX_LOG_LINES);
 				}
 			}
 		});
@@ -134,9 +128,7 @@
 		});
 	}
 
-	// Initialize a reactive state variable to store the logs
 	let logs: { time: Date; message: string; instance: string; m?: string }[] = $state([]);
-	// Initialize a reactive state variable to store the selected instances for filtering logs
 	let selectedInstances: string[] = $state([]);
 
 	let isStarted: boolean = $state(false);
@@ -148,7 +140,6 @@
 		let instance = page.url.searchParams.get('instance');
 
 		if (instance) {
-			// If an instance is provided in the URL, set it as the selected instance
 			team.environment.job.runs.nodes.forEach((run) => {
 				run.instances.nodes.forEach((node) => {
 					if (node.name.startsWith(instance)) {
@@ -167,14 +158,12 @@
 				.flat();
 			start();
 		} else {
-			// Otherwise, select all instances by default
 			selectedInstances = team.environment.job.runs.nodes
 				.map((run) => run.instances.nodes.map((node) => node.name))
 				.flat();
 		}
 	});
 
-	// Unsubscribe from the GraphQL subscription when the component is destroyed
 	onDestroy(() => {
 		store.unlisten();
 	});
@@ -189,10 +178,8 @@
 		}
 	}
 
-	// Define an array of colors to use for different instances
 	const colors = ['blue', 'green', 'orange', 'purple', 'limegreen'];
 
-	// Function to extract the log level from the message
 	function getLogLevel(message: string) {
 		const logLevel = message.match(/"level":"(\w+)"/);
 		if (logLevel) {
@@ -234,21 +221,18 @@
 							value={renderInstanceName(instance.name)}
 							selected={selectedInstances.includes(instance.name)}
 							onclick={() => {
-								// Toggle the selected instance and update the logs
 								if (selectedInstances.includes(instance.name)) {
 									selectedInstances = selectedInstances.filter((i) => i !== instance.name);
 								} else {
 									selectedInstances = [...selectedInstances, instance.name];
 								}
 								if (selectedInstances.length === 0) {
-									// If no instances are selected, unsubscribe from the current subscription
 									store.unlisten();
 									isPaused = true;
 								}
 								if (isPaused) {
 									return;
 								}
-								// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
 								store.unlisten().then(start);
 							}}
 						/>
@@ -268,7 +252,6 @@
 								start();
 							} else {
 								isPaused = true;
-								// Pause the subscription
 								store.unlisten();
 							}
 						}}

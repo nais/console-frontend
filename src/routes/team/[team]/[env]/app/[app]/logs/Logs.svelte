@@ -1,18 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 
-	// Import necessary modules from Svelte and other libraries
 	import { graphql } from '$houdini';
-	// Houdini GraphQL client
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
-	// UI components
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
-	// Date formatting library
-	import { onDestroy, onMount } from 'svelte'; // Svelte lifecycle hook
+	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
-	// Define the props for the component, including team information
 	const {
 		team
 	}: {
@@ -47,7 +42,6 @@
 		};
 	} = $props();
 
-	// Define a GraphQL subscription to fetch new logs
 	const newstore = () => {
 		const store = graphql(`
 			subscription NewLogsSubscription($filter: WorkloadLogSubscriptionFilter!) {
@@ -58,7 +52,6 @@
 				}
 			}
 		`);
-		// Subscribe to the GraphQL subscription to receive new logs in real-time
 		store.subscribe((result) => {
 			if (!result.fetching) {
 				return;
@@ -73,7 +66,6 @@
 					console.log('Log received but not for selected instances:', result.data.workloadLog);
 				}
 				let m;
-				// Attempt to parse the log message as JSON, if it fails, use the original message
 				try {
 					m = JSON.parse(result.data.workloadLog.message).message;
 				} catch (e) {
@@ -85,12 +77,10 @@
 					m = result.data.workloadLog.message;
 				}
 
-				// Update the logs array with the new log
 				logs = [...logs, { ...result.data.workloadLog, m }];
 
-				// Keep only the latest MAX_LOG_LINES logs
 				if (logs.length > MAX_LOG_LINES) {
-					logs = logs.slice(-MAX_LOG_LINES); // Discard the oldest logs
+					logs = logs.slice(-MAX_LOG_LINES);
 				}
 			}
 		});
@@ -118,9 +108,7 @@
 		});
 	}
 
-	// Initialize a reactive state variable to store the logs
 	let logs: { time: Date; message: string; instance: string; m?: string }[] = $state([]);
-	// Initialize a reactive state variable to store the selected instances for filtering logs
 	let selectedInstances: string[] = $state([]);
 
 	let isStarted: boolean = $state(false);
@@ -132,16 +120,13 @@
 		let instance = page.url.searchParams.get('instance');
 
 		if (instance) {
-			// If an instance is provided in the URL, set it as the selected instance
 			selectedInstances = [instance];
 			start();
 		} else {
-			// Otherwise, select all instances by default
 			selectedInstances = team.environment.application.instances.nodes.map((node) => node.name);
 		}
 	});
 
-	// Unsubscribe from the GraphQL subscription when the component is destroyed
 	onDestroy(() => {
 		store.unlisten();
 	});
@@ -156,10 +141,8 @@
 		}
 	}
 
-	// Define an array of colors to use for different instances
 	const colors = ['blue', 'green', 'orange', 'purple', 'limegreen'];
 
-	// Function to extract the log level from the message
 	function getLogLevel(message: string) {
 		const logLevel = message.match(/"level":"(\w+)"/);
 		if (logLevel) {
@@ -201,7 +184,6 @@
 						value={renderInstanceName(name)}
 						selected={selectedInstances.includes(name)}
 						onclick={() => {
-							// Toggle the selected instance and update the logs
 							if (selectedInstances.includes(name)) {
 								selectedInstances = selectedInstances.filter((i) => i !== name);
 							} else {
@@ -209,7 +191,6 @@
 							}
 
 							if (selectedInstances.length === 0) {
-								// If no instances are selected, unsubscribe from the current subscription
 								store.unlisten();
 								isPaused = true;
 							}
@@ -218,7 +199,6 @@
 								return;
 							}
 
-							// Unsubscribe from the current subscription and subscribe to a new one with the updated filter
 							store.unlisten().then(start);
 						}}
 					/>
@@ -237,7 +217,6 @@
 								start();
 							} else {
 								isPaused = true;
-								// Pause the subscription
 								store.unlisten();
 							}
 						}}
