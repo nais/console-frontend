@@ -11,7 +11,7 @@
 
 {#if $AppManifest.data}
 	<div class="wrapper">
-		<Manifest workload={$AppManifest.data.team.environment.application} />
+		<Manifest workload={$AppManifest.data.team.environment.workload} />
 	</div>
 {/if}
 

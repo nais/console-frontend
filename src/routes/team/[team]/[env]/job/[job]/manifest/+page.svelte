@@ -11,7 +11,7 @@
 
 {#if $JobManifest.data}
 	<div class="wrapper">
-		<Manifest workload={$JobManifest.data.team.environment.job} />
+		<Manifest workload={$JobManifest.data.team.environment.workload} />
 	</div>
 {/if}
 
