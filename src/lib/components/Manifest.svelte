@@ -26,7 +26,7 @@
 	);
 </script>
 
-{#if manifest}
+{#if $manifest}
 	<div class="copy-button">
 		<CopyButton
 			text="Copy manifest"
