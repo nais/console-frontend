@@ -231,7 +231,7 @@
 			<div class="buttons">
 				{#if isStarted}
 					<Button
-						size="small"
+						size="medium"
 						variant="primary"
 						disabled={selectedInstances.length === 0}
 						onclick={() => {
@@ -246,7 +246,7 @@
 						{isPaused ? 'Restart' : 'Stop'}
 					</Button>
 					<Button
-						size="small"
+						size="medium"
 						variant="primary"
 						onclick={() => {
 							logs = [];
@@ -256,7 +256,7 @@
 					</Button>
 				{:else}
 					<Button
-						size="small"
+						size="medium"
 						variant="primary"
 						onclick={() => {
 							isStarted = true;
