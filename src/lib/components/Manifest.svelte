@@ -26,7 +26,7 @@
 	);
 </script>
 
-{#if manifest}
+{#if $manifest}
 	<div class="copy-button">
 		<CopyButton
 			text="Copy manifest"
@@ -36,10 +36,11 @@
 			size="xsmall"
 		/>
 	</div>
-
-	<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
-		<LineNumbers {highlighted} hideBorder />
-	</Highlight>
+	<div>
+		<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
+			<LineNumbers {highlighted} hideBorder />
+		</Highlight>
+	</div>
 {/if}
 
 <style>

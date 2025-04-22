@@ -10,5 +10,16 @@
 <GraphErrors errors={$AppManifest.errors} />
 
 {#if $AppManifest.data}
-	<Manifest workload={$AppManifest.data.team.environment.application} />
+	<div class="wrapper">
+		<Manifest workload={$AppManifest.data.team.environment.workload} />
+	</div>
 {/if}
+
+<style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		max-width: 1230px;
+		gap: 1rem;
+	}
+</style>

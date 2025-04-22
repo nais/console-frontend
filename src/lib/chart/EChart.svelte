@@ -1,22 +1,16 @@
 <script lang="ts">
 	import { registerTheme } from '$lib/chart/theme';
-	import type {
-		DefaultLabelFormatterCallbackParams,
-		ECElementEvent,
-		EChartsOption,
-		EChartsType
-	} from 'echarts';
-	import { createEventDispatcher, mount } from 'svelte';
+	import type { DefaultLabelFormatterCallbackParams, EChartsOption, EChartsType } from 'echarts';
+	import { mount } from 'svelte';
 	import Legends from './Legends.svelte';
 
 	interface Props {
 		options: EChartsOption;
 		style?: string;
+		onclick?: (name: string) => void;
 	}
 
-	let { options, style = '' }: Props = $props();
-
-	const dispatcher = createEventDispatcher<{ click: ECElementEvent }>();
+	let { options, style = '', onclick }: Props = $props();
 
 	let activeSeries: string | undefined = undefined;
 
@@ -68,7 +62,7 @@
 			});
 			window.addEventListener('resize', resize);
 			ins.on('click', (e) => {
-				dispatcher('click', e);
+				onclick?.(e.name);
 			});
 		});
 

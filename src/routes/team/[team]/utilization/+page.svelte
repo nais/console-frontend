@@ -204,6 +204,11 @@
 			sortState.direction
 		);
 	});
+
+	function handleChartClick(name: string) {
+		const [env, app] = name.split(':');
+		goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
+	}
 </script>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
@@ -277,18 +282,12 @@
 				<EChart
 					options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
 					style="height: 350px; width: 50%;"
-					on:click={(e) => {
-						const [env, app] = e.detail.name.split(':');
-						goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
-					}}
+					onclick={handleChartClick}
 				/>
 				<EChart
 					options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
 					style="height: 350px; width: 50%;"
-					on:click={(e) => {
-						const [env, app] = e.detail.name.split(':');
-						goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
-					}}
+					onclick={handleChartClick}
 				/>
 			{/if}
 		</div>

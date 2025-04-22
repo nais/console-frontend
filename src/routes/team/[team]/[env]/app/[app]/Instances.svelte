@@ -225,7 +225,7 @@
 			<AppInstanceListItem
 				{instance}
 				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
-					.name}/app/{$data.name}/logs?name="
+					.name}/app/{$data.name}/logs?instance="
 				utilization={$data.utilization}
 			/>
 		{/each}

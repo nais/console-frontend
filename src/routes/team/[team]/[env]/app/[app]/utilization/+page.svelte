@@ -4,14 +4,23 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { EChartsOption } from 'echarts';
 
+	import { docURL } from '$lib/doc';
+	import { formatKubernetesCPU, formatKubernetesMemory } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
 		Heading,
 		Loader,
+		ReadMore,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tr
 	} from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
@@ -151,48 +160,142 @@
 
 	const limitColor = '#DE2E2E';
 	const requestColor = '#838C9A';
+
+	function isIn10PercentRange(n: number, target: number): boolean {
+		const lowerBound = target * 0.9; // 10% less than the target
+		const upperBound = target * 1.1; // 10% more than the target
+		return n >= lowerBound && n <= upperBound;
+	}
+
+	const cpuReqRecommendation = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
+			.cpuRequestCores ?? 0
+	);
+
+	const cpuReq = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.requests.cpu ?? 0
+	);
+
+	const cpuLimit = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.limits.cpu
+	);
+
+	const memReqRecommendation = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
+			.memoryRequestBytes ?? 0
+	);
+
+	const memReq = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.requests.memory ?? 0
+	);
+	const memLimit = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.resources.limits.memory ?? 0
+	);
+	const memLimitRecommendation = $derived(
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
+			.memoryLimitBytes ?? 0
+	);
 </script>
 
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
 <div class="wrapper">
-	<Heading size="medium" level="2">Analyzing Your Resource Usage</Heading>
-	<BodyLong>
-		These graphs show your application's CPU and memory usage.
-		<ul>
-			<li>
-				<strong>Requests</strong> (grey line): The minimum CPU or memory guaranteed to your app.
-			</li>
-			<li>
-				<strong>Limits</strong> (red line, if present): The maximum CPU or memory your app can use.
-			</li>
-			<li>
-				Shaded Areas: The actual resource consumption over time for each running instance of your
-				app.
-			</li>
-		</ul>
-		Your app can use more than its requested amount if resources are available.
-		<ul>
-			<li>
-				CPU: Exceeding requests might cause <strong>throttling</strong>, potentially reducing
-				performance.
-			</li>
-			<li>
-				Memory: Exceeding the limit will cause that specific app instance to be terminated
-				(OOMKilled).
-			</li>
-		</ul>
-		<div><strong>Optimize your resource settings:</strong></div>
-		<div>✅ If usage is consistently below requests, consider lowering requests to save money.</div>
-		<div>
-			✅ If CPU is frequently throttled, increasing the CPU limit may improve performance.
-			Alternatively, omitting a CPU limit allows unlimited usage, but may cause resource contention.
-		</div>
-	</BodyLong>
-	<div class="section">
-		{#if $ResourceUtilizationForApp.data}
-			{@const utilization =
-				$ResourceUtilizationForApp.data.team.environment.application.utilization}
+	{#if $ResourceUtilizationForApp.data}
+		{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
+		{#if !isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation)}
+			<Heading level="2" size="medium" spacing>Resource Settings and Recommendations</Heading>
+			<BodyLong>
+				<div>
+					⚠️ Your app's resource settings are outside the recommended range. Consider adjusting them
+					to optimize performance and cost.
+				</div>
+				<div>
+					Read more about setting resources in the
+					<a
+						href={docURL(
+							'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
+						)}>Nais documentation.</a
+					>
+				</div>
+			</BodyLong>
+
+			<Table size="small">
+				<Thead>
+					<Tr>
+						<Th>Resource Type</Th>
+						<Th>Current Value</Th>
+						<Th>Recommended Value</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#if !isIn10PercentRange(cpuReq, cpuReqRecommendation)}
+						<Tr>
+							<Td>CPU Request</Td>
+							<Td>{cpuReq ? formatKubernetesCPU(cpuReq) : 'Using default (200m)'}</Td>
+							<Td>{formatKubernetesCPU(cpuReqRecommendation)}</Td>
+						</Tr>
+					{/if}
+					{#if cpuLimit}
+						<Tr>
+							<Td>CPU Limit</Td>
+							<Td>{formatKubernetesCPU(cpuLimit)}</Td>
+							<Td>CPU Limit is generally not recommended</Td>
+						</Tr>
+					{/if}
+					{#if !isIn10PercentRange(memReq, memReqRecommendation)}
+						<Tr>
+							<Td>Memory Request</Td>
+							<Td>{memReq ? formatKubernetesMemory(memReq) : 'Using default (256Mi)'}</Td>
+							<Td>{formatKubernetesMemory(memReqRecommendation)}</Td>
+						</Tr>
+					{/if}
+					{#if !isIn10PercentRange(memLimit, memLimitRecommendation)}
+						<Tr>
+							<Td>Memory Limits</Td>
+							<Td>{memLimit ? formatKubernetesMemory(memLimit) : 'Using default (512Mi)'}</Td>
+							<Td>{formatKubernetesMemory(memLimitRecommendation)}</Td>
+						</Tr>
+					{/if}
+				</Tbody>
+			</Table>
+			<ReadMore header="About Resource Recommendations">
+				<div>
+					<p>
+						These recommendations are based on actual usage data from the past week, during working
+						hours (weekdays, 06:00-18:00). They are intended to help right-size workloads to improve
+						resource efficiency and reduce costs.
+					</p>
+					How recommendations are calculated:
+					<dl>
+						<dt><strong>CPU Request:</strong></dt>
+						<dd>
+							The highest average CPU usage during the timeframe. This helps ensure your app has
+							enough CPU during peak usage, without over-allocating.
+						</dd>
+						<dt><strong>CPU Limit:</strong></dt>
+						<dd>
+							We do not recommend CPU limits, as the workload can utilize the shared resources.
+						</dd>
+						<dt><strong>Memory Request:</strong></dt>
+						<dd>
+							The 80th percentile of memory usage during the timeframe, then taking the maximum
+							observed value. This aims to strike a balance between stability and efficient memory
+							usage.
+						</dd>
+						<dt><strong>Memory Limit:</strong></dt>
+						<dd>
+							The 95th percentile of memory usage during the timeframe, using the maximum value seen
+							across the week. This is meant to cap usage at a safe level without risking
+							unnecessary OOM kills.
+						</dd>
+					</dl>
+					Use these values as guidance when adjusting your resource settings. Properly tuned resource
+					requests and limits help avoid both over-provisioning, wasting money and resources, and instability.
+				</div>
+			</ReadMore>
+		{/if}
+
+		<div class="section">
 			<div class="heading-with-toggle">
 				<Heading level="2" size="medium" spacing>Memory Usage</Heading>
 				<ToggleGroup
@@ -204,6 +307,7 @@
 					{/each}
 				</ToggleGroup>
 			</div>
+
 			<div class="chart-wrapper">
 				<EChart
 					options={options(
@@ -238,16 +342,45 @@
 					)}
 				/>
 			</div>
-		{:else}
-			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
-				<Loader size="3xlarge" />
-			</div>
-		{/if}
-	</div>
-	<div class="section">
-		{#if $ResourceUtilizationForApp.data}
-			{@const utilization =
-				$ResourceUtilizationForApp.data.team.environment.application.utilization}
+			<ReadMore header="Analyzing Your Memory Usage">
+				<BodyLong>
+					This graph show your workloads's memory usage over time. <ul>
+						<li>
+							<strong>Requests</strong> (grey line): The minimum amount of memory guaranteed to your
+							app.
+						</li>
+						<li>
+							<strong>Limits</strong> (red line, if present): The maximum amount of memory your app can
+							use.
+						</li>
+						<li>Shaded Areas: The actual memory usage of each running instance over time.</li>
+					</ul>
+					Your app can use more than its requested memory if available, but exceeding the memory
+					<strong>limit</strong>
+					will cause the instance to be terminated (<code>OOMKilled</code>).
+
+					<div><strong>Optimize your memory settings:</strong></div>
+					<div>
+						✅ If memory usage is consistently below the request, consider lowering the request to
+						reduce overall cost and resource waste.
+					</div>
+					<div>
+						✅ Memory limits are useful for containing runaway memory usage, but setting them too
+						low may cause instability.
+					</div>
+					<div>
+						Read more about memory best practices in the <a
+							href={docURL(
+								'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
+							)}
+						>
+							Nais documentation.
+						</a>
+					</div>
+				</BodyLong>
+			</ReadMore>
+		</div>
+		<div class="section">
 			<div class="heading-with-toggle">
 				<Heading level="2" size="medium" spacing>CPU Usage</Heading>
 				<ToggleGroup
@@ -272,12 +405,53 @@
 					)}
 				/>
 			</div>
-		{:else}
-			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
-				<Loader size="3xlarge" />
-			</div>
-		{/if}
-	</div>
+			<ReadMore header="Analyzing Your CPU Usage">
+				<BodyLong>
+					This graph show your workload's CPU usage over time. <ul>
+						<li>
+							<strong>Requests</strong> (grey line): The minimum amount of CPU guaranteed to your app.
+						</li>
+						<li>
+							<strong>Limits</strong> (red line, if present): The maximum amount of CPU your app can
+							use.
+						</li>
+						<li>Shaded Areas: The actual CPU usage of each running instance over time.</li>
+					</ul>
+					Your app can use more than its requested CPU if available, but exceeding the request might
+					lead to
+					<strong>CPU throttling</strong>, which can impact performance. However, this is usually
+					not a problem for most applications, as Kubernetes is designed to handle resource
+					contention gracefully. In many cases, workloads can burst beyond their requests when
+					resources are available, ensuring smooth operation during short spikes in demand.
+				</BodyLong>
+				<Heading level="3" size="small" spacing>Optimize your CPU settings</Heading>
+				<BodyLong>
+					<div>
+						✅ If CPU usage is consistently below the request, consider lowering the request to
+						reduce costs and resource waste.
+					</div>
+					<div>
+						✅ CPU throttling usually happens when a <strong>CPU limit</strong> is set. Not setting a
+						limit allows the container to burst above its request, improving responsiveness during brief
+						spikes.
+					</div>
+					<div>
+						Read more about CPU best practices in the <a
+							href={docURL(
+								'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
+							)}
+						>
+							Nais documentation.
+						</a>
+					</div>
+				</BodyLong>
+			</ReadMore>
+		</div>
+	{:else}
+		<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
+			<Loader size="3xlarge" />
+		</div>
+	{/if}
 </div>
 
 <style>
