@@ -2,7 +2,7 @@
 	import { BodyShort, Detail, Heading, Tag } from '@nais/ds-svelte-community';
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
-	import type { Component } from 'svelte';
+	import type { Component, Snippet } from 'svelte';
 	import Icon from './Icon.svelte';
 
 	const {
@@ -14,10 +14,10 @@
 		onclick,
 		...rest
 	}: {
-		label: Component | string;
+		label: Snippet | Component | string;
 		href?: string;
-		icon: Component | string;
-		description?: Component | string;
+		icon: Snippet | Component | string;
+		description?: Snippet | Component | string;
 		tag?: {
 			label: string;
 			variant: TagProps['variant'];
@@ -32,6 +32,8 @@
 				level: HeadingProps['level'];
 		  }
 	) = $props();
+
+	const isSnippet = (value: Component | Snippet): value is Snippet => value.length === 1;
 </script>
 
 {#snippet linkOrText()}
@@ -42,9 +44,11 @@
 	{/if}
 {/snippet}
 
-{#snippet componentOrString(Value: Component | string)}
+{#snippet componentOrString(Value: Snippet | Component | string)}
 	{#if typeof Value === 'string'}
 		{Value}
+	{:else if isSnippet(Value)}
+		{@render Value()}
 	{:else}
 		<Value />
 	{/if}
@@ -59,6 +63,8 @@
 >
 	{#if typeof icon === 'string'}
 		<Icon {icon} />
+	{:else if isSnippet(icon)}
+		{@render icon()}
 	{:else}
 		{@const Icon = icon}
 		<Icon />
