@@ -3,18 +3,17 @@ import { browser } from '$app/environment';
 type Themes = 'dark' | 'light';
 
 class ThemeSwitch {
-	theme: Themes = $state('dark');
-
-	constructor() {
-		if (browser) {
-			this.theme = (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
-		}
-	}
+	theme: Themes = $state('light');
 
 	setTheme(theme: 'dark' | 'light') {
 		this.theme = theme;
 		if (browser) {
-			localStorage.setItem('theme', theme);
+			const formData = new FormData();
+			formData.append('theme', themeSwitch.theme);
+			fetch('/api/theme', {
+				method: 'POST',
+				body: formData
+			});
 		}
 	}
 }

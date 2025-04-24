@@ -18,6 +18,8 @@
 	let { data, children }: LayoutProps = $props();
 	let { UserInfo } = $derived(data);
 
+	themeSwitch.theme = data.theme;
+
 	let user = $derived(
 		UserInfo.data?.me as
 			| {

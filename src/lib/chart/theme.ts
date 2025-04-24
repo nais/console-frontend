@@ -1,5 +1,6 @@
 import type { ThemeOption } from 'echarts/types/src/util/types.js';
 
+import { visualizationColors } from '$lib/visualizationColors';
 import {
 	BorderNeutral,
 	BorderNeutralSubtle,
@@ -7,7 +8,6 @@ import {
 	TextNeutralContrast,
 	TextNeutralSubtle
 } from '@navikt/ds-tokens/darkside-js';
-import { visualizationColors } from '$lib/visualizationColors';
 
 type rootEcharts = typeof import('echarts');
 
@@ -31,12 +31,9 @@ const rootTheme: ThemeOption = {
 		itemStyle: {
 			borderWidth: '4'
 		},
-		lineStyle: {
-			width: '3'
-		},
 		symbolSize: '0',
 		symbol: 'circle',
-		smooth: true
+		smooth: false
 	},
 	bar: {
 		itemStyle: {
