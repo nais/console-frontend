@@ -1,1 +1,1 @@
-export type FeedbackType = 'BUG' | 'CHANGE_REQUEST' | 'OTHER' | 'QUESTION';
+export type FeedbackType = 'BUG' | 'CHANGE_REQUEST' | 'OTHER' | 'QUESTION' | undefined;

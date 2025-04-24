@@ -15,7 +15,7 @@
 		InternalHeaderTitle,
 		InternalHeaderUserButton
 	} from '@nais/ds-svelte-community/experimental';
-	import { CogIcon, LeaveIcon } from '@nais/ds-svelte-community/icons';
+	import { ChatElipsisIcon, CogIcon, LeaveIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
 	interface Props {
@@ -47,14 +47,21 @@
 		Utilization
 	</InternalHeaderButton>
 	<InternalHeaderButton as="a" href={docURL()}>Docs</InternalHeaderButton>
-	<Button variant="primary-neutral" size="small" onclick={() => (feedbackOpen = true)}>
-		<span style="font-weight: 400">Feedback</span>
-	</Button>
+
+	<div class="aksel-stack__spacer aksel-stack__spacer"></div>
+	<div class="feedback-button-wrapper">
+		<Button
+			variant="primary-neutral"
+			icon={ChatElipsisIcon}
+			size="small"
+			onclick={() => (feedbackOpen = true)}
+		>
+			<span style="font-weight: 400">Feedback</span>
+		</Button>
+	</div>
 	{#if feedbackOpen}
 		<Feedback bind:open={feedbackOpen} />
 	{/if}
-	<div class="aksel-stack__spacer aksel-stack__spacer"></div>
-
 	<SearchButton />
 	<ActionMenu>
 		{#snippet trigger(props)}
@@ -98,5 +105,10 @@
 		gap: 1rem;
 		font-size: 1.5rem;
 		font-weight: 700;
+	}
+	.feedback-button-wrapper {
+		display: flex;
+		place-items: center;
+		padding: 0 1rem;
 	}
 </style>
