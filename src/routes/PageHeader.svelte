@@ -54,7 +54,6 @@
 	<div class="aksel-stack__spacer aksel-stack__spacer"></div>
 
 	<SearchButton />
-	<!-- <Theme theme={themeSwitch.theme}> -->
 	<ActionMenu>
 		{#snippet trigger(props)}
 			<InternalHeaderUserButton name={user ? user.name : 'unauthorized'} {...props} />
@@ -87,7 +86,6 @@
 			</a>
 		</ActionMenuItem>
 	</ActionMenu>
-	<!-- </Theme> -->
 </InternalHeader>
 
 <style>
