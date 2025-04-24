@@ -237,7 +237,7 @@
 				color 50ms;
 
 			&:hover {
-				background-color: var(--ax-bg-brand-blue-moderate-hover, --a-surface-action-subtle-hover);
+				background-color: var(--ax-bg-brand-blue-moderate-hover);
 				text-decoration: none;
 
 				.label {
@@ -246,13 +246,13 @@
 			}
 			&:active,
 			&:focus-visible {
-				background-color: var(--ax-bg-accent-strong, --a-surface-action);
+				background-color: var(--ax-bg-accent-strong);
 				color: var(--ax-text-neutral, --a-text-on-action);
 				box-shadow: none;
 			}
 
 			&:active {
-				background-color: var(--ax-bg-accent-strong-hover, --a-surface-action-active);
+				background-color: var(--ax-bg-accent-strong-hover);
 			}
 		}
 
@@ -265,7 +265,7 @@
 			padding: var(--ax-space-4, --a-spacing-1);
 
 			&.selected {
-				background-color: var(--ax-bg-accent-strong-pressed, --a-surface-selected);
+				background-color: var(--ax-bg-accent-moderate-pressed);
 			}
 		}
 	}
