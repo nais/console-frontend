@@ -3,7 +3,7 @@
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { yaml } from 'svelte-highlight/languages';
-	import 'svelte-highlight/styles/github.css';
+	import '../../styles/aksel-highlight.css';
 
 	interface Props {
 		workload: Manifest;
@@ -38,7 +38,7 @@
 	</div>
 	<div>
 		<Highlight language={yaml} code={$manifest.manifest.content} let:highlighted>
-			<LineNumbers {highlighted} hideBorder />
+			<LineNumbers {highlighted} hideBorder wrapLines />
 		</Highlight>
 	</div>
 {/if}
