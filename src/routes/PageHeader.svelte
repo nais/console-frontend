@@ -54,14 +54,18 @@
 	<div class="aksel-stack__spacer aksel-stack__spacer"></div>
 
 	<SearchButton />
+	<!-- <Theme theme={themeSwitch.theme}> -->
 	<ActionMenu>
 		{#snippet trigger(props)}
 			<InternalHeaderUserButton name={user ? user.name : 'unauthorized'} {...props} />
 		{/snippet}
+
 		{#if user?.isAdmin}
-			<a href="/admin" class="unstyled action-menu-link">
-				<ActionMenuItem><CogIcon />Admin</ActionMenuItem>
-			</a>
+			<ActionMenuItem
+				><a href="/admin" class="action-menu-link" style="text-decoration: none;"
+					><CogIcon />Admin</a
+				></ActionMenuItem
+			>
 			<ActionMenuDivider />
 		{/if}
 		<!-- <ActionMenuCheckboxItem
@@ -76,13 +80,14 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem> -->
-		<a href="/oauth2/logout" class="unstyled action-menu-link">
-			<ActionMenuItem>
+		<ActionMenuItem>
+			<a href="/oauth2/logout" class="action-menu-link" style="text-decoration: none;">
 				<LeaveIcon />
 				Logout
-			</ActionMenuItem>
-		</a>
+			</a>
+		</ActionMenuItem>
 	</ActionMenu>
+	<!-- </Theme> -->
 </InternalHeader>
 
 <style>
