@@ -3,9 +3,11 @@
 	import SearchButton from '$lib/components/search/SearchButton.svelte';
 	import { docURL } from '$lib/doc';
 	import Feedback from '$lib/feedback/Feedback.svelte';
+	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
+		ActionMenuCheckboxItem,
 		ActionMenuDivider,
 		ActionMenuItem,
 		InternalHeader,
@@ -67,7 +69,7 @@
 			>
 			<ActionMenuDivider />
 		{/if}
-		<!-- <ActionMenuCheckboxItem
+		<ActionMenuCheckboxItem
 			checked={themeSwitch.theme == 'dark'}
 			onchange={(checked) => {
 				if (!checked) {
@@ -78,7 +80,7 @@
 			}}
 		>
 			Dark theme
-		</ActionMenuCheckboxItem> -->
+		</ActionMenuCheckboxItem>
 		<ActionMenuItem>
 			<a href="/oauth2/logout" class="action-menu-link" style="text-decoration: none;">
 				<LeaveIcon />
