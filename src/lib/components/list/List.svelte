@@ -24,7 +24,7 @@
 		gap: 2px;
 
 		.header {
-			background-color: var(--ax-meta-purple-100, #f7f8f9);
+			background-color: var(--ax-neutral-100);
 			display: flex;
 			justify-content: space-between;
 			align-items: center;

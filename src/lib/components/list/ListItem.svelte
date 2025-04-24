@@ -10,7 +10,7 @@
 
 <style>
 	.list-item {
-		background-color: var(--ax-accent-100, #f7f8f9);
+		background-color: var(--ax-neutral-100);
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
@@ -19,7 +19,7 @@
 		padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-24, --a-spacing-6);
 
 		&:hover {
-			background-color: var(--ax-accent-300, --a-surface-subtle);
+			background-color: var(--ax-neutral-300);
 		}
 	}
 </style>
