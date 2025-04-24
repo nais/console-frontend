@@ -29,34 +29,34 @@ const rootTheme: ThemeOption = {
 	},
 	line: {
 		itemStyle: {
-			borderWidth: '4'
+			borderWidth: 4
 		},
-		symbolSize: '0',
+		symbolSize: 0,
 		symbol: 'circle',
 		smooth: false
 	},
 	bar: {
 		itemStyle: {
-			barBorderWidth: '0',
+			barBorderWidth: 0,
 			barBorderColor: BorderNeutralSubtle
 		}
 	},
 	pie: {
 		itemStyle: {
-			borderWidth: '0',
+			borderWidth: 0,
 			borderColor: BorderNeutralSubtle
 		}
 	},
 	graph: {
 		itemStyle: {
-			borderWidth: '0',
+			borderWidth: 0,
 			borderColor: BorderNeutralSubtle
 		},
 		lineStyle: {
-			width: '1',
+			width: 1,
 			color: Neutral1000
 		},
-		symbolSize: '0',
+		symbolSize: 0,
 		symbol: 'circle',
 		smooth: true,
 		color: ['#3386e0', '#005b82', '#c77300', '#368da8', '#33aa5f', '#8269a2'],
