@@ -164,17 +164,17 @@
 	export function severityToColorWithHover(severity: string): string {
 		switch (severity) {
 			case 'critical':
-				return 'var(--a-red-200)';
+				return 'var(--ax-danger-600, --a-red-200)';
 			case 'high':
-				return 'var(--a-orange-200)';
+				return 'var(--ax-warning-200, --a-orange-200)';
 			case 'medium':
-				return 'var(--a-orange-200)';
+				return 'var(--ax-warning-200, --a-orange-200)';
 			case 'low':
-				return 'var(--a-green-200)';
+				return 'var(--ax-success-400, --a-green-200)';
 			case 'unassigned':
-				return 'var(--a-gray-200)';
+				return 'var(--ax-neutral-200, --a-gray-200)';
 			default:
-				return 'var(--a-gray-200)';
+				return 'var(--ax-neutral-200, --a-gray-200)';
 		}
 	}
 </script>
@@ -260,7 +260,9 @@
 														: '-'}
 												</a>
 											{:else}
-												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+												<CheckmarkIcon
+													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+												/>
 											{/if}
 										{:else}
 											-
@@ -279,7 +281,9 @@
 													{workload.image.vulnerabilitySummary.high}
 												</a>
 											{:else}
-												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+												<CheckmarkIcon
+													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+												/>
 											{/if}
 										{:else}
 											-
@@ -303,7 +307,9 @@
 														: '-'}
 												</a>
 											{:else}
-												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+												<CheckmarkIcon
+													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+												/>
 											{/if}
 										{:else}
 											-
@@ -324,7 +330,9 @@
 														: '-'}
 												</a>
 											{:else}
-												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+												<CheckmarkIcon
+													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+												/>
 											{/if}
 										{:else}
 											-
@@ -346,7 +354,9 @@
 													{workload.image.vulnerabilitySummary.unassigned}
 												</a>
 											{:else}
-												<CheckmarkIcon style="color: var(--a-icon-success); font-size: 1.75rem;" />
+												<CheckmarkIcon
+													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+												/>
 											{/if}
 										{:else}
 											-
@@ -417,39 +427,47 @@
 			text-decoration: none;
 
 			&.CRITICAL {
-				background-color: var(--a-red-200);
+				background-color: var(--ax-danger-600, --a-red-200);
 				&:hover {
-					background-color: var(--a-red-300);
+					background-color: var(--ax-danger-300, --a-red-300);
 				}
 			}
 			&.HIGH {
-				background-color: color-mix(in oklab, var(--a-red-200), var(--a-orange-200));
+				background-color: color-mix(
+					in oklab,
+					var(--ax-danger-600, --a-red-200),
+					var(--ax-warning-200, --a-orange-200)
+				);
 				&:hover {
-					background-color: color-mix(in oklab, var(--a-red-300), var(--a-orange-300));
+					background-color: color-mix(
+						in oklab,
+						var(--ax-danger-300, --a-red-300),
+						var(--ax-warning-300, --a-orange-300)
+					);
 				}
 			}
 			&.MEDIUM {
-				background-color: var(--a-orange-200);
+				background-color: var(--ax-warning-200, --a-orange-200);
 				&:hover {
-					background-color: var(--a-orange-300);
+					background-color: var(--ax-warning-300, --a-orange-300);
 				}
 			}
 			&.LOW {
-				background-color: var(--a-green-200);
+				background-color: var(--ax-success-400, --a-green-200);
 				&:hover {
-					background-color: var(--a-green-300);
+					background-color: var(--ax-success-300, --a-green-300);
 				}
 			}
 			&.UNASSIGNED {
-				background-color: var(--a-gray-200);
+				background-color: var(--ax-neutral-200, --a-gray-200);
 				&:hover {
-					background-color: var(--a-gray-300);
+					background-color: var(--ax-neutral-300, --a-gray-300);
 				}
 			}
 
 			&.RISK_SCORE {
 				&:hover {
-					background-color: var(--a-gray-300);
+					background-color: var(--ax-neutral-300, --a-gray-300);
 				}
 			}
 		}

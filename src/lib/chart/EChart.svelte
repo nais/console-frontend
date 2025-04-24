@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { registerTheme } from '$lib/chart/theme';
 	import type { DefaultLabelFormatterCallbackParams, EChartsOption, EChartsType } from 'echarts';
 	import { mount } from 'svelte';
 	import Legends from './Legends.svelte';
 
 	interface Props {
 		options: EChartsOption;
-		theme?: string;
 		style?: string;
 		onclick?: (name: string) => void;
 	}
 
-	let { options, theme = 'london', style = '', onclick }: Props = $props();
+	let { options, style = '', onclick }: Props = $props();
 
 	let activeSeries: string | undefined = undefined;
 
@@ -51,7 +51,8 @@
 		};
 
 		import('echarts').then((echarts) => {
-			ins = echarts.init(el, theme, { renderer: 'svg' });
+			registerTheme(echarts);
+			ins = echarts.init(el, 'aksel', { renderer: 'svg' });
 			ins.setOption(options);
 			ins.on('mouseover', (e) => {
 				activeSeries = e.seriesId;

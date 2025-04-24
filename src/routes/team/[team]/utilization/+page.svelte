@@ -218,9 +218,9 @@
 			<Card columns={4} borderColor="#83bff6">
 				<SummaryCard
 					color="blue"
-					title="Unused CPU cost"
-					helpTextTitle="Annual cost of unused CPU"
-					helpText="Estimate of annual cost of unused CPU for team {teamSlug} calculated from current utilization
+					title="Unutilized CPU cost"
+					helpTextTitle="Annual cost of unutilized CPU"
+					helpText="Estimate of annual cost of unutilized CPU for team {teamSlug} calculated from current utilization
 							data."
 				>
 					{#snippet icon({ color })}
@@ -245,9 +245,9 @@
 			<Card columns={4} borderColor="#91dc75">
 				<SummaryCard
 					color="green"
-					title="Unused memory cost"
-					helpTextTitle="Annual cost of unused memory"
-					helpText="Estimate of annual cost of unused memory for team {teamSlug} calculated from current utilization
+					title="Unutilized memory cost"
+					helpTextTitle="Annual cost of unutilized memory"
+					helpText="Estimate of annual cost of unutilized memory for team {teamSlug} calculated from current utilization
 							data."
 				>
 					{#snippet icon({ color })}
@@ -274,7 +274,7 @@
 			</Card>
 		</div>
 		<div style="display: flex; justify-content: space-between;">
-			<Heading level="2">Top 10 Unused Resources per Application</Heading>
+			<Heading level="2">Top 10 Unutilized Resources per Application</Heading>
 		</div>
 
 		<div style="display: flex">
@@ -292,7 +292,7 @@
 			{/if}
 		</div>
 		<div>
-			<Heading level="3" spacing>Unused Resources for All Applications</Heading>
+			<Heading level="3" spacing>Unutilized Resources for All Applications</Heading>
 			<Table
 				size="small"
 				sort={sortState}
@@ -304,8 +304,8 @@
 					<Tr>
 						<Th sortable={true} sortKey="APPLICATION">Application</Th>
 						<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
-						<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-						<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+						<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
+						<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
 						<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
 					</Tr>
 				</Thead>

@@ -48,19 +48,20 @@
 	.menu {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-5);
+		gap: var(--ax-space-20, --a-spacing-5);
 
 		.list {
 			display: flex;
 			flex-direction: column;
-			gap: var(--a-spacing-1);
+			gap: var(--ax-space-4, --a-spacing-1);
 		}
 
 		a {
 			display: grid;
 			grid-template-columns: 1fr auto;
 			border-radius: 4px;
-			padding: var(--a-spacing-1) var(--a-spacing-3) var(--a-spacing-1) var(--a-spacing-2);
+			padding: var(--ax-space-4, --a-spacing-1) var(--ax-space-12, --a-spacing-3)
+				var(--ax-space-4, --a-spacing-1) var(--ax-space-8, --a-spacing-2);
 			text-decoration: none;
 			color: inherit;
 			transition: background-color 50ms;
@@ -84,7 +85,7 @@
 
 			.label {
 				:global(.badge) {
-					color: var(--a-red-300);
+					color: var(--ax-danger-500, --a-red-300);
 					font-size: 0.5rem;
 					position: relative;
 					top: -8px;
@@ -92,7 +93,7 @@
 				}
 			}
 			&:not(.active) .icon {
-				color: var(--a-text-subtle);
+				color: var(--ax-text-subtle, --a-text-subtle);
 			}
 
 			.icon {

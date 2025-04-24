@@ -75,6 +75,10 @@
 	.withBackground {
 		background-color: color-mix(in srgb, var(--bg-color) 10%, white);
 	}
+	:global(.dark) .withBackground {
+		background-color: color-mix(in srgb, var(--bg-color) 10%, var(--ax-bg-default));
+	}
+
 	.summary {
 		width: 100%;
 	}

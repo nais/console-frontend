@@ -91,7 +91,7 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 		align-items: start;
 	}
 </style>

@@ -58,7 +58,7 @@
 	.graph {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-4);
+		gap: var(--ax-space-16, --a-spacing-4);
 	}
 
 	.heading {

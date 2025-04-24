@@ -93,24 +93,24 @@
 <style>
 	.desc {
 		display: flex;
-		gap: var(--a-spacing-1);
+		gap: var(--ax-space-4, --a-spacing-1);
 		align-items: center;
 	}
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-05);
+		gap: var(--ax-space-2, --a-spacing-05);
 	}
 	.label-tag-wrapper {
 		display: flex;
 		align-items: center;
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8, --a-spacing-2);
 	}
 
 	.icon-label {
 		display: flex;
 		align-items: center;
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8, --a-spacing-2);
 		font-size: 1.25rem;
 
 		> * {
@@ -127,24 +127,24 @@
 
 			&:active,
 			&:focus-visible {
-				color: var(--ac-link-focus-text, var(--a-text-on-action));
+				color: var(--ac-link-focus-text, var(--ax-text-neutral, --a-text-on-action));
 			}
 		}
 	}
 	.icon-label--small {
-		gap: var(--a-spacing-1);
-		font-size: var(--a-font-size-small);
+		gap: var(--ax-space-4, --a-spacing-1);
+		font-size: var(--ax-font-size-small, --a-font-size-small);
 	}
 	.icon-label--medium {
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8, --a-spacing-2);
 	}
 	.icon-label--large {
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8, --a-spacing-2);
 	}
 	.icon-label--with-desc {
 		font-size: 1.5rem;
 	}
 	.icon-label--large.icon-label--with-desc {
-		gap: var(--a-spacing-3);
+		gap: var(--ax-space-12, --a-spacing-3);
 	}
 </style>

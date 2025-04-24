@@ -53,7 +53,12 @@
 				}[job.status.state] ?? ''}
 			>
 				<CircleFillIcon
-					style="color: var(--a-icon-{{
+					style="color: var(--ax-text-{{
+						NAIS: 'success',
+						FAILING: 'danger',
+						NOT_NAIS: 'warning',
+						UNKNOWN: 'info'
+					}[job.status.state] ?? 'info'}-icon, --a-icon-{{
 						NAIS: 'success',
 						FAILING: 'danger',
 						NOT_NAIS: 'warning',
@@ -129,6 +134,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		gap: var(--a-spacing-05);
+		gap: var(--ax-space-2, --a-spacing-05);
 	}
 </style>

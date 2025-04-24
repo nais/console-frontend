@@ -95,7 +95,9 @@
 										{edge.node.user.name}
 									</BodyShort>
 									<BodyShort size="small">
-										<span style="color: var(--a-text-subtle);">{edge.node.user.email}</span>
+										<span style="color: var(--ax-text-subtle, --a-text-subtle);"
+											>{edge.node.user.email}</span
+										>
 									</BodyShort>
 								</div>
 
@@ -128,7 +130,9 @@
 												}}
 											>
 												{#snippet icon()}
-													<TrashIcon style="color:var(--a-icon-danger)!important" />
+													<TrashIcon
+														style="color:var(--ax-text-danger-icon, --a-icon-danger)!important"
+													/>
 												{/snippet}
 											</Button>
 										</div>
@@ -198,11 +202,11 @@
 	.button {
 		display: flex;
 		justify-content: flex-end;
-		margin-bottom: var(--a-spacing-6);
+		margin-bottom: var(--ax-space-24, --a-spacing-6);
 	}
 	.content-wrapper {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 		grid-template-columns: 1fr 300px;
 	}
 
@@ -218,7 +222,7 @@
 		width: 200px;
 	}
 	.role {
-		color: var(--a-text-subtle);
+		color: var(--ax-text-subtle, --a-text-subtle);
 		text-transform: lowercase;
 	}
 	.role::first-letter {

@@ -484,15 +484,15 @@
 		gap: var(--spacing-layout);
 	}
 	.card {
-		background-color: var(--a-surface-subtle);
-		padding: var(--a-spacing-4) var(--a-spacing-5);
+		background-color: var(--ax-bg-sunken, --a-surface-subtle);
+		padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-20, --a-spacing-5);
 		border-radius: 12px;
 		align-self: start;
 	}
 	.danger-zone {
-		padding: var(--a-spacing-4);
+		padding: var(--ax-space-16, --a-spacing-4);
 		border-radius: 8px;
-		border: 1px solid var(--a-border-danger);
+		border: 1px solid var(--ax-border-danger, --a-border-danger);
 	}
 
 	dl {
@@ -540,7 +540,7 @@
 	}
 	.last-sync {
 		width: 100%;
-		color: var(--a-text-subtle);
+		color: var(--ax-text-subtle, --a-text-subtle);
 		font-size: 0.9rem;
 		text-align: right;
 	}

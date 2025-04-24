@@ -26,7 +26,7 @@
 		<Onboarding {tenantName} />
 	</div>
 {:else}
-	<div class="hero">
+	<div class="hero dark">
 		<div class="logo-wrapper">
 			<Logo height="min(15vw, 262.5px)" />
 		</div>
@@ -83,10 +83,10 @@
 		padding-top: 4rem;
 	}
 	.content-wrapper {
-		background: var(--a-surface-default);
+		background: var(--ax-bg-default, --a-surface-default);
 		position: relative;
 		top: -40px;
-		padding: var(--a-spacing-6);
+		padding: var(--ax-space-24, --a-spacing-6);
 		border-radius: 12px;
 		max-width: 900px;
 		margin-inline: auto;
@@ -103,9 +103,10 @@
 		font-size: max(min(2.4vw, 42px), 30px);
 		font-weight: 600;
 		letter-spacing: -0.4px;
+		color: var(--ax-text-neutral-contrast,);
 	}
 	.logo-wrapper {
-		background-color: var(--a-surface-inverted);
+		background-color: var(--ax-bg-default, --a-surface-inverted);
 		border-radius: 100%;
 		height: min(40vw, 700px);
 		width: min(40vw, 700px);
@@ -119,6 +120,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: var(--a-spacing-4);
+		margin-bottom: var(--ax-space-16, --a-spacing-4);
 	}
 </style>

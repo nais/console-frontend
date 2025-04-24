@@ -164,11 +164,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: start;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 	}
 	.search {
 		display: flex;
 		flex-direction: column;
-		gap: var(--a-spacing-3);
+		gap: var(--ax-space-12, --a-spacing-3);
 	}
 </style>

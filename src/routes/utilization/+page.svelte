@@ -218,9 +218,9 @@
 			<Card columns={3} borderColor="#83bff6">
 				<SummaryCard
 					color="blue"
-					title="Unused CPU cost"
-					helpTextTitle="Annual cost of unused CPU"
-					helpText="Estimate of annual cost of unused CPU for tenant calculated from current utilization data."
+					title="Unutilized CPU cost"
+					helpTextTitle="Annual cost of unutilized CPU"
+					helpText="Estimate of annual cost of unutilized CPU for tenant calculated from current utilization data."
 				>
 					{#snippet icon({ color })}
 						<WalletIcon height="32px" width="32px" {color} />
@@ -241,9 +241,9 @@
 			<Card columns={3} borderColor="#91dc75">
 				<SummaryCard
 					color="green"
-					title="Unused memory cost"
-					helpTextTitle="Annual cost of unused memory"
-					helpText="Estimate of annual cost of unused memory for tenant calculated from current utilization data."
+					title="Unutilized memory cost"
+					helpTextTitle="Annual cost of unutilized memory"
+					helpText="Estimate of annual cost of unutilized memory for tenant calculated from current utilization data."
 				>
 					{#snippet icon({ color })}
 						<WalletIcon height="32px" width="32px" {color} />
@@ -266,7 +266,7 @@
 			</Card>
 		</div>
 
-		<Heading level="1" size="large">Top 10 Unused Resources per Team</Heading>
+		<Heading level="1" size="large">Top 10 Unutilized Resources per Team</Heading>
 
 		<div style="display: flex">
 			<EChart
@@ -292,8 +292,8 @@
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey="TEAM">Team</Th>
-						<Th sortable={true} sortKey="CPU">Unused CPU</Th>
-						<Th sortable={true} sortKey="MEMORY">Unused memory</Th>
+						<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
+						<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
 						<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
 					</Tr>
 				</Thead>

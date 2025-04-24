@@ -71,7 +71,7 @@
 									: 0,
 								'dd/MM/yyyy HH:mm'
 							)}</div>
-							<hr style="border: none; height: 1px; background-color: var(--a-border-subtle);" />
+							<hr style="border: none; height: 1px; background-color: var(--ax-border-subtle, --a-border-subtle);" />
 							<div style="display: grid; grid-template-columns: auto auto; column-gap: 0.5rem;">
 								${value
 									.map(
@@ -457,7 +457,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		gap: var(--a-spacing-6);
+		gap: var(--ax-space-24, --a-spacing-6);
 	}
 	.heading-with-toggle {
 		display: flex;

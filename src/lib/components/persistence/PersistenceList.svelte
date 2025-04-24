@@ -49,7 +49,7 @@
 		display: flex;
 		width: 850px;
 		flex-direction: row;
-		border-bottom: 1px solid var(--a-border-subtle);
+		border-bottom: 1px solid var(--ax-border-subtle, --a-border-subtle);
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.2rem;

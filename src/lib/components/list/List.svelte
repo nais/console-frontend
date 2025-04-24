@@ -24,11 +24,11 @@
 		gap: 2px;
 
 		.header {
-			background-color: #f7f8f9;
+			background-color: var(--ax-neutral-100);
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: var(--a-spacing-4) var(--a-spacing-6);
+			padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-24, --a-spacing-6);
 		}
 
 		:global(> *) {
@@ -46,6 +46,6 @@
 
 	.menu {
 		display: flex;
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8, --a-spacing-2);
 	}
 </style>

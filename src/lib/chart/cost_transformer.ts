@@ -1,4 +1,3 @@
-import { visualizationColors } from '$lib/visualizationColors';
 import type { EChartsOption } from 'echarts';
 import type { OptionDataValue } from 'echarts/types/src/util/types.js';
 
@@ -131,7 +130,6 @@ export function costTransformStackedColumnChart(
 				return euroValueFormatter(value[1] as number);
 			}
 		},
-		color: visualizationColors,
 		legend: {
 			selector: [{ title: 'Inverse selection', type: 'inverse' }],
 			data: Array.from(allServices)
@@ -269,7 +267,6 @@ export function costTransformColumnChartTeamEnvironmentApplicationsCost(
 				return euroValueFormatter(value[1] as number);
 			}
 		},
-		color: visualizationColors,
 
 		grid: {
 			left: '3%',

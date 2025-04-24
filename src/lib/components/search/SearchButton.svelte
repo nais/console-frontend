@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Button } from '@nais/ds-svelte-community';
+	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import { Theme } from '@nais/ds-svelte-community';
+	import { InternalHeaderButton } from '@nais/ds-svelte-community/experimental';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import SearchModal from './SearchModal.svelte';
 
@@ -17,25 +19,23 @@
 
 <svelte:document {onkeydown} />
 
-<Button
-	size="small"
-	icon={MagnifyingGlassIcon}
-	variant="primary-neutral"
-	onclick={() => (open = true)}
->
+<InternalHeaderButton onclick={() => (open = true)}>
+	<MagnifyingGlassIcon />
 	<div class="hotkey">
 		{isMac ? '⌘' : 'Ctrl'}-K
 	</div>
-</Button>
+</InternalHeaderButton>
 {#if open}
-	<SearchModal bind:open />
+	<Theme theme={themeSwitch.theme}>
+		<SearchModal bind:open />
+	</Theme>
 {/if}
 
 <style>
 	.hotkey {
-		font-size: var(--a-font-size-small);
-		font-weight: var(--a-font-weight-regular);
-		color: var(--a-gray-200);
+		font-size: var(--ax-font-size-small, --a-font-size-small);
+		font-weight: var(--ax-font-weight-regular, --a-font-weight-regular);
+		color: var(--ax-text-default, --a-gray-200);
 		padding-top: 2px;
 	}
 </style>
