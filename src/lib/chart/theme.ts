@@ -235,12 +235,12 @@ const rootTheme: ThemeOption = {
 	}
 };
 
-let registered = false;
+let themeRegistered = false;
 export function registerTheme(echarts: rootEcharts) {
-	if (registered) {
+	if (themeRegistered) {
 		return;
 	}
-	registered = true;
+	themeRegistered = true;
 
 	echarts.registerTheme('aksel', {
 		...rootTheme
