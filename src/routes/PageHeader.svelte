@@ -54,13 +54,15 @@
 			variant="primary-neutral"
 			icon={ChatElipsisIcon}
 			size="small"
-			onclick={() => (feedbackOpen = true)}
+			onclick={() => {
+				feedbackOpen = true;
+			}}
 		>
 			<span style="font-weight: 400">Feedback</span>
 		</Button>
 	</div>
 	{#if feedbackOpen}
-		<Feedback bind:open={feedbackOpen} />
+		<Feedback close={() => (feedbackOpen = false)} />
 	{/if}
 	<SearchButton />
 	<ActionMenu>

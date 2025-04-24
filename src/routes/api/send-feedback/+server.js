@@ -25,18 +25,20 @@ export async function POST(event) {
 	const body = await request.json();
 	const { anonymous, feedback, path, type } = body;
 
-	try {
-		// Create the feedback message blocks
-		const blocks = createFeedbackMessage(anonymous, email, feedback, path, tenant, type);
+	let blocks = [];
 
-		// Send the message to Slack using the WebClient
+	try {
+		blocks = createFeedbackMessage(anonymous, email, feedback, path, tenant, type);
+	} catch (error) {
+		return json({ error: 'Failed to create feedback message - ' + error }, { status: 500 });
+	}
+
+	try {
 		const result = await client.chat.postMessage({
 			channel: channel,
 			blocks: blocks,
 			text: `${type} feedback`
 		});
-
-		console.log('Feedback result:', result);
 
 		if (result.ok) {
 			return json({ message: 'Feedback sent successfully!' });
@@ -44,7 +46,6 @@ export async function POST(event) {
 			return json({ error: 'Failed to send feedback' }, { status: 500 });
 		}
 	} catch (error) {
-		console.error('Error sending feedback to Slack:', error);
-		return json({ error: 'An error occurred' }, { status: 500 });
+		return json({ error: 'An error occurred - ' + error }, { status: 500 });
 	}
 }

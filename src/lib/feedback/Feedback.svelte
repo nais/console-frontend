@@ -3,16 +3,15 @@
 	import { replacer } from '$lib/replacer';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Button, Checkbox, Heading, Modal, Select, Theme } from '@nais/ds-svelte-community';
-	import { createEventDispatcher } from 'svelte';
 	import type { FeedbackType } from './types';
 
 	interface Props {
-		open: boolean;
+		close: () => void;
 	}
 
-	let { open = $bindable() }: Props = $props();
+	let { close }: Props = $props();
 
-	let type: FeedbackType = $state(undefined);
+	let type: FeedbackType | '' = $state('');
 	let details = $state('');
 	let anonymous: boolean = $state(false);
 	let uri = '';
@@ -20,9 +19,9 @@
 	let loading = $state(false);
 	let feedbackSent: boolean = $state(false);
 
-	let errorMessage: string = '';
-	let errorType: boolean = false;
-	let errorDetails: boolean = false;
+	let errorMessage: string = $state('');
+	let errorType: boolean = $state(false);
+	let errorDetails: boolean = $state(false);
 
 	const maxlength = 3000;
 
@@ -38,15 +37,23 @@
 		{ value: 'OTHER', text: 'Other' }
 	];
 
-	const dispatcher = createEventDispatcher<{ close: void }>();
-
-	const close = () => {
-		feedbackSent = false;
-		open = false;
-		dispatcher('close');
-	};
-
 	const submitFeedback = async () => {
+		if (type === '') {
+			errorType = true;
+		} else {
+			errorType = false;
+		}
+
+		if (details === '' || details === undefined) {
+			errorDetails = true;
+		} else {
+			errorDetails = false;
+		}
+
+		if (errorType || errorDetails) {
+			return;
+		}
+
 		loading = true;
 		let response = '';
 		try {
@@ -65,18 +72,23 @@
 			loading = false;
 			const data = await result.json();
 
+			if (data.error) {
+				errorMessage = data.error;
+				return;
+			}
+
 			response = data.ok ? 'Message sent!' : 'Failed to send message.';
 			feedbackSent = true;
 		} catch (error) {
 			console.error('Error:', error);
-			response = 'Error sending message.';
+			response = 'Error sending message: ' + error;
 		}
 		return response;
 	};
 </script>
 
 <Theme theme={themeSwitch.theme}>
-	<Modal bind:open width="medium" onclose={close}>
+	<Modal open width="medium" onclose={close}>
 		{#snippet header()}
 			<Heading level="1">Nais Console Feedback</Heading>
 		{/snippet}
