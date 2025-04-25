@@ -17,8 +17,9 @@ export function yearlyOverageCost(
 	request: number,
 	currentUsage: number
 ) {
-	const costPerCpuCorePerYear = 136.69;
-	const costPerBytePerYear = 18.71 / 1024 / 1024 / 1024;
+	// TODO: should be provided by Nais API
+	const costPerCpuCorePerYear = 210.27; //136.69
+	const costPerBytePerYear = 28.1993616 / 1024 / 1024 / 1024; // 18.71
 
 	const overage = request - currentUsage;
 
