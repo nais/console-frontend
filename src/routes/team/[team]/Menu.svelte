@@ -33,11 +33,9 @@
 					inventoryCounts {
 						applications {
 							total
-							notNais
 						}
 						jobs {
 							total
-							notNais
 						}
 						sqlInstances {
 							total

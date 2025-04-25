@@ -117,8 +117,8 @@ describe('menuItems', () => {
 				member: true,
 				isAdmin: false,
 				inventory: {
-					applications: { total: 42, notNais: 10 },
-					jobs: { total: 1, notNais: 1 },
+					applications: { total: 42 },
+					jobs: { total: 1 },
 					sqlInstances: { total: 7 },
 					buckets: { total: 1337 },
 					valkeyInstances: { total: 11 },
@@ -127,8 +127,6 @@ describe('menuItems', () => {
 					bigQueryDatasets: { total: 49 }
 				}
 			});
-
-			expect(res.flatMap((g) => g).find((i) => i.label === 'Applications')?.badge).toBe(true);
 
 			expect(
 				res

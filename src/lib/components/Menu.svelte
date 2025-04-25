@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Detail } from '@nais/ds-svelte-community';
-	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Icon from './Icon.svelte';
 	import IconLabel from './IconLabel.svelte';
 
@@ -12,7 +11,6 @@
 			href: string;
 			active?: boolean;
 			count?: number;
-			badge?: boolean;
 		}[][];
 	} = $props();
 </script>
@@ -20,15 +18,12 @@
 <div class="menu">
 	{#each items as group (group)}
 		<div class="list">
-			{#each group as { label: text, href, active, count, badge } (href)}
+			{#each group as { label: text, href, active, count } (href)}
 				<a {href} class:active>
 					<IconLabel>
 						{#snippet label()}
 							<span class="label">
 								{text}
-								{#if badge}
-									<CircleFillIcon class="badge" />
-								{/if}
 							</span>
 						{/snippet}
 						{#snippet icon()}
@@ -83,15 +78,6 @@
 				background-color: var(--active-color);
 			}
 
-			.label {
-				:global(.badge) {
-					color: var(--ax-danger-500, --a-red-300);
-					font-size: 0.5rem;
-					position: relative;
-					top: -8px;
-					right: 2px;
-				}
-			}
 			&:not(.active) .icon {
 				color: var(--ax-text-subtle, --a-text-subtle);
 			}

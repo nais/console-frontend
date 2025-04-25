@@ -16,8 +16,8 @@
 		items={[
 			[{ label: 'Overview', href: '/team/devteam' }],
 			[
-				{ label: 'Applications', href: '/team/devteam/applications', count: 42, badge: true },
-				{ label: 'Jobs', href: '/team/devteam/jobs', count: 1, badge: true, active: true }
+				{ label: 'Applications', href: '/team/devteam/applications', count: 42 },
+				{ label: 'Jobs', href: '/team/devteam/jobs', count: 1, active: true }
 			],
 			[
 				{ label: 'Secrets', href: '/team/devteam/secrets' },
