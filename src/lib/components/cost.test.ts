@@ -119,6 +119,19 @@ describe('aggregateAndSortCostByDate', () => {
 		).toBeCloseTo(2.03);
 	});
 
+	const dates: Date[] = [];
+	const now = new Date();
+
+	// Start from the last month (not including the current month)
+	for (let i = 1; i <= 12; i++) {
+		const year = now.getFullYear();
+		const month = now.getMonth() - i + 1; // month is 0-indexed
+		const date = new Date(year, month + 1, 0).toISOString().split('T')[0]; // 0th day of the next month gives the last day of current month
+		dates.push(new Date(date));
+	}
+
+	console.log(dates);
+
 	test('data for one app, a full year', () => {
 		expect(
 			aggregateAndSortCostByDate([
@@ -127,51 +140,51 @@ describe('aggregateAndSortCostByDate', () => {
 						monthly: {
 							series: [
 								{
-									date: new Date('2025-02-28'),
+									date: dates[0],
 									sum: 1
 								},
 								{
-									date: new Date('2025-01-31'),
+									date: dates[1],
 									sum: 1
 								},
 								{
-									date: new Date('2024-12-31'),
+									date: dates[2],
 									sum: 1
 								},
 								{
-									date: new Date('2024-11-30'),
+									date: dates[3],
 									sum: 1
 								},
 								{
-									date: new Date('2024-10-31'),
+									date: dates[4],
 									sum: 1
 								},
 								{
-									date: new Date('2024-09-30'),
+									date: dates[5],
 									sum: 1
 								},
 								{
-									date: new Date('2024-08-31'),
+									date: dates[6],
 									sum: 1
 								},
 								{
-									date: new Date('2024-07-31'),
+									date: dates[7],
 									sum: 1
 								},
 								{
-									date: new Date('2024-06-30'),
+									date: dates[8],
 									sum: 1
 								},
 								{
-									date: new Date('2024-05-31'),
+									date: dates[9],
 									sum: 1
 								},
 								{
-									date: new Date('2024-04-30'),
+									date: dates[10],
 									sum: 1
 								},
 								{
-									date: new Date('2024-03-31'),
+									date: dates[11],
 									sum: 1
 								}
 							]
@@ -183,51 +196,51 @@ describe('aggregateAndSortCostByDate', () => {
 						monthly: {
 							series: [
 								{
-									date: new Date('2025-02-28'),
+									date: dates[0],
 									sum: 1
 								},
 								{
-									date: new Date('2025-01-31'),
+									date: dates[2],
 									sum: 1
 								},
 								{
-									date: new Date('2024-12-31'),
+									date: dates[1],
 									sum: 1
 								},
 								{
-									date: new Date('2024-11-30'),
+									date: dates[3],
 									sum: 1
 								},
 								{
-									date: new Date('2024-10-31'),
+									date: dates[5],
 									sum: 1
 								},
 								{
-									date: new Date('2024-09-30'),
+									date: dates[4],
 									sum: 1
 								},
 								{
-									date: new Date('2024-08-31'),
+									date: dates[7],
 									sum: 1
 								},
 								{
-									date: new Date('2024-07-31'),
+									date: dates[6],
 									sum: 1
 								},
 								{
-									date: new Date('2024-06-30'),
+									date: dates[8],
 									sum: 1
 								},
 								{
-									date: new Date('2024-05-31'),
+									date: dates[9],
 									sum: 1
 								},
 								{
-									date: new Date('2024-04-30'),
+									date: dates[10],
 									sum: 1
 								},
 								{
-									date: new Date('2024-03-31'),
+									date: dates[11],
 									sum: 1
 								}
 							]
@@ -236,18 +249,18 @@ describe('aggregateAndSortCostByDate', () => {
 				}
 			])
 		).toEqual([
-			{ date: new Date('2024-03-31'), sum: 2 },
-			{ date: new Date('2024-04-30'), sum: 2 },
-			{ date: new Date('2024-05-31'), sum: 2 },
-			{ date: new Date('2024-06-30'), sum: 2 },
-			{ date: new Date('2024-07-31'), sum: 2 },
-			{ date: new Date('2024-08-31'), sum: 2 },
-			{ date: new Date('2024-09-30'), sum: 2 },
-			{ date: new Date('2024-10-31'), sum: 2 },
-			{ date: new Date('2024-11-30'), sum: 2 },
-			{ date: new Date('2024-12-31'), sum: 2 },
-			{ date: new Date('2025-01-31'), sum: 2 },
-			{ date: new Date('2025-02-28'), sum: 2 }
+			{ date: dates[11], sum: 2 },
+			{ date: dates[10], sum: 2 },
+			{ date: dates[9], sum: 2 },
+			{ date: dates[8], sum: 2 },
+			{ date: dates[7], sum: 2 },
+			{ date: dates[6], sum: 2 },
+			{ date: dates[5], sum: 2 },
+			{ date: dates[4], sum: 2 },
+			{ date: dates[3], sum: 2 },
+			{ date: dates[2], sum: 2 },
+			{ date: dates[1], sum: 2 },
+			{ date: dates[0], sum: 2 }
 		]);
 	});
 });
