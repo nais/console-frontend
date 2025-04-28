@@ -21,6 +21,14 @@
 						url
 						type
 					}
+					status {
+						errors {
+							... on WorkloadStatusDeprecatedIngress {
+								__typename
+								ingress
+							}
+						}
+					}
 				}
 			`)
 		)
@@ -34,6 +42,13 @@
 		{#each ingresses as ingress (ingress)}
 			<IconLabel size="medium" label={ingress.url} href={ingress.url}>
 				{#snippet icon()}
+					{#each $data.status.errors as error (error)}
+						{#if error.__typename === 'WorkloadStatusDeprecatedIngress' && error.ingress === ingress.url}
+							<TooltipAlignHack content="Deprecated ingress: {error.ingress}"
+								><WarningIcon /></TooltipAlignHack
+							>
+						{/if}
+					{/each}
 					<TooltipAlignHack
 						content={group === 'UNKNOWN'
 							? 'Ingress not found'
