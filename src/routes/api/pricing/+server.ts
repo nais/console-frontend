@@ -1,16 +1,10 @@
+import type { PricingEntry } from '$lib/stores/pricingStore.svelte';
 import type { GaxiosResponse } from 'gaxios';
 import { cloudbilling_v1beta, google } from 'googleapis';
 
 interface PricingRequestBody {
 	currency: string;
 	skuIds: string[]; // Accepting an array of SKU IDs
-}
-
-interface SkuPricing {
-	type: 'CPU' | 'MEM';
-	price: number;
-	currency: string;
-	skuId: string;
 }
 
 interface SkuPriceData {
@@ -24,7 +18,7 @@ interface SkuPriceData {
 	};
 }
 
-const skus_to_fetch: { [skuId: string]: { description: string; type: 'CPU' | 'MEM' } } = {
+const sku_mappings: { [skuId: string]: { description: string; type: 'CPU' | 'MEM' } } = {
 	'0981-D144-B18E': { description: 'E2 Instance Core running in Finland', type: 'CPU' },
 	'779E-BED5-F31F': { description: 'E2 Instance Ram running in Finland', type: 'MEM' }
 };
@@ -87,13 +81,13 @@ async function getPricingForSku(skuId: string, currency: string): Promise<SkuPri
 	return skuPriceData;
 }
 
-async function getPricingForSkus(skuIds: string[], currency: string): Promise<SkuPricing[]> {
-	const pricingData: SkuPricing[] = [];
+async function getPricingForSkus(skuIds: string[], currency: string): Promise<PricingEntry[]> {
+	const pricingData: PricingEntry[] = [];
 
 	for (const skuId of skuIds) {
 		try {
 			const pricing = await getPricingForSku(skuId, currency);
-			const type = skus_to_fetch[skuId]?.type || 'CPU'; // Default to 'CPU' if no match
+			const type = sku_mappings[skuId]?.type || 'CPU'; // Default to 'CPU' if no match
 			const price = convertPriceToNumber(pricing.rate?.tiers?.at(0)?.listPrice?.nanos || 0);
 			const skuCurrency = pricing.rate?.tiers?.at(0)?.listPrice?.currencyCode || '';
 

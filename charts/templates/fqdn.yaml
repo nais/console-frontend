@@ -10,6 +10,7 @@ spec:
       to:
         - fqdns:
             - slack.com
+            - googleapis.com
   podSelector:
     matchLabels:
       app: '{{ .Release.Name }}'
