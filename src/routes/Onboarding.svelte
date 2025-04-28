@@ -128,6 +128,7 @@
 				<div class="search">
 					<Search
 						bind:value={teamSearchQuery}
+						clearButton={false}
 						oninput={searchTeam}
 						label="Team search"
 						hideLabel
