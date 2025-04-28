@@ -2,15 +2,12 @@ import type { GaxiosResponse } from 'gaxios';
 import { cloudbilling_v1, google } from 'googleapis';
 
 // Define a simple in-memory cache
+// Cache duration is until the next restart
 const pricingCache = new Map<string, { timestamp: number; skus: cloudbilling_v1.Schema$Sku[] }>();
-const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour
 
 async function getPricingForRegion(currency: string) {
-	// Check if we have fresh data cached
 	const cached = pricingCache.get(currency);
-	const now = Date.now();
-	if (cached && now - cached.timestamp < CACHE_DURATION_MS) {
-		console.log('Using cached data for currency:', currency);
+	if (cached) {
 		return cached.skus;
 	}
 
@@ -47,7 +44,7 @@ async function getPricingForRegion(currency: string) {
 	);
 
 	// Save result in cache
-	pricingCache.set(currency, { timestamp: now, skus: filteredSkus });
+	pricingCache.set(currency, { timestamp: 0, skus: filteredSkus });
 
 	return filteredSkus;
 }
