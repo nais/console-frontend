@@ -6,7 +6,7 @@ interface PricingRequestBody {
 	skuIds: string[]; // Accepting an array of SKU IDs
 }
 
-export interface SkuPricing {
+interface SkuPricing {
 	type: 'CPU' | 'MEM';
 	price: number;
 	currency: string;
