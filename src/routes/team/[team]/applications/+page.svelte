@@ -88,7 +88,7 @@
 					}}
 				>
 					<Search
-						clearButton={true}
+						clearButton={false}
 						clearButtonLabel="Clear"
 						label="filter applications"
 						placeholder="Filter by name"
