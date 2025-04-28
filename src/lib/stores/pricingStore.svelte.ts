@@ -55,3 +55,7 @@ class PricingStore {
 }
 
 export const pricingStore = new PricingStore();
+
+export async function initializePricing() {
+	await pricingStore.initialize();
+}

@@ -4,6 +4,7 @@
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
 	import ProgressBar from '$lib/ProgressBar.svelte';
+	import { initializePricing } from '$lib/stores/pricingStore.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Page, Theme } from '@nais/ds-svelte-community';
 	import '@nais/ds-svelte-community/css/darkside.css';
@@ -37,6 +38,10 @@
 			}
 		}
 	`);
+
+	onMount(() => {
+		initializePricing();
+	});
 
 	onMount(() => {
 		setInterval(
