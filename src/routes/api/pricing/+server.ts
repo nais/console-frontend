@@ -26,7 +26,7 @@ async function getPricingForRegion(currency: string) {
 			await billing.services.skus.list({
 				parent: 'services/6F81-5844-456A',
 				currencyCode: currency,
-				pageSize: 5000,
+				pageSize: 500,
 				pageToken: nextPageToken
 			});
 
