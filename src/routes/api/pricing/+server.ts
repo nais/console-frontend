@@ -58,7 +58,7 @@ async function getPricingForSku(skuId: string, currency: string): Promise<SkuPri
 	}
 
 	const auth = await google.auth.getClient({
-		scopes: ['https://www.googleapis.com/auth/cloud-platform']
+		scopes: ['https://www.googleapis.com/auth/cloud-billing.readonly']
 	});
 	const billing = google.cloudbilling({ version: 'v1beta', auth });
 	const res: GaxiosResponse<cloudbilling_v1beta.Schema$GoogleCloudBillingPricesV1betaPrice> =
