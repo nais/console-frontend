@@ -19,12 +19,8 @@
 		padding: 0.75rem 1rem;
 		border-bottom: 3px solid transparent;
 	}
-	.tab:hover {
-		/* TODO(thokra): What should this be? */
-		border-bottom: 3px solid var(--ax-border-subtle, --a-border-subtle-hover);
-	}
 	.tab.active {
 		color: var(--ax-text-neutral, --a-text-default);
-		border-bottom: 3px solid var(--ax-border-accent-strong, --a-border-action);
+		border-bottom: 3px solid var(--ax-border-accent-strong);
 	}
 </style>
