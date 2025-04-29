@@ -68,7 +68,6 @@
 		"cronstrue": "^2.59.0",
 		"echarts": "^5.6.0",
 		"eslint-plugin-unicorn": "^59.0.0",
-		"googleapis": "^148.0.0",
 		"graphql": "^16.11.0",
 		"graphql-sse": "^2.5.4",
 		"luxon": "^3.6.1",

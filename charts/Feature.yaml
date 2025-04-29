@@ -27,9 +27,3 @@ values:
     computed:
       template: |
         {{ .Env.teams_github_org | quote }}
-  serviceaccount.email:
-    displayName: GCP SA email
-    description: Console service account email
-    computed:
-      template: |
-        {{.Env.console_serviceaccount_email | quote}}
