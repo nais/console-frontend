@@ -15,12 +15,12 @@
 <style>
 	.tab {
 		text-decoration: none;
-		color: var(--ax-text-subtle, --a-text-subtle);
+		color: var(--ax-text-subtle);
 		padding: 0.75rem 1rem;
 		border-bottom: 3px solid transparent;
 	}
 	.tab.active {
-		color: var(--ax-text-neutral, --a-text-default);
+		color: var(--ax-text-neutral);
 		border-bottom: 3px solid var(--ax-border-accent-strong);
 	}
 </style>
