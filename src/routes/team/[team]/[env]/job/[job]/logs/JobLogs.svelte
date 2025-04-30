@@ -190,7 +190,7 @@
 	let logLevels = new SvelteSet<string>();
 	let selectedLogLevels = new SvelteSet<string>();
 
-	const colors = ['blue', 'green', 'orange', 'purple', 'limegreen'];
+	const colors = ['green', 'orange', 'purple', 'limegreen', 'blue'];
 
 	function getLogLevel(message: string) {
 		const logLevel = message.match(/"level":"(\w+)"/);
@@ -226,10 +226,10 @@
 				{#each team.environment.job.runs.nodes as run, i (run.id)}
 					{#each run.instances.nodes as instance, j (instance.id)}
 						<ToggleChip
-							--ac-chip-toggle-bg="var(--a-{colors[(i + j) % colors.length]}-200)"
-							--ac-chip-toggle-hover-bg="var(--a-{colors[(i + j) % colors.length]}-300)"
-							--ac-chip-toggle-pressed-bg="var(--a-{colors[(i + j) % colors.length]}-500)"
-							--ac-chip-toggle-pressed-hover-bg="var(--a-{colors[(i + j) % colors.length]}-600)"
+							--ax-bg-accent-moderate="var(--{colors[(i + j) % colors.length]}-200)"
+							--ax-bg-accent-moderate-hover="var(--{colors[(i + j) % colors.length]}-300)"
+							--ax-bg-accent-strong-pressed="var(--{colors[(i + j) % colors.length]}-500)"
+							--ax-bg-accent-strong-hover="var(--{colors[(i + j) % colors.length]}-600)"
 							value={renderInstanceName(instance.name)}
 							selected={selectedInstances.includes(instance.name)}
 							onclick={() => {
@@ -292,7 +292,7 @@
 					</Button>
 				{/if}
 			</div>
-			<div style="padding-top: var(--a-spacing-2);">
+			<div style="padding-top: var(--ax-space-8);">
 				{#each team.environment.job.logDestinations as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
 						<a href={logDestination.grafanaURL} target="_blank" rel="noopener noreferrer">
@@ -366,7 +366,7 @@
 						{/if}
 						<div
 							class="instance-color"
-							style:background-color="var(--a-{colors[
+							style:background-color="var(--{colors[
 								(team.environment.job.runs.nodes.findIndex((run) =>
 									log.instance.startsWith(run.name)
 								) +
@@ -400,12 +400,12 @@
 	.controls {
 		display: flex;
 		flex-direction: row;
-		gap: var(--a-spacing-8);
+		gap: var(--ax-space-32);
 		width: 100%;
 		.buttons {
 			display: flex;
 			flex-direction: row;
-			gap: var(--a-spacing-2);
+			gap: var(--ax-space-8);
 		}
 	}
 	.chips {
@@ -413,7 +413,7 @@
 		grid-template-columns: repeat(auto-fill, 28ch);
 		grid-auto-rows: min-content;
 
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8);
 		flex-grow: 1;
 	}
 	.log-wrapper {

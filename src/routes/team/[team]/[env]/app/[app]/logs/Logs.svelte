@@ -200,10 +200,10 @@
 				{#each team.environment.application.instances.nodes as instance, i (instance.name)}
 					{@const name = instance.name}
 					<ToggleChip
-						--ac-chip-toggle-bg="var(--a-{colors[i % colors.length]}-200)"
-						--ac-chip-toggle-hover-bg="var(--a-{colors[i % colors.length]}-300)"
-						--ac-chip-toggle-pressed-bg="var(--a-{colors[i % colors.length]}-500)"
-						--ac-chip-toggle-pressed-hover-bg="var(--a-{colors[i % colors.length]}-600)"
+						--ax-bg-accent-moderate="var(--{colors[i % colors.length]}-200)"
+						--ax-bg-accent-moderate-hover="var(--{colors[i % colors.length]}-300)"
+						--ax-bg-accent-strong-pressed="var(--{colors[i % colors.length]}-500)"
+						--ax-bg-accent-strong-hover="var(--{colors[i % colors.length]}-600)"
 						value={renderInstanceName(name)}
 						selected={selectedInstances.includes(name)}
 						onclick={() => {
@@ -267,7 +267,7 @@
 					</Button>
 				{/if}
 			</div>
-			<div style="padding-top: var(--a-spacing-2);">
+			<div style="padding-top: var(--ax-space-8);">
 				{#each team.environment.application.logDestinations as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
 						<a href={logDestination.grafanaURL} target="_blank" rel="noopener noreferrer">
@@ -337,7 +337,7 @@
 						{/if}
 						<div
 							class="instance-color"
-							style:background-color="var(--a-{colors[
+							style:background-color="var(--{colors[
 								team.environment.application.instances.nodes.findIndex(
 									(instance) => instance.name === log.instance
 								) % colors.length
@@ -366,12 +366,12 @@
 	.controls {
 		display: flex;
 		flex-direction: row;
-		gap: var(--a-spacing-8);
+		gap: var(--ax-space-32);
 		width: 100%;
 		.buttons {
 			display: flex;
 			flex-direction: row;
-			gap: var(--a-spacing-2);
+			gap: var(--ax-space-8);
 		}
 	}
 	.chips {
@@ -379,7 +379,7 @@
 		grid-template-columns: repeat(auto-fill, 28ch);
 		grid-auto-rows: min-content;
 
-		gap: var(--a-spacing-2);
+		gap: var(--ax-space-8);
 		flex-grow: 1;
 	}
 	.log-wrapper {
