@@ -38,10 +38,6 @@
 		}
 	`);
 
-	// onMount(() => {
-	// 	initializePricing();
-	// });
-
 	onMount(() => {
 		setInterval(
 			async () => {
