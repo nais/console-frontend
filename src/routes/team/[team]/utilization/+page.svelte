@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { PendingValue, UtilizationResourceType } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
@@ -14,7 +12,7 @@
 		yearlyOverageCost,
 		type TeamOverageData
 	} from '$lib/utils/resources';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import {
 		Table,
 		Tbody,
@@ -24,7 +22,7 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community/components/Table/index.js';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$houdini';
@@ -215,63 +213,71 @@
 <div class="wrapper">
 	{#if resourceUtilization}
 		<div class="grid">
-			<Card columns={4} borderColor="#83bff6">
-				<SummaryCard
-					color="blue"
-					title="Unutilized CPU cost"
-					helpTextTitle="Annual cost of unutilized CPU"
-					helpText="Estimate of annual cost of unutilized CPU for team {teamSlug} calculated from current utilization
-							data."
+			<div class="card">
+				<Heading level="2" size="medium" spacing
+					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
 				>
-					{#snippet icon({ color })}
-						<WalletIcon height="32px" width="32px" {color} />
-					{/snippet}
-					{#if resourceUtilization !== PendingValue}
-						{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
-							(item) => item && item.used < item.requested
-						)}
-						{@const cpuRequested = filteredCpuUtil.reduce(
-							(acc, item) => acc + (item ? item.requested : 0),
-							0
-						)}
-						{@const cpuUsage = filteredCpuUtil.reduce(
-							(acc, item) => acc + (item ? item.used : 0),
-							0
-						)}
-						€{round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage), 0)}
-					{/if}
-				</SummaryCard>
-			</Card>
-			<Card columns={4} borderColor="#91dc75">
-				<SummaryCard
-					color="green"
-					title="Unutilized memory cost"
-					helpTextTitle="Annual cost of unutilized memory"
-					helpText="Estimate of annual cost of unutilized memory for team {teamSlug} calculated from current utilization
-							data."
+				<BodyShort spacing
+					>Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
+					data.</BodyShort
 				>
-					{#snippet icon({ color })}
-						<WalletIcon height="32px" width="32px" {color} />
-					{/snippet}
-					{#if resourceUtilization !== PendingValue}
-						{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
-							(item) => item && item.used < item.requested
-						)}
-						{@const memoryRequested = filtertedMemoryUtil.reduce(
-							(acc, item) => acc + (item ? item.requested : 0),
-							0
-						)}
-						{@const memoryUsage = filtertedMemoryUtil.reduce(
-							(acc, item) => acc + (item ? item.used : 0),
-							0
-						)}
-						€{round(
-							yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage),
-							0
-						)}
-					{/if}
-				</SummaryCard>
-			</Card>
+
+				{#if resourceUtilization !== PendingValue}
+					{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
+						(item) => item && item.used < item.requested
+					)}
+					{@const cpuRequested = filteredCpuUtil.reduce(
+						(acc, item) => acc + (item ? item.requested : 0),
+						0
+					)}
+					{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
+					<div
+						style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
+					>
+						<div class="cost-amount">
+							{euroValueFormatter(
+								round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage), 0),
+								{ maximumFractionDigits: 0 }
+							)}
+						</div>
+					</div>
+				{/if}
+			</div>
+			<div class="card">
+				<Heading level="2" size="medium" spacing
+					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
+				>
+				<BodyShort
+					>Estimate of annual cost of unutilized memory for {teamSlug} calculated from current utilization
+					data.</BodyShort
+				>
+
+				{#if resourceUtilization !== PendingValue}
+					{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
+						(item) => item && item.used < item.requested
+					)}
+					{@const memoryRequested = filtertedMemoryUtil.reduce(
+						(acc, item) => acc + (item ? item.requested : 0),
+						0
+					)}
+					{@const memoryUsage = filtertedMemoryUtil.reduce(
+						(acc, item) => acc + (item ? item.used : 0),
+						0
+					)}
+					<div
+						style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
+					>
+						<div class="cost-amount">
+							{euroValueFormatter(
+								round(
+									yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage),
+									0
+								)
+							)}
+						</div>
+					</div>
+				{/if}
+			</div>
 		</div>
 		<div style="display: flex; justify-content: space-between;">
 			<Heading level="2">Top 10 Unutilized Resources per Application</Heading>
@@ -354,9 +360,24 @@
 		gap: 1rem;
 	}
 	.grid {
+		margin-top: 1rem;
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
+		grid-template-columns: repeat(2, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+	.card {
+		background-color: var(--ax-bg-sunken);
+		padding: var(--ax-space-16) var(--ax-space-20);
+		border-radius: 12px;
+		align-items: stretch;
+	}
+	.cost-amount {
+		background-color: var(--ax-bg-raised);
+		font-size: 1.5rem;
+		padding: 1rem 2rem;
+		border-radius: 0.375rem;
+		display: inline-block;
+		align-items: center;
 	}
 </style>

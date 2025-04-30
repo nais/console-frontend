@@ -135,8 +135,8 @@
 		Overage cost:
 		{#if cpuRequested && cpuUsage && memoryRequested && memoryUsage}
 			{euroValueFormatter(
-				yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested, cpuUsage) +
-					yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested, memoryUsage)
+				yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage) +
+					yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage)
 			)}
 		{/if}
 	</BodyShort>

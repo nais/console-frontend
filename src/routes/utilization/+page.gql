@@ -5,6 +5,12 @@ query TenantUtilization {
 		}
 		requested
 		used
+
+		teamEnvironment {
+			environment {
+				name
+			}
+		}
 	}
 	memUtil: teamsUtilization(resourceType: MEMORY) {
 		team {
@@ -12,5 +18,11 @@ query TenantUtilization {
 		}
 		requested
 		used
+
+		teamEnvironment {
+			environment {
+				name
+			}
+		}
 	}
 }
