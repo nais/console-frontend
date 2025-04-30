@@ -62,7 +62,7 @@
 </script>
 
 <Theme theme={themeSwitch.theme}>
-	<Page>
+	<Page contentBlockPadding="none">
 		<div class="full-wrapper">
 			{#if loading}
 				<ProgressBar />
