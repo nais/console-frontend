@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { badgeLevel } from '$lib/components/Badge.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
+	import { badgeLevel } from '$lib/components/list/Badge.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
 	import Pagination from '$lib/Pagination.svelte';
