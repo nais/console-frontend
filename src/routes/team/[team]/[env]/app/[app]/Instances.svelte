@@ -3,7 +3,7 @@
 	import { fragment, graphql } from '$houdini';
 	import AppInstanceListItem from '$lib/components/list/AppInstanceListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 
 	interface Props {
@@ -81,6 +81,28 @@
 		)
 	);
 
+	const instances = $derived($data.instances.edges.map((edge) => edge.node));
+
+	let cpu_usage = $derived(
+		instances.map((instance) => instance.cpu.current).reduce((a, b) => a + b, 0)
+	);
+
+	let memory_usage = $derived(
+		instances.map((instance) => instance.memory.current).reduce((a, b) => a + b, 0)
+	);
+
+	let usage_cpu_percent = $derived(
+		$data.resources.requests.cpu !== null && $data.resources.requests.cpu !== undefined
+			? (cpu_usage / ($data.resources.requests.cpu * instances.length)) * 100
+			: 0
+	);
+
+	let usage_memory_percent = $derived(
+		$data.resources.requests.memory !== null && $data.resources.requests.memory !== undefined
+			? (memory_usage / ($data.resources.requests.memory * instances.length)) * 100
+			: 0
+	);
+
 	const renameStrategy = (type: string) => {
 		if (type === 'CPUScalingStrategy') {
 			return 'CPU usage';
@@ -90,25 +112,34 @@
 			return 'Unknown';
 		}
 	};
-
-	const instances = $derived($data.instances.edges.map((edge) => edge.node));
 </script>
 
 <div>
+	{#if usage_cpu_percent < 50 || usage_memory_percent < 50}
+		<Alert variant="info" size="small" style="margin-bottom: var(--ax-space-8);">
+			CPU and/or memory utilization is below 50%. To reduce costs, consider scaling down the
+			requested resources. Refer to the applications <a
+				href="/team/{$data.team.slug}/{$data.teamEnvironment.environment
+					.name}/app/{$data.name}/utilization">utilization</a
+			> page for more details.
+		</Alert>
+	{/if}
+
 	<Heading level="4" size="small">Resources:</Heading>
+
 	<ul class="resource-list">
 		<li>
-			Requests:
+			CPU:
 			<ul>
 				<li>
 					<div class="resource-list-item">
-						<div>CPU:</div>
+						<div>Request:</div>
 						<div class="data">
 							<code>
 								{#if $data.resources.requests.cpu}
-									{$data.resources.requests.cpu?.toFixed(2)} CPUs
+									{$data.resources.requests.cpu?.toFixed(3)} CPUs
 								{:else if $data.utilization.requested_cpu}
-									{$data.utilization.requested_cpu?.toFixed(2)} CPUs (default)
+									{$data.utilization.requested_cpu?.toFixed(3)} CPUs (default)
 								{:else}
 									Not set
 								{/if}
@@ -116,10 +147,40 @@
 						</div>
 					</div>
 				</li>
-
 				<li>
 					<div class="resource-list-item">
-						<div>Memory:</div>
+						<div>Limit:</div>
+						<div class="data">
+							<code>
+								{#if $data.resources.limits.cpu}
+									{$data.resources.limits.cpu.toFixed(3)} CPUs
+								{:else if $data.utilization.limit_cpu}
+									{$data.utilization.limit_cpu.toFixed(3)} CPUs (default)
+								{:else}
+									Not set
+								{/if}
+							</code>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="resource-list-item">
+						<div>Usage of request:</div>
+						<div class="data">
+							<code>
+								{usage_cpu_percent.toFixed(2)}%
+							</code>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</li>
+		<li>
+			Memory:
+			<ul>
+				<li>
+					<div class="resource-list-item">
+						<div>Request:</div>
 						<div class="data">
 							<code>
 								{#if $data.resources.requests.memory !== null}
@@ -141,31 +202,9 @@
 						</div>
 					</div>
 				</li>
-			</ul>
-		</li>
-		<li>
-			Limits:
-			<ul>
 				<li>
 					<div class="resource-list-item">
-						<div>CPU:</div>
-						<div class="data">
-							<code>
-								{#if $data.resources.limits.cpu}
-									{$data.resources.limits.cpu.toFixed(2)} CPUs
-								{:else if $data.utilization.limit_cpu}
-									{$data.utilization.limit_cpu.toFixed(2)} CPUs (default)
-								{:else}
-									Not set
-								{/if}
-							</code>
-						</div>
-					</div>
-				</li>
-
-				<li>
-					<div class="resource-list-item">
-						<div>Memory:</div>
+						<div>Limit:</div>
 						<div class="data">
 							<code>
 								{#if $data.resources.limits.memory}
@@ -186,6 +225,14 @@
 									Not set
 								{/if}
 							</code>
+						</div>
+					</div>
+				</li>
+				<li>
+					<div class="resource-list-item">
+						<div>Usage of request:</div>
+						<div class="data">
+							<code>{usage_memory_percent.toFixed(2)}%</code>
 						</div>
 					</div>
 				</li>
