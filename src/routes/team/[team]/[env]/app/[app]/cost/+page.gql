@@ -2,6 +2,9 @@ query AppCost($app: String!, $team: Slug!, $env: String!, $from: Date!, $to: Dat
 @cache(policy: NetworkOnly) {
 	team(slug: $team) @loading {
 		environment(name: $env) @loading {
+			environment @loading {
+				name
+			}
 			application(name: $app) @loading {
 				cost @loading {
 					daily(from: $from, to: $to) @loading {

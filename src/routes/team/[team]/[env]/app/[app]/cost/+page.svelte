@@ -24,21 +24,30 @@
 						and Aiven.
 					</BodyLong>
 				</div>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
 			</div>
 			{#if $AppCost.data && $AppCost.data.team.environment.application.cost.daily !== PendingValue}
-				{@const d = $AppCost.data.team.environment.application.cost.daily}
-				<EChart
-					options={costTransformStackedColumnChart(new Date(from), new Date(to), d)}
-					style="height: 400px"
-				/>
+				{#if $AppCost.data.team.environment.application.cost.daily.series.length === 0 && $AppCost.data.team.environment.environment !== PendingValue && $AppCost.data.team.environment.environment.name.search(/-fss/i) > 0}
+					<BodyLong spacing
+						>No cost data available for applications in {$AppCost.data.team.environment.environment
+							.name}.</BodyLong
+					>
+				{:else}
+					{@const d = $AppCost.data.team.environment.application.cost.daily}
+					<div class="toggles">
+						<ToggleGroup
+							value={interval}
+							onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+						>
+							{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+								<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+							{/each}
+						</ToggleGroup>
+					</div>
+					<EChart
+						options={costTransformStackedColumnChart(new Date(from), new Date(to), d)}
+						style="height: 400px"
+					/>
+				{/if}
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 					<Loader size="3xlarge" />
@@ -63,8 +72,12 @@
 
 	.heading {
 		display: flex;
-		justify-content: space-between;
 		align-items: flex-end;
+		gap: var(--spacing-layout);
+	}
+	.toggles {
+		display: flex;
+		justify-content: flex-end;
 		gap: var(--spacing-layout);
 	}
 
