@@ -18,18 +18,6 @@ export function euroValueFormatter(
 	});
 }
 
-export function getMinToDate(from: string) {
-	const fromDate = new Date(from);
-	fromDate.setDate(fromDate.getDate() + 1);
-	return fromDate.toISOString().split('T')[0];
-}
-
-export function getMaxFromDate(to: string) {
-	const toDate = new Date(to);
-	toDate.setDate(toDate.getDate() - 1);
-	return toDate.toISOString().split('T')[0];
-}
-
 export type DailCostType = {
 	readonly series: {
 		readonly date: Date;
@@ -155,86 +143,6 @@ export function costTransformStackedColumnChart(
 			}
 		],
 		series
-	} as EChartsOption;
-}
-
-export type TeamCostEnvType = {
-	readonly date: Date;
-	readonly sum: number;
-	readonly workloads: {
-		readonly cost: number;
-		readonly workloadName: string;
-	}[];
-}[];
-
-export function costTransformColumnChartTeamCostEnv(data: TeamCostEnvType) {
-	const dates = data.map((entry) => entry.date.toISOString().split('T')[0]);
-
-	const workloadNames = new Set<string>();
-	data.forEach((entry) => {
-		entry.workloads.forEach((workload) => {
-			if (workload.workloadName !== '') {
-				workloadNames.add(workload.workloadName);
-			}
-		});
-	});
-
-	return {
-		title: {},
-		legend: {
-			bottom: 0,
-			width: '90%',
-			selector: [
-				{
-					title: 'Inverse selection',
-					type: 'inverse'
-				}
-			]
-		},
-
-		tooltip: {
-			trigger: data[0].workloads.length > 10 ? 'item' : 'axis',
-			axisPointer: {
-				type: 'shadow'
-			},
-			valueFormatter(value: number) {
-				return euroValueFormatter(value);
-			}
-		},
-		color: ['#3386E0', '#005B82', '#C77300', '#368DA8', '#33AA5F', '#8269A2'].reverse(),
-
-		grid: {
-			left: '3%',
-			right: '4%',
-			bottom: '3%',
-			containLabel: true
-		},
-		xAxis: [
-			{
-				type: 'category',
-				data: dates,
-				boundaryGap: false
-			}
-		],
-		yAxis: [
-			{
-				type: 'value',
-				axisLabel: {
-					formatter: (value: number) => euroValueFormatter(value)
-				}
-			}
-		],
-		series: Array.from(workloadNames).map((workloadName) => ({
-			name: workloadName,
-			type: 'line',
-			emphasis: {
-				focus: 'series'
-			},
-			data: data.map((dateEntry) => {
-				const workload = dateEntry.workloads.find((w) => w.workloadName === workloadName);
-				return workload?.cost || 0;
-			})
-		}))
 	} as EChartsOption;
 }
 

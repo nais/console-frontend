@@ -1,10 +1,3 @@
-export const joinAliases = (aliases: { name: string; source: string }[], vulnId: string) => {
-	return aliases
-		.filter((a) => a.name !== vulnId)
-		.map((a) => a.name)
-		.join(', ');
-};
-
 export const detailsUrl = (vulnId: string) => {
 	if (vulnId.startsWith('CVE')) {
 		return `https://nvd.nist.gov/vuln/detail/${vulnId}`;
