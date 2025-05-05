@@ -12,7 +12,7 @@
 		yearlyOverageCost,
 		type TeamOverageData
 	} from '$lib/utils/resources';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import {
 		Table,
 		Tbody,
@@ -264,9 +264,12 @@
 				</div>
 			</div>
 		</div>
-		<div style="display: flex; justify-content: space-between;">
-			<Heading level="2">Top 10 Unutilized Resources per Application</Heading>
-		</div>
+		<Heading level="2">Top 10 Overprovisioned Applications</Heading>
+		<BodyLong spacing>
+			These charts highlight the 10 applications with the highest unused CPU and memory relative to
+			their requested resources. Large gaps may indicate overprovisioning and opportunities to
+			reduce infrastructure costs by optimizing resource requests.
+		</BodyLong>
 
 		<div style="display: flex">
 			<EChart
@@ -280,57 +283,60 @@
 				onclick={handleChartClick}
 			/>
 		</div>
-		<div>
-			<Heading level="3" spacing>Unutilized Resources for All Applications</Heading>
-			<Table
-				size="small"
-				sort={sortState}
-				onsortchange={(key) => {
-					sortState = sortTable(key, sortState);
-				}}
-			>
-				<Thead>
+		<Heading level="3" spacing>Resource Waste Across All Applications</Heading>
+		<BodyLong spacing>
+			This table shows unutilized CPU and memory for each application, along with estimated overage
+			costs. Use this overview to identify where you can reduce requests and cut infrastructure
+			spending.
+		</BodyLong>
+		<Table
+			size="small"
+			sort={sortState}
+			onsortchange={(key) => {
+				sortState = sortTable(key, sortState);
+			}}
+		>
+			<Thead>
+				<Tr>
+					<Th sortable={true} sortKey="APPLICATION">Application</Th>
+					<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+					<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
+					<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
+					<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+				</Tr>
+			</Thead>
+			<Tbody>
+				{#each overageTable as overage (overage.id)}
 					<Tr>
-						<Th sortable={true} sortKey="APPLICATION">Application</Th>
-						<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
-						<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
-						<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
-						<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+						<Td>
+							<WorkloadLink
+								workload={{
+									__typename: overage.type,
+									teamEnvironment: { environment: { name: overage.env } },
+									team: { slug: teamSlug },
+									name: overage.name
+								}}
+							/>
+						</Td>
+						<Td>{overage.env}</Td>
+						<Td
+							>{overage.unusedCpu.toLocaleString('en-GB', {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2
+							})}</Td
+						>
+						<Td>{prettyBytes(overage.unusedMem)}</Td>
+						<Td>
+							{euroValueFormatter(overage.estimatedAnnualOverageCost)}
+						</Td>
 					</Tr>
-				</Thead>
-				<Tbody>
-					{#each overageTable as overage (overage.id)}
-						<Tr>
-							<Td>
-								<WorkloadLink
-									workload={{
-										__typename: overage.type,
-										teamEnvironment: { environment: { name: overage.env } },
-										team: { slug: teamSlug },
-										name: overage.name
-									}}
-								/>
-							</Td>
-							<Td>{overage.env}</Td>
-							<Td
-								>{overage.unusedCpu.toLocaleString('en-GB', {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								})}</Td
-							>
-							<Td>{prettyBytes(overage.unusedMem)}</Td>
-							<Td>
-								{euroValueFormatter(overage.estimatedAnnualOverageCost)}
-							</Td>
-						</Tr>
-					{:else}
-						<Tr>
-							<Td colspan={999}>No overage data for team {teamSlug}</Td>
-						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
-		</div>
+				{:else}
+					<Tr>
+						<Td colspan={999}>No overage data for team {teamSlug}</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
 	{/if}
 </div>
 
