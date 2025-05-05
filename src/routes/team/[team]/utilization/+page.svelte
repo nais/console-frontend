@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PendingValue, UtilizationResourceType } from '$houdini';
+	import { UtilizationResourceType } from '$houdini';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { truncateString } from '$lib/chart/util';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
-		mergeCalculateAndSortOverageData,
+		getTeamOverageData,
 		round,
 		yearlyOverageCost,
 		type TeamOverageData
@@ -179,11 +179,7 @@
 			}
 		}
 
-		overageTable = mergeCalculateAndSortOverageData(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction
-		);
+		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
 		return sortState;
 	};
 
@@ -196,11 +192,7 @@
 	let overageTable: TeamOverageData[] = $state([]);
 
 	$effect(() => {
-		overageTable = mergeCalculateAndSortOverageData(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction
-		);
+		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
 	});
 
 	function handleChartClick(name: string) {
@@ -212,6 +204,25 @@
 <GraphErrors errors={$TeamResourceUsage.errors} />
 <div class="wrapper">
 	{#if resourceUtilization}
+		{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
+			(item) => item && item.used < item.requested
+		)}
+		{@const cpuRequested = filteredCpuUtil.reduce(
+			(acc, item) => acc + (item ? item.requested : 0),
+			0
+		)}
+		{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
+		{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
+			(item) => item && item.used < item.requested
+		)}
+		{@const memoryRequested = filtertedMemoryUtil.reduce(
+			(acc, item) => acc + (item ? item.requested : 0),
+			0
+		)}
+		{@const memoryUsage = filtertedMemoryUtil.reduce(
+			(acc, item) => acc + (item ? item.used : 0),
+			0
+		)}
 		<div class="grid">
 			<div class="card">
 				<Heading level="2" size="medium" spacing
@@ -222,26 +233,16 @@
 					data.</BodyShort
 				>
 
-				{#if resourceUtilization !== PendingValue}
-					{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
-						(item) => item && item.used < item.requested
-					)}
-					{@const cpuRequested = filteredCpuUtil.reduce(
-						(acc, item) => acc + (item ? item.requested : 0),
-						0
-					)}
-					{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
-					<div
-						style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
-					>
-						<div class="cost-amount">
-							{euroValueFormatter(
-								round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage), 0),
-								{ maximumFractionDigits: 0 }
-							)}
-						</div>
+				<div
+					style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
+				>
+					<div class="cost-amount">
+						{euroValueFormatter(
+							round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage), 0),
+							{ maximumFractionDigits: 0 }
+						)}
 					</div>
-				{/if}
+				</div>
 			</div>
 			<div class="card">
 				<Heading level="2" size="medium" spacing
@@ -252,31 +253,18 @@
 					data.</BodyShort
 				>
 
-				{#if resourceUtilization !== PendingValue}
-					{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
-						(item) => item && item.used < item.requested
-					)}
-					{@const memoryRequested = filtertedMemoryUtil.reduce(
-						(acc, item) => acc + (item ? item.requested : 0),
-						0
-					)}
-					{@const memoryUsage = filtertedMemoryUtil.reduce(
-						(acc, item) => acc + (item ? item.used : 0),
-						0
-					)}
-					<div
-						style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
-					>
-						<div class="cost-amount">
-							{euroValueFormatter(
-								round(
-									yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage),
-									0
-								)
-							)}
-						</div>
+				<div
+					style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
+				>
+					<div class="cost-amount">
+						{euroValueFormatter(
+							round(
+								yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage),
+								0
+							)
+						)}
 					</div>
-				{/if}
+				</div>
 			</div>
 		</div>
 		<div style="display: flex; justify-content: space-between;">
@@ -284,18 +272,16 @@
 		</div>
 
 		<div style="display: flex">
-			{#if resourceUtilization !== PendingValue}
-				<EChart
-					options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
-					style="height: 350px; width: 50%;"
-					onclick={handleChartClick}
-				/>
-				<EChart
-					options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
-					style="height: 350px; width: 50%;"
-					onclick={handleChartClick}
-				/>
-			{/if}
+			<EChart
+				options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
+				style="height: 350px; width: 50%;"
+				onclick={handleChartClick}
+			/>
+			<EChart
+				options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+				style="height: 350px; width: 50%;"
+				onclick={handleChartClick}
+			/>
 		</div>
 		<div>
 			<Heading level="3" spacing>Unutilized Resources for All Applications</Heading>
@@ -316,37 +302,35 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#if resourceUtilization !== PendingValue}
-						{#each overageTable as overage (overage.id)}
-							<Tr>
-								<Td>
-									<WorkloadLink
-										workload={{
-											__typename: overage.type,
-											teamEnvironment: { environment: { name: overage.env } },
-											team: { slug: teamSlug },
-											name: overage.name
-										}}
-									/>
-								</Td>
-								<Td>{overage.env}</Td>
-								<Td
-									>{overage.unusedCpu.toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})}</Td
-								>
-								<Td>{prettyBytes(overage.unusedMem)}</Td>
-								<Td>
-									{euroValueFormatter(overage.estimatedAnnualOverageCost)}
-								</Td>
-							</Tr>
-						{:else}
-							<Tr>
-								<Td colspan={999}>No overage data for team {teamSlug}</Td>
-							</Tr>
-						{/each}
-					{/if}
+					{#each overageTable as overage (overage.id)}
+						<Tr>
+							<Td>
+								<WorkloadLink
+									workload={{
+										__typename: overage.type,
+										teamEnvironment: { environment: { name: overage.env } },
+										team: { slug: teamSlug },
+										name: overage.name
+									}}
+								/>
+							</Td>
+							<Td>{overage.env}</Td>
+							<Td
+								>{overage.unusedCpu.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}</Td
+							>
+							<Td>{prettyBytes(overage.unusedMem)}</Td>
+							<Td>
+								{euroValueFormatter(overage.estimatedAnnualOverageCost)}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td colspan={999}>No overage data for team {teamSlug}</Td>
+						</Tr>
+					{/each}
 				</Tbody>
 			</Table>
 		</div>

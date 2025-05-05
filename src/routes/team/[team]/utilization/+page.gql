@@ -1,5 +1,5 @@
 query TeamResourceUsage($team: Slug!) {
-	team(slug: $team) @loading {
+	team(slug: $team) {
 		cpuUtil: workloadUtilization(resourceType: CPU) {
 			workload {
 				id
