@@ -229,13 +229,11 @@
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
 				>
 				<BodyShort spacing
-					>Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
-					data.</BodyShort
+					>Estimate of annual cost of unutilized CPU for <strong>{teamSlug}</strong> calculated from
+					current utilization data.</BodyShort
 				>
 
-				<div
-					style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
-				>
+				<div class="cost-wrapper">
 					<div class="cost-amount">
 						{euroValueFormatter(
 							round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage), 0),
@@ -248,20 +246,19 @@
 				<Heading level="2" size="medium" spacing
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
 				>
-				<BodyShort
-					>Estimate of annual cost of unutilized memory for {teamSlug} calculated from current utilization
-					data.</BodyShort
+				<BodyShort spacing
+					>Estimate of annual cost of unutilized memory for <strong>{teamSlug}</strong> calculated from
+					current utilization data.</BodyShort
 				>
 
-				<div
-					style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
-				>
+				<div class="cost-wrapper">
 					<div class="cost-amount">
 						{euroValueFormatter(
 							round(
 								yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage),
 								0
-							)
+							),
+							{ maximumFractionDigits: 0 }
 						)}
 					</div>
 				</div>
@@ -356,12 +353,19 @@
 		border-radius: 12px;
 		align-items: stretch;
 	}
+
+	.cost-wrapper {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+	}
+
 	.cost-amount {
 		background-color: var(--ax-bg-raised);
 		font-size: 1.5rem;
-		padding: 1rem 2rem;
 		border-radius: 0.375rem;
 		display: inline-block;
 		align-items: center;
+		padding: var(--ax-space-8) var(--ax-space-32);
 	}
 </style>

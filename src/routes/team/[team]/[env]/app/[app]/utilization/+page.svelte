@@ -4,12 +4,16 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import type { EChartsOption } from 'echarts';
 
+	import { UtilizationResourceType } from '$houdini';
+	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import { docURL } from '$lib/doc';
 	import { formatKubernetesCPU, formatKubernetesMemory } from '$lib/utils/formatters';
+	import { round, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
+		BodyShort,
 		Heading,
 		Loader,
 		ReadMore,
@@ -22,6 +26,7 @@
 		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
+	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import prettyBytes from 'pretty-bytes';
@@ -202,6 +207,58 @@
 <div class="wrapper">
 	{#if $ResourceUtilizationForApp.data}
 		{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
+		<div class="grid">
+			<div class="card">
+				<Heading level="2" size="medium" spacing
+					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
+				>
+				<BodyShort spacing
+					>Estimate of annual cost of unutilized CPU for application <strong
+						>{$ResourceUtilizationForApp.data.team.environment.application.name}</strong
+					> calculated from current utilization data.
+				</BodyShort>
+
+				<div class="cost-wrapper">
+					<div class="cost-amount">
+						{euroValueFormatter(
+							round(
+								yearlyOverageCost(
+									UtilizationResourceType.CPU,
+									(cpuReq ?? 0) - (utilization.cpu_series.at(-1)?.value ?? 0)
+								),
+								0
+							),
+							{ maximumFractionDigits: 0 }
+						)}
+					</div>
+				</div>
+			</div>
+			<div class="card">
+				<Heading level="2" size="medium" spacing
+					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
+				>
+				<BodyShort spacing
+					>Estimate of annual cost of unutilized memory for application <strong
+						>{$ResourceUtilizationForApp.data.team.environment.application.name}</strong
+					> calculated from current utilization data.</BodyShort
+				>
+
+				<div class="cost-wrapper">
+					<div class="cost-amount">
+						{euroValueFormatter(
+							round(
+								yearlyOverageCost(
+									UtilizationResourceType.MEMORY,
+									memReq - (utilization.memory_series.at(-1)?.value ?? 0)
+								),
+								0
+							),
+							{ maximumFractionDigits: 0 }
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
 		{#if !isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation)}
 			<Heading level="2" size="medium" spacing>Resource Settings and Recommendations</Heading>
 			<BodyLong>
@@ -470,5 +527,35 @@
 
 	.chart-wrapper {
 		padding-block: 1rem;
+	}
+
+	.grid {
+		margin-top: 1rem;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		column-gap: 1rem;
+		row-gap: 1rem;
+	}
+
+	.card {
+		background-color: var(--ax-bg-sunken);
+		padding: var(--ax-space-16) var(--ax-space-20);
+		border-radius: 12px;
+		align-items: stretch;
+	}
+
+	.cost-wrapper {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+	}
+
+	.cost-amount {
+		background-color: var(--ax-bg-raised);
+		font-size: 1.5rem;
+		border-radius: 0.375rem;
+		display: inline-block;
+		align-items: center;
+		padding: var(--ax-space-8) var(--ax-space-32);
 	}
 </style>
