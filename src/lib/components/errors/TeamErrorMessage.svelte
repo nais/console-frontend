@@ -2,7 +2,7 @@
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { Alert, BodyLong, Button, Heading } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import ExternalLink from '../ExternalLink.svelte';
 	import WorkloadLink from '../WorkloadLink.svelte';
 
 	const {
@@ -91,10 +91,8 @@
 				<BodyLong>
 					Applications and jobs on Nais must use images from Google Artifact Registry (GAR). The
 					easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in the
-					workflow. <a
-						href="https://nais.io/log/#2025-02-24-image-policy"
-						target="_blank"
-						rel="noopener noreferrer">Read more in Nais announcement</a
+					workflow. <ExternalLink href="https://nais.io/log/#2025-02-24-image-policy"
+						>Read more in Nais announcement</ExternalLink
 					>.
 				</BodyLong>
 				<BodyLong>
@@ -132,11 +130,13 @@
 					{workloads?.length === 1 ? 'does' : 'do'}
 					not have a registered Software Bill of Materials (SBOM). This can be resolved by utilizing
 					the
-					<a href="https://github.com/nais/docker-build-push"
-						>nais/docker-build-push<ExternalLinkIcon /></a
+					<ExternalLink href="https://github.com/nais/docker-build-push"
+						>nais/docker-build-push</ExternalLink
 					>
 					GitHub action. Read more in the
-					<a href={docURL('/services/vulnerabilities/how-to/sbom/')}>Nais documentation</a>.
+					<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
+						>Nais documentation</ExternalLink
+					>.
 				</BodyLong>
 			{/if}
 			<div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
@@ -214,7 +215,7 @@
 								{/snippet}
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem>
-										<a href="https://github.com/{repo.name}" target="_blank">{repo.name}</a>
+										<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
 
 										<div class="right">
 											<Button

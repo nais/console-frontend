@@ -6,6 +6,7 @@
 		graphql,
 		type QueryResult
 	} from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import SlackIcon from '$lib/icons/SlackIcon.svelte';
@@ -23,7 +24,6 @@
 	} from '@nais/ds-svelte-community';
 	import {
 		ArrowsCirclepathIcon,
-		ExternalLinkIcon,
 		EyeIcon,
 		EyeSlashIcon,
 		TrashIcon
@@ -313,58 +313,42 @@
 						{#if external.googleArtifactRegistry}
 							<dt>Google Artifact Registry:</dt>
 							<dd>
-								<a
+								<ExternalLink
 									href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
-									target="_blank"
-									rel="noopener noreferrer"
-									style:display="inline"
 								>
 									{formatGARRepo(external.googleArtifactRegistry.repository)}
-									<ExternalLinkIcon class="text-aligned-icon" />
-								</a>
+								</ExternalLink>
 							</dd>
 						{/if}
 						{#if external.entraIDGroup}
 							<dt>Entra ID Group:</dt>
 							<dd>
-								<a
+								<ExternalLink
 									href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}"
-									target="_blank"
-									rel="noopener noreferrer"
-									style:display="inline"
 								>
 									{external.entraIDGroup.groupID}
-									<ExternalLinkIcon class="text-aligned-icon" />
-								</a>
+								</ExternalLink>
 							</dd>
 						{/if}
 						{#if external.cdn}
 							<dt>Team CDN bucket:</dt>
 							<dd>
-								<a
+								<ExternalLink
 									href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}"
-									target="_blank"
-									rel="noopener noreferrer"
-									style:display="inline"
 								>
 									{external.cdn.bucket}
-									<ExternalLinkIcon class="text-aligned-icon" />
-								</a>
+								</ExternalLink>
 							</dd>
 						{/if}
 					{/if}
 					{#each $TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
 						<dt>Team project in {teamEnvironment.environment.name}:</dt>
 						<dd>
-							<a
+							<ExternalLink
 								href="https://console.cloud.google.com/home/dashboard?project={teamEnvironment.gcpProjectID}"
-								target="_blank"
-								rel="noopener noreferrer"
-								style:display="inline"
 							>
 								{teamEnvironment.gcpProjectID}
-								<ExternalLinkIcon class="text-aligned-icon" />
-							</a>
+							</ExternalLink>
 						</dd>
 					{/each}
 				</dl>

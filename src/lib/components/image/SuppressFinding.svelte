@@ -48,8 +48,8 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
+	import ExternalLink from '../ExternalLink.svelte';
 	import { detailsUrl } from './imageUtils';
 
 	interface Props {
@@ -199,8 +199,8 @@
 
 			<dt>Details:</dt>
 			<dd>
-				<a href={detailsUrl(finding.identifier)} target="_blank"
-					>{detailsUrl(finding.identifier)}<ExternalLinkIcon /></a
+				<ExternalLink href={detailsUrl(finding.identifier)}
+					>{detailsUrl(finding.identifier)}</ExternalLink
 				>
 			</dd>
 		</dl>

@@ -5,6 +5,7 @@
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import ExternalLink from './ExternalLink.svelte';
 
 	interface Props {
 		team: TeamDeployments;
@@ -94,8 +95,9 @@
 							<span
 								style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
 							>
-								<a href="https://github.com/{deploy.repository}/commit/{deploy.commitSha}"
-									>{deploy?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
+								<ExternalLink
+									href="https://github.com/{deploy.repository}/commit/{deploy.commitSha}"
+									>{deploy?.commitSha.slice(0, 7)}</ExternalLink
 								>
 							</span>
 						{/if}

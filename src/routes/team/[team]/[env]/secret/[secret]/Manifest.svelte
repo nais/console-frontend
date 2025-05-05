@@ -1,7 +1,7 @@
 <script lang="ts">
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { CopyButton, Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		secretName: string;
@@ -19,10 +19,7 @@
 
 	<Heading level="3" size="xsmall">Documentation</Heading>
 	<div class="value">
-		<a href={docURL('/services/secrets/how-to/workload/')} target="_blank"
-			>How-to guide
-			<ExternalLinkIcon title="How-to guide" font-size="1.5rem" />
-		</a>
+		<ExternalLink href={docURL('/services/secrets/how-to/workload/')}>How-to guide</ExternalLink>
 	</div>
 
 	<Heading level="3" size="xsmall">Manifest</Heading>

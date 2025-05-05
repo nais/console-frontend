@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { ApplicationOrderField } from '$houdini';
 	import AggregatedCostForApplications from '$lib/components/AggregatedCostForApplications.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
@@ -68,13 +69,15 @@
 			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
 				<strong>No applications found.</strong> Applications are long-running processes designed to
 				handle continuous workloads and remain active until stopped or restarted.
-				<a href={docURL('/workloads/application')}
-					>Learn more about applications and how to get started.</a
+				<ExternalLink href={docURL('/workloads/application')}
+					>Learn more about applications and how to get started.</ExternalLink
 				>
 			{:else}
 				Applications are long-running processes designed to handle continuous workloads and remain
 				active until stopped or restarted.
-				<a href={docURL('/workloads/application')}>Learn more about applications.</a>
+				<ExternalLink href={docURL('/workloads/application')}
+					>Learn more about applications.</ExternalLink
+				>
 			{/if}
 		</BodyLong>
 

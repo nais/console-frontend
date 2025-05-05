@@ -5,6 +5,7 @@
 
 	import { SqlInstanceOrderField } from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
@@ -36,8 +37,8 @@
 		<div>
 			<BodyLong spacing>
 				Postgres instances provide managed relational databases in the cloud.
-				<a href={docURL('/persistence/postgres')}
-					>Learn more about Postgres in Nais and how to get started.</a
+				<ExternalLink href={docURL('/persistence/postgres')}
+					>Learn more about Postgres in Nais and how to get started.</ExternalLink
 				>
 			</BodyLong>
 
@@ -178,8 +179,8 @@
 		<BodyLong>
 			<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
 			databases in the cloud.
-			<a href={docURL('/persistence/postgres')}
-				>Learn more about Postgres in Nais and how to get started.</a
+			<ExternalLink href={docURL('/persistence/postgres')}
+				>Learn more about Postgres in Nais and how to get started.</ExternalLink
 			>
 		</BodyLong>
 	</div>

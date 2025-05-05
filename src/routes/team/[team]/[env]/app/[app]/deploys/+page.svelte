@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import { docURL } from '$lib/doc';
@@ -46,7 +47,9 @@
 							>{$AppDeploys.data.team.environment.application.teamEnvironment.environment.name}</Tag
 						> found.</strong
 					>
-					<a href={docURL('/build/')}>Learn more about builds and deployments in Nais.</a>
+					<ExternalLink href={docURL('/build/')}
+						>Learn more about builds and deployments in Nais.</ExternalLink
+					>
 				{:else}
 					Overview of deployments of <strong
 						>{$AppDeploys.data.team.environment.application.name}</strong
@@ -57,7 +60,9 @@
 							$AppDeploys.data.team.environment.application.teamEnvironment.environment.name
 						)}>{$AppDeploys.data.team.environment.application.teamEnvironment.environment.name}</Tag
 					>.
-					<a href={docURL('/build/')}>Learn more about builds and deployments in Nais.</a>
+					<ExternalLink href={docURL('/build/')}
+						>Learn more about builds and deployments in Nais.</ExternalLink
+					>
 				{/if}
 			</BodyLong>
 			<List

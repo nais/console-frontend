@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { BigQueryDatasetOrderField } from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -27,8 +28,8 @@
 		{#snippet description()}
 			<BodyLong spacing>
 				BigQuery datasets store structured data optimized for analytical workloads.
-				<a href={docURL('/persistence/bigquery')}
-					>Learn more about BigQuery datasets and how to get started.</a
+				<ExternalLink href={docURL('/persistence/bigquery')}
+					>Learn more about BigQuery datasets and how to get started.</ExternalLink
 				>
 			</BodyLong>
 		{/snippet}
@@ -36,8 +37,8 @@
 			<BodyLong
 				><strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
 				optimized for analytical workloads.
-				<a href={docURL('/persistence/bigquery')}
-					>Learn more about BigQuery datasets and how to get started.</a
+				<ExternalLink href={docURL('/persistence/bigquery')}
+					>Learn more about BigQuery datasets and how to get started.</ExternalLink
 				>
 			</BodyLong>
 		{/snippet}

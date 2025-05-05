@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ValkeyInstanceOrderField } from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -28,7 +29,9 @@
 			<BodyLong spacing>
 				Valkey is a key value database that is used for storing and querying data. It is a good
 				choice for storing data that is not relational in nature and often used for caching.
-				<a href={docURL('/persistence/valkey')}>Learn more about Valkey and how to get started.</a>
+				<ExternalLink href={docURL('/persistence/valkey')}
+					>Learn more about Valkey and how to get started.</ExternalLink
+				>
 			</BodyLong>
 		{/snippet}
 		{#snippet notFound()}
@@ -36,7 +39,9 @@
 				><strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
 				storing and querying data. It is a good choice for storing data that is not relational in
 				nature and often used for caching.
-				<a href={docURL('/persistence/valkey')}>Learn more about Valkey and how to get started.</a>
+				<ExternalLink href={docURL('/persistence/valkey')}
+					>Learn more about Valkey and how to get started.</ExternalLink
+				>
 			</BodyLong>
 		{/snippet}
 	</PersistencePage>

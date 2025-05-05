@@ -5,7 +5,7 @@
 	import Time from '$lib/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import ExternalLink from '../ExternalLink.svelte';
 	import ListItem from './ListItem.svelte';
 
 	const {
@@ -44,17 +44,18 @@
 	<div>
 		<BodyShort size="small">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
-				Commit <span
-					style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
-				>
-					<a href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
-						>{deployment?.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
+				Commit
+				<ExternalLink
+					href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
+					><span
+						style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
+						>{deployment?.commitSha.slice(0, 7)}</span
 					>
-				</span>
+				</ExternalLink>
 				by {deployment.deployerUsername} triggered a
 				{#if deployment.triggerUrl}
 					{#if showEnv}
-						<a href={deployment.triggerUrl}>Github action <ExternalLinkIcon /></a>
+						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
 						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
 							.resources.nodes.length === 1
 							? ''
@@ -63,7 +64,7 @@
 							{deployment.environmentName}
 						</Tag>:
 					{:else}
-						<a href={deployment.triggerUrl}>Github action <ExternalLinkIcon /></a>
+						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
 						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
 							.resources.nodes.length === 1
 							? ''

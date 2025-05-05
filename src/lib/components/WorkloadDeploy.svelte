@@ -5,6 +5,7 @@
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyShort, Heading, Link, Tag } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import ExternalLink from './ExternalLink.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
 
 	interface Props {
@@ -91,9 +92,10 @@
 		{/if}
 
 		{#if deploymentInfo.commitSha && isValidSha(deploymentInfo.commitSha)}
-			<a href="https://github.com/{deploymentInfo.repository}/commit/{deploymentInfo.commitSha}"
-				>Commit {deploymentInfo.commitSha.slice(0, 7)} <ExternalLinkIcon /></a
-			>
+			<ExternalLink
+				href="https://github.com/{deploymentInfo.repository}/commit/{deploymentInfo.commitSha}"
+				>Commit {deploymentInfo.commitSha.slice(0, 7)}
+			</ExternalLink>
 		{/if}
 	{:else}
 		<BodyShort>No deployment metadata found for workload.</BodyShort>
@@ -102,12 +104,9 @@
 <div class="wrapper">
 	<Heading level="3" size="small">Image</Heading>
 	{#if $data.image.name.startsWith('europe-north1-docker.pkg.dev')}
-		<a href="https://{$data.image.name + ':' + $data.image.tag}">
-			<span
-				>{getImageDisplayName($data.image.name)}:{$data.image.tag}
-				<ExternalLinkIcon /></span
-			>
-		</a>
+		<ExternalLink href="https://{$data.image.name + ':' + $data.image.tag}">
+			{getImageDisplayName($data.image.name)}:{$data.image.tag}
+		</ExternalLink>
 	{:else}
 		{$data.image.name}:{$data.image.tag}
 	{/if}

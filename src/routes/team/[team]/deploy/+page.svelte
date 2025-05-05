@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import { docURL } from '$lib/doc';
@@ -36,10 +37,14 @@
 			<BodyLong spacing>
 				{#if $Deployments.data?.team.deployments.pageInfo.totalCount == 0}
 					<strong>No deployments found.</strong>
-					<a href={docURL('/build/')}>Learn more about builds and deployments in Nais.</a>
+					<ExternalLink href={docURL('/build/')}
+						>Learn more about builds and deployments in Nais.</ExternalLink
+					>
 				{:else}
 					Overview of your team's deployments.
-					<a href={docURL('/build/')}>Learn more about builds and deployments in Nais.</a>
+					<ExternalLink href={docURL('/build/')}
+						>Learn more about builds and deployments in Nais.</ExternalLink
+					>
 				{/if}
 			</BodyLong>
 			<List

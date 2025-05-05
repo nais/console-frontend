@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import Confirm from '$lib/components/Confirm.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
@@ -26,7 +27,6 @@
 	import {
 		BulletListIcon,
 		CheckmarkIcon,
-		ExternalLinkIcon,
 		PlusCircleFillIcon,
 		PlusIcon,
 		TokenIcon,
@@ -208,11 +208,8 @@
 				</p>
 				<p><strong>Web UI</strong></p>
 				<p>
-					<a href="https://{unleash.webIngress}"
-						>https://{unleash.webIngress}<ExternalLinkIcon
-							title="Unleash UI"
-							font-size="1.5rem"
-						/></a
+					<ExternalLink href="https://{unleash.webIngress}"
+						>https://{unleash.webIngress}</ExternalLink
 					>
 				</p>
 				<p><strong>API</strong></p>
@@ -222,9 +219,9 @@
 				</p>
 				<p><strong>Documentation</strong></p>
 				<p>
-					<a href={docURL('/explanation/feature-toggling')}
+					<ExternalLink href={docURL('/explanation/feature-toggling')}
 						>{docURL('/explanation/feature-toggling')}
-					</a>
+					</ExternalLink>
 				</p>
 			</div>
 			<div>

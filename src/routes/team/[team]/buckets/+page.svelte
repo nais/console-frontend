@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { BucketOrderField } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import { docURL } from '$lib/doc';
 	import { BodyLong } from '@nais/ds-svelte-community';
@@ -29,7 +30,8 @@
 		{#snippet description()}
 			<BodyLong spacing>
 				Storage buckets are containers for storing and managing data in the cloud.
-				<a href={docURL('/persistence/buckets')}>Learn more about Buckets and how to get started.</a
+				<ExternalLink href={docURL('/persistence/buckets')}
+					>Learn more about Buckets and how to get started.</ExternalLink
 				>
 			</BodyLong>
 		{/snippet}
@@ -38,9 +40,9 @@
 				<BodyLong>
 					<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
 					data in the cloud.
-					<a href={docURL('/persistence/buckets')}>
+					<ExternalLink href={docURL('/persistence/buckets')}>
 						Learn more about Buckets and how to get started.
-					</a>
+					</ExternalLink>
 				</BodyLong>
 			</div>
 		{/snippet}

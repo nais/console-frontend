@@ -1,11 +1,12 @@
 <script lang="ts">
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, ExternalLinkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -22,8 +23,8 @@
 			<dl>
 				<dt>Bucket</dt>
 				<dd>
-					<a href="https://console.cloud.google.com/storage/browser/{bucket.name}"
-						>Google Cloud Console<ExternalLinkIcon title="Google Cloud Console" /></a
+					<ExternalLink href="https://console.cloud.google.com/storage/browser/{bucket.name}"
+						>Google Cloud Console</ExternalLink
 					>
 				</dd>
 				<dt>Public access prevention</dt>

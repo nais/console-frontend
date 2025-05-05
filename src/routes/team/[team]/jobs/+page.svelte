@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { JobOrderField } from '$houdini';
 	import AggregatedCostForJobs from '$lib/components/AggregatedCostForJobs.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import JobListItem from '$lib/components/list/JobListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
@@ -68,10 +69,12 @@
 			{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}
 				<strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
 				completion and then exit.
-				<a href={docURL('/workloads/job')}>Learn more about jobs and how to get started.</a>
+				<ExternalLink href={docURL('/workloads/job')}
+					>Learn more about jobs and how to get started.</ExternalLink
+				>
 			{:else}
 				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
-				<a href={docURL('/workloads/job')}>Learn more about jobs.</a>
+				<ExternalLink href={docURL('/workloads/job')}>Learn more about jobs.</ExternalLink>
 			{/if}
 		</BodyLong>
 

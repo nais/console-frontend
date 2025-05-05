@@ -12,6 +12,7 @@
 <script lang="ts">
 	import { WorkloadStatusErrorLevel, type ValueOf } from '$houdini';
 	import { Alert, BodyLong, Button, Heading } from '@nais/ds-svelte-community';
+	import ExternalLink from '../ExternalLink.svelte';
 
 	const {
 		error,
@@ -108,14 +109,12 @@
 					<BodyLong>
 						To resolve this issue, review the {workloadType === 'Job' ? 'job' : 'application'} manifest
 						and correct any errors. Consult the
-						<a
-							target="_blank"
-							rel="noopener noreferrer"
+						<ExternalLink
 							href={docURL(
 								workloadType === 'Job'
 									? '/workloads/job/reference/naisjob-spec/'
 									: '/workloads/application/reference/application-spec/'
-							)}>Nais {workloadType === 'Job' ? 'job' : 'application'} reference</a
+							)}>Nais {workloadType === 'Job' ? 'job' : 'application'} reference</ExternalLink
 						> for manifest requirements.
 					</BodyLong>
 				{:else if error.__typename === 'WorkloadStatusSynchronizationFailing'}
@@ -136,11 +135,10 @@
 					<BodyLong
 						>Applications and jobs on Nais must use images from Google Artifact Registry (GAR). The
 						easiest way to ensure that images are stored in GAR is to use Nais' GitHub Actions in
-						the workflow. <a
-							href="https://nais.io/log/#2025-02-24-image-policy"
-							target="_blank"
-							rel="noopener noreferrer">Read more in Nais announcement</a
-						>.
+						the workflow. <ExternalLink href="https://nais.io/log/#2025-02-24-image-policy"
+							>Read more in Nais announcement</ExternalLink
+						>
+						.
 					</BodyLong>
 				{:else if error.__typename === 'WorkloadStatusNoRunningInstances'}
 					<BodyLong>The application has no running instances.</BodyLong>
