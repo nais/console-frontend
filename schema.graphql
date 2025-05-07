@@ -9,11 +9,6 @@ directive @defer(
   label: String
 ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
-"""
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
-
 """Interface for activity log entries."""
 interface ActivityLogEntry {
   """
@@ -879,6 +874,15 @@ input CreateUnleashForTeamInput {
 
 type CreateUnleashForTeamPayload {
   unleash: UnleashInstance
+}
+
+"""Get current unit prices."""
+type CurrentUnitPrices {
+  """Current price for one CPU hour."""
+  cpu: Price!
+
+  """Current price for one GB hour of memory."""
+  memory: Price!
 }
 
 """
@@ -2355,8 +2359,15 @@ interface Persistence {
   teamEnvironment: TeamEnvironment!
 }
 
+type Price {
+  value: Float!
+}
+
 """The query root for the Nais GraphQL API."""
 type Query {
+  """Get current prices for resources."""
+  currentUnitPrices: CurrentUnitPrices!
+
   """Get a single environment."""
   environment(
     """The name of the environment to get."""
