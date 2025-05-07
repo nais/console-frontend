@@ -1,4 +1,12 @@
 query DataProduct {
+	currentUnitPrices {
+		cpu {
+			value
+		}
+		memory {
+			value
+		}
+	}
 	teams(first: 1000) {
 		nodes {
 			inventoryCounts {

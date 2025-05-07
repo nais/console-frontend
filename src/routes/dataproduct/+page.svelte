@@ -70,6 +70,10 @@
 </script>
 
 {#if $DataProduct.data}
+	<ul>
+		<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
+		<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
+	</ul>
 	<div class="grid">
 		<!--pre>{JSON.stringify(calculateTotals($DataProduct.data), undefined, 2)}</pre-->
 		<Card columns={12}>
