@@ -75,6 +75,11 @@
 						requested_memory: requested(resourceType: MEMORY)
 						limit_cpu: limit(resourceType: CPU)
 						limit_memory: limit(resourceType: MEMORY)
+						recommendations {
+							cpuRequestCores
+							memoryLimitBytes
+							memoryRequestBytes
+						}
 					}
 				}
 			`)
@@ -83,25 +88,33 @@
 
 	const instances = $derived($data.instances.edges.map((edge) => edge.node));
 
-	let cpu_usage = $derived(
+	const cpu_usage = $derived(
 		instances.map((instance) => instance.cpu.current).reduce((a, b) => a + b, 0)
 	);
 
-	let memory_usage = $derived(
+	const memory_usage = $derived(
 		instances.map((instance) => instance.memory.current).reduce((a, b) => a + b, 0)
 	);
 
-	let usage_cpu_percent = $derived(
+	const usage_cpu_percent = $derived(
 		$data.resources.requests.cpu !== null && $data.resources.requests.cpu !== undefined
 			? (cpu_usage / ($data.resources.requests.cpu * instances.length)) * 100
 			: 0
 	);
 
-	let usage_memory_percent = $derived(
+	const usage_memory_percent = $derived(
 		$data.resources.requests.memory !== null && $data.resources.requests.memory !== undefined
 			? (memory_usage / ($data.resources.requests.memory * instances.length)) * 100
 			: 0
 	);
+
+	const cpuReqRecommendation = $derived($data?.utilization.recommendations.cpuRequestCores ?? 0);
+
+	const cpuReq = $derived($data?.resources.requests.cpu ?? 0);
+
+	const memReqRecommendation = $derived($data.utilization.recommendations.memoryRequestBytes ?? 0);
+
+	const memReq = $derived($data.resources.requests.memory ?? 0);
 
 	const renameStrategy = (type: string) => {
 		if (type === 'CPUScalingStrategy') {
@@ -112,13 +125,20 @@
 			return 'Unknown';
 		}
 	};
+
+	function isIn50PercentRange(n: number, target: number): boolean {
+		const lowerBound = target * 0.5; // 50% less than the target
+		const upperBound = target * 1.5; // 50% more than the target
+		return n >= lowerBound && n <= upperBound;
+	}
 </script>
 
 <div>
-	{#if usage_cpu_percent < 50 || usage_memory_percent < 50}
+	{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
 		<Alert variant="info" size="small" style="margin-bottom: var(--ax-space-8);">
-			CPU and/or memory utilization is below 50%. To reduce costs, consider scaling down the
-			requested resources. Refer to the applications <a
+			CPU and/or memory requests differ by more than 50% from the recommended values. To optimize
+			resource usage and cost, consider adjusting the requested resources. Refer to the
+			application's <a
 				href="/team/{$data.team.slug}/{$data.teamEnvironment.environment
 					.name}/app/{$data.name}/utilization">utilization</a
 			> page for more details.
