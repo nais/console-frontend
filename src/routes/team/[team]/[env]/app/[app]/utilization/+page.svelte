@@ -33,7 +33,7 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { ResourceUtilizationForApp, prices } = $derived(data);
+	let { ResourceUtilizationForApp } = $derived(data);
 
 	type resourceUsage = {
 		readonly timestamp: Date;
@@ -225,8 +225,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.CPU,
 									(cpuReq ?? 0) - (utilization.cpu_series.at(-1)?.value ?? 0),
-									prices.cpu,
-									prices.memory
+									$ResourceUtilizationForApp.data.currentUnitPrices.cpu.value,
+									$ResourceUtilizationForApp.data.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -252,8 +252,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.MEMORY,
 									memReq - (utilization.memory_series.at(-1)?.value ?? 0),
-									prices.cpu,
-									prices.memory
+									$ResourceUtilizationForApp.data.currentUnitPrices.cpu.value,
+									$ResourceUtilizationForApp.data.currentUnitPrices.memory.value
 								),
 								0
 							),

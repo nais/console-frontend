@@ -12,8 +12,10 @@
 		yearlyOverageCost,
 		type TeamOverageData
 	} from '$lib/utils/resources';
-	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import {
+		BodyLong,
+		BodyShort,
+		Heading,
 		Table,
 		Tbody,
 		Td,
@@ -21,7 +23,7 @@
 		Thead,
 		Tr,
 		type TableSortState
-	} from '@nais/ds-svelte-community/components/Table/index.js';
+	} from '@nais/ds-svelte-community';
 	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
@@ -179,13 +181,7 @@
 			}
 		}
 
-		overageTable = getTeamOverageData(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction,
-			data.prices.cpu,
-			data.prices.memory
-		);
+		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
 		return sortState;
 	};
 
@@ -193,18 +189,15 @@
 		orderBy: 'COST',
 		direction: 'descending'
 	});
+
 	let { TeamResourceUsage } = $derived(data);
-	let resourceUtilization = $derived($TeamResourceUsage.data?.team);
+
+	let resourceUtilization = $derived($TeamResourceUsage.data);
+
 	let overageTable: TeamOverageData[] = $state([]);
 
 	$effect(() => {
-		overageTable = getTeamOverageData(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction,
-			data.prices.cpu,
-			data.prices.memory
-		);
+		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
 	});
 
 	function handleChartClick(name: string) {
@@ -216,7 +209,7 @@
 <GraphErrors errors={$TeamResourceUsage.errors} />
 <div class="wrapper">
 	{#if resourceUtilization}
-		{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
+		{@const filteredCpuUtil = resourceUtilization.team.cpuUtil.filter(
 			(item) => item && item.used < item.requested
 		)}
 		{@const cpuRequested = filteredCpuUtil.reduce(
@@ -224,7 +217,7 @@
 			0
 		)}
 		{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
-		{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
+		{@const filtertedMemoryUtil = resourceUtilization.team.memUtil.filter(
 			(item) => item && item.used < item.requested
 		)}
 		{@const memoryRequested = filtertedMemoryUtil.reduce(
@@ -252,8 +245,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.CPU,
 									cpuRequested - cpuUsage,
-									data.prices.cpu,
-									data.prices.memory
+									resourceUtilization.currentUnitPrices.cpu.value,
+									resourceUtilization.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -278,8 +271,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.MEMORY,
 									memoryRequested - memoryUsage,
-									data.prices.cpu,
-									data.prices.memory
+									resourceUtilization.currentUnitPrices.cpu.value,
+									resourceUtilization.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -298,12 +291,12 @@
 
 		<div style="display: flex">
 			<EChart
-				options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
+				options={echartOptionsCPUOverageChart(resourceUtilization.team.cpuUtil)}
 				style="height: 350px; width: 50%;"
 				onclick={handleChartClick}
 			/>
 			<EChart
-				options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+				options={echartOptionsMemoryOverageChart(resourceUtilization.team.memUtil)}
 				style="height: 350px; width: 50%;"
 				onclick={handleChartClick}
 			/>

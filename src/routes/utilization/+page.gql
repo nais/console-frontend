@@ -25,4 +25,12 @@ query TenantUtilization {
 			}
 		}
 	}
+	currentUnitPrices {
+		cpu {
+			value
+		}
+		memory {
+			value
+		}
+	}
 }

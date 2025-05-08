@@ -206,9 +206,7 @@
 		overageTable = getTeamsOverageData(
 			$TenantUtilization.data,
 			sortState.orderBy,
-			sortState.direction,
-			data.prices.cpu,
-			data.prices.memory
+			sortState.direction
 		);
 	});
 
@@ -245,8 +243,8 @@
 									yearlyOverageCost(
 										UtilizationResourceType.CPU,
 										cpuRequested - cpuUsage,
-										data.prices.cpu,
-										data.prices.memory
+										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 									),
 									0
 								),
@@ -282,8 +280,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.MEMORY,
 									memoryRequested - memoryUsage,
-									data.prices.cpu,
-									data.prices.memory
+									$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+									$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 								),
 								{ maximumFractionDigits: 0 }
 							)}

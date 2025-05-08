@@ -65,7 +65,9 @@
 				/>
 			</div>
 		{/if}
-		<div class="card"><TeamUtilizationAndOverage {teamSlug} prices={data.prices} /></div>
+		<div class="card">
+			<TeamUtilizationAndOverage {teamSlug} />
+		</div>
 		<div class="card" style:grid-column="span 2"><AggregatedCostForTeam {teamSlug} /></div>
 		<div class="card deployments">
 			<Heading size="small" level="2">Deployments</Heading>
