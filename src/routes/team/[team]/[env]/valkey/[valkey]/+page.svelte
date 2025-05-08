@@ -38,11 +38,17 @@
 {/if}
 {#if $ValkeyInstance.data}
 	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
-        {@const mandatoryServiceMaintenanceUpdates = $ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(x => !!x?.deadline)}
-        {@const nonMandatoryServiceMaintenanceUpdates = $ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(x => !x?.deadline)}
+	{@const mandatoryServiceMaintenanceUpdates =
+		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(
+			(x) => !!x?.deadline
+		)}
+	{@const nonMandatoryServiceMaintenanceUpdates =
+		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(
+			(x) => !x?.deadline
+		)}
 	<div class="wrapper">
 		<div>
-		  <Heading level="3" spacing>Valkey Instance Access List</Heading>
+			<Heading level="3" spacing>Valkey Instance Access List</Heading>
 			<Table
 				size="small"
 				sort={{
@@ -105,36 +111,32 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 		</div>
-	  <div>
-	    <Heading level="3">Ventende vedlikehold</Heading>
-	    <Heading level="4" style="margin-left: 1em">Påkrevd vedlikehold</Heading>
-            {#if mandatoryServiceMaintenanceUpdates.length > 0}
-	    <ul>
-	      {#each mandatoryServiceMaintenanceUpdates as u}
+		<div>
+			<Heading level="3">Ventende vedlikehold</Heading>
+			<Heading level="4" style="margin-left: 1em">Påkrevd vedlikehold</Heading>
+			{#if mandatoryServiceMaintenanceUpdates.length > 0}
+				<ul>
+					{#each mandatoryServiceMaintenanceUpdates as u}
+						<li>
+							<p>{u?.title}</p>
+							<p>{u?.description}</p>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 
-	      <li>
-		<p>{u?.title}</p>
-		<p>{u?.description}</p>
-	      </li>
-             {/each}
-	    </ul>
-            {/if}
-
-	    <Heading level="4">Anbefalt vedlikehold</Heading>
-            {#if nonMandatoryServiceMaintenanceUpdates.length > 0}
-	    <ul>
-
-	      {#each nonMandatoryServiceMaintenanceUpdates as u}
-
-	      <li>
-		<p>{u?.title}</p>
-		<p>{u?.description}</p>
-	      </li>
-             {/each}
-	    </ul>
-
-	    {/if}
-           </div>
+			<Heading level="4">Anbefalt vedlikehold</Heading>
+			{#if nonMandatoryServiceMaintenanceUpdates.length > 0}
+				<ul>
+					{#each nonMandatoryServiceMaintenanceUpdates as u}
+						<li>
+							<p>{u?.title}</p>
+							<p>{u?.description}</p>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
 	</div>
 {/if}
 
