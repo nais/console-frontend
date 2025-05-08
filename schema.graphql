@@ -876,15 +876,6 @@ type CreateUnleashForTeamPayload {
   unleash: UnleashInstance
 }
 
-"""Get current unit prices."""
-type CurrentUnitPrices {
-  """Current price for one CPU hour."""
-  cpu: Price!
-
-  """Current price for one GB hour of memory."""
-  memory: Price!
-}
-
 """
 A cursor for use in pagination
 
@@ -2359,15 +2350,8 @@ interface Persistence {
   teamEnvironment: TeamEnvironment!
 }
 
-type Price {
-  value: Float!
-}
-
 """The query root for the Nais GraphQL API."""
 type Query {
-  """Get current prices for resources."""
-  currentUnitPrices: CurrentUnitPrices!
-
   """Get a single environment."""
   environment(
     """The name of the environment to get."""
@@ -3873,6 +3857,35 @@ type ServiceCostSeries {
 
   """The sum of the cost across all services."""
   sum: Float!
+}
+
+type ServiceMaintenance implements Node {
+  id: ID!
+  updates: [ServiceMaintenanceUpdate]!
+}
+
+type ServiceMaintenanceUpdate {
+  """
+  Deadline for installing the maintenance. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  deadline: Time
+
+  """Description of the maintenance."""
+  description: String!
+
+  """Documentation link."""
+  documentation_link: String
+
+  """The earliest time the update will be automatically applied."""
+  start_after: Time
+
+  """
+  The time when the update will be automatically applied. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  start_at: Time
+
+  """Title of the maintenance."""
+  title: String!
 }
 
 input SetTeamMemberRoleInput {
@@ -5796,6 +5809,9 @@ type ValkeyInstance implements Node & Persistence {
   cost: ValkeyInstanceCost!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
+
+  """Fetch maintenances for the Valkey instance."""
+  maintenance: ServiceMaintenance!
   name: String!
   status: ValkeyInstanceStatus!
   team: Team!
