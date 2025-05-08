@@ -1,0 +1,10 @@
+query Pricing {
+	currentUnitPrices {
+		cpu {
+			value
+		}
+		memory {
+			value
+		}
+	}
+}

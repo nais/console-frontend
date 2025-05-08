@@ -5,6 +5,7 @@ import {
 	type TenantUtilization$result,
 	type UtilizationResourceType$options
 } from '$houdini';
+import { pricingStore } from '$lib/stores/price.svelte';
 
 export function round(value: number, decimals: number = 0): number {
 	const factor = Math.pow(10, decimals);
@@ -17,8 +18,8 @@ export function yearlyOverageCost(
 	unutilized: number
 ) {
 	// TODO: should be provided by Nais API
-	const costPerCpuCorePerYear = 0.022258158 * 8760; // 8760 hours in a year
-	const costPerBytePerYear = (0.00298259 / 1024 / 1024 / 1024) * 8760;
+	const costPerCpuCorePerYear = pricingStore.getCPU() * 8760; //  0.022258158 * 8760; // 8760 hours in a year
+	const costPerBytePerYear = (pricingStore.getMEM() / 1024 / 1024 / 1024) * 8760;
 
 	let cost = 0.0;
 
