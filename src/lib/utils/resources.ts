@@ -5,7 +5,6 @@ import {
 	type TenantUtilization$result,
 	type UtilizationResourceType$options
 } from '$houdini';
-import { pricingStore } from '$lib/stores/price.svelte';
 
 export function round(value: number, decimals: number = 0): number {
 	const factor = Math.pow(10, decimals);
@@ -15,10 +14,12 @@ export function round(value: number, decimals: number = 0): number {
 // memory should be in Bytes
 export function yearlyOverageCost(
 	resourceType: UtilizationResourceType$options,
-	unutilized: number
+	unutilized: number,
+	cpuCost: number,
+	memCost: number
 ) {
-	const costPerCpuCorePerYear = pricingStore.getCPU() * 8760; // 8760 hours in a year
-	const costPerBytePerYear = (pricingStore.getMEM() / 1024 / 1024 / 1024) * 8760; // convert to GB and multiply by hours in a year
+	const costPerCpuCorePerYear = cpuCost * 8760; // 8760 hours in a year
+	const costPerBytePerYear = (memCost / 1024 / 1024 / 1024) * 8760; // convert to GB and multiply by hours in a year
 
 	let cost = 0.0;
 
@@ -83,7 +84,9 @@ export type TeamsOverageData = {
 export function getTeamOverageData(
 	data: TeamResourceUsage$result['team'] | undefined,
 	sortedBy: string = 'COST',
-	sortDirection: string = 'descending'
+	sortDirection: string = 'descending',
+	cpuCost: number,
+	memCost: number
 ): TeamOverageData[] {
 	const appMap = new Map<string, TeamOverageData>();
 	if (!data) {
@@ -103,13 +106,13 @@ export function getTeamOverageData(
 				env: cpuItem.workload.teamEnvironment.environment.name,
 				unusedMem: 0,
 				unusedCpu: unusedCpu,
-				estimatedAnnualOverageCost: yearlyOverageCost('CPU', unusedCpu),
+				estimatedAnnualOverageCost: yearlyOverageCost('CPU', unusedCpu, cpuCost, memCost),
 				type: cpuItem.workload.__typename
 			});
 		} else {
 			const current = appMap.get(appKey)!;
 			current.unusedCpu += unusedCpu;
-			current.estimatedAnnualOverageCost += yearlyOverageCost('CPU', unusedCpu);
+			current.estimatedAnnualOverageCost += yearlyOverageCost('CPU', unusedCpu, cpuCost, memCost);
 		}
 	}
 
@@ -127,13 +130,18 @@ export function getTeamOverageData(
 				env: memItem.workload.teamEnvironment.environment.name,
 				unusedCpu: 0,
 				unusedMem: unusedMem,
-				estimatedAnnualOverageCost: yearlyOverageCost('MEMORY', unusedMem),
+				estimatedAnnualOverageCost: yearlyOverageCost('MEMORY', unusedMem, cpuCost, memCost),
 				type: memItem.workload.__typename
 			});
 		} else {
 			const current = appMap.get(appKey)!;
 			current.unusedMem += unusedMem;
-			current.estimatedAnnualOverageCost += yearlyOverageCost('MEMORY', unusedMem);
+			current.estimatedAnnualOverageCost += yearlyOverageCost(
+				'MEMORY',
+				unusedMem,
+				cpuCost,
+				memCost
+			);
 		}
 	}
 	return Array.from(appMap.values()).sort((a, b) => {
@@ -195,7 +203,9 @@ export function getTeamOverageData(
 export function getTeamsOverageData(
 	data: TenantUtilization$result | null,
 	sortedBy: string,
-	sortDirection: string
+	sortDirection: string,
+	cpuCost: number,
+	memCost: number
 ): TeamsOverageData[] {
 	const teamMap = new Map<string, TeamsOverageData>();
 
@@ -214,12 +224,12 @@ export function getTeamsOverageData(
 				teamSlug: cpuItem.team.slug,
 				unusedMem: 0,
 				unusedCpu: unusedCpu,
-				estimatedAnnualOverageCost: yearlyOverageCost('CPU', unusedCpu)
+				estimatedAnnualOverageCost: yearlyOverageCost('CPU', unusedCpu, cpuCost, memCost)
 			});
 		} else {
 			const current = teamMap.get(teamKey)!;
 			current.unusedCpu += unusedCpu;
-			current.estimatedAnnualOverageCost += yearlyOverageCost('CPU', unusedCpu);
+			current.estimatedAnnualOverageCost += yearlyOverageCost('CPU', unusedCpu, cpuCost, memCost);
 		}
 	}
 
@@ -234,12 +244,17 @@ export function getTeamsOverageData(
 				teamSlug: memItem.team.slug,
 				unusedCpu: 0,
 				unusedMem: unusedMem,
-				estimatedAnnualOverageCost: yearlyOverageCost('MEMORY', unusedMem)
+				estimatedAnnualOverageCost: yearlyOverageCost('MEMORY', unusedMem, cpuCost, memCost)
 			});
 		} else {
 			const current = teamMap.get(teamKey)!;
 			current.unusedMem += unusedMem;
-			current.estimatedAnnualOverageCost += yearlyOverageCost('MEMORY', unusedMem);
+			current.estimatedAnnualOverageCost += yearlyOverageCost(
+				'MEMORY',
+				unusedMem,
+				cpuCost,
+				memCost
+			);
 		}
 	}
 

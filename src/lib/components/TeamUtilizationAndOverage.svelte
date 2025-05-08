@@ -54,9 +54,13 @@
 
 	interface Props {
 		teamSlug: string;
+		prices: {
+			cpu: number;
+			memory: number;
+		};
 	}
 
-	let { teamSlug }: Props = $props();
+	let { teamSlug, prices }: Props = $props();
 
 	let cpuMetrics = $derived($utilization.data?.team.cpuUtil.filter((item) => !!item) ?? []);
 
@@ -135,8 +139,18 @@
 		Overage cost:
 		{#if cpuRequested && cpuUsage && memoryRequested && memoryUsage}
 			{euroValueFormatter(
-				yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage) +
-					yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage)
+				yearlyOverageCost(
+					UtilizationResourceType.CPU,
+					cpuRequested - cpuUsage,
+					prices.cpu,
+					prices.memory
+				) +
+					yearlyOverageCost(
+						UtilizationResourceType.MEMORY,
+						memoryRequested - memoryUsage,
+						prices.cpu,
+						prices.memory
+					)
 			)}
 		{/if}
 	</BodyShort>

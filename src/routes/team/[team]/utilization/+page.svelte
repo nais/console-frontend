@@ -179,7 +179,13 @@
 			}
 		}
 
-		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
+		overageTable = getTeamOverageData(
+			resourceUtilization,
+			sortState.orderBy,
+			sortState.direction,
+			data.prices.cpu,
+			data.prices.memory
+		);
 		return sortState;
 	};
 
@@ -192,7 +198,13 @@
 	let overageTable: TeamOverageData[] = $state([]);
 
 	$effect(() => {
-		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
+		overageTable = getTeamOverageData(
+			resourceUtilization,
+			sortState.orderBy,
+			sortState.direction,
+			data.prices.cpu,
+			data.prices.memory
+		);
 	});
 
 	function handleChartClick(name: string) {
@@ -236,7 +248,15 @@
 				<div class="cost-wrapper">
 					<div class="cost-amount">
 						{euroValueFormatter(
-							round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage), 0),
+							round(
+								yearlyOverageCost(
+									UtilizationResourceType.CPU,
+									cpuRequested - cpuUsage,
+									data.prices.cpu,
+									data.prices.memory
+								),
+								0
+							),
 							{ maximumFractionDigits: 0 }
 						)}
 					</div>
@@ -255,7 +275,12 @@
 					<div class="cost-amount">
 						{euroValueFormatter(
 							round(
-								yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage),
+								yearlyOverageCost(
+									UtilizationResourceType.MEMORY,
+									memoryRequested - memoryUsage,
+									data.prices.cpu,
+									data.prices.memory
+								),
 								0
 							),
 							{ maximumFractionDigits: 0 }

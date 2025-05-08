@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import '$lib/font.css';
 	import ProgressBar from '$lib/ProgressBar.svelte';
-	import { pricingStore } from '$lib/stores/price.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Page, Theme } from '@nais/ds-svelte-community';
 	import '@nais/ds-svelte-community/css/darkside.css';
@@ -19,13 +17,6 @@
 
 	let { data, children }: LayoutProps = $props();
 	let { UserInfo } = $derived(data);
-
-	export async function load() {
-		if (browser) {
-			await pricingStore.ready;
-		}
-		return {};
-	}
 
 	themeSwitch.theme = data.theme;
 

@@ -206,7 +206,9 @@
 		overageTable = getTeamsOverageData(
 			$TenantUtilization.data,
 			sortState.orderBy,
-			sortState.direction
+			sortState.direction,
+			data.prices.cpu,
+			data.prices.memory
 		);
 	});
 
@@ -239,7 +241,15 @@
 					>
 						<div class="cost-amount">
 							{euroValueFormatter(
-								round(yearlyOverageCost(UtilizationResourceType.CPU, cpuRequested - cpuUsage), 0),
+								round(
+									yearlyOverageCost(
+										UtilizationResourceType.CPU,
+										cpuRequested - cpuUsage,
+										data.prices.cpu,
+										data.prices.memory
+									),
+									0
+								),
 								{ maximumFractionDigits: 0 }
 							)}
 						</div>
@@ -269,7 +279,12 @@
 					>
 						<div class="cost-amount">
 							{euroValueFormatter(
-								yearlyOverageCost(UtilizationResourceType.MEMORY, memoryRequested - memoryUsage),
+								yearlyOverageCost(
+									UtilizationResourceType.MEMORY,
+									memoryRequested - memoryUsage,
+									data.prices.cpu,
+									data.prices.memory
+								),
 								{ maximumFractionDigits: 0 }
 							)}
 						</div>
