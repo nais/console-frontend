@@ -876,6 +876,15 @@ type CreateUnleashForTeamPayload {
   unleash: UnleashInstance
 }
 
+"""Get current unit prices."""
+type CurrentUnitPrices {
+  """Current price for one CPU hour."""
+  cpu: Price!
+
+  """Current price for one GB hour of memory."""
+  memory: Price!
+}
+
 """
 A cursor for use in pagination
 
@@ -2350,8 +2359,15 @@ interface Persistence {
   teamEnvironment: TeamEnvironment!
 }
 
+type Price {
+  value: Float!
+}
+
 """The query root for the Nais GraphQL API."""
 type Query {
+  """Get current prices for resources."""
+  currentUnitPrices: CurrentUnitPrices!
+
   """Get a single environment."""
   environment(
     """The name of the environment to get."""
@@ -3859,8 +3875,7 @@ type ServiceCostSeries {
   sum: Float!
 }
 
-type ServiceMaintenance implements Node {
-  id: ID!
+type ServiceMaintenance {
   updates: [ServiceMaintenanceUpdate]!
 }
 
