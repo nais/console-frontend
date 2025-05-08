@@ -113,7 +113,7 @@
 		</div>
 		<div>
 			<Heading level="3">Ventende vedlikehold</Heading>
-			<Heading level="4" style="margin-left: 1em">Påkrevd vedlikehold</Heading>
+			<Heading level="4">Påkrevd vedlikehold</Heading>
 			{#if mandatoryServiceMaintenanceUpdates.length > 0}
 				<ul>
 					{#each mandatoryServiceMaintenanceUpdates as u (u?.title)}
