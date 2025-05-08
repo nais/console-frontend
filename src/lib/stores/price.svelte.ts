@@ -1,17 +1,21 @@
 import { browser } from '$app/environment';
 import { PricingStore } from '$houdini';
 
-class PS {
+class Pricing {
 	private initialized = false;
 	private prices = { cpu: 0, memory: 0 };
+
+	// Promise to let consumers await readiness
+	ready: Promise<void>;
+
 	constructor() {
-		this.initialize();
+		this.ready = this.initialize();
 	}
-	async initialize() {
-		if (this.initialized || !browser) {
-			return;
-		}
+
+	private async initialize() {
+		if (this.initialized || !browser) return;
 		this.initialized = true;
+
 		const ps = new PricingStore();
 		const pricing = await ps.fetch();
 		if (pricing.data) {
@@ -21,12 +25,12 @@ class PS {
 	}
 
 	getCPU(): number {
-		return this.prices['cpu'];
+		return this.prices.cpu;
 	}
 
 	getMEM(): number {
-		return this.prices['memory'];
+		return this.prices.memory;
 	}
 }
 
-export const pricingStore = new PS();
+export const pricingStore = new Pricing();

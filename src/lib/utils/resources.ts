@@ -17,9 +17,8 @@ export function yearlyOverageCost(
 	resourceType: UtilizationResourceType$options,
 	unutilized: number
 ) {
-	// TODO: should be provided by Nais API
-	const costPerCpuCorePerYear = pricingStore.getCPU() * 8760; //  0.022258158 * 8760; // 8760 hours in a year
-	const costPerBytePerYear = (pricingStore.getMEM() / 1024 / 1024 / 1024) * 8760;
+	const costPerCpuCorePerYear = pricingStore.getCPU() * 8760; // 8760 hours in a year
+	const costPerBytePerYear = (pricingStore.getMEM() / 1024 / 1024 / 1024) * 8760; // convert to GB and multiply by hours in a year
 
 	let cost = 0.0;
 
