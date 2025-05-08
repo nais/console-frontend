@@ -116,7 +116,7 @@
 			<Heading level="4" style="margin-left: 1em">Påkrevd vedlikehold</Heading>
 			{#if mandatoryServiceMaintenanceUpdates.length > 0}
 				<ul>
-					{#each mandatoryServiceMaintenanceUpdates as u}
+					{#each mandatoryServiceMaintenanceUpdates as u (u?.title)}
 						<li>
 							<p>{u?.title}</p>
 							<p>{u?.description}</p>
@@ -128,7 +128,7 @@
 			<Heading level="4">Anbefalt vedlikehold</Heading>
 			{#if nonMandatoryServiceMaintenanceUpdates.length > 0}
 				<ul>
-					{#each nonMandatoryServiceMaintenanceUpdates as u}
+					{#each nonMandatoryServiceMaintenanceUpdates as u (u?.title)}
 						<li>
 							<p>{u?.title}</p>
 							<p>{u?.description}</p>
