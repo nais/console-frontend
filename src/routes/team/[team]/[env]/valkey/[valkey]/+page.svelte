@@ -38,8 +38,8 @@
 {/if}
 {#if $ValkeyInstance.data}
 	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
-        {@const mandatoryServiceMaintenanceUpdates = $ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(x => !!x.deadline)}
-        {@const nonMandatoryServiceMaintenanceUpdates = $ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(x => !x.deadline)}
+        {@const mandatoryServiceMaintenanceUpdates = $ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(x => !!x?.deadline)}
+        {@const nonMandatoryServiceMaintenanceUpdates = $ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(x => !x?.deadline)}
 	<div class="wrapper">
 		<div>
 		  <Heading level="3" spacing>Valkey Instance Access List</Heading>
@@ -113,8 +113,8 @@
 	      {#each mandatoryServiceMaintenanceUpdates as u}
 
 	      <li>
-		<p>{u.title}</p>
-		<p>{u.description}</p>
+		<p>{u?.title}</p>
+		<p>{u?.description}</p>
 	      </li>
              {/each}
 	    </ul>
@@ -127,8 +127,8 @@
 	      {#each nonMandatoryServiceMaintenanceUpdates as u}
 
 	      <li>
-		<p>{u.title}</p>
-		<p>{u.description}</p>
+		<p>{u?.title}</p>
+		<p>{u?.description}</p>
 	      </li>
              {/each}
 	    </ul>
