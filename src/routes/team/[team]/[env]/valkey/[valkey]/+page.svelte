@@ -138,7 +138,7 @@
 								description={u?.description}
 								start_at={u?.start_at}
 								start_after={u?.start_after}
-								has_deadline={u.deadline}
+								deadline={u?.deadline}
 							>
 								<p>{u?.description}</p>
 								<p>starts at: {u?.start_at}</p>

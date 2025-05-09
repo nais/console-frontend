@@ -10,27 +10,29 @@
 		description: String;
 		start_at: String;
 		start_after: String;
-		has_deadline: boolean;
+		deadline: boolean;
 	}
 
-	let { title, description, start_at, start_after, has_deadline }: Props = $props();
+	let { title, description, start_at, start_after, deadline }: Props = $props();
 </script>
 
 <ListItem>
 	<BodyShort size="small" spacing>
 		<h4>{title}</h4>
+		{#if start_after}
+		<p>Maintenance might start sometime after: <time>{start_after}</time> </p>
+		{/if}
 		<p>{description}</p>
-		<time time={start_at} />
+		{#if !!deadline}
+		<p>Maintenance is scheduled for: <time>{start_at}</time></p>
+		{/if}
 	</BodyShort>
 	<div class="status">
-		<ServiceMaintenanceStatus status={!!has_deadline ? 'DEADLINE' : 'NO_DEADLINE'} />
+		<ServiceMaintenanceStatus status={!!deadline ? 'DEADLINE' : 'NO_DEADLINE'} />
 	</div>
 </ListItem>
 
 <style>
-	code {
-		font-size: 14px;
-	}
 	.status {
 		display: flex;
 		flex-direction: column;
