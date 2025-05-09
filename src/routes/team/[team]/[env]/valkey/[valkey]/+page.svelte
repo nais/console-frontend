@@ -127,9 +127,8 @@
 			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
 				<div class="service-maintenance-list-heading">
 					<Heading level="3">Pending maintenance</Heading>
-					<Button variant="primary" size="small" onclick={() => (errors = [])}
-						>Run maintenance</Button
-					>
+					<Button variant="primary" size="small" onclick={() => ("foo")}
+						>Run maintenance</Button>
 				</div>
 				<div>
 					<List>

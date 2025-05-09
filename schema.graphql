@@ -5836,6 +5836,7 @@ type ValkeyInstance implements Node & Persistence {
   """Fetch maintenances for the Valkey instance."""
   maintenance: ServiceMaintenance!
   name: String!
+  project: String!
   status: ValkeyInstanceStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
