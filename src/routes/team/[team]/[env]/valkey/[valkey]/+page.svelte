@@ -114,6 +114,8 @@
 			</div>
 		</div>
 	  <div>
+	    		        {#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
+
 	    <div class="service-maintenance-list-heading">
 			<Heading level="3">Pending maintenance</Heading>
  				<Button variant="primary" size="small" onclick={() => (errors = [])}>Run maintenance</Button>
@@ -121,7 +123,6 @@
 	      </div>
              <div>
 
-		        {#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
 				<List>
 					{#each (mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates)) as u}
 						<ServiceMaintenanceListItem title={u?.title} description={u?.description} start_at={u?.start_at} start_after={u?.start_after} has_deadline={u.deadline} >
@@ -130,9 +131,10 @@
 						</ServiceMaintenanceListItem>
 					{/each}
 				</List>
-			{/if}
 
-	      </div>
+	     </div>
+	    			{/if}
+
 		</div>
 	</div>
 {/if}
