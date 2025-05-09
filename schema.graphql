@@ -2174,6 +2174,7 @@ type Mutation {
   Remove team from the list of teams that can access the Unleash instance.
   """
   revokeTeamAccessToUnleash(input: RevokeTeamAccessToUnleashInput!): RevokeTeamAccessToUnleashPayload!
+  runMaintenance(input: RunMaintenanceInput!): RunMaintenancePayload
 
   """
   Assign a role to a team member
@@ -3138,6 +3139,13 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
   """The name of the user that got a role revoked."""
   userName: String!
 }
+
+input RunMaintenanceInput {
+  project: String!
+  serviceName: String!
+}
+
+scalar RunMaintenancePayload
 
 """Types of scaling strategies."""
 union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
