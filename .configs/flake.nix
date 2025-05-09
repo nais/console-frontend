@@ -25,7 +25,7 @@
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
           # The Nix packages provided in the environment
-          packages = with pkgs; [ bun nodejs_20];
+          packages = with pkgs; [ bun nodejs_22 ];
 
         };
       });

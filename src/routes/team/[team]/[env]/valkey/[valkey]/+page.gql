@@ -19,6 +19,17 @@ query ValkeyInstance(
 				status {
 					state
 				}
+				maintenance {
+					updates {
+						description
+						title
+						start_at
+						deadline
+						start_after
+						documentation_link
+					}
+				}
+
 				workload {
 					name
 					__typename
