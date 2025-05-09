@@ -101,40 +101,39 @@
 </script>
 
 <div class="buttons">
-	<Button
+	<button
 		title="Add new key and value"
 		variant="tertiary"
 		size="small"
-		onclick={openModal}
-		icon={PlusCircleFillIcon}
+		onclick="{openModal}"
+		icon="{PlusCircleFillIcon}"
 	>
 		Add key and value
-	</Button>
+	</button>
 </div>
-<Modal bind:open onclose={reset} width="medium">
+<Modal bind:open onclose="{reset}" width="medium">
 	{#snippet header()}
-		<Heading level="1" size="large">Add new key and value</Heading>
+	<Heading level="1" size="large">Add new key and value</Heading>
 	{/snippet}
 	<div class="text-input">
 		<TextField
-			style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small);"
+			style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
 			size="small"
-			bind:value={key}
-			error={validKey(key)}
+			bind:value="{key}"
+			error="{validKey(key)}"
 			description="Examples: SOME_KEY, some.key, or some-key"
 			label="Key"
 		/>
 
-		<Textarea bind:text={value} label="Value" description="Example: some-value" />
+		<textarea bind:text="{value}" label="Value" description="Example: some-value" />
 	</div>
 
-	{#snippet footer()}
-		{#if key === '' || value === ''}
-			<Button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</Button>
-		{:else}
-			<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>
-		{/if}
-		<Button variant="secondary" size="small" onclick={reset}>Cancel</Button>
+	{#snippet footer()} {#if key === '' || value === ''}
+	<button variant="primary" size="small" onclick="{addSecretValue}" disabled="{true}">Add</button>
+	{:else}
+	<button variant="primary" size="small" onclick="{addSecretValue}">Add</button>
+	{/if}
+	<button variant="secondary" size="small" onclick="{reset}">Cancel</button>
 	{/snippet}
 </Modal>
 

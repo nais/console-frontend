@@ -5,8 +5,10 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+        import List from '$lib/components/list/List.svelte';
+	import { Button, BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 
 	let { data }: PageProps = $props();
 	let { ValkeyInstance } = $derived(data);
@@ -111,31 +113,26 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 		</div>
-		<div>
-			<Heading level="3">Ventende vedlikehold</Heading>
-			<Heading level="4">Påkrevd vedlikehold</Heading>
-			{#if mandatoryServiceMaintenanceUpdates.length > 0}
-				<ul>
-					{#each mandatoryServiceMaintenanceUpdates as u (u?.title)}
-						<li>
-							<p>{u?.title}</p>
-							<p>{u?.description}</p>
-						</li>
+	  <div>
+	    <div class="service-maintenance-list-heading">
+			<Heading level="3">Pending maintenance</Heading>
+ 				<Button variant="primary" size="small" onclick={() => (errors = [])}>Run maintenance</Button>
+
+	      </div>
+             <div>
+
+		        {#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
+				<List>
+					{#each (mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates)) as u}
+						<ServiceMaintenanceListItem title={u?.title} description={u?.description} start_at={u?.start_at} start_after={u?.start_after} has_deadline={u.deadline} >
+						  <p>{u?.description}</p>
+                                                  <p>starts at: {u?.start_at}</p>
+						</ServiceMaintenanceListItem>
 					{/each}
-				</ul>
+				</List>
 			{/if}
 
-			<Heading level="4">Anbefalt vedlikehold</Heading>
-			{#if nonMandatoryServiceMaintenanceUpdates.length > 0}
-				<ul>
-					{#each nonMandatoryServiceMaintenanceUpdates as u (u?.title)}
-						<li>
-							<p>{u?.title}</p>
-							<p>{u?.description}</p>
-						</li>
-					{/each}
-				</ul>
-			{/if}
+	      </div>
 		</div>
 	</div>
 {/if}
@@ -147,6 +144,12 @@
 		gap: var(--spacing-layout);
 	}
 
+        .service-maintenance-list-heading {
+           display: flex;
+           justify-content: space-between;
+           margin-bottom: 8px;
+
+         }
 	.sidebar {
 		display: flex;
 		flex-direction: column;
