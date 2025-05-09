@@ -5,8 +5,18 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-        import List from '$lib/components/list/List.svelte';
-	import { Button, BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import List from '$lib/components/list/List.svelte';
+	import {
+		Button,
+		BodyShort,
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 
@@ -113,28 +123,31 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 		</div>
-	  <div>
-	    		        {#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
-
-	    <div class="service-maintenance-list-heading">
-			<Heading level="3">Pending maintenance</Heading>
- 				<Button variant="primary" size="small" onclick={() => (errors = [])}>Run maintenance</Button>
-
-	      </div>
-             <div>
-
-				<List>
-					{#each (mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates)) as u}
-						<ServiceMaintenanceListItem title={u?.title} description={u?.description} start_at={u?.start_at} start_after={u?.start_after} has_deadline={u.deadline} >
-						  <p>{u?.description}</p>
-                                                  <p>starts at: {u?.start_at}</p>
-						</ServiceMaintenanceListItem>
-					{/each}
-				</List>
-
-	     </div>
-	    			{/if}
-
+		<div>
+			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
+				<div class="service-maintenance-list-heading">
+					<Heading level="3">Pending maintenance</Heading>
+					<Button variant="primary" size="small" onclick={() => (errors = [])}
+						>Run maintenance</Button
+					>
+				</div>
+				<div>
+					<List>
+						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u}
+							<ServiceMaintenanceListItem
+								title={u?.title}
+								description={u?.description}
+								start_at={u?.start_at}
+								start_after={u?.start_after}
+								has_deadline={u.deadline}
+							>
+								<p>{u?.description}</p>
+								<p>starts at: {u?.start_at}</p>
+							</ServiceMaintenanceListItem>
+						{/each}
+					</List>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -146,12 +159,11 @@
 		gap: var(--spacing-layout);
 	}
 
-        .service-maintenance-list-heading {
-           display: flex;
-           justify-content: space-between;
-           margin-bottom: 8px;
-
-         }
+	.service-maintenance-list-heading {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 8px;
+	}
 	.sidebar {
 		display: flex;
 		flex-direction: column;

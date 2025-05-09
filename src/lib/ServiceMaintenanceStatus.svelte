@@ -20,7 +20,7 @@
 	});
 </script>
 
-<Tag variant="{statusType.variant}" size="small"><span>{statusType.title}</span></Tag>
+<Tag variant={statusType.variant} size="small"><span>{statusType.title}</span></Tag>
 
 <style>
 	span {

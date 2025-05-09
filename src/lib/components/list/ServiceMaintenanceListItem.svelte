@@ -20,9 +20,9 @@
 	<BodyShort size="small" spacing>
 		<h4>{title}</h4>
 		<p>{description}</p>
-		<time time="{start_at}" />
+		<time time={start_at} />
 	</BodyShort>
-  <div class="status">
+	<div class="status">
 		<ServiceMaintenanceStatus status={!!has_deadline ? 'DEADLINE' : 'NO_DEADLINE'} />
 	</div>
 </ListItem>

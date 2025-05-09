@@ -44,68 +44,79 @@
 	<div>
 		<BodyShort size="small">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
-			Commit
-			<ExternalLink href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
-				><span
-					style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
-					>{deployment?.commitSha.slice(0, 7)}</span
-				>
-			</ExternalLink>
-			by {deployment.deployerUsername} triggered a {#if deployment.triggerUrl} {#if showEnv}
-			<ExternalLink href="{deployment.triggerUrl}">Github action</ExternalLink>
-			<time time="{deployment.createdAt}" distance="{true}" /> to deploy the following
-			resource{deployment .resources.nodes.length === 1 ? '' : 's'} in
-			<Tag size="small" variant="{envTagVariant(deployment.environmentName)}">
-				{deployment.environmentName} </Tag
-			>: {:else}
-			<ExternalLink href="{deployment.triggerUrl}">Github action</ExternalLink>
-			<time time="{deployment.createdAt}" distance="{true}" /> to deploy the following
-			resource{deployment .resources.nodes.length === 1 ? '' : 's'}: {/if} {/if} {#if
-			deployment.resources.nodes.length > 0}
-			<ul>
-				{#each deployment.resources.nodes as r (r.id)}
-				<li>
-					{#if r.kind === 'Application'}
-					<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/app/{r.name}">
-						<strong>{r.name}</strong>
-					</a>
-					{:else if r.kind === 'Naisjob'}
-					<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/job/{r.name}">
-						<strong>{r.name}</strong>
-					</a>
+				Commit
+				<ExternalLink
+					href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
+					><span
+						style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
+						>{deployment?.commitSha.slice(0, 7)}</span
+					>
+				</ExternalLink>
+				by {deployment.deployerUsername} triggered a {#if deployment.triggerUrl}
+					{#if showEnv}
+						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
+						<time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
+							.resources.nodes.length === 1
+							? ''
+							: 's'} in
+						<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
+							{deployment.environmentName}
+						</Tag>:
 					{:else}
-					<strong>{r.name}</strong>
-					{/if} (<code>{r.kind}</code>)
-				</li>
-				{/each}
-			</ul>
-			{/if} {:else} Something triggered a deploy
-			<time time="{deployment.createdAt}" distance="{true}" /> of: {#if
-			deployment.resources.nodes.length > 0}
-			<ul>
-				{#each deployment.resources.nodes as r (r.id)}
-				<li>
-					{#if r.kind === 'Application'}
-					<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/app/{r.name}">
-						<strong>{r.name}</strong>
-					</a>
-					{:else if r.kind === 'Naisjob'}
-					<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/job/{r.name}">
-						<strong>{r.name}</strong>
-					</a>
-					{:else}
-					<strong>{r.name}</strong>
-					{/if} (<code>{r.kind}</code>)
-				</li>
-				{/each}
-			</ul>
-			{/if} {/if}
+						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
+						<time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
+							.resources.nodes.length === 1
+							? ''
+							: 's'}:
+					{/if}
+				{/if}
+				{#if deployment.resources.nodes.length > 0}
+					<ul>
+						{#each deployment.resources.nodes as r (r.id)}
+							<li>
+								{#if r.kind === 'Application'}
+									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/app/{r.name}">
+										<strong>{r.name}</strong>
+									</a>
+								{:else if r.kind === 'Naisjob'}
+									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/job/{r.name}">
+										<strong>{r.name}</strong>
+									</a>
+								{:else}
+									<strong>{r.name}</strong>
+								{/if} (<code>{r.kind}</code>)
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			{:else}
+				Something triggered a deploy
+				<time time={deployment.createdAt} distance={true} /> of: {#if deployment.resources.nodes.length > 0}
+					<ul>
+						{#each deployment.resources.nodes as r (r.id)}
+							<li>
+								{#if r.kind === 'Application'}
+									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/app/{r.name}">
+										<strong>{r.name}</strong>
+									</a>
+								{:else if r.kind === 'Naisjob'}
+									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/job/{r.name}">
+										<strong>{r.name}</strong>
+									</a>
+								{:else}
+									<strong>{r.name}</strong>
+								{/if} (<code>{r.kind}</code>)
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			{/if}
 		</BodyShort>
 	</div>
 	<div class="status">
 		{#if deployment.statuses.nodes.length === 0}
-		<DeploymentStatus status="UNKNOWN" />
-		{:else}<DeploymentStatus status="{deployment.statuses.nodes[0].state}" />{/if}
+			<DeploymentStatus status="UNKNOWN" />
+		{:else}<DeploymentStatus status={deployment.statuses.nodes[0].state} />{/if}
 	</div>
 </ListItem>
 
