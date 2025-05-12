@@ -21,17 +21,20 @@
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 
 	const runServiceMaintenance = graphql(`
-		mutation runMaintenance(
-			$project: String!
-			$serviceName: String!
-		) {runMaintenance(input: {project: $project, serviceName: $serviceName})
-                              {}}
+		mutation runMaintenance($project: String!, $serviceName: String!) {
+			RunMaintenance(input: { project: $project, serviceName: $serviceName }) {
+
+					error
+
+       	                }
+	         }
 	`);
 
-	const runServiceMaintenanceStart = async () => {
+        const runServiceMaintenanceStart = async () => {
+
 		await runServiceMaintenance.mutate({
-			project: "foo", // $ValkeyInstance.data.team.environment.valkeyInstance.,
-			serviceName: "foo" //$ValkeyInstance.data.team.environment.valkeyInstance.
+ 		project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
+			serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name
 		});
 	};
 
@@ -145,7 +148,7 @@
 					<Button
 						variant="primary"
 						size="small"
-						on:click={runServiceMaintenanceStart}
+                                                onclick={runServiceMaintenanceStart}
 					>
 						Run maintenance
 					</Button>

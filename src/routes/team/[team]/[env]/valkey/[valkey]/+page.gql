@@ -19,6 +19,7 @@ query ValkeyInstance(
 				status {
 					state
 				}
+				project
 				maintenance {
 					updates {
 						description

@@ -2029,6 +2029,8 @@ type MaskinportenAuthIntegration implements AuthIntegration {
 
 """The mutation root for the Nais GraphQL API."""
 type Mutation {
+  RunMaintenance(input: RunMaintenanceInput!): RunMaintenancePayload
+
   """Add a team repository."""
   addRepositoryToTeam(input: AddRepositoryToTeamInput!): AddRepositoryToTeamPayload!
 
@@ -2174,7 +2176,6 @@ type Mutation {
   Remove team from the list of teams that can access the Unleash instance.
   """
   revokeTeamAccessToUnleash(input: RevokeTeamAccessToUnleashInput!): RevokeTeamAccessToUnleashPayload!
-  runMaintenance(input: RunMaintenanceInput!): RunMaintenancePayload
 
   """
   Assign a role to a team member
@@ -3145,7 +3146,9 @@ input RunMaintenanceInput {
   serviceName: String!
 }
 
-scalar RunMaintenancePayload
+type RunMaintenancePayload {
+  error: String
+}
 
 """Types of scaling strategies."""
 union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
