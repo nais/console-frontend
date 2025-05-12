@@ -19,11 +19,11 @@
 		<Heading level="4" size="small">{title}</Heading>
 		<p>{description}</p>
 		{#if !!start_at}
-			<p>Maintenance is scheduled for: <Time time={start_at} dateFormat="PPPPp" /></p>
+		<p>Maintenance is scheduled for: <Time time={start_at} dateFormat="PPPPp" /></p>
 		{/if}
 	</div>
 	<div class="status">
-		<ServiceMaintenanceStatus status={deadline ? 'DEADLINE' : 'NO_DEADLINE'} />
+		<ServiceMaintenanceStatus status={deadline} />
 	</div>
 </ListItem>
 
@@ -35,10 +35,5 @@
 		justify-content: center;
 		gap: var(--ax-space-4, --a-spacing-1);
 		font-size: 16px;
-	}
-
-	.heading {
-		font-size: 20px;
-		font-weight: 650;
 	}
 </style>

@@ -7,6 +7,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import List from '$lib/components/list/List.svelte';
 	import {
+         	Alert,
 		Button,
 		BodyShort,
 		Heading,
@@ -28,8 +29,9 @@
 		}
 	`);
 
+        let maintenanceError = null
 	const runServiceMaintenanceStart = async () => {
-		await runServiceMaintenance.mutate({
+		maintenanceError =  await runServiceMaintenance.mutate({
 			project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
 			serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name
 		});
@@ -139,9 +141,16 @@
 			</div>
 		</div>
 		<div>
+           		{#if maintenanceError}
+         		<Alert variant="error" style="margin-bottom: 1rem;">
+                              {maintenanceError.data.RunMaintenance.error}
+    			  </Alert>
+			{/if}
+
 			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
 				<div class="service-maintenance-list-heading">
 					<Heading level="3">Pending maintenance</Heading>
+
 					<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
 						Run all maintenance
 					</Button>

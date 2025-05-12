@@ -3,21 +3,13 @@
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 
 	interface Props {
-		status: 'DEADLINE' | 'NO_DEADLINE';
+		status: boolean
 	}
 
-	let { status }: Props = $props();
+	let { status }: Props = $props()
 
-	let statusType: { variant: TagProps['variant']; title: string } = $derived.by(() => {
-		switch (status) {
-			case 'DEADLINE':
-				return { variant: 'warning-moderate', title: 'DEADLINE' };
-			case 'NO_DEADLINE':
-				return { variant: 'info-moderate', title: 'NO DEADLINE' };
-			default:
-				return { variant: 'neutral', title: 'Unknown' };
-		}
-	});
+        let statusType = status ? { variant: 'warning-moderate', title: 'DEADLINE' } : { variant: 'info-moderate', title: 'NO DEADLINE' }
+
 </script>
 
 <Tag variant={statusType.variant} size="small"><span>{statusType.title}</span></Tag>
