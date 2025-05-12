@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ValkeyInstanceAccessOrderField } from '$houdini';
+	import { graphql, ValkeyInstanceAccessOrderField } from '$houdini';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
@@ -19,6 +19,21 @@
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
+
+	const runServiceMaintenance = graphql(`
+		mutation runMaintenance(
+			$project: String!
+			$serviceName: String!
+		) {runMaintenance(input: {project: $project, serviceName: $serviceName})
+                              {}}
+	`);
+
+	const runServiceMaintenanceStart = async () => {
+		await runServiceMaintenance.mutate({
+			project: "foo", // $ValkeyInstance.data.team.environment.valkeyInstance.,
+			serviceName: "foo" //$ValkeyInstance.data.team.environment.valkeyInstance.
+		});
+	};
 
 	let { data }: PageProps = $props();
 	let { ValkeyInstance } = $derived(data);
@@ -127,8 +142,13 @@
 			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
 				<div class="service-maintenance-list-heading">
 					<Heading level="3">Pending maintenance</Heading>
-					<Button variant="primary" size="small" onclick={() => ("foo")}
-						>Run maintenance</Button>
+					<Button
+						variant="primary"
+						size="small"
+						on:click={runServiceMaintenanceStart}
+					>
+						Run maintenance
+					</Button>
 				</div>
 				<div>
 					<List>
