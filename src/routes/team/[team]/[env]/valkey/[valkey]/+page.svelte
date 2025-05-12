@@ -23,17 +23,14 @@
 	const runServiceMaintenance = graphql(`
 		mutation runMaintenance($project: String!, $serviceName: String!) {
 			RunMaintenance(input: { project: $project, serviceName: $serviceName }) {
-
-					error
-
-       	                }
-	         }
+				error
+			}
+		}
 	`);
 
-        const runServiceMaintenanceStart = async () => {
-
+	const runServiceMaintenanceStart = async () => {
 		await runServiceMaintenance.mutate({
- 		project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
+			project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
 			serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name
 		});
 	};
@@ -145,17 +142,13 @@
 			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
 				<div class="service-maintenance-list-heading">
 					<Heading level="3">Pending maintenance</Heading>
-					<Button
-						variant="primary"
-						size="small"
-                                                onclick={runServiceMaintenanceStart}
-					>
+					<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
 						Run all maintenance
 					</Button>
 				</div>
 				<div>
 					<List>
-						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u}
+						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
 							<ServiceMaintenanceListItem
 								title={u?.title}
 								description={u?.description}
