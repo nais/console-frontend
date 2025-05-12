@@ -48,7 +48,7 @@
 					&nbsp;and&nbsp;
 				{/if}
 			{/each}
-			<time time={$data.createdAt} distance /> to
+			<time time={$data.createdAt} distance></time> to
 			<Tag size="small" variant={envTagVariant($data.environmentName)}>{$data.environmentName}</Tag>
 		</BodyShort>
 	</div>
