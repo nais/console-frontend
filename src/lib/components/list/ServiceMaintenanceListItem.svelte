@@ -20,11 +20,11 @@
 	<BodyShort size="small" spacing>
 		<h4>{title}</h4>
 		{#if start_after}
-		<p>Maintenance might start sometime after: <time>{start_after}</time> </p>
+		<p>Maintenance might start sometime after: <Time time={start_after} dateFormat={"PPPPp"}/> </p>
 		{/if}
 		<p>{description}</p>
 		{#if !!deadline}
-		<p>Maintenance is scheduled for: <time>{start_at}</time></p>
+		<p>Maintenance is scheduled for: <Time time={start_at}  dateFormat={"PPPPp"}/></p>
 		{/if}
 	</BodyShort>
 	<div class="status">

@@ -150,7 +150,7 @@
 						size="small"
                                                 onclick={runServiceMaintenanceStart}
 					>
-						Run maintenance
+						Run all maintenance
 					</Button>
 				</div>
 				<div>
