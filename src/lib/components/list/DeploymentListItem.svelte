@@ -52,24 +52,26 @@
 						>{deployment?.commitSha.slice(0, 7)}</span
 					>
 				</ExternalLink>
-				by {deployment.deployerUsername} triggered a {#if deployment.triggerUrl}
+				by {deployment.deployerUsername} triggered a
+				{#if deployment.triggerUrl}
 					{#if showEnv}
 						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
+						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
 							.resources.nodes.length === 1
 							? ''
-							: 's'} in
-						<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
+							: 's'}
+						in <Tag size="small" variant={envTagVariant(deployment.environmentName)}>
 							{deployment.environmentName}
 						</Tag>:
 					{:else}
 						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
+						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
 							.resources.nodes.length === 1
 							? ''
 							: 's'}:
 					{/if}
 				{/if}
+
 				{#if deployment.resources.nodes.length > 0}
 					<ul>
 						{#each deployment.resources.nodes as r (r.id)}
@@ -84,14 +86,15 @@
 									</a>
 								{:else}
 									<strong>{r.name}</strong>
-								{/if} (<code>{r.kind}</code>)
+								{/if}
+								(<code>{r.kind}</code>)
 							</li>
 						{/each}
 					</ul>
 				{/if}
 			{:else}
-				Something triggered a deploy
-				<time time={deployment.createdAt} distance={true} /> of: {#if deployment.resources.nodes.length > 0}
+				Something triggered a deploy <Time time={deployment.createdAt} distance={true} /> of:
+				{#if deployment.resources.nodes.length > 0}
 					<ul>
 						{#each deployment.resources.nodes as r (r.id)}
 							<li>
@@ -105,7 +108,8 @@
 									</a>
 								{:else}
 									<strong>{r.name}</strong>
-								{/if} (<code>{r.kind}</code>)
+								{/if}
+								(<code>{r.kind}</code>)
 							</li>
 						{/each}
 					</ul>

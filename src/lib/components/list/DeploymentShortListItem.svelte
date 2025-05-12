@@ -41,15 +41,18 @@
 <div class="deployment">
 	<div>
 		<BodyShort size="small" spacing>
-			{$data.deployerUsername ? $data.deployerUsername : 'Something'} deployed {#each $data.resources.nodes as r, i (r.id)}
+			{$data.deployerUsername ? $data.deployerUsername : 'Something'} deployed
+			{#each $data.resources.nodes as r, i (r.id)}
 				<strong>{r.name}</strong>
 				(<code>{r.kind}</code>){#if i < $data.resources.nodes.length - 2},&nbsp;
 				{:else if i === $data.resources.nodes.length - 2}
 					&nbsp;and&nbsp;
 				{/if}
 			{/each}
-			<time time={$data.createdAt} distance></time> to
-			<Tag size="small" variant={envTagVariant($data.environmentName)}>{$data.environmentName}</Tag>
+			<Time time={$data.createdAt} distance /> to <Tag
+				size="small"
+				variant={envTagVariant($data.environmentName)}>{$data.environmentName}</Tag
+			>
 		</BodyShort>
 	</div>
 	<div class="status">

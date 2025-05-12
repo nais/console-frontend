@@ -101,7 +101,7 @@
 </script>
 
 <div class="buttons">
-	<button
+	<Button
 		title="Add new key and value"
 		variant="tertiary"
 		size="small"
@@ -109,7 +109,7 @@
 		icon={PlusCircleFillIcon}
 	>
 		Add key and value
-	</button>
+	</Button>
 </div>
 <Modal bind:open onclose={reset} width="medium">
 	{#snippet header()}
@@ -117,7 +117,7 @@
 	{/snippet}
 	<div class="text-input">
 		<TextField
-			style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
+			style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small);"
 			size="small"
 			bind:value={key}
 			error={validKey(key)}
@@ -125,16 +125,16 @@
 			label="Key"
 		/>
 
-		<textarea bind:text={value} label="Value" description="Example: some-value" />
+		<Textarea bind:text={value} label="Value" description="Example: some-value" />
 	</div>
 
 	{#snippet footer()}
 		{#if key === '' || value === ''}
-			<button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</button>
+			<Button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</Button>
 		{:else}
-			<button variant="primary" size="small" onclick={addSecretValue}>Add</button>
+			<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>
 		{/if}
-		<button variant="secondary" size="small" onclick={reset}>Cancel</button>
+		<Button variant="secondary" size="small" onclick={reset}>Cancel</Button>
 	{/snippet}
 </Modal>
 
