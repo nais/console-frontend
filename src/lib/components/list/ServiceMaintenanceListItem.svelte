@@ -6,8 +6,7 @@
 	interface Props {
 		title: string;
 		description: string;
-		start_at: string;
-		start_after: string;
+		start_at: Date | null | undefined;
 		deadline: boolean;
 	}
 
@@ -19,7 +18,7 @@
 		<Heading level="4" size="small">{title}</Heading>
 		<p>{description}</p>
 		{#if !!start_at}
-		<p>Maintenance is scheduled for: <Time time={start_at} dateFormat="PPPPp" /></p>
+			<p>Maintenance is scheduled for: <Time time={start_at} dateFormat="PPPPp" /></p>
 		{/if}
 	</div>
 	<div class="status">

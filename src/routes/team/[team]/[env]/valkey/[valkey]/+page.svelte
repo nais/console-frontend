@@ -7,7 +7,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import List from '$lib/components/list/List.svelte';
 	import {
-         	Alert,
+		Alert,
 		Button,
 		BodyShort,
 		Heading,
@@ -29,12 +29,19 @@
 		}
 	`);
 
-        let maintenanceError = null
+	let maintenanceError = $state<string | null | undefined>(undefined);
 	const runServiceMaintenanceStart = async () => {
-		maintenanceError =  await runServiceMaintenance.mutate({
-			project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
-			serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name
-		});
+		if ($ValkeyInstance.data) {
+			let resp = await runServiceMaintenance.mutate({
+				project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
+				serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name
+			});
+			if (resp.errors) {
+				maintenanceError = resp.errors.map((e) => e.message).join(', ');
+			} else {
+				maintenanceError = resp?.data?.RunMaintenance?.error;
+			}
+		}
 	};
 
 	let { data }: PageProps = $props();
@@ -131,7 +138,7 @@
 				{:else}
 					<div class="inline">
 						<i>No owner</i>
-						<WarningIcon title="This Big Query instance does not belong to any workload" />
+						<WarningIcon title="This Valkey instance does not belong to any workload" />
 					</div>
 				{/if}
 			</div>
@@ -141,33 +148,31 @@
 			</div>
 		</div>
 		<div>
-           		{#if maintenanceError}
-         		<Alert variant="error" style="margin-bottom: 1rem;">
-                              {maintenanceError.data.RunMaintenance.error}
-    			  </Alert>
+			{#if maintenanceError}
+				<Alert variant="error" style="margin-bottom: 1rem;">
+					{maintenanceError}
+				</Alert>
 			{/if}
 
-			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates > 0}
+			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
 				<div class="service-maintenance-list-heading">
 					<Heading level="3">Pending maintenance</Heading>
 
-					<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
-						Run all maintenance
-					</Button>
+					{#if $ValkeyInstance.data}
+						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
+							Run all maintenance
+						</Button>
+					{/if}
 				</div>
 				<div>
 					<List>
 						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
 							<ServiceMaintenanceListItem
-								title={u?.title}
-								description={u?.description}
+								title={u?.title ?? 'Missing title'}
+								description={u?.description ?? 'Missing description'}
 								start_at={u?.start_at}
-								start_after={u?.start_after}
-								deadline={u?.deadline}
-							>
-								<p>{u?.description}</p>
-								<p>starts at: {u?.start_at}</p>
-							</ServiceMaintenanceListItem>
+								deadline={!!u?.deadline}
+							/>
 						{/each}
 					</List>
 				</div>
