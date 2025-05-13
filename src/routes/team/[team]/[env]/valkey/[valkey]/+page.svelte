@@ -22,8 +22,20 @@
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 
 	const runServiceMaintenance = graphql(`
-		mutation runMaintenance($project: String!, $serviceName: String!) {
-			RunMaintenance(input: { project: $project, serviceName: $serviceName }) {
+		mutation runMaintenance(
+			$project: String!
+			$serviceName: String!
+			$teamSlug: Slug!
+			$environmentName: String!
+		) {
+			RunMaintenance(
+				input: {
+					project: $project
+					serviceName: $serviceName
+					teamSlug: $teamSlug
+					environmentName: $environmentName
+				}
+			) {
 				error
 			}
 		}
@@ -34,7 +46,10 @@
 		if ($ValkeyInstance.data) {
 			let resp = await runServiceMaintenance.mutate({
 				project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
-				serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name
+				serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name,
+				teamSlug: $ValkeyInstance.data.team.slug,
+				environmentName:
+					$ValkeyInstance.data.team.environment.valkeyInstance.teamEnvironment.environment.name
 			});
 			if (resp.errors) {
 				maintenanceError = resp.errors.map((e) => e.message).join(', ');
@@ -158,7 +173,9 @@
 				<div class="service-maintenance-list-heading">
 					<Heading level="3">Pending maintenance</Heading>
 
-					{#if $ValkeyInstance.data}
+					{#if maintenanceError === ''}
+						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
+					{:else}
 						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
 							Run all maintenance
 						</Button>

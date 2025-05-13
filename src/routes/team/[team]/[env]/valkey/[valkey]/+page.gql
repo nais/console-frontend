@@ -26,7 +26,6 @@ query ValkeyInstance(
 						title
 						start_at
 						deadline
-						start_after
 						documentation_link
 					}
 				}

@@ -3142,8 +3142,10 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
 }
 
 input RunMaintenanceInput {
+  environmentName: String!
   project: String!
   serviceName: String!
+  teamSlug: Slug!
 }
 
 type RunMaintenancePayload {
@@ -3901,9 +3903,6 @@ type ServiceMaintenanceUpdate {
 
   """Documentation link."""
   documentation_link: String
-
-  """The earliest time the update will be automatically applied."""
-  start_after: Time
 
   """
   The time when the update will be automatically applied. If set, maintenance is mandatory and will be forcibly applied.
