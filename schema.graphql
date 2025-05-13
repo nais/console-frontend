@@ -2029,6 +2029,8 @@ type MaskinportenAuthIntegration implements AuthIntegration {
 
 """The mutation root for the Nais GraphQL API."""
 type Mutation {
+  RunMaintenance(input: RunMaintenanceInput!): RunMaintenancePayload
+
   """Add a team repository."""
   addRepositoryToTeam(input: AddRepositoryToTeamInput!): AddRepositoryToTeamPayload!
 
@@ -3139,6 +3141,17 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
   userName: String!
 }
 
+input RunMaintenanceInput {
+  environmentName: String!
+  project: String!
+  serviceName: String!
+  teamSlug: Slug!
+}
+
+type RunMaintenancePayload {
+  error: String
+}
+
 """Types of scaling strategies."""
 union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
 
@@ -3873,6 +3886,31 @@ type ServiceCostSeries {
 
   """The sum of the cost across all services."""
   sum: Float!
+}
+
+type ServiceMaintenance {
+  updates: [ServiceMaintenanceUpdate]!
+}
+
+type ServiceMaintenanceUpdate {
+  """
+  Deadline for installing the maintenance. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  deadline: Time
+
+  """Description of the maintenance."""
+  description: String!
+
+  """Documentation link."""
+  documentation_link: String
+
+  """
+  The time when the update will be automatically applied. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  start_at: Time
+
+  """Title of the maintenance."""
+  title: String!
 }
 
 input SetTeamMemberRoleInput {
@@ -5796,7 +5834,11 @@ type ValkeyInstance implements Node & Persistence {
   cost: ValkeyInstanceCost!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
+
+  """Fetch maintenances for the Valkey instance."""
+  maintenance: ServiceMaintenance!
   name: String!
+  project: String!
   status: ValkeyInstanceStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
