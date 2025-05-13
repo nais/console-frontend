@@ -21,8 +21,8 @@
 	import type { PageProps } from './$houdini';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 
-	const runServiceMaintenance = graphql(`
-		mutation runMaintenance(
+	const runValkeyServiceMaintenance = graphql(`
+		mutation runValkeyMaintenance(
 			$project: String!
 			$serviceName: String!
 			$teamSlug: Slug!
@@ -34,6 +34,7 @@
 					serviceName: $serviceName
 					teamSlug: $teamSlug
 					environmentName: $environmentName
+					serviceType: VALKEY
 				}
 			) {
 				error
@@ -42,9 +43,9 @@
 	`);
 
 	let maintenanceError = $state<string | null | undefined>(undefined);
-	const runServiceMaintenanceStart = async () => {
+	const runValkeyServiceMaintenanceStart = async () => {
 		if ($ValkeyInstance.data) {
-			let resp = await runServiceMaintenance.mutate({
+			let resp = await runValkeyServiceMaintenance.mutate({
 				project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
 				serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name,
 				teamSlug: $ValkeyInstance.data.team.slug,
@@ -176,7 +177,7 @@
 					{#if maintenanceError === ''}
 						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
 					{:else}
-						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
+						<Button variant="primary" size="small" onclick={runValkeyServiceMaintenanceStart}>
 							Run all maintenance
 						</Button>
 					{/if}

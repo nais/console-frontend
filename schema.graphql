@@ -2244,7 +2244,11 @@ type OpenSearch implements Node & Persistence {
   cost: OpenSearchCost!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
+
+  """Fetch maintenances for the OpenSearch instance."""
+  maintenance: ServiceMaintenance!
   name: String!
+  project: String!
   status: OpenSearchStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
@@ -3145,6 +3149,7 @@ input RunMaintenanceInput {
   environmentName: String!
   project: String!
   serviceName: String!
+  serviceType: ServiceType!
   teamSlug: Slug!
 }
 
@@ -3911,6 +3916,11 @@ type ServiceMaintenanceUpdate {
 
   """Title of the maintenance."""
   title: String!
+}
+
+enum ServiceType {
+  OPENSEARCH
+  VALKEY
 }
 
 input SetTeamMemberRoleInput {
