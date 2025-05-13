@@ -200,15 +200,9 @@
 	let { TenantUtilization } = $derived(data);
 
 	let resourceUtilization = $derived(mergeAll($TenantUtilization.data));
-	let overageTable: TeamsOverageData[] = $state([]);
-
-	$effect(() => {
-		overageTable = getTeamsOverageData(
-			$TenantUtilization.data,
-			sortState.orderBy,
-			sortState.direction
-		);
-	});
+	let overageTable: TeamsOverageData[] = $derived(
+		getTeamsOverageData($TenantUtilization.data, sortState.orderBy, sortState.direction)
+	);
 
 	function handleChartClick(name: string) {
 		goto(`/team/${name}/utilization`);

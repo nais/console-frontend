@@ -61,13 +61,15 @@
 
 	function optionsCPU(input: OverageData[]): EChartsOption {
 		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
-		const overage = tmp.map((s) => {
-			return {
-				name: s.workload.name,
-				env: s.workload.teamEnvironment.environment.name,
-				overage: s.requested - s.used
-			};
-		});
+		const overage = tmp
+			.map((s) => {
+				return {
+					name: s.workload.name,
+					env: s.workload.teamEnvironment.environment.name,
+					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
+				};
+			})
+			.filter((s) => s.overage > 0);
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
 		return {
 			tooltip: {
@@ -99,7 +101,7 @@
 			series: {
 				name: 'Unutilized CPU',
 				data: sorted.map((s) => {
-					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+					return s.overage.toPrecision(2);
 				}),
 				type: 'bar',
 				color: '#83bff6'
@@ -109,13 +111,15 @@
 
 	function optionsMem(input: OverageData[]): EChartsOption {
 		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
-		const overage = tmp.map((s) => {
-			return {
-				name: s.workload.name,
-				env: s.workload.teamEnvironment.environment.name,
-				overage: s.requested - s.used
-			};
-		});
+		const overage = tmp
+			.map((s) => {
+				return {
+					name: s.workload.name,
+					env: s.workload.teamEnvironment.environment.name,
+					overage: s.requested - s.used
+				};
+			})
+			.filter((s) => s.overage > 0);
 
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
 		return {
@@ -194,11 +198,9 @@
 
 	let resourceUtilization = $derived($TeamResourceUsage.data);
 
-	let overageTable: TeamOverageData[] = $state([]);
-
-	$effect(() => {
-		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
-	});
+	let overageTable: TeamOverageData[] = $derived(
+		getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction)
+	);
 
 	function handleChartClick(name: string) {
 		const [env, app] = name.split(':');
@@ -282,9 +284,9 @@
 				</div>
 			</div>
 		</div>
-		<Heading level="2">Top 10 Overprovisioned Applications</Heading>
+		<Heading level="2">Top Overprovisioned Applications</Heading>
 		<BodyLong spacing>
-			These charts highlight the 10 applications with the highest unused CPU and memory relative to
+			These charts highlight the applications with the highest unused CPU and memory relative to
 			their requested resources. Large gaps may indicate overprovisioning and opportunities to
 			reduce infrastructure costs by optimizing resource requests.
 		</BodyLong>
