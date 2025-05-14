@@ -4,7 +4,7 @@
 		[key: string]: unknown;
 	}
 
-	let { size = '0.85em', ...rest }: Props = $props();
+	let { size = '1em', ...rest }: Props = $props();
 </script>
 
 <svg
