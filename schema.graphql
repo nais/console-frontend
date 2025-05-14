@@ -315,6 +315,9 @@ type Application implements Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyInstanceOrder
   ): ValkeyInstanceConnection!
+
+  """Get the vulnerability history for application."""
+  vulnerabilityHistory: [ImageVulnerabilityHistory!]!
 }
 
 """Authentication integrations for the application."""
@@ -1442,6 +1445,14 @@ type ImageVulnerabilityEdge {
   node: ImageVulnerability!
 }
 
+type ImageVulnerabilityHistory {
+  """Timestamp of the vulnerability summary."""
+  date: Time!
+
+  """The historic image vulnerability summary"""
+  summary: ImageVulnerabilitySummary!
+}
+
 """Ordering options when fetching teams."""
 input ImageVulnerabilityOrder {
   """The direction to order items by."""
@@ -1661,6 +1672,9 @@ type Job implements Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyInstanceOrder
   ): ValkeyInstanceConnection!
+
+  """Get the vulnerability history for job."""
+  vulnerabilityHistory: [ImageVulnerabilityHistory!]!
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -6055,6 +6069,9 @@ interface Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyInstanceOrder
   ): ValkeyInstanceConnection!
+
+  """Get the vulnerability history for workload."""
+  vulnerabilityHistory: [ImageVulnerabilityHistory!]!
 }
 
 """Workload connection."""
