@@ -303,7 +303,7 @@
 				onclick={handleChartClick}
 			/>
 		</div>
-		<Heading level="3" spacing>Resource Waste Across All Applications</Heading>
+		<Heading level="3" spacing>CPU and Memory Underutilization per Application</Heading>
 		<BodyLong spacing>
 			This table shows unutilized CPU and memory for each application, along with estimated overage
 			costs. Use this overview to identify where you can reduce requests and cut infrastructure
