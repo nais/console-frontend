@@ -1,9 +1,9 @@
-query TenantCost {
-	teams(first: 999) {
+query TenantCost($from: Date!, $to: Date!) {
+	teams(first: 5) {
 		nodes {
 			slug
 			cost {
-				daily(from: "2025-01-01", to: "2025-01-30") {
+				daily(from: $from, to: $to) {
 					series {
 						services {
 							cost
