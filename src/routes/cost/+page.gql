@@ -1,5 +1,5 @@
 query TenantCost {
-	teams(first: 5) {
+	teams(first: 999) {
 		nodes {
 			slug
 			cost {

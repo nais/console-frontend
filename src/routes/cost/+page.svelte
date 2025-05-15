@@ -2,14 +2,12 @@
 	import type { TenantCost$result } from '$houdini';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { round } from '$lib/utils/resources';
 	import { Table, Tbody, Td, Th, Thead, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 	let tenantCost = $derived(data.TenantCost);
-	let services = new SvelteSet<string>();
+	let services = new Map<string, string>();
 	type TeamData = {
 		slug: string;
 		services: {
@@ -29,10 +27,11 @@
 	$tenantCost.data?.teams.nodes.forEach((team: TenantCost$result['teams']['nodes'][0]) => {
 		team.cost.daily.series.forEach((day) => {
 			day.services.forEach((service) => {
-				services.add(service.service);
+				services.set(service.service.toUpperCase(), service.service);
 			});
 		});
 	});
+
 	type SortBy = 'SUM' | 'TEAM' | string;
 
 	const sortTable = (key: SortBy, sortState: TableSortState) => {
@@ -58,54 +57,49 @@
 
 		return sortState;
 	};
-	$inspect(sortState, 'sortState');
 
-	// Extract team data and calculate the sum of costs
-	let teamData = $derived(
-		($tenantCost.data?.teams.nodes
-			.map((team: TenantCost$result['teams']['nodes'][0]) => {
-				return {
-					slug: team.slug,
-					sum: team.cost.daily.series.reduce((acc, day) => {
-						acc += day.sum;
+	function mapTeamsToTeamData(teams: TenantCost$result['teams']['nodes']): TeamData[] {
+		return teams.map((team) => {
+			return {
+				slug: team.slug,
+				sum: team.cost.daily.series.reduce((acc, day) => acc + day.sum, 0),
+				services: team.cost.daily.series.reduce(
+					(acc, day) => {
+						day.services.forEach((service) => {
+							const name = service.service.toUpperCase();
+							if (!acc[name]) {
+								acc[name] = { cost: 0 };
+							}
+							acc[name].cost += service.cost;
+						});
 						return acc;
-					}, 0),
-					services: team.cost.daily.series.reduce(
-						(acc, day) => {
-							day.services.forEach((service) => {
-								if (!acc[service.service]) {
-									acc[service.service] = { cost: 0 };
-								}
-								acc[service.service].cost += service.cost;
-							});
-							return acc;
-						},
-						{} as { [service: string]: { cost: number } }
-					)
-				};
-			})
-			.sort((a, b) => {
-				if (sortState.orderBy === 'SUM') {
-					return sortState.direction === 'ascending' ? a.sum - b.sum : b.sum - a.sum;
-				} else if (sortState.orderBy === 'TEAM') {
-					return sortState.direction === 'ascending'
-						? a.slug.localeCompare(b.slug)
-						: b.slug.localeCompare(a.slug);
-				} else {
-					if (a.services[sortState.orderBy.toLowerCase()] === undefined) {
-						a.services[sortState.orderBy.toLowerCase()] = { cost: 0 };
-					}
-					if (b.services[sortState.orderBy.toLowerCase()] === undefined) {
-						b.services[sortState.orderBy.toLowerCase()] = { cost: 0 };
-					}
-					return sortState.direction === 'ascending'
-						? a.services[sortState.orderBy.toLowerCase()].cost -
-								b.services[sortState.orderBy.toLowerCase()].cost
-						: b.services[sortState.orderBy.toLowerCase()].cost -
-								a.services[sortState.orderBy.toLowerCase()].cost;
-				}
-			}) as TeamData[]) || []
-	);
+					},
+					{} as { [service: string]: { cost: number } }
+				)
+			};
+		});
+	}
+
+	function sortTeamData(teams: TeamData[], sortState: TableSortState): TeamData[] {
+		return [...teams].sort((a, b) => {
+			if (sortState.orderBy === 'SUM') {
+				return sortState.direction === 'ascending' ? a.sum - b.sum : b.sum - a.sum;
+			} else if (sortState.orderBy === 'TEAM') {
+				return sortState.direction === 'ascending'
+					? a.slug.localeCompare(b.slug)
+					: b.slug.localeCompare(a.slug);
+			} else {
+				const aCost = a.services[sortState.orderBy]?.cost ?? -1;
+				const bCost = b.services[sortState.orderBy]?.cost ?? -1;
+
+				return sortState.direction === 'ascending' ? aCost - bCost : bCost - aCost;
+			}
+		});
+	}
+
+	let teamData = $derived(mapTeamsToTeamData($tenantCost.data?.teams.nodes || []));
+
+	let sortedTeamData = $derived(sortTeamData(teamData, sortState));
 </script>
 
 <div class="container">
@@ -121,29 +115,28 @@
 			<Thead>
 				<Tr>
 					<Th sortable={true} sortKey="TEAM">Team</Th>
-					{#each Array.from(services).toSorted() as service (service)}
-						<Th sortable={true} sortKey={service.toUpperCase()}>{service}</Th>
+					{#each services as service (service)}
+						<Th sortable={true} sortKey={service[0]}>{service[1]}</Th>
 					{/each}
 					<Th sortable={true} sortKey="SUM">Sum</Th>
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each teamData as team (team)}
+				{#each sortedTeamData as team (team)}
 					<Tr>
 						<Td>{team.slug}</Td>
-						{#each Array.from(services).toSorted() as service (service)}
+						{#each services as service (service)}
 							<Td
-								>{team.services[service]?.cost
-									? euroValueFormatter(round(team.services[service]?.cost))
+								>{team.services[service[0]]?.cost
+									? euroValueFormatter(team.services[service[0]]?.cost)
 									: '-'}</Td
 							>
 						{/each}
-						<Td>{euroValueFormatter(round(team.sum))}</Td>
+						<Td>{euroValueFormatter(team.sum)}</Td>
 					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
-		<!-- <pre>{JSON.stringify($tenantCost.data?.teams, null, 2)}</pre> -->
 	{/if}
 </div>
 
