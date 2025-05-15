@@ -1,0 +1,19 @@
+query TenantCost {
+	teams {
+		nodes {
+			slug
+			cost {
+				daily(from: "2025-01-01", to: "2025-01-30") {
+					series {
+						services {
+							cost
+							service
+						}
+						date
+						sum
+					}
+				}
+			}
+		}
+	}
+}
