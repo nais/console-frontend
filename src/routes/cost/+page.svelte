@@ -2,7 +2,16 @@
 	import type { TenantCost$result } from '$houdini';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import {
+		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -48,10 +57,10 @@
 			}
 		} else {
 			sortState.orderBy = key;
-			if (key === 'SUM') {
-				sortState.direction = 'ascending';
-			} else {
+			if (sortState.direction === 'ascending') {
 				sortState.direction = 'descending';
+			} else {
+				sortState.direction = 'ascending';
 			}
 		}
 
@@ -104,7 +113,7 @@
 
 <div class="container">
 	<GraphErrors errors={$tenantCost.errors} />
-	{#if $tenantCost.data}
+	{#if !$tenantCost.fetching}
 		<Table
 			size="small"
 			sort={sortState}
@@ -137,6 +146,10 @@
 				{/each}
 			</Tbody>
 		</Table>
+	{:else}
+		<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+			<Loader size="3xlarge" />
+		</div>
 	{/if}
 </div>
 

@@ -1,5 +1,5 @@
-query TenantCost($from: Date!, $to: Date!) {
-	teams(first: 5) {
+query TenantCost($from: Date!, $to: Date!) @blocking {
+	teams(first: 25) {
 		nodes {
 			slug
 			cost {
