@@ -13,6 +13,10 @@
 		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+	import EChart from '$lib/chart/EChart.svelte';
+	import { goto } from '$app/navigation';
+	import type { EChartsOption } from 'echarts';
+	import { truncateString } from '$lib/chart/util';
 
 	let { data }: PageProps = $props();
 	let tenantCost = $derived(data.TenantCost);
@@ -109,11 +113,70 @@
 	let teamData = $derived(mapTeamsToTeamData($tenantCost.data?.teams.nodes || []));
 
 	let sortedTeamData = $derived(sortTeamData(teamData, sortState));
+
+	function handleChartClick(name: string) {
+		goto(`/team/${name}/cost`);
+	}
+
+	function echartOptionsCost(data: TeamData[]) {
+		const opts = optionsMem(data);
+		opts.height = '150px';
+		opts.legend = { ...opts.legend, bottom: 20 };
+		return opts;
+	}
+
+	function optionsMem(data: TeamData[]): EChartsOption {
+		const overage = data.map((t) => {
+			return {
+				team: t.slug,
+				sum: t.sum
+			};
+		});
+		const sorted = overage.sort((a, b) => b.sum - a.sum).slice(0, 20);
+		return {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'line'
+				},
+				valueFormatter: (value: number) => euroValueFormatter(value)
+			},
+			xAxis: {
+				type: 'category',
+				data: sorted.map((s) => {
+					return s.team;
+				}),
+				axisLabel: {
+					rotate: 60,
+					formatter: (value: string) => {
+						return truncateString(value, 23);
+					}
+				}
+			},
+			legend: {
+				show: false
+			},
+			yAxis: {
+				type: 'value',
+				name: 'Cost'
+			},
+			series: {
+				name: 'Total cost',
+				data: sorted.map((s) => {
+					return s.sum;
+				}),
+				type: 'bar',
+				color: '#91dc75'
+			}
+		} as EChartsOption;
+	}
 </script>
 
 <div class="container">
 	<GraphErrors errors={$tenantCost.errors} />
-	{#if !$tenantCost.fetching}
+
+	{#if $tenantCost.data}
+		<EChart options={echartOptionsCost(teamData)} onclick={handleChartClick} />
 		<Table
 			size="small"
 			sort={sortState}
