@@ -7,5 +7,4 @@
 
 <a {href} target="_blank" rel="noopener noreferrer" style:display="inline">
 	{@render children()}
-	<ExternalLinkIcon class="text-aligned-icon" />
-</a>
+</a><ExternalLinkIcon class="text-aligned-icon" />
