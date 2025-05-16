@@ -29,11 +29,21 @@ export type DailCostType = {
 	}[];
 };
 
-export function costTransformStackedColumnChart(
-	from: Date,
-	to: Date,
-	data: DailCostType
-): EChartsOption {
+export function costTransformStackedColumnChart(data: DailCostType | undefined): EChartsOption {
+	if (!data) {
+		return {
+			animation: false,
+			title: {
+				text: 'No data',
+				left: 'center',
+				top: 'center',
+				textStyle: {
+					color: '#aaa'
+				}
+			}
+		} as EChartsOption;
+	}
+
 	const dates: string[] = [];
 	const seriesData: { [service: string]: [number, number][] } = {};
 	const allServices = new Set<string>();
@@ -49,37 +59,34 @@ export function costTransformStackedColumnChart(
 	data.series.forEach((entry) => {
 		const entryDate = new Date(entry.date);
 
-		// Check if the entry date is within the provided range
-		if (entryDate >= from && entryDate <= to) {
-			dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+		dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
 
-			if (entry.services.length === 0) {
-				// No services for this day, add 0 for all services
-				allServices.forEach((service) => {
+		if (entry.services.length === 0) {
+			// No services for this day, add 0 for all services
+			allServices.forEach((service) => {
+				if (!seriesData[service]) {
+					seriesData[service] = [];
+				}
+				seriesData[service].push([entryDate.getTime(), 0]);
+			});
+		} else {
+			// Process each service for this day
+			entry.services.forEach((service) => {
+				if (!seriesData[service.service]) {
+					seriesData[service.service] = [];
+				}
+				seriesData[service.service].push([entryDate.getTime(), service.cost]);
+			});
+
+			// Add 0 for missing services on this day
+			allServices.forEach((service) => {
+				if (!entry.services.some((s) => s.service === service)) {
 					if (!seriesData[service]) {
 						seriesData[service] = [];
 					}
 					seriesData[service].push([entryDate.getTime(), 0]);
-				});
-			} else {
-				// Process each service for this day
-				entry.services.forEach((service) => {
-					if (!seriesData[service.service]) {
-						seriesData[service.service] = [];
-					}
-					seriesData[service.service].push([entryDate.getTime(), service.cost]);
-				});
-
-				// Add 0 for missing services on this day
-				allServices.forEach((service) => {
-					if (!entry.services.some((s) => s.service === service)) {
-						if (!seriesData[service]) {
-							seriesData[service] = [];
-						}
-						seriesData[service].push([entryDate.getTime(), 0]);
-					}
-				});
-			}
+				}
+			});
 		}
 	});
 

@@ -13,6 +13,13 @@ query TenantCost($from: Date!, $to: Date!) @blocking {
 						sum
 					}
 				}
+
+				monthlySummary {
+					series {
+						cost
+						date
+					}
+				}
 			}
 		}
 	}

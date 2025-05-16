@@ -3,8 +3,7 @@ import type { TenantCostVariables } from './$houdini';
 
 export const _TenantCostVariables: TenantCostVariables = () => {
 	const to = subDays(new Date(), 2);
-
-	const from = subDays(to, 3);
+	const from = subDays(to, 5);
 
 	return {
 		from,

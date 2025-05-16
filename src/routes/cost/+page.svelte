@@ -1,6 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { TenantCost$result } from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
+	import {
+		costTransformStackedColumnChart,
+		euroValueFormatter,
+		type DailCostType
+	} from '$lib/chart/cost_transformer';
+	import EChart from '$lib/chart/EChart.svelte';
+	import { truncateString } from '$lib/chart/util';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import {
 		Loader,
@@ -12,14 +19,12 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { goto } from '$app/navigation';
 	import type { EChartsOption } from 'echarts';
-	import { truncateString } from '$lib/chart/util';
+	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let tenantCost = $derived(data.TenantCost);
+	let { TenantCost } = $derived(data);
+
 	let services = new Map<string, string>();
 	type TeamData = {
 		slug: string;
@@ -37,7 +42,7 @@
 	});
 
 	// Extract services from the tenant cost data
-	$tenantCost.data?.teams.nodes.forEach((team: TenantCost$result['teams']['nodes'][0]) => {
+	$TenantCost.data?.teams.nodes.forEach((team: TenantCost$result['teams']['nodes'][0]) => {
 		team.cost.daily.series.forEach((day) => {
 			day.services.forEach((service) => {
 				services.set(service.service.toUpperCase(), service.service);
@@ -110,7 +115,7 @@
 		});
 	}
 
-	let teamData = $derived(mapTeamsToTeamData($tenantCost.data?.teams.nodes || []));
+	let teamData = $derived(mapTeamsToTeamData($TenantCost.data?.teams.nodes || []));
 
 	let sortedTeamData = $derived(sortTeamData(teamData, sortState));
 
@@ -118,21 +123,14 @@
 		goto(`/team/${name}/cost`);
 	}
 
-	function echartOptionsCost(data: TeamData[]) {
-		const opts = optionsMem(data);
-		opts.height = '150px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
-
-	function optionsMem(data: TeamData[]): EChartsOption {
-		const overage = data.map((t) => {
+	function echartOptionsCost(data: TenantCost$result): EChartsOption {
+		const cost = data.teams.nodes.map((t) => {
 			return {
 				team: t.slug,
-				sum: t.sum
+				sum: t.cost.monthlySummary.series.reduce((acc, day) => acc + day.cost, 0)
 			};
 		});
-		const sorted = overage.sort((a, b) => b.sum - a.sum).slice(0, 20);
+		const sorted = cost.sort((a, b) => b.sum - a.sum).slice(0, 20);
 		return {
 			tooltip: {
 				trigger: 'axis',
@@ -170,13 +168,59 @@
 			}
 		} as EChartsOption;
 	}
+
+	function stackedGraphData(data: TenantCost$result): DailCostType {
+		const merged = new Map<string, { date: Date; services: Record<string, number>; sum: number }>();
+
+		for (const team of data.teams.nodes) {
+			for (const day of team.cost.daily.series) {
+				const key = day.date.toISOString().slice(0, 10); // YYYY-MM-DD
+
+				if (!merged.has(key)) {
+					merged.set(key, { date: day.date, services: {}, sum: 0 });
+				}
+
+				const entry = merged.get(key)!;
+
+				for (const service of day.services) {
+					entry.services[service.service] = (entry.services[service.service] || 0) + service.cost;
+				}
+
+				entry.sum += day.sum;
+			}
+		}
+
+		const series = Array.from(merged.values())
+			.map((entry) => ({
+				date: entry.date,
+				services: Object.entries(entry.services).map(([service, cost]) => ({ service, cost })),
+				sum: entry.sum
+			}))
+			.sort((a, b) => a.date.getTime() - b.date.getTime()); // sort by date ascending
+
+		return { series };
+	}
+
+	let stacked = $derived.by(() => {
+		if ($TenantCost.data) {
+			const data = $TenantCost.data;
+			const transformedData = stackedGraphData(data);
+			return transformedData;
+		}
+		return null;
+	});
 </script>
 
 <div class="container">
-	<GraphErrors errors={$tenantCost.errors} />
+	<GraphErrors errors={$TenantCost.errors} />
 
-	{#if $tenantCost.data}
-		<EChart options={echartOptionsCost(teamData)} onclick={handleChartClick} />
+	{#if !$TenantCost.fetching && $TenantCost.data}
+		<EChart options={echartOptionsCost($TenantCost.data)} onclick={handleChartClick} />
+
+		{#if stacked}
+			<EChart options={costTransformStackedColumnChart(stacked)} style="height: 500px" />
+		{/if}
+
 		<Table
 			size="small"
 			sort={sortState}

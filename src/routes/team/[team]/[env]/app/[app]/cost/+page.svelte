@@ -8,7 +8,7 @@
 	import type { PageProps } from './$houdini';
 
 	const { data }: PageProps = $props();
-	const { AppCost, interval, from, to } = $derived(data);
+	const { AppCost, interval } = $derived(data);
 </script>
 
 <GraphErrors errors={$AppCost.errors} />
@@ -43,10 +43,7 @@
 							{/each}
 						</ToggleGroup>
 					</div>
-					<EChart
-						options={costTransformStackedColumnChart(new Date(from), new Date(to), d)}
-						style="height: 400px"
-					/>
+					<EChart options={costTransformStackedColumnChart(d)} style="height: 400px" />
 				{/if}
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">

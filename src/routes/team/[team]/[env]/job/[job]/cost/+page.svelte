@@ -8,7 +8,7 @@
 	import type { PageProps } from './$houdini';
 
 	const { data }: PageProps = $props();
-	const { JobCost, interval, from, to } = $derived(data);
+	const { JobCost, interval } = $derived(data);
 </script>
 
 <GraphErrors errors={$JobCost.errors} />
@@ -35,10 +35,7 @@
 			</div>
 			{#if $JobCost.data && $JobCost.data.team.environment.job.cost.daily !== PendingValue}
 				{@const d = $JobCost.data.team.environment.job.cost.daily}
-				<EChart
-					options={costTransformStackedColumnChart(new Date(from), new Date(to), d)}
-					style="height: 400px"
-				/>
+				<EChart options={costTransformStackedColumnChart(d)} style="height: 400px" />
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 					<Loader size="3xlarge" />
