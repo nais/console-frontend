@@ -767,6 +767,25 @@ type ContainerImageWorkloadReferenceEdge {
   node: ContainerImageWorkloadReference!
 }
 
+type CostMonthlySample {
+  """The total cost for the month for the given service."""
+  cost: Float!
+
+  """The last date with cost data in the month."""
+  date: Date!
+
+  """The service"""
+  service: String!
+}
+
+type CostMonthlySummary {
+  """The cost series."""
+  series: [CostMonthlySample!]!
+
+  """The total cost for the last 12 months."""
+  sum: Float!
+}
+
 input CreateSecretInput {
   """The environment the secret exists in."""
   environment: String!
@@ -2367,6 +2386,9 @@ type Price {
 
 """The query root for the Nais GraphQL API."""
 type Query {
+  """Get the monthly cost summary for a tenant."""
+  costMonthlySummary: CostMonthlySummary!
+
   """Get current prices for resources."""
   currentUnitPrices: CurrentUnitPrices!
 
