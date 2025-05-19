@@ -12,8 +12,10 @@
 		yearlyOverageCost,
 		type TeamOverageData
 	} from '$lib/utils/resources';
-	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import {
+		BodyLong,
+		BodyShort,
+		Heading,
 		Table,
 		Tbody,
 		Td,
@@ -21,7 +23,7 @@
 		Thead,
 		Tr,
 		type TableSortState
-	} from '@nais/ds-svelte-community/components/Table/index.js';
+	} from '@nais/ds-svelte-community';
 	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
@@ -59,13 +61,15 @@
 
 	function optionsCPU(input: OverageData[]): EChartsOption {
 		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
-		const overage = tmp.map((s) => {
-			return {
-				name: s.workload.name,
-				env: s.workload.teamEnvironment.environment.name,
-				overage: s.requested - s.used
-			};
-		});
+		const overage = tmp
+			.map((s) => {
+				return {
+					name: s.workload.name,
+					env: s.workload.teamEnvironment.environment.name,
+					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
+				};
+			})
+			.filter((s) => s.overage > 0);
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
 		return {
 			tooltip: {
@@ -97,7 +101,7 @@
 			series: {
 				name: 'Unutilized CPU',
 				data: sorted.map((s) => {
-					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+					return s.overage.toPrecision(2);
 				}),
 				type: 'bar',
 				color: '#83bff6'
@@ -107,13 +111,15 @@
 
 	function optionsMem(input: OverageData[]): EChartsOption {
 		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
-		const overage = tmp.map((s) => {
-			return {
-				name: s.workload.name,
-				env: s.workload.teamEnvironment.environment.name,
-				overage: s.requested - s.used
-			};
-		});
+		const overage = tmp
+			.map((s) => {
+				return {
+					name: s.workload.name,
+					env: s.workload.teamEnvironment.environment.name,
+					overage: s.requested - s.used
+				};
+			})
+			.filter((s) => s.overage > 0);
 
 		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
 		return {
@@ -179,13 +185,7 @@
 			}
 		}
 
-		overageTable = getTeamOverageData(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction,
-			data.prices.cpu,
-			data.prices.memory
-		);
+		overageTable = getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction);
 		return sortState;
 	};
 
@@ -193,19 +193,14 @@
 		orderBy: 'COST',
 		direction: 'descending'
 	});
-	let { TeamResourceUsage } = $derived(data);
-	let resourceUtilization = $derived($TeamResourceUsage.data?.team);
-	let overageTable: TeamOverageData[] = $state([]);
 
-	$effect(() => {
-		overageTable = getTeamOverageData(
-			resourceUtilization,
-			sortState.orderBy,
-			sortState.direction,
-			data.prices.cpu,
-			data.prices.memory
-		);
-	});
+	let { TeamResourceUsage } = $derived(data);
+
+	let resourceUtilization = $derived($TeamResourceUsage.data);
+
+	let overageTable: TeamOverageData[] = $derived(
+		getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction)
+	);
 
 	function handleChartClick(name: string) {
 		const [env, app] = name.split(':');
@@ -216,7 +211,7 @@
 <GraphErrors errors={$TeamResourceUsage.errors} />
 <div class="wrapper">
 	{#if resourceUtilization}
-		{@const filteredCpuUtil = resourceUtilization.cpuUtil.filter(
+		{@const filteredCpuUtil = resourceUtilization.team.cpuUtil.filter(
 			(item) => item && item.used < item.requested
 		)}
 		{@const cpuRequested = filteredCpuUtil.reduce(
@@ -224,7 +219,7 @@
 			0
 		)}
 		{@const cpuUsage = filteredCpuUtil.reduce((acc, item) => acc + (item ? item.used : 0), 0)}
-		{@const filtertedMemoryUtil = resourceUtilization.memUtil.filter(
+		{@const filtertedMemoryUtil = resourceUtilization.team.memUtil.filter(
 			(item) => item && item.used < item.requested
 		)}
 		{@const memoryRequested = filtertedMemoryUtil.reduce(
@@ -252,8 +247,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.CPU,
 									cpuRequested - cpuUsage,
-									data.prices.cpu,
-									data.prices.memory
+									resourceUtilization.currentUnitPrices.cpu.value,
+									resourceUtilization.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -278,8 +273,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.MEMORY,
 									memoryRequested - memoryUsage,
-									data.prices.cpu,
-									data.prices.memory
+									resourceUtilization.currentUnitPrices.cpu.value,
+									resourceUtilization.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -289,26 +284,26 @@
 				</div>
 			</div>
 		</div>
-		<Heading level="2">Top 10 Overprovisioned Applications</Heading>
+		<Heading level="2">Top Overprovisioned Applications</Heading>
 		<BodyLong spacing>
-			These charts highlight the 10 applications with the highest unused CPU and memory relative to
+			These charts highlight the applications with the highest unused CPU and memory relative to
 			their requested resources. Large gaps may indicate overprovisioning and opportunities to
 			reduce infrastructure costs by optimizing resource requests.
 		</BodyLong>
 
 		<div style="display: flex">
 			<EChart
-				options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
+				options={echartOptionsCPUOverageChart(resourceUtilization.team.cpuUtil)}
 				style="height: 350px; width: 50%;"
 				onclick={handleChartClick}
 			/>
 			<EChart
-				options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
+				options={echartOptionsMemoryOverageChart(resourceUtilization.team.memUtil)}
 				style="height: 350px; width: 50%;"
 				onclick={handleChartClick}
 			/>
 		</div>
-		<Heading level="3" spacing>Resource Waste Across All Applications</Heading>
+		<Heading level="3" spacing>CPU and Memory Underutilization per Application</Heading>
 		<BodyLong spacing>
 			This table shows unutilized CPU and memory for each application, along with estimated overage
 			costs. Use this overview to identify where you can reduce requests and cut infrastructure

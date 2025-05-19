@@ -490,7 +490,7 @@
 		font-weight: bold;
 	}
 	dd {
-		margin-inline-start: 40px;
+		margin-inline-start: 0px;
 		font-family: monospace;
 		font-size: 1rem;
 	}

@@ -1,4 +1,12 @@
 query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
+	currentUnitPrices {
+		cpu {
+			value
+		}
+		memory {
+			value
+		}
+	}
 	team(slug: $team) {
 		environments {
 			id

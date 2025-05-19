@@ -1,4 +1,12 @@
 query TeamResourceUsage($team: Slug!) {
+	currentUnitPrices {
+		cpu {
+			value
+		}
+		memory {
+			value
+		}
+	}
 	team(slug: $team) {
 		cpuUtil: workloadUtilization(resourceType: CPU) {
 			workload {

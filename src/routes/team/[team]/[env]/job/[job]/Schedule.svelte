@@ -51,8 +51,7 @@
 				use24HourTimeFormat: true
 			});
 
-			const descriptionParts = description.split(',');
-			const descriptionString = descriptionParts[0] + ` (${cronTimeZone}),` + descriptionParts[1];
+			const descriptionString = description + ' (' + cronTimeZone + ')';
 
 			const nextRun = getNextRunTime(expression, cronTimeZone, 'Europe/Oslo');
 

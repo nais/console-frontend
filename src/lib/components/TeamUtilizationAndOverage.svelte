@@ -23,6 +23,14 @@
 
 	const utilization = graphql(`
 		query AggregatedTeamUtilization($team: Slug!) @load {
+			currentUnitPrices @loading {
+				cpu {
+					value
+				}
+				memory {
+					value
+				}
+			}
 			team(slug: $team) @loading {
 				cpuUtil: workloadUtilization(resourceType: CPU) @loading {
 					requested
@@ -54,13 +62,9 @@
 
 	interface Props {
 		teamSlug: string;
-		prices: {
-			cpu: number;
-			memory: number;
-		};
 	}
 
-	let { teamSlug, prices }: Props = $props();
+	let { teamSlug }: Props = $props();
 
 	let cpuMetrics = $derived($utilization.data?.team.cpuUtil.filter((item) => !!item) ?? []);
 
@@ -86,6 +90,12 @@
 		memoryMetrics
 			.filter((metric) => metric !== PendingValue)
 			.reduce((acc, item) => acc + item.used, 0)
+	);
+
+	let prices = $derived(
+		$utilization.data?.currentUnitPrices === PendingValue
+			? undefined
+			: $utilization.data?.currentUnitPrices
 	);
 </script>
 
@@ -137,19 +147,19 @@
 	</Table>
 	<BodyShort>
 		Overage cost:
-		{#if cpuRequested && cpuUsage && memoryRequested && memoryUsage}
+		{#if cpuRequested && cpuUsage && memoryRequested && memoryUsage && prices}
 			{euroValueFormatter(
 				yearlyOverageCost(
 					UtilizationResourceType.CPU,
 					cpuRequested - cpuUsage,
-					prices.cpu,
-					prices.memory
+					prices.cpu.value,
+					prices.memory.value
 				) +
 					yearlyOverageCost(
 						UtilizationResourceType.MEMORY,
 						memoryRequested - memoryUsage,
-						prices.cpu,
-						prices.memory
+						prices.cpu.value,
+						prices.memory.value
 					)
 			)}
 		{/if}

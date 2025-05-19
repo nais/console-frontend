@@ -200,17 +200,9 @@
 	let { TenantUtilization } = $derived(data);
 
 	let resourceUtilization = $derived(mergeAll($TenantUtilization.data));
-	let overageTable: TeamsOverageData[] = $state([]);
-
-	$effect(() => {
-		overageTable = getTeamsOverageData(
-			$TenantUtilization.data,
-			sortState.orderBy,
-			sortState.direction,
-			data.prices.cpu,
-			data.prices.memory
-		);
-	});
+	let overageTable: TeamsOverageData[] = $derived(
+		getTeamsOverageData($TenantUtilization.data, sortState.orderBy, sortState.direction)
+	);
 
 	function handleChartClick(name: string) {
 		goto(`/team/${name}/utilization`);
@@ -245,8 +237,8 @@
 									yearlyOverageCost(
 										UtilizationResourceType.CPU,
 										cpuRequested - cpuUsage,
-										data.prices.cpu,
-										data.prices.memory
+										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 									),
 									0
 								),
@@ -282,8 +274,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.MEMORY,
 									memoryRequested - memoryUsage,
-									data.prices.cpu,
-									data.prices.memory
+									$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+									$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 								),
 								{ maximumFractionDigits: 0 }
 							)}

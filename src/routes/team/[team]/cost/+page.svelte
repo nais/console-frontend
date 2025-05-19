@@ -42,7 +42,7 @@
 		</div>
 		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
 			<EChart
-				options={costTransformStackedColumnChart(from, to, $TeamCost.data.team.cost.daily)}
+				options={costTransformStackedColumnChart($TeamCost.data.team.cost.daily)}
 				style="height: 500px"
 			/>
 		{:else}
