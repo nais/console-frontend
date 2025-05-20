@@ -8,7 +8,8 @@
 	import { fade } from 'svelte/transition';
 </script>
 
-{#if page.url.searchParams.get('naisdevice') == 'connected'}
+{#if page.url.searchParams.get('naisdevice') == 'connected' || page.url.searchParams.get('naisdevice') == '1'}
+	<!-- A bug in naisdevice sends people to `?naisdevice=1`, we handle it the same way as `connected` for a while -->
 	<div class="naisdevice" out:fade>
 		<Alert
 			variant="success"
