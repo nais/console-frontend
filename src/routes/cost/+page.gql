@@ -1,25 +1,12 @@
-query TenantCost($from: Date!, $to: Date!) @blocking {
-	teams(first: 25) {
-		nodes {
-			slug
-			cost {
-				daily(from: $from, to: $to) {
-					series {
-						services {
-							cost
-							service
-						}
-						date
-						sum
-					}
-				}
+query TenantCost {
+	costMonthlySummary {
+		series {
+			date
+			sum
 
-				monthlySummary {
-					series {
-						cost
-						date
-					}
-				}
+			services {
+				cost
+				service
 			}
 		}
 	}

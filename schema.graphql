@@ -767,23 +767,9 @@ type ContainerImageWorkloadReferenceEdge {
   node: ContainerImageWorkloadReference!
 }
 
-type CostMonthlySample {
-  """The total cost for the month for the given service."""
-  cost: Float!
-
-  """The last date with cost data in the month."""
-  date: Date!
-
-  """The service"""
-  service: String!
-}
-
 type CostMonthlySummary {
   """The cost series."""
-  series: [CostMonthlySample!]!
-
-  """The total cost for the last 12 months."""
-  sum: Float!
+  series: [ServiceCostSeries!]!
 }
 
 input CreateSecretInput {
@@ -824,7 +810,7 @@ input CreateServiceAccountTokenInput {
 
   """
   Optional expiry date of the token.
-  
+
   If not specified, the token will never expire.
   """
   expiresAt: Date
@@ -839,11 +825,11 @@ input CreateServiceAccountTokenInput {
 type CreateServiceAccountTokenPayload {
   """
   The secret of the service account token.
-  
+
   This value is only returned once, and can not be retrieved at a later stage. If the secret is lost, a new token must be created.
-  
+
   Once obtained, the secret can be used to authenticate as the service account using the HTTP `Authorization` request header:
-  
+
   ```
   Authorization: Bearer <secret>
   ```
@@ -860,7 +846,7 @@ type CreateServiceAccountTokenPayload {
 input CreateTeamInput {
   """
   The purpose / description of the team.
-  
+
   What is the team for? What is the team working on? This value is meant for human consumption, and should be enough
   to give a newcomer an idea of what the team is about.
   """
@@ -868,14 +854,14 @@ input CreateTeamInput {
 
   """
   The main Slack channel for the team.
-  
+
   Where does the team communicate? This value is used to link to the team's main Slack channel.
   """
   slackChannel: String!
 
   """
   Unique team slug.
-  
+
   After creation, this value can not be changed. Also, after a potential deletion of the team, the slug can not be
   reused, so please choose wisely.
   """
@@ -2058,7 +2044,7 @@ type Mutation {
 
   """
   Add a team member
-  
+
   If the user is already a member or an owner of the team, the mutation will result in an error.
   """
   addTeamMember(input: AddTeamMemberInput!): AddTeamMemberPayload!
@@ -2077,12 +2063,12 @@ type Mutation {
 
   """
   Confirm a team deletion
-  
+
   This will start the actual team deletion process, which will be done in an asynchronous manner. All external
   entities controlled by Nais will also be deleted.
-  
+
   WARNING: There is no going back after starting this process.
-  
+
   Note: Service accounts are not allowed to confirm a team deletion.
   """
   confirmTeamDeletion(input: ConfirmTeamDeletionInput!): ConfirmTeamDeletionPayload!
@@ -2095,23 +2081,23 @@ type Mutation {
 
   """
   Create a service account token.
-  
+
   The secret is automatically generated, and is returned as a part of the payload for this mutation. The secret can
   not be retrieved at a later stage.
-  
+
   A service account can have multiple active tokens at the same time.
   """
   createServiceAccountToken(input: CreateServiceAccountTokenInput!): CreateServiceAccountTokenPayload!
 
   """
   Create a new Nais team
-  
+
   The user creating the team will be granted team ownership, unless the user is a service account, in which case the
   team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
-  
+
   Creation of a team will also create external resources for the team, which will be managed by the Nais API
   reconcilers. This will be done asynchronously.
-  
+
   Refer to the [official Nais documentation](https://docs.nais.io/explanations/team/) for more information regarding
   Nais teams.
   """
@@ -2119,7 +2105,7 @@ type Mutation {
 
   """
   Create a new Unleash instance.
-  
+
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
   """
@@ -2145,14 +2131,14 @@ type Mutation {
 
   """
   Disable a reconciler
-  
+
   The reconciler configuration will be left intact.
   """
   disableReconciler(input: DisableReconcilerInput!): Reconciler!
 
   """
   Enable a reconciler
-  
+
   A reconciler must be fully configured before it can be enabled.
   """
   enableReconciler(input: EnableReconcilerInput!): Reconciler!
@@ -2165,19 +2151,19 @@ type Mutation {
 
   """
   Remove a team member
-  
+
   If the user is not already a member or an owner of the team, the mutation will result in an error.
   """
   removeTeamMember(input: RemoveTeamMemberInput!): RemoveTeamMemberPayload!
 
   """
   Request a key that can be used to trigger a team deletion process
-  
+
   Deleting a team is a two step process. First an owner of the team (or an admin) must request a team deletion key,
   and then a second owner of the team (or an admin) must confirm the deletion using the confirmTeamDeletion mutation.
-  
+
   The returned delete key is valid for an hour, and can only be used once.
-  
+
   Note: Service accounts are not allowed to request team delete keys.
   """
   requestTeamDeletion(input: RequestTeamDeletionInput!): RequestTeamDeletionPayload!
@@ -2198,10 +2184,12 @@ type Mutation {
 
   """
   Assign a role to a team member
-  
+
   The user must already be a member of the team for this mutation to succeed.
   """
   setTeamMemberRole(input: SetTeamMemberRoleInput!): SetTeamMemberRolePayload!
+  startOpenSearchMaintenance(input: StartOpenSearchMaintenanceInput!): StartOpenSearchMaintenancePayload
+  startValkeyMaintenance(input: StartValkeyMaintenanceInput!): StartValkeyMaintenancePayload
 
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
@@ -2220,14 +2208,14 @@ type Mutation {
 
   """
   Update a service account token.
-  
+
   Note that the secret itself can not be updated, only the metadata.
   """
   updateServiceAccountToken(input: UpdateServiceAccountTokenInput!): UpdateServiceAccountTokenPayload!
 
   """
   Update an existing Nais team
-  
+
   This mutation can be used to update the team purpose and the main Slack channel. It is not possible to update the
   team slug.
   """
@@ -2263,6 +2251,9 @@ type OpenSearch implements Node & Persistence {
   cost: OpenSearchCost!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
+
+  """Fetch maintenances updates for the OpenSearch instance."""
+  maintenance: OpenSearchMaintenance!
   name: String!
   status: OpenSearchStatus!
   team: Team!
@@ -2310,6 +2301,63 @@ type OpenSearchCost {
 type OpenSearchEdge {
   cursor: Cursor!
   node: OpenSearch!
+}
+
+type OpenSearchMaintenance {
+  updates(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): OpenSearchMaintenanceUpdateConnection!
+}
+
+type OpenSearchMaintenanceUpdate implements ServiceMaintenanceUpdate {
+  """
+  Deadline for installing the maintenance. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  deadline: Time
+
+  """Description of the maintenance."""
+  description: String!
+
+  """
+  The time when the update will be automatically applied. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  startAt: Time
+
+  """Title of the maintenance."""
+  title: String!
+}
+
+type OpenSearchMaintenanceUpdateConnection {
+  """List of edges."""
+  edges: [OpenSearchMaintenanceUpdateEdge!]!
+
+  """List of nodes."""
+  nodes: [OpenSearchMaintenanceUpdate!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type OpenSearchMaintenanceUpdateEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The OpenSearchMaintenanceUpdate."""
+  node: OpenSearchMaintenanceUpdate!
 }
 
 input OpenSearchOrder {
@@ -4130,10 +4178,30 @@ enum SqlInstanceUserOrderField {
   NAME
 }
 
+input StartOpenSearchMaintenanceInput {
+  environmentName: String!
+  serviceName: String!
+  teamSlug: Slug!
+}
+
+type StartOpenSearchMaintenancePayload {
+  error: String
+}
+
+input StartValkeyMaintenanceInput {
+  environmentName: String!
+  serviceName: String!
+  teamSlug: Slug!
+}
+
+type StartValkeyMaintenancePayload {
+  error: String
+}
+
 type Subscription {
   """
   Subscribe to workload logs
-  
+
   This subscription is used to stream logs from a specific workload. When filtering logs you must either specify an
   application or a job owned by a team that is running in a specific environment. You can also filter logs on instance
   name(s).
@@ -5538,7 +5606,7 @@ type UpdateSecretValuePayload {
 input UpdateServiceAccountInput {
   """
   The new description of the service account.
-  
+
   If not specified, the description will remain unchanged.
   """
   description: String
@@ -5555,14 +5623,14 @@ type UpdateServiceAccountPayload {
 input UpdateServiceAccountTokenInput {
   """
   The new description of the service account token.
-  
+
   If not specified, the description will remain unchanged.
   """
   description: String
 
   """
   The new name of the service account token.
-  
+
   If not specified, the name will remain unchanged.
   """
   name: String
@@ -5603,14 +5671,14 @@ type UpdateTeamEnvironmentPayload {
 input UpdateTeamInput {
   """
   An optional new purpose / description of the team.
-  
+
   When omitted the existing value will not be updated.
   """
   purpose: String
 
   """
   An optional new Slack channel for the team.
-  
+
   When omitted the existing value will not be updated.
   """
   slackChannel: String
@@ -5921,6 +5989,63 @@ enum ValkeyInstanceOrderField {
 
 type ValkeyInstanceStatus {
   state: String!
+}
+
+type ValkeyMaintenance {
+  updates(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ValkeyMaintenanceUpdateConnection!
+}
+
+type ValkeyMaintenanceUpdate implements ServiceMaintenanceUpdate {
+  """
+  Deadline for installing the maintenance. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  deadline: Time
+
+  """Description of the maintenance."""
+  description: String!
+
+  """
+  The time when the update will be automatically applied. If set, maintenance is mandatory and will be forcibly applied.
+  """
+  startAt: Time
+
+  """Title of the maintenance."""
+  title: String!
+}
+
+type ValkeyMaintenanceUpdateConnection {
+  """List of edges."""
+  edges: [ValkeyMaintenanceUpdateEdge!]!
+
+  """List of nodes."""
+  nodes: [ValkeyMaintenanceUpdate!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type ValkeyMaintenanceUpdateEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The ValkeyMaintenanceUpdate."""
+  node: ValkeyMaintenanceUpdate!
 }
 
 """Ordering options when fetching vulnerability summaries for workloads."""
