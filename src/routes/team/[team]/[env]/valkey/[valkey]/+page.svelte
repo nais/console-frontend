@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { graphql, ValkeyInstanceAccessOrderField } from '$houdini';
+	import List from '$lib/components/list/List.svelte';
+	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import List from '$lib/components/list/List.svelte';
 	import {
 		Alert,
-		Button,
 		BodyShort,
+		Button,
 		Heading,
 		Table,
 		Tbody,
@@ -19,22 +20,11 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
-	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 
 	const runServiceMaintenance = graphql(`
-		mutation runMaintenance(
-			$project: String!
-			$serviceName: String!
-			$teamSlug: Slug!
-			$environmentName: String!
-		) {
-			RunMaintenance(
-				input: {
-					project: $project
-					serviceName: $serviceName
-					teamSlug: $teamSlug
-					environmentName: $environmentName
-				}
+		mutation runMaintenance($serviceName: String!, $teamSlug: Slug!, $environmentName: String!) {
+			startValkeyMaintenance(
+				input: { serviceName: $serviceName, teamSlug: $teamSlug, environmentName: $environmentName }
 			) {
 				error
 			}
@@ -45,7 +35,6 @@
 	const runServiceMaintenanceStart = async () => {
 		if ($ValkeyInstance.data) {
 			let resp = await runServiceMaintenance.mutate({
-				project: $ValkeyInstance.data.team.environment.valkeyInstance.project,
 				serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name,
 				teamSlug: $ValkeyInstance.data.team.slug,
 				environmentName:
@@ -54,7 +43,7 @@
 			if (resp.errors) {
 				maintenanceError = resp.errors.map((e) => e.message).join(', ');
 			} else {
-				maintenanceError = resp?.data?.RunMaintenance?.error;
+				maintenanceError = resp.data?.startValkeyMaintenance?.error;
 			}
 		}
 	};
@@ -90,11 +79,11 @@
 {#if $ValkeyInstance.data}
 	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
 	{@const mandatoryServiceMaintenanceUpdates =
-		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(
+		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.nodes.filter(
 			(x) => !!x?.deadline
 		)}
 	{@const nonMandatoryServiceMaintenanceUpdates =
-		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.filter(
+		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.nodes.filter(
 			(x) => !x?.deadline
 		)}
 	<div class="wrapper">
@@ -187,7 +176,7 @@
 							<ServiceMaintenanceListItem
 								title={u?.title ?? 'Missing title'}
 								description={u?.description ?? 'Missing description'}
-								start_at={u?.start_at}
+								start_at={u?.startAt}
 								deadline={!!u?.deadline}
 							/>
 						{/each}

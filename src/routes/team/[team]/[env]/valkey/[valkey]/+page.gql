@@ -19,14 +19,24 @@ query ValkeyInstance(
 				status {
 					state
 				}
-				project
+
 				maintenance {
 					updates {
-						description
-						title
-						start_at
-						deadline
-						documentation_link
+						pageInfo {
+							hasNextPage
+							hasPreviousPage
+							pageStart
+							pageEnd
+							totalCount
+							startCursor
+							endCursor
+						}
+						nodes {
+							deadline
+							description
+							startAt
+							title
+						}
 					}
 				}
 
