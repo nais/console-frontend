@@ -2437,7 +2437,13 @@ type Price {
 """The query root for the Nais GraphQL API."""
 type Query {
   """Get the monthly cost summary for a tenant."""
-  costMonthlySummary: CostMonthlySummary!
+  costMonthlySummary(
+    """Start month of the period, inclusive."""
+    from: Date!
+
+    """End month of the period, inclusive."""
+    to: Date!
+  ): CostMonthlySummary!
 
   """Get current prices for resources."""
   currentUnitPrices: CurrentUnitPrices!

@@ -1,15 +1,22 @@
 <script lang="ts">
-	import type { TenantCost$result } from '$houdini';
+	import { type TenantCost$result } from '$houdini';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
+	import { changeParams } from '$lib/utils/searchparams';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { EChartsOption } from 'echarts';
 	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { TenantCost } = $derived(data);
+	let { TenantCost, interval } = $derived(data);
 
 	export function costTransformStackedColumnChart(
 		data: TenantCost$result | undefined
@@ -136,26 +143,59 @@
 	}
 </script>
 
-<div class="container">
+<div class="wrapper">
 	<GraphErrors errors={$TenantCost.errors} />
 
-	{#if !$TenantCost.fetching && $TenantCost.data}
-		<EChart options={costTransformStackedColumnChart($TenantCost.data)} />
-		<!-- <pre>
-			{JSON.stringify(costTransformStackedColumnChart($TenantCost.data), null, 2)}
-		 </pre> -->
-	{:else}
-		<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-			<Loader size="3xlarge" />
+	<div class="graph">
+		<div class="heading">
+			<div class="content">
+				<Heading level="2" spacing>Cost by Service</Heading>
+				<BodyLong>
+					Distribution of team costs across various services. Some services, like Kafka, are missing
+					cost data per team. Cost information is best-effort and originates from Google Cloud and
+					Aiven.
+				</BodyLong>
+			</div>
+			<ToggleGroup
+				value={interval}
+				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+			>
+				{#each ['3y', '1y', '6m'] as interval (interval)}
+					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+				{/each}
+			</ToggleGroup>
 		</div>
-	{/if}
+		{#if $TenantCost.data}
+			<EChart options={costTransformStackedColumnChart($TenantCost.data)} style="height: 500px" />
+		{:else}
+			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+				<Loader size="3xlarge" />
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style>
-	.container {
-		margin-top: var(--spacing-layout);
+	.wrapper {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.graph {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16, --a-spacing-4);
+	}
+
+	.heading {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: var(--spacing-layout);
+	}
+
+	.content {
+		max-width: 80ch;
 	}
 </style>

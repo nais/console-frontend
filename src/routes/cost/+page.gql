@@ -1,5 +1,5 @@
-query TenantCost {
-	costMonthlySummary {
+query TenantCost($from: Date!, $to: Date!) @cache(policy: NetworkOnly) {
+	costMonthlySummary(from: $from, to: $to) {
 		series {
 			date
 			sum
