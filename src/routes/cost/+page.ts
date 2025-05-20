@@ -8,6 +8,8 @@ export const load: PageLoad = async (event) => {
 
 	const getFrom = (interval: string): Date => {
 		switch (interval) {
+			case '5y':
+				return subYears(to, 5);
 			case '3y':
 				return subYears(to, 3);
 			case '1y':
@@ -20,7 +22,6 @@ export const load: PageLoad = async (event) => {
 	};
 
 	const from = getFrom(interval);
-	console.log('from', from);
 
 	return {
 		interval,
