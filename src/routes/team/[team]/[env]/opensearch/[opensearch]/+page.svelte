@@ -1,11 +1,56 @@
 <script lang="ts">
-	import { OpenSearchAccessOrderField } from '$houdini';
+	import { graphql, OpenSearchAccessOrderField } from '$houdini';
+	import List from '$lib/components/list/List.svelte';
+	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyShort, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		BodyShort,
+		Button,
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+
+	const runServiceMaintenance = graphql(`
+		mutation runOpenSearchMaintenance(
+			$serviceName: String!
+			$teamSlug: Slug!
+			$environmentName: String!
+		) {
+			startOpenSearchMaintenance(
+				input: { serviceName: $serviceName, teamSlug: $teamSlug, environmentName: $environmentName }
+			) {
+				error
+			}
+		}
+	`);
+
+	let maintenanceError = $state<string | null | undefined>(undefined);
+	const runServiceMaintenanceStart = async () => {
+		if ($OpenSearchInstance.data) {
+			let resp = await runServiceMaintenance.mutate({
+				serviceName: $OpenSearchInstance.data.team.environment.openSearchInstance.name,
+				teamSlug: $OpenSearchInstance.data.team.slug,
+				environmentName:
+					$OpenSearchInstance.data.team.environment.openSearchInstance.teamEnvironment.environment
+						.name
+			});
+			if (resp.errors) {
+				maintenanceError = resp.errors.map((e) => e.message).join(', ');
+			} else {
+				maintenanceError = resp.data?.startOpenSearchMaintenance?.error;
+			}
+		}
+	};
 
 	let { data }: PageProps = $props();
 	let { OpenSearchInstance } = $derived(data);
@@ -36,6 +81,14 @@
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}
 	{@const instance = $OpenSearchInstance.data.team.environment.openSearchInstance}
+	{@const mandatoryServiceMaintenanceUpdates =
+		$OpenSearchInstance.data.team.environment.openSearchInstance.maintenance.updates.nodes.filter(
+			(x) => !!x?.deadline
+		)}
+	{@const nonMandatoryServiceMaintenanceUpdates =
+		$OpenSearchInstance.data.team.environment.openSearchInstance.maintenance.updates.nodes.filter(
+			(x) => !x?.deadline
+		)}
 
 	<div class="wrapper">
 		<div>
@@ -93,6 +146,39 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 		</div>
+		<div>
+			{#if maintenanceError}
+				<Alert variant="error" style="margin-bottom: 1rem;">
+					{maintenanceError}
+				</Alert>
+			{/if}
+
+			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
+				<div class="service-maintenance-list-heading">
+					<Heading level="3">Pending maintenance</Heading>
+
+					{#if maintenanceError === ''}
+						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
+					{:else}
+						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
+							Run all maintenance
+						</Button>
+					{/if}
+				</div>
+				<div>
+					<List>
+						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
+							<ServiceMaintenanceListItem
+								title={u?.title ?? 'Missing title'}
+								description={u?.description ?? 'Missing description'}
+								start_at={u?.startAt}
+								deadline={!!u?.deadline}
+							/>
+						{/each}
+					</List>
+				</div>
+			{/if}
+		</div>
 	</div>
 {/if}
 
@@ -101,6 +187,12 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+
+	.service-maintenance-list-heading {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 8px;
 	}
 
 	.sidebar {

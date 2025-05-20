@@ -20,6 +20,26 @@ query OpenSearchInstance(
 					state
 				}
 
+				maintenance {
+					updates {
+						pageInfo {
+							hasNextPage
+							hasPreviousPage
+							pageStart
+							pageEnd
+							totalCount
+							startCursor
+							endCursor
+						}
+						nodes {
+							deadline
+							description
+							startAt
+							title
+						}
+					}
+				}
+
 				workload {
 					name
 					teamEnvironment {

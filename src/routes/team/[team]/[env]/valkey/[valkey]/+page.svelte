@@ -22,7 +22,11 @@
 	import type { PageProps } from './$houdini';
 
 	const runServiceMaintenance = graphql(`
-		mutation runMaintenance($serviceName: String!, $teamSlug: Slug!, $environmentName: String!) {
+		mutation runValkeyMaintenance(
+			$serviceName: String!
+			$teamSlug: Slug!
+			$environmentName: String!
+		) {
 			startValkeyMaintenance(
 				input: { serviceName: $serviceName, teamSlug: $teamSlug, environmentName: $environmentName }
 			) {
@@ -199,6 +203,7 @@
 		justify-content: space-between;
 		margin-bottom: 8px;
 	}
+
 	.sidebar {
 		display: flex;
 		flex-direction: column;
