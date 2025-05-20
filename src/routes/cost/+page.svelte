@@ -11,7 +11,7 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
-	import type { EChartsOption } from 'echarts';
+	import { type EChartsOption } from 'echarts';
 	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
 	import type { PageProps } from './$houdini';
 
@@ -81,19 +81,26 @@
 		});
 
 		// Prepare the series for ECharts
-		const series = Array.from(allServices).map((serviceName) => ({
-			name: serviceName,
-			type: 'line',
-			stack: 'Cost',
-			areaStyle: {
-				opacity: 1
-			},
-			showSymbol: false,
-			data: seriesData[serviceName]
-		}));
+		const series = Array.from(allServices)
+			.map((serviceName) => ({
+				name: serviceName,
+				type: 'line',
+				stack: 'Cost',
+				areaStyle: {
+					normal: {
+						opacity: 0.9
+					}
+				},
+				showSymbol: true,
+				data: seriesData[serviceName]
+			}))
+			.toSorted((a, b) => {
+				return a.name.localeCompare(b.name);
+			});
 
 		return {
 			animation: false,
+			width: '80%',
 			title:
 				series.length === 0
 					? {
@@ -108,15 +115,21 @@
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
-					type: 'shadow'
+					type: 'cross'
 				},
 				valueFormatter(value: OptionDataValue[]) {
 					return euroValueFormatter(value[1] as number);
 				}
 			},
+			emphasis: {
+				focus: 'series'
+			},
+
 			legend: {
 				selector: [{ title: 'Inverse selection', type: 'inverse' }],
-				data: Array.from(allServices)
+				data: Array.from(allServices).toSorted((a, b) => {
+					return a.localeCompare(b);
+				})
 			},
 			grid: {
 				left: '3%',
@@ -127,14 +140,20 @@
 			xAxis: [
 				{
 					type: 'time',
-					boundaryGap: false
+					boundaryGap: true
 				}
 			],
 			yAxis: [
 				{
 					type: 'value',
 					axisLabel: {
-						formatter: (value: number) => euroValueFormatter(value)
+						formatter: (value: number) =>
+							value.toLocaleString('en', {
+								style: 'currency',
+								currency: 'EUR',
+								minimumSignificantDigits: 1,
+								roundingPriority: 'morePrecision'
+							})
 					}
 				}
 			],
@@ -143,39 +162,46 @@
 	}
 </script>
 
-<div class="wrapper">
-	<GraphErrors errors={$TenantCost.errors} />
+<div class="container">
+	<div class="wrapper">
+		<GraphErrors errors={$TenantCost.errors} />
 
-	<div class="graph">
-		<div class="heading">
-			<div class="content">
-				<Heading level="2" spacing>Cost by Service</Heading>
-				<BodyLong>
-					Distribution of team costs across various services. Some services, like Kafka, are missing
-					cost data per team. Cost information is best-effort and originates from Google Cloud and
-					Aiven.
-				</BodyLong>
+		<div class="graph">
+			<div class="heading">
+				<div class="content">
+					<Heading level="2" spacing>Cost by Service</Heading>
+					<BodyLong>
+						Service cost distribution for the tenant. Some services (e.g., Kafka) lack per-team
+						data. Cost figures are best-effort, based on data from Google Cloud and Aiven.
+					</BodyLong>
+				</div>
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
 			</div>
-			<ToggleGroup
-				value={interval}
-				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-			>
-				{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
-					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-				{/each}
-			</ToggleGroup>
+			{#if $TenantCost.data}
+				<EChart options={costTransformStackedColumnChart($TenantCost.data)} style="height: 500px" />
+			{:else}
+				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+					<Loader size="3xlarge" />
+				</div>
+			{/if}
 		</div>
-		{#if $TenantCost.data}
-			<EChart options={costTransformStackedColumnChart($TenantCost.data)} style="height: 500px" />
-		{:else}
-			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-				<Loader size="3xlarge" />
-			</div>
-		{/if}
 	</div>
 </div>
 
 <style>
+	.container {
+		margin-top: var(--spacing-layout);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
 	.wrapper {
 		display: flex;
 		flex-direction: column;
