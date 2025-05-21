@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { type TenantCost$result } from '$houdini';
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
@@ -18,9 +19,148 @@
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
 
-	export function costTransformStackedColumnChart(
-		data: TenantCost$result | undefined
-	): EChartsOption {
+	// function costTransformStackedLineChart(data: TenantCost$result | undefined): EChartsOption {
+	// 	if (!data) {
+	// 		return {
+	// 			animation: false,
+	// 			title: {
+	// 				text: 'No data',
+	// 				left: 'center',
+	// 				top: 'center',
+	// 				textStyle: {
+	// 					color: '#aaa'
+	// 				}
+	// 			}
+	// 		} as EChartsOption;
+	// 	}
+
+	// 	const dates: string[] = [];
+	// 	const seriesData: { [service: string]: [number, number][] } = {};
+	// 	const allServices = new Set<string>();
+
+	// 	data.costMonthlySummary.series.forEach((entry) => {
+	// 		entry.services.forEach((service) => {
+	// 			allServices.add(service.service);
+	// 		});
+	// 	});
+
+	// 	// Second pass to build the series data
+	// 	data.costMonthlySummary.series.forEach((entry) => {
+	// 		const entryDate = new Date(entry.date);
+
+	// 		dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+
+	// 		if (entry.services.length === 0) {
+	// 			// No services for this day, add 0 for all services
+	// 			allServices.forEach((service) => {
+	// 				if (!seriesData[service]) {
+	// 					seriesData[service] = [];
+	// 				}
+	// 				seriesData[service].push([entryDate.getTime(), 0]);
+	// 			});
+	// 		} else {
+	// 			// Process each service for this day
+	// 			entry.services.forEach((service) => {
+	// 				if (!seriesData[service.service]) {
+	// 					seriesData[service.service] = [];
+	// 				}
+	// 				seriesData[service.service].push([entryDate.getTime(), service.cost]);
+	// 			});
+
+	// 			// Add 0 for missing services on this day
+	// 			allServices.forEach((service) => {
+	// 				if (!entry.services.some((s) => s.service === service)) {
+	// 					if (!seriesData[service]) {
+	// 						seriesData[service] = [];
+	// 					}
+	// 					seriesData[service].push([entryDate.getTime(), 0]);
+	// 				}
+	// 			});
+	// 		}
+	// 	});
+
+	// 	// Prepare the series for ECharts
+	// 	const series = Array.from(allServices)
+	// 		.map((serviceName) => ({
+	// 			name: serviceName,
+	// 			type: 'line',
+	// 			stack: 'Cost',
+	// 			areaStyle: {
+	// 				normal: {
+	// 					opacity: 0.9
+	// 				}
+	// 			},
+	// 			showSymbol: true,
+	// 			data: seriesData[serviceName]
+	// 		}))
+	// 		.toSorted((a, b) => {
+	// 			return a.name.localeCompare(b.name);
+	// 		});
+
+	// 	return {
+	// 		animation: false,
+	// 		width: '80%',
+	// 		title:
+	// 			series.length === 0
+	// 				? {
+	// 						text: 'No data',
+	// 						left: 'center',
+	// 						top: 'center',
+	// 						textStyle: {
+	// 							color: '#aaa'
+	// 						}
+	// 					}
+	// 				: {},
+	// 		tooltip: {
+	// 			trigger: 'axis',
+	// 			axisPointer: {
+	// 				type: 'cross'
+	// 			},
+	// 			valueFormatter(value: OptionDataValue[]) {
+	// 				return euroValueFormatter(value[1] as number);
+	// 			}
+	// 		},
+	// 		emphasis: {
+	// 			focus: 'series'
+	// 		},
+
+	// 		legend: {
+	// 			selector: [{ title: 'Inverse selection', type: 'inverse' }],
+	// 			data: Array.from(allServices).toSorted((a, b) => {
+	// 				return a.localeCompare(b);
+	// 			})
+	// 		},
+	// 		grid: {
+	// 			left: '3%',
+	// 			right: '4%',
+	// 			bottom: '3%',
+	// 			containLabel: true
+	// 		},
+	// 		xAxis: [
+	// 			{
+	// 				type: 'time',
+	// 				boundaryGap: true
+	// 			}
+	// 		],
+	// 		yAxis: [
+	// 			{
+	// 				type: 'value',
+	// 				axisLabel: {
+	// 					formatter: (value: number) =>
+	// 						value.toLocaleString('en', {
+	// 							style: 'currency',
+	// 							currency: 'EUR',
+	// 							minimumSignificantDigits: 1,
+	// 							roundingPriority: 'morePrecision'
+	// 						})
+	// 				}
+	// 			}
+	// 		],
+	// 		series
+	// 	} as EChartsOption;
+	// }
+
+	function costTransformStackedColumnChart(data: TenantCost$result | undefined): EChartsOption {
 		if (!data) {
 			return {
 				animation: false,
@@ -84,13 +224,13 @@
 		const series = Array.from(allServices)
 			.map((serviceName) => ({
 				name: serviceName,
-				type: 'line',
+				type: 'bar',
 				stack: 'Cost',
-				areaStyle: {
-					normal: {
-						opacity: 0.9
-					}
-				},
+				// areaStyle: {
+				// 	normal: {
+				// 		opacity: 0.9
+				// 	}
+				// },
 				showSymbol: true,
 				data: seriesData[serviceName]
 			}))
@@ -121,10 +261,9 @@
 					return euroValueFormatter(value[1] as number);
 				}
 			},
-			emphasis: {
-				focus: 'series'
-			},
-
+			// emphasis: {
+			// 	focus: 'series'
+			// },
 			legend: {
 				selector: [{ title: 'Inverse selection', type: 'inverse' }],
 				data: Array.from(allServices).toSorted((a, b) => {
@@ -171,7 +310,7 @@
 				<div class="content">
 					<Heading level="2" spacing>Cost by Service</Heading>
 					<BodyLong>
-						Service cost distribution for the tenant. Some services (e.g., Kafka) lack per-team
+						Service cost distribution for {page.data.tenantName}. Some services (e.g., Kafka) lack
 						data. Cost figures are best-effort, based on data from Google Cloud and Aiven.
 					</BodyLong>
 				</div>
@@ -185,7 +324,11 @@
 				</ToggleGroup>
 			</div>
 			{#if $TenantCost.data}
-				<EChart options={costTransformStackedColumnChart($TenantCost.data)} style="height: 500px" />
+				<!-- <EChart options={costTransformStackedLineChart($TenantCost.data)} /> -->
+				<EChart
+					options={costTransformStackedColumnChart($TenantCost.data)}
+					style="height: 1000px;"
+				/>
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 					<Loader size="3xlarge" />
