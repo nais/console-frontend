@@ -77,8 +77,10 @@
 	<Heading level="3" size="small">
 		<div style="display: flex; gap: var(--ax-space-8, --a-spacing-2);">
 			Deployment
-			{#if deploymentInfo?.statuses.nodes[0].state === 'FAILURE'}
-				<Tag variant="error" size="small">Failed</Tag>
+			{#if deploymentInfo?.statuses && deploymentInfo.statuses.nodes && deploymentInfo.statuses.nodes.length > 0}
+				{#if deploymentInfo?.statuses.nodes[0].state === 'FAILURE'}
+					<Tag variant="error" size="small">Failed</Tag>
+				{/if}
 			{/if}
 		</div>
 	</Heading>
