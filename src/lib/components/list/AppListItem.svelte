@@ -61,12 +61,7 @@
 						FAILING: 'danger',
 						NOT_NAIS: 'warning',
 						UNKNOWN: 'info'
-					}[app.status.state] ?? 'info'}-icon, --a-icon-{{
-						NAIS: 'success',
-						FAILING: 'danger',
-						NOT_NAIS: 'warning',
-						UNKNOWN: 'info'
-					}[app.status.state] ?? 'info'}); font-size: 0.7rem"
+					}[app.status.state] ?? 'info'}-decoration); font-size: 0.7rem"
 				/>
 			</TooltipAlignHack>
 		{/snippet}

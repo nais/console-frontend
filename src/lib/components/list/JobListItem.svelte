@@ -58,12 +58,7 @@
 						FAILING: 'danger',
 						NOT_NAIS: 'warning',
 						UNKNOWN: 'info'
-					}[job.status.state] ?? 'info'}-icon, --a-icon-{{
-						NAIS: 'success',
-						FAILING: 'danger',
-						NOT_NAIS: 'warning',
-						UNKNOWN: 'info'
-					}[job.status.state] ?? 'info'}); font-size: 0.7rem"
+					}[job.status.state] ?? 'info'}-decoration); font-size: 0.7rem"
 				/>
 			</TooltipAlignHack>
 		{/snippet}
