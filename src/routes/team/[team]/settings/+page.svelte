@@ -311,45 +311,49 @@
 					{#if $TeamSettings.data?.team.externalResources}
 						{@const external = $TeamSettings.data.team.externalResources}
 						{#if external.googleArtifactRegistry}
-							<dt>Google Artifact Registry:</dt>
-							<dd>
+							<Heading level="3" size="xsmall">Google Artifact Registry</Heading>
+							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
-									href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
+									href="https://console.cloud.google.com/gcr/images/{formatGARRepo(
+										external.googleArtifactRegistry.repository
+									)}"
 								>
 									{formatGARRepo(external.googleArtifactRegistry.repository)}
 								</ExternalLink>
-							</dd>
+							</BodyShort>
 						{/if}
 						{#if external.entraIDGroup}
-							<dt>Entra ID Group:</dt>
-							<dd>
+							<Heading level="3" size="xsmall">Entra ID Group</Heading>
+							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
 									href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}"
 								>
 									{external.entraIDGroup.groupID}
 								</ExternalLink>
-							</dd>
+							</BodyShort>
 						{/if}
 						{#if external.cdn}
-							<dt>Team CDN bucket:</dt>
-							<dd>
+							<Heading level="3" size="xsmall">Team CDN bucket</Heading>
+							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
 									href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}"
 								>
 									{external.cdn.bucket}
 								</ExternalLink>
-							</dd>
+							</BodyShort>
 						{/if}
 					{/if}
 					{#each $TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
-						<dt>Team project in {teamEnvironment.environment.name}:</dt>
-						<dd>
+						<Heading level="3" size="xsmall"
+							>Team project in {teamEnvironment.environment.name}</Heading
+						>
+						<BodyShort style="font-size: 0.9rem">
 							<ExternalLink
 								href="https://console.cloud.google.com/home/dashboard?project={teamEnvironment.gcpProjectID}"
 							>
 								{teamEnvironment.gcpProjectID}
 							</ExternalLink>
-						</dd>
+						</BodyShort>
 					{/each}
 				</dl>
 			</div>
@@ -464,7 +468,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: 1fr 320px;
 		gap: var(--spacing-layout);
 	}
 	.card {
@@ -479,21 +483,6 @@
 		border: 1px solid var(--ax-border-danger, --a-border-danger);
 	}
 
-	dl {
-		display: block;
-		margin-block-start: 0.2em;
-		margin-block-end: 1em;
-		margin-inline-start: 0px;
-		margin-inline-end: 0px;
-	}
-	dt {
-		font-weight: bold;
-	}
-	dd {
-		margin-inline-start: 0px;
-		font-family: monospace;
-		font-size: 1rem;
-	}
 	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
