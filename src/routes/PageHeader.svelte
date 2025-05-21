@@ -5,7 +5,7 @@
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import { Button } from '@nais/ds-svelte-community';
+	import { Button, Spacer } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -55,8 +55,11 @@
 	>
 		Utilization
 	</InternalHeaderButton>
+	<!-- <InternalHeaderButton as="a" href="/cost" class={{ active: page.url.pathname === '/cost' }}>
+		Cost
+	</InternalHeaderButton> -->
 
-	<div class="aksel-stack__spacer aksel-stack__spacer"></div>
+	<Spacer />
 	<div class="feedback-button-wrapper">
 		<Button
 			variant="primary-neutral"
