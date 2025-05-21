@@ -240,7 +240,9 @@
 
 		return {
 			animation: false,
-			width: '80%',
+			height: '850px',
+			width: '1250px',
+
 			title:
 				series.length === 0
 					? {
@@ -362,6 +364,7 @@
 		justify-content: space-between;
 		align-items: flex-end;
 		gap: var(--spacing-layout);
+		padding-bottom: var(--spacing-layout);
 	}
 
 	.content {
