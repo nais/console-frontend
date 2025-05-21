@@ -4,6 +4,7 @@
 	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
@@ -312,8 +313,16 @@
 				<div class="content">
 					<Heading level="2" spacing>Cost by Service</Heading>
 					<BodyLong>
-						Service cost distribution for {page.data.tenantName}. Some services (e.g., Kafka) lack
-						data. Cost figures are best-effort, based on data from Google Cloud and Aiven.
+						Service cost distribution for <strong>{page.data.tenantName}</strong>. Some services
+						(e.g., Kafka) are missing cost data. Figures are best-effort, based on data from Google
+						Cloud and Aiven. The current month includes data up to
+						{#if $TenantCost.data?.costMonthlySummary?.series && $TenantCost.data.costMonthlySummary.series.length > 0 && $TenantCost.data.costMonthlySummary.series.at(-1)?.date}
+							<strong
+								><Time
+									time={$TenantCost.data.costMonthlySummary.series.at(-1)?.date as Date}
+								/></strong
+							>
+						{/if}.
 					</BodyLong>
 				</div>
 				<ToggleGroup
