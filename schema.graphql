@@ -223,6 +223,12 @@ type Application implements Node & Workload {
   """The container image of the application."""
   image: ContainerImage!
 
+  """Get the vulnerability summary history for application."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory!
+
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
 
@@ -1447,6 +1453,11 @@ type ImageVulnerabilityEdge {
   node: ImageVulnerability!
 }
 
+type ImageVulnerabilityHistory {
+  """Vulnerability summary samples."""
+  samples: [ImageVulnerabilitySample!]!
+}
+
 """Ordering options when fetching teams."""
 input ImageVulnerabilityOrder {
   """The direction to order items by."""
@@ -1462,6 +1473,14 @@ enum ImageVulnerabilityOrderField {
   SEVERITY
   STATE
   SUPPRESSED
+}
+
+type ImageVulnerabilitySample {
+  """Timestamp of the vulnerability summary."""
+  date: Time!
+
+  """The historic image vulnerability summary"""
+  summary: ImageVulnerabilitySummary!
 }
 
 enum ImageVulnerabilitySeverity {
@@ -1574,6 +1593,12 @@ type Job implements Node & Workload {
 
   """The container image of the job."""
   image: ContainerImage!
+
+  """Get the vulnerability summary history for job."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory!
 
   """
   Kafka topics the job has access to. This does not currently support pagination, but will return all available Kafka topics.
@@ -2462,6 +2487,12 @@ type Query {
 
   """Feature flags."""
   features: Features!
+
+  """Get the vulnerability summary history for all teams."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory!
 
   """The currently authenticated user."""
   me: AuthenticatedUser!
@@ -4328,6 +4359,12 @@ type Team implements Node {
   """The globally unique ID of the team."""
   id: ID!
 
+  """Get the vulnerability summary history for team."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory!
+
   """Overall inventory of resources for the team."""
   inventoryCounts: TeamInventoryCounts!
 
@@ -6153,6 +6190,12 @@ interface Workload {
 
   """The container image of the workload."""
   image: ContainerImage!
+
+  """Get the vulnerability summary history for workload."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory!
 
   """
   Kafka topics the workload has access to. This does not currently support pagination, but will return all available Kafka topics.

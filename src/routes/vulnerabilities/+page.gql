@@ -1,0 +1,16 @@
+query TenantVulnerabilites($from: Date!) @cache(policy: NetworkOnly) {
+	imageVulnerabilityHistory(from: $from) {
+		samples {
+			date
+			summary {
+				critical
+				high
+				low
+				medium
+				riskScore
+				total
+				unassigned
+			}
+		}
+	}
+}

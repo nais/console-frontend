@@ -1,9 +1,11 @@
 export function severityToColor({
 	severity,
-	isText
+	isText,
+	isGraph
 }: {
 	severity: string;
 	isText?: boolean;
+	isGraph?: boolean;
 }): string {
 	if (isText) {
 		switch (severity) {
@@ -18,6 +20,20 @@ export function severityToColor({
 			case 'unassigned':
 			default:
 				return 'var(--ax-neutral-600)';
+		}
+	} else if (isGraph) {
+		switch (severity) {
+			case 'critical':
+				return '#e22a49';
+			case 'high':
+				return '#f89686';
+			case 'medium':
+				return '#ffebc7';
+			case 'low':
+				return '#a8dfb4';
+			case 'unassigned':
+			default:
+				return '#cfd3d8';
 		}
 	} else {
 		switch (severity) {
