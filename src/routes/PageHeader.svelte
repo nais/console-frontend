@@ -55,9 +55,9 @@
 	>
 		Utilization
 	</InternalHeaderButton>
-	<!-- <InternalHeaderButton as="a" href="/cost" class={{ active: page.url.pathname === '/cost' }}>
+	<InternalHeaderButton as="a" href="/cost" class={{ active: page.url.pathname === '/cost' }}>
 		Cost
-	</InternalHeaderButton> -->
+	</InternalHeaderButton>
 
 	<Spacer />
 	<div class="feedback-button-wrapper">
