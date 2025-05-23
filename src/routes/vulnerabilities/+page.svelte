@@ -39,7 +39,7 @@
 					</BodyLong>
 				</div>
 			</div>
-			{#if $TenantVulnerabilites.data}
+			{#if !$TenantVulnerabilites.fetching && $TenantVulnerabilites.data}
 				<div class="toggles">
 					<ToggleGroup
 						label="Interval"
