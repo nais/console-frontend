@@ -20,6 +20,16 @@
 	let { TenantVulnerabilites, interval } = $derived(data);
 	let riskScoreArea = $state('off');
 
+	type Severity = 'critical' | 'high' | 'medium' | 'low' | 'unassigned' | 'riskScore' | 'total';
+	const allSeverities: Severity[] = ['critical', 'high', 'medium', 'low', 'unassigned'];
+	const sevirityToRiskScore: { Severity: string; value: number }[] = [
+		{ Severity: 'critical', value: 10 },
+		{ Severity: 'high', value: 5 },
+		{ Severity: 'medium', value: 3 },
+		{ Severity: 'low', value: 1 },
+		{ Severity: 'unassigned', value: 5 }
+	];
+
 	const vulnerabilitiesTransformStackedLineChart = (
 		data: TenantVulnerabilites$result
 	): EChartsOption => {
@@ -39,10 +49,6 @@
 
 		const dates: string[] = [];
 		const seriesData: { [criticality: string]: [Date, number][] } = {};
-		const allSeverities: Severity[] = ['critical', 'high', 'medium', 'low', 'unassigned'];
-
-		// Second pass to build the series data
-		type Severity = 'critical' | 'high' | 'medium' | 'low' | 'unassigned' | 'riskScore' | 'total';
 
 		data.imageVulnerabilityHistory.samples.forEach((entry) => {
 			const entryDate = new Date(entry.date);
@@ -62,7 +68,7 @@
 			.map((severity) => ({
 				name: severity,
 				type: 'line',
-				stack: 'Cost',
+				stack: 'Vulnerabilities',
 				areaStyle: {
 					opacity: 1
 				},
@@ -99,9 +105,6 @@
 					return value[1];
 				}
 			},
-			// emphasis: {
-			// 	focus: 'series'
-			// },
 			legend: {
 				selector: [{ title: 'Inverse selection', type: 'inverse' }],
 				data: Array.from(allSeverities)
@@ -145,17 +148,6 @@
 
 		const dates: string[] = [];
 		const seriesData: { [criticality: string]: [Date, number][] } = {};
-		const allSeverities: Severity[] = ['critical', 'high', 'medium', 'low', 'unassigned'];
-		const sevirityToRiskScore: { Severity: string; value: number }[] = [
-			{ Severity: 'critical', value: 10 },
-			{ Severity: 'high', value: 5 },
-			{ Severity: 'medium', value: 3 },
-			{ Severity: 'low', value: 1 },
-			{ Severity: 'unassigned', value: 5 }
-		];
-
-		// Second pass to build the series data
-		type Severity = 'critical' | 'high' | 'medium' | 'low' | 'unassigned' | 'riskScore' | 'total';
 
 		data.imageVulnerabilityHistory.samples.forEach((entry) => {
 			const entryDate = new Date(entry.date);
@@ -179,7 +171,7 @@
 			.map((severity) => ({
 				name: severity,
 				type: 'line',
-				stack: 'Cost',
+				stack: 'Vulnerabilities',
 				areaStyle: {
 					opacity: 1
 				},
@@ -216,9 +208,6 @@
 					return value[1];
 				}
 			},
-			// emphasis: {
-			// 	focus: 'series'
-			// },
 			legend: {
 				selector: [{ title: 'Inverse selection', type: 'inverse' }],
 				data: Array.from(allSeverities)
@@ -238,7 +227,7 @@
 			yAxis: [
 				{
 					type: 'value',
-					name: '# of vulnerabilities'
+					name: 'Risk score'
 				}
 			],
 			series
@@ -253,30 +242,36 @@
 		<div class="graph">
 			<div class="heading">
 				<div class="content">
-					{riskScoreArea}
 					<Heading level="2" spacing
 						>Vulnerabilities for <strong>{page.data.tenantName?.toUpperCase()}</strong></Heading
 					>
 					<BodyLong>
-						Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perferendis est ipsam ipsum
-						qui necessitatibus quisquam accusamus alias dolores voluptates fugit, molestias atque
-						consequatur, itaque esse! Ea suscipit porro autem tempora.
+						This stacked line chart displays the accumulation of image vulnerabilities over time,
+						categorized by severity level. Use the interval selector to adjust the time range.
+						Enable the Risk Score toggle to weight each severity by its impact.
 					</BodyLong>
 				</div>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['1y', '6m', '30d', '7d'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
-				<ToggleGroup value={riskScoreArea} onchange={(val) => (riskScoreArea = val)}>
-					<ToggleGroupItem value="off">Off</ToggleGroupItem>
-					<ToggleGroupItem value="on">On</ToggleGroupItem>
-				</ToggleGroup>
 			</div>
 			{#if $TenantVulnerabilites.data}
+				<div class="toggles">
+					<ToggleGroup
+						label="Interval"
+						value={interval}
+						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					>
+						{#each ['6m', '30d', '7d'] as interval (interval)}
+							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
+					<ToggleGroup
+						label="Risk score"
+						value={riskScoreArea}
+						onchange={(val) => (riskScoreArea = val)}
+					>
+						<ToggleGroupItem value="off">Off</ToggleGroupItem>
+						<ToggleGroupItem value="on">On</ToggleGroupItem>
+					</ToggleGroup>
+				</div>
 				{#if riskScoreArea === 'on'}
 					<EChart
 						options={riskScoreTransformStackedLineChart($TenantVulnerabilites.data)}
@@ -299,10 +294,10 @@
 
 <style>
 	.container {
-		margin-top: var(--spacing-layout);
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		margin-top: var(--spacing-layout);
 	}
 	.wrapper {
 		display: flex;
@@ -326,5 +321,11 @@
 
 	.content {
 		max-width: 80ch;
+	}
+	.toggles {
+		display: flex;
+		gap: var(--spacing-layout);
+		flex-direction: row;
+		justify-content: flex-end;
 	}
 </style>
