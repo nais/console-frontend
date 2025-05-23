@@ -58,6 +58,13 @@
 	<InternalHeaderButton as="a" href="/cost" class={{ active: page.url.pathname === '/cost' }}>
 		Cost
 	</InternalHeaderButton>
+	<!-- <InternalHeaderButton
+		as="a"
+		href="/vulnerabilities"
+		class={{ active: page.url.pathname === '/vulnerabilities' }}
+	>
+		Vulnerabilities
+	</InternalHeaderButton> -->
 
 	<Spacer />
 	<div class="feedback-button-wrapper">
