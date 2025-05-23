@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { TenantVulnerabilites$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
+	import { transformVulnerabilities } from '$lib/chart/transformVulnerabilities';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
 		BodyLong,
 		Heading,
@@ -12,227 +11,15 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
-	import type { EChartsOption } from 'echarts';
-	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 	let { TenantVulnerabilites, interval } = $derived(data);
 	let riskScoreArea = $state('off');
 
-	type Severity = 'critical' | 'high' | 'medium' | 'low' | 'unassigned' | 'riskScore' | 'total';
-	const allSeverities: Severity[] = ['critical', 'high', 'medium', 'low', 'unassigned'];
-	const sevirityToRiskScore: { Severity: string; value: number }[] = [
-		{ Severity: 'critical', value: 10 },
-		{ Severity: 'high', value: 5 },
-		{ Severity: 'medium', value: 3 },
-		{ Severity: 'low', value: 1 },
-		{ Severity: 'unassigned', value: 5 }
-	];
-
-	const vulnerabilitiesTransformStackedLineChart = (
-		data: TenantVulnerabilites$result
-	): EChartsOption => {
-		if (data.imageVulnerabilityHistory.samples.length === 0) {
-			return {
-				animation: false,
-				title: {
-					text: 'No data',
-					left: 'center',
-					top: 'center',
-					textStyle: {
-						color: '#aaa'
-					}
-				}
-			} as EChartsOption;
-		}
-
-		const dates: string[] = [];
-		const seriesData: { [criticality: string]: [Date, number][] } = {};
-
-		data.imageVulnerabilityHistory.samples.forEach((entry) => {
-			const entryDate = new Date(entry.date);
-
-			dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
-
-			(Object.keys(entry.summary) as Severity[]).forEach((criticality) => {
-				if (!seriesData[criticality]) {
-					seriesData[criticality] = [];
-				}
-				seriesData[criticality].push([entryDate, entry.summary[criticality]]);
-			});
-		});
-
-		// Prepare the series for ECharts
-		const series = allSeverities
-			.map((severity) => ({
-				name: severity,
-				type: 'line',
-				stack: 'Vulnerabilities',
-				areaStyle: {
-					opacity: 1
-				},
-				showSymbol: false,
-				color: severityToColor({ severity, isGraph: true }),
-				data: seriesData[severity]
-			}))
-			.sort((a, b) => {
-				return (
-					allSeverities.indexOf(b.name as Severity) - allSeverities.indexOf(a.name as Severity)
-				);
-			});
-
-		// Return the ECharts option object
-		return {
-			animation: false,
-			title:
-				series.length === 0
-					? {
-							text: 'No data',
-							left: 'center',
-							top: 'center',
-							textStyle: {
-								color: '#aaa'
-							}
-						}
-					: {},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'shadow'
-				},
-				valueFormatter(value: OptionDataValue[]) {
-					return value[1];
-				}
-			},
-			legend: {
-				selector: [{ title: 'Inverse selection', type: 'inverse' }],
-				data: Array.from(allSeverities)
-			},
-			grid: {
-				left: '3%',
-				right: '4%',
-				bottom: '3%',
-				containLabel: true
-			},
-			xAxis: [
-				{
-					type: 'time',
-					boundaryGap: false
-				}
-			],
-			yAxis: [
-				{
-					type: 'value',
-					name: '# of vulnerabilities'
-				}
-			],
-			series
-		} as EChartsOption;
-	};
-
-	const riskScoreTransformStackedLineChart = (data: TenantVulnerabilites$result): EChartsOption => {
-		if (data.imageVulnerabilityHistory.samples.length === 0) {
-			return {
-				animation: false,
-				title: {
-					text: 'No data',
-					left: 'center',
-					top: 'center',
-					textStyle: {
-						color: '#aaa'
-					}
-				}
-			} as EChartsOption;
-		}
-
-		const dates: string[] = [];
-		const seriesData: { [criticality: string]: [Date, number][] } = {};
-
-		data.imageVulnerabilityHistory.samples.forEach((entry) => {
-			const entryDate = new Date(entry.date);
-
-			dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
-
-			(Object.keys(entry.summary) as Severity[]).forEach((criticality) => {
-				if (!seriesData[criticality]) {
-					seriesData[criticality] = [];
-				}
-				seriesData[criticality].push([
-					entryDate,
-					entry.summary[criticality] *
-						(sevirityToRiskScore.find((s) => s.Severity === criticality)?.value ?? 1)
-				]);
-			});
-		});
-
-		// Prepare the series for ECharts
-		const series = allSeverities
-			.map((severity) => ({
-				name: severity,
-				type: 'line',
-				stack: 'Vulnerabilities',
-				areaStyle: {
-					opacity: 1
-				},
-				showSymbol: false,
-				color: severityToColor({ severity, isGraph: true }),
-				data: seriesData[severity]
-			}))
-			.sort((a, b) => {
-				return (
-					allSeverities.indexOf(b.name as Severity) - allSeverities.indexOf(a.name as Severity)
-				);
-			});
-
-		// Return the ECharts option object
-		return {
-			animation: false,
-			title:
-				series.length === 0
-					? {
-							text: 'No data',
-							left: 'center',
-							top: 'center',
-							textStyle: {
-								color: '#aaa'
-							}
-						}
-					: {},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'shadow'
-				},
-				valueFormatter(value: OptionDataValue[]) {
-					return value[1];
-				}
-			},
-			legend: {
-				selector: [{ title: 'Inverse selection', type: 'inverse' }],
-				data: Array.from(allSeverities)
-			},
-			grid: {
-				left: '3%',
-				right: '4%',
-				bottom: '3%',
-				containLabel: true
-			},
-			xAxis: [
-				{
-					type: 'time',
-					boundaryGap: false
-				}
-			],
-			yAxis: [
-				{
-					type: 'value',
-					name: 'Risk score'
-				}
-			],
-			series
-		} as EChartsOption;
-	};
+	let options = $derived(
+		transformVulnerabilities($TenantVulnerabilites.data, riskScoreArea === 'on')
+	);
 </script>
 
 <div class="container">
@@ -272,17 +59,9 @@
 						<ToggleGroupItem value="on">On</ToggleGroupItem>
 					</ToggleGroup>
 				</div>
-				{#if riskScoreArea === 'on'}
-					<EChart
-						options={riskScoreTransformStackedLineChart($TenantVulnerabilites.data)}
-						style="height: 500px"
-					/>
-				{:else}
-					<EChart
-						options={vulnerabilitiesTransformStackedLineChart($TenantVulnerabilites.data)}
-						style="height: 500px"
-					/>
-				{/if}
+				{#key options}
+					<EChart {options} style="height: 500px" />
+				{/key}
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 					<Loader size="3xlarge" />
