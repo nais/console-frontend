@@ -1,4 +1,3 @@
-import type { TenantVulnerabilites$result } from '$houdini';
 import {
 	allSeverities,
 	severityToColor,
@@ -9,11 +8,27 @@ import { format } from 'date-fns';
 import type { EChartsOption } from 'echarts';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
+export type ImageVulnerabilityHistory =
+	| {
+			samples: {
+				date: Date;
+				summary: {
+					critical: number;
+					high: number;
+					low: number;
+					medium: number;
+					unassigned: number;
+				};
+			}[];
+	  }
+	| undefined
+	| null;
+
 export function transformVulnerabilities(
-	data: TenantVulnerabilites$result | null,
+	data: ImageVulnerabilityHistory | null,
 	riskScoreToggle: boolean
 ): EChartsOption {
-	if (!data || !data.imageVulnerabilityHistory?.samples.length) {
+	if (!data || !data?.samples.length) {
 		return {
 			animation: false,
 			title: {
@@ -25,15 +40,21 @@ export function transformVulnerabilities(
 		};
 	}
 
-	const seriesData: Record<string, [Date, number][]> = {};
+	const seriesData: Record<string, [Date, number | string][]> = {};
 
-	for (const entry of data.imageVulnerabilityHistory.samples) {
+	for (const entry of data.samples) {
 		const theDate = new Date(entry.date);
 		theDate.setHours(0, 0, 0, 0);
 
 		for (const severity of allSeverities) {
 			const rawCount = entry.summary[severity.toLowerCase() as keyof typeof entry.summary] ?? 0;
-			const value = riskScoreToggle ? rawCount * severityToRiskScore[severity] : rawCount;
+			// const value = riskScoreToggle ? rawCount * severityToRiskScore[severity] : rawCount;
+			const value =
+				rawCount === 0
+					? '-'
+					: riskScoreToggle
+						? rawCount * severityToRiskScore[severity]
+						: rawCount;
 			(seriesData[severity] ??= []).push([theDate, value]);
 		}
 	}

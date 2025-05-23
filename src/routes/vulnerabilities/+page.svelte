@@ -15,10 +15,13 @@
 
 	let { data }: PageProps = $props();
 	let { TenantVulnerabilites, interval } = $derived(data);
-	let riskScoreArea = $state('off');
+	let riskScoreToggle = $state('off');
 
 	let options = $derived(
-		transformVulnerabilities($TenantVulnerabilites.data, riskScoreArea === 'on')
+		transformVulnerabilities(
+			$TenantVulnerabilites.data?.imageVulnerabilityHistory,
+			riskScoreToggle === 'on'
+		)
 	);
 </script>
 
@@ -52,8 +55,8 @@
 					</ToggleGroup>
 					<ToggleGroup
 						label="Risk score"
-						value={riskScoreArea}
-						onchange={(val) => (riskScoreArea = val)}
+						value={riskScoreToggle}
+						onchange={(val) => (riskScoreToggle = val)}
 					>
 						<ToggleGroupItem value="off">Off</ToggleGroupItem>
 						<ToggleGroupItem value="on">On</ToggleGroupItem>
@@ -87,7 +90,6 @@
 	.graph {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16, --a-spacing-4);
 	}
 
 	.heading {

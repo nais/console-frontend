@@ -7,8 +7,6 @@ query TenantVulnerabilites($from: Date!) @cache(policy: NetworkOnly) {
 				high
 				low
 				medium
-				riskScore
-				total
 				unassigned
 			}
 		}
