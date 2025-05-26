@@ -53,7 +53,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { ValkeyInstance } = $derived(data);
+	let { ValkeyInstance, viewerIsMember } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $ValkeyInstance.variables?.orderBy?.field,
@@ -168,7 +168,7 @@
 
 					{#if maintenanceError === ''}
 						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
-					{:else}
+					{:else if viewerIsMember}
 						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
 							Run all maintenance
 						</Button>

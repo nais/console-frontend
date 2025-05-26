@@ -2,9 +2,9 @@
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -53,7 +53,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { OpenSearchInstance } = $derived(data);
+	let { OpenSearchInstance, viewerIsMember } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
@@ -159,7 +159,7 @@
 
 					{#if maintenanceError === ''}
 						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
-					{:else}
+					{:else if viewerIsMember}
 						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
 							Run all maintenance
 						</Button>
