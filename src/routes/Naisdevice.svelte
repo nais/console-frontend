@@ -1,15 +1,22 @@
-<svelte:options runes />
+<script module>
+	import { page } from '$app/state';
+	export function isNaisdevice() {
+		return (
+			// A bug in naisdevice sends people to `?naisdevice=1`, we handle it the same way as `connected` for a while
+			page.url.searchParams.get('naisdevice') == 'connected' ||
+			page.url.searchParams.get('naisdevice') == '1'
+		);
+	}
+</script>
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { Alert } from '@nais/ds-svelte-community';
 
 	import { fade } from 'svelte/transition';
 </script>
 
-{#if page.url.searchParams.get('naisdevice') == 'connected' || page.url.searchParams.get('naisdevice') == '1'}
-	<!-- A bug in naisdevice sends people to `?naisdevice=1`, we handle it the same way as `connected` for a while -->
+{#if isNaisdevice()}
 	<div class="naisdevice" out:fade>
 		<Alert
 			variant="success"
