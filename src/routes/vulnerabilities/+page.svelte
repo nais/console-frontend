@@ -8,14 +8,37 @@
 		BodyLong,
 		Heading,
 		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tr
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 	let { TenantVulnerabilites, interval } = $derived(data);
 	let riskScoreToggle = $state('off');
+
+	let tableData = $derived(
+		$TenantVulnerabilites.data?.teams.nodes
+			.filter(
+				(team) => team.workloads.pageInfo.totalCount > 0 && team.vulnerabilitySummary.riskScore > 0
+			)
+			.map((team) => ({
+				slug: team.slug,
+				critical: team.vulnerabilitySummary.critical,
+				high: team.vulnerabilitySummary.high,
+				medium: team.vulnerabilitySummary.medium,
+				low: team.vulnerabilitySummary.low,
+				unassigned: team.vulnerabilitySummary.unassigned,
+				riskScore: team.vulnerabilitySummary.riskScore
+			}))
+			.toSorted((a, b) => b.riskScore - a.riskScore || a.slug.localeCompare(b.slug)) ?? []
+	);
 
 	let options = $derived(
 		transformVulnerabilities(
@@ -70,6 +93,34 @@
 					<Loader size="3xlarge" />
 				</div>
 			{/if}
+		</div>
+		<div>
+			<Table size="small">
+				<Thead>
+					<Tr>
+						<Th>Team</Th>
+						<Th>Critical</Th>
+						<Th>High</Th>
+						<Th>Medium</Th>
+						<Th>Low</Th>
+						<Th>Unassgined</Th>
+						<Th>Risk Score</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#each tableData ?? [] as team (team.slug)}
+						<Tr>
+							<Td><a href="/team/{team.slug}/vulnerabilities">{team.slug}</a></Td>
+							<Td>{team.critical}</Td>
+							<Td>{team.high}</Td>
+							<Td>{team.medium}</Td>
+							<Td>{team.low}</Td>
+							<Td>{team.unassigned}</Td>
+							<Td>{team.riskScore}</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
 		</div>
 	</div>
 </div>

@@ -1,4 +1,32 @@
-query TenantVulnerabilites($from: Date!) @cache(policy: NetworkOnly) {
+query TenantVulnerabilites($from: Date!) @blocking {
+	teams(first: 999) {
+		pageInfo {
+			endCursor
+			hasNextPage
+			hasPreviousPage
+			pageEnd
+			pageStart
+			startCursor
+			totalCount
+		}
+		nodes {
+			slug
+			vulnerabilitySummary {
+				critical
+				high
+				medium
+				low
+				unassigned
+				riskScore
+				bomCount
+			}
+			workloads {
+				pageInfo {
+					totalCount
+				}
+			}
+		}
+	}
 	imageVulnerabilityHistory(from: $from) {
 		samples {
 			date
