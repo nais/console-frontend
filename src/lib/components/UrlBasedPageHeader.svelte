@@ -10,7 +10,6 @@
 		purpose?: string;
 		gitHubOrganization?: string;
 		gitHubTeam?: string;
-		slackChannel?: string;
 		memberCount: number;
 		viewerIsMember: boolean;
 	}
