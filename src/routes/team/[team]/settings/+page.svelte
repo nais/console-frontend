@@ -134,7 +134,7 @@
 			</div>
 
 			<div>
-				<Heading level="2"><SlackIcon class="heading-aligned-icon" /> Slack Channels</Heading>
+				<Heading level="2"><SlackIcon class="heading-aligned-icon" /> Slack Alert Channels</Heading>
 				{#if teamSettings.slackChannel !== ''}
 					<p>
 						<b>Default slack-channel:</b>

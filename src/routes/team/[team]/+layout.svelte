@@ -15,7 +15,6 @@
 		viewerIsMember,
 		purpose,
 		externalResources,
-		slackChannel,
 		members
 	} = $derived(data);
 	const gitHubOrganization = page.data.githubOrganization;
@@ -46,7 +45,6 @@
 				{gitHubOrganization}
 				{gitHubTeam}
 				{purpose}
-				{slackChannel}
 				memberCount={members.pageInfo.totalCount}
 				{viewerIsMember}
 			/>

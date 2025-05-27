@@ -15,6 +15,5 @@ query TeamRoles($team: Slug!) {
 			}
 		}
 		purpose
-		slackChannel
 	}
 }

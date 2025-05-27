@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
-	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import IconLabel from './IconLabel.svelte';
@@ -16,14 +15,7 @@
 		viewerIsMember: boolean;
 	}
 
-	const {
-		purpose,
-		gitHubOrganization,
-		slackChannel,
-		gitHubTeam,
-		memberCount,
-		viewerIsMember
-	}: Props = $props();
+	const { purpose, gitHubOrganization, gitHubTeam, memberCount, viewerIsMember }: Props = $props();
 
 	const pageHeaderProps = $derived(urlToPageHeader(page.url));
 </script>
@@ -60,11 +52,11 @@
 					<span class="label">Visit {gitHubTeam} on GitHub</span>
 				{/snippet}
 			</IconLabel>
-			<IconLabel icon={SlackIcon}>
+			<!-- <IconLabel icon={SlackIcon}>
 				{#snippet label()}
 					<span class="label">Reach out on Slack: {slackChannel}</span>
 				{/snippet}
-			</IconLabel>
+			</IconLabel> -->
 		</div>
 	{/if}
 </div>
