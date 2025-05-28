@@ -124,18 +124,25 @@
 						<Th sortable={true} sortKey={TeamOrderField.LOW_VULNERABILITIES}>Low</Th>
 						<Th sortable={true} sortKey={TeamOrderField.UNASSIGNED_VULNERABILITIES}>Unassgined</Th>
 						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk Score</Th>
+						<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>Coverage</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
 					{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
 						<Tr>
 							<Td><a href="/team/{team.slug}/vulnerabilities">{team.slug}</a></Td>
-							<Td>{team.vulnerabilitySummary.critical}</Td>
-							<Td>{team.vulnerabilitySummary.high}</Td>
-							<Td>{team.vulnerabilitySummary.medium}</Td>
-							<Td>{team.vulnerabilitySummary.low}</Td>
-							<Td>{team.vulnerabilitySummary.unassigned}</Td>
-							<Td>{team.vulnerabilitySummary.riskScore}</Td>
+							<Td style="text-align: right">{team.vulnerabilitySummary.critical}</Td>
+							<Td style="text-align: right">{team.vulnerabilitySummary.high}</Td>
+							<Td style="text-align: right">{team.vulnerabilitySummary.medium}</Td>
+							<Td style="text-align: right">{team.vulnerabilitySummary.low}</Td>
+							<Td style="text-align: right">{team.vulnerabilitySummary.unassigned}</Td>
+							<Td style="text-align: right">{team.vulnerabilitySummary.riskScore}</Td>
+							<Td style="text-align: right"
+								>{team.vulnerabilitySummary.coverage.toLocaleString('en-GB', {
+									minimumFractionDigits: 0,
+									maximumFractionDigits: 0
+								})}%</Td
+							>
 						</Tr>
 					{/each}
 				</Tbody>

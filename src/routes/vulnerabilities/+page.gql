@@ -26,7 +26,7 @@ query TenantVulnerabilites(
 				low
 				unassigned
 				riskScore
-				bomCount
+				coverage
 			}
 		}
 	}

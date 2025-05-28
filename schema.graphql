@@ -5274,6 +5274,9 @@ enum TeamOrderField {
   """The accumulated risk score of the teams workloads."""
   RISK_SCORE
 
+  """The team's software bill of materials (SBOM) coverage."""
+  SBOM_COVERAGE
+
   """The unique slug of the team."""
   SLUG
 
