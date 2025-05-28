@@ -1,17 +1,22 @@
-import { load_TenantVulnerabilites } from '$houdini';
+import { TeamOrderField, type OrderDirection$options, type TeamOrderField$options } from '$houdini';
 import { subDays, subMonths } from 'date-fns';
-import type { PageLoad } from './$houdini';
+import type { TenantVulnerabilitesVariables } from './$houdini';
 
-// const rows = 25;
+const rows = 20;
 
-export const load: PageLoad = async (event) => {
-	const interval = event.url.searchParams.get('interval') ?? '7d';
+export const _TenantVulnerabilitesVariables: TenantVulnerabilitesVariables = ({ url }) => {
+	const field = (url.searchParams.get('field') ||
+		TeamOrderField.RISK_SCORE) as TeamOrderField$options;
+	const direction = (url.searchParams.get('direction') || 'DESC') as OrderDirection$options;
+
+	const after = url.searchParams.get('after') || '';
+	const before = url.searchParams.get('before') || '';
+
+	const interval = url.searchParams.get('interval') ?? '7d';
 
 	const getFrom = (interval: string): Date => {
 		const now = new Date();
 		switch (interval) {
-			// case '1y':
-			// 	return subYears(now, 1);
 			case '6m':
 				return subMonths(now, 6);
 			case '30d':
@@ -25,17 +30,9 @@ export const load: PageLoad = async (event) => {
 
 	const from = getFrom(interval);
 
-	// const after = event.url.searchParams.get('after') || '';
-	// const before = event.url.searchParams.get('before') || '';
-
 	return {
-		interval,
-		...(await load_TenantVulnerabilites({
-			event,
-			variables: {
-				// ...(before ? { before, last: rows } : { after, first: rows }),
-				from
-			}
-		}))
+		orderBy: { field: field, direction: direction },
+		...(before ? { before, last: rows } : { after, first: rows }),
+		from
 	};
 };

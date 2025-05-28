@@ -1,5 +1,13 @@
-query TenantVulnerabilites($from: Date!) @blocking {
-	teams(first: 999) {
+query TenantVulnerabilites(
+	$from: Date!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$orderBy: TeamOrder
+) @blocking {
+	teams(first: $first, last: $last, before: $before, after: $after, orderBy: $orderBy)
+		@paginate(mode: SinglePage) {
 		pageInfo {
 			endCursor
 			hasNextPage
@@ -19,11 +27,6 @@ query TenantVulnerabilites($from: Date!) @blocking {
 				unassigned
 				riskScore
 				bomCount
-			}
-			workloads {
-				pageInfo {
-					totalCount
-				}
 			}
 		}
 	}

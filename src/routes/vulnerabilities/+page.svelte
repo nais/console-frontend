@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { TeamOrderField } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { transformVulnerabilities } from '$lib/chart/transformVulnerabilities';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
@@ -20,25 +22,8 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { TenantVulnerabilites, interval } = $derived(data);
+	let { TenantVulnerabilites } = $derived(data);
 	let riskScoreToggle = $state('off');
-
-	let tableData = $derived(
-		$TenantVulnerabilites.data?.teams.nodes
-			.filter(
-				(team) => team.workloads.pageInfo.totalCount > 0 && team.vulnerabilitySummary.riskScore > 0
-			)
-			.map((team) => ({
-				slug: team.slug,
-				critical: team.vulnerabilitySummary.critical,
-				high: team.vulnerabilitySummary.high,
-				medium: team.vulnerabilitySummary.medium,
-				low: team.vulnerabilitySummary.low,
-				unassigned: team.vulnerabilitySummary.unassigned,
-				riskScore: team.vulnerabilitySummary.riskScore
-			}))
-			.toSorted((a, b) => b.riskScore - a.riskScore || a.slug.localeCompare(b.slug)) ?? []
-	);
 
 	let options = $derived(
 		transformVulnerabilities(
@@ -46,6 +31,32 @@
 			riskScoreToggle === 'on'
 		)
 	);
+
+	let tableSort = $derived({
+		orderBy: $TenantVulnerabilites.variables?.orderBy?.field,
+		direction: $TenantVulnerabilites.variables?.orderBy?.direction
+	});
+
+	let interval = $derived.by(() => {
+		const val = page.url.searchParams.get('interval');
+		if (val && ['6m', '30d', '7d'].includes(val)) return val;
+		return '7d';
+	});
+
+	const tableSortChange = (key: string) => {
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
+			tableSort.direction = 'DESC';
+		}
+
+		changeParams({
+			direction: tableSort.direction,
+			field: tableSort.orderBy || TeamOrderField.SLUG
+		});
+	};
 </script>
 
 <div class="container">
@@ -94,33 +105,58 @@
 				</div>
 			{/if}
 		</div>
+
 		<div>
-			<Table size="small">
+			<Table
+				size="small"
+				sort={{
+					orderBy: tableSort.orderBy || TeamOrderField.SLUG,
+					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+				}}
+				onsortchange={tableSortChange}
+			>
 				<Thead>
 					<Tr>
-						<Th>Team</Th>
-						<Th>Critical</Th>
-						<Th>High</Th>
-						<Th>Medium</Th>
-						<Th>Low</Th>
-						<Th>Unassgined</Th>
-						<Th>Risk Score</Th>
+						<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
+						<Th sortable={true} sortKey={TeamOrderField.CRITICAL_VULNERABILITIES}>Critical</Th>
+						<Th sortable={true} sortKey={TeamOrderField.HIGH_VULNERABILITIES}>High</Th>
+						<Th sortable={true} sortKey={TeamOrderField.MEDIUM_VULNERABILITIES}>Medium</Th>
+						<Th sortable={true} sortKey={TeamOrderField.LOW_VULNERABILITIES}>Low</Th>
+						<Th sortable={true} sortKey={TeamOrderField.UNASSIGNED_VULNERABILITIES}>Unassgined</Th>
+						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk Score</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each tableData ?? [] as team (team.slug)}
+					{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
 						<Tr>
 							<Td><a href="/team/{team.slug}/vulnerabilities">{team.slug}</a></Td>
-							<Td>{team.critical}</Td>
-							<Td>{team.high}</Td>
-							<Td>{team.medium}</Td>
-							<Td>{team.low}</Td>
-							<Td>{team.unassigned}</Td>
-							<Td>{team.riskScore}</Td>
+							<Td>{team.vulnerabilitySummary.critical}</Td>
+							<Td>{team.vulnerabilitySummary.high}</Td>
+							<Td>{team.vulnerabilitySummary.medium}</Td>
+							<Td>{team.vulnerabilitySummary.low}</Td>
+							<Td>{team.vulnerabilitySummary.unassigned}</Td>
+							<Td>{team.vulnerabilitySummary.riskScore}</Td>
 						</Tr>
 					{/each}
 				</Tbody>
 			</Table>
+			{#if $TenantVulnerabilites.data?.teams.pageInfo.hasPreviousPage || $TenantVulnerabilites.data?.teams.pageInfo.hasNextPage}
+				<Pagination
+					page={$TenantVulnerabilites.data?.teams.pageInfo}
+					loaders={{
+						loadPreviousPage: () =>
+							changeParams({
+								after: '',
+								before: $TenantVulnerabilites.data?.teams.pageInfo.startCursor ?? ''
+							}),
+						loadNextPage: () =>
+							changeParams({
+								after: $TenantVulnerabilites.data?.teams.pageInfo.endCursor ?? '',
+								before: ''
+							})
+					}}
+				/>
+			{/if}
 		</div>
 	</div>
 </div>
