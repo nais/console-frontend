@@ -5275,7 +5275,7 @@ enum TeamOrderField {
   RISK_SCORE
 
   """The unique slug of the team."""
-  TEAM_SLUG
+  SLUG
 
   """
   The accumulated number of unassigned vulnerabilities of the teams workloads.
