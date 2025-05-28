@@ -205,6 +205,7 @@
 						--ax-bg-accent-moderate-hover="var(--{colors[i % colors.length]}-300)"
 						--ax-bg-accent-strong-pressed="var(--{colors[i % colors.length]}-500)"
 						--ax-bg-accent-strong-hover="var(--{colors[i % colors.length]}-600)"
+						--ax-text-accent="var(--ax-neutral-000)"
 						value={renderInstanceName(name)}
 						selected={selectedInstances.includes(name)}
 						onclick={() => {
