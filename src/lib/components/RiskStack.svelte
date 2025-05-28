@@ -112,7 +112,7 @@
 	.segment {
 		display: flex;
 		align-items: center;
-		color: var(--ax-text-neutral, --a-text-on-neutral);
+		color: var(--ax-text-neutral);
 		font-weight: bold;
 		justify-content: center;
 		width: 100%;
@@ -120,7 +120,7 @@
 	}
 
 	.critical {
-		background-color: var(--ax-danger-600, --a-red-200);
+		background-color: var(--ax-danger-600);
 	}
 	.high {
 		background-color: color-mix(
@@ -130,20 +130,20 @@
 		);
 	}
 	.medium {
-		background-color: var(--ax-warning-200, --a-orange-200);
+		background-color: var(--ax-warning-200);
 	}
 	.low {
-		background-color: var(--ax-success-400, --a-green-200);
+		background-color: var(--ax-success-400);
 	}
 	.unassigned {
-		background-color: var(--ax-neutral-200, --a-gray-200);
+		background-color: var(--ax-neutral-200);
 	}
 	.red {
-		color: var(--ax-bg-danger-strong, --a-surface-danger);
+		color: var(--ax-bg-danger-strong);
 	}
 
 	.green {
-		color: var(--ax-text-success-subtle, --a-surface-success);
+		color: var(--ax-text-success-subtle);
 	}
 
 	dl {

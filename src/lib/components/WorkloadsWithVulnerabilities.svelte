@@ -261,7 +261,7 @@
 												</a>
 											{:else}
 												<CheckmarkIcon
-													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
 												/>
 											{/if}
 										{:else}
@@ -282,7 +282,7 @@
 												</a>
 											{:else}
 												<CheckmarkIcon
-													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
 												/>
 											{/if}
 										{:else}
@@ -308,7 +308,7 @@
 												</a>
 											{:else}
 												<CheckmarkIcon
-													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
 												/>
 											{/if}
 										{:else}
@@ -331,7 +331,7 @@
 												</a>
 											{:else}
 												<CheckmarkIcon
-													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
 												/>
 											{/if}
 										{:else}
@@ -355,7 +355,7 @@
 												</a>
 											{:else}
 												<CheckmarkIcon
-													style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.75rem;"
+													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
 												/>
 											{/if}
 										{:else}

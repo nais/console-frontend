@@ -184,9 +184,7 @@
 				<p style="display: flex; align-items: center; gap 0 1rem;"><strong>Status</strong></p>
 				<p style="padding-top: 4px;">
 					{#if unleash.ready}
-						<CheckmarkIcon
-							style="color: var(--ax-text-success-icon, --a-icon-success); font-size: 1.2rem"
-						/>
+						<CheckmarkIcon style="color: var(--ax-text-success-decoration); font-size: 1.2rem" />
 					{:else}
 						<Tooltip
 							content="Unleash is not ready, new instances will be online after a minute."
