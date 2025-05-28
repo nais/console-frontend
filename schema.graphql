@@ -5255,8 +5255,32 @@ input TeamOrder {
 
 """Possible fields to order teams by."""
 enum TeamOrderField {
+  """
+  The accumulated number of critical vulnerabilities of the teams workloads.
+  """
+  CRITICAL_VULNERABILITIES
+
+  """The accumulated number of high vulnerabilities of the teams workloads."""
+  HIGH_VULNERABILITIES
+
+  """The accumulated number of low vulnerabilities of the teams workloads."""
+  LOW_VULNERABILITIES
+
+  """
+  The accumulated number of medium vulnerabilities of the teams workloads.
+  """
+  MEDIUM_VULNERABILITIES
+
+  """The accumulated risk score of the teams workloads."""
+  RISK_SCORE
+
   """The unique slug of the team."""
   TEAM_SLUG
+
+  """
+  The accumulated number of unassigned vulnerabilities of the teams workloads.
+  """
+  UNASSIGNED_VULNERABILITIES
 }
 
 input TeamRepositoryFilter {
