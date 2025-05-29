@@ -125,6 +125,7 @@
 						<Th sortable={true} sortKey={TeamOrderField.UNASSIGNED_VULNERABILITIES}>Unassgined</Th>
 						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk Score</Th>
 						<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>Coverage</Th>
+						<Th># of Workloads</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
@@ -143,6 +144,7 @@
 									maximumFractionDigits: 0
 								})}%</Td
 							>
+							<Td style="text-align: right">{team.workloads.pageInfo.totalCount}</Td>
 						</Tr>
 					{/each}
 				</Tbody>

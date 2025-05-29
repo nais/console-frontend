@@ -19,6 +19,11 @@ query TenantVulnerabilites(
 		}
 		nodes {
 			slug
+			workloads {
+				pageInfo {
+					totalCount
+				}
+			}
 			vulnerabilitySummary {
 				critical
 				high
