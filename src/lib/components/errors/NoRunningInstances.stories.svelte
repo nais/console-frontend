@@ -17,8 +17,20 @@
 			level: 'ERROR'
 		}}
 		instances={[
-			{ name: 'bidrag-sak-675cdddb5-vcffp', status: { message: 'ImagePullBackOff' } },
-			{ name: 'bidrag-sak-675cdddb5-vpc6m', status: { message: 'ImagePullBackOff' } }
+			{
+				node: {
+					name: 'bidrag-sak-675cdddb5-vcffp',
+					status: { message: 'ImagePullBackOff' },
+					restarts: 0
+				}
+			},
+			{
+				node: {
+					name: 'bidrag-sak-675cdddb5-vpc6m',
+					status: { message: 'ImagePullBackOff' },
+					restarts: 1
+				}
+			}
 		]}
 		workloadType="App"
 		teamSlug="team-service-management"

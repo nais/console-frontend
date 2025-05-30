@@ -1,92 +1,19 @@
 <script lang="ts">
-	import type { AppInstances } from '$houdini';
-	import { fragment, graphql } from '$houdini';
+	import type { App$result } from '$houdini';
 	import AppInstanceListItem from '$lib/components/list/AppInstanceListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 
 	interface Props {
-		app: AppInstances;
+		app: App$result;
 	}
 
 	let { app }: Props = $props();
-	let data = $derived(
-		fragment(
-			app,
-			graphql(`
-				fragment AppInstances on Application {
-					team {
-						slug
-					}
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					resources {
-						scaling {
-							maxInstances
-							minInstances
-							strategies {
-								__typename
-								... on KafkaLagScalingStrategy {
-									consumerGroup
-									threshold
-									topicName
-								}
-								... on CPUScalingStrategy {
-									threshold
-								}
-							}
-						}
-						requests {
-							cpu
-							memory
-						}
-						limits {
-							cpu
-							memory
-						}
-					}
-					instances {
-						edges {
-							node {
-								id
-								name
-								restarts
-								status {
-									state
-									message
-								}
-								created
-								memory: instanceUtilization(resourceType: MEMORY) {
-									current
-								}
-								cpu: instanceUtilization(resourceType: CPU) {
-									current
-								}
-							}
-						}
-					}
-					utilization {
-						requested_cpu: requested(resourceType: CPU)
-						requested_memory: requested(resourceType: MEMORY)
-						limit_cpu: limit(resourceType: CPU)
-						limit_memory: limit(resourceType: MEMORY)
-						recommendations {
-							cpuRequestCores
-							memoryLimitBytes
-							memoryRequestBytes
-						}
-					}
-				}
-			`)
-		)
-	);
 
-	const instances = $derived($data.instances.edges.map((edge) => edge.node));
+	const instances = $derived(
+		app.team.environment.application.instances.edges.map((edge) => edge.node)
+	);
 
 	const cpu_usage = $derived(
 		instances.map((instance) => instance.cpu.current).reduce((a, b) => a + b, 0)
@@ -97,24 +24,33 @@
 	);
 
 	const usage_cpu_percent = $derived(
-		$data.resources.requests.cpu !== null && $data.resources.requests.cpu !== undefined
-			? (cpu_usage / ($data.resources.requests.cpu * instances.length)) * 100
+		app.team.environment.application.resources.requests.cpu !== null &&
+			app.team.environment.application.resources.requests.cpu !== undefined
+			? (cpu_usage / (app.team.environment.application.resources.requests.cpu * instances.length)) *
+					100
 			: 0
 	);
 
 	const usage_memory_percent = $derived(
-		$data.resources.requests.memory !== null && $data.resources.requests.memory !== undefined
-			? (memory_usage / ($data.resources.requests.memory * instances.length)) * 100
+		app.team.environment.application.resources.requests.memory !== null &&
+			app.team.environment.application.resources.requests.memory !== undefined
+			? (memory_usage /
+					(app.team.environment.application.resources.requests.memory * instances.length)) *
+					100
 			: 0
 	);
 
-	const cpuReqRecommendation = $derived($data?.utilization.recommendations.cpuRequestCores ?? 0);
+	const cpuReqRecommendation = $derived(
+		app.team.environment.application.utilization.recommendations.cpuRequestCores ?? 0
+	);
 
-	const cpuReq = $derived($data?.resources.requests.cpu ?? 0);
+	const cpuReq = $derived(app.team.environment.application.resources.requests.cpu ?? 0);
 
-	const memReqRecommendation = $derived($data.utilization.recommendations.memoryRequestBytes ?? 0);
+	const memReqRecommendation = $derived(
+		app.team.environment.application.utilization.recommendations.memoryRequestBytes ?? 0
+	);
 
-	const memReq = $derived($data.resources.requests.memory ?? 0);
+	const memReq = $derived(app.team.environment.application.resources.requests.memory ?? 0);
 
 	const renameStrategy = (type: string) => {
 		if (type === 'CPUScalingStrategy') {
@@ -139,14 +75,14 @@
 			CPU and/or memory requests differ by more than 50% from the recommended values. To optimize
 			resource usage and cost, consider adjusting the requested resources. Refer to the
 			application's <a
-				href="/team/{$data.team.slug}/{$data.teamEnvironment.environment
-					.name}/app/{$data.name}/utilization">utilization</a
+				href="/team/{app.team.environment.application.team.slug}/{app.team.environment.application
+					.teamEnvironment.environment.name}/app/{app.team.environment.application
+					.name}/utilization">utilization</a
 			> page for more details.
 		</Alert>
 	{/if}
 
 	<Heading level="4" size="small">Resources:</Heading>
-
 	<ul class="resource-list">
 		<li>
 			CPU:
@@ -156,10 +92,10 @@
 						<div>Request:</div>
 						<div class="data">
 							<code>
-								{#if $data.resources.requests.cpu}
-									{$data.resources.requests.cpu?.toFixed(3)} CPUs
-								{:else if $data.utilization.requested_cpu}
-									{$data.utilization.requested_cpu?.toFixed(3)} CPUs (default)
+								{#if app.team.environment.application.resources.requests.cpu}
+									{app.team.environment.application.resources.requests.cpu?.toFixed(3)} CPUs
+								{:else if app.team.environment.application.utilization.requested_cpu}
+									{app.team.environment.application.utilization.requested_cpu?.toFixed(3)} CPUs (default)
 								{:else}
 									Not set
 								{/if}
@@ -172,10 +108,10 @@
 						<div>Limit:</div>
 						<div class="data">
 							<code>
-								{#if $data.resources.limits.cpu}
-									{$data.resources.limits.cpu.toFixed(3)} CPUs
-								{:else if $data.utilization.limit_cpu}
-									{$data.utilization.limit_cpu.toFixed(3)} CPUs (default)
+								{#if app.team.environment.application.resources.limits.cpu}
+									{app.team.environment.application.resources.limits.cpu.toFixed(3)} CPUs
+								{:else if app.team.environment.application.utilization.limit_cpu}
+									{app.team.environment.application.utilization.limit_cpu.toFixed(3)} CPUs (default)
 								{:else}
 									Not set
 								{/if}
@@ -203,15 +139,15 @@
 						<div>Request:</div>
 						<div class="data">
 							<code>
-								{#if $data.resources.requests.memory !== null}
-									{prettyBytes($data.resources.requests.memory, {
+								{#if app.team.environment.application.resources.requests.memory !== null}
+									{prettyBytes(app.team.environment.application.resources.requests.memory, {
 										locale: 'en',
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
 										binary: true
 									})}
 								{:else}
-									{prettyBytes($data.utilization.requested_memory, {
+									{prettyBytes(app.team.environment.application.utilization.requested_memory, {
 										locale: 'en',
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
@@ -227,15 +163,15 @@
 						<div>Limit:</div>
 						<div class="data">
 							<code>
-								{#if $data.resources.limits.memory}
-									{prettyBytes($data.resources.limits.memory, {
+								{#if app.team.environment.application.resources.limits.memory}
+									{prettyBytes(app.team.environment.application.resources.limits.memory, {
 										locale: 'en',
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
 										binary: true
 									})}
-								{:else if $data.utilization.limit_memory}
-									{prettyBytes($data.utilization.limit_memory, {
+								{:else if app.team.environment.application.utilization.limit_memory}
+									{prettyBytes(app.team.environment.application.utilization.limit_memory, {
 										locale: 'en',
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
@@ -261,8 +197,8 @@
 	</ul>
 </div>
 
-{#if $data.resources.scaling}
-	{@const scaling = $data.resources.scaling}
+{#if app.team.environment.application.resources.scaling}
+	{@const scaling = app.team.environment.application.resources.scaling}
 	{#if scaling.minInstances !== scaling.maxInstances}
 		<div>
 			<Heading level="4" size="small">Scaling Configuration</Heading>
@@ -287,13 +223,17 @@
 {#if instances.length === 0}
 	<BodyShort>No instances found</BodyShort>
 {:else}
-	<List title="{instances.length} application instance{instances.length === 1 ? '' : 's'}">
+	<List
+		title="{app.team.environment.application.instances.pageInfo
+			.totalCount} application instance{instances.length === 1 ? '' : 's'}"
+	>
 		{#each instances as instance (instance.id)}
 			<AppInstanceListItem
 				{instance}
-				urlBase="/team/{$data.team.slug}/{$data.teamEnvironment.environment
-					.name}/app/{$data.name}/logs?instance="
-				utilization={$data.utilization}
+				urlBase="/team/{app.team.environment.application.team.slug}/{app.team.environment
+					.application.teamEnvironment.environment.name}/app/{app.team.environment.application
+					.name}/logs?instance="
+				utilization={app.team.environment.application.utilization}
 			/>
 		{/each}
 	</List>

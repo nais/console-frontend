@@ -1,4 +1,12 @@
-query App($app: String!, $team: Slug!, $env: String!) {
+query App(
+	$app: String!
+	$team: Slug!
+	$env: String!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
 	team(slug: $team) {
 		environment(name: $env) {
 			application(name: $app) {
@@ -24,20 +32,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						name
 					}
 				}
-				instances {
-					nodes {
-						id
-						name
-						image {
-							name
-							tag
-						}
-						status {
-							state
-							message
-						}
-					}
-				}
+
 				deletionStartedAt
 				deployments(first: 1) {
 					nodes {
@@ -51,7 +46,61 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						}
 					}
 				}
-
+				instances(first: $first, after: $after, last: $last, before: $before)
+					@paginate(mode: SinglePage) {
+					pageInfo {
+						totalCount
+						hasNextPage
+						hasPreviousPage
+						pageEnd
+						pageStart
+						startCursor
+						endCursor
+					}
+					edges {
+						node {
+							id
+							name
+							restarts
+							status {
+								state
+								message
+							}
+							created
+							memory: instanceUtilization(resourceType: MEMORY) {
+								current
+							}
+							cpu: instanceUtilization(resourceType: CPU) {
+								current
+							}
+						}
+					}
+				}
+				resources {
+					scaling {
+						maxInstances
+						minInstances
+						strategies {
+							__typename
+							... on KafkaLagScalingStrategy {
+								consumerGroup
+								threshold
+								topicName
+							}
+							... on CPUScalingStrategy {
+								threshold
+							}
+						}
+					}
+					requests {
+						cpu
+						memory
+					}
+					limits {
+						cpu
+						memory
+					}
+				}
 				status {
 					errors {
 						__typename
@@ -73,8 +122,18 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						}
 					}
 				}
+				utilization {
+					requested_cpu: requested(resourceType: CPU)
+					requested_memory: requested(resourceType: MEMORY)
+					limit_cpu: limit(resourceType: CPU)
+					limit_memory: limit(resourceType: MEMORY)
+					recommendations {
+						cpuRequestCores
+						memoryLimitBytes
+						memoryRequestBytes
+					}
+				}
 
-				...AppInstances
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy

@@ -28,8 +28,13 @@
 		workloadName: string;
 		environment: string;
 		instances?: {
-			name: string;
-			status: { message: string };
+			node: {
+				name: string;
+				restarts: number;
+				status: {
+					message: string;
+				};
+			};
 		}[];
 		error:
 			| ({
@@ -146,10 +151,10 @@
 					{#if instances?.length}
 						<Heading level="3" size="xsmall">Failing Instances</Heading>
 						<ul style="margin: 0;">
-							{#each instances as instance (instance.name)}
+							{#each instances as instance (instance.node.name)}
 								<li>
-									<code style="font-size: 1rem; line-height: 1.75;">{instance.name}</code>:
-									<strong>{instance.status.message}</strong>
+									<code style="font-size: 1rem; line-height: 1.75;">{instance.node.name}</code>:
+									<strong>{instance.node.status.message}</strong>
 								</li>
 							{/each}
 						</ul>

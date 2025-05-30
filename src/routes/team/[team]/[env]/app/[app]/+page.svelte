@@ -12,8 +12,10 @@
 	import WorkloadVulnerabilitySummary from '$lib/components/WorkloadVulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
+	import { changeParams } from '$lib/utils/searchparams';
+	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 	import Ingresses from './Ingresses.svelte';
@@ -52,10 +54,30 @@
 			team: teamSlug
 		});
 	};
+
+	let after: string = $derived($App.variables?.after ?? '');
+	let before: string = $derived($App.variables?.before ?? '');
+
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+		} = {}
+	) => {
+		changeParams({
+			before: params.before ?? before,
+			after: params.after ?? after
+		});
+	};
 </script>
 
 <GraphErrors errors={$App.errors} />
 
+{#if $App.fetching}
+	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+		<Loader size="3xlarge" />
+	</div>
+{/if}
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
 
@@ -70,7 +92,7 @@
 							{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
 								<ErrorMessage
 									{error}
-									instances={app.instances.nodes}
+									instances={app.instances.edges}
 									{docURL}
 									workloadType="App"
 									{teamSlug}
@@ -106,7 +128,25 @@
 							</Button>
 						{/if}
 					</div>
-					<Instances {app} />
+					<Instances app={$App.data} />
+					<Pagination
+						page={$App.data?.team.environment.application.instances.pageInfo}
+						loaders={{
+							loadPreviousPage: () => {
+								changeQuery({
+									after: '',
+									before:
+										$App.data?.team.environment.application.instances.pageInfo.startCursor ?? ''
+								});
+							},
+							loadNextPage: () => {
+								changeQuery({
+									before: '',
+									after: $App.data?.team.environment.application.instances.pageInfo.endCursor ?? ''
+								});
+							}
+						}}
+					/>
 				</div>
 				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1rem;">
 					<div>
