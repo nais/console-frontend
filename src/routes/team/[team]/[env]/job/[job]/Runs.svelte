@@ -37,7 +37,7 @@
 						}
 					}
 
-					runs(first: 20) @list(name: "All_Runs") {
+					runs(first: 999) @list(name: "All_Runs") {
 						edges {
 							node {
 								id
