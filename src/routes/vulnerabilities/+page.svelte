@@ -211,6 +211,7 @@
 			{#if !$TenantVulnerabilites.fetching && $TenantVulnerabilites.data}
 				<div class="toggles">
 					<ToggleGroup
+						size="small"
 						label="Interval"
 						value={interval}
 						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -220,6 +221,7 @@
 						{/each}
 					</ToggleGroup>
 					<ToggleGroup
+						size="small"
 						label="Risk score"
 						value={riskScoreToggle}
 						onchange={(val) => (riskScoreToggle = val)}
@@ -241,6 +243,7 @@
 					</Heading>
 					<div class="toggles">
 						<ToggleGroup
+							size="small"
 							label="Show by"
 							value={showByToggle.toString()}
 							onchange={(val) => {
