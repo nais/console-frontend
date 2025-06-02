@@ -22,6 +22,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import type { EChartsOption } from 'echarts';
+	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -92,7 +93,17 @@
 				axisPointer: {
 					type: 'line'
 				},
-				valueFormatter: (value: number) => (value == null ? '0' : value)
+				formatter: (params: CallbackDataParams[]) => {
+					const items = params.map((p) => {
+						return `
+						<div>
+							<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background:#ff4500;"></span>
+							${p.seriesName}: ${p.value}
+						</div>
+					`;
+					});
+					return `${params[0].value}<br/>${items.join('')}`;
+				}
 			},
 			xAxis: {
 				type: 'category',
@@ -126,26 +137,21 @@
 								? 'SBOM Coverage'
 								: 'Risk Score',
 				type: 'bar',
-				data: seriesData
-				// itemStyle: {
-				// 	color: {
-				// 		type: 'linear',
-				// 		x: 0,
-				// 		y: 0,
-				// 		x2: 0,
-				// 		y2: 1,
-				// 		colorStops: [
-				// 			{
-				// 				offset: 0,
-				// 				color: '#ff0000' // Red at top
-				// 			},
-				// 			{
-				// 				offset: 1,
-				// 				color: '#ffa500' // Orange at bottom
-				// 			}
-				// 		]
-				// 	}
-				// }
+				data: seriesData,
+				color: '#ff4500', // Tooltip marker color (e.g. solid orange-red)
+				itemStyle: {
+					color: {
+						type: 'linear',
+						x: 0,
+						y: 0,
+						x2: 0,
+						y2: 1,
+						colorStops: [
+							{ offset: 0, color: '#ff0000' }, // Red at top
+							{ offset: 1, color: '#ffa500' } // Orange at bottom
+						]
+					}
+				}
 			}
 		} as EChartsOption;
 	}
