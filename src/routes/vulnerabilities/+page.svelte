@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { TeamOrderField } from '$houdini';
+	import { TeamOrderField, type TeamOrderField$options } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { transformVulnerabilities } from '$lib/chart/transformVulnerabilities';
+	import { truncateString } from '$lib/chart/util';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -19,11 +21,15 @@
 		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
+	import type { EChartsOption } from 'echarts';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 	let { TenantVulnerabilites } = $derived(data);
 	let riskScoreToggle = $state('off');
+	let showByToggle = $state() as TeamOrderField$options;
+	showByToggle =
+		$TenantVulnerabilites.variables?.mostVulnerableTeamsField || TeamOrderField.RISK_SCORE;
 
 	let options = $derived(
 		transformVulnerabilities(
@@ -31,6 +37,118 @@
 			riskScoreToggle === 'on'
 		)
 	);
+
+	type VulnerabilityTeams =
+		| {
+				nodes: {
+					slug: string;
+					vulnerabilitySummary: {
+						riskScore: number;
+						critical: number;
+						high: number;
+						medium: number;
+						low: number;
+						unassigned: number;
+						coverage: number;
+					};
+					workloads: {
+						pageInfo: {
+							totalCount: number;
+						};
+					};
+				}[];
+		  }
+		| undefined
+		| null;
+
+	let mostVulnerable = $derived.by(() =>
+		optionsMostVulnerable($TenantVulnerabilites.data?.mostVulnerableTeams, showByToggle)
+	);
+
+	function optionsMostVulnerable(
+		input: VulnerabilityTeams,
+		showByToggle: TeamOrderField$options
+	): EChartsOption {
+		if (!input || input.nodes.length === 0) {
+			return {} as EChartsOption;
+		}
+
+		const seriesData = input.nodes.map((s) =>
+			showByToggle === TeamOrderField.RISK_SCORE
+				? s.vulnerabilitySummary.riskScore
+				: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
+					? s.vulnerabilitySummary.critical
+					: showByToggle === TeamOrderField.SBOM_COVERAGE
+						? s.workloads.pageInfo.totalCount > 0
+							? s.vulnerabilitySummary.coverage
+							: null
+						: s.vulnerabilitySummary.riskScore
+		);
+
+		return {
+			height: '500px',
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'line'
+				},
+				valueFormatter: (value: number) => (value == null ? '0' : value)
+			},
+			xAxis: {
+				type: 'category',
+				data: input.nodes.map((s) => s.slug),
+				axisLabel: {
+					rotate: 60,
+					formatter: (value: string) => truncateString(value, 23)
+				}
+			},
+			legend: {
+				show: false
+			},
+			yAxis: {
+				type: 'value',
+				name:
+					showByToggle === TeamOrderField.RISK_SCORE
+						? 'Risk Score'
+						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
+							? 'Critical Vulnerabilities'
+							: showByToggle === TeamOrderField.SBOM_COVERAGE
+								? 'SBOM Coverage'
+								: 'Risk Score'
+			},
+			series: {
+				name:
+					showByToggle === TeamOrderField.RISK_SCORE
+						? 'Risk Score'
+						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
+							? 'Critical Vulnerabilities'
+							: showByToggle === TeamOrderField.SBOM_COVERAGE
+								? 'SBOM Coverage'
+								: 'Risk Score',
+				type: 'bar',
+				data: seriesData
+				// itemStyle: {
+				// 	color: {
+				// 		type: 'linear',
+				// 		x: 0,
+				// 		y: 0,
+				// 		x2: 0,
+				// 		y2: 1,
+				// 		colorStops: [
+				// 			{
+				// 				offset: 0,
+				// 				color: '#ff0000' // Red at top
+				// 			},
+				// 			{
+				// 				offset: 1,
+				// 				color: '#ffa500' // Orange at bottom
+				// 			}
+				// 		]
+				// 	}
+				// }
+			}
+		} as EChartsOption;
+	}
 
 	let tableSort = $derived({
 		orderBy: $TenantVulnerabilites.variables?.orderBy?.field,
@@ -52,13 +170,19 @@
 			tableSort.direction = 'DESC';
 		}
 
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || TeamOrderField.SLUG,
-			after: '',
-			before: ''
-		});
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || TeamOrderField.SLUG,
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
 	};
+	function handleChartClick(name: string) {
+		goto(`/team/${name}/vulnerabilities`);
+	}
 </script>
 
 <div class="container">
@@ -98,9 +222,36 @@
 						<ToggleGroupItem value="on">On</ToggleGroupItem>
 					</ToggleGroup>
 				</div>
-				{#key options}
-					<EChart {options} style="height: 500px" />
-				{/key}
+				<EChart {options} style="height: 500px" />
+				<div>
+					<Heading level="3" spacing
+						>Most Vulnerable Teams - {showByToggle === TeamOrderField.RISK_SCORE
+							? 'Highest Vulnerability Risk Score'
+							: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
+								? 'Most Critical Vulnerabilities'
+								: showByToggle === TeamOrderField.SBOM_COVERAGE
+									? 'Lowest SBOM Coverage'
+									: 'Should not print'}
+					</Heading>
+					<div class="toggles">
+						<ToggleGroup
+							label="Show by"
+							value={showByToggle.toString()}
+							onchange={(val) => {
+								showByToggle = val as TeamOrderField$options;
+								changeParams({ showByToggle }, { noScroll: true });
+							}}
+						>
+							<ToggleGroupItem value={TeamOrderField.RISK_SCORE}>Risk Score</ToggleGroupItem>
+							<ToggleGroupItem value={TeamOrderField.CRITICAL_VULNERABILITIES}
+								>Critical Vulnerabilities</ToggleGroupItem
+							>
+							<ToggleGroupItem value={TeamOrderField.SBOM_COVERAGE}>SBOM Coverage</ToggleGroupItem>
+						</ToggleGroup>
+					</div>
+
+					<EChart options={mostVulnerable} style="height: 700px" onclick={handleChartClick} />
+				</div>
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 					<Loader size="3xlarge" />

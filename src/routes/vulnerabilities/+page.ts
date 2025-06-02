@@ -13,6 +13,7 @@ export const _TenantVulnerabilitesVariables: TenantVulnerabilitesVariables = ({ 
 	const before = url.searchParams.get('before') || '';
 
 	const interval = url.searchParams.get('interval') ?? '7d';
+	const showByToggle = url.searchParams.get('showByToggle') || TeamOrderField.RISK_SCORE;
 
 	const getFrom = (interval: string): Date => {
 		const now = new Date();
@@ -27,12 +28,22 @@ export const _TenantVulnerabilitesVariables: TenantVulnerabilitesVariables = ({ 
 				return subDays(now, 7);
 		}
 	};
+	const mostVulnerableTeamsDirection =
+		showByToggle === TeamOrderField.RISK_SCORE
+			? 'DESC'
+			: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
+				? 'DESC'
+				: showByToggle === TeamOrderField.SBOM_COVERAGE
+					? 'ASC'
+					: 'DESC';
 
 	const from = getFrom(interval);
 
 	return {
 		orderBy: { field: field, direction: direction },
 		...(before ? { before, last: rows } : { after, first: rows }),
-		from
+		from,
+		mostVulnerableTeamsField: showByToggle as TeamOrderField$options,
+		mostVulnerableTeamsDirection: mostVulnerableTeamsDirection as OrderDirection$options
 	};
 };
