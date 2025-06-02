@@ -44,7 +44,7 @@
 <InternalHeader>
 	<InternalHeaderTitle as="a" href="/">
 		<div class="logo">
-			<Logo height="1.8rem" />
+			<Logo height="32px" />
 			<span>Console</span>
 		</div>
 	</InternalHeaderTitle>

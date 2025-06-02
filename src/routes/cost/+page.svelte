@@ -140,8 +140,7 @@
 			},
 			xAxis: [
 				{
-					type: 'time',
-					boundaryGap: true
+					type: 'time'
 				}
 			],
 			yAxis: [

@@ -54,7 +54,9 @@
 
 		changeParams({
 			direction: tableSort.direction,
-			field: tableSort.orderBy || TeamOrderField.SLUG
+			field: tableSort.orderBy || TeamOrderField.SLUG,
+			after: '',
+			before: ''
 		});
 	};
 </script>
