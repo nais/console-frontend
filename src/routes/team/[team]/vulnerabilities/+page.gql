@@ -19,23 +19,6 @@ query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNet
 			}
 		}
 
-		workloads(first: 999) {
-			pageInfo {
-				totalCount
-			}
-			nodes {
-				__typename
-				name
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-				team {
-					slug
-				}
-			}
-		}
 		...VulnerabilityOverviewFragment
 	}
 }
