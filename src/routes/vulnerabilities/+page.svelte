@@ -79,11 +79,7 @@
 				? s.vulnerabilitySummary.riskScore
 				: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
 					? s.vulnerabilitySummary.critical
-					: showByToggle === TeamOrderField.SBOM_COVERAGE
-						? s.workloads.pageInfo.totalCount > 0
-							? s.vulnerabilitySummary.coverage
-							: null
-						: s.vulnerabilitySummary.riskScore
+					: s.vulnerabilitySummary.riskScore
 		);
 
 		return {
@@ -123,9 +119,7 @@
 						? 'Risk Score'
 						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
 							? 'Critical Vulnerabilities'
-							: showByToggle === TeamOrderField.SBOM_COVERAGE
-								? 'SBOM Coverage'
-								: 'Risk Score'
+							: 'Risk Score'
 			},
 			series: {
 				name:
@@ -133,9 +127,7 @@
 						? 'Risk Score'
 						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
 							? 'Critical Vulnerabilities'
-							: showByToggle === TeamOrderField.SBOM_COVERAGE
-								? 'SBOM Coverage'
-								: 'Risk Score',
+							: 'Risk Score',
 				type: 'bar',
 				data: seriesData,
 				color: '#ff4500', // Tooltip marker color (e.g. solid orange-red)
@@ -255,7 +247,6 @@
 							<ToggleGroupItem value={TeamOrderField.CRITICAL_VULNERABILITIES}
 								>Critical Vulnerabilities</ToggleGroupItem
 							>
-							<ToggleGroupItem value={TeamOrderField.SBOM_COVERAGE}>SBOM Coverage</ToggleGroupItem>
 						</ToggleGroup>
 					</div>
 
