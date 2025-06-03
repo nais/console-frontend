@@ -3,7 +3,7 @@
 	import Time from '$lib/Time.svelte';
 	import { getImageDisplayName } from '$lib/utils/image';
 	import { isValidSha } from '$lib/utils/isValidSha';
-	import { BodyShort, Heading, Link, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Heading, Link, Tag } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import ExternalLink from './ExternalLink.svelte';
 	import WorkloadLink from './WorkloadLink.svelte';
@@ -104,7 +104,16 @@
 	{/if}
 </div>
 <div class="wrapper">
-	<Heading level="3" size="small">Image</Heading>
+	<div class="image_heading">
+		<Heading level="3" size="small">Image</Heading>
+		<div>
+			<CopyButton
+				copyText={$data.image.name + ':' + $data.image.tag}
+				size="small"
+				variant="action"
+			/>
+		</div>
+	</div>
 	{#if $data.image.name.startsWith('europe-north1-docker.pkg.dev')}
 		<ExternalLink href="https://{$data.image.name + ':' + $data.image.tag}">
 			{getImageDisplayName($data.image.name)}:{$data.image.tag}
@@ -125,5 +134,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4, --a-spacing-1);
+	}
+	.image_heading {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--spacing-layout);
 	}
 </style>
