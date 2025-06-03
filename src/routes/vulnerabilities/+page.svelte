@@ -284,7 +284,7 @@
 						<Th sortable={true} sortKey={TeamOrderField.HIGH_VULNERABILITIES}>High</Th>
 						<Th sortable={true} sortKey={TeamOrderField.MEDIUM_VULNERABILITIES}>Medium</Th>
 						<Th sortable={true} sortKey={TeamOrderField.LOW_VULNERABILITIES}>Low</Th>
-						<Th sortable={true} sortKey={TeamOrderField.UNASSIGNED_VULNERABILITIES}>Unassgined</Th>
+						<Th sortable={true} sortKey={TeamOrderField.UNASSIGNED_VULNERABILITIES}>Unassigned</Th>
 						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk Score</Th>
 						<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>Coverage</Th>
 						<Th># of Workloads</Th>
