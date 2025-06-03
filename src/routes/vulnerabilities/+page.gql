@@ -1,5 +1,4 @@
 query TenantVulnerabilites(
-	$from: Date!
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -56,18 +55,6 @@ query TenantVulnerabilites(
 				low
 				unassigned
 				coverage
-			}
-		}
-	}
-	imageVulnerabilityHistory(from: $from) {
-		samples {
-			date
-			summary {
-				critical
-				high
-				low
-				medium
-				unassigned
 			}
 		}
 	}

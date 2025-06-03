@@ -3,7 +3,6 @@
 	import { page } from '$app/state';
 	import { TeamOrderField, type TeamOrderField$options } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
-	import { transformVulnerabilities } from '$lib/chart/transformVulnerabilities';
 	import { truncateString } from '$lib/chart/util';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
@@ -24,20 +23,13 @@
 	import type { EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import type { PageProps } from './$houdini';
+	import VulnerabilityHistory from './VulnerabilityHistory.svelte';
 
 	let { data }: PageProps = $props();
 	let { TenantVulnerabilites } = $derived(data);
-	let riskScoreToggle = $state('off');
 	let showByToggle = $state() as TeamOrderField$options;
 	showByToggle =
 		$TenantVulnerabilites.variables?.mostVulnerableTeamsField || TeamOrderField.RISK_SCORE;
-
-	let options = $derived(
-		transformVulnerabilities(
-			$TenantVulnerabilites.data?.imageVulnerabilityHistory,
-			riskScoreToggle === 'on'
-		)
-	);
 
 	type VulnerabilityTeams =
 		| {
@@ -153,12 +145,6 @@
 		direction: $TenantVulnerabilites.variables?.orderBy?.direction
 	});
 
-	let interval = $derived.by(() => {
-		const val = page.url.searchParams.get('interval');
-		if (val && ['6m', '30d', '7d'].includes(val)) return val;
-		return '7d';
-	});
-
 	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
@@ -200,63 +186,42 @@
 					</BodyLong>
 				</div>
 			</div>
-			{#if !$TenantVulnerabilites.fetching && $TenantVulnerabilites.data}
+			<VulnerabilityHistory />
+
+			<div>
+				<Heading level="3" spacing
+					>Most Vulnerable Teams - {showByToggle === TeamOrderField.RISK_SCORE
+						? 'Highest Vulnerability Risk Score'
+						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
+							? 'Most Critical Vulnerabilities'
+							: showByToggle === TeamOrderField.SBOM_COVERAGE
+								? 'Lowest SBOM Coverage'
+								: 'Should not print'}
+				</Heading>
 				<div class="toggles">
 					<ToggleGroup
 						size="small"
-						label="Interval"
-						value={interval}
-						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+						label="Show by"
+						value={showByToggle.toString()}
+						onchange={(val) => {
+							showByToggle = val as TeamOrderField$options;
+							changeParams({ showByToggle }, { noScroll: true });
+						}}
 					>
-						{#each ['6m', '30d', '7d'] as interval (interval)}
-							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-						{/each}
-					</ToggleGroup>
-					<ToggleGroup
-						size="small"
-						label="Risk score"
-						value={riskScoreToggle}
-						onchange={(val) => (riskScoreToggle = val)}
-					>
-						<ToggleGroupItem value="off">Off</ToggleGroupItem>
-						<ToggleGroupItem value="on">On</ToggleGroupItem>
-					</ToggleGroup>
-				</div>
-				<EChart {options} style="height: 500px" />
-				<div>
-					<Heading level="3" spacing
-						>Most Vulnerable Teams - {showByToggle === TeamOrderField.RISK_SCORE
-							? 'Highest Vulnerability Risk Score'
-							: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
-								? 'Most Critical Vulnerabilities'
-								: showByToggle === TeamOrderField.SBOM_COVERAGE
-									? 'Lowest SBOM Coverage'
-									: 'Should not print'}
-					</Heading>
-					<div class="toggles">
-						<ToggleGroup
-							size="small"
-							label="Show by"
-							value={showByToggle.toString()}
-							onchange={(val) => {
-								showByToggle = val as TeamOrderField$options;
-								changeParams({ showByToggle }, { noScroll: true });
-							}}
+						<ToggleGroupItem value={TeamOrderField.RISK_SCORE}>Risk Score</ToggleGroupItem>
+						<ToggleGroupItem value={TeamOrderField.CRITICAL_VULNERABILITIES}
+							>Critical Vulnerabilities</ToggleGroupItem
 						>
-							<ToggleGroupItem value={TeamOrderField.RISK_SCORE}>Risk Score</ToggleGroupItem>
-							<ToggleGroupItem value={TeamOrderField.CRITICAL_VULNERABILITIES}
-								>Critical Vulnerabilities</ToggleGroupItem
-							>
-						</ToggleGroup>
-					</div>
-
+					</ToggleGroup>
+				</div>
+				{#if !$TenantVulnerabilites.fetching && $TenantVulnerabilites.data}
 					<EChart options={mostVulnerable} style="height: 700px" onclick={handleChartClick} />
-				</div>
-			{:else}
-				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-					<Loader size="3xlarge" />
-				</div>
-			{/if}
+				{:else}
+					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+						<Loader size="3xlarge" />
+					</div>
+				{/if}
+			</div>
 		</div>
 
 		<div>

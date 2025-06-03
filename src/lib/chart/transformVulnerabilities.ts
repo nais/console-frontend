@@ -29,15 +29,7 @@ export function transformVulnerabilities(
 	riskScoreToggle: boolean
 ): EChartsOption {
 	if (!data || !data?.samples.length) {
-		return {
-			animation: false,
-			title: {
-				text: 'No data',
-				left: 'center',
-				top: 'center',
-				textStyle: { color: '#aaa' }
-			}
-		};
+		return {} as EChartsOption;
 	}
 
 	const seriesData: Record<string, [Date, number | string][]> = {};
