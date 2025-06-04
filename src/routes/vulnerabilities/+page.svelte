@@ -1,144 +1,27 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { TeamOrderField, type TeamOrderField$options } from '$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { truncateString } from '$lib/chart/util';
+	import { TeamOrderField } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
 		Heading,
-		Loader,
+		Skeleton,
 		Table,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		ToggleGroup,
-		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import type { EChartsOption } from 'echarts';
-	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import type { PageProps } from './$houdini';
 	import VulnerabilityHistory from './VulnerabilityHistory.svelte';
+	import VulnerabilityLeaderBoard from './VulnerabilityLeaderBoard.svelte';
 
 	let { data }: PageProps = $props();
-	let { TenantVulnerabilites } = $derived(data);
-	let showByToggle = $state() as TeamOrderField$options;
-	showByToggle =
-		$TenantVulnerabilites.variables?.mostVulnerableTeamsField || TeamOrderField.RISK_SCORE;
-
-	type VulnerabilityTeams =
-		| {
-				nodes: {
-					slug: string;
-					vulnerabilitySummary: {
-						riskScore: number;
-						critical: number;
-						high: number;
-						medium: number;
-						low: number;
-						unassigned: number;
-						coverage: number;
-					};
-					workloads: {
-						pageInfo: {
-							totalCount: number;
-						};
-					};
-				}[];
-		  }
-		| undefined
-		| null;
-
-	let mostVulnerable = $derived.by(() =>
-		optionsMostVulnerable($TenantVulnerabilites.data?.mostVulnerableTeams, showByToggle)
-	);
-
-	function optionsMostVulnerable(
-		input: VulnerabilityTeams,
-		showByToggle: TeamOrderField$options
-	): EChartsOption {
-		if (!input || input.nodes.length === 0) {
-			return {} as EChartsOption;
-		}
-
-		const seriesData = input.nodes.map((s) =>
-			showByToggle === TeamOrderField.RISK_SCORE
-				? s.vulnerabilitySummary.riskScore
-				: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
-					? s.vulnerabilitySummary.critical
-					: s.vulnerabilitySummary.riskScore
-		);
-
-		return {
-			height: '500px',
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
-				},
-				formatter: (params: CallbackDataParams[]) => {
-					const items = params.map((p) => {
-						return `
-						<div>
-							<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background:#ff4500;"></span>
-							${p.seriesName}: ${p.value}
-						</div>
-					`;
-					});
-					return `${params[0].value}<br/>${items.join('')}`;
-				}
-			},
-			xAxis: {
-				type: 'category',
-				data: input.nodes.map((s) => s.slug),
-				axisLabel: {
-					rotate: 60,
-					formatter: (value: string) => truncateString(value, 23)
-				}
-			},
-			legend: {
-				show: false
-			},
-			yAxis: {
-				type: 'value',
-				name:
-					showByToggle === TeamOrderField.RISK_SCORE
-						? 'Risk Score'
-						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
-							? 'Critical Vulnerabilities'
-							: 'Risk Score'
-			},
-			series: {
-				name:
-					showByToggle === TeamOrderField.RISK_SCORE
-						? 'Risk Score'
-						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
-							? 'Critical Vulnerabilities'
-							: 'Risk Score',
-				type: 'bar',
-				data: seriesData,
-				color: '#ff4500', // Tooltip marker color (e.g. solid orange-red)
-				itemStyle: {
-					color: {
-						type: 'linear',
-						x: 0,
-						y: 0,
-						x2: 0,
-						y2: 1,
-						colorStops: [
-							{ offset: 0, color: '#ff0000' }, // Red at top
-							{ offset: 1, color: '#ffa500' } // Orange at bottom
-						]
-					}
-				}
-			}
-		} as EChartsOption;
-	}
+	let { TenantVulnerabilites, mostVulnerableTeamsDirection, mostVulnerableTeamsField } =
+		$derived(data);
 
 	let tableSort = $derived({
 		orderBy: $TenantVulnerabilites.variables?.orderBy?.field,
@@ -164,9 +47,6 @@
 			{ noScroll: true }
 		);
 	};
-	function handleChartClick(name: string) {
-		goto(`/team/${name}/vulnerabilities`);
-	}
 </script>
 
 <div class="container">
@@ -187,47 +67,8 @@
 				</div>
 			</div>
 			<VulnerabilityHistory />
-
-			<div>
-				<Heading level="3" spacing
-					>Most Vulnerable Teams - {showByToggle === TeamOrderField.RISK_SCORE
-						? 'Highest Vulnerability Risk Score'
-						: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
-							? 'Most Critical Vulnerabilities'
-							: showByToggle === TeamOrderField.SBOM_COVERAGE
-								? 'Lowest SBOM Coverage'
-								: 'Should not print'}
-				</Heading>
-				<BodyLong>
-					A ranked view of teams with the highest security risk, based on either overall Risk Score
-					or the number of critical vulnerabilities. This chart helps teams identify and prioritize
-					areas that require the most security attention.
-				</BodyLong>
-				<div class="toggles">
-					<ToggleGroup
-						size="small"
-						label="Show by"
-						value={showByToggle.toString()}
-						onchange={(val) => {
-							showByToggle = val as TeamOrderField$options;
-							changeParams({ showByToggle }, { noScroll: true });
-						}}
-					>
-						<ToggleGroupItem value={TeamOrderField.RISK_SCORE}>Risk Score</ToggleGroupItem>
-						<ToggleGroupItem value={TeamOrderField.CRITICAL_VULNERABILITIES}
-							>Critical Vulnerabilities</ToggleGroupItem
-						>
-					</ToggleGroup>
-				</div>
-				{#if !$TenantVulnerabilites.fetching && $TenantVulnerabilites.data}
-					<EChart options={mostVulnerable} style="height: 700px" onclick={handleChartClick} />
-				{:else}
-					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-						<Loader size="3xlarge" />
-					</div>
-				{/if}
-			</div>
 		</div>
+		<VulnerabilityLeaderBoard {mostVulnerableTeamsDirection} {mostVulnerableTeamsField} />
 
 		<div>
 			<Heading level="3" spacing>Team Security Posture</Heading>
@@ -258,43 +99,58 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
-						<Tr>
-							<Td><a href="/team/{team.slug}/vulnerabilities">{team.slug}</a></Td>
-							<Td style="text-align: right">{team.vulnerabilitySummary.critical}</Td>
-							<Td style="text-align: right">{team.vulnerabilitySummary.high}</Td>
-							<Td style="text-align: right">{team.vulnerabilitySummary.medium}</Td>
-							<Td style="text-align: right">{team.vulnerabilitySummary.low}</Td>
-							<Td style="text-align: right">{team.vulnerabilitySummary.unassigned}</Td>
-							<Td style="text-align: right">{team.vulnerabilitySummary.riskScore}</Td>
-							<Td style="text-align: right"
-								>{team.vulnerabilitySummary.coverage.toLocaleString('en-GB', {
-									minimumFractionDigits: 0,
-									maximumFractionDigits: 0
-								})}%</Td
-							>
-							<Td style="text-align: right">{team.workloads.pageInfo.totalCount}</Td>
-						</Tr>
-					{/each}
+					{#if $TenantVulnerabilites.fetching}
+						{#each Array(20).fill('text') as tr, i (i)}
+							<Tr>
+								{#each Array(9).fill(tr) as variant, i (i)}
+									<Td height="2rem"><Skeleton {variant} /></Td>
+								{/each}
+							</Tr>
+						{/each}
+					{:else}
+						{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
+							<Tr>
+								<Td height="2rem"><a href="/team/{team.slug}/vulnerabilities">{team.slug}</a></Td>
+								<Td style="text-align: right">{team.vulnerabilitySummary.critical}</Td>
+								<Td style="text-align: right">{team.vulnerabilitySummary.high}</Td>
+								<Td style="text-align: right">{team.vulnerabilitySummary.medium}</Td>
+								<Td style="text-align: right">{team.vulnerabilitySummary.low}</Td>
+								<Td style="text-align: right">{team.vulnerabilitySummary.unassigned}</Td>
+								<Td style="text-align: right">{team.vulnerabilitySummary.riskScore}</Td>
+								<Td style="text-align: right"
+									>{team.vulnerabilitySummary.coverage.toLocaleString('en-GB', {
+										minimumFractionDigits: 0,
+										maximumFractionDigits: 0
+									})}%</Td
+								>
+								<Td style="text-align: right">{team.workloads.pageInfo.totalCount}</Td>
+							</Tr>
+						{/each}
+					{/if}
 				</Tbody>
 			</Table>
-			{#if $TenantVulnerabilites.data?.teams.pageInfo.hasPreviousPage || $TenantVulnerabilites.data?.teams.pageInfo.hasNextPage}
-				<Pagination
-					page={$TenantVulnerabilites.data?.teams.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams({
+			<Pagination
+				page={$TenantVulnerabilites.data?.teams.pageInfo}
+				fetching={$TenantVulnerabilites.fetching}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
 								after: '',
 								before: $TenantVulnerabilites.data?.teams.pageInfo.startCursor ?? ''
-							}),
-						loadNextPage: () =>
-							changeParams({
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{
 								after: $TenantVulnerabilites.data?.teams.pageInfo.endCursor ?? '',
 								before: ''
-							})
-					}}
-				/>
-			{/if}
+							},
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
 	</div>
 </div>
@@ -327,11 +183,5 @@
 
 	.content {
 		max-width: 80ch;
-	}
-	.toggles {
-		display: flex;
-		gap: var(--spacing-layout);
-		flex-direction: row;
-		justify-content: flex-end;
 	}
 </style>

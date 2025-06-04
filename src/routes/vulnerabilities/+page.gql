@@ -4,9 +4,7 @@ query TenantVulnerabilites(
 	$before: Cursor
 	$after: Cursor
 	$orderBy: TeamOrder
-	$mostVulnerableTeamsField: TeamOrderField!
-	$mostVulnerableTeamsDirection: OrderDirection!
-) @blocking {
+) {
 	teams(first: $first, last: $last, before: $before, after: $after, orderBy: $orderBy)
 		@paginate(mode: SinglePage) {
 		pageInfo {
@@ -32,28 +30,6 @@ query TenantVulnerabilites(
 				low
 				unassigned
 				riskScore
-				coverage
-			}
-		}
-	}
-	mostVulnerableTeams: teams(
-		first: 20
-		orderBy: { field: $mostVulnerableTeamsField, direction: $mostVulnerableTeamsDirection }
-	) {
-		nodes {
-			slug
-			workloads {
-				pageInfo {
-					totalCount
-				}
-			}
-			vulnerabilitySummary {
-				riskScore
-				critical
-				high
-				medium
-				low
-				unassigned
 				coverage
 			}
 		}
