@@ -198,6 +198,11 @@
 								? 'Lowest SBOM Coverage'
 								: 'Should not print'}
 				</Heading>
+				<BodyLong>
+					A ranked view of teams with the highest security risk, based on either overall Risk Score
+					or the number of critical vulnerabilities. This chart helps teams identify and prioritize
+					areas that require the most security attention.
+				</BodyLong>
 				<div class="toggles">
 					<ToggleGroup
 						size="small"
@@ -225,6 +230,12 @@
 		</div>
 
 		<div>
+			<Heading level="3" spacing>Team Security Posture</Heading>
+			<BodyLong>
+				A detailed breakdown of all teams, showing the number of vulnerabilities by severity, total
+				risk score, SBOM coverage, and workload count. Use this table to explore and compare
+				security posture across teams.
+			</BodyLong>
 			<Table
 				size="small"
 				sort={{
