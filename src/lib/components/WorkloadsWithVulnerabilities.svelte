@@ -12,6 +12,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyShort,
+		Loader,
 		Skeleton,
 		Table,
 		Tbody,
@@ -179,234 +180,246 @@
 	}
 </script>
 
-{#if $query.data?.team}
-	{@const team = $query.data.team}
-	<Table
-		size="small"
-		sort={{
-			orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_RISK_SCORE,
-			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-		}}
-		onsortchange={tableSortChange}
-	>
-		<Thead>
-			<Tr>
-				<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-
-				<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT} style="width: 142px;"
-					>Environment</Th
-				>
-				<Th
-					sortable={true}
-					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
-					style="width: 102px;">Critical</Th
-				>
-				<Th
-					sortable={true}
-					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}
-					style="width: 86px;">High</Th
-				>
-				<Th
-					sortable={true}
-					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}
-					style="width: 108px;">Medium</Th
-				>
-				<Th
-					sortable={true}
-					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}
-					style="width: 82px;">Low</Th
-				>
-				<Th
-					sortable={true}
-					sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
-					style="width: 134px;">Unassigned</Th
-				>
-				<Th
-					sortable={true}
-					sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}
-					style="width: 124px;">Risk Score</Th
-				>
-			</Tr>
-		</Thead>
-		<Tbody>
-			{#if team.workloads === PendingValue}
-				{#each new Array(10).fill('text') as type, i (i)}
-					<Tr>
-						<Td colspan={999}><Skeleton variant={type} style="min-height: 44px;" /></Td>
-					</Tr>
-				{/each}
-			{:else if team.workloads.nodes.length > 0}
-				{@const workloads = team.workloads.nodes}
-				{#each workloads as workload (workload.id)}
-					<Tr>
-						<Td>
-							<WorkloadLink {workload} />
-						</Td>
-						<Td>
-							{workload.teamEnvironment.environment.name}
-						</Td>
-						<Td>
-							<div class="vulnerability">
-								<div class="vulnerability-summary">
-									<Tooltip content="critical">
-										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
-											{#if workload.image.vulnerabilitySummary.critical > 0}
-												<a
-													href={vulnerabilityReportUrl(workload)}
-													class="vulnerability-count CRITICAL"
-												>
-													{workload.image.vulnerabilitySummary
-														? workload.image.vulnerabilitySummary.critical
-														: '-'}
-												</a>
-											{:else}
-												<CheckmarkIcon
-													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
-												/>
-											{/if}
-										{:else}
-											-
-										{/if}
-									</Tooltip>
-								</div>
-							</div>
-						</Td>
-						<Td>
-							<div class="vulnerability">
-								<div class="vulnerability-summary">
-									<Tooltip content="high">
-										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
-											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary.high > 0}
-												<a href={vulnerabilityReportUrl(workload)} class="vulnerability-count HIGH">
-													{workload.image.vulnerabilitySummary.high}
-												</a>
-											{:else}
-												<CheckmarkIcon
-													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
-												/>
-											{/if}
-										{:else}
-											-
-										{/if}
-									</Tooltip>
-								</div>
-							</div>
-						</Td>
-						<Td>
-							<div class="vulnerability">
-								<div class="vulnerability-summary">
-									<Tooltip content="medium">
-										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
-											{#if workload.image.vulnerabilitySummary.medium > 0}
-												<a
-													href={vulnerabilityReportUrl(workload)}
-													class="vulnerability-count MEDIUM"
-												>
-													{workload.image.vulnerabilitySummary
-														? workload.image.vulnerabilitySummary.medium
-														: '-'}
-												</a>
-											{:else}
-												<CheckmarkIcon
-													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
-												/>
-											{/if}
-										{:else}
-											-
-										{/if}
-									</Tooltip>
-								</div>
-							</div>
-						</Td>
-						<Td>
-							<div class="vulnerability">
-								<div class="vulnerability-summary">
-									<Tooltip content="low">
-										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
-											{#if workload.image.vulnerabilitySummary.low > 0}
-												<a href={vulnerabilityReportUrl(workload)} class="vulnerability-count LOW">
-													{workload.image.vulnerabilitySummary
-														? workload.image.vulnerabilitySummary.low
-														: '-'}
-												</a>
-											{:else}
-												<CheckmarkIcon
-													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
-												/>
-											{/if}
-										{:else}
-											-
-										{/if}
-									</Tooltip>
-								</div>
-							</div>
-						</Td>
-						<Td>
-							<div class="vulnerability">
-								<div class="vulnerability-summary">
-									<Tooltip content="unassigned">
-										{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
-											{#if workload.image.vulnerabilitySummary.unassigned > 0}
-												<a
-													href={vulnerabilityReportUrl(workload)}
-													class="vulnerability-count UNASSIGNED"
-												>
-													{workload.image.vulnerabilitySummary.unassigned}
-												</a>
-											{:else}
-												<CheckmarkIcon
-													style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
-												/>
-											{/if}
-										{:else}
-											-
-										{/if}
-									</Tooltip>
-								</div>
-							</div>
-						</Td>
-						<Td>
-							<div class="vulnerability">
-								<div class="vulnerability-summary">
-									<Tooltip content="risk score">
-										<BodyShort class="vulnerability-count">
-											<a
-												href={vulnerabilityReportUrl(workload)}
-												class="vulnerability-count RISK_SCORE"
-											>
-												{workload.image.vulnerabilitySummary && workload.image.hasSBOM
-													? workload.image.vulnerabilitySummary.riskScore
-													: '-'}
-											</a>
-										</BodyShort>
-									</Tooltip>
-								</div>
-							</div>
-						</Td>
-					</Tr>
-				{/each}
-			{:else}
+{#if !$query.fetching}
+	{#if $query.data?.team}
+		{@const team = $query.data.team}
+		<Table
+			size="small"
+			sort={{
+				orderBy: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_RISK_SCORE,
+				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+			}}
+			onsortchange={tableSortChange}
+		>
+			<Thead>
 				<Tr>
-					<Td colspan={9}>No workloads with vulnerability data found</Td>
+					<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
+
+					<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT} style="width: 142px;"
+						>Environment</Th
+					>
+					<Th
+						sortable={true}
+						sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
+						style="width: 102px;">Critical</Th
+					>
+					<Th
+						sortable={true}
+						sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_HIGH}
+						style="width: 86px;">High</Th
+					>
+					<Th
+						sortable={true}
+						sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_MEDIUM}
+						style="width: 108px;">Medium</Th
+					>
+					<Th
+						sortable={true}
+						sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_LOW}
+						style="width: 82px;">Low</Th
+					>
+					<Th
+						sortable={true}
+						sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_UNASSIGNED}
+						style="width: 134px;">Unassigned</Th
+					>
+					<Th
+						sortable={true}
+						sortKey={WorkloadOrderField.VULNERABILITY_RISK_SCORE}
+						style="width: 124px;">Risk Score</Th
+					>
 				</Tr>
-			{/if}
-		</Tbody>
-	</Table>
-	{#if $query.data?.team.workloads !== PendingValue}
-		<div>
-			<Pagination
-				page={$query.data?.team.workloads.pageInfo}
-				loaders={{
-					loadNextPage: () => {
-						query.loadNextPage();
-					},
-					loadPreviousPage: () => {
-						query.loadPreviousPage();
-					}
-				}}
-			/>
-		</div>
+			</Thead>
+			<Tbody>
+				{#if team.workloads === PendingValue}
+					{#each new Array(10).fill('text') as type, i (i)}
+						<Tr>
+							<Td colspan={999}><Skeleton variant={type} style="min-height: 44px;" /></Td>
+						</Tr>
+					{/each}
+				{:else if team.workloads.nodes.length > 0}
+					{@const workloads = team.workloads.nodes}
+					{#each workloads as workload (workload.id)}
+						<Tr>
+							<Td>
+								<WorkloadLink {workload} />
+							</Td>
+							<Td>
+								{workload.teamEnvironment.environment.name}
+							</Td>
+							<Td>
+								<div class="vulnerability">
+									<div class="vulnerability-summary">
+										<Tooltip content="critical">
+											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+												{#if workload.image.vulnerabilitySummary.critical > 0}
+													<a
+														href={vulnerabilityReportUrl(workload)}
+														class="vulnerability-count CRITICAL"
+													>
+														{workload.image.vulnerabilitySummary
+															? workload.image.vulnerabilitySummary.critical
+															: '-'}
+													</a>
+												{:else}
+													<CheckmarkIcon
+														style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+													/>
+												{/if}
+											{:else}
+												-
+											{/if}
+										</Tooltip>
+									</div>
+								</div>
+							</Td>
+							<Td>
+								<div class="vulnerability">
+									<div class="vulnerability-summary">
+										<Tooltip content="high">
+											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+												{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary.high > 0}
+													<a
+														href={vulnerabilityReportUrl(workload)}
+														class="vulnerability-count HIGH"
+													>
+														{workload.image.vulnerabilitySummary.high}
+													</a>
+												{:else}
+													<CheckmarkIcon
+														style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+													/>
+												{/if}
+											{:else}
+												-
+											{/if}
+										</Tooltip>
+									</div>
+								</div>
+							</Td>
+							<Td>
+								<div class="vulnerability">
+									<div class="vulnerability-summary">
+										<Tooltip content="medium">
+											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+												{#if workload.image.vulnerabilitySummary.medium > 0}
+													<a
+														href={vulnerabilityReportUrl(workload)}
+														class="vulnerability-count MEDIUM"
+													>
+														{workload.image.vulnerabilitySummary
+															? workload.image.vulnerabilitySummary.medium
+															: '-'}
+													</a>
+												{:else}
+													<CheckmarkIcon
+														style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+													/>
+												{/if}
+											{:else}
+												-
+											{/if}
+										</Tooltip>
+									</div>
+								</div>
+							</Td>
+							<Td>
+								<div class="vulnerability">
+									<div class="vulnerability-summary">
+										<Tooltip content="low">
+											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+												{#if workload.image.vulnerabilitySummary.low > 0}
+													<a
+														href={vulnerabilityReportUrl(workload)}
+														class="vulnerability-count LOW"
+													>
+														{workload.image.vulnerabilitySummary
+															? workload.image.vulnerabilitySummary.low
+															: '-'}
+													</a>
+												{:else}
+													<CheckmarkIcon
+														style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+													/>
+												{/if}
+											{:else}
+												-
+											{/if}
+										</Tooltip>
+									</div>
+								</div>
+							</Td>
+							<Td>
+								<div class="vulnerability">
+									<div class="vulnerability-summary">
+										<Tooltip content="unassigned">
+											{#if workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+												{#if workload.image.vulnerabilitySummary.unassigned > 0}
+													<a
+														href={vulnerabilityReportUrl(workload)}
+														class="vulnerability-count UNASSIGNED"
+													>
+														{workload.image.vulnerabilitySummary.unassigned}
+													</a>
+												{:else}
+													<CheckmarkIcon
+														style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+													/>
+												{/if}
+											{:else}
+												-
+											{/if}
+										</Tooltip>
+									</div>
+								</div>
+							</Td>
+							<Td>
+								<div class="vulnerability">
+									<div class="vulnerability-summary">
+										<Tooltip content="risk score">
+											<BodyShort class="vulnerability-count">
+												<a
+													href={vulnerabilityReportUrl(workload)}
+													class="vulnerability-count RISK_SCORE"
+												>
+													{workload.image.vulnerabilitySummary && workload.image.hasSBOM
+														? workload.image.vulnerabilitySummary.riskScore
+														: '-'}
+												</a>
+											</BodyShort>
+										</Tooltip>
+									</div>
+								</div>
+							</Td>
+						</Tr>
+					{/each}
+				{:else}
+					<Tr>
+						<Td colspan={9}>No workloads with vulnerability data found</Td>
+					</Tr>
+				{/if}
+			</Tbody>
+		</Table>
+		{#if $query.data?.team.workloads !== PendingValue}
+			<div>
+				<Pagination
+					page={$query.data?.team.workloads.pageInfo}
+					loaders={{
+						loadNextPage: () => {
+							query.loadNextPage();
+						},
+						loadPreviousPage: () => {
+							query.loadPreviousPage();
+						}
+					}}
+				/>
+			</div>
+		{/if}
 	{/if}
+{:else}
+	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+		<Loader size="3xlarge" />
+	</div>
 {/if}
 
 <style>

@@ -76,8 +76,18 @@
 				</div>
 			{/if}
 		</div>
+
 		<div>
-			<Heading level="3" size="medium" spacing>Workloads with Vulnerabilities</Heading>
+			<div class="heading">
+				<div class="content">
+					<Heading level="3" size="medium" spacing>Most Vulnerable Workloads</Heading>
+					<BodyLong spacing>
+						A list of this team's workloads with the highest security risk, based on Risk Score
+						(default sorting). Use this list to focus remediation efforts where they’ll have the
+						greatest impact.
+					</BodyLong>
+				</div>
+			</div>
 
 			<div class="env-filter">
 				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">
@@ -102,7 +112,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		gap: var(--ax-space-16, --a-spacing-4);
+		gap: var(--ax-space-32);
 	}
 
 	.env-filter {
@@ -120,7 +130,6 @@
 		justify-content: space-between;
 		align-items: flex-end;
 		gap: var(--spacing-layout);
-		padding-bottom: var(--spacing-layout);
 	}
 
 	.content {
