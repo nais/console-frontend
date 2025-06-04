@@ -25,12 +25,7 @@
 {#if fetching}
 	<div class="pagination">
 		<div class="fetching">
-			<Skeleton variant="text" style="width: 1.5rem; height: 1.5rem;" /> - <Skeleton
-				variant="text"
-				style="width: 1.5rem; height: 1.5rem;"
-			/>
-
-			&nbsp;of&nbsp; <Skeleton variant="text" style="width: 2rem; height: 1.5rem;" />
+			<Skeleton variant="text" style="width: 12ch; height: 1.5rem;" />
 		</div>
 
 		<span class="pagination-buttons">
