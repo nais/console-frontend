@@ -17,15 +17,20 @@
 
 	export type BadgeProps = {
 		count: number;
+		max?: number;
 		level: WorkloadStatusErrorLevel$options;
 	};
 
-	const { count, level }: BadgeProps = $props();
+	const { count, level, max }: BadgeProps = $props();
 </script>
 
 {#if count}
 	<div class={['badge', `badge--${level}`, { 'badge--long': `${count}`.length > 2 }]}>
-		{count}
+		{#if max && count > max}
+			{max}+
+		{:else}
+			{count}
+		{/if}
 	</div>
 {/if}
 

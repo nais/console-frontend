@@ -5467,6 +5467,9 @@ input TeamVulnerabilitySummaryFilter {
 input TeamWorkloadsFilter {
   """Only return workloads from the given named environments."""
   environments: [String!]
+
+  """Filter workloads with given workload states."""
+  states: [WorkloadState!]
 }
 
 """

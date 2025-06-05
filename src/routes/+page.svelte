@@ -54,6 +54,7 @@
 								team={node.team}
 								badge={{
 									count: errors.length,
+									max: 9,
 									level: badgeLevel(errors)
 								}}
 							/>
