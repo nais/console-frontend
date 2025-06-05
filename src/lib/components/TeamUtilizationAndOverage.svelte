@@ -173,7 +173,7 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8, --a-spacing-2);
+		gap: var(--ax-space-8);
 		min-height: 100%;
 	}
 

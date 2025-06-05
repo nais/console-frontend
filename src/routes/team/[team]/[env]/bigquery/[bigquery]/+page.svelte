@@ -52,7 +52,7 @@
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
 									<CheckmarkIcon
-										style="color: var(--ax-text-success-subtle, --a-surface-success)"
+										style="color: var(--ax-text-success-subtle)"
 										title="CascadingDelete"
 									/>
 								</TooltipAlignHack>
@@ -62,7 +62,7 @@
 						<IconLabel label="Deleting the application will NOT remove the dataset.">
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
-									<XMarkIcon style="color: var(--ax-text-danger-icon, --a-icon-danger);" />
+									<XMarkIcon style="color: var(--ax-text-danger-icon);" />
 								</TooltipAlignHack>
 							{/snippet}
 						</IconLabel>

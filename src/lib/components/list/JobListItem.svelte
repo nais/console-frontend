@@ -129,6 +129,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		gap: var(--ax-space-2, --a-spacing-05);
+		gap: var(--ax-space-2);
 	}
 </style>

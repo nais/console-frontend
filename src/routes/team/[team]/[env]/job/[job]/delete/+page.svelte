@@ -174,19 +174,19 @@
 
 	.heading-wrapper {
 		display: flex;
-		gap: var(--ax-space-12, --a-spacing-3);
+		gap: var(--ax-space-12);
 		align-items: baseline;
 	}
 
 	.confirmation-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8, --a-spacing-2);
-		margin-top: var(--ax-space-16, --a-spacing-4);
+		gap: var(--ax-space-8);
+		margin-top: var(--ax-space-16);
 	}
 	.danger-zone {
-		padding: var(--ax-space-16, --a-spacing-4);
+		padding: var(--ax-space-16);
 		border-radius: 8px;
-		border: 1px solid var(--ax-border-danger, --a-border-danger);
+		border: 1px solid var(--ax-border-danger);
 	}
 </style>

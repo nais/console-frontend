@@ -190,9 +190,7 @@
 							content="Unleash is not ready, new instances will be online after a minute."
 							placement="right"
 						>
-							<XMarkIcon
-								style="color: var(--ax-text-danger-icon, --a-icon-danger); font-size: 1.2rem"
-							/>
+							<XMarkIcon style="color: var(--ax-text-danger-icon); font-size: 1.2rem" />
 						</Tooltip>
 					{/if}
 				</p>
@@ -247,9 +245,7 @@
 											onclick={() => removeTeamClickHandler(team.slug)}
 										>
 											{#snippet icon()}
-												<TrashIcon
-													style="color:var(--ax-text-danger-icon, --a-icon-danger)!important"
-												/>
+												<TrashIcon style="color:var(--ax-text-danger-icon)!important" />
 											{/snippet}
 										</Button>
 									{/if}
@@ -362,7 +358,7 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16, --a-spacing-4);
+		gap: var(--ax-space-16);
 	}
 
 	.wrapper p {
@@ -379,8 +375,8 @@
 	}
 
 	.card {
-		background-color: var(--ax-bg-sunken, --a-surface-subtle);
-		padding: var(--ax-space-20, --a-spacing-5);
+		background-color: var(--ax-bg-sunken);
+		padding: var(--ax-space-20);
 		border-radius: 12px;
 	}
 	.summary {

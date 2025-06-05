@@ -72,7 +72,7 @@
 			icon={ChevronDownIcon}
 			{...props}
 		>
-			<div style="display: flex; align-items: center; gap: var(--ax-space-8, --a-spacing-2);">
+			<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
 				{#if orderDirection === OrderDirection.ASC}
 					<SortUpIcon />
 				{:else}

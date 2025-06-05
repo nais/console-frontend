@@ -37,7 +37,7 @@
 	div {
 		border-radius: 0.5rem;
 		border: 1px solid var(--borderColor);
-		background-color: var(--ax-bg-default, --a-bg-default);
+		background-color: var(--ax-bg-default);
 		padding: 1rem;
 		grid-column: span var(--columns);
 		grid-row: span var(--rows);

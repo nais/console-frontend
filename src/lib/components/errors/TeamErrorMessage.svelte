@@ -68,7 +68,7 @@
 
 <Alert variant={levelVariant(error.level)} size="small">
 	<div class="content">
-		<div style="display: flex; align-items: center; gap: var(--ax-space-8, --a-spacing-2);">
+		<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
 			<Heading level="2" size="small">{heading[error.__typename]}</Heading>
 			{#if collapsible}
 				<Button variant="tertiary" size="xsmall" onclick={() => (open = !open)}>
@@ -180,6 +180,6 @@
 <style>
 	.content {
 		display: grid;
-		gap: var(--ax-space-12, --a-spacing-3);
+		gap: var(--ax-space-12);
 	}
 </style>

@@ -50,8 +50,7 @@
 								{edge.node.name}
 							</BodyShort>
 							<BodyShort size="small">
-								<span style="color: var(--ax-text-subtle, --a-text-subtle);">{edge.node.email}</span
-								>
+								<span style="color: var(--ax-text-subtle);">{edge.node.email}</span>
 							</BodyShort>
 						</div>
 						<div>

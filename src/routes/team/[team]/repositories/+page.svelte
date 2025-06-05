@@ -264,7 +264,7 @@
 	}
 	.right {
 		display: flex;
-		gap: var(--ax-space-6, --a-spacing-1-alt);
+		gap: var(--ax-space-6);
 		align-items: center;
 	}
 	code {

@@ -165,17 +165,17 @@
 	export function severityToColorWithHover(severity: string): string {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-danger-600, --a-red-200)';
+				return 'var(--ax-danger-600)';
 			case 'high':
-				return 'var(--ax-warning-200, --a-orange-200)';
+				return 'var(--ax-warning-200)';
 			case 'medium':
-				return 'var(--ax-warning-200, --a-orange-200)';
+				return 'var(--ax-warning-200)'; // TODO: high and medium should not be the same color
 			case 'low':
-				return 'var(--ax-success-400, --a-green-200)';
+				return 'var(--ax-success-400)';
 			case 'unassigned':
-				return 'var(--ax-neutral-200, --a-gray-200)';
+				return 'var(--ax-neutral-200)';
 			default:
-				return 'var(--ax-neutral-200, --a-gray-200)';
+				return 'var(--ax-neutral-200)';
 		}
 	}
 </script>
@@ -440,47 +440,39 @@
 			text-decoration: none;
 
 			&.CRITICAL {
-				background-color: var(--ax-danger-600, --a-red-200);
+				background-color: var(--ax-danger-600);
 				&:hover {
-					background-color: var(--ax-danger-300, --a-red-300);
+					background-color: var(--ax-danger-300);
 				}
 			}
 			&.HIGH {
-				background-color: color-mix(
-					in oklab,
-					var(--ax-danger-600, --a-red-200),
-					var(--ax-warning-200, --a-orange-200)
-				);
+				background-color: color-mix(in oklab, var(--ax-danger-600), var(--ax-warning-200));
 				&:hover {
-					background-color: color-mix(
-						in oklab,
-						var(--ax-danger-300, --a-red-300),
-						var(--ax-warning-300, --a-orange-300)
-					);
+					background-color: color-mix(in oklab, var(--ax-danger-300), var(--ax-warning-300));
 				}
 			}
 			&.MEDIUM {
-				background-color: var(--ax-warning-200, --a-orange-200);
+				background-color: var(--ax-warning-200);
 				&:hover {
-					background-color: var(--ax-warning-300, --a-orange-300);
+					background-color: var(--ax-warning-300);
 				}
 			}
 			&.LOW {
-				background-color: var(--ax-success-400, --a-green-200);
+				background-color: var(--ax-success-400);
 				&:hover {
-					background-color: var(--ax-success-300, --a-green-300);
+					background-color: var(--ax-success-300);
 				}
 			}
 			&.UNASSIGNED {
-				background-color: var(--ax-neutral-200, --a-gray-200);
+				background-color: var(--ax-neutral-200);
 				&:hover {
-					background-color: var(--ax-neutral-300, --a-gray-300);
+					background-color: var(--ax-neutral-300);
 				}
 			}
 
 			&.RISK_SCORE {
 				&:hover {
-					background-color: var(--ax-neutral-300, --a-gray-300);
+					background-color: var(--ax-neutral-300);
 				}
 			}
 		}

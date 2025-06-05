@@ -36,8 +36,8 @@
 
 <style>
 	.card {
-		background-color: var(--ax-bg-sunken, --a-surface-subtle);
-		padding: var(--ax-space-20, --a-spacing-5) var(--ax-space-20, --a-spacing-5);
+		background-color: var(--ax-bg-sunken);
+		padding: var(--ax-space-20) var(--ax-space-20);
 		border-radius: 12px;
 	}
 	.value {
@@ -46,7 +46,7 @@
 
 	.manifest {
 		display: block;
-		font-size: var(--ax-font-size-small, --a-font-size-small);
+		font-size: var(--ax-font-size-small);
 		word-break: break-word;
 		white-space: pre-wrap;
 		margin: 0.5rem 1rem;

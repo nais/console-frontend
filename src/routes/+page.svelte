@@ -83,10 +83,10 @@
 		padding-top: 4rem;
 	}
 	.content-wrapper {
-		background: var(--ax-bg-default, --a-surface-default);
+		background: var(--ax-bg-default);
 		position: relative;
 		top: -40px;
-		padding: var(--ax-space-24, --a-spacing-6);
+		padding: var(--ax-space-24);
 		border-radius: 12px;
 		max-width: 900px;
 		margin-inline: auto;
@@ -106,7 +106,7 @@
 		color: var(--ax-text-neutral-contrast,);
 	}
 	.logo-wrapper {
-		background-color: var(--ax-bg-default, --a-surface-inverted);
+		background-color: var(--ax-bg-default);
 		border-radius: 100%;
 		height: min(40vw, 700px);
 		width: min(40vw, 700px);
@@ -120,6 +120,6 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: var(--ax-space-16, --a-spacing-4);
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

@@ -117,7 +117,7 @@
 	{/snippet}
 	<div class="text-input">
 		<TextField
-			style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small);"
+			style="font-family: monospace; font-size: var(--ax-font-size-small);"
 			size="small"
 			bind:value={key}
 			error={validKey(key)}
@@ -142,7 +142,7 @@
 	.text-input {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12, --a-spacing-3);
+		gap: var(--ax-space-12);
 	}
 	/* .buttons {
 		margin-top: 1rem;

@@ -91,7 +91,7 @@
 												PENDING_DELETE: 'info',
 												SUSPENDED: 'info',
 												UNSPECIFIED: 'info'
-											}[instance.state] ?? 'info'}-icon, --a-icon-{{
+											}[instance.state] ?? 'info'}-icon{{
 												RUNNABLE: 'success',
 												FAILED: 'danger',
 												MAINTENANCE: 'warning',
@@ -108,7 +108,7 @@
 
 						{#if instance.workload}
 							<div class="right">
-								<div style:display="flex" style:gap="var(--ax-space-6, --a-spacing-1-alt)">
+								<div style:display="flex" style:gap="var(--ax-space-6)">
 									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 								</div>
 								<div>Version: <code>{instance.version}</code></div>
@@ -189,20 +189,20 @@
 <style>
 	.content-wrapper {
 		display: grid;
-		gap: var(--ax-space-24, --a-spacing-6);
+		gap: var(--ax-space-24);
 		grid-template-columns: 1fr 300px;
 		align-items: start;
 	}
 	.right {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6, --a-spacing-1-alt);
+		gap: var(--ax-space-6);
 		align-items: flex-end;
 	}
 
 	.right-column {
 		display: grid;
-		gap: var(--ax-space-24, --a-spacing-6);
+		gap: var(--ax-space-24);
 	}
 	code {
 		font-size: 0.9rem;
@@ -210,13 +210,13 @@
 
 	.utilization {
 		display: grid;
-		gap: var(--ax-space-6, --a-spacing-1-alt);
+		gap: var(--ax-space-6);
 		div {
 			display: grid;
-			gap: var(--ax-space-6, --a-spacing-1-alt);
+			gap: var(--ax-space-6);
 			div {
 				display: flex;
-				gap: var(--ax-space-6, --a-spacing-1-alt);
+				gap: var(--ax-space-6);
 				align-items: center;
 			}
 		}

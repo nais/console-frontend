@@ -49,6 +49,6 @@
 		justify-content: flex-end;
 		align-items: center;
 		align-self: stretch;
-		margin-bottom: var(--ax-space-12, --a-spacing-3);
+		margin-bottom: var(--ax-space-12);
 	}
 </style>

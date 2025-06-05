@@ -58,7 +58,7 @@
 
 		&:active,
 		&:focus-visible {
-			color: var(--ac-link-focus-text, var(--ax-text-neutral, --a-text-on-action));
+			color: var(--ac-link-focus-text, var(--ax-text-neutral));
 		}
 	}
 </style>

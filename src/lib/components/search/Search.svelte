@@ -166,18 +166,18 @@
 <style>
 	.description-wrapper {
 		display: flex;
-		gap: var(--ax-space-6, --a-spacing-1-alt);
+		gap: var(--ax-space-6);
 		align-items: center;
 	}
 	.helpers {
 		display: flex;
-		gap: var(--ax-space-16, --a-spacing-4);
-		padding: var(--ax-space-12, --a-spacing-3) var(--ax-space-24, --a-spacing-6);
-		background-color: var(--ax-bg-default, --a-surface-subtle);
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-12) var(--ax-space-24);
+		background-color: var(--ax-bg-default);
 
 		> div {
 			display: flex;
-			gap: var(--ax-space-8, --a-spacing-2);
+			gap: var(--ax-space-8);
 			align-items: center;
 
 			&:last-child {
@@ -198,7 +198,7 @@
 		);
 		border: solid 1px rgb(35, 38, 42);
 		border-radius: 6px;
-		padding: var(--ax-space-4, --a-spacing-1);
+		padding: var(--ax-space-4);
 		display: inline-flex;
 		justify-content: center;
 	}
@@ -218,15 +218,15 @@
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: center;
-		gap: var(--ax-space-8, --a-spacing-2);
-		padding: var(--ax-space-24, --a-spacing-6);
-		padding-bottom: var(--ax-space-16, --a-spacing-4);
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-24);
+		padding-bottom: var(--ax-space-16);
 	}
 	.results {
 		display: flex;
-		padding-inline: var(--ax-space-24, --a-spacing-6);
+		padding-inline: var(--ax-space-24);
 		flex-direction: column;
-		gap: var(--ax-space-4, --a-spacing-1);
+		gap: var(--ax-space-4);
 		overflow-y: auto;
 
 		a.result {
@@ -247,7 +247,7 @@
 			&:active,
 			&:focus-visible {
 				background-color: var(--ax-bg-accent-strong);
-				color: var(--ax-text-neutral, --a-text-on-action);
+				color: var(--ax-text-neutral);
 				box-shadow: none;
 			}
 
@@ -259,10 +259,10 @@
 		.result {
 			display: grid;
 			grid-template-columns: 1fr auto;
-			gap: var(--ax-space-16, --a-spacing-4);
+			gap: var(--ax-space-16);
 			align-items: center;
 			border-radius: 4px;
-			padding: var(--ax-space-4, --a-spacing-1);
+			padding: var(--ax-space-4);
 
 			&.selected {
 				background-color: var(--ax-bg-accent-moderate-pressed);
@@ -272,6 +272,6 @@
 	.no-results {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16, --a-spacing-4);
+		gap: var(--ax-space-16);
 	}
 </style>

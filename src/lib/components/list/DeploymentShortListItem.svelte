@@ -68,7 +68,7 @@
 	}
 	.deployment {
 		display: grid;
-		gap: var(--ax-space-24, --a-spacing-6);
+		gap: var(--ax-space-24);
 		grid-template-columns: 1fr 100px;
 	}
 	.status {
@@ -76,7 +76,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-4, --a-spacing-1);
+		gap: var(--ax-space-4);
 		font-size: 16px;
 	}
 </style>

@@ -123,11 +123,7 @@
 		background-color: var(--ax-danger-600);
 	}
 	.high {
-		background-color: color-mix(
-			in oklab,
-			var(--ax-danger-600, --a-red-200),
-			var(--ax-warning-200, --a-orange-200)
-		);
+		background-color: color-mix(in oklab, var(--ax-danger-600), var(--ax-warning-200));
 	}
 	.medium {
 		background-color: var(--ax-warning-200);
@@ -151,7 +147,7 @@
 		grid-template-columns: 90px auto;
 		margin-block-start: 0;
 		margin-block-end: 0;
-		padding-top: var(--ax-space-16, --a-spacing-4);
+		padding-top: var(--ax-space-16);
 	}
 
 	dt {

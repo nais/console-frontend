@@ -43,20 +43,19 @@
 	.menu {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20, --a-spacing-5);
+		gap: var(--ax-space-20);
 
 		.list {
 			display: flex;
 			flex-direction: column;
-			gap: var(--ax-space-4, --a-spacing-1);
+			gap: var(--ax-space-4);
 		}
 
 		a {
 			display: grid;
 			grid-template-columns: 1fr auto;
 			border-radius: 4px;
-			padding: var(--ax-space-4, --a-spacing-1) var(--ax-space-12, --a-spacing-3)
-				var(--ax-space-4, --a-spacing-1) var(--ax-space-8, --a-spacing-2);
+			padding: var(--ax-space-4) var(--ax-space-12) var(--ax-space-4) var(--ax-space-8);
 			text-decoration: none;
 			color: inherit;
 			transition: background-color 50ms;
@@ -79,7 +78,7 @@
 			}
 
 			&:not(.active) .icon {
-				color: var(--ax-text-subtle, --a-text-subtle);
+				color: var(--ax-text-subtle);
 			}
 
 			.icon {

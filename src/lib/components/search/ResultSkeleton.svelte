@@ -18,8 +18,8 @@
 	.skeleton {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6, --a-spacing-1-alt);
+		gap: var(--ax-space-6);
 		border-radius: 4px;
-		padding: var(--ax-space-4, --a-spacing-1);
+		padding: var(--ax-space-4);
 	}
 </style>

@@ -1,8 +1,8 @@
 <script lang="ts">
+	import ListItem from '$lib/components/list/ListItem.svelte';
 	import ServiceMaintenanceStatus from '$lib/ServiceMaintenanceStatus.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
-	import ListItem from '$lib/components/list/ListItem.svelte';
 	interface Props {
 		title: string;
 		description: string;
@@ -32,7 +32,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-4, --a-spacing-1);
+		gap: var(--ax-space-4);
 		font-size: 16px;
 	}
 </style>

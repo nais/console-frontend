@@ -1,5 +1,5 @@
 :root {
-	--spacing-layout: var(--ax-space-40, --a-spacing-10);
+	--spacing-layout: var(--ax-space-40);
 }
 
 html,
@@ -18,7 +18,7 @@ html {
 }
 
 .text-aligned-icon {
-	height: var(--ax-font-line-height-large, --a-font-line-height-large);
+	height: var(--ax-font-line-height-large);
 	vertical-align: bottom;
 }
 

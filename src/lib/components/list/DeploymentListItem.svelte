@@ -47,8 +47,7 @@
 				Commit
 				<ExternalLink
 					href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
-					><span
-						style="font-family: monospace; font-size: var(--ax-font-size-small, --a-font-size-small)"
+					><span style="font-family: monospace; font-size: var(--ax-font-size-small)"
 						>{deployment?.commitSha.slice(0, 7)}</span
 					>
 				</ExternalLink>
@@ -138,7 +137,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-4, --a-spacing-1);
+		gap: var(--ax-space-4);
 		font-size: 16px;
 	}
 </style>

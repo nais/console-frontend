@@ -62,7 +62,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: start;
-		gap: var(--ax-space-4, --a-spacing-1);
+		gap: var(--ax-space-4);
 	}
 
 	.loading {
@@ -75,7 +75,7 @@
 
 	.heading {
 		display: flex;
-		gap: var(--ax-space-8, --a-spacing-2);
+		gap: var(--ax-space-8);
 		align-items: center;
 	}
 </style>

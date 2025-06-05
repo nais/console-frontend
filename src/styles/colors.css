@@ -26,11 +26,11 @@
 	--limegreen-500: #a2ad00;
 	--limegreen-600: #939e00;
 
-	--active-color: var(--ax-brand-blue-200, --a-deepblue-50);
-	--active-color-strong: var(--ax-brand-blue-400, --a-deepblue-100);
+	--active-color: var(--ax-brand-blue-200);
+	--active-color-strong: var(--ax-brand-blue-400);
 }
 
 .dark {
-	--active-color: var(--ax-brand-blue-200, --a-deepblue-50);
-	--active-color-strong: var(--ax-brand-blue-600, --a-deepblue-100);
+	--active-color: var(--ax-brand-blue-200);
+	--active-color-strong: var(--ax-brand-blue-600);
 }

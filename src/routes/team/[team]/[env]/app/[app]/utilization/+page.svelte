@@ -518,7 +518,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		gap: var(--ax-space-24, --a-spacing-6);
+		gap: var(--ax-space-24);
 	}
 	.heading-with-toggle {
 		display: flex;

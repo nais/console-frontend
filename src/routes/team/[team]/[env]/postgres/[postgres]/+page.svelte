@@ -100,9 +100,7 @@
 			<dt>Instance status:</dt>
 			<dd>
 				{#if instance.state === 'RUNNABLE'}
-					<CheckmarkIcon
-						style="color: var(--ax-text-success-subtle, --a-surface-success); font-size: 1.5rem"
-					/>
+					<CheckmarkIcon style="color: var(--ax-text-success-subtle); font-size: 1.5rem" />
 				{:else}
 					<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink
 						href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
@@ -131,7 +129,7 @@
 <style>
 	dl {
 		display: grid;
-		gap: var(--ax-space-8, --a-spacing-2);
+		gap: var(--ax-space-8);
 		grid-template-columns: max-content max-content;
 
 		dd {
@@ -141,7 +139,7 @@
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--ax-space-16, --a-spacing-4);
+		gap: var(--ax-space-16);
 	}
 	.summary-grid {
 		display: grid;

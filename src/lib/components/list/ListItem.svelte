@@ -15,8 +15,8 @@
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
 		align-items: center;
-		column-gap: var(--ax-space-16, --a-spacing-4);
-		padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-24, --a-spacing-6);
+		column-gap: var(--ax-space-16);
+		padding: var(--ax-space-16) var(--ax-space-24);
 
 		&:hover {
 			background-color: var(--ax-neutral-300);

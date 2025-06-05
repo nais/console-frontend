@@ -28,7 +28,7 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: var(--ax-space-16, --a-spacing-4) var(--ax-space-24, --a-spacing-6);
+			padding: var(--ax-space-16) var(--ax-space-24);
 		}
 
 		:global(> *) {
@@ -46,6 +46,6 @@
 
 	.menu {
 		display: flex;
-		gap: var(--ax-space-8, --a-spacing-2);
+		gap: var(--ax-space-8);
 	}
 </style>

@@ -195,7 +195,7 @@
 
 	.right-column {
 		display: grid;
-		gap: var(--ax-space-24, --a-spacing-6);
+		gap: var(--ax-space-24);
 	}
 
 	.search {
