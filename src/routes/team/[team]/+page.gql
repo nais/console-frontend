@@ -30,7 +30,11 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 
-		workloads(first: 999) {
+		workloads(
+			first: 50
+			filter: { states: [NOT_NAIS, FAILING] }
+			orderBy: { field: STATUS, direction: DESC }
+		) {
 			pageInfo {
 				totalCount
 			}
