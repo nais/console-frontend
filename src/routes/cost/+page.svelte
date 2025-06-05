@@ -35,10 +35,10 @@
 			} as EChartsOption;
 		}
 
-		const dates: string[] = [];
-		const seriesData: { [service: string]: [number, number][] } = {};
+		const seriesData: { [service: string]: [string, number][] } = {};
 		const allServices = new Set<string>();
 
+		// First pass to collect all service names
 		data.costMonthlySummary.series.forEach((entry) => {
 			entry.services.forEach((service) => {
 				allServices.add(service.service);
@@ -48,61 +48,52 @@
 		// Second pass to build the series data
 		data.costMonthlySummary.series.forEach((entry) => {
 			const entryDate = new Date(entry.date);
-
-			dates.push(entryDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+			const label = entryDate.toLocaleDateString('en-US', {
+				month: 'short',
+				day: 'numeric',
+				year: 'numeric'
+			});
 
 			if (entry.services.length === 0) {
-				// No services for this day, add 0 for all services
 				allServices.forEach((service) => {
 					if (!seriesData[service]) {
 						seriesData[service] = [];
 					}
-					seriesData[service].push([entryDate.getTime(), 0]);
+					seriesData[service].push([label, 0]);
 				});
 			} else {
-				// Process each service for this day
 				entry.services.forEach((service) => {
 					if (!seriesData[service.service]) {
 						seriesData[service.service] = [];
 					}
-					seriesData[service.service].push([entryDate.getTime(), service.cost]);
+					seriesData[service.service].push([label, service.cost]);
 				});
 
-				// Add 0 for missing services on this day
 				allServices.forEach((service) => {
 					if (!entry.services.some((s) => s.service === service)) {
 						if (!seriesData[service]) {
 							seriesData[service] = [];
 						}
-						seriesData[service].push([entryDate.getTime(), 0]);
+						seriesData[service].push([label, 0]);
 					}
 				});
 			}
 		});
 
-		// Prepare the series for ECharts
 		const series = Array.from(allServices)
 			.map((serviceName) => ({
 				name: serviceName,
 				type: 'bar',
 				stack: 'Cost',
-				// areaStyle: {
-				// 	normal: {
-				// 		opacity: 0.9
-				// 	}
-				// },
 				showSymbol: true,
 				data: seriesData[serviceName]
 			}))
-			.toSorted((a, b) => {
-				return a.name.localeCompare(b.name);
-			});
+			.toSorted((a, b) => a.name.localeCompare(b.name));
 
 		return {
 			animation: false,
 			height: '850px',
 			width: '1250px',
-
 			title:
 				series.length === 0
 					? {
@@ -123,14 +114,9 @@
 					return euroValueFormatter(value[1] as number);
 				}
 			},
-			// emphasis: {
-			// 	focus: 'series'
-			// },
 			legend: {
 				selector: [{ title: 'Inverse selection', type: 'inverse' }],
-				data: Array.from(allServices).toSorted((a, b) => {
-					return a.localeCompare(b);
-				})
+				data: Array.from(allServices).toSorted((a, b) => a.localeCompare(b))
 			},
 			grid: {
 				left: '3%',
@@ -140,7 +126,7 @@
 			},
 			xAxis: [
 				{
-					type: 'time'
+					type: 'category'
 				}
 			],
 			yAxis: [
