@@ -22,7 +22,8 @@
 				| 'WorkloadStatusNoRunningInstances'
 				| 'WorkloadStatusFailedRun'
 				| 'WorkloadStatusVulnerable'
-				| 'WorkloadStatusMissingSBOM';
+				| 'WorkloadStatusMissingSBOM'
+				| 'WorkloadStatusUnsupportedCloudSQLVersion';
 		};
 		workloads: {
 			__typename: string | null;
@@ -51,7 +52,8 @@
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
 		WorkloadStatusFailedRun: 'Job Failed',
 		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected',
-		WorkloadStatusMissingSBOM: 'Missing Software Bill of Materials'
+		WorkloadStatusMissingSBOM: 'Missing Software Bill of Materials',
+		WorkloadStatusUnsupportedCloudSQLVersion: 'Deprecated or Unsupported Cloud SQL Version'
 	};
 	const summary = {
 		WorkloadStatusInvalidNaisYaml: 'Workloads with invalid manifests',
@@ -60,7 +62,9 @@
 		WorkloadStatusNoRunningInstances: 'Applications with no running instances',
 		WorkloadStatusFailedRun: 'Failed jobs',
 		WorkloadStatusVulnerable: 'High risk workloads',
-		WorkloadStatusMissingSBOM: 'Workloads with missing Software Bill of Materials'
+		WorkloadStatusMissingSBOM: 'Workloads with missing Software Bill of Materials',
+		WorkloadStatusUnsupportedCloudSQLVersion:
+			'Workloads with deprecated or unsupported Cloud SQL versions'
 	};
 
 	let open = $state(false);
@@ -137,6 +141,11 @@
 					<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
 						>Nais documentation</ExternalLink
 					>.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusUnsupportedCloudSQLVersion'}
+				<BodyLong>
+					The following workload{workloads.length === 1 ? ' is' : 's are'} using a Postgres version that
+					has reached or is nearing end-of-life, leading to increased costs and potential security vulnerabilities.
 				</BodyLong>
 			{/if}
 			<div>

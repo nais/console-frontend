@@ -65,6 +65,10 @@ query AllErrors {
 							... on WorkloadStatusNoRunningInstances {
 								level
 							}
+							... on WorkloadStatusUnsupportedCloudSQLVersion {
+								level
+								version
+							}
 						}
 					}
 				}

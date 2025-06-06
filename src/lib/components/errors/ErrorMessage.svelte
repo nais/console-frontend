@@ -5,7 +5,8 @@
 		'WorkloadStatusNoRunningInstances',
 		'WorkloadStatusFailedRun',
 		'WorkloadStatusDeprecatedRegistry',
-		'WorkloadStatusVulnerable'
+		'WorkloadStatusVulnerable',
+		'WorkloadStatusUnsupportedCloudSQLVersion'
 	] as const;
 </script>
 
@@ -63,6 +64,10 @@
 								critical: number;
 							};
 					  }
+					| {
+							__typename: 'WorkloadStatusUnsupportedCloudSQLVersion';
+							version: string;
+					  }
 			  ))
 			| { __typename: "non-exhaustive; don't match this" };
 		docURL: (path: string) => string;
@@ -86,10 +91,12 @@
 		WorkloadStatusDeprecatedRegistry: 'Unsupported Image Registry',
 		WorkloadStatusNoRunningInstances: 'No Running Instances',
 		WorkloadStatusFailedRun: 'Job Failed',
-		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected'
+		WorkloadStatusVulnerable: 'High Risk: Vulnerabilities Detected',
+		WorkloadStatusUnsupportedCloudSQLVersion: 'Deprecated or Unsupported Cloud SQL Version'
 	};
 
 	let open = $state(false);
+	console.log(error);
 </script>
 
 {#if error.__typename !== "non-exhaustive; don't match this"}
@@ -201,6 +208,51 @@
 						Ignoring these vulnerabilities can expose your {workloadType === 'Job'
 							? 'job'
 							: 'application'} to potential security breaches.
+					</BodyLong>
+				{:else if error.__typename === 'WorkloadStatusUnsupportedCloudSQLVersion'}
+					{#if error.level === WorkloadStatusErrorLevel.ERROR}
+						<BodyLong>
+							This {workloadType === 'Job' ? 'job' : 'application'} is using a Postgres version (<strong
+								>{error.version}</strong
+							>) that has reached end-of-life.
+						</BodyLong>
+					{:else}
+						<BodyLong>
+							This {workloadType === 'Job' ? 'job' : 'application'} is using a Postgres version (<strong
+								>{error.version}</strong
+							>) that is nearing end-of-life.</BodyLong
+						>
+					{/if}
+
+					<BodyLong>
+						Google increases pricing significantly for Cloud SQL using Postgres versions that are
+						past their end-of-life. Continuing to use outdated versions results in substantially
+						higher costs and increased security risks.
+					</BodyLong>
+
+					<BodyLong>
+						Teams should upgrade PostgreSQL regularly to avoid higher costs and reduce the risk of
+						security vulnerabilities.
+					</BodyLong>
+
+					<BodyLong>
+						To upgrade, you can choose one of the following approaches:
+						<ul>
+							<li>
+								<ExternalLink
+									href="https://docs.nais.io/persistence/postgres/how-to/upgrade-postgres/"
+								>
+									Simple in-place upgrade
+								</ExternalLink>
+							</li>
+							<li>
+								<ExternalLink
+									href="https://docs.nais.io/persistence/postgres/how-to/migrate-to-new-instance/"
+								>
+									Migrate to a new instance
+								</ExternalLink>
+							</li>
+						</ul>
 					</BodyLong>
 				{/if}
 			{/if}

@@ -120,6 +120,10 @@ query App(
 								riskScore
 							}
 						}
+						... on WorkloadStatusUnsupportedCloudSQLVersion {
+							level
+							version
+						}
 					}
 				}
 				utilization {

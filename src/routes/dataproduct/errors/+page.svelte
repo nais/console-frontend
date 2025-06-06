@@ -16,7 +16,7 @@
 </script>
 
 <select bind:value>
-	{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusVulnerable', 'WorkloadStatusFailedRun', 'WorkloadStatusMissingSBOM', 'WorkloadStatusDeprecatedIngress', 'WorkloadStatusDeprecatedRegistry'] as type (type)}
+	{#each ['WorkloadStatusInvalidNaisYaml', 'WorkloadStatusSynchronizationFailing', 'WorkloadStatusNoRunningInstances', 'WorkloadStatusVulnerable', 'WorkloadStatusFailedRun', 'WorkloadStatusMissingSBOM', 'WorkloadStatusDeprecatedIngress', 'WorkloadStatusDeprecatedRegistry', 'WorkloadStatusUnsupportedCloudSQLVersion'] as type (type)}
 		<option value={type}>{type}</option>
 	{/each}
 </select>
