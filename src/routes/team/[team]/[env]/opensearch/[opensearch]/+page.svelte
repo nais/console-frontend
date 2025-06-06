@@ -70,10 +70,15 @@
 			tableSort.direction = 'ASC';
 		}
 
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD
-		});
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD
+			},
+			{
+				noScroll: true
+			}
+		);
 	};
 </script>
 

@@ -70,10 +70,15 @@
 			tableSort.direction = 'ASC';
 		}
 
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || ValkeyInstanceAccessOrderField.WORKLOAD
-		});
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || ValkeyInstanceAccessOrderField.WORKLOAD
+			},
+			{
+				noScroll: true
+			}
+		);
 	};
 </script>
 

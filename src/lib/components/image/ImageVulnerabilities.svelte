@@ -136,10 +136,13 @@
 			tableSort.direction = 'ASC';
 		}
 
-		changeParams({
-			direction: tableSort.direction || 'DESC',
-			field: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY
-		});
+		changeParams(
+			{
+				direction: tableSort.direction || 'DESC',
+				field: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY
+			},
+			{ noScroll: true }
+		);
 
 		if (team !== PendingValue && environment !== PendingValue && workload !== PendingValue) {
 			vulnerabilities.fetch({

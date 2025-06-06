@@ -69,10 +69,15 @@
 			tableSort.direction = 'ASC';
 		}
 
-		changeParams({
-			direction: tableSort.direction ? tableSort.direction : 'ASC',
-			field: tableSort.orderBy || SecretOrderField.NAME
-		});
+		changeParams(
+			{
+				direction: tableSort.direction ? tableSort.direction : 'ASC',
+				field: tableSort.orderBy || SecretOrderField.NAME
+			},
+			{
+				noScroll: true
+			}
+		);
 	};
 
 	const open = () => {

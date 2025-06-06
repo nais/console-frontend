@@ -88,7 +88,10 @@
 				<ActionMenuRadioItem
 					value={field}
 					onselect={(value) =>
-						changeParams({ sort: `${value}-${orderDirection}`, after: '', before: '' })}
+						changeParams(
+							{ sort: `${value}-${orderDirection}`, after: '', before: '' },
+							{ noScroll: true }
+						)}
 				>
 					{fieldLabel(field)}
 				</ActionMenuRadioItem>
@@ -102,7 +105,10 @@
 				<ActionMenuRadioItem
 					value={direction}
 					onselect={(value) =>
-						changeParams({ sort: `${currentOrderField}-${value}`, after: '', before: '' })}
+						changeParams(
+							{ sort: `${currentOrderField}-${value}`, after: '', before: '' },
+							{ noScroll: true }
+						)}
 				>
 					{#if direction === OrderDirection.ASC}
 						<SortUpIcon /> Ascending

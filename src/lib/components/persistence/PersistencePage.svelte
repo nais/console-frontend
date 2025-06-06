@@ -101,8 +101,10 @@
 			<Pagination
 				page={pageInfo}
 				loaders={{
-					loadPreviousPage: () => changeParams({ after: '', before: pageInfo.startCursor ?? '' }),
-					loadNextPage: () => changeParams({ before: '', after: pageInfo.endCursor ?? '' })
+					loadPreviousPage: () =>
+						changeParams({ after: '', before: pageInfo.startCursor ?? '' }, { noScroll: true }),
+					loadNextPage: () =>
+						changeParams({ before: '', after: pageInfo.endCursor ?? '' }, { noScroll: true })
 				}}
 			/>
 		</div>

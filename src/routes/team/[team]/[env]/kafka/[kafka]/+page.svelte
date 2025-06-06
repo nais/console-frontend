@@ -28,10 +28,15 @@
 			tableSort.direction = 'ASC';
 		}
 
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG
-		});
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG
+			},
+			{
+				noScroll: true
+			}
+		);
 	};
 </script>
 

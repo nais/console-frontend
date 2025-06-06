@@ -1,4 +1,5 @@
-query Deployments($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after: Cursor) {
+query Deployments($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after: Cursor)
+@blocking {
 	team(slug: $team) {
 		deployments(first: $first, last: $last, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
