@@ -8,6 +8,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { format } from 'date-fns';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -66,7 +67,15 @@
 					.totalCount} deployment{$JobDeploys.data.team.environment.job.deployments.pageInfo
 					.totalCount !== 1
 					? 's'
-					: ''}"
+					: ''} - showing {$JobDeploys.data.team.environment.job.deployments.pageInfo.pageEnd -
+					$JobDeploys.data.team.environment.job.deployments.pageInfo.pageStart +
+					1} spanning {format(
+					$JobDeploys.data.team.environment.job.deployments.nodes.at(0)?.createdAt ?? '',
+					'dd/MM/yyyy'
+				)} to {format(
+					$JobDeploys.data.team.environment.job.deployments.nodes.at(-1)?.createdAt ?? '',
+					'dd/MM/yyyy'
+				)}"
 			>
 				{#each $JobDeploys.data.team.environment.job.deployments.nodes as deployment (deployment.id)}
 					<div><DeploymentListItem {deployment} /></div>
