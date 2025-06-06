@@ -140,10 +140,15 @@
 			}
 		}
 
-		changeParams({
-			direction: tableSort.direction,
-			field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_RISK_SCORE
-		});
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || WorkloadOrderField.VULNERABILITY_RISK_SCORE
+			},
+			{
+				noScroll: true
+			}
+		);
 	};
 
 	const vulnerabilityReportUrl = (workload: {
