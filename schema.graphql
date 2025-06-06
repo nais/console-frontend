@@ -6571,6 +6571,19 @@ type WorkloadStatusSynchronizationFailing implements WorkloadStatusError {
   level: WorkloadStatusErrorLevel!
 }
 
+"""
+Error describing usage of an instance of Cloud SQL with a unsupported version
+"""
+type WorkloadStatusUnsupportedCloudSQLVersion implements WorkloadStatusError {
+  """
+  Error level. Warning if the version is deprecated, error if the version is unsupported.
+  """
+  level: WorkloadStatusErrorLevel!
+
+  """Postgres version"""
+  version: String!
+}
+
 """Error describing that the workload is missing SBOM"""
 type WorkloadStatusVulnerable implements WorkloadStatusError {
   """Error level"""
