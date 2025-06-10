@@ -55,7 +55,7 @@
 					? 's'
 					: ''} - showing {$Deployments.data.team.deployments.pageInfo.pageEnd -
 					$Deployments.data.team.deployments.pageInfo.pageStart +
-					1} spanning {format(
+					1} from {format(
 					$Deployments.data.team.deployments.nodes.at(0)?.createdAt ?? '',
 					'dd/MM/yyyy'
 				)} to {format(

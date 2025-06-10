@@ -74,7 +74,7 @@
 					: ''} - showing {$AppDeploys.data.team.environment.application.deployments.pageInfo
 					.pageEnd -
 					$AppDeploys.data.team.environment.application.deployments.pageInfo.pageStart +
-					1} spanning {format(
+					1} from {format(
 					$AppDeploys.data.team.environment.application.deployments.nodes.at(0)?.createdAt ?? '',
 					'dd/MM/yyyy'
 				)} to {format(
