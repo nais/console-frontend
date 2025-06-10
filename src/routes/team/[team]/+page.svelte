@@ -14,7 +14,7 @@
 	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
 
 	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
-		const workloads = $TeamOverview.data?.team.workloads.nodes.filter((workload) =>
+		const workloads = $TeamOverview.data?.team.statuses.nodes.filter((workload) =>
 			workload.status.errors.some((error) => error.__typename === errorType)
 		);
 
