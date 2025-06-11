@@ -57,7 +57,8 @@
 			<div class="heading">
 				<div class="content">
 					<Heading level="2" spacing
-						>Vulnerabilities for <strong>{page.data.tenantName?.toUpperCase()}</strong></Heading
+						>Vulnerabilities Overview for <strong>{page.data.tenantName?.toUpperCase()}</strong
+						></Heading
 					>
 					<BodyLong>
 						This stacked line chart displays the accumulation of image vulnerabilities over time,
@@ -73,9 +74,9 @@
 		<div>
 			<Heading level="3" spacing>Team Security Posture</Heading>
 			<BodyLong>
-				A detailed breakdown of all teams, showing the number of vulnerabilities by severity, total
-				risk score, SBOM coverage, and workload count. Use this table to explore and compare
-				security posture across teams.
+				A detailed breakdown of all teams with workloads, showing the number of vulnerabilities by
+				severity, total risk score, SBOM coverage, and workload count. Use this table to explore and
+				compare security posture across teams.
 			</BodyLong>
 			<Table
 				size="small"

@@ -5,8 +5,14 @@ query TenantVulnerabilites(
 	$after: Cursor
 	$orderBy: TeamOrder
 ) {
-	teams(first: $first, last: $last, before: $before, after: $after, orderBy: $orderBy)
-		@paginate(mode: SinglePage) {
+	teams(
+		first: $first
+		last: $last
+		before: $before
+		after: $after
+		orderBy: $orderBy
+		filter: { hasWorkloads: true }
+	) @paginate(mode: SinglePage) {
 		pageInfo {
 			endCursor
 			hasNextPage
