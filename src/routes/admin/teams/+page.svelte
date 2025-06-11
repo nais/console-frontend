@@ -18,7 +18,7 @@
 
 	let { data }: PageProps = $props();
 
-	let { Teams, tenantName } = $derived(data);
+	let { Teams, tenantName, filter } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Teams.variables?.orderBy?.field,
@@ -60,7 +60,7 @@
 		});
 	};
 
-	let workloadsToggle = $state('all');
+	let workloadsToggle = $derived(filter || 'all');
 </script>
 
 <Heading level="2" size="large" spacing>Teams in {tenantName}</Heading>
@@ -70,11 +70,11 @@
 		size="small"
 		label="Show Teams"
 		value={workloadsToggle}
-		onchange={(val) => changeParams({ filter: val })}
+		onchange={(val) => changeParams({ filter: val, before: '', after: '' })}
 	>
-		<ToggleGroupItem value="all">All</ToggleGroupItem>
-		<ToggleGroupItem value="no_workloads">Without Workloads</ToggleGroupItem>
-		<ToggleGroupItem value="has_workloads">With Workloads</ToggleGroupItem>
+		<ToggleGroupItem value="ALL">All</ToggleGroupItem>
+		<ToggleGroupItem value="WITHOUT_WORKLOADS">Without Workloads</ToggleGroupItem>
+		<ToggleGroupItem value="WITH_WORKLOADS">With Workloads</ToggleGroupItem>
 	</ToggleGroup>
 </div>
 
@@ -90,8 +90,9 @@
 	>
 		<Thead>
 			<Tr>
-				<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-				<Th>Members</Th>
+				<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
+				<Th style="width: 16ch;">Members</Th>
+				<Th>Inventory</Th>
 			</Tr>
 		</Thead>
 		<Tbody>
@@ -102,6 +103,64 @@
 						<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a
 						></Td
 					>
+					<Td>
+						<ul>
+							{#if t.node.inventoryCounts.applications.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/applications"
+										>{t.node.inventoryCounts.applications.total} applications</a
+									>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.jobs.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/jobs">{t.node.inventoryCounts.jobs.total} jobs</a>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.bigQueryDatasets.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/bigquery"
+										>{t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets</a
+									>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.buckets.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/buckets"
+										>{t.node.inventoryCounts.buckets.total} buckets</a
+									>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.kafkaTopics.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/kafka"
+										>{t.node.inventoryCounts.kafkaTopics.total} Kafka topics</a
+									>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.openSearchInstances.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/opensearch"
+										>{t.node.inventoryCounts.openSearchInstances.total} OpenSearch instances</a
+									>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.sqlInstances.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/postgres"
+										>{t.node.inventoryCounts.sqlInstances.total} SQL instances</a
+									>
+								</li>
+							{/if}
+							{#if t.node.inventoryCounts.valkeyInstances.total > 0}
+								<li>
+									<a href="/team/{t.node.slug}/valkey"
+										>{t.node.inventoryCounts.valkeyInstances.total} Valkey instances</a
+									>
+								</li>
+							{/if}
+						</ul>
+					</Td>
 				</Tr>
 			{/each}
 		</Tbody>

@@ -31,6 +31,33 @@ query Teams(
 						totalCount
 					}
 				}
+
+				inventoryCounts {
+					applications {
+						total
+					}
+					bigQueryDatasets {
+						total
+					}
+					buckets {
+						total
+					}
+					jobs {
+						total
+					}
+					kafkaTopics {
+						total
+					}
+					openSearchInstances {
+						total
+					}
+					sqlInstances {
+						total
+					}
+					valkeyInstances {
+						total
+					}
+				}
 			}
 		}
 	}
