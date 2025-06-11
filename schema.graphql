@@ -2597,6 +2597,9 @@ type Query {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filter options for the teams returned from the connection."""
+    filter: TeamFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -4974,6 +4977,12 @@ type TeamExternalResources {
 
   """The Google group for the team."""
   googleGroup: TeamGoogleGroup
+}
+
+"""Input for filtering teams."""
+input TeamFilter {
+  """Filter teams by the existence of workloads."""
+  hasWorkloads: Boolean
 }
 
 type TeamGitHubTeam {
