@@ -11,6 +11,11 @@
 	let currentRoute = $derived(page.route.id);
 	const nav = [
 		{
+			tab: 'Teams',
+			routeId: '/admin/teams',
+			withSubRoutes: false
+		},
+		{
 			tab: 'Users',
 			routeId: '/admin',
 			withSubRoutes: false

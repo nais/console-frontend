@@ -1,0 +1,37 @@
+query Teams(
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$filter: TeamFilter
+	$orderBy: TeamOrder
+) {
+	teams(
+		first: $first
+		last: $last
+		before: $before
+		after: $after
+		filter: $filter
+		orderBy: $orderBy
+	) @paginate(mode: SinglePage) {
+		pageInfo {
+			hasNextPage
+			hasPreviousPage
+			pageStart
+			pageEnd
+			totalCount
+			startCursor
+			endCursor
+		}
+		edges {
+			node {
+				slug
+				members {
+					pageInfo {
+						totalCount
+					}
+				}
+			}
+		}
+	}
+}

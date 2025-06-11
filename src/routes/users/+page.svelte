@@ -85,7 +85,6 @@
 <style>
 	.container {
 		margin-top: var(--spacing-layout);
-
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
@@ -93,6 +92,6 @@
 
 	.item {
 		display: grid;
-		grid-template-columns: 70lvi 1fr;
+		grid-template-columns: 60lvi 1fr;
 	}
 </style>
