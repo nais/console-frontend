@@ -18,7 +18,42 @@ query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNet
 				}
 			}
 		}
+		workloads(first: 999) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				__typename
+				id
+				name
+				team {
+					slug
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 
-		...VulnerabilityOverviewFragment
+				status {
+					errors {
+						level
+						... on WorkloadStatusMissingSBOM {
+							__typename
+						}
+						... on WorkloadStatusVulnerable {
+							__typename
+						}
+					}
+				}
+			}
+		}
+		vulnerabilitySummary {
+			bomCount
+			coverage
+			critical
+			riskScore
+			riskScoreTrend
+		}
 	}
 }
