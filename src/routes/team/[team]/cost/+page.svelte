@@ -26,9 +26,9 @@
 			<div class="content">
 				<Heading level="2" spacing>Cost by Service</Heading>
 				<BodyLong>
-					Distribution of team costs across various services. Some services, like Kafka, are missing
-					cost data per team. Cost information is best-effort and originates from Google Cloud and
-					Aiven.
+					Distribution of team costs across various services. Cost information is best-effort and
+					originates from Google Cloud and Aiven. For Kafka we are using a shared base cost for
+					every team, plus the total size of the Kafka topics in the team.
 				</BodyLong>
 			</div>
 			<ToggleGroup

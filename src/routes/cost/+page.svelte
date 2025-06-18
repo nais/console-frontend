@@ -158,8 +158,8 @@
 					<Heading level="2" spacing>Cost by Service</Heading>
 					<BodyLong>
 						Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
-						Some services (e.g., Kafka) are missing cost data. Figures are based on data from Google
-						Cloud and Aiven. The current month includes data up to
+						Some services are missing cost data. Figures are based on data from Google Cloud and
+						Aiven. The current month includes data up to
 						{#if $TenantCost.data?.costMonthlySummary?.series && $TenantCost.data.costMonthlySummary.series.length > 0 && $TenantCost.data.costMonthlySummary.series.at(-1)?.date}
 							<strong
 								><Time

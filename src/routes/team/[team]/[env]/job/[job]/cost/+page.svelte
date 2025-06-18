@@ -19,9 +19,8 @@
 			<div class="heading">
 				<div class="content">
 					<BodyLong>
-						Distribution of job costs across various services. Some services, like Kafka, are
-						missing cost data. Cost information is best-effort and originates from Google Cloud and
-						Aiven.
+						Distribution of job costs across various services. Cost information is best-effort and
+						originates from Google Cloud and Aiven.
 					</BodyLong>
 				</div>
 				<ToggleGroup
