@@ -40,4 +40,14 @@ query TenantVulnerabilites(
 			}
 		}
 	}
+	vulnerabilitySummary {
+		critical
+		high
+		medium
+		low
+		unassigned
+		riskScore
+		coverage
+		sbomCount
+	}
 }

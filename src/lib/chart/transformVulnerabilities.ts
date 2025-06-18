@@ -40,7 +40,6 @@ export function transformVulnerabilities(
 
 		for (const severity of allSeverities) {
 			const rawCount = entry.summary[severity.toLowerCase() as keyof typeof entry.summary] ?? 0;
-			// const value = riskScoreToggle ? rawCount * severityToRiskScore[severity] : rawCount;
 			const value =
 				rawCount === 0
 					? '-'
@@ -68,27 +67,40 @@ export function transformVulnerabilities(
 			trigger: 'axis',
 			formatter: (value: CallbackDataParams[]) => {
 				let date = '';
+				let total = 0;
+
 				if (value[0] && Array.isArray(value[0].value)) {
 					const raw = (value[0].value as [number | string | Date, number])[0];
 					const parsedDate =
 						typeof raw === 'string' || typeof raw === 'number' ? new Date(raw) : raw;
 					date = format(parsedDate, 'dd/MM/yyyy');
 				}
-				const rows = value
-					.sort(
-						(a, b) =>
-							allSeverities.indexOf(a.seriesName as Severity) -
-							allSeverities.indexOf(b.seriesName as Severity)
-					)
-					.map(
-						(v) =>
-							`<div style="display:flex;align-items:center;gap:0.25rem;">
-					<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
-					${v.seriesName}
-				</div><div style="text-align:right;">${(v.value as [number, number])[1]}</div>`
-					)
+
+				const sorted = value.sort(
+					(a, b) =>
+						allSeverities.indexOf(a.seriesName as Severity) -
+						allSeverities.indexOf(b.seriesName as Severity)
+				);
+
+				const rows = sorted
+					.map((v) => {
+						const val = (v.value as [number, number])[1];
+						if (!riskScoreToggle) {
+							total += val * severityToRiskScore[v.seriesName as Severity];
+						} else {
+							total += val;
+						}
+						return `<div style="display:flex;align-items:center;gap:0.25rem;">
+				<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
+				${v.seriesName}
+			</div><div style="text-align:right;">${val}</div>`;
+					})
 					.join('');
-				return `<div>${date}</div><hr/><div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
+
+				return `<div>${date}</div>
+		<div style="font-weight:bold;margin:0.25rem 0;">Risk Score: ${total}</div>
+		<hr/>
+		<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
 			}
 		},
 		legend: {

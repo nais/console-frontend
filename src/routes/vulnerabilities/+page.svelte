@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { TeamOrderField } from '$houdini';
+	import VulnerabilitySummaryTenant from '$lib/components/VulnerabilitySummaryTenant.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -55,16 +56,23 @@
 
 		<div class="graph">
 			<div class="heading">
-				<div class="content">
+				<div>
 					<Heading level="2" spacing
 						>Vulnerabilities Overview for <strong>{page.data.tenantName?.toUpperCase()}</strong
 						></Heading
 					>
-					<BodyLong>
-						This stacked line chart displays the accumulation of image vulnerabilities over time,
-						categorized by severity level. Use the interval selector to adjust the time range.
-						Enable the Risk Score toggle to weight each severity by its impact.
-					</BodyLong>
+					<div class="info">
+						<BodyLong>
+							This stacked line chart displays the accumulation of image vulnerabilities over time,
+							categorized by severity level. Use the interval selector to adjust the time range.
+							Enable the Risk Score toggle to weight each severity by its impact.
+						</BodyLong>
+						{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
+							<VulnerabilitySummaryTenant
+								vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
+							/>
+						{/if}
+					</div>
 				</div>
 			</div>
 			<VulnerabilityHistory />
@@ -182,7 +190,10 @@
 		padding-bottom: var(--spacing-layout);
 	}
 
-	.content {
-		max-width: 80ch;
+	.info {
+		display: grid;
+		grid-template-columns: 1fr 350px;
+		gap: 1rem;
+		align-items: start;
 	}
 </style>
