@@ -5479,6 +5479,9 @@ input TeamWorkloadsFilter {
 
   """Filter workloads with given workload states."""
   states: [WorkloadState!]
+
+  """Filter workloads with given workload status error types."""
+  statusErrorTypes: [WorkloadStatusErrorType!]
 }
 
 """
@@ -6534,6 +6537,42 @@ enum WorkloadStatusErrorLevel {
 
   """WARNING are errors that should be fixed, but are not critical"""
   WARNING
+}
+
+"""
+This enum represents types of errors implementing WorkloadStatusError for use in workload filtering.
+"""
+enum WorkloadStatusErrorType {
+  """Error describing usage of a deprecated ingress"""
+  DEPRECATED_INGRESS
+
+  """Error describing usage of a deprecated registry"""
+  DEPRECATED_REGISTRY
+
+  """Error describing that the workload is failing to run"""
+  FAILED_RUN
+
+  """Last deployed YAML is invalid"""
+  INVALID_NAIS_YAML
+
+  """Error describing that the workload is missing SBOM"""
+  MISSING_SBOM
+
+  """
+  Workload does not have any active instances, but is requested to have some
+  """
+  NO_RUNNING_INSTANCES
+
+  """Error describing that the workload is failing to synchronize"""
+  SYNCHRONIZATION_FAILING
+
+  """
+  Error describing usage of an instance of Cloud SQL with a unsupported version
+  """
+  UNSUPPORTED_CLOUD_SQL_VERSION
+
+  """Error describing that the workload is vulnerable"""
+  VULNERABLE
 }
 
 """Error describing that the workload is failing to run"""
