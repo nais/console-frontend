@@ -2658,6 +2658,9 @@ type Query {
     """Ordering options for items returned from the connection."""
     orderBy: UserOrder
   ): UserConnection!
+
+  """Get the vulnerability summary for the tenant."""
+  vulnerabilitySummary: TenantVulnerabilitySummary!
 }
 
 """Reconciler type."""
@@ -5482,6 +5485,32 @@ input TeamWorkloadsFilter {
 
   """Filter workloads with given workload status error types."""
   statusErrorTypes: [WorkloadStatusErrorType!]
+}
+
+type TenantVulnerabilitySummary {
+  """SBOM Coverage of the tenant."""
+  coverage: Float!
+
+  """Number of vulnerabilities with severity CRITICAL."""
+  critical: Int!
+
+  """Number of vulnerabilities with severity HIGH."""
+  high: Int!
+
+  """Number of vulnerabilities with severity LOW."""
+  low: Int!
+
+  """Number of vulnerabilities with severity MEDIUM."""
+  medium: Int!
+
+  """Risk score of the tenant."""
+  riskScore: Int!
+
+  """Number of workloads with a software bill of materials (SBOM) attached."""
+  sbomCount: Int!
+
+  """Number of vulnerabilities with severity UNASSIGNED."""
+  unassigned: Int!
 }
 
 """
