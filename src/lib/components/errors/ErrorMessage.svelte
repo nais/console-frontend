@@ -96,7 +96,6 @@
 	};
 
 	let open = $state(false);
-	console.log(error);
 </script>
 
 {#if error.__typename !== "non-exhaustive; don't match this"}
