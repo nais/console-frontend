@@ -9,6 +9,13 @@ export function capitalizeFirstLetter(sentence: string): string {
 	return sentence.length ? sentence.charAt(0).toUpperCase() + sentence.slice(1) : sentence;
 }
 
+export function numberFormatter(value: number, maximumFractionDigits: number = 2): string {
+	if (isNaN(value)) {
+		return '0';
+	}
+	return value.toLocaleString('no-NO', { maximumFractionDigits });
+}
+
 export function formatKubernetesMemory(bytes: number): string {
 	// Define the units used in Kubernetes memory representation.
 	const units = ['Ei', 'Pi', 'Ti', 'Gi', 'Mi', 'Ki'];
