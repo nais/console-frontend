@@ -31,25 +31,6 @@
 			riskScoreToggle === 'on'
 		)
 	);
-
-	const supportedErrorTypes = ['WorkloadStatusVulnerable', 'WorkloadStatusMissingSBOM'] as const;
-
-	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
-		const workloads = $TeamVulnerabilities.data?.team.workloads.nodes.filter((workload) =>
-			workload.status.errors.some((error) => error.__typename === errorType)
-		);
-		if (workloads?.length) {
-			return {
-				__typename: errorType,
-				level: workloads[0].status.errors.find((error) => error.__typename === errorType)?.level,
-				workloads
-			};
-		} else {
-			return {
-				__typename: errorType
-			};
-		}
-	};
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -60,19 +41,29 @@
 		<div class="columns">
 			<div class="status">
 				<div class="alerts-wrapper">
-					{#each supportedErrorTypes
-						.map(getWorkloadsWithError)
-						.filter((error) => error.workloads?.length && error.level) as errors (errors.__typename)}
+					{#if $TeamVulnerabilities.data.team.missing_sbom.pageInfo.totalCount > 0}
 						<TeamErrorMessage
 							collapsible={false}
 							error={{
-								__typename: errors.__typename,
-								level: errors.level ?? 'ERROR'
+								__typename: 'WorkloadStatusMissingSBOM',
+								level: 'TODO'
 							}}
 							{teamSlug}
-							workloads={errors.workloads ?? []}
+							workloads={$TeamVulnerabilities.data.team.missing_sbom.nodes ?? []}
 						/>
-					{:else}
+					{/if}
+					{#if $TeamVulnerabilities.data.team.vulnerable.pageInfo.totalCount > 0}
+						<TeamErrorMessage
+							collapsible={false}
+							error={{
+								__typename: 'WorkloadStatusVulnerable',
+								level: 'WARNING'
+							}}
+							{teamSlug}
+							workloads={$TeamVulnerabilities.data.team.vulnerable.nodes ?? []}
+						/>
+					{/if}
+					{#if $TeamVulnerabilities.data.team.missing_sbom.pageInfo.totalCount == 0 && $TeamVulnerabilities.data.team.vulnerable.pageInfo.totalCount == 0}
 						<div class="media-object">
 							<Nais
 								size="80px"
@@ -92,7 +83,7 @@
 								</BodyShort>
 							</div>
 						</div>
-					{/each}
+					{/if}
 				</div>
 			</div>
 
@@ -149,7 +140,9 @@
 		<div>
 			<div class="heading">
 				<div class="content">
-					<Heading level="3" size="medium" spacing>Most Vulnerable Workloads</Heading>
+					<Heading level="3" size="medium" spacing id="most_vulnerable_workloads"
+						>Most Vulnerable Workloads</Heading
+					>
 					<BodyLong spacing>
 						A list of this team's workloads with the highest security risk, based on Risk Score
 						(default sorting). Use this list to focus remediation efforts where they’ll have the

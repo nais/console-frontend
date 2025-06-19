@@ -1,4 +1,4 @@
-query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNetwork) {
+query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNetwork) @blocking {
 	team(slug: $team) {
 		environments {
 			id
@@ -18,7 +18,12 @@ query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNet
 				}
 			}
 		}
-		workloads(first: 999) {
+		workloads {
+			pageInfo {
+				totalCount
+			}
+		}
+		missing_sbom: workloads(filter: { statusErrorTypes: [MISSING_SBOM] }) {
 			pageInfo {
 				totalCount
 			}
@@ -41,6 +46,30 @@ query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNet
 						... on WorkloadStatusMissingSBOM {
 							__typename
 						}
+					}
+				}
+			}
+		}
+		vulnerable: workloads(filter: { statusErrorTypes: [VULNERABLE] }) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				__typename
+				id
+				name
+				team {
+					slug
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+
+				status {
+					errors {
+						level
 						... on WorkloadStatusVulnerable {
 							__typename
 						}

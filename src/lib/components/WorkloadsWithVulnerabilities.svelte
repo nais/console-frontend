@@ -182,10 +182,10 @@
 			<Thead>
 				<Tr>
 					<Th sortable={true} sortKey={WorkloadOrderField.NAME}>Workload</Th>
-
 					<Th sortable={true} sortKey={WorkloadOrderField.ENVIRONMENT} style="width: 142px;"
 						>Environment</Th
 					>
+					<Th sortable={true} sortKey={WorkloadOrderField.HAS_SBOM}>Has SBOM</Th>
 					<Th
 						sortable={true}
 						sortKey={WorkloadOrderField.VULNERABILITY_SEVERITY_CRITICAL}
@@ -234,6 +234,9 @@
 							</Td>
 							<Td>
 								{workload.teamEnvironment.environment.name}
+							</Td>
+							<Td>
+								{workload.image.hasSBOM ? 'Yes' : !workload.image.hasSBOM ? 'No' : '-'}
 							</Td>
 							<Td>
 								<div class="vulnerability">

@@ -6457,6 +6457,9 @@ enum WorkloadOrderField {
   """Order by the name of the environment the workload is deployed in."""
   ENVIRONMENT
 
+  """Order by whether the workload has a software bill of materials (SBOM)"""
+  HAS_SBOM
+
   """Order by name."""
   NAME
 

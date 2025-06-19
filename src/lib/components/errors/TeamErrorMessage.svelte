@@ -117,55 +117,18 @@
 				</BodyLong>
 			{:else if error.__typename === 'WorkloadStatusVulnerable'}
 				<BodyLong>
-					The following
-					{#if workloads.length !== 1}
-						<strong>{workloads.length}</strong>
-					{/if}
-					workload{workloads.length === 1 ? ' is' : 's are'} flagged as vulnerable because
-					{workloads.length === 1 ? 'its' : 'their'} dependencies have a high risk score or critical
-					vulnerabilities.
+					There{workloads.length === 1 ? ' is' : ' are'} <strong>{workloads.length}</strong>
+					workload{workloads.length === 1 ? ' ' : 's '} flagged as vulnerable because
+					{workloads.length === 1 ? 'its' : 'their'} dependencies have a combined risk score above 100
+					or one or more critical vulnerabilities.
 				</BodyLong>
-			{:else if error.__typename === 'WorkloadStatusMissingSBOM'}
-				<BodyLong>
-					The following {workloads?.length > 1 ? workloads?.length : ''} workload{workloads.length ===
-					1
-						? ' '
-						: 's'}
-					{workloads?.length === 1 ? 'does' : 'do'}
-					not have a registered Software Bill of Materials (SBOM). This can be resolved by utilizing
-					the
-					<ExternalLink href="https://github.com/nais/docker-build-push"
-						>nais/docker-build-push</ExternalLink
-					>
-					GitHub action. Read more in the
-					<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
-						>Nais documentation</ExternalLink
-					>.
-				</BodyLong>
-			{:else if error.__typename === 'WorkloadStatusUnsupportedCloudSQLVersion'}
-				<BodyLong>
-					The following workload{workloads.length === 1 ? ' is' : 's are'} using a Postgres version that
-					has reached or is nearing end-of-life, leading to increased costs and potential security vulnerabilities.
-				</BodyLong>
-			{/if}
-			<div>
-				{#if workloads.length < 5}
-					{#each workloads as workload (workload)}
-						<WorkloadLink {workload} hideTeam />
-					{/each}
-				{:else}
-					<details>
-						<summary>{summary[error.__typename]}</summary>
-						{#each workloads as workload (workload)}
-							<WorkloadLink {workload} hideTeam />
-						{/each}
-					</details>
-				{/if}
-			</div>
 
-			{#if error.__typename === 'WorkloadStatusVulnerable'}
 				<BodyLong>
-					Review detailed vulnerability information in
+					See <a
+						href="/team/{teamSlug}/vulnerabilities?direction=DESC&field=VULNERABILITY_RISK_SCORE#most_vulnerable_workloads"
+						>Most Vulnerable Workloads</a
+					>
+					table and review detailed vulnerability information in
 					{#if workloads.length === 1}
 						{@const workload = workloads[0]}
 						your workload's
@@ -181,6 +144,45 @@
 					Ignoring these vulnerabilities can expose your workload{workloads.length === 1 ? '' : 's'}
 					to potential security breaches.
 				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusMissingSBOM'}
+				<BodyLong>
+					There are <strong>{workloads.length > 1 ? workloads.length : ''}</strong>
+					workload{workloads.length === 1 ? ' ' : 's'}
+					without a registered Software Bill of Materials (SBOM). See
+					<a
+						href="/team/{teamSlug}/vulnerabilities?direction=ASC&field=HAS_SBOM#most_vulnerable_workloads"
+						>Most Vulnerable Workloads</a
+					>
+					table. This can be resolved by utilizing the
+					<ExternalLink href="https://github.com/nais/docker-build-push"
+						>nais/docker-build-push</ExternalLink
+					>
+					GitHub action. Read more in the
+					<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
+						>Nais documentation</ExternalLink
+					>.
+				</BodyLong>
+			{:else if error.__typename === 'WorkloadStatusUnsupportedCloudSQLVersion'}
+				<BodyLong>
+					The following workload{workloads.length === 1 ? ' is' : 's are'} using a Postgres version that
+					has reached or is nearing end-of-life, leading to increased costs and potential security vulnerabilities.
+				</BodyLong>
+			{/if}
+			{#if error.__typename !== 'WorkloadStatusVulnerable' && error.__typename !== 'WorkloadStatusMissingSBOM'}
+				<div>
+					{#if workloads.length < 5}
+						{#each workloads as workload (workload)}
+							<WorkloadLink {workload} hideTeam />
+						{/each}
+					{:else}
+						<details>
+							<summary>{summary[error.__typename]}</summary>
+							{#each workloads as workload (workload)}
+								<WorkloadLink {workload} hideTeam />
+							{/each}
+						</details>
+					{/if}
+				</div>
 			{/if}
 		{/if}
 	</div>
