@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format, lastDayOfMonth } from 'date-fns';

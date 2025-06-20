@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql, PendingValue } from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 	import { format, lastDayOfMonth } from 'date-fns';
 	import { type EChartsOption } from 'echarts';

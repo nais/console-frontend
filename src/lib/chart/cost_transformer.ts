@@ -1,22 +1,6 @@
+import { euroValueFormatter } from '$lib/utils/formatters';
 import type { EChartsOption } from 'echarts';
 import type { OptionDataValue } from 'echarts/types/src/util/types.js';
-
-export function euroValueFormatter(
-	value?: number,
-	{ maximumFractionDigits = 2 }: Intl.NumberFormatOptions = {}
-): string {
-	if (value === undefined) {
-		return '';
-	}
-
-	return value.toLocaleString('en', {
-		style: 'currency',
-		currency: 'EUR',
-		maximumFractionDigits,
-		maximumSignificantDigits: 2,
-		roundingPriority: 'morePrecision'
-	});
-}
 
 export type DailCostType = {
 	readonly series: {

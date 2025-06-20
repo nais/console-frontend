@@ -1,11 +1,11 @@
 <script lang="ts">
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		BodyShort,
 		CopyButton,

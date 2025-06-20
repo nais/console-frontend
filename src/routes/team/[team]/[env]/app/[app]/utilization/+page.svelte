@@ -5,9 +5,12 @@
 	import type { EChartsOption } from 'echarts';
 
 	import { UtilizationResourceType } from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import { docURL } from '$lib/doc';
-	import { formatKubernetesCPU, formatKubernetesMemory } from '$lib/utils/formatters';
+	import {
+		euroValueFormatter,
+		formatKubernetesCPU,
+		formatKubernetesMemory
+	} from '$lib/utils/formatters';
 	import { round, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';

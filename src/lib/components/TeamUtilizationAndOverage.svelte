@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { graphql, PendingValue, UtilizationResourceType } from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
-	import { percentageFormatter } from '$lib/utils/formatters';
+	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import {
 		BodyShort,

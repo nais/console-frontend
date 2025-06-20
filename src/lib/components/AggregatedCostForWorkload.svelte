@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
 	import type { AggregatedCostVariables } from './$houdini';
 

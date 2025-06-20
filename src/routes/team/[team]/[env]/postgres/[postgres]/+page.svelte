@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Card from '$lib/Card.svelte';
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';

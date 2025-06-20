@@ -16,6 +16,23 @@ export function numberFormatter(value: number, maximumFractionDigits: number = 2
 	return value.toLocaleString('no-NO', { maximumFractionDigits });
 }
 
+export function euroValueFormatter(
+	value?: number,
+	{ maximumFractionDigits = 2 }: Intl.NumberFormatOptions = {}
+): string {
+	if (value === undefined) {
+		return '';
+	}
+
+	return value.toLocaleString('nb-NO', {
+		style: 'currency',
+		currency: 'EUR',
+		maximumFractionDigits,
+		maximumSignificantDigits: 2,
+		roundingPriority: 'morePrecision'
+	});
+}
+
 export function formatKubernetesMemory(bytes: number): string {
 	// Define the units used in Kubernetes memory representation.
 	const units = ['Ei', 'Pi', 'Ti', 'Gi', 'Mi', 'Ki'];

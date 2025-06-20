@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { euroValueFormatter } from '$lib/chart/cost_transformer';
 	import EChart from '$lib/chart/EChart.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail, Heading, HelpText } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
