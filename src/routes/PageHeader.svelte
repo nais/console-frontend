@@ -142,7 +142,7 @@
 
 <style>
 	.logo {
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 		text-decoration: none;
 		display: flex;
 		gap: 1rem;
