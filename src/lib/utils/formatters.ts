@@ -1,8 +1,14 @@
 export function percentageFormatter(value: number, maximumFractionDigits: number = 2): string {
-	if (isNaN(value) || value == 0) {
-		return '0';
+	if (isNaN(value) || value === 0) {
+		return '0 %';
 	}
-	return value.toLocaleString('en-GB', { maximumFractionDigits }) + '%';
+
+	const fraction = value / 100;
+
+	return fraction.toLocaleString('nb-NO', {
+		style: 'percent',
+		maximumFractionDigits
+	});
 }
 
 export function capitalizeFirstLetter(sentence: string): string {
