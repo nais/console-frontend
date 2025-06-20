@@ -11,10 +11,10 @@
 <script lang="ts">
 </script>
 
-<Story name="Team menu">
+<Story name="Team menu" asChild>
 	<Menu
 		items={[
-			[{ label: 'Overview', href: '/team/devteam' }],
+			[{ label: 'Team Overview', href: '/team/devteam' }],
 			[
 				{ label: 'Applications', href: '/team/devteam/applications', count: 42 },
 				{ label: 'Jobs', href: '/team/devteam/jobs', count: 1, active: true }
@@ -45,13 +45,10 @@
 	/>
 </Story>
 
-<Story name="Application menu">
+<Story name="Application menu" asChild>
 	<Menu
 		items={[
-			[
-				{ label: 'Overview', href: '/team/devteam/dev/app/app-w-all-storage' },
-				{ label: 'Status', href: '/team/devteam/dev/app/app-w-all-storage/status' }
-			],
+			[{ label: 'App Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 			[
 				{
 					label: 'Vulnerability Report',
@@ -64,6 +61,25 @@
 					href: '/team/devteam/dev/app/app-w-all-storage/utilization',
 					active: true
 				},
+				{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
+			],
+			[{ label: 'Manifest', href: '/team/devteam/dev/app/app-w-all-storage/manifest' }],
+			[{ label: 'Delete', href: '/team/devteam/dev/app/app-w-all-storage/delete' }]
+		]}
+	/>
+</Story>
+
+<Story name="Job menu" asChild>
+	<Menu
+		items={[
+			[{ label: 'Job Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
+			[
+				{
+					label: 'Vulnerability Report',
+					href: '/team/devteam/dev/app/app-w-all-storage/vulnerability-report'
+				},
+				{ label: 'Deployments', href: '/team/devteam/dev/app/app-w-all-storage/deploys' },
+				{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
 				{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
 			],
 			[{ label: 'Manifest', href: '/team/devteam/dev/app/app-w-all-storage/manifest' }],

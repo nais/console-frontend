@@ -18,7 +18,7 @@
 	});
 </script>
 
-<Story name="Job run">
+<Story name="Job run" asChild>
 	<IconLabel
 		label="dataproduct-apps-topics-28896705"
 		href="/team/devteam/dev/job/dataproduct-apps-topics/logs?name=dataproduct-apps-topics-28896705"
@@ -36,11 +36,11 @@
 	</IconLabel>
 </Story>
 
-<Story name="Menu item">
+<Story name="Menu item" asChild>
 	<IconLabel label="Cost" icon={WalletIcon} />
 </Story>
 
-<Story name="Ingress">
+<Story name="Ingress" asChild>
 	<IconLabel
 		size="medium"
 		label="https://storageapp.eksternius.example.com"
@@ -54,11 +54,11 @@
 	</IconLabel>
 </Story>
 
-<Story name="Team without desc">
+<Story name="Team without desc" asChild>
 	<IconLabel label="nais" href="/team/nais" icon={PersonGroupIcon} size="large" level="3" />
 </Story>
 
-<Story name="Team">
+<Story name="Team" asChild>
 	<IconLabel
 		label="nais"
 		href="/team/nais"
@@ -69,7 +69,7 @@
 	/>
 </Story>
 
-<Story name="Team long desc">
+<Story name="Team long desc" asChild>
 	<IconLabel
 		label="nais"
 		href="/team/nais"
@@ -80,7 +80,7 @@
 	/>
 </Story>
 
-<Story name="Workload link">
+<Story name="Workload link" asChild>
 	<IconLabel
 		label="dataprodukt-annulleringer"
 		href="/team/tbd/dev-gcp/app/dataprodukt-annulleringer"
@@ -89,6 +89,6 @@
 	/>
 </Story>
 
-<Story name="Last deploy">
+<Story name="Last deploy" asChild>
 	<IconLabel label="22 days ago" icon={RocketIcon} size="small" />
 </Story>

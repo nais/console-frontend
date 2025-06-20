@@ -10,23 +10,23 @@
 	});
 </script>
 
-<Story name="Empty">
+<Story name="Empty" asChild>
 	<Search query="" close={() => {}} />
 </Story>
 
-<Story name="No results">
+<Story name="No results" asChild>
 	<Search query="wat" results={[]} close={() => {}} />
 </Story>
 
-<Story name="No results with ':'">
+<Story name="No results with ':'" asChild>
 	<Search query="wat:hmmm" results={[]} close={() => {}} />
 </Story>
 
-<Story name="Loading">
+<Story name="Loading" asChild>
 	<Search query="wat" loading close={() => {}} />
 </Story>
 
-<Story name="Results with link">
+<Story name="Results with link" asChild>
 	<Search
 		query="wat"
 		results={[
@@ -87,7 +87,7 @@
 	/>
 </Story>
 
-<Story name="Results with action">
+<Story name="Results with action" asChild>
 	<Search
 		query="wat"
 		results={[

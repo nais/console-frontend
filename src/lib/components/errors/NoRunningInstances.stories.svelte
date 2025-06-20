@@ -9,7 +9,7 @@
 	});
 </script>
 
-<Story name="Workload">
+<Story name="Workload" asChild>
 	<ErrorMessage
 		docURL={(p) => p}
 		error={{
@@ -39,7 +39,7 @@
 	/>
 </Story>
 
-<Story name="Team">
+<Story name="Team" asChild>
 	<TeamErrorMessage
 		teamSlug="team-service-management"
 		error={{

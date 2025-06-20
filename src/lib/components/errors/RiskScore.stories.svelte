@@ -9,7 +9,7 @@
 	});
 </script>
 
-<Story name="Risk Score - Workload">
+<Story name="Risk Score - Workload" asChild>
 	<ErrorMessage
 		docURL={(p) => p}
 		error={{
@@ -27,7 +27,7 @@
 	/>
 </Story>
 
-<Story name="Critical - Workload">
+<Story name="Critical - Workload" asChild>
 	<ErrorMessage
 		docURL={(p) => p}
 		error={{
@@ -45,7 +45,7 @@
 	/>
 </Story>
 
-<Story name="Both - Workload">
+<Story name="Both - Workload" asChild>
 	<ErrorMessage
 		docURL={(p) => p}
 		error={{
@@ -63,7 +63,7 @@
 	/>
 </Story>
 
-<Story name="Team - Singular">
+<Story name="Team - Singular" asChild>
 	<TeamErrorMessage
 		teamSlug="team-service-management"
 		error={{
@@ -81,7 +81,7 @@
 	/>
 </Story>
 
-<Story name="Team - Multiple">
+<Story name="Team - Multiple" asChild>
 	<TeamErrorMessage
 		teamSlug="team-service-management"
 		error={{

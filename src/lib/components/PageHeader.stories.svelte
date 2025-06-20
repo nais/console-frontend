@@ -9,7 +9,7 @@
 	});
 </script>
 
-<Story name="Manifest">
+<Story name="Manifest" asChild>
 	<PageHeader
 		breadcrumbs={[
 			{ label: 'nais', href: '/team/nais' },
@@ -21,7 +21,7 @@
 	/>
 </Story>
 
-<Story name="Job">
+<Story name="Job" asChild>
 	<PageHeader
 		breadcrumbs={[
 			{ label: 'nais', href: '/team/nais' },
@@ -32,10 +32,10 @@
 	/>
 </Story>
 
-<Story name="Jobs">
+<Story name="Jobs" asChild>
 	<PageHeader breadcrumbs={[{ label: 'nais', href: '/team/nais' }]} heading="Jobs" />
 </Story>
 
-<Story name="Team">
+<Story name="Team" asChild>
 	<PageHeader heading="nais" />
 </Story>

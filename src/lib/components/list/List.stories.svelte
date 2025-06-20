@@ -320,7 +320,7 @@
 	];
 </script>
 
-<Story name="Teams">
+<Story name="Teams" asChild>
 	<List>
 		{#each teams as team (team.slug)}
 			<TeamListItem {team} />
@@ -328,7 +328,7 @@
 	</List>
 </Story>
 
-<Story name="Job runs">
+<Story name="Job runs" asChild>
 	<List title="4 job runs">
 		{#each runs as jobRun (jobRun)}
 			<JobRunListItem run={jobRun} urlBase="/" />
@@ -336,7 +336,7 @@
 	</List>
 </Story>
 
-<Story name="App instances">
+<Story name="App instances" asChild>
 	<List title="{instances.length} application instances">
 		{#each instances as instance (instance)}
 			<AppInstanceListItem
@@ -351,7 +351,7 @@
 	</List>
 </Story>
 
-<Story name="Applications">
+<Story name="Applications" asChild>
 	<List title="173 applications">
 		{#snippet menu()}
 			<ActionMenu>
