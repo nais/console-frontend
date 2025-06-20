@@ -1,6 +1,5 @@
 import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 
-// HACK: mantained manually - should have been provided by Nais API
 export const envTagVariant = (env: string): TagProps['variant'] => {
 	switch (env) {
 		case 'non-prod':
