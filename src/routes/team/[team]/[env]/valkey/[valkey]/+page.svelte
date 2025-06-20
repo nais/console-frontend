@@ -97,51 +97,86 @@
 		)}
 	<div class="wrapper">
 		<div>
-			<Heading level="3" spacing>Valkey Instance Access List</Heading>
-			<Table
-				size="small"
-				sort={{
-					orderBy: tableSort.orderBy || ValkeyInstanceAccessOrderField.WORKLOAD,
-					direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-				}}
-				onsortchange={tableSortChange}
-			>
-				<Thead>
-					<Tr>
-						<Th sortable={true} sortKey={ValkeyInstanceAccessOrderField.WORKLOAD}>Workload</Th>
-						<Th sortable={true} sortKey={ValkeyInstanceAccessOrderField.ACCESS}>Access level</Th>
-						<Th>Type</Th>
-					</Tr>
-				</Thead>
-				<Tbody>
-					{#each instance.access.edges as edge (edge)}
-						{@const access = edge.node}
+			<div class="spacing">
+				<Heading level="3" spacing>Valkey Instance Access List</Heading>
+				<Table
+					size="small"
+					sort={{
+						orderBy: tableSort.orderBy || ValkeyInstanceAccessOrderField.WORKLOAD,
+						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+					}}
+					onsortchange={tableSortChange}
+				>
+					<Thead>
 						<Tr>
-							<Td>
-								<WorkloadLink workload={access.workload} />
-							</Td>
-							<Td>{access.access}</Td>
+							<Th sortable={true} sortKey={ValkeyInstanceAccessOrderField.WORKLOAD}>Workload</Th>
+							<Th sortable={true} sortKey={ValkeyInstanceAccessOrderField.ACCESS}>Access level</Th>
+							<Th>Type</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each instance.access.edges as edge (edge)}
+							{@const access = edge.node}
+							<Tr>
+								<Td>
+									<WorkloadLink workload={access.workload} />
+								</Td>
+								<Td>{access.access}</Td>
 
-							<Td>{access.workload.__typename}</Td>
-						</Tr>
-					{:else}
-						<Tr>
-							<Td colspan={3}>No access</Td>
-						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
-			<Pagination
-				page={instance.access.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						ValkeyInstance.loadPreviousPage();
-					},
-					loadNextPage: () => {
-						ValkeyInstance.loadNextPage();
-					}
-				}}
-			/>
+								<Td>{access.workload.__typename}</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td colspan={3}>No access</Td>
+							</Tr>
+						{/each}
+					</Tbody>
+				</Table>
+				<Pagination
+					page={instance.access.pageInfo}
+					loaders={{
+						loadPreviousPage: () => {
+							ValkeyInstance.loadPreviousPage();
+						},
+						loadNextPage: () => {
+							ValkeyInstance.loadNextPage();
+						}
+					}}
+				/>
+			</div>
+			<div>
+				{#if maintenanceError}
+					<Alert variant="error" style="margin-bottom: 1rem;">
+						{maintenanceError}
+					</Alert>
+				{/if}
+
+				{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
+					<div class="service-maintenance-list-heading">
+						<Heading level="3">Pending maintenance</Heading>
+
+						{#if maintenanceError === ''}
+							<Button variant="secondary" size="small" disabled>Maintenance running</Button>
+						{:else if viewerIsMember}
+							<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
+								Run all maintenance
+							</Button>
+						{/if}
+					</div>
+					<div>
+						<List>
+							{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
+								<ServiceMaintenanceListItem
+									title={u?.title ?? 'Missing title'}
+									description={u?.description ?? 'Missing description'}
+									start_at={u?.startAt}
+									deadline={!!u?.deadline}
+								/>
+							{/each}
+						</List>
+					</div>
+				{/if}
+			</div>
 		</div>
 		<div class="sidebar">
 			<div>
@@ -160,39 +195,6 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 		</div>
-		<div>
-			{#if maintenanceError}
-				<Alert variant="error" style="margin-bottom: 1rem;">
-					{maintenanceError}
-				</Alert>
-			{/if}
-
-			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
-				<div class="service-maintenance-list-heading">
-					<Heading level="3">Pending maintenance</Heading>
-
-					{#if maintenanceError === ''}
-						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
-					{:else if viewerIsMember}
-						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
-							Run all maintenance
-						</Button>
-					{/if}
-				</div>
-				<div>
-					<List>
-						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
-							<ServiceMaintenanceListItem
-								title={u?.title ?? 'Missing title'}
-								description={u?.description ?? 'Missing description'}
-								start_at={u?.startAt}
-								deadline={!!u?.deadline}
-							/>
-						{/each}
-					</List>
-				</div>
-			{/if}
-		</div>
 	</div>
 {/if}
 
@@ -201,6 +203,10 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+
+	.spacing {
+		margin-bottom: var(--ax-space-24);
 	}
 
 	.service-maintenance-list-heading {

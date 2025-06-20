@@ -97,92 +97,110 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
+			<div class="spacing">
+				<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
 
-			{#if instance.access.edges.length > 0}
-				<Table
-					size="small"
-					sort={{
-						orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					onsortchange={tableSortChange}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey={OpenSearchAccessOrderField.WORKLOAD}>Workload</Th>
-							<Th sortable={true} sortKey={OpenSearchAccessOrderField.ACCESS}>Access level</Th>
-							<Th>Type</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each instance.access.edges as edge (edge)}
-							{@const access = edge.node}
-							<Tr>
-								<Td>
-									<WorkloadLink workload={access.workload} />
-								</Td>
-								<Td><code>{access.access}</code></Td>
-								<Td>{access.workload.__typename}</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-				{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
-					<Pagination
-						page={instance.access.pageInfo}
-						loaders={{
-							loadPreviousPage: () => {
-								OpenSearchInstance.loadPreviousPage();
-							},
-							loadNextPage: () => {
-								OpenSearchInstance.loadNextPage();
-							}
+				{#if instance.access.edges.length > 0}
+					<Table
+						size="small"
+						sort={{
+							orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
+							direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 						}}
-					/>
+						onsortchange={tableSortChange}
+					>
+						<Thead>
+							<Tr>
+								<Th sortable={true} sortKey={OpenSearchAccessOrderField.WORKLOAD}>Workload</Th>
+								<Th sortable={true} sortKey={OpenSearchAccessOrderField.ACCESS}>Access level</Th>
+								<Th>Type</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each instance.access.edges as edge (edge)}
+								{@const access = edge.node}
+								<Tr>
+									<Td>
+										<WorkloadLink workload={access.workload} />
+									</Td>
+									<Td><code>{access.access}</code></Td>
+									<Td>{access.workload.__typename}</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+					{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
+						<Pagination
+							page={instance.access.pageInfo}
+							loaders={{
+								loadPreviousPage: () => {
+									OpenSearchInstance.loadPreviousPage();
+								},
+								loadNextPage: () => {
+									OpenSearchInstance.loadNextPage();
+								}
+							}}
+						/>
+					{/if}
+				{:else}
+					<p>No workloads with configured access</p>
 				{/if}
-			{:else}
-				<p>No workloads with configured access</p>
-			{/if}
+			</div>
+			<div>
+				{#if maintenanceError}
+					<Alert variant="error" style="margin-bottom: 1rem;">
+						{maintenanceError}
+					</Alert>
+				{/if}
+
+				{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
+					<div class="service-maintenance-list-heading">
+						<Heading level="3">Pending maintenance</Heading>
+
+						{#if maintenanceError === ''}
+							<Button variant="secondary" size="small" disabled>Maintenance running</Button>
+						{:else if viewerIsMember}
+							<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
+								Run all maintenance
+							</Button>
+						{/if}
+					</div>
+					<div>
+						<List>
+							{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
+								<ServiceMaintenanceListItem
+									title={u?.title ?? 'Missing title'}
+									description={u?.description ?? 'Missing description'}
+									start_at={u?.startAt}
+									deadline={!!u?.deadline}
+								/>
+							{/each}
+						</List>
+					</div>
+				{/if}
+			</div>
 		</div>
 		<div class="sidebar">
 			<div>
 				<Heading level="3">Status</Heading>
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
-		</div>
-		<div>
-			{#if maintenanceError}
-				<Alert variant="error" style="margin-bottom: 1rem;">
-					{maintenanceError}
-				</Alert>
-			{/if}
-
-			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
-				<div class="service-maintenance-list-heading">
-					<Heading level="3">Pending maintenance</Heading>
-
-					{#if maintenanceError === ''}
-						<Button variant="secondary" size="small" disabled>Maintenance running</Button>
-					{:else if viewerIsMember}
-						<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
-							Run all maintenance
-						</Button>
-					{/if}
-				</div>
-				<div>
-					<List>
-						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
-							<ServiceMaintenanceListItem
-								title={u?.title ?? 'Missing title'}
-								description={u?.description ?? 'Missing description'}
-								start_at={u?.startAt}
-								deadline={!!u?.deadline}
-							/>
-						{/each}
-					</List>
-				</div>
-			{/if}
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.status.state}</BodyShort>
+			</div>
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.status.state}</BodyShort>
+			</div>
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.status.state}</BodyShort>
+			</div>
+			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.status.state}</BodyShort>
+			</div>
 		</div>
 	</div>
 {/if}
@@ -194,10 +212,14 @@
 		gap: var(--spacing-layout);
 	}
 
+	.spacing {
+		margin-bottom: var(--ax-space-24);
+	}
+
 	.service-maintenance-list-heading {
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 8px;
+		margin-bottom: var(--ax-space-12);
 	}
 
 	.sidebar {
