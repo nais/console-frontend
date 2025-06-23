@@ -22,7 +22,7 @@
 		"@chromatic-com/storybook": "^3.2.6",
 		"@eslint/compat": "^1.2.9",
 		"@nais/ds-svelte-community": "^1.0.1",
-		"@navikt/ds-css": "^7.22.0",
+		"@navikt/ds-css": "7.22.0",
 		"@storybook/addon-essentials": "^8.6.14",
 		"@storybook/addon-interactions": "^8.6.14",
 		"@storybook/addon-svelte-csf": "^5.0.1",
