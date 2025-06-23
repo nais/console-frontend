@@ -60,6 +60,14 @@ export function transformVulnerabilities(
 		data: seriesData[severity]
 	}));
 
+	function normalizeVal(val: number | string): number {
+		return typeof val === 'number' ? val : 0;
+	}
+
+	function displayVal(val: number | string): string {
+		return typeof val === 'number' ? val.toString() : '-';
+	}
+
 	return {
 		animation: false,
 		title: {},
@@ -84,23 +92,22 @@ export function transformVulnerabilities(
 
 				const rows = sorted
 					.map((v) => {
-						const val = (v.value as [number, number])[1];
-						if (!riskScoreToggle) {
-							total += val * severityToRiskScore[v.seriesName as Severity];
-						} else {
-							total += val;
-						}
+						const valRaw = (v.value as [number | string | Date, number | string])[1];
+						const val = normalizeVal(valRaw);
+
+						total += riskScoreToggle ? val : val * severityToRiskScore[v.seriesName as Severity];
+
 						return `<div style="display:flex;align-items:center;gap:0.25rem;">
-				<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
-				${v.seriesName}
-			</div><div style="text-align:right;">${val}</div>`;
+							<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
+							${v.seriesName}
+						</div><div style="text-align:right;">${displayVal(valRaw)}</div>`;
 					})
 					.join('');
 
 				return `<div>${date}</div>
-		<div style="font-weight:bold;margin:0.25rem 0;">Risk Score: ${total}</div>
-		<hr/>
-		<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
+					<div style="font-weight:bold;margin:0.25rem 0;">Risk Score: ${total}</div>
+					<hr/>
+					<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
 			}
 		},
 		legend: {
