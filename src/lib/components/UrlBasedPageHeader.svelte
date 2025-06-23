@@ -51,11 +51,6 @@
 					<span class="label">Visit {gitHubTeam} on GitHub</span>
 				{/snippet}
 			</IconLabel>
-			<!-- <IconLabel icon={SlackIcon}>
-				{#snippet label()}
-					<span class="label">Reach out on Slack: {slackChannel}</span>
-				{/snippet}
-			</IconLabel> -->
 		</div>
 	{/if}
 </div>
