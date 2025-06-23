@@ -1,21 +1,9 @@
-query TeamVulnerabilities($team: Slug!, $from: Date!) @cache(policy: CacheAndNetwork) @blocking {
+query TeamVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		environments {
 			id
 			environment {
 				name
-			}
-		}
-		imageVulnerabilityHistory(from: $from) {
-			samples {
-				date
-				summary {
-					critical
-					high
-					low
-					medium
-					unassigned
-				}
 			}
 		}
 		workloads {

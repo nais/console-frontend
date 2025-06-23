@@ -1,36 +1,26 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { transformVulnerabilities } from '$lib/chart/transformVulnerabilities';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
+	import TeamVulnerabilityHistoryGraph from '$lib/components/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/components/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		BodyLong,
-		BodyShort,
-		Heading,
-		Loader,
-		Select,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading, Select } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { TeamVulnerabilities, interval, teamSlug } = $derived(data);
+	let { TeamVulnerabilities, teamSlug } = $derived(data);
 
 	let selectedEnvironment: string = $state(page.url.searchParams.get('environment') || '');
-	let riskScoreToggle = $state('off');
+	// let riskScoreToggle = $state('off');
 
-	let options = $derived(
-		transformVulnerabilities(
-			$TeamVulnerabilities.data?.team.imageVulnerabilityHistory,
-			riskScoreToggle === 'on'
-		)
-	);
+	// let options = $derived(
+	// 	transformVulnerabilities(
+	// 		$TeamVulnerabilities.data?.team.imageVulnerabilityHistory,
+	// 		riskScoreToggle === 'on'
+	// 	)
+	// );
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -92,7 +82,7 @@
 				vulnerabilitySummary={team.vulnerabilitySummary}
 			/>
 		</div>
-		{#if $TeamVulnerabilities.data?.team.imageVulnerabilityHistory?.samples.length > 0}
+		<!-- {#if $TeamVulnerabilities.data?.team.imageVulnerabilityHistory?.samples.length > 0}
 			<div class="graph">
 				<div class="heading">
 					<div class="content">
@@ -135,7 +125,9 @@
 					</div>
 				{/if}
 			</div>
-		{/if}
+		{/if} -->
+
+		<TeamVulnerabilityHistoryGraph {teamSlug} />
 
 		<div>
 			<div class="heading">
@@ -182,11 +174,6 @@
 		margin-bottom: 1rem;
 	}
 
-	.graph {
-		display: flex;
-		flex-direction: column;
-	}
-
 	.heading {
 		display: flex;
 		justify-content: space-between;
@@ -197,12 +184,7 @@
 	.content {
 		max-width: 80ch;
 	}
-	.toggles {
-		display: flex;
-		gap: var(--spacing-layout);
-		flex-direction: row;
-		justify-content: flex-end;
-	}
+
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;
