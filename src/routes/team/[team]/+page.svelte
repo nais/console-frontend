@@ -6,7 +6,7 @@
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import DeploymentItemShort from '$lib/components/list/DeploymentShortListItem.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
-	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
+	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 

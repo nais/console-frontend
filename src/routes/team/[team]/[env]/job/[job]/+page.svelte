@@ -6,8 +6,8 @@
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/components/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import WorkloadVulnerabilitySummary from '$lib/components/WorkloadVulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';

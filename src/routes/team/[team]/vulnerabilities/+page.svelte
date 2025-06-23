@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import TeamVulnerabilityHistoryGraph from '$lib/components/TeamVulnerabilityHistoryGraph.svelte';
-	import VulnerabilitySummary from '$lib/components/VulnerabilitySummary.svelte';
-	import WorkloadsWithVulnerabilities from '$lib/components/WorkloadsWithVulnerabilities.svelte';
+	import TeamVulnerabilityHistoryGraph from '$lib/components/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
+	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
+	import WorkloadsWithVulnerabilities from '$lib/components/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import { BodyLong, BodyShort, Heading, Select } from '@nais/ds-svelte-community';
@@ -13,14 +13,6 @@
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
 
 	let selectedEnvironment: string = $state(page.url.searchParams.get('environment') || '');
-	// let riskScoreToggle = $state('off');
-
-	// let options = $derived(
-	// 	transformVulnerabilities(
-	// 		$TeamVulnerabilities.data?.team.imageVulnerabilityHistory,
-	// 		riskScoreToggle === 'on'
-	// 	)
-	// );
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -82,50 +74,6 @@
 				vulnerabilitySummary={team.vulnerabilitySummary}
 			/>
 		</div>
-		<!-- {#if $TeamVulnerabilities.data?.team.imageVulnerabilityHistory?.samples.length > 0}
-			<div class="graph">
-				<div class="heading">
-					<div class="content">
-						<Heading level="2" spacing
-							>Vulnerability History for <strong>{teamSlug}</strong></Heading
-						>
-						<BodyLong>
-							This stacked line chart displays the accumulation of image vulnerabilities over time,
-							categorized by severity level. Use the interval selector to adjust the time range.
-							Enable the Risk Score toggle to weight each severity by its impact.
-						</BodyLong>
-					</div>
-				</div>
-				{#if !$TeamVulnerabilities.fetching}
-					<div class="toggles">
-						<ToggleGroup
-							label="Interval"
-							value={interval}
-							onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-						>
-							{#each ['6m', '30d', '7d'] as interval (interval)}
-								<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-							{/each}
-						</ToggleGroup>
-						<ToggleGroup
-							label="Risk score"
-							value={riskScoreToggle}
-							onchange={(val) => (riskScoreToggle = val)}
-						>
-							<ToggleGroupItem value="off">Off</ToggleGroupItem>
-							<ToggleGroupItem value="on">On</ToggleGroupItem>
-						</ToggleGroup>
-					</div>
-					{#key options}
-						<EChart {options} style="height: 500px" />
-					{/key}
-				{:else}
-					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-						<Loader size="3xlarge" />
-					</div>
-				{/if}
-			</div>
-		{/if} -->
 
 		<TeamVulnerabilityHistoryGraph {teamSlug} />
 

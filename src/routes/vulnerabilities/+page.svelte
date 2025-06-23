@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { TeamOrderField } from '$houdini';
-	import VulnerabilitySummaryTenant from '$lib/components/VulnerabilitySummaryTenant.svelte';
+	import VulnerabilitySummaryTenant from '$lib/components/vulnerability/VulnerabilitySummaryTenant.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
