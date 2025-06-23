@@ -69,7 +69,7 @@ export function transformVulnerabilities(
 	}
 
 	return {
-		animation: false,
+		animation: true,
 		title: {},
 		tooltip: {
 			trigger: 'axis',

@@ -50,6 +50,7 @@
 	} from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
 	import ExternalLink from '../ExternalLink.svelte';
+	import WorkloadLink from '../WorkloadLink.svelte';
 	import { detailsUrl } from './imageUtils';
 
 	interface Props {
@@ -218,9 +219,8 @@
 			<Tbody>
 				{#each workloads as workload (workload.id)}
 					<Tr>
-						<Td>{workload.teamEnvironment.environment.name}</Td>
 						<Td>{workload.team.slug}</Td>
-						<Td>{workload.name}</Td>
+						<Td><WorkloadLink hideTeam {workload} /></Td>
 					</Tr>
 				{/each}
 			</Tbody>

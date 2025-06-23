@@ -90,7 +90,7 @@
 									}
 								}
 							}
-							workloadReferences {
+							workloadReferences(first: 999) {
 								nodes {
 									workload {
 										id
