@@ -211,7 +211,6 @@
 		<Table size="small">
 			<Thead>
 				<Tr>
-					<Th>Environment</Th>
 					<Th>Team</Th>
 					<Th>Workload</Th>
 				</Tr>
