@@ -91,15 +91,7 @@
 												PENDING_DELETE: 'info',
 												SUSPENDED: 'info',
 												UNSPECIFIED: 'info'
-											}[instance.state] ?? 'info'}-icon{{
-												RUNNABLE: 'success',
-												FAILED: 'danger',
-												MAINTENANCE: 'warning',
-												PENDING_CREATE: 'info',
-												PENDING_DELETE: 'info',
-												SUSPENDED: 'info',
-												UNSPECIFIED: 'info'
-											}[instance.state] ?? 'info'}); font-size: 0.7rem"
+											}[instance.state] ?? 'info'}-decoration); font-size: 0.7rem"
 										/>
 									</TooltipAlignHack>
 								{/snippet}
