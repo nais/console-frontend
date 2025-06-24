@@ -22,6 +22,14 @@
 					__typename
 					id
 					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
 					image {
 						name
 						tag
@@ -102,6 +110,14 @@
 	{:else}
 		<BodyShort>No deployment metadata found for workload.</BodyShort>
 	{/if}
+	<div style="margin-top: var(--ax-space-8);">
+		<a
+			href="/team/{$data.team.slug}/{$data.teamEnvironment.environment.name}/{$data.__typename ===
+			'job'
+				? 'job'
+				: 'app'}/{$data.name}/deploys">View deployments</a
+		>
+	</div>
 </div>
 <div class="wrapper">
 	<div class="image_heading">
