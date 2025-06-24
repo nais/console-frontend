@@ -156,7 +156,7 @@
 				{#if estimatedSecondMonthSum > firstMonthSum}
 					<CaretUpFillIcon style="color: var(--ax-bg-danger-strong);" />
 				{:else}
-					<CaretDownFillIcon style="color: var(--ax-bg-success-stron);" />
+					<CaretDownFillIcon style="color: var(--ax-bg-success-strong);" />
 				{/if}
 			</Detail>
 		</div>
