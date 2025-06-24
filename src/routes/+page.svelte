@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
+	import FavoritesList from '$lib/components/FavoritesList.svelte';
 	import { badgeLevel } from '$lib/components/list/Badge.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
@@ -75,6 +76,7 @@
 					/>
 				{/if}
 			{/if}
+			<FavoritesList />
 		</div>
 	</div>
 {/if}
