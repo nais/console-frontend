@@ -82,7 +82,7 @@ type Result = {
 	href?: string;
 };
 
-const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
+export const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 	const split = pathname.split('/');
 
 	if (split.length < 4) {
@@ -129,3 +129,63 @@ export const urlToPageHeader = (
 		...(split.length > 5 ? { tag: { label: split[3], variant: envTagVariant(split[3]) } } : {})
 	};
 };
+
+export function pathToFavoriteLabel(path: string): string {
+	const parts = path.split('/').filter(Boolean);
+
+	if (parts.length < 2 || parts[0] !== 'team') {
+		return path;
+	}
+
+	const team = parts[1];
+
+	// Case: /team/{team} only
+	if (parts.length === 2) {
+		return team;
+	}
+
+	// Case: /team/{team}/{something} (kan være env eller annen underside)
+	if (parts.length === 3) {
+		const secondPart = parts[2];
+		// Hvis denne matcher et kjent miljø, vis som team · env
+		// Her kan du evt ha liste over miljøer, men for enkelhet viser vi alltid som env
+		return `${team} · ${capitalize(secondPart)}`;
+	}
+
+	// Lengre path med miljø, type osv.
+	const env = parts[2];
+	const type = parts[3];
+	const resource = parts[4] ?? null;
+	const subpage = parts[5] ?? null;
+
+	if (type === 'settings' && resource === 'confirm_delete') {
+		return `${team} · Confirm Team Deletion`;
+	}
+
+	const typeInfo = label(type);
+
+	const labelParts = [team, env];
+
+	if (resource) {
+		labelParts.push(typeInfo.pageName);
+		labelParts.push(resource);
+	} else {
+		labelParts.push(typeInfo.pageName);
+	}
+
+	if (subpage) {
+		const subpageInfo = label(subpage);
+		if (subpageInfo.pageName) {
+			labelParts.push(subpageInfo.pageName);
+		} else {
+			labelParts.push(capitalize(subpage));
+		}
+	}
+
+	return labelParts.join(' · ');
+}
+
+function capitalize(str: string): string {
+	if (!str) return '';
+	return str[0].toUpperCase() + str.slice(1);
+}
