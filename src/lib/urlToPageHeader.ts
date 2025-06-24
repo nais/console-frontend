@@ -131,7 +131,6 @@ export const urlToPageHeader = (
 };
 
 export function pathToFavoriteLabel(path: string): string {
-	console.log('pathToFavoriteLabel', path);
 	const parts = path.split('/').filter(Boolean);
 
 	if (parts.length < 2 || parts[0] !== 'team') {

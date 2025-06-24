@@ -45,7 +45,6 @@ class Favorites {
 
 	#saveToLocalStorage(): void {
 		if (browser) {
-			console.log('Saving favorites to localStorage:', Array.from(this.favorites.keys()));
 			localStorage.setItem('console-favorites', JSON.stringify(Array.from(this.favorites.keys())));
 		}
 	}
