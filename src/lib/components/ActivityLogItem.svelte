@@ -126,6 +126,17 @@
 							revokedTeamSlug
 						}
 					}
+					... on DeploymentActivityLogEntry {
+						deploymentData: data {
+							triggerURL
+						}
+					}
+					... on ApplicationScaledActivityLogEntry {
+						appScaled: data {
+							newSize
+							direction
+						}
+					}
 				}
 			`)
 		)
@@ -231,6 +242,27 @@
 				Application <strong>{$data.resourceName}</strong> was deleted
 			{:else if $data.__typename === 'ApplicationRestartedActivityLogEntry'}
 				Application <strong>{$data.resourceName}</strong> was restarted
+			{:else if $data.__typename === 'DeploymentActivityLogEntry'}
+				{$data.resourceType === 'JOB' ? 'Job' : 'Application'}
+				<a
+					href={resourceLink(
+						$data.environmentName ? $data.environmentName : '',
+						$data.resourceType,
+						$data.resourceName,
+						$data.teamSlug
+					)}>{$data.resourceName}</a
+				> was deployed
+			{:else if $data.__typename === 'ApplicationScaledActivityLogEntry'}
+				Scaled {$data.appScaled.direction} application
+				<a
+					href={resourceLink(
+						$data.environmentName ? $data.environmentName : '',
+						$data.resourceType,
+						$data.resourceName,
+						$data.teamSlug
+					)}>{$data.resourceName}</a
+				>
+				to <strong>{$data.appScaled.newSize}</strong> relicas
 			{:else if $data.__typename === 'JobTriggeredActivityLogEntry'}
 				Job <a
 					href={resourceLink(

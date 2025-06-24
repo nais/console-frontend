@@ -138,6 +138,7 @@ query App(
 					}
 				}
 
+				...WorkloadActivityLogFragment
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy

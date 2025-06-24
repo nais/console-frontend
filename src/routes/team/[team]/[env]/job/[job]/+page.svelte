@@ -7,6 +7,7 @@
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/components/vulnerability/WorkloadVulnerabilitySummary.svelte';
+	import WorkloadActivity from '$lib/components/workloadActivity/WorkloadActivity.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -125,6 +126,8 @@
 				<Heading level="2" size="small" spacing>Vulnerabilities</Heading>
 				<WorkloadVulnerabilitySummary workload={job} />
 			</div>
+
+			<WorkloadActivity workload={job} />
 			<WorkloadDeploy workload={job} />
 
 			{#if viewerIsMember}
