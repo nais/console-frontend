@@ -1595,6 +1595,9 @@ type ImageVulnerabilitySummary {
   """Number of vulnerabilities with severity HIGH."""
   high: Int!
 
+  """Timestamp of the last update of the vulnerability summary."""
+  lastUpdated: Time!
+
   """Number of vulnerabilities with severity LOW."""
   low: Int!
 
@@ -5537,20 +5540,6 @@ enum TeamVulnerabilityRiskScoreTrend {
   UP
 }
 
-enum TeamVulnerabilityState {
-  COVERAGE_TOO_LOW
-  MISSING_SBOM
-  OK
-  TOO_MANY_VULNERABLE_WORKLOADS
-  VULNERABLE
-}
-
-type TeamVulnerabilityStatus {
-  description: String!
-  state: TeamVulnerabilityState!
-  title: String!
-}
-
 type TeamVulnerabilitySummary {
   """Number of workloads with a software bill of materials (SBOM) attached."""
   bomCount: Int!
@@ -5563,6 +5552,9 @@ type TeamVulnerabilitySummary {
 
   """Number of vulnerabilities with severity HIGH."""
   high: Int!
+
+  """Timestamp of the last update of the vulnerability summary."""
+  lastUpdated: Time!
 
   """Number of vulnerabilities with severity LOW."""
   low: Int!
@@ -5578,9 +5570,6 @@ type TeamVulnerabilitySummary {
 
   """Trend of vulnerability status for the team."""
   riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
-
-  """Aggregated status of the vulnerabilities for the team."""
-  status: [TeamVulnerabilityStatus!]!
 
   """Number of vulnerabilities with severity UNASSIGNED."""
   unassigned: Int!
@@ -5613,6 +5602,9 @@ type TenantVulnerabilitySummary {
 
   """Number of vulnerabilities with severity HIGH."""
   high: Int!
+
+  """Timestamp of the last update of the vulnerability summary."""
+  lastUpdated: Time!
 
   """Number of vulnerabilities with severity LOW."""
   low: Int!
