@@ -992,7 +992,7 @@ input DeleteJobInput {
 }
 
 type DeleteJobPayload {
-  """Whether or not the application was deleted."""
+  """Whether or not the job was deleted."""
   success: Boolean
 
   """The team that owned the deleted job."""
@@ -1631,7 +1631,7 @@ enum IngressType {
 }
 
 type Job implements Node & Workload {
-  """Activity log associated with the application."""
+  """Activity log associated with the job."""
   activityLog(
     """Get items after this cursor."""
     after: Cursor
@@ -5186,7 +5186,7 @@ input TeamJobsFilter {
   """Filter by the name of the environment."""
   environments: [String!]
 
-  """Filter by the name of the application."""
+  """Filter by the name of the job."""
   name: String!
 }
 
@@ -6329,7 +6329,7 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
 """Interface for workloads."""
 interface Workload {
-  """Activity log associated with the application."""
+  """Activity log associated with the workload."""
   activityLog(
     """Get items after this cursor."""
     after: Cursor
