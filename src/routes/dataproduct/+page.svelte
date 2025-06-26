@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { type DataProduct$result } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import EChart from '$lib/chart/EChart.svelte';
 	import type { EChartsOption } from 'echarts';
 	import type { PageProps } from './$houdini';
@@ -74,23 +73,8 @@
 		<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
 		<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
 	</ul>
-	<div class="grid">
-		<!--pre>{JSON.stringify(calculateTotals($DataProduct.data), undefined, 2)}</pre-->
-		<Card columns={12}>
-			<EChart
-				options={renderChart(calculateTotals($DataProduct.data))}
-				style="height: 700px; width: 100%;"
-			/>
-		</Card>
-	</div>
+	<EChart
+		options={renderChart(calculateTotals($DataProduct.data))}
+		style="height: 700px; width: 100%;"
+	/>
 {/if}
-
-<style>
-	.grid {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: repeat(12, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-</style>

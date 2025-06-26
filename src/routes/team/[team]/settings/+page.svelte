@@ -513,7 +513,7 @@
 	}
 	.last-sync {
 		width: 100%;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-info-subtle);
 		font-size: 0.9rem;
 		text-align: right;
 	}

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Card from '$lib/Card.svelte';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
@@ -37,23 +36,23 @@
 		</ExternalLink>
 	</BodyShort>
 	<div class="summary-grid">
-		<Card columns={3}>
+		<div class="card">
 			<SummaryCard
 				title="Cost"
 				helpText="Total SQL instance cost for the last 30 days"
-				color="blue"
+				color="grey"
 			>
 				{#snippet icon({ color })}
 					<WalletIcon height="32px" width="32px" {color} />
 				{/snippet}
 				{euroValueFormatter(instance.cost.sum)}
 			</SummaryCard>
-		</Card>
-		<Card columns={3}>
+		</div>
+		<div class="card">
 			<SummaryCard
 				title="CPU utilization"
 				helpText="Current CPU utilization"
-				color="green"
+				color="grey"
 				styled={false}
 			>
 				{#snippet icon()}
@@ -62,12 +61,12 @@
 				{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
 				core{instance.metrics.cpu.cores > 1 ? 's' : ''}
 			</SummaryCard>
-		</Card>
-		<Card columns={3}>
+		</div>
+		<div class="card">
 			<SummaryCard
 				title="Memory utilization"
 				helpText="Current memory utilization"
-				color="green"
+				color="grey"
 				styled={false}
 			>
 				{#snippet icon()}
@@ -77,12 +76,12 @@
 					instance.metrics.memory.quotaBytes
 				)}
 			</SummaryCard>
-		</Card>
-		<Card columns={3}>
+		</div>
+		<div class="card">
 			<SummaryCard
 				title="Disk utilization"
 				helpText="Current disk utilization"
-				color="green"
+				color="grey"
 				styled={false}
 			>
 				{#snippet icon()}
@@ -92,7 +91,7 @@
 					instance.metrics.disk.quotaBytes
 				)}
 			</SummaryCard>
-		</Card>
+		</div>
 	</div>
 
 	<div class="grid">
@@ -143,9 +142,15 @@
 	}
 	.summary-grid {
 		display: grid;
-		grid-template-columns: repeat(12, 1fr);
+		grid-template-columns: repeat(4, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
+	}
+	.card {
+		border: 1px solid var(--ax-border-neutral);
+		background-color: var(--ax-bg-sunken);
+		padding: var(--ax-space-20);
+		border-radius: 12px;
 	}
 </style>

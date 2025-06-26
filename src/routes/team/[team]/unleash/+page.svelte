@@ -375,6 +375,7 @@
 	}
 
 	.card {
+		border: 1px solid var(--ax-border-neutral);
 		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-20);
 		border-radius: 12px;
@@ -387,6 +388,6 @@
 		justify-content: space-between;
 		margin: 0;
 		font-size: 1rem;
-		color: var(--color-text-secondary);
+		color: var(--ax-text-neutral-subtle);
 	}
 </style>

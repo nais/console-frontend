@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { fragment, graphql, type ReconcilerFragment } from '$houdini';
-	import Card from '$lib/Card.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import {
 		Accordion,
@@ -127,7 +126,8 @@
 	};
 </script>
 
-<Card style="margin-bottom:1rem;">
+<!-- <Card style="margin-bottom:1rem;"> -->
+<div class="card">
 	<Heading level="2">{$r.displayName}</Heading>
 	{#if $r.errors.pageInfo.totalCount}
 		<span class="reconciler-error">
@@ -185,7 +185,8 @@
 			</AccordionItem>
 		</Accordion>
 	{/if}
-</Card>
+	<!-- </Card> -->
+</div>
 <Confirm bind:open={confirm} onconfirm={toggle}>
 	{#snippet header()}
 		Confirmation required
@@ -198,5 +199,13 @@
 <style>
 	.reconciler-error {
 		color: var(--ax-text-danger);
+	}
+	.card {
+		margin-bottom: 1rem;
+		background-color: var(--ax-bg-sunken);
+		border-radius: 12px;
+		align-items: stretch;
+		border: 1px solid var(--ax-border-neutral);
+		padding: var(--ax-space-20);
 	}
 </style>

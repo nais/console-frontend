@@ -3,9 +3,9 @@
 	import type { Snippet } from 'svelte';
 
 	const colors = {
-		green: '#91dc75',
-		blue: '#83bff6',
-		grey: '#c0c0c0'
+		green: 'var(--ax-border-success-strong)',
+		blue: 'var(--ax-border-brand-blue-strong)',
+		grey: 'var(--ax-border-neutral-strong)'
 	};
 
 	interface Props {
@@ -85,8 +85,6 @@
 	.heading {
 		display: flex;
 		justify-content: space-between;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
+		color: var(--ax-text-neutral-subtle);
 	}
 </style>
