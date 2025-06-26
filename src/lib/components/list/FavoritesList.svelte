@@ -24,8 +24,6 @@
 
 <style>
 	.favorites-list {
-		padding: var(--ax-space-4);
-		border-radius: var(--ax-border-radius);
 		margin-top: var(--ax-space-16);
 	}
 	.header {
