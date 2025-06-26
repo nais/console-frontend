@@ -25,6 +25,7 @@ query App(
 						low
 						unassigned
 						riskScore
+						lastUpdated
 					}
 				}
 				teamEnvironment {

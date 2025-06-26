@@ -18,6 +18,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 						low
 						unassigned
 						riskScore
+						lastUpdated
 					}
 				}
 				schedule {
