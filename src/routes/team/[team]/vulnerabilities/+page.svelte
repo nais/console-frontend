@@ -70,6 +70,7 @@
 			</div>
 
 			<VulnerabilitySummary
+				{teamSlug}
 				workloads={team.workloads}
 				vulnerabilitySummary={team.vulnerabilitySummary}
 			/>

@@ -11,7 +11,7 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { TeamOverview, teamSlug, viewerIsMember } = $derived(data);
+	let { TeamOverview, teamSlug } = $derived(data);
 
 	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
 		const workloads = $TeamOverview.data?.team.statuses.nodes.filter((workload) =>
@@ -60,6 +60,7 @@
 		{#if $TeamOverview.data}
 			<div>
 				<VulnerabilitySummary
+					{teamSlug}
 					workloads={$TeamOverview.data.team.workloads}
 					vulnerabilitySummary={$TeamOverview.data.team.vulnerabilitySummary}
 				/>
@@ -91,11 +92,9 @@
 					{/each}
 				</div>
 			{/if}
-			{#if viewerIsMember}
-				<a href="/team/{teamSlug}/activity-log" style:align-self="end" style:margin-top="auto"
-					>View Activity Log</a
-				>
-			{/if}
+			<a href="/team/{teamSlug}/activity-log" style:align-self="end" style:margin-top="auto"
+				>View Activity Log</a
+			>
 		</div>
 	</div>
 </div>

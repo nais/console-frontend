@@ -8,44 +8,42 @@
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
-	let { ActivityLog, viewerIsMember } = $derived(data);
+	let { ActivityLog } = $derived(data);
 </script>
 
 <div>
-	{#if viewerIsMember}
-		{#if $ActivityLog.data}
-			{@const ae = $ActivityLog.data.team.activityLog}
-			<div class="wrapper">
-				<div>
-					<BodyLong spacing
-						>The Activity Log provides an overview of changes made to your team and its resources
-						within the Nais Console application.</BodyLong
-					>
-					<List title="{ae.pageInfo.totalCount} entries">
-						{#each ae.nodes || [] as item (item.id)}
-							<ListItem>
-								<ActivityLogItem {item} />
-							</ListItem>
-						{/each}
-					</List>
-					<Pagination
-						page={ae.pageInfo}
-						loaders={{
-							loadPreviousPage: () =>
-								changeParams({
-									after: '',
-									before: ae.pageInfo.startCursor ?? ''
-								}),
-							loadNextPage: () =>
-								changeParams({
-									before: '',
-									after: ae.pageInfo.endCursor ?? ''
-								})
-						}}
-					/>
-				</div>
+	{#if $ActivityLog.data}
+		{@const ae = $ActivityLog.data.team.activityLog}
+		<div class="wrapper">
+			<div>
+				<BodyLong spacing
+					>The Activity Log provides an overview of changes made to your team and its resources
+					within the Nais Console application.</BodyLong
+				>
+				<List title="{ae.pageInfo.totalCount} entries">
+					{#each ae.nodes || [] as item (item.id)}
+						<ListItem>
+							<ActivityLogItem {item} />
+						</ListItem>
+					{/each}
+				</List>
+				<Pagination
+					page={ae.pageInfo}
+					loaders={{
+						loadPreviousPage: () =>
+							changeParams({
+								after: '',
+								before: ae.pageInfo.startCursor ?? ''
+							}),
+						loadNextPage: () =>
+							changeParams({
+								before: '',
+								after: ae.pageInfo.endCursor ?? ''
+							})
+					}}
+				/>
 			</div>
-		{/if}
+		</div>
 	{/if}
 </div>
 

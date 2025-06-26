@@ -107,7 +107,7 @@ export const menuItems = ({
 			menuItem('Members', 'members'),
 			menuItem('Repositories', 'repositories'),
 			(member || isAdmin) && menuItem('Settings', 'settings'),
-			member && menuItem('Activity Log', 'activity-log')
+			menuItem('Activity Log', 'activity-log')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[]
 	];
 };

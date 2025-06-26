@@ -71,6 +71,7 @@ query TeamVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
 			critical
 			riskScore
 			riskScoreTrend
+			lastUpdated
 		}
 	}
 }

@@ -91,6 +91,7 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			riskScore
 			riskScoreTrend
 			ranking
+			lastUpdated
 		}
 	}
 }
