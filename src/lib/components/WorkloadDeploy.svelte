@@ -115,7 +115,7 @@
 			href="/team/{$data.team.slug}/{$data.teamEnvironment.environment.name}/{$data.__typename ===
 			'job'
 				? 'job'
-				: 'app'}/{$data.name}/deploys">View deployments</a
+				: 'app'}/{$data.name}/deploys">View Deployments</a
 		>
 	</div>
 </div>

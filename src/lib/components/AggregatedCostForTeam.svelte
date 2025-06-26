@@ -151,9 +151,7 @@
 				/>
 			</div>
 
-			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto"
-				>View team costs</a
-			>
+			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto">View Costs</a>
 		{:else}
 			<div class="loading">
 				<Loader size="3xlarge" />
