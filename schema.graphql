@@ -9,6 +9,116 @@ directive @defer(
   label: String
 ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
+enum ActivityLogActivityType {
+  """An application was deleted."""
+  APPLICATION_DELETED
+
+  """An application was restarted."""
+  APPLICATION_RESTARTED
+
+  """An application was scaled."""
+  APPLICATION_SCALED
+
+  """Activity log entry for deployment activity."""
+  DEPLOYMENT
+
+  """Activity log entries related to job deletion."""
+  JOB_DELETED
+
+  """Activity log entries related to job triggering."""
+  JOB_TRIGGERED
+
+  """Reconciler configured activity log entry."""
+  RECONCILER_CONFIGURED
+
+  """Reconciler disabled activity log entry."""
+  RECONCILER_DISABLED
+
+  """Reconciler enabled activity log entry."""
+  RECONCILER_ENABLED
+
+  """Repository was added to a team."""
+  REPOSITORY_ADDED
+
+  """Repository was removed from a team."""
+  REPOSITORY_REMOVED
+
+  """Secret was created."""
+  SECRET_CREATED
+
+  """Secret was deleted."""
+  SECRET_DELETED
+
+  """Secret value was added."""
+  SECRET_VALUE_ADDED
+
+  """Secret value was removed."""
+  SECRET_VALUE_REMOVED
+
+  """Secret value was updated."""
+  SECRET_VALUE_UPDATED
+
+  """Service account was created."""
+  SERVICE_ACCOUNT_CREATED
+
+  """Service account was deleted."""
+  SERVICE_ACCOUNT_DELETED
+
+  """Role was assigned to a service account."""
+  SERVICE_ACCOUNT_ROLE_ASSIGNED
+
+  """Role was revoked from a service account."""
+  SERVICE_ACCOUNT_ROLE_REVOKED
+
+  """Service account token was created."""
+  SERVICE_ACCOUNT_TOKEN_CREATED
+
+  """Service account token was deleted."""
+  SERVICE_ACCOUNT_TOKEN_DELETED
+
+  """Service account token was updated."""
+  SERVICE_ACCOUNT_TOKEN_UPDATED
+
+  """Service account was updated."""
+  SERVICE_ACCOUNT_UPDATED
+
+  """Team delete key was confirmed."""
+  TEAM_CONFIRM_DELETE_KEY
+
+  """Team was created."""
+  TEAM_CREATED
+
+  """Team delete key was created."""
+  TEAM_CREATE_DELETE_KEY
+
+  """Activity log entry for team deploy key updates."""
+  TEAM_DEPLOY_KEY_UPDATED
+
+  """Team environment was updated."""
+  TEAM_ENVIRONMENT_UPDATED
+
+  """Team member was added."""
+  TEAM_MEMBER_ADDED
+
+  """Team member was removed."""
+  TEAM_MEMBER_REMOVED
+
+  """Team member role was set."""
+  TEAM_MEMBER_SET_ROLE
+
+  """Team was updated."""
+  TEAM_UPDATED
+
+  """Unleash instance was created."""
+  UNLEASH_INSTANCE_CREATED
+
+  """Unleash instance was updated."""
+  UNLEASH_INSTANCE_UPDATED
+
+  """Activity log entry for when a vulnerability is updated."""
+  VULNERABILITY_UPDATED
+}
+
 """Interface for activity log entries."""
 interface ActivityLogEntry {
   """
@@ -107,6 +217,10 @@ enum ActivityLogEntryResourceType {
   VULNERABILITY
 }
 
+input ActivityLogFilter {
+  activityTypes: [ActivityLogActivityType!]
+}
+
 input AddRepositoryToTeamInput {
   """Name of the repository, with the org prefix, for instance 'org/repo'."""
   repositoryName: String!
@@ -177,6 +291,9 @@ type Application implements Node & Workload {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -1642,6 +1759,9 @@ type Job implements Node & Workload {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filter items."""
+    filter: ActivityLogFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -2784,6 +2904,9 @@ type Reconciler implements Node {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -4361,6 +4484,9 @@ type Team implements Node {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.

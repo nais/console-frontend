@@ -27,6 +27,21 @@ query ResourceUtilizationForApp(
 						memory
 					}
 				}
+				activityLog(first: 50, filter: { activityTypes: [APPLICATION_SCALED, DEPLOYMENT] }) {
+					nodes {
+						createdAt
+						__typename
+						... on ApplicationScaledActivityLogEntry {
+							appScaled: data {
+								newSize
+								direction
+							}
+						}
+						... on DeploymentActivityLogEntry {
+							createdAt
+						}
+					}
+				}
 				utilization {
 					requested_memory_series: requestedSeries(
 						input: { start: $start, end: $end, resourceType: MEMORY }
