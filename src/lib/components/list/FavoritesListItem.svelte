@@ -2,7 +2,7 @@
 	import { favorites } from '$lib/stores/favorites.svelte';
 	import { pathToFavoriteLabel } from '$lib/urlToPageHeader';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
-	import { StarIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '../IconLabel.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -18,7 +18,7 @@
 </script>
 
 <ListItem>
-	<IconLabel label={pathToFavoriteLabel(path)} icon={StarIcon} size="medium" href={path} />
+	<IconLabel label={pathToFavoriteLabel(path)} icon={StarFillIcon} size="medium" href={path} />
 	<div class="right">
 		<Tooltip placement="bottom" content="Remove from favorites">
 			<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
@@ -31,6 +31,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		gap: var(--ax-space-2);
+		gap: var(--ax-space-1);
 	}
 </style>

@@ -24,7 +24,6 @@
 
 <style>
 	.favorites-list {
-		background-color: var(--ax-bg-secondary);
 		padding: var(--ax-space-4);
 		border-radius: var(--ax-border-radius);
 		margin-top: var(--ax-space-16);
