@@ -97,6 +97,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		gap: var(--ax-space-2s);
+		gap: var(--ax-space-2);
 	}
 </style>
