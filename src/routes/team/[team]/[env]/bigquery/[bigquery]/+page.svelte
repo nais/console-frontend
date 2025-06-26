@@ -62,7 +62,7 @@
 						<IconLabel label="Deleting the application will NOT remove the dataset.">
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
-									<XMarkIcon style="color: var(--ax-text-danger-icon);" />
+									<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
 								</TooltipAlignHack>
 							{/snippet}
 						</IconLabel>

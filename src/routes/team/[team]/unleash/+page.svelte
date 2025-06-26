@@ -190,7 +190,7 @@
 							content="Unleash is not ready, new instances will be online after a minute."
 							placement="right"
 						>
-							<XMarkIcon style="color: var(--ax-text-danger-icon); font-size: 1.2rem" />
+							<XMarkIcon style="color: var(--ax-text-danger-decoration); font-size: 1.2rem" />
 						</Tooltip>
 					{/if}
 				</p>
@@ -245,7 +245,7 @@
 											onclick={() => removeTeamClickHandler(team.slug)}
 										>
 											{#snippet icon()}
-												<TrashIcon style="color:var(--ax-text-danger-icon)!important" />
+												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
 											{/snippet}
 										</Button>
 									{/if}

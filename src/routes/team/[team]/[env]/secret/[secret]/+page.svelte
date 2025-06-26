@@ -304,7 +304,7 @@
 										}}
 									>
 										{#snippet icon()}
-											<TrashIcon style="color:var(--ax-text-danger-icon)!important" />
+											<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
 										{/snippet}
 									</Button>
 								</div>

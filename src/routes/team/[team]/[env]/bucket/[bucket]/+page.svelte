@@ -50,7 +50,7 @@
 						<IconLabel label="Deleting the application will NOT remove the bucket.">
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete: false">
-									<XMarkIcon style="color: var(--ax-text-danger-icon);" />
+									<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
 								</TooltipAlignHack>
 							{/snippet}
 						</IconLabel>

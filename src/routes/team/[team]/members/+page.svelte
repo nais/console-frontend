@@ -128,7 +128,7 @@
 												}}
 											>
 												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-icon)!important" />
+													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
 												{/snippet}
 											</Button>
 										</div>
@@ -208,14 +208,14 @@
 
 	.item {
 		display: grid;
-		grid-template-columns: 600px 1fr;
+		grid-template-columns: 1fr 174px;
 	}
 	.role-and-buttons {
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
-		width: 200px;
+		width: 174px;
 	}
 	.role {
 		color: var(--ax-text-subtle);
