@@ -123,7 +123,7 @@
 			<Schedule schedule={job.schedule} />
 			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 			<div>
-				<Heading level="2" size="small" spacing>Vulnerabilities</Heading>
+				<Heading level="2" size="small">Vulnerabilities</Heading>
 				<WorkloadVulnerabilitySummary workload={job} />
 			</div>
 

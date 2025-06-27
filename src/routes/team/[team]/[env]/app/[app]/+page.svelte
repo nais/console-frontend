@@ -163,7 +163,7 @@
 			<div class="sidebar">
 				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				<div>
-					<Heading level="2" size="small" spacing>Vulnerabilities</Heading>
+					<Heading level="2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
 				<WorkloadActivity workload={app} />
