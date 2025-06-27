@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { format, formatDistanceStrict, intervalToDuration } from 'date-fns';
+	import {
+		differenceInDays,
+		differenceInHours,
+		differenceInMinutes,
+		differenceInMonths,
+		differenceInSeconds,
+		differenceInYears,
+		format,
+		formatDistanceStrict
+	} from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import { onDestroy, untrack } from 'svelte';
 
@@ -20,14 +29,25 @@
 	}
 
 	function distanceShortText(): string {
-		const duration = intervalToDuration({ start: time, end: new Date() });
+		const now = new Date();
 
-		if (duration.years) return `${duration.years}y`;
-		if (duration.months) return `${duration.months}mo`;
-		if (duration.days) return `${duration.days}d`;
-		if (duration.hours) return `${duration.hours}h`;
-		if (duration.minutes) return `${duration.minutes}m`;
-		return `${duration.seconds ?? 0}s`;
+		const seconds = differenceInSeconds(now, time);
+		if (seconds < 60) return `${Math.ceil(seconds)}s`;
+
+		const minutes = differenceInMinutes(now, time);
+		if (minutes < 60) return `${Math.ceil(minutes)}m`;
+
+		const hours = differenceInHours(now, time);
+		if (hours < 24) return `${Math.ceil(hours)}h`;
+
+		const days = differenceInDays(now, time);
+		if (days < 30) return `${Math.ceil(days)}d`;
+
+		const months = differenceInMonths(now, time);
+		if (months < 12) return `${Math.ceil(months)}mo`;
+
+		const years = differenceInYears(now, time);
+		return `${Math.ceil(years)}y`;
 	}
 
 	function getDisplayText(): string {
