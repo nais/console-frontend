@@ -104,62 +104,25 @@
 						></Td
 					>
 					<Td>
-						<ul>
-							{#if t.node.inventoryCounts.applications.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/applications"
-										>{t.node.inventoryCounts.applications.total} applications</a
-									>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.jobs.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/jobs">{t.node.inventoryCounts.jobs.total} jobs</a>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.bigQueryDatasets.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/bigquery"
-										>{t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets</a
-									>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.buckets.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/buckets"
-										>{t.node.inventoryCounts.buckets.total} buckets</a
-									>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.kafkaTopics.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/kafka"
-										>{t.node.inventoryCounts.kafkaTopics.total} Kafka topics</a
-									>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.openSearchInstances.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/opensearch"
-										>{t.node.inventoryCounts.openSearchInstances.total} OpenSearch instances</a
-									>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.sqlInstances.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/postgres"
-										>{t.node.inventoryCounts.sqlInstances.total} SQL instances</a
-									>
-								</li>
-							{/if}
-							{#if t.node.inventoryCounts.valkeyInstances.total > 0}
-								<li>
-									<a href="/team/{t.node.slug}/valkey"
-										>{t.node.inventoryCounts.valkeyInstances.total} Valkey instances</a
-									>
-								</li>
-							{/if}
-						</ul>
+						{[
+							t.node.inventoryCounts.applications.total > 0 &&
+								`${t.node.inventoryCounts.applications.total} applications`,
+							t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} jobs`,
+							t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
+								`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
+							t.node.inventoryCounts.buckets.total > 0 &&
+								`${t.node.inventoryCounts.buckets.total} buckets`,
+							t.node.inventoryCounts.kafkaTopics.total > 0 &&
+								`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
+							t.node.inventoryCounts.openSearchInstances.total > 0 &&
+								`${t.node.inventoryCounts.openSearchInstances.total} OpenSearch instances`,
+							t.node.inventoryCounts.sqlInstances.total > 0 &&
+								`${t.node.inventoryCounts.sqlInstances.total} SQL instances`,
+							t.node.inventoryCounts.valkeyInstances.total > 0 &&
+								`${t.node.inventoryCounts.valkeyInstances.total} Valkey instances`
+						]
+							.filter(Boolean)
+							.join(', ')}
 					</Td>
 				</Tr>
 			{/each}
