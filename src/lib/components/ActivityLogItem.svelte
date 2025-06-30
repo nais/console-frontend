@@ -44,6 +44,7 @@
 			graphql(`
 				fragment ActivityLogEntryFragment on ActivityLogEntry {
 					__typename
+					id
 					createdAt
 					actor
 					createdAt

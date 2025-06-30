@@ -1,8 +1,14 @@
-query ActivityLog($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after: Cursor)
-@cache(policy: NetworkOnly) {
+query ActivityLog(
+	$team: Slug!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$filter: ActivityLogFilter
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
-		activityLog(first: $first, last: $last, before: $before, after: $after)
+		activityLog(first: $first, last: $last, before: $before, after: $after, filter: $filter)
 			@paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
@@ -15,6 +21,7 @@ query ActivityLog($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after
 			}
 			nodes {
 				id
+				__typename
 				...ActivityLogEntryFragment
 			}
 		}
