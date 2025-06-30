@@ -1713,7 +1713,7 @@ type ImageVulnerabilitySummary {
   high: Int!
 
   """Timestamp of the last update of the vulnerability summary."""
-  lastUpdated: Time!
+  lastUpdated: Time
 
   """Number of vulnerabilities with severity LOW."""
   low: Int!
@@ -5680,7 +5680,7 @@ type TeamVulnerabilitySummary {
   high: Int!
 
   """Timestamp of the last update of the vulnerability summary."""
-  lastUpdated: Time!
+  lastUpdated: Time
 
   """Number of vulnerabilities with severity LOW."""
   low: Int!
@@ -5730,7 +5730,7 @@ type TenantVulnerabilitySummary {
   high: Int!
 
   """Timestamp of the last update of the vulnerability summary."""
-  lastUpdated: Time!
+  lastUpdated: Time
 
   """Number of vulnerabilities with severity LOW."""
   low: Int!
