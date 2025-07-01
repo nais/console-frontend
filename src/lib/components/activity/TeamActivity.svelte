@@ -5,7 +5,7 @@
 		type TeamActivityLogFragment,
 		type TeamActivityLogFragment$data
 	} from '$houdini';
-	import DefaultText from '$lib/components/workloadActivity/DefaultText.svelte';
+	import DefaultText from '$lib/components/activity/DefaultText.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import {
 		MinusCircleIcon,

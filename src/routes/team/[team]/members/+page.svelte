@@ -12,7 +12,7 @@
 	import type { PageProps } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
-	import TeamActivity from './TeamActivity.svelte';
+	import TeamActivity from '../../../../lib/components/activity/TeamActivity.svelte';
 
 	let { data }: PageProps = $props();
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
