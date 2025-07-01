@@ -91,8 +91,6 @@
 			} as ActivityLog$input
 		});
 	}
-
-	$inspect(searchQuery, 'searchQuery');
 </script>
 
 <div>

@@ -30,5 +30,6 @@ query Members(
 				}
 			}
 		}
+		...TeamActivityLogFragment
 	}
 }

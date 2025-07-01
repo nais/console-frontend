@@ -12,6 +12,7 @@
 	import type { PageProps } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
+	import TeamActivity from './TeamActivity.svelte';
 
 	let { data }: PageProps = $props();
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
@@ -158,6 +159,9 @@
 			/>
 		</div>
 		<!--div>Here be documentation of teams, members and roles</div-->
+		<div>
+			<TeamActivity {team} />
+		</div>
 	</div>
 	{#if team}
 		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
