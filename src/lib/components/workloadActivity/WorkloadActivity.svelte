@@ -64,7 +64,6 @@
 			case 'ApplicationScaledActivityLogEntry':
 				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
 			default:
-				console.log('Unknown kind', kind);
 				return DefaultText as Component<{ data: unknown }>;
 		}
 	}
