@@ -35,5 +35,6 @@ query Repositories(
 				}
 			}
 		}
+		...RepositoryActivityLogFragment
 	}
 }

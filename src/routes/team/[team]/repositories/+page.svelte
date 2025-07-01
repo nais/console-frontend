@@ -11,6 +11,7 @@
 	import { Alert, BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
+	import RepositoryActivity from '$lib/components/activity/RepositoryActivity.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -247,6 +248,9 @@
 					</div>
 				{/if}
 			{/if}
+		</div>
+		<div>
+			<RepositoryActivity team={$Repositories.data.team} />
 		</div>
 	</div>
 {/if}
