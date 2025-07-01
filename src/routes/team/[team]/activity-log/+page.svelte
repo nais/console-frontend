@@ -198,7 +198,6 @@
 	.activity-group-label {
 		padding: var(--ax-space-4) var(--ax-space-8);
 		font-weight: 500;
-		/* font-size: var(--text-small); */
 		color: var(--ax-text-neutral-subtle);
 		margin-top: var(--ax-space-2);
 	}
