@@ -6,11 +6,15 @@
 		type RepositoryActivityLogFragment$data
 	} from '$houdini';
 	import { Heading } from '@nais/ds-svelte-community';
-	import { MinusCircleIcon, PersonIcon, PlusCircleIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		MinusCircleIcon,
+		PlusCircleIcon,
+		QuestionmarkIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-	import DefaultText from './DefaultText.svelte';
-	import RepositoryAddedActivityLogEntryText from './RepositoryAddedActivityLogEntryText.svelte';
-	import RepositoryRemovedActivityLogEntryText from './RepositoryRemovedActivityLogEntryText.svelte';
+	import DefaultText from './texts/DefaultText.svelte';
+	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
 
 	interface Props {
 		team: RepositoryActivityLogFragment;
@@ -69,7 +73,7 @@
 <div class="wrapper">
 	<Heading level="3" size="small">Activity</Heading>
 	{#each $data.activityLog.nodes as entry (entry.id)}
-		{@const Icon = icons[entry.__typename] || PersonIcon}
+		{@const Icon = icons[entry.__typename] || QuestionmarkIcon}
 		{@const TextComponent = textComponent(entry.__typename)}
 
 		<div class="item">

@@ -8,9 +8,9 @@
 	import { Heading } from '@nais/ds-svelte-community';
 	import { CaretUpDownIcon, PlayIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-	import ApplicationScaledActivityLogEntryText from './ApplicationScaledActivityLogEntryText.svelte';
-	import DefaultText from './DefaultText.svelte';
-	import DeploymentActivityLogEntryText from './DeploymentActivityLogEntryText.svelte';
+	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
+	import DefaultText from './texts/DefaultText.svelte';
+	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 
 	interface Props {
 		workload: WorkloadActivityLogFragment;

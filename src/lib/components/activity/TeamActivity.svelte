@@ -5,18 +5,18 @@
 		type TeamActivityLogFragment,
 		type TeamActivityLogFragment$data
 	} from '$houdini';
-	import DefaultText from '$lib/components/activity/DefaultText.svelte';
+	import DefaultText from '$lib/components/activity/texts/DefaultText.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import {
 		MinusCircleIcon,
-		PersonIcon,
 		PersonPencilIcon,
-		PlusCircleIcon
+		PlusCircleIcon,
+		QuestionmarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-	import TeamMemberAddedActivityLogEntryText from './TeamMemberAddedActivityLogEntryText.svelte';
-	import TeamMemberRemovedActivityLogEntryText from './TeamMemberRemovedActivityLogEntryText.svelte';
-	import TeamMemberSetRoleActivityLogEntryText from './TeamMemberSetRoleActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
 
 	interface Props {
 		team: TeamActivityLogFragment;
@@ -93,7 +93,7 @@
 <div class="wrapper">
 	<Heading level="3" size="small">Activity</Heading>
 	{#each $data.activityLog.nodes as entry (entry.id)}
-		{@const Icon = icons[entry.__typename] || PersonIcon}
+		{@const Icon = icons[entry.__typename] || QuestionmarkIcon}
 		{@const TextComponent = textComponent(entry.__typename)}
 
 		<div class="item">
