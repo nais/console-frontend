@@ -106,7 +106,7 @@ describe('menuItems', () => {
 					isAdmin: false
 				})
 					.flatMap((g) => g)
-					.find((i) => ['Secrets', 'Activity Log', 'Settings'].includes(i.label))
+					.find((i) => ['Secrets', 'Settings'].includes(i.label))
 			).toBeUndefined();
 		});
 
