@@ -35,7 +35,7 @@
 	.hotkey {
 		font-size: var(--ax-font-size-small);
 		font-weight: var(--ax-font-weight-regular);
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 		padding-top: 2px;
 	}
 </style>
