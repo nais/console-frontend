@@ -47,7 +47,8 @@ const config = {
 			marshal(date) {
 				return date.toISOString();
 			}
-		}
+		},
+		TimeOfDay: { type: 'string' }
 	}
 };
 

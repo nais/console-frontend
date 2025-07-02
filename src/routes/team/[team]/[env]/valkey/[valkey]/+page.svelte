@@ -87,14 +87,12 @@
 {/if}
 {#if $ValkeyInstance.data}
 	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
-	{@const mandatoryServiceMaintenanceUpdates =
-		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.nodes.filter(
-			(x) => !!x?.deadline
-		)}
-	{@const nonMandatoryServiceMaintenanceUpdates =
-		$ValkeyInstance.data.team.environment.valkeyInstance.maintenance.updates.nodes.filter(
-			(x) => !x?.deadline
-		)}
+	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
+		(x) => !!x?.deadline
+	)}
+	{@const nonMandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
+		(x) => !x?.deadline
+	)}
 	<div class="wrapper">
 		<div>
 			<div class="spacing">
@@ -194,6 +192,13 @@
 				<Heading level="3">Status</Heading>
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
+			{#if instance.maintenance && instance.maintenance.window}
+				<div>
+					<Heading level="3">Maintenance window</Heading>
+					<BodyShort>Day of week: {instance.maintenance.window.dayOfWeek}</BodyShort>
+					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}

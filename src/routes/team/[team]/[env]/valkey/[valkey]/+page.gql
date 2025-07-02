@@ -21,6 +21,10 @@ query ValkeyInstance(
 				}
 
 				maintenance {
+					window {
+						dayOfWeek
+						timeOfDay
+					}
 					updates {
 						pageInfo {
 							hasNextPage

@@ -2279,6 +2279,14 @@ type LogDestinationSecureLogs implements LogDestination & Node {
   id: ID!
 }
 
+type MaintenanceWindow {
+  """Day of the week when the maintenance is scheduled."""
+  dayOfWeek: Weekday!
+
+  """Time of day when the maintenance is scheduled."""
+  timeOfDay: TimeOfDay!
+}
+
 """
 Maskinporten authentication.
 
@@ -2580,6 +2588,9 @@ type OpenSearchMaintenance {
     """
     last: Int
   ): OpenSearchMaintenanceUpdateConnection!
+
+  """The day and time of the week when the maintenance will be scheduled."""
+  window: MaintenanceWindow
 }
 
 type OpenSearchMaintenanceUpdate implements ServiceMaintenanceUpdate {
@@ -5754,6 +5765,11 @@ Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, 
 scalar Time
 
 """
+TimeOfDay is the time of day, represented as a string in the format HH:MM:SS.
+"""
+scalar TimeOfDay
+
+"""
 TokenX authentication.
 
 Read more: https://docs.nais.io/auth/tokenx/
@@ -6331,6 +6347,9 @@ type ValkeyMaintenance {
     """
     last: Int
   ): ValkeyMaintenanceUpdateConnection!
+
+  """The day and time of the week when the maintenance will be scheduled."""
+  window: MaintenanceWindow
 }
 
 type ValkeyMaintenanceUpdate implements ServiceMaintenanceUpdate {
@@ -6443,6 +6462,30 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+"""The days of the week."""
+enum Weekday {
+  """Friday"""
+  FRIDAY
+
+  """Monday"""
+  MONDAY
+
+  """Saturday"""
+  SATURDAY
+
+  """Sunday"""
+  SUNDAY
+
+  """Thursday"""
+  THURSDAY
+
+  """Tuesday"""
+  TUESDAY
+
+  """Wednesday"""
+  WEDNESDAY
 }
 
 """Interface for workloads."""

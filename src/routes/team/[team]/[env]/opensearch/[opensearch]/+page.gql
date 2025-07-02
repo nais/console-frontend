@@ -21,6 +21,10 @@ query OpenSearchInstance(
 				}
 
 				maintenance {
+					window {
+						dayOfWeek
+						timeOfDay
+					}
 					updates {
 						pageInfo {
 							hasNextPage
