@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql, TeamMemberOrderField } from '$houdini';
+	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
@@ -12,7 +13,6 @@
 	import type { PageProps } from './$houdini';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
-	import TeamActivity from '../../../../lib/components/activity/TeamActivity.svelte';
 
 	let { data }: PageProps = $props();
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
@@ -160,7 +160,7 @@
 		</div>
 		<!--div>Here be documentation of teams, members and roles</div-->
 		<div>
-			<TeamActivity {team} />
+			<SidebarActivity activityLog={team} direct={$Members.data?.team.activityLog} />
 		</div>
 	</div>
 	{#if team}

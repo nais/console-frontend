@@ -6,11 +6,31 @@
 		type SidebarActivityLogFragment$data
 	} from '$houdini';
 	import { Heading } from '@nais/ds-svelte-community';
-	import { CaretUpDownIcon, PlayIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		CaretUpDownIcon,
+		LayerMinusIcon,
+		LayersPlusIcon,
+		MinusCircleIcon,
+		NotePencilIcon,
+		PersonPencilIcon,
+		PlayIcon,
+		PlusCircleIcon,
+		RocketIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
+	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
+	import SecretDeletedActivityLogEntry from './texts/SecretDeletedActivityLogEntry.svelte';
+	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
+	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
+	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
 
 	interface Props {
 		activityLog: SidebarActivityLogFragment;
@@ -31,6 +51,7 @@
 							actor
 							message
 							createdAt
+							resourceName
 							__typename
 							... on DeploymentActivityLogEntry {
 								deploymentData: data {
@@ -44,14 +65,10 @@
 								}
 							}
 							... on RepositoryAddedActivityLogEntry {
-								actor
-								createdAt
-								resourceName
+								id
 							}
 							... on RepositoryRemovedActivityLogEntry {
-								actor
-								createdAt
-								resourceName
+								id
 							}
 							... on SecretCreatedActivityLogEntry {
 								id
@@ -107,7 +124,17 @@
 	const icons: { [key in Kind]?: Component } = {
 		DeploymentActivityLogEntry: RocketIcon,
 		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
-		JobTriggeredActivityLogEntry: PlayIcon
+		JobTriggeredActivityLogEntry: PlayIcon,
+		RepositoryAddedActivityLogEntry: PlusCircleIcon,
+		RepositoryRemovedActivityLogEntry: MinusCircleIcon,
+		SecretValueAddedActivityLogEntry: LayersPlusIcon,
+		SecretValueRemovedActivityLogEntry: LayerMinusIcon,
+		SecretValueUpdatedActivityLogEntry: NotePencilIcon,
+		SecretCreatedActivityLogEntry: PlusCircleIcon,
+		SecretDeletedActivityLogEntry: MinusCircleIcon,
+		TeamMemberAddedActivityLogEntry: PlusCircleIcon,
+		TeamMemberRemovedActivityLogEntry: MinusCircleIcon,
+		TeamMemberSetRoleActivityLogEntry: PersonPencilIcon
 	};
 
 	function textComponent(kind: Kind): Component<{ data: unknown }> {
@@ -116,6 +143,26 @@
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':
 				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
+			case 'RepositoryAddedActivityLogEntry':
+				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'RepositoryRemovedActivityLogEntry':
+				return RepositoryRemovedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValueAddedActivityLogEntry':
+				return SecretValueAddedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValueUpdatedActivityLogEntry':
+				return SecretValueUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValueRemovedActivityLogEntry':
+				return SecretValueRemovedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretCreatedActivityLogEntry':
+				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretDeletedActivityLogEntry':
+				return SecretDeletedActivityLogEntry as Component<{ data: unknown }>;
+			case 'TeamMemberAddedActivityLogEntry':
+				return TeamMemberAddedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamMemberRemovedActivityLogEntry':
+				return TeamMemberRemovedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamMemberSetRoleActivityLogEntry':
+				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}

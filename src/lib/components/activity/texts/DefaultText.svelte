@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { WorkloadActivityLogFragment$data } from '$houdini';
+	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 
 	let {
 		data
 	}: {
-		data: WorkloadActivityLogFragment$data['activityLog']['nodes'][number];
+		data: SidebarActivityLogFragment$data['activityLog']['nodes'][number];
 	} = $props();
 </script>
 

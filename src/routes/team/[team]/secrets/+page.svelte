@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { SecretOrderField } from '$houdini';
-	import SecretActivity from '$lib/components/activity/SecretActivity.svelte';
+	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -176,7 +176,9 @@
 				/>
 			</div>
 		</div>
-		<div><SecretActivity team={$Secrets.data.team} /></div>
+		<div>
+			<SidebarActivity activityLog={$Secrets.data.team} direct={$Secrets.data.team.activityLog} />
+		</div>
 	</div>
 	{#if createSecretOpen}
 		<CreateSecret team={teamSlug} bind:open={createSecretOpen} {environments} />
