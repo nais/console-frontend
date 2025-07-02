@@ -221,6 +221,30 @@ input ActivityLogFilter {
   activityTypes: [ActivityLogActivityType!]
 }
 
+interface ActivityLogger {
+  """Activity log associated with the type."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+}
+
 input AddRepositoryToTeamInput {
   """Name of the repository, with the org prefix, for instance 'org/repo'."""
   repositoryName: String!
@@ -283,7 +307,7 @@ An application lets you run one or more instances of a container image on the [N
 
 Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 """
-type Application implements Node & Workload {
+type Application implements ActivityLogger & Node & Workload {
   """Activity log associated with the application."""
   activityLog(
     """Get items after this cursor."""
@@ -1750,7 +1774,7 @@ enum IngressType {
   UNKNOWN
 }
 
-type Job implements Node & Workload {
+type Job implements ActivityLogger & Node & Workload {
   """Activity log associated with the job."""
   activityLog(
     """Get items after this cursor."""
@@ -2907,7 +2931,7 @@ type Query {
 }
 
 """Reconciler type."""
-type Reconciler implements Node {
+type Reconciler implements ActivityLogger & Node {
   """Activity log associated with the reconciler."""
   activityLog(
     """Get items after this cursor."""
@@ -4487,7 +4511,7 @@ Learn more about what Nais teams are and what they can be used for in the [offic
 
 External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
 """
-type Team implements Node {
+type Team implements ActivityLogger & Node {
   """Activity log associated with the team."""
   activityLog(
     """Get items after this cursor."""
@@ -6497,6 +6521,9 @@ interface Workload {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.

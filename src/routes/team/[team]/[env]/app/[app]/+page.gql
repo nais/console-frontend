@@ -139,7 +139,7 @@ query App(
 					}
 				}
 
-				...WorkloadActivityLogFragment
+				...SidebarActivityLogFragment
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy

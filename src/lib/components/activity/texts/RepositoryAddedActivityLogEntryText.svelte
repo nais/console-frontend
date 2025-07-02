@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { RepositoryActivityLogFragment$data } from '$houdini';
+	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 
@@ -7,7 +7,7 @@
 		data
 	}: {
 		data: Extract<
-			RepositoryActivityLogFragment$data['activityLog']['nodes'][number],
+			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
 			{ __typename: 'RepositoryAddedActivityLogEntry' }
 		>;
 	} = $props();

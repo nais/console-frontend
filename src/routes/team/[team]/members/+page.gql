@@ -30,6 +30,10 @@ query Members(
 				}
 			}
 		}
-		...TeamActivityLogFragment
+		...SidebarActivityLogFragment
+			@with(
+				filter: { activityTypes: [TEAM_MEMBER_REMOVED, TEAM_MEMBER_ADDED, TEAM_MEMBER_SET_ROLE] }
+			)
+			@mask_disable
 	}
 }

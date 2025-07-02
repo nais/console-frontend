@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
+	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
@@ -11,7 +12,6 @@
 	import { Alert, BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
-	import RepositoryActivity from '$lib/components/activity/RepositoryActivity.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -250,7 +250,10 @@
 			{/if}
 		</div>
 		<div>
-			<RepositoryActivity team={$Repositories.data.team} />
+			<SidebarActivity
+				activityLog={$Repositories.data.team}
+				direct={$Repositories.data.team.activityLog}
+			/>
 		</div>
 	</div>
 {/if}
