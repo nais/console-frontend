@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
+	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import ErrorMessage, { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/components/vulnerability/WorkloadVulnerabilitySummary.svelte';
-	import WorkloadActivity from '$lib/components/activity/WorkloadActivity.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -127,7 +127,7 @@
 				<WorkloadVulnerabilitySummary workload={job} />
 			</div>
 
-			<WorkloadActivity workload={job} />
+			<SidebarActivity activityLog={job} />
 			<WorkloadDeploy workload={job} />
 
 			{#if viewerIsMember}

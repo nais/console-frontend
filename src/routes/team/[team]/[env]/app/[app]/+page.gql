@@ -140,17 +140,6 @@ query App(
 				}
 
 				...SidebarActivityLogFragment
-					@with(
-						filter: {
-							activityTypes: [
-								APPLICATION_DELETED
-								APPLICATION_RESTARTED
-								APPLICATION_SCALED
-								DEPLOYMENT
-							]
-						}
-					)
-					@mask_disable
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy

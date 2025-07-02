@@ -13,7 +13,7 @@
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 
 	interface Props {
-		activityLog?: SidebarActivityLogFragment;
+		activityLog: SidebarActivityLogFragment;
 		direct?: SidebarActivityLogFragment$data['activityLog'];
 	}
 

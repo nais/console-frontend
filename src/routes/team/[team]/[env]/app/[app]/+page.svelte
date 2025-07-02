@@ -166,8 +166,7 @@
 					<Heading level="2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
-				<!-- <WorkloadActivity workload={app} /> -->
-				<SidebarActivity activityLog={app} direct={app.activityLog} />
+				<SidebarActivity activityLog={app} />
 
 				<WorkloadDeploy workload={app} />
 				{#if viewerIsMember}
