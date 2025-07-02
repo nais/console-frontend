@@ -167,7 +167,7 @@
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
 				<!-- <WorkloadActivity workload={app} /> -->
-				<SidebarActivity activityLog={app} />
+				<SidebarActivity activityLog={app} direct={app.activityLog} />
 
 				<WorkloadDeploy workload={app} />
 				{#if viewerIsMember}

@@ -13,10 +13,11 @@
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 
 	interface Props {
-		activityLog: SidebarActivityLogFragment;
+		activityLog?: SidebarActivityLogFragment;
+		direct?: SidebarActivityLogFragment$data['activityLog'];
 	}
 
-	let { activityLog }: Props = $props();
+	let { activityLog, direct }: Props = $props();
 
 	let data = $derived(
 		fragment(
@@ -119,11 +120,13 @@
 				return DefaultText as Component<{ data: unknown }>;
 		}
 	}
+
+	const list = $derived(data && $data ? $data.activityLog.nodes : (direct?.nodes ?? []));
 </script>
 
 <div class="wrapper">
 	<Heading level="3" size="small">Activity</Heading>
-	{#each $data?.activityLog.nodes ?? [] as entry (entry.id)}
+	{#each list as entry (entry.id)}
 		{@const Icon = icons[entry.__typename] || RocketIcon}
 		{@const TextComponent = textComponent(entry.__typename)}
 

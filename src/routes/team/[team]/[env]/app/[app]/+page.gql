@@ -150,6 +150,7 @@ query App(
 							]
 						}
 					)
+					@mask_disable
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy
