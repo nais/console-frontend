@@ -78,49 +78,47 @@
 				</IconLabel>
 			</Tooltip>
 		{/if}
-		<Detail>
-			{#if job.runs.edges.length}
-				{@const lastRun = job.runs.edges[0].node}
-				<div style="display: flex; gap: 4px; align-items: center;">
-					{#if lastRun.status}
-						{#if lastRun.status.state === 'RUNNING'}
-							<TooltipAlignHack content="Job is running">
-								<Loader size="xsmall" variant="interaction" />
-							</TooltipAlignHack>
-						{:else if lastRun.status.state === 'PENDING'}
-							<TooltipAlignHack content="Job run pending">
-								<Loader size="xsmall" variant="interaction" />
-							</TooltipAlignHack>
-						{:else if lastRun.status.state === 'SUCCEEDED'}
-							<TooltipAlignHack content="Last job ran successfully">
-								<SuccessIcon />
-							</TooltipAlignHack>
-						{:else if lastRun.status.state === 'FAILED'}
-							<TooltipAlignHack content="Last job run failed">
-								<ErrorIcon />
-							</TooltipAlignHack>
-						{:else}
-							<TooltipAlignHack content="Job run status is unknown">
-								<QuestionmarkIcon />
-							</TooltipAlignHack>
-						{/if}
+		{#if job.runs.edges.length}
+			{@const lastRun = job.runs.edges[0].node}
+			<div style="display: flex; gap: 4px; align-items: center;">
+				{#if lastRun.status}
+					{#if lastRun.status.state === 'RUNNING'}
+						<TooltipAlignHack content="Job is running">
+							<Loader size="xsmall" variant="interaction" />
+						</TooltipAlignHack>
+					{:else if lastRun.status.state === 'PENDING'}
+						<TooltipAlignHack content="Job run pending">
+							<Loader size="xsmall" variant="interaction" />
+						</TooltipAlignHack>
+					{:else if lastRun.status.state === 'SUCCEEDED'}
+						<TooltipAlignHack content="Last job ran successfully">
+							<SuccessIcon />
+						</TooltipAlignHack>
+					{:else if lastRun.status.state === 'FAILED'}
+						<TooltipAlignHack content="Last job run failed">
+							<ErrorIcon />
+						</TooltipAlignHack>
 					{:else}
 						<TooltipAlignHack content="Job run status is unknown">
 							<QuestionmarkIcon />
 						</TooltipAlignHack>
 					{/if}
-					{#if lastRun.startTime}
-						<TooltipAlignHack
-							content="Last run - {format(lastRun.startTime, 'PPPP', { locale: enGB })}"
-						>
-							<Detail><Time time={lastRun.startTime} distance={true} /></Detail>
-						</TooltipAlignHack>
-					{/if}
-				</div>
-			{:else}
-				<Detail>No runs</Detail>
-			{/if}
-		</Detail>
+				{:else}
+					<TooltipAlignHack content="Job run status is unknown">
+						<QuestionmarkIcon />
+					</TooltipAlignHack>
+				{/if}
+				{#if lastRun.startTime}
+					<TooltipAlignHack
+						content="Last run - {format(lastRun.startTime, 'PPPP', { locale: enGB })}"
+					>
+						<Detail><Time time={lastRun.startTime} distance={true} /></Detail>
+					</TooltipAlignHack>
+				{/if}
+			</div>
+		{:else}
+			<Detail>No runs</Detail>
+		{/if}
 	</div>
 </ListItem>
 
