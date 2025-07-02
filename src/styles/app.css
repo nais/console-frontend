@@ -1,5 +1,32 @@
+@import 'tailwindcss';
+@import '@nais/ds-svelte-community/css/darkside' layer(components);
+@import '@layerstack/tailwind/core.css';
+@import '@layerstack/tailwind/utils.css';
+
+@source '../../node_modules/layerchart/**/*.{svelte,js}';
+
 :root {
 	--spacing-layout: var(--ax-space-40);
+
+	--customTextColor: white;
+	--primaryTextColor: #ff5757;
+	--softTextColor: rgba(156, 163, 175, 1);
+	--softLineColor: rgba(156, 163, 175, 0.4);
+	--screenBgColor: rgba(70, 70, 70, 0.5);
+	--errorBgColor: darkred;
+	--bgbase200: #2a2e37;
+	--scrollBarColor: rgba(86, 93, 105, 1);
+	--bgbase100: #3d4451;
+	--bgaccent: #078d7e;
+
+}
+
+/* layerchart */
+:root, .dark {
+	--color-surface-100: var(--ax-bg-default);
+	--color-surface-200: #00ff00;
+	--color-surface-300: var(--ax-bg-raised);
+	--color-surface-content: var(--ax-text-neutral);
 }
 
 html,
