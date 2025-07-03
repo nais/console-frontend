@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Manifest from '$lib/components/Manifest.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { AppManifest } = $derived(data);
