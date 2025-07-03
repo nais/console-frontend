@@ -1,14 +1,14 @@
-import { load_SqlInstance } from '$houdini';
+import { load_Secret } from '$houdini';
 import type { PageLoad } from './$houdini';
 
 export const load: PageLoad = async (event) => {
 	return {
-		...(await load_SqlInstance({
+		...(await load_Secret({
 			event,
 			variables: {
-				env: event.params.env,
 				team: event.params.team,
-				name: event.params.postgres
+				env: event.params.env,
+				secret: event.params.secret
 			}
 		}))
 	};

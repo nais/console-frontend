@@ -13,7 +13,6 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 				}
 				cascadingDelete
 				healthy
-				#	type
 				connectionName
 				diskAutoresize
 				diskAutoresizeLimit

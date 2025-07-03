@@ -23,7 +23,7 @@
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
