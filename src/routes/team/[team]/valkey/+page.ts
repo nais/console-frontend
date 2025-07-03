@@ -2,6 +2,7 @@ import { ValkeyInstanceOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
+import { get } from 'svelte/store';
 import type { PageLoad } from './$houdini';
 
 const rows = 25;
@@ -10,7 +11,9 @@ export const _ValkeyVariables: PageLoad = async (event) => {
 	const { url } = event;
 	const parent = await event.parent();
 
-	if (parent.UserInfo.data?.features.valkey.enabled === false) {
+	const userInfoData = get(parent.UserInfo);
+
+	if (userInfoData.data?.features.valkey.enabled === false) {
 		error(404, 'Valkey not enabled');
 	}
 

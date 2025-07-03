@@ -21,16 +21,11 @@ export const load: PageLoad = async (event) => {
 		}
 	};
 
-	const from = getFrom(interval);
-
 	return {
 		interval,
 		...(await load_TenantCost({
 			event,
-			variables: {
-				to,
-				from
-			}
+			variables: { from: getFrom(interval), to: subDays(new Date(), 2) }
 		}))
 	};
 };

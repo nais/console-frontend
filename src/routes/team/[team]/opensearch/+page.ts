@@ -3,6 +3,7 @@ import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMen
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
 import type { PageLoad } from './$houdini';
+import { get } from 'svelte/store';
 
 const rows = 25;
 
@@ -10,7 +11,9 @@ export const _OpenSearchVariables: PageLoad = async (event) => {
 	const { url } = event;
 	const parent = await event.parent();
 
-	if (parent.UserInfo.data?.features.openSearch.enabled === false) {
+	const userInfoData = get(parent.UserInfo);
+
+	if (userInfoData.data?.features.openSearch.enabled === false) {
 		error(404, 'OpenSearch not enabled');
 	}
 

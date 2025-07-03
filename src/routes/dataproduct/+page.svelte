@@ -68,13 +68,15 @@
 	}
 </script>
 
-{#if $DataProduct.data}
-	<ul>
-		<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
-		<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
-	</ul>
-	<EChart
-		options={renderChart(calculateTotals($DataProduct.data))}
-		style="height: 700px; width: 100%;"
-	/>
-{/if}
+<div class="page">
+	{#if $DataProduct.data}
+		<ul>
+			<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
+			<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
+		</ul>
+		<EChart
+			options={renderChart(calculateTotals($DataProduct.data))}
+			style="height: 700px; width: 100%;"
+		/>
+	{/if}
+</div>

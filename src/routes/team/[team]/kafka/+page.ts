@@ -1,6 +1,7 @@
 import { KafkaTopicOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { error } from '@sveltejs/kit';
+import { get } from 'svelte/store';
 import type { PageLoad } from './$houdini';
 
 const rows = 25;
@@ -9,7 +10,9 @@ export const _KafkaTopicsVariables: PageLoad = async (event) => {
 	const { url } = event;
 	const parent = await event.parent();
 
-	if (parent.UserInfo.data?.features.kafka.enabled === false) {
+	const userInfoData = get(parent.UserInfo);
+
+	if (userInfoData.data?.features.kafka.enabled === false) {
 		error(404, 'Kafka not enabled');
 	}
 

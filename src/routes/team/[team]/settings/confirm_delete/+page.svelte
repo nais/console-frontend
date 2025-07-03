@@ -32,7 +32,7 @@
 
 {#if $TeamDeleteKey.data}
 	{@const key = $TeamDeleteKey.data.team.deleteKey}
-	{#if UserInfo.data?.me.__typename == 'User' && UserInfo.data.me.id == key.createdBy.id}
+	{#if $UserInfo.data?.me.__typename == 'User' && $UserInfo.data.me.id == key.createdBy.id}
 		<Alert variant="error">You can not confirm your own delete request.</Alert>
 	{:else if Date.now() - +key.expires > 0}
 		<Alert variant="error">The delete key has expired.</Alert>
