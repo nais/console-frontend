@@ -3,7 +3,7 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Button, ErrorSummary, Heading, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { form = $bindable() }: PageProps = $props();
 	let saving = $state(false);

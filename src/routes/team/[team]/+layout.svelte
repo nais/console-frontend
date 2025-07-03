@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { LayoutProps } from './$houdini';
+	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
 
 	let { data, children }: LayoutProps = $props();
