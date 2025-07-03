@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Heading } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import Reconciler from './Reconciler.svelte';
 
 	let { data }: PageProps = $props();

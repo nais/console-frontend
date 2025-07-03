@@ -14,7 +14,7 @@
 	} from '@nais/ds-svelte-community';
 	import { type EChartsOption } from 'echarts';
 	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
