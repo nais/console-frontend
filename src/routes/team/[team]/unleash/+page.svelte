@@ -34,7 +34,7 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
 
 	let { data }: PageProps = $props();
