@@ -1,8 +1,15 @@
-import type { BucketVariables } from './$houdini';
-export const _BucketVariables: BucketVariables = ({ params }) => {
+import { load_Bucket } from '$houdini';
+import type { PageLoad } from './$houdini';
+
+export const load: PageLoad = async (event) => {
 	return {
-		environment: params.env,
-		team: params.team,
-		name: params.bucket
+		...(await load_Bucket({
+			event,
+			variables: {
+				team: event.params.team,
+				environment: event.params.env,
+				name: event.params.bucket
+			}
+		}))
 	};
 };
