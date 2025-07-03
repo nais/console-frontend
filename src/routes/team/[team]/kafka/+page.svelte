@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { KafkaTopicOrderField } from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { KafkaTopics } = $derived(data);
