@@ -18,7 +18,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
 

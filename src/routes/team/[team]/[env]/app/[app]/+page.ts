@@ -1,12 +1,21 @@
-import type { AppVariables } from './$houdini';
+import { load_App } from '$houdini';
+import type { PageLoad } from './$houdini';
 
 const rows = 6;
 
-export const _AppVariables: AppVariables = ({ url }) => {
-	const after = url.searchParams.get('after') || '';
-	const before = url.searchParams.get('before') || '';
+export const load: PageLoad = async (event) => {
+	const after = event.url.searchParams.get('after') || '';
+	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(before ? { before, last: rows } : { after, first: rows })
+		...(await load_App({
+			event,
+			variables: {
+				team: event.params.team,
+				env: event.params.env,
+				app: event.params.app,
+				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		}))
 	};
 };
