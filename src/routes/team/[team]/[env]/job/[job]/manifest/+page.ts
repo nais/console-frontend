@@ -1,11 +1,9 @@
-import { load_RunsWithPodNames } from '$houdini';
+import { load_JobManifest } from '$houdini';
 import type { PageLoad } from './$houdini';
-
-export const ssr = false;
 
 export const load: PageLoad = async (event) => {
 	return {
-		...(await load_RunsWithPodNames({
+		...(await load_JobManifest({
 			event,
 			variables: {
 				team: event.params.team,

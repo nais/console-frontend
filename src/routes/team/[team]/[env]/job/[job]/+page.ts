@@ -1,14 +1,14 @@
-import { load_JobDeploys } from '$houdini';
+import { load_Job } from '$houdini';
 import type { PageLoad } from './$houdini';
 
-const rows = 25;
+const rows = 6;
 
 export const load: PageLoad = async (event) => {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await load_JobDeploys({
+		...(await load_Job({
 			event,
 			variables: {
 				team: event.params.team,
