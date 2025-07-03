@@ -1,25 +1,36 @@
-import { ApplicationOrderField, OrderDirection, type TeamApplicationsFilter } from '$houdini';
+import {
+	ApplicationOrderField,
+	load_Applications,
+	OrderDirection,
+	type TeamApplicationsFilter
+} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { ApplicationsVariables } from './$houdini';
+import type { PageLoad } from './$houdini';
 
 const rows = 25;
 
-export const _ApplicationsVariables: ApplicationsVariables = ({ url }) => {
-	const filter: string = url.searchParams.get('filter') || '';
+export const load: PageLoad = async (event) => {
+	const filter: string = event.url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
-		url.searchParams.get('environments') === 'none'
+		event.url.searchParams.get('environments') === 'none'
 			? undefined
-			: url.searchParams.get('environments')?.split(',') || [];
+			: event.url.searchParams.get('environments')?.split(',') || [];
 
-	const after = url.searchParams.get('after') || '';
-	const before = url.searchParams.get('before') || '';
+	const after = event.url.searchParams.get('after') || '';
+	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		filter: { name: filter, environments } as TeamApplicationsFilter,
-		orderBy: {
-			field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.STATUS, url),
-			direction: urlToOrderDirection(url, OrderDirection.DESC)
-		},
-		...(before ? { before, last: rows } : { after, first: rows })
+		...(await load_Applications({
+			event,
+			variables: {
+				team: event.params.team,
+				filter: { name: filter, environments } as TeamApplicationsFilter,
+				orderBy: {
+					field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.STATUS, event.url),
+					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
+				},
+				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		}))
 	};
 };
