@@ -18,7 +18,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, PlusIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
 	let { data }: PageProps = $props();
@@ -38,11 +38,10 @@
 	});
 
 	let createSecretOpen = $state(false);
-	let environments: EnvironmentType[] = $state([]);
 
-	$effect(() => {
-		if ($Secrets.data) {
-			environments = $Secrets.data?.team.environments
+	const environments = $derived.by(() => {
+		return (
+			$Secrets.data?.team.environments
 				.map((env) => {
 					return {
 						name: env.environment.name,
@@ -57,8 +56,8 @@
 								}) || []
 					};
 				})
-				.filter((env) => env !== undefined) as EnvironmentType[];
-		}
+				.filter((env) => env !== undefined) ?? ([] as EnvironmentType[])
+		);
 	});
 
 	const tableSortChange = (key: string) => {
