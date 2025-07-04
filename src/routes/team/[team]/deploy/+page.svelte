@@ -8,7 +8,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
