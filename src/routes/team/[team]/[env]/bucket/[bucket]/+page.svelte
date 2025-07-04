@@ -92,7 +92,7 @@
 				{:else}
 					<div class="inline">
 						<i>No owner</i>
-						<WarningIcon title="This Big Query instance does not belong to any workload" />
+						<WarningIcon title="This bucket does not belong to any workload" />
 					</div>
 				{/if}
 			</div>
