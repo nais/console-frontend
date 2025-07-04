@@ -21,7 +21,7 @@
 	themeSwitch.theme = data.theme;
 
 	let user = $derived(
-		UserInfo.data?.me as
+		$UserInfo.data?.me as
 			| {
 					readonly name: string;
 					readonly isAdmin: boolean;
@@ -68,7 +68,7 @@
 				<ProgressBar />
 			{/if}
 
-			{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
+			{#if !$isAuthenticated || isUnauthenticated($UserInfo.errors)}
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}

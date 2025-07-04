@@ -1,10 +1,9 @@
 import type { OrderDirection$options, TeamFilter, TeamOrderField$options } from '$houdini';
 import { load_Teams, TeamOrderField } from '$houdini';
-import type { PageLoad } from './$houdini';
 
 const rows = 25;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 	let filter = event.url.searchParams.get('filter') || '';
@@ -31,4 +30,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

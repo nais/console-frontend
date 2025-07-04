@@ -4,7 +4,6 @@
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
@@ -184,7 +183,6 @@
 				{:else}
 					<div class="inline">
 						<i>No owner</i>
-						<WarningIcon title="This Valkey instance does not belong to any workload" />
 					</div>
 				{/if}
 			</div>

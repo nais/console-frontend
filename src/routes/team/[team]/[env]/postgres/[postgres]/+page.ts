@@ -1,10 +1,14 @@
-import type { SqlInstanceVariables } from './$houdini';
-export const _SqlInstanceVariables: SqlInstanceVariables = ({ params }) => {
+import { load_SqlInstance } from '$houdini';
+
+export async function load(event) {
 	return {
-		environment: params.env,
-		team: params.team,
-		name: params.postgres,
-		from: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-		to: new Date(Date.now())
+		...(await load_SqlInstance({
+			event,
+			variables: {
+				env: event.params.env,
+				team: event.params.team,
+				name: event.params.postgres
+			}
+		}))
 	};
-};
+}

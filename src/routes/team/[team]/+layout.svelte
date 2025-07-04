@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import PageHeader from '$lib/components/UrlBasedPageHeader.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
-	import type { LayoutProps } from './$houdini';
+	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
 
 	let { data, children }: LayoutProps = $props();
@@ -21,7 +21,7 @@
 	const gitHubTeam = $derived(externalResources.gitHubTeam?.slug);
 
 	const isAdmin = $derived(
-		UserInfo.data?.me.__typename === 'User' ? UserInfo.data?.me.isAdmin : false
+		$UserInfo.data?.me.__typename === 'User' ? $UserInfo.data?.me.isAdmin : false
 	);
 </script>
 
@@ -39,7 +39,7 @@
 	{/if}
 
 	<div class="main">
-		<Menu features={UserInfo.data?.features} member={viewerIsMember} {teamSlug} {isAdmin} />
+		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {teamSlug} {isAdmin} />
 		<div class="container">
 			<PageHeader
 				{gitHubOrganization}

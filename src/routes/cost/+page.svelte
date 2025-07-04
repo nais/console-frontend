@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { type TenantCost$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -15,7 +14,7 @@
 	} from '@nais/ds-svelte-community';
 	import { type EChartsOption } from 'echarts';
 	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
@@ -148,47 +147,50 @@
 	}
 </script>
 
-<div class="container">
-	<div class="wrapper">
-		<GraphErrors errors={$TenantCost.errors} />
+<svelte:head><title>Tenant Cost - Nais Console</title></svelte:head>
+<div class="page">
+	<div class="container">
+		<div class="wrapper">
+			<!-- <GraphErrors errors={$TenantCost.errors} /> -->
 
-		<div class="graph">
-			<div class="heading">
-				<div class="content">
-					<Heading level="2" spacing>Cost by Service</Heading>
-					<BodyLong>
-						Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
-						Some services are missing cost data. Figures are based on data from Google Cloud and
-						Aiven. The current month includes data up to
-						{#if $TenantCost.data?.costMonthlySummary?.series && $TenantCost.data.costMonthlySummary.series.length > 0 && $TenantCost.data.costMonthlySummary.series.at(-1)?.date}
-							<strong
-								><Time
-									time={$TenantCost.data.costMonthlySummary.series.at(-1)?.date as Date}
-								/></strong
-							>
-						{/if}.
-					</BodyLong>
+			<div class="graph">
+				<div class="heading">
+					<div class="content">
+						<Heading level="2" spacing>Cost by Service</Heading>
+						<BodyLong>
+							Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
+							Some services are missing cost data. Figures are based on data from Google Cloud and
+							Aiven. The current month includes data up to
+							{#if $TenantCost.data?.costMonthlySummary?.series && $TenantCost.data.costMonthlySummary.series.length > 0 && $TenantCost.data.costMonthlySummary.series.at(-1)?.date}
+								<strong
+									><Time
+										time={$TenantCost.data.costMonthlySummary.series.at(-1)?.date as Date}
+									/></strong
+								>
+							{/if}.
+						</BodyLong>
+					</div>
+					<ToggleGroup
+						value={interval}
+						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					>
+						{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
+							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
 				</div>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
+				{#if $TenantCost.data}
+					<!-- <EChart options={costTransformStackedLineChart($TenantCost.data)} /> -->
+					<EChart
+						options={costTransformStackedColumnChart($TenantCost.data)}
+						style="height: 1000px;"
+					/>
+				{:else}
+					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+						<Loader size="3xlarge" />
+					</div>
+				{/if}
 			</div>
-			{#if $TenantCost.data}
-				<!-- <EChart options={costTransformStackedLineChart($TenantCost.data)} /> -->
-				<EChart
-					options={costTransformStackedColumnChart($TenantCost.data)}
-					style="height: 1000px;"
-				/>
-			{:else}
-				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-					<Loader size="3xlarge" />
-				</div>
-			{/if}
 		</div>
 	</div>
 </div>

@@ -1,18 +1,22 @@
-import { OrderDirection, TeamMemberOrderField } from '$houdini';
+import { load_Members, OrderDirection, TeamMemberOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { MembersVariables } from './$houdini';
 
 const rows = 25;
 
-export const _MembersVariables: MembersVariables = ({ url }) => {
-	const after = url.searchParams.get('after') || '';
-	const before = url.searchParams.get('before') || '';
-
+export async function load(event) {
+	const after = event.url.searchParams.get('after') || '';
+	const before = event.url.searchParams.get('before') || '';
 	return {
-		orderBy: {
-			field: urlToOrderField(TeamMemberOrderField, TeamMemberOrderField.NAME, url),
-			direction: urlToOrderDirection(url, OrderDirection.ASC)
-		},
-		...(before ? { before, last: rows } : { after, first: rows })
+		...(await load_Members({
+			event,
+			variables: {
+				team: event.params.team,
+				orderBy: {
+					field: urlToOrderField(TeamMemberOrderField, TeamMemberOrderField.NAME, event.url),
+					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+				},
+				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		}))
 	};
-};
+}

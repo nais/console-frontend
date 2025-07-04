@@ -1,12 +1,20 @@
-import type { JobDeploysVariables } from './$houdini';
+import { load_JobDeploys } from '$houdini';
 
 const rows = 25;
 
-export const _JobDeploysVariables: JobDeploysVariables = ({ url }) => {
-	const after = url.searchParams.get('after') || '';
-	const before = url.searchParams.get('before') || '';
+export async function load(event) {
+	const after = event.url.searchParams.get('after') || '';
+	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(before ? { before, last: rows } : { after, first: rows })
+		...(await load_JobDeploys({
+			event,
+			variables: {
+				team: event.params.team,
+				env: event.params.env,
+				job: event.params.job,
+				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		}))
 	};
-};
+}

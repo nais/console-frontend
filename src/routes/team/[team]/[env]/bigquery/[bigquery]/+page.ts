@@ -1,8 +1,14 @@
-import type { BigQueryDatasetVariables } from './$houdini';
-export const _BigQueryDatasetVariables: BigQueryDatasetVariables = ({ params }) => {
+import { load_BigQueryDataset } from '$houdini';
+
+export async function load(event) {
 	return {
-		environment: params.env,
-		team: params.team,
-		name: params.bigquery
+		...(await load_BigQueryDataset({
+			event,
+			variables: {
+				team: event.params.team,
+				environment: event.params.env,
+				name: event.params.bigquery
+			}
+		}))
 	};
-};
+}

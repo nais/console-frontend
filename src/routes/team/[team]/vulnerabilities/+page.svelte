@@ -7,7 +7,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
 	import { BodyLong, BodyShort, Heading, Select } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TeamVulnerabilities, teamSlug } = $derived(data);

@@ -1,11 +1,8 @@
-import { load_TeamRoles, type TeamRoles$result } from '$houdini';
+import { load_TeamRoles } from '$houdini';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
-import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async (
-	event
-): Promise<TeamRoles$result['team'] & { teamSlug: string }> => {
+export async function load(event) {
 	const roles = await load_TeamRoles({
 		event,
 		variables: { team: event.params.team },
@@ -45,4 +42,4 @@ export const load: LayoutLoad = async (
 				}),
 		teamSlug: event.params.team
 	};
-};
+}

@@ -1,18 +1,24 @@
 import {
+	load_ValkeyInstance,
 	ValkeyInstanceAccessOrderField,
 	type OrderDirection$options,
 	type ValkeyInstanceAccessOrderField$options
 } from '$houdini';
-import type { ValkeyInstanceVariables } from './$houdini';
-export const _ValkeyInstanceVariables: ValkeyInstanceVariables = ({ url, params }) => {
-	const field = (url.searchParams.get('field') ||
+
+export async function load(event) {
+	const field = (event.url.searchParams.get('field') ||
 		ValkeyInstanceAccessOrderField.WORKLOAD) as ValkeyInstanceAccessOrderField$options;
-	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
 
 	return {
-		orderBy: { field: field, direction: direction },
-		environment: params.env,
-		team: params.team,
-		name: params.valkey
+		...(await load_ValkeyInstance({
+			event,
+			variables: {
+				orderBy: { field: field, direction: direction },
+				environment: event.params.env,
+				team: event.params.team,
+				name: event.params.valkey
+			}
+		}))
 	};
-};
+}

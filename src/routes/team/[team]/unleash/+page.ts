@@ -1,11 +1,12 @@
 import { load_Unleash } from '$houdini';
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$houdini';
+import { get } from 'svelte/store';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const parent = await event.parent();
+	const userInfoData = get(parent.UserInfo);
 
-	if (parent.UserInfo.data?.features.unleash.enabled === false) {
+	if (userInfoData.data?.features.unleash.enabled === false) {
 		error(404, 'Unleash not enabled');
 	}
 
@@ -17,4 +18,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

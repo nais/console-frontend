@@ -12,11 +12,12 @@
 
 	let { data }: PageProps = $props();
 
-	let UserTeams = $derived(data.UserTeams);
+	let { UserTeams } = $derived(data);
+
 	let tenantName = $derived(data.tenantName);
 
 	let userTeams = $derived(
-		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data?.me.teams?.nodes.length
+		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data.me.teams?.nodes.length
 	);
 </script>
 

@@ -1,10 +1,11 @@
 import { error } from '@sveltejs/kit';
-import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ parent }) => {
+export async function load({ parent }) {
 	const pd = await parent();
 
-	if (!(pd.UserInfo.data?.me.__typename === 'User' && pd.UserInfo.data?.me.isAdmin)) {
+	const userInfoData = await pd.UserInfo.fetch();
+
+	if (!(userInfoData.data?.me.__typename === 'User' && userInfoData.data?.me.isAdmin)) {
 		error(403, 'You are not allowed to view this page');
 	}
-};
+}

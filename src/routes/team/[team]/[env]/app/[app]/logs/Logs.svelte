@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-
 	import { graphql } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';

@@ -1,8 +1,7 @@
 import { load_TenantCost } from '$houdini';
 import { subDays, subMonths, subYears } from 'date-fns';
-import type { PageLoad } from './$houdini';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const interval = event.url.searchParams.get('interval') ?? '6m';
 	const to = subDays(new Date(), 2);
 
@@ -21,16 +20,11 @@ export const load: PageLoad = async (event) => {
 		}
 	};
 
-	const from = getFrom(interval);
-
 	return {
 		interval,
 		...(await load_TenantCost({
 			event,
-			variables: {
-				to,
-				from
-			}
+			variables: { from: getFrom(interval), to: subDays(new Date(), 2) }
 		}))
 	};
-};
+}

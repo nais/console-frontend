@@ -1,7 +1,7 @@
 <script lang="ts">
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { AllErrors } = $derived(data);

@@ -1,8 +1,7 @@
 import { load_JobCost } from '$houdini';
 import { subDays, subMonths, subYears } from 'date-fns';
-import type { PageLoad } from './$houdini';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const interval = event.url.searchParams.get('interval') ?? '30d';
 	const to = subDays(new Date(), 2);
 
@@ -37,4 +36,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

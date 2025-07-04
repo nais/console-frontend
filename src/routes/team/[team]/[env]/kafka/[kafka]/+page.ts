@@ -1,19 +1,24 @@
 import {
 	KafkaTopicAclOrderField,
+	load_KafkaTopic,
 	type KafkaTopicAclOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { KafkaTopicVariables } from './$houdini';
 
-export const _KafkaTopicVariables: KafkaTopicVariables = ({ url, params }) => {
-	const field = (url.searchParams.get('field') ||
-		KafkaTopicAclOrderField.TEAM_SLUG) as KafkaTopicAclOrderField$options;
-	const direction = (url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
-
+export async function load(event) {
 	return {
-		orderBy: { field: field, direction: direction },
-		environment: params.env,
-		team: params.team,
-		name: params.kafka
+		...(await load_KafkaTopic({
+			event,
+			variables: {
+				environment: event.params.env,
+				team: event.params.team,
+				name: event.params.kafka,
+				orderBy: {
+					field: (event.url.searchParams.get('field') ||
+						KafkaTopicAclOrderField.TEAM_SLUG) as KafkaTopicAclOrderField$options,
+					direction: (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options
+				}
+			}
+		}))
 	};
-};
+}
