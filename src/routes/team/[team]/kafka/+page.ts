@@ -1,6 +1,6 @@
 import { KafkaTopicOrderField, load_KafkaTopics } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 const rows = 25;
 

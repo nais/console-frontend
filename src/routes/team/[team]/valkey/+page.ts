@@ -3,7 +3,7 @@ import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMen
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
 import { get } from 'svelte/store';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 const rows = 25;
 

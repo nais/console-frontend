@@ -4,7 +4,7 @@ import {
 	type OpenSearchAccessOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async (event) => {
 	return {

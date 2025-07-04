@@ -1,5 +1,5 @@
 import { load_RunsWithPodNames } from '$houdini';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 export const ssr = false;
 

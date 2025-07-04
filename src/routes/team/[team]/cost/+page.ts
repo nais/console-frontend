@@ -1,6 +1,6 @@
 import { load_TeamCost } from '$houdini';
 import { subDays, subMonths, subYears } from 'date-fns';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async (event) => {
 	const interval = event.url.searchParams.get('interval') ?? '30d';

@@ -1,5 +1,5 @@
 import { load_JobDeploys } from '$houdini';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 const rows = 25;
 

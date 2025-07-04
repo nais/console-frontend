@@ -1,7 +1,7 @@
 import { load_Unleash } from '$houdini';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async (event) => {
 	const parent = await event.parent();

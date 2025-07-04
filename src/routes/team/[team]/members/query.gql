@@ -5,7 +5,7 @@ query Members(
 	$first: Int
 	$last: Int
 	$orderBy: TeamMemberOrder!
-) @blocking {
+) {
 	team(slug: $team) {
 		slug
 		members(after: $after, before: $before, first: $first, last: $last, orderBy: $orderBy)

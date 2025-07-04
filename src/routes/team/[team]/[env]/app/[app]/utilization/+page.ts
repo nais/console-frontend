@@ -1,5 +1,5 @@
 import { load_ResourceUtilizationForApp } from '$houdini';
-import type { PageLoad } from './$houdini';
+import type { PageLoad } from './$types';
 
 function getStart(interval: string | null) {
 	switch (interval) {
