@@ -1,10 +1,9 @@
 import { load_AdminReconcilers } from '$houdini';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	return {
 		...(await load_AdminReconcilers({
 			event
 		}))
 	};
-};
+}

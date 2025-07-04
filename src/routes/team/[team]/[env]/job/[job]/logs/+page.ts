@@ -1,9 +1,8 @@
 import { load_RunsWithPodNames } from '$houdini';
-import type { PageLoad } from './$types';
 
 export const ssr = false;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	return {
 		...(await load_RunsWithPodNames({
 			event,
@@ -14,4 +13,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

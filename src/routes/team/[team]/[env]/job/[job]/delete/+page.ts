@@ -1,6 +1,6 @@
 import { load_DeleteJobPage } from '$houdini';
 import { error } from '@sveltejs/kit';
-import type { BeforeLoadEvent, PageLoad } from './$houdini';
+import type { BeforeLoadEvent } from './$houdini';
 
 export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
 	const pd = await parent();
@@ -10,7 +10,7 @@ export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
 	}
 }
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	return {
 		...(await load_DeleteJobPage({
 			event,
@@ -21,4 +21,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

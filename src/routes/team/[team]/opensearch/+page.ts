@@ -3,11 +3,10 @@ import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMen
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
 import { get } from 'svelte/store';
-import type { PageLoad } from './$types';
 
 const rows = 25;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const { url } = event;
 	const parent = await event.parent();
 
@@ -35,4 +34,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

@@ -4,11 +4,10 @@ import {
 	type OrderDirection$options,
 	type TeamOrderField$options
 } from '$houdini';
-import type { PageLoad } from './$types';
 
 const rows = 20;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const field = (event.url.searchParams.get('field') ||
 		TeamOrderField.RISK_SCORE) as TeamOrderField$options;
 	const direction = (event.url.searchParams.get('direction') || 'DESC') as OrderDirection$options;
@@ -40,4 +39,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

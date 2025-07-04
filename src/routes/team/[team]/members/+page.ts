@@ -1,10 +1,9 @@
 import { load_Members, OrderDirection, TeamMemberOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { PageLoad } from './$types';
 
 const rows = 25;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 	return {
@@ -20,4 +19,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

@@ -1,7 +1,6 @@
 import { load_TeamVulnerabilities } from '$houdini';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	return {
 		...(await load_TeamVulnerabilities({
 			event,
@@ -10,4 +9,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

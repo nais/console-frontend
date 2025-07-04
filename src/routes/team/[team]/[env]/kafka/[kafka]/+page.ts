@@ -4,9 +4,8 @@ import {
 	type KafkaTopicAclOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	return {
 		...(await load_KafkaTopic({
 			event,
@@ -22,4 +21,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

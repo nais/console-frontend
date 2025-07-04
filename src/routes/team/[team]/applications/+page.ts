@@ -5,11 +5,10 @@ import {
 	type TeamApplicationsFilter
 } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
-import type { PageLoad } from './$types';
 
 const rows = 25;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const filter: string = event.url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
 		event.url.searchParams.get('environments') === 'none'
@@ -33,4 +32,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

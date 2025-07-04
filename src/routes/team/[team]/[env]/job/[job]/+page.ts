@@ -1,9 +1,8 @@
 import { load_Job } from '$houdini';
-import type { PageLoad } from './$types';
 
 const rows = 6;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
@@ -18,4 +17,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

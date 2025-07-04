@@ -1,9 +1,8 @@
 import { load_Unleash } from '$houdini';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const parent = await event.parent();
 	const userInfoData = get(parent.UserInfo);
 
@@ -19,4 +18,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

@@ -1,5 +1,4 @@
 import { load_ResourceUtilizationForApp } from '$houdini';
-import type { PageLoad } from './$types';
 
 function getStart(interval: string | null) {
 	switch (interval) {
@@ -17,7 +16,7 @@ function getStart(interval: string | null) {
 }
 
 export const ssr = false;
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const interval = event.url.searchParams.get('interval');
 	const end = new Date(Date.now());
 	const start = getStart(interval);
@@ -35,4 +34,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

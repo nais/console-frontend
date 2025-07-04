@@ -1,11 +1,10 @@
 import { BucketOrderField, load_Buckets } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { startOfMonth, subMonths } from 'date-fns';
-import type { PageLoad } from './$types';
 
 const rows = 25;
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
@@ -24,4 +23,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}

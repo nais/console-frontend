@@ -6,9 +6,8 @@ import {
 	type SecretOrder,
 	type SecretOrderField$options
 } from '$houdini';
-import type { PageLoad } from './$types';
 
-export const load: PageLoad = async (event) => {
+export async function load(event) {
 	const filter = event.url.searchParams.get('filter') || '';
 	const field = (event.url.searchParams.get('field') ||
 		SecretOrderField.NAME) as SecretOrderField$options;
@@ -30,4 +29,4 @@ export const load: PageLoad = async (event) => {
 			}
 		}))
 	};
-};
+}
