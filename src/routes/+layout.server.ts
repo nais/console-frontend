@@ -1,6 +1,4 @@
-import type { LayoutServerLoad } from './$houdini';
-
-export const load: LayoutServerLoad = async (event) => {
+export async function load(event) {
 	let theme = event.cookies.get('theme');
 	if (theme !== 'dark' && theme !== 'light') {
 		theme = 'light';
@@ -12,4 +10,4 @@ export const load: LayoutServerLoad = async (event) => {
 		theme: theme as 'dark' | 'light',
 		userAgent: event.request.headers.get('user-agent') || 'unknown'
 	};
-};
+}
