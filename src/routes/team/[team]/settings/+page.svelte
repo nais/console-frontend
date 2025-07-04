@@ -28,7 +28,7 @@
 		EyeSlashIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';
 
 	let { data }: PageProps = $props();

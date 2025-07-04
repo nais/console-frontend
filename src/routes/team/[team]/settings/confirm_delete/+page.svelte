@@ -10,7 +10,7 @@
 	import Time from '$lib/Time.svelte';
 	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
