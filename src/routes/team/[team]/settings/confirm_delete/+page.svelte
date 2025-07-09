@@ -30,6 +30,8 @@
 	`);
 </script>
 
+<GraphErrors errors={$TeamDeleteKey.errors} />
+
 {#if $TeamDeleteKey.data}
 	{@const key = $TeamDeleteKey.data.team.deleteKey}
 	{#if $UserInfo.data?.me.__typename == 'User' && $UserInfo.data.me.id == key.createdBy.id}
@@ -89,6 +91,4 @@
 			{/snippet}
 		</Modal>
 	{/if}
-{:else}
-	<GraphErrors errors={$TeamDeleteKey?.errors || []} />
 {/if}
