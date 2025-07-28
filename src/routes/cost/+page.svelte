@@ -14,6 +14,7 @@
 	} from '@nais/ds-svelte-community';
 	import { type EChartsOption } from 'echarts';
 	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -35,7 +36,7 @@
 		}
 
 		const seriesData: { [service: string]: [string, number][] } = {};
-		const allServices = new Set<string>();
+		const allServices = new SvelteSet<string>();
 
 		// First pass to collect all service names
 		data.costMonthlySummary.series.forEach((entry) => {

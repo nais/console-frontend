@@ -53,8 +53,12 @@
 	let open = $state(false);
 
 	const submit = (runName: string) => {
+		if (!jobName || !environment) {
+			console.error('Job name or environment is not defined');
+			return;
+		}
 		triggerRun.mutate({
-			jobName,
+			jobName: jobName,
 			environment,
 			teamSlug,
 			runName,
@@ -121,7 +125,9 @@
 		<div class="sidebar">
 			<!-- <Status {job} /> -->
 			<Schedule schedule={job.schedule} />
-			<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
+			{#if jobName && environment}
+				<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
+			{/if}
 			<div>
 				<Heading level="2" size="small">Vulnerabilities</Heading>
 				<WorkloadVulnerabilitySummary workload={job} />
@@ -130,13 +136,13 @@
 			<SidebarActivity activityLog={job} />
 			<WorkloadDeploy workload={job} />
 
-			{#if viewerIsMember}
+			{#if viewerIsMember && jobName && environment}
 				<Secrets workload={jobName} {environment} {teamSlug} />
 			{/if}
 		</div>
 	</div>
 
-	{#if open}
+	{#if open && jobName && environment}
 		<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
 	{/if}
 {/if}

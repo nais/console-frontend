@@ -35,8 +35,8 @@
 	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
 
-	let secretName = $derived(page.params.secret);
-	let env = $derived(page.params.env);
+	let secretName = $derived(page.params.secret ?? '');
+	let env = $derived(page.params.env ?? '');
 
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);

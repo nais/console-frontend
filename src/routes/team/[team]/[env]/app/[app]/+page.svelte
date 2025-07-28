@@ -49,6 +49,10 @@
 	let restart = $state(false);
 
 	const submit = () => {
+		if (!application || !environment) {
+			console.error('Application or environment is not defined');
+			return;
+		}
 		restartApp.mutate({
 			application,
 			environment,
@@ -161,7 +165,9 @@
 				</div>
 			</div>
 			<div class="sidebar">
-				<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+				{#if environment}
+					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+				{/if}
 				<div>
 					<Heading level="2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={app} />
@@ -169,7 +175,7 @@
 				<SidebarActivity activityLog={app} />
 
 				<WorkloadDeploy workload={app} />
-				{#if viewerIsMember}
+				{#if viewerIsMember && environment}
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
