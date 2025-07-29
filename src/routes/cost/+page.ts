@@ -14,8 +14,8 @@ export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 	const field = (event.url.searchParams.get('field') ||
-		TeamOrderField.SLUG) as TeamOrderField$options;
-	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+		TeamOrderField.ACCUMULATED_COST) as TeamOrderField$options;
+	const direction = (event.url.searchParams.get('direction') || 'DESC') as OrderDirection$options;
 
 	const getFrom = (interval: string): Date => {
 		switch (interval) {

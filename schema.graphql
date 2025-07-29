@@ -5548,6 +5548,9 @@ input TeamOrder {
 
 """Possible fields to order teams by."""
 enum TeamOrderField {
+  """The team's accumulated cost over the last 12 months"""
+  ACCUMULATED_COST
+
   """
   The accumulated number of critical vulnerabilities of the teams workloads.
   """

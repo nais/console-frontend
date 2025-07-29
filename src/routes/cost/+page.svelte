@@ -3,6 +3,7 @@
 	import { TeamOrderField, type TenantCost$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -25,7 +26,6 @@
 	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
-	import Pagination from '$lib/Pagination.svelte';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
@@ -34,7 +34,6 @@
 		orderBy: $TenantCost.variables?.orderBy?.field,
 		direction: $TenantCost.variables?.orderBy?.direction
 	});
-	$inspect(tableSort, 'tableSort');
 
 	const tableSortChange = (key: string) => {
 		if (key === tableSort.orderBy) {
@@ -316,7 +315,7 @@
 					<Thead>
 						<Tr>
 							<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-							<Th>Total</Th>
+							<Th sortable={true} sortKey={TeamOrderField.ACCUMULATED_COST}>Total</Th>
 						</Tr>
 					</Thead>
 					<Tbody>
@@ -331,7 +330,7 @@
 						{:else}
 							{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
 								<Tr>
-									<Td height="2rem"><a href="/team/{team.slug}/team">{team.slug}</a></Td>
+									<Td height="2rem"><a href="/team/{team.slug}/cost">{team.slug}</a></Td>
 									<Td style="text-align: right"
 										>{euroValueFormatter(team.cost.monthlySummary.sum)}</Td
 									>
