@@ -26,6 +26,7 @@
 	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
+	import { serviceColor } from '$lib/chart/util';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
@@ -209,49 +210,6 @@
 			],
 			series
 		} as EChartsOption;
-	}
-
-	function serviceColor(serviceName: string): string {
-		switch (serviceName) {
-			case 'Cloud SQL':
-				return '#FF3C38'; // vivid red
-			case 'Cloud Storage':
-				return '#FF9F1C'; // bright orange
-			case 'Compute Engine':
-				return '#FFD23F'; // pure yellow
-			case 'Cloud Key Management Service (KMS)':
-				return '#7FFF00'; // electric chartreuse
-			case 'BigQuery':
-				return '#00BFFF'; // bright sky blue
-			case 'InfluxDB':
-				return '#4F98FF'; // clear blue
-			case 'Redis':
-				return '#ADFF2F'; // lime green
-			case 'OpenSearch':
-				return '#8A2BE2'; // blue violet
-			case 'Secret Manager':
-				return '#FF66CC'; // hot pink
-			case 'Kubernetes Engine':
-				return '#FF1493'; // deep pink
-			case 'Networking':
-				return '#FF61A6'; // bubblegum
-			case 'Cloud Workstations':
-				return '#FF6F61'; // coral
-			case 'Confidential Computing':
-				return '#FF8C00'; // deep orange
-			case 'Valkey':
-				return '#FF00FF'; // pure magenta
-			case 'Kafka Shared':
-				return '#32CD32'; // vibrant green
-			case 'Kafka Tiered Storage':
-				return '#40E0D0'; // turquoise
-			default:
-				return '#1E90FF'; // dodger blue
-		}
-		/*
-			return '#9D4EDD'; // vibrant violet
-			return '#D633FF'; // strong magenta
-		*/
 	}
 </script>
 

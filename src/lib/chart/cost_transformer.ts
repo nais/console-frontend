@@ -1,6 +1,9 @@
 import { euroValueFormatter } from '$lib/utils/formatters';
-import type { EChartsOption } from 'echarts';
-import type { OptionDataValue } from 'echarts/types/src/util/types.js';
+import { format } from 'date-fns';
+import { type EChartsOption } from 'echarts';
+import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
+import { normalizeVal } from './transformVulnerabilities';
+import { serviceColor } from './util';
 
 export type DailCostType = {
 	readonly series: {
@@ -75,16 +78,23 @@ export function costTransformStackedColumnChart(data: DailCostType | undefined):
 	});
 
 	// Prepare the series for ECharts
-	const series = Array.from(allServices).map((serviceName) => ({
-		name: serviceName,
-		type: 'line',
-		stack: 'Cost',
-		areaStyle: {
-			opacity: 1
-		},
-		showSymbol: false,
-		data: seriesData[serviceName]
-	}));
+	const series = Array.from(allServices)
+		.map((serviceName) => ({
+			name: serviceName,
+			color: serviceColor(serviceName), // Default color per service
+			type: 'line',
+			stack: 'Cost',
+			areaStyle: {
+				opacity: 1
+			},
+			showSymbol: false,
+			data: seriesData[serviceName]
+		}))
+		.toSorted((a, b) => {
+			const aValue = seriesData[a.name].at(-1)?.[1] ?? 0;
+			const bValue = seriesData[b.name].at(-1)?.[1] ?? 0;
+			return aValue - bValue;
+		});
 
 	// Return the ECharts option object
 	return {
@@ -101,12 +111,43 @@ export function costTransformStackedColumnChart(data: DailCostType | undefined):
 					}
 				: {},
 		tooltip: {
-			trigger: series.length > 10 ? 'item' : 'axis',
-			axisPointer: {
-				type: 'shadow'
-			},
-			valueFormatter(value: OptionDataValue[]) {
-				return euroValueFormatter(value[1] as number);
+			trigger: 'axis',
+			formatter: (value: CallbackDataParams[]) => {
+				let date = '';
+				let total = 0;
+
+				if (value[0] && Array.isArray(value[0].value)) {
+					const raw = (value[0].value as [number | string | Date, number])[0];
+					const parsedDate =
+						typeof raw === 'string' || typeof raw === 'number' ? new Date(raw) : raw;
+					date = format(parsedDate, 'dd/MM/yyyy');
+				}
+
+				const rows = value
+					.toSorted((a, b) => {
+						// make sure most expensive service is first to match the chart order
+						if (!a.value || !b.value) return 0;
+						if (!Array.isArray(a.value) || !Array.isArray(b.value)) return 0;
+						if (typeof a.value[1] !== 'number' || typeof b.value[1] !== 'number') return 0;
+						return b.value[1] - a.value[1];
+					})
+					.map((v) => {
+						const valRaw = (v.value as [number | string | Date, number | string])[1];
+						const val = normalizeVal(valRaw);
+
+						total += val;
+
+						return `<div style="display:flex;align-items:center;gap:0.25rem;">
+							<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
+							${v.seriesName}
+						</div><div style="text-align:right;">${euroValueFormatter(normalizeVal(valRaw))}</div>`;
+					})
+					.join('');
+
+				return `<div>${date}</div>
+					<div style="font-weight:bold;margin:0.25rem 0;">Total cost: ${euroValueFormatter(total)}</div>
+					<hr/>
+					<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
 			}
 		},
 		legend: {
@@ -156,17 +197,39 @@ export function costTransformColumnChartTeamEnvironmentApplicationsCost(
 				}
 			]
 		},
-
 		tooltip: {
 			trigger: 'axis',
-			axisPointer: {
-				type: 'shadow'
-			},
-			valueFormatter(value: OptionDataValue[]) {
-				return euroValueFormatter(value[1] as number);
+			formatter: (value: CallbackDataParams[]) => {
+				let date = '';
+				let total = 0;
+
+				if (value[0] && Array.isArray(value[0].value)) {
+					const raw = (value[0].value as [number | string | Date, number])[0];
+					const parsedDate =
+						typeof raw === 'string' || typeof raw === 'number' ? new Date(raw) : raw;
+					date = format(parsedDate, 'dd/MM/yyyy');
+				}
+
+				const rows = value
+					.map((v) => {
+						const valRaw = (v.value as [number | string | Date, number | string])[1];
+						const val = normalizeVal(valRaw);
+
+						total += val;
+
+						return `<div style="display:flex;align-items:center;gap:0.25rem;">
+							<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
+							${v.seriesName}
+						</div><div style="text-align:right;">${euroValueFormatter(normalizeVal(valRaw))}</div>`;
+					})
+					.join('');
+
+				return `<div>${date}</div>
+					<div style="font-weight:bold;margin:0.25rem 0;">Total cost: ${euroValueFormatter(total)}</div>
+					<hr/>
+					<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
 			}
 		},
-
 		grid: {
 			left: '3%',
 			right: '4%',
