@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { type TenantCost$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
+	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
 	import Time from '$lib/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -12,8 +13,9 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
+	import { format } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
-	import type { OptionDataValue } from 'echarts/types/src/util/types.js';
+	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
@@ -112,11 +114,35 @@
 					: {},
 			tooltip: {
 				trigger: 'axis',
-				axisPointer: {
-					type: 'cross'
-				},
-				valueFormatter(value: OptionDataValue[]) {
-					return euroValueFormatter(value[1] as number);
+				formatter: (value: CallbackDataParams[]) => {
+					let date = '';
+					let total = 0;
+
+					if (value[0] && Array.isArray(value[0].value)) {
+						const raw = (value[0].value as [number | string | Date, number])[0];
+						const parsedDate =
+							typeof raw === 'string' || typeof raw === 'number' ? new Date(raw) : raw;
+						date = format(parsedDate, 'dd/MM/yyyy');
+					}
+
+					const rows = value
+						.map((v) => {
+							const valRaw = (v.value as [number | string | Date, number | string])[1];
+							const val = normalizeVal(valRaw);
+
+							total += val;
+
+							return `<div style="display:flex;align-items:center;gap:0.25rem;">
+							<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
+							${v.seriesName}
+						</div><div style="text-align:right;">${euroValueFormatter(normalizeVal(valRaw))}</div>`;
+						})
+						.join('');
+
+					return `<div>${date}</div>
+					<div style="font-weight:bold;margin:0.25rem 0;">Total cost: ${euroValueFormatter(total)}</div>
+					<hr/>
+					<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
 				}
 			},
 			legend: {

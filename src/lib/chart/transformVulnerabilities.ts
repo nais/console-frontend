@@ -24,6 +24,14 @@ export type ImageVulnerabilityHistory =
 	| undefined
 	| null;
 
+export function displayVal(val: number | string): string {
+	return typeof val === 'number' ? val.toString() : '-';
+}
+
+export function normalizeVal(val: number | string): number {
+	return typeof val === 'number' ? val : 0;
+}
+
 export function transformVulnerabilities(
 	data: ImageVulnerabilityHistory | null,
 	riskScoreToggle: boolean
@@ -59,10 +67,6 @@ export function transformVulnerabilities(
 		color: severityToColor({ severity, isGraph: true }),
 		data: seriesData[severity]
 	}));
-
-	function normalizeVal(val: number | string): number {
-		return typeof val === 'number' ? val : 0;
-	}
 
 	function displayVal(val: number | string): string {
 		return typeof val === 'number' ? val.toString() : '-';
