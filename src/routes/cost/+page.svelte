@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { type TenantCost$result } from '$houdini';
+	import { TeamOrderField, type TenantCost$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
 	import Time from '$lib/Time.svelte';
@@ -10,17 +10,51 @@
 		BodyLong,
 		Heading,
 		Loader,
+		Skeleton,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tr
 	} from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
+	import Pagination from '$lib/Pagination.svelte';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
+
+	let tableSort = $derived({
+		orderBy: $TenantCost.variables?.orderBy?.field,
+		direction: $TenantCost.variables?.orderBy?.direction
+	});
+	$inspect(tableSort, 'tableSort');
+
+	const tableSortChange = (key: string) => {
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
+			tableSort.direction = 'DESC';
+		}
+
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || TeamOrderField.SLUG,
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
+	};
 
 	function costTransformStackedColumnChart(data: TenantCost$result | undefined): EChartsOption {
 		if (!data) {
@@ -255,7 +289,6 @@
 					</ToggleGroup>
 				</div>
 				{#if $TenantCost.data}
-					<!-- <EChart options={costTransformStackedLineChart($TenantCost.data)} /> -->
 					<EChart
 						options={costTransformStackedColumnChart($TenantCost.data)}
 						style="height: 1000px;"
@@ -265,6 +298,70 @@
 						<Loader size="3xlarge" />
 					</div>
 				{/if}
+			</div>
+			<div>
+				<Heading level="3" spacing>Team Cost last 12 months</Heading>
+				<BodyLong>
+					This table shows the monthly cost for each team over the last 12 months. The cost is
+					aggregated from all services used by the team.
+				</BodyLong>
+				<Table
+					size="small"
+					sort={{
+						orderBy: tableSort.orderBy || TeamOrderField.SLUG,
+						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+					}}
+					onsortchange={tableSortChange}
+				>
+					<Thead>
+						<Tr>
+							<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
+							<Th>Total</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#if $TenantCost.fetching}
+							{#each Array(20).fill('text') as tr, i (i)}
+								<Tr>
+									{#each Array(9).fill(tr) as variant, i (i)}
+										<Td height="2rem"><Skeleton {variant} /></Td>
+									{/each}
+								</Tr>
+							{/each}
+						{:else}
+							{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
+								<Tr>
+									<Td height="2rem"><a href="/team/{team.slug}/team">{team.slug}</a></Td>
+									<Td style="text-align: right"
+										>{euroValueFormatter(team.cost.monthlySummary.sum)}</Td
+									>
+								</Tr>
+							{/each}
+						{/if}
+					</Tbody>
+				</Table>
+				<Pagination
+					page={$TenantCost.data?.teams.pageInfo}
+					fetching={$TenantCost.fetching}
+					loaders={{
+						loadPreviousPage: () =>
+							changeParams(
+								{
+									after: '',
+									before: $TenantCost.data?.teams.pageInfo.startCursor ?? ''
+								},
+								{ noScroll: true }
+							),
+						loadNextPage: () =>
+							changeParams(
+								{
+									after: $TenantCost.data?.teams.pageInfo.endCursor ?? '',
+									before: ''
+								},
+								{ noScroll: true }
+							)
+					}}
+				/>
 			</div>
 		</div>
 	</div>

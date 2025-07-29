@@ -1,9 +1,21 @@
-import { load_TenantCost } from '$houdini';
+import {
+	load_TenantCost,
+	TeamOrderField,
+	type OrderDirection$options,
+	type TeamOrderField$options
+} from '$houdini';
 import { subDays, subMonths, subYears } from 'date-fns';
+
+const rows = 20;
 
 export async function load(event) {
 	const interval = event.url.searchParams.get('interval') ?? '6m';
 	const to = subDays(new Date(), 2);
+	const after = event.url.searchParams.get('after') || '';
+	const before = event.url.searchParams.get('before') || '';
+	const field = (event.url.searchParams.get('field') ||
+		TeamOrderField.SLUG) as TeamOrderField$options;
+	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
 
 	const getFrom = (interval: string): Date => {
 		switch (interval) {
@@ -24,7 +36,12 @@ export async function load(event) {
 		interval,
 		...(await load_TenantCost({
 			event,
-			variables: { from: getFrom(interval), to: subDays(new Date(), 2) }
+			variables: {
+				from: getFrom(interval),
+				to: subDays(new Date(), 2),
+				orderBy: { field: field, direction: direction },
+				...(before ? { before, last: rows } : { after, first: rows })
+			}
 		}))
 	};
 }
