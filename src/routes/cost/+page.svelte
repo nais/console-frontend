@@ -3,6 +3,7 @@
 	import { TeamOrderField, type TenantCost$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
+	import { serviceColor } from '$lib/chart/util';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
@@ -26,7 +27,6 @@
 	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
-	import { serviceColor } from '$lib/chart/util';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, interval } = $derived(data);
@@ -68,68 +68,55 @@
 						color: '#aaa'
 					}
 				}
-			} as EChartsOption;
+			};
 		}
 
-		const seriesData: { [service: string]: [string, number][] } = {};
+		const seriesData: Record<string, [string, number][]> = {};
 		const allServices = new SvelteSet<string>();
+		const allLabels: string[] = [];
 
-		// First pass to collect all service names
+		// Collect all unique service names
 		data.costMonthlySummary.series.forEach((entry) => {
 			entry.services.forEach((service) => {
 				allServices.add(service.service);
 			});
 		});
 
-		// Second pass to build the series data
-		data.costMonthlySummary.series.forEach((entry) => {
-			const entryDate = new Date(entry.date);
-			const label = entryDate.toLocaleDateString('en-US', {
-				month: 'short',
-				day: 'numeric',
-				year: 'numeric'
-			});
+		const serviceList = Array.from(allServices);
 
-			if (entry.services.length === 0) {
-				allServices.forEach((service) => {
-					if (!seriesData[service]) {
-						seriesData[service] = [];
-					}
-					seriesData[service].push([label, 0]);
-				});
-			} else {
-				entry.services.forEach((service) => {
-					if (!seriesData[service.service]) {
-						seriesData[service.service] = [];
-					}
-					seriesData[service.service].push([label, service.cost]);
-				});
-
-				allServices.forEach((service) => {
-					if (!entry.services.some((s) => s.service === service)) {
-						if (!seriesData[service]) {
-							seriesData[service] = [];
-						}
-						seriesData[service].push([label, 0]);
-					}
-				});
-			}
+		// Initialize data containers for all services
+		serviceList.forEach((service) => {
+			seriesData[service] = [];
 		});
 
-		const series = Array.from(allServices)
-			.map((serviceName) => ({
-				name: serviceName,
-				color: serviceColor(serviceName), // Default color per service
-				type: 'bar',
-				stack: 'Cost',
-				showSymbol: true,
-				data: seriesData[serviceName]
-			}))
-			.toSorted((a, b) => {
-				const aValue = seriesData[a.name].at(-1)?.[1] ?? 0;
-				const bValue = seriesData[b.name].at(-1)?.[1] ?? 0;
-				return bValue - aValue;
+		// Populate series data
+		data.costMonthlySummary.series.forEach((entry) => {
+			const label = format(new Date(entry.date), 'yyyy-MM-dd');
+			allLabels.push(label);
+
+			const costMap = new Map<string, number>(entry.services.map((s) => [s.service, s.cost]));
+
+			serviceList.forEach((service) => {
+				const cost = costMap.get(service) ?? 0;
+				seriesData[service].push([label, cost]);
 			});
+		});
+
+		// Sort by latest cost descending
+		const sortedServices = [...serviceList].sort((a, b) => {
+			const aVal = seriesData[a].at(-1)?.[1] ?? 0;
+			const bVal = seriesData[b].at(-1)?.[1] ?? 0;
+			return bVal - aVal;
+		});
+
+		// Reverse for stacked bar (last = bottom)
+		const series = [...sortedServices].reverse().map((serviceName) => ({
+			name: serviceName,
+			color: serviceColor(serviceName),
+			type: 'bar',
+			stack: 'Cost',
+			data: seriesData[serviceName]
+		}));
 
 		return {
 			animation: false,
@@ -148,28 +135,39 @@
 					: {},
 			tooltip: {
 				trigger: 'axis',
-				formatter: (value: CallbackDataParams[]) => {
-					let date = '';
+				formatter: (params: CallbackDataParams[]) => {
+					if (!params.length) return '';
+
+					const valueList = [...params].sort((a, b) => {
+						const aVal = normalizeVal((a.value as [string, number | string])[1]);
+						const bVal = normalizeVal((b.value as [string, number | string])[1]);
+						return bVal - aVal;
+					});
+
+					const rawDate = (valueList[0].value as [string, number])[0];
+					const parsedDate = new Date(rawDate);
+					const date = format(parsedDate, 'dd/MM/yyyy');
+
 					let total = 0;
-
-					if (value[0] && Array.isArray(value[0].value)) {
-						const raw = (value[0].value as [number | string | Date, number])[0];
-						const parsedDate =
-							typeof raw === 'string' || typeof raw === 'number' ? new Date(raw) : raw;
-						date = format(parsedDate, 'dd/MM/yyyy');
-					}
-
-					const rows = value
+					const rows = valueList
 						.map((v) => {
-							const valRaw = (v.value as [number | string | Date, number | string])[1];
+							const valRaw = (v.value as [string, number | string])[1];
 							const val = normalizeVal(valRaw);
-
 							total += val;
+							return { val, html: v };
+						})
+						.map(({ val, html: v }) => {
+							const percent = total > 0 ? ` (${((val / total) * 100).toFixed(1)}%)` : '';
+							const valueHtml = `<div style="text-align:right;">${
+								val === 0
+									? `<span style="opacity:0.5;">${euroValueFormatter(val)}</span>`
+									: `${euroValueFormatter(val)}${percent}`
+							}</div>`;
 
 							return `<div style="display:flex;align-items:center;gap:0.25rem;">
-							<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
-							${v.seriesName}
-						</div><div style="text-align:right;">${euroValueFormatter(normalizeVal(valRaw))}</div>`;
+						<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
+						${v.seriesName}
+					</div>${valueHtml}`;
 						})
 						.join('');
 
@@ -180,30 +178,38 @@
 				}
 			},
 			legend: {
+				top: 0,
+				left: 'center',
+				orient: 'horizontal',
 				selector: [{ title: 'Inverse selection', type: 'inverse' }],
-				data: Array.from(allServices).toSorted((a, b) => a.localeCompare(b))
+				data: sortedServices
 			},
 			grid: {
-				left: '3%',
-				right: '4%',
-				bottom: '3%',
+				left: 80,
+				right: 20,
+				bottom: 40,
+				top: 100,
 				containLabel: true
 			},
 			xAxis: [
 				{
-					type: 'category'
+					type: 'category',
+					name: 'Date',
+					data: allLabels
 				}
 			],
 			yAxis: [
 				{
 					type: 'value',
+					name: 'Cost (€)',
+					nameLocation: 'middle',
+					nameGap: 20,
 					axisLabel: {
 						formatter: (value: number) =>
 							value.toLocaleString('en', {
 								style: 'currency',
 								currency: 'EUR',
-								minimumSignificantDigits: 1,
-								roundingPriority: 'morePrecision'
+								minimumSignificantDigits: 1
 							})
 					}
 				}
