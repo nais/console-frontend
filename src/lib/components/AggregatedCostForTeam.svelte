@@ -103,10 +103,9 @@
 		>
 	</div>
 	<GraphErrors errors={$costQuery.errors} />
-
-	{#if $costQuery.data !== null}
-		{@const cost = $costQuery.data.team.cost}
-		{#if cost !== PendingValue}
+	{#if !$costQuery.fetching}
+		{#if $costQuery.data && $costQuery.data?.team.cost !== PendingValue && $costQuery.data.team.cost.monthlySummary.series.length > 0}
+			{@const cost = $costQuery.data.team.cost}
 			<div>
 				{#if cost.monthlySummary.series.length > 1}
 					{@const factor = getFactor(cost.monthlySummary.series)}
@@ -153,10 +152,12 @@
 
 			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto">View Costs</a>
 		{:else}
-			<div class="loading">
-				<Loader size="3xlarge" />
-			</div>
+			No cost data available
 		{/if}
+	{:else}
+		<div class="loading">
+			<Loader size="3xlarge" />
+		</div>
 	{/if}
 </div>
 
