@@ -151,17 +151,15 @@
 						}}
 					/>
 				</div>
-				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1rem;">
-					<div>
-						<Ingresses {app} />
-					</div>
-					<div>
-						<Persistence workload={app} />
-					</div>
+				<div>
+					<Ingresses {app} />
 				</div>
 
 				<div>
 					<NetworkPolicy workload={app} />
+				</div>
+				<div>
+					<Persistence workload={app} />
 				</div>
 			</div>
 			<div class="sidebar">
