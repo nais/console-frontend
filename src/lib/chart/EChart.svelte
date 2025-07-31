@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { registerTheme } from '$lib/chart/theme';
+	import { isReducedMotion } from '$lib/reducedMotion';
 	import type { DefaultLabelFormatterCallbackParams, EChartsOption, EChartsType } from 'echarts';
 	import { mount } from 'svelte';
 	import Legends from './Legends.svelte';
@@ -30,7 +31,9 @@
 			return el;
 		};
 
-		const defaultOptions = {
+		const defaultOptions: EChartsOption = {
+			animation: !isReducedMotion,
+			animationDuration: 500,
 			tooltip: {
 				formatter: (params) => {
 					if (Array.isArray(params)) {
@@ -39,7 +42,7 @@
 					return formatter([params]);
 				}
 			}
-		} as EChartsOption;
+		};
 
 		let ins: EChartsType | undefined;
 
