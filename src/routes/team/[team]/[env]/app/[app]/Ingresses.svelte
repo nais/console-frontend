@@ -6,7 +6,13 @@
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
-	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		CloudDownIcon,
+		ExclamationmarkTriangleIcon,
+		GlobeIcon,
+		HouseIcon,
+		PadlockLockedIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		app: Ingresses;
@@ -22,6 +28,10 @@
 					ingresses {
 						url
 						type
+						metrics {
+							requestsPerSecond
+							errorsPerSecond
+						}
 					}
 					status {
 						errors {
@@ -69,18 +79,26 @@
 						</TooltipAlignHack>
 					{/snippet}
 				</IconLabel>
-				<!-- <div>
+				<div>
 					<div>
 						<TooltipAlignHack content="Requests per second">
-							<IconLabel size="small" icon={CloudDownIcon} label="6,69 req/s" />
+							<IconLabel
+								size="small"
+								icon={CloudDownIcon}
+								label="{ingress.metrics.requestsPerSecond.toFixed(2)} req/s"
+							/>
 						</TooltipAlignHack>
 					</div>
 					<div>
 						<TooltipAlignHack content="Errors per second">
-							<IconLabel size="small" icon={ExclamationmarkTriangleIcon} label="12,69 err/s" />
+							<IconLabel
+								size="small"
+								icon={ExclamationmarkTriangleIcon}
+								label="{ingress.metrics.errorsPerSecond.toFixed(2)} err/s"
+							/>
 						</TooltipAlignHack>
 					</div>
-				</div> -->
+				</div>
 			</ListItem>
 		{/each}
 	{:else}

@@ -1760,11 +1760,22 @@ type InboundNetworkPolicy {
 }
 
 type Ingress {
+  """Metrics for the ingress."""
+  metrics: IngressMetrics!
+
   """Type of ingress."""
   type: IngressType!
 
   """URL for the ingress."""
   url: String!
+}
+
+type IngressMetrics {
+  """Number of errors in the ingress per second."""
+  errorsPerSecond: Float!
+
+  """Number of requests to the ingress per second."""
+  requestsPerSecond: Float!
 }
 
 enum IngressType {
