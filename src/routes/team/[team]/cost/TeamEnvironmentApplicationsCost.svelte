@@ -116,7 +116,7 @@
 			</div>
 
 			{#if env.series.length > 0}
-				<div class="h-[500px] mb-12 mt-5">
+				<div class="mt-5 mb-12 h-[500px]">
 					<LineChart
 						padding={{ left: 40 }}
 						legend={{ placement: 'top' }}

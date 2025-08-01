@@ -90,7 +90,7 @@
 		</div>
 	</div>
 
-	<CostChart {data} dateField="date" valueField="sum" class="h-[180px] w-[93%] pl-[7%] mt-3 mb-5" />
+	<CostChart {data} dateField="date" valueField="sum" class="mt-3 mb-5 h-[180px] w-[93%] pl-[7%]" />
 {:else}
 	<Detail>Insufficient data to display cost.</Detail>
 {/if}

@@ -133,7 +133,7 @@
 			data={costData.daily.series}
 			dateField="date"
 			valueField="sum"
-			class="h-[180px] w-[93%] pl-[7%] mt-3 mb-5"
+			class="mt-3 mb-5 h-[180px] w-[93%] pl-[7%]"
 		/>
 	</div>
 
