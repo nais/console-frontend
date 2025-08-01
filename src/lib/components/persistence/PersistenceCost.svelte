@@ -1,11 +1,8 @@
 <script lang="ts">
-	import EChart from '$lib/chart/EChart.svelte';
+	import CostChart from '$lib/chart/CostChart.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail, Heading, HelpText } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import type { EChartsOption } from 'echarts';
-	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 	interface Props {
 		pageName: string;
@@ -16,44 +13,6 @@
 	}
 
 	let { pageName, costData, from, to, teamSlug }: Props = $props();
-
-	const costTransform = (
-		data: {
-			readonly date: Date;
-			readonly sum: number;
-		}[]
-	): EChartsOption => {
-		return {
-			height: '230px',
-			width: '280px',
-			animation: false,
-			tooltip: {
-				trigger: 'axis',
-				formatter: (params: CallbackDataParams[]) =>
-					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
-			},
-			grid: {
-				top: '20',
-				left: '0',
-				containLabel: true
-			},
-			xAxis: {
-				data: data.map((entry) => format(entry.date, data.length > 60 ? 'MMM' : 'dd.MM'))
-			},
-			yAxis: {
-				axisLabel: {
-					formatter: (value: number) => euroValueFormatter(value)
-				}
-			},
-			series: {
-				name: 'Bucket cost',
-				type: 'line',
-				emphasis: { focus: 'series' },
-				symbol: 'none',
-				data: data.map(({ sum }) => sum)
-			}
-		} as EChartsOption;
-	};
 
 	export type CostData = {
 		readonly daily: {
@@ -169,7 +128,13 @@
 		</div>
 	</div>
 	<div>
-		<EChart options={costTransform(costData.daily.series)} />
+		<!-- <EChart options={costTransform(costData.daily.series)} /> -->
+		<CostChart
+			data={costData.daily.series}
+			dateField="date"
+			valueField="sum"
+			class="h-[180px] w-[93%] pl-[7%] mt-3 mb-5"
+		/>
 	</div>
 
 	<a href="/team/{teamSlug}/cost">See cost details</a>

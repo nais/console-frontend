@@ -2,6 +2,7 @@
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
+	import { localizeLayerChart } from '$lib/chart/util';
 	import '$lib/font.css';
 	import ProgressBar from '$lib/ProgressBar.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
@@ -17,6 +18,8 @@
 
 	let { data, children }: LayoutProps = $props();
 	let { UserInfo, userAgent } = $derived(data);
+
+	localizeLayerChart();
 
 	themeSwitch.theme = data.theme;
 

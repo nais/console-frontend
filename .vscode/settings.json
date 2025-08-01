@@ -33,5 +33,6 @@
 			"source.organizeImports": "explicit"
 		}
 	},
-	"editor.insertSpaces": false
+	"editor.insertSpaces": false,
+	"cSpell.enabled": false
 }
