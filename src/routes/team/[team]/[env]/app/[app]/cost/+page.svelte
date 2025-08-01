@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { costTransformStackedColumnChart } from '$lib/chart/cost_transformer';
+	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -31,7 +30,6 @@
 							.name}.</BodyLong
 					>
 				{:else}
-					{@const d = $AppCost.data.team.environment.application.cost.daily}
 					<div class="toggles">
 						<ToggleGroup
 							value={interval}
@@ -42,7 +40,17 @@
 							{/each}
 						</ToggleGroup>
 					</div>
-					<EChart options={costTransformStackedColumnChart(d)} style="height: 400px" />
+					<div class="h-[500px]">
+						<CostAreaChart
+							data={$AppCost.data.team.environment.application.cost.daily.series.map((item) => {
+								const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
+								item.services.forEach((service) => {
+									ret[service.service] = service.cost;
+								});
+								return ret;
+							})}
+						/>
+					</div>
 				{/if}
 			{:else}
 				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">

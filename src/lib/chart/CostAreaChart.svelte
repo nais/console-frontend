@@ -3,15 +3,13 @@
 	import { euroAxisFormatter, serviceColor } from './util';
 
 	let {
-		data,
-		class: klass
+		data
 	}: {
 		data: {
 			date: Date;
 			[key: string]: number | Date;
 		}[];
 		height?: number;
-		class?: string;
 	} = $props();
 
 	const series = $derived(
@@ -24,41 +22,39 @@
 </script>
 
 {#if data.length > 0}
-	<div class={klass}>
-		<AreaChart
-			padding={{ left: 40 }}
-			{data}
-			{series}
-			seriesLayout="stack"
-			x="date"
-			legend={{
-				placement: 'top',
-				classes: {
-					root: 'mb-2'
-				}
-			}}
-			props={{
-				area: {
-					fillOpacity: 0.6
-				},
-				yAxis: {
-					format: euroAxisFormatter
-				},
-				tooltip: {
-					item: {
-						format: {
-							type: 'currency',
-							options: {
-								currency: 'EUR',
-								style: 'currency'
-							}
+	<AreaChart
+		padding={{ left: 40 }}
+		{data}
+		{series}
+		seriesLayout="stack"
+		x="date"
+		legend={{
+			placement: 'top',
+			classes: {
+				root: 'mb-2'
+			}
+		}}
+		props={{
+			area: {
+				fillOpacity: 0.6
+			},
+			yAxis: {
+				format: euroAxisFormatter
+			},
+			tooltip: {
+				item: {
+					format: {
+						type: 'currency',
+						options: {
+							currency: 'EUR',
+							style: 'currency'
 						}
 					}
-				},
-				xAxis: {
-					format: 'day'
 				}
-			}}
-		/>
-	</div>
+			},
+			xAxis: {
+				format: 'day'
+			}
+		}}
+	/>
 {/if}
