@@ -6804,6 +6804,9 @@ enum WorkloadOrderField {
   """Order by status."""
   STATUS
 
+  """Order by the last time the vulnerabilities were scanned."""
+  VULNERABILITY_LAST_SCANNED
+
   """Order by risk score"""
   VULNERABILITY_RISK_SCORE
 
