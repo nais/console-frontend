@@ -3,7 +3,7 @@
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import { StarIcon } from '@nais/ds-svelte-community/icons';
 	import FavoritesListItem from './FavoritesListItem.svelte';
-	import List from './List.svelte';
+	import SortableList from './SortableList.svelte';
 </script>
 
 <div class="favorites-list">
@@ -11,7 +11,10 @@
 		<Heading level="1" size="large">My Favorites</Heading>
 	</div>
 
-	<List>
+	<SortableList
+		items={favorites.getFavorites()}
+		onReorder={(newOrder) => favorites.setFavorites(newOrder)}
+	>
 		{#each favorites.getFavorites() as fav (fav)}
 			<FavoritesListItem path={fav} />
 		{:else}
@@ -19,7 +22,7 @@
 				Click the <StarIcon /> icon on any page to add it to your favorites. You haven’t added any yet.
 			</BodyLong>
 		{/each}
-	</List>
+	</SortableList>
 </div>
 
 <style>

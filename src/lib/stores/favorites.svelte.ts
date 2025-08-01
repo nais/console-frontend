@@ -1,51 +1,53 @@
 import { browser } from '$app/environment';
-import { SvelteSet } from 'svelte/reactivity';
 
 class Favorites {
-	private favorites: SvelteSet<string> = $state(new SvelteSet<string>());
+	// Reactive state: array of unique paths
+	private favorites: string[] = $state([]);
 
 	constructor() {
-		this.favorites = new SvelteSet<string>();
-
 		if (browser) {
-			const storedFavorites = localStorage.getItem('console-favorites');
-
-			if (storedFavorites) {
-				this.favorites = new SvelteSet(JSON.parse(storedFavorites));
+			const stored = localStorage.getItem('console-favorites');
+			if (stored) {
+				this.favorites = JSON.parse(stored);
 			}
-			// Listen for changes in localStorage
-			// This is useful for multi-tab synchronization
-			// and will update the favorites store when changes are made in other tabs.
+
 			window.addEventListener('storage', (event) => {
 				if (event.key === 'console-favorites') {
-					const newFavorites = event.newValue ? JSON.parse(event.newValue) : [];
-					this.favorites = new SvelteSet(newFavorites);
+					const updated = event.newValue ? JSON.parse(event.newValue) : [];
+					this.favorites = updated;
 				}
 			});
 		}
 	}
 
 	addFavorite(path: string): void {
-		this.favorites.add(path);
-		this.#saveToLocalStorage();
+		if (!this.favorites.includes(path)) {
+			this.favorites.push(path);
+			this.#saveToLocalStorage();
+		}
 	}
 
 	removeFavorite(path: string): void {
-		this.favorites.delete(path);
+		this.favorites = this.favorites.filter((p) => p !== path);
+		this.#saveToLocalStorage();
+	}
+
+	setFavorites(newOrder: string[]): void {
+		this.favorites = [...newOrder];
 		this.#saveToLocalStorage();
 	}
 
 	isFavorite(path: string): boolean {
-		return this.favorites.has(path);
+		return this.favorites.includes(path);
 	}
 
-	getFavorites(): SvelteSet<string> {
+	getFavorites(): string[] {
 		return this.favorites;
 	}
 
 	#saveToLocalStorage(): void {
 		if (browser) {
-			localStorage.setItem('console-favorites', JSON.stringify(Array.from(this.favorites.keys())));
+			localStorage.setItem('console-favorites', JSON.stringify(this.favorites));
 		}
 	}
 }

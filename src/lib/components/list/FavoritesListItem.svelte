@@ -24,6 +24,7 @@
 			<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
 		</Tooltip>
 	</div>
+	<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">☰</div>
 </ListItem>
 
 <style>
@@ -32,5 +33,14 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-1);
+	}
+
+	.drag-handle {
+		cursor: grab;
+		user-select: none;
+		margin-right: var(--ax-space-2);
+		display: flex;
+		align-items: center;
+		font-size: 1.2rem;
 	}
 </style>
