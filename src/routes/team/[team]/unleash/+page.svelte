@@ -11,6 +11,7 @@
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import {
 		Alert,
+		BodyLong,
 		BodyShort,
 		Button,
 		CopyButton,
@@ -145,6 +146,13 @@
 		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
+	<BodyLong
+		>Unleash is a feature toggle system, that gives you a great overview of all feature toggles
+		across all your applications and services
+		<ExternalLink href={docURL('/services/feature-toggling')}
+			>Learn more about Unleash and how to get started.</ExternalLink
+		>
+	</BodyLong>
 	<Confirm
 		confirmText="Delete"
 		variant="danger"
@@ -338,6 +346,13 @@
 	</div>
 {:else}
 	<div>
+		<BodyLong
+			><strong>No Unleash found.</strong> Unleash is a feature toggle system, that gives you a great
+			overview of all feature toggles across all your applications and services
+			<ExternalLink href={docURL('/services/feature-toggling')}
+				>Learn more about Unleash and how to get started.</ExternalLink
+			>
+		</BodyLong>
 		<p>
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
