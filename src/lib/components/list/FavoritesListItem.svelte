@@ -2,7 +2,7 @@
 	import { favorites } from '$lib/stores/favorites.svelte';
 	import { pathToFavoriteLabel } from '$lib/urlToPageHeader';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
-	import { StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { DragVerticalIcon, StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '../IconLabel.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -24,7 +24,9 @@
 			<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
 		</Tooltip>
 	</div>
-	<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">☰</div>
+	<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
+		<DragVerticalIcon />
+	</div>
 </ListItem>
 
 <style>
