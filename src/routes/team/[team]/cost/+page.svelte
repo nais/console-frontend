@@ -40,16 +40,17 @@
 			</ToggleGroup>
 		</div>
 		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
-			<CostAreaChart
-				data={$TeamCost.data.team.cost.daily.series.map((item) => {
-					const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
-					item.services.forEach((service) => {
-						ret[service.service] = service.cost;
-					});
-					return ret;
-				})}
-				class="mt-4 h-[500px]"
-			/>
+			<div class="mt-4 h-[500px]">
+				<CostAreaChart
+					data={$TeamCost.data.team.cost.daily.series.map((item) => {
+						const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
+						item.services.forEach((service) => {
+							ret[service.service] = service.cost;
+						});
+						return ret;
+					})}
+				/>
+			</div>
 		{:else}
 			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 				<Loader size="3xlarge" />
