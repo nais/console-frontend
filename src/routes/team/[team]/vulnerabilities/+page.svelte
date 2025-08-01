@@ -1,18 +1,15 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import TeamVulnerabilityHistoryGraph from '$lib/components/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/components/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Nais from '$lib/icons/Nais.svelte';
-	import { BodyLong, BodyShort, Heading, Select } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
-
-	let selectedEnvironment: string = $state(page.url.searchParams.get('environment') || '');
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -92,22 +89,7 @@
 				</div>
 			</div>
 
-			<div class="env-filter">
-				<Select size="small" hideLabel={true} bind:value={selectedEnvironment} label="Environment">
-					<option value="">All environments</option>
-					{#if team.environments}
-						{#each team.environments as teamEnvironment (teamEnvironment.id)}
-							<option
-								value={teamEnvironment.environment.name}
-								selected={teamEnvironment.environment.name === selectedEnvironment}
-								>{teamEnvironment.environment.name}</option
-							>
-						{/each}
-					{/if}
-				</Select>
-			</div>
-
-			<WorkloadsWithVulnerabilities team={teamSlug} environment={selectedEnvironment} />
+			<WorkloadsWithVulnerabilities team={teamSlug} />
 		</div>
 	</div>
 {/if}
@@ -116,11 +98,6 @@
 	.wrapper {
 		display: grid;
 		gap: var(--ax-space-32);
-	}
-
-	.env-filter {
-		display: flex;
-		margin-bottom: 1rem;
 	}
 
 	.heading {

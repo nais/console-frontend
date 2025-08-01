@@ -38,9 +38,10 @@
 	interface Props {
 		orderField: T;
 		defaultOrderField: ValueOf<T>;
+		onlyInclude?: ValueOf<T>[];
 	}
 
-	const { orderField, defaultOrderField }: Props = $props();
+	const { orderField, defaultOrderField, onlyInclude }: Props = $props();
 
 	const currentOrderField = $derived(
 		Object.values(orderField).find((field) =>
@@ -57,6 +58,23 @@
 		switch (fieldName) {
 			case 'DEPLOYMENT_TIME':
 				return 'Deploy';
+			case 'VULNERABILITY_RISK_SCORE':
+				return 'Risk score';
+			case 'VULNERABILITY_LAST_SCANNED':
+				return 'Last scanned';
+			case 'HAS_SBOM':
+				return 'Has SBOM';
+			case 'VULNERABILITY_SEVERITY_CRITICAL':
+				return 'Critical vulnerabilities';
+			case 'VULNERABILITY_SEVERITY_HIGH':
+				return 'High vulnerabilities';
+			case 'VULNERABILITY_SEVERITY_MEDIUM':
+				return 'Medium vulnerabilities';
+			case 'VULNERABILITY_SEVERITY_LOW':
+				return 'Low vulnerabilities';
+			case 'VULNERABILITY_SEVERITY_UNASSIGNED':
+				return 'Unassigned vulnerabilities';
+
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}
@@ -84,7 +102,9 @@
 	{/snippet}
 	{#key orderField}
 		<ActionMenuRadioGroup value={currentOrderField} label="Order by">
-			{#each Object.values(orderField).sort( (a) => (a === defaultOrderField ? -1 : 1) ) as field (field)}
+			{#each Object.values(orderField)
+				.filter((field) => !onlyInclude || onlyInclude.includes(field as ValueOf<T>))
+				.sort( (a) => ((a as ValueOf<T>) === defaultOrderField ? -1 : (a as ValueOf<T>) > defaultOrderField ? 1 : -1) ) as field (field)}
 				<ActionMenuRadioItem
 					value={field}
 					onselect={(value) =>
