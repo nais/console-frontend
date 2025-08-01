@@ -1,32 +1,23 @@
-@import 'tailwindcss';
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
 @import '@nais/ds-svelte-community/css/darkside' layer(components);
 @import '@layerstack/tailwind/core.css';
 @import '@layerstack/tailwind/utils.css';
 
 @source '../../node_modules/layerchart/**/*.{svelte,js}';
 
-:root {
-	--spacing-layout: var(--ax-space-40);
-
-	--customTextColor: white;
-	--primaryTextColor: #ff5757;
-	--softTextColor: rgba(156, 163, 175, 1);
-	--softLineColor: rgba(156, 163, 175, 0.4);
-	--screenBgColor: rgba(70, 70, 70, 0.5);
-	--errorBgColor: darkred;
-	--bgbase200: #2a2e37;
-	--scrollBarColor: rgba(86, 93, 105, 1);
-	--bgbase100: #3d4451;
-	--bgaccent: #078d7e;
-
-}
-
-/* layerchart */
-:root, .dark {
+@theme inline {
+	--color-primary: var(--ax-border-accent);
 	--color-surface-100: var(--ax-bg-default);
 	--color-surface-200: #00ff00;
 	--color-surface-300: var(--ax-bg-raised);
-	--color-surface-content: var(--ax-text-neutral);
+	--color-surface-content: var(--ax-text-neutral-subtle);
+}
+
+:root {
+	--spacing-layout: var(--ax-space-40);
 }
 
 html,
@@ -66,4 +57,15 @@ html {
 		padding: 0;
 		height: 100%;
 	}
+}
+
+.lc-legend-swatch-button {
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.lc-text {
+	font-family: sans-serif;
+	font-size: 12px;
 }

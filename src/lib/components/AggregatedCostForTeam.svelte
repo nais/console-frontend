@@ -1,24 +1,18 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
+	import CostChart from '$lib/chart/CostChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
-	import { format, lastDayOfMonth } from 'date-fns';
-	import { type EChartsOption } from 'echarts';
-	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 	const costQuery = graphql(`
 		query AggregatedTeamCost($team: Slug!) {
 			team(slug: $team) {
-				cost {
-					monthlySummary {
-						sum
-						series {
-							date
-							cost
-						}
+				monthlySummary {
+					sum
+					series {
+						date
+						cost
 					}
 				}
 			}
@@ -38,56 +32,6 @@
 	}
 
 	let { teamSlug }: Props = $props();
-
-	const costTransform = (
-		data: {
-			readonly date: Date;
-			readonly cost: number;
-		}[],
-		lastMonthEstimate: number
-	): EChartsOption => {
-		data = data.toSorted((a, b) => a.date.getTime() - b.date.getTime()).slice(0, -1);
-
-		data.push({ date: lastDayOfMonth(new Date()), cost: lastMonthEstimate });
-		return {
-			animation: false,
-			height: '150px',
-			tooltip: {
-				trigger: 'axis',
-				formatter: (params: CallbackDataParams[]) =>
-					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
-			},
-			grid: {
-				top: '25',
-				left: '25',
-				containLabel: true
-			},
-			xAxis: {
-				axisLabel: {
-					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733'
-				},
-				data: data.map((entry) => format(entry.date, 'MMM'))
-			},
-			yAxis: {
-				axisLabel: {
-					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733',
-					formatter: (value: number) => {
-						if (value < 1000) {
-							return euroValueFormatter(value);
-						}
-						return '€' + (value / 1000).toFixed(0) + 'k';
-					}
-				}
-			},
-			series: {
-				name: 'Bucket cost',
-				type: 'line',
-				emphasis: { focus: 'series' },
-				symbol: 'none',
-				data: data.map(({ cost }) => cost)
-			}
-		} as EChartsOption;
-	};
 
 	function getEstimateForMonth(cost: number, date: Date) {
 		const daysKnown = date.getDate();
@@ -146,17 +90,12 @@
 				{/if}
 			</div>
 
-			<div style="height: 200px; overflow: hidden; margin-bottom: var(--ax-space-16)">
-				<EChart
-					options={costTransform(
-						cost.monthlySummary.series,
-						getEstimateForMonth(
-							cost.monthlySummary.series[0].cost,
-							cost.monthlySummary.series[0].date
-						)
-					)}
-				/>
-			</div>
+			<CostChart
+				data={$costQuery.data.team.cost.monthlySummary.series}
+				dateField="date"
+				valueField="cost"
+				class="h-[250px]"
+			/>
 
 			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto"
 				>View Cost for Team</a

@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { TeamOrderField, type CostMonthly$result } from '$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
-	import { serviceColor } from '$lib/chart/util';
+	import { TeamOrderField } from '$houdini';
+	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
@@ -21,175 +19,87 @@
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { sum } from 'd3-array';
 	import { format } from 'date-fns';
-	import { type EChartsOption } from 'echarts';
-	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { accessor, BarChart, findRelatedData, Tooltip } from 'layerchart';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TenantCost, CostMonthly, interval } = $derived(data);
 
-	function costTransformStackedColumnChart(data: CostMonthly$result | undefined): EChartsOption {
-		if (!data) {
-			return {
-				animation: false,
-				title: {
-					text: 'No data',
-					left: 'center',
-					top: 'center',
-					textStyle: {
-						color: '#aaa'
-					}
-				}
-			};
+	let tableSort = $derived({
+		orderBy: $TenantCost.variables?.orderBy?.field,
+		direction: $TenantCost.variables?.orderBy?.direction
+	});
+
+	const tableSortChange = (key: string) => {
+		if (key === tableSort.orderBy) {
+			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			tableSort.direction = direction;
+		} else {
+			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
+			tableSort.direction = 'DESC';
 		}
 
-		const seriesData: Record<string, [string, number][]> = {};
-		const allServices = new SvelteSet<string>();
-		const allLabels: string[] = [];
+		changeParams(
+			{
+				direction: tableSort.direction,
+				field: tableSort.orderBy || TeamOrderField.SLUG,
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
+	};
 
-		// Collect all unique service names
-		data.costMonthlySummary.series.forEach((entry) => {
-			entry.services.forEach((service) => {
-				allServices.add(service.service);
+	const allServicesSeries = $derived.by(() => {
+		if (!$TenantCost.data?.costMonthlySummary?.series) return [];
+		const mp = $TenantCost.data.costMonthlySummary.series.reduce((acc, item) => {
+			item.services.forEach((service) => {
+				acc.set(service.service, service.cost);
 			});
-		});
+			return acc;
+		}, new Map<string, number>());
 
-		const serviceList = Array.from(allServices);
+		return Array.from(mp.keys())
+			.sort((a, b) => {
+				const aVal = mp.get(a) || 0;
+				const bVal = mp.get(b) || 0;
+				return bVal - aVal;
+			})
+			.reverse()
+			.map((key) => ({
+				key,
+				color: serviceColor(key)
+			}));
+	});
 
-		// Initialize data containers for all services
-		serviceList.forEach((service) => {
-			seriesData[service] = [];
-		});
-
-		// Populate series data
-		data.costMonthlySummary.series.forEach((entry) => {
-			const label = format(new Date(entry.date), 'yyyy-MM-dd');
-			allLabels.push(label);
-
-			const costMap = new Map<string, number>(entry.services.map((s) => [s.service, s.cost]));
-
-			serviceList.forEach((service) => {
-				const cost = costMap.get(service) ?? 0;
-				seriesData[service].push([label, cost]);
-			});
-		});
-
-		// Sort by latest cost descending
-		const sortedServices = [...serviceList].sort((a, b) => {
-			const aVal = seriesData[a].at(-1)?.[1] ?? 0;
-			const bVal = seriesData[b].at(-1)?.[1] ?? 0;
-			return bVal - aVal;
-		});
-
-		// Reverse for stacked bar (last = bottom)
-		const series = [...sortedServices].reverse().map((serviceName) => ({
-			name: serviceName,
-			color: serviceColor(serviceName),
-			type: 'bar',
-			stack: 'Cost',
-			data: seriesData[serviceName]
+	const tenantCostData = $derived.by(() => {
+		if (!$TenantCost.data?.costMonthlySummary?.series) return [];
+		return $TenantCost.data.costMonthlySummary.series.map((item) => ({
+			date: item.date,
+			...Object.fromEntries(item.services.map((s) => [s.service, s.cost]))
 		}));
+	});
 
-		return {
-			animation: false,
-			height: '850px',
-			width: '1250px',
-			title:
-				series.length === 0
-					? {
-							text: 'No data',
-							left: 'center',
-							top: 'center',
-							textStyle: {
-								color: '#aaa'
-							}
-						}
-					: {},
-			tooltip: {
-				trigger: 'axis',
-				formatter: (params: CallbackDataParams[]) => {
-					if (!params.length) return '';
+	function formatDate(value: Date): string {
+		if (!value) return '';
+		return format(value, 'yyyy-MM-dd');
+	}
 
-					const valueList = [...params].sort((a, b) => {
-						const aVal = normalizeVal((a.value as [string, number | string])[1]);
-						const bVal = normalizeVal((b.value as [string, number | string])[1]);
-						return bVal - aVal;
-					});
-
-					const rawDate = (valueList[0].value as [string, number])[0];
-					const parsedDate = new Date(rawDate);
-					const date = format(parsedDate, 'dd/MM/yyyy');
-
-					let total = 0;
-					const rows = valueList
-						.map((v) => {
-							const valRaw = (v.value as [string, number | string])[1];
-							const val = normalizeVal(valRaw);
-							total += val;
-							return { val, html: v };
-						})
-						.map(({ val, html: v }) => {
-							const percent = total > 0 ? ` (${((val / total) * 100).toFixed(1)}%)` : '';
-							const valueHtml = `<div style="text-align:right;">${
-								val === 0
-									? `<span style="opacity:0.5;">${euroValueFormatter(val)}</span>`
-									: `${euroValueFormatter(val)}${percent}`
-							}</div>`;
-
-							return `<div style="display:flex;align-items:center;gap:0.25rem;">
-						<div style="height:8px;width:8px;border-radius:50%;background:${v.color};"></div>
-						${v.seriesName}
-					</div>${valueHtml}`;
-						})
-						.join('');
-
-					return `<div>${date}</div>
-					<div style="font-weight:bold;margin:0.25rem 0;">Total cost: ${euroValueFormatter(total)}</div>
-					<hr/>
-					<div style="display:grid;grid-template-columns:auto auto;gap:0.5rem;">${rows}</div>`;
-				}
-			},
-			legend: {
-				top: 0,
-				left: 'center',
-				orient: 'horizontal',
-				selector: [{ title: 'Inverse selection', type: 'inverse' }],
-				data: sortedServices
-			},
-			grid: {
-				left: 80,
-				right: 20,
-				bottom: 40,
-				top: 100,
-				containLabel: true
-			},
-			xAxis: [
-				{
-					type: 'category',
-					name: 'Date',
-					data: allLabels
-				}
-			],
-			yAxis: [
-				{
-					type: 'value',
-					name: 'Cost (€)',
-					nameLocation: 'middle',
-					nameGap: 20,
-					axisLabel: {
-						formatter: (value: number) =>
-							value.toLocaleString('en', {
-								style: 'currency',
-								currency: 'EUR',
-								minimumSignificantDigits: 1
-							})
-					}
-				}
-			],
-			series
-		} as EChartsOption;
+	function sortedPayload(
+		payload: { color?: string; name?: string; key: string; value?: number }[]
+	) {
+		return payload.toSorted((a, b) => {
+			// Place items without value at the end
+			if (!a.value) {
+				return 1;
+			}
+			if (!b.value) {
+				return -1;
+			}
+			return (b.value ?? 0) - (a.value ?? 0);
+		});
 	}
 </script>
 
@@ -225,11 +135,65 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $CostMonthly.data}
-					<EChart
-						options={costTransformStackedColumnChart($CostMonthly.data)}
-						style="height: 1000px;"
-					/>
+				{#if $TenantCost.data}
+					<div class="h-[1000px]">
+						<BarChart
+							legend={{
+								placement: 'top',
+
+								classes: {
+									root: 'mb-2'
+								}
+							}}
+							padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
+							data={tenantCostData}
+							x="date"
+							series={allServicesSeries}
+							seriesLayout="stack"
+							props={{
+								xAxis: {
+									format: formatDate
+								},
+								yAxis: { format: euroAxisFormatter }
+							}}
+						>
+							{#snippet tooltip({ context, visibleSeries })}
+								<Tooltip.Root>
+									{#snippet children({ data, payload })}
+										{@const total = sum(visibleSeries, (s) => {
+											const seriesTooltipData = s.data
+												? findRelatedData(s.data, data, context.x)
+												: data;
+											const valueAccessor = accessor(s.value ?? (s.data ? context.y : s.key));
+											return valueAccessor(seriesTooltipData);
+										})}
+										<Tooltip.Header value={payload[0].label} format={formatDate} />
+										<Tooltip.List>
+											{#each sortedPayload(payload) as p, i (p.key ?? i)}
+												<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
+													{#if p.value && p.value > 0}
+														{euroValueFormatter(p.value)}
+														({((p.value / total) * 100).toFixed(1)}%)
+													{:else}
+														<span style="opacity:0.5;">${euroValueFormatter(0)}</span>
+													{/if}
+												</Tooltip.Item>
+											{/each}
+											{#if payload.length > 1}
+												<Tooltip.Separator />
+												<Tooltip.Item
+													label="total"
+													value={total}
+													format="currency"
+													valueAlign="right"
+												/>
+											{/if}
+										</Tooltip.List>
+									{/snippet}
+								</Tooltip.Root>
+							{/snippet}
+						</BarChart>
+					</div>
 				{:else}
 					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 						<Loader size="3xlarge" />
