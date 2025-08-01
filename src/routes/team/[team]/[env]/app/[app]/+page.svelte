@@ -89,6 +89,7 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				<WorkloadDeploy workload={app} />
 				{#if app.status.errors.filter( (e) => supportedErrorTypes.some((errorType) => errorType === e.__typename) ).length}
 					<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
 						{#each app.status.errors as error, i (i)}
@@ -172,7 +173,6 @@
 				</div>
 				<SidebarActivity activityLog={app} />
 
-				<WorkloadDeploy workload={app} />
 				{#if viewerIsMember && environment}
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
