@@ -23,21 +23,16 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	const allEnvs = $Jobs.data?.team.environments.map((env) => env.name) ?? [];
+	const allEnvs = $derived($Jobs.data?.team.environments.map((env) => env.environment.name) ?? []);
 
-	let filteredEnvs = $state(
+	let filteredEnvs = $derived(
 		page.url.searchParams.get('environments') === 'none'
 			? []
 			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
 	);
 
 	$effect(() => {
-		const environments =
-			filteredEnvs.length === 0
-				? 'none'
-				: filteredEnvs.length === allEnvs.length
-					? ''
-					: filteredEnvs.join(',');
+		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 
 		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
 			changeQuery({ environments });
@@ -78,7 +73,7 @@
 			{/if}
 		</BodyLong>
 
-		{#if $Jobs.data && ($Jobs.data.team.jobs.nodes.length > 0 || filter !== '')}
+		{#if $Jobs.data && $Jobs.data?.team.totalJobs.pageInfo.totalCount > 0}
 			{@const jobs = $Jobs.data.team.jobs}
 			{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
 				<div class="search">
@@ -135,15 +130,15 @@
 							>
 								All environments
 							</ActionMenuCheckboxItem>
-							{#each $Jobs.data?.team.environments ?? [] as { name, id } (id)}
+							{#each $Jobs.data?.team.environments ?? [] as { environment, id } (id)}
 								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(name)}
+									checked={filteredEnvs.includes(environment.name)}
 									onchange={(checked) =>
 										(filteredEnvs = checked
-											? [...filteredEnvs, name]
-											: filteredEnvs.filter((env) => env !== name))}
+											? [...filteredEnvs, environment.name]
+											: filteredEnvs.filter((env) => env !== environment.name))}
 								>
-									{name}
+									{environment.name}
 								</ActionMenuCheckboxItem>
 							{/each}
 						</ActionMenu>

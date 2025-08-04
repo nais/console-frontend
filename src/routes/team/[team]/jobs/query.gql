@@ -11,7 +11,9 @@ query Jobs(
 		slug
 		environments {
 			id
-			name
+			environment {
+				name
+			}
 		}
 		totalJobs: jobs {
 			pageInfo {
