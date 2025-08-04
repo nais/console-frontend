@@ -14,7 +14,7 @@
 	};
 
 	const costQuery = graphql(`
-		query AggregatedTeamCost($team: Slug!) @load {
+		query AggregatedTeamCost($team: Slug!) {
 			team(slug: $team) @loading {
 				cost @loading {
 					monthlySummary {
@@ -28,6 +28,14 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				team: teamSlug
+			}
+		});
+	});
 
 	interface Props {
 		teamSlug: string;

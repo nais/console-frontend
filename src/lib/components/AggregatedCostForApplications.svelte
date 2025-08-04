@@ -12,7 +12,7 @@
 
 	const costQuery = $derived(
 		graphql(`
-			query AggregatedCostForApplications($team: Slug!, $totalCount: Int) @load {
+			query AggregatedCostForApplications($team: Slug!, $totalCount: Int) {
 				team(slug: $team) {
 					slug
 					applications(first: $totalCount) {
@@ -31,6 +31,15 @@
 			}
 		`)
 	);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				team: teamSlug,
+				totalCount: totalCount
+			}
+		});
+	});
 
 	interface Props {
 		teamSlug: string;

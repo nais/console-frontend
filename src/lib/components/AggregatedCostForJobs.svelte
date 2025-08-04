@@ -10,7 +10,7 @@
 	};
 
 	const costQuery = graphql(`
-		query AggregatedCostForJobs($team: Slug!, $totalCount: Int) @load {
+		query AggregatedCostForJobs($team: Slug!, $totalCount: Int) {
 			team(slug: $team) @loading {
 				slug
 				jobs(first: $totalCount) {
@@ -28,6 +28,15 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				team: teamSlug,
+				totalCount: totalCount
+			}
+		});
+	});
 
 	interface Props {
 		teamSlug: string;
