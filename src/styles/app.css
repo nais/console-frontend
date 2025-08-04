@@ -73,3 +73,7 @@ html {
 svg {
 	display: unset;
 }
+
+.lc-spline-path {
+	shape-rendering: geometricPrecision !important;
+}

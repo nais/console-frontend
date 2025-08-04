@@ -140,9 +140,9 @@
 						<BarChart
 							legend={{
 								placement: 'top',
-
 								classes: {
-									root: 'mb-2'
+									root: 'mb-4 w-full -top-[1.5em]',
+									items: 'flex-wrap justify-center'
 								}
 							}}
 							padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
