@@ -199,7 +199,6 @@
 			},
 			xAxis: {
 				type: 'time',
-				boundaryGap: false,
 				axisLabel: { formatter: { month: '{MMM} {d}', day: '{dd}.{MM}' } }
 			},
 			yAxis: {
