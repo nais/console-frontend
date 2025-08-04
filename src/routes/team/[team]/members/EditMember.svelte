@@ -2,7 +2,6 @@
 	import { graphql, type TeamMemberRole$options } from '$houdini';
 	import { Alert, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
 	import { createEventDispatcher } from 'svelte';
-	import type { TeamMemberVariables } from './$houdini';
 
 	interface Props {
 		open: boolean;
@@ -15,7 +14,7 @@
 	const dispatcher = createEventDispatcher<{ updated: null }>();
 
 	const store = graphql(`
-		query TeamMember($team: Slug!, $email: String!) @load {
+		query TeamMember($team: Slug!, $email: String!) {
 			team(slug: $team) {
 				member(email: $email) {
 					role
@@ -28,12 +27,14 @@
 		}
 	`);
 
-	export const _TeamMemberVariables: TeamMemberVariables = () => {
-		return {
-			team,
-			email
-		};
-	};
+	$effect.pre(() => {
+		store.fetch({
+			variables: {
+				team: team,
+				email: email
+			}
+		});
+	});
 
 	const alterRole = graphql(`
 		mutation UpdateMemberRoleMutation($input: SetTeamMemberRoleInput!) {

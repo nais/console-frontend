@@ -3,7 +3,6 @@
 	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { createEventDispatcher } from 'svelte';
-	import type { AddMemberQueryVariables } from './$houdini';
 
 	interface Props {
 		open: boolean;
@@ -14,12 +13,8 @@
 
 	const dispatcher = createEventDispatcher<{ created: null }>();
 
-	export const _AddMemberQueryVariables: AddMemberQueryVariables = () => {
-		return { team: team };
-	};
-
 	const store = graphql(`
-		query AddMemberQuery($team: Slug!) @load {
+		query AddMemberQuery($team: Slug!) {
 			users(first: 10000) {
 				nodes {
 					id
@@ -37,6 +32,14 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		store.fetch({
+			variables: {
+				team: team
+			}
+		});
+	});
 
 	const create = graphql(`
 		mutation CreateMemberMutation($input: AddTeamMemberInput!) {
