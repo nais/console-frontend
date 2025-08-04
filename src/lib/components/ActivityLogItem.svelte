@@ -263,7 +263,7 @@
 						$data.teamSlug
 					)}>{$data.resourceName}</a
 				>
-				to <strong>{$data.appScaled.newSize}</strong> relicas
+				to <strong>{$data.appScaled.newSize}</strong> replicas
 			{:else if $data.__typename === 'JobTriggeredActivityLogEntry'}
 				Job <a
 					href={resourceLink(
