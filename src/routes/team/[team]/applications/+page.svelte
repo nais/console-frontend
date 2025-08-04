@@ -10,7 +10,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Loader, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -77,34 +77,38 @@
 				>
 			{/if}
 		</BodyLong>
-
-		{#if $Applications.data && $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
-			{@const apps = $Applications.data.team.applications}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
+		<div class="search">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					changeQuery({ newFilter: filter });
+				}}
+			>
+				<Search
+					clearButton={false}
+					clearButtonLabel="Clear"
+					label="filter applications"
+					placeholder="Filter by name"
+					hideLabel={true}
+					size="small"
+					variant="simple"
+					width="100%"
+					autocomplete="off"
+					bind:value={filter}
+					onclear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
 					}}
-				>
-					<Search
-						clearButton={false}
-						clearButtonLabel="Clear"
-						label="filter applications"
-						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				</form>
+				/>
+			</form>
+		</div>
+		{#if $Applications.fetching}
+			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
+				<Loader size="3xlarge" />
 			</div>
+		{:else if $Applications.data && $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
+			{@const apps = $Applications.data.team.applications}
+
 			<List
 				title="{apps.pageInfo.totalCount} application{apps.pageInfo.totalCount !== 1 ? 's' : ''}
 						{apps.pageInfo.totalCount !== $Applications.data.team.totalApplications.pageInfo.totalCount
