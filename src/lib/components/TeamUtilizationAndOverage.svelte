@@ -14,14 +14,9 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import type { AggregatedTeamUtilizationVariables } from './$houdini';
-
-	export const _AggregatedTeamUtilizationVariables: AggregatedTeamUtilizationVariables = () => {
-		return { team: teamSlug };
-	};
 
 	const utilization = graphql(`
-		query AggregatedTeamUtilization($team: Slug!) @load {
+		query AggregatedTeamUtilization($team: Slug!) {
 			currentUnitPrices @loading {
 				cpu {
 					value
@@ -58,6 +53,14 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		utilization.fetch({
+			variables: {
+				team: teamSlug
+			}
+		});
+	});
 
 	interface Props {
 		teamSlug: string;
