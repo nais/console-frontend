@@ -7,7 +7,7 @@ query OpenSearch(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @blocking {
+) {
 	team(slug: $team) {
 		slug
 

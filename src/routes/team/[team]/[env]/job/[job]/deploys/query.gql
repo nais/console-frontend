@@ -6,7 +6,7 @@ query JobDeploys(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @blocking {
+) {
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {
