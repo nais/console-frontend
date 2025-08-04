@@ -63,7 +63,7 @@
 		"bytes-iec": "^3.1.1",
 		"cron-parser": "^5.3.0",
 		"cronstrue": "^3.2.0",
-		"echarts": "^5.6.0",
+		"echarts": "^6.0.0",
 		"eslint-plugin-unicorn": "^60.0.0",
 		"graphql": "^16.11.0",
 		"graphql-sse": "^2.5.4",
