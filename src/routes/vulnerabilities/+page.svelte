@@ -21,8 +21,7 @@
 	import VulnerabilityLeaderBoard from './VulnerabilityLeaderBoard.svelte';
 
 	let { data }: PageProps = $props();
-	let { TenantVulnerabilites, mostVulnerableTeamsDirection, mostVulnerableTeamsField } =
-		$derived(data);
+	let { TenantVulnerabilites } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $TenantVulnerabilites.variables?.orderBy?.field,
@@ -80,7 +79,7 @@
 				</div>
 				<VulnerabilityHistory />
 			</div>
-			<VulnerabilityLeaderBoard {mostVulnerableTeamsDirection} {mostVulnerableTeamsField} />
+			<VulnerabilityLeaderBoard />
 
 			<div>
 				<Heading level="3" spacing>Team Security Posture</Heading>
