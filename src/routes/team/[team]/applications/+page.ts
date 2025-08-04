@@ -18,22 +18,9 @@ export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
-	console.log(environments, 'environments');
-
-	// const variables = {
-	// 	team: event.params.team,
-	// 	filter: { name: filter, environments } as TeamApplicationsFilter,
-	// 	orderBy: {
-	// 		field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.STATUS, event.url),
-	// 		direction: urlToOrderDirection(event.url, OrderDirection.DESC)
-	// 	},
-	// 	...(before ? { before, last: rows } : { after, first: rows })
-	// };
-
 	return {
 		...(await load_Applications({
 			event,
-			// variables
 			variables: {
 				team: event.params.team,
 				filter: { name: filter, environments } as TeamApplicationsFilter,
