@@ -10,7 +10,6 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
-	import type { TeamEnvironmentApplicationsCostVariables } from './$houdini';
 
 	const {
 		teamSlug,
@@ -24,13 +23,8 @@
 		interval: string;
 	} = $props();
 
-	export const _TeamEnvironmentApplicationsCostVariables: TeamEnvironmentApplicationsCostVariables =
-		() => {
-			return { teamSlug, to, from };
-		};
-
 	const costQuery = graphql(`
-		query TeamEnvironmentApplicationsCost($teamSlug: Slug!, $from: Date!, $to: Date!) @load {
+		query TeamEnvironmentApplicationsCost($teamSlug: Slug!, $from: Date!, $to: Date!) {
 			team(slug: $teamSlug) {
 				environments {
 					id
@@ -55,6 +49,16 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				teamSlug,
+				from,
+				to
+			}
+		});
+	});
 
 	const appsByEnv = $derived(
 		$costQuery.data?.team.environments
