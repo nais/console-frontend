@@ -115,7 +115,8 @@ export function transformVulnerabilities(
 		},
 		legend: {
 			selector: [{ title: 'Inverse selection', type: 'inverse' }],
-			data: allSeverities
+			data: allSeverities,
+			top: '0%'
 		},
 		grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
 		xAxis: [{ type: 'time', boundaryGap: false }],

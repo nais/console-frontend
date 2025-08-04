@@ -152,7 +152,8 @@ export function costTransformStackedColumnChart(data: DailCostType | undefined):
 		},
 		legend: {
 			selector: [{ title: 'Inverse selection', type: 'inverse' }],
-			data: Array.from(allServices)
+			data: Array.from(allServices),
+			top: '0%'
 		},
 		grid: {
 			left: '3%',
@@ -188,7 +189,7 @@ export function costTransformColumnChartTeamEnvironmentApplicationsCost(
 		animation: false,
 		title: {},
 		legend: {
-			// bottom: 0,
+			top: '0%',
 			width: '90%',
 			selector: [
 				{

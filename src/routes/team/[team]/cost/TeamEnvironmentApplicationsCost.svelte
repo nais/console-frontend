@@ -129,6 +129,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		padding-bottom: var(--spacing-layout);
 	}
 	.content {
 		max-width: 80ch;

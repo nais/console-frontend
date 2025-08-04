@@ -73,6 +73,7 @@
 		justify-content: space-between;
 		align-items: flex-end;
 		gap: var(--spacing-layout);
+		padding-bottom: var(--spacing-layout);
 	}
 
 	.content {
