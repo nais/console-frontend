@@ -23,21 +23,18 @@
 	let after: string = $derived($Applications.variables?.after ?? '');
 	let before: string = $derived($Applications.variables?.before ?? '');
 
-	const allEnvs = $Applications.data?.team.environments.map((env) => env.environment.name) ?? [];
+	const allEnvs = $derived(
+		$Applications.data?.team.environments.map((env) => env.environment.name) ?? []
+	);
 
-	let filteredEnvs = $state(
+	let filteredEnvs = $derived(
 		page.url.searchParams.get('environments') === 'none'
 			? []
 			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
 	);
 
 	$effect(() => {
-		const environments =
-			filteredEnvs.length === 0
-				? 'none'
-				: filteredEnvs.length === allEnvs.length
-					? ''
-					: filteredEnvs.join(',');
+		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 
 		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
 			changeQuery({ environments });
