@@ -7,11 +7,6 @@
 	import { format, lastDayOfMonth } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
-	import type { AggregatedTeamCostVariables } from './$houdini';
-
-	export const _AggregatedTeamCostVariables: AggregatedTeamCostVariables = () => {
-		return { team: teamSlug };
-	};
 
 	const costQuery = graphql(`
 		query AggregatedTeamCost($team: Slug!) {

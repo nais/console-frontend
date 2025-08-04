@@ -3,11 +3,6 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
-	import type { AggregatedCostVariables } from './$houdini';
-
-	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
-		return { workload: workload, environment: environment, team: teamSlug };
-	};
 
 	const costQuery = graphql(`
 		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) {

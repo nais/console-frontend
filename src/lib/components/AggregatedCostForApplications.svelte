@@ -2,13 +2,7 @@
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
-	import type { AggregatedCostForApplicationsVariables } from './$houdini';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
-
-	export const _AggregatedCostForApplicationsVariables: AggregatedCostForApplicationsVariables =
-		() => {
-			return { team: teamSlug, totalCount: totalCount };
-		};
 
 	const costQuery = $derived(
 		graphql(`

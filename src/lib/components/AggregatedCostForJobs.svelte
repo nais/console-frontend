@@ -2,12 +2,7 @@
 	import { graphql, PendingValue } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
-	import type { AggregatedCostForJobsVariables } from './$houdini';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
-
-	export const _AggregatedCostForJobsVariables: AggregatedCostForJobsVariables = () => {
-		return { team: teamSlug, totalCount: totalCount };
-	};
 
 	const costQuery = graphql(`
 		query AggregatedCostForJobs($team: Slug!, $totalCount: Int) {
