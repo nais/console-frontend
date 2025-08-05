@@ -1,52 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { TeamOrderField } from '$houdini';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import ListItem from '$lib/components/list/ListItem.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import VulnerabilitySummaryTenant from '$lib/components/vulnerability/VulnerabilitySummaryTenant.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		BodyLong,
-		Heading,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Detail, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 	import VulnerabilityHistory from './VulnerabilityHistory.svelte';
 	import VulnerabilityLeaderBoard from './VulnerabilityLeaderBoard.svelte';
 
 	let { data }: PageProps = $props();
 	let { TenantVulnerabilites } = $derived(data);
-
-	let tableSort = $derived({
-		orderBy: $TenantVulnerabilites.variables?.orderBy?.field,
-		direction: $TenantVulnerabilites.variables?.orderBy?.direction
-	});
-
-	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
-			tableSort.direction = 'DESC';
-		}
-
-		changeParams(
-			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || TeamOrderField.SLUG,
-				after: '',
-				before: ''
-			},
-			{ noScroll: true }
-		);
-	};
 </script>
 
 <svelte:head><title>Tenant Vulnerabilities - Nais Console</title></svelte:head>
@@ -83,64 +53,187 @@
 
 			<div>
 				<Heading level="3" spacing>Team Security Posture</Heading>
-				<BodyLong>
+				<BodyLong spacing>
 					A detailed breakdown of all teams with workloads, showing the number of vulnerabilities by
 					severity, total risk score, SBOM coverage, and workload count. Use this table to explore
 					and compare security posture across teams.
 				</BodyLong>
-				<Table
-					size="small"
-					sort={{
-						orderBy: tableSort.orderBy || TeamOrderField.SLUG,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					onsortchange={tableSortChange}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-							<Th sortable={true} sortKey={TeamOrderField.CRITICAL_VULNERABILITIES}>Critical</Th>
-							<Th sortable={true} sortKey={TeamOrderField.HIGH_VULNERABILITIES}>High</Th>
-							<Th sortable={true} sortKey={TeamOrderField.MEDIUM_VULNERABILITIES}>Medium</Th>
-							<Th sortable={true} sortKey={TeamOrderField.LOW_VULNERABILITIES}>Low</Th>
-							<Th sortable={true} sortKey={TeamOrderField.UNASSIGNED_VULNERABILITIES}>Unassigned</Th
-							>
-							<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk Score</Th>
-							<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>Coverage</Th>
-							<Th># of Workloads</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#if $TenantVulnerabilites.fetching}
-							{#each Array(20).fill('text') as tr, i (i)}
-								<Tr>
-									{#each Array(9).fill(tr) as variant, i (i)}
-										<Td height="2rem"><Skeleton {variant} /></Td>
-									{/each}
-								</Tr>
-							{/each}
-						{:else}
-							{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
-								<Tr>
-									<Td height="2rem"><a href="/team/{team.slug}/vulnerabilities">{team.slug}</a></Td>
-									<Td style="text-align: right">{team.vulnerabilitySummary.critical}</Td>
-									<Td style="text-align: right">{team.vulnerabilitySummary.high}</Td>
-									<Td style="text-align: right">{team.vulnerabilitySummary.medium}</Td>
-									<Td style="text-align: right">{team.vulnerabilitySummary.low}</Td>
-									<Td style="text-align: right">{team.vulnerabilitySummary.unassigned}</Td>
-									<Td style="text-align: right">{team.vulnerabilitySummary.riskScore}</Td>
-									<Td style="text-align: right"
-										>{team.vulnerabilitySummary.coverage.toLocaleString('en-GB', {
-											minimumFractionDigits: 0,
-											maximumFractionDigits: 0
-										})}%</Td
-									>
-									<Td style="text-align: right">{team.workloads.pageInfo.totalCount}</Td>
-								</Tr>
-							{/each}
-						{/if}
-					</Tbody>
-				</Table>
+
+				<List title="Teams and Vulnerabilities">
+					{#snippet menu()}
+						<OrderByMenu
+							orderField={TeamOrderField}
+							defaultOrderField={TeamOrderField.RISK_SCORE}
+							onlyInclude={[
+								TeamOrderField.RISK_SCORE,
+								TeamOrderField.CRITICAL_VULNERABILITIES,
+								TeamOrderField.HIGH_VULNERABILITIES,
+								TeamOrderField.MEDIUM_VULNERABILITIES,
+								TeamOrderField.LOW_VULNERABILITIES,
+								TeamOrderField.UNASSIGNED_VULNERABILITIES,
+								TeamOrderField.SBOM_COVERAGE,
+								TeamOrderField.SLUG
+							]}
+						/>
+					{/snippet}
+					{#if $TenantVulnerabilites.fetching}
+						<div
+							style="display: flex; justify-content: center; align-items: center; height: 500px;"
+						>
+							<Loader size="3xlarge" />
+						</div>
+					{:else}
+						{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
+							<ListItem>
+								<IconLabel
+									label={team.slug}
+									href="/team/{team.slug}"
+									icon={PersonGroupIcon}
+									size="large"
+									level="3"
+								/>
+
+								<div class="right">
+									<div class="grid">
+										<div class="vulnerability">
+											<div class="vulnerability-summary">
+												<Tooltip content="critical">
+													{#if team.vulnerabilitySummary.critical > 0}
+														<a
+															href={`/team/${team.slug}/vulnerabilities`}
+															class="vulnerability-count CRITICAL"
+														>
+															{team.vulnerabilitySummary.critical
+																? team.vulnerabilitySummary.critical
+																: '-'}
+														</a>
+													{:else}
+														<CheckmarkIcon
+															style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+														/>
+													{/if}
+												</Tooltip>
+											</div>
+										</div>
+										<div class="vulnerability">
+											<div class="vulnerability-summary">
+												<Tooltip content="high">
+													{#if team.vulnerabilitySummary.high > 0}
+														<a
+															href={`/team/${team.slug}/vulnerabilities`}
+															class="vulnerability-count HIGH"
+														>
+															{team.vulnerabilitySummary.high
+																? team.vulnerabilitySummary.high
+																: '-'}
+														</a>
+													{:else}
+														<CheckmarkIcon
+															style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+														/>
+													{/if}
+												</Tooltip>
+											</div>
+										</div>
+										<div class="vulnerability">
+											<div class="vulnerability-summary">
+												<Tooltip content="medium">
+													{#if team.vulnerabilitySummary.medium > 0}
+														<a
+															href={`/team/${team.slug}/vulnerabilities`}
+															class="vulnerability-count MEDIUM"
+														>
+															{team.vulnerabilitySummary.medium
+																? team.vulnerabilitySummary.medium
+																: '-'}
+														</a>
+													{:else}
+														<CheckmarkIcon
+															style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+														/>
+													{/if}
+												</Tooltip>
+											</div>
+										</div>
+										<div class="vulnerability">
+											<div class="vulnerability-summary">
+												<Tooltip content="low">
+													{#if team.vulnerabilitySummary.low > 0}
+														<a
+															href={`/team/${team.slug}/vulnerabilities`}
+															class="vulnerability-count LOW"
+														>
+															{team.vulnerabilitySummary.low ? team.vulnerabilitySummary.low : '-'}
+														</a>
+													{:else}
+														<CheckmarkIcon
+															style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+														/>
+													{/if}
+												</Tooltip>
+											</div>
+										</div>
+										<div class="vulnerability">
+											<div class="vulnerability-summary">
+												<Tooltip content="unassigned">
+													{#if team.vulnerabilitySummary.unassigned > 0}
+														<a
+															href={`/team/${team.slug}/vulnerabilities`}
+															class="vulnerability-count UNASSIGNED"
+														>
+															{team.vulnerabilitySummary.unassigned
+																? team.vulnerabilitySummary.unassigned
+																: '-'}
+														</a>
+													{:else}
+														<CheckmarkIcon
+															style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+														/>
+													{/if}
+												</Tooltip>
+											</div>
+										</div>
+										<div class="vulnerability">
+											<div class="vulnerability-summary">
+												<Tooltip content="risk score">
+													{#if team.vulnerabilitySummary.riskScore > 0}
+														<a
+															href={`/team/${team.slug}/vulnerabilities`}
+															class="vulnerability-count RISK_SCORE"
+														>
+															{team.vulnerabilitySummary.riskScore
+																? team.vulnerabilitySummary.riskScore
+																: '-'}
+														</a>
+													{:else}
+														<CheckmarkIcon
+															style="color: var(--ax-text-success-decoration); font-size: 1.75rem;"
+														/>
+													{/if}
+												</Tooltip>
+											</div>
+										</div>
+										<div>
+											<Detail>
+												SBOM coverage: <span
+													style="color: {team.vulnerabilitySummary.coverage < 100
+														? 'var(--ax-warning-500)'
+														: 'inherit'}; font-weight: bold;"
+													>{team.vulnerabilitySummary.coverage.toFixed(0)}%</span
+												>
+											</Detail>
+											<Detail
+												># of workloads: <span style="font-weight: bold;"
+													>{team.workloads.pageInfo.totalCount}</span
+												></Detail
+											>
+										</div>
+									</div>
+								</div>
+							</ListItem>
+						{/each}
+					{/if}
+				</List>
 				<Pagination
 					page={$TenantVulnerabilites.data?.teams.pageInfo}
 					fetching={$TenantVulnerabilites.fetching}
@@ -199,5 +292,78 @@
 		grid-template-columns: 1fr 350px;
 		gap: 1rem;
 		align-items: start;
+	}
+
+	.vulnerability-summary {
+		display: flex;
+		gap: 1px;
+
+		.vulnerability-count {
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+
+			padding: 4px 10px;
+
+			color: inherit;
+			text-decoration: none;
+
+			&.CRITICAL {
+				background-color: var(--ax-danger-600);
+				&:hover {
+					background-color: var(--ax-danger-500);
+				}
+			}
+			&.HIGH {
+				background-color: color-mix(in oklab, var(--ax-danger-600), var(--ax-warning-200));
+				&:hover {
+					background-color: color-mix(in oklab, var(--ax-danger-500), var(--ax-warning-100));
+				}
+			}
+			&.MEDIUM {
+				background-color: var(--ax-warning-300);
+				&:hover {
+					background-color: var(--ax-warning-200);
+				}
+			}
+			&.LOW {
+				background-color: var(--ax-success-400);
+				&:hover {
+					background-color: var(--ax-success-300);
+				}
+			}
+			&.UNASSIGNED {
+				background-color: var(--ax-neutral-200);
+				&:hover {
+					background-color: var(--ax-neutral-100);
+				}
+			}
+
+			&.RISK_SCORE {
+				&:hover {
+					background-color: var(--ax-neutral-100);
+				}
+			}
+		}
+	}
+	.vulnerability {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(6, 88px) 160px;
+		gap: var(--ax-space-8);
+		align-items: center;
+	}
+
+	.right {
+		display: flex;
+		flex-direction: row;
+		align-items: end;
+		gap: var(--ax-space-24);
 	}
 </style>

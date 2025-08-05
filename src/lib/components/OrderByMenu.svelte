@@ -54,6 +54,26 @@
 			OrderDirection.ASC
 	);
 
+	export const orderFieldWeights: Record<string, number> = {
+		DEPLOYMENT_TIME: 10,
+		VULNERABILITY_RISK_SCORE: 20,
+		VULNERABILITY_LAST_SCANNED: 30,
+		HAS_SBOM: 40,
+		VULNERABILITY_SEVERITY_CRITICAL: 50,
+		VULNERABILITY_SEVERITY_HIGH: 60,
+		VULNERABILITY_SEVERITY_MEDIUM: 70,
+		VULNERABILITY_SEVERITY_LOW: 80,
+		VULNERABILITY_SEVERITY_UNASSIGNED: 90,
+		RISK_SCORE: 100,
+		CRITICAL_VULNERABILITIES: 110,
+		HIGH_VULNERABILITIES: 120,
+		MEDIUM_VULNERABILITIES: 130,
+		LOW_VULNERABILITIES: 140,
+		UNASSIGNED_VULNERABILITIES: 150,
+		SBOM_COVERAGE: 160,
+		SLUG: 170
+	};
+
 	const fieldLabel = (fieldName: string) => {
 		switch (fieldName) {
 			case 'DEPLOYMENT_TIME':
@@ -74,7 +94,22 @@
 				return 'Low vulnerabilities';
 			case 'VULNERABILITY_SEVERITY_UNASSIGNED':
 				return 'Unassigned vulnerabilities';
-
+			case 'RISK_SCORE':
+				return 'Risk score';
+			case 'HIGH_VULNERABILITIES':
+				return 'High vulnerabilities';
+			case 'CRITICAL_VULNERABILITIES':
+				return 'Critical vulnerabilities';
+			case 'MEDIUM_VULNERABILITIES':
+				return 'Medium vulnerabilities';
+			case 'LOW_VULNERABILITIES':
+				return 'Low vulnerabilities';
+			case 'UNASSIGNED_VULNERABILITIES':
+				return 'Unassigned vulnerabilities';
+			case 'SBOM_COVERAGE':
+				return 'SBOM coverage';
+			case 'SLUG':
+				return 'Team';
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}
@@ -104,7 +139,11 @@
 		<ActionMenuRadioGroup value={currentOrderField} label="Order by">
 			{#each Object.values(orderField)
 				.filter((field) => !onlyInclude || onlyInclude.includes(field as ValueOf<T>))
-				.sort( (a) => ((a as ValueOf<T>) === defaultOrderField ? -1 : (a as ValueOf<T>) > defaultOrderField ? 1 : -1) ) as field (field)}
+				.sort((a, b) => {
+					const aWeight = orderFieldWeights[a as string] ?? 9999;
+					const bWeight = orderFieldWeights[b as string] ?? 9999;
+					return aWeight - bWeight;
+				}) as field (field)}
 				<ActionMenuRadioItem
 					value={field}
 					onselect={(value) =>
