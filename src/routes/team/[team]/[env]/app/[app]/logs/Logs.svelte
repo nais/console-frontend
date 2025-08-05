@@ -3,7 +3,6 @@
 	import { graphql } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -271,9 +270,7 @@
 			<div style="padding-top: var(--ax-space-8);">
 				{#each team.environment.application.logDestinations as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
-						<ExternalLink href={logDestination.grafanaURL}>
-							View logs in Grafana <ExternalLinkIcon />
-						</ExternalLink>
+						<ExternalLink href={logDestination.grafanaURL}>View logs in Grafana</ExternalLink>
 					{/if}
 				{/each}
 			</div>
