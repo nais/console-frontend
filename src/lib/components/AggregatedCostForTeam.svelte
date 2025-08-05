@@ -2,6 +2,7 @@
 	import { graphql, PendingValue } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 	import { format, lastDayOfMonth } from 'date-fns';
@@ -58,14 +59,18 @@
 			},
 			grid: {
 				top: '25',
-				left: '0',
+				left: '25',
 				containLabel: true
 			},
 			xAxis: {
+				axisLabel: {
+					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733'
+				},
 				data: data.map((entry) => format(entry.date, 'MMM'))
 			},
 			yAxis: {
 				axisLabel: {
+					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733',
 					formatter: (value: number) => {
 						if (value < 1000) {
 							return euroValueFormatter(value);
@@ -109,7 +114,7 @@
 	{#if !$costQuery.fetching}
 		{#if $costQuery.data && $costQuery.data?.team.cost !== PendingValue && $costQuery.data.team.cost.monthlySummary.series.length > 0}
 			{@const cost = $costQuery.data.team.cost}
-			<div>
+			<div style="margin-bottom: var(--ax-space-16)">
 				{#if cost.monthlySummary.series.length > 1}
 					{@const factor = getFactor(cost.monthlySummary.series)}
 					{#each cost.monthlySummary.series.slice(0, 2) as item (item)}
@@ -141,7 +146,7 @@
 				{/if}
 			</div>
 
-			<div style="height: 200px; overflow: hidden;">
+			<div style="height: 200px; overflow: hidden; margin-bottom: var(--ax-space-16)">
 				<EChart
 					options={costTransform(
 						cost.monthlySummary.series,

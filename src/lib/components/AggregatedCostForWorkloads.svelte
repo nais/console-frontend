@@ -1,5 +1,6 @@
 <script lang="ts">
 	import EChart from '$lib/chart/EChart.svelte';
+	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
@@ -89,10 +90,14 @@
 				containLabel: true
 			},
 			xAxis: {
+				axisLabel: {
+					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733'
+				},
 				data: series.map((entry) => format(entry.date, 'MMM'))
 			},
 			yAxis: {
 				axisLabel: {
+					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733',
 					formatter: (value: number) => {
 						if (value < 1000) {
 							return euroValueFormatter(value);
