@@ -97,7 +97,7 @@
 									<div class="grid">
 										<div class="vulnerability">
 											<div class="vulnerability-summary">
-												<Tooltip content="critical">
+												<Tooltip content="Critical">
 													{#if team.vulnerabilitySummary.critical > 0}
 														<a
 															href={`/team/${team.slug}/vulnerabilities`}
@@ -117,7 +117,7 @@
 										</div>
 										<div class="vulnerability">
 											<div class="vulnerability-summary">
-												<Tooltip content="high">
+												<Tooltip content="High">
 													{#if team.vulnerabilitySummary.high > 0}
 														<a
 															href={`/team/${team.slug}/vulnerabilities`}
@@ -137,7 +137,7 @@
 										</div>
 										<div class="vulnerability">
 											<div class="vulnerability-summary">
-												<Tooltip content="medium">
+												<Tooltip content="Medium">
 													{#if team.vulnerabilitySummary.medium > 0}
 														<a
 															href={`/team/${team.slug}/vulnerabilities`}
@@ -157,7 +157,7 @@
 										</div>
 										<div class="vulnerability">
 											<div class="vulnerability-summary">
-												<Tooltip content="low">
+												<Tooltip content="Low">
 													{#if team.vulnerabilitySummary.low > 0}
 														<a
 															href={`/team/${team.slug}/vulnerabilities`}
@@ -175,7 +175,7 @@
 										</div>
 										<div class="vulnerability">
 											<div class="vulnerability-summary">
-												<Tooltip content="unassigned">
+												<Tooltip content="Unassigned">
 													{#if team.vulnerabilitySummary.unassigned > 0}
 														<a
 															href={`/team/${team.slug}/vulnerabilities`}
@@ -195,7 +195,7 @@
 										</div>
 										<div class="vulnerability">
 											<div class="vulnerability-summary">
-												<Tooltip content="risk score">
+												<Tooltip content="Risk score">
 													{#if team.vulnerabilitySummary.riskScore > 0}
 														<a
 															href={`/team/${team.slug}/vulnerabilities`}
