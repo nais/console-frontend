@@ -17,12 +17,14 @@
 		data,
 		dateField,
 		valueField,
-		class: klass
+		class: klass,
+		color
 	}: {
 		data: T[];
 		height?: number;
 		dateField: keyof T;
 		valueField: keyof T;
+		color?: string;
 		class?: string;
 	} = $props();
 
@@ -47,6 +49,14 @@
 			data={chartData}
 			x="date"
 			y="value"
+			series={color
+				? [
+						{
+							key: 'value',
+							color: color
+						}
+					]
+				: undefined}
 			props={{
 				yAxis: {
 					format: euroAxisFormatter

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CostChart from '$lib/chart/CostChart.svelte';
+	import { serviceColor } from '$lib/chart/util';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail, Heading, HelpText } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
@@ -17,6 +18,9 @@
 	export type CostData = {
 		readonly daily: {
 			readonly series: {
+				readonly services: {
+					readonly service: string;
+				}[];
 				readonly date: Date;
 				readonly sum: number;
 			}[];
@@ -142,6 +146,7 @@
 			dateField="date"
 			valueField="sum"
 			class="mt-3 mb-5 h-[180px] w-[93%] pl-[7%]"
+			color={serviceColor(costData.daily.series.at(0)?.services.at(0)?.service ?? '')}
 		/>
 	</div>
 
