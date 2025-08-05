@@ -14,6 +14,9 @@ query OpenSearch(
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["OpenSearch"] }) {
 				series {
+					services {
+						service
+					}
 					date
 					sum
 				}
