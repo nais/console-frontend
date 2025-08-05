@@ -57,15 +57,13 @@
 		{/each}
 	</div>
 	<div class="grid">
-		{#if $TeamOverview.data}
-			<div>
-				<VulnerabilitySummary
-					{teamSlug}
-					workloads={$TeamOverview.data.team.workloads}
-					vulnerabilitySummary={$TeamOverview.data.team.vulnerabilitySummary}
-				/>
-			</div>
-		{/if}
+		<div>
+			<VulnerabilitySummary
+				{teamSlug}
+				workloads={$TeamOverview.data?.team.workloads}
+				vulnerabilitySummary={$TeamOverview.data?.team.vulnerabilitySummary}
+			/>
+		</div>
 		<div class="card">
 			<TeamUtilizationAndOverage {teamSlug} />
 		</div>
@@ -134,6 +132,7 @@
 		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;
+		min-height: 344px;
 	}
 
 	.activity {
