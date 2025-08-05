@@ -4,24 +4,23 @@
 	import EChart from '$lib/chart/EChart.svelte';
 	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
 	import { serviceColor } from '$lib/chart/util';
+	import IconLabel from '$lib/components/IconLabel.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import ListItem from '$lib/components/list/ListItem.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
+		BodyShort,
 		Heading,
 		Loader,
-		Skeleton,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
 		ToggleGroup,
-		ToggleGroupItem,
-		Tr
+		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/src/util/types.js';
@@ -30,31 +29,6 @@
 
 	let { data }: PageProps = $props();
 	let { TenantCost, CostMonthly, interval } = $derived(data);
-
-	let tableSort = $derived({
-		orderBy: $TenantCost.variables?.orderBy?.field,
-		direction: $TenantCost.variables?.orderBy?.direction
-	});
-
-	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
-			tableSort.direction = 'DESC';
-		}
-
-		changeParams(
-			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || TeamOrderField.SLUG,
-				after: '',
-				before: ''
-			},
-			{ noScroll: true }
-		);
-	};
 
 	function costTransformStackedColumnChart(data: CostMonthly$result | undefined): EChartsOption {
 		if (!data) {
@@ -264,45 +238,46 @@
 			</div>
 			<div>
 				<Heading level="3" spacing>Team Cost last 12 months</Heading>
-				<BodyLong>
+				<BodyLong spacing>
 					This table shows the monthly cost for each team over the last 12 months. The cost is
 					aggregated from all services used by the team.
 				</BodyLong>
-				<Table
-					size="small"
-					sort={{
-						orderBy: tableSort.orderBy || TeamOrderField.SLUG,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					onsortchange={tableSortChange}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-							<Th sortable={true} sortKey={TeamOrderField.ACCUMULATED_COST}>Total</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#if $TenantCost.fetching}
-							{#each Array(20).fill('text') as tr, i (i)}
-								<Tr>
-									{#each Array(9).fill(tr) as variant, i (i)}
-										<Td height="2rem"><Skeleton {variant} /></Td>
-									{/each}
-								</Tr>
-							{/each}
-						{:else}
-							{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
-								<Tr>
-									<Td height="2rem"><a href="/team/{team.slug}/cost">{team.slug}</a></Td>
-									<Td style="text-align: right"
-										>{euroValueFormatter(team.cost.monthlySummary.sum)}</Td
+
+				<List title="Team Cost Breakdown">
+					{#snippet menu()}
+						<OrderByMenu
+							orderField={TeamOrderField}
+							defaultOrderField={TeamOrderField.ACCUMULATED_COST}
+							onlyInclude={[TeamOrderField.SLUG, TeamOrderField.ACCUMULATED_COST]}
+						/>
+					{/snippet}
+					{#if !$TenantCost.fetching}
+						{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
+							<ListItem>
+								<IconLabel
+									label={team.slug}
+									href="/team/${team.slug}/cost"
+									icon={PersonGroupIcon}
+									size="large"
+									level="3"
+								/>
+								<div class="right">
+									<BodyShort
+										>{euroValueFormatter(team.cost.monthlySummary.sum, {
+											maximumFractionDigits: 0
+										})}</BodyShort
 									>
-								</Tr>
-							{/each}
-						{/if}
-					</Tbody>
-				</Table>
+								</div>
+							</ListItem>
+						{/each}
+					{:else}
+						<div
+							style="display: flex; justify-content: center; align-items: center; height: 200px;"
+						>
+							<Loader size="3xlarge" />
+						</div>
+					{/if}
+				</List>
 				<Pagination
 					page={$TenantCost.data?.teams.pageInfo}
 					fetching={$TenantCost.fetching}
@@ -359,5 +334,11 @@
 
 	.content {
 		max-width: 80ch;
+	}
+	.right {
+		display: flex;
+		flex-direction: row;
+		align-items: end;
+		gap: var(--ax-space-24);
 	}
 </style>

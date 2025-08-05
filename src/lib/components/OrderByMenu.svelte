@@ -110,6 +110,8 @@
 				return 'SBOM coverage';
 			case 'SLUG':
 				return 'Team';
+			case 'ACCUMULATED_COST':
+				return 'Accumulated cost';
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}

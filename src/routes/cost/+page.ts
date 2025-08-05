@@ -2,10 +2,10 @@ import {
 	load_CostMonthly,
 	load_TenantCost,
 	loadAll,
-	TeamOrderField,
-	type OrderDirection$options,
-	type TeamOrderField$options
+	OrderDirection,
+	TeamOrderField
 } from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { subDays, subMonths, subYears } from 'date-fns';
 
 const rows = 20;
@@ -15,9 +15,6 @@ export async function load(event) {
 	const to = subDays(new Date(), 2);
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
-	const field = (event.url.searchParams.get('field') ||
-		TeamOrderField.ACCUMULATED_COST) as TeamOrderField$options;
-	const direction = (event.url.searchParams.get('direction') || 'DESC') as OrderDirection$options;
 
 	const getFrom = (interval: string): Date => {
 		switch (interval) {
@@ -40,7 +37,10 @@ export async function load(event) {
 			load_TenantCost({
 				event,
 				variables: {
-					orderBy: { field: field, direction: direction },
+					orderBy: {
+						field: urlToOrderField(TeamOrderField, TeamOrderField.ACCUMULATED_COST, event.url),
+						direction: urlToOrderDirection(event.url, OrderDirection.DESC)
+					},
 					...(before ? { before, last: rows } : { after, first: rows })
 				}
 			}),
