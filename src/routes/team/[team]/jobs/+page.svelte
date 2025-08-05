@@ -10,7 +10,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Loader, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
@@ -23,21 +23,16 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	const allEnvs = $Jobs.data?.team.environments.map((env) => env.name) ?? [];
+	const allEnvs = $derived($Jobs.data?.team.environments.map((env) => env.environment.name) ?? []);
 
-	let filteredEnvs = $state(
+	let filteredEnvs = $derived(
 		page.url.searchParams.get('environments') === 'none'
 			? []
 			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
 	);
 
 	$effect(() => {
-		const environments =
-			filteredEnvs.length === 0
-				? 'none'
-				: filteredEnvs.length === allEnvs.length
-					? ''
-					: filteredEnvs.join(',');
+		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 
 		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
 			changeQuery({ environments });
@@ -77,94 +72,95 @@
 				<ExternalLink href={docURL('/workloads/job')}>Learn more about jobs.</ExternalLink>
 			{/if}
 		</BodyLong>
-
-		{#if $Jobs.data && ($Jobs.data.team.jobs.nodes.length > 0 || filter !== '')}
-			{@const jobs = $Jobs.data.team.jobs}
-			{#if jobs.nodes.length > 0 || $Jobs.data.team.totalJobs.pageInfo.totalCount > 0}
-				<div class="search">
-					<form
-						onsubmit={(e) => {
-							e.preventDefault();
-							changeQuery({ newFilter: filter });
-						}}
-					>
-						<Search
-							clearButton={false}
-							clearButtonLabel="Clear"
-							label="filter jobs"
-							placeholder="Filter by name"
-							hideLabel={true}
-							size="small"
-							variant="simple"
-							width="100%"
-							autocomplete="off"
-							bind:value={filter}
-							onclear={() => {
-								filter = '';
-								changeQuery({ newFilter: '' });
-							}}
-						/>
-					</form>
-				</div>
-				<List
-					title="{jobs.pageInfo.totalCount} job{jobs.pageInfo.totalCount !== 1 ? 's' : ''}
-						{jobs.pageInfo.totalCount !== $Jobs.data.team.totalJobs.pageInfo.totalCount
-						? `(of total ${$Jobs.data.team.totalJobs.pageInfo.totalCount})`
-						: ''}"
-				>
-					{#snippet menu()}
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Environment</span>
-								</Button>
-							{/snippet}
-							<ActionMenuCheckboxItem
-								checked={allEnvs.length === filteredEnvs.length
-									? true
-									: filteredEnvs.length > 0
-										? 'indeterminate'
-										: false}
-								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-							>
-								All environments
-							</ActionMenuCheckboxItem>
-							{#each $Jobs.data?.team.environments ?? [] as { name, id } (id)}
-								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(name)}
-									onchange={(checked) =>
-										(filteredEnvs = checked
-											? [...filteredEnvs, name]
-											: filteredEnvs.filter((env) => env !== name))}
-								>
-									{name}
-								</ActionMenuCheckboxItem>
-							{/each}
-						</ActionMenu>
-						<OrderByMenu orderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
-					{/snippet}
-					{#each jobs.nodes as job (job.id)}
-						<JobListItem {job} />
-					{/each}
-				</List>
-				<Pagination
-					page={jobs.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({ after: '', before: jobs.pageInfo.startCursor ?? '' });
-						},
-						loadNextPage: () => {
-							changeQuery({ before: '', after: jobs.pageInfo.endCursor ?? '' });
-						}
+		<div class="search">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					changeQuery({ newFilter: filter });
+				}}
+			>
+				<Search
+					clearButton={false}
+					clearButtonLabel="Clear"
+					label="filter jobs"
+					placeholder="Filter by name"
+					hideLabel={true}
+					size="small"
+					variant="simple"
+					width="100%"
+					autocomplete="off"
+					bind:value={filter}
+					onclear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
 					}}
 				/>
-			{/if}
+			</form>
+		</div>
+		{#if $Jobs.fetching}
+			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
+				<Loader size="3xlarge" />
+			</div>
+		{:else if $Jobs.data && $Jobs.data?.team.totalJobs.pageInfo.totalCount > 0}
+			{@const jobs = $Jobs.data.team.jobs}
+			<List
+				title="{jobs.pageInfo.totalCount} job{jobs.pageInfo.totalCount !== 1 ? 's' : ''}
+						{jobs.pageInfo.totalCount !== $Jobs.data.team.totalJobs.pageInfo.totalCount
+					? `(of total ${$Jobs.data.team.totalJobs.pageInfo.totalCount})`
+					: ''}"
+			>
+				{#snippet menu()}
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								iconPosition="right"
+								{...props}
+								icon={ChevronDownIcon}
+							>
+								<span style="font-weight: normal">Environment</span>
+							</Button>
+						{/snippet}
+						<ActionMenuCheckboxItem
+							checked={allEnvs.length === filteredEnvs.length
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $Jobs.data?.team.environments ?? [] as { environment, id } (id)}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(environment.name)}
+								onchange={(checked) =>
+									(filteredEnvs = checked
+										? [...filteredEnvs, environment.name]
+										: filteredEnvs.filter((env) => env !== environment.name))}
+							>
+								{environment.name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenu>
+					<OrderByMenu orderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
+				{/snippet}
+				{#each jobs.nodes as job (job.id)}
+					<JobListItem {job} />
+				{/each}
+			</List>
+			<Pagination
+				page={jobs.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						changeQuery({ after: '', before: jobs.pageInfo.startCursor ?? '' });
+					},
+					loadNextPage: () => {
+						changeQuery({ before: '', after: jobs.pageInfo.endCursor ?? '' });
+					}
+				}}
+			/>
 		{/if}
 	</div>
 	<div>

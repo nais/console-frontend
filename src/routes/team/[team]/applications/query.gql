@@ -6,12 +6,11 @@ query Applications(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @blocking @cache(policy: NetworkOnly) {
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
 		environments {
 			id
-
 			environment {
 				name
 			}

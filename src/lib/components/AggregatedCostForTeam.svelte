@@ -7,14 +7,9 @@
 	import { format, lastDayOfMonth } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
-	import type { AggregatedTeamCostVariables } from './$houdini';
-
-	export const _AggregatedTeamCostVariables: AggregatedTeamCostVariables = () => {
-		return { team: teamSlug };
-	};
 
 	const costQuery = graphql(`
-		query AggregatedTeamCost($team: Slug!) @load {
+		query AggregatedTeamCost($team: Slug!) {
 			team(slug: $team) @loading {
 				cost @loading {
 					monthlySummary {
@@ -28,6 +23,14 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				team: teamSlug
+			}
+		});
+	});
 
 	interface Props {
 		teamSlug: string;

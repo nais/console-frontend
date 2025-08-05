@@ -1,0 +1,13 @@
+query CostMonthly($from: Date!, $to: Date!) {
+	costMonthlySummary(from: $from, to: $to) {
+		series {
+			date
+			sum
+
+			services {
+				cost
+				service
+			}
+		}
+	}
+}

@@ -2,17 +2,11 @@
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
-	import type { AggregatedCostForApplicationsVariables } from './$houdini';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
-
-	export const _AggregatedCostForApplicationsVariables: AggregatedCostForApplicationsVariables =
-		() => {
-			return { team: teamSlug, totalCount: totalCount };
-		};
 
 	const costQuery = $derived(
 		graphql(`
-			query AggregatedCostForApplications($team: Slug!, $totalCount: Int) @load {
+			query AggregatedCostForApplications($team: Slug!, $totalCount: Int) {
 				team(slug: $team) {
 					slug
 					applications(first: $totalCount) {
@@ -31,6 +25,15 @@
 			}
 		`)
 	);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				team: teamSlug,
+				totalCount: totalCount
+			}
+		});
+	});
 
 	interface Props {
 		teamSlug: string;

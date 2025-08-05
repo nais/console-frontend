@@ -1,5 +1,7 @@
 import {
+	load_CostMonthly,
 	load_TenantCost,
+	loadAll,
 	TeamOrderField,
 	type OrderDirection$options,
 	type TeamOrderField$options
@@ -34,14 +36,21 @@ export async function load(event) {
 
 	return {
 		interval,
-		...(await load_TenantCost({
-			event,
-			variables: {
-				from: getFrom(interval),
-				to: subDays(new Date(), 2),
-				orderBy: { field: field, direction: direction },
-				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		}))
+		...(await loadAll(
+			load_TenantCost({
+				event,
+				variables: {
+					orderBy: { field: field, direction: direction },
+					...(before ? { before, last: rows } : { after, first: rows })
+				}
+			}),
+			load_CostMonthly({
+				event,
+				variables: {
+					from: getFrom(interval),
+					to: subDays(new Date(), 2)
+				}
+			})
+		))
 	};
 }

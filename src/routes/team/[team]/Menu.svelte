@@ -3,7 +3,6 @@
 	import { graphql } from '$houdini';
 	import Menu from '$lib/components/Menu.svelte';
 	import { menuItems } from '$lib/menuItems';
-	import type { InventoryVariables } from './$houdini';
 
 	const {
 		member,
@@ -22,13 +21,9 @@
 		teamSlug: string;
 	} = $props();
 
-	export const _InventoryVariables: InventoryVariables = () => {
-		return { team: teamSlug };
-	};
-
 	const Inventory = $derived(
 		graphql(`
-			query Inventory($team: Slug!) @load {
+			query Inventory($team: Slug!) {
 				team(slug: $team) {
 					inventoryCounts {
 						applications {
@@ -60,6 +55,14 @@
 			}
 		`)
 	);
+
+	$effect.pre(() => {
+		Inventory.fetch({
+			variables: {
+				team: teamSlug
+			}
+		});
+	});
 </script>
 
 <Menu

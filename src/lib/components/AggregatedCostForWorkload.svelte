@@ -3,14 +3,9 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
-	import type { AggregatedCostVariables } from './$houdini';
-
-	export const _AggregatedCostVariables: AggregatedCostVariables = () => {
-		return { workload: workload, environment: environment, team: teamSlug };
-	};
 
 	const costQuery = graphql(`
-		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) @load {
+		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) {
 			team(slug: $team) {
 				slug
 				environment(name: $environment) {
@@ -34,6 +29,16 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		costQuery.fetch({
+			variables: {
+				team: teamSlug,
+				environment: environment,
+				workload: workload
+			}
+		});
+	});
 
 	interface Props {
 		environment: string;
@@ -77,7 +82,7 @@
 
 	<GraphErrors errors={$costQuery.errors} />
 
-	{#if $costQuery.data !== null}
+	{#if $costQuery.data}
 		{@const cost = $costQuery.data.team.environment.workload.cost}
 		{@const factor = getFactor(cost.monthly.series)}
 

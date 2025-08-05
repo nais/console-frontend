@@ -1,23 +1,4 @@
-query TenantCost(
-	$from: Date!
-	$to: Date!
-	$first: Int
-	$last: Int
-	$before: Cursor
-	$after: Cursor
-	$orderBy: TeamOrder
-) @cache(policy: NetworkOnly) @blocking {
-	costMonthlySummary(from: $from, to: $to) {
-		series {
-			date
-			sum
-
-			services {
-				cost
-				service
-			}
-		}
-	}
+query TenantCost($first: Int, $last: Int, $before: Cursor, $after: Cursor, $orderBy: TeamOrder) {
 	teams(first: $first, last: $last, before: $before, after: $after, orderBy: $orderBy)
 		@paginate(mode: SinglePage) {
 		pageInfo {

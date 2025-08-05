@@ -3,15 +3,10 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
-	import type { WorkloadSecretsVariables } from './$houdini';
 	import IconLabel from './IconLabel.svelte';
 
-	export const _WorkloadSecretsVariables: WorkloadSecretsVariables = () => {
-		return { name: workload, team: teamSlug, env: environment };
-	};
-
 	const secrets = graphql(`
-		query WorkloadSecrets($name: String!, $team: Slug!, $env: String!) @load {
+		query WorkloadSecrets($name: String!, $team: Slug!, $env: String!) {
 			team(slug: $team) {
 				slug
 				environment(name: $env) {
@@ -38,6 +33,16 @@
 		workload: string;
 		teamSlug: string;
 	}
+
+	$effect.pre(() => {
+		secrets.fetch({
+			variables: {
+				name: workload,
+				team: teamSlug,
+				env: environment
+			}
+		});
+	});
 
 	let { environment, workload, teamSlug }: Props = $props();
 </script>

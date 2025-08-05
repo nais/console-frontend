@@ -38,7 +38,7 @@
 	`);
 
 	const teamsQuery = graphql(`
-		query OnboardingTeams @load {
+		query OnboardingTeams {
 			teams(first: 25) @paginate {
 				pageInfo {
 					hasNextPage
@@ -56,6 +56,10 @@
 			}
 		}
 	`);
+
+	$effect.pre(() => {
+		teamsQuery.fetch();
+	});
 
 	let teamSearchQuery = $state('');
 	let teamSearchTimeout: ReturnType<typeof setTimeout> | null = null;

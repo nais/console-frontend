@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { graphql, ImageVulnerabilityOrderField, PendingValue } from '$houdini';
+	import { page } from '$app/state';
+	import {
+		graphql,
+		ImageVulnerabilityOrderField,
+		type ImageVulnerabilityOrderField$options
+	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
@@ -15,36 +20,17 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
-	import { untrack } from 'svelte';
-	import type { ImageVulnerabilitiesVariables } from './$houdini';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
 	import TrailFinding from './TrailFinding.svelte';
 
 	interface Props {
-		authorized: boolean | typeof PendingValue;
-		team: string | typeof PendingValue;
-		environment: string | typeof PendingValue;
-		workload: string | typeof PendingValue;
+		authorized: boolean;
+		team: string;
+		environment: string;
+		workload: string;
 	}
 
 	let { authorized, team, environment, workload }: Props = $props();
-
-	export const _ImageVulnerabilitiesVariables: ImageVulnerabilitiesVariables = () => {
-		return untrack(() => {
-			if (team === PendingValue || environment === PendingValue || workload === PendingValue) {
-				return { team: '', environment: '', workload: '' };
-			}
-			return {
-				workload: workload,
-				environment: environment,
-				team: team,
-				orderBy: {
-					field: tableSort.orderBy ? tableSort.orderBy : ImageVulnerabilityOrderField.SEVERITY,
-					direction: tableSort.direction ? tableSort.direction : 'ASC'
-				}
-			};
-		});
-	};
 
 	const vulnerabilities = graphql(`
 		query ImageVulnerabilities(
@@ -52,7 +38,7 @@
 			$environment: String!
 			$workload: String!
 			$orderBy: ImageVulnerabilityOrder
-		) @load {
+		) {
 			team(slug: $team) {
 				environment(name: $environment) {
 					workload(name: $workload) {
@@ -114,6 +100,22 @@
 		}
 	`);
 
+	$effect.pre(() => {
+		vulnerabilities.fetch({
+			variables: {
+				team: team,
+				environment: environment,
+				workload: workload,
+				orderBy: {
+					field:
+						(page.url.searchParams.get('field') as ImageVulnerabilityOrderField$options) ||
+						ImageVulnerabilityOrderField.SEVERITY,
+					direction: (page.url.searchParams.get('direction') as 'ASC' | 'DESC') || 'ASC'
+				}
+			}
+		});
+	});
+
 	let findingToSuppress: FindingType | undefined = $state();
 	let suppressOpen = $state(false);
 	let analysisTrail: FindingType | undefined = $state();
@@ -143,20 +145,6 @@
 			},
 			{ noScroll: true }
 		);
-
-		if (team !== PendingValue && environment !== PendingValue && workload !== PendingValue) {
-			vulnerabilities.fetch({
-				variables: {
-					team: team,
-					environment: environment,
-					workload: workload,
-					orderBy: {
-						field: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
-						direction: tableSort.direction || 'DESC'
-					}
-				}
-			});
-		}
 	};
 </script>
 
@@ -259,7 +247,7 @@
 		}}
 	/>
 
-	{#if findingToSuppress && authorized !== PendingValue && image.workloadReferences}
+	{#if findingToSuppress && image.workloadReferences}
 		{#key findingToSuppress.id}
 			<SuppressFinding
 				bind:open={suppressOpen}
@@ -273,7 +261,7 @@
 		{/key}
 	{/if}
 
-	{#if analysisTrail && authorized !== PendingValue && authorized && image.workloadReferences}
+	{#if analysisTrail && authorized && image.workloadReferences}
 		<TrailFinding
 			bind:open={analysisOpen}
 			finding={analysisTrail}

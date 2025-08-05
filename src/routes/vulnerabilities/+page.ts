@@ -16,20 +16,8 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	const interval = event.url.searchParams.get('interval') ?? '7d';
-	const showByToggle = event.url.searchParams.get('showByToggle') || TeamOrderField.RISK_SCORE;
-
-	const mostVulnerableTeamsDirection =
-		showByToggle === TeamOrderField.RISK_SCORE
-			? 'DESC'
-			: showByToggle === TeamOrderField.CRITICAL_VULNERABILITIES
-				? 'DESC'
-				: showByToggle === TeamOrderField.SBOM_COVERAGE
-					? 'ASC'
-					: 'DESC';
 
 	return {
-		mostVulnerableTeamsField: showByToggle as TeamOrderField$options,
-		mostVulnerableTeamsDirection: mostVulnerableTeamsDirection as OrderDirection$options,
 		interval,
 		...(await load_TenantVulnerabilites({
 			event,

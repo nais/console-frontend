@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { TeamOrderField, type TenantCost$result } from '$houdini';
+	import { TeamOrderField, type CostMonthly$result } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import { normalizeVal } from '$lib/chart/transformVulnerabilities';
 	import { serviceColor } from '$lib/chart/util';
@@ -29,7 +29,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TenantCost, interval } = $derived(data);
+	let { TenantCost, CostMonthly, interval } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $TenantCost.variables?.orderBy?.field,
@@ -56,7 +56,7 @@
 		);
 	};
 
-	function costTransformStackedColumnChart(data: TenantCost$result | undefined): EChartsOption {
+	function costTransformStackedColumnChart(data: CostMonthly$result | undefined): EChartsOption {
 		if (!data) {
 			return {
 				animation: false,
@@ -233,10 +233,10 @@
 							Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
 							Some services are missing cost data. Figures are based on data from Google Cloud and
 							Aiven. The current month includes data up to
-							{#if $TenantCost.data?.costMonthlySummary?.series && $TenantCost.data.costMonthlySummary.series.length > 0 && $TenantCost.data.costMonthlySummary.series.at(-1)?.date}
+							{#if $CostMonthly.data?.costMonthlySummary?.series && $CostMonthly.data.costMonthlySummary.series.length > 0 && $CostMonthly.data.costMonthlySummary.series.at(-1)?.date}
 								<strong
 									><Time
-										time={$TenantCost.data.costMonthlySummary.series.at(-1)?.date as Date}
+										time={$CostMonthly.data.costMonthlySummary.series.at(-1)?.date as Date}
 									/></strong
 								>
 							{/if}.
@@ -251,9 +251,9 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $TenantCost.data}
+				{#if $CostMonthly.data}
 					<EChart
-						options={costTransformStackedColumnChart($TenantCost.data)}
+						options={costTransformStackedColumnChart($CostMonthly.data)}
 						style="height: 1000px;"
 					/>
 				{:else}

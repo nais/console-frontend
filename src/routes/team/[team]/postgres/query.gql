@@ -7,7 +7,7 @@ query SqlInstances(
 	$after: Cursor
 	$from: Date!
 	$to: Date!
-) @blocking {
+) {
 	team(slug: $team) {
 		slug
 

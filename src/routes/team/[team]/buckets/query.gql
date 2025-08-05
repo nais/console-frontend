@@ -7,7 +7,7 @@ query Buckets(
 	$after: Cursor
 	$from: Date!
 	$to: Date!
-) @blocking {
+) {
 	team(slug: $team) {
 		slug
 		cost {
