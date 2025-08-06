@@ -2,6 +2,8 @@
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import IconLabel from './IconLabel.svelte';
 
 	interface Props {
 		workload: WorkloadDeploy;
@@ -14,38 +16,6 @@
 			workload,
 			graphql(`
 				fragment WorkloadDeploy on Workload {
-					__typename
-					id
-					name
-					team {
-						slug
-					}
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					image {
-						name
-						tag
-						workloadReferences {
-							nodes {
-								workload {
-									id
-									__typename
-									team {
-										slug
-									}
-									teamEnvironment {
-										environment {
-											name
-										}
-									}
-									name
-								}
-							}
-						}
-					}
 					deployments(first: 1) {
 						nodes {
 							createdAt
@@ -69,10 +39,11 @@
 <div class="wrapper">
 	{#if deploymentInfo}
 		{#if deploymentInfo.createdAt}
-			<BodyShort
-				>Last deployed
-				<Time time={deploymentInfo.createdAt} distance={true} />.
-			</BodyShort>
+			<IconLabel icon={RocketIcon} size="medium">
+				{#snippet label()}
+					Last deployed <Time time={deploymentInfo.createdAt} distance={true} />
+				{/snippet}
+			</IconLabel>
 		{/if}
 	{:else}
 		<BodyShort>No deployment metadata found for workload.</BodyShort>
