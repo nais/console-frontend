@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -9,7 +10,8 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
-	import type { PageProps } from './$houdini';
+	import { tick } from 'svelte';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
@@ -29,6 +31,37 @@
 			after: params.after ?? after
 		});
 	};
+
+	function idFromTriggerUrl(triggerUrl: string): string {
+		if (!triggerUrl) return '';
+		const id = triggerUrl.trim().split('/').at(-1);
+		return id && id.length > 0 ? id : '';
+	}
+
+	let highlightId = $state('');
+
+	$effect(() => {
+		const deployId = page.url.searchParams.get('deployId');
+		if (!deployId || !$JobDeploys.data) return;
+
+		highlightId = deployId;
+
+		let attempts = 0;
+
+		const tryScroll = async () => {
+			await tick(); // wait for DOM to update
+
+			const el = document.getElementById(deployId);
+			if (el) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			} else if (attempts < 10) {
+				attempts++;
+				setTimeout(tryScroll, 100); // try again in 100ms
+			}
+		};
+
+		tryScroll();
+	});
 </script>
 
 <GraphErrors errors={$JobDeploys.errors} />
@@ -39,7 +72,8 @@
 			<BodyLong spacing>
 				{#if $JobDeploys.data.team.environment.job.deployments.pageInfo.totalCount == 0}
 					<strong
-						>No deployments of <strong>{$JobDeploys.data.team.environment.job.name}</strong> in <Tag
+						>No deployments of <strong>{$JobDeploys.data.team.environment.job.name}</strong>
+						in <Tag
 							size="small"
 							variant={envTagVariant(
 								$JobDeploys.data.team.environment.job.teamEnvironment.environment.name
@@ -78,7 +112,10 @@
 				)}"
 			>
 				{#each $JobDeploys.data.team.environment.job.deployments.nodes as deployment (deployment.id)}
-					<div><DeploymentListItem {deployment} /></div>
+					{@const id = idFromTriggerUrl(deployment.triggerUrl ?? '')}
+					<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
+						<DeploymentListItem {deployment} />
+					</div>
 				{/each}
 			</List>
 			<Pagination
@@ -107,5 +144,24 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+	/* Base state (if needed) */
+	[id] {
+		transition:
+			background-color 0.8s ease,
+			border-left-color 0.8s ease,
+			border-left-width 0.8s ease,
+			opacity 0.8s ease,
+			padding-left 0.8s ease;
+	}
+
+	/* Fade in */
+	.highlight-in {
+		background-color: var(--ax-accent-400);
+		border-left: 4px solid var(--a-border-focus);
+		padding-left: 0.25rem;
+		border-radius: var(--a-border-radius);
+		opacity: 1;
+		border-left-width: 4px;
 	}
 </style>

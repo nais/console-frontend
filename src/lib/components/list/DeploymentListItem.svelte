@@ -4,7 +4,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import ExternalLink from '../ExternalLink.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -42,7 +42,7 @@
 
 <ListItem>
 	<div>
-		<BodyShort size="small">
+		<BodyLong size="small" as="div">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
 				Commit
 				<ExternalLink
@@ -114,7 +114,7 @@
 					</ul>
 				{/if}
 			{/if}
-		</BodyShort>
+		</BodyLong>
 	</div>
 	<div class="status">
 		{#if deployment.statuses.nodes.length === 0}

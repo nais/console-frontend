@@ -73,6 +73,7 @@
 	{@const job = $Job.data.team.environment.job}
 	<div class="job-content">
 		<div style="display:flex; flex-direction: column; gap: var(--ax-space-8);">
+			<WorkloadDeploy workload={job} />
 			{#each job.status.errors as error, i (i)}
 				{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
 					<ErrorMessage
@@ -109,10 +110,6 @@
 						</Button>
 					{/if}
 				</div>
-				<!-- <p>
-					Showing current run and the last 2 successful and 1 failed runs, as configured by
-					successfulJobsHistoryLimit and failedJobsHistoryLimit (default: 3).
-				</p> -->
 				<Runs {job} />
 			</div>
 			<div>
@@ -134,7 +131,6 @@
 			</div>
 
 			<SidebarActivity activityLog={job} />
-			<WorkloadDeploy workload={job} />
 
 			{#if viewerIsMember && jobName && environment}
 				<Secrets workload={jobName} {environment} {teamSlug} />
