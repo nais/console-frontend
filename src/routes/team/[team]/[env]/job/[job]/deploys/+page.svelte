@@ -3,6 +3,7 @@
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
+	import { idFromTriggerUrl } from '$lib/components/list/utils';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -31,12 +32,6 @@
 			after: params.after ?? after
 		});
 	};
-
-	function idFromTriggerUrl(triggerUrl: string): string {
-		if (!triggerUrl) return '';
-		const id = triggerUrl.trim().split('/').at(-1);
-		return id && id.length > 0 ? id : '';
-	}
 
 	let highlightId = $state('');
 
