@@ -147,7 +147,6 @@
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 	}
-	/* Base state (if needed) */
 	[id] {
 		transition:
 			background-color 0.8s ease,
@@ -157,11 +156,9 @@
 			padding-left 0.8s ease;
 	}
 
-	/* Fade in */
 	.highlight-in {
 		background-color: var(--ax-accent-400);
-		border-left: 4px solid var(--a-border-focus);
-		padding-left: 0.25rem;
+		padding-left: 0.5rem;
 		border-radius: var(--a-border-radius);
 		opacity: 1;
 		border-left-width: 4px;
