@@ -12,7 +12,7 @@
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -69,81 +69,102 @@
 
 <GraphErrors errors={$Job.errors} />
 
+{#if $Job.fetching}
+	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+		<Loader size="3xlarge" />
+	</div>
+{/if}
+
 {#if $Job.data}
 	{@const job = $Job.data.team.environment.job}
-	<div class="job-content">
-		<div style="display:flex; flex-direction: column; gap: var(--ax-space-8);">
-			<WorkloadDeploy workload={job} />
-			{#each job.status.errors as error, i (i)}
-				{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
-					<ErrorMessage
-						{error}
-						{docURL}
-						workloadType="Job"
-						{teamSlug}
-						workloadName={job.name}
-						environment={job.teamEnvironment.environment.name}
-					/>
+	<div class="wrapper">
+		<div class="job-content">
+			<div class="main-section">
+				<WorkloadDeploy workload={job} />
+				{#if job.status.errors.filter( (e) => supportedErrorTypes.some((errorType) => errorType === e.__typename) ).length}
+					{#each job.status.errors as error, i (i)}
+						{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
+							<ErrorMessage
+								{error}
+								{docURL}
+								workloadType="Job"
+								{teamSlug}
+								workloadName={job.name}
+								environment={job.teamEnvironment.environment.name}
+							/>
+						{/if}
+					{/each}
 				{/if}
-			{/each}
 
-			{#if job.deletionStartedAt}
-				<Alert variant="info" size="small" fullWidth={false}>
-					This job is being deleted. Deletion started <Time
-						time={job.deletionStartedAt}
-						distance
-					/>. If the deletion is taking too long, contact the Nais team.
-				</Alert>
-			{/if}
+				{#if job.deletionStartedAt}
+					<Alert variant="info" size="small" fullWidth={false}>
+						This job is being deleted. Deletion started <Time
+							time={job.deletionStartedAt}
+							distance
+						/>. If the deletion is taking too long, contact the Nais team.
+					</Alert>
+				{/if}
 
-			<div style="display:flex; flex-direction: column; gap:0.5rem;">
-				<div class="runs-header">
-					<Heading level="2" size="medium">Runs</Heading>
-					{#if viewerIsMember && job.schedule}
-						<Button
-							variant="secondary"
-							size="small"
-							onclick={() => (open = true)}
-							disabled={job.deletionStartedAt !== null}
-						>
-							Trigger run
-						</Button>
-					{/if}
+				<div style="display:flex; flex-direction: column; gap:0.5rem;">
+					<div class="runs-header">
+						<Heading level="2" size="medium">Runs</Heading>
+						{#if viewerIsMember && job.schedule}
+							<Button
+								variant="secondary"
+								size="small"
+								onclick={() => (open = true)}
+								disabled={job.deletionStartedAt !== null}
+							>
+								Trigger run
+							</Button>
+						{/if}
+					</div>
+					<Runs {job} />
 				</div>
-				<Runs {job} />
+				<div>
+					<NetworkPolicy workload={job} />
+				</div>
+				<div>
+					<Persistence workload={job} />
+				</div>
 			</div>
-			<div>
-				<NetworkPolicy workload={job} />
-			</div>
-			<div>
-				<Persistence workload={job} />
+			<div class="sidebar">
+				<!-- <Status {job} /> -->
+				<Schedule schedule={job.schedule} />
+				{#if jobName && environment}
+					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
+				{/if}
+				<div>
+					<Heading level="2" size="small">Vulnerabilities</Heading>
+					<WorkloadVulnerabilitySummary workload={job} />
+				</div>
+
+				<SidebarActivity activityLog={job} />
+
+				{#if viewerIsMember && jobName && environment}
+					<Secrets workload={jobName} {environment} {teamSlug} />
+				{/if}
 			</div>
 		</div>
-		<div class="sidebar">
-			<!-- <Status {job} /> -->
-			<Schedule schedule={job.schedule} />
-			{#if jobName && environment}
-				<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
-			{/if}
-			<div>
-				<Heading level="2" size="small">Vulnerabilities</Heading>
-				<WorkloadVulnerabilitySummary workload={job} />
-			</div>
 
-			<SidebarActivity activityLog={job} />
-
-			{#if viewerIsMember && jobName && environment}
-				<Secrets workload={jobName} {environment} {teamSlug} />
-			{/if}
-		</div>
+		{#if open && jobName && environment}
+			<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
+		{/if}
 	</div>
-
-	{#if open && jobName && environment}
-		<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
-	{/if}
 {/if}
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
+
+	.main-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
 	.job-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;
