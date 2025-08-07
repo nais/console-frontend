@@ -237,18 +237,7 @@
 	</Confirm>
 	<div
 		style="display: flex; flex-direction: row; justify-content: flex-end; padding-bottom: var(--spacing-layout);"
-	>
-		<Button
-			class="delete-secret"
-			title="Delete secret from environment"
-			variant="danger"
-			size="small"
-			onclick={openDeleteModal}
-			icon={TrashIcon}
-		>
-			Delete
-		</Button>
-	</div>
+	></div>
 	<div class="wrapper">
 		<div>
 			<div class="alerts">
@@ -257,10 +246,22 @@
 				{/if}
 			</div>
 			<div class="data-heading">
-				<Heading level="2">Secret Data</Heading>
-				<HelpText title="Secret data" placement="right">
-					A secret contains a set of key-value pairs.
-				</HelpText>
+				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
+					<Heading level="2">Secret Data</Heading>
+					<HelpText title="Secret data" placement="right">
+						A secret contains a set of key-value pairs.
+					</HelpText>
+				</div>
+				<Button
+					class="delete-secret"
+					title="Delete secret from environment"
+					variant="danger"
+					size="small"
+					onclick={openDeleteModal}
+					icon={TrashIcon}
+				>
+					Delete
+				</Button>
 			</div>
 			<Table size="small" style="margin-top: 2rem">
 				<Thead>
@@ -373,6 +374,7 @@
 
 	.data-heading {
 		display: flex;
+		justify-content: space-between;
 		gap: 0.5rem;
 	}
 
