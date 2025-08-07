@@ -55,6 +55,7 @@
 	);
 
 	export const orderFieldWeights: Record<string, number> = {
+		NAME: 0,
 		DEPLOYMENT_TIME: 10,
 		VULNERABILITY_RISK_SCORE: 20,
 		VULNERABILITY_LAST_SCANNED: 30,
@@ -112,6 +113,8 @@
 				return 'Team';
 			case 'ACCUMULATED_COST':
 				return 'Accumulated cost';
+			case 'LAST_MODIFIED_AT':
+				return 'Last modified';
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}
