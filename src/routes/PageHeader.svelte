@@ -69,7 +69,7 @@
 	<Spacer />
 	<div class="feedback-button-wrapper">
 		<Button
-			variant="primary-neutral"
+			variant="tertiary-neutral"
 			icon={ChatElipsisIcon}
 			size="small"
 			onclick={() => {
