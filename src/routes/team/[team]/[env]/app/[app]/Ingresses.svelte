@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { fragment, graphql, type Ingresses } from '$houdini';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -53,7 +54,12 @@
 	{#each Object.entries(Object.groupBy($data.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
 		{#each ingresses as ingress (ingress)}
 			<ListItem>
-				<IconLabel size="medium" label={ingress.url} href={ingress.url}>
+				<IconLabel
+					size="medium"
+					label={ingress.url}
+					href="/team/{page.params.team}/{page.params.env}/app/{page.params
+						.app}/ingresses?ingress={encodeURIComponent(ingress.url)}"
+				>
 					{#snippet icon()}
 						{#each $data.status.errors as error (error)}
 							{#if error.__typename === 'WorkloadStatusDeprecatedIngress' && error.ingress === ingress.url}
