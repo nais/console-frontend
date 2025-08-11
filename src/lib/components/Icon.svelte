@@ -16,6 +16,7 @@
 		HouseIcon,
 		ImageIcon,
 		LineGraphStackedIcon,
+		LinkIcon,
 		PackageIcon,
 		PadlockLockedIcon,
 		PersonGroupIcon,
@@ -87,6 +88,8 @@
 				return FileTextIcon;
 			case 'delete':
 				return TrashIcon;
+			case 'ingresses':
+				return LinkIcon;
 			default:
 				return QuestionmarkIcon;
 		}

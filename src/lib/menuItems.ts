@@ -76,6 +76,7 @@ export const menuItems = ({
 				menuItem('Deployments', 'deploys'),
 				menuItem('Cost', 'cost'),
 				workloadType === 'app' && menuItem('Utilization', 'utilization'),
+				workloadType === 'app' && menuItem('Ingresses', 'ingresses'),
 				menuItem('Logs', 'logs')
 			].filter(Boolean),
 			[menuItem('Manifest', 'manifest')],
