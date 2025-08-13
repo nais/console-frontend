@@ -102,7 +102,10 @@
 		</div>
 		<div>
 			{#if $TeamOverview.data?.team}
-				<SidebarActivity activityLog={$TeamOverview.data?.team} />
+				<SidebarActivity
+					activityLog={$TeamOverview.data?.team}
+					direct={$TeamOverview.data?.team.activityLog}
+				/>
 			{/if}
 		</div>
 	</div>
@@ -142,7 +145,6 @@
 		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;
-		min-height: 344px;
 	}
 
 	.deployments {

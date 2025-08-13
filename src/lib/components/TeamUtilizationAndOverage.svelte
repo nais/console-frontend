@@ -149,7 +149,7 @@
 		{/if}
 	</BodyShort>
 	<a href="/team/{teamSlug}/utilization" style:margin-top="auto" style:align-self="end"
-		>View Utilization</a
+		>View Team Utilization</a
 	>
 </div>
 

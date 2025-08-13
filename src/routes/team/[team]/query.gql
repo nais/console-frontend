@@ -110,6 +110,6 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			ranking
 			lastUpdated
 		}
-		...SidebarActivityLogFragment @with(first: 3)
+		...SidebarActivityLogFragment @with(limit: 15) @mask_disable
 	}
 }

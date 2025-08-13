@@ -18,13 +18,14 @@
 		RocketIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
+
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
-	import SecretDeletedActivityLogEntry from './texts/SecretDeletedActivityLogEntry.svelte';
+	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
 	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
@@ -39,91 +40,91 @@
 
 	let { activityLog, direct }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			activityLog,
-			graphql(`
-				fragment SidebarActivityLogFragment on ActivityLogger
-				@arguments(filter: { type: "ActivityLogFilter" }, first: { type: "Int", default: 10 }) {
-					activityLog(first: $first, filter: $filter) {
-						nodes {
+	const data = fragment(
+		activityLog,
+		graphql(`
+			fragment SidebarActivityLogFragment on ActivityLogger
+			@arguments(filter: { type: "ActivityLogFilter" }, limit: { type: "Int" }) {
+				activityLog(first: $limit, filter: $filter) {
+					nodes {
+						id
+						actor
+						message
+						createdAt
+						resourceName
+						resourceType
+						environmentName
+						teamSlug
+						__typename
+
+						... on DeploymentActivityLogEntry {
+							deploymentData: data {
+								triggerURL
+							}
+						}
+						... on ApplicationScaledActivityLogEntry {
+							appScaled: data {
+								newSize
+								direction
+							}
+						}
+						... on RepositoryAddedActivityLogEntry {
 							id
-							actor
-							message
-							createdAt
-							resourceName
-							resourceType
-							environmentName
-							teamSlug
-							__typename
-							... on DeploymentActivityLogEntry {
-								deploymentData: data {
-									triggerURL
-								}
+						}
+						... on RepositoryRemovedActivityLogEntry {
+							id
+						}
+						... on SecretCreatedActivityLogEntry {
+							id
+						}
+						... on SecretDeletedActivityLogEntry {
+							id
+						}
+						... on SecretValueAddedActivityLogEntry {
+							secretValueAddedData: data {
+								valueName
 							}
-							... on ApplicationScaledActivityLogEntry {
-								appScaled: data {
-									newSize
-									direction
-								}
+						}
+						... on SecretValueUpdatedActivityLogEntry {
+							secretValueUpdatedData: data {
+								valueName
 							}
-							... on RepositoryAddedActivityLogEntry {
-								id
+						}
+						... on SecretValueRemovedActivityLogEntry {
+							secretValueRemovedData: data {
+								valueName
 							}
-							... on RepositoryRemovedActivityLogEntry {
-								id
+						}
+						... on TeamMemberAddedActivityLogEntry {
+							addedData: data {
+								role
+								userEmail
+								userID
 							}
-							... on SecretCreatedActivityLogEntry {
-								id
+						}
+						... on TeamMemberRemovedActivityLogEntry {
+							removedData: data {
+								userEmail
+								userID
 							}
-							... on SecretDeletedActivityLogEntry {
-								id
-							}
-							... on SecretValueAddedActivityLogEntry {
-								secretValueAddedData: data {
-									valueName
-								}
-							}
-							... on SecretValueUpdatedActivityLogEntry {
-								secretValueUpdatedData: data {
-									valueName
-								}
-							}
-							... on SecretValueRemovedActivityLogEntry {
-								secretValueRemoved: data {
-									valueName
-								}
-							}
-							... on TeamMemberAddedActivityLogEntry {
-								addedData: data {
-									role
-									userEmail
-									userID
-								}
-							}
-							... on TeamMemberRemovedActivityLogEntry {
-								removedData: data {
-									userEmail
-									userID
-								}
-							}
-							... on TeamMemberSetRoleActivityLogEntry {
-								setRoleData: data {
-									role
-									userEmail
-									userID
-								}
+						}
+						... on TeamMemberSetRoleActivityLogEntry {
+							setRoleData: data {
+								role
+								userEmail
+								userID
 							}
 						}
 					}
 				}
-			`)
-		)
+			}
+		`)
 	);
 
 	type Kind =
 		| SidebarActivityLogFragment$data['activityLog']['nodes'][number]['__typename']
 		| 'JobTriggeredActivityLogEntry';
+
 	const icons: { [key in Kind]?: Component } = {
 		DeploymentActivityLogEntry: RocketIcon,
 		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
@@ -159,7 +160,7 @@
 			case 'SecretCreatedActivityLogEntry':
 				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretDeletedActivityLogEntry':
-				return SecretDeletedActivityLogEntry as Component<{ data: unknown }>;
+				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
 				return TeamMemberAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberRemovedActivityLogEntry':
@@ -179,12 +180,13 @@
 	{#each list as entry (entry.id)}
 		{@const Icon = icons[entry.__typename] || RocketIcon}
 		{@const TextComponent = textComponent(entry.__typename)}
-
 		<div class="item">
 			<div class="icon">
 				<Icon width="75%" height="75%" />
 			</div>
-			<div class="content"><TextComponent data={entry} /></div>
+			<div class="content">
+				<TextComponent data={entry} />
+			</div>
 		</div>
 	{:else}
 		<p>No activity log entries found.</p>
@@ -201,34 +203,31 @@
 		display: flex;
 		position: relative;
 		padding-bottom: 0.75rem;
-
-		.icon {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			width: 30px;
-			height: 30px;
-			min-width: 30px;
-			min-height: 30px;
-			background: var(--ax-bg-raised);
-			z-index: 1;
-			border-radius: 50%;
-		}
-
-		.content {
-			flex: 1 1 auto;
-			padding: 0 0 0 1rem;
-		}
-
-		&:not(:last-child)::before {
-			background: var(--ax-border-neutral-subtleA);
-			content: '';
-			height: 100%;
-			left: 14px;
-			position: absolute;
-			top: 20px;
-			width: 2px;
-			z-index: 0;
-		}
+	}
+	.icon {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 30px;
+		height: 30px;
+		min-width: 30px;
+		min-height: 30px;
+		background: var(--ax-bg-raised);
+		z-index: 1;
+		border-radius: 50%;
+	}
+	.content {
+		flex: 1 1 auto;
+		padding: 0 0 0 1rem;
+	}
+	.item:not(:last-child)::before {
+		background: var(--ax-border-neutral-subtleA);
+		content: '';
+		height: 100%;
+		left: 14px;
+		position: absolute;
+		top: 20px;
+		width: 2px;
+		z-index: 0;
 	}
 </style>
