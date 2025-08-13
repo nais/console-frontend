@@ -23,7 +23,7 @@
 
 	const Inventory = $derived(
 		graphql(`
-			query Inventory($team: Slug!) {
+			query Inventory($team: Slug!) @cache(policy: NoCache) {
 				team(slug: $team) {
 					inventoryCounts {
 						applications {

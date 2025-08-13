@@ -12,7 +12,6 @@ query Deployments($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after
 				totalCount
 			}
 			nodes {
-				...DeploymentItemFragment
 				id
 				statuses {
 					nodes {

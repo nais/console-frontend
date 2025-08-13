@@ -44,14 +44,17 @@
 			activityLog,
 			graphql(`
 				fragment SidebarActivityLogFragment on ActivityLogger
-				@arguments(filter: { type: "ActivityLogFilter" }) {
-					activityLog(first: 10, filter: $filter) {
+				@arguments(filter: { type: "ActivityLogFilter" }, first: { type: "Int", default: 10 }) {
+					activityLog(first: $first, filter: $filter) {
 						nodes {
 							id
 							actor
 							message
 							createdAt
 							resourceName
+							resourceType
+							environmentName
+							teamSlug
 							__typename
 							... on DeploymentActivityLogEntry {
 								deploymentData: data {

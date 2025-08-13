@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
+	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
-	import DeploymentItemShort from '$lib/components/list/DeploymentShortListItem.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
+	import List from '$lib/components/list/List.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
-	import { Alert, Heading } from '@nais/ds-svelte-community';
+	import { docURL } from '$lib/doc';
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -41,22 +45,49 @@
 {/if}
 
 <div class="wrapper">
-	<div class="alerts-wrapper">
-		{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
-			{#if errors.workloads?.length && errors.level}
-				<TeamErrorMessage
-					collapsible={errors.__typename !== 'WorkloadStatusNoRunningInstances'}
-					error={{
-						__typename: errors.__typename,
-						level: errors.level
-					}}
-					{teamSlug}
-					workloads={errors.workloads}
-				/>
+	<div class="left">
+		<div class="alerts-wrapper">
+			{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
+				{#if errors.workloads?.length && errors.level}
+					<TeamErrorMessage
+						collapsible={errors.__typename !== 'WorkloadStatusNoRunningInstances'}
+						error={{
+							__typename: errors.__typename,
+							level: errors.level
+						}}
+						{teamSlug}
+						workloads={errors.workloads}
+					/>
+				{/if}
+			{/each}
+		</div>
+		<div>
+			<AggregatedCostForTeam {teamSlug} />
+		</div>
+		<div class="deployments">
+			<Heading size="small" level="2"
+				>Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments for {capitalizeFirstLetter(
+					teamSlug
+				)}</Heading
+			>
+			{#if $TeamOverview.data?.team.deployments.pageInfo.totalCount === 0}
+				<BodyLong spacing>
+					No deployments found. <ExternalLink href={docURL('/build/')}
+						>Learn more about builds and deployments in Nais.</ExternalLink
+					>
+				</BodyLong>
 			{/if}
-		{/each}
+			{#if $TeamOverview.data}
+				<List>
+					{#each $TeamOverview.data.team.deployments.nodes as deployment (deployment.id)}
+						<DeploymentListItem {deployment} showEnv />
+					{/each}
+				</List>
+			{/if}
+			<a href="/team/{teamSlug}/deploy" style:align-self="end">View All Deployments for Team</a>
+		</div>
 	</div>
-	<div class="grid">
+	<div class="right">
 		<div>
 			<VulnerabilitySummary
 				{teamSlug}
@@ -64,66 +95,45 @@
 				vulnerabilitySummary={$TeamOverview.data?.team.vulnerabilitySummary}
 			/>
 		</div>
-		<div class="card">
-			<TeamUtilizationAndOverage {teamSlug} />
+		<div>
+			<div class="card">
+				<TeamUtilizationAndOverage {teamSlug} />
+			</div>
 		</div>
-		<div class="card" style:grid-column="span 2"><AggregatedCostForTeam {teamSlug} /></div>
-		<div class="card deployments">
-			<Heading size="small" level="2">Deployments</Heading>
-			{#if $TeamOverview.data}
-				<div class="raised">
-					{#each $TeamOverview.data.team.deployments.nodes as deployment (deployment.id)}
-						<div><DeploymentItemShort {deployment} /></div>
-					{/each}
-				</div>
+		<div>
+			{#if $TeamOverview.data?.team}
+				<SidebarActivity activityLog={$TeamOverview.data?.team} />
 			{/if}
-			<a href="/team/{teamSlug}/deploy" style:align-self="end" style:margin-top="auto"
-				>View Deployments</a
-			>
-		</div>
-		<div class="card activity">
-			<Heading size="small" level="2">Activity</Heading>
-			{#if $TeamOverview.data}
-				<div class="raised">
-					{#each $TeamOverview.data.team.activityLog.nodes as item (item.id)}
-						<div><ActivityLogItem {item} /></div>
-					{/each}
-				</div>
-			{/if}
-			<a href="/team/{teamSlug}/activity-log" style:align-self="end" style:margin-top="auto"
-				>View Activity Log</a
-			>
 		</div>
 	</div>
 </div>
 
 <style>
 	.wrapper {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 	}
-	.raised {
-		border-radius: 8px;
+	.left {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: var(--ax-space-16);
+	}
+	.right {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+	}
+	.deployments {
+		align-self: start;
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		grid-column: span 3;
+		word-wrap: break-word;
 
-		> div {
-			background-color: var(--ax-bg-default);
-			padding: var(--ax-space-8) var(--ax-space-20);
-		}
-
-		> div:first-child {
-			border-top-left-radius: 8px;
-			border-top-right-radius: 8px;
-			padding-top: var(--ax-space-12);
-		}
-
-		> div:last-child {
-			padding-bottom: var(--ax-space-12);
-			border-bottom-left-radius: 8px;
-			border-bottom-right-radius: 8px;
+		> a {
+			align-self: end;
 		}
 	}
 
@@ -135,41 +145,18 @@
 		min-height: 344px;
 	}
 
-	.activity {
-		grid-column: span 2;
-		word-wrap: break-word;
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		min-height: 100%;
-
-		> a {
-			align-self: end;
-		}
-	}
-
 	.deployments {
-		grid-column: span 2;
-		word-wrap: break-word;
+		align-self: start;
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
-		min-height: 100%;
-		align-self: start;
+		word-wrap: break-word;
 
 		> a {
 			align-self: end;
 		}
 	}
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 1rem;
-		grid-auto-flow: dense;
-	}
-	.grid:not(:first-child) {
-		margin-top: 1rem;
-	}
+
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;

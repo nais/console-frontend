@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, PendingValue, UtilizationResourceType } from '$houdini';
+	import { graphql, UtilizationResourceType } from '$houdini';
 	import { euroValueFormatter, percentageFormatter } from '$lib/utils/formatters';
 	import { teamUtilization, yearlyOverageCost } from '$lib/utils/resources';
 	import {
@@ -17,7 +17,7 @@
 
 	const utilization = graphql(`
 		query AggregatedTeamUtilization($team: Slug!) {
-			currentUnitPrices @loading {
+			currentUnitPrices {
 				cpu {
 					value
 				}
@@ -25,8 +25,8 @@
 					value
 				}
 			}
-			team(slug: $team) @loading {
-				cpuUtil: workloadUtilization(resourceType: CPU) @loading {
+			team(slug: $team) {
+				cpuUtil: workloadUtilization(resourceType: CPU) {
 					requested
 					used
 					workload {
@@ -38,7 +38,7 @@
 						}
 					}
 				}
-				memUtil: workloadUtilization(resourceType: MEMORY) @loading {
+				memUtil: workloadUtilization(resourceType: MEMORY) {
 					requested
 					used
 					workload {
@@ -70,35 +70,17 @@
 
 	let cpuMetrics = $derived($utilization.data?.team.cpuUtil.filter((item) => !!item) ?? []);
 
-	let cpuRequested = $derived(
-		cpuMetrics
-			.filter((metric) => metric !== PendingValue)
-			.reduce((acc, item) => acc + item.requested, 0)
-	);
+	let cpuRequested = $derived(cpuMetrics.reduce((acc, item) => acc + item.requested, 0));
 
-	let cpuUsage = $derived(
-		cpuMetrics.filter((metric) => metric !== PendingValue).reduce((acc, item) => acc + item.used, 0)
-	);
+	let cpuUsage = $derived(cpuMetrics.reduce((acc, item) => acc + item.used, 0));
 
 	let memoryMetrics = $derived($utilization.data?.team?.memUtil.filter((item) => !!item) ?? []);
 
-	let memoryRequested = $derived(
-		memoryMetrics
-			.filter((metric) => metric !== PendingValue)
-			.reduce((acc, item) => acc + item.requested, 0)
-	);
+	let memoryRequested = $derived(memoryMetrics.reduce((acc, item) => acc + item.requested, 0));
 
-	let memoryUsage = $derived(
-		memoryMetrics
-			.filter((metric) => metric !== PendingValue)
-			.reduce((acc, item) => acc + item.used, 0)
-	);
+	let memoryUsage = $derived(memoryMetrics.reduce((acc, item) => acc + item.used, 0));
 
-	let prices = $derived(
-		$utilization.data?.currentUnitPrices === PendingValue
-			? undefined
-			: $utilization.data?.currentUnitPrices
-	);
+	let prices = $derived($utilization.data?.currentUnitPrices);
 </script>
 
 <div class="wrapper">
@@ -121,7 +103,7 @@
 				<Td>Memory</Td>
 				<Td>
 					{#if memoryMetrics.length > 0}
-						{#if memoryMetrics[0] !== PendingValue}
+						{#if !$utilization.fetching}
 							{percentageFormatter(teamUtilization(memoryMetrics))}
 						{:else}
 							<Skeleton variant="text" />
@@ -135,7 +117,7 @@
 				<Td>CPU</Td>
 				<Td>
 					{#if cpuMetrics.length > 0}
-						{#if cpuMetrics[0] !== PendingValue}
+						{#if !$utilization.fetching}
 							{percentageFormatter(teamUtilization(cpuMetrics))}
 						{:else}
 							<Skeleton variant="text" />

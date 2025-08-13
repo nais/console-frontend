@@ -10,12 +10,38 @@
 	}
 
 	let { deployment }: Props = $props();
-
+	/**
+deployment: {
+			id: string;
+			statuses: {
+				nodes: {
+					state: ValueOf<typeof DeploymentStatusState>;
+					message: string;
+					createdAt: Date;
+				}[];
+			};
+			resources: {
+				nodes: {
+					id: string;
+					kind: string;
+					name: string;
+				}[];
+			};
+			environmentName: string;
+			createdAt: Date;
+			teamSlug: string;
+			repository: string | null;
+			commitSha: string | null;
+			deployerUsername: string | null;
+			triggerUrl: string | null;
+		};
+ */
 	let data = $derived(
 		fragment(
 			deployment,
 			graphql(`
 				fragment DeploymentItemFragment on Deployment {
+					id
 					createdAt
 					environmentName
 					deployerUsername
@@ -29,7 +55,9 @@
 					}
 					statuses {
 						nodes {
+							createdAt
 							state
+							message
 						}
 					}
 				}
@@ -70,6 +98,7 @@
 		display: grid;
 		gap: var(--ax-space-24);
 		grid-template-columns: 1fr 100px;
+		border: 1px solid black;
 	}
 	.status {
 		display: flex;
