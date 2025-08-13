@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { graphql, PendingValue } from '$houdini';
+	import { graphql } from '$houdini';
 	import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import { capitalizeFirstLetter, euroValueFormatter } from '$lib/utils/formatters';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 	import { format, lastDayOfMonth } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
@@ -11,8 +11,8 @@
 
 	const costQuery = graphql(`
 		query AggregatedTeamCost($team: Slug!) {
-			team(slug: $team) @loading {
-				cost @loading {
+			team(slug: $team) {
+				cost {
 					monthlySummary {
 						sum
 						series {
@@ -105,14 +105,16 @@
 
 <div class="wrapper">
 	<div class="header">
-		<Heading level="4" size="small" spacing>Cost</Heading>
+		<Heading level="4" size="small" spacing
+			>Aggregated Cost for {capitalizeFirstLetter(teamSlug)}</Heading
+		>
 		<HelpText title="Aggregated team cost"
 			>Aggregated cost for team. Current month is estimated.</HelpText
 		>
 	</div>
 	<GraphErrors errors={$costQuery.errors} />
 	{#if !$costQuery.fetching}
-		{#if $costQuery.data && $costQuery.data?.team.cost !== PendingValue && $costQuery.data.team.cost.monthlySummary.series.length > 0}
+		{#if $costQuery.data && $costQuery.data.team.cost.monthlySummary.series.length > 0}
 			{@const cost = $costQuery.data.team.cost}
 			<div style="margin-bottom: var(--ax-space-16)">
 				{#if cost.monthlySummary.series.length > 1}
@@ -158,9 +160,9 @@
 				/>
 			</div>
 
-			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto">View Costs</a>
-		{:else}
-			No cost data available
+			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto"
+				>View Cost for Team</a
+			>
 		{/if}
 	{:else}
 		<div class="loading">

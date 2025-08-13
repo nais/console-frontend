@@ -103,6 +103,7 @@
 			series: [
 				{
 					name: 'req/s',
+					color: '#236B7D', // --a-lightblue-800
 					type: 'line',
 					yAxisIndex: 0,
 					showSymbol: false,
@@ -115,6 +116,7 @@
 				},
 				{
 					name: 'err/s',
+					color: '#F25C5C', //--a-red-300
 					type: 'line',
 					yAxisIndex: 1,
 					showSymbol: false,

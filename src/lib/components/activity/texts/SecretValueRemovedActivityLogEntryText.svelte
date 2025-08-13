@@ -14,7 +14,7 @@
 </script>
 
 <div>
-	Value <strong>{data.secretValueRemoved.valueName}</strong> in secret
+	Value <strong>{data.secretValueRemovedData.valueName}</strong> in secret
 	<strong>{data.resourceName}</strong> was removed by {data.actor}<br />
 	<BodyShort textColor="subtle" size="small">
 		<Time time={data.createdAt} distance />

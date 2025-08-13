@@ -55,19 +55,13 @@
 				{#if deployment.triggerUrl}
 					{#if showEnv}
 						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
-							.resources.nodes.length === 1
-							? ''
-							: 's'}
-						in <Tag size="small" variant={envTagVariant(deployment.environmentName)}>
+						<Time time={deployment.createdAt} distance={true} /> to deploy to
+						<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
 							{deployment.environmentName}
 						</Tag>:
 					{:else}
 						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<Time time={deployment.createdAt} distance={true} /> to deploy the following resource{deployment
-							.resources.nodes.length === 1
-							? ''
-							: 's'}:
+						<Time time={deployment.createdAt} distance={true} /> to deploy:
 					{/if}
 				{/if}
 

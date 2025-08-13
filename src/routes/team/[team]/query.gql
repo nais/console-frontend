@@ -16,17 +16,34 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 		purpose
-		activityLog(first: 5) {
-			nodes {
-				id
-				...ActivityLogEntryFragment
-			}
-		}
 
-		deployments(first: 5) {
+		deployments(first: 10) {
+			pageInfo {
+				totalCount
+			}
 			nodes {
 				id
-				...DeploymentItemFragment
+				statuses {
+					nodes {
+						state
+						message
+						createdAt
+					}
+				}
+				resources {
+					nodes {
+						id
+						kind
+						name
+					}
+				}
+				environmentName
+				createdAt
+				teamSlug
+				repository
+				commitSha
+				deployerUsername
+				triggerUrl
 			}
 		}
 
@@ -93,5 +110,6 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			ranking
 			lastUpdated
 		}
+		...SidebarActivityLogFragment @with(limit: 15) @mask_disable
 	}
 }
