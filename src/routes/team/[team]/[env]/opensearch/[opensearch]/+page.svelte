@@ -38,11 +38,10 @@
 	const runServiceMaintenanceStart = async () => {
 		if ($OpenSearchInstance.data) {
 			let resp = await runServiceMaintenance.mutate({
-				serviceName: $OpenSearchInstance.data.team.environment.openSearchInstance.name,
+				serviceName: $OpenSearchInstance.data.team.environment.openSearch.name,
 				teamSlug: $OpenSearchInstance.data.team.slug,
 				environmentName:
-					$OpenSearchInstance.data.team.environment.openSearchInstance.teamEnvironment.environment
-						.name
+					$OpenSearchInstance.data.team.environment.openSearch.teamEnvironment.environment.name
 			});
 			if (resp.errors) {
 				maintenanceError = resp.errors.map((e) => e.message).join(', ');
@@ -85,7 +84,7 @@
 {#if $OpenSearchInstance.errors}
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}
-	{@const instance = $OpenSearchInstance.data.team.environment.openSearchInstance}
+	{@const instance = $OpenSearchInstance.data.team.environment.openSearch}
 	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
 		(x) => !!x?.deadline
 	)}

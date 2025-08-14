@@ -114,12 +114,12 @@
 								`${t.node.inventoryCounts.buckets.total} buckets`,
 							t.node.inventoryCounts.kafkaTopics.total > 0 &&
 								`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
-							t.node.inventoryCounts.openSearchInstances.total > 0 &&
-								`${t.node.inventoryCounts.openSearchInstances.total} OpenSearch instances`,
+							t.node.inventoryCounts.openSearches.total > 0 &&
+								`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
 							t.node.inventoryCounts.sqlInstances.total > 0 &&
 								`${t.node.inventoryCounts.sqlInstances.total} SQL instances`,
-							t.node.inventoryCounts.valkeyInstances.total > 0 &&
-								`${t.node.inventoryCounts.valkeyInstances.total} Valkey instances`
+							t.node.inventoryCounts.valkeys.total > 0 &&
+								`${t.node.inventoryCounts.valkeys.total} Valkey instances`
 						]
 							.filter(Boolean)
 							.join(', ')}

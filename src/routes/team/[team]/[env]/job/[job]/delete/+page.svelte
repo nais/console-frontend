@@ -47,7 +47,7 @@
 			job.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			job.buckets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
-			job.valkeyInstances.nodes.filter((s) => !s.terminationProtection).length > 0
+			job.valkeys.nodes.filter((s) => !s.terminationProtection).length > 0
 		);
 	}
 
@@ -56,7 +56,7 @@
 			job.sqlInstances.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
 			job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
 			job.buckets.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
-			job.valkeyInstances.nodes.filter((s) => s.terminationProtection).length > 0
+			job.valkeys.nodes.filter((s) => s.terminationProtection).length > 0
 		);
 	}
 </script>
@@ -104,7 +104,7 @@
 						the manifest.
 					</PersistenceList>
 				{/each}
-				{#each job.valkeyInstances.nodes.filter((s) => !s.terminationProtection) as node (node.id)}
+				{#each job.valkeys.nodes.filter((s) => !s.terminationProtection) as node (node.id)}
 					<PersistenceList persistence={node}
 						>If this Valkey instance is defined at the team level, it won't be deleted. If it was
 						created by the application, it will be permanently deleted.
@@ -127,7 +127,7 @@
 					{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
 						<PersistenceList persistence={node} />
 					{/each}
-					{#each job.valkeyInstances.nodes.filter((s) => s.terminationProtection) as node (node.id)}
+					{#each job.valkeys.nodes.filter((s) => s.terminationProtection) as node (node.id)}
 						<PersistenceList persistence={node} />
 					{/each}
 				</div>

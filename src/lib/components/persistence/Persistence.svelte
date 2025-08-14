@@ -73,7 +73,7 @@
 							}
 						}
 					}
-					valkeyInstances {
+					valkeys {
 						edges {
 							node {
 								id
@@ -124,7 +124,7 @@
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		valkey: $data.valkeyInstances.edges.map(toIconLabel('valkey'))
+		valkey: $data.valkeys.edges.map(toIconLabel('valkey'))
 	});
 </script>
 

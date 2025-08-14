@@ -38,10 +38,10 @@
 						buckets {
 							total
 						}
-						valkeyInstances {
+						valkeys {
 							total
 						}
-						openSearchInstances {
+						openSearches {
 							total
 						}
 						kafkaTopics {

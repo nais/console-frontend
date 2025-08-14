@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ValkeyInstanceOrderField } from '$houdini';
+	import { ValkeyOrderField } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
 	import { docURL } from '$lib/doc';
@@ -8,22 +8,22 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Valkey } = $derived(data);
+	let { Valkeys } = $derived(data);
 </script>
 
-<GraphErrors errors={$Valkey.errors} />
+<GraphErrors errors={$Valkeys.errors} />
 
-{#if $Valkey.data}
+{#if $Valkeys.data}
 	<PersistencePage
 		cost={{
-			costData: $Valkey.data.team.cost,
-			teamSlug: $Valkey.data.team.slug,
+			costData: $Valkeys.data.team.cost,
+			teamSlug: $Valkeys.data.team.slug,
 			pageName: 'Valkey'
 		}}
-		list={$Valkey.data.team.valkeyInstances.nodes}
-		pageInfo={$Valkey.data.team.valkeyInstances.pageInfo}
-		orderField={ValkeyInstanceOrderField}
-		defaultOrderField={ValkeyInstanceOrderField.NAME}
+		list={$Valkeys.data.team.valkeys.nodes}
+		pageInfo={$Valkeys.data.team.valkeys.pageInfo}
+		orderField={ValkeyOrderField}
+		defaultOrderField={ValkeyOrderField.NAME}
 	>
 		{#snippet description()}
 			<BodyLong spacing>

@@ -1,13 +1,8 @@
-query ValkeyInstance(
-	$environment: String!
-	$team: Slug!
-	$name: String!
-	$orderBy: ValkeyInstanceAccessOrder!
-) {
+query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: ValkeyAccessOrder!) {
 	team(slug: $team) {
 		slug
 		environment(name: $environment) {
-			valkeyInstance(name: $name) {
+			valkey(name: $name) {
 				__typename
 				id
 				name

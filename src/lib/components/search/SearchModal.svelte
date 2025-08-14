@@ -59,7 +59,7 @@
 							}
 						}
 					}
-					... on ValkeyInstance {
+					... on Valkey {
 						name
 						team {
 							slug
@@ -144,11 +144,11 @@
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},
-		ValkeyInstance: {
+		Valkey: {
 			icon: ValkeyIcon,
 			urlName: 'valkey',
 			prefix: 'valkey',
-			type: 'VALKEY_INSTANCE'
+			type: 'VALKEY'
 		},
 		OpenSearch: {
 			icon: OpenSearchIcon,

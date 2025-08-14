@@ -48,13 +48,13 @@ query Teams(
 					kafkaTopics {
 						total
 					}
-					openSearchInstances {
+					openSearches {
 						total
 					}
 					sqlInstances {
 						total
 					}
-					valkeyInstances {
+					valkeys {
 						total
 					}
 				}

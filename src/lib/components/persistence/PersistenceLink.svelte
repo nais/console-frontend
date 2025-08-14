@@ -30,7 +30,7 @@
 				return 'opensearch';
 			case 'SqlInstance':
 				return 'postgres';
-			case 'ValkeyInstance':
+			case 'Valkey':
 				return 'valkey';
 			default:
 				throw new Error(`Unknown instance type ${instance.__typename}`);
