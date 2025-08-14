@@ -72,31 +72,33 @@
 				<ExternalLink href={docURL('/workloads/job')}>Learn more about jobs.</ExternalLink>
 			{/if}
 		</BodyLong>
-		<div class="search">
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					changeQuery({ newFilter: filter });
-				}}
-			>
-				<Search
-					clearButton={false}
-					clearButtonLabel="Clear"
-					label="filter jobs"
-					placeholder="Filter by name"
-					hideLabel={true}
-					size="small"
-					variant="simple"
-					width="100%"
-					autocomplete="off"
-					bind:value={filter}
-					onclear={() => {
-						filter = '';
-						changeQuery({ newFilter: '' });
+		{#if $Jobs.data?.team.totalJobs?.pageInfo?.totalCount ?? 0 > 0}
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						changeQuery({ newFilter: filter });
 					}}
-				/>
-			</form>
-		</div>
+				>
+					<Search
+						clearButton={false}
+						clearButtonLabel="Clear"
+						label="filter jobs"
+						placeholder="Filter by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							changeQuery({ newFilter: '' });
+						}}
+					/>
+				</form>
+			</div>
+		{/if}
 		{#if $Jobs.fetching}
 			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />

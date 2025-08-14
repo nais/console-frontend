@@ -77,31 +77,33 @@
 				>
 			{/if}
 		</BodyLong>
-		<div class="search">
-			<form
-				onsubmit={(e) => {
-					e.preventDefault();
-					changeQuery({ newFilter: filter });
-				}}
-			>
-				<Search
-					clearButton={false}
-					clearButtonLabel="Clear"
-					label="filter applications"
-					placeholder="Filter by name"
-					hideLabel={true}
-					size="small"
-					variant="simple"
-					width="100%"
-					autocomplete="off"
-					bind:value={filter}
-					onclear={() => {
-						filter = '';
-						changeQuery({ newFilter: '' });
+		{#if $Applications.data?.team.totalApplications?.pageInfo?.totalCount ?? 0 > 0}
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						changeQuery({ newFilter: filter });
 					}}
-				/>
-			</form>
-		</div>
+				>
+					<Search
+						clearButton={false}
+						clearButtonLabel="Clear"
+						label="filter applications"
+						placeholder="Filter by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							changeQuery({ newFilter: '' });
+						}}
+					/>
+				</form>
+			</div>
+		{/if}
 		{#if $Applications.fetching}
 			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
 				<Loader size="3xlarge" />
