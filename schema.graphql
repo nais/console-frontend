@@ -19,6 +19,9 @@ enum ActivityLogActivityType {
   """An application was scaled."""
   APPLICATION_SCALED
 
+  """All activity log entries related to direct cluster changes."""
+  CLUSTER_AUDIT
+
   """Activity log entry for deployment activity."""
   DEPLOYMENT
 
@@ -175,6 +178,9 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to applications will use this resource type.
   """
   APP
+
+  """All activity log entries related to direct cluster changes."""
+  CLUSTER_AUDIT
 
   """
   All activity log entries related to deploy keys will use this resource type.
@@ -861,6 +867,45 @@ input ChangeDeploymentKeyInput {
 type ChangeDeploymentKeyPayload {
   """The updated deploy key."""
   deploymentKey: DeploymentKey
+}
+
+type ClusterAuditActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: ClusterAuditActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+type ClusterAuditActivityLogEntryData {
+  """The action that was performed."""
+  action: String!
+
+  """The kind of resource that was affected by the action."""
+  resourceKind: String!
 }
 
 input ConfigureReconcilerInput {
