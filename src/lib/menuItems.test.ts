@@ -183,6 +183,10 @@ describe('menuItems', () => {
 						href: '/team/devteam/dev/app/app-w-all-storage/utilization',
 						active: true
 					},
+					{
+						href: '/team/devteam/dev/app/app-w-all-storage/ingresses',
+						label: 'Ingresses'
+					},
 					{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
 				],
 				[
