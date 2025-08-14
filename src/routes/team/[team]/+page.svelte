@@ -134,6 +134,7 @@
 		gap: var(--ax-space-16);
 		grid-column: span 3;
 		word-wrap: break-word;
+		min-width: 100%;
 
 		> a {
 			align-self: end;
