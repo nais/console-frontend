@@ -18,8 +18,8 @@ export const menuItems = ({
 		jobs: { total: number };
 		sqlInstances: { total: number };
 		buckets: { total: number };
-		valkeyInstances: { total: number };
-		openSearchInstances: { total: number };
+		valkeys: { total: number };
+		openSearches: { total: number };
 		kafkaTopics: { total: number };
 		bigQueryDatasets: { total: number };
 	};
@@ -33,8 +33,8 @@ export const menuItems = ({
 			jobs: 'jobs',
 			postgres: 'sqlInstances',
 			buckets: 'buckets',
-			valkey: 'valkeyInstances',
-			opensearch: 'openSearchInstances',
+			valkey: 'valkeys',
+			opensearch: 'openSearches',
 			kafka: 'kafkaTopics',
 			bigquery: 'bigQueryDatasets'
 		} as const;

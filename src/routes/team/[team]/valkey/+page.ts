@@ -1,4 +1,4 @@
-import { load_Valkey, ValkeyInstanceOrderField } from '$houdini';
+import { load_Valkeys, ValkeyOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
@@ -18,16 +18,12 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await load_Valkey({
+		...(await load_Valkeys({
 			event,
 			variables: {
 				team: event.params.team,
 				orderBy: {
-					field: urlToOrderField(
-						ValkeyInstanceOrderField,
-						ValkeyInstanceOrderField.NAME,
-						event.url
-					),
+					field: urlToOrderField(ValkeyOrderField, ValkeyOrderField.NAME, event.url),
 					direction: urlToOrderDirection(event.url)
 				},
 				...(before ? { before, last: rows } : { after, first: rows }),

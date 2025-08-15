@@ -121,8 +121,8 @@ describe('menuItems', () => {
 					jobs: { total: 1 },
 					sqlInstances: { total: 7 },
 					buckets: { total: 1337 },
-					valkeyInstances: { total: 11 },
-					openSearchInstances: { total: 17 },
+					valkeys: { total: 11 },
+					openSearches: { total: 17 },
 					kafkaTopics: { total: 23 },
 					bigQueryDatasets: { total: 49 }
 				}
@@ -182,6 +182,10 @@ describe('menuItems', () => {
 						label: 'Utilization',
 						href: '/team/devteam/dev/app/app-w-all-storage/utilization',
 						active: true
+					},
+					{
+						href: '/team/devteam/dev/app/app-w-all-storage/ingresses',
+						label: 'Ingresses'
 					},
 					{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
 				],

@@ -49,7 +49,6 @@
 			case 'bucket':
 				return BucketIcon;
 			case 'valkey':
-			case 'valkeyinstance':
 				return ValkeyIcon;
 			case 'opensearch':
 				return OpenSearchIcon;

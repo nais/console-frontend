@@ -17,7 +17,7 @@
 				return 'BigQuery';
 			case 'SqlInstance':
 				return 'Postgres';
-			case 'ValkeyInstance':
+			case 'Valkey':
 				return 'Valkey';
 			default:
 				return type;

@@ -1,6 +1,6 @@
-query Valkey(
+query Valkeys(
 	$team: Slug!
-	$orderBy: ValkeyInstanceOrder
+	$orderBy: ValkeyOrder
 	$from: Date!
 	$to: Date!
 	$first: Int
@@ -19,7 +19,7 @@ query Valkey(
 			}
 		}
 
-		valkeyInstances(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
+		valkeys(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage

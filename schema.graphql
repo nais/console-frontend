@@ -224,7 +224,7 @@ enum ActivityLogEntryResourceType {
   UNLEASH
 
   """Activity log entries related to valkey instances."""
-  VALKEY_INSTANCE
+  VALKEY
 
   """
   All activity log entries related to vulnerabilities will use this resource type.
@@ -492,10 +492,10 @@ type Application implements ActivityLogger & Node & Workload {
   """
   Valkey instances referenced by the application. This does not currently support pagination, but will return all available Valkey instances.
   """
-  valkeyInstances(
+  valkeys(
     """Ordering options for items returned from the connection."""
-    orderBy: ValkeyInstanceOrder
-  ): ValkeyInstanceConnection!
+    orderBy: ValkeyOrder
+  ): ValkeyConnection!
 }
 
 """Authentication integrations for the application."""
@@ -2040,10 +2040,10 @@ type Job implements ActivityLogger & Node & Workload {
   """
   Valkey instances referenced by the job. This does not currently support pagination, but will return all available Valkey instances.
   """
-  valkeyInstances(
+  valkeys(
     """Ordering options for items returned from the connection."""
-    orderBy: ValkeyInstanceOrder
-  ): ValkeyInstanceConnection!
+    orderBy: ValkeyOrder
+  ): ValkeyConnection!
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -3646,7 +3646,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | Team | ValkeyInstance
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | Team | Valkey
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -3682,7 +3682,7 @@ enum SearchType {
 
   """Search for teams."""
   TEAM
-  VALKEY_INSTANCE
+  VALKEY
 }
 
 """A secret is a collection of secret values."""
@@ -4856,7 +4856,7 @@ type Team implements ActivityLogger & Node {
   ): TeamMemberConnection!
 
   """OpenSearch instances owned by the team."""
-  openSearchInstances(
+  openSearches(
     """Get items after this cursor."""
     after: Cursor
 
@@ -4957,7 +4957,7 @@ type Team implements ActivityLogger & Node {
   unleash: UnleashInstance
 
   """Valkey instances owned by the team."""
-  valkeyInstances(
+  valkeys(
     """Get items after this cursor."""
     after: Cursor
 
@@ -4975,8 +4975,8 @@ type Team implements ActivityLogger & Node {
     last: Int
 
     """Ordering options for items returned from the connection."""
-    orderBy: ValkeyInstanceOrder
-  ): ValkeyInstanceConnection!
+    orderBy: ValkeyOrder
+  ): ValkeyConnection!
 
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
@@ -5282,7 +5282,7 @@ type TeamEnvironment implements Node {
   name: String! @deprecated(reason: "Use the `environment` field to get the environment name.")
 
   """OpenSearch instance in the team environment."""
-  openSearchInstance(name: String!): OpenSearch!
+  openSearch(name: String!): OpenSearch!
 
   """Get a secret by name."""
   secret(name: String!): Secret!
@@ -5297,7 +5297,7 @@ type TeamEnvironment implements Node {
   team: Team!
 
   """Valkey instance in the team environment."""
-  valkeyInstance(name: String!): ValkeyInstance!
+  valkey(name: String!): Valkey!
 
   """Workload in the team environment."""
   workload(
@@ -5444,7 +5444,7 @@ type TeamInventoryCountKafkaTopics {
   total: Int!
 }
 
-type TeamInventoryCountOpenSearchInstances {
+type TeamInventoryCountOpenSearches {
   """Total number of OpenSearch instances."""
   total: Int!
 }
@@ -5454,7 +5454,7 @@ type TeamInventoryCountSqlInstances {
   total: Int!
 }
 
-type TeamInventoryCountValkeyInstances {
+type TeamInventoryCountValkeys {
   """Total number of Valkey instances."""
   total: Int!
 }
@@ -5466,9 +5466,9 @@ type TeamInventoryCounts {
   buckets: TeamInventoryCountBuckets!
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
-  openSearchInstances: TeamInventoryCountOpenSearchInstances!
+  openSearches: TeamInventoryCountOpenSearches!
   sqlInstances: TeamInventoryCountSqlInstances!
-  valkeyInstances: TeamInventoryCountValkeyInstances!
+  valkeys: TeamInventoryCountValkeys!
 }
 
 input TeamJobsFilter {
@@ -6410,75 +6410,61 @@ type UtilizationSample {
   value: Float!
 }
 
-type ValkeyInstance implements Node & Persistence {
-  access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: ValkeyInstanceAccessOrder): ValkeyInstanceAccessConnection!
-  cost: ValkeyInstanceCost!
+type Valkey implements Node & Persistence {
+  access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: ValkeyAccessOrder): ValkeyAccessConnection!
+  cost: ValkeyCost!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """Fetch maintenances updates for the Valkey instance."""
   maintenance: ValkeyMaintenance!
   name: String!
-  status: ValkeyInstanceStatus!
+  status: ValkeyStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
   terminationProtection: Boolean!
   workload: Workload
 }
 
-type ValkeyInstanceAccess {
+type ValkeyAccess {
   access: String!
   workload: Workload!
 }
 
-type ValkeyInstanceAccessConnection {
-  edges: [ValkeyInstanceAccessEdge!]!
-  nodes: [ValkeyInstanceAccess!]!
+type ValkeyAccessConnection {
+  edges: [ValkeyAccessEdge!]!
+  nodes: [ValkeyAccess!]!
   pageInfo: PageInfo!
 }
 
-type ValkeyInstanceAccessEdge {
+type ValkeyAccessEdge {
   cursor: Cursor!
-  node: ValkeyInstanceAccess!
+  node: ValkeyAccess!
 }
 
-input ValkeyInstanceAccessOrder {
+input ValkeyAccessOrder {
   direction: OrderDirection!
-  field: ValkeyInstanceAccessOrderField!
+  field: ValkeyAccessOrderField!
 }
 
-enum ValkeyInstanceAccessOrderField {
+enum ValkeyAccessOrderField {
   ACCESS
   WORKLOAD
 }
 
-type ValkeyInstanceConnection {
-  edges: [ValkeyInstanceEdge!]!
-  nodes: [ValkeyInstance!]!
+type ValkeyConnection {
+  edges: [ValkeyEdge!]!
+  nodes: [Valkey!]!
   pageInfo: PageInfo!
 }
 
-type ValkeyInstanceCost {
+type ValkeyCost {
   sum: Float!
 }
 
-type ValkeyInstanceEdge {
+type ValkeyEdge {
   cursor: Cursor!
-  node: ValkeyInstance!
-}
-
-input ValkeyInstanceOrder {
-  direction: OrderDirection!
-  field: ValkeyInstanceOrderField!
-}
-
-enum ValkeyInstanceOrderField {
-  ENVIRONMENT
-  NAME
-}
-
-type ValkeyInstanceStatus {
-  state: String!
+  node: Valkey!
 }
 
 type ValkeyMaintenance {
@@ -6539,6 +6525,20 @@ type ValkeyMaintenanceUpdateEdge {
 
   """The ValkeyMaintenanceUpdate."""
   node: ValkeyMaintenanceUpdate!
+}
+
+input ValkeyOrder {
+  direction: OrderDirection!
+  field: ValkeyOrderField!
+}
+
+enum ValkeyOrderField {
+  ENVIRONMENT
+  NAME
+}
+
+type ValkeyStatus {
+  state: String!
 }
 
 """Ordering options when fetching vulnerability summaries for workloads."""
@@ -6785,10 +6785,10 @@ interface Workload {
   """
   Valkey instances referenced by the workload. This does not currently support pagination, but will return all available Valkey instances.
   """
-  valkeyInstances(
+  valkeys(
     """Ordering options for items returned from the connection."""
-    orderBy: ValkeyInstanceOrder
-  ): ValkeyInstanceConnection!
+    orderBy: ValkeyOrder
+  ): ValkeyConnection!
 }
 
 """Workload connection."""

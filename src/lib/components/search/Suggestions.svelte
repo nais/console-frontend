@@ -5,10 +5,10 @@
 	<code>bucket:myBucket</code>
 	<code>job:myJob</code>
 	<code>kafka:myKafkaTopic</code>
-	<code>os:myOpenSearchInstance</code>
+	<code>os:myOpenSearch</code>
 	<code>sql:mySqlinstance</code>
 	<code>team:myTeam</code>
-	<code>valkey:myValkeyInstance</code>
+	<code>valkey:myValkey</code>
 </div>
 
 <style>

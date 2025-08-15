@@ -20,13 +20,8 @@ query OpenSearch(
 			}
 		}
 
-		openSearchInstances(
-			first: $first
-			last: $last
-			orderBy: $orderBy
-			before: $before
-			after: $after
-		) @paginate(mode: SinglePage) {
+		openSearches(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage

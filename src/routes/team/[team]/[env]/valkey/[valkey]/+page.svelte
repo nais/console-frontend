@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, ValkeyInstanceAccessOrderField } from '$houdini';
+	import { graphql, ValkeyAccessOrderField } from '$houdini';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -36,12 +36,11 @@
 
 	let maintenanceError = $state<string | null | undefined>(undefined);
 	const runServiceMaintenanceStart = async () => {
-		if ($ValkeyInstance.data) {
+		if ($Valkey.data) {
 			let resp = await runServiceMaintenance.mutate({
-				serviceName: $ValkeyInstance.data.team.environment.valkeyInstance.name,
-				teamSlug: $ValkeyInstance.data.team.slug,
-				environmentName:
-					$ValkeyInstance.data.team.environment.valkeyInstance.teamEnvironment.environment.name
+				serviceName: $Valkey.data.team.environment.valkey.name,
+				teamSlug: $Valkey.data.team.slug,
+				environmentName: $Valkey.data.team.environment.valkey.teamEnvironment.environment.name
 			});
 			if (resp.errors) {
 				maintenanceError = resp.errors.map((e) => e.message).join(', ');
@@ -52,11 +51,11 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { ValkeyInstance, viewerIsMember } = $derived(data);
+	let { Valkey, viewerIsMember } = $derived(data);
 
 	let tableSort = $derived({
-		orderBy: $ValkeyInstance.variables?.orderBy?.field,
-		direction: $ValkeyInstance.variables?.orderBy?.direction
+		orderBy: $Valkey.variables?.orderBy?.field,
+		direction: $Valkey.variables?.orderBy?.direction
 	});
 
 	const tableSortChange = (key: string) => {
@@ -64,15 +63,14 @@
 			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
 			tableSort.direction = direction;
 		} else {
-			tableSort.orderBy =
-				ValkeyInstanceAccessOrderField[key as keyof typeof ValkeyInstanceAccessOrderField];
+			tableSort.orderBy = ValkeyAccessOrderField[key as keyof typeof ValkeyAccessOrderField];
 			tableSort.direction = 'ASC';
 		}
 
 		changeParams(
 			{
 				direction: tableSort.direction,
-				field: tableSort.orderBy || ValkeyInstanceAccessOrderField.WORKLOAD
+				field: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD
 			},
 			{
 				noScroll: true
@@ -81,11 +79,11 @@
 	};
 </script>
 
-{#if $ValkeyInstance.errors}
-	<GraphErrors errors={$ValkeyInstance.errors} />
+{#if $Valkey.errors}
+	<GraphErrors errors={$Valkey.errors} />
 {/if}
-{#if $ValkeyInstance.data}
-	{@const instance = $ValkeyInstance.data.team.environment.valkeyInstance}
+{#if $Valkey.data}
+	{@const instance = $Valkey.data.team.environment.valkey}
 	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
 		(x) => !!x?.deadline
 	)}
@@ -95,19 +93,19 @@
 	<div class="wrapper">
 		<div>
 			<div class="spacing">
-				<Heading level="3" spacing>Valkey Instance Access List</Heading>
+				<Heading level="3" spacing>Valkey Access List</Heading>
 				<Table
 					size="small"
 					sort={{
-						orderBy: tableSort.orderBy || ValkeyInstanceAccessOrderField.WORKLOAD,
+						orderBy: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD,
 						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
 					}}
 					onsortchange={tableSortChange}
 				>
 					<Thead>
 						<Tr>
-							<Th sortable={true} sortKey={ValkeyInstanceAccessOrderField.WORKLOAD}>Workload</Th>
-							<Th sortable={true} sortKey={ValkeyInstanceAccessOrderField.ACCESS}>Access level</Th>
+							<Th sortable={true} sortKey={ValkeyAccessOrderField.WORKLOAD}>Workload</Th>
+							<Th sortable={true} sortKey={ValkeyAccessOrderField.ACCESS}>Access level</Th>
 							<Th>Type</Th>
 						</Tr>
 					</Thead>
@@ -133,10 +131,10 @@
 					page={instance.access.pageInfo}
 					loaders={{
 						loadPreviousPage: () => {
-							ValkeyInstance.loadPreviousPage();
+							Valkey.loadPreviousPage();
 						},
 						loadNextPage: () => {
-							ValkeyInstance.loadNextPage();
+							Valkey.loadNextPage();
 						}
 					}}
 				/>

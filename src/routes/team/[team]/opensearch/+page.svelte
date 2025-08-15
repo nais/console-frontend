@@ -20,8 +20,8 @@
 			teamSlug: $OpenSearch.data.team.slug,
 			pageName: 'OpenSearch'
 		}}
-		list={$OpenSearch.data.team.openSearchInstances.nodes}
-		pageInfo={$OpenSearch.data.team.openSearchInstances.pageInfo}
+		list={$OpenSearch.data.team.openSearches.nodes}
+		pageInfo={$OpenSearch.data.team.openSearches.pageInfo}
 		orderField={OpenSearchOrderField}
 		defaultOrderField={OpenSearchOrderField.NAME}
 	>

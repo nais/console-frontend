@@ -25,10 +25,10 @@ query DataProduct {
 				kafkaTopics {
 					total
 				}
-				openSearchInstances {
+				openSearches {
 					total
 				}
-				valkeyInstances {
+				valkeys {
 					total
 				}
 				sqlInstances {

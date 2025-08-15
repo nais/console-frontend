@@ -30,7 +30,7 @@ query DeleteAppPage($app: String!, $team: Slug!, $env: String!) @cache(policy: N
 						cascadingDelete
 					}
 				}
-				valkeyInstances {
+				valkeys {
 					nodes {
 						id
 						__typename

@@ -7,7 +7,7 @@ query OpenSearchInstance(
 	team(slug: $team) {
 		slug
 		environment(name: $environment) {
-			openSearchInstance(name: $name) {
+			openSearch(name: $name) {
 				__typename
 				id
 				name
