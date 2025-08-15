@@ -2,7 +2,7 @@
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import ServiceMaintenanceStatus from '$lib/ServiceMaintenanceStatus.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	interface Props {
 		title: string;
 		description: string;
@@ -15,10 +15,12 @@
 
 <ListItem>
 	<div>
-		<Heading level="4" size="small">{title}</Heading>
-		<p>{description}</p>
+		<Heading level="4" size="xsmall">{title}</Heading>
+		<BodyShort>{description}</BodyShort>
 		{#if !!start_at}
-			<p>Maintenance is scheduled for: <Time time={start_at} dateFormat="PPPPp" /></p>
+			<BodyShort
+				>Maintenance is scheduled for: <Time time={start_at} dateFormat="PPPPp" /></BodyShort
+			>
 		{/if}
 	</div>
 	<div class="status">

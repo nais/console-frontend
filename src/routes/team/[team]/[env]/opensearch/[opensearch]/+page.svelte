@@ -201,13 +201,13 @@
 	}
 
 	.spacing {
-		margin-bottom: var(--ax-space-24);
+		margin-bottom: var(--spacing-layout);
 	}
 
 	.service-maintenance-list-heading {
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: var(--ax-space-12);
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.sidebar {
