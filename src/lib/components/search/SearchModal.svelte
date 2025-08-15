@@ -184,7 +184,16 @@
 				const [prefix, q] = query.split(':');
 				const category = Object.values(categories).find((c) => c.prefix === prefix);
 				const type = category?.type;
-				const searchQuery = type ? (q ? q.trim() : query) : query;
+				let searchQuery;
+				if (type) {
+					if (q && q.trim()) {
+						searchQuery = q.trim();
+					} else {
+						searchQuery = '';
+					}
+				} else {
+					searchQuery = query;
+				}
 				store.fetch({ variables: { query: searchQuery, type } });
 			}, 300);
 
