@@ -11,6 +11,7 @@ query OpenSearchInstance(
 				__typename
 				id
 				name
+				version
 				teamEnvironment {
 					environment {
 						name

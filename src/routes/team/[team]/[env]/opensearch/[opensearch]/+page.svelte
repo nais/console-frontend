@@ -190,6 +190,10 @@
 				<Heading level="3">Status</Heading>
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
+			<div>
+				<Heading level="3">Version</Heading>
+				<BodyShort>{instance.version}</BodyShort>
+			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
 					<Heading level="3">Maintenance window</Heading>
