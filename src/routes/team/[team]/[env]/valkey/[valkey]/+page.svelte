@@ -18,6 +18,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
+	import { CogRotationIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
 
 	const runServiceMaintenance = graphql(`
@@ -151,9 +152,16 @@
 						<Heading level="3">Pending maintenance</Heading>
 
 						{#if maintenanceError === ''}
-							<Button variant="secondary" size="small" disabled>Maintenance running</Button>
+							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
+								>Maintenance running</Button
+							>
 						{:else if viewerIsMember}
-							<Button variant="primary" size="small" onclick={runServiceMaintenanceStart}>
+							<Button
+								icon={CogRotationIcon}
+								variant="secondary"
+								size="small"
+								onclick={runServiceMaintenanceStart}
+							>
 								Run all maintenance
 							</Button>
 						{/if}
