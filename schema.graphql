@@ -2647,6 +2647,9 @@ type OpenSearch implements Node & Persistence {
   team: Team!
   teamEnvironment: TeamEnvironment!
   terminationProtection: Boolean!
+
+  """Fetch version for the OpenSearch instance."""
+  version: String!
   workload: Workload
 }
 
