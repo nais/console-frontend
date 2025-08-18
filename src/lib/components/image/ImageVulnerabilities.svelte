@@ -6,6 +6,7 @@
 		type ImageVulnerabilityOrderField$options
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
+	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
@@ -61,6 +62,8 @@
 									package
 									severity
 									state
+									creationDate
+									lastUpdated
 									analysisTrail {
 										state
 										suppressed
@@ -148,130 +151,136 @@
 	};
 </script>
 
-<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
-{#if $vulnerabilities.data}
-	<Table
-		size="small"
-		sort={{
-			orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
-			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-		}}
-		onsortchange={tableSortChange}
-	>
-		<Thead>
-			<Tr>
-				<Th style="width: 13rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
-					>ID</Th
-				>
-				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
-				<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
-					>Severity</Th
-				>
-				<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
-					>Suppressed</Th
-				>
-				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
-			</Tr>
-		</Thead>
-		<Tbody>
-			{@const vulnz = $vulnerabilities.data.team.environment.workload.image.vulnerabilities.nodes}
-			{#each vulnz as v (v)}
+<div class="table">
+	<Heading level="2" size="medium" spacing>Vulnerabilities</Heading>
+	{#if $vulnerabilities.data}
+		<Table
+			size="small"
+			sort={{
+				orderBy: tableSort.orderBy || ImageVulnerabilityOrderField.SEVERITY,
+				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+			}}
+			onsortchange={tableSortChange}
+		>
+			<Thead>
 				<Tr>
-					<Td>
-						<!--{#if authorized}-->
-						<Button
-							variant="tertiary"
-							size="xsmall"
-							onclick={() => {
-								findingToSuppress = v;
-								suppressOpen = true;
-							}}
-						>
-							<code>{v.identifier}</code>
-						</Button>
-						<!--{:else}
+					<Th style="width: 13rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
+						>ID</Th
+					>
+					<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
+					<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
+						>Severity</Th
+					>
+					<Th sortable={true} sortKey={ImageVulnerabilityOrderField.CREATED_AT}>Created</Th>
+					<Th sortable={true} sortKey={ImageVulnerabilityOrderField.UPDATED_AT}>Updated</Th>
+					<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
+						>Suppressed</Th
+					>
+					<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
+				</Tr>
+			</Thead>
+			<Tbody>
+				{@const vulnz = $vulnerabilities.data.team.environment.workload.image.vulnerabilities.nodes}
+				{#each vulnz as v (v)}
+					<Tr>
+						<Td>
+							<!--{#if authorized}-->
+							<Button
+								variant="tertiary"
+								size="xsmall"
+								onclick={() => {
+									findingToSuppress = v;
+									suppressOpen = true;
+								}}
+							>
+								<code>{v.identifier}</code>
+							</Button>
+							<!--{:else}
 							<code>{v.identifier}</code>
 						{/if}-->
-					</Td>
-					<Td><code>{v.package}</code></Td>
-					<Td
-						><code
-							style="color: {severityToColor({
-								severity: v.severity.toLowerCase(),
-								isText: true
-							})}">{v.severity}</code
-						></Td
-					>
-					<Td style="text-align: center">
-						{#if v.analysisTrail.suppressed}
-							<CheckmarkIcon width="18px" height="18px" />
-						{/if}
-					</Td>
-					<Td>
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							disabled={v.analysisTrail?.state ? false : true}
-							onclick={() => {
-								analysisTrail = v;
-								analysisOpen = true;
-							}}
+						</Td>
+						<Td><code>{v.package}</code></Td>
+						<Td
+							><code
+								style="color: {severityToColor({
+									severity: v.severity.toLowerCase(),
+									isText: true
+								})}">{v.severity}</code
+							></Td
 						>
-							<code>{v.analysisTrail?.state ? v.analysisTrail?.state : 'N/A'} </code>
-						</Button>
-					</Td>
-				</Tr>
-			{:else}
-				<Tr>
-					<Td colspan={999}>No vulnerabilities</Td>
-				</Tr>
-			{/each}
-		</Tbody>
-	</Table>
-{:else}
-	<div style="display: flex; justify-content: center; align-items: center; height: 200px;">
-		<Loader size="2xlarge" />
-	</div>
-{/if}
-
-{#if image}
-	<Pagination
-		page={image.vulnerabilities.pageInfo}
-		loaders={{
-			loadPreviousPage: () => {
-				vulnerabilities.loadPreviousPage();
-			},
-			loadNextPage: () => {
-				vulnerabilities.loadNextPage();
-			}
-		}}
-	/>
-
-	{#if findingToSuppress && image.workloadReferences}
-		{#key findingToSuppress.id}
-			<SuppressFinding
-				bind:open={suppressOpen}
-				finding={findingToSuppress}
-				workloads={image.workloadReferences.nodes.map((node) => node.workload)}
-				{authorized}
-				on:close={() => {
-					findingToSuppress = undefined;
-				}}
-			/>
-		{/key}
+						<Td><Time time={v.creationDate} distance /></Td>
+						<Td><Time time={v.lastUpdated} distance /></Td>
+						<Td style="text-align: center">
+							{#if v.analysisTrail.suppressed}
+								<CheckmarkIcon width="18px" height="18px" />
+							{/if}
+						</Td>
+						<Td>
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								disabled={v.analysisTrail?.state ? false : true}
+								onclick={() => {
+									analysisTrail = v;
+									analysisOpen = true;
+								}}
+							>
+								<code>{v.analysisTrail?.state ? v.analysisTrail?.state : 'N/A'} </code>
+							</Button>
+						</Td>
+					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={999}>No vulnerabilities</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+	{:else}
+		<div style="display: flex; justify-content: center; align-items: center; height: 200px;">
+			<Loader size="2xlarge" />
+		</div>
 	{/if}
 
-	{#if analysisTrail && authorized && image.workloadReferences}
-		<TrailFinding
-			bind:open={analysisOpen}
-			finding={analysisTrail}
-			workloads={image.workloadReferences.nodes.map((node) => node.workload)}
-			on:close={() => {
-				analysisTrail = undefined;
+	{#if image}
+		<Pagination
+			page={image.vulnerabilities.pageInfo}
+			loaders={{
+				loadPreviousPage: () => {
+					vulnerabilities.loadPreviousPage();
+				},
+				loadNextPage: () => {
+					vulnerabilities.loadNextPage();
+				}
 			}}
 		/>
+
+		{#if findingToSuppress && image.workloadReferences}
+			{#key findingToSuppress.id}
+				<SuppressFinding
+					bind:open={suppressOpen}
+					finding={findingToSuppress}
+					workloads={image.workloadReferences.nodes.map((node) => node.workload)}
+					{authorized}
+					on:close={() => {
+						findingToSuppress = undefined;
+					}}
+				/>
+			{/key}
+		{/if}
+
+		{#if analysisTrail && authorized && image.workloadReferences}
+			<TrailFinding
+				bind:open={analysisOpen}
+				finding={analysisTrail}
+				workloads={image.workloadReferences.nodes.map((node) => node.workload)}
+				on:close={() => {
+					analysisTrail = undefined;
+				}}
+			/>
+		{/if}
 	{/if}
-{/if}
+</div>
 
 <style>
 	code {

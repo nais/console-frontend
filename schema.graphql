@@ -1636,6 +1636,9 @@ type ImageVulnerability implements Node {
   """Analysis trail of the vulnerability."""
   analysisTrail: ImageVulnerabilityAnalysisTrail!
 
+  """Timestamp of the creation date of the vulnerability."""
+  creationDate: Time!
+
   """Description of the vulnerability."""
   description: String!
 
@@ -1644,6 +1647,9 @@ type ImageVulnerability implements Node {
 
   """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
+
+  """Timestamp of the last update of the vulnerability."""
+  lastUpdated: Time!
 
   """Package name of the vulnerability."""
   package: String!
@@ -1753,11 +1759,13 @@ input ImageVulnerabilityOrder {
 }
 
 enum ImageVulnerabilityOrderField {
+  CREATED_AT
   IDENTIFIER
   PACKAGE
   SEVERITY
   STATE
   SUPPRESSED
+  UPDATED_AT
 }
 
 type ImageVulnerabilitySample {
