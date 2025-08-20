@@ -8,11 +8,13 @@
 	const costQuery = graphql(`
 		query AggregatedTeamCost($team: Slug!) {
 			team(slug: $team) {
-				monthlySummary {
-					sum
-					series {
-						date
-						cost
+				cost {
+					monthlySummary {
+						sum
+						series {
+							date
+							cost
+						}
 					}
 				}
 			}
@@ -100,9 +102,13 @@
 			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto"
 				>View Cost for Team</a
 			>
+		{:else}
+			<div class="loading h-[250px]">
+				<Loader size="3xlarge" />
+			</div>
 		{/if}
 	{:else}
-		<div class="loading">
+		<div class="loading h-[250px]">
 			<Loader size="3xlarge" />
 		</div>
 	{/if}

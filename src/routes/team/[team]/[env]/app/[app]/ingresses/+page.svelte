@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import EChart from '$lib/chart/EChart.svelte';
+	// import EChart from '$lib/chart/EChart.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
-	import type { EChartsOption } from 'echarts';
-	import type { CallbackDataParams } from 'echarts/types/dist/shared';
+	// import type { EChartsOption } from 'echarts';
+	// import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
