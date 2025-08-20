@@ -70,9 +70,9 @@ html {
 	font-size: 12px;
 }
 
-svg {
+/* svg {
 	display: unset;
-}
+} */
 
 .lc-spline-path {
 	shape-rendering: geometricPrecision !important;

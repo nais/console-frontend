@@ -27,34 +27,9 @@
 	let { data }: PageProps = $props();
 	let { TenantCost, CostMonthly, interval } = $derived(data);
 
-	let tableSort = $derived({
-		orderBy: $TenantCost.variables?.orderBy?.field,
-		direction: $TenantCost.variables?.orderBy?.direction
-	});
-
-	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
-		} else {
-			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
-			tableSort.direction = 'DESC';
-		}
-
-		changeParams(
-			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || TeamOrderField.SLUG,
-				after: '',
-				before: ''
-			},
-			{ noScroll: true }
-		);
-	};
-
 	const allServicesSeries = $derived.by(() => {
-		if (!$TenantCost.data?.costMonthlySummary?.series) return [];
-		const mp = $TenantCost.data.costMonthlySummary.series.reduce((acc, item) => {
+		if (!$CostMonthly.data?.costMonthlySummary.series) return [];
+		const mp = $CostMonthly.data.costMonthlySummary.series.reduce((acc, item) => {
 			item.services.forEach((service) => {
 				acc.set(service.service, service.cost);
 			});
@@ -75,8 +50,8 @@
 	});
 
 	const tenantCostData = $derived.by(() => {
-		if (!$TenantCost.data?.costMonthlySummary?.series) return [];
-		return $TenantCost.data.costMonthlySummary.series.map((item) => ({
+		if (!$CostMonthly.data?.costMonthlySummary?.series) return [];
+		return $CostMonthly.data.costMonthlySummary.series.map((item) => ({
 			date: item.date,
 			...Object.fromEntries(item.services.map((s) => [s.service, s.cost]))
 		}));
@@ -135,7 +110,7 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $TenantCost.data}
+				{#if $CostMonthly.data}
 					<div class="h-[1000px]">
 						<BarChart
 							legend={{
