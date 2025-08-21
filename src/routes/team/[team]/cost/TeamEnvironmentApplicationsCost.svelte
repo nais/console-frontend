@@ -120,37 +120,40 @@
 					</ToggleGroup>
 				</div>
 
-			{#if env.series.length > 0}
-				<div class="mt-5 mb-12 h-[500px]">
-					<LineChart
-						padding={{ left: 40 }}
-						legend={{ placement: 'top' }}
-						series={env.series.map((item, i) => {
-							return {
-								key: item.name!,
-								color: visualizationColors[i % visualizationColors.length],
-								data: item.data.map(([date, value]) => ({
-									date: new Date(date as number),
-									value
-								}))
-							};
-						})}
-						x="date"
-						y="value"
-						props={{
-							yAxis: {
-								format: euroAxisFormatter
-							},
-							xAxis: {
-								format: 'day'
-							}
-						}}
-					/>
-				</div>
-
+				{#if env.series.length > 0}
+					<div class="mt-5 mb-12 h-[500px]">
+						<LineChart
+							padding={{ left: 40 }}
+							legend={{ placement: 'top' }}
+							series={env.series.map((item, i) => {
+								return {
+									key: item.name!,
+									color: visualizationColors[i % visualizationColors.length],
+									data: item.data.map(([date, value]) => ({
+										date: new Date(date as number),
+										value
+									}))
+								};
+							})}
+							x="date"
+							y="value"
+							props={{
+								spline: {
+									class: 'stroke-2'
+								},
+								yAxis: {
+									format: euroAxisFormatter
+								},
+								xAxis: {
+									format: 'day'
+								}
+							}}
+						/>
+					</div>
+				{/if}
+			{:else}
+				<BodyLong>No application cost data available</BodyLong>
 			{/if}
-		{:else}
-			<BodyLong>No application cost data available</BodyLong>
 		{/each}
 	{/if}
 </div>

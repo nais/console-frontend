@@ -13,7 +13,7 @@
 	--color-surface-100: var(--ax-bg-default);
 	--color-surface-200: #00ff00;
 	--color-surface-300: var(--ax-bg-raised);
-	--color-surface-content: var(--ax-text-neutral-subtle);
+	--color-surface-content: var(--ax-text-neutral);
 }
 
 :root {

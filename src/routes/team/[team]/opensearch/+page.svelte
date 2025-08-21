@@ -24,6 +24,7 @@
 		pageInfo={$OpenSearch.data.team.openSearches.pageInfo}
 		orderField={OpenSearchOrderField}
 		defaultOrderField={OpenSearchOrderField.NAME}
+		service="OpenSearch"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

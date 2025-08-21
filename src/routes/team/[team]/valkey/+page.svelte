@@ -24,6 +24,7 @@
 		pageInfo={$Valkeys.data.team.valkeys.pageInfo}
 		orderField={ValkeyOrderField}
 		defaultOrderField={ValkeyOrderField.NAME}
+		service="Valkey"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

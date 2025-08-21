@@ -19,6 +19,7 @@
 		pageInfo={$KafkaTopics.data.team.kafkaTopics.pageInfo}
 		orderField={KafkaTopicOrderField}
 		defaultOrderField={KafkaTopicOrderField.NAME}
+		service="Kafka Shared"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

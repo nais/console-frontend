@@ -129,6 +129,7 @@
 						costData={cost}
 						from={startOfMonth(subMonths(new Date(), 1))}
 						to={endOfYesterday()}
+						service="Cloud SQL"
 					/>
 				</div>
 			{/if}

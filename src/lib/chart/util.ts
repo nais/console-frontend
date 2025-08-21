@@ -8,7 +8,25 @@ export function truncateString(str: string, num: number) {
 	return str.slice(0, num - 3) + '...';
 }
 
-export function serviceColor(serviceName: string): string {
+export type ServiceName =
+	| 'Cloud SQL'
+	| 'Cloud Storage'
+	| 'Compute Engine'
+	| 'Cloud Key Management Service (KMS)'
+	| 'BigQuery'
+	| 'InfluxDB'
+	| 'Redis'
+	| 'OpenSearch'
+	| 'Secret Manager'
+	| 'Kubernetes Engine'
+	| 'Networking'
+	| 'Cloud Workstations'
+	| 'Confidential Computing'
+	| 'Valkey'
+	| 'Kafka Shared'
+	| 'Kafka Tiered Storage';
+
+export function serviceColor(serviceName: ServiceName | string): string {
 	switch (serviceName) {
 		case 'Cloud SQL':
 			return '#B45E5A'; // muted red

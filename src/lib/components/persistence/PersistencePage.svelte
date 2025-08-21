@@ -1,4 +1,5 @@
 <script lang="ts" generics="T extends OrderField">
+	import type { ServiceName } from '$lib/chart/util';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu, { type OrderField } from '$lib/components/OrderByMenu.svelte';
@@ -24,7 +25,8 @@
 		pageInfo,
 		orderField,
 		defaultOrderField,
-		viewerIsMember
+		viewerIsMember,
+		service
 	}: {
 		description: Snippet;
 		notFound: Snippet;
@@ -71,6 +73,7 @@
 		};
 		orderField: T;
 		defaultOrderField: T[keyof T];
+		service: ServiceName;
 	} = $props();
 </script>
 
@@ -115,6 +118,7 @@
 						{...cost}
 						from={startOfMonth(subMonths(new Date(), 1))}
 						to={endOfYesterday()}
+						{service}
 					/>
 				</div>
 			{/if}

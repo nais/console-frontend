@@ -28,13 +28,28 @@
 		class?: string;
 	} = $props();
 
+	const daily = $derived.by(() => {
+		if (data.length < 2) return false;
+
+		const firstDate = data[0][dateField] as Date;
+		const secondDate = data[1][dateField] as Date;
+
+		if (
+			firstDate.getFullYear() === secondDate.getFullYear() &&
+			firstDate.getMonth() === secondDate.getMonth() &&
+			secondDate.getDate() - firstDate.getDate() === 1
+		) {
+			return true;
+		}
+		return false;
+	});
 	const chartData = $derived.by(() => {
 		return (
 			data?.map((item, i) => {
 				return {
 					date: item[dateField] as Date,
 					value:
-						i == 0
+						i == 0 && !daily
 							? getEstimateForMonth(item[valueField] as number, item[dateField] as Date)
 							: item[valueField] // The first item might be incomplete, so we estimate it
 				};
@@ -58,6 +73,9 @@
 					]
 				: undefined}
 			props={{
+				spline: {
+					class: 'stroke-2'
+				},
 				yAxis: {
 					format: euroAxisFormatter
 				},
@@ -84,7 +102,10 @@
 					{#snippet children({ data })}
 						<Tooltip.List>
 							<Tooltip.Item
-								label={data.date.toLocaleString('en-GB', { month: 'long' })}
+								label={data.date.toLocaleString('en-GB', {
+									month: 'long',
+									day: daily ? 'numeric' : undefined
+								})}
 								value={euroValueFormatter(data.value)}
 							/>
 						</Tooltip.List>
