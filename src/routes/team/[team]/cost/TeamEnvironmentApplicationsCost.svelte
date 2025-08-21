@@ -137,6 +137,9 @@
 						x="date"
 						y="value"
 						props={{
+							spline: {
+								class: 'stroke-2'
+							},
 							yAxis: {
 								format: euroAxisFormatter
 							},

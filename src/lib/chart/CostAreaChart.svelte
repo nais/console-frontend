@@ -12,13 +12,21 @@
 		height?: number;
 	} = $props();
 
-	const series = $derived(
-		data.length > 0
-			? Object.keys(data[0])
-					.filter((key) => key !== 'date')
-					.map((key) => ({ key, color: serviceColor(key) }))
-			: []
-	);
+	const series = $derived.by(() => {
+		if (data.length == 0) return [];
+
+		const series = Object.keys(data[0])
+			.filter((key) => key !== 'date')
+			.map((key) => ({ key, color: serviceColor(key) }));
+
+		const firstData = data.at(0);
+
+		return series.toSorted((a, b) => {
+			const aValue = (firstData?.[a.key] as number) ?? 0;
+			const bValue = (firstData?.[b.key] as number) ?? 0;
+			return aValue - bValue;
+		});
+	});
 </script>
 
 {#if data.length > 0}
@@ -35,6 +43,9 @@
 			}
 		}}
 		props={{
+			highlight: {
+				motion: 'none'
+			},
 			area: {
 				fillOpacity: 0.6
 			},

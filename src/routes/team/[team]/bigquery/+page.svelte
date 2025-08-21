@@ -24,6 +24,7 @@
 		pageInfo={$BigQuery.data.team.bigQueryDatasets.pageInfo}
 		orderField={BigQueryDatasetOrderField}
 		defaultOrderField={BigQueryDatasetOrderField.NAME}
+		service="BigQuery"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

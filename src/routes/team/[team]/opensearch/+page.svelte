@@ -32,6 +32,7 @@
 			header: 'Create OpenSearch',
 			viewerIsMember: viewerIsMember
 		}}
+		service="OpenSearch"
 	>
 		{#snippet description()}
 			<BodyLong spacing>
