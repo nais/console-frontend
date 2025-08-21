@@ -195,7 +195,7 @@
 							<ListItem>
 								<IconLabel
 									label={team.slug}
-									href="/team/${team.slug}/cost"
+									href="/team/{team.slug}/cost"
 									icon={PersonGroupIcon}
 									size="large"
 									level="3"

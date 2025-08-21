@@ -107,17 +107,18 @@
 		</div>
 	{:else}
 		{#each appsByEnv as env (env.id)}
-			<div class="heading">
-				<Heading level="3" size="small">{env.environment.name}</Heading>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
-			</div>
+			{#if env.series.length > 0}
+				<div class="heading">
+					<Heading level="3" size="small">{env.environment.name}</Heading>
+					<ToggleGroup
+						value={interval}
+						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					>
+						{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
+				</div>
 
 			{#if env.series.length > 0}
 				<div class="mt-5 mb-12 h-[500px]">
@@ -146,6 +147,7 @@
 						}}
 					/>
 				</div>
+
 			{/if}
 		{:else}
 			<BodyLong>No application cost data available</BodyLong>
