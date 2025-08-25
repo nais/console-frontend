@@ -14,10 +14,18 @@
 </script>
 
 <div>
-	Value <strong>{data.secretValueAddedData.valueName}</strong> was added to secret
+	Value
+	<span class="valueName">{data.secretValueAddedData.valueName}</span> was added to secret
 	<strong>{data.resourceName}</strong>
 	by {data.actor}<br />
 	<BodyShort textColor="subtle" size="small">
 		<Time time={data.createdAt} distance />
 	</BodyShort>
 </div>
+
+<style>
+	.valueName {
+		font-weight: bold;
+		word-break: break-all;
+	}
+</style>
