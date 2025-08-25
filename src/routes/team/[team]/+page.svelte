@@ -10,7 +10,6 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -66,9 +65,7 @@
 		</div>
 		<div class="deployments">
 			<Heading size="small" level="2"
-				>Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments for {capitalizeFirstLetter(
-					teamSlug
-				)}</Heading
+				>Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments for {teamSlug}</Heading
 			>
 			{#if $TeamOverview.data?.team.deployments.pageInfo.totalCount === 0}
 				<BodyLong spacing>

@@ -3,7 +3,7 @@
 	import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import { capitalizeFirstLetter, euroValueFormatter } from '$lib/utils/formatters';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 	import { format, lastDayOfMonth } from 'date-fns';
 	import { type EChartsOption } from 'echarts';
@@ -105,9 +105,7 @@
 
 <div class="wrapper">
 	<div class="header">
-		<Heading level="4" size="small" spacing
-			>Aggregated Cost for {capitalizeFirstLetter(teamSlug)}</Heading
-		>
+		<Heading level="4" size="small" spacing>Aggregated Cost for {teamSlug}</Heading>
 		<HelpText title="Aggregated team cost"
 			>Aggregated cost for team. Current month is estimated.</HelpText
 		>
