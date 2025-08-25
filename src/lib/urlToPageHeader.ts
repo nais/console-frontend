@@ -122,11 +122,27 @@ export const urlToPageHeader = (
 } => {
 	const split = url.pathname.split('/');
 
+	const lastSegment = split.at(-1) ?? '';
+	const isSimpleHeading = [3, 6].includes(split.length);
+
+	const heading = isSimpleHeading
+		? lastSegment
+		: label(lastSegment).pageName ?? '';
+
+	const tag =
+		split.length > 5
+			? {
+					tag: {
+						label: split[3],
+						variant: envTagVariant(split[3])
+					}
+				}
+			: {};
+
 	return {
 		breadcrumbs: urlToBreadcrumbs(url),
-		heading:
-			([3, 6].includes(split.length) ? split.at(-1) : label(split.at(-1) ?? '').pageName) ?? '',
-		...(split.length > 5 ? { tag: { label: split[3], variant: envTagVariant(split[3]) } } : {})
+		heading,
+		...tag
 	};
 };
 
