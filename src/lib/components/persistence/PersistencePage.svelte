@@ -10,7 +10,8 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '@nais/ds-svelte-community';
+	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { Snippet } from 'svelte';
 	import CdnBucket from './CDNBucket.svelte';
@@ -24,7 +25,8 @@
 		pageInfo,
 		orderField,
 		defaultOrderField,
-		viewerIsMember
+		viewerIsMember,
+		create
 	}: {
 		description: Snippet;
 		notFound: Snippet;
@@ -34,6 +36,10 @@
 			costData: CostData;
 			teamSlug: string;
 			pageName: string;
+		};
+		create?: {
+			buttonText: string;
+			url: string;
 		};
 		list: {
 			readonly id: string;
@@ -78,6 +84,14 @@
 	<div class="content-wrapper">
 		<div>
 			{@render description()}
+
+			{#if create}
+				<div class="button">
+					<Button variant="secondary" size="small" as="a" href={create.url} icon={PlusIcon}>
+						{create.buttonText}
+					</Button>
+				</div>
+			{/if}
 			<List title="{pageInfo.totalCount} entries">
 				{#snippet menu()}
 					<OrderByMenu {orderField} {defaultOrderField} />
@@ -153,5 +167,10 @@
 	.right-column {
 		display: grid;
 		gap: var(--ax-space-24);
+	}
+	.button {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: var(--spacing-layout);
 	}
 </style>

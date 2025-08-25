@@ -24,6 +24,10 @@
 		pageInfo={$Valkeys.data.team.valkeys.pageInfo}
 		orderField={ValkeyOrderField}
 		defaultOrderField={ValkeyOrderField.NAME}
+		create={{
+			buttonText: 'Create Valkey',
+			url: `/team/${$Valkeys.data.team.slug}/valkey/create`
+		}}
 	>
 		{#snippet description()}
 			<BodyLong spacing>
