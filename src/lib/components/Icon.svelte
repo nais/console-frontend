@@ -89,6 +89,8 @@
 				return TrashIcon;
 			case 'ingresses':
 				return LinkIcon;
+			case 'alerts':
+				return BellIcon;
 			default:
 				return QuestionmarkIcon;
 		}

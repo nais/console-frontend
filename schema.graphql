@@ -2905,10 +2905,27 @@ type Price {
   value: Float!
 }
 
+type PrometheusAlarm {
+  """The action to take when the alert fires."""
+  action: String!
+
+  """The consequence of the alert firing."""
+  consequence: String!
+
+  """The time when the alert started firing."""
+  since: Time!
+
+  """The state of the alert."""
+  state: AlertState!
+
+  """A summary of the alert."""
+  summary: String!
+}
+
 """PrometheusAlert type"""
 type PrometheusAlert implements Alert & Node {
-  """The details of the alert available if state is firing."""
-  details: [PrometheusAlertDetails!]!
+  """The alarms of the alert available if state is firing."""
+  alarms: [PrometheusAlarm!]!
 
   """The duration for the alert."""
   duration: Float!
@@ -2933,20 +2950,6 @@ type PrometheusAlert implements Alert & Node {
 
   """The team environment for the alert."""
   teamEnvironment: TeamEnvironment!
-}
-
-type PrometheusAlertDetails {
-  """The action to take when the alert fires."""
-  action: String!
-
-  """The consequence of the alert firing."""
-  consequence: String!
-
-  """The time when the alert started firing."""
-  since: Time!
-
-  """A summary of the alert."""
-  summary: String!
 }
 
 """The query root for the Nais GraphQL API."""
@@ -4784,6 +4787,8 @@ type Team implements ActivityLogger & Node {
     """
     last: Int
   ): ActivityLogEntryConnection!
+
+  """EXPERIMENTAL: DO NOT USE"""
   alerts(
     """Get items after this cursor."""
     after: Cursor
@@ -5403,6 +5408,7 @@ type TeamEntraIDGroup {
 }
 
 type TeamEnvironment implements Node {
+  """EXPERIMENTAL: DO NOT USE"""
   alerts(
     """Get items after this cursor."""
     after: Cursor

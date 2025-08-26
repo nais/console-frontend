@@ -1,0 +1,42 @@
+#$orderBy: ApplicationOrder, $filter: TeamApplicationsFilter
+query Alerts($team: Slug!, $orderBy: AlertOrder!) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		slug
+		alerts(orderBy: $orderBy) {
+			pageInfo {
+				startCursor
+				endCursor
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
+			nodes {
+				id
+				name
+				state
+				query
+				duration
+				... on PrometheusAlert {
+					alarms {
+						action
+						consequence
+						since
+						summary
+						state
+					}
+					ruleGroup
+				}
+				team {
+					slug
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
