@@ -17,6 +17,38 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 		}
 		purpose
 
+		firingAlerts: alerts(filter: { states: [FIRING] }) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				id
+				name
+				state
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+
+		pendingAlerts: alerts(filter: { states: [PENDING] }) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				id
+				name
+				state
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+
 		deployments(first: 10) {
 			pageInfo {
 				totalCount
