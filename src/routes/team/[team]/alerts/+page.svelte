@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { AlertOrderField } from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import { formatSeconds } from '$lib/components/vulnerability/dateUtils';
+	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { Detail, ExpansionCard, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, CopyButton, ExpansionCard, Heading, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, ClockDashedIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -14,6 +15,19 @@
 	let { Alerts } = $derived(data);
 </script>
 
+<BodyLong spacing>
+	{#if $Alerts.data?.team.alerts.pageInfo.totalCount == 0}
+		<strong>No alerts found.</strong> Alerts notify you when something needs your attention.
+		<ExternalLink href={docURL('/observability/alerting')}
+			>Learn more about alerts and how to get started.</ExternalLink
+		>
+	{:else}
+		Alerts notify you when something needs your attention.
+		<ExternalLink href={docURL('/observability/alerting')}
+			>Learn more about alerts and how to get started.</ExternalLink
+		>
+	{/if}
+</BodyLong>
 {#if $Alerts.data && $Alerts.data?.team.alerts.pageInfo.totalCount > 0}
 	{@const alerts = $Alerts.data.team.alerts}
 	<div class="order-by">
@@ -50,80 +64,69 @@
 				{/snippet}
 				{#snippet description()}
 					<div class="description">
-						Very descriptive alert description that might even span multiple lines.
+						Rule group: <strong>{alert.ruleGroup}</strong>
 					</div>
 				{/snippet}
-				<Heading level="2" size="xsmall">Query</Heading>
-				<Detail>
-					<div class="query">{alert.query}</div>
-					<IconLabel
-						icon={ClockDashedIcon}
-						label={`for: ${formatSeconds(alert.duration)}`}
-						size="small"
-					/>
-				</Detail>
+
 				{#if alert.__typename === 'PrometheusAlert'}
-					<Heading level="2" size="xsmall" style="margin-top: var(--ax-space-8)"
+					<Heading level="2" size="xsmall" spacing style="margin-top: var(--ax-space-8)"
 						>Current alarms ({alert.alarms.length})</Heading
 					>
-					{#each alert.alarms as alarm (alarm)}
-						<div class="alarm">
-							<div>
-								<IconLabel
-									size="small"
-									label={alarm.summary}
-									tag={{
-										label: alarm.state,
-										variant: alarm.state === 'FIRING' ? 'error' : 'warning'
-									}}
-								>
-									{#snippet icon()}
-										<TooltipAlignHack
-											content={{
-												INACTIVE: 'Alert inactive',
-												FIRING: 'Alert firing',
-												PENDING: 'Alert is pending'
-											}[alarm.state] ?? ''}
-											placement="right"
+					<div class="alarms">
+						{#each alert.alarms as alarm, i (alarm)}
+							<div class="alarm">
+								<div class="alarm-heading">
+									<div class="heading-with-tag">
+										<Tag variant={alarm.state === 'FIRING' ? 'error' : 'warning'} size="small"
+											>{alarm.state}</Tag
 										>
-											<CircleFillIcon
-												style="color: var(--ax-text-{{
-													INACTIVE: 'success',
-													FIRING: 'danger',
-													PENDING: 'warning'
-												}[alarm.state] ?? 'info'}-decoration); font-size: 0.7rem"
-											/>
-										</TooltipAlignHack>
-									{/snippet}
-								</IconLabel>
-							</div>
+										<Heading level="3" size="small">
+											{alarm.summary !== '' ? alarm.summary : 'Alarm ' + (i + 1)}
+										</Heading>
+									</div>
+									<div class="right">
+										<span class="since"
+											>{alarm.state === 'FIRING' ? 'Firing ' : 'Pending '} since <Time
+												time={alarm.since}
+												distance
+											/></span
+										>
+									</div>
+								</div>
+								<div class="alarm-label">
+									<dl class="kv">
+										<dt>Action</dt>
+										<dd>{alarm.action || 'No action label defined in PrometheusRule'}</dd>
 
-							<div>
-								{#if alarm.action}
-									<Heading level="3" size="xsmall">Action</Heading>
-									{alarm.action}
-								{/if}
-								{#if alarm.summary}
-									<Heading level="3" size="xsmall">Summary</Heading>
-									{alarm.summary}
-								{/if}
-								{#if alarm.consequence}
-									<Heading level="3" size="xsmall">Consequence</Heading>
-									{alarm.consequence}
-								{/if}
-								<div class="right">
-									<span class="since"
-										>{alarm.state === 'FIRING' ? 'Firing ' : 'Pending '} since <Time
-											time={alarm.since}
-											distance
-										/></span
-									>
+										<dt>Consequence</dt>
+										<dd>{alarm.consequence || 'No consequence defined in PrometheusRule'}</dd>
+									</dl>
 								</div>
 							</div>
-						</div>
-					{:else}
-						No alerts firing
-					{/each}
+						{:else}
+							No alerts firing
+						{/each}
+					</div>
+					<div class="query-heading">
+						<Heading level="2" size="xsmall">Query</Heading><CopyButton
+							text="Copy query"
+							activeText="Query copied"
+							variant="action"
+							copyText={alert.query}
+							size="xsmall"
+						/>
+					</div>
+
+					<div class="query-wrap">
+						<pre class="query"><code>{alert.query}</code></pre>
+					</div>
+					<div style="color: var(--ax-text-info-decoration);">
+						<IconLabel
+							icon={ClockDashedIcon}
+							label={`for: ${formatSeconds(alert.duration)}`}
+							size="small"
+						/>
+					</div>
 				{/if}
 			</ExpansionCard>
 		{/each}
@@ -134,7 +137,7 @@
 	.cards {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--ax-space-16);
 	}
 	.order-by {
 		display: flex;
@@ -142,23 +145,26 @@
 		margin-bottom: var(--ax-space-4);
 	}
 	.description {
-		font-size: 0.9rem;
-		margin-top: var(--ax-space-4);
+		margin-top: var(--ax-space-8);
+	}
+	.alarm-heading {
+		display: flex;
+		justify-content: space-between;
+	}
+	.heading-with-tag {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+	.alarm-label {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--ax-space-4);
+		padding: var(--ax-space-4) 0;
 	}
 
-	.right {
-		display: flex;
-		flex-direction: column;
-		align-items: end;
-		gap: var(--ax-space-2);
-	}
-	.alarm {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: var(--spacing-layout);
-	}
 	.since {
-		color: var(--ax-text-neutral-decoration);
+		color: var(--ax-text-neutral);
 		font-size: 0.9rem;
 		text-align: right;
 	}
@@ -166,5 +172,35 @@
 		font-family: monospace;
 		font-size: 0.8rem;
 		white-space: pre-wrap;
+	}
+	.query-heading {
+		margin-top: var(--ax-space-8);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.kv {
+		display: grid;
+		grid-template-columns: minmax(8rem, 18rem) 1fr;
+		gap: var(--ax-space-2) var(--ax-space-6);
+		align-items: start;
+		margin-top: var(--ax-space-3);
+	}
+
+	.kv dt {
+		color: var(--ax-text-neutral);
+	}
+	.kv dd {
+		margin: 0;
+	}
+
+	.alarms {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+	}
+	.alarm {
+		border-bottom: 1px solid var(--ax-border-neutral-subtle);
 	}
 </style>
