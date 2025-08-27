@@ -18,7 +18,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { BigQueryDataset: BigQueryDatasetInstance } = $derived(data);

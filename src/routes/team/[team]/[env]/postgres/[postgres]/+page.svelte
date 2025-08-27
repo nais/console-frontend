@@ -10,7 +10,7 @@
 	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { SqlInstance } = $derived(data);

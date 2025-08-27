@@ -34,7 +34,7 @@
 	import { format } from 'date-fns';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { ResourceUtilizationForApp } = $derived(data);

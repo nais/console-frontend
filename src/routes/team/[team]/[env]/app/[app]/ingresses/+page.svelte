@@ -11,7 +11,7 @@
 	import type { EChartsOption } from 'echarts';
 	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 	import { tick } from 'svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { IngressMetrics } = $derived(data);

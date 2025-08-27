@@ -11,7 +11,7 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import TeamEnvironmentApplicationsCost from './TeamEnvironmentApplicationsCost.svelte';
 
 	const { data }: PageProps = $props();

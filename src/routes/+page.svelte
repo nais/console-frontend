@@ -7,7 +7,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import Onboarding from './Onboarding.svelte';
 
 	let { data }: PageProps = $props();
