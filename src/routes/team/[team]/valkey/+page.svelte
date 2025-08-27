@@ -6,6 +6,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import CreatePage from './create/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { Valkeys } = $derived(data);
@@ -26,7 +27,9 @@
 		defaultOrderField={ValkeyOrderField.NAME}
 		create={{
 			buttonText: 'Create Valkey',
-			url: `/team/${$Valkeys.data.team.slug}/valkey/create`
+			url: `/team/${$Valkeys.data.team.slug}/valkey/create`,
+			page: CreatePage,
+			header: 'Create Valkey'
 		}}
 	>
 		{#snippet description()}
