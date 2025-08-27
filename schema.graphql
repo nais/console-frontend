@@ -308,6 +308,85 @@ type AddTeamMemberPayload {
   member: TeamMember
 }
 
+"""Alert interface."""
+interface Alert {
+  """
+  The time in seconds the alert condition must be met before it activates.
+  """
+  duration: Float!
+
+  """The unique identifier of the alert."""
+  id: ID!
+
+  """The name of the alert."""
+  name: String!
+
+  """The query or expression evaluated for the alert."""
+  query: String!
+
+  """The current state of the alert (e.g. FIRING, PENDING, INACTIVE)."""
+  state: AlertState!
+
+  """The team responsible for the alert."""
+  team: Team!
+
+  """The team environment associated with the alert."""
+  teamEnvironment: TeamEnvironment!
+}
+
+"""AlertConnection connection."""
+type AlertConnection {
+  """List of edges."""
+  edges: [AlertEdge!]!
+
+  """List of nodes."""
+  nodes: [Alert!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+"""Alert edge."""
+type AlertEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The Alert."""
+  node: Alert!
+}
+
+"""Ordering options when fetching alerts."""
+input AlertOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: AlertOrderField!
+}
+
+"""Fields to order alerts in an environment by."""
+enum AlertOrderField {
+  """ENVIRONMENT"""
+  ENVIRONMENT
+
+  """Order by name."""
+  NAME
+
+  """Order by state."""
+  STATE
+}
+
+enum AlertState {
+  """Only return alerts that are firing."""
+  FIRING
+
+  """Only return alerts that are inactive."""
+  INACTIVE
+
+  """Only return alerts that are pending."""
+  PENDING
+}
+
 input AllowTeamAccessToUnleashInput {
   allowedTeamSlug: Slug!
   teamSlug: Slug!
@@ -2826,6 +2905,53 @@ type Price {
   value: Float!
 }
 
+type PrometheusAlarm {
+  """The action to take when the alert fires."""
+  action: String!
+
+  """The consequence of the alert firing."""
+  consequence: String!
+
+  """The time when the alert started firing."""
+  since: Time!
+
+  """The state of the alert."""
+  state: AlertState!
+
+  """A summary of the alert."""
+  summary: String!
+}
+
+"""PrometheusAlert type"""
+type PrometheusAlert implements Alert & Node {
+  """The alarms of the alert available if state is firing."""
+  alarms: [PrometheusAlarm!]!
+
+  """The duration for the alert."""
+  duration: Float!
+
+  """The unique identifier for the alert."""
+  id: ID!
+
+  """The name of the alert."""
+  name: String!
+
+  """The query for the alert."""
+  query: String!
+
+  """The prometheus rule group for the alert."""
+  ruleGroup: String!
+
+  """The state of the alert."""
+  state: AlertState!
+
+  """The team that owns the alert."""
+  team: Team!
+
+  """The team environment for the alert."""
+  teamEnvironment: TeamEnvironment!
+}
+
 """The query root for the Nais GraphQL API."""
 type Query {
   """Get the monthly cost summary for a tenant."""
@@ -4662,6 +4788,31 @@ type Team implements ActivityLogger & Node {
     last: Int
   ): ActivityLogEntryConnection!
 
+  """EXPERIMENTAL: DO NOT USE"""
+  alerts(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter the returned objects"""
+    filter: TeamAlertsFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: AlertOrder
+  ): AlertConnection!
+
   """Nais applications owned by the team."""
   applications(
     """Get items after this cursor."""
@@ -5040,6 +5191,12 @@ type Team implements ActivityLogger & Node {
   ): WorkloadConnection!
 }
 
+"""Input for filtering alerts."""
+input TeamAlertsFilter {
+  """Only return alerts from the given named states."""
+  states: [AlertState!]
+}
+
 """Input for filtering the applications of a team."""
 input TeamApplicationsFilter {
   """Filter by the name of the environment."""
@@ -5251,6 +5408,31 @@ type TeamEntraIDGroup {
 }
 
 type TeamEnvironment implements Node {
+  """EXPERIMENTAL: DO NOT USE"""
+  alerts(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter the returned objects"""
+    filter: TeamAlertsFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: AlertOrder
+  ): AlertConnection!
+
   """Nais application in the team environment."""
   application(
     """The name of the application."""

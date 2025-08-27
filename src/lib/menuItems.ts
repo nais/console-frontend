@@ -99,6 +99,7 @@ export const menuItems = ({
 			features?.unleash && menuItem('Unleash', 'unleash')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[],
 		[
+			menuItem('Alerts', 'alerts'),
 			menuItem('Deployments', 'deploy'),
 			menuItem('Cost', 'cost'),
 			menuItem('Utilization', 'utilization'),
