@@ -63,9 +63,9 @@
 					</IconLabel>
 				{/snippet}
 				{#snippet description()}
-					<div class="description">
+					<span class="description">
 						Rule group: <strong>{alert.ruleGroup}</strong>
-					</div>
+					</span>
 				{/snippet}
 
 				{#if alert.__typename === 'PrometheusAlert'}
