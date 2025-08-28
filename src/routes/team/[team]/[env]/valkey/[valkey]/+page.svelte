@@ -19,7 +19,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
 
@@ -95,6 +95,26 @@
 	)}
 	<div class="wrapper">
 		<div>
+			<div class="button">
+				<Button
+					as="a"
+					variant="secondary"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
+					icon={PencilIcon}
+				>
+					Edit Valkey
+				</Button>
+				<Button
+					as="a"
+					variant="danger"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/delete"
+					icon={TrashIcon}
+				>
+					Delete Valkey
+				</Button>
+			</div>
 			<div class="spacing">
 				<Heading level="3" spacing>Valkey Access List</Heading>
 				<Table
@@ -240,5 +260,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.button {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--ax-space-8);
 	}
 </style>
