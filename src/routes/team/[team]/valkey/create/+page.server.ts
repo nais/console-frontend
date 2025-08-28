@@ -1,10 +1,16 @@
 import { graphql, ValkeyMaxMemoryPolicy, ValkeySize, ValkeyTier } from '$houdini';
+import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
 	mutation CreateValkey($input: CreateValkeyInput!) {
 		createValkey(input: $input) {
 			valkey {
 				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 			}
 		}
 	}
@@ -22,7 +28,15 @@ export const actions = {
 		const max_memory_policy = data.get('max_memory_policy') as string | null;
 
 		if (!name || !environment || !tier || !size) {
-			return { success: false, error: 'All fields are required' };
+			return fail(400, {
+				success: false,
+				error: 'All fields are required',
+				name,
+				environment,
+				tier,
+				size,
+				max_memory_policy
+			});
 		}
 
 		const res = await mutation.mutate(
@@ -42,7 +56,7 @@ export const actions = {
 		);
 
 		if (res.errors?.length ?? 0 > 0) {
-			return {
+			return fail(400, {
 				success: false,
 				error: res.errors![0].message,
 				name,
@@ -50,9 +64,22 @@ export const actions = {
 				tier,
 				size,
 				max_memory_policy
-			};
+			});
+		} else if (!res.data) {
+			return fail(500, {
+				success: false,
+				error: 'Failed to create Valkey',
+				name,
+				environment,
+				tier,
+				size,
+				max_memory_policy
+			});
 		}
 
-		return { success: true };
+		return redirect(
+			303,
+			`/team/${params.team}/${res.data.createValkey.valkey.teamEnvironment.environment.name}/valkey/${res.data.createValkey.valkey.name}`
+		);
 	}
 };
