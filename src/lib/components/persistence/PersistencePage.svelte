@@ -88,7 +88,7 @@
 
 	$effect(() => {
 		console.log('Loading modal data for', page.state);
-		if (page.state.modalHref && !modalData) {
+		if (page.state.modalHref) {
 			const href = page.state.modalHref;
 			// run `load` functions (or rather, get the result of the `load` functions
 			// that are already running because of `data-sveltekit-preload-data`)
@@ -100,8 +100,8 @@
 					goto(href);
 				}
 			});
-			// } else {
-			// 	modalData = undefined;
+		} else {
+			modalData = undefined;
 		}
 	});
 </script>
@@ -219,9 +219,8 @@
 			modalData = undefined;
 		}}
 		open={true}
-		header={create.header + '-' + new Date().toISOString()}
+		header={create.header}
 	>
-		{new Date().toISOString()}
 		{#if !modalData}
 			<Loader />
 		{:else}

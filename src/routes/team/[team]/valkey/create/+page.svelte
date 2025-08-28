@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import { ValkeyMaxMemoryPolicy, ValkeySize, ValkeyTier } from '$houdini';
 	import { BodyLong, Button, ErrorMessage, Select, TextField } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
-	let { data, form }: PageProps = $props();
+	let { data }: PageProps = $props();
 
 	const { CreateValkeyEnvironments } = $derived(data);
 
 	const environments = $derived($CreateValkeyEnvironments.data?.team.environments ?? []);
+
+	const form = $derived(page.form);
 </script>
 
 <BodyLong>This is an explanation on how to create a Valkey instance.</BodyLong>
@@ -19,6 +22,7 @@
 
 <form method="POST" use:enhance>
 	<TextField size="small" label="Instance name" name="name" required value={form?.name ?? ''} />
+
 	<Select
 		size="small"
 		label="Environment"
