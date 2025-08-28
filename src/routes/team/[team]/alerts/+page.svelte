@@ -12,7 +12,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Alerts } = $derived(data);
+	let { Alerts, tenantName } = $derived(data);
 
 	function makePrometheusQueryUrl(baseUrl: string, query: string): string {
 		const cleanBase = baseUrl.replace(/\/+$/, '');
@@ -153,7 +153,9 @@
 							href={makePrometheusQueryUrl(
 								'https://prometheus.' +
 									alert.teamEnvironment.environment.name +
-									'.nav.cloud.nais.io',
+									'.' +
+									tenantName +
+									'.cloud.nais.io',
 								alert.query
 							)}
 						>
