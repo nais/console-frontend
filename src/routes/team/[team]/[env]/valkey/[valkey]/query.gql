@@ -6,6 +6,9 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 				__typename
 				id
 				name
+				tier
+				size
+				maxMemoryPolicy
 				teamEnvironment {
 					environment {
 						name

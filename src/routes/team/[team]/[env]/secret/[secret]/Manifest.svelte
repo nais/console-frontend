@@ -15,7 +15,7 @@
 </script>
 
 <div class="card">
-	<Heading level="2" size="medium" spacing>Use This Secret</Heading>
+	<Heading level="2" size="medium" spacing>Use this secret</Heading>
 
 	<Heading level="3" size="xsmall">Documentation</Heading>
 	<div class="value">

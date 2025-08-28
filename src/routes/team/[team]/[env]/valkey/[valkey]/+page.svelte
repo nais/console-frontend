@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql, ValkeyAccessOrderField } from '$houdini';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
@@ -20,6 +21,7 @@
 	} from '@nais/ds-svelte-community';
 	import { CogRotationIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import Manifest from './Manifest.svelte';
 
 	const runServiceMaintenance = graphql(`
 		mutation runValkeyMaintenance(
@@ -196,6 +198,14 @@
 				<Heading level="3">Status</Heading>
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
+			<div>
+				<Heading level="3">Settings</Heading>
+				<BodyShort>Tier: {instance.tier}</BodyShort>
+				<BodyShort>Size: {instance.size}</BodyShort>
+				{#if instance.maxMemoryPolicy}
+					<BodyShort>Max memory policy: {instance.maxMemoryPolicy}</BodyShort>
+				{/if}
+			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
 					<Heading level="3">Maintenance window</Heading>
@@ -203,6 +213,8 @@
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>
 			{/if}
+
+			<Manifest instanceName={instance.name} teamSlug={page.params.team!} />
 		</div>
 	</div>
 {/if}
