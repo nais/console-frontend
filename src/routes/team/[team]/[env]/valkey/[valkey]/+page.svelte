@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql, ValkeyAccessOrderField } from '$houdini';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
@@ -18,8 +19,9 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import Manifest from './Manifest.svelte';
 
 	const runServiceMaintenance = graphql(`
 		mutation runValkeyMaintenance(
@@ -93,6 +95,26 @@
 	)}
 	<div class="wrapper">
 		<div>
+			<div class="button">
+				<Button
+					as="a"
+					variant="secondary"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
+					icon={PencilIcon}
+				>
+					Edit Valkey
+				</Button>
+				<Button
+					as="a"
+					variant="danger"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/delete"
+					icon={TrashIcon}
+				>
+					Delete Valkey
+				</Button>
+			</div>
 			<div class="spacing">
 				<Heading level="3" spacing>Valkey Access List</Heading>
 				<Table
@@ -196,6 +218,14 @@
 				<Heading level="3">Status</Heading>
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
+			<div>
+				<Heading level="3">Settings</Heading>
+				<BodyShort>Tier: {instance.tier}</BodyShort>
+				<BodyShort>Size: {instance.size}</BodyShort>
+				{#if instance.maxMemoryPolicy}
+					<BodyShort>Max memory policy: {instance.maxMemoryPolicy}</BodyShort>
+				{/if}
+			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
 					<Heading level="3">Maintenance window</Heading>
@@ -203,6 +233,8 @@
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>
 			{/if}
+
+			<Manifest instanceName={instance.name} teamSlug={page.params.team!} />
 		</div>
 	</div>
 {/if}
@@ -228,5 +260,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.button {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--ax-space-8);
 	}
 </style>
