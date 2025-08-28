@@ -149,14 +149,16 @@
 						/>
 					</div>
 					<div>
-						<a
+						<ExternalLink
 							href={makePrometheusQueryUrl(
 								'https://prometheus.' +
 									alert.teamEnvironment.environment.name +
 									'.nav.cloud.nais.io',
 								alert.query
-							)}>Run query in Prometheus</a
+							)}
 						>
+							Run query in Prometheus
+						</ExternalLink>
 					</div>
 				{/if}
 			</ExpansionCard>
