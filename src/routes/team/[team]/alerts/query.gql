@@ -25,6 +25,7 @@ query Alerts($team: Slug!, $orderBy: AlertOrder!) @cache(policy: NetworkOnly) {
 						since
 						summary
 						state
+						value
 					}
 					ruleGroup
 				}

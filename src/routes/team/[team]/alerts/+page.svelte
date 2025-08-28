@@ -13,6 +13,23 @@
 
 	let { data }: PageProps = $props();
 	let { Alerts } = $derived(data);
+
+	function makePrometheusQueryUrl(baseUrl: string, query: string): string {
+		const cleanBase = baseUrl.replace(/\/+$/, '');
+
+		const params = new URLSearchParams({
+			'g0.expr': query,
+			'g0.show_tree': '0',
+			'g0.tab': 'table',
+			'g0.range_input': '1h',
+			'g0.res_type': 'auto',
+			'g0.res_density': 'medium',
+			'g0.display_mode': 'lines',
+			'g0.show_exemplars': '0'
+		});
+
+		return `${cleanBase}/query?${params.toString()}`;
+	}
 </script>
 
 <BodyLong spacing>
@@ -100,6 +117,9 @@
 
 										<dt>Consequence</dt>
 										<dd>{alarm.consequence || 'No consequence defined in PrometheusRule'}</dd>
+
+										<dt>Value</dt>
+										<dd>{alarm.value}</dd>
 									</dl>
 								</div>
 							</div>
@@ -108,7 +128,8 @@
 						{/each}
 					</div>
 					<div class="query-heading">
-						<Heading level="2" size="xsmall">Query</Heading><CopyButton
+						<Heading level="2" size="xsmall">Query</Heading>
+						<CopyButton
 							text="Copy query"
 							activeText="Query copied"
 							variant="action"
@@ -126,6 +147,16 @@
 							label={`for: ${formatSeconds(alert.duration)}`}
 							size="small"
 						/>
+					</div>
+					<div>
+						<a
+							href={makePrometheusQueryUrl(
+								'https://prometheus.' +
+									alert.teamEnvironment.environment.name +
+									'.nav.cloud.nais.io',
+								alert.query
+							)}>Run query in Prometheus</a
+						>
 					</div>
 				{/if}
 			</ExpansionCard>
@@ -189,10 +220,7 @@
 	}
 
 	.kv dt {
-		color: var(--ax-text-neutral);
-	}
-	.kv dd {
-		margin: 0;
+		font-weight: bold;
 	}
 
 	.alarms {
