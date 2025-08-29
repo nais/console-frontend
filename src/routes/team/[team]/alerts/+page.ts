@@ -1,14 +1,15 @@
 import { AlertOrderField, load_Alerts, OrderDirection } from '$houdini';
+import type { TeamAlertsFilter } from '$houdini/runtime/generated';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 
-const rows = 10;
+const rows = 25;
 
 export async function load(event) {
-	// const filter: string = event.url.searchParams.get('filter') || '';
-	// const environments: string[] | undefined =
-	// 	event.url.searchParams.get('environments') === 'none'
-	// 		? undefined
-	// 		: event.url.searchParams.get('environments')?.split(',') || [];
+	const filter: string = event.url.searchParams.get('filter') || '';
+	const environments: string[] | undefined =
+		event.url.searchParams.get('environments') === 'none'
+			? undefined
+			: event.url.searchParams.get('environments')?.split(',') || [];
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
@@ -18,7 +19,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				// filter: { name: filter, environments } as TeamApplicationsFilter,
+				filter: { name: filter, environments } as TeamAlertsFilter,
 				orderBy: {
 					field: urlToOrderField(AlertOrderField, AlertOrderField.STATE, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.ASC)

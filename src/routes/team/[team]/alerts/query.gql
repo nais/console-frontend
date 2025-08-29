@@ -1,5 +1,6 @@
 query Alerts(
 	$team: Slug!
+	$filter: TeamAlertsFilter
 	$orderBy: AlertOrder
 	$first: Int
 	$last: Int
@@ -8,8 +9,14 @@ query Alerts(
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
-		alerts(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
-			@paginate(mode: SinglePage) {
+		alerts(
+			first: $first
+			last: $last
+			filter: $filter
+			orderBy: $orderBy
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				startCursor
 				endCursor
@@ -49,6 +56,12 @@ query Alerts(
 		totalAlerts: alerts {
 			pageInfo {
 				totalCount
+			}
+		}
+		environments {
+			id
+			environment {
+				name
 			}
 		}
 	}

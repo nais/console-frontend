@@ -5196,6 +5196,12 @@ type Team implements ActivityLogger & Node {
 
 """Input for filtering alerts."""
 input TeamAlertsFilter {
+  """Filter by the name of the environment."""
+  environments: [String!]
+
+  """Filter by the name of the application."""
+  name: String
+
   """Only return alerts from the given named states."""
   states: [AlertState!]
 }

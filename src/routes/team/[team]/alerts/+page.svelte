@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { AlertOrderField } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -8,13 +9,20 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
-	import { ChevronRightIcon, ClockDashedIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
+	import {
+		ChevronDownIcon,
+		ChevronRightIcon,
+		ClockDashedIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
 	let { Alerts, tenantName } = $derived(data);
+
+	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
@@ -34,10 +42,37 @@
 		return `${cleanBase}/query?${params.toString()}`;
 	}
 
-	const changeQuery = (params: { after?: string; before?: string } = {}) => {
+	const allEnvs = $derived(
+		$Alerts.data?.team.environments.map((env) => env.environment.name) ?? []
+	);
+
+	let filteredEnvs = $derived(
+		page.url.searchParams.get('environments') === 'none'
+			? []
+			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
+	);
+
+	$effect(() => {
+		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+
+		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
+			changeQuery({ environments });
+		}
+	});
+
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+			newFilter?: string;
+			environments?: string;
+		} = {}
+	) => {
 		changeParams({
 			before: params.before ?? before,
-			after: params.after ?? after
+			after: params.after ?? after,
+			filter: params.newFilter ?? filter,
+			environments: params.environments ?? ''
 		});
 	};
 </script>
@@ -57,6 +92,33 @@
 				>
 			{/if}
 		</BodyLong>
+		{#if $Alerts.data?.team.totalAlerts?.pageInfo?.totalCount ?? 0 > 0}
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						changeQuery({ newFilter: filter });
+					}}
+				>
+					<Search
+						clearButton={true}
+						clearButtonLabel="Clear"
+						label="filter alerts"
+						placeholder="Filter by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							changeQuery({ newFilter: '' });
+						}}
+					/>
+				</form>
+			</div>
+		{/if}
 
 		{#if $Alerts.data && $Alerts.data?.team.alerts.pageInfo.totalCount > 0}
 			{@const page = $Alerts.data.team.alerts}
@@ -68,6 +130,42 @@
 					: ''}"
 			>
 				{#snippet menu()}
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								iconPosition="right"
+								{...props}
+								icon={ChevronDownIcon}
+							>
+								<span style="font-weight: normal">Environment</span>
+							</Button>
+						{/snippet}
+						<ActionMenuCheckboxItem
+							checked={$Alerts.data?.team.environments.every((env) =>
+								filteredEnvs.includes(env.environment.name)
+							)
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $Alerts.data?.team.environments ?? [] as { environment, id } (id)}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(environment.name)}
+								onchange={(checked) =>
+									(filteredEnvs = checked
+										? [...filteredEnvs, environment.name]
+										: filteredEnvs.filter((env) => env !== environment.name))}
+							>
+								{environment.name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenu>
 					<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
 				{/snippet}
 				{#each page.nodes as alert (alert.id)}
@@ -162,6 +260,11 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+	.search {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
 	}
 
 	details > summary {
