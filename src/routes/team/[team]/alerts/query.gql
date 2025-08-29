@@ -1,8 +1,15 @@
-#$orderBy: ApplicationOrder, $filter: TeamApplicationsFilter
-query Alerts($team: Slug!, $orderBy: AlertOrder!) @cache(policy: NetworkOnly) {
+query Alerts(
+	$team: Slug!
+	$orderBy: AlertOrder
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
-		alerts(orderBy: $orderBy) {
+		alerts(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
 			pageInfo {
 				startCursor
 				endCursor

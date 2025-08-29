@@ -6,13 +6,18 @@
 	import { formatSeconds } from '$lib/components/vulnerability/dateUtils';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, CopyButton, ExpansionCard, Heading, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, ClockDashedIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { Alerts, tenantName } = $derived(data);
+
+	let after: string = $derived($Alerts.variables?.after ?? '');
+	let before: string = $derived($Alerts.variables?.before ?? '');
 
 	function makePrometheusQueryUrl(baseUrl: string, query: string): string {
 		const cleanBase = baseUrl.replace(/\/+$/, '');
@@ -30,6 +35,18 @@
 
 		return `${cleanBase}/query?${params.toString()}`;
 	}
+
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+		} = {}
+	) => {
+		changeParams({
+			before: params.before ?? before,
+			after: params.after ?? after
+		});
+	};
 </script>
 
 <BodyLong spacing>
@@ -50,7 +67,6 @@
 	<div class="order-by">
 		<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
 	</div>
-
 	<div class="cards">
 		{#each alerts.nodes as alert (alert.id)}
 			<ExpansionCard
@@ -165,6 +181,17 @@
 				{/if}
 			</ExpansionCard>
 		{/each}
+		<Pagination
+			page={alerts.pageInfo}
+			loaders={{
+				loadPreviousPage: () => {
+					changeQuery({ before: alerts.pageInfo.startCursor ?? '', after: '' });
+				},
+				loadNextPage: () => {
+					changeQuery({ after: alerts.pageInfo.endCursor ?? '', before: '' });
+				}
+			}}
+		/>
 	</div>
 {/if}
 

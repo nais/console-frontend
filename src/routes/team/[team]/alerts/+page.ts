@@ -1,7 +1,7 @@
 import { AlertOrderField, load_Alerts, OrderDirection } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 
-// const rows = 25;
+const rows = 10;
 
 export async function load(event) {
 	// const filter: string = event.url.searchParams.get('filter') || '';
@@ -10,8 +10,8 @@ export async function load(event) {
 	// 		? undefined
 	// 		: event.url.searchParams.get('environments')?.split(',') || [];
 
-	// const after = event.url.searchParams.get('after') || '';
-	// const before = event.url.searchParams.get('before') || '';
+	const after = event.url.searchParams.get('after') || '';
+	const before = event.url.searchParams.get('before') || '';
 
 	return {
 		...(await load_Alerts({
@@ -22,8 +22,8 @@ export async function load(event) {
 				orderBy: {
 					field: urlToOrderField(AlertOrderField, AlertOrderField.STATE, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
-				}
-				// ...(before ? { before, last: rows } : { after, first: rows })
+				},
+				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))
 	};
