@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { AlertOrderField } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import { formatSeconds } from '$lib/components/vulnerability/dateUtils';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
 	import { ChevronRightIcon, ClockDashedIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
 	let { Alerts, tenantName } = $derived(data);
@@ -60,11 +61,15 @@
 		{#if $Alerts.data && $Alerts.data?.team.alerts.pageInfo.totalCount > 0}
 			{@const page = $Alerts.data.team.alerts}
 
-			<div class="toolbar">
-				<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
-			</div>
-
-			<div class="list">
+			<List
+				title="{page.pageInfo.totalCount} alert rule{page.pageInfo.totalCount !== 1 ? 's' : ''}
+						{page.pageInfo.totalCount !== $Alerts.data.team.totalAlerts.pageInfo.totalCount
+					? `(of total ${$Alerts.data.team.totalAlerts.pageInfo.totalCount})`
+					: ''}"
+			>
+				{#snippet menu()}
+					<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
+				{/snippet}
 				{#each page.nodes as alert (alert.id)}
 					<details class="item">
 						<summary class="head">
@@ -101,38 +106,7 @@
 								{#if alert.alarms.length > 0}
 									<div class="alarms">
 										{#each alert.alarms as alarm, i (alarm)}
-											<div class="alarm">
-												<div class="alarm-head">
-													<div class="heading-with-tag">
-														<Tag
-															variant={alarm.state === 'FIRING' ? 'error' : 'warning'}
-															size="small"
-														>
-															{alarm.state}
-														</Tag>
-														<Heading level="3" size="xsmall">
-															{alarm.summary !== '' ? alarm.summary : `Alarm ${i + 1}`}
-														</Heading>
-													</div>
-													<div class="right">
-														<span class="since">
-															Active since
-															<Time time={alarm.since} distance />
-														</span>
-													</div>
-												</div>
-
-												<dl class="kv">
-													<dt>Action</dt>
-													<dd>{alarm.action || 'No action label defined in PrometheusRule'}</dd>
-
-													<dt>Consequence</dt>
-													<dd>{alarm.consequence || 'No consequence defined in PrometheusRule'}</dd>
-
-													<dt>Value</dt>
-													<dd>{alarm.value}</dd>
-												</dl>
-											</div>
+											<PrometheusAlarmDetail {alarm} {i} />
 										{/each}
 									</div>
 								{:else}
@@ -148,7 +122,7 @@
 												alert.query
 											)}
 										>
-											Run in Prometheus
+											<span style="font-size: 16px;">Run in Prometheus</span>
 										</ExternalLink>
 										<CopyButton
 											text="Copy query"
@@ -169,7 +143,7 @@
 						{/if}
 					</details>
 				{/each}
-			</div>
+			</List>
 
 			<Pagination
 				page={page.pageInfo}
@@ -189,17 +163,6 @@
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 	}
-	.toolbar {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: var(--ax-space-4);
-	}
-
-	.list {
-		border: 1px solid var(--ax-border-neutral-subtle);
-		border-radius: 12px;
-		overflow: hidden;
-	}
 
 	details > summary {
 		list-style: none;
@@ -210,9 +173,6 @@
 
 	.item {
 		background: var(--ax-neutral-100);
-	}
-	.item + .item {
-		border-top: 1px solid var(--ax-border-neutral-subtle);
 	}
 
 	.head {
@@ -288,40 +248,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-10);
-	}
-	.alarm {
-		margin-bottom: var(--ax-space-16);
-		border-bottom: 1px solid var(--ax-border-neutral-subtle);
-	}
-	.alarm:last-child {
-		border-bottom: 0;
-	}
-	.alarm-head {
-		display: flex;
-		justify-content: space-between;
-	}
-	.heading-with-tag {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-8);
-	}
-
-	.kv {
-		display: grid;
-		grid-template-columns: minmax(4rem, 18rem) 1fr;
-		gap: var(--ax-space-2) var(--ax-space-6);
-		align-items: start;
-		margin-top: var(--ax-space-3);
-		font-size: 0.9rem;
-	}
-	.kv dt {
-		font-weight: 600;
-	}
-	.since {
-		color: var(--ax-text-neutral);
-		font-size: 0.9rem;
-		text-align: right;
 	}
 
 	.query-heading {

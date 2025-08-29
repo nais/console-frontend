@@ -46,5 +46,10 @@ query Alerts(
 				}
 			}
 		}
+		totalAlerts: alerts {
+			pageInfo {
+				totalCount
+			}
+		}
 	}
 }
