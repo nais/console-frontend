@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertOrderField } from '$houdini';
+	import CodeBlockPromQl from '$lib/components/CodeBlockPromQL.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
@@ -231,11 +232,11 @@
 										/>
 									</div>
 								</div>
-								<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-									<code>{alert.query}</code>
-									<span class="muted small for">
+								<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
+									<CodeBlockPromQl code={alert.query} />
+									<div class="muted small for">
 										<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
-									</span>
+									</div>
 								</div>
 							</div>
 						{/if}
@@ -327,18 +328,18 @@
 		color: var(--ax-text-neutral);
 	}
 	.small {
-		font-size: 12px;
+		font-size: 0.8rem;
+	}
+	.for {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-2);
 	}
 
 	.state {
 		display: flex;
 		align-items: center;
 		gap: 10px;
-	}
-	.for {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
 	}
 
 	.rule {
@@ -365,11 +366,5 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-4);
-	}
-
-	code {
-		overflow-wrap: anywhere;
-		word-break: break-word;
-		font-size: 0.9rem;
 	}
 </style>
