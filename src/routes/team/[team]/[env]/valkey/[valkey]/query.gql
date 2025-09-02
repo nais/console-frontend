@@ -85,6 +85,8 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 						}
 					}
 				}
+
+				...ValkeyManifestFragment
 			}
 		}
 	}
