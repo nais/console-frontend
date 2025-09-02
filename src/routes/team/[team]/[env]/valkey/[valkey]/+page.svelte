@@ -234,7 +234,7 @@
 				</div>
 			{/if}
 
-			<Manifest instanceName={instance.name} teamSlug={page.params.team!} />
+			<Manifest valkey={instance} teamSlug={page.params.team!} />
 		</div>
 	</div>
 {/if}
