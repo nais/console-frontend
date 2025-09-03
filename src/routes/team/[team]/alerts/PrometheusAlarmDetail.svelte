@@ -70,7 +70,7 @@
 
 	.kv {
 		display: grid;
-		grid-template-columns: minmax(4rem, 18rem) 1fr;
+		grid-template-columns: auto 1fr;
 		gap: var(--ax-space-2) var(--ax-space-6);
 		align-items: start;
 		margin-top: var(--ax-space-3);

@@ -40,7 +40,8 @@ export default ts.config(
 		rules: {
 			'svelte/require-each-key': 'error',
 			'svelte/valid-each-key': 'error',
-			'unicorn/prefer-at': 'error'
+			'unicorn/prefer-at': 'error',
+			'svelte/no-navigation-without-resolve': 'off'
 			/*'svelte/no-unused-class-name': 'error'*/
 		}
 	}
