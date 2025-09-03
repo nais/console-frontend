@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { TeamOrderField } from '$houdini';
+	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -111,15 +112,9 @@
 					</ToggleGroup>
 				</div>
 				{#if $CostMonthly.data}
-					<div class="h-[1000px]">
+					<LegendWrapper height="1000px">
 						<BarChart
-							legend={{
-								placement: 'top',
-								classes: {
-									root: 'mb-4 w-full -top-[1.5em]',
-									items: 'flex-wrap justify-center'
-								}
-							}}
+							legend={legendSnippet}
 							padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
 							data={tenantCostData}
 							x="date"
@@ -168,7 +163,7 @@
 								</Tooltip.Root>
 							{/snippet}
 						</BarChart>
-					</div>
+					</LegendWrapper>
 				{:else}
 					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 						<Loader size="3xlarge" />

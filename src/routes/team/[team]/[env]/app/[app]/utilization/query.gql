@@ -33,12 +33,14 @@ query ResourceUtilizationForApp(
 						createdAt
 						__typename
 						... on ApplicationScaledActivityLogEntry {
+							id
 							appScaled: data {
 								newSize
 								direction
 							}
 						}
 						... on DeploymentActivityLogEntry {
+							id
 							createdAt
 						}
 					}

@@ -47,6 +47,7 @@
 								item.services.forEach((service) => {
 									ret[service.service] = service.cost;
 								});
+								console.log(ret);
 								return ret;
 							})}
 						/>

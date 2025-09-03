@@ -172,6 +172,33 @@
 		);
 	});
 
+	const cpuChartData = $derived.by(() => {
+		return (
+			$ResourceUtilizationForApp.data?.team.environment.application.utilization.cpu_series
+				.reduce(
+					(acc, d) => {
+						const val = {
+							timestamp: d.timestamp,
+							value: d.value
+						};
+						const existing = acc.find((a) => a.key === d.instance);
+						if (existing) {
+							existing.data.push(val);
+						} else {
+							acc.push({
+								key: d.instance,
+								color: visualizationColors[acc.length % visualizationColors.length],
+								data: [val]
+							});
+						}
+						return acc;
+					},
+					[] as { key: string; color: string; data: { timestamp: Date; value: number }[] }[]
+				)
+				.filter((d) => d.data.length > 1) ?? []
+		);
+	});
+
 	const memoryMax = $derived.by(() => {
 		let max = Math.max(
 			...($ResourceUtilizationForApp.data?.team.environment.application.utilization.memory_series.map(
@@ -188,6 +215,31 @@
 		);
 
 		$ResourceUtilizationForApp.data?.team.environment.application.utilization.requested_memory_series.forEach(
+			(d) => {
+				if (d.value > max) {
+					max = d.value;
+				}
+			}
+		);
+		return max;
+	});
+
+	const cpuMax = $derived.by(() => {
+		let max = Math.max(
+			...($ResourceUtilizationForApp.data?.team.environment.application.utilization.cpu_series.map(
+				(d) => d.value
+			) ?? [])
+		);
+
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.limit_cpu_series.forEach(
+			(d) => {
+				if (d.value > max) {
+					max = d.value;
+				}
+			}
+		);
+
+		$ResourceUtilizationForApp.data?.team.environment.application.utilization.requested_cpu_series.forEach(
 			(d) => {
 				if (d.value > max) {
 					max = d.value;
@@ -556,19 +608,112 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<div class="h-[330px]">
-				<!-- <EChart
-					options={options(
-						utilization.cpu_series,
-						utilization.requested_cpu_series,
-						utilization.limit_cpu_series,
-						activityLog,
-						(value: number) =>
-							value == null
-								? '-'
-								: `${value.toLocaleString('en-GB', { maximumFractionDigits: 4 })} CPUs`
-					)}
-				/> -->
+			<div class="chart h-[330px]">
+				<AreaChart
+					series={cpuChartData}
+					x="timestamp"
+					y="value"
+					brush={{
+						onBrushEnd(detail) {
+							brushXDomain = detail.xDomain as [Date, Date];
+						}
+					}}
+					yDomain={[0, cpuMax]}
+					xDomain={[
+						$ResourceUtilizationForApp.variables?.start,
+						$ResourceUtilizationForApp.variables?.end
+					]}
+					props={{
+						yAxis: {
+							// format: prettyBytes
+						},
+						highlight: {
+							points: false
+						},
+						area: {
+							motion: 'none'
+						}
+					}}
+					{annotations}
+				>
+					{#snippet aboveMarks()}
+						<AnnotationSeries
+							data={utilization.requested_cpu_series}
+							colorClass="stroke-warning [stroke-dasharray:2,2]"
+							label="Request"
+							labelColorClass="fill-warning"
+						/>
+						<AnnotationSeries
+							data={utilization.limit_cpu_series}
+							colorClass="stroke-danger [stroke-dasharray:2,2]"
+							label="Limit"
+							labelColorClass="fill-danger"
+							labelPosition="below"
+						/>
+					{/snippet}
+					{#snippet tooltip({ context })}
+						<Tooltip.Root>
+							{#snippet children({ data, payload })}
+								{#if data.annotation}
+									{@const log = data.annotation.details as groupedLogs}
+									{#each log.logs as l (l.id)}
+										<div class="whitespace-nowrap">
+											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
+											{#if l.__typename == 'DeploymentActivityLogEntry'}
+												New release
+											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
+												Scaled {l.appScaled.direction} to
+												{l.appScaled.newSize}
+											{:else}
+												{l.__typename}
+											{/if}
+										</div>
+									{/each}
+								{:else}
+									{@const request = utilization.requested_cpu_series.find(
+										(d) => d.timestamp.getTime() === context.x(data).getTime()
+									)?.value}
+									{@const limit = utilization.limit_cpu_series.find(
+										(d) => d.timestamp.getTime() === context.x(data).getTime()
+									)?.value}
+									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
+									<Tooltip.List>
+										{#each payload.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
+											<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
+												{p.value.toFixed(3)}
+											</Tooltip.Item>
+										{/each}
+										{#if request || limit}
+											<Tooltip.Separator />
+										{/if}
+										{#if request}
+											<Tooltip.Item
+												label="Request"
+												color="var(--color-warning)"
+												value={request}
+												format={(v) => {
+													return v.toFixed(3);
+												}}
+												valueAlign="right"
+											/>
+										{/if}
+										{#if limit}
+											<Tooltip.Item
+												label="Limit"
+												color="var(--color-danger)"
+												value={limit}
+												format={(v) => {
+													return v.toFixed(3);
+												}}
+												valueAlign="right"
+											/>
+										{/if}
+									</Tooltip.List>
+								{/if}
+							{/snippet}
+						</Tooltip.Root>
+					{/snippet}
+				</AreaChart>
 			</div>
 			<ReadMore header="Analyzing Your CPU Usage">
 				<BodyLong>
@@ -663,12 +808,16 @@
 		padding: var(--ax-space-8) var(--ax-space-32);
 	}
 
-	.chart :global(.annotation) {
-		background-color: var(--ax-bg-neutral-strong);
-	}
+	.chart {
+		margin-top: var(--ax-space-16);
 
-	.chart :global(.annotation-text) {
-		fill: var(--ax-text-neutral-contrast);
-		font-size: 10px;
+		:global(.annotation) {
+			background-color: var(--ax-bg-neutral-strong);
+		}
+
+		:global(.annotation-text) {
+			fill: var(--ax-text-neutral-contrast);
+			font-size: 10px;
+		}
 	}
 </style>
