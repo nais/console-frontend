@@ -19,7 +19,7 @@
 
 	// Combine all data points where the value is the same
 	const combinedData: { from: Date; to: Date; value: number }[] = $derived.by(() => {
-		const results: { from: Date; to: Date; value: number }[] = [];
+		let results: { from: Date; to: Date; value: number }[] = [];
 		let currentFrom: Date | null = null;
 		let currentValue: number | null = null;
 		for (const item of data) {
@@ -34,37 +34,25 @@
 		if (currentFrom !== null && currentValue !== null && data.length > 0) {
 			results.push({ from: currentFrom, to: data.at(-1)!.timestamp, value: currentValue });
 		}
+
+		// Ensure all data points are within the xDomain
+		if (ctx.xDomain) {
+			const xMin = ctx.xDomain[0] as unknown as Date;
+			const xMax = ctx.xDomain[1] as unknown as Date;
+
+			results = results.filter((item) => item.to >= xMin && item.from <= xMax);
+
+			results.forEach((item) => {
+				if (item.from < xMin) {
+					item.from = xMin;
+				}
+				if (item.to > xMax) {
+					item.to = xMax;
+				}
+			});
+		}
 		return results;
 	});
-
-	// {
-	// 	x:
-	// 		(labelPlacement.includes('left')
-	// 			? line.x1
-	// 			: labelPlacement.includes('right')
-	// 				? line.x2
-	// 				: (line.x2 - line.x1) / 2) +
-	// 		(['left', 'top-right', 'bottom-right'].includes(labelPlacement)
-	// 			? -labelXOffset
-	// 			: labelXOffset),
-	// 	y: line.y1 + (labelPlacement.includes('top') ? -labelYOffset : labelYOffset),
-	// 	dy: -2, // adjust for smaller font size
-	// 	textAnchor:
-	// 		labelPlacement === 'left'
-	// 			? 'end' // place beside line
-	// 			: labelPlacement === 'right'
-	// 				? 'start' // place beside line
-	// 				: labelPlacement.includes('left')
-	// 					? 'start'
-	// 					: labelPlacement.includes('right')
-	// 						? 'end'
-	// 						: 'middle',
-	// 	verticalAnchor: labelPlacement.includes('top')
-	// 		? 'end'
-	// 		: labelPlacement.includes('bottom')
-	// 			? 'start'
-	// 			: 'middle'
-	// }
 
 	function labelProps(item: (typeof combinedData)[number]) {
 		// Label placement is right
@@ -84,33 +72,14 @@
 		y1={ctx.yScale(item.value)}
 		x2={ctx.xScale(item.to)}
 		y2={ctx.yScale(item.value)}
-		class={['stroke-surface-content asdfasdf', colorClass]}
+		class={['stroke-surface-content', colorClass]}
 	/>
-	<!-- <g class="lc-annotation-series asdfasdf">
-		<line
-			x1={ctx.xScale(item.from)}
-			y1={ctx.yScale(item.value)}
-			x2={ctx.xScale(item.to)}
-			y2={ctx.yScale(item.value)}
-			stroke="currentColor"
-			stroke-width="2"
-		/>
-		<text
-			x={(ctx.xScale(item.from) + ctx.xScale(item.to)) / 2}
-			y={ctx.yScale(item.value) - 5}
-			text-anchor="middle"
-			fill="currentColor"
-			font-size="12"
-		>
-			{item.value}
-		</text>
-	</g> -->
 
 	{#if i == combinedData.length - 1 && label}
 		<Text
 			value={label}
 			{...labelProps(item)}
-			class={['pointer-events-none text-xs', labelColorClass, 'asdfasdf']}
+			class={['pointer-events-none text-xs', labelColorClass]}
 		/>
 	{/if}
 {/each}

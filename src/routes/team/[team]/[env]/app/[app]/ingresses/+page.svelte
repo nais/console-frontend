@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	// import EChart from '$lib/chart/EChart.svelte';
+	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
-	// import type { EChartsOption } from 'echarts';
-	// import type { CallbackDataParams } from 'echarts/types/dist/shared';
-	import { tick } from 'svelte';
+	import { LineChart } from 'layerchart';
+	import { tick, type ComponentProps } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -30,101 +29,20 @@
 		};
 	};
 
-	export function options(input: Series): EChartsOption {
-		const toPoints = (arr: Metric[]) =>
-			(arr ?? [])
-				.map((m) => [m.timestamp.getTime(), m.value] as [number, number])
-				.sort((a, b) => a[0] - b[0]);
-
-		const rpsData = toPoints(input.metrics.rps);
-		const epsData = toPoints(input.metrics.eps);
-
-		const fmtTime = (ms: number) =>
-			new Date(ms).toLocaleString('en-GB', {
-				year: 'numeric',
-				month: '2-digit',
-				day: '2-digit',
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-				hour12: false
-			});
-		const fmtNum = (n: number | undefined) =>
-			n !== undefined && Number.isFinite(n) ? (n as number).toFixed(2) : '-';
-
-		const getX = (p: CallbackDataParams): number | undefined => {
-			const d = p.data as unknown;
-			if (Array.isArray(d) && d.length >= 2) {
-				const xv = d[0] as number | string;
-				return typeof xv === 'number' ? xv : Date.parse(String(xv));
-			}
-			const v = p.value as unknown;
-			if (Array.isArray(v) && v.length >= 2) {
-				const xv = v[0] as number | string;
-				return typeof xv === 'number' ? xv : Date.parse(String(xv));
-			}
-			return undefined;
-		};
-
-		const getY = (p: CallbackDataParams): number | undefined => {
-			const d = p.data as unknown;
-			if (Array.isArray(d) && d.length >= 2) return Number(d[1] as number);
-			const v = p.value as unknown;
-			if (Array.isArray(v) && v.length >= 2) return Number(v[1] as number);
-			if (typeof p.value === 'number') return p.value;
-			return undefined;
-		};
+	function options(input: Series): ComponentProps<LineChart<unknown>> {
+		const rpsData = input.metrics.rps;
+		const epsData = input.metrics.eps;
 
 		return {
-			grid: { left: 120 },
-			legend: { data: ['req/s', 'err/s'], top: 0 },
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: { type: 'cross' },
-				formatter: (params: CallbackDataParams | CallbackDataParams[]) => {
-					const list = Array.isArray(params) ? params : [params];
-					const t = getX(list[0]!);
-					const header = t !== undefined ? fmtTime(t) : '';
-
-					const lines = list.map((p) => {
-						const marker = (p as unknown as { marker?: string }).marker ?? '';
-						return `${marker} ${p.seriesName}&nbsp;&nbsp;<b>${fmtNum(getY(p))}</b>`;
-					});
-
-					return [header, ...lines].filter(Boolean).join('<br/>');
-				}
-			},
-			xAxis: { type: 'time', boundaryGap: [0, 0] },
-			yAxis: [
-				{ type: 'value', name: 'req/s', min: 0, alignTicks: true },
-				{ type: 'value', name: 'err/s', min: 0, alignTicks: true }
-			],
-			dataZoom: [{ type: 'inside', throttle: 50 }, { type: 'slider' }],
 			series: [
 				{
-					name: 'req/s',
+					key: 'req/s',
 					color: '#236B7D', // --a-lightblue-800
-					type: 'line',
-					yAxisIndex: 0,
-					showSymbol: false,
-					smooth: 0.2,
-					connectNulls: true,
-					sampling: 'lttb',
-					emphasis: { focus: 'series' },
-					encode: { x: 0, y: 1, tooltip: [1] },
 					data: rpsData
 				},
 				{
-					name: 'err/s',
+					key: 'err/s',
 					color: '#F25C5C', //--a-red-300
-					type: 'line',
-					yAxisIndex: 1,
-					showSymbol: false,
-					smooth: 0.2,
-					connectNulls: true,
-					sampling: 'lttb',
-					emphasis: { focus: 'series' },
-					encode: { x: 0, y: 1, tooltip: [1] },
 					data: epsData
 				}
 			]
@@ -188,6 +106,7 @@
 		</div>
 		{#each Object.entries(Object.groupBy($IngressMetrics.data.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
 			{#each ingresses as ingress (ingress.url)}
+				{(() => console.log(options(ingress)))()}
 				<div class="section" id={ingress.url}>
 					<IconLabel size="large" level="2" label={ingress.url}>
 						{#snippet icon()}
@@ -208,7 +127,28 @@
 					</IconLabel>
 
 					<div class="chart-wrapper">
-						<EChart options={options(ingress)} />
+						<!-- <EChart options={options(ingress)} /> -->
+						<LegendWrapper height="300px">
+							<LineChart
+								{...options(ingress)}
+								padding={{ left: 40 }}
+								brush={true}
+								x="timestamp"
+								y="value"
+								legend={legendSnippet}
+								props={{
+									spline: {
+										class: 'stroke-2'
+									},
+									tooltip: {
+										hideTotal: true
+									},
+									xAxis: {
+										format: 'day'
+									}
+								}}
+							/>
+						</LegendWrapper>
 					</div>
 				</div>
 			{/each}

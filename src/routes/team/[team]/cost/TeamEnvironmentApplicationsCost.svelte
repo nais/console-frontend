@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter } from '$lib/chart/util';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
@@ -120,38 +121,40 @@
 			</div>
 
 			{#if env.series.length > 0}
-				<div class="mt-5 mb-12 h-[500px]">
-					<LineChart
-						padding={{ left: 40 }}
-						legend={{ placement: 'top' }}
-						series={env.series.map((item, i) => {
-							return {
-								key: item.name!,
-								color: visualizationColors[i % visualizationColors.length],
-								data: item.data.map(([date, value]) => ({
-									date: new Date(date as number),
-									value
-								}))
-							};
-						})}
-						x="date"
-						y="value"
-						props={{
-							spline: {
-								class: 'stroke-2'
-							},
-							yAxis: {
-								format: euroAxisFormatter
-							},
-							xAxis: {
-								format: 'day'
-							}
-						}}
-					/>
+				<div class="mt-5 mb-12">
+					<LegendWrapper height="500px">
+						<LineChart
+							padding={{ left: 40 }}
+							legend={legendSnippet}
+							series={env.series.map((item, i) => {
+								return {
+									key: item.name!,
+									color: visualizationColors[i % visualizationColors.length],
+									data: item.data.map(([date, value]) => ({
+										date: new Date(date as number),
+										value
+									}))
+								};
+							})}
+							x="date"
+							y="value"
+							props={{
+								spline: {
+									class: 'stroke-2'
+								},
+								yAxis: {
+									format: euroAxisFormatter
+								},
+								xAxis: {
+									format: 'day'
+								}
+							}}
+						/>
+					</LegendWrapper>
 				</div>
+			{:else}
+				<BodyLong>No application cost data available</BodyLong>
 			{/if}
-		{:else}
-			<BodyLong>No application cost data available</BodyLong>
 		{/each}
 	{/if}
 </div>
