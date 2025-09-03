@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import JobLogs from './JobLogs.svelte';
 
 	let { data }: PageProps = $props();

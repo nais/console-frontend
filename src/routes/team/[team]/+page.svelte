@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { AlertState } from '$houdini';
 	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
+	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
@@ -10,7 +12,6 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -47,6 +48,22 @@
 <div class="wrapper">
 	<div class="left">
 		<div class="alerts-wrapper">
+			{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
+				<PrometheusAlert
+					{teamSlug}
+					alerts={$TeamOverview.data?.team.firingAlerts.nodes}
+					collapsible={false}
+					alertsState={AlertState.FIRING}
+				/>
+			{/if}
+			{#if $TeamOverview.data?.team.pendingAlerts.pageInfo.totalCount}
+				<PrometheusAlert
+					{teamSlug}
+					alerts={$TeamOverview.data?.team.pendingAlerts.nodes}
+					collapsible={false}
+					alertsState={AlertState.PENDING}
+				/>
+			{/if}
 			{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
 				{#if errors.workloads?.length && errors.level}
 					<TeamErrorMessage
@@ -66,9 +83,7 @@
 		</div>
 		<div class="deployments">
 			<Heading size="small" level="2"
-				>Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments for {capitalizeFirstLetter(
-					teamSlug
-				)}</Heading
+				>Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments for {teamSlug}</Heading
 			>
 			{#if $TeamOverview.data?.team.deployments.pageInfo.totalCount === 0}
 				<BodyLong spacing>

@@ -3,6 +3,7 @@
 /** @type {import('houdini').ConfigFile} */
 
 const config = {
+	runtimeDir: '.houdini',
 	defaultPaginateMode: 'SinglePage',
 	watchSchema: {
 		interval: 0,

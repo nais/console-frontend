@@ -11,7 +11,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Detail, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 	import VulnerabilityHistory from './VulnerabilityHistory.svelte';
 	import VulnerabilityLeaderBoard from './VulnerabilityLeaderBoard.svelte';
 

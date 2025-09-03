@@ -1,0 +1,370 @@
+<script lang="ts">
+	import { page } from '$app/state';
+	import { AlertOrderField } from '$houdini';
+	import CodeBlockPromQl from '$lib/components/CodeBlockPromQL.svelte';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import { formatSeconds } from '$lib/components/vulnerability/dateUtils';
+	import { docURL } from '$lib/doc';
+	import { envTagVariant } from '$lib/envTagVariant';
+	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
+	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
+	import {
+		ChevronDownIcon,
+		ChevronRightIcon,
+		ClockDashedIcon
+	} from '@nais/ds-svelte-community/icons';
+	import type { PageProps } from './$types';
+	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
+
+	let { data }: PageProps = $props();
+	let { Alerts, tenantName } = $derived(data);
+
+	let filter = $state($Alerts.variables?.filter?.name ?? '');
+
+	let after: string = $derived($Alerts.variables?.after ?? '');
+	let before: string = $derived($Alerts.variables?.before ?? '');
+
+	function makePrometheusQueryUrl(baseUrl: string, query: string): string {
+		const cleanBase = baseUrl.replace(/\/+$/, '');
+		const params = new URLSearchParams({
+			'g0.expr': query,
+			'g0.show_tree': '0',
+			'g0.tab': 'table',
+			'g0.range_input': '1h',
+			'g0.res_type': 'auto',
+			'g0.res_density': 'medium',
+			'g0.display_mode': 'lines',
+			'g0.show_exemplars': '0'
+		});
+		return `${cleanBase}/query?${params.toString()}`;
+	}
+
+	const allEnvs = $derived(
+		$Alerts.data?.team.environments.map((env) => env.environment.name) ?? []
+	);
+
+	let filteredEnvs = $derived(
+		page.url.searchParams.get('environments') === 'none'
+			? []
+			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
+	);
+
+	$effect(() => {
+		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+
+		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
+			changeQuery({ environments });
+		}
+	});
+
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+			newFilter?: string;
+			environments?: string;
+		} = {}
+	) => {
+		changeParams({
+			before: params.before ?? before,
+			after: params.after ?? after,
+			filter: params.newFilter ?? filter,
+			environments: params.environments ?? ''
+		});
+	};
+</script>
+
+<div class="wrapper">
+	<div>
+		<BodyLong spacing>
+			{#if $Alerts.data?.team.alerts.pageInfo.totalCount == 0}
+				<strong>No alerts found.</strong> Alerts notify you when something needs your attention.
+				<ExternalLink href={docURL('/observability/alerting')}
+					>Learn more about alerts and how to get started.</ExternalLink
+				>
+			{:else}
+				Alerts notify you when something needs your attention.
+				<ExternalLink href={docURL('/observability/alerting')}
+					>Learn more about alerts and how to get started.</ExternalLink
+				>
+			{/if}
+		</BodyLong>
+		{#if $Alerts.data?.team.totalAlerts?.pageInfo?.totalCount ?? 0 > 0}
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						changeQuery({ newFilter: filter });
+					}}
+				>
+					<Search
+						clearButton={true}
+						clearButtonLabel="Clear"
+						label="filter alerts"
+						placeholder="Filter by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							changeQuery({ newFilter: '' });
+						}}
+					/>
+				</form>
+			</div>
+		{/if}
+
+		{#if $Alerts.data && $Alerts.data?.team.alerts.pageInfo.totalCount > 0}
+			{@const page = $Alerts.data.team.alerts}
+
+			<List
+				title="{page.pageInfo.totalCount} alert rule{page.pageInfo.totalCount !== 1 ? 's' : ''}
+						{page.pageInfo.totalCount !== $Alerts.data.team.totalAlerts.pageInfo.totalCount
+					? `(of total ${$Alerts.data.team.totalAlerts.pageInfo.totalCount})`
+					: ''}"
+			>
+				{#snippet menu()}
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								iconPosition="right"
+								{...props}
+								icon={ChevronDownIcon}
+							>
+								<span style="font-weight: normal">Environment</span>
+							</Button>
+						{/snippet}
+						<ActionMenuCheckboxItem
+							checked={$Alerts.data?.team.environments.every((env) =>
+								filteredEnvs.includes(env.environment.name)
+							)
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $Alerts.data?.team.environments ?? [] as { environment, id } (id)}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(environment.name)}
+								onchange={(checked) =>
+									(filteredEnvs = checked
+										? [...filteredEnvs, environment.name]
+										: filteredEnvs.filter((env) => env !== environment.name))}
+							>
+								{environment.name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenu>
+					<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
+				{/snippet}
+				{#each page.nodes as alert (alert.id)}
+					<details class="item">
+						<summary class="head">
+							<div class="chev">
+								<ChevronRightIcon />
+							</div>
+							<div class="titleblock">
+								<div class="titleline">
+									<Heading size="xsmall" level="2" title={alert.name}>{alert.name}</Heading>
+								</div>
+								<div class="subtitle">
+									<Tag size="small" variant={envTagVariant(alert.teamEnvironment.environment.name)}>
+										{alert.teamEnvironment.environment.name}
+									</Tag>
+								</div>
+							</div>
+
+							<div class="state">
+								{#if alert.alarms.filter((a) => a.state === 'FIRING').length > 0}
+									<Tag variant="error" size="small">
+										FIRING ({alert.alarms.filter((a) => a.state === 'FIRING').length})
+									</Tag>
+								{/if}
+								{#if alert.alarms.filter((a) => a.state === 'PENDING').length > 0}
+									<Tag variant="warning" size="small">
+										PENDING ({alert.alarms.filter((a) => a.state === 'PENDING').length})
+									</Tag>
+								{/if}
+							</div>
+						</summary>
+
+						{#if alert.__typename === 'PrometheusAlert'}
+							<div class="rule">
+								{#if alert.alarms.length > 0}
+									<div class="alarms">
+										{#each alert.alarms as alarm, i (alarm)}
+											<PrometheusAlarmDetail {alarm} {i} />
+										{/each}
+									</div>
+								{:else}
+									<div class="muted">No alerts firing</div>
+								{/if}
+
+								<div class="query-heading">
+									<Heading level="2" size="xsmall">Query</Heading>
+									<div class="query-actions">
+										<ExternalLink
+											href={makePrometheusQueryUrl(
+												`https://prometheus.${alert.teamEnvironment.environment.name}.${tenantName}.cloud.nais.io`,
+												alert.query
+											)}
+										>
+											<span style="font-size: 16px;">Run in Prometheus</span>
+										</ExternalLink>
+										<CopyButton
+											text="Copy query"
+											activeText="Query copied"
+											variant="action"
+											copyText={alert.query}
+											size="xsmall"
+										/>
+									</div>
+								</div>
+								<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
+									<CodeBlockPromQl code={alert.query} />
+									<div class="muted small for">
+										<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
+									</div>
+								</div>
+							</div>
+						{/if}
+					</details>
+				{/each}
+			</List>
+
+			<Pagination
+				page={page.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeQuery({ before: page.pageInfo.startCursor ?? '', after: '' }),
+					loadNextPage: () => changeQuery({ after: page.pageInfo.endCursor ?? '', before: '' })
+				}}
+			/>
+		{/if}
+	</div>
+</div>
+
+<style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+	.search {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
+	}
+
+	details > summary {
+		list-style: none;
+	}
+	details > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.item {
+		background: var(--ax-neutral-100);
+	}
+
+	.head {
+		display: grid;
+		grid-template-columns: 22px 1fr auto;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 14px;
+		cursor: pointer;
+		padding: 10px 14px;
+	}
+
+	.item:not([open]) > summary.head:hover {
+		box-shadow: inset 0 0 0 9999px var(--ax-neutral-300);
+		transition: box-shadow 0.12s ease;
+	}
+
+	.item[open] > summary.head {
+		background-color: var(--ax-neutral-300);
+	}
+
+	.chev {
+		width: 16px;
+		height: 16px;
+		color: var(--ax-text-neutral);
+		transition: transform 0.18s ease;
+	}
+	.item[open] .chev {
+		transform: rotate(90deg);
+	}
+
+	.titleblock {
+		min-width: 0;
+	}
+	.titleline {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	.subtitle {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 2px;
+	}
+	.muted {
+		color: var(--ax-text-neutral);
+	}
+	.small {
+		font-size: 0.8rem;
+	}
+	.for {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-2);
+	}
+
+	.state {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.rule {
+		padding: 12px 14px 14px calc(14px + 22px);
+		background: var(--ax-bg-subtle);
+		border-top: 1px dashed var(--ax-border-neutral-subtle);
+	}
+
+	.alarms {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-10);
+	}
+
+	.query-heading {
+		margin-top: var(--ax-space-8);
+		margin-bottom: var(--ax-space-8);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		word-break: break-word;
+	}
+	.query-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+</style>

@@ -24,7 +24,7 @@
 	} from '@nais/ds-svelte-community';
 	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 

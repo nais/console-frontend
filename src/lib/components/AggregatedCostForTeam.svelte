@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import CostChart from '$lib/chart/CostChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { capitalizeFirstLetter, euroValueFormatter } from '$lib/utils/formatters';
+	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
 
 	const costQuery = graphql(`
@@ -51,9 +51,7 @@
 
 <div class="wrapper">
 	<div class="header">
-		<Heading level="4" size="small" spacing
-			>Aggregated Cost for {capitalizeFirstLetter(teamSlug)}</Heading
-		>
+		<Heading level="4" size="small" spacing>Aggregated Cost for {teamSlug}</Heading>
 		<HelpText title="Aggregated team cost"
 			>Aggregated cost for team. Current month is estimated.</HelpText
 		>

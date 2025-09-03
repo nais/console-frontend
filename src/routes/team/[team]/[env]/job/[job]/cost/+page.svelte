@@ -4,7 +4,7 @@
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
 	const { JobCost, interval } = $derived(data);

@@ -35,7 +35,7 @@
 	import { visualizationColors } from '$lib/visualizationColors';
 	import { AreaChart, Tooltip, type ChartAnnotations } from 'layerchart';
 	import prettyBytes from 'pretty-bytes';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { ResourceUtilizationForApp } = $derived(data);

@@ -157,12 +157,10 @@
 				<Pagination
 					page={secrets.pageInfo}
 					loaders={{
-						loadPreviousPage: () => {
-							Secrets.loadPreviousPage();
-						},
-						loadNextPage: () => {
-							Secrets.loadNextPage();
-						}
+						loadPreviousPage: () =>
+							changeParams({ after: '', before: secrets.pageInfo.startCursor ?? '' }),
+						loadNextPage: () =>
+							changeParams({ before: '', after: secrets.pageInfo.endCursor ?? '' })
 					}}
 				/>
 			</div>
