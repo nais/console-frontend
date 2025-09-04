@@ -1715,6 +1715,11 @@ type ImageVulnerability implements Node {
   """Analysis trail of the vulnerability."""
   analysisTrail: ImageVulnerabilityAnalysisTrail!
 
+  """
+  Timestamp of when the vulnerability was marked as critical, or null if never marked as critical.
+  """
+  criticalSince: Time
+
   """Description of the vulnerability."""
   description: String!
 
@@ -5998,20 +6003,6 @@ type TeamUtilizationData {
   used: Float!
 }
 
-enum TeamVulnerabilityRanking {
-  """Bottom third most vulnerable teams."""
-  LEAST_VULNERABLE
-
-  """Middle third most vulnerable teams."""
-  MIDDLE
-
-  """Top third most vulnerable teams."""
-  MOST_VULNERABLE
-
-  """Unknown ranking."""
-  UNKNOWN
-}
-
 enum TeamVulnerabilityRiskScoreTrend {
   """Risk score is decreasing."""
   DOWN
@@ -6044,9 +6035,6 @@ type TeamVulnerabilitySummary {
 
   """Number of vulnerabilities with severity MEDIUM."""
   medium: Int!
-
-  """Ranking of the team based on vulnerability severity."""
-  ranking: TeamVulnerabilityRanking!
 
   """Risk score of the team."""
   riskScore: Int!

@@ -139,7 +139,6 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			critical
 			riskScore
 			riskScoreTrend
-			ranking
 			lastUpdated
 		}
 		...SidebarActivityLogFragment @with(limit: 15) @mask_disable
