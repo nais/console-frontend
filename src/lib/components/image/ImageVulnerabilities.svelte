@@ -6,6 +6,7 @@
 		type ImageVulnerabilityOrderField$options
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
+	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import {
@@ -60,6 +61,7 @@
 									identifier
 									package
 									severity
+									severitySince
 									state
 									analysisTrail {
 										state
@@ -164,9 +166,10 @@
 					>ID</Th
 				>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
-				<Th style="width: 7rem " sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
+				<Th style="width: 7rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
 					>Severity</Th
 				>
+				<Th style="width: 13rem">Since</Th>
 				<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
 					>Suppressed</Th
 				>
@@ -178,7 +181,6 @@
 			{#each vulnz as v (v)}
 				<Tr>
 					<Td>
-						<!--{#if authorized}-->
 						<Button
 							variant="tertiary"
 							size="xsmall"
@@ -189,9 +191,6 @@
 						>
 							<code>{v.identifier}</code>
 						</Button>
-						<!--{:else}
-							<code>{v.identifier}</code>
-						{/if}-->
 					</Td>
 					<Td><code>{v.package}</code></Td>
 					<Td
@@ -202,6 +201,13 @@
 							})}">{v.severity}</code
 						></Td
 					>
+					<Td>
+						{#if v.severitySince}
+							<Time time={v.severitySince} dateFormat="yyyy-MM-dd" />
+						{:else}
+							—
+						{/if}
+					</Td>
 					<Td style="text-align: center">
 						{#if v.analysisTrail.suppressed}
 							<CheckmarkIcon width="18px" height="18px" />

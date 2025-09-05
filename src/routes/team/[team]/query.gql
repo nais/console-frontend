@@ -1,4 +1,4 @@
-query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
+query TeamOverview($team: Slug!, $severitySince: Time!) @cache(policy: NetworkOnly) {
 	currentUnitPrices {
 		cpu {
 			value
@@ -79,9 +79,22 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 
-		workloads {
+		workloads(filter: { statusErrorTypes: [VULNERABLE] }) {
 			pageInfo {
 				totalCount
+			}
+
+			nodes {
+				id
+				image {
+					vulnerabilities(filter: { severity: CRITICAL, severitySince: $severitySince }) {
+						nodes {
+							id
+							severity
+							severitySince
+						}
+					}
+				}
 			}
 		}
 
