@@ -6,6 +6,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import CreatePage from '../opensearch/create/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { OpenSearch } = $derived(data);
@@ -24,6 +25,12 @@
 		pageInfo={$OpenSearch.data.team.openSearches.pageInfo}
 		orderField={OpenSearchOrderField}
 		defaultOrderField={OpenSearchOrderField.NAME}
+		create={{
+			buttonText: 'Create OpenSearch',
+			url: `/team/${$OpenSearch.data.team.slug}/opensearch/create`,
+			page: CreatePage,
+			header: 'Create OpenSearch'
+		}}
 	>
 		{#snippet description()}
 			<BodyLong spacing>
