@@ -2843,6 +2843,7 @@ type OpenSearch implements Node & Persistence {
 
   """Fetch maintenances updates for the OpenSearch instance."""
   maintenance: OpenSearchMaintenance!
+  majorVersion: OpenSearchMajorVersion!
   name: String!
   size: OpenSearchSize!
   status: OpenSearchStatus!
