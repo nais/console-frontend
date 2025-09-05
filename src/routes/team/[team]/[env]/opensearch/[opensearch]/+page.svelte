@@ -18,8 +18,10 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import Manifest from './Manifest.svelte';
+	import { page } from '$app/state';
 
 	const runServiceMaintenance = graphql(`
 		mutation runOpenSearchMaintenance(
@@ -95,6 +97,27 @@
 
 	<div class="wrapper">
 		<div>
+			<div class="button">
+				<Button
+					as="a"
+					variant="secondary"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params.opensearch}/edit"
+					icon={PencilIcon}
+				>
+					Edit OpenSearch
+				</Button>
+				<Button
+					as="a"
+					variant="danger"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+						.opensearch}/delete"
+					icon={TrashIcon}
+				>
+					Delete OpenSearch
+				</Button>
+			</div>
 			<div class="spacing">
 				<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
 
@@ -191,6 +214,11 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 			<div>
+				<Heading level="3">Settings</Heading>
+				<BodyShort>Tier: {instance.tier}</BodyShort>
+				<BodyShort>Size: {instance.size}</BodyShort>
+			</div>
+			<div>
 				<Heading level="3">Version</Heading>
 				<BodyShort>{instance.version.actual ?? 'Unknown'}</BodyShort>
 			</div>
@@ -201,6 +229,8 @@
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>
 			{/if}
+
+			<Manifest instanceName={instance.name} teamSlug={page.params.team!} />
 		</div>
 	</div>
 {/if}
@@ -226,5 +256,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.button {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--ax-space-8);
 	}
 </style>
