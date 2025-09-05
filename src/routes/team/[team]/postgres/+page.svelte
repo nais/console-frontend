@@ -79,7 +79,8 @@
 											PENDING_DELETE: 'PENDING_DELETE',
 											RUNNABLE: 'RUNNABLE',
 											SUSPENDED: 'SUSPENDED',
-											UNSPECIFIED: 'UNSPECIFIED'
+											UNSPECIFIED: 'UNSPECIFIED',
+											STOPPED: 'STOPPED'
 										}[instance.state] ?? ''}
 									>
 										<CircleFillIcon
@@ -90,7 +91,8 @@
 												PENDING_CREATE: 'info',
 												PENDING_DELETE: 'info',
 												SUSPENDED: 'info',
-												UNSPECIFIED: 'info'
+												UNSPECIFIED: 'info',
+												STOPPED: 'info'
 											}[instance.state] ?? 'info'}-decoration); font-size: 0.7rem"
 										/>
 									</TooltipAlignHack>
