@@ -162,17 +162,11 @@
 	>
 		<Thead>
 			<Tr>
-				<Th style="width: 13rem" sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}
-					>ID</Th
-				>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}>ID</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
-				<Th style="width: 7rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}
-					>Severity</Th
-				>
-				<Th style="width: 13rem">Since</Th>
-				<Th style="width: 3rem" sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}
-					>Suppressed</Th
-				>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}>Severity</Th>
+				<Th>Since</Th>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}>Suppressed</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
 			</Tr>
 		</Thead>
