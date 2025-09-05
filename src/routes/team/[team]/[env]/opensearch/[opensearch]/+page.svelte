@@ -230,7 +230,7 @@
 				</div>
 			{/if}
 
-			<Manifest instanceName={instance.name} teamSlug={page.params.team!} />
+			<Manifest openSearch={instance} teamSlug={page.params.team!} />
 		</div>
 	</div>
 {/if}
