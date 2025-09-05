@@ -1041,6 +1041,9 @@ type ContainerImage implements Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filter the vulnerabilities."""
+    filter: ImageVulnerabilityFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -1522,6 +1525,16 @@ enum DeploymentStatusState {
   SUCCESS
 }
 
+type DeprecatedIngressIssue implements Issue & Node {
+  application: Application!
+  environment: String!
+  id: ID!
+  ingresses: [String!]!
+  message: String!
+  severity: Severity!
+  team: Slug!
+}
+
 input DisableReconcilerInput {
   """The name of the reconciler to disable."""
   name: String!
@@ -1715,11 +1728,6 @@ type ImageVulnerability implements Node {
   """Analysis trail of the vulnerability."""
   analysisTrail: ImageVulnerabilityAnalysisTrail!
 
-  """
-  Timestamp of when the vulnerability was marked as critical, or null if never marked as critical.
-  """
-  criticalSince: Time
-
   """Description of the vulnerability."""
   description: String!
 
@@ -1734,6 +1742,9 @@ type ImageVulnerability implements Node {
 
   """Severity of the vulnerability."""
   severity: ImageVulnerabilitySeverity!
+
+  """Timestamp of when the vulnerability got its current severity."""
+  severitySince: Time
 
   """State of the vulnerability."""
   state: ImageVulnerabilityState!
@@ -1820,6 +1831,13 @@ type ImageVulnerabilityEdge {
 
   """The image vulnerability."""
   node: ImageVulnerability!
+}
+
+"""Input for filtering image vulnerabilities."""
+input ImageVulnerabilityFilter {
+  """Only return vulnerabilities with the given severity."""
+  severity: ImageVulnerabilitySeverity
+  severitySince: Time
 }
 
 type ImageVulnerabilityHistory {
@@ -1953,6 +1971,80 @@ enum IngressType {
   EXTERNAL
   INTERNAL
   UNKNOWN
+}
+
+interface Issue {
+  environment: String!
+  id: ID!
+  message: String!
+  severity: Severity!
+  team: Slug!
+}
+
+type IssueConnection {
+  """List of edges."""
+  edges: [IssueEdge!]!
+
+  """List of nodes."""
+  nodes: [Issue!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+type IssueEdge {
+  """Cursor for this edge that can be used for pagination."""
+  cursor: Cursor!
+
+  """The Issue."""
+  node: Issue!
+}
+
+input IssueFilter {
+  """Filter by environment."""
+  environments: [String!]
+
+  """Filter by issue type."""
+  issueType: IssueType
+
+  """Filter by resource type."""
+  resourceType: ResourceType
+
+  """Filter by severity."""
+  severity: Severity
+}
+
+input IssueOrder {
+  """Order direction."""
+  direction: OrderDirection!
+
+  """Order by this field."""
+  field: IssueOrderField!
+}
+
+enum IssueOrderField {
+  """Order by environment."""
+  ENVIRONMENT
+
+  """Order by issue type."""
+  ISSUE_TYPE
+
+  """Order by resource name."""
+  RESOURCE_NAME
+
+  """Order by resource type."""
+  RESOURCE_TYPE
+
+  """Order by severity."""
+  SEVERITY
+}
+
+enum IssueType {
+  DEPRECATED_INGRESS
+  GENERAL
+  OPENSEARCH
+  SQLINSTANCE
+  VALKEY
 }
 
 type Job implements ActivityLogger & Node & Workload {
@@ -2778,6 +2870,16 @@ type OpenSearchEdge {
   node: OpenSearch!
 }
 
+type OpenSearchIssue implements Issue & Node {
+  environment: String!
+  event: String!
+  id: ID!
+  message: String!
+  openSearch: OpenSearch!
+  severity: Severity!
+  team: Slug!
+}
+
 type OpenSearchMaintenance {
   updates(
     """Get items after this cursor."""
@@ -3570,6 +3672,13 @@ type RequestTeamDeletionPayload {
   The delete key for the team. This can be used to confirm the deletion of the team.
   """
   key: TeamDeleteKey
+}
+
+enum ResourceType {
+  APPLICATION
+  OPENSEARCH
+  SQLINSTANCE
+  VALKEY
 }
 
 input RestartApplicationInput {
@@ -4556,6 +4665,12 @@ type SetTeamMemberRolePayload {
   member: TeamMember
 }
 
+enum Severity {
+  CRITICAL
+  TODO
+  WARNING
+}
+
 """
 The slug must:
 
@@ -4662,6 +4777,16 @@ type SqlInstanceFlagEdge {
   node: SqlInstanceFlag!
 }
 
+type SqlInstanceIssue implements Issue & Node {
+  environment: String!
+  id: ID!
+  message: String!
+  severity: Severity!
+  sqlInstance: SqlInstance!
+  state: SqlInstanceState!
+  team: Slug!
+}
+
 type SqlInstanceMaintenanceWindow {
   day: Int!
   hour: Int!
@@ -4700,6 +4825,7 @@ enum SqlInstanceState {
   PENDING_CREATE
   PENDING_DELETE
   RUNNABLE
+  STOPPED
   SUSPENDED
   UNSPECIFIED
 }
@@ -4941,6 +5067,27 @@ type Team implements ActivityLogger & Node {
 
   """Overall inventory of resources for the team."""
   inventoryCounts: TeamInventoryCounts!
+
+  """Issues that affects the team."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+    filter: IssueFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """Nais jobs owned by the team."""
   jobs(
@@ -6647,6 +6794,16 @@ type ValkeyCost {
 type ValkeyEdge {
   cursor: Cursor!
   node: Valkey!
+}
+
+type ValkeyIssue implements Issue & Node {
+  environment: String!
+  event: String!
+  id: ID!
+  message: String!
+  severity: Severity!
+  team: Slug!
+  valkey: Valkey!
 }
 
 type ValkeyMaintenance {
