@@ -2041,9 +2041,9 @@ enum IssueOrderField {
 
 enum IssueType {
   DEPRECATED_INGRESS
-  GENERAL
   OPENSEARCH
-  SQLINSTANCE
+  SQLINSTANCE_STATE
+  SQLINSTANCE_VERSION
   VALKEY
 }
 
@@ -4777,16 +4777,6 @@ type SqlInstanceFlagEdge {
   node: SqlInstanceFlag!
 }
 
-type SqlInstanceIssue implements Issue & Node {
-  environment: String!
-  id: ID!
-  message: String!
-  severity: Severity!
-  sqlInstance: SqlInstance!
-  state: SqlInstanceState!
-  team: Slug!
-}
-
 type SqlInstanceMaintenanceWindow {
   day: Int!
   hour: Int!
@@ -4830,6 +4820,16 @@ enum SqlInstanceState {
   UNSPECIFIED
 }
 
+type SqlInstanceStateIssue implements Issue & Node {
+  environment: String!
+  id: ID!
+  message: String!
+  severity: Severity!
+  sqlInstance: SqlInstance!
+  state: SqlInstanceState!
+  team: Slug!
+}
+
 type SqlInstanceStatus {
   privateIpAddress: String
   publicIpAddress: String
@@ -4859,6 +4859,15 @@ input SqlInstanceUserOrder {
 enum SqlInstanceUserOrderField {
   AUTHENTICATION
   NAME
+}
+
+type SqlInstanceVersionIssue implements Issue & Node {
+  environment: String!
+  id: ID!
+  message: String!
+  severity: Severity!
+  sqlInstance: SqlInstance!
+  team: Slug!
 }
 
 input StartOpenSearchMaintenanceInput {
