@@ -1,0 +1,9 @@
+query CreateOpenSearchEnvironments($slug: Slug!) {
+	team(slug: $slug) {
+		environments {
+			environment {
+				name
+			}
+		}
+	}
+}
