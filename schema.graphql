@@ -1535,6 +1535,15 @@ type DeprecatedIngressIssue implements Issue & Node {
   team: Slug!
 }
 
+type DeprecatedRegistryIssue implements Issue & Node {
+  environment: String!
+  id: ID!
+  message: String!
+  severity: Severity!
+  team: Slug!
+  workload: Workload!
+}
+
 input DisableReconcilerInput {
   """The name of the reconciler to disable."""
   name: String!
@@ -2041,6 +2050,7 @@ enum IssueOrderField {
 
 enum IssueType {
   DEPRECATED_INGRESS
+  DEPRECATED_REGISTRY
   OPENSEARCH
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
@@ -3676,6 +3686,7 @@ type RequestTeamDeletionPayload {
 
 enum ResourceType {
   APPLICATION
+  JOB
   OPENSEARCH
   SQLINSTANCE
   VALKEY
