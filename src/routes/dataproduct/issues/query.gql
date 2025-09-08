@@ -1,0 +1,51 @@
+query AllIssues {
+	teams(first: 500) {
+		nodes {
+			slug
+			issues(first: 500) {
+				nodes {
+					id
+					__typename
+					environment
+					message
+					severity
+					team
+					... on DeprecatedIngressIssue {
+						application {
+							name
+						}
+						ingresses
+					}
+					... on DeprecatedRegistryIssue {
+						workload {
+							name
+							__typename
+						}
+					}
+					... on OpenSearchIssue {
+						event
+						openSearch {
+							name
+						}
+					}
+					... on SqlInstanceStateIssue {
+						sqlInstance {
+							name
+						}
+						state
+					}
+					... on SqlInstanceVersionIssue {
+						sqlInstance {
+							name
+						}
+					}
+					... on ValkeyIssue {
+						valkey {
+							name
+						}
+					}
+				}
+			}
+		}
+	}
+}

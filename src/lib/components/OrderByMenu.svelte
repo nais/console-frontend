@@ -115,6 +115,14 @@
 				return 'Accumulated cost';
 			case 'LAST_MODIFIED_AT':
 				return 'Last modified';
+			case 'ISSUE_TYPE':
+				return 'Issue type';
+			case 'SEVERITY':
+				return 'Severity';
+			case 'RESOURCE_NAME':
+				return 'Resource name';
+			case 'RESOURCE_TYPE':
+				return 'Resource type';
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}

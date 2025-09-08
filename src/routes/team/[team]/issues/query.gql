@@ -1,0 +1,36 @@
+query TeamIssues(
+	$team: Slug!
+	$filter: IssueFilter
+	$orderBy: IssueOrder
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		slug
+		issues(
+			first: $first
+			last: $last
+			filter: $filter
+			orderBy: $orderBy
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
+			pageInfo {
+				startCursor
+				endCursor
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+			}
+			nodes {
+				id
+				__typename
+				...IssueFragment
+			}
+		}
+	}
+}
