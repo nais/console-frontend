@@ -94,49 +94,52 @@
 					>
 				{/if}
 			</BodyLong>
-			<List
-				title="{$AppDeploys.data.team.environment.application.deployments.pageInfo
-					.totalCount} deployment{$AppDeploys.data.team.environment.application.deployments.pageInfo
-					.totalCount !== 1
-					? 's'
-					: ''} - showing {$AppDeploys.data.team.environment.application.deployments.pageInfo
-					.pageEnd -
-					$AppDeploys.data.team.environment.application.deployments.pageInfo.pageStart +
-					1} from {format(
-					$AppDeploys.data.team.environment.application.deployments.nodes.at(0)?.createdAt ?? '',
-					'dd/MM/yyyy'
-				)} to {format(
-					$AppDeploys.data.team.environment.application.deployments.nodes.at(-1)?.createdAt ?? '',
-					'dd/MM/yyyy'
-				)}"
-			>
-				{#each $AppDeploys.data.team.environment.application.deployments.nodes as deployment (deployment.id)}
-					{@const id = idFromTriggerUrl(deployment.triggerUrl ?? '')}
-					<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
-						<DeploymentListItem {deployment} />
-					</div>
-				{/each}
-			</List>
-			<Pagination
-				page={$AppDeploys.data.team.environment.application.deployments.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						changeQuery({
-							after: '',
-							before:
-								$AppDeploys.data?.team.environment.application.deployments.pageInfo.startCursor ??
-								''
-						});
-					},
-					loadNextPage: () => {
-						changeQuery({
-							before: '',
-							after:
-								$AppDeploys.data?.team.environment.application.deployments.pageInfo.endCursor ?? ''
-						});
-					}
-				}}
-			/>
+			{#if $AppDeploys.data.team.environment.application.deployments.pageInfo.totalCount != 0}
+				<List
+					title="{$AppDeploys.data.team.environment.application.deployments.pageInfo
+						.totalCount} deployment{$AppDeploys.data.team.environment.application.deployments
+						.pageInfo.totalCount !== 1
+						? 's'
+						: ''} - showing {$AppDeploys.data.team.environment.application.deployments.pageInfo
+						.pageEnd -
+						$AppDeploys.data.team.environment.application.deployments.pageInfo.pageStart +
+						1} from {format(
+						$AppDeploys.data.team.environment.application.deployments.nodes.at(0)?.createdAt ?? '',
+						'dd/MM/yyyy'
+					)} to {format(
+						$AppDeploys.data.team.environment.application.deployments.nodes.at(-1)?.createdAt ?? '',
+						'dd/MM/yyyy'
+					)}"
+				>
+					{#each $AppDeploys.data.team.environment.application.deployments.nodes as deployment (deployment.id)}
+						{@const id = idFromTriggerUrl(deployment.triggerUrl ?? '')}
+						<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
+							<DeploymentListItem {deployment} />
+						</div>
+					{/each}
+				</List>
+				<Pagination
+					page={$AppDeploys.data.team.environment.application.deployments.pageInfo}
+					loaders={{
+						loadPreviousPage: () => {
+							changeQuery({
+								after: '',
+								before:
+									$AppDeploys.data?.team.environment.application.deployments.pageInfo.startCursor ??
+									''
+							});
+						},
+						loadNextPage: () => {
+							changeQuery({
+								before: '',
+								after:
+									$AppDeploys.data?.team.environment.application.deployments.pageInfo.endCursor ??
+									''
+							});
+						}
+					}}
+				/>
+			{/if}
 		</div>
 	</div>
 {/if}
