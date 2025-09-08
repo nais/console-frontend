@@ -448,7 +448,7 @@
 				</div>
 			</div>
 		</div>
-		{#if !isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation)}
+		{#if !$ResourceUtilizationForApp.errors && (!isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation))}
 			<Heading level="2" size="medium" spacing>Resource Settings and Recommendations</Heading>
 			<BodyLong>
 				<div>
