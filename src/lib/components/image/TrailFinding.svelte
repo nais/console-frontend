@@ -14,7 +14,6 @@
 	import { createEventDispatcher } from 'svelte';
 	import ExternalLink from '../ExternalLink.svelte';
 	import type { FindingType } from './SuppressFinding.svelte';
-	import { detailsUrl } from './imageUtils';
 
 	interface Props {
 		open: boolean;
@@ -59,8 +58,8 @@
 				{/if}
 				<dt>Details:</dt>
 				<dd>
-					<ExternalLink href={detailsUrl(finding.identifier)}
-						>{detailsUrl(finding.identifier)}</ExternalLink
+					<ExternalLink href={finding.vulnerabilityDetailsLink}
+						>{finding.vulnerabilityDetailsLink}</ExternalLink
 					>
 				</dd>
 			</dl>

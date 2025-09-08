@@ -63,6 +63,7 @@
 									severity
 									severitySince
 									state
+									vulnerabilityDetailsLink
 									analysisTrail {
 										state
 										suppressed

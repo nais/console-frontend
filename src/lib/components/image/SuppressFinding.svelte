@@ -1,21 +1,22 @@
 <script lang="ts" module>
 	export type FindingType = {
-		readonly id: string;
-		readonly description: string;
-		readonly identifier: string;
-		readonly package: string;
-		readonly severity: ValueOf<typeof ImageVulnerabilitySeverity>;
-		readonly state: ValueOf<typeof ImageVulnerabilityState>;
-		readonly analysisTrail: {
-			readonly state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
-			readonly suppressed: boolean;
-			readonly comments: {
-				readonly nodes: {
-					readonly comment: string;
-					readonly onBehalfOf: string;
-					readonly state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
-					readonly suppressed: boolean;
-					readonly timestamp: Date;
+		id: string;
+		description: string;
+		identifier: string;
+		package: string;
+		severity: ValueOf<typeof ImageVulnerabilitySeverity>;
+		state: ValueOf<typeof ImageVulnerabilityState>;
+		vulnerabilityDetailsLink: string;
+		analysisTrail: {
+			state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
+			suppressed: boolean;
+			comments: {
+				nodes: {
+					comment: string;
+					onBehalfOf: string;
+					state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
+					suppressed: boolean;
+					timestamp: Date;
 				}[];
 			};
 		};
@@ -51,7 +52,6 @@
 	import { createEventDispatcher } from 'svelte';
 	import ExternalLink from '../ExternalLink.svelte';
 	import WorkloadLink from '../WorkloadLink.svelte';
-	import { detailsUrl } from './imageUtils';
 
 	interface Props {
 		open: boolean;
@@ -200,8 +200,8 @@
 
 			<dt>Details:</dt>
 			<dd>
-				<ExternalLink href={detailsUrl(finding.identifier)}
-					>{detailsUrl(finding.identifier)}</ExternalLink
+				<ExternalLink href={finding.vulnerabilityDetailsLink}
+					>{finding.vulnerabilityDetailsLink}</ExternalLink
 				>
 			</dd>
 		</dl>

@@ -1757,6 +1757,9 @@ type ImageVulnerability implements Node {
 
   """State of the vulnerability."""
   state: ImageVulnerabilityState!
+
+  """Link to the vulnerability details."""
+  vulnerabilityDetailsLink: String!
 }
 
 type ImageVulnerabilityAnalysisComment {
