@@ -79,7 +79,7 @@ query TeamOverview($team: Slug!, $severitySince: Time!) @cache(policy: NetworkOn
 			}
 		}
 
-		workloads(filter: { statusErrorTypes: [VULNERABLE] }) {
+		workloads {
 			pageInfo {
 				totalCount
 			}
