@@ -32,5 +32,20 @@ query TeamIssues(
 				...IssueFragment
 			}
 		}
+		todos: issues(filter: { severity: TODO }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		warnings: issues(filter: { severity: WARNING }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		critical: issues(filter: { severity: CRITICAL }) {
+			pageInfo {
+				totalCount
+			}
+		}
 	}
 }

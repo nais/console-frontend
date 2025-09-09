@@ -6,12 +6,8 @@
 	let {
 		data
 	}: {
-		data: Extract<IssueFragment$data, { __typename: 'DeprecatedRegistryIssue' }>;
+		data: Extract<IssueFragment$data, { __typename: 'FailedJobRunsIssue' }>;
 	} = $props();
-
-	let workloadType: 'app' | 'job' = $derived.by(() => {
-		return data.workload.__typename === 'Application' ? 'app' : 'job';
-	});
 </script>
 
 <div class="item">
@@ -20,8 +16,8 @@
 			environmentName={data.teamEnvironment.environment.name}
 			teamSlug={data.teamEnvironment.team.slug}
 			severity={data.severity}
-			workloadName={data.workload.name}
-			{workloadType}
+			workloadName={data.job.name}
+			workloadType="job"
 		/>
 	</div>
 

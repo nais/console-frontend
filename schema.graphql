@@ -1798,6 +1798,14 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
+type FailedJobRunsIssue implements Issue & Node {
+  id: ID!
+  job: Job!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+}
+
 type FeatureKafka implements Node {
   """Wether Kafka is enabled or not."""
   enabled: Boolean!
@@ -2181,6 +2189,7 @@ enum IssueOrderField {
 enum IssueType {
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
+  FAILED_JOB_RUNS
   NO_RUNNING_INSTANCES
   OPENSEARCH
   SQLINSTANCE_STATE

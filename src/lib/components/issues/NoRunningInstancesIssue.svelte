@@ -6,7 +6,7 @@
 	let {
 		data
 	}: {
-		data: Extract<IssueFragment$data, { __typename: 'DeprecatedRegistryIssue' }>;
+		data: Extract<IssueFragment$data, { __typename: 'NoRunningInstancesIssue' }>;
 	} = $props();
 
 	let workloadType: 'app' | 'job' = $derived.by(() => {

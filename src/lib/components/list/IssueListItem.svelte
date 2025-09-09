@@ -4,6 +4,8 @@
 	import DefaultIssue from '../issues/DefaultIssue.svelte';
 	import DeprecatedIngressIssue from '../issues/DeprecatedIngressIssue.svelte';
 	import DeprecatedRegistryIssue from '../issues/DeprecatedRegistryIssue.svelte';
+	import FailedJobRunsIssue from '../issues/FailedJobRunsIssue.svelte';
+	import NoRunningInstancesIssue from '../issues/NoRunningInstancesIssue.svelte';
 	import OpenSearchIssue from '../issues/OpenSearchIssue.svelte';
 	import SqlInstanceStateIssue from '../issues/SqlInstanceStateIssue.svelte';
 	import SqlInstanceVersionIssue from '../issues/SqlInstanceVersionIssue.svelte';
@@ -25,6 +27,9 @@
 						environment {
 							name
 						}
+						team {
+							slug
+						}
 					}
 					message
 					severity
@@ -36,6 +41,20 @@
 						ingresses
 					}
 					... on DeprecatedRegistryIssue {
+						workload {
+							__typename
+							name
+							image {
+								name
+							}
+						}
+					}
+					... on FailedJobRunsIssue {
+						job {
+							name
+						}
+					}
+					... on NoRunningInstancesIssue {
 						workload {
 							__typename
 							name
@@ -76,6 +95,10 @@
 				return DeprecatedIngressIssue as Component<{ data: unknown }>;
 			case 'DeprecatedRegistryIssue':
 				return DeprecatedRegistryIssue as Component<{ data: unknown }>;
+			case 'FailedJobRunsIssue':
+				return FailedJobRunsIssue as Component<{ data: unknown }>;
+			case 'NoRunningInstancesIssue':
+				return NoRunningInstancesIssue as Component<{ data: unknown }>;
 			case 'OpenSearchIssue':
 				return OpenSearchIssue as Component<{ data: unknown }>;
 			case 'SqlInstanceStateIssue':
@@ -84,6 +107,7 @@
 				return SqlInstanceVersionIssue as Component<{ data: unknown }>;
 			case 'ValkeyIssue':
 				return ValkeyIssue as Component<{ data: unknown }>;
+
 			default:
 				return DefaultIssue as Component<{ data: unknown }>;
 		}
