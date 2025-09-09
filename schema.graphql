@@ -505,6 +505,28 @@ type Application implements ActivityLogger & Node & Workload {
     last: Int
   ): ApplicationInstanceConnection!
 
+  """Issues that affects the workload."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: IssueOrder
+  ): IssueConnection!
+
   """
   Kafka topics the application has access to. This does not currently support pagination, but will return all available Kafka topics.
   """
@@ -1527,20 +1549,18 @@ enum DeploymentStatusState {
 
 type DeprecatedIngressIssue implements Issue & Node {
   application: Application!
-  environment: String!
   id: ID!
   ingresses: [String!]!
   message: String!
   severity: Severity!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
 }
 
 type DeprecatedRegistryIssue implements Issue & Node {
-  environment: String!
   id: ID!
   message: String!
   severity: Severity!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
   workload: Workload!
 }
 
@@ -1986,11 +2006,10 @@ enum IngressType {
 }
 
 interface Issue {
-  environment: String!
   id: ID!
   message: String!
   severity: Severity!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
 }
 
 type IssueConnection {
@@ -2018,6 +2037,9 @@ input IssueFilter {
 
   """Filter by issue type."""
   issueType: IssueType
+
+  """Filter by resource name."""
+  resourceName: String
 
   """Filter by resource type."""
   resourceType: ResourceType
@@ -2142,6 +2164,28 @@ type Job implements ActivityLogger & Node & Workload {
     """Get vulnerability summary from given date until today."""
     from: Date!
   ): ImageVulnerabilityHistory!
+
+  """Issues that affects the workload."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """
   Kafka topics the job has access to. This does not currently support pagination, but will return all available Kafka topics.
@@ -2816,6 +2860,14 @@ type NetworkPolicyRule {
   targetWorkloadName: String!
 }
 
+type NoRunningInstancesIssue implements Issue & Node {
+  id: ID!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
 """
 This interface is implemented by types that supports the [Global Object Identification specification](https://graphql.org/learn/global-object-identification/).
 """
@@ -2885,13 +2937,12 @@ type OpenSearchEdge {
 }
 
 type OpenSearchIssue implements Issue & Node {
-  environment: String!
   event: String!
   id: ID!
   message: String!
   openSearch: OpenSearch!
   severity: Severity!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
 }
 
 type OpenSearchMaintenance {
@@ -4836,13 +4887,12 @@ enum SqlInstanceState {
 }
 
 type SqlInstanceStateIssue implements Issue & Node {
-  environment: String!
   id: ID!
   message: String!
   severity: Severity!
   sqlInstance: SqlInstance!
   state: SqlInstanceState!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
 }
 
 type SqlInstanceStatus {
@@ -4877,12 +4927,11 @@ enum SqlInstanceUserOrderField {
 }
 
 type SqlInstanceVersionIssue implements Issue & Node {
-  environment: String!
   id: ID!
   message: String!
   severity: Severity!
   sqlInstance: SqlInstance!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
 }
 
 input StartOpenSearchMaintenanceInput {
@@ -6821,12 +6870,11 @@ type ValkeyEdge {
 }
 
 type ValkeyIssue implements Issue & Node {
-  environment: String!
   event: String!
   id: ID!
   message: String!
   severity: Severity!
-  team: Slug!
+  teamEnvironment: TeamEnvironment!
   valkey: Valkey!
 }
 
@@ -7082,6 +7130,28 @@ interface Workload {
     """Get vulnerability summary from given date until today."""
     from: Date!
   ): ImageVulnerabilityHistory!
+
+  """Issues that affects the workload."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """
   Kafka topics the workload has access to. This does not currently support pagination, but will return all available Kafka topics.
