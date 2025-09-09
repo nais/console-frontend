@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -21,14 +22,17 @@
 	</div>
 
 	<div>
-		Application {data.application.name} uses deprecated ingress{data.ingresses.length > 1
-			? 'es'
-			: ''}:
-		<ul>
-			{#each data.ingresses as ingress (ingress)}
-				<li><code>{ingress}</code></li>
-			{/each}
-		</ul>
+		<Heading level="4" size="xsmall" spacing>Deprecated Ingress issue</Heading>
+		<BodyShort
+			>Application {data.application.name} uses deprecated ingress{data.ingresses.length > 1
+				? 'es'
+				: ''}:
+			<ul>
+				{#each data.ingresses as ingress (ingress)}
+					<li><code>{ingress}</code></li>
+				{/each}
+			</ul>
+		</BodyShort>
 	</div>
 </div>
 

@@ -29,6 +29,16 @@ query AllIssues {
 							__typename
 						}
 					}
+					... on FailedJobRunsIssue {
+						job {
+							name
+						}
+					}
+					... on NoRunningInstancesIssue {
+						workload {
+							name
+						}
+					}
 					... on OpenSearchIssue {
 						event
 						openSearch {

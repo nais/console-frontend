@@ -66,7 +66,12 @@
 	{#if $TeamIssues.data}
 		{@const page = $TeamIssues.data.team.issues}
 		<div>
-			<List title="{page.pageInfo.totalCount} issue{page.pageInfo.totalCount > 1 ? 's' : ''}">
+			<List
+				title="{page.pageInfo.totalCount} application{page.pageInfo.totalCount !== 1 ? 's' : ''}
+						{page.pageInfo.totalCount !== $TeamIssues.data.team.total.pageInfo.totalCount
+					? `(of total ${$TeamIssues.data.team.total.pageInfo.totalCount})`
+					: ''}"
+			>
 				{#snippet menu()}
 					<ActionMenu>
 						{#snippet trigger(props)}
