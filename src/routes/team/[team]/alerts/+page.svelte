@@ -10,7 +10,15 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Button,
+		CopyButton,
+		Heading,
+		Loader,
+		Search,
+		Tag
+	} from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import {
 		ChevronDownIcon,
@@ -120,8 +128,11 @@
 				</form>
 			</div>
 		{/if}
-
-		{#if $Alerts.data && $Alerts.data?.team.alerts.pageInfo.totalCount > 0}
+		{#if $Alerts.fetching}
+			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
+				<Loader size="3xlarge" />
+			</div>
+		{:else if $Alerts.data && $Alerts.data?.team.totalAlerts.pageInfo.totalCount > 0}
 			{@const page = $Alerts.data.team.alerts}
 
 			<List
