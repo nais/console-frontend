@@ -5,6 +5,7 @@
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
 	import Pagination from '$lib/Pagination.svelte';
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import type { PageProps } from './$types';
@@ -12,13 +13,15 @@
 
 	let { data }: PageProps = $props();
 
-	let { UserTeams } = $derived(data);
+	let { UserTeams, UserInfo } = $derived(data);
 
 	let tenantName = $derived(data.tenantName);
 
 	let userTeams = $derived(
 		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data.me.teams?.nodes.length
 	);
+
+	let name = $derived($UserInfo.data?.me.__typename == 'User' ? $UserInfo.data.me.name : '');
 </script>
 
 <svelte:head><title>Nais Console</title></svelte:head>
@@ -33,8 +36,7 @@
 			<Logo height="min(15vw, 262.5px)" />
 		</div>
 		<div>
-			Know what's running, what it costs, <br />
-			and where the risks are.
+			Welcome to Nais Console, {capitalizeFirstLetter(name.split(' ')[0])}!
 		</div>
 	</div>
 	<div class="page">
@@ -112,8 +114,8 @@
 	.logo-wrapper {
 		background-color: var(--ax-bg-default);
 		border-radius: 100%;
-		height: min(40vw, 700px);
-		width: min(40vw, 700px);
+		height: min(30vw, 525px);
+		width: min(30vw, 525px);
 		margin-block: max(-10vw, -175px);
 		display: flex;
 		align-items: center;
