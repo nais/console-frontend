@@ -166,7 +166,7 @@
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.IDENTIFIER}>ID</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}>Severity</Th>
-				<Th>Since</Th>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY_SINCE}>Since</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}>Suppressed</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
 			</Tr>
