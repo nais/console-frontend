@@ -3,6 +3,11 @@
 	import type { Component } from 'svelte';
 	import DefaultIssue from '../issues/DefaultIssue.svelte';
 	import DeprecatedIngressIssue from '../issues/DeprecatedIngressIssue.svelte';
+	import DeprecatedRegistryIssue from '../issues/DeprecatedRegistryIssue.svelte';
+	import OpenSearchIssue from '../issues/OpenSearchIssue.svelte';
+	import SqlInstanceStateIssue from '../issues/SqlInstanceStateIssue.svelte';
+	import SqlInstanceVersionIssue from '../issues/SqlInstanceVersionIssue.svelte';
+	import ValkeyIssue from '../issues/ValkeyIssue.svelte';
 	import ListItem from './ListItem.svelte';
 
 	interface Props {
@@ -28,8 +33,8 @@
 					}
 					... on DeprecatedRegistryIssue {
 						workload {
-							name
 							__typename
+							name
 						}
 					}
 					... on OpenSearchIssue {
@@ -65,6 +70,16 @@
 		switch (kind) {
 			case 'DeprecatedIngressIssue':
 				return DeprecatedIngressIssue as Component<{ data: unknown }>;
+			case 'DeprecatedRegistryIssue':
+				return DeprecatedRegistryIssue as Component<{ data: unknown }>;
+			case 'OpenSearchIssue':
+				return OpenSearchIssue as Component<{ data: unknown }>;
+			case 'SqlInstanceStateIssue':
+				return SqlInstanceStateIssue as Component<{ data: unknown }>;
+			case 'SqlInstanceVersionIssue':
+				return SqlInstanceVersionIssue as Component<{ data: unknown }>;
+			case 'ValkeyIssue':
+				return ValkeyIssue as Component<{ data: unknown }>;
 			default:
 				return DefaultIssue as Component<{ data: unknown }>;
 		}
