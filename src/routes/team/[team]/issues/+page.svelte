@@ -64,11 +64,11 @@
 
 <div class="wrapper">
 	{#if $TeamIssues.data}
-		{@const page = $TeamIssues.data.team.issues}
+		{@const issues = $TeamIssues.data.team.issues}
 		<div>
 			<List
-				title="{page.pageInfo.totalCount} issue{page.pageInfo.totalCount !== 1 ? 's' : ''}
-						{page.pageInfo.totalCount !== $TeamIssues.data.team.total.pageInfo.totalCount
+				title="{issues.pageInfo.totalCount} issue{issues.pageInfo.totalCount !== 1 ? 's' : ''}
+						{issues.pageInfo.totalCount !== $TeamIssues.data.team.total.pageInfo.totalCount
 					? `(of total ${$TeamIssues.data.team.total.pageInfo.totalCount})`
 					: ''}"
 			>
@@ -130,16 +130,16 @@
 					</ActionMenu>
 					<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />
 				{/snippet}
-				{#each page.nodes as issue (issue.id)}
+				{#each issues.nodes as issue (issue.id)}
 					<IssueListItem item={issue} />
 				{/each}
 			</List>
 			<Pagination
-				page={page.pageInfo}
+				page={issues.pageInfo}
 				loaders={{
 					loadPreviousPage: () =>
-						changeQuery({ before: page.pageInfo.startCursor ?? '', after: '' }),
-					loadNextPage: () => changeQuery({ after: page.pageInfo.endCursor ?? '', before: '' })
+						changeQuery({ before: issues.pageInfo.startCursor ?? '', after: '' }),
+					loadNextPage: () => changeQuery({ after: issues.pageInfo.endCursor ?? '', before: '' })
 				}}
 			/>
 		</div>
@@ -158,10 +158,12 @@
 							TODO: 'info',
 							WARNING: 'warning',
 							CRITICAL: 'danger'
-						}['CRITICAL'] ?? 'info'}-decoration); font-size: 0.7rem"
+						}['CRITICAL'] ?? 'info'}-decoration); font-size: 0.8rem"
 					/>
-					{$TeamIssues.data.team.critical.pageInfo.totalCount}
-					critical{$TeamIssues.data.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found
+					<span style="font-size: 1.2rem; font-weight: bold"
+						>{$TeamIssues.data.team.critical.pageInfo.totalCount}
+						critical issue{$TeamIssues.data.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found</span
+					>
 				</TooltipAlignHack>
 				<TooltipAlignHack
 					content={{
@@ -175,10 +177,12 @@
 							TODO: 'info',
 							WARNING: 'warning',
 							CRITICAL: 'danger'
-						}['WARNING'] ?? 'info'}-decoration); font-size: 0.7rem"
+						}['WARNING'] ?? 'info'}-decoration); font-size: 0.8rem"
 					/>
-					{$TeamIssues.data.team.warnings.pageInfo.totalCount}
-					warning{$TeamIssues.data.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found
+					<span style="font-size: 1.2rem; font-weight: bold"
+						>{$TeamIssues.data.team.warnings.pageInfo.totalCount}
+						warning{$TeamIssues.data.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found</span
+					>
 				</TooltipAlignHack>
 				<TooltipAlignHack
 					content={{
@@ -192,10 +196,12 @@
 							TODO: 'info',
 							WARNING: 'warning',
 							CRITICAL: 'danger'
-						}['TODO'] ?? 'info'}-decoration); font-size: 0.7rem"
+						}['TODO'] ?? 'info'}-decoration); font-size: 0.8rem"
 					/>
-					{$TeamIssues.data.team.todos.pageInfo.totalCount}
-					todo{$TeamIssues.data.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found
+					<span style="font-size: 1.2rem; font-weight: bold"
+						>{$TeamIssues.data.team.todos.pageInfo.totalCount}
+						todo{$TeamIssues.data.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found</span
+					>
 				</TooltipAlignHack>
 			</div>
 		</div>
@@ -211,10 +217,11 @@
 	.card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--ax-space-24);
 		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;
+		padding-bottom: var(--ax-space-32);
 	}
 </style>
