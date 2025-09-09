@@ -29,12 +29,12 @@
 			{:else}
 				Application {data.application.name} is using deprecated ingresses:
 			{/if}
-			<ul>
-				{#each data.ingresses as ingress (ingress)}
-					<li><code>{ingress}</code></li>
-				{/each}
-			</ul>
 		</BodyShort>
+		<ul>
+			{#each data.ingresses as ingress (ingress)}
+				<li><code>{ingress}</code></li>
+			{/each}
+		</ul>
 	</div>
 </div>
 
