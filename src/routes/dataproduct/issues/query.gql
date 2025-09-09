@@ -6,10 +6,17 @@ query AllIssues {
 				nodes {
 					id
 					__typename
-					environment
+					teamEnvironment {
+						environment {
+							name
+						}
+						team {
+							slug
+						}
+					}
 					message
 					severity
-					team
+
 					... on DeprecatedIngressIssue {
 						application {
 							name

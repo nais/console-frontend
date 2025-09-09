@@ -11,5 +11,5 @@
 
 <div>
 	<Heading level="2" size="small" spacing>{data.__typename}</Heading>
-	Issue in environment {data.environment}: {data.message}
+	Issue in environment {data.teamEnvironment.environment.name}: {data.message}
 </div>

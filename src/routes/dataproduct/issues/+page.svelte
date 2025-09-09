@@ -26,8 +26,8 @@
 				{issue.__typename}: {issue.message}
 			</div>
 			<div>
-				<a href="/team/{issue.team}/issues">
-					{issue.team + '/' + issue.environment}
+				<a href="/team/{issue.teamEnvironment.team.slug}/issues">
+					{issue.teamEnvironment.team.slug + '/' + issue.teamEnvironment.environment.name}
 				</a>
 			</div>
 		{/each}

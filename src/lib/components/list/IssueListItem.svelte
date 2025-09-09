@@ -21,7 +21,11 @@
 			item,
 			graphql(`
 				fragment IssueFragment on Issue {
-					environment
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
 					message
 					severity
 
