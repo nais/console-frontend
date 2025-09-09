@@ -23,10 +23,12 @@
 
 	<div>
 		<Heading level="4" size="xsmall" spacing>Deprecated Ingress issue</Heading>
-		<BodyShort
-			>Application {data.application.name} uses deprecated ingress{data.ingresses.length > 1
-				? 'es'
-				: ''}:
+		<BodyShort>
+			{#if data.ingresses.length === 1}
+				Application {data.application.name} is using a deprecated ingress:
+			{:else}
+				Application {data.application.name} is using deprecated ingresses:
+			{/if}
 			<ul>
 				{#each data.ingresses as ingress (ingress)}
 					<li><code>{ingress}</code></li>
