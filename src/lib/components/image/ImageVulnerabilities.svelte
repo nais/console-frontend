@@ -113,7 +113,7 @@
 					field:
 						(page.url.searchParams.get('field') as ImageVulnerabilityOrderField$options) ||
 						ImageVulnerabilityOrderField.SEVERITY,
-					direction: (page.url.searchParams.get('direction') as 'ASC' | 'DESC') || 'ASC'
+					direction: (page.url.searchParams.get('direction') as 'ASC' | 'DESC') || 'DESC'
 				}
 			}
 		});
