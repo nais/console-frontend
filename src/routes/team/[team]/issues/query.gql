@@ -9,6 +9,12 @@ query TeamIssues(
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
+		environments {
+			id
+			environment {
+				name
+			}
+		}
 		issues(
 			first: $first
 			last: $last
@@ -29,6 +35,12 @@ query TeamIssues(
 			nodes {
 				id
 				__typename
+
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 				...IssueFragment
 			}
 		}

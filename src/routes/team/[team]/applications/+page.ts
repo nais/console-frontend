@@ -11,9 +11,7 @@ const rows = 25;
 export async function load(event) {
 	const filter: string = event.url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
-		event.url.searchParams.get('environments') === 'none'
-			? undefined
-			: event.url.searchParams.get('environments')?.split(',') || [];
+		event.url.searchParams.get('environments')?.split(',') || undefined;
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';

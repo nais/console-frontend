@@ -27,11 +27,7 @@
 		$Applications.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
-	let filteredEnvs = $derived(
-		page.url.searchParams.get('environments') === 'none'
-			? []
-			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
-	);
+	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
 	$effect(() => {
 		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
