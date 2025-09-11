@@ -121,26 +121,16 @@
 						e.shiftKey || // or the link is opened in a new window
 						e.metaKey ||
 						e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-						// should also consider clicking with a mouse scroll wheel
-					)
+					) {
 						return;
+					}
 
 					// prevent navigation
 					e.preventDefault();
 
 					const { href } = e.currentTarget;
 
-					// run `load` functions (or rather, get the result of the `load` functions
-					// that are already running because of `data-sveltekit-preload-data`)
-					// const result = await preloadData(href);
-					// modalData = result.data;
-
-					// if (result.type === 'loaded' && result.status === 200) {
 					pushState(href, { modalHref: href });
-					// } else {
-					// 	// something bad happened! try navigating
-					// 	goto(href);
-					// }
 				}}
 			>
 				{create.buttonText}
