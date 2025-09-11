@@ -9,7 +9,15 @@
 		type ValkeyTier$options
 	} from '$houdini';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
-	import { BodyLong, BodyShort, Button, ErrorMessage, Select } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		BodyShort,
+		Button,
+		CopyButton,
+		ErrorMessage,
+		ReadMore,
+		Select
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { form, data }: PageProps = $props();
@@ -31,6 +39,11 @@
 			$UpdateValkeyData.data?.team.environment.valkey.maxMemoryPolicy ??
 			''
 	);
+
+	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
+tier = "${tier}"
+size = "${size}"
+${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 </script>
 
 <BodyLong>This is an explanation on how to edit a Valkey instance.</BodyLong>
@@ -52,7 +65,12 @@
 		{/each}
 	</Select>
 
-	<Select size="small" label="Max memory policy" name="max_memory_policy" value={maxMemoryPolicy}>
+	<Select
+		size="small"
+		label="Max memory policy"
+		name="max_memory_policy"
+		bind:value={maxMemoryPolicy}
+	>
 		{#if !maxMemoryPolicy}
 			<option value="">Default (unset)</option>
 		{/if}
@@ -72,6 +90,21 @@
 
 	<Button type="submit">Save changes</Button>
 </form>
+
+<ReadMore header="Nais TOML Manifest (ALPHA)" size="small">
+	<BodyLong>
+		The manifest below can be added to your <code>nais.toml</code> file. You can then use
+		<code>nais alpha apply</code> to manage the lifecycle of your Valkey.
+	</BodyLong>
+	<pre class="manifest">{tomlManifest}</pre>
+	<CopyButton
+		activeText="TOML copied"
+		text="Copy TOML to clipboard"
+		variant="neutral"
+		copyText={tomlManifest}
+		size="xsmall"
+	/>
+</ReadMore>
 
 <style>
 	form {
