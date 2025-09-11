@@ -4,6 +4,7 @@ query UpdateValkeyData($environment: String!, $team: Slug!, $name: String!)
 		slug
 		environment(name: $environment) {
 			valkey(name: $name) {
+				name
 				tier
 				size
 				maxMemoryPolicy

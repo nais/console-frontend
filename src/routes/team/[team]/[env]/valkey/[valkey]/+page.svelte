@@ -54,7 +54,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { Valkey, viewerIsMember } = $derived(data);
+	let { Valkey, viewerIsMember, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Valkey.variables?.orderBy?.field,
@@ -80,6 +80,10 @@
 			}
 		);
 	};
+
+	const isManagedByConsole = $derived(
+		!$Valkey.data?.team.environment.valkey.name.startsWith(`valkey-${teamSlug}-`)
+	);
 </script>
 
 {#if $Valkey.errors}
@@ -95,7 +99,7 @@
 	)}
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember}
+			{#if viewerIsMember && isManagedByConsole}
 				<div class="button">
 					<Button
 						as="a"

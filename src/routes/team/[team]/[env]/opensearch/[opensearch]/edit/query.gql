@@ -4,6 +4,7 @@ query UpdateOpenSearchData($environment: String!, $team: Slug!, $name: String!)
 		slug
 		environment(name: $environment) {
 			openSearch(name: $name) {
+				name
 				tier
 				size
 				version {

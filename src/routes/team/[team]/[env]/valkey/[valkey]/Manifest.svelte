@@ -2,7 +2,7 @@
 	import { fragment, graphql, type ValkeyManifestFragment } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
-	import { Alert, BodyLong, Button, CopyButton, Heading, Modal } from '@nais/ds-svelte-community';
+	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		valkey: ValkeyManifestFragment;
@@ -28,15 +28,6 @@
 	const workloadManifest = $derived(`spec:
   valkey:
     - instance: ${niceName}`);
-
-	const tomlManifest = $derived(`[valkey.${niceName}]
-instance = "${niceName}"
-size = "${$data.size}"
-tier = "${$data.tier}"
-${$data.maxMemoryPolicy ? `max_memory_policy = "${$data.maxMemoryPolicy}"` : ``}
-	`);
-
-	let modalOpen = $state(false);
 </script>
 
 <div class="card">
@@ -61,31 +52,7 @@ ${$data.maxMemoryPolicy ? `max_memory_policy = "${$data.maxMemoryPolicy}"` : ``}
 		/>
 	</Heading>
 	<pre class="manifest">{workloadManifest}</pre>
-	<Button variant="tertiary-neutral" size="small" onclick={() => (modalOpen = true)}>
-		Show in Nais TOML format
-	</Button>
 </div>
-
-<Modal bind:open={modalOpen} header="Nais TOML">
-	<BodyLong>
-		The manifest below can be added to your <code>nais.toml</code> file. You can then use
-		<code>nais alpha apply</code> to manage the lifecycle of your Valkey.
-	</BodyLong>
-	{#if $data.name != niceName}
-		<Alert variant="warning" size="small" inline style="margin: 1rem 0">
-			You will need to do a manual change to the resource using <code>kubectl</code> to allow Console
-			to manage this resource.
-		</Alert>
-	{/if}
-	<CopyButton
-		activeText="Manifest copied"
-		text="Copy manifest to clipboard"
-		variant="neutral"
-		copyText={tomlManifest}
-		size="xsmall"
-	/>
-	<pre class="manifest">{tomlManifest}</pre>
-</Modal>
 
 <style>
 	.value {
