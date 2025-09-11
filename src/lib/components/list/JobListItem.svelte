@@ -53,12 +53,12 @@
 				}[job.status.state] ?? ''}
 			>
 				<CircleFillIcon
-					style="color: var(--ax-text-{{
-						NAIS: 'success',
-						FAILING: 'danger',
-						NOT_NAIS: 'warning',
-						UNKNOWN: 'info'
-					}[job.status.state] ?? 'info'}-decoration); font-size: 0.7rem"
+					style="color: var({{
+						NAIS: '--ax-bg-success-strong',
+						FAILING: '--ax-bg-danger-strong',
+						NOT_NAIS: '--ax-bg-warning-moderate-pressed',
+						UNKNOWN: '--ax-bg-info-strong'
+					}[job.status.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 				/>
 			</TooltipAlignHack>
 		{/snippet}

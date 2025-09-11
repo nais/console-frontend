@@ -84,16 +84,16 @@
 										}[instance.state] ?? ''}
 									>
 										<CircleFillIcon
-											style="color: var(--ax-text-{{
-												RUNNABLE: 'success',
-												FAILED: 'danger',
-												MAINTENANCE: 'warning',
-												PENDING_CREATE: 'info',
-												PENDING_DELETE: 'info',
-												SUSPENDED: 'info',
-												UNSPECIFIED: 'info',
-												STOPPED: 'info'
-											}[instance.state] ?? 'info'}-decoration); font-size: 0.7rem"
+											style="color: var({{
+												RUNNABLE: '--ax-bg-success-strong',
+												FAILED: '--ax-bg-danger-strong',
+												MAINTENANCE: '--ax-bg-warning-moderate-pressed',
+												PENDING_CREATE: '--ax-bg-info-strong',
+												PENDING_DELETE: '--ax-bg-info-strong',
+												SUSPENDED: '--ax-bg-info-strong',
+												UNSPECIFIED: '--ax-bg-info-strong',
+												STOPPED: '--ax-bg-info-strong'
+											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 										/>
 									</TooltipAlignHack>
 								{/snippet}

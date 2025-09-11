@@ -154,11 +154,11 @@
 					}['CRITICAL'] ?? ''}
 				>
 					<CircleFillIcon
-						style="color: var(--ax-text-{{
-							TODO: 'info',
-							WARNING: 'warning',
-							CRITICAL: 'danger'
-						}['CRITICAL'] ?? 'info'}-decoration); font-size: 0.8rem"
+						style="color: var({{
+							TODO: '--ax-bg-success-strong',
+							WARNING: '--ax-bg-warning-moderate-pressed',
+							CRITICAL: '--ax-bg-danger-strong'
+						}['CRITICAL'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 					/>
 					<span style="font-size: 1.2rem; font-weight: bold"
 						>{$TeamIssues.data.team.critical.pageInfo.totalCount}
@@ -173,11 +173,11 @@
 					}['WARNING'] ?? ''}
 				>
 					<CircleFillIcon
-						style="color: var(--ax-text-{{
-							TODO: 'info',
-							WARNING: 'warning',
-							CRITICAL: 'danger'
-						}['WARNING'] ?? 'info'}-decoration); font-size: 0.8rem"
+						style="color: var({{
+							TODO: '--ax-bg-success-strong',
+							WARNING: '--ax-bg-warning-moderate-pressed',
+							CRITICAL: '--ax-bg-danger-strong'
+						}['WARNING'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 					/>
 					<span style="font-size: 1.2rem; font-weight: bold"
 						>{$TeamIssues.data.team.warnings.pageInfo.totalCount}
@@ -192,11 +192,11 @@
 					}['TODO'] ?? ''}
 				>
 					<CircleFillIcon
-						style="color: var(--ax-text-{{
-							TODO: 'info',
-							WARNING: 'warning',
-							CRITICAL: 'danger'
-						}['TODO'] ?? 'info'}-decoration); font-size: 0.8rem"
+						style="color: var({{
+							TODO: '--ax-bg-success-strong',
+							WARNING: '--ax-bg-warning-moderate-pressed',
+							CRITICAL: '--ax-bg-danger-strong'
+						}['TODO'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 					/>
 					<span style="font-size: 1.2rem; font-weight: bold"
 						>{$TeamIssues.data.team.todos.pageInfo.totalCount}

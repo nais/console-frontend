@@ -35,11 +35,11 @@
 			}[severity] ?? ''}
 		>
 			<CircleFillIcon
-				style="color: var(--ax-text-{{
-					TODO: 'info',
-					WARNING: 'warning',
-					CRITICAL: 'danger'
-				}[severity] ?? 'info'}-decoration); font-size: 0.7rem"
+				style="color: var({{
+					TODO: '--ax-bg-success-strong',
+					WARNING: '--ax-bg-warning-moderate-pressed',
+					CRITICAL: '--ax-bg-danger-strong'
+				}[severity] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 			/>
 		</TooltipAlignHack>
 	{/snippet}
