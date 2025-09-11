@@ -1806,6 +1806,14 @@ type FailedJobRunsIssue implements Issue & Node {
   teamEnvironment: TeamEnvironment!
 }
 
+type FailedSynchronizationIssue implements Issue & Node {
+  id: ID!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
 type FeatureKafka implements Node {
   """Wether Kafka is enabled or not."""
   enabled: Boolean!
@@ -2118,6 +2126,14 @@ enum IngressType {
   UNKNOWN
 }
 
+type InvalidSpecIssue implements Issue & Node {
+  id: ID!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
 interface Issue {
   id: ID!
   message: String!
@@ -2190,6 +2206,8 @@ enum IssueType {
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
   FAILED_JOB_RUNS
+  FAILED_SYNCHRONIZATION
+  INVALID_SPEC
   NO_RUNNING_INSTANCES
   OPENSEARCH
   SQLINSTANCE_STATE
