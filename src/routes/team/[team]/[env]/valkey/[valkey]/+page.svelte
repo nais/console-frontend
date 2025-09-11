@@ -95,26 +95,28 @@
 	)}
 	<div class="wrapper">
 		<div>
-			<div class="button">
-				<Button
-					as="a"
-					variant="secondary"
-					size="small"
-					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
-					icon={PencilIcon}
-				>
-					Edit Valkey
-				</Button>
-				<Button
-					as="a"
-					variant="danger"
-					size="small"
-					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/delete"
-					icon={TrashIcon}
-				>
-					Delete Valkey
-				</Button>
-			</div>
+			{#if viewerIsMember}
+				<div class="button">
+					<Button
+						as="a"
+						variant="secondary"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
+						icon={PencilIcon}
+					>
+						Edit Valkey
+					</Button>
+					<Button
+						as="a"
+						variant="danger"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/delete"
+						icon={TrashIcon}
+					>
+						Delete Valkey
+					</Button>
+				</div>
+			{/if}
 			<div class="spacing">
 				<Heading level="3" spacing>Valkey Access List</Heading>
 				<Table

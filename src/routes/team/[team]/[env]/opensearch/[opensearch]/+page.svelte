@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
@@ -21,7 +22,6 @@
 	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
-	import { page } from '$app/state';
 
 	const runServiceMaintenance = graphql(`
 		mutation runOpenSearchMaintenance(
@@ -97,27 +97,30 @@
 
 	<div class="wrapper">
 		<div>
-			<div class="button">
-				<Button
-					as="a"
-					variant="secondary"
-					size="small"
-					href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params.opensearch}/edit"
-					icon={PencilIcon}
-				>
-					Edit OpenSearch
-				</Button>
-				<Button
-					as="a"
-					variant="danger"
-					size="small"
-					href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
-						.opensearch}/delete"
-					icon={TrashIcon}
-				>
-					Delete OpenSearch
-				</Button>
-			</div>
+			{#if viewerIsMember}
+				<div class="button">
+					<Button
+						as="a"
+						variant="secondary"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+							.opensearch}/edit"
+						icon={PencilIcon}
+					>
+						Edit OpenSearch
+					</Button>
+					<Button
+						as="a"
+						variant="danger"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+							.opensearch}/delete"
+						icon={TrashIcon}
+					>
+						Delete OpenSearch
+					</Button>
+				</div>
+			{/if}
 			<div class="spacing">
 				<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
 
