@@ -31,7 +31,7 @@
 		create
 	}: {
 		description: Snippet;
-		notFound: Snippet;
+		notFound: Snippet<[{ createButton: Snippet }]>;
 		cdnBucket?: string;
 		viewerIsMember?: boolean;
 		cost?: {
@@ -45,6 +45,7 @@
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			page: Component<any, any, ''>;
 			header: string;
+			viewerIsMember: boolean;
 		};
 		list: {
 			readonly id: string;
@@ -87,7 +88,6 @@
 	let modalData = $state();
 
 	$effect(() => {
-		console.log('Loading modal data for', page.state);
 		if (page.state.modalHref) {
 			const href = page.state.modalHref;
 			// run `load` functions (or rather, get the result of the `load` functions
@@ -106,51 +106,55 @@
 	});
 </script>
 
+{#snippet createButton()}
+	{#if create && create.viewerIsMember}
+		<div class="button">
+			<Button
+				variant="secondary"
+				size="small"
+				as="a"
+				href={create.url}
+				icon={PlusIcon}
+				onclick={async (e) => {
+					if (
+						innerWidth < 640 || // bail if the screen is too small
+						e.shiftKey || // or the link is opened in a new window
+						e.metaKey ||
+						e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
+						// should also consider clicking with a mouse scroll wheel
+					)
+						return;
+
+					// prevent navigation
+					e.preventDefault();
+
+					const { href } = e.currentTarget;
+
+					// run `load` functions (or rather, get the result of the `load` functions
+					// that are already running because of `data-sveltekit-preload-data`)
+					// const result = await preloadData(href);
+					// modalData = result.data;
+
+					// if (result.type === 'loaded' && result.status === 200) {
+					pushState(href, { modalHref: href });
+					// } else {
+					// 	// something bad happened! try navigating
+					// 	goto(href);
+					// }
+				}}
+			>
+				{create.buttonText}
+			</Button>
+		</div>
+	{/if}
+{/snippet}
+
 {#if pageInfo.totalCount}
 	<div class="content-wrapper">
 		<div>
 			{@render description()}
 
-			{#if create}
-				<div class="button">
-					<Button
-						variant="secondary"
-						size="small"
-						as="a"
-						href={create.url}
-						icon={PlusIcon}
-						onclick={async (e) => {
-							if (
-								innerWidth < 640 || // bail if the screen is too small
-								e.shiftKey || // or the link is opened in a new window
-								e.metaKey ||
-								e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-								// should also consider clicking with a mouse scroll wheel
-							)
-								return;
-
-							// prevent navigation
-							e.preventDefault();
-
-							const { href } = e.currentTarget;
-
-							// run `load` functions (or rather, get the result of the `load` functions
-							// that are already running because of `data-sveltekit-preload-data`)
-							// const result = await preloadData(href);
-							// modalData = result.data;
-
-							// if (result.type === 'loaded' && result.status === 200) {
-							pushState(href, { modalHref: href });
-							// } else {
-							// 	// something bad happened! try navigating
-							// 	goto(href);
-							// }
-						}}
-					>
-						{create.buttonText}
-					</Button>
-				</div>
-			{/if}
+			{@render createButton()}
 			<List title="{pageInfo.totalCount} entries">
 				{#snippet menu()}
 					<OrderByMenu {orderField} {defaultOrderField} />
@@ -200,7 +204,7 @@
 	</div>
 {:else}
 	<div class="content-wrapper">
-		{@render notFound()}
+		{@render notFound({ createButton })}
 		<div class="right-column">
 			{#if cdnBucket && viewerIsMember}
 				<div>

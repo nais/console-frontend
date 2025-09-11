@@ -4,9 +4,9 @@
 		OpenSearchMajorVersion,
 		OpenSearchSize,
 		OpenSearchTier,
+		type OpenSearchMajorVersion$options,
 		type OpenSearchSize$options,
-		type OpenSearchTier$options,
-		type OpenSearchMajorVersion$options
+		type OpenSearchTier$options
 	} from '$houdini';
 	import { BodyLong, BodyShort, Button, ErrorMessage, Select } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
@@ -44,7 +44,7 @@
 	);
 	let version = $derived(
 		(form?.version as OpenSearchMajorVersion$options) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.majorVersion ??
+			$UpdateOpenSearchData.data?.team.environment.openSearch.version.desiredMajor ??
 			''
 	);
 </script>

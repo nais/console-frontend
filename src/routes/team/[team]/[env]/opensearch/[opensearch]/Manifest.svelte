@@ -18,7 +18,9 @@
 				name
 				size
 				tier
-				majorVersion
+				version {
+					desiredMajor
+				}
 			}
 		`)
 	);
@@ -33,7 +35,7 @@
 instance = "${niceName}"
 size = "${$data.size}"
 tier = "${$data.tier}"
-${$data.majorVersion ? `version = "${$data.majorVersion}"` : ``}
+${$data.version.desiredMajor ? `version = "${$data.version.desiredMajor}"` : ``}
 	`);
 
 	let modalOpen = $state(false);
