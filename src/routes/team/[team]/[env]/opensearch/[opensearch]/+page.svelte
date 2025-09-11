@@ -55,7 +55,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { OpenSearchInstance, viewerIsMember } = $derived(data);
+	let { OpenSearchInstance, viewerIsMember, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
@@ -82,6 +82,12 @@
 			}
 		);
 	};
+
+	const isManagedByConsole = $derived(
+		!$OpenSearchInstance.data?.team.environment.openSearch.name.startsWith(
+			`opensearch-${teamSlug}-`
+		)
+	);
 </script>
 
 {#if $OpenSearchInstance.errors}
@@ -97,7 +103,7 @@
 
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember}
+			{#if viewerIsMember && isManagedByConsole}
 				<div class="button">
 					<Button
 						as="a"
