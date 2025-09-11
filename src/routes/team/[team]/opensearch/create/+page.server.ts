@@ -27,7 +27,7 @@ export const actions = {
 		const size = data.get('size') as string | null;
 		const version = data.get('version') as string | null;
 
-		if (!name || !environment || !tier || !size) {
+		if (!name || !environment || !tier || !size || !version) {
 			return fail(400, {
 				success: false,
 				error: 'All fields are required',
@@ -47,9 +47,7 @@ export const actions = {
 					teamSlug: params.team,
 					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
 					size: OpenSearchSize[size as keyof typeof OpenSearchSize],
-					version: !version
-						? null
-						: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion]
+					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion]
 				}
 			},
 			{ event }
