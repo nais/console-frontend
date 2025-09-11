@@ -192,7 +192,7 @@
 			</div>
 			<div>
 				<Heading level="3">Version</Heading>
-				<BodyShort>{instance.version}</BodyShort>
+				<BodyShort>{instance.version.actual ?? 'Unknown'}</BodyShort>
 			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
