@@ -8,29 +8,13 @@
 		type OpenSearchSize$options,
 		type OpenSearchTier$options
 	} from '$houdini';
+	import { openSearchPlanCosts } from '$lib/utils/aivencost';
 	import { BodyLong, BodyShort, Button, ErrorMessage, Select } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { form, data }: PageProps = $props();
 
 	const { UpdateOpenSearchData } = $derived(data);
-
-	const planCosts: Record<OpenSearchTier$options, Record<OpenSearchSize$options, number>> = {
-		SINGLE_NODE: {
-			RAM_4GB: 77,
-			RAM_8GB: 154,
-			RAM_16GB: 308,
-			RAM_32GB: 616,
-			RAM_64GB: 1231
-		},
-		HIGH_AVAILABILITY: {
-			RAM_4GB: 235,
-			RAM_8GB: 470,
-			RAM_16GB: 940,
-			RAM_32GB: 1881,
-			RAM_64GB: 3763
-		}
-	};
 
 	let tier = $derived(
 		(form?.tier as OpenSearchTier$options) ??
@@ -76,7 +60,7 @@
 
 	<BodyShort>
 		Estimated cost: <strong
-			>{planCosts[tier][size].toLocaleString('no-NO', {
+			>{openSearchPlanCosts[tier][size].toLocaleString('no-NO', {
 				style: 'currency',
 				currency: 'EUR'
 			})}</strong

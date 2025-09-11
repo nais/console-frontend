@@ -8,6 +8,7 @@
 		type ValkeySize$options,
 		type ValkeyTier$options
 	} from '$houdini';
+	import { valkeyPlanCosts } from '$lib/utils/aivencost';
 	import {
 		BodyLong,
 		BodyShort,
@@ -25,29 +26,6 @@
 	const environments = $derived($CreateValkeyEnvironments.data?.team.environments ?? []);
 
 	const form = $derived(page.form);
-
-	const planCosts: Record<ValkeyTier$options, Record<ValkeySize$options, number>> = {
-		SINGLE_NODE: {
-			RAM_1GB: Infinity,
-			RAM_4GB: 64,
-			RAM_8GB: 128,
-			RAM_14GB: 214,
-			RAM_28GB: 394,
-			RAM_56GB: 651,
-			RAM_112GB: 1277,
-			RAM_200GB: 2554
-		},
-		HIGH_AVAILABILITY: {
-			RAM_1GB: 60,
-			RAM_4GB: 171,
-			RAM_8GB: 342,
-			RAM_14GB: 462,
-			RAM_28GB: 737,
-			RAM_56GB: 1337,
-			RAM_112GB: 2640,
-			RAM_200GB: 5057
-		}
-	};
 
 	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
 	let size = $derived((form?.size as ValkeySize$options) ?? ValkeySize.RAM_1GB);
@@ -100,7 +78,7 @@
 
 	<BodyShort>
 		Estimated cost: <strong
-			>{planCosts[tier][size].toLocaleString('no-NO', {
+			>{valkeyPlanCosts[tier][size].toLocaleString('no-NO', {
 				style: 'currency',
 				currency: 'EUR'
 			})}</strong
