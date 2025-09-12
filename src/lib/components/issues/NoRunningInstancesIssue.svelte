@@ -15,13 +15,13 @@
 </script>
 
 <div class="item">
-	<div>
+	<div class="label">
 		<IssueLabel
 			environmentName={data.teamEnvironment.environment.name}
 			teamSlug={data.teamEnvironment.team.slug}
 			severity={data.severity}
-			workloadName={data.workload.name}
-			{workloadType}
+			resourceName={data.workload.name}
+			resourceType={workloadType}
 		/>
 	</div>
 
@@ -35,5 +35,9 @@
 		display: grid;
 		grid-template-columns: 300px auto;
 		gap: 1rem;
+	}
+	.label {
+		display: flex;
+		align-items: center;
 	}
 </style>

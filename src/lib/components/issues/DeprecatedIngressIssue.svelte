@@ -11,18 +11,18 @@
 </script>
 
 <div class="item">
-	<div>
+	<div class="label">
 		<IssueLabel
 			environmentName={data.teamEnvironment.environment.name}
 			teamSlug={data.teamEnvironment.team.slug}
 			severity={data.severity}
-			workloadName={data.application.name}
-			workloadType="app"
+			resourceName={data.application.name}
+			resourceType="app"
 		/>
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall" spacing>Deprecated Ingress issue</Heading>
+		<Heading level="4" size="xsmall" spacing>Deprecated Ingress</Heading>
 		<BodyShort>
 			{#if data.ingresses.length === 1}
 				Application {data.application.name} is using a deprecated ingress:
@@ -44,7 +44,10 @@
 		grid-template-columns: 300px auto;
 		gap: 1rem;
 	}
-
+	.label {
+		display: flex;
+		align-items: center;
+	}
 	code {
 		font-size: 0.9rem;
 	}

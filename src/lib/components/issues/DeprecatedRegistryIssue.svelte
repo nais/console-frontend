@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -15,17 +15,18 @@
 </script>
 
 <div class="item">
-	<div>
+	<div class="label">
 		<IssueLabel
 			environmentName={data.teamEnvironment.environment.name}
 			teamSlug={data.teamEnvironment.team.slug}
 			severity={data.severity}
-			workloadName={data.workload.name}
-			{workloadType}
+			resourceName={data.workload.name}
+			resourceType={workloadType}
 		/>
 	</div>
 
 	<div>
+		<Heading level="4" size="xsmall" spacing>Deprecated Registry</Heading>
 		<BodyShort>{data.message}</BodyShort>
 	</div>
 </div>
@@ -35,5 +36,9 @@
 		display: grid;
 		grid-template-columns: 300px auto;
 		gap: 1rem;
+	}
+	.label {
+		display: flex;
+		align-items: center;
 	}
 </style>

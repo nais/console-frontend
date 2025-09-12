@@ -107,7 +107,6 @@
 				return SqlInstanceVersionIssue as Component<{ data: unknown }>;
 			case 'ValkeyIssue':
 				return ValkeyIssue as Component<{ data: unknown }>;
-
 			default:
 				return DefaultIssue as Component<{ data: unknown }>;
 		}

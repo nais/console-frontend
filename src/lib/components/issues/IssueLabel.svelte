@@ -8,19 +8,19 @@
 	interface Props {
 		teamSlug: string;
 		environmentName: string;
-		workloadType: 'app' | 'job';
-		workloadName: string;
+		resourceType: 'app' | 'job' | 'opensearch' | 'postgres' | 'valkey';
+		resourceName: string;
 		severity: Severity$options;
 	}
 
-	let { teamSlug, environmentName, workloadType, workloadName, severity }: Props = $props();
+	let { teamSlug, environmentName, resourceType, resourceName, severity }: Props = $props();
 </script>
 
 <IconLabel
 	level="4"
-	href="/team/{teamSlug}/{environmentName}/{workloadType}/{workloadName}"
+	href="/team/{teamSlug}/{environmentName}/{resourceType}/{resourceName}"
 	size="large"
-	label={workloadName}
+	label={resourceName}
 	tag={{
 		label: environmentName,
 		variant: envTagVariant(environmentName)
@@ -36,7 +36,7 @@
 		>
 			<CircleFillIcon
 				style="color: var({{
-					TODO: '--ax-bg-success-strong',
+					TODO: '--ax-bg-info-strong',
 					WARNING: '--ax-bg-warning-moderate-pressed',
 					CRITICAL: '--ax-bg-danger-strong'
 				}[severity] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"

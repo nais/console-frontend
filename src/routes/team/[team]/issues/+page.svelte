@@ -155,7 +155,7 @@
 				>
 					<CircleFillIcon
 						style="color: var({{
-							TODO: '--ax-bg-success-strong',
+							TODO: '--ax-bg-info-strong',
 							WARNING: '--ax-bg-warning-moderate-pressed',
 							CRITICAL: '--ax-bg-danger-strong'
 						}['CRITICAL'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
@@ -174,7 +174,7 @@
 				>
 					<CircleFillIcon
 						style="color: var({{
-							TODO: '--ax-bg-success-strong',
+							TODO: '--ax-bg-info-strong',
 							WARNING: '--ax-bg-warning-moderate-pressed',
 							CRITICAL: '--ax-bg-danger-strong'
 						}['WARNING'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
@@ -193,7 +193,7 @@
 				>
 					<CircleFillIcon
 						style="color: var({{
-							TODO: '--ax-bg-success-strong',
+							TODO: '--ax-bg-info-strong',
 							WARNING: '--ax-bg-warning-moderate-pressed',
 							CRITICAL: '--ax-bg-danger-strong'
 						}['TODO'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
