@@ -10,15 +10,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		BodyLong,
-		Button,
-		CopyButton,
-		Heading,
-		Loader,
-		Search,
-		Tag
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import {
 		ChevronDownIcon,
@@ -29,7 +21,7 @@
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
-	let { Alerts, tenantName } = $derived(data);
+	let { Alerts, AlertsMetadata, tenantName } = $derived(data);
 
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
@@ -51,15 +43,13 @@
 		return `${cleanBase}/query?${params.toString()}`;
 	}
 
+	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
+
 	const allEnvs = $derived(
-		$Alerts.data?.team.environments.map((env) => env.environment.name) ?? []
+		$AlertsMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
-	let filteredEnvs = $derived(
-		page.url.searchParams.get('environments') === 'none'
-			? []
-			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
-	);
+	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
 	$effect(() => {
 		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
@@ -89,19 +79,16 @@
 <div class="wrapper">
 	<div>
 		<BodyLong spacing>
-			{#if $Alerts.data?.team.alerts.pageInfo.totalCount == 0}
-				<strong>No alerts found.</strong> Alerts notify you when something needs your attention.
-				<ExternalLink href={docURL('/observability/alerting')}
-					>Learn more about alerts and how to get started.</ExternalLink
-				>
-			{:else}
-				Alerts notify you when something needs your attention.
-				<ExternalLink href={docURL('/observability/alerting')}
-					>Learn more about alerts and how to get started.</ExternalLink
-				>
+			{#if totalAlerts == 0}
+				<strong>No alerts found.</strong>
 			{/if}
+			Alerts notify you when something needs your attention.
+			<ExternalLink href={docURL('/observability/alerting')}
+				>Learn more about alerts and how to get started.</ExternalLink
+			>
 		</BodyLong>
-		{#if $Alerts.data?.team.totalAlerts?.pageInfo?.totalCount ?? 0 > 0}
+		{#if totalAlerts > 0}
+			{@const alerts = $Alerts.data?.team.alerts}
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -127,19 +114,12 @@
 					/>
 				</form>
 			</div>
-		{/if}
-		{#if $Alerts.fetching}
-			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
-				<Loader size="3xlarge" />
-			</div>
-		{:else if $Alerts.data && $Alerts.data?.team.totalAlerts.pageInfo.totalCount > 0}
-			{@const page = $Alerts.data.team.alerts}
 
 			<List
-				title="{page.pageInfo.totalCount} alert rule{page.pageInfo.totalCount !== 1 ? 's' : ''}
-						{page.pageInfo.totalCount !== $Alerts.data.team.totalAlerts.pageInfo.totalCount
-					? `(of total ${$Alerts.data.team.totalAlerts.pageInfo.totalCount})`
-					: ''}"
+				title="{alerts?.pageInfo.totalCount} alert rule{alerts?.pageInfo.totalCount !== 1
+					? 's'
+					: ''}
+						{alerts?.pageInfo.totalCount !== totalAlerts ? `(of total ${totalAlerts})` : ''}"
 			>
 				{#snippet menu()}
 					<ActionMenu>
@@ -180,7 +160,7 @@
 					</ActionMenu>
 					<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
 				{/snippet}
-				{#each page.nodes as alert (alert.id)}
+				{#each alerts?.nodes ?? [] as alert (alert.id)}
 					<details class="item">
 						<summary class="head">
 							<div class="chev">
@@ -256,11 +236,11 @@
 			</List>
 
 			<Pagination
-				page={page.pageInfo}
+				page={alerts?.pageInfo}
 				loaders={{
 					loadPreviousPage: () =>
-						changeQuery({ before: page.pageInfo.startCursor ?? '', after: '' }),
-					loadNextPage: () => changeQuery({ after: page.pageInfo.endCursor ?? '', before: '' })
+						changeQuery({ before: alerts?.pageInfo.startCursor ?? '', after: '' }),
+					loadNextPage: () => changeQuery({ after: alerts?.pageInfo.endCursor ?? '', before: '' })
 				}}
 			/>
 		{/if}

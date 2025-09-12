@@ -1,4 +1,4 @@
-import { AlertOrderField, load_Alerts, OrderDirection } from '$houdini';
+import { AlertOrderField, load_Alerts, load_AlertsMetadata, OrderDirection } from '$houdini';
 import type { TeamAlertsFilter } from '$houdini/runtime/generated';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 
@@ -25,6 +25,12 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		})),
+		...(await load_AlertsMetadata({
+			event,
+			variables: {
+				team: event.params.team
 			}
 		}))
 	};
