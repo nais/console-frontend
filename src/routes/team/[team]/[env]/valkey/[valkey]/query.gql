@@ -1,4 +1,5 @@
-query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: ValkeyAccessOrder!) {
+query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: ValkeyAccessOrder!)
+@cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		slug
 		environment(name: $environment) {
@@ -6,6 +7,9 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 				__typename
 				id
 				name
+				tier
+				size
+				maxMemoryPolicy
 				teamEnvironment {
 					environment {
 						name
@@ -81,6 +85,8 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 						}
 					}
 				}
+
+				...ValkeyManifestFragment
 			}
 		}
 	}

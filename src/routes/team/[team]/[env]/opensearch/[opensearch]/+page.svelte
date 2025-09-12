@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
@@ -18,8 +19,9 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import Manifest from './Manifest.svelte';
 
 	const runServiceMaintenance = graphql(`
 		mutation runOpenSearchMaintenance(
@@ -53,7 +55,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { OpenSearchInstance, viewerIsMember } = $derived(data);
+	let { OpenSearchInstance, viewerIsMember, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
@@ -80,6 +82,12 @@
 			}
 		);
 	};
+
+	const isManagedByConsole = $derived(
+		!$OpenSearchInstance.data?.team.environment.openSearch.name.startsWith(
+			`opensearch-${teamSlug}-`
+		)
+	);
 </script>
 
 {#if $OpenSearchInstance.errors}
@@ -95,6 +103,30 @@
 
 	<div class="wrapper">
 		<div>
+			{#if viewerIsMember && isManagedByConsole}
+				<div class="button">
+					<Button
+						as="a"
+						variant="secondary"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+							.opensearch}/edit"
+						icon={PencilIcon}
+					>
+						Edit OpenSearch
+					</Button>
+					<Button
+						as="a"
+						variant="danger"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+							.opensearch}/delete"
+						icon={TrashIcon}
+					>
+						Delete OpenSearch
+					</Button>
+				</div>
+			{/if}
 			<div class="spacing">
 				<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
 
@@ -191,8 +223,13 @@
 				<BodyShort>{instance.status.state}</BodyShort>
 			</div>
 			<div>
+				<Heading level="3">Settings</Heading>
+				<BodyShort>Tier: {instance.tier}</BodyShort>
+				<BodyShort>Size: {instance.size}</BodyShort>
+			</div>
+			<div>
 				<Heading level="3">Version</Heading>
-				<BodyShort>{instance.version}</BodyShort>
+				<BodyShort>{instance.version.actual ?? 'Unknown'}</BodyShort>
 			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
@@ -201,6 +238,8 @@
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>
 			{/if}
+
+			<Manifest openSearch={instance} teamSlug={page.params.team!} />
 		</div>
 	</div>
 {/if}
@@ -226,5 +265,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.button {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--ax-space-8);
 	}
 </style>

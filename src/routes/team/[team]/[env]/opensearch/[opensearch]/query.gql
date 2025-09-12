@@ -11,7 +11,12 @@ query OpenSearchInstance(
 				__typename
 				id
 				name
-				version
+				version {
+					actual
+					desiredMajor
+				}
+				tier
+				size
 				teamEnvironment {
 					environment {
 						name
@@ -87,6 +92,7 @@ query OpenSearchInstance(
 						}
 					}
 				}
+				...OpenSearchManifestFragment
 			}
 		}
 	}
