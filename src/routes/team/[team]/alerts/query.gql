@@ -9,11 +9,6 @@ query Alerts(
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
-		totalAlerts: alerts {
-			pageInfo {
-				totalCount
-			}
-		}
 		alerts(
 			first: $first
 			last: $last
@@ -56,11 +51,6 @@ query Alerts(
 						name
 					}
 				}
-			}
-		}
-		totalAlerts: alerts {
-			pageInfo {
-				totalCount
 			}
 		}
 		environments {

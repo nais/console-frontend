@@ -1,6 +1,7 @@
 import {
 	ApplicationOrderField,
 	load_Applications,
+	load_ApplicationsListMetadata,
 	OrderDirection,
 	type TeamApplicationsFilter
 } from '$houdini';
@@ -27,6 +28,12 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		})),
+		...(await load_ApplicationsListMetadata({
+			event,
+			variables: {
+				team: event.params.team
 			}
 		}))
 	};

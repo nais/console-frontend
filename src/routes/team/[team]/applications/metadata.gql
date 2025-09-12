@@ -1,0 +1,15 @@
+query ApplicationsListMetadata($team: Slug!) @cache(policy: CacheAndNetwork) {
+	team(slug: $team) {
+		environments {
+			id
+			environment {
+				name
+			}
+		}
+		totalApplications: applications {
+			pageInfo {
+				totalCount
+			}
+		}
+	}
+}

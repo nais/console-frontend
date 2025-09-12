@@ -1,0 +1,15 @@
+query JobsListMetadata($team: Slug!) @cache(policy: CacheAndNetwork) {
+	team(slug: $team) {
+		environments {
+			id
+			environment {
+				name
+			}
+		}
+		totalJobs: jobs {
+			pageInfo {
+				totalCount
+			}
+		}
+	}
+}

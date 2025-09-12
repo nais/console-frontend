@@ -1,0 +1,15 @@
+query AlertsMetadata($team: Slug!) @cache(policy: CacheAndNetwork) {
+	team(slug: $team) {
+		environments {
+			id
+			environment {
+				name
+			}
+		}
+		totalAlerts: alerts {
+			pageInfo {
+				totalCount
+			}
+		}
+	}
+}

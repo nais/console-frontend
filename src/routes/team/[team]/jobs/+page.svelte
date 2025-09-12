@@ -10,26 +10,24 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Loader, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Jobs } = $derived(data);
+	let { Jobs, JobsListMetadata, teamSlug } = $derived(data);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
+	const totalJobs = $derived($JobsListMetadata.data?.team.totalJobs.pageInfo.totalCount ?? 0);
+
 	const allEnvs = $derived($Jobs.data?.team.environments.map((env) => env.environment.name) ?? []);
 
-	let filteredEnvs = $derived(
-		page.url.searchParams.get('environments') === 'none'
-			? []
-			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
-	);
+	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
 	$effect(() => {
 		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
@@ -61,18 +59,15 @@
 <div class="wrapper">
 	<div class="content">
 		<BodyLong spacing>
-			{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount == 0}
-				<strong>No jobs found.</strong> Jobs are used for one-time or scheduled tasks that run to
-				completion and then exit.
-				<ExternalLink href={docURL('/workloads/job')}
-					>Learn more about jobs and how to get started.</ExternalLink
-				>
+			{#if totalJobs == 0}
+				<strong>No jobs found.</strong>
 			{:else}
 				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
 				<ExternalLink href={docURL('/workloads/job')}>Learn more about jobs.</ExternalLink>
 			{/if}
 		</BodyLong>
-		{#if $Jobs.data?.team.totalJobs?.pageInfo?.totalCount ?? 0 > 0}
+		{#if totalJobs > 0}
+			{@const jobs = $Jobs.data?.team.jobs}
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -98,18 +93,10 @@
 					/>
 				</form>
 			</div>
-		{/if}
-		{#if $Jobs.fetching}
-			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
-				<Loader size="3xlarge" />
-			</div>
-		{:else if $Jobs.data && $Jobs.data?.team.totalJobs.pageInfo.totalCount > 0}
-			{@const jobs = $Jobs.data.team.jobs}
+
 			<List
-				title="{jobs.pageInfo.totalCount} job{jobs.pageInfo.totalCount !== 1 ? 's' : ''}
-						{jobs.pageInfo.totalCount !== $Jobs.data.team.totalJobs.pageInfo.totalCount
-					? `(of total ${$Jobs.data.team.totalJobs.pageInfo.totalCount})`
-					: ''}"
+				title="{jobs?.pageInfo.totalCount} job{jobs?.pageInfo.totalCount !== 1 ? 's' : ''}
+						{jobs?.pageInfo.totalCount !== totalJobs ? `(of total ${totalJobs})` : ''}"
 			>
 				{#snippet menu()}
 					<ActionMenu>
@@ -148,32 +135,26 @@
 					</ActionMenu>
 					<OrderByMenu orderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
 				{/snippet}
-				{#each jobs.nodes as job (job.id)}
+				{#each jobs?.nodes ?? [] as job (job.id)}
 					<JobListItem {job} />
 				{/each}
 			</List>
 			<Pagination
-				page={jobs.pageInfo}
+				page={jobs?.pageInfo}
 				loaders={{
 					loadPreviousPage: () => {
-						changeQuery({ after: '', before: jobs.pageInfo.startCursor ?? '' });
+						changeQuery({ after: '', before: jobs?.pageInfo.startCursor ?? '' });
 					},
 					loadNextPage: () => {
-						changeQuery({ before: '', after: jobs.pageInfo.endCursor ?? '' });
+						changeQuery({ before: '', after: jobs?.pageInfo.endCursor ?? '' });
 					}
 				}}
 			/>
 		{/if}
 	</div>
-	<div>
-		{#if $Jobs.data?.team.slug}
-			{#if $Jobs.data?.team.totalJobs.pageInfo.totalCount > 0}
-				{@const teamSlug = $Jobs.data.team.slug}
-				<AggregatedCostForJobs
-					{teamSlug}
-					totalCount={$Jobs.data?.team.totalJobs.pageInfo.totalCount}
-				/>
-			{/if}
+	<div class="right-column">
+		{#if totalJobs > 0}
+			<AggregatedCostForJobs {teamSlug} totalCount={totalJobs} />
 		{/if}
 	</div>
 </div>
@@ -183,6 +164,10 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-24);
 	}
 	.search {
 		display: flex;

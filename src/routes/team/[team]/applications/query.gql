@@ -6,20 +6,8 @@ query Applications(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: NetworkOnly) {
+) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
-		slug
-		environments {
-			id
-			environment {
-				name
-			}
-		}
-		totalApplications: applications {
-			pageInfo {
-				totalCount
-			}
-		}
 		applications(
 			first: $first
 			last: $last
