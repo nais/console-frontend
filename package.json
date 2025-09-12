@@ -28,7 +28,7 @@
 		"@storybook/addon-themes": "^9.1.5",
 		"@storybook/sveltekit": "^9.1.5",
 		"@sveltejs/adapter-node": "^5.3.2",
-		"@sveltejs/kit": "2.38.1",
+		"@sveltejs/kit": "2.39.0",
 		"@sveltejs/vite-plugin-svelte": "^6.2.0",
 		"@types/amplitude-js": "^8.16.5",
 		"@types/luxon": "^3.7.1",
