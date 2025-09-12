@@ -2208,11 +2208,13 @@ enum IssueType {
   FAILED_JOB_RUNS
   FAILED_SYNCHRONIZATION
   INVALID_SPEC
+  MISSING_SBOM
   NO_RUNNING_INSTANCES
   OPENSEARCH
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   VALKEY
+  VULNERABLE_IMAGE
 }
 
 type Job implements ActivityLogger & Node & Workload {
@@ -2782,6 +2784,14 @@ Read more: https://docs.nais.io/auth/maskinporten/
 type MaskinportenAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
+}
+
+type MissingSbomIssue implements Issue & Node {
+  id: ID!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
 }
 
 """The mutation root for the Nais GraphQL API."""
@@ -7521,6 +7531,16 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type VulnerableImageIssue implements Issue & Node {
+  critical: Int!
+  id: ID!
+  message: String!
+  riskScore: Int!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
 }
 
 """The days of the week."""
