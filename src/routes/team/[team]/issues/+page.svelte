@@ -4,7 +4,6 @@
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -20,20 +19,18 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamIssues } = $derived(data);
+	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
 
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
 	let before: string = $derived($TeamIssues.variables?.before ?? '');
 
+	const totalIssues = $derived($TeamIssuesMetadata.data?.team.total.pageInfo.totalCount ?? 0);
+
 	const allEnvs = $derived(
-		$TeamIssues.data?.team.environments.map((env) => env.environment.name) ?? []
+		$TeamIssuesMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
-	let filteredEnvs = $derived(
-		page.url.searchParams.get('environments') === 'none'
-			? []
-			: (page.url.searchParams.get('environments')?.split(',') ?? allEnvs)
-	);
+	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
 	$effect(() => {
 		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
@@ -63,13 +60,13 @@
 <GraphErrors errors={$TeamIssues.errors} />
 
 <div class="wrapper">
-	{#if $TeamIssues.data}
-		{@const issues = $TeamIssues.data.team.issues}
+	{#if totalIssues > 0}
+		{@const issues = $TeamIssues.data?.team.issues}
 		<div>
 			<List
-				title="{issues.pageInfo.totalCount} issue{issues.pageInfo.totalCount !== 1 ? 's' : ''}
-						{issues.pageInfo.totalCount !== $TeamIssues.data.team.total.pageInfo.totalCount
-					? `(of total ${$TeamIssues.data.team.total.pageInfo.totalCount})`
+				title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
+						{issues?.pageInfo.totalCount !== $TeamIssues.data?.team.total.pageInfo.totalCount
+					? `(of total ${$TeamIssues.data?.team.total.pageInfo.totalCount})`
 					: ''}"
 			>
 				{#snippet menu()}
@@ -130,82 +127,51 @@
 					</ActionMenu>
 					<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />
 				{/snippet}
-				{#each issues.nodes as issue (issue.id)}
+				{#each issues?.nodes ?? [] as issue (issue.id)}
 					<IssueListItem item={issue} />
 				{/each}
 			</List>
 			<Pagination
-				page={issues.pageInfo}
+				page={issues?.pageInfo}
 				loaders={{
 					loadPreviousPage: () =>
-						changeQuery({ before: issues.pageInfo.startCursor ?? '', after: '' }),
-					loadNextPage: () => changeQuery({ after: issues.pageInfo.endCursor ?? '', before: '' })
+						changeQuery({ before: issues?.pageInfo.startCursor ?? '', after: '' }),
+					loadNextPage: () => changeQuery({ after: issues?.pageInfo.endCursor ?? '', before: '' })
 				}}
 			/>
 		</div>
-		<div>
-			<div class="card">
-				<Heading level="3" size="medium" spacing>Issue summary</Heading>
-				<TooltipAlignHack
-					content={{
-						TODO: 'Todo',
-						WARNING: 'Warning',
-						CRITICAL: 'Critical'
-					}['CRITICAL'] ?? ''}
+	{:else}
+		<div>No issues found</div>
+	{/if}
+
+	<div>
+		<div class="card">
+			<Heading level="3" size="medium" spacing>Issue summary</Heading>
+			<div class="summary critical">
+				<CircleFillIcon />
+				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
+					>{$TeamIssues.data?.team.critical.pageInfo.totalCount}
+					critical issue{$TeamIssues.data?.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found</span
 				>
-					<CircleFillIcon
-						style="color: var({{
-							TODO: '--ax-bg-info-strong',
-							WARNING: '--ax-bg-warning-moderate-pressed',
-							CRITICAL: '--ax-bg-danger-strong'
-						}['CRITICAL'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-					/>
-					<span style="font-size: 1.2rem; font-weight: bold"
-						>{$TeamIssues.data.team.critical.pageInfo.totalCount}
-						critical issue{$TeamIssues.data.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-					>
-				</TooltipAlignHack>
-				<TooltipAlignHack
-					content={{
-						TODO: 'Todo',
-						WARNING: 'Warning',
-						CRITICAL: 'Critical'
-					}['WARNING'] ?? ''}
+			</div>
+			<div class="summary warning">
+				<CircleFillIcon />
+				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
+					>{$TeamIssues.data?.team.warnings.pageInfo.totalCount}
+					warning{$TeamIssues.data?.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found</span
 				>
-					<CircleFillIcon
-						style="color: var({{
-							TODO: '--ax-bg-info-strong',
-							WARNING: '--ax-bg-warning-moderate-pressed',
-							CRITICAL: '--ax-bg-danger-strong'
-						}['WARNING'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-					/>
-					<span style="font-size: 1.2rem; font-weight: bold"
-						>{$TeamIssues.data.team.warnings.pageInfo.totalCount}
-						warning{$TeamIssues.data.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-					>
-				</TooltipAlignHack>
-				<TooltipAlignHack
-					content={{
-						TODO: 'Todo',
-						WARNING: 'Warning',
-						CRITICAL: 'Critical'
-					}['TODO'] ?? ''}
+			</div>
+
+			<div class="summary todo">
+				<CircleFillIcon />
+
+				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
+					>{$TeamIssues.data?.team.todos.pageInfo.totalCount}
+					todo{$TeamIssues.data?.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found</span
 				>
-					<CircleFillIcon
-						style="color: var({{
-							TODO: '--ax-bg-info-strong',
-							WARNING: '--ax-bg-warning-moderate-pressed',
-							CRITICAL: '--ax-bg-danger-strong'
-						}['TODO'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-					/>
-					<span style="font-size: 1.2rem; font-weight: bold"
-						>{$TeamIssues.data.team.todos.pageInfo.totalCount}
-						todo{$TeamIssues.data.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-					>
-				</TooltipAlignHack>
 			</div>
 		</div>
-	{/if}
+	</div>
 </div>
 
 <style>
@@ -223,5 +189,20 @@
 		border-radius: 12px;
 		align-items: stretch;
 		padding-bottom: var(--ax-space-32);
+	}
+	.summary {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-16);
+	}
+
+	.todo {
+		color: light-dark(var(--ax-bg-info-strong), var(--ax-bg-info-strong));
+	}
+	.warning {
+		color: light-dark(var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed));
+	}
+	.critical {
+		color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong));
 	}
 </style>

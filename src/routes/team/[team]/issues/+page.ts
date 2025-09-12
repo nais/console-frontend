@@ -1,4 +1,10 @@
-import { IssueOrderField, load_TeamIssues, OrderDirection, type IssueFilter } from '$houdini';
+import {
+	IssueOrderField,
+	load_TeamIssues,
+	load_TeamIssuesMetadata,
+	OrderDirection,
+	type IssueFilter
+} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 
 const rows = 25;
@@ -22,6 +28,12 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		})),
+		...(await load_TeamIssuesMetadata({
+			event,
+			variables: {
+				team: event.params.team
 			}
 		}))
 	};

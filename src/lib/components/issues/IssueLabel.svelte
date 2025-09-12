@@ -41,11 +41,11 @@
 			}[severity] ?? ''}
 		>
 			<CircleFillIcon
-				style="color: var({{
-					TODO: '--ax-bg-info-strong',
-					WARNING: '--ax-bg-warning-moderate-pressed',
-					CRITICAL: '--ax-bg-danger-strong'
-				}[severity] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+				style="color: light-dark({{
+					TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
+					WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)',
+					CRITICAL: 'var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)'
+				}[severity] ?? 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
 			/>
 		</TooltipAlignHack>
 	{/snippet}

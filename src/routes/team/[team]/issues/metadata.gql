@@ -1,0 +1,31 @@
+query TeamIssuesMetadata($team: Slug!) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		environments {
+			id
+			environment {
+				name
+			}
+		}
+
+		todos: issues(filter: { severity: TODO }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		warnings: issues(filter: { severity: WARNING }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		critical: issues(filter: { severity: CRITICAL }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		total: issues {
+			pageInfo {
+				totalCount
+			}
+		}
+	}
+}

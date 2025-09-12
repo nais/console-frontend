@@ -53,12 +53,13 @@
 				}[job.status.state] ?? ''}
 			>
 				<CircleFillIcon
-					style="color: var({{
-						NAIS: '--ax-bg-success-strong',
-						FAILING: '--ax-bg-danger-strong',
-						NOT_NAIS: '--ax-bg-warning-moderate-pressed',
-						UNKNOWN: '--ax-bg-info-strong'
-					}[job.status.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+					style="color: light-dark({{
+						NAIS: 'var(--ax-bg-success-strong), var(--ax-bg-success-strong)',
+						FAILING: 'var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)',
+						NOT_NAIS: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)',
+						UNKNOWN: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'
+					}[job.status.state] ??
+						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
 				/>
 			</TooltipAlignHack>
 		{/snippet}
