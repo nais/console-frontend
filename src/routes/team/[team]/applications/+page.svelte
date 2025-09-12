@@ -10,21 +10,25 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Loader, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Applications } = $derived(data);
+	let { Applications, ApplicationsListMetadata, teamSlug } = $derived(data);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Applications.variables?.after ?? '');
 	let before: string = $derived($Applications.variables?.before ?? '');
 
+	const totalApplications = $derived(
+		$ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
+	);
+
 	const allEnvs = $derived(
-		$Applications.data?.team.environments.map((env) => env.environment.name) ?? []
+		$ApplicationsListMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
@@ -59,21 +63,17 @@
 <div class="wrapper">
 	<div>
 		<BodyLong spacing>
-			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount == 0}
-				<strong>No applications found.</strong> Applications are long-running processes designed to
-				handle continuous workloads and remain active until stopped or restarted.
-				<ExternalLink href={docURL('/workloads/application')}
-					>Learn more about applications and how to get started.</ExternalLink
-				>
-			{:else}
-				Applications are long-running processes designed to handle continuous workloads and remain
-				active until stopped or restarted.
-				<ExternalLink href={docURL('/workloads/application')}
-					>Learn more about applications.</ExternalLink
-				>
+			{#if totalApplications == 0}
+				<strong>No applications found.</strong>
 			{/if}
+			Applications are long-running processes designed to handle continuous workloads and remain active
+			until stopped or restarted.
+			<ExternalLink href={docURL('/workloads/application')}
+				>Learn more about applications and how to get started.</ExternalLink
+			>
 		</BodyLong>
-		{#if $Applications.data?.team.totalApplications?.pageInfo?.totalCount ?? 0 > 0}
+		{#if totalApplications > 0}
+			{@const apps = $Applications.data?.team.applications}
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -99,19 +99,12 @@
 					/>
 				</form>
 			</div>
-		{/if}
-		{#if $Applications.fetching}
-			<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
-				<Loader size="3xlarge" />
-			</div>
-		{:else if $Applications.data && $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
-			{@const apps = $Applications.data.team.applications}
 
 			<List
-				title="{apps.pageInfo.totalCount} application{apps.pageInfo.totalCount !== 1 ? 's' : ''}
-						{apps.pageInfo.totalCount !== $Applications.data.team.totalApplications.pageInfo.totalCount
-					? `(of total ${$Applications.data.team.totalApplications.pageInfo.totalCount})`
-					: ''}"
+				title="{apps?.pageInfo.totalCount ?? 0} application{apps?.pageInfo.totalCount !== 1
+					? 's'
+					: ''}
+						{apps?.pageInfo.totalCount !== totalApplications ? `(of total ${totalApplications})` : ''}"
 			>
 				{#snippet menu()}
 					<ActionMenu>
@@ -127,7 +120,7 @@
 							</Button>
 						{/snippet}
 						<ActionMenuCheckboxItem
-							checked={$Applications.data?.team.environments.every((env) =>
+							checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
 								filteredEnvs.includes(env.environment.name)
 							)
 								? true
@@ -138,7 +131,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Applications.data?.team.environments ?? [] as { environment, id } (id)}
+						{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(environment.name)}
 								onchange={(checked) =>
@@ -155,32 +148,26 @@
 						defaultOrderField={ApplicationOrderField.STATUS}
 					/>
 				{/snippet}
-				{#each apps.nodes as app (app.id)}
+				{#each apps?.nodes ?? [] as app (app.id)}
 					<AppListItem {app} />
 				{/each}
 			</List>
 			<Pagination
-				page={apps.pageInfo}
+				page={apps?.pageInfo}
 				loaders={{
 					loadPreviousPage: () => {
-						changeQuery({ before: apps.pageInfo.startCursor ?? '', after: '' });
+						changeQuery({ before: apps?.pageInfo.startCursor ?? '', after: '' });
 					},
 					loadNextPage: () => {
-						changeQuery({ after: apps.pageInfo.endCursor ?? '', before: '' });
+						changeQuery({ after: apps?.pageInfo.endCursor ?? '', before: '' });
 					}
 				}}
 			/>
 		{/if}
 	</div>
 	<div class="right-column">
-		{#if $Applications.data?.team.slug}
-			{#if $Applications.data?.team.totalApplications.pageInfo.totalCount > 0}
-				{@const teamSlug = $Applications.data.team.slug}
-				<AggregatedCostForApplications
-					{teamSlug}
-					totalCount={$Applications.data?.team.totalApplications.pageInfo.totalCount}
-				/>
-			{/if}
+		{#if totalApplications > 0}
+			<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
 		{/if}
 	</div>
 </div>
