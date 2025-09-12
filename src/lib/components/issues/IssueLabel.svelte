@@ -24,9 +24,8 @@
 </script>
 
 <IconLabel
-	level="4"
 	href="/team/{teamSlug}/{environmentName}/{resourceType}/{resourceName}"
-	size="large"
+	size="small"
 	tag={{
 		label: environmentName,
 		variant: envTagVariant(environmentName)

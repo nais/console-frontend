@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -20,9 +20,9 @@
 			resourceType="job"
 		/>
 	</div>
-
 	<div>
-		<BodyShort>{data.message}</BodyShort>
+		<Heading level="4" size="xsmall" spacing>Job has failed runs</Heading>
+		<Detail>{data.message}</Detail>
 	</div>
 </div>
 

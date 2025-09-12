@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -26,12 +26,12 @@
 			<Heading level="4" size="xsmall" spacing>
 				{data.openSearch.name} is low on disk space
 			</Heading>
-			<BodyShort
+			<Detail
 				>Your OpenSearch service {data.openSearch.name} is low on disk space. Write operations will be
-				denied and other functionality may become unavailable.</BodyShort
+				denied and other functionality may become unavailable.</Detail
 			>
 		{:else}
-			<BodyShort>{data.message}</BodyShort>
+			<Detail>{data.message}</Detail>
 		{/if}
 	</div>
 </div>

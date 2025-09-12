@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -27,14 +27,14 @@
 
 	<div>
 		<Heading level="4" size="xsmall" spacing>Deprecated Registry</Heading>
-		<BodyShort>{data.message}</BodyShort>
+		<Detail><span style="word-break: break-word;">{data.message}</span></Detail>
 	</div>
 </div>
 
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 300px 1fr;
 		gap: 1rem;
 	}
 	.label {

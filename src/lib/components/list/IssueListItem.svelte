@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { fragment, graphql, type IssueFragment, type IssueFragment$data } from '$houdini';
+	import DefaultIssue from '$lib/components/issues/DefaultIssue.svelte';
+	import DeprecatedIngressIssue from '$lib/components/issues/DeprecatedIngressIssue.svelte';
+	import DeprecatedRegistryIssue from '$lib/components/issues/DeprecatedRegistryIssue.svelte';
+	import FailedJobRunsIssue from '$lib/components/issues/FailedJobRunsIssue.svelte';
+	import NoRunningInstancesIssue from '$lib/components/issues/NoRunningInstancesIssue.svelte';
+	import OpenSearchIssue from '$lib/components/issues/OpenSearchIssue.svelte';
+	import SqlInstanceStateIssue from '$lib/components/issues/SqlInstanceStateIssue.svelte';
+	import SqlInstanceVersionIssue from '$lib/components/issues/SqlInstanceVersionIssue.svelte';
+	import ValkeyIssue from '$lib/components/issues/ValkeyIssue.svelte';
 	import type { Component } from 'svelte';
-	import DefaultIssue from '../issues/DefaultIssue.svelte';
-	import DeprecatedIngressIssue from '../issues/DeprecatedIngressIssue.svelte';
-	import DeprecatedRegistryIssue from '../issues/DeprecatedRegistryIssue.svelte';
-	import FailedJobRunsIssue from '../issues/FailedJobRunsIssue.svelte';
-	import NoRunningInstancesIssue from '../issues/NoRunningInstancesIssue.svelte';
-	import OpenSearchIssue from '../issues/OpenSearchIssue.svelte';
-	import SqlInstanceStateIssue from '../issues/SqlInstanceStateIssue.svelte';
-	import SqlInstanceVersionIssue from '../issues/SqlInstanceVersionIssue.svelte';
-	import ValkeyIssue from '../issues/ValkeyIssue.svelte';
 	import ListItem from './ListItem.svelte';
 
 	interface Props {

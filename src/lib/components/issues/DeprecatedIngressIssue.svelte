@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -23,18 +23,16 @@
 
 	<div>
 		<Heading level="4" size="xsmall" spacing>Deprecated Ingress</Heading>
-		<BodyShort>
+		<Detail>
 			{#if data.ingresses.length === 1}
 				Application {data.application.name} is using a deprecated ingress:
 			{:else}
 				Application {data.application.name} is using deprecated ingresses:
 			{/if}
-		</BodyShort>
-		<ul>
-			{#each data.ingresses as ingress (ingress)}
-				<li><code>{ingress}</code></li>
-			{/each}
-		</ul>
+		</Detail>
+		{#each data.ingresses as ingress (ingress)}
+			<Detail><span style="word-break: break-word;">{ingress}</span></Detail>
+		{/each}
 	</div>
 </div>
 
@@ -47,15 +45,5 @@
 	.label {
 		display: flex;
 		align-items: center;
-	}
-	code {
-		font-size: 0.9rem;
-	}
-	ul {
-		margin: 0;
-		padding: 0.2rem 0 0rem 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-4);
 	}
 </style>

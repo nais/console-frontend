@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IssueFragment$data } from '$houdini';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
 
 	let {
@@ -23,7 +23,7 @@
 
 	<div>
 		<Heading level="4" size="xsmall" spacing>Valkey issue</Heading>
-		<BodyShort>{data.message}</BodyShort>
+		<Detail>{data.message}</Detail>
 	</div>
 </div>
 
