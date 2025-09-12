@@ -58,7 +58,7 @@
 <style>
 	.team-info {
 		display: grid;
-		grid-template-columns: 2fr 1fr;
+		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 		margin-top: calc(-1 * var(--spacing-layout));
 	}
