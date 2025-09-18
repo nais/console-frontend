@@ -305,7 +305,7 @@
 					)}>{$data.resourceName}</a
 				>
 			{:else if $data.__typename === 'ClusterAuditActivityLogEntry'}
-				{$data.clusterAuditData?.action}ed
+				{$data.clusterAuditData?.action}
 				{$data.clusterAuditData?.resourceKind.toLowerCase()}
 				<a
 					href={resourceLink(
