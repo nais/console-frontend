@@ -3224,6 +3224,9 @@ type OpenSearchMaintenanceUpdateEdge {
 }
 
 enum OpenSearchMajorVersion {
+  """OpenSearch Version 1.x"""
+  V1
+
   """OpenSearch Version 2.x"""
   V2
 }
