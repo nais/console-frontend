@@ -12,6 +12,8 @@
 	import SqlInstanceVersionIssue from '$lib/components/issues/SqlInstanceVersionIssue.svelte';
 	import ValkeyIssue from '$lib/components/issues/ValkeyIssue.svelte';
 	import type { Component } from 'svelte';
+	import MissingSbomIssue from '../issues/MissingSbomIssue.svelte';
+	import VulnerableImageIssue from '../issues/VulnerableImageIssue.svelte';
 	import ListItem from './ListItem.svelte';
 
 	interface Props {
@@ -134,7 +136,9 @@
 			case 'InvalidSpecIssue':
 				return InvalidSpecIssue as Component<{ data: unknown }>;
 			case 'MissingSbomIssue':
+				return MissingSbomIssue as Component<{ data: unknown }>;
 			case 'VulnerableImageIssue':
+				return VulnerableImageIssue as Component<{ data: unknown }>;
 			case 'NoRunningInstancesIssue':
 				return NoRunningInstancesIssue as Component<{ data: unknown }>;
 			case 'OpenSearchIssue':
