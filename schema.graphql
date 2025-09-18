@@ -3242,6 +3242,7 @@ enum OpenSearchOrderField {
 }
 
 enum OpenSearchSize {
+  RAM_2GB
   RAM_4GB
   RAM_8GB
   RAM_16GB
