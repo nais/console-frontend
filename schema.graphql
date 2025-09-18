@@ -1171,7 +1171,7 @@ input CreateOpenSearchInput {
   tier: OpenSearchTier!
 
   """Major version of the OpenSearch instance."""
-  version: OpenSearchMajorVersion
+  version: OpenSearchMajorVersion!
 }
 
 type CreateOpenSearchPayload {
@@ -3044,7 +3044,6 @@ type OpenSearch implements Node & Persistence {
 
   """Fetch maintenances updates for the OpenSearch instance."""
   maintenance: OpenSearchMaintenance!
-  majorVersion: OpenSearchMajorVersion!
   name: String!
   size: OpenSearchSize!
   status: OpenSearchStatus!
@@ -3054,7 +3053,7 @@ type OpenSearch implements Node & Persistence {
   tier: OpenSearchTier!
 
   """Fetch version for the OpenSearch instance."""
-  version: String!
+  version: OpenSearchVersion!
   workload: Workload
 }
 
@@ -3300,6 +3299,16 @@ type OpenSearchUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+type OpenSearchVersion {
+  """
+  The full version string of the OpenSearch instance. This will be available after the instance is created.
+  """
+  actual: String
+
+  """The desired major version of the OpenSearch instance."""
+  desiredMajor: OpenSearchMajorVersion!
 }
 
 """Possible directions in which to order a list of items."""
@@ -6799,7 +6808,7 @@ input UpdateOpenSearchInput {
   tier: OpenSearchTier!
 
   """Major version of the OpenSearch instance."""
-  version: OpenSearchMajorVersion
+  version: OpenSearchMajorVersion!
 }
 
 type UpdateOpenSearchPayload {
