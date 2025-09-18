@@ -4,6 +4,8 @@
 	import DeprecatedIngressIssue from '$lib/components/issues/DeprecatedIngressIssue.svelte';
 	import DeprecatedRegistryIssue from '$lib/components/issues/DeprecatedRegistryIssue.svelte';
 	import FailedJobRunsIssue from '$lib/components/issues/FailedJobRunsIssue.svelte';
+	import FailedSynchronizationIssue from '$lib/components/issues/FailedSynchronizationIssue.svelte';
+	import InvalidSpecIssue from '$lib/components/issues/InvalidSpecIssue.svelte';
 	import NoRunningInstancesIssue from '$lib/components/issues/NoRunningInstancesIssue.svelte';
 	import OpenSearchIssue from '$lib/components/issues/OpenSearchIssue.svelte';
 	import SqlInstanceStateIssue from '$lib/components/issues/SqlInstanceStateIssue.svelte';
@@ -54,6 +56,30 @@
 							name
 						}
 					}
+					... on FailedSynchronizationIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on InvalidSpecIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on MissingSbomIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on FailedSynchronizationIssue {
+						workload {
+							__typename
+							name
+						}
+					}
 					... on NoRunningInstancesIssue {
 						workload {
 							__typename
@@ -82,6 +108,12 @@
 							name
 						}
 					}
+					... on VulnerableImageIssue {
+						workload {
+							__typename
+							name
+						}
+					}
 				}
 			`)
 		)
@@ -97,6 +129,12 @@
 				return DeprecatedRegistryIssue as Component<{ data: unknown }>;
 			case 'FailedJobRunsIssue':
 				return FailedJobRunsIssue as Component<{ data: unknown }>;
+			case 'FailedSynchronizationIssue':
+				return FailedSynchronizationIssue as Component<{ data: unknown }>;
+			case 'InvalidSpecIssue':
+				return InvalidSpecIssue as Component<{ data: unknown }>;
+			case 'MissingSbomIssue':
+			case 'VulnerableImageIssue':
 			case 'NoRunningInstancesIssue':
 				return NoRunningInstancesIssue as Component<{ data: unknown }>;
 			case 'OpenSearchIssue':
