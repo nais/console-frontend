@@ -4,12 +4,13 @@
 	import {
 		ValkeyMaxMemoryPolicy,
 		ValkeySize,
-		ValkeyTier,
 		type ValkeySize$options,
+		ValkeyTier,
 		type ValkeyTier$options
 	} from '$houdini';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
 	import {
+		Alert,
 		BodyLong,
 		BodyShort,
 		Button,
@@ -35,6 +36,14 @@
 
 {#if form?.error}
 	<ErrorMessage>{form.error}</ErrorMessage>
+{/if}
+
+{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
+	<Alert variant="warning" size="small">
+		This combination of tier and size is not recommended for production workloads.<br />
+		Limitations include no guarantees for uptime and availability, no detailed metrics, limited backups,
+		and so on.
+	</Alert>
 {/if}
 
 <form method="POST" use:enhance>

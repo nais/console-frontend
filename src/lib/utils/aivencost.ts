@@ -7,7 +7,7 @@ import type {
 
 export const valkeyPlanCosts: Record<ValkeyTier$options, Record<ValkeySize$options, number>> = {
 	SINGLE_NODE: {
-		RAM_1GB: Infinity,
+		RAM_1GB: 16, // hobbyist
 		RAM_4GB: 64,
 		RAM_8GB: 128,
 		RAM_14GB: 214,
@@ -33,6 +33,7 @@ export const openSearchPlanCosts: Record<
 	Record<OpenSearchSize$options, number>
 > = {
 	SINGLE_NODE: {
+		RAM_2GB: 16, // hobbyist
 		RAM_4GB: 77,
 		RAM_8GB: 154,
 		RAM_16GB: 308,
@@ -40,6 +41,7 @@ export const openSearchPlanCosts: Record<
 		RAM_64GB: 1231
 	},
 	HIGH_AVAILABILITY: {
+		RAM_2GB: Infinity, // not available
 		RAM_4GB: 235,
 		RAM_8GB: 470,
 		RAM_16GB: 940,
