@@ -22,6 +22,8 @@
 	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
+	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 
 	const runServiceMaintenance = graphql(`
 		mutation runValkeyMaintenance(
@@ -120,6 +122,15 @@
 						Delete Valkey
 					</Button>
 				</div>
+			{/if}
+			{#if viewerIsMember && !isManagedByConsole}
+				<Alert variant="info" style="margin-bottom: 1rem;">
+					This Valkey instance is managed outside Console.<br />
+					To migrate this instance to Console, see the
+					<ExternalLink href={docURL('/persistence/valkey/how-to/migrate-to-console/')}>
+						Nais documentation
+					</ExternalLink>.
+				</Alert>
 			{/if}
 			<div class="spacing">
 				<Heading level="3" spacing>Valkey Access List</Heading>
