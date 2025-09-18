@@ -8,6 +8,7 @@
 	} from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	const resourceLink = (
@@ -305,8 +306,7 @@
 					)}>{$data.resourceName}</a
 				>
 			{:else if $data.__typename === 'ClusterAuditActivityLogEntry'}
-				{$data.clusterAuditData?.action}
-				{$data.clusterAuditData?.resourceKind.toLowerCase()}
+				{capitalizeFirstLetter($data.message.toLowerCase())} in
 				<a
 					href={resourceLink(
 						$data.environmentName ? $data.environmentName : '',
