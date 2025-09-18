@@ -20,6 +20,7 @@
 	import type { Component } from 'svelte';
 
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
@@ -68,6 +69,14 @@
 								direction
 							}
 						}
+						... on ClusterAuditActivityLogEntry {
+							id
+							clusterAuditData: data {
+								action
+								resourceKind
+							}
+						}
+
 						... on RepositoryAddedActivityLogEntry {
 							id
 						}
@@ -167,6 +176,8 @@
 				return TeamMemberRemovedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberSetRoleActivityLogEntry':
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ClusterAuditActivityLogEntry':
+				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}

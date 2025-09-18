@@ -147,6 +147,13 @@
 					... on ServiceMaintenanceActivityLogEntry {
 						__typename
 					}
+					... on ClusterAuditActivityLogEntry {
+						id
+						clusterAuditData: data {
+							action
+							resourceKind
+						}
+					}
 				}
 			`)
 		)
@@ -289,6 +296,17 @@
 					: $data.resourceType === 'VALKEY'
 						? 'Valkey'
 						: 'service'}
+				<a
+					href={resourceLink(
+						$data.environmentName ? $data.environmentName : '',
+						$data.resourceType,
+						$data.resourceName,
+						$data.teamSlug
+					)}>{$data.resourceName}</a
+				>
+			{:else if $data.__typename === 'ClusterAuditActivityLogEntry'}
+				{$data.clusterAuditData?.action}ed
+				{$data.clusterAuditData?.resourceKind.toLowerCase()}
 				<a
 					href={resourceLink(
 						$data.environmentName ? $data.environmentName : '',
