@@ -27,6 +27,12 @@
 				return `/team/${teamSlug}/${environmentName}/secret/${resourceName}`;
 			case ActivityLogEntryResourceType.TEAM:
 				return `/team/${teamSlug}`;
+			case ActivityLogEntryResourceType.OPENSEARCH:
+				return `/team/${teamSlug}/${environmentName}/opensearch/${resourceName}`;
+			case ActivityLogEntryResourceType.REPOSITORY:
+				return `/team/${teamSlug}/repositories`;
+			case ActivityLogEntryResourceType.VALKEY:
+				return `/team/${teamSlug}/${environmentName}/valkey/${resourceName}`;
 			default:
 				return null;
 		}
@@ -137,6 +143,9 @@
 							newSize
 							direction
 						}
+					}
+					... on ServiceMaintenanceActivityLogEntry {
+						__typename
 					}
 				}
 			`)
@@ -274,6 +283,20 @@
 					)}>{$data.resourceName}</a
 				>
 				was triggered
+			{:else if $data.__typename === 'ServiceMaintenanceActivityLogEntry'}
+				Started maintenance on {$data.resourceType === 'OPENSEARCH'
+					? 'OpenSearch'
+					: $data.resourceType === 'VALKEY'
+						? 'Valkey'
+						: 'service'}
+				<a
+					href={resourceLink(
+						$data.environmentName ? $data.environmentName : '',
+						$data.resourceType,
+						$data.resourceName,
+						$data.teamSlug
+					)}>{$data.resourceName}</a
+				>
 			{:else}
 				{$data.message}
 				{@const link = resourceLink(

@@ -43,7 +43,8 @@
 		OpenSearch: [
 			ActivityLogActivityType.OPENSEARCH_CREATED,
 			ActivityLogActivityType.OPENSEARCH_DELETED,
-			ActivityLogActivityType.OPENSEARCH_UPDATED
+			ActivityLogActivityType.OPENSEARCH_UPDATED,
+			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED
 		],
 		Reconciler: [
 			ActivityLogActivityType.RECONCILER_CONFIGURED,
@@ -61,16 +62,6 @@
 			ActivityLogActivityType.SECRET_VALUE_REMOVED,
 			ActivityLogActivityType.SECRET_VALUE_UPDATED
 		],
-		// ServiceAccount: [
-		// 	'SERVICE_ACCOUNT_CREATED',
-		// 	'SERVICE_ACCOUNT_DELETED',
-		// 	'SERVICE_ACCOUNT_ROLE_ASSIGNED',
-		// 	'SERVICE_ACCOUNT_ROLE_REVOKED',
-		// 	'SERVICE_ACCOUNT_TOKEN_CREATED',
-		// 	'SERVICE_ACCOUNT_TOKEN_DELETED',
-		// 	'SERVICE_ACCOUNT_TOKEN_UPDATED',
-		// 	'SERVICE_ACCOUNT_UPDATED'
-		// ],
 		Team: [
 			ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
 			ActivityLogActivityType.TEAM_CREATED,
@@ -85,7 +76,8 @@
 		Valkey: [
 			ActivityLogActivityType.VALKEY_CREATED,
 			ActivityLogActivityType.VALKEY_DELETED,
-			ActivityLogActivityType.VALKEY_UPDATED
+			ActivityLogActivityType.VALKEY_UPDATED,
+			ActivityLogActivityType.VALKEY_MAINTENANCE_STARTED
 		],
 		Unleash: [
 			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
@@ -100,9 +92,6 @@
 	}
 
 	function filterActivities() {
-		filteredActivities = filteredActivities.filter(
-			(a) => a !== ActivityLogActivityType.MAINTENANCE_STARTED
-		);
 		ActivityLog.fetch({
 			variables: {
 				team: teamSlug.valueOf(),

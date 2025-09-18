@@ -31,14 +31,14 @@ enum ActivityLogActivityType {
   """Activity log entries related to job triggering."""
   JOB_TRIGGERED
 
-  """Maintenance started for the service."""
-  MAINTENANCE_STARTED
-
   """OpenSearch was created."""
   OPENSEARCH_CREATED
 
   """OpenSearch was deleted."""
   OPENSEARCH_DELETED
+
+  """Started service maintenance on OpenSearch instance."""
+  OPENSEARCH_MAINTENANCE_STARTED
 
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
@@ -135,6 +135,9 @@ enum ActivityLogActivityType {
 
   """Valkey was deleted."""
   VALKEY_DELETED
+
+  """Started service maintenance on Valkey instance."""
+  VALKEY_MAINTENANCE_STARTED
 
   """Valkey was updated."""
   VALKEY_UPDATED
