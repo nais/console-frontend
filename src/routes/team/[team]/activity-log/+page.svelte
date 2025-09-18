@@ -33,20 +33,33 @@
 
 	const groupedActivities: Record<string, ActivityLogActivityType$options[]> = {
 		Application: [
-			'APPLICATION_DELETED',
-			'APPLICATION_RESTARTED',
-			'APPLICATION_SCALED',
-			'DEPLOYMENT'
+			ActivityLogActivityType.APPLICATION_DELETED,
+			ActivityLogActivityType.APPLICATION_RESTARTED,
+			ActivityLogActivityType.APPLICATION_SCALED
 		],
-		Job: ['JOB_DELETED', 'JOB_TRIGGERED'],
-		Reconciler: ['RECONCILER_CONFIGURED', 'RECONCILER_DISABLED', 'RECONCILER_ENABLED'],
-		Repository: ['REPOSITORY_ADDED', 'REPOSITORY_REMOVED'],
+		'Cluster Audit': [ActivityLogActivityType.CLUSTER_AUDIT],
+		Deployment: [ActivityLogActivityType.DEPLOYMENT],
+		Job: [ActivityLogActivityType.JOB_DELETED, ActivityLogActivityType.JOB_TRIGGERED],
+		OpenSearch: [
+			ActivityLogActivityType.OPENSEARCH_CREATED,
+			ActivityLogActivityType.OPENSEARCH_DELETED,
+			ActivityLogActivityType.OPENSEARCH_UPDATED
+		],
+		Reconciler: [
+			ActivityLogActivityType.RECONCILER_CONFIGURED,
+			ActivityLogActivityType.RECONCILER_DISABLED,
+			ActivityLogActivityType.RECONCILER_ENABLED
+		],
+		Repository: [
+			ActivityLogActivityType.REPOSITORY_ADDED,
+			ActivityLogActivityType.REPOSITORY_REMOVED
+		],
 		Secret: [
-			'SECRET_CREATED',
-			'SECRET_DELETED',
-			'SECRET_VALUE_ADDED',
-			'SECRET_VALUE_REMOVED',
-			'SECRET_VALUE_UPDATED'
+			ActivityLogActivityType.SECRET_CREATED,
+			ActivityLogActivityType.SECRET_DELETED,
+			ActivityLogActivityType.SECRET_VALUE_ADDED,
+			ActivityLogActivityType.SECRET_VALUE_REMOVED,
+			ActivityLogActivityType.SECRET_VALUE_UPDATED
 		],
 		// ServiceAccount: [
 		// 	'SERVICE_ACCOUNT_CREATED',
@@ -59,23 +72,26 @@
 		// 	'SERVICE_ACCOUNT_UPDATED'
 		// ],
 		Team: [
-			'TEAM_CONFIRM_DELETE_KEY',
-			'TEAM_CREATED',
-			'TEAM_CREATE_DELETE_KEY',
-			'TEAM_DEPLOY_KEY_UPDATED',
-			'TEAM_ENVIRONMENT_UPDATED',
-			'TEAM_MEMBER_ADDED',
-			'TEAM_MEMBER_REMOVED',
-			'TEAM_MEMBER_SET_ROLE',
-			'TEAM_UPDATED'
+			ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
+			ActivityLogActivityType.TEAM_CREATED,
+			ActivityLogActivityType.TEAM_CREATE_DELETE_KEY,
+			ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
+			ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
+			ActivityLogActivityType.TEAM_MEMBER_ADDED,
+			ActivityLogActivityType.TEAM_MEMBER_REMOVED,
+			ActivityLogActivityType.TEAM_MEMBER_SET_ROLE,
+			ActivityLogActivityType.TEAM_UPDATED
 		],
-		Unleash: ['UNLEASH_INSTANCE_CREATED', 'UNLEASH_INSTANCE_UPDATED'],
-		Other: [
-			'CLUSTER_AUDIT',
-			'UNLEASH_INSTANCE_CREATED',
-			'UNLEASH_INSTANCE_UPDATED',
-			'VULNERABILITY_UPDATED'
-		]
+		Valkey: [
+			ActivityLogActivityType.VALKEY_CREATED,
+			ActivityLogActivityType.VALKEY_DELETED,
+			ActivityLogActivityType.VALKEY_UPDATED
+		],
+		Unleash: [
+			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
+			ActivityLogActivityType.UNLEASH_INSTANCE_UPDATED
+		],
+		Vulnerability: [ActivityLogActivityType.VULNERABILITY_UPDATED]
 	};
 
 	function filteredGroup(types: string[]) {
@@ -84,6 +100,9 @@
 	}
 
 	function filterActivities() {
+		filteredActivities = filteredActivities.filter(
+			(a) => a !== ActivityLogActivityType.MAINTENANCE_STARTED
+		);
 		ActivityLog.fetch({
 			variables: {
 				team: teamSlug.valueOf(),
