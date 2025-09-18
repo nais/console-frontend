@@ -1,4 +1,5 @@
-query TeamOverview($team: Slug!, $severitySince: Time!) @cache(policy: NetworkOnly) {
+query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: ActivityLogFilter!)
+@cache(policy: NetworkOnly) {
 	currentUnitPrices {
 		cpu {
 			value
@@ -154,6 +155,6 @@ query TeamOverview($team: Slug!, $severitySince: Time!) @cache(policy: NetworkOn
 			riskScoreTrend
 			lastUpdated
 		}
-		...SidebarActivityLogFragment @with(limit: 15) @mask_disable
+		...SidebarActivityLogFragment @with(limit: 15, filter: $activityLogFilter) @mask_disable
 	}
 }

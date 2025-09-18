@@ -1,5 +1,9 @@
-import { load_TeamOverview } from '$houdini';
+import { ActivityLogActivityType, load_TeamOverview } from '$houdini';
 import { subWeeks } from 'date-fns';
+
+const activityLogFilter = Object.values(ActivityLogActivityType).filter(
+	(type) => type !== ActivityLogActivityType.APPLICATION_SCALED
+);
 
 export async function load(event) {
 	return {
@@ -7,7 +11,8 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				severitySince: subWeeks(new Date(), 1)
+				severitySince: subWeeks(new Date(), 1),
+				activityLogFilter: { activityTypes: activityLogFilter }
 			}
 		}))
 	};
