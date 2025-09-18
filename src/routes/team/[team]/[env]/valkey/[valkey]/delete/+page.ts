@@ -10,9 +10,7 @@ export async function load(event) {
 	}
 
 	const isManagedByConsole = !params.valkey.startsWith(`valkey-${params.team}-`);
-
-	// FIXME: create docs and add link to docs
 	if (!isManagedByConsole) {
-		error(422, 'This Valkey instance is not managed by Console. See TODO to add it to Console.');
+		error(422, 'This Valkey instance is not managed by Console.');
 	}
 }
