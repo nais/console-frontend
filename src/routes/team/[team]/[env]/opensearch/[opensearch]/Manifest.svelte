@@ -37,7 +37,8 @@
 
 	<Heading level="3" size="xsmall">Documentation</Heading>
 	<div class="value">
-		<ExternalLink href={docURL('/persistence/opensearch/how-to/create/')}>How-to guide</ExternalLink
+		<ExternalLink href={docURL('/persistence/opensearch/how-to/use-in-workload/')}
+			>How-to guide</ExternalLink
 		>
 	</div>
 

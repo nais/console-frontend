@@ -35,7 +35,7 @@
 
 	<Heading level="3" size="xsmall">Documentation</Heading>
 	<div class="value">
-		<ExternalLink href={docURL('/persistence/valkey/how-to/create-application/')}
+		<ExternalLink href={docURL('/persistence/valkey/how-to/use-in-workload/')}
 			>How-to guide</ExternalLink
 		>
 	</div>
