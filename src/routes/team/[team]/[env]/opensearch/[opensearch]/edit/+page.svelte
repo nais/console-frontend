@@ -49,21 +49,11 @@ version = "${version}"
 `);
 </script>
 
-<BodyLong>This is an explanation on how to edit a OpenSearch instance.</BodyLong>
-
-{#if form?.error}
-	<ErrorMessage>{form.error}</ErrorMessage>
-{/if}
-
-{#if tier === OpenSearchTier.SINGLE_NODE && size === OpenSearchSize.RAM_2GB}
-	<Alert variant="warning" size="small">
-		This combination of tier and size is not recommended for production workloads.<br />
-		Limitations include no guarantees for uptime and availability, no detailed metrics, limited backups,
-		and so on.
-	</Alert>
-{/if}
-
 <form method="POST" use:enhance>
+	<Alert variant="info" size="small"
+		>Changing these settings may cause a restart of this OpenSearch instance.</Alert
+	>
+
 	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
 		{#each Object.values(OpenSearchTier) as opt (opt)}
 			<option value={opt}>{opt}</option>
@@ -91,6 +81,18 @@ version = "${version}"
 		> per month
 	</BodyShort>
 
+	{#if form?.error}
+		<ErrorMessage>{form.error}</ErrorMessage>
+	{/if}
+
+	{#if tier === OpenSearchTier.SINGLE_NODE && size === OpenSearchSize.RAM_2GB}
+		<Alert variant="warning" size="small">
+			This combination of tier and size is not recommended for production workloads.<br />
+			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
+			backups.
+		</Alert>
+	{/if}
+
 	<Button type="submit">Save changes</Button>
 </form>
 
@@ -110,7 +112,7 @@ version = "${version}"
 </ReadMore>
 
 <style>
-	form {
+	form :global(.aksel-form-field) {
 		max-width: 400px;
 	}
 
