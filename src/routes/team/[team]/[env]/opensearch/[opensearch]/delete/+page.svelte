@@ -56,7 +56,7 @@
 		max-width: 400px;
 	}
 
-	:global(form > *) {
+	form :global(> *) {
 		margin-bottom: 1rem;
 	}
 </style>
