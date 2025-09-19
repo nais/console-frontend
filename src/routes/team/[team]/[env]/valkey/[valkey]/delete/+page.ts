@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit';
+import { load_DeleteValkeyData } from '$houdini';
 
 export async function load(event) {
 	const { parent, params } = event;
@@ -13,4 +14,15 @@ export async function load(event) {
 	if (!isManagedByConsole) {
 		error(422, 'This Valkey instance is not managed by Console.');
 	}
+
+	return {
+		...(await load_DeleteValkeyData({
+			event,
+			variables: {
+				environment: event.params.env,
+				team: event.params.team,
+				name: event.params.valkey
+			}
+		}))
+	};
 }

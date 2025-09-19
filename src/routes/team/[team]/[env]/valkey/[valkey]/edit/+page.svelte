@@ -47,21 +47,11 @@ size = "${size}"
 ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 </script>
 
-<BodyLong>This is an explanation on how to edit a Valkey instance.</BodyLong>
-
-{#if form?.error}
-	<ErrorMessage>{form.error}</ErrorMessage>
-{/if}
-
-{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
-	<Alert variant="warning" size="small">
-		This combination of tier and size is not recommended for production workloads.<br />
-		Limitations include no guarantees for uptime and availability, no detailed metrics, limited backups,
-		and so on.
-	</Alert>
-{/if}
-
 <form method="POST" use:enhance>
+	<Alert variant="info" size="small"
+		>Changing these settings may cause a restart of this Valkey instance.</Alert
+	>
+
 	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
 		{#each Object.values(ValkeyTier) as opt (opt)}
 			<option value={opt}>{opt}</option>
@@ -97,6 +87,18 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 		> per month
 	</BodyShort>
 
+	{#if form?.error}
+		<ErrorMessage>{form.error}</ErrorMessage>
+	{/if}
+
+	{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
+		<Alert variant="warning" size="small">
+			This combination of tier and size is not recommended for production workloads.<br />
+			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
+			backups.
+		</Alert>
+	{/if}
+
 	<Button type="submit">Save changes</Button>
 </form>
 
@@ -116,7 +118,7 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 </ReadMore>
 
 <style>
-	form {
+	form :global(.aksel-form-field) {
 		max-width: 400px;
 	}
 

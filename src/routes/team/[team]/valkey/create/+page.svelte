@@ -32,21 +32,13 @@
 	let size = $derived((form?.size as ValkeySize$options) ?? ValkeySize.RAM_1GB);
 </script>
 
-<BodyLong>This is an explanation on how to create a Valkey instance.</BodyLong>
-
-{#if form?.error}
-	<ErrorMessage>{form.error}</ErrorMessage>
-{/if}
-
-{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
-	<Alert variant="warning" size="small">
-		This combination of tier and size is not recommended for production workloads.<br />
-		Limitations include no guarantees for uptime and availability, no detailed metrics, limited backups,
-		and so on.
-	</Alert>
-{/if}
-
 <form method="POST" use:enhance>
+	<BodyLong style="margin-bottom: 1rem;"
+		>This will create a new Valkey instance for <span style="font-weight: bold;"
+			>{data.teamSlug}</span
+		>.</BodyLong
+	>
+
 	<TextField size="small" label="Instance name" name="name" required value={form?.name ?? ''} />
 
 	<Select
@@ -94,11 +86,27 @@
 		> per month
 	</BodyShort>
 
+	{#if form?.error}
+		<ErrorMessage>{form.error}</ErrorMessage>
+	{/if}
+
+	{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
+		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+			This combination of tier and size is not recommended for production workloads.<br />
+			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
+			backups.
+		</Alert>
+	{/if}
+
 	<Button type="submit">Create Valkey instance</Button>
 </form>
 
 <style>
 	form {
+		width: 600px;
+	}
+
+	form :global(.aksel-form-field) {
 		max-width: 400px;
 	}
 
