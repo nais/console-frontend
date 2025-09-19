@@ -115,12 +115,14 @@
 				<TeamUtilizationAndOverage {teamSlug} />
 			</div>
 		</div>
-		<div>
+		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
 			{#if $TeamOverview.data?.team}
 				<SidebarActivity
 					activityLog={$TeamOverview.data?.team}
 					direct={$TeamOverview.data?.team.activityLog}
 				/>
+				<a href="/team/{teamSlug}/activity-log" style:align-self="end">View All Activity for Team</a
+				>
 			{/if}
 		</div>
 	</div>

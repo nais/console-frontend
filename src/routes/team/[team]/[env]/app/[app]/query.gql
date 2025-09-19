@@ -139,7 +139,7 @@ query App(
 					}
 				}
 
-				...SidebarActivityLogFragment
+				...SidebarActivityLogFragment @with(limit: 20) @mask_disable
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy
