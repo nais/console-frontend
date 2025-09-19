@@ -4,8 +4,8 @@ import {
 	ValkeyAccessOrderField,
 	type ValkeyAccessOrderField$options
 } from '$houdini';
-import { get } from 'svelte/store';
 import { redirect } from '@sveltejs/kit';
+import { get } from 'svelte/store';
 
 export async function load(event) {
 	const field = (event.url.searchParams.get('field') ||
@@ -23,11 +23,9 @@ export async function load(event) {
 		}
 	});
 
-	if (get(loadValkey.Valkey).data?.team.environment.valkey.name !== event.params.valkey) {
-		redirect(
-			307,
-			`/team/${event.params.team}/${event.params.env}/valkey/${get(loadValkey.Valkey).data?.team.environment.valkey.name}`
-		);
+	const name = get(loadValkey.Valkey).data?.team.environment.valkey.name;
+	if (!!name && name !== event.params.valkey) {
+		redirect(307, `/team/${event.params.team}/${event.params.env}/valkey/${name}`);
 	}
 
 	return {
