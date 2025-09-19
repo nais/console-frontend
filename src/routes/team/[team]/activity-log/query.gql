@@ -5,11 +5,11 @@ query ActivityLog(
 	$before: Cursor
 	$after: Cursor
 	$filter: ActivityLogFilter
-) @cache(policy: NetworkOnly) {
+) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		slug
 		activityLog(first: $first, last: $last, before: $before, after: $after, filter: $filter)
-			@paginate(mode: SinglePage) {
+			@paginate(mode: Infinite) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage

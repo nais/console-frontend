@@ -5,7 +5,10 @@ export async function load(event) {
 		...(await load_ActivityLog({
 			event,
 			variables: {
-				team: event.params.team
+				team: event.params.team,
+				first: 20,
+				after: undefined,
+				filter: undefined
 			}
 		}))
 	};

@@ -7,9 +7,8 @@
 	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
-	import Pagination from '$lib/Pagination.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
-	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Loader, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -17,9 +16,10 @@
 	let { data }: PageProps = $props();
 	let { ActivityLog, teamSlug } = $derived(data);
 
+	/* ---- filters (unchanged) ---- */
 	const allActivities = Object.values(ActivityLogActivityType).map((type) => type);
-
 	let filteredActivities = $state(allActivities);
+	let searchQuery = $state('');
 
 	let allActivitiesButtonState: boolean | 'indeterminate' = $derived(
 		filteredActivities.length === allActivities.length
@@ -28,8 +28,6 @@
 				? false
 				: 'indeterminate'
 	);
-
-	let searchQuery = $state('');
 
 	const groupedActivities: Record<string, ActivityLogActivityType$options[]> = {
 		Application: [
@@ -103,7 +101,48 @@
 				}
 			} as ActivityLog$input
 		});
+		// Optional: window.scrollTo({ top: 0, behavior: 'auto' });
 	}
+
+	/* ---- bottom-only infinite scroll via window scroll ---- */
+	let loadingNext = $state(false);
+	const PAGE_SIZE = 20;
+	const NEAR_BOTTOM_PX = 800; // eager
+
+	async function loadMore() {
+		if (loadingNext) return;
+		const page = $ActivityLog.data?.team.activityLog.pageInfo;
+		if (!page?.hasNextPage) return;
+
+		loadingNext = true;
+		try {
+			// Infinite mode + CacheAndNetwork -> APPEND
+			await ActivityLog.loadNextPage({ first: PAGE_SIZE });
+		} finally {
+			loadingNext = false;
+		}
+	}
+
+	// rAF-throttled scroll handler
+	$effect(() => {
+		let ticking = false;
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(() => {
+				const doc = document.documentElement;
+				const nearBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - NEAR_BOTTOM_PX;
+				if (nearBottom) void loadMore();
+				ticking = false;
+			});
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		// Check once on mount (eager in case the first page doesn't fill viewport)
+		onScroll();
+
+		return () => window.removeEventListener('scroll', onScroll);
+	});
 </script>
 
 <div>
@@ -111,10 +150,11 @@
 		{@const ae = $ActivityLog.data.team.activityLog}
 		<div class="wrapper">
 			<div>
-				<BodyLong spacing
-					>The Activity Log provides an overview of changes made to your team and its resources
-					within the Nais Console application.</BodyLong
-				>
+				<BodyLong spacing>
+					The Activity Log provides an overview of changes made to your team and its resources
+					within the Nais Console application.
+				</BodyLong>
+
 				<List title="{ae.pageInfo.totalCount} entries">
 					{#snippet menu()}
 						<ActionMenu>
@@ -158,7 +198,6 @@
 												filteredActivities = checked
 													? [...filteredActivities, t]
 													: filteredActivities.filter((a) => a !== t);
-
 												filterActivities();
 											}}
 										>
@@ -169,26 +208,18 @@
 							{/each}
 						</ActionMenu>
 					{/snippet}
+
 					{#each ae.nodes || [] as item (item.id)}
 						<ListItem>
 							<ActivityLogItem {item} />
 						</ListItem>
 					{/each}
 				</List>
-				{#if $ActivityLog.data.team.activityLog.pageInfo.hasPreviousPage || $ActivityLog.data.team.activityLog.pageInfo.hasNextPage}
-					<Pagination
-						page={ae.pageInfo}
-						loaders={{
-							loadNextPage: () => {
-								ActivityLog.loadNextPage({ first: 20 });
-							},
-							loadPreviousPage: () => {
-								ActivityLog.loadPreviousPage({
-									last: 20
-								});
-							}
-						}}
-					/>
+
+				{#if loadingNext}
+					<div class="loader">
+						<Loader size="small" title="Loading more…" />
+					</div>
 				{/if}
 			</div>
 		</div>
@@ -201,15 +232,19 @@
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 	}
-
 	.activity-search-wrapper {
 		padding: var(--ax-space-8);
 	}
-
 	.activity-group-label {
 		padding: var(--ax-space-4) var(--ax-space-8);
 		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin-top: var(--ax-space-2);
+	}
+	.loader {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: var(--ax-space-8) 0;
 	}
 </style>
