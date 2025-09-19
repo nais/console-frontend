@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	let {
 		data
@@ -24,7 +25,9 @@
 			href="/team/{data.teamSlug}/{data.environmentName}/{workloadType}/{data.resourceName}/deploys?deployId={id}"
 			>Deployed</a
 		>
-		{data.resourceName}
+		{data.resourceName} to <Tag size="small" variant={envTagVariant(data.environmentName || '')}
+			>{data.environmentName}</Tag
+		>
 	{:else}
 		Deployment
 	{/if}
