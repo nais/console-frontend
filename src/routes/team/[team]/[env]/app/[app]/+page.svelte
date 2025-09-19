@@ -171,7 +171,7 @@
 					<Heading level="2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
-				<SidebarActivity activityLog={app} />
+				<SidebarActivity activityLog={app} direct={app.activityLog} />
 
 				{#if viewerIsMember && environment}
 					<Secrets workload={app.name} {environment} {teamSlug} />
