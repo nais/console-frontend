@@ -1,3 +1,4 @@
+import { load_DeleteOpenSearchData } from '$houdini';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {
@@ -13,4 +14,15 @@ export async function load(event) {
 	if (!isManagedByConsole) {
 		error(422, `This OpenSearch instance is not managed by Console.`);
 	}
+
+	return {
+		...(await load_DeleteOpenSearchData({
+			event,
+			variables: {
+				environment: event.params.env,
+				team: event.params.team,
+				name: event.params.opensearch
+			}
+		}))
+	};
 }

@@ -7,7 +7,7 @@ const config = {
 	defaultPaginateMode: 'SinglePage',
 	watchSchema: {
 		interval: 0,
-		url: 'env:VITE_GRAPHQL_ENDPOINT',
+		url: 'env:VITE_SCHEMA_ENDPOINT',
 		headers: {
 			'x-user-email': 'dev.usersen@example.com'
 		}
