@@ -102,7 +102,7 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 	<Button type="submit">Save changes</Button>
 </form>
 
-<ReadMore header="Nais TOML Manifest (ALPHA)" size="small">
+<ReadMore header="Nais TOML Manifest (ALPHA)" size="small" style="display: none;">
 	<BodyLong>
 		The manifest below can be added to your <code>nais.toml</code> file. You can then use
 		<code>nais alpha apply</code> to manage the lifecycle of your Valkey.
