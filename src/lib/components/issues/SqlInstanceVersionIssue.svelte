@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall" spacing>SQL Instance Version issue</Heading>
+		<Heading level="4" size="xsmall">Deprecated SQL Instance Version</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>
@@ -30,7 +30,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 	.label {

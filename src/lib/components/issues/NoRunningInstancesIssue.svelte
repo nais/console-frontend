@@ -26,7 +26,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall" spacing>No running instances</Heading>
+		<Heading level="4" size="xsmall">No Running Instances for {data.workload.name}</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>
@@ -34,7 +34,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 	.label {

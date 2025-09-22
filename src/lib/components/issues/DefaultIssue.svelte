@@ -10,6 +10,6 @@
 </script>
 
 <div>
-	<Heading level="2" size="small" spacing>{data.__typename}</Heading>
+	<Heading level="2" size="small">{data.__typename}</Heading>
 	Issue in environment {data.teamEnvironment.environment.name}: {data.message}
 </div>

@@ -25,15 +25,15 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall" spacing>Workload Invalid Spec</Heading>
-		<Detail>{data.message}</Detail>
+		<Heading level="4" size="xsmall">Workload Has Invalid Spec</Heading>
+		<Detail><strong>Details:</strong> {data.message}</Detail>
 	</div>
 </div>
 
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 

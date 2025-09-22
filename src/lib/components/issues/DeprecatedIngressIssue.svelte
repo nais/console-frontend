@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall" spacing>Deprecated Ingress</Heading>
+		<Heading level="4" size="xsmall">Deprecated Ingress</Heading>
 		<Detail>
 			{#if data.ingresses.length === 1}
 				Application {data.application.name} is using a deprecated ingress:
@@ -39,7 +39,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 	.label {

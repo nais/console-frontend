@@ -26,7 +26,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall" spacing>Deprecated Registry</Heading>
+		<Heading level="4" size="xsmall">Deprecated Registry</Heading>
 		<Detail><span style="word-break: break-word;">{data.message}</span></Detail>
 	</div>
 </div>
@@ -34,7 +34,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px 1fr;
+		grid-template-columns: 200px 1fr;
 		gap: 1rem;
 	}
 	.label {

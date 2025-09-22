@@ -21,7 +21,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall" spacing>Job has failed runs</Heading>
+		<Heading level="4" size="xsmall">Failed Runs for {data.job.name}</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>
@@ -29,7 +29,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 

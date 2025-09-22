@@ -22,24 +22,17 @@
 	</div>
 
 	<div>
-		{#if data.message === 'user_alert_resource_usage_disk'}
-			<Heading level="4" size="xsmall" spacing>
-				{data.openSearch.name} is low on disk space
-			</Heading>
-			<Detail
-				>Your OpenSearch service {data.openSearch.name} is low on disk space. Write operations will be
-				denied and other functionality may become unavailable.</Detail
-			>
-		{:else}
-			<Detail>{data.message}</Detail>
-		{/if}
+		<Heading level="4" size="xsmall">
+			Issues with OpenSearch {data.openSearch.name}
+		</Heading>
+		<Detail>{data.message}</Detail>
 	</div>
 </div>
 
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 	.label {

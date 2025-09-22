@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall" spacing
+		<Heading level="4" size="xsmall"
 			>SQL Instance {data.sqlInstance.name} is {data.state.toLocaleLowerCase()}</Heading
 		>
 		<Detail>{data.message}</Detail>
@@ -32,7 +32,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 300px auto;
+		grid-template-columns: 200px auto;
 		gap: 1rem;
 	}
 	.label {

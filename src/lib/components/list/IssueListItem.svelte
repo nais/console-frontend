@@ -37,7 +37,6 @@
 					}
 					message
 					severity
-
 					... on DeprecatedIngressIssue {
 						application {
 							name
