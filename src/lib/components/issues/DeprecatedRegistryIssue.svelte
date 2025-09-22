@@ -34,7 +34,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 200px 1fr;
+		grid-template-columns: 25ch auto;
 		gap: 1rem;
 	}
 	.label {

@@ -32,7 +32,7 @@
 <style>
 	.item {
 		display: grid;
-		grid-template-columns: 200px auto;
+		grid-template-columns: 25ch auto;
 		gap: 1rem;
 	}
 	.label {
