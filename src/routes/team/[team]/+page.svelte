@@ -3,9 +3,7 @@
 	import { AlertState } from '$houdini';
 	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
-	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
-	import TeamErrorMessage from '$lib/components/errors/TeamErrorMessage.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -18,24 +16,6 @@
 
 	let { data }: PageProps = $props();
 	let { TeamOverview, teamSlug } = $derived(data);
-
-	const getWorkloadsWithError = (errorType: (typeof supportedErrorTypes)[number]) => {
-		const workloads = $TeamOverview.data?.team.statuses.nodes.filter((workload) =>
-			workload.status.errors.some((error) => error.__typename === errorType)
-		);
-
-		if (workloads?.length) {
-			return {
-				__typename: errorType,
-				level: workloads[0].status.errors.find((error) => error.__typename === errorType)?.level,
-				workloads
-			};
-		} else {
-			return {
-				__typename: errorType
-			};
-		}
-	};
 </script>
 
 {#if page.url.searchParams.has('deleted')}
@@ -65,19 +45,6 @@
 					alertsState={AlertState.PENDING}
 				/>
 			{/if}
-			{#each supportedErrorTypes.map(getWorkloadsWithError) as errors (errors.__typename)}
-				{#if errors.workloads?.length && errors.level}
-					<TeamErrorMessage
-						collapsible={errors.__typename !== 'WorkloadStatusNoRunningInstances'}
-						error={{
-							__typename: errors.__typename,
-							level: errors.level
-						}}
-						{teamSlug}
-						workloads={errors.workloads}
-					/>
-				{/if}
-			{/each}
 		</div>
 		<div>
 			<AggregatedCostForTeam {teamSlug} />
@@ -104,7 +71,13 @@
 		</div>
 	</div>
 	<div class="right">
-		<div class="card issues">
+		<div
+			class="card issues {($TeamOverview.data?.team.critical.pageInfo.totalCount ?? 0) > 0
+				? 'card-critical'
+				: ($TeamOverview.data?.team.warnings.pageInfo.totalCount ?? 0) > 0
+					? 'card-warning'
+					: 'card-todo'}"
+		>
 			{#if $TeamOverview.fetching}
 				<div
 					style="display: flex; justify-content: center; align-items: center; margin-top: 100px;"
@@ -206,6 +179,21 @@
 		flex-direction: column;
 		gap: var(--ax-space-24);
 		padding-bottom: var(--ax-space-32);
+	}
+
+	.card-todo {
+		border: 1px solid var(--ax-border-info-strong);
+		background-color: var(--ax-bg-info-soft);
+	}
+
+	.card-warning {
+		border: 1px solid var(--ax-border-warning);
+		background-color: var(--ax-bg-warning-soft);
+	}
+
+	.card-critical {
+		border: 1px solid var(--ax-border-danger);
+		background-color: var(--ax-bg-danger-soft);
 	}
 
 	.summary {

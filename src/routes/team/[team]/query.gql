@@ -1,23 +1,6 @@
 query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: ActivityLogFilter!)
 @cache(policy: NetworkOnly) {
-	currentUnitPrices {
-		cpu {
-			value
-		}
-		memory {
-			value
-		}
-	}
 	team(slug: $team) {
-		environments {
-			id
-			gcpProjectID
-			environment {
-				name
-			}
-		}
-		purpose
-
 		firingAlerts: alerts(filter: { states: [FIRING] }) {
 			pageInfo {
 				totalCount
@@ -115,54 +98,6 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 			}
 		}
 
-		statuses: workloads(
-			first: 50
-			filter: { states: [NOT_NAIS, FAILING] }
-			orderBy: { field: STATUS, direction: DESC }
-		) {
-			pageInfo {
-				totalCount
-			}
-			nodes {
-				__typename
-				id
-				name
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-
-				status {
-					errors {
-						__typename
-						level
-						... on WorkloadStatusDeprecatedRegistry {
-							name
-							registry
-							repository
-							tag
-						}
-						... on WorkloadStatusSynchronizationFailing {
-							detail
-						}
-						... on WorkloadStatusInvalidNaisYaml {
-							detail
-						}
-						... on WorkloadStatusNoRunningInstances {
-							level
-						}
-						... on WorkloadStatusFailedRun {
-							detail
-							name
-						}
-					}
-				}
-			}
-		}
 		vulnerabilitySummary {
 			bomCount
 			coverage
