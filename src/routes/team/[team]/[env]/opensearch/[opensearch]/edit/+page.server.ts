@@ -33,7 +33,7 @@ export const actions = {
 			tier,
 			size,
 			version,
-			diskSize
+			diskSizeGB: diskSize
 		};
 
 		if (!tier || !size || !version || !diskSize) {

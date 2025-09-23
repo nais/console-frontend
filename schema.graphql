@@ -1162,6 +1162,9 @@ type CostMonthlySummary {
 }
 
 input CreateOpenSearchInput {
+  """Size of the disk in GB."""
+  diskSizeGB: Int!
+
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 
@@ -3049,6 +3052,7 @@ interface Node {
 type OpenSearch implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: OpenSearchAccessOrder): OpenSearchAccessConnection!
   cost: OpenSearchCost!
+  diskSizeGB: Int!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
@@ -6806,6 +6810,9 @@ type UpdateImageVulnerabilityPayload {
 }
 
 input UpdateOpenSearchInput {
+  """Size of the disk in GB."""
+  diskSizeGB: Int!
+
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 

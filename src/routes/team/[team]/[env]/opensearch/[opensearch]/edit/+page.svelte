@@ -42,7 +42,7 @@
 			''
 	);
 	let diskSize = $derived(
-		(form?.diskSizeGB as number) ??
+		(form?.diskSizeGB as string) ??
 			$UpdateOpenSearchData.data?.team.environment.openSearch.diskSizeGB ??
 			diskRequirements[tier][size].min
 	);

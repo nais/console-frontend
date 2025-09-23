@@ -120,7 +120,6 @@
 			{/if}
 		{/snippet}
 	</TextField>
-	<input type="range" min={minDiskSize} max={maxDiskSize} bind:value={diskSize} />
 
 	<BodyShort>
 		Estimated cost: <strong
