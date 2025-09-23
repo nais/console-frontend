@@ -1,8 +1,10 @@
-import type {
-	OpenSearchSize$options,
-	OpenSearchTier$options,
-	ValkeySize$options,
-	ValkeyTier$options
+import {
+	OpenSearchSize,
+	OpenSearchTier,
+	type OpenSearchSize$options,
+	type OpenSearchTier$options,
+	type ValkeySize$options,
+	type ValkeyTier$options
 } from '$houdini';
 
 export const valkeyPlanCosts: Record<ValkeyTier$options, Record<ValkeySize$options, number>> = {
@@ -47,5 +49,27 @@ export const openSearchPlanCosts: Record<
 		RAM_16GB: 940,
 		RAM_32GB: 1881,
 		RAM_64GB: 3763
+	}
+};
+
+export const diskRequirements: Record<
+	OpenSearchTier$options,
+	Record<OpenSearchSize$options, { min: number; max: number }>
+> = {
+	[OpenSearchTier.SINGLE_NODE]: {
+		[OpenSearchSize.RAM_2GB]: { min: 16, max: 16 },
+		[OpenSearchSize.RAM_4GB]: { min: 80, max: 400 },
+		[OpenSearchSize.RAM_8GB]: { min: 175, max: 875 },
+		[OpenSearchSize.RAM_16GB]: { min: 350, max: 1750 },
+		[OpenSearchSize.RAM_32GB]: { min: 700, max: 3500 },
+		[OpenSearchSize.RAM_64GB]: { min: 1400, max: 5120 }
+	},
+	[OpenSearchTier.HIGH_AVAILABILITY]: {
+		[OpenSearchSize.RAM_2GB]: { min: 0, max: 0 }, // Not available
+		[OpenSearchSize.RAM_4GB]: { min: 240, max: 1200 },
+		[OpenSearchSize.RAM_8GB]: { min: 525, max: 2625 },
+		[OpenSearchSize.RAM_16GB]: { min: 1050, max: 5250 },
+		[OpenSearchSize.RAM_32GB]: { min: 2100, max: 10500 },
+		[OpenSearchSize.RAM_64GB]: { min: 4200, max: 15360 }
 	}
 };

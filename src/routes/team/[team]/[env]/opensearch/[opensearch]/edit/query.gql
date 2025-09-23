@@ -10,6 +10,7 @@ query UpdateOpenSearchData($environment: String!, $team: Slug!, $name: String!)
 				version {
 					desiredMajor
 				}
+				diskSizeGB
 			}
 		}
 	}

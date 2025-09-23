@@ -9,7 +9,7 @@
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
-	import { openSearchPlanCosts } from '$lib/utils/aivencost';
+	import { diskRequirements, openSearchPlanCosts } from '$lib/utils/aivencost';
 	import {
 		Alert,
 		BodyLong,
@@ -36,7 +36,21 @@
 		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V2
 	);
 
+	let diskSize = $derived((form?.diskSizeGB as number) ?? diskRequirements[tier][size].min);
+
 	const teamCtx = getTeamContext();
+
+	const availableSizes = $derived(
+		Object.values(OpenSearchSize).filter((size) => {
+			if (tier == OpenSearchTier.HIGH_AVAILABILITY && size == OpenSearchSize.RAM_2GB) {
+				return false;
+			}
+			return true;
+		})
+	);
+
+	const minDiskSize = $derived(diskRequirements[tier][size].min);
+	const maxDiskSize = $derived(diskRequirements[tier][size].max);
 </script>
 
 <form
@@ -68,6 +82,12 @@
 		{/each}
 	</Select>
 
+	<Select size="small" label="Major version" name="version" required bind:value={version}>
+		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
+			<option value={opt}>{opt}</option>
+		{/each}
+	</Select>
+
 	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
 		{#each Object.values(OpenSearchTier) as opt (opt)}
 			<option value={opt}>{opt}</option>
@@ -75,16 +95,32 @@
 	</Select>
 
 	<Select size="small" label="Size" name="size" required bind:value={size}>
-		{#each Object.values(OpenSearchSize) as opt (opt)}
+		{#each availableSizes as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
 
-	<Select size="small" label="Major version" name="version" required bind:value={version}>
-		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
-			<option value={opt}>{opt}</option>
-		{/each}
-	</Select>
+	<TextField
+		size="small"
+		type="number"
+		label="Disk size (GB)"
+		name="diskSizeGB"
+		htmlSize={7}
+		required
+		min={diskRequirements[tier][size].min}
+		max={diskRequirements[tier][size].max}
+		readonly={minDiskSize == maxDiskSize}
+		bind:value={diskSize}
+	>
+		{#snippet description()}
+			{#if minDiskSize == maxDiskSize}
+				<BodyShort>Disk size: {minDiskSize} GB (fixed)</BodyShort>
+			{:else}
+				<BodyShort>Available disk size: {minDiskSize} - {maxDiskSize} GB.</BodyShort>
+			{/if}
+		{/snippet}
+	</TextField>
+	<input type="range" min={minDiskSize} max={maxDiskSize} bind:value={diskSize} />
 
 	<BodyShort>
 		Estimated cost: <strong
