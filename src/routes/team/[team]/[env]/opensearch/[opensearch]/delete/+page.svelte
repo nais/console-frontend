@@ -6,6 +6,7 @@
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
+	import { getTeamContext } from '../../../../teamContext.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { form, data }: PageProps = $props();
@@ -17,6 +18,8 @@
 	let usesCount = $derived(
 		$DeleteOpenSearchData.data?.team.environment.openSearch.access.pageInfo.totalCount ?? 0
 	);
+
+	const teamCtx = getTeamContext();
 </script>
 
 {#if usesCount > 0}
@@ -42,7 +45,15 @@
 	<ErrorMessage>{form.error}</ErrorMessage>
 {/if}
 
-<form method="POST" use:enhance>
+<form
+	method="POST"
+	use:enhance={() => {
+		return async ({ update }) => {
+			await update();
+			teamCtx.refetchInventory();
+		};
+	}}
+>
 	<TextField
 		name="name"
 		bind:value={name}

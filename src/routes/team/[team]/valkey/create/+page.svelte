@@ -18,6 +18,7 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
+	import { getTeamContext } from '../../teamContext.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -30,9 +31,19 @@
 
 	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
 	let size = $derived((form?.size as ValkeySize$options) ?? ValkeySize.RAM_1GB);
+
+	const teamCtx = getTeamContext();
 </script>
 
-<form method="POST" use:enhance>
+<form
+	method="POST"
+	use:enhance={() => {
+		return async ({ update }) => {
+			await update();
+			teamCtx.refetchInventory();
+		};
+	}}
+>
 	<BodyLong style="margin-bottom: 1rem;"
 		>This will create a new Valkey instance for <span style="font-weight: bold;"
 			>{data.teamSlug}</span

@@ -5,6 +5,7 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
+	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
 	let {
@@ -19,6 +20,8 @@
 	} = $derived(data);
 	const gitHubOrganization = page.data.githubOrganization;
 	const gitHubTeam = $derived(externalResources.gitHubTeam?.slug);
+
+	createTeamContext();
 
 	const isAdmin = $derived(
 		$UserInfo.data?.me.__typename === 'User' ? $UserInfo.data?.me.isAdmin : false
