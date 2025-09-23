@@ -50,6 +50,22 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 			}
 		}
 
+		todos: issues(filter: { severity: TODO }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		warnings: issues(filter: { severity: WARNING }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		critical: issues(filter: { severity: CRITICAL }) {
+			pageInfo {
+				totalCount
+			}
+		}
+
 		deployments(first: 10) {
 			pageInfo {
 				totalCount

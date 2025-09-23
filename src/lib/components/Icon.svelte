@@ -25,6 +25,7 @@
 		ShieldLockIcon,
 		TrashIcon,
 		VirusIcon,
+		VitalsIcon,
 		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 
@@ -91,6 +92,8 @@
 				return LinkIcon;
 			case 'alerts':
 				return BellIcon;
+			case 'issues':
+				return VitalsIcon;
 			default:
 				return QuestionmarkIcon;
 		}

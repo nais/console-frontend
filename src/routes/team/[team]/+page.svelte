@@ -12,7 +12,8 @@
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
+	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -103,6 +104,41 @@
 		</div>
 	</div>
 	<div class="right">
+		<div class="card issues">
+			{#if $TeamOverview.fetching}
+				<div
+					style="display: flex; justify-content: center; align-items: center; margin-top: 100px;"
+				>
+					<Loader size="3xlarge" />
+				</div>
+			{:else}
+				<Heading level="3" size="medium" spacing>Issue summary</Heading>
+				<div class="summary critical">
+					<CircleFillIcon />
+					<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
+						>{$TeamOverview.data?.team.critical.pageInfo.totalCount}
+						critical issue{$TeamOverview.data?.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found</span
+					>
+				</div>
+				<div class="summary warning">
+					<CircleFillIcon />
+					<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
+						>{$TeamOverview.data?.team.warnings.pageInfo.totalCount}
+						warning{$TeamOverview.data?.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found</span
+					>
+				</div>
+
+				<div class="summary todo">
+					<CircleFillIcon />
+
+					<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
+						>{$TeamOverview.data?.team.todos.pageInfo.totalCount}
+						todo{$TeamOverview.data?.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found</span
+					>
+				</div>
+			{/if}
+			<a href="/team/{teamSlug}/issues" style:align-self="end">View All Issues for Team</a>
+		</div>
 		<div>
 			<VulnerabilitySummary
 				{teamSlug}
@@ -165,6 +201,19 @@
 		align-items: stretch;
 	}
 
+	.issues {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-24);
+		padding-bottom: var(--ax-space-32);
+	}
+
+	.summary {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-16);
+	}
+
 	.deployments {
 		align-self: start;
 		display: flex;
@@ -181,5 +230,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
+	}
+
+	.todo {
+		color: light-dark(var(--ax-bg-info-strong), var(--ax-bg-info-strong));
+	}
+	.warning {
+		color: light-dark(var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed));
+	}
+	.critical {
+		color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong));
 	}
 </style>

@@ -100,6 +100,7 @@ export const menuItems = ({
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[],
 		[
 			menuItem('Alerts', 'alerts'),
+			menuItem('Issues', 'issues'),
 			menuItem('Deployments', 'deploy'),
 			menuItem('Cost', 'cost'),
 			menuItem('Utilization', 'utilization'),

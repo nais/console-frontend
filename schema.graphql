@@ -708,6 +708,7 @@ type ApplicationInstanceEdge {
 enum ApplicationInstanceState {
   FAILING
   RUNNING
+  STARTING
   UNKNOWN
 }
 
