@@ -538,6 +538,9 @@ type Application implements ActivityLogger & Node & Workload {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filtering options for items returned from the connection."""
+    filter: IssueFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -2310,6 +2313,9 @@ type Job implements ActivityLogger & Node & Workload {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: IssueFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -7671,6 +7677,9 @@ interface Workload {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: IssueFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.

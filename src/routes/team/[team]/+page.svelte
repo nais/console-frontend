@@ -5,13 +5,13 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
-	import { Alert, BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
-	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -71,47 +71,13 @@
 		</div>
 	</div>
 	<div class="right">
-		<div
-			class="card issues {($TeamOverview.data?.team.critical.pageInfo.totalCount ?? 0) > 0
-				? 'card-critical'
-				: ($TeamOverview.data?.team.warnings.pageInfo.totalCount ?? 0) > 0
-					? 'card-warning'
-					: 'card-todo'}"
-		>
-			{#if $TeamOverview.fetching}
-				<div
-					style="display: flex; justify-content: center; align-items: center; margin-top: 100px;"
-				>
-					<Loader size="3xlarge" />
-				</div>
-			{:else}
-				<Heading level="3" size="medium" spacing>Issue summary</Heading>
-				<div class="summary critical">
-					<CircleFillIcon />
-					<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-						>{$TeamOverview.data?.team.critical.pageInfo.totalCount}
-						critical issue{$TeamOverview.data?.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-					>
-				</div>
-				<div class="summary warning">
-					<CircleFillIcon />
-					<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-						>{$TeamOverview.data?.team.warnings.pageInfo.totalCount}
-						warning{$TeamOverview.data?.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-					>
-				</div>
-
-				<div class="summary todo">
-					<CircleFillIcon />
-
-					<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-						>{$TeamOverview.data?.team.todos.pageInfo.totalCount}
-						todo{$TeamOverview.data?.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-					>
-				</div>
-			{/if}
-			<a href="/team/{teamSlug}/issues" style:align-self="end">View All Issues for Team</a>
-		</div>
+		<IssueSummary
+			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
+			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
+			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
+			{teamSlug}
+			loading={$TeamOverview.fetching}
+		/>
 		<div>
 			<VulnerabilitySummary
 				{teamSlug}
@@ -174,34 +140,6 @@
 		align-items: stretch;
 	}
 
-	.issues {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-24);
-		padding-bottom: var(--ax-space-32);
-	}
-
-	.card-todo {
-		border: 1px solid var(--ax-border-info-strong);
-		background-color: var(--ax-bg-info-soft);
-	}
-
-	.card-warning {
-		border: 1px solid var(--ax-border-warning);
-		background-color: var(--ax-bg-warning-soft);
-	}
-
-	.card-critical {
-		border: 1px solid var(--ax-border-danger);
-		background-color: var(--ax-bg-danger-soft);
-	}
-
-	.summary {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-16);
-	}
-
 	.deployments {
 		align-self: start;
 		display: flex;
@@ -218,15 +156,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
-	}
-
-	.todo {
-		color: light-dark(var(--ax-bg-info-strong), var(--ax-bg-info-strong));
-	}
-	.warning {
-		color: light-dark(var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed));
-	}
-	.critical {
-		color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong));
 	}
 </style>

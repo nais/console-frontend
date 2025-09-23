@@ -3,13 +3,11 @@
 	import { graphql } from '$houdini';
 	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
-	import ErrorMessage, { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/components/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Time from '$lib/Time.svelte';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
@@ -81,20 +79,6 @@
 		<div class="job-content">
 			<div class="main-section">
 				<WorkloadDeploy workload={job} />
-				{#if job.status.errors.filter( (e) => supportedErrorTypes.some((errorType) => errorType === e.__typename) ).length}
-					{#each job.status.errors as error, i (i)}
-						{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
-							<ErrorMessage
-								{error}
-								{docURL}
-								workloadType="Job"
-								{teamSlug}
-								workloadName={job.name}
-								environment={job.teamEnvironment.environment.name}
-							/>
-						{/if}
-					{/each}
-				{/if}
 
 				{#if job.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
@@ -129,7 +113,6 @@
 				</div>
 			</div>
 			<div class="sidebar">
-				<!-- <Status {job} /> -->
 				<Schedule schedule={job.schedule} />
 				{#if jobName && environment}
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />

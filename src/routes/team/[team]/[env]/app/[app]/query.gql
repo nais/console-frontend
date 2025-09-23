@@ -102,31 +102,7 @@ query App(
 						memory
 					}
 				}
-				status {
-					errors {
-						__typename
-						level
-						... on WorkloadStatusDeprecatedRegistry {
-							registry
-						}
-						... on WorkloadStatusSynchronizationFailing {
-							detail
-						}
-						... on WorkloadStatusInvalidNaisYaml {
-							detail
-						}
-						... on WorkloadStatusVulnerable {
-							summary {
-								critical
-								riskScore
-							}
-						}
-						... on WorkloadStatusUnsupportedCloudSQLVersion {
-							level
-							version
-						}
-					}
-				}
+
 				utilization {
 					requested_cpu: requested(resourceType: CPU)
 					requested_memory: requested(resourceType: MEMORY)

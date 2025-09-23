@@ -43,7 +43,7 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 				totalCount
 			}
 		}
-		critical: issues(filter: { severity: CRITICAL }) {
+		criticals: issues(filter: { severity: CRITICAL }) {
 			pageInfo {
 				totalCount
 			}

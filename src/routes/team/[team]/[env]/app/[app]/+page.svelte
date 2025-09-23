@@ -5,13 +5,11 @@
 	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
-	import ErrorMessage, { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/components/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
@@ -90,23 +88,6 @@
 		<div class="app-content">
 			<div class="main-section">
 				<WorkloadDeploy workload={app} />
-				{#if app.status.errors.filter( (e) => supportedErrorTypes.some((errorType) => errorType === e.__typename) ).length}
-					<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
-						{#each app.status.errors as error, i (i)}
-							{#if supportedErrorTypes.some((errorType) => errorType === error.__typename)}
-								<ErrorMessage
-									{error}
-									instances={app.instances.edges}
-									{docURL}
-									workloadType="App"
-									{teamSlug}
-									workloadName={app.name}
-									environment={app.teamEnvironment.environment.name}
-								/>
-							{/if}
-						{/each}
-					</div>
-				{/if}
 
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>

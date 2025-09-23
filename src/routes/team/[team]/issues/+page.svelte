@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { IssueOrderField, Severity } from '$houdini';
+	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, Heading } from '@nais/ds-svelte-community';
+	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -15,7 +16,7 @@
 		ActionMenuRadioGroup,
 		ActionMenuRadioItem
 	} from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon, CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -145,32 +146,13 @@
 	{/if}
 
 	<div>
-		<div class="card">
-			<Heading level="3" size="medium" spacing>Issue summary</Heading>
-			<div class="summary critical">
-				<CircleFillIcon />
-				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{$TeamIssues.data?.team.critical.pageInfo.totalCount}
-					critical issue{$TeamIssues.data?.team.critical.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-				>
-			</div>
-			<div class="summary warning">
-				<CircleFillIcon />
-				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{$TeamIssues.data?.team.warnings.pageInfo.totalCount}
-					warning{$TeamIssues.data?.team.warnings.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-				>
-			</div>
-
-			<div class="summary todo">
-				<CircleFillIcon />
-
-				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{$TeamIssues.data?.team.todos.pageInfo.totalCount}
-					todo{$TeamIssues.data?.team.todos.pageInfo.totalCount !== 1 ? 's' : ''} found</span
-				>
-			</div>
-		</div>
+		<IssueSummary
+			critical={$TeamIssues.data?.team.critical.pageInfo.totalCount}
+			warning={$TeamIssues.data?.team.warnings.pageInfo.totalCount}
+			todo={$TeamIssues.data?.team.todos.pageInfo.totalCount}
+			teamSlug={$TeamIssues.data?.team.slug}
+			loading={$TeamIssues.fetching}
+		/>
 	</div>
 </div>
 
@@ -179,30 +161,5 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
-	}
-	.card {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-24);
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-16) var(--ax-space-20);
-		border-radius: 12px;
-		align-items: stretch;
-		padding-bottom: var(--ax-space-32);
-	}
-	.summary {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-16);
-	}
-
-	.todo {
-		color: light-dark(var(--ax-bg-info-strong), var(--ax-bg-info-strong));
-	}
-	.warning {
-		color: light-dark(var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed));
-	}
-	.critical {
-		color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong));
 	}
 </style>
