@@ -607,6 +607,7 @@ type Application implements ActivityLogger & Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
+  state: ApplicationState!
 
   """Status of the application"""
   status: WorkloadStatus!
@@ -840,6 +841,14 @@ type ApplicationScaling {
 
   """Scaling strategies for the application."""
   strategies: [ScalingStrategy!]!
+}
+
+enum ApplicationState {
+  """The application is not running."""
+  NOT_RUNNING
+
+  """The application is running."""
+  RUNNING
 }
 
 input AssignRoleToServiceAccountInput {
@@ -1162,9 +1171,6 @@ type CostMonthlySummary {
 }
 
 input CreateOpenSearchInput {
-  """Size of the disk in GB."""
-  diskSizeGB: Int!
-
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 
@@ -1173,6 +1179,9 @@ input CreateOpenSearchInput {
 
   """Size of the OpenSearch instance."""
   size: OpenSearchSize!
+
+  """Storage size in GB."""
+  storageGB: Int!
 
   """The team that owns the OpenSearch instance."""
   teamSlug: Slug!
@@ -3052,7 +3061,6 @@ interface Node {
 type OpenSearch implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: OpenSearchAccessOrder): OpenSearchAccessConnection!
   cost: OpenSearchCost!
-  diskSizeGB: Int!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
@@ -3061,6 +3069,9 @@ type OpenSearch implements Node & Persistence {
   name: String!
   size: OpenSearchSize!
   status: OpenSearchStatus!
+
+  """Storage size in GB."""
+  storageGB: Int!
   team: Team!
   teamEnvironment: TeamEnvironment!
   terminationProtection: Boolean!
@@ -6810,9 +6821,6 @@ type UpdateImageVulnerabilityPayload {
 }
 
 input UpdateOpenSearchInput {
-  """Size of the disk in GB."""
-  diskSizeGB: Int!
-
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 
@@ -6821,6 +6829,9 @@ input UpdateOpenSearchInput {
 
   """Size of the OpenSearch instance."""
   size: OpenSearchSize!
+
+  """Storage size in GB."""
+  storageGB: Int!
 
   """The team that owns the OpenSearch instance."""
   teamSlug: Slug!
