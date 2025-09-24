@@ -94,6 +94,13 @@ export const urlToBreadcrumbs = ({ pathname }: URL): Result[] => {
 		return [{ label: split[2], href: `/team/${split[2]}` }];
 	}
 
+	if (split.at(-1) === 'create') {
+		return [
+			{ label: split[2], href: `/team/${split[2]}` },
+			{ label: split[3], href: `/team/${split[2]}/${split[3]}` }
+		];
+	}
+
 	const [, , team, env, type, resource] = split;
 
 	let res: Result[] = [{ label: team, href: `/team/${team}` }];
@@ -123,7 +130,7 @@ export const urlToPageHeader = (
 	const split = url.pathname.split('/');
 
 	return {
-		breadcrumbs: urlToBreadcrumbs(url),
+		breadcrumbs: [...urlToBreadcrumbs(url)],
 		heading:
 			([3, 6].includes(split.length) ? split.at(-1) : label(split.at(-1) ?? '').pageName) ?? '',
 		...(split.length > 5 ? { tag: { label: split[3], variant: envTagVariant(split[3]) } } : {})

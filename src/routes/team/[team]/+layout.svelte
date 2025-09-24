@@ -5,6 +5,7 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
+	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
 	let {
@@ -20,6 +21,8 @@
 	const gitHubOrganization = page.data.githubOrganization;
 	const gitHubTeam = $derived(externalResources.gitHubTeam?.slug);
 
+	createTeamContext();
+
 	const isAdmin = $derived(
 		$UserInfo.data?.me.__typename === 'User' ? $UserInfo.data?.me.isAdmin : false
 	);
@@ -33,7 +36,7 @@
 	{/if}
 	{#if !lastSuccessfulSync && !deletionInProgress}
 		<Alert variant="info" style="margin-bottom: 1rem;" contentMaxWidth={false}
-			>The team and all of its resources is currently beeing created. Expected time to completion is
+			>The team and all of its resources is currently being created. Expected time to completion is
 			about 15 minutes.</Alert
 		>
 	{/if}

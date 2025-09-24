@@ -1,0 +1,14 @@
+query UpdateValkeyData($environment: String!, $team: Slug!, $name: String!)
+@cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		slug
+		environment(name: $environment) {
+			valkey(name: $name) {
+				name
+				tier
+				size
+				maxMemoryPolicy
+			}
+		}
+	}
+}

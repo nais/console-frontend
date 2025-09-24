@@ -6,9 +6,10 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import CreatePage from './create/+page.svelte';
 
 	let { data }: PageProps = $props();
-	let { Valkeys } = $derived(data);
+	let { Valkeys, viewerIsMember } = $derived(data);
 </script>
 
 <GraphErrors errors={$Valkeys.errors} />
@@ -24,6 +25,13 @@
 		pageInfo={$Valkeys.data.team.valkeys.pageInfo}
 		orderField={ValkeyOrderField}
 		defaultOrderField={ValkeyOrderField.NAME}
+		create={{
+			buttonText: 'Create Valkey',
+			url: `/team/${$Valkeys.data.team.slug}/valkey/create`,
+			page: CreatePage,
+			header: 'Create Valkey',
+			viewerIsMember: viewerIsMember
+		}}
 	>
 		{#snippet description()}
 			<BodyLong spacing>
@@ -34,9 +42,11 @@
 				>
 			</BodyLong>
 		{/snippet}
-		{#snippet notFound()}
-			<BodyLong
-				><strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
+		{#snippet notFound({ createButton })}
+			<BodyLong as="div">
+				{@render createButton()}
+
+				<strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
 				storing and querying data. It is a good choice for storing data that is not relational in
 				nature and often used for caching.
 				<ExternalLink href={docURL('/persistence/valkey')}

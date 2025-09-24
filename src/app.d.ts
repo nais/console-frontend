@@ -2,13 +2,18 @@
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
+		interface Error {
+			docPath?: string;
+		}
 		interface Locals {
 			tenantName: string;
 			githubOrganization: string;
 		}
 		// interface PageData {}
 		// interface Platform {}
+		interface PageState {
+			modalHref?: string;
+		}
 	}
 }
 

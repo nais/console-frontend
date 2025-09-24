@@ -1,0 +1,9 @@
+query CreateValkeyEnvironments($slug: Slug!) {
+	team(slug: $slug) {
+		environments {
+			environment {
+				name
+			}
+		}
+	}
+}

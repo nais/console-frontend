@@ -4,21 +4,31 @@ import {
 	type OpenSearchAccessOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
+import { redirect } from '@sveltejs/kit';
+import { get } from 'svelte/store';
 
 export async function load(event) {
-	return {
-		...(await load_OpenSearchInstance({
-			event,
-			variables: {
-				environment: event.params.env,
-				team: event.params.team,
-				name: event.params.opensearch,
-				orderBy: {
-					field: (event.url.searchParams.get('field') ||
-						OpenSearchAccessOrderField.WORKLOAD) as OpenSearchAccessOrderField$options,
-					direction: (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options
-				}
+	const loadValkey = await load_OpenSearchInstance({
+		event,
+		blocking: true,
+		variables: {
+			environment: event.params.env,
+			team: event.params.team,
+			name: event.params.opensearch,
+			orderBy: {
+				field: (event.url.searchParams.get('field') ||
+					OpenSearchAccessOrderField.WORKLOAD) as OpenSearchAccessOrderField$options,
+				direction: (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options
 			}
-		}))
+		}
+	});
+
+	const name = get(loadValkey.OpenSearchInstance).data?.team.environment.openSearch.name;
+	if (!!name && name !== event.params.opensearch) {
+		redirect(307, `/team/${event.params.team}/${event.params.env}/opensearch/${name}`);
+	}
+
+	return {
+		...loadValkey
 	};
 }

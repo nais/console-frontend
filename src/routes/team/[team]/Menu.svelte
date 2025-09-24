@@ -3,6 +3,7 @@
 	import { graphql } from '$houdini';
 	import Menu from '$lib/components/Menu.svelte';
 	import { menuItems } from '$lib/menuItems';
+	import { setInventoryRefetcher } from './teamContext.svelte';
 
 	const {
 		member,
@@ -23,7 +24,7 @@
 
 	const Inventory = $derived(
 		graphql(`
-			query Inventory($team: Slug!) @cache(policy: NoCache) {
+			query Inventory($team: Slug!) @cache(policy: CacheAndNetwork) {
 				team(slug: $team) {
 					inventoryCounts {
 						applications {
@@ -57,6 +58,14 @@
 	);
 
 	$effect.pre(() => {
+		Inventory.fetch({
+			variables: {
+				team: teamSlug
+			}
+		});
+	});
+
+	setInventoryRefetcher(() => {
 		Inventory.fetch({
 			variables: {
 				team: teamSlug
