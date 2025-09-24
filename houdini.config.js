@@ -12,6 +12,7 @@ const config = {
 			'x-user-email': 'dev.usersen@example.com'
 		}
 	},
+	defaultCachePolicy: 'CacheAndNetwork',
 	plugins: {
 		'houdini-svelte': {
 			forceRunesMode: true
