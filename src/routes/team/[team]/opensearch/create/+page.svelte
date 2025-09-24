@@ -9,7 +9,7 @@
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
-	import { diskRequirements, openSearchPlanCosts } from '$lib/utils/aivencost';
+	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
 	import {
 		Alert,
 		BodyLong,
@@ -36,7 +36,7 @@
 		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V2
 	);
 
-	let diskSize = $derived((form?.diskSizeGB as number) ?? diskRequirements[tier][size].min);
+	let storage = $derived((form?.storageGB as number) ?? storageRequirements[tier][size].min);
 
 	const teamCtx = getTeamContext();
 
@@ -49,8 +49,8 @@
 		})
 	);
 
-	const minDiskSize = $derived(diskRequirements[tier][size].min);
-	const maxDiskSize = $derived(diskRequirements[tier][size].max);
+	const minStorage = $derived(storageRequirements[tier][size].min);
+	const maxStorage = $derived(storageRequirements[tier][size].max);
 </script>
 
 <form
@@ -103,20 +103,20 @@
 	<TextField
 		size="small"
 		type="number"
-		label="Disk size (GB)"
-		name="diskSizeGB"
+		label="Storage (GB)"
+		name="storageGB"
 		htmlSize={7}
 		required
-		min={diskRequirements[tier][size].min}
-		max={diskRequirements[tier][size].max}
-		readonly={minDiskSize == maxDiskSize}
-		bind:value={diskSize}
+		min={storageRequirements[tier][size].min}
+		max={storageRequirements[tier][size].max}
+		readonly={minStorage == maxStorage}
+		bind:value={storage}
 	>
 		{#snippet description()}
-			{#if minDiskSize == maxDiskSize}
-				<BodyShort>Disk size: {minDiskSize} GB (fixed)</BodyShort>
+			{#if minStorage == maxStorage}
+				<BodyShort>Storage: {minStorage} GB (fixed)</BodyShort>
 			{:else}
-				<BodyShort>Available disk size: {minDiskSize} - {maxDiskSize} GB.</BodyShort>
+				<BodyShort>Available storage: {minStorage} - {maxStorage} GB.</BodyShort>
 			{/if}
 		{/snippet}
 	</TextField>

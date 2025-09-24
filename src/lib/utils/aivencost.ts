@@ -52,7 +52,7 @@ export const openSearchPlanCosts: Record<
 	}
 };
 
-export const diskRequirements: Record<
+export const storageRequirements: Record<
 	OpenSearchTier$options,
 	Record<OpenSearchSize$options, { min: number; max: number }>
 > = {

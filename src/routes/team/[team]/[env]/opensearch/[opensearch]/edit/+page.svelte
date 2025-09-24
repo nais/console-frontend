@@ -8,7 +8,7 @@
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
-	import { diskRequirements, openSearchPlanCosts } from '$lib/utils/aivencost';
+	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
 	import {
 		Alert,
 		BodyLong,
@@ -41,10 +41,10 @@
 			$UpdateOpenSearchData.data?.team.environment.openSearch.version.desiredMajor ??
 			''
 	);
-	let diskSize = $derived(
-		(form?.diskSizeGB as string) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.diskSizeGB ??
-			diskRequirements[tier][size].min
+	let storage = $derived(
+		(form?.storageGB as string) ??
+			$UpdateOpenSearchData.data?.team.environment.openSearch.storageGB ??
+			storageRequirements[tier][size].min
 	);
 
 	const availableSizes = $derived(
@@ -56,15 +56,15 @@
 		})
 	);
 
-	const minDiskSize = $derived(diskRequirements[tier][size].min);
-	const maxDiskSize = $derived(diskRequirements[tier][size].max);
+	const minStorage = $derived(storageRequirements[tier][size].min);
+	const maxStorage = $derived(storageRequirements[tier][size].max);
 
 	const tomlManifest =
 		$derived(`[openSearch.${$UpdateOpenSearchData.data?.team.environment.openSearch.name}]
 tier = "${tier}"
 size = "${size}"
 version = "${version}"
-diskSizeGB = "${diskSize}"
+storageGB = "${storage}"
 `);
 </script>
 
@@ -94,22 +94,21 @@ diskSizeGB = "${diskSize}"
 	<TextField
 		size="small"
 		type="number"
-		label="Disk size (GB)"
-		name="diskSizeGB"
+		label="Storage (GB)"
+		name="storageGB"
 		htmlSize={7}
 		required
-		min={diskRequirements[tier][size].min}
-		max={diskRequirements[tier][size].max}
-		readonly={minDiskSize == maxDiskSize}
-		bind:value={diskSize}
+		min={storageRequirements[tier][size].min}
+		max={storageRequirements[tier][size].max}
+		readonly={minStorage == maxStorage}
+		bind:value={storage}
 	>
 		{#snippet description()}
-			{#if minDiskSize == maxDiskSize}
-				<BodyShort>Disk size: {minDiskSize} GB (fixed)</BodyShort>
+			{#if minStorage == maxStorage}
+				<BodyShort>Storage: {minStorage} GB (fixed)</BodyShort>
 			{:else}
 				<BodyShort
-					>Available disk size: {minDiskSize} - {maxDiskSize} GB. Reducing will result in the service
-					re-balancing.</BodyShort
+					>Available storage: {minStorage} - {maxStorage} GB. Reducing will result in the service re-balancing.</BodyShort
 				>
 			{/if}
 		{/snippet}

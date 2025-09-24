@@ -26,7 +26,7 @@ export const actions = {
 		const tier = data.get('tier') as string | null;
 		const size = data.get('size') as string | null;
 		const version = data.get('version') as string | null;
-		const diskSize = data.get('diskSizeGB') as string | null;
+		const storage = data.get('storageGB') as string | null;
 
 		const allProps = {
 			name,
@@ -34,10 +34,10 @@ export const actions = {
 			tier,
 			size,
 			version,
-			diskSize
+			storage
 		};
 
-		if (!name || !environment || !tier || !size || !version || !diskSize) {
+		if (!name || !environment || !tier || !size || !version || !storage) {
 			return fail(400, {
 				...allProps,
 				success: false,
@@ -45,12 +45,12 @@ export const actions = {
 			});
 		}
 
-		const diskSizeGB = parseInt(diskSize, 10);
-		if (isNaN(diskSizeGB)) {
+		const storageGB = parseInt(storage, 10);
+		if (isNaN(storageGB)) {
 			return fail(400, {
 				...allProps,
 				success: false,
-				error: 'Disk size must be a number in GB'
+				error: 'Storage must be a number in GB'
 			});
 		}
 
@@ -63,7 +63,7 @@ export const actions = {
 					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
 					size: OpenSearchSize[size as keyof typeof OpenSearchSize],
 					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
-					diskSizeGB: diskSizeGB
+					storageGB: storageGB
 				}
 			},
 			{ event }
