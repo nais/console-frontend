@@ -26,7 +26,11 @@
 
 	const { CreateOpenSearchEnvironments } = $derived(data);
 
-	const environments = $derived($CreateOpenSearchEnvironments.data?.team.environments ?? []);
+	const environments = $derived(
+		($CreateOpenSearchEnvironments.data?.team.environments ?? []).filter(
+			(env) => !!env.gcpProjectID
+		)
+	);
 
 	const form = $derived(page.form);
 

@@ -25,7 +25,9 @@
 
 	const { CreateValkeyEnvironments } = $derived(data);
 
-	const environments = $derived($CreateValkeyEnvironments.data?.team.environments ?? []);
+	const environments = $derived(
+		($CreateValkeyEnvironments.data?.team.environments ?? []).filter((env) => !!env.gcpProjectID)
+	);
 
 	const form = $derived(page.form);
 

@@ -1,6 +1,7 @@
 query CreateOpenSearchEnvironments($slug: Slug!) {
 	team(slug: $slug) {
 		environments {
+			gcpProjectID
 			environment {
 				name
 			}
