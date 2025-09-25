@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ApplicationOrderField } from '$houdini';
+	import { ApplicationOrderField, OrderDirection } from '$houdini';
 	import AggregatedCostForApplications from '$lib/components/AggregatedCostForApplications.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import AppListItem from '$lib/components/list/AppListItem.svelte';
@@ -145,7 +145,8 @@
 					</ActionMenu>
 					<OrderByMenu
 						orderField={ApplicationOrderField}
-						defaultOrderField={ApplicationOrderField.STATUS}
+						defaultOrderField={ApplicationOrderField.ISSUES}
+						defaultOrderDirection={OrderDirection.DESC}
 					/>
 				{/snippet}
 				{#each apps?.nodes ?? [] as app (app.id)}

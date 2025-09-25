@@ -24,7 +24,7 @@ export async function load(event) {
 				team: event.params.team,
 				filter: { name: filter, environments } as TeamApplicationsFilter,
 				orderBy: {
-					field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.STATUS, event.url),
+					field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })

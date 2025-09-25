@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { JobOrderField } from '$houdini';
+	import { JobOrderField, OrderDirection } from '$houdini';
 	import AggregatedCostForJobs from '$lib/components/AggregatedCostForJobs.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import JobListItem from '$lib/components/list/JobListItem.svelte';
@@ -133,7 +133,11 @@
 							</ActionMenuCheckboxItem>
 						{/each}
 					</ActionMenu>
-					<OrderByMenu orderField={JobOrderField} defaultOrderField={JobOrderField.NAME} />
+					<OrderByMenu
+						orderField={JobOrderField}
+						defaultOrderField={JobOrderField.ISSUES}
+						defaultOrderDirection={OrderDirection.DESC}
+					/>
 				{/snippet}
 				{#each jobs?.nodes ?? [] as job (job.id)}
 					<JobListItem {job} />

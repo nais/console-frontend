@@ -38,10 +38,16 @@
 	interface Props {
 		orderField: T;
 		defaultOrderField: ValueOf<T>;
+		defaultOrderDirection?: OrderDirection$options;
 		onlyInclude?: ValueOf<T>[];
 	}
 
-	const { orderField, defaultOrderField, onlyInclude }: Props = $props();
+	const {
+		orderField,
+		defaultOrderField,
+		defaultOrderDirection = OrderDirection.ASC,
+		onlyInclude
+	}: Props = $props();
 
 	const currentOrderField = $derived(
 		Object.values(orderField).find((field) =>
@@ -51,7 +57,7 @@
 
 	const orderDirection = $derived(
 		Object.values(OrderDirection).find((dir) => page.url.searchParams.get('sort')?.endsWith(dir)) ??
-			OrderDirection.ASC
+			defaultOrderDirection
 	);
 
 	export const orderFieldWeights: Record<string, number> = {

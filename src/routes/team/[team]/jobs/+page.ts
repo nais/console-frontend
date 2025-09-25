@@ -1,4 +1,10 @@
-import { JobOrderField, load_Jobs, load_JobsListMetadata, type TeamJobsFilter } from '$houdini';
+import {
+	JobOrderField,
+	load_Jobs,
+	load_JobsListMetadata,
+	OrderDirection,
+	type TeamJobsFilter
+} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 
 const rows = 25;
@@ -20,8 +26,8 @@ export async function load(event) {
 				team: event.params.team,
 				filter: { name: filter, environments } as TeamJobsFilter,
 				orderBy: {
-					field: urlToOrderField(JobOrderField, JobOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url)
+					field: urlToOrderField(JobOrderField, JobOrderField.ISSUES, event.url),
+					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
