@@ -607,6 +607,8 @@ type Application implements ActivityLogger & Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
+
+  """The application state."""
   state: ApplicationState!
 
   """Status of the application"""
@@ -748,6 +750,9 @@ enum ApplicationOrderField {
 
   """Order applications by the name of the environment."""
   ENVIRONMENT
+
+  """Order applications by issue severity"""
+  ISSUES
 
   """Order applications by name."""
   NAME
@@ -1174,13 +1179,13 @@ input CreateOpenSearchInput {
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 
+  """Available memory for the OpenSearch instance."""
+  memory: OpenSearchMemory!
+
   """Name of the OpenSearch instance."""
   name: String!
 
-  """Size of the OpenSearch instance."""
-  size: OpenSearchSize!
-
-  """Storage size in GB."""
+  """Available storage in GB."""
   storageGB: Int!
 
   """The team that owns the OpenSearch instance."""
@@ -1314,11 +1319,11 @@ input CreateValkeyInput {
   """Maximum memory policy for the Valkey instance."""
   maxMemoryPolicy: ValkeyMaxMemoryPolicy
 
+  """Available memory for the Valkey instance."""
+  memory: ValkeyMemory!
+
   """Name of the Valkey instance."""
   name: String!
-
-  """Size of the Valkey instance."""
-  size: ValkeySize!
 
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
@@ -2418,6 +2423,9 @@ type Job implements ActivityLogger & Node & Workload {
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
 
+  """The state of the Job"""
+  state: JobState!
+
   """Status of the job"""
   status: WorkloadStatus!
 
@@ -2504,6 +2512,9 @@ enum JobOrderField {
 
   """Order jobs by the name of the environment."""
   ENVIRONMENT
+
+  """Order jobs by issue severity"""
+  ISSUES
 
   """Order jobs by name."""
   NAME
@@ -2650,6 +2661,13 @@ type JobSchedule {
 
   """The time zone for the job. Defaults to UTC."""
   timeZone: String!
+}
+
+enum JobState {
+  COMPLETED
+  FAILED
+  RUNNING
+  UNKNOWN
 }
 
 type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node {
@@ -3066,15 +3084,19 @@ type OpenSearch implements Node & Persistence {
 
   """Fetch maintenances updates for the OpenSearch instance."""
   maintenance: OpenSearchMaintenance!
+
+  """Available memory for the OpenSearch instance."""
+  memory: OpenSearchMemory!
   name: String!
-  size: OpenSearchSize!
   status: OpenSearchStatus!
 
-  """Storage size in GB."""
+  """Available storage in GB."""
   storageGB: Int!
   team: Team!
   teamEnvironment: TeamEnvironment!
   terminationProtection: Boolean!
+
+  """Availability tier for the OpenSearch instance."""
   tier: OpenSearchTier!
 
   """Fetch version for the OpenSearch instance."""
@@ -3256,6 +3278,15 @@ enum OpenSearchMajorVersion {
   V2
 }
 
+enum OpenSearchMemory {
+  GB_2
+  GB_4
+  GB_8
+  GB_16
+  GB_32
+  GB_64
+}
+
 input OpenSearchOrder {
   direction: OrderDirection!
   field: OpenSearchOrderField!
@@ -3264,15 +3295,6 @@ input OpenSearchOrder {
 enum OpenSearchOrderField {
   ENVIRONMENT
   NAME
-}
-
-enum OpenSearchSize {
-  RAM_2GB
-  RAM_4GB
-  RAM_8GB
-  RAM_16GB
-  RAM_32GB
-  RAM_64GB
 }
 
 type OpenSearchStatus {
@@ -6824,13 +6846,13 @@ input UpdateOpenSearchInput {
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 
+  """Available memory for the OpenSearch instance."""
+  memory: OpenSearchMemory!
+
   """Name of the OpenSearch instance."""
   name: String!
 
-  """Size of the OpenSearch instance."""
-  size: OpenSearchSize!
-
-  """Storage size in GB."""
+  """Available storage in GB."""
   storageGB: Int!
 
   """The team that owns the OpenSearch instance."""
@@ -6963,11 +6985,11 @@ input UpdateValkeyInput {
   """Maximum memory policy for the Valkey instance."""
   maxMemoryPolicy: ValkeyMaxMemoryPolicy
 
+  """Available memory for the Valkey instance."""
+  memory: ValkeyMemory!
+
   """Name of the Valkey instance."""
   name: String!
-
-  """Size of the Valkey instance."""
-  size: ValkeySize!
 
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
@@ -7217,12 +7239,16 @@ type Valkey implements Node & Persistence {
   """Fetch maintenances updates for the Valkey instance."""
   maintenance: ValkeyMaintenance!
   maxMemoryPolicy: ValkeyMaxMemoryPolicy
+
+  """Available memory for the Valkey instance."""
+  memory: ValkeyMemory!
   name: String!
-  size: ValkeySize!
   status: ValkeyStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
   terminationProtection: Boolean!
+
+  """Availability tier for the Valkey instance."""
   tier: ValkeyTier!
   workload: Workload
 }
@@ -7423,6 +7449,17 @@ enum ValkeyMaxMemoryPolicy {
   VOLATILE_TTL
 }
 
+enum ValkeyMemory {
+  GB_1
+  GB_4
+  GB_8
+  GB_14
+  GB_28
+  GB_56
+  GB_112
+  GB_200
+}
+
 input ValkeyOrder {
   direction: OrderDirection!
   field: ValkeyOrderField!
@@ -7431,17 +7468,6 @@ input ValkeyOrder {
 enum ValkeyOrderField {
   ENVIRONMENT
   NAME
-}
-
-enum ValkeySize {
-  RAM_1GB
-  RAM_4GB
-  RAM_8GB
-  RAM_14GB
-  RAM_28GB
-  RAM_56GB
-  RAM_112GB
-  RAM_200GB
 }
 
 type ValkeyStatus {
@@ -7904,6 +7930,9 @@ enum WorkloadOrderField {
 
   """Order by whether the workload has a software bill of materials (SBOM)"""
   HAS_SBOM
+
+  """Order workloads by issue severity"""
+  ISSUES
 
   """Order by name."""
   NAME

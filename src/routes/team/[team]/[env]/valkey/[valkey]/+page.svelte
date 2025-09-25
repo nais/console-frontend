@@ -238,7 +238,7 @@
 			<div>
 				<Heading level="3">Settings</Heading>
 				<BodyShort>Tier: {instance.tier}</BodyShort>
-				<BodyShort>Size: {instance.size}</BodyShort>
+				<BodyShort>Memory: {instance.memory}</BodyShort>
 				{#if instance.maxMemoryPolicy}
 					<BodyShort>Max memory policy: {instance.maxMemoryPolicy}</BodyShort>
 				{/if}

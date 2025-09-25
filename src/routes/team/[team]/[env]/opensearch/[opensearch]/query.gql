@@ -16,7 +16,8 @@ query OpenSearchInstance(
 					desiredMajor
 				}
 				tier
-				size
+				memory
+				storageGB
 				teamEnvironment {
 					environment {
 						name

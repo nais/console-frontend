@@ -2,8 +2,8 @@ import {
 	graphql,
 	ValkeyMaxMemoryPolicy,
 	type ValkeyMaxMemoryPolicy$options,
-	ValkeySize,
-	type ValkeySize$options,
+	ValkeyMemory,
+	type ValkeyMemory$options,
 	ValkeyTier,
 	type ValkeyTier$options
 } from '$houdini';
@@ -25,15 +25,15 @@ export const actions = {
 		const data = await request.formData();
 
 		const tier = data.get('tier') as ValkeyTier$options | null;
-		const size = data.get('size') as ValkeySize$options | null;
+		const memory = data.get('memory') as ValkeyMemory$options | null;
 		const max_memory_policy = data.get('max_memory_policy') as ValkeyMaxMemoryPolicy$options | null;
 
-		if (!tier || !size) {
+		if (!tier || !memory) {
 			return fail(400, {
 				success: false,
 				error: 'All fields are required',
 				tier,
-				size,
+				memory,
 				max_memory_policy
 			});
 		}
@@ -45,7 +45,7 @@ export const actions = {
 					environmentName: params.env,
 					teamSlug: params.team,
 					tier: ValkeyTier[tier as keyof typeof ValkeyTier],
-					size: ValkeySize[size as keyof typeof ValkeySize],
+					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
 					maxMemoryPolicy: !max_memory_policy
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy]
@@ -59,7 +59,7 @@ export const actions = {
 				success: false,
 				error: res.errors![0].message,
 				tier,
-				size,
+				memory,
 				max_memory_policy
 			});
 		} else if (!res.data) {
@@ -67,7 +67,7 @@ export const actions = {
 				success: false,
 				error: 'Failed to update Valkey',
 				tier,
-				size,
+				memory,
 				max_memory_policy
 			});
 		}

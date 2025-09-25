@@ -16,7 +16,7 @@
 		graphql(`
 			fragment OpenSearchManifestFragment on OpenSearch {
 				name
-				size
+				memory
 				tier
 				version {
 					desiredMajor

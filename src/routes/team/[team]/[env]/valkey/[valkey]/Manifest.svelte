@@ -16,7 +16,7 @@
 		graphql(`
 			fragment ValkeyManifestFragment on Valkey {
 				name
-				size
+				memory
 				tier
 				maxMemoryPolicy
 			}

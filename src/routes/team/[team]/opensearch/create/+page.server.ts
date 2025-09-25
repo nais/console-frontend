@@ -1,4 +1,4 @@
-import { graphql, OpenSearchMajorVersion, OpenSearchSize, OpenSearchTier } from '$houdini';
+import { graphql, OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$houdini';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
@@ -24,7 +24,7 @@ export const actions = {
 		const name = data.get('name') as string | null;
 		const environment = data.get('environment') as string | null;
 		const tier = data.get('tier') as string | null;
-		const size = data.get('size') as string | null;
+		const memory = data.get('memory') as string | null;
 		const version = data.get('version') as string | null;
 		const storage = data.get('storageGB') as string | null;
 
@@ -32,12 +32,12 @@ export const actions = {
 			name,
 			environment,
 			tier,
-			size,
+			memory,
 			version,
 			storage
 		};
 
-		if (!name || !environment || !tier || !size || !version || !storage) {
+		if (!name || !environment || !tier || !memory || !version || !storage) {
 			return fail(400, {
 				...allProps,
 				success: false,
@@ -61,7 +61,7 @@ export const actions = {
 					environmentName: environment,
 					teamSlug: params.team,
 					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
-					size: OpenSearchSize[size as keyof typeof OpenSearchSize],
+					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
 					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
 					storageGB: storageGB
 				}

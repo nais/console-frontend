@@ -3,8 +3,8 @@
 	import {
 		OpenSearchMajorVersion,
 		type OpenSearchMajorVersion$options,
-		OpenSearchSize,
-		type OpenSearchSize$options,
+		OpenSearchMemory,
+		type OpenSearchMemory$options,
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
@@ -31,10 +31,10 @@
 			$UpdateOpenSearchData.data?.team.environment.openSearch.tier ??
 			OpenSearchTier.SINGLE_NODE
 	);
-	let size = $derived(
-		(form?.size as OpenSearchSize$options) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.size ??
-			OpenSearchSize.RAM_4GB
+	let memory = $derived(
+		(form?.memory as OpenSearchMemory$options) ??
+			$UpdateOpenSearchData.data?.team.environment.openSearch.memory ??
+			OpenSearchMemory.GB_4
 	);
 	let version = $derived(
 		(form?.version as OpenSearchMajorVersion$options) ??
@@ -44,25 +44,25 @@
 	let storage = $derived(
 		(form?.storageGB as string) ??
 			$UpdateOpenSearchData.data?.team.environment.openSearch.storageGB ??
-			storageRequirements[tier][size].min
+			storageRequirements[tier][memory].min
 	);
 
-	const availableSizes = $derived(
-		Object.values(OpenSearchSize).filter((size) => {
-			if (tier == OpenSearchTier.HIGH_AVAILABILITY && size == OpenSearchSize.RAM_2GB) {
+	const availableMemory = $derived(
+		Object.values(OpenSearchMemory).filter((memory) => {
+			if (tier == OpenSearchTier.HIGH_AVAILABILITY && memory == OpenSearchMemory.GB_2) {
 				return false;
 			}
 			return true;
 		})
 	);
 
-	const minStorage = $derived(storageRequirements[tier][size].min);
-	const maxStorage = $derived(storageRequirements[tier][size].max);
+	const minStorage = $derived(storageRequirements[tier][memory].min);
+	const maxStorage = $derived(storageRequirements[tier][memory].max);
 
 	const tomlManifest =
 		$derived(`[openSearch.${$UpdateOpenSearchData.data?.team.environment.openSearch.name}]
 tier = "${tier}"
-size = "${size}"
+memory = "${memory}"
 version = "${version}"
 storageGB = "${storage}"
 `);
@@ -85,8 +85,8 @@ storageGB = "${storage}"
 		{/each}
 	</Select>
 
-	<Select size="small" label="Size" name="size" required bind:value={size}>
-		{#each availableSizes as opt (opt)}
+	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
+		{#each availableMemory as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
@@ -98,8 +98,8 @@ storageGB = "${storage}"
 		name="storageGB"
 		htmlSize={7}
 		required
-		min={storageRequirements[tier][size].min}
-		max={storageRequirements[tier][size].max}
+		min={storageRequirements[tier][memory].min}
+		max={storageRequirements[tier][memory].max}
 		readonly={minStorage == maxStorage}
 		bind:value={storage}
 	>
@@ -116,7 +116,7 @@ storageGB = "${storage}"
 
 	<BodyShort>
 		Estimated cost: <strong
-			>{openSearchPlanCosts[tier][size].toLocaleString('no-NO', {
+			>{openSearchPlanCosts[tier][memory].toLocaleString('no-NO', {
 				style: 'currency',
 				currency: 'EUR'
 			})}</strong
@@ -127,9 +127,9 @@ storageGB = "${storage}"
 		<ErrorMessage>{form.error}</ErrorMessage>
 	{/if}
 
-	{#if tier === OpenSearchTier.SINGLE_NODE && size === OpenSearchSize.RAM_2GB}
+	{#if tier === OpenSearchTier.SINGLE_NODE && memory === OpenSearchMemory.GB_2}
 		<Alert variant="warning" size="small">
-			This combination of tier and size is not recommended for production workloads.<br />
+			This combination of tier and memory is not recommended for production workloads.<br />
 			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
 			backups.
 		</Alert>

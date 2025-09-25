@@ -6,7 +6,7 @@ query UpdateValkeyData($environment: String!, $team: Slug!, $name: String!)
 			valkey(name: $name) {
 				name
 				tier
-				size
+				memory
 				maxMemoryPolicy
 			}
 		}

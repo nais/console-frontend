@@ -1,75 +1,75 @@
 import {
-	OpenSearchSize,
+	OpenSearchMemory,
+	type OpenSearchMemory$options,
 	OpenSearchTier,
-	type OpenSearchSize$options,
 	type OpenSearchTier$options,
-	type ValkeySize$options,
+	type ValkeyMemory$options,
 	type ValkeyTier$options
 } from '$houdini';
 
-export const valkeyPlanCosts: Record<ValkeyTier$options, Record<ValkeySize$options, number>> = {
+export const valkeyPlanCosts: Record<ValkeyTier$options, Record<ValkeyMemory$options, number>> = {
 	SINGLE_NODE: {
-		RAM_1GB: 16, // hobbyist
-		RAM_4GB: 64,
-		RAM_8GB: 128,
-		RAM_14GB: 214,
-		RAM_28GB: 394,
-		RAM_56GB: 651,
-		RAM_112GB: 1277,
-		RAM_200GB: 2554
+		GB_1: 16, // hobbyist
+		GB_4: 64,
+		GB_8: 128,
+		GB_14: 214,
+		GB_28: 394,
+		GB_56: 651,
+		GB_112: 1277,
+		GB_200: 2554
 	},
 	HIGH_AVAILABILITY: {
-		RAM_1GB: 60,
-		RAM_4GB: 171,
-		RAM_8GB: 342,
-		RAM_14GB: 462,
-		RAM_28GB: 737,
-		RAM_56GB: 1337,
-		RAM_112GB: 2640,
-		RAM_200GB: 5057
+		GB_1: 60,
+		GB_4: 171,
+		GB_8: 342,
+		GB_14: 462,
+		GB_28: 737,
+		GB_56: 1337,
+		GB_112: 2640,
+		GB_200: 5057
 	}
 };
 
 export const openSearchPlanCosts: Record<
 	OpenSearchTier$options,
-	Record<OpenSearchSize$options, number>
+	Record<OpenSearchMemory$options, number>
 > = {
 	SINGLE_NODE: {
-		RAM_2GB: 16, // hobbyist
-		RAM_4GB: 77,
-		RAM_8GB: 154,
-		RAM_16GB: 308,
-		RAM_32GB: 616,
-		RAM_64GB: 1231
+		GB_2: 16, // hobbyist
+		GB_4: 77,
+		GB_8: 154,
+		GB_16: 308,
+		GB_32: 616,
+		GB_64: 1231
 	},
 	HIGH_AVAILABILITY: {
-		RAM_2GB: Infinity, // not available
-		RAM_4GB: 235,
-		RAM_8GB: 470,
-		RAM_16GB: 940,
-		RAM_32GB: 1881,
-		RAM_64GB: 3763
+		GB_2: Infinity, // not available
+		GB_4: 235,
+		GB_8: 470,
+		GB_16: 940,
+		GB_32: 1881,
+		GB_64: 3763
 	}
 };
 
 export const storageRequirements: Record<
 	OpenSearchTier$options,
-	Record<OpenSearchSize$options, { min: number; max: number }>
+	Record<OpenSearchMemory$options, { min: number; max: number }>
 > = {
 	[OpenSearchTier.SINGLE_NODE]: {
-		[OpenSearchSize.RAM_2GB]: { min: 16, max: 16 },
-		[OpenSearchSize.RAM_4GB]: { min: 80, max: 400 },
-		[OpenSearchSize.RAM_8GB]: { min: 175, max: 875 },
-		[OpenSearchSize.RAM_16GB]: { min: 350, max: 1750 },
-		[OpenSearchSize.RAM_32GB]: { min: 700, max: 3500 },
-		[OpenSearchSize.RAM_64GB]: { min: 1400, max: 5120 }
+		[OpenSearchMemory.GB_2]: { min: 16, max: 16 },
+		[OpenSearchMemory.GB_4]: { min: 80, max: 400 },
+		[OpenSearchMemory.GB_8]: { min: 175, max: 875 },
+		[OpenSearchMemory.GB_16]: { min: 350, max: 1750 },
+		[OpenSearchMemory.GB_32]: { min: 700, max: 3500 },
+		[OpenSearchMemory.GB_64]: { min: 1400, max: 5120 }
 	},
 	[OpenSearchTier.HIGH_AVAILABILITY]: {
-		[OpenSearchSize.RAM_2GB]: { min: 0, max: 0 }, // Not available
-		[OpenSearchSize.RAM_4GB]: { min: 240, max: 1200 },
-		[OpenSearchSize.RAM_8GB]: { min: 525, max: 2625 },
-		[OpenSearchSize.RAM_16GB]: { min: 1050, max: 5250 },
-		[OpenSearchSize.RAM_32GB]: { min: 2100, max: 10500 },
-		[OpenSearchSize.RAM_64GB]: { min: 4200, max: 15360 }
+		[OpenSearchMemory.GB_2]: { min: 0, max: 0 }, // Not available
+		[OpenSearchMemory.GB_4]: { min: 240, max: 1200 },
+		[OpenSearchMemory.GB_8]: { min: 525, max: 2625 },
+		[OpenSearchMemory.GB_16]: { min: 1050, max: 5250 },
+		[OpenSearchMemory.GB_32]: { min: 2100, max: 10500 },
+		[OpenSearchMemory.GB_64]: { min: 4200, max: 15360 }
 	}
 };

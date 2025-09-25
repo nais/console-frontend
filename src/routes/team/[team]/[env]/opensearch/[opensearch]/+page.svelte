@@ -236,7 +236,8 @@
 			<div>
 				<Heading level="3">Settings</Heading>
 				<BodyShort>Tier: {instance.tier}</BodyShort>
-				<BodyShort>Size: {instance.size}</BodyShort>
+				<BodyShort>Memory: {instance.memory}</BodyShort>
+				<BodyShort>Storage: {instance.storageGB}GB</BodyShort>
 			</div>
 			<div>
 				<Heading level="3">Version</Heading>
