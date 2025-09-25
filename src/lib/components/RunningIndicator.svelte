@@ -22,4 +22,11 @@
 	.pulse {
 		animation: pulse 2s infinite ease-out;
 	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pulse {
+			animation: none;
+			display: none;
+		}
+	}
 </style>
