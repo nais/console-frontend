@@ -221,16 +221,17 @@
 					Comment
 				{/snippet}
 			</TextField>
+			<Button style="align-self: end;" variant="danger" size="small" onclick={() => {}}
+				>Remove Suppression</Button
+			>
 		</div>
 	{/if}
 	{#snippet footer()}
 		{#if authorized}
-			<Button variant="primary" size="small" onclick={triggerSuppress} disabled={!authorized}
-				>Suppress</Button
+			<Button variant="primary" size="small" onclick={triggerSuppress}
+				>{finding.suppression ? 'Update' : 'Suppress'}</Button
 			>
 			<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
-		{:else}
-			<Button variant="secondary" size="small" onclick={close}>Close</Button>
 		{/if}
 	{/snippet}
 </Modal>
