@@ -3,6 +3,7 @@
 	import {
 		graphql,
 		ImageVulnerabilityOrderField,
+		ImageVulnerabilitySuppressionState,
 		type ImageVulnerabilityOrderField$options
 	} from '$houdini';
 	import Pagination from '$lib/Pagination.svelte';
@@ -20,9 +21,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import SuppressFinding, { type FindingType } from './SuppressFinding.svelte';
-	import TrailFinding from './TrailFinding.svelte';
 
 	interface Props {
 		authorized: boolean;
@@ -62,20 +61,10 @@
 									package
 									severity
 									severitySince
-									state
 									vulnerabilityDetailsLink
-									analysisTrail {
+									suppression {
+										reason
 										state
-										suppressed
-										comments {
-											nodes {
-												comment
-												onBehalfOf
-												state
-												suppressed
-												timestamp
-											}
-										}
 									}
 								}
 							}
@@ -121,8 +110,6 @@
 
 	let findingToSuppress: FindingType | undefined = $state();
 	let suppressOpen = $state(false);
-	let analysisTrail: FindingType | undefined = $state();
-	let analysisOpen = $state(false);
 
 	let image = $derived($vulnerabilities.data?.team.environment.workload.image);
 
@@ -167,8 +154,7 @@
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.PACKAGE}>Package</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY}>Severity</Th>
 				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SEVERITY_SINCE}>Since</Th>
-				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.SUPPRESSED}>Suppressed</Th>
-				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>State</Th>
+				<Th sortable={true} sortKey={ImageVulnerabilityOrderField.STATE}>Suppression</Th>
 			</Tr>
 		</Thead>
 		<Tbody>
@@ -203,23 +189,21 @@
 							—
 						{/if}
 					</Td>
-					<Td style="text-align: center">
-						{#if v.analysisTrail.suppressed}
-							<CheckmarkIcon width="18px" height="18px" />
+
+					<Td
+						>{#if v.suppression}
+							<code
+								>{v.suppression?.state === ImageVulnerabilitySuppressionState.FALSE_POSITIVE
+									? 'False Positive'
+									: v.suppression?.state === ImageVulnerabilitySuppressionState.NOT_AFFECTED
+										? 'Not Affected'
+										: v.suppression?.state === ImageVulnerabilitySuppressionState.IN_TRIAGE
+											? 'In Triage'
+											: v.suppression?.state === ImageVulnerabilitySuppressionState.RESOLVED
+												? 'Resolved'
+												: 'Unknown'}</code
+							>
 						{/if}
-					</Td>
-					<Td>
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							disabled={v.analysisTrail?.state ? false : true}
-							onclick={() => {
-								analysisTrail = v;
-								analysisOpen = true;
-							}}
-						>
-							<code>{v.analysisTrail?.state ? v.analysisTrail?.state : 'N/A'} </code>
-						</Button>
 					</Td>
 				</Tr>
 			{:else}
@@ -260,17 +244,6 @@
 				}}
 			/>
 		{/key}
-	{/if}
-
-	{#if analysisTrail && authorized && image.workloadReferences}
-		<TrailFinding
-			bind:open={analysisOpen}
-			finding={analysisTrail}
-			workloads={image.workloadReferences.nodes.map((node) => node.workload)}
-			on:close={() => {
-				analysisTrail = undefined;
-			}}
-		/>
 	{/if}
 {/if}
 

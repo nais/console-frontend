@@ -5,39 +5,23 @@
 		identifier: string;
 		package: string;
 		severity: ValueOf<typeof ImageVulnerabilitySeverity>;
-		state: ValueOf<typeof ImageVulnerabilityState>;
+		suppression: {
+			reason: string;
+			state: ValueOf<typeof ImageVulnerabilitySuppressionState>;
+		} | null;
 		vulnerabilityDetailsLink: string;
-		analysisTrail: {
-			state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
-			suppressed: boolean;
-			comments: {
-				nodes: {
-					comment: string;
-					onBehalfOf: string;
-					state: ValueOf<typeof ImageVulnerabilityAnalysisState>;
-					suppressed: boolean;
-					timestamp: Date;
-				}[];
-			};
-		};
 	};
 </script>
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import {
-		graphql,
-		ImageVulnerabilityAnalysisState,
-		type ImageVulnerabilitySeverity,
-		type ImageVulnerabilityState,
-		type ValueOf
-	} from '$houdini';
+	import { graphql, ImageVulnerabilitySuppressionState, type ValueOf } from '$houdini';
+	import type { ImageVulnerabilitySeverity } from '$houdini/graphql/enums';
 	import {
 		Alert,
 		BodyShort,
 		Button,
-		Checkbox,
 		Heading,
 		Modal,
 		Select,
@@ -72,7 +56,7 @@
 
 	let errormessage = $state('');
 
-	let selectedReason: ValueOf<typeof ImageVulnerabilityAnalysisState> | '' = $state('');
+	let selectedReason: ValueOf<typeof ImageVulnerabilitySuppressionState> | '' = $state('');
 	let inputText = $state('');
 	let suppressed: boolean = $state(false);
 
@@ -133,32 +117,23 @@
 	// TODO: needs refresh
 	const suppress = graphql(`
 		mutation SuppressFinding(
-			$analysisState: ImageVulnerabilityAnalysisState!
+			$analysisState: ImageVulnerabilitySuppressionState!
 			$comment: String!
 			$suppress: Boolean!
 			$vulnerabilityID: ID!
 		) {
 			updateImageVulnerability(
 				input: {
-					analysisState: $analysisState
-					comment: $comment
+					state: $analysisState
+					reason: $comment
 					suppress: $suppress
 					vulnerabilityID: $vulnerabilityID
 				}
 			) {
 				vulnerability {
-					analysisTrail {
+					suppression {
+						reason
 						state
-						suppressed
-						comments {
-							nodes {
-								comment
-								onBehalfOf
-								state
-								suppressed
-								timestamp
-							}
-						}
 					}
 				}
 			}
@@ -167,16 +142,16 @@
 
 	const SUPPRESS_OPTIONS = [
 		{ value: '', text: 'Suppress reason' },
-		{ value: ImageVulnerabilityAnalysisState.IN_TRIAGE, text: 'In triage' },
-		{ value: ImageVulnerabilityAnalysisState.RESOLVED, text: 'Resolved' },
-		{ value: ImageVulnerabilityAnalysisState.FALSE_POSITIVE, text: 'False positive' },
-		{ value: ImageVulnerabilityAnalysisState.NOT_AFFECTED, text: 'Not affected' }
+		{ value: ImageVulnerabilitySuppressionState.IN_TRIAGE, text: 'In triage' },
+		{ value: ImageVulnerabilitySuppressionState.RESOLVED, text: 'Resolved' },
+		{ value: ImageVulnerabilitySuppressionState.FALSE_POSITIVE, text: 'False positive' },
+		{ value: ImageVulnerabilitySuppressionState.NOT_AFFECTED, text: 'Not affected' }
 	];
 
 	const init = (finding: FindingType) => {
-		inputText = finding.analysisTrail?.comments?.nodes[0]?.comment ?? '';
-		selectedReason = finding.analysisTrail?.state ?? '';
-		suppressed = finding.analysisTrail?.suppressed ?? false;
+		inputText = finding.suppression?.reason ?? '';
+		selectedReason = finding.suppression?.state ?? '';
+		suppressed = finding.suppression !== null;
 	};
 
 	$effect(() => {
@@ -193,11 +168,6 @@
 		<dl>
 			<dt>Package:</dt>
 			<dd><code>{finding.package}</code></dd>
-			{#if finding.description !== ''}
-				<dt>Description:</dt>
-				<dd>{finding.description}</dd>
-			{/if}
-
 			<dt>Details:</dt>
 			<dd>
 				<ExternalLink href={finding.vulnerabilityDetailsLink}
@@ -238,7 +208,7 @@
 			</BodyShort>
 			<Select size="small" label="Analysis" bind:value={selectedReason}>
 				{#each SUPPRESS_OPTIONS as option (option)}
-					{#if option.value === finding.state}
+					{#if option.value === finding.suppression?.state}
 						<option value={option.value}>{option.text} </option>
 					{:else}
 						<option value={option.value}>{option.text}</option>
@@ -251,13 +221,12 @@
 					Comment
 				{/snippet}
 			</TextField>
-			<Checkbox bind:checked={suppressed}>Suppress</Checkbox>
 		</div>
 	{/if}
 	{#snippet footer()}
 		{#if authorized}
 			<Button variant="primary" size="small" onclick={triggerSuppress} disabled={!authorized}
-				>Update</Button
+				>Suppress</Button
 			>
 			<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 		{:else}

@@ -99,7 +99,7 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 		}
 
 		vulnerabilitySummary {
-			bomCount
+			sbomCount
 			coverage
 			critical
 			riskScore
