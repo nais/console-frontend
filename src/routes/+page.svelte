@@ -4,12 +4,14 @@
 	import FavoritesList from '$lib/components/list/FavoritesList.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
+	import PageModal, { pageModalClick } from '$lib/components/PageModal.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import type { PageProps } from './$types';
 	import Onboarding from './Onboarding.svelte';
+	import CreatePage from './team/create/+page.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -43,7 +45,9 @@
 		<div class="content-wrapper">
 			<div class="header">
 				<Heading level="1" size="large">My Teams</Heading>
-				<Button as="a" size="medium" href="/team/create" variant="primary">Create team</Button>
+				<Button as="a" size="medium" href="/team/create" variant="primary" onclick={pageModalClick}>
+					Create team
+				</Button>
 			</div>
 			{#if $UserTeams.data}
 				{#if $UserTeams.data.me.__typename == 'User'}
@@ -82,6 +86,8 @@
 			<FavoritesList />
 		</div>
 	</div>
+
+	<PageModal content={CreatePage} header="Create a New Team" />
 {/if}
 
 <style>

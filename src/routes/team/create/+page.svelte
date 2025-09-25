@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { isPossiblyInModal } from '$lib/components/PageModal.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { Button, ErrorSummary, Heading, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
-	let { form = $bindable() }: PageProps = $props();
+	let { form }: PageProps = $props();
 	let saving = $state(false);
 	let slackChannelError = $state('');
 
@@ -133,8 +134,14 @@
 	}
 </script>
 
-<div class="container">
-	<Heading level="1" size="large" spacing>Create a New Team</Heading>
+<svelte:head>
+	<title>Create a New Team - Nais Console</title>
+</svelte:head>
+
+<div class="container" class:partOfModal={isPossiblyInModal()}>
+	{#if !isPossiblyInModal()}
+		<Heading level="1" size="large" spacing>Create a New Team</Heading>
+	{/if}
 	{#if form?.errors && form.errors.length > 0}
 		<ErrorSummary heading="Error creating team">
 			{#each form.errors as error (error)}
@@ -210,5 +217,9 @@
 		padding-top: 4rem;
 		margin-inline: auto;
 		max-width: 620px;
+
+		&.partOfModal {
+			padding-top: 0;
+		}
 	}
 </style>

@@ -1,9 +1,8 @@
 <script lang="ts" generics="T extends OrderField">
-	import { goto, preloadData, pushState } from '$app/navigation';
-	import { page } from '$app/state';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu, { type OrderField } from '$lib/components/OrderByMenu.svelte';
+	import PageModal, { pageModalClick } from '$lib/components/PageModal.svelte';
 	import PersistenceCost, {
 		type CostData
 	} from '$lib/components/persistence/PersistenceCost.svelte';
@@ -12,7 +11,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, Loader, Modal, Tag } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { Component, Snippet } from 'svelte';
@@ -84,26 +83,6 @@
 		orderField: T;
 		defaultOrderField: T[keyof T];
 	} = $props();
-
-	let modalData = $state();
-
-	$effect(() => {
-		if (page.state.modalHref) {
-			const href = page.state.modalHref;
-			// run `load` functions (or rather, get the result of the `load` functions
-			// that are already running because of `data-sveltekit-preload-data`)
-			preloadData(href).then((result) => {
-				if (result.type === 'loaded' && result.status === 200) {
-					modalData = result.data;
-				} else {
-					// something bad happened! try navigating
-					goto(href);
-				}
-			});
-		} else {
-			modalData = undefined;
-		}
-	});
 </script>
 
 {#snippet createButton()}
@@ -115,23 +94,7 @@
 				as="a"
 				href={create.url}
 				icon={PlusIcon}
-				onclick={async (e) => {
-					if (
-						innerWidth < 640 || // bail if the screen is too small
-						e.shiftKey || // or the link is opened in a new window
-						e.metaKey ||
-						e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-					) {
-						return;
-					}
-
-					// prevent navigation
-					e.preventDefault();
-
-					const { href } = e.currentTarget;
-
-					pushState(href, { modalHref: href });
-				}}
+				onclick={pageModalClick}
 			>
 				{create.buttonText}
 			</Button>
@@ -205,22 +168,8 @@
 	</div>
 {/if}
 
-{#if create && modalData}
-	{@const Page = create.page}
-	<Modal
-		onclose={() => {
-			history.back();
-			modalData = undefined;
-		}}
-		open={true}
-		header={create.header}
-	>
-		{#if !modalData}
-			<Loader />
-		{:else}
-			<Page data={modalData} />
-		{/if}
-	</Modal>
+{#if create}
+	<PageModal content={create.page} header={create.header} />
 {/if}
 
 <style>
