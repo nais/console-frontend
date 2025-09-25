@@ -79,6 +79,31 @@
 		dispatcher('close');
 	};
 
+	const removeSuppress = async () => {
+		errormessage = '';
+
+		await suppress.mutate({
+			analysisState: null,
+			comment: '',
+			vulnerabilityID: finding.id,
+			suppress: false
+		});
+
+		if ($suppress.errors) {
+			if (errormessage === '') {
+				errormessage = $suppress.errors[0].message;
+			}
+			open = true;
+			return;
+		}
+
+		errormessage = '';
+		const vulnerabilityReportUrl =
+			'/team/' + team + '/' + env + '/' + workload + '/vulnerability-report';
+		close();
+		await goto(vulnerabilityReportUrl, { replaceState: true });
+	};
+
 	const triggerSuppress = async () => {
 		errormessage = '';
 
@@ -117,7 +142,7 @@
 	// TODO: needs refresh
 	const suppress = graphql(`
 		mutation SuppressFinding(
-			$analysisState: ImageVulnerabilitySuppressionState!
+			$analysisState: ImageVulnerabilitySuppressionState
 			$comment: String!
 			$suppress: Boolean!
 			$vulnerabilityID: ID!
@@ -221,9 +246,11 @@
 					Comment
 				{/snippet}
 			</TextField>
-			<Button style="align-self: end;" variant="danger" size="small" onclick={() => {}}
-				>Remove Suppression</Button
-			>
+			{#if finding.suppression}
+				<Button style="align-self: end;" variant="danger" size="small" onclick={removeSuppress}
+					>Remove Suppression</Button
+				>
+			{/if}
 		</div>
 	{/if}
 	{#snippet footer()}

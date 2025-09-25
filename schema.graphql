@@ -6764,7 +6764,7 @@ input UpdateImageVulnerabilityInput {
   reason: String!
 
   """New state of the vulnerability."""
-  state: ImageVulnerabilitySuppressionState!
+  state: ImageVulnerabilitySuppressionState
 
   """Should the vulnerability be suppressed."""
   suppress: Boolean!
