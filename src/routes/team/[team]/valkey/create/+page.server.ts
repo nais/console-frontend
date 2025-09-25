@@ -1,4 +1,4 @@
-import { graphql, ValkeyMaxMemoryPolicy, ValkeySize, ValkeyTier } from '$houdini';
+import { graphql, ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$houdini';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
@@ -24,17 +24,17 @@ export const actions = {
 		const name = data.get('name') as string | null;
 		const environment = data.get('environment') as string | null;
 		const tier = data.get('tier') as string | null;
-		const size = data.get('size') as string | null;
+		const memory = data.get('memory') as string | null;
 		const max_memory_policy = data.get('max_memory_policy') as string | null;
 
-		if (!name || !environment || !tier || !size) {
+		if (!name || !environment || !tier || !memory) {
 			return fail(400, {
 				success: false,
 				error: 'All fields are required',
 				name,
 				environment,
 				tier,
-				size,
+				memory,
 				max_memory_policy
 			});
 		}
@@ -46,7 +46,7 @@ export const actions = {
 					environmentName: environment,
 					teamSlug: params.team,
 					tier: ValkeyTier[tier as keyof typeof ValkeyTier],
-					size: ValkeySize[size as keyof typeof ValkeySize],
+					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
 					maxMemoryPolicy: !max_memory_policy
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy]
@@ -62,7 +62,7 @@ export const actions = {
 				name,
 				environment,
 				tier,
-				size,
+				memory,
 				max_memory_policy
 			});
 		} else if (!res.data) {
@@ -72,7 +72,7 @@ export const actions = {
 				name,
 				environment,
 				tier,
-				size,
+				memory,
 				max_memory_policy
 			});
 		}

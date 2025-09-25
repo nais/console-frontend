@@ -4,8 +4,8 @@
 	import {
 		OpenSearchMajorVersion,
 		type OpenSearchMajorVersion$options,
-		OpenSearchSize,
-		type OpenSearchSize$options,
+		OpenSearchMemory,
+		type OpenSearchMemory$options,
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
@@ -35,26 +35,26 @@
 	const form = $derived(page.form);
 
 	let tier = $derived((form?.tier as OpenSearchTier$options) ?? OpenSearchTier.SINGLE_NODE);
-	let size = $derived((form?.size as OpenSearchSize$options) ?? OpenSearchSize.RAM_4GB);
+	let memory = $derived((form?.memory as OpenSearchMemory$options) ?? OpenSearchMemory.GB_4);
 	let version = $derived(
 		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V2
 	);
 
-	let storage = $derived((form?.storageGB as number) ?? storageRequirements[tier][size].min);
+	let storage = $derived((form?.storageGB as number) ?? storageRequirements[tier][memory].min);
 
 	const teamCtx = getTeamContext();
 
-	const availableSizes = $derived(
-		Object.values(OpenSearchSize).filter((size) => {
-			if (tier == OpenSearchTier.HIGH_AVAILABILITY && size == OpenSearchSize.RAM_2GB) {
+	const availableMemories = $derived(
+		Object.values(OpenSearchMemory).filter((memory) => {
+			if (tier == OpenSearchTier.HIGH_AVAILABILITY && memory == OpenSearchMemory.GB_2) {
 				return false;
 			}
 			return true;
 		})
 	);
 
-	const minStorage = $derived(storageRequirements[tier][size].min);
-	const maxStorage = $derived(storageRequirements[tier][size].max);
+	const minStorage = $derived(storageRequirements[tier][memory].min);
+	const maxStorage = $derived(storageRequirements[tier][memory].max);
 </script>
 
 <form
@@ -98,8 +98,8 @@
 		{/each}
 	</Select>
 
-	<Select size="small" label="Size" name="size" required bind:value={size}>
-		{#each availableSizes as opt (opt)}
+	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
+		{#each availableMemories as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
@@ -111,8 +111,8 @@
 		name="storageGB"
 		htmlSize={7}
 		required
-		min={storageRequirements[tier][size].min}
-		max={storageRequirements[tier][size].max}
+		min={storageRequirements[tier][memory].min}
+		max={storageRequirements[tier][memory].max}
 		readonly={minStorage == maxStorage}
 		bind:value={storage}
 	>
@@ -127,7 +127,7 @@
 
 	<BodyShort>
 		Estimated cost: <strong
-			>{openSearchPlanCosts[tier][size].toLocaleString('no-NO', {
+			>{openSearchPlanCosts[tier][memory].toLocaleString('no-NO', {
 				style: 'currency',
 				currency: 'EUR'
 			})}</strong
@@ -138,9 +138,9 @@
 		<ErrorMessage>{form.error}</ErrorMessage>
 	{/if}
 
-	{#if tier === OpenSearchTier.SINGLE_NODE && size === OpenSearchSize.RAM_2GB}
+	{#if tier === OpenSearchTier.SINGLE_NODE && memory === OpenSearchMemory.GB_2}
 		<Alert variant="warning" size="small">
-			This combination of tier and size is not recommended for production workloads.<br />
+			This combination of tier and memory is not recommended for production workloads.<br />
 			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
 			backups.
 		</Alert>

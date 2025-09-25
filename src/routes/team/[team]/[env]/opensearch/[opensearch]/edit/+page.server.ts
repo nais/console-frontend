@@ -2,8 +2,8 @@ import {
 	graphql,
 	OpenSearchMajorVersion,
 	type OpenSearchMajorVersion$options,
-	OpenSearchSize,
-	type OpenSearchSize$options,
+	OpenSearchMemory,
+	type OpenSearchMemory$options,
 	OpenSearchTier,
 	type OpenSearchTier$options
 } from '$houdini';
@@ -25,18 +25,18 @@ export const actions = {
 		const data = await request.formData();
 
 		const tier = data.get('tier') as OpenSearchTier$options | null;
-		const size = data.get('size') as OpenSearchSize$options | null;
+		const memory = data.get('memory') as OpenSearchMemory$options | null;
 		const version = data.get('version') as OpenSearchMajorVersion$options | null;
 		const storage = data.get('storageGB') as string | null;
 
 		const allProps = {
 			tier,
-			size,
+			memory,
 			version,
 			storageGB: storage
 		};
 
-		if (!tier || !size || !version || !storage) {
+		if (!tier || !memory || !version || !storage) {
 			return fail(400, {
 				...allProps,
 				success: false,
@@ -49,7 +49,7 @@ export const actions = {
 			return fail(400, {
 				...allProps,
 				success: false,
-				error: 'Storage size must be a number in GB'
+				error: 'Storage capacity must be a number in GB'
 			});
 		}
 
@@ -60,7 +60,7 @@ export const actions = {
 					environmentName: params.env,
 					teamSlug: params.team,
 					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
-					size: OpenSearchSize[size as keyof typeof OpenSearchSize],
+					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
 					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
 					storageGB: storageGB
 				}

@@ -3,8 +3,8 @@
 	import { page } from '$app/state';
 	import {
 		ValkeyMaxMemoryPolicy,
-		ValkeySize,
-		type ValkeySize$options,
+		ValkeyMemory,
+		type ValkeyMemory$options,
 		ValkeyTier,
 		type ValkeyTier$options
 	} from '$houdini';
@@ -32,7 +32,7 @@
 	const form = $derived(page.form);
 
 	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
-	let size = $derived((form?.size as ValkeySize$options) ?? ValkeySize.RAM_1GB);
+	let memory = $derived((form?.size as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
 
 	const teamCtx = getTeamContext();
 </script>
@@ -72,8 +72,8 @@
 		{/each}
 	</Select>
 
-	<Select size="small" label="Size" name="size" required bind:value={size}>
-		{#each Object.values(ValkeySize) as opt (opt)}
+	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
+		{#each Object.values(ValkeyMemory) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
@@ -92,7 +92,7 @@
 
 	<BodyShort>
 		Estimated cost: <strong
-			>{valkeyPlanCosts[tier][size].toLocaleString('no-NO', {
+			>{valkeyPlanCosts[tier][memory].toLocaleString('no-NO', {
 				style: 'currency',
 				currency: 'EUR'
 			})}</strong
@@ -103,9 +103,9 @@
 		<ErrorMessage>{form.error}</ErrorMessage>
 	{/if}
 
-	{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
+	{#if tier === ValkeyTier.SINGLE_NODE && memory === ValkeyMemory.GB_1}
 		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
-			This combination of tier and size is not recommended for production workloads.<br />
+			This combination of tier and memory is not recommended for production workloads.<br />
 			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
 			backups.
 		</Alert>

@@ -3,8 +3,8 @@
 	import {
 		ValkeyMaxMemoryPolicy,
 		type ValkeyMaxMemoryPolicy$options,
-		ValkeySize,
-		type ValkeySize$options,
+		ValkeyMemory,
+		type ValkeyMemory$options,
 		ValkeyTier,
 		type ValkeyTier$options
 	} from '$houdini';
@@ -30,10 +30,10 @@
 			$UpdateValkeyData.data?.team.environment.valkey.tier ??
 			ValkeyTier.HIGH_AVAILABILITY
 	);
-	let size = $derived(
-		(form?.size as ValkeySize$options) ??
-			$UpdateValkeyData.data?.team.environment.valkey.size ??
-			ValkeySize.RAM_1GB
+	let memory = $derived(
+		(form?.memory as ValkeyMemory$options) ??
+			$UpdateValkeyData.data?.team.environment.valkey.memory ??
+			ValkeyMemory.GB_1
 	);
 	let maxMemoryPolicy = $derived(
 		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ??
@@ -43,7 +43,7 @@
 
 	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
 tier = "${tier}"
-size = "${size}"
+memory = "${memory}"
 ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 </script>
 
@@ -58,8 +58,8 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 		{/each}
 	</Select>
 
-	<Select size="small" label="Size" name="size" required bind:value={size}>
-		{#each Object.values(ValkeySize) as opt (opt)}
+	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
+		{#each Object.values(ValkeyMemory) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
@@ -80,7 +80,7 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 
 	<BodyShort>
 		Estimated cost: <strong
-			>{valkeyPlanCosts[tier][size].toLocaleString('no-NO', {
+			>{valkeyPlanCosts[tier][memory].toLocaleString('no-NO', {
 				style: 'currency',
 				currency: 'EUR'
 			})}</strong
@@ -91,9 +91,9 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 		<ErrorMessage>{form.error}</ErrorMessage>
 	{/if}
 
-	{#if tier === ValkeyTier.SINGLE_NODE && size === ValkeySize.RAM_1GB}
+	{#if tier === ValkeyTier.SINGLE_NODE && memory === ValkeyMemory.GB_1}
 		<Alert variant="warning" size="small">
-			This combination of tier and size is not recommended for production workloads.<br />
+			This combination of tier and memory is not recommended for production workloads.<br />
 			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
 			backups.
 		</Alert>
