@@ -64,7 +64,6 @@
 			preloadData(href).then((result) => {
 				if (result.type === 'loaded' && result.status === 200) {
 					modalData = result.data;
-					console.log(modalData);
 				} else {
 					// something bad happened! try navigating
 					goto(href);
