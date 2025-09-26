@@ -74,12 +74,12 @@
 
 		const series = costData.daily.series;
 
-		if (series.length === 0) return { firstMonthSum: 0, estimatedSecondMonthSum: 0 };
-
 		// Sort dataset by date to ensure first entry is truly the earliest
-		const sortedSeries = [...series].sort(
+		const sortedSeries = series.toSorted(
 			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
 		);
+
+		if (sortedSeries.length === 0) return { firstMonthSum: 0, estimatedSecondMonthSum: 0 };
 
 		// Extract unique months from dataset
 		const uniqueMonths = new Set(
@@ -110,26 +110,32 @@
 			return { firstMonthSum: 0, estimatedSecondMonthSum: estimatedCurrentMonthSum };
 		}
 
-		// Otherwise, proceed with normal calculations for first and second month
-		const firstEntryDate = new Date(sortedSeries[0].date);
-		const firstMonth = firstEntryDate.getMonth();
-		const firstYear = firstEntryDate.getFullYear();
-		const secondMonth = (firstMonth + 1) % 12;
-		const secondYear = firstMonth === 11 ? firstYear + 1 : firstYear;
-		const totalDaysInSecondMonth = new Date(secondYear, secondMonth + 1, 0).getDate();
+		// Otherwise, calculate based on the last two months present in the data
+		const lastMonthDate = new Date(sortedSeries.at(-1)!.date);
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
+		const firstMonthDate = new Date(lastMonthDate);
+		firstMonthDate.setMonth(lastMonthDate.getMonth() - 1);
 
 		let firstMonthSum = 0;
 		let secondMonthSum = 0;
 		let secondMonthDays = 0;
+		const totalDaysInSecondMonth = new Date(
+			lastMonthDate.getFullYear(),
+			lastMonthDate.getMonth() + 1,
+			0
+		).getDate();
 
 		for (const entry of series) {
 			const entryDate = new Date(entry.date);
-			const entryMonth = entryDate.getMonth();
-			const entryYear = entryDate.getFullYear();
-
-			if (entryMonth === firstMonth && entryYear === firstYear) {
+			if (
+				entryDate.getFullYear() === firstMonthDate.getFullYear() &&
+				entryDate.getMonth() === firstMonthDate.getMonth()
+			) {
 				firstMonthSum += entry.sum;
-			} else if (entryMonth === secondMonth && entryYear === secondYear) {
+			} else if (
+				entryDate.getFullYear() === lastMonthDate.getFullYear() &&
+				entryDate.getMonth() === lastMonthDate.getMonth()
+			) {
 				secondMonthSum += entry.sum;
 				secondMonthDays++;
 			}
@@ -141,7 +147,9 @@
 		return { firstMonthSum, estimatedSecondMonthSum };
 	}
 
-	const { firstMonthSum, estimatedSecondMonthSum } = calculateMonthlyCostEstimates(costData);
+	const { firstMonthSum, estimatedSecondMonthSum } = $derived(
+		calculateMonthlyCostEstimates(costData)
+	);
 </script>
 
 <div>
