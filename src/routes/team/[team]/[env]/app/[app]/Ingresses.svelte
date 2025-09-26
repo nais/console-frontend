@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { fragment, graphql, type Ingresses } from '$houdini';
+	import { type App$result } from '$houdini';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
@@ -16,42 +16,16 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
-		app: Ingresses;
+		app: App$result;
 	}
 
 	let { app }: Props = $props();
-
-	let data = $derived(
-		fragment(
-			app,
-			graphql(`
-				fragment Ingresses on Application {
-					ingresses {
-						url
-						type
-						metrics {
-							requestsPerSecond
-							errorsPerSecond
-						}
-					}
-					status {
-						errors {
-							... on WorkloadStatusDeprecatedIngress {
-								__typename
-								ingress
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
 </script>
 
 <Heading level="2" size="medium" spacing>Ingresses</Heading>
 
 <List>
-	{#each Object.entries(Object.groupBy($data.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
+	{#each Object.entries(Object.groupBy(app.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
 		{#each ingresses as ingress (ingress)}
 			<ListItem>
 				<IconLabel
@@ -61,13 +35,14 @@
 						.app}/ingresses?ingress={encodeURIComponent(ingress.url)}"
 				>
 					{#snippet icon()}
-						{#each $data.status.errors as error (error)}
-							{#if error.__typename === 'WorkloadStatusDeprecatedIngress' && error.ingress === ingress.url}
-								<TooltipAlignHack content="Deprecated ingress: {error.ingress}"
+						{#each app.team.environment.application.issues.edges as issue (issue.node.id)}
+							{#if issue.node.__typename === 'DeprecatedIngressIssue'}
+								<TooltipAlignHack content="Deprecated ingress: {ingress.url}"
 									><WarningIcon /></TooltipAlignHack
 								>
 							{/if}
 						{/each}
+
 						<TooltipAlignHack
 							content={group === 'UNKNOWN'
 								? 'Ingress not found'

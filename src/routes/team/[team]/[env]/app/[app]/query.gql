@@ -77,9 +77,19 @@ query App(
 						}
 					}
 				}
+				ingresses {
+					type
+					url
+					metrics {
+						errorsPerSecond
+						requestsPerSecond
+					}
+				}
 				issues {
 					edges {
 						node {
+							__typename
+							id
 							message
 							severity
 						}
@@ -128,7 +138,6 @@ query App(
 				...WorkloadDeploy
 				...NetworkPolicy
 				...Manifest
-				...Ingresses
 			}
 		}
 	}

@@ -134,7 +134,7 @@
 					/>
 				</div>
 				<div>
-					<Ingresses {app} />
+					<Ingresses app={$App.data} />
 				</div>
 
 				<div>
