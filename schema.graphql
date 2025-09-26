@@ -757,6 +757,9 @@ enum ApplicationOrderField {
   """Order applications by name."""
   NAME
 
+  """Order applications by state."""
+  STATE
+
   """Order applications by status."""
   STATUS
 }
@@ -854,6 +857,9 @@ enum ApplicationState {
 
   """The application is running."""
   RUNNING
+
+  """The application state is unknown."""
+  UNKNOWN
 }
 
 input AssignRoleToServiceAccountInput {
@@ -2024,7 +2030,7 @@ enum ImageVulnerabilitySuppressionState {
   """Vulnerability is marked as false positive."""
   FALSE_POSITIVE
 
-  """Vulnerability is in triaged."""
+  """Vulnerability is in triage."""
   IN_TRIAGE
 
   """Vulnerability is marked as not affected."""
@@ -2464,6 +2470,9 @@ enum JobOrderField {
 
   """Order jobs by name."""
   NAME
+
+  """Order by state."""
+  STATE
 
   """Order jobs by status."""
   STATUS
@@ -3034,6 +3043,7 @@ type OpenSearch implements Node & Persistence {
   """Available memory for the OpenSearch instance."""
   memory: OpenSearchMemory!
   name: String!
+  state: OpenSearchState!
   status: OpenSearchStatus!
 
   """Available storage in GB."""
@@ -3241,6 +3251,15 @@ input OpenSearchOrder {
 enum OpenSearchOrderField {
   ENVIRONMENT
   NAME
+  STATE
+}
+
+enum OpenSearchState {
+  POWEROFF
+  REBALANCING
+  REBUILDING
+  RUNNING
+  UNKNOWN
 }
 
 type OpenSearchStatus {
@@ -7189,6 +7208,7 @@ type Valkey implements Node & Persistence {
   """Available memory for the Valkey instance."""
   memory: ValkeyMemory!
   name: String!
+  state: ValkeyState!
   status: ValkeyStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
@@ -7414,6 +7434,15 @@ input ValkeyOrder {
 enum ValkeyOrderField {
   ENVIRONMENT
   NAME
+  STATE
+}
+
+enum ValkeyState {
+  POWEROFF
+  REBALANCING
+  REBUILDING
+  RUNNING
+  UNKNOWN
 }
 
 type ValkeyStatus {
