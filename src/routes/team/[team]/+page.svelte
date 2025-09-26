@@ -8,7 +8,6 @@
 	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
-	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
 	import { Alert, BodyLong } from '@nais/ds-svelte-community';
@@ -100,11 +99,11 @@
 				vulnerabilitySummary={$TeamOverview.data?.team.vulnerabilitySummary}
 			/>
 		</div>
-		<div>
+		<!-- <div>
 			<div class="card">
 				<TeamUtilizationAndOverage {teamSlug} />
 			</div>
-		</div>
+		</div> -->
 		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
 			{#if $TeamOverview.data?.team}
 				<SidebarActivity
@@ -146,13 +145,6 @@
 		> a {
 			align-self: end;
 		}
-	}
-
-	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-16) var(--ax-space-20);
-		border-radius: 12px;
-		align-items: stretch;
 	}
 
 	.deployments {
