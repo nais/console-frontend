@@ -14,17 +14,9 @@
 	let { todo, warning, critical, teamSlug, loading }: Props = $props();
 </script>
 
-<div
-	class="card issues {(critical ?? 0) > 0
-		? 'card-critical'
-		: (warning ?? 0) > 0
-			? 'card-warning'
-			: (todo ?? 0) > 0
-				? 'card-todo'
-				: ''}"
->
+<div class="card issues">
 	{#if !loading}
-		<Heading level="3" size="medium" spacing>Health summary</Heading>
+		<Heading level="3" size="medium">Health summary</Heading>
 		{#if (critical ?? 0) > 0}
 			<div class="summary critical">
 				<CircleFillIcon />
@@ -87,21 +79,6 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-16);
-	}
-
-	.card-todo {
-		border: 1px solid var(--ax-border-info-strong);
-		background-color: var(--ax-bg-info-soft);
-	}
-
-	.card-warning {
-		border: 1px solid var(--ax-border-warning);
-		background-color: var(--ax-bg-warning-soft);
-	}
-
-	.card-critical {
-		border: 1px solid var(--ax-border-danger);
-		background-color: var(--ax-bg-danger-soft);
 	}
 
 	.todo {
