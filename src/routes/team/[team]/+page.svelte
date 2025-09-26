@@ -52,7 +52,9 @@
 		</div>
 		<div>
 			<List
-				title="Issues {($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 20
+				title="Issue{($TeamOverview.data?.team.issues.nodes?.length ?? 0 > 1)
+					? 's'
+					: ''} {($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 20
 					? `(20 of ${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
 					: ($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 0
 						? `(${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
