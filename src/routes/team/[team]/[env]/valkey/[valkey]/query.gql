@@ -15,10 +15,6 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 						name
 					}
 				}
-				status {
-					state
-				}
-
 				maintenance {
 					window {
 						dayOfWeek
