@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { supportedErrorTypes } from '$lib/components/errors/ErrorMessage.svelte';
-	import { badgeLevel } from '$lib/components/list/Badge.svelte';
 	import FavoritesList from '$lib/components/list/FavoritesList.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamListItem from '$lib/components/list/TeamListItem.svelte';
@@ -53,19 +51,7 @@
 				{#if $UserTeams.data.me.__typename == 'User'}
 					<List>
 						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
-							{@const errors = node.team.workloads.nodes.flatMap((w) =>
-								w.status.errors.filter((e) =>
-									supportedErrorTypes.some((errorType) => errorType === e.__typename)
-								)
-							)}
-							<TeamListItem
-								team={node.team}
-								badge={{
-									count: errors.length,
-									max: 9,
-									level: badgeLevel(errors)
-								}}
-							/>
+							<TeamListItem team={node.team} />
 						{:else}
 							<BodyLong>
 								You don't seem to belong to any teams at the moment. You can create a new team or

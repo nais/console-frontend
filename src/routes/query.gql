@@ -17,16 +17,6 @@ query UserTeams @cache(policy: CacheAndNetwork) {
 						id
 						slug
 						purpose
-						workloads(first: 10, filter: { states: [NOT_NAIS, FAILING] }) {
-							nodes {
-								status {
-									errors {
-										__typename
-										level
-									}
-								}
-							}
-						}
 					}
 				}
 			}
