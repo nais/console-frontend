@@ -23,9 +23,6 @@ query OpenSearchInstance(
 						name
 					}
 				}
-				status {
-					state
-				}
 
 				maintenance {
 					window {
