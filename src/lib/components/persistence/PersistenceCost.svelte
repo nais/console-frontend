@@ -1,12 +1,9 @@
 <script lang="ts">
-	import EChart from '$lib/chart/EChart.svelte';
-	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import CostChart from '$lib/chart/CostChart.svelte';
+	import { serviceColor, type ServiceName } from '$lib/chart/util';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail, Heading, HelpText } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import type { EChartsOption } from 'echarts';
-	import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 	interface Props {
 		pageName: string;
@@ -14,55 +11,17 @@
 		from: Date;
 		to: Date;
 		teamSlug: string;
+		service: ServiceName;
 	}
 
-	let { pageName, costData, from, to, teamSlug }: Props = $props();
-
-	const costTransform = (
-		data: {
-			readonly date: Date;
-			readonly sum: number;
-		}[]
-	): EChartsOption => {
-		return {
-			height: '230px',
-			width: '280px',
-			animation: false,
-			tooltip: {
-				trigger: 'axis',
-				formatter: (params: CallbackDataParams[]) =>
-					`${params[0].name}: <b>${euroValueFormatter(params[0].value as number)}</b>`
-			},
-			grid: {
-				top: '20',
-				left: '0',
-				containLabel: true
-			},
-			xAxis: {
-				axisLabel: {
-					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733'
-				},
-				data: data.map((entry) => format(entry.date, data.length > 60 ? 'MMM' : 'dd.MM'))
-			},
-			yAxis: {
-				axisLabel: {
-					color: themeSwitch.theme === 'dark' ? '#dfe1e5' : '#202733',
-					formatter: (value: number) => euroValueFormatter(value)
-				}
-			},
-			series: {
-				name: 'Bucket cost',
-				type: 'line',
-				emphasis: { focus: 'series' },
-				symbol: 'none',
-				data: data.map(({ sum }) => sum)
-			}
-		} as EChartsOption;
-	};
+	let { pageName, costData, from, to, teamSlug, service }: Props = $props();
 
 	export type CostData = {
 		readonly daily: {
 			readonly series: {
+				// readonly services: {
+				// 	readonly service: string;
+				// }[];
 				readonly date: Date;
 				readonly sum: number;
 			}[];
@@ -182,7 +141,13 @@
 		</div>
 	</div>
 	<div>
-		<EChart options={costTransform(costData.daily.series)} />
+		<CostChart
+			data={costData.daily.series}
+			dateField="date"
+			valueField="sum"
+			class="mt-3 mb-5 h-[220px] w-[93%] pl-[7%]"
+			color={serviceColor(service)}
+		/>
 	</div>
 
 	<a href="/team/{teamSlug}/cost">See cost details</a>

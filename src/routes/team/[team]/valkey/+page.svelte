@@ -32,6 +32,7 @@
 			header: 'Create Valkey',
 			viewerIsMember: viewerIsMember
 		}}
+		service="Valkey"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

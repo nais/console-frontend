@@ -27,17 +27,20 @@ query ResourceUtilizationForApp(
 						memory
 					}
 				}
-				activityLog(first: 50, filter: { activityTypes: [APPLICATION_SCALED, DEPLOYMENT] }) {
+				activityLog(first: 100, filter: { activityTypes: [APPLICATION_SCALED, DEPLOYMENT] }) {
 					nodes {
+						id
 						createdAt
 						__typename
 						... on ApplicationScaledActivityLogEntry {
+							id
 							appScaled: data {
 								newSize
 								direction
 							}
 						}
 						... on DeploymentActivityLogEntry {
+							id
 							createdAt
 						}
 					}

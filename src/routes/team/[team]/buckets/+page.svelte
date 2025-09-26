@@ -26,6 +26,7 @@
 		pageInfo={$Buckets.data.team.buckets.pageInfo}
 		orderField={BucketOrderField}
 		defaultOrderField={BucketOrderField.NAME}
+		service="Cloud Storage"
 	>
 		{#snippet description()}
 			<BodyLong spacing>

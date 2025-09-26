@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { truncateString } from '$lib/chart/util';
+	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
@@ -24,7 +23,6 @@
 		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
-	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -59,112 +57,6 @@
 			return acc;
 		}, new Map<string, TenantOverageData>());
 		return Array.from(merged.values());
-	}
-
-	function echartOptionsCPUOverageChart(data: TenantOverageData[]) {
-		const opts = optionsCPU(data);
-		opts.height = '150px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
-
-	function echartOptionsMemoryOverageChart(data: TenantOverageData[]) {
-		const opts = optionsMem(data);
-		opts.height = '150px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
-
-	function optionsCPU(input: TenantOverageData[]): EChartsOption {
-		const overage = input.map((s) => {
-			return {
-				team: s.team.slug,
-				overage: s.requested - s.used
-			};
-		});
-		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
-		return {
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
-				},
-				valueFormatter: (value: number) => (value == null ? '0' : value)
-			},
-			xAxis: {
-				type: 'category',
-				data: sorted.map((s) => {
-					return s.team;
-				}),
-				axisLabel: {
-					rotate: 60,
-					formatter: (value: string) => {
-						return truncateString(value, 23);
-					}
-				}
-			},
-			legend: {
-				show: false
-			},
-			yAxis: {
-				type: 'value',
-				name: 'CPU'
-			},
-			series: {
-				name: 'Unutilized CPU',
-				data: sorted.map((s) => {
-					return s.overage.toLocaleString('en-GB', { maximumFractionDigits: 2 });
-				}),
-				type: 'bar',
-				color: '#83bff6'
-			}
-		} as EChartsOption;
-	}
-
-	function optionsMem(input: TenantOverageData[]): EChartsOption {
-		const overage = input.map((s) => {
-			return {
-				team: s.team.slug,
-				overage: (s.requested - s.used) / 1024 / 1024 / 1024
-			};
-		});
-		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
-		return {
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
-				},
-				valueFormatter: (value: number) => prettyBytes(value * 1024 * 1024 * 1024)
-			},
-			xAxis: {
-				type: 'category',
-				data: sorted.map((s) => {
-					return s.team;
-				}),
-				axisLabel: {
-					rotate: 60,
-					formatter: (value: string) => {
-						return truncateString(value, 23);
-					}
-				}
-			},
-			legend: {
-				show: false
-			},
-			yAxis: {
-				type: 'value',
-				name: 'Memory'
-			},
-			series: {
-				name: 'Unutilized memory',
-				data: sorted.map((s) => {
-					return s.overage;
-				}),
-				type: 'bar',
-				color: '#91dc75'
-			}
-		} as EChartsOption;
 	}
 
 	type SortBy = 'TEAM' | 'CPU' | 'MEMORY' | 'COST';
@@ -204,8 +96,38 @@
 		getTeamsOverageData($TenantUtilization.data, sortState.orderBy, sortState.direction)
 	);
 
-	function handleChartClick(name: string) {
-		goto(`/team/${name}/utilization`);
+	const sortedMemoryData = $derived.by(() => {
+		const tmp =
+			(resourceUtilization?.memUtil.filter((item) => item) as NonNullable<TenantOverageData>[]) ??
+			[];
+		const overage = tmp
+			.map((s) => {
+				return {
+					key: s.team.slug,
+					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
+				};
+			})
+			.filter((s) => s.overage > 0);
+		return overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
+	});
+
+	const sortedCpuData = $derived.by(() => {
+		const tmp =
+			(resourceUtilization?.cpuUtil.filter((item) => item) as NonNullable<TenantOverageData>[]) ??
+			[];
+		const overage = tmp
+			.map((s) => {
+				return {
+					key: s.team.slug,
+					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
+				};
+			})
+			.filter((s) => s.overage > 0);
+		return overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
+	});
+
+	function handleBarClick({ key }: { key: string }) {
+		goto(`/team/${key}/utilization`);
 	}
 </script>
 
@@ -304,17 +226,9 @@
 				underutilization. For a complete overview of all teams, please refer to the table below.
 			</BodyLong>
 
-			<div style="display: flex; ">
-				<EChart
-					options={echartOptionsCPUOverageChart(resourceUtilization.cpuUtil)}
-					style="height: 350px; width: 50%;"
-					onclick={handleChartClick}
-				/>
-				<EChart
-					options={echartOptionsMemoryOverageChart(resourceUtilization.memUtil)}
-					style="height: 350px; width: 50%;"
-					onclick={handleChartClick}
-				/>
+			<div class="flex h-[350px]">
+				<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
+				<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 			</div>
 
 			<BodyLong>

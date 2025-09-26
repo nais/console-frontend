@@ -13,6 +13,9 @@ query Buckets(
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["Cloud Storage"] }) {
 				series {
+					services {
+						service
+					}
 					date
 					sum
 				}

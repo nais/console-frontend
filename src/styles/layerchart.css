@@ -1,0 +1,52 @@
+:root {
+	--color-primary: var(--ax-text-accent);
+	--color-primary-content: var(--ax-text-neutral);
+	--color-secondary: var(--ax-text-accent);
+	--color-surface-100: var(--ax-neutral-000);
+	--color-surface-200: var(--ax-neutral-100);
+	--color-surface-300: var(--ax-neutral-200);
+	--color-surface-content: var(--ax-text-neutral);
+}
+
+.dark,
+.dark-theme {
+	--color-primary: var(--ax-text-accent);
+	--color-primary-content: var(--ax-text-neutral);
+	--color-secondary: var(--ax-text-accent);
+	--color-surface-100: var(--ax-neutral-000);
+	--color-surface-200: var(--ax-neutral-100);
+	--color-surface-300: var(--ax-neutral-200);
+	--color-surface-content: var(--ax-text-neutral);
+}
+
+.lc-legend-swatch-button {
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.lc-legend-swatch-label {
+	font-family: inherit;
+	font-size: var(--ax-font-size-small);
+}
+
+.lc-text {
+	font-family: sans-serif;
+	font-size: 12px;
+}
+
+/* svg {
+	display: unset;
+} */
+
+.lc-spline-path {
+	shape-rendering: geometricPrecision !important;
+}
+
+.stroke-warning {
+	stroke: var(--ax-border-warning);
+}
+
+.stroke-danger {
+	stroke: var(--ax-border-danger);
+}
