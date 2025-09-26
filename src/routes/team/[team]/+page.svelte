@@ -5,8 +5,8 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
-	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
@@ -49,12 +49,12 @@
 		<div>
 			<AggregatedCostForTeam {teamSlug} />
 		</div>
-		<div>
+		<!-- <div>
 			<List
 				title="Issue{($TeamOverview.data?.team.issues.nodes?.length ?? 0 > 1)
 					? 's'
 					: ''} {($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 20
-					? `(20 of ${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
+					? `(${$TeamOverview.data?.team.issues.nodes.length} of ${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
 					: ($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 0
 						? `(${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
 						: ''}"
@@ -66,7 +66,7 @@
 			<div style="display: flex; justify-content: flex-end; padding-top: var(--ax-space-8);">
 				<a href="/team/{teamSlug}/issues">View All Issues</a>
 			</div>
-		</div>
+		</div> -->
 		<div class="deployments">
 			{#if $TeamOverview.data?.team.deployments.pageInfo.totalCount === 0}
 				<BodyLong spacing>
@@ -76,10 +76,7 @@
 				</BodyLong>
 			{/if}
 			{#if $TeamOverview.data}
-				<List
-					title="Last {$TeamOverview.data?.team.deployments.nodes
-						.length} Deployments for {teamSlug}"
-				>
+				<List title="Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments">
 					{#each $TeamOverview.data.team.deployments.nodes as deployment (deployment.id)}
 						<DeploymentListItem {deployment} showEnv />
 					{/each}
@@ -89,13 +86,13 @@
 		</div>
 	</div>
 	<div class="right">
-		<!-- <IssueSummary
+		<IssueSummary
 			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
 			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
 			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
 			{teamSlug}
 			loading={$TeamOverview.fetching}
-		/> -->
+		/>
 		<div>
 			<VulnerabilitySummary
 				{teamSlug}

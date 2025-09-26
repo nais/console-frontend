@@ -49,7 +49,7 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 			}
 		}
 
-		issues(orderBy: { field: SEVERITY, direction: ASC }) {
+		issues(first: 10, orderBy: { field: SEVERITY, direction: ASC }) {
 			pageInfo {
 				totalCount
 			}
