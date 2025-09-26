@@ -49,6 +49,23 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 			}
 		}
 
+		issues(orderBy: { field: SEVERITY, direction: ASC }) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				id
+				__typename
+
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				...IssueFragment
+			}
+		}
+
 		deployments(first: 10) {
 			pageInfo {
 				totalCount
