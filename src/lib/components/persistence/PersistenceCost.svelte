@@ -141,7 +141,6 @@
 		</div>
 	</div>
 	<div>
-		<!-- <EChart options={costTransform(costData.daily.series)} /> -->
 		<CostChart
 			data={costData.daily.series}
 			dateField="date"

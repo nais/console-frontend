@@ -26,7 +26,7 @@
 		<Legend {...props} />
 	</div>
 {/if}
-<div class="chart h-[{height}]">
+<div class="chart" style="height: {height};">
 	{@render children()}
 </div>
 
@@ -36,9 +36,8 @@
 	}
 
 	.wrapper :global(.lc-legend-container) {
+		all: unset;
 		width: 100%;
-		position: unset;
-		translate: unset;
 	}
 
 	.wrapper :global(.lc-legend-swatch-group) {

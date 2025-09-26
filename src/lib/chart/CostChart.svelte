@@ -5,6 +5,8 @@
 		const costPerDay = cost / daysKnown;
 		return costPerDay * daysInMonth;
 	}
+
+	const minScale = 1; // EUR
 </script>
 
 <script lang="ts" generics="T">
@@ -56,6 +58,13 @@
 			}) ?? []
 		);
 	});
+
+	const maxValue = $derived.by(() =>
+		chartData.reduce((max, item) => {
+			const v = item.value as number;
+			return v > max ? v : max;
+		}, -Infinity)
+	);
 </script>
 
 {#if chartData.length > 0}
@@ -64,6 +73,7 @@
 			data={chartData}
 			x="date"
 			y="value"
+			yDomain={[null, maxValue > minScale ? null : minScale]}
 			series={color
 				? [
 						{
