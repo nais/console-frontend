@@ -5,7 +5,7 @@
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -70,19 +70,6 @@
 					/>
 				</dd>
 			</dl>
-			{#if bucket.status.errors.length > 0}
-				<div>
-					<Heading level="3">Errors</Heading>
-					<div>
-						{#each bucket.status.errors as error (error)}
-							<details>
-								<summary>{error.message}</summary>
-								<p>{error.details}</p>
-							</details>
-						{/each}
-					</div>
-				</div>
-			{/if}
 		</div>
 		<div class="sidebar">
 			<div>
@@ -95,10 +82,6 @@
 						<WarningIcon title="This bucket does not belong to any workload" />
 					</div>
 				{/if}
-			</div>
-			<div>
-				<Heading level="3">Status</Heading>
-				<BodyShort>{bucket.status.state}</BodyShort>
 			</div>
 		</div>
 	</div>
