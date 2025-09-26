@@ -129,6 +129,12 @@
 				return 'Resource name';
 			case 'RESOURCE_TYPE':
 				return 'Resource type';
+			case 'CPU_UTILIZATION':
+				return 'CPU Utilization';
+			case 'DISK_UTILIZATION':
+				return 'Disk Utilization';
+			case 'MEMORY_UTILIZATION':
+				return 'Memory Utilization';
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}
