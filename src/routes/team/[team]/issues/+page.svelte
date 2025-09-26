@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { IssueOrderField, Severity } from '$houdini';
-	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
+	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
@@ -146,7 +146,7 @@
 	{/if}
 
 	<div>
-		<IssueSummary
+		<HealthSummary
 			critical={$TeamIssues.data?.team.critical.pageInfo.totalCount}
 			warning={$TeamIssues.data?.team.warnings.pageInfo.totalCount}
 			todo={$TeamIssues.data?.team.todos.pageInfo.totalCount}

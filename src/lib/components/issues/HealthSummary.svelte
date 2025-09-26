@@ -16,7 +16,7 @@
 
 <div class="card issues">
 	{#if !loading}
-		<Heading level="3" size="medium">Health summary</Heading>
+		<Heading level="3" size="medium">Health</Heading>
 		{#if (critical ?? 0) > 0}
 			<div class="summary critical">
 				<CircleFillIcon />
@@ -56,29 +56,27 @@
 		</div>
 	{/if}
 	{#if !page.url.pathname.includes('/issues')}
-		<a href="/team/{teamSlug}/issues" style:align-self="end">View All Issues for Team</a>
+		<a href="/team/{teamSlug}/issues" style:align-self="end">View Team Issues</a>
 	{/if}
 </div>
 
 <style>
 	.card {
-		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-16) var(--ax-space-20);
-		border-radius: 12px;
 		align-items: stretch;
 	}
 
 	.issues {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--ax-space-8);
 		padding-bottom: var(--ax-space-32);
 	}
 
 	.summary {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-8);
 	}
 
 	.todo {

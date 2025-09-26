@@ -5,7 +5,7 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
+	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
@@ -86,7 +86,7 @@
 		</div>
 	</div>
 	<div class="right">
-		<IssueSummary
+		<HealthSummary
 			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
 			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
 			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
