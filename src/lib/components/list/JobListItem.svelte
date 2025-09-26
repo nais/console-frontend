@@ -1,14 +1,15 @@
 <script lang="ts">
-	import type { JobRunState$options } from '$houdini';
+	import { JobState, type JobRunState$options } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Detail, Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, QuestionmarkIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 	import IconLabel from '../IconLabel.svelte';
+	import RunningIndicator from '../RunningIndicator.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -20,7 +21,11 @@
 			name: string;
 			teamEnvironment: { environment: { name: string } };
 			team: { slug: string };
-			status: { state: string };
+			state: string;
+			issues: {
+				pageInfo: { totalCount: number };
+				edges: { node: { severity: string } }[];
+			};
 			deployments: { nodes: { createdAt: Date }[] };
 			runs: {
 				pageInfo: { totalCount: number };
@@ -46,24 +51,51 @@
 		{#snippet icon()}
 			<TooltipAlignHack
 				content={{
-					NAIS: 'Job is healthy',
-					FAILING: 'Job is failing',
-					NOT_NAIS: 'Job has issues',
-					UNKNOWN: 'Job status is unknown'
-				}[job.status.state] ?? ''}
+					COMPLETED: 'Job is completed',
+					RUNNING: 'Job is running',
+					FAILED: 'Job failed',
+					UNKNOWN: 'Unkown status'
+				}[job.state] ?? ''}
 			>
-				<CircleFillIcon
-					style="color: light-dark({{
-						NAIS: 'var(--ax-bg-success-strong), var(--ax-bg-success-strong)',
-						FAILING: 'var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)',
-						NOT_NAIS: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)',
-						UNKNOWN: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'
-					}[job.status.state] ??
-						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
-				/>
+				{#if job.state === JobState.COMPLETED}
+					<CircleFillIcon
+						style="width: 24px; color: light-dark(var(--ax-bg-success-strong), var(--ax-bg-success-strong)); font-size: 0.7rem"
+					/>
+				{:else if job.state === JobState.RUNNING}
+					<RunningIndicator />
+				{:else if job.state === JobState.FAILED}
+					<CircleFillIcon
+						style="width: 24px; color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)); font-size: 0.7rem"
+					/>
+				{:else}
+					<CircleFillIcon
+						style="width: 24px; color: light-dark(var(--ax-text-neutral-decoration), var(--ax-text-neutral-decoration)); font-size: 0.7rem"
+					/>
+				{/if}
 			</TooltipAlignHack>
 		{/snippet}
 	</IconLabel>
+	{#if job.issues?.pageInfo.totalCount > 0}
+		{@const criticalCount = job.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
+		{@const warningCount = job.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
+		{@const todoCount = job.issues.edges.filter((e) => e.node.severity === 'TODO').length}
+
+		<div class="issues-container">
+			{#if criticalCount > 0}
+				<Tag variant="error" size="xsmall"
+					>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
+				>
+			{/if}
+			{#if warningCount > 0}
+				<Tag variant="warning" size="xsmall"
+					>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
+				>
+			{/if}
+			{#if todoCount > 0}
+				<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
+			{/if}
+		</div>
+	{/if}
 	<div class="right">
 		{#if job.deployments.nodes.length > 0}
 			{@const timestamp = job.deployments.nodes[0].createdAt}

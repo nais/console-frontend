@@ -77,6 +77,14 @@ query App(
 						}
 					}
 				}
+				issues {
+					edges {
+						node {
+							message
+							severity
+						}
+					}
+				}
 				resources {
 					scaling {
 						maxInstances

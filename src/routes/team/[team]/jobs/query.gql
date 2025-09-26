@@ -61,9 +61,17 @@ query Jobs(
 						}
 					}
 				}
-				status {
-					state
+				issues {
+					pageInfo {
+						totalCount
+					}
+					edges {
+						node {
+							severity
+						}
+					}
 				}
+				state
 				deployments(first: 1) {
 					nodes {
 						createdAt

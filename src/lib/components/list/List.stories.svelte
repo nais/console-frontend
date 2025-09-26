@@ -79,7 +79,14 @@
 			name: 'behovsakkumulator',
 			teamEnvironment: { environment: { name: 'prod-fss' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:22:24.210001Z') }] },
 			instances: {
 				pageInfo: { totalCount: 4 },
@@ -97,7 +104,14 @@
 			name: 'behovsakkumulator',
 			teamEnvironment: { environment: { name: 'dev-gcp' } },
 			team: { slug: 'tbd' },
-			status: { state: 'FAILING' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:22:22.26412Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -109,7 +123,14 @@
 			name: 'dataprodukt-annulleringer',
 			teamEnvironment: { environment: { name: 'dev-gcp' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NOT_NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:26.10995Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -121,7 +142,14 @@
 			name: 'dataprodukt-annulleringer',
 			teamEnvironment: { environment: { name: 'prod-fss' } },
 			team: { slug: 'tbd' },
-			status: { state: 'UNKNOWN' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:20.156954Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -133,7 +161,14 @@
 			name: 'dataprodukt-arbeidsgiveropplysninger',
 			teamEnvironment: { environment: { name: 'prod-gcp' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:31.81996Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -145,7 +180,14 @@
 			name: 'dataprodukt-arbeidsgiveropplysninger',
 			teamEnvironment: { environment: { name: 'dev-fss' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:28.74535Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -157,7 +199,11 @@
 			name: 'dataprodukt-forstegangsbehandling',
 			teamEnvironment: { environment: { name: 'dev-fss' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 0 },
+				edges: []
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:38.095107Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -169,7 +215,14 @@
 			name: 'dataprodukt-forstegangsbehandling',
 			teamEnvironment: { environment: { name: 'prod-fss' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T12:21:44.186683Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -181,7 +234,14 @@
 			name: 'helse-spane',
 			teamEnvironment: { environment: { name: 'dev-fss' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 2 },
+				edges: [
+					{ node: { severity: 'CRITICAL', message: 'Critical issue', __typename: 'SomeIssue' } },
+					{ node: { severity: 'WARNING', message: 'Warning issue', __typename: 'SomeIssue' } }
+				]
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T20:37:08.725562Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -193,7 +253,11 @@
 			name: 'helse-spleis',
 			teamEnvironment: { environment: { name: 'dev-gcp' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 0 },
+				edges: []
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-02-13T14:44:41.989308Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -205,7 +269,11 @@
 			name: 'red-team',
 			teamEnvironment: { environment: { name: 'prod-gcp' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 0 },
+				edges: []
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-02-03T15:12:17.565089Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
@@ -217,7 +285,11 @@
 			name: 'risk-mock',
 			teamEnvironment: { environment: { name: 'dev-gcp' } },
 			team: { slug: 'tbd' },
-			status: { state: 'NAIS' },
+			state: 'RUNNING',
+			issues: {
+				pageInfo: { totalCount: 0 },
+				edges: []
+			},
 			deployments: { nodes: [{ createdAt: new Date('2025-01-27T19:32:15.70328Z') }] },
 			instances: {
 				pageInfo: { totalCount: 1 },
