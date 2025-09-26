@@ -5,7 +5,6 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
@@ -64,6 +63,9 @@
 					<IssueListItem item={issue} />
 				{/each}
 			</List>
+			<div style="display: flex; justify-content: flex-end; padding-top: var(--ax-space-8);">
+				<a href="/team/{teamSlug}/issues">View All Issues</a>
+			</div>
 		</div>
 		<div class="deployments">
 			{#if $TeamOverview.data?.team.deployments.pageInfo.totalCount === 0}
@@ -83,17 +85,17 @@
 					{/each}
 				</List>
 			{/if}
-			<a href="/team/{teamSlug}/deploy" style:align-self="end">View All Deployments for Team</a>
+			<a href="/team/{teamSlug}/deploy" style:align-self="end">View All Deployments</a>
 		</div>
 	</div>
 	<div class="right">
-		<IssueSummary
+		<!-- <IssueSummary
 			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
 			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
 			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
 			{teamSlug}
 			loading={$TeamOverview.fetching}
-		/>
+		/> -->
 		<div>
 			<VulnerabilitySummary
 				{teamSlug}
