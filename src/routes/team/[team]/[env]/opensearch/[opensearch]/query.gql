@@ -18,6 +18,7 @@ query OpenSearchInstance(
 				tier
 				memory
 				storageGB
+				state
 				teamEnvironment {
 					environment {
 						name

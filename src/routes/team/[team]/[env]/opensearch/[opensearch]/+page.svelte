@@ -230,6 +230,10 @@
 		</div>
 		<div class="sidebar">
 			<div>
+				<Heading level="3">Status</Heading>
+				<BodyShort>{instance.state}</BodyShort>
+			</div>
+			<div>
 				<Heading level="3">Settings</Heading>
 				<BodyShort>Tier: {instance.tier}</BodyShort>
 				<BodyShort>Memory: {instance.memory}</BodyShort>
