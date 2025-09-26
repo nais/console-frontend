@@ -74,12 +74,12 @@
 
 		const series = costData.daily.series;
 
-		if (series.length === 0) return { firstMonthSum: 0, estimatedSecondMonthSum: 0 };
-
 		// Sort dataset by date to ensure first entry is truly the earliest
-		const sortedSeries = [...series].sort(
+		const sortedSeries = series.toSorted(
 			(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
 		);
+
+		if (sortedSeries.length === 0) return { firstMonthSum: 0, estimatedSecondMonthSum: 0 };
 
 		// Extract unique months from dataset
 		const uniqueMonths = new Set(
