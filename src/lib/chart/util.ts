@@ -66,11 +66,17 @@ export function serviceColor(serviceName: ServiceName | string): string {
 }
 
 export function euroAxisFormatter(value: number) {
-	if (value === 0) return '';
+	if (value === 0) return '€0';
 	if (value < 1000) {
 		return euroValueFormatter(value);
 	}
-	return '€' + (value / 1000).toFixed(0) + 'k';
+	const kValue = value / 1000;
+	// Use 1 decimal place if needed to avoid duplicates
+	if (kValue % 1 === 0) {
+		return '€' + kValue.toFixed(0) + 'K';
+	} else {
+		return '€' + kValue.toFixed(1) + 'K';
+	}
 }
 
 export function localizeLayerChart() {
