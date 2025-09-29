@@ -96,11 +96,7 @@
 			loading={$TeamOverview.fetching}
 		/>
 		<div>
-			<VulnerabilitySummary
-				{teamSlug}
-				workloads={$TeamOverview.data?.team.workloads}
-				vulnerabilitySummary={$TeamOverview.data?.team.vulnerabilitySummary}
-			/>
+			<VulnerabilitySummary {teamSlug} />
 		</div>
 		<!-- <div>
 			<div class="card">

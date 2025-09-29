@@ -115,14 +115,6 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 			}
 		}
 
-		vulnerabilitySummary {
-			sbomCount
-			coverage
-			critical
-			riskScore
-			riskScoreTrend
-			lastUpdated
-		}
 		...SidebarActivityLogFragment @with(limit: 15, filter: $activityLogFilter) @mask_disable
 	}
 }

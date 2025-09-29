@@ -13,17 +13,12 @@
 <GraphErrors errors={$TeamVulnerabilities.errors} />
 
 {#if $TeamVulnerabilities.data}
-	{@const team = $TeamVulnerabilities.data.team}
 	<div class="wrapper">
 		<div class="columns">
 			<div>
 				<TeamVulnerabilityHistoryGraph {teamSlug} />
 			</div>
-			<VulnerabilitySummary
-				{teamSlug}
-				workloads={team.workloads}
-				vulnerabilitySummary={team.vulnerabilitySummary}
-			/>
+			<VulnerabilitySummary {teamSlug} />
 		</div>
 
 		<div>
