@@ -13,6 +13,7 @@
 	import { euroValueFormatter } from '$lib/utils/formatters';
 
 	import { Highlight, LineChart, Tooltip } from 'layerchart';
+	import { SvelteDate } from 'svelte/reactivity';
 	import { euroAxisFormatter } from './util';
 
 	let {
@@ -73,7 +74,7 @@
 			data={chartData}
 			x="date"
 			y="value"
-			yDomain={[null, maxValue > minScale ? null : minScale]}
+			yDomain={[0, maxValue > minScale ? null : minScale]}
 			series={color
 				? [
 						{
@@ -92,8 +93,7 @@
 				xAxis: {
 					format(value: Date) {
 						if (!value) return '';
-						// eslint-disable-next-line svelte/prefer-svelte-reactivity
-						const date = new Date(value);
+						const date = new SvelteDate(value);
 						date.setMonth(value.getMonth() - 1); // Set to the first of the month for display
 						return date.toLocaleString('en-GB', { month: 'short' });
 					}
