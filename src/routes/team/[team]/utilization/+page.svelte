@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType } from '$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
-	import { truncateString } from '$lib/chart/util';
+	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
@@ -25,7 +24,6 @@
 		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
-	import type { EChartsOption } from 'echarts';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -44,125 +42,6 @@
 		readonly requested: number;
 		readonly used: number;
 	} | null;
-
-	function echartOptionsCPUOverageChart(data: OverageData[]) {
-		const opts = optionsCPU(data);
-		opts.height = '150px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
-
-	function echartOptionsMemoryOverageChart(data: OverageData[]) {
-		const opts = optionsMem(data);
-		opts.height = '150px';
-		opts.legend = { ...opts.legend, bottom: 20 };
-		return opts;
-	}
-
-	function optionsCPU(input: OverageData[]): EChartsOption {
-		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
-		const overage = tmp
-			.map((s) => {
-				return {
-					name: s.workload.name,
-					env: s.workload.teamEnvironment.environment.name,
-					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
-				};
-			})
-			.filter((s) => s.overage > 0);
-		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
-		return {
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
-				},
-				valueFormatter: (value: number) => (value == null ? '0' : value)
-			},
-			xAxis: {
-				type: 'category',
-				data: sorted.map((s) => {
-					return s.env.concat(':').concat(s.name);
-				}),
-				axisLabel: {
-					rotate: 60,
-					formatter: (value: string) => {
-						return truncateString(value, 23);
-					}
-				}
-			},
-			legend: {
-				show: false
-			},
-			yAxis: {
-				type: 'value',
-				name: 'CPU'
-			},
-			series: {
-				name: 'Unutilized CPU',
-				data: sorted.map((s) => {
-					return s.overage.toPrecision(2);
-				}),
-				type: 'bar',
-				color: '#83bff6'
-			}
-		} as EChartsOption;
-	}
-
-	function optionsMem(input: OverageData[]): EChartsOption {
-		const tmp = input.filter((item) => item) as NonNullable<OverageData>[];
-		const overage = tmp
-			.map((s) => {
-				return {
-					name: s.workload.name,
-					env: s.workload.teamEnvironment.environment.name,
-					overage: s.requested - s.used
-				};
-			})
-			.filter((s) => s.overage > 0);
-
-		const sorted = overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
-		return {
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					type: 'line'
-				},
-				valueFormatter: prettyBytes
-			},
-			xAxis: {
-				type: 'category',
-				data: sorted.map((s) => {
-					return s.env.concat(':').concat(s.name);
-				}),
-				axisLabel: {
-					rotate: 60,
-					formatter: (value: string) => {
-						return truncateString(value, 23);
-					}
-				}
-			},
-			legend: {
-				show: false
-			},
-			yAxis: {
-				type: 'value',
-				name: 'Memory',
-
-				axisLabel: {
-					formatter: prettyBytes
-				}
-			},
-			series: {
-				name: 'Unutilized memory',
-				data: sorted.map((s) => {
-					return s.overage;
-				}),
-				type: 'bar',
-				color: '#91dc75'
-			}
-		} as EChartsOption;
-	}
 
 	const sortTable = (key: string, sortState: TableSortState) => {
 		if (!sortState) {
@@ -202,10 +81,43 @@
 		getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction)
 	);
 
-	function handleChartClick(name: string) {
-		const [env, app] = name.split(':');
-		goto(`/team/${teamSlug}/${env}/app/${app}/utilization`);
-	}
+	const sortedMemoryData = $derived.by(() => {
+		const tmp =
+			(resourceUtilization?.team.memUtil.filter((item) => item) as NonNullable<OverageData>[]) ??
+			[];
+		const overage = tmp
+			.map((s) => {
+				return {
+					key: s.workload.teamEnvironment.environment.name.concat(':').concat(s.workload.name),
+					name: s.workload.name,
+					env: s.workload.teamEnvironment.environment.name,
+					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
+				};
+			})
+			.filter((s) => s.overage > 0);
+		return overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
+	});
+
+	const sortedCpuData = $derived.by(() => {
+		const tmp =
+			(resourceUtilization?.team.cpuUtil.filter((item) => item) as NonNullable<OverageData>[]) ??
+			[];
+		const overage = tmp
+			.map((s) => {
+				return {
+					key: s.workload.teamEnvironment.environment.name.concat(':').concat(s.workload.name),
+					name: s.workload.name,
+					env: s.workload.teamEnvironment.environment.name,
+					overage: s.requested - s.used > 0 ? s.requested - s.used : 0
+				};
+			})
+			.filter((s) => s.overage > 0);
+		return overage.sort((a, b) => b.overage - a.overage).slice(0, 10);
+	});
+
+	const handleBarClick = (bar: { env: string; name: string }) => {
+		goto(`/team/${teamSlug}/${bar.env}/app/${bar.name}/utilization`);
+	};
 </script>
 
 <GraphErrors errors={$TeamResourceUsage.errors} />
@@ -291,17 +203,9 @@
 			reduce infrastructure costs by optimizing resource requests.
 		</BodyLong>
 
-		<div style="display: flex">
-			<EChart
-				options={echartOptionsCPUOverageChart(resourceUtilization.team.cpuUtil)}
-				style="height: 350px; width: 50%;"
-				onclick={handleChartClick}
-			/>
-			<EChart
-				options={echartOptionsMemoryOverageChart(resourceUtilization.team.memUtil)}
-				style="height: 350px; width: 50%;"
-				onclick={handleChartClick}
-			/>
+		<div class="flex h-[350px] gap-20 pl-2">
+			<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
+			<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 		</div>
 		<Heading level="3" spacing>CPU and Memory Underutilization per Application</Heading>
 		<BodyLong spacing>

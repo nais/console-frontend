@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { type DataProduct$result } from '$houdini';
-	import EChart from '$lib/chart/EChart.svelte';
-	import type { EChartsOption } from 'echarts';
+	import { accessor, PieChart, Tooltip } from 'layerchart';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -25,47 +24,16 @@
 		return totals;
 	}
 
-	function renderChart(totals: { [key: string]: number }) {
-		// Prepare data for the pie chart
-		const chartData = Object.entries(totals).map(([name, value]) => ({
-			name,
+	const chartData = $derived.by(() => {
+		if (!$DataProduct.data) return [];
+		const totals = calculateTotals($DataProduct.data);
+		return Object.entries(totals).map(([name, value]) => ({
+			fruit: name,
 			value
 		}));
+	});
 
-		// Configure chart options
-		const options = {
-			title: {
-				text: 'Inventory Totals',
-				left: 'center'
-			},
-			tooltip: {
-				trigger: 'item',
-				formatter: '{a} <br/>{b}: {c} ({d}%)'
-			},
-			legend: {
-				orient: 'vertical',
-				left: 'left'
-			},
-			series: [
-				{
-					name: 'Inventory',
-					type: 'pie',
-					radius: '50%',
-					data: chartData,
-					emphasis: {
-						itemStyle: {
-							shadowBlur: 10,
-							shadowOffsetX: 0,
-							shadowColor: 'rgba(0, 0, 0, 0.5)'
-						}
-					}
-				}
-			]
-		};
-
-		// Set chart options
-		return options as EChartsOption;
-	}
+	const total = $derived(Object.values(chartData).reduce((sum, item) => sum + item.value, 0));
 </script>
 
 <div class="page">
@@ -74,9 +42,37 @@
 			<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
 			<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
 		</ul>
-		<EChart
-			options={renderChart(calculateTotals($DataProduct.data))}
-			style="height: 700px; width: 100%;"
-		/>
+		<div class="h-[700px]">
+			<PieChart
+				data={chartData}
+				key="fruit"
+				value="value"
+				outerRadius={250}
+				legend={{
+					placement: 'top-left',
+					orientation: 'vertical'
+				}}
+				props={{ pie: { motion: 'tween' } }}
+			>
+				{#snippet tooltip({ series, context })}
+					<Tooltip.Root>
+						{#snippet children({ data })}
+							<Tooltip.List>
+								{#each series as s (s.key)}
+									{@const valueAccessor = accessor(s.value ?? s.key)}
+									<Tooltip.Item label={data.fruit} color={context.cScale?.(context.c(data))}>
+										{valueAccessor(data)}
+										{total > 0 ? `(${((valueAccessor(data) / total) * 100).toFixed(2)}%)` : ''}
+									</Tooltip.Item>
+								{/each}
+							</Tooltip.List>
+						{/snippet}
+					</Tooltip.Root>
+				{/snippet}
+			</PieChart>
+		</div>
 	{/if}
 </div>
+
+<style>
+</style>

@@ -13,6 +13,9 @@ query BigQuery(
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["BigQuery"] }) {
 				series {
+					services {
+						service
+					}
 					date
 					sum
 				}

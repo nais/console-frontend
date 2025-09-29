@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { costTransformColumnChartTeamEnvironmentApplicationsCost } from '$lib/chart/cost_transformer';
-	import EChart from '$lib/chart/EChart.svelte';
+	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import { euroAxisFormatter } from '$lib/chart/util';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
 		Heading,
@@ -10,6 +11,7 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
+	import { LineChart } from 'layerchart';
 
 	const {
 		teamSlug,
@@ -106,26 +108,53 @@
 		</div>
 	{:else}
 		{#each appsByEnv as env (env.id)}
-			{#if env.series.length > 0}
-				<div class="heading">
-					<Heading level="3" size="small">{env.environment.name}</Heading>
-					<ToggleGroup
-						value={interval}
-						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-					>
-						{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-						{/each}
-					</ToggleGroup>
-				</div>
+			<div class="heading">
+				<Heading level="3" size="small">{env.environment.name}</Heading>
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
 
-				<EChart
-					options={costTransformColumnChartTeamEnvironmentApplicationsCost(env.series)}
-					style="height: 500px"
-				/>
+			{#if env.series.length > 0}
+				<div class="mt-5 mb-12">
+					<LegendWrapper height="500px">
+						<LineChart
+							padding={{ left: 40 }}
+							legend={legendSnippet}
+							series={env.series.map((item, i) => {
+								return {
+									key: item.name!,
+									color: visualizationColors[i % visualizationColors.length],
+									data: item.data.map(([date, value]) => ({
+										date: new Date(date as number),
+										value
+									}))
+								};
+							})}
+							x="date"
+							y="value"
+							props={{
+								spline: {
+									class: 'stroke-2'
+								},
+								yAxis: {
+									format: euroAxisFormatter
+								},
+								xAxis: {
+									format: 'day'
+								}
+							}}
+						/>
+					</LegendWrapper>
+				</div>
+			{:else}
+				<BodyLong>No application cost data available</BodyLong>
 			{/if}
-		{:else}
-			<BodyLong>No application cost data available</BodyLong>
 		{/each}
 	{/if}
 </div>

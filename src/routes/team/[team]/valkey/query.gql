@@ -13,6 +13,9 @@ query Valkeys(
 		cost {
 			daily(from: $from, to: $to, filter: { services: ["Valkey"] }) {
 				series {
+					services {
+						service
+					}
 					date
 					sum
 				}

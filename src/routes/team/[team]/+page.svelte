@@ -10,6 +10,7 @@
 	import List from '$lib/components/list/List.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
+	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert, BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -24,6 +25,8 @@
 		{msgParts[1]}.
 	</Alert>
 {/if}
+
+<GraphErrors errors={$TeamOverview.errors} />
 
 <div class="wrapper">
 	<div class="left">
