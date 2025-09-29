@@ -15,7 +15,7 @@
 </script>
 
 <div class="card issues">
-	<Heading level="3" size="medium">Health</Heading>
+	<Heading level="2" size="small">Health</Heading>
 	{#if !loading}
 		{#if (critical ?? 0) > 0}
 			<div class="summary critical">
@@ -62,7 +62,7 @@
 
 <style>
 	.card {
-		padding: var(--ax-space-16) var(--ax-space-20);
+		/* padding: var(--ax-space-16) var(--ax-space-20); */
 		align-items: stretch;
 	}
 
