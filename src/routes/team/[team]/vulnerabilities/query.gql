@@ -11,60 +11,7 @@ query TeamVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
 				totalCount
 			}
 		}
-		missing_sbom: workloads(filter: { statusErrorTypes: [MISSING_SBOM] }) {
-			pageInfo {
-				totalCount
-			}
-			nodes {
-				__typename
-				id
-				name
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
 
-				status {
-					errors {
-						level
-						... on WorkloadStatusMissingSBOM {
-							__typename
-						}
-					}
-				}
-			}
-		}
-		vulnerable: workloads(filter: { statusErrorTypes: [VULNERABLE] }) {
-			pageInfo {
-				totalCount
-			}
-			nodes {
-				__typename
-				id
-				name
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-
-				status {
-					errors {
-						level
-						... on WorkloadStatusVulnerable {
-							__typename
-						}
-					}
-				}
-			}
-		}
 		vulnerabilitySummary {
 			sbomCount
 			coverage

@@ -37,11 +37,15 @@ query Applications(
 				team {
 					slug
 				}
-				status {
-					state
-					errors {
-						__typename
-						level
+				state
+				issues {
+					pageInfo {
+						totalCount
+					}
+					edges {
+						node {
+							severity
+						}
 					}
 				}
 				deployments(first: 1) {

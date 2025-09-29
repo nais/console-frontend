@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { Detail, Tooltip } from '@nais/ds-svelte-community';
+	import { Detail, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import IconLabel from '../IconLabel.svelte';
+	import RunningIndicator from '../RunningIndicator.svelte';
 	import TooltipAlignHack from '../TooltipAlignHack.svelte';
 	import ListItem from './ListItem.svelte';
 
@@ -19,17 +20,15 @@
 				environment: { name: string };
 			};
 			team: { slug: string };
-			status: {
-				state: string;
-				errors?: {
-					__typename: string | null;
-					level: 'ERROR' | 'WARNING' | 'TODO';
-				}[];
-			};
+			state: string;
 			deployments: { nodes: { createdAt: Date }[] };
 			instances: {
 				pageInfo: { totalCount: number };
 				edges: { node: { status: { message: string; state: string } } }[];
+			};
+			issues: {
+				pageInfo: { totalCount: number };
+				edges: { node: { severity: string } }[];
 			};
 		};
 	} = $props();
@@ -49,24 +48,47 @@
 		{#snippet icon()}
 			<TooltipAlignHack
 				content={{
-					NAIS: 'Application is healthy',
-					FAILING: 'Application is failing',
-					NOT_NAIS: 'Application has issues',
-					UNKNOWN: 'Application status is unknown'
-				}[app.status.state] ?? ''}
+					RUNNING: 'Application is running',
+					NOT_RUNNING: 'Application is not running',
+					UNKNOWN: 'Unkown status'
+				}[app.state] ?? ''}
 			>
-				<CircleFillIcon
-					style="color: light-dark({{
-						NAIS: 'var(--ax-bg-success-strong), var(--ax-bg-success-strong)',
-						FAILING: 'var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)',
-						NOT_NAIS: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)',
-						UNKNOWN: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'
-					}[app.status.state] ??
-						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
-				/>
+				{#if app.state === 'RUNNING'}
+					<RunningIndicator />
+				{:else if app.state === 'NOT_RUNNING'}
+					<CircleFillIcon
+						style="width: 24px; color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)); font-size: 0.7rem"
+					/>
+				{:else}
+					<CircleFillIcon
+						style="width: 24px; color: light-dark(var(--ax-text-neutral-decoration), var(--ax-text-neutral-decoration)); font-size: 0.7rem"
+					/>
+				{/if}
 			</TooltipAlignHack>
 		{/snippet}
 	</IconLabel>
+
+	{#if app.issues?.pageInfo.totalCount > 0}
+		{@const criticalCount = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
+		{@const warningCount = app.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
+		{@const todoCount = app.issues.edges.filter((e) => e.node.severity === 'TODO').length}
+
+		<div class="issues-container">
+			{#if criticalCount > 0}
+				<Tag variant="error" size="xsmall"
+					>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
+				>
+			{/if}
+			{#if warningCount > 0}
+				<Tag variant="warning" size="xsmall"
+					>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
+				>
+			{/if}
+			{#if todoCount > 0}
+				<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
+			{/if}
+		</div>
+	{/if}
 	<div class="right">
 		{#if app.deployments.nodes.length > 0}
 			{@const timestamp = app.deployments.nodes[0].createdAt}
@@ -99,5 +121,13 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
+	}
+
+	.issues-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-16);
+		width: 100%;
+		align-items: center;
 	}
 </style>

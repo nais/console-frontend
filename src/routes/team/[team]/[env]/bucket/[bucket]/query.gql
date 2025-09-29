@@ -8,13 +8,6 @@ query Bucket($team: Slug!, $name: String!, $environment: String!) {
 				publicAccessPrevention
 				uniformBucketLevelAccess
 
-				status {
-					state
-					errors {
-						details
-						message
-					}
-				}
 				name
 				teamEnvironment {
 					environment {

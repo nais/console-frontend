@@ -77,6 +77,24 @@ query App(
 						}
 					}
 				}
+				ingresses {
+					type
+					url
+					metrics {
+						errorsPerSecond
+						requestsPerSecond
+					}
+				}
+				issues {
+					edges {
+						node {
+							__typename
+							id
+							message
+							severity
+						}
+					}
+				}
 				resources {
 					scaling {
 						maxInstances
@@ -120,7 +138,6 @@ query App(
 				...WorkloadDeploy
 				...NetworkPolicy
 				...Manifest
-				...Ingresses
 			}
 		}
 	}

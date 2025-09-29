@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -22,8 +24,6 @@
 	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
-	import { docURL } from '$lib/doc';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
 
 	const runServiceMaintenance = graphql(`
 		mutation runOpenSearchMaintenance(
@@ -231,7 +231,7 @@
 		<div class="sidebar">
 			<div>
 				<Heading level="3">Status</Heading>
-				<BodyShort>{instance.status.state}</BodyShort>
+				<BodyShort>{instance.state}</BodyShort>
 			</div>
 			<div>
 				<Heading level="3">Settings</Heading>

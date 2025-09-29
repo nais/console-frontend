@@ -1,4 +1,4 @@
-import { load_SqlInstances, SqlInstanceOrderField } from '$houdini';
+import { load_SqlInstances, OrderDirection, SqlInstanceOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { startOfMonth, subMonths } from 'date-fns';
 
@@ -15,7 +15,7 @@ export async function load(event) {
 				team: event.params.team,
 				orderBy: {
 					field: urlToOrderField(SqlInstanceOrderField, SqlInstanceOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url)
+					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows }),
 				from: startOfMonth(subMonths(new Date(), 12)),

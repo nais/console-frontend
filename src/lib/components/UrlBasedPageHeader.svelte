@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
 	import { urlToPageHeader } from '$lib/urlToPageHeader';
 	import { BodyShort } from '@nais/ds-svelte-community';
-	import IconLabel from './IconLabel.svelte';
 	import PageHeader from './PageHeader.svelte';
 
 	interface Props {
@@ -14,7 +12,7 @@
 		viewerIsMember: boolean;
 	}
 
-	const { purpose, gitHubOrganization, gitHubTeam, memberCount, viewerIsMember }: Props = $props();
+	const { purpose }: Props = $props();
 
 	const pageHeaderProps = $derived(urlToPageHeader(page.url));
 </script>
@@ -34,15 +32,13 @@
 	{#if pageHeaderProps.breadcrumbs.length === 0}
 		<!-- no breadcrumbs == on team page -->
 		<div>
-			<BodyShort spacing>{purpose}</BodyShort>
-			<BodyShort>
+			<BodyShort>{purpose}</BodyShort>
+			<!-- <BodyShort spacing>
 				{memberCount} team member{memberCount === 1 ? '' : 's'}.
 				<a href="/team/{pageHeaderProps.heading}/members">
 					{viewerIsMember ? 'Manage members' : 'View all'}
 				</a>
 			</BodyShort>
-		</div>
-		<div>
 			<IconLabel
 				href="https://github.com/orgs/{gitHubOrganization}/teams/{gitHubTeam}"
 				icon={GitHubIcon}
@@ -50,7 +46,7 @@
 				{#snippet label()}
 					<span class="label">Visit {gitHubTeam} on GitHub</span>
 				{/snippet}
-			</IconLabel>
+			</IconLabel> -->
 		</div>
 	{/if}
 </div>

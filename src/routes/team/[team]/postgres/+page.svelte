@@ -47,12 +47,7 @@
 			>
 				{#snippet menu()}
 					<OrderByMenu
-						orderField={{
-							NAME: SqlInstanceOrderField.NAME,
-							ENVIRONMENT: SqlInstanceOrderField.ENVIRONMENT,
-							STATUS: SqlInstanceOrderField.STATUS,
-							VERSION: SqlInstanceOrderField.VERSION
-						}}
+						orderField={SqlInstanceOrderField}
 						defaultOrderField={SqlInstanceOrderField.NAME}
 					/>
 				{/snippet}
@@ -100,14 +95,15 @@
 							</IconLabel>
 						</div>
 
-						{#if instance.workload}
-							<div class="right">
+						<div class="right">
+							{#if instance.workload}
 								<div style:display="flex" style:gap="var(--ax-space-6)">
 									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 								</div>
-								<div>Version: <code>{instance.version}</code></div>
-							</div>
-						{/if}
+							{/if}
+
+							<div>Version: <code>{instance.version}</code></div>
+						</div>
 					</ListItem>
 				{/each}
 			</List>

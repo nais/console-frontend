@@ -5,13 +5,12 @@
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
+	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
 	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
-	import TeamUtilizationAndOverage from '$lib/components/TeamUtilizationAndOverage.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import { docURL } from '$lib/doc';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -49,10 +48,25 @@
 		<div>
 			<AggregatedCostForTeam {teamSlug} />
 		</div>
-		<div class="deployments">
-			<Heading size="small" level="2"
-				>Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments for {teamSlug}</Heading
+		<!-- <div>
+			<List
+				title="Issue{($TeamOverview.data?.team.issues.nodes?.length ?? 0 > 1)
+					? 's'
+					: ''} {($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 20
+					? `(${$TeamOverview.data?.team.issues.nodes.length} of ${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
+					: ($TeamOverview.data?.team.issues?.pageInfo?.totalCount ?? 0) > 0
+						? `(${$TeamOverview.data?.team.issues?.pageInfo?.totalCount})`
+						: ''}"
 			>
+				{#each $TeamOverview.data?.team.issues?.nodes ?? [] as issue (issue.id)}
+					<IssueListItem item={issue} />
+				{/each}
+			</List>
+			<div style="display: flex; justify-content: flex-end; padding-top: var(--ax-space-8);">
+				<a href="/team/{teamSlug}/issues">View All Issues</a>
+			</div>
+		</div> -->
+		<div class="deployments">
 			{#if $TeamOverview.data?.team.deployments.pageInfo.totalCount === 0}
 				<BodyLong spacing>
 					No deployments found. <ExternalLink href={docURL('/build/')}
@@ -61,17 +75,17 @@
 				</BodyLong>
 			{/if}
 			{#if $TeamOverview.data}
-				<List>
+				<List title="Last {$TeamOverview.data?.team.deployments.nodes.length} Deployments">
 					{#each $TeamOverview.data.team.deployments.nodes as deployment (deployment.id)}
 						<DeploymentListItem {deployment} showEnv />
 					{/each}
 				</List>
 			{/if}
-			<a href="/team/{teamSlug}/deploy" style:align-self="end">View All Deployments for Team</a>
+			<a href="/team/{teamSlug}/deploy" style:align-self="end">View All Deployments</a>
 		</div>
 	</div>
 	<div class="right">
-		<IssueSummary
+		<HealthSummary
 			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
 			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
 			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
@@ -85,11 +99,11 @@
 				vulnerabilitySummary={$TeamOverview.data?.team.vulnerabilitySummary}
 			/>
 		</div>
-		<div>
+		<!-- <div>
 			<div class="card">
 				<TeamUtilizationAndOverage {teamSlug} />
 			</div>
-		</div>
+		</div> -->
 		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
 			{#if $TeamOverview.data?.team}
 				<SidebarActivity
@@ -131,13 +145,6 @@
 		> a {
 			align-self: end;
 		}
-	}
-
-	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-16) var(--ax-space-20);
-		border-radius: 12px;
-		align-items: stretch;
 	}
 
 	.deployments {
