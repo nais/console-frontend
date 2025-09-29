@@ -1,4 +1,4 @@
-query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: ActivityLogFilter!)
+query TeamOverview($team: Slug!, $activityLogFilter: ActivityLogFilter!)
 @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		firingAlerts: alerts(filter: { states: [FIRING] }) {
@@ -93,25 +93,6 @@ query TeamOverview($team: Slug!, $severitySince: Time!, $activityLogFilter: Acti
 				commitSha
 				deployerUsername
 				triggerUrl
-			}
-		}
-
-		workloads {
-			pageInfo {
-				totalCount
-			}
-
-			nodes {
-				id
-				image {
-					vulnerabilities(filter: { severity: CRITICAL, severitySince: $severitySince }) {
-						nodes {
-							id
-							severity
-							severitySince
-						}
-					}
-				}
 			}
 		}
 
