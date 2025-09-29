@@ -15,8 +15,8 @@
 </script>
 
 <div class="card issues">
+	<Heading level="3" size="medium">Health</Heading>
 	{#if !loading}
-		<Heading level="3" size="medium">Health</Heading>
 		{#if (critical ?? 0) > 0}
 			<div class="summary critical">
 				<CircleFillIcon />
