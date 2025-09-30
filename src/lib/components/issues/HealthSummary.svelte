@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 
@@ -15,7 +14,7 @@
 </script>
 
 <div class="card issues">
-	<Heading level="2" size="small">Health</Heading>
+	<Heading level="2" size="small"><a href="/team/{teamSlug}/issues">Health</a></Heading>
 	{#if !loading}
 		{#if (critical ?? 0) > 0}
 			<div class="summary critical">
@@ -54,9 +53,6 @@
 		<div style="display: flex; justify-content: center; align-items: center; height: 290px;">
 			<Loader size="3xlarge" />
 		</div>
-	{/if}
-	{#if !page.url.pathname.includes('/issues')}
-		<a href="/team/{teamSlug}/issues" style:align-self="end">View Team Issues</a>
 	{/if}
 </div>
 
