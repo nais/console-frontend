@@ -20,6 +20,7 @@
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import WorkloadDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
 	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
 	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
@@ -118,6 +119,10 @@
 
 	function textComponent(kind: Kind): Component<{ data: unknown }> {
 		switch (kind) {
+			case 'ApplicationDeletedActivityLogEntry':
+			case 'ValkeyDeletedActivityLogEntry':
+			case 'OpenSearchDeletedActivityLogEntry':
+				return WorkloadDeletedActivityLogEntryText as Component;
 			case 'DeploymentActivityLogEntry':
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':
