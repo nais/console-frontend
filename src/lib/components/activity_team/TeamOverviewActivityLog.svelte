@@ -14,21 +14,23 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
-	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
-	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
-	import DefaultText from './texts/DefaultText.svelte';
-	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
-	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
-	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import ApplicationScaledActivityLogEntryText from '../activity/texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ClusterAuditActivityLogEntryText from '../activity/texts/ClusterAuditActivityLogEntryText.svelte';
+	import DefaultText from '../activity/texts/DefaultText.svelte';
+	import DeploymentActivityLogEntryText from '../activity/texts/DeploymentActivityLogEntryText.svelte';
+	import OpenSearchUpdatedActivityLogEntryText from './texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import RepositoryAddedActivityLogEntryText from '../activity/texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from '../activity/texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import WorkloadDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
-	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
-	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
-	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
-	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
-	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
-	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
-	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
-	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import SecretCreatedActivityLogEntryText from '../activity/texts/SecretCreatedActivityLogEntryText.svelte';
+	import SecretDeletedActivityLogEntryText from '../activity/texts/SecretDeletedActivityLogEntryText.svelte';
+	import SecretValueAddedActivityLogEntryText from '../activity/texts/SecretValueAddedActivityLogEntryText.svelte';
+	import SecretValueRemovedActivityLogEntryText from '../activity/texts/SecretValueRemovedActivityLogEntryText.svelte';
+	import SecretValueUpdatedActivityLogEntryText from '../activity/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from '../activity/texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from '../activity/texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from '../activity/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import ValkeyUpdatedActivityLogEntryText from '../activity/texts/ValkeyUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -66,12 +68,21 @@
 									resourceKind
 								}
 							}
+
 							... on DeploymentActivityLogEntry {
 								deploymentData: data {
 									triggerURL
 								}
 							}
-
+							... on OpenSearchUpdatedActivityLogEntry {
+								opensearchData: data {
+									updatedFields {
+										field
+										newValue
+										oldValue
+									}
+								}
+							}
 							... on SecretValueAddedActivityLogEntry {
 								secretValueAdded: data {
 									valueName
@@ -104,6 +115,15 @@
 									userEmail
 								}
 							}
+							... on ValkeyUpdatedActivityLogEntry {
+								valkeyData: data {
+									updatedFields {
+										field
+										newValue
+										oldValue
+									}
+								}
+							}
 						}
 					}
 				}
@@ -122,7 +142,7 @@
 			case 'ApplicationDeletedActivityLogEntry':
 			case 'ValkeyDeletedActivityLogEntry':
 			case 'OpenSearchDeletedActivityLogEntry':
-				return WorkloadDeletedActivityLogEntryText as Component;
+				return WorkloadDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'DeploymentActivityLogEntry':
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':
@@ -149,6 +169,10 @@
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyUpdatedActivityLogEntry':
+				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchUpdatedActivityLogEntry':
+				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}
@@ -179,7 +203,9 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Activity log</Heading>
+	<Heading level="2" size="small" spacing
+		><a href="/team/{teamSlug}/activity-log">Activity log</a></Heading
+	>
 	{#if $activityLogQuery.fetching || !$activityLogQuery.data}
 		<div style="display: flex; justify-content: center; align-items: center; min-height: 500px;">
 			<Loader size="3xlarge" />

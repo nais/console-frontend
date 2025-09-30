@@ -3,6 +3,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { resourceTypeToText } from '../../activity/texts/utils';
 
 	let {
 		data
@@ -12,21 +13,6 @@
 			{ resourceType: string; resourceName: string; environmentName: string | null }
 		>;
 	} = $props();
-
-	function resourceTypeToText(type: string) {
-		switch (type) {
-			case 'APP':
-				return 'Application';
-			case 'JOB':
-				return 'Job';
-			case 'VALKEY':
-				return 'Valkey';
-			case 'OPENSEARCH':
-				return 'OpenSearch';
-			default:
-				return 'Resource';
-		}
-	}
 </script>
 
 <div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertState } from '$houdini';
-	import TeamOverviewActivityLog from '$lib/components/activity/TeamOverviewActivityLog.svelte';
+	import TeamOverviewActivityLog from '$lib/components/activity_team/TeamOverviewActivityLog.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
@@ -44,23 +44,24 @@
 				/>
 			{/if}
 		</div>
-		<div>
-			<AggregatedCostForTeam {teamSlug} />
-		</div>
+
 		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
+			<HealthSummary
+				critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
+				warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
+				todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
+				{teamSlug}
+				loading={$TeamOverview.fetching}
+			/>
 			<TeamOverviewActivityLog {teamSlug} />
 		</div>
 	</div>
 	<div class="right">
-		<HealthSummary
-			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
-			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
-			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
-			{teamSlug}
-			loading={$TeamOverview.fetching}
-		/>
 		<div>
 			<VulnerabilitySummary {teamSlug} />
+		</div>
+		<div>
+			<AggregatedCostForTeam {teamSlug} />
 		</div>
 	</div>
 </div>
