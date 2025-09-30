@@ -17,7 +17,7 @@
 
 <div>
 	{resourceTypeToText(data.resourceType)}
-	<strong>{data.resourceName}</strong> deleted in
+	<strong>{data.resourceName}</strong> created in
 	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
 	>.
 

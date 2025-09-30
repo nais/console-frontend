@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
@@ -9,13 +9,14 @@
 		data
 	}: {
 		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
+			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
 			{ __typename: 'ClusterAuditActivityLogEntry' }
 		>;
 	} = $props();
 </script>
 
 <div>
+	Cluster audit: <br />
 	{capitalizeFirstLetter(data.message.toLowerCase())}
 	in
 	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag>

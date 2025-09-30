@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
 	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import {
 		CaretUpDownIcon,
@@ -13,34 +13,81 @@
 		RocketIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-
-	import ApplicationScaledActivityLogEntryText from '../activity/texts/ApplicationScaledActivityLogEntryText.svelte';
-	import ClusterAuditActivityLogEntryText from '../activity/texts/ClusterAuditActivityLogEntryText.svelte';
-	import DefaultText from '../activity/texts/DefaultText.svelte';
-	import DeploymentActivityLogEntryText from '../activity/texts/DeploymentActivityLogEntryText.svelte';
+	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
+	import DefaultText from './texts/DefaultText.svelte';
+	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from './texts/OpenSearchUpdatedActivityLogEntryText.svelte';
-	import RepositoryAddedActivityLogEntryText from '../activity/texts/RepositoryAddedActivityLogEntryText.svelte';
-	import RepositoryRemovedActivityLogEntryText from '../activity/texts/RepositoryRemovedActivityLogEntryText.svelte';
-	import WorkloadDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
-	import SecretCreatedActivityLogEntryText from '../activity/texts/SecretCreatedActivityLogEntryText.svelte';
-	import SecretDeletedActivityLogEntryText from '../activity/texts/SecretDeletedActivityLogEntryText.svelte';
-	import SecretValueAddedActivityLogEntryText from '../activity/texts/SecretValueAddedActivityLogEntryText.svelte';
-	import SecretValueRemovedActivityLogEntryText from '../activity/texts/SecretValueRemovedActivityLogEntryText.svelte';
-	import SecretValueUpdatedActivityLogEntryText from '../activity/texts/SecretValueUpdatedActivityLogEntryText.svelte';
-	import TeamMemberAddedActivityLogEntryText from '../activity/texts/TeamMemberAddedActivityLogEntryText.svelte';
-	import TeamMemberRemovedActivityLogEntryText from '../activity/texts/TeamMemberRemovedActivityLogEntryText.svelte';
-	import TeamMemberSetRoleActivityLogEntryText from '../activity/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
-	import ValkeyUpdatedActivityLogEntryText from '../activity/texts/ValkeyUpdatedActivityLogEntryText.svelte';
+	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import ResourceCreatedActivityLogEntryText from './texts/ResourceCreatedActivityLogEntryText.svelte';
+	import ResourceDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
+	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
+	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
+	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
+	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
+	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		teamSlug: string;
 	}
 	let { teamSlug }: Props = $props();
 
+	const filter: ActivityLogFilter = {
+		activityTypes: [
+			ActivityLogActivityType.APPLICATION_DELETED,
+			ActivityLogActivityType.APPLICATION_RESTARTED,
+			//ActivityLogActivityType.APPLICATION_SCALED,
+			ActivityLogActivityType.CLUSTER_AUDIT,
+			ActivityLogActivityType.DEPLOYMENT,
+			ActivityLogActivityType.JOB_DELETED,
+			ActivityLogActivityType.JOB_TRIGGERED,
+			ActivityLogActivityType.OPENSEARCH_CREATED,
+			ActivityLogActivityType.OPENSEARCH_DELETED,
+			ActivityLogActivityType.OPENSEARCH_UPDATED,
+			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED,
+			//ActivityLogActivityType.RECONCILER_CONFIGURED,
+			//ActivityLogActivityType.RECONCILER_DISABLED,
+			//ActivityLogActivityType.RECONCILER_ENABLED,
+			ActivityLogActivityType.REPOSITORY_ADDED,
+			ActivityLogActivityType.REPOSITORY_REMOVED,
+			ActivityLogActivityType.SECRET_CREATED,
+			ActivityLogActivityType.SECRET_DELETED,
+			ActivityLogActivityType.SECRET_VALUE_ADDED,
+			ActivityLogActivityType.SECRET_VALUE_REMOVED,
+			ActivityLogActivityType.SECRET_VALUE_UPDATED,
+			ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
+			ActivityLogActivityType.TEAM_CREATED,
+			ActivityLogActivityType.TEAM_CREATE_DELETE_KEY,
+			ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
+			ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
+			ActivityLogActivityType.TEAM_MEMBER_ADDED,
+			ActivityLogActivityType.TEAM_MEMBER_REMOVED,
+			ActivityLogActivityType.TEAM_MEMBER_SET_ROLE,
+			ActivityLogActivityType.TEAM_UPDATED,
+			ActivityLogActivityType.VALKEY_CREATED,
+			ActivityLogActivityType.VALKEY_DELETED,
+			ActivityLogActivityType.VALKEY_UPDATED,
+			ActivityLogActivityType.VALKEY_MAINTENANCE_STARTED,
+			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
+			ActivityLogActivityType.UNLEASH_INSTANCE_UPDATED,
+			ActivityLogActivityType.VULNERABILITY_UPDATED
+		]
+	};
+
 	const activityLogQuery = graphql(`
-		query TeamOverviewActivityLog($teamSlug: Slug!, $first: Int!, $after: Cursor) {
+		query TeamOverviewActivityLog(
+			$teamSlug: Slug!
+			$first: Int!
+			$after: Cursor
+			$filter: ActivityLogFilter
+		) {
 			team(slug: $teamSlug) {
-				activityLog(first: $first, after: $after) @paginate(mode: Infinite) {
+				activityLog(first: $first, after: $after, filter: $filter) @paginate(mode: Infinite) {
 					pageInfo {
 						hasNextPage
 						endCursor
@@ -82,6 +129,18 @@
 										oldValue
 									}
 								}
+							}
+							... on RepositoryAddedActivityLogEntry {
+								id
+							}
+							... on RepositoryRemovedActivityLogEntry {
+								id
+							}
+							... on SecretCreatedActivityLogEntry {
+								id
+							}
+							... on SecretDeletedActivityLogEntry {
+								id
 							}
 							... on SecretValueAddedActivityLogEntry {
 								secretValueAdded: data {
@@ -132,7 +191,7 @@
 	`);
 
 	$effect.pre(() => {
-		activityLogQuery.fetch({ variables: { teamSlug, first: 10 } });
+		activityLogQuery.fetch({ variables: { teamSlug, first: 10, filter } });
 	});
 
 	type Kind = string;
@@ -142,7 +201,15 @@
 			case 'ApplicationDeletedActivityLogEntry':
 			case 'ValkeyDeletedActivityLogEntry':
 			case 'OpenSearchDeletedActivityLogEntry':
-				return WorkloadDeletedActivityLogEntryText as Component<{ data: unknown }>;
+				return ResourceDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationCreatedActivityLogEntry':
+			case 'ValkeyCreatedActivityLogEntry':
+			case 'OpenSearchCreatedActivityLogEntry':
+				return ResourceCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyUpdatedActivityLogEntry':
+				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchUpdatedActivityLogEntry':
+				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'DeploymentActivityLogEntry':
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':
@@ -169,10 +236,7 @@
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ValkeyUpdatedActivityLogEntry':
-				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'OpenSearchUpdatedActivityLogEntry':
-				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}
