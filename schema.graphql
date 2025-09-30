@@ -611,9 +611,6 @@ type Application implements ActivityLogger & Node & Workload {
   """The application state."""
   state: ApplicationState!
 
-  """Status of the application"""
-  status: WorkloadStatus!
-
   """The team that owns the application."""
   team: Team!
 
@@ -759,9 +756,6 @@ enum ApplicationOrderField {
 
   """Order applications by state."""
   STATE
-
-  """Order applications by status."""
-  STATUS
 }
 
 type ApplicationResources implements WorkloadResources {
@@ -964,7 +958,6 @@ type Bucket implements Node & Persistence {
   id: ID!
   name: String!
   publicAccessPrevention: String!
-  status: BucketStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
   uniformBucketLevelAccess: Boolean!
@@ -982,11 +975,6 @@ type BucketEdge {
   node: Bucket!
 }
 
-type BucketError {
-  details: String
-  message: String!
-}
-
 input BucketOrder {
   direction: OrderDirection!
   field: BucketOrderField!
@@ -995,17 +983,6 @@ input BucketOrder {
 enum BucketOrderField {
   ENVIRONMENT
   NAME
-}
-
-enum BucketState {
-  ERROR
-  HEALTHY
-  UNKNOWN
-}
-
-type BucketStatus {
-  errors: [BucketError!]!
-  state: BucketState!
 }
 
 """
@@ -1806,9 +1783,6 @@ enum EnvironmentWorkloadOrderField {
   """Order by name."""
   NAME
 
-  """Order by status."""
-  STATUS
-
   """Order by team slug."""
   TEAM_SLUG
 }
@@ -2378,9 +2352,6 @@ type Job implements ActivityLogger & Node & Workload {
   """The state of the Job"""
   state: JobState!
 
-  """Status of the job"""
-  status: WorkloadStatus!
-
   """The team that owns the job."""
   team: Team!
 
@@ -2473,9 +2444,6 @@ enum JobOrderField {
 
   """Order by state."""
   STATE
-
-  """Order jobs by status."""
-  STATUS
 }
 
 type JobResources implements WorkloadResources {
@@ -3044,7 +3012,6 @@ type OpenSearch implements Node & Persistence {
   memory: OpenSearchMemory!
   name: String!
   state: OpenSearchState!
-  status: OpenSearchStatus!
 
   """Available storage in GB."""
   storageGB: Int!
@@ -3260,10 +3227,6 @@ enum OpenSearchState {
   REBUILDING
   RUNNING
   UNKNOWN
-}
-
-type OpenSearchStatus {
-  state: String!
 }
 
 enum OpenSearchTier {
@@ -5201,7 +5164,7 @@ enum SqlInstanceOrderField {
   ENVIRONMENT
   MEMORY_UTILIZATION
   NAME
-  STATUS
+  STATE
   VERSION
 }
 
@@ -6160,12 +6123,6 @@ type TeamGoogleGroup {
 
 """Application inventory count for a team."""
 type TeamInventoryCountApplications {
-  """
-  Number of applications considered "not nais". When an application is considered "not nais", it means that the
-  application might not be working as expected, or that it is not following the Nais guidelines.
-  """
-  notNais: Int!
-
   """Total number of applications."""
   total: Int!
 }
@@ -6181,9 +6138,6 @@ type TeamInventoryCountBuckets {
 }
 
 type TeamInventoryCountJobs {
-  """Number of jobs considered not nais."""
-  notNais: Int!
-
   """Total number of jobs."""
   total: Int!
 }
@@ -6606,12 +6560,6 @@ input TeamVulnerabilitySummaryFilter {
 input TeamWorkloadsFilter {
   """Only return workloads from the given named environments."""
   environments: [String!]
-
-  """Filter workloads with given workload states."""
-  states: [WorkloadState!]
-
-  """Filter workloads with given workload status error types."""
-  statusErrorTypes: [WorkloadStatusErrorType!]
 }
 
 type TenantVulnerabilitySummary {
@@ -7209,7 +7157,6 @@ type Valkey implements Node & Persistence {
   memory: ValkeyMemory!
   name: String!
   state: ValkeyState!
-  status: ValkeyStatus!
   team: Team!
   teamEnvironment: TeamEnvironment!
   terminationProtection: Boolean!
@@ -7443,10 +7390,6 @@ enum ValkeyState {
   REBUILDING
   RUNNING
   UNKNOWN
-}
-
-type ValkeyStatus {
-  state: String!
 }
 
 enum ValkeyTier {
@@ -7767,9 +7710,6 @@ interface Workload {
     orderBy: SqlInstanceOrder
   ): SqlInstanceConnection!
 
-  """Status of the workload"""
-  status: WorkloadStatus!
-
   """The team that owns the workload."""
   team: Team!
 
@@ -7912,9 +7852,6 @@ enum WorkloadOrderField {
   """Order by name."""
   NAME
 
-  """Order by status."""
-  STATUS
-
   """Order by the last time the vulnerabilities were scanned."""
   VULNERABILITY_LAST_SCANNED
 
@@ -7953,176 +7890,6 @@ interface WorkloadResources {
 
   """Resources requested by the workload."""
   requests: WorkloadResourceQuantity!
-}
-
-"""State of the workload"""
-enum WorkloadState {
-  """Something is failing"""
-  FAILING
-
-  """Everything is nais"""
-  NAIS
-
-  """Something is not nais"""
-  NOT_NAIS
-
-  """Unknown state"""
-  UNKNOWN
-}
-
-type WorkloadStatus {
-  """Errors related to the workload"""
-  errors: [WorkloadStatusError!]!
-
-  """State of the workload"""
-  state: WorkloadState!
-}
-
-"""Error describing usage of a deprecated ingress"""
-type WorkloadStatusDeprecatedIngress implements WorkloadStatusError {
-  """Deprecated ingress"""
-  ingress: String!
-
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
-"""Error describing usage of a deprecated registry"""
-type WorkloadStatusDeprecatedRegistry implements WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-
-  """Image name"""
-  name: String!
-
-  """Image registry"""
-  registry: String!
-
-  """Image repository"""
-  repository: String!
-
-  """Image tag"""
-  tag: String!
-}
-
-"""An error for a workload"""
-interface WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
-"""Workload status error level"""
-enum WorkloadStatusErrorLevel {
-  """ERROR are errors that must be fixed"""
-  ERROR
-
-  """TODO are errors that should be fixed when possible"""
-  TODO
-
-  """WARNING are errors that should be fixed, but are not critical"""
-  WARNING
-}
-
-"""
-This enum represents types of errors implementing WorkloadStatusError for use in workload filtering.
-"""
-enum WorkloadStatusErrorType {
-  """Error describing usage of a deprecated ingress"""
-  DEPRECATED_INGRESS
-
-  """Error describing usage of a deprecated registry"""
-  DEPRECATED_REGISTRY
-
-  """Error describing that the workload is failing to run"""
-  FAILED_RUN
-
-  """Last deployed YAML is invalid"""
-  INVALID_NAIS_YAML
-
-  """Error describing that the workload is missing SBOM"""
-  MISSING_SBOM
-
-  """
-  Workload does not have any active instances, but is requested to have some
-  """
-  NO_RUNNING_INSTANCES
-
-  """Error describing that the workload is failing to synchronize"""
-  SYNCHRONIZATION_FAILING
-
-  """
-  Error describing usage of an instance of Cloud SQL with a unsupported version
-  """
-  UNSUPPORTED_CLOUD_SQL_VERSION
-
-  """Error describing that the workload is vulnerable"""
-  VULNERABLE
-}
-
-"""Error describing that the workload is failing to run"""
-type WorkloadStatusFailedRun implements WorkloadStatusError {
-  """Error message"""
-  detail: String!
-
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-
-  """Name of the run"""
-  name: String!
-}
-
-"""The last deployed YAML is invalid"""
-type WorkloadStatusInvalidNaisYaml implements WorkloadStatusError {
-  """Error message"""
-  detail: String!
-
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
-"""Error describing that the workload is missing SBOM"""
-type WorkloadStatusMissingSBOM implements WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
-"""
-A workload does not have any active instances, but is requested to have some
-"""
-type WorkloadStatusNoRunningInstances implements WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
-"""Error describing that the workload is failing to synchronize"""
-type WorkloadStatusSynchronizationFailing implements WorkloadStatusError {
-  """Error message"""
-  detail: String!
-
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-}
-
-"""
-Error describing usage of an instance of Cloud SQL with a unsupported version
-"""
-type WorkloadStatusUnsupportedCloudSQLVersion implements WorkloadStatusError {
-  """
-  Error level. Warning if the version is deprecated, error if the version is unsupported.
-  """
-  level: WorkloadStatusErrorLevel!
-
-  """Postgres version"""
-  version: String!
-}
-
-"""Error describing that the workload is missing SBOM"""
-type WorkloadStatusVulnerable implements WorkloadStatusError {
-  """Error level"""
-  level: WorkloadStatusErrorLevel!
-
-  """Vulnerabilities"""
-  summary: ImageVulnerabilitySummary!
 }
 
 type WorkloadUtilization {
