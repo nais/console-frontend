@@ -2,7 +2,7 @@ query ApplicationIssues(
 	$team: Slug!
 	$env: String!
 	$app: String!
-	$filter: IssueFilter
+	$filter: ResourceIssueFilter
 	$orderBy: IssueOrder
 	$first: Int
 	$last: Int

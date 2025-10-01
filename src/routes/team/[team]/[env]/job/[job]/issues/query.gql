@@ -2,7 +2,7 @@ query JobIssues(
 	$team: Slug!
 	$env: String!
 	$job: String!
-	$filter: IssueFilter
+	$filter: ResourceIssueFilter
 	$orderBy: IssueOrder
 	$first: Int
 	$last: Int
