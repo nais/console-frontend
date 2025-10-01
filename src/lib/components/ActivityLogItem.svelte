@@ -7,9 +7,23 @@
 		type ActivityLogEntryResourceType$options
 	} from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import Time from '$lib/Time.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import {
+		CaretUpDownIcon,
+		LayerMinusIcon,
+		LayersPlusIcon,
+		MinusCircleIcon,
+		NotePencilIcon,
+		PersonPencilIcon,
+		PlayIcon,
+		PlusCircleIcon,
+		RocketIcon
+	} from '@nais/ds-svelte-community/icons';
+	import type { Component } from 'svelte';
 
 	const resourceLink = (
 		environmentName: string,
@@ -159,9 +173,71 @@
 			`)
 		)
 	);
+
+	const icons: { [key: string]: Component } = {
+		DeploymentActivityLogEntry: RocketIcon,
+		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
+		JobTriggeredActivityLogEntry: PlayIcon,
+		RepositoryAddedActivityLogEntry: PlusCircleIcon,
+		RepositoryRemovedActivityLogEntry: MinusCircleIcon,
+		SecretValueAddedActivityLogEntry: LayersPlusIcon,
+		SecretValueRemovedActivityLogEntry: LayerMinusIcon,
+		SecretValueUpdatedActivityLogEntry: NotePencilIcon,
+		SecretCreatedActivityLogEntry: PlusCircleIcon,
+		SecretDeletedActivityLogEntry: MinusCircleIcon,
+		TeamMemberAddedActivityLogEntry: PlusCircleIcon,
+		TeamMemberRemovedActivityLogEntry: MinusCircleIcon,
+		TeamMemberSetRoleActivityLogEntry: PersonPencilIcon,
+		ClusterAuditActivityLogEntry: NotePencilIcon,
+		ValkeyCreatedActivityLogEntry: ValkeyIcon,
+		ValkeyDeletedActivityLogEntry: ValkeyIcon,
+		ValkeyUpdatedActivityLogEntry: ValkeyIcon,
+		OpenSearchCreatedActivityLogEntry: OpenSearchIcon,
+		OpenSearchDeletedActivityLogEntry: OpenSearchIcon,
+		OpenSearchUpdatedActivityLogEntry: OpenSearchIcon
+	};
+
+	const iconVariant = (typename: string, direction?: string, auditAction?: string): string => {
+		if (typename.includes('ApplicationScaled')) {
+			if (direction === 'UP') return 'scale-up';
+			if (direction === 'DOWN') return 'scale-down';
+			return 'scale-neutral';
+		}
+
+		// Cluster audit: hvis action finnes, farg som added/updated/deleted; ellers audit
+		if (typename.includes('ClusterAudit')) {
+			if (auditAction) {
+				const a = auditAction.toLowerCase();
+				if (a.includes('create') || a === 'apply') return 'added';
+				if (a.includes('delete')) return 'deleted';
+				if (a.includes('update') || a.includes('patch') || a.includes('replace')) return 'updated';
+			}
+			return 'audit';
+		}
+
+		if (typename.includes('Added') || typename.includes('Created')) return 'added';
+		if (typename.includes('Removed') || typename.includes('Deleted')) return 'deleted';
+		if (typename.includes('Updated') || typename.includes('SetRole')) return 'updated';
+		if (typename.includes('Deployment') || typename.includes('Restarted')) return 'deployment';
+		if (typename.includes('Maintenance')) return 'maintenance';
+		return 'neutral';
+	};
 </script>
 
 <div class="activity">
+	<div
+		class="icon {iconVariant(
+			$data.__typename,
+			$data.__typename === 'ApplicationScaledActivityLogEntry'
+				? $data.appScaled?.direction
+				: undefined
+		)}"
+	>
+		{#if $data.__typename}
+			{@const Icon = icons[$data.__typename] || RocketIcon}
+			<Icon />
+		{/if}
+	</div>
 	<div>
 		<BodyShort size="small" spacing>
 			{#if $data.__typename === 'SecretValueAddedActivityLogEntry'}
@@ -333,18 +409,85 @@
 				</Tag>.
 			{/if}
 		</BodyShort>
-	</div>
-	<div>
-		<BodyShort size="small" style="color: var(--ax-text-subtle)">
-			<Time time={$data.createdAt} distance={true} />
-			by {$data.actor}
-		</BodyShort>
+		<div>
+			<BodyShort size="small" style="color: var(--ax-text-subtle)">
+				<Time time={$data.createdAt} distance={true} />
+				by {$data.actor}
+			</BodyShort>
+		</div>
 	</div>
 </div>
 
 <style>
 	.activity {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: var(--ax-space-12); /* mer luft mellom ikon og tekst */
+		padding: var(--ax-space-2) 0;
+	}
+
+	.icon {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 36px;
+		height: 36px;
+		min-width: 36px;
+		min-height: 36px;
+
+		border-radius: 50%;
+		border: 1px solid var(--ax-border-neutral-subtle);
+		box-shadow:
+			0 1px 2px rgba(0, 0, 0, 0.05),
+			0 2px 6px rgba(0, 0, 0, 0.08);
+
+		color: white;
+		font-size: 18px;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.icon:hover {
+		transform: scale(1.05);
+		box-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.08),
+			0 4px 10px rgba(0, 0, 0, 0.12);
+	}
+
+	/* Scale */
+	.icon.scale-up {
+		background: linear-gradient(145deg, #27ae60, #1e874b); /* grønn */
+	}
+	.icon.scale-down {
+		background: linear-gradient(145deg, #e74c3c, #c0392b); /* rød */
+	}
+	.icon.scale-neutral {
+		background: linear-gradient(145deg, #95a5a6, #7f8c8d); /* grå */
+	}
+
+	/* Andre varianter (fra før) */
+	.icon.added {
+		background: linear-gradient(145deg, #3bb273, #2d995f);
+	}
+	.icon.deleted {
+		background: linear-gradient(145deg, #e15241, #c0392b);
+	}
+	.icon.updated {
+		background: linear-gradient(145deg, #3498db, #2c80b4);
+	}
+	.icon.deployment {
+		background: linear-gradient(145deg, #8e44ad, #6d3390);
+	}
+	.icon.maintenance {
+		background: linear-gradient(145deg, #e67e22, #ca6b16);
+	}
+	.icon.neutral {
+		background: linear-gradient(145deg, var(--ax-bg-default), var(--ax-bg-raised));
+		color: var(--ax-text-neutral-strong);
+	}
+	.icon.audit {
+		/* Teal – tydelig, men ikke alarmistisk */
+		background: linear-gradient(145deg, #16a085, #0e7668);
+		color: white;
 	}
 </style>
