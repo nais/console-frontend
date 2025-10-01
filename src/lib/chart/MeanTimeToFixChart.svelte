@@ -1,15 +1,15 @@
 <script lang="ts" module>
 	export type MeanTimeToFixHistory =
 		| {
-		samples: {
-			severity: string; // e.g., 'HIGH', 'MEDIUM', 'LOW', 'CRITICAL', 'UNASSIGNED'
-			date: Date;
-			days: number;
-			fixedCount: number;
-			firstFixedAt: Date | null;
-			lastFixedAt: Date | null;
-		}[];
-	}
+				samples: {
+					severity: string;
+					date: Date;
+					days: number;
+					fixedCount: number;
+					firstFixedAt: Date | null;
+					lastFixedAt: Date | null;
+				}[];
+		  }
 		| undefined
 		| null;
 </script>
@@ -17,13 +17,14 @@
 <script lang="ts" generics="T extends MeanTimeToFixHistory">
 	import type { intervalOptionsVulnerabilityHistory } from '$lib/components/vulnerability/dateUtils';
 	import { isReducedMotion } from '$lib/reducedMotion';
-	import { severityToColor, type Severity } from '$lib/utils/vulnerabilities';
+	import { severityToColor } from '$lib/utils/vulnerabilities';
 	import { format } from 'date-fns';
-	import { accessor, AreaChart, Tooltip, type SeriesData } from 'layerchart';
-	import { SvelteDate } from 'svelte/reactivity';
+	import { accessor, AreaChart, Tooltip } from 'layerchart';
+	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import LegendWrapper, { legendSnippet } from './LegendWrapper.svelte';
 
-	const UPPERCASE_SEVERITIES = ['HIGH', 'MEDIUM', 'LOW'] as const;
+	const UPPERCASE_SEVERITIES = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNASSIGNED'] as const;
+	type UppercaseSeverity = (typeof UPPERCASE_SEVERITIES)[number];
 
 	const {
 		data,
@@ -37,7 +38,7 @@
 
 	type MTTFixChartData = {
 		date: Date;
-		[key: string]: number | Date;
+		[key: string]: number | Date | null;
 	};
 
 	function transformLayerchartMTTFix(data: MeanTimeToFixHistory): {
@@ -46,19 +47,22 @@
 	} {
 		if (!data || !data.samples.length) return { data: [], series: [] };
 
-		// Merge samples by date
-		const mergedDataMap = new Map<number, MTTFixChartData>();
+		// Use SvelteMap for reactivity
+		const mergedDataMap = new SvelteMap<number, MTTFixChartData>();
 
 		for (const sample of data.samples) {
-			if (!UPPERCASE_SEVERITIES.includes(sample.severity.toUpperCase() as any)) continue;
+			const severity = sample.severity.toUpperCase() as UppercaseSeverity;
+			if (!UPPERCASE_SEVERITIES.includes(severity)) continue;
 
+			// normalize to start of day
 			const dateKey = new SvelteDate(sample.date).setHours(0, 0, 0, 0);
 			const entry = mergedDataMap.get(dateKey) ?? { date: new Date(dateKey) };
 
-			entry[sample.severity.toUpperCase()] = sample.days ?? 0;
-			entry[`fixedCount_${sample.severity.toUpperCase()}`] = sample.fixedCount ?? 0;
-			entry[`lastFixedAt_${sample.severity.toUpperCase()}`] = sample.lastFixedAt ?? null;
-			entry[`firstFixedAt_${sample.severity.toUpperCase()}`] = sample.firstFixedAt ?? null;
+			// assign values (null allowed safely now)
+			entry[severity] = sample.days ?? 0;
+			entry[`fixedCount_${severity}`] = sample.fixedCount ?? 0;
+			entry[`lastFixedAt_${severity}`] = sample.lastFixedAt;
+			entry[`firstFixedAt_${severity}`] = sample.firstFixedAt;
 
 			mergedDataMap.set(dateKey, entry);
 		}
@@ -72,6 +76,10 @@
 	}
 
 	const chartData = $derived.by(() => transformLayerchartMTTFix(data));
+
+	function formatLastFixedAt(value: unknown): string {
+		return value instanceof Date ? format(value, 'dd/MM/yyyy') : '-';
+	}
 </script>
 
 <LegendWrapper {height}>
@@ -89,9 +97,7 @@
 			xAxis: {
 				motion: isReducedMotion ? 'none' : 'tween',
 				format:
-					interval === '6m'
-						? 'month'
-						: (value: Date) => (value ? format(value, 'dd/MM') : ''),
+					interval === '6m' ? 'month' : (value: Date) => (value ? format(value, 'dd/MM') : ''),
 				tickSpacing: 150
 			}
 		}}
@@ -111,9 +117,7 @@
 								{data[`fixedCount_${severityKey}`] ?? 0}
 							</Tooltip.Item>
 							<Tooltip.Item label="Last fixed at">
-								{data[`lastFixedAt_${severityKey}`]
-									? format(new Date(data[`lastFixedAt_${severityKey}`] as Date), 'dd/MM/yyyy')
-									: '-'}
+								{formatLastFixedAt(data[`lastFixedAt_${severityKey}`])}
 							</Tooltip.Item>
 						{/each}
 					</Tooltip.List>
