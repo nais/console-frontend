@@ -539,7 +539,7 @@ type Application implements ActivityLogger & Node & Workload {
     before: Cursor
 
     """Filtering options for items returned from the connection."""
-    filter: IssueFilter
+    filter: ResourceIssueFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -2258,7 +2258,7 @@ type Job implements ActivityLogger & Node & Workload {
     before: Cursor
 
     """Filtering options for items returned from the connection."""
-    filter: IssueFilter
+    filter: ResourceIssueFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -3026,6 +3026,31 @@ type OpenSearch implements ActivityLogger & Node & Persistence {
   cost: OpenSearchCost!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
+
+  """Issues that affects the instance."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: ResourceIssueFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """Fetch maintenances updates for the OpenSearch instance."""
   maintenance: OpenSearchMaintenance!
@@ -4030,6 +4055,14 @@ type RequestTeamDeletionPayload {
   The delete key for the team. This can be used to confirm the deletion of the team.
   """
   key: TeamDeleteKey
+}
+
+input ResourceIssueFilter {
+  """Filter by issue type."""
+  issueType: IssueType
+
+  """Filter by severity."""
+  severity: Severity
 }
 
 enum ResourceType {
@@ -5073,13 +5106,16 @@ type SqlInstance implements Node & Persistence {
   highAvailability: Boolean!
   id: ID!
 
-  """Issues that affects the workload."""
+  """Issues that affects the instance."""
   issues(
     """Get items after this cursor."""
     after: Cursor
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: ResourceIssueFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -7193,6 +7229,31 @@ type Valkey implements ActivityLogger & Node & Persistence {
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
+  """Issues that affects the instance."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: ResourceIssueFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: IssueOrder
+  ): IssueConnection!
+
   """Fetch maintenances updates for the Valkey instance."""
   maintenance: ValkeyMaintenance!
   maxMemoryPolicy: ValkeyMaxMemoryPolicy
@@ -7685,7 +7746,7 @@ interface Workload {
     before: Cursor
 
     """Filtering options for items returned from the connection."""
-    filter: IssueFilter
+    filter: ResourceIssueFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
