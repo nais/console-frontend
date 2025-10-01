@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { TeamOverviewActivityLog$result } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	let {
 		data
@@ -14,7 +15,11 @@
 </script>
 
 <div>
-	Workload scaled {data.appScaled.direction} to {data.appScaled.newSize} replicas.
+	Application <strong>{data.resourceName}</strong> scaled {data.appScaled.direction} to {data
+		.appScaled.newSize} instances in <Tag
+		size="small"
+		variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
+	>
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

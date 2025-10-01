@@ -23,7 +23,7 @@
 	>.
 	<ReadMore header="Updated fields">
 		<dl>
-			{#each data.valkeyData.updatedFields as field (field)}
+			{#each data.valkeyUpdated.updatedFields as field (field)}
 				<dt>
 					<code>{field.field}</code>:
 				</dt>
