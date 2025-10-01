@@ -47,18 +47,15 @@
 	} {
 		if (!data || !data.samples.length) return { data: [], series: [] };
 
-		// Use SvelteMap for reactivity
 		const mergedDataMap = new SvelteMap<number, MTTFixChartData>();
 
 		for (const sample of data.samples) {
 			const severity = sample.severity.toUpperCase() as UppercaseSeverity;
 			if (!UPPERCASE_SEVERITIES.includes(severity)) continue;
 
-			// normalize to start of day
 			const dateKey = new SvelteDate(sample.date).setHours(0, 0, 0, 0);
 			const entry = mergedDataMap.get(dateKey) ?? { date: new Date(dateKey) };
 
-			// assign values (null allowed safely now)
 			entry[severity] = sample.days ?? 0;
 			entry[`fixedCount_${severity}`] = sample.fixedCount ?? 0;
 			entry[`lastFixedAt_${severity}`] = sample.lastFixedAt;
@@ -79,6 +76,11 @@
 
 	function formatLastFixedAt(value: unknown): string {
 		return value instanceof Date ? format(value, 'dd/MM/yyyy') : '-';
+	}
+
+	function formatDays(value: number | undefined): string {
+		if (value == null) return '0';
+		return Number.isInteger(value) ? value.toString() : value.toFixed(1);
 	}
 </script>
 
@@ -111,13 +113,14 @@
 							{@const seriesItem = series.find((s) => s.key === severityKey)}
 							{@const valueAccessor = accessor(severityKey)}
 							<Tooltip.Item label={severityKey} color={seriesItem?.color}>
-								{valueAccessor(data)?.toFixed(1) ?? 0} days
+								{formatDays(valueAccessor(data))} days
 							</Tooltip.Item>
 							<Tooltip.Item label="Fixed count">
 								{data[`fixedCount_${severityKey}`] ?? 0}
 							</Tooltip.Item>
+							{@const lastFixedAt = data[`lastFixedAt_${severityKey}`]}
 							<Tooltip.Item label="Last fixed at">
-								{formatLastFixedAt(data[`lastFixedAt_${severityKey}`])}
+								{formatLastFixedAt(lastFixedAt)}
 							</Tooltip.Item>
 						{/each}
 					</Tooltip.List>
