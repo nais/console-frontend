@@ -1,0 +1,51 @@
+query JobIssues(
+	$team: Slug!
+	$env: String!
+	$job: String!
+	$filter: IssueFilter
+	$orderBy: IssueOrder
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		slug
+		environment(name: $env) {
+			id
+			job(name: $job) {
+				id
+				name
+				issues(
+					first: $first
+					last: $last
+					filter: $filter
+					orderBy: $orderBy
+					before: $before
+					after: $after
+				) @paginate(mode: SinglePage) {
+					pageInfo {
+						startCursor
+						endCursor
+						hasNextPage
+						hasPreviousPage
+						pageStart
+						pageEnd
+						totalCount
+					}
+					nodes {
+						id
+						__typename
+
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+						...IssueFragment
+					}
+				}
+			}
+		}
+	}
+}
