@@ -16,6 +16,7 @@
 	import type { Component } from 'svelte';
 
 	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
+	import KubernetesIcon from '$lib/icons/KubernetesIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
@@ -269,7 +270,7 @@
 	const icons: { [key: string]: Component } = {
 		ApplicationDeletedActivityLogEntry: PackageIcon,
 		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
-		ClusterAuditActivityLogEntry: NotePencilIcon,
+		ClusterAuditActivityLogEntry: KubernetesIcon,
 		DeploymentActivityLogEntry: RocketIcon,
 		JobTriggeredActivityLogEntry: PlayIcon,
 		OpenSearchCreatedActivityLogEntry: OpenSearchIcon,
