@@ -1,4 +1,4 @@
-import { load_OpenSearch, OpenSearchOrderField } from '$houdini';
+import { load_OpenSearch, OpenSearchOrderField, OrderDirection } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
@@ -10,9 +10,17 @@ export async function load(event) {
 	const { url } = event;
 	const parent = await event.parent();
 
-	const userInfoData = get(parent.UserInfo);
+	const userInfoData = get(parent.UserInfo) as {
+		data?: {
+			features?: {
+				openSearch?: {
+					enabled?: boolean;
+				};
+			};
+		};
+	};
 
-	if (userInfoData.data?.features.openSearch.enabled === false) {
+	if (userInfoData.data?.features?.openSearch?.enabled === false) {
 		error(404, 'OpenSearch not enabled');
 	}
 
@@ -25,8 +33,8 @@ export async function load(event) {
 			variables: {
 				team: event.params.team,
 				orderBy: {
-					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url)
+					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.STATE, event.url),
+					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows }),
 				from: startOfMonth(subMonths(new Date(), 12)),
