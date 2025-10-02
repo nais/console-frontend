@@ -2,6 +2,8 @@
 	import { page } from '$app/state';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
+	import List from '$lib/components/list/List.svelte';
 	import SummaryCard from '$lib/components/SummaryCard.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
@@ -95,24 +97,33 @@
 	</div>
 
 	<div class="grid">
-		<dl>
-			<dt>Instance status:</dt>
-			<dd>
-				{#if instance.state === 'RUNNABLE'}
-					<CheckmarkIcon style="color: var(--ax-text-success-subtle); font-size: 1.5rem" />
-				{:else}
-					<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink
-						href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
-					>
-						Google Cloud Console
-					</ExternalLink>
-				{/if}
-			</dd>
-			<dt>Version:</dt>
-			<dd>{instance.version}</dd>
-			<dt>Tier:</dt>
-			<dd>{instance.tier}</dd>
-		</dl>
+		<div>
+			<dl>
+				<dt>Instance status:</dt>
+				<dd>
+					{#if instance.state === 'RUNNABLE'}
+						<CheckmarkIcon style="color: var(--ax-text-success-subtle); font-size: 1.5rem" />
+					{:else}
+						<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink
+							href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
+						>
+							Google Cloud Console
+						</ExternalLink>
+					{/if}
+				</dd>
+				<dt>Version:</dt>
+				<dd>{instance.version}</dd>
+				<dt>Tier:</dt>
+				<dd>{instance.tier}</dd>
+			</dl>
+
+			<Heading level="3">Issues</Heading>
+			<List>
+				{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
+					<IssueListItem item={edge.node} />
+				{/each}
+			</List>
+		</div>
 		<div>
 			<Heading level="2" size="small">Owner</Heading>
 			{#if instance.workload}

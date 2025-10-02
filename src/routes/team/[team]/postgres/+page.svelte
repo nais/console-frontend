@@ -3,7 +3,7 @@
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
-	import { SqlInstanceOrderField } from '$houdini';
+	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
@@ -15,7 +15,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import prettyBytes from 'pretty-bytes';
@@ -48,7 +48,8 @@
 				{#snippet menu()}
 					<OrderByMenu
 						orderField={SqlInstanceOrderField}
-						defaultOrderField={SqlInstanceOrderField.NAME}
+						defaultOrderField={SqlInstanceOrderField.STATE}
+						defaultOrderDirection={OrderDirection.DESC}
 					/>
 				{/snippet}
 				{#each si.nodes as instance (instance.id)}
@@ -103,6 +104,35 @@
 							{/if}
 
 							<div>Version: <code>{instance.version}</code></div>
+							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
+								{@const criticalCount = instance.issues?.edges.filter(
+									(e) => e.node.severity === 'CRITICAL'
+								).length}
+								{@const warningCount = instance.issues?.edges.filter(
+									(e) => e.node.severity === 'WARNING'
+								).length}
+								{@const todoCount = instance.issues?.edges.filter(
+									(e) => e.node.severity === 'TODO'
+								).length}
+
+								<div class="issues-container">
+									{#if criticalCount ?? 0 > 0}
+										<Tag variant="error" size="xsmall"
+											>{criticalCount ?? 0} critical issue{(criticalCount ?? 0) > 1 ? 's' : ''}</Tag
+										>
+									{/if}
+									{#if warningCount ?? 0 > 0}
+										<Tag variant="warning" size="xsmall"
+											>{warningCount ?? 0} warning{(warningCount ?? 0) > 1 ? 's' : ''}</Tag
+										>
+									{/if}
+									{#if todoCount ?? 0 > 0}
+										<Tag variant="info" size="xsmall"
+											>{todoCount ?? 0} todo{(todoCount ?? 0) > 1 ? 's' : ''}</Tag
+										>
+									{/if}
+								</div>
+							{/if}
 						</div>
 					</ListItem>
 				{/each}

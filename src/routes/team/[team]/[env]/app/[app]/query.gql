@@ -28,6 +28,14 @@ query App(
 						lastUpdated
 					}
 				}
+				issues {
+					edges {
+						node {
+							id
+							...IssueFragment
+						}
+					}
+				}
 				teamEnvironment {
 					environment {
 						name

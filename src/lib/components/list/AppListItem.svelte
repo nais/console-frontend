@@ -68,27 +68,6 @@
 		{/snippet}
 	</IconLabel>
 
-	{#if app.issues?.pageInfo.totalCount > 0}
-		{@const criticalCount = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
-		{@const warningCount = app.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
-		{@const todoCount = app.issues.edges.filter((e) => e.node.severity === 'TODO').length}
-
-		<div class="issues-container">
-			{#if criticalCount > 0}
-				<Tag variant="error" size="xsmall"
-					>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
-				>
-			{/if}
-			{#if warningCount > 0}
-				<Tag variant="warning" size="xsmall"
-					>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
-				>
-			{/if}
-			{#if todoCount > 0}
-				<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
-			{/if}
-		</div>
-	{/if}
 	<div class="right">
 		{#if app.deployments.nodes.length > 0}
 			{@const timestamp = app.deployments.nodes[0].createdAt}
@@ -112,6 +91,27 @@
 					.instances.pageInfo.totalCount} running
 			{/if}
 		</Detail>
+		{#if app.issues?.pageInfo.totalCount > 0}
+			{@const criticalCount = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
+			{@const warningCount = app.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
+			{@const todoCount = app.issues.edges.filter((e) => e.node.severity === 'TODO').length}
+
+			<div class="issues-container">
+				{#if criticalCount > 0}
+					<Tag variant="error" size="xsmall"
+						>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
+					>
+				{/if}
+				{#if warningCount > 0}
+					<Tag variant="warning" size="xsmall"
+						>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
+					>
+				{/if}
+				{#if todoCount > 0}
+					<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </ListItem>
 
@@ -125,9 +125,9 @@
 
 	.issues-container {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		gap: var(--ax-space-16);
 		width: 100%;
-		align-items: center;
+		align-items: end;
 	}
 </style>

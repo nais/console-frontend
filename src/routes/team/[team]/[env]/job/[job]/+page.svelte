@@ -3,6 +3,8 @@
 	import { graphql } from '$houdini';
 	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
+	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
+	import List from '$lib/components/list/List.svelte';
 	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
 	import Persistence from '$lib/components/persistence/Persistence.svelte';
 	import Secrets from '$lib/components/Secrets.svelte';
@@ -88,7 +90,14 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-
+				<div>
+					<Heading level="3" spacing>Issues</Heading>
+					<List>
+						{#each $Job.data.team.environment.job.issues.edges as edge (edge.node.id)}
+							<IssueListItem item={edge.node} />
+						{/each}
+					</List>
+				</div>
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
 						<Heading level="2" size="medium">Runs</Heading>

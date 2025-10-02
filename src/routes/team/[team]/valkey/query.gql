@@ -45,6 +45,16 @@ query Valkeys(
 						name
 					}
 				}
+				issues {
+					pageInfo {
+						totalCount
+					}
+					edges {
+						node {
+							severity
+						}
+					}
+				}
 				workload {
 					__typename
 					name

@@ -75,27 +75,7 @@
 			</TooltipAlignHack>
 		{/snippet}
 	</IconLabel>
-	{#if job.issues?.pageInfo.totalCount > 0}
-		{@const criticalCount = job.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
-		{@const warningCount = job.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
-		{@const todoCount = job.issues.edges.filter((e) => e.node.severity === 'TODO').length}
 
-		<div class="issues-container">
-			{#if criticalCount > 0}
-				<Tag variant="error" size="xsmall"
-					>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
-				>
-			{/if}
-			{#if warningCount > 0}
-				<Tag variant="warning" size="xsmall"
-					>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
-				>
-			{/if}
-			{#if todoCount > 0}
-				<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
-			{/if}
-		</div>
-	{/if}
 	<div class="right">
 		{#if job.deployments.nodes.length > 0}
 			{@const timestamp = job.deployments.nodes[0].createdAt}
@@ -152,6 +132,27 @@
 		{:else}
 			<Detail>No runs</Detail>
 		{/if}
+		{#if job.issues?.pageInfo.totalCount > 0}
+			{@const criticalCount = job.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
+			{@const warningCount = job.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
+			{@const todoCount = job.issues.edges.filter((e) => e.node.severity === 'TODO').length}
+
+			<div class="issues-container">
+				{#if criticalCount > 0}
+					<Tag variant="error" size="xsmall"
+						>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
+					>
+				{/if}
+				{#if warningCount > 0}
+					<Tag variant="warning" size="xsmall"
+						>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
+					>
+				{/if}
+				{#if todoCount > 0}
+					<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </ListItem>
 
@@ -161,5 +162,12 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
+	}
+	.issues-container {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		width: 100%;
+		align-items: end;
 	}
 </style>

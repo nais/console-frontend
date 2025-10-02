@@ -75,6 +75,7 @@ export const menuItems = ({
 				menuItem('Vulnerability Report', 'vulnerability-report'),
 				menuItem('Deployments', 'deploys'),
 				menuItem('Cost', 'cost'),
+				menuItem('Issues', 'issues'),
 				workloadType === 'app' && menuItem('Utilization', 'utilization'),
 				workloadType === 'app' && menuItem('Ingresses', 'ingresses'),
 				menuItem('Logs', 'logs')

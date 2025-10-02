@@ -11,6 +11,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 						name
 					}
 				}
+
 				cascadingDelete
 				healthy
 				connectionName
@@ -26,6 +27,14 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 					}
 					team {
 						slug
+					}
+				}
+				issues {
+					edges {
+						node {
+							id
+							...IssueFragment
+						}
 					}
 				}
 				state

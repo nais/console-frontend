@@ -21,6 +21,14 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 						lastUpdated
 					}
 				}
+				issues {
+					edges {
+						node {
+							id
+							...IssueFragment
+						}
+					}
+				}
 				schedule {
 					expression
 					timeZone

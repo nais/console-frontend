@@ -25,6 +25,15 @@ query OpenSearchInstance(
 					}
 				}
 
+				issues {
+					edges {
+						node {
+							id
+							...IssueFragment
+						}
+					}
+				}
+
 				maintenance {
 					window {
 						dayOfWeek
