@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { IssueOrderField, Severity } from '$houdini';
-	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
@@ -144,22 +143,12 @@
 	{:else}
 		<div>No issues found</div>
 	{/if}
-
-	<div>
-		<HealthSummary
-			critical={$TeamIssues.data?.team.critical.pageInfo.totalCount}
-			warning={$TeamIssues.data?.team.warnings.pageInfo.totalCount}
-			todo={$TeamIssues.data?.team.todos.pageInfo.totalCount}
-			teamSlug={$TeamIssues.data?.team.slug}
-			loading={$TeamIssues.fetching}
-		/>
-	</div>
 </div>
 
 <style>
 	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
+		display: flex;
+		flex-direction: column;
 		gap: var(--spacing-layout);
 	}
 </style>

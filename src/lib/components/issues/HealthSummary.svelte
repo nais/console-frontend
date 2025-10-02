@@ -1,50 +1,94 @@
 <script lang="ts">
+	import { graphql } from '$houdini';
 	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import IssueListItem from '../list/IssueListItem.svelte';
+	import List from '../list/List.svelte';
 
 	interface Props {
-		todo: number | undefined;
-		warning: number | undefined;
-		critical: number | undefined;
-		teamSlug: string | undefined;
-		loading: boolean;
+		teamSlug: string;
 	}
 
-	let { todo, warning, critical, teamSlug, loading }: Props = $props();
+	let { teamSlug }: Props = $props();
+
+	const teamHealth = graphql(`
+		query TeamHealth($teamSlug: Slug!) {
+			team(slug: $teamSlug) {
+				issues {
+					edges {
+						node {
+							id
+							severity
+							...IssueFragment
+						}
+					}
+				}
+			}
+		}
+	`);
+
+	$effect.pre(() => {
+		teamHealth.fetch({ variables: { teamSlug } });
+	});
+
+	let criticalIssues = $derived(
+		$teamHealth.data?.team.issues.edges.filter((node) => node.node.severity === 'CRITICAL')
+	);
+	let warnings = $derived(
+		$teamHealth.data?.team.issues.edges.filter((node) => node.node.severity === 'WARNING')
+	);
+	let todos = $derived(
+		$teamHealth.data?.team.issues.edges.filter((node) => node.node.severity === 'TODO')
+	);
 </script>
 
 <div class="card issues">
 	<Heading level="2" size="small"><a href="/team/{teamSlug}/issues">Health</a></Heading>
-	{#if !loading}
-		{#if (critical ?? 0) > 0}
+	{#if !$teamHealth.fetching}
+		{#if (criticalIssues?.length ?? 0) > 0}
 			<div class="summary critical">
 				<CircleFillIcon />
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{(critical ?? 0) > 0 ? critical : 'No '}
-					critical issue{(critical ?? 0) !== 1 ? 's' : ''}</span
+					>{(criticalIssues?.length ?? 0) > 0 ? criticalIssues?.length : 'No '}
+					critical issue{(criticalIssues?.length ?? 0) !== 1 ? 's' : ''}</span
 				>
 			</div>
+			<List>
+				{#each criticalIssues ?? [] as issue (issue.node.id)}
+					<IssueListItem item={issue.node} />
+				{/each}
+			</List>
 		{/if}
-		{#if (warning ?? 0) > 0}
+		{#if (warnings?.length ?? 0) > 0}
 			<div class="summary warning">
 				<CircleFillIcon />
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{(warning ?? 0) > 0 ? warning : 'No'}
-					warning{(warning ?? 0) !== 1 ? 's' : ''}</span
+					>{(warnings?.length ?? 0) > 0 ? warnings?.length : 'No'}
+					warning{(warnings?.length ?? 0) !== 1 ? 's' : ''}</span
 				>
 			</div>
+			<!-- <List>
+				{#each warnings ?? [] as warning (warning.node.id)}
+					<IssueListItem item={warning.node} />
+				{/each}
+			</List> -->
 		{/if}
-		{#if (todo ?? 0) > 0}
+		{#if (todos?.length ?? 0) > 0}
 			<div class="summary todo">
 				<CircleFillIcon />
 
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{(todo ?? 0) > 0 ? todo : 'No'}
-					todo{(todo ?? 0) !== 1 ? 's' : ''}</span
+					>{(todos?.length ?? 0) > 0 ? todos?.length : 'No'}
+					todo{(todos?.length ?? 0) !== 1 ? 's' : ''}</span
 				>
 			</div>
+			<!-- <List>
+				{#each todos ?? [] as todo (todo.node.id)}
+					<IssueListItem item={todo.node} />
+				{/each}
+			</List> -->
 		{/if}
-		{#if (critical ?? 0) == 0 && (warning ?? 0) == 0 && (todo ?? 0) == 0}
+		{#if (criticalIssues?.length ?? 0) == 0 && (warnings?.length ?? 0) == 0 && (todos?.length ?? 0) == 0}
 			<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold">
 				No issues found
 			</span>

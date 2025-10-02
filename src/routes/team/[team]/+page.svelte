@@ -46,13 +46,7 @@
 		</div>
 
 		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
-			<HealthSummary
-				critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
-				warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
-				todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
-				{teamSlug}
-				loading={$TeamOverview.fetching}
-			/>
+			<HealthSummary {teamSlug} />
 			<TeamOverviewActivityLog {teamSlug} />
 		</div>
 	</div>
@@ -70,7 +64,6 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
 	}
 	.left {
 		display: flex;
