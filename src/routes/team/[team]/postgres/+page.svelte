@@ -3,7 +3,7 @@
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 
-	import { SqlInstanceOrderField } from '$houdini';
+	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
@@ -48,7 +48,8 @@
 				{#snippet menu()}
 					<OrderByMenu
 						orderField={SqlInstanceOrderField}
-						defaultOrderField={SqlInstanceOrderField.NAME}
+						defaultOrderField={SqlInstanceOrderField.STATE}
+						defaultOrderDirection={OrderDirection.DESC}
 					/>
 				{/snippet}
 				{#each si.nodes as instance (instance.id)}
