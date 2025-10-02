@@ -3,20 +3,29 @@
 	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import {
 		CaretUpDownIcon,
+		CogIcon,
+		ExclamationmarkTriangleIcon,
+		FolderMinusIcon,
+		FolderPlusIcon,
+		KeyHorizontalIcon,
+		KeyVerticalIcon,
 		LayerMinusIcon,
 		LayersPlusIcon,
 		MinusCircleIcon,
 		NotePencilIcon,
-		PackageIcon,
+		PersonMinusIcon,
 		PersonPencilIcon,
+		PersonPlusIcon,
 		PlayIcon,
 		PlusCircleIcon,
-		RocketIcon
+		RocketIcon,
+		RotateRightIcon,
+		TerminalIcon,
+		TrashIcon,
+		WrenchIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
-	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
-	import KubernetesIcon from '$lib/icons/KubernetesIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
@@ -104,7 +113,6 @@
 					edges {
 						node {
 							id
-							__typename
 							actor
 							message
 							createdAt
@@ -113,18 +121,24 @@
 							environmentName
 							teamSlug
 							... on ApplicationScaledActivityLogEntry {
+								__typename
+
 								appScaled: data {
 									newSize
 									direction
 								}
 							}
 							... on ClusterAuditActivityLogEntry {
+								__typename
+
 								clusterAuditData: data {
 									action
 									resourceKind
 								}
 							}
 							... on DeploymentActivityLogEntry {
+								__typename
+
 								deploymentData: data {
 									triggerURL
 								}
@@ -136,6 +150,8 @@
 								__typename
 							}
 							... on OpenSearchUpdatedActivityLogEntry {
+								__typename
+
 								opensearchData: data {
 									updatedFields {
 										field
@@ -145,56 +161,64 @@
 								}
 							}
 							... on RepositoryAddedActivityLogEntry {
-								id
+								__typename
 							}
 							... on RepositoryRemovedActivityLogEntry {
-								id
+								__typename
 							}
 							... on SecretCreatedActivityLogEntry {
-								id
+								__typename
 							}
 							... on SecretDeletedActivityLogEntry {
-								id
+								__typename
 							}
 							... on SecretValueAddedActivityLogEntry {
+								__typename
+
 								secretValueAdded: data {
 									valueName
 								}
 							}
 							... on SecretValueRemovedActivityLogEntry {
+								__typename
+
 								secretValueRemoved: data {
 									valueName
 								}
 							}
 							... on SecretValueUpdatedActivityLogEntry {
+								__typename
+
 								secretValueUpdated: data {
 									valueName
 								}
 							}
 							... on TeamMemberAddedActivityLogEntry {
+								__typename
+
 								teamMemberAdded: data {
 									role
 									userEmail
 								}
 							}
 							... on TeamMemberRemovedActivityLogEntry {
+								__typename
+
 								teamMemberRemoved: data {
 									userEmail
 								}
 							}
 							... on TeamMemberSetRoleActivityLogEntry {
+								__typename
+
 								teamMemberSetRole: data {
 									role
 									userEmail
 								}
 							}
-							... on ValkeyCreatedActivityLogEntry {
-								__typename
-							}
-							... on ValkeyDeletedActivityLogEntry {
-								__typename
-							}
 							... on ValkeyUpdatedActivityLogEntry {
+								__typename
+
 								valkeyUpdated: data {
 									updatedFields {
 										field
@@ -202,6 +226,12 @@
 										oldValue
 									}
 								}
+							}
+							... on ValkeyCreatedActivityLogEntry {
+								__typename
+							}
+							... on ValkeyDeletedActivityLogEntry {
+								__typename
 							}
 						}
 					}
@@ -211,7 +241,7 @@
 	`);
 
 	$effect.pre(() => {
-		activityLogQuery.fetch({ variables: { teamSlug, first: 100, filter } });
+		activityLogQuery.fetch({ variables: { teamSlug, first: 10, filter } });
 	});
 
 	type Kind = string;
@@ -268,32 +298,56 @@
 	}
 
 	const icons: { [key: string]: Component } = {
-		ApplicationDeletedActivityLogEntry: PackageIcon,
-		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
-		ClusterAuditActivityLogEntry: KubernetesIcon,
 		DeploymentActivityLogEntry: RocketIcon,
+		ApplicationRestartedActivityLogEntry: RotateRightIcon,
+		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
 		JobTriggeredActivityLogEntry: PlayIcon,
-		OpenSearchCreatedActivityLogEntry: OpenSearchIcon,
-		OpenSearchDeletedActivityLogEntry: OpenSearchIcon,
-		OpenSearchUpdatedActivityLogEntry: OpenSearchIcon,
-		RepositoryAddedActivityLogEntry: GitHubIcon,
-		RepositoryRemovedActivityLogEntry: GitHubIcon,
+
+		ApplicationDeletedActivityLogEntry: TrashIcon,
+		JobDeletedActivityLogEntry: TrashIcon,
+
+		RepositoryAddedActivityLogEntry: FolderPlusIcon,
+		RepositoryRemovedActivityLogEntry: FolderMinusIcon,
+
 		SecretCreatedActivityLogEntry: PlusCircleIcon,
 		SecretDeletedActivityLogEntry: MinusCircleIcon,
 		SecretValueAddedActivityLogEntry: LayersPlusIcon,
 		SecretValueRemovedActivityLogEntry: LayerMinusIcon,
 		SecretValueUpdatedActivityLogEntry: NotePencilIcon,
-		TeamMemberAddedActivityLogEntry: PlusCircleIcon,
-		TeamMemberRemovedActivityLogEntry: MinusCircleIcon,
+
+		TeamMemberAddedActivityLogEntry: PersonPlusIcon,
+		TeamMemberRemovedActivityLogEntry: PersonMinusIcon,
 		TeamMemberSetRoleActivityLogEntry: PersonPencilIcon,
+		TeamCreatedActivityLogEntry: PlusCircleIcon,
+		TeamUpdatedActivityLogEntry: NotePencilIcon,
+		TeamEnvironmentUpdatedActivityLogEntry: NotePencilIcon,
+
+		UnleashInstanceCreatedActivityLogEntry: KeyHorizontalIcon,
+		UnleashInstanceUpdatedActivityLogEntry: KeyVerticalIcon,
+
+		ServiceMaintenanceActivityLogEntry: WrenchIcon,
+
+		OpenSearchCreatedActivityLogEntry: OpenSearchIcon,
+		OpenSearchDeletedActivityLogEntry: OpenSearchIcon,
+		OpenSearchUpdatedActivityLogEntry: OpenSearchIcon,
+
 		ValkeyCreatedActivityLogEntry: ValkeyIcon,
 		ValkeyDeletedActivityLogEntry: ValkeyIcon,
-		ValkeyUpdatedActivityLogEntry: ValkeyIcon
+		ValkeyUpdatedActivityLogEntry: ValkeyIcon,
+		ValkeyMaintenanceStartedActivityLogEntry: WrenchIcon,
+
+		VulnerabilityUpdatedActivityLogEntry: ExclamationmarkTriangleIcon,
+
+		ClusterAuditActivityLogEntry: TerminalIcon,
+
+		TeamDeployKeyUpdatedActivityLogEntry: CogIcon,
+		ReconcilerConfiguredActivityLogEntry: CogIcon,
+		ReconcilerEnabledActivityLogEntry: CogIcon,
+		ReconcilerDisabledActivityLogEntry: CogIcon
 	};
 
-	// ---- Styling helper: returnerer hele class-stringen for ikondiven
 	function iconClass(entry: { __typename: string; appScaled?: { direction?: string } }): string {
-		const t = entry.__typename as string;
+		const t = entry.__typename;
 
 		// Scale
 		if (t === 'ApplicationScaledActivityLogEntry') {
@@ -306,12 +360,18 @@
 		// Cluster audit
 		if (t === 'ClusterAuditActivityLogEntry') return 'icon audit';
 
-		// Generiske typer
-		if (t.includes('Added') || t.includes('Created')) return 'icon added';
-		if (t.includes('Removed') || t.includes('Deleted')) return 'icon deleted';
-		if (t.includes('Updated') || t.includes('SetRole')) return 'icon updated';
+		// Vulnerabilities / Reconciler
+		if (t.startsWith('Vulnerability')) return 'icon vulnerability';
+		if (t.startsWith('Reconciler')) return 'icon reconciler';
+
+		// Generic patterns (now match "...ActivityLogEntry")
+		if (/(Added|Created)ActivityLogEntry$/.test(t)) return 'icon added';
+		if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return 'icon deleted';
+		if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return 'icon updated';
+		if (/Maintenance/.test(t)) return 'icon maintenance';
+
+		// Deploy / restart
 		if (t.includes('Deployment') || t.includes('Restarted')) return 'icon deployment';
-		if (t.includes('Maintenance')) return 'icon maintenance';
 
 		return 'icon neutral';
 	}
@@ -329,13 +389,9 @@
 			{@const TextComponent = textComponent(entry.__typename)}
 			<div class="item">
 				<div class={iconClass(entry)}>
-					<Icon width="75%" height="75%" />
+					<Icon size="1em" />
 				</div>
 				<div class="content">
-					<!-- TODO: remove-->
-					{#if !['ApplicationDeletedActivityLogEntry', 'ApplicationScaledActivityLogEntry', 'OpenSearchCreatedActivityLogEntry', 'OpenSearchDeletedActivityLogEntry', 'OpenSearchUpdatedActivityLogEntry', 'RepositoryAddedActivityLogEntry', 'SecretValueAddedActivityLogEntry', 'SecretValueRemovedActivityLogEntry', 'ValkeyDeletedActivityLogEntry', 'ValkeyCreatedActivityLogEntry', 'ValkeyUpdatedActivityLogEntry', 'DeploymentActivityLogEntry'].includes(entry.__typename)}
-						{entry.__typename}
-					{/if}
 					<TextComponent data={entry} />
 				</div>
 			</div>
@@ -365,7 +421,7 @@
 		position: relative;
 		padding: var(--ax-space-4) 0;
 		border-bottom: 1px solid var(--ax-border-subtle);
-		gap: var(--ax-space-12); /* mer luft mellom ikon og tekst */
+		gap: var(--ax-space-12);
 		align-items: flex-start;
 	}
 
@@ -373,7 +429,6 @@
 		border-bottom: none;
 	}
 
-	/* vertikal “timeline” */
 	.item::before {
 		content: '';
 		position: absolute;
@@ -389,7 +444,6 @@
 		display: none;
 	}
 
-	/* Base for ikon */
 	.icon {
 		position: relative;
 		z-index: 1;
@@ -405,7 +459,7 @@
 			0 1px 2px rgba(0, 0, 0, 0.05),
 			0 2px 6px rgba(0, 0, 0, 0.08);
 		color: white;
-		background: linear-gradient(145deg, var(--ax-bg-default), var(--ax-bg-raised)); /* fallback */
+		background: linear-gradient(145deg, var(--ax-bg-default), var(--ax-bg-raised));
 		transition:
 			transform 0.15s ease-in-out,
 			box-shadow 0.15s ease-in-out;
@@ -418,24 +472,37 @@
 			0 4px 10px rgba(0, 0, 0, 0.12);
 	}
 
-	/* Varianter */
-	/* Scale */
 	.icon.scale-up {
-		background: linear-gradient(145deg, #27ae60, #1e874b); /* grønn */
+		background: linear-gradient(145deg, #27ae60, #1e874b);
 	}
 	.icon.scale-down {
-		background: linear-gradient(145deg, #e74c3c, #c0392b); /* rød */
+		background: linear-gradient(145deg, #e74c3c, #c0392b);
 	}
 	.icon.scale-neutral {
-		background: linear-gradient(145deg, #95a5a6, #7f8c8d); /* grå */
+		background: linear-gradient(145deg, #95a5a6, #7f8c8d);
 	}
 
-	/* Cluster audit */
 	.icon.audit {
-		background: linear-gradient(145deg, #16a085, #0e7668); /* teal */
+		background: linear-gradient(145deg, #16a085, #0e7668);
 	}
-
-	/* Andre hendelser */
+	.icon.audit {
+		background: linear-gradient(145deg, #16a085, #0e7668);
+	} /* default teal */
+	.icon.audit.audit-read {
+		background: linear-gradient(145deg, #3498db, #2c80b4);
+	} /* blue = read */
+	.icon.audit.audit-create {
+		background: linear-gradient(145deg, #27ae60, #1e874b);
+	} /* green = create */
+	.icon.audit.audit-update {
+		background: linear-gradient(145deg, #8e44ad, #6d3390);
+	} /* purple = change */
+	.icon.audit.audit-delete {
+		background: linear-gradient(145deg, #e74c3c, #c0392b);
+	} /* red = delete */
+	.icon.audit.audit-forbidden {
+		background: linear-gradient(145deg, #e67e22, #ca6b16);
+	} /* orange = forbidden */
 	.icon.added {
 		background: linear-gradient(145deg, #3bb273, #2d995f);
 	}
@@ -451,6 +518,16 @@
 	.icon.maintenance {
 		background: linear-gradient(145deg, #e67e22, #ca6b16);
 	}
+
+	/* Nye klasser */
+	.icon.vulnerability {
+		background: linear-gradient(145deg, #f1c40f, #d4ac0d);
+		color: black;
+	}
+	.icon.reconciler {
+		background: linear-gradient(145deg, #34495e, #2c3e50);
+	}
+
 	.icon.neutral {
 		background: linear-gradient(145deg, var(--ax-bg-default), var(--ax-bg-raised));
 		color: var(--ax-text-neutral-strong);

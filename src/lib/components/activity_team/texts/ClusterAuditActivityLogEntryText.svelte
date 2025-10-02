@@ -16,7 +16,6 @@
 </script>
 
 <div>
-	Cluster audit: <br />
 	{capitalizeFirstLetter(data.message.toLowerCase())}
 	in
 	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag>
