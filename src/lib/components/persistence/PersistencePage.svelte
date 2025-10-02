@@ -57,6 +57,17 @@
 					readonly name: string;
 				};
 			};
+			readonly issues?: {
+				readonly pageInfo: {
+					readonly totalCount: number;
+				};
+				readonly edges: {
+					readonly node: {
+						readonly severity: 'CRITICAL' | 'WARNING' | 'TODO' | string;
+					};
+				}[];
+			} | null;
+
 			readonly team: {
 				readonly slug: string;
 			};
@@ -123,6 +134,35 @@
 								>{instance.teamEnvironment.environment.name}</Tag
 							>
 						</div>
+						{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
+							{@const criticalCount = instance.issues?.edges.filter(
+								(e) => e.node.severity === 'CRITICAL'
+							).length}
+							{@const warningCount = instance.issues?.edges.filter(
+								(e) => e.node.severity === 'WARNING'
+							).length}
+							{@const todoCount = instance.issues?.edges.filter(
+								(e) => e.node.severity === 'TODO'
+							).length}
+
+							<div class="issues-container">
+								{#if criticalCount ?? 0 > 0}
+									<Tag variant="error" size="xsmall"
+										>{criticalCount ?? 0} critical issue{(criticalCount ?? 0) > 1 ? 's' : ''}</Tag
+									>
+								{/if}
+								{#if warningCount ?? 0 > 0}
+									<Tag variant="warning" size="xsmall"
+										>{warningCount ?? 0} warning{(warningCount ?? 0) > 1 ? 's' : ''}</Tag
+									>
+								{/if}
+								{#if todoCount ?? 0 > 0}
+									<Tag variant="info" size="xsmall"
+										>{todoCount ?? 0} todo{(todoCount ?? 0) > 1 ? 's' : ''}</Tag
+									>
+								{/if}
+							</div>
+						{/if}
 						{#if instance.workload}
 							<div class="right">
 								Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
@@ -196,5 +236,12 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: var(--spacing-layout);
+	}
+	.issues-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-16);
+		width: 100%;
+		align-items: center;
 	}
 </style>

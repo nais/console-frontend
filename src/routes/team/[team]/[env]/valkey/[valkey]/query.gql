@@ -16,6 +16,14 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 						name
 					}
 				}
+				issues {
+					edges {
+						node {
+							id
+							...IssueFragment
+						}
+					}
+				}
 				maintenance {
 					window {
 						dayOfWeek

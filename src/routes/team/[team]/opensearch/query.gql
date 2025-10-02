@@ -46,6 +46,16 @@ query OpenSearch(
 				team {
 					slug
 				}
+				issues {
+					pageInfo {
+						totalCount
+					}
+					edges {
+						node {
+							severity
+						}
+					}
+				}
 				workload {
 					__typename
 					name

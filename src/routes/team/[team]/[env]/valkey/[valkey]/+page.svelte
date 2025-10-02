@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, ValkeyAccessOrderField } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
@@ -178,6 +179,14 @@
 						}
 					}}
 				/>
+			</div>
+			<div class="spacing">
+				<Heading level="3">Issues</Heading>
+				<List>
+					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
+						<IssueListItem item={edge.node} />
+					{/each}
+				</List>
 			</div>
 			<div>
 				{#if maintenanceError}

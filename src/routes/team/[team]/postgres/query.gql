@@ -79,6 +79,17 @@ query SqlInstances(
 						utilization
 					}
 				}
+				issues {
+					pageInfo {
+						totalCount
+					}
+					edges {
+						node {
+							id
+							severity
+						}
+					}
+				}
 
 				workload {
 					__typename
