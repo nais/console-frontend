@@ -87,77 +87,46 @@ export const icons: { [typename: string]: Component } = {
 	ReconcilerDisabledActivityLogEntry: CogIcon
 };
 
-/**
- * COLOR/VARIANT (what operation happened)
- * This returns the full class string for the icon “bubble”.
- * It expects you have the shared CSS loaded (activity-log.css),
- * which defines .activity-icon and the --variant modifiers.
- *
- * Examples returned:
- *  - "activity-icon activity-icon--added"
- *  - "activity-icon activity-icon--audit activity-icon--audit-delete"
- */
-export function activityIconClass(
-	typename: string,
-	opts: { direction?: string | null; auditAction?: string | null } = {}
+export function activityIconClassFromEntry(
+	entry: { __typename: string; appScaled?: { direction?: string } },
+	auditAction?: string // valgfri: ClusterAudit
 ): string {
-	const t = typename ?? '';
-	const dir = opts.direction?.toLowerCase() ?? null;
-	const action = opts.auditAction?.toLowerCase() ?? null;
+	const base = 'activity-icon';
+	const t = entry.__typename ?? '';
 
-	// Scaling (up/down/neutral)
+	// Scale
 	if (t.includes('ApplicationScaled')) {
-		if (dir === 'up') return 'activity-icon activity-icon--scale-up';
-		if (dir === 'down') return 'activity-icon activity-icon--scale-down';
-		return 'activity-icon activity-icon--scale-neutral';
+		const dir = entry.appScaled?.direction?.toUpperCase();
+		if (dir === 'UP') return `${base} scale-up`;
+		if (dir === 'DOWN') return `${base} scale-down`;
+		return `${base} scale-neutral`;
 	}
 
-	// Cluster audit (kubectl) — color by action if available
+	// Cluster audit — farg etter action om mulig
 	if (t.includes('ClusterAudit')) {
-		if (action) {
-			if (/forbidden|denied|unauthori[sz]ed/.test(action))
-				return 'activity-icon activity-icon--audit activity-icon--audit-forbidden';
-			if (/^(get|list|watch)$|logs|describe|top/.test(action))
-				return 'activity-icon activity-icon--audit activity-icon--audit-read';
-			if (/delete(collection)?/.test(action))
-				return 'activity-icon activity-icon--audit activity-icon--audit-delete';
-			if (/(create|apply)/.test(action))
-				return 'activity-icon activity-icon--audit activity-icon--audit-create';
-			if (/(update|patch|replace|scale|rollout|cordon|uncordon|drain)/.test(action))
-				return 'activity-icon activity-icon--audit activity-icon--audit-update';
+		if (auditAction) {
+			const a = auditAction.toLowerCase();
+			if (a.includes('create') || a === 'apply') return `${base} audit-create`;
+			if (a.includes('delete')) return `${base} audit-delete`;
+			if (a.includes('update') || a.includes('patch') || a.includes('replace'))
+				return `${base} audit-update`;
+			if (a.includes('get') || a.includes('list') || a.includes('read'))
+				return `${base} audit-read`;
+			if (a.includes('forbidden') || a.includes('deny')) return `${base} audit-forbidden`;
 		}
-		return 'activity-icon activity-icon--audit';
+		return `${base} audit`;
 	}
 
-	// Generic CRUD buckets (match “…ActivityLogEntry” suffixes)
-	if (/(Added|Created)ActivityLogEntry$/.test(t)) return 'activity-icon activity-icon--added';
-	if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return 'activity-icon activity-icon--deleted';
-	if (/(Updated|SetRole|Restarted)ActivityLogEntry$/.test(t))
-		return 'activity-icon activity-icon--updated';
-	if (/Maintenance/.test(t)) return 'activity-icon activity-icon--maintenance';
+	// Generiske mønstre
+	if (/(Added|Created)ActivityLogEntry$/.test(t)) return `${base} added`;
+	if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return `${base} deleted`;
+	if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return `${base} updated`;
+	if (/Maintenance/.test(t)) return `${base} maintenance`;
+	if (t.includes('Deployment') || t.includes('Restarted')) return `${base} deployment`;
 
-	// Job triggered behaves like a deployment (runtime operation)
-	if (t === 'JobTriggeredActivityLogEntry') return 'activity-icon activity-icon--deployment';
+	// Temaer vi skiller ut som egne (valgfritt)
+	if (t.startsWith('Vulnerability')) return `${base} vulnerability`;
+	if (t.startsWith('Reconciler')) return `${base} reconciler`;
 
-	// Deployment-like
-	if (t.includes('Deployment')) return 'activity-icon activity-icon--deployment';
-
-	// Special buckets
-	if (t.startsWith('Vulnerability')) return 'activity-icon activity-icon--vulnerability';
-	if (t.startsWith('Reconciler')) return 'activity-icon activity-icon--reconciler';
-
-	// Fallback
-	return 'activity-icon activity-icon--neutral';
-}
-
-/** Convenience for when you have the whole entry object. */
-export function activityIconClassFromEntry(entry: {
-	__typename: string;
-	appScaled?: { direction?: string | null };
-	clusterAuditData?: { action?: string | null };
-}): string {
-	return activityIconClass(entry.__typename, {
-		direction: entry.appScaled?.direction ?? null,
-		auditAction: entry.clusterAuditData?.action ?? null
-	});
+	return `${base} neutral`;
 }

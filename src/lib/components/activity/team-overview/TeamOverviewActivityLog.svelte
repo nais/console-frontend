@@ -328,15 +328,11 @@
 		display: flex;
 		position: relative;
 		padding: var(--ax-space-4) 0;
-		border-bottom: 1px solid var(--ax-border-subtle);
 		gap: var(--ax-space-12);
 		align-items: flex-start;
 	}
 
-	.item:last-child {
-		border-bottom: none;
-	}
-
+	/* vertical timeline line */
 	.item::before {
 		content: '';
 		position: absolute;
@@ -344,10 +340,9 @@
 		top: 48px;
 		bottom: -1px;
 		width: 1px;
-		background: var(--ax-border-subtle);
+		background: var(--ax-border-neutral-strong);
 		z-index: 0;
 	}
-
 	.item:last-child::before {
 		display: none;
 	}

@@ -11,7 +11,7 @@
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
-	import { activityIconClass, icons } from '../activity/activity-log-icons';
+	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
 	import '../activity/activity-log.css';
 	import ListItem from './ListItem.svelte';
 
@@ -170,16 +170,12 @@
 <ListItem>
 	<div style="display: flex; gap: 0.5rem;">
 		<div
-			class={activityIconClass($data.__typename, {
-				direction:
-					$data.__typename === 'ApplicationScaledActivityLogEntry'
-						? $data.appScaled?.direction
-						: null,
-				auditAction:
-					$data.__typename === 'ClusterAuditActivityLogEntry'
-						? $data.clusterAuditData?.action
-						: null
-			})}
+			class={activityIconClassFromEntry(
+				$data,
+				$data.__typename === 'ClusterAuditActivityLogEntry'
+					? $data.clusterAuditData?.action
+					: undefined
+			)}
 		>
 			<Icon size="1.25em" width="1.25em" height="1.25em" />
 		</div>
