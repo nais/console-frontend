@@ -26,24 +26,26 @@
 
 <div class="wrapper">
 	<div class="left">
-		<div class="alerts-wrapper">
-			{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
+		{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
+			<div class="alerts-wrapper">
 				<PrometheusAlert
 					{teamSlug}
 					alerts={$TeamOverview.data?.team.firingAlerts.nodes}
 					collapsible={false}
 					alertsState={AlertState.FIRING}
 				/>
-			{/if}
-			{#if $TeamOverview.data?.team.pendingAlerts.pageInfo.totalCount}
+			</div>
+		{/if}
+		{#if $TeamOverview.data?.team.pendingAlerts.pageInfo.totalCount}
+			<div class="alerts-wrapper">
 				<PrometheusAlert
 					{teamSlug}
 					alerts={$TeamOverview.data?.team.pendingAlerts.nodes}
 					collapsible={false}
 					alertsState={AlertState.PENDING}
 				/>
-			{/if}
-		</div>
+			</div>
+		{/if}
 
 		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
 			<HealthSummary {teamSlug} />
@@ -64,21 +66,22 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
 	}
 	.left {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
 	}
 	.right {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--spacing-layout);
 	}
 
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
+		padding-bottom: var(--spacing-layout);
 	}
 </style>

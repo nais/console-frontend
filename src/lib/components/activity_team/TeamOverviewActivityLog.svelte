@@ -378,7 +378,9 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Activity log</Heading>
+	<Heading level="2" size="small" spacing
+		><a href="/team/{teamSlug}/activity-log">Activity log</a></Heading
+	>
 	{#if $activityLogQuery.fetching || !$activityLogQuery.data}
 		<div style="display: flex; justify-content: center; align-items: center; min-height: 500px;">
 			<Loader size="3xlarge" />
@@ -403,7 +405,7 @@
 
 		{#if $activityLogQuery.data?.team?.activityLog.pageInfo.hasNextPage}
 			<div class="load-more">
-				<Button variant="tertiary" size="small" onclick={loadMore}>Load more activity</Button>
+				<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
 			</div>
 		{/if}
 	{/if}

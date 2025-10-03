@@ -100,13 +100,6 @@
 				valueField="cost"
 				class="h-[250px]"
 			/>
-
-			<!-- <a
-
-				style:align-self="end"
-				style:margin-top="auto"
-				style:padding-top="var(ax-space-12)">View Cost for Team</a
-			> -->
 		{:else}
 			<div class="loading h-[250px]">
 				<Loader size="3xlarge" />
