@@ -99,6 +99,9 @@
 							resourceType
 							environmentName
 							teamSlug
+							... on ApplicationRestartedActivityLogEntry {
+								__typename
+							}
 							... on ApplicationScaledActivityLogEntry {
 								__typename
 
