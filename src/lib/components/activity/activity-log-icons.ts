@@ -87,46 +87,44 @@ export const icons: { [typename: string]: Component } = {
 	ReconcilerDisabledActivityLogEntry: CogIcon
 };
 
+// activity-log-icons.ts
 export function activityIconClassFromEntry(
-	entry: { __typename: string; appScaled?: { direction?: string } },
-	auditAction?: string // valgfri: ClusterAudit
+	entry: {
+		__typename: string;
+		appScaled?: { direction?: string | null } | null;
+		clusterAuditData?: { action?: string | null } | null;
+	},
+	auditAction?: string | null
 ): string {
-	const base = 'activity-icon';
-	const t = entry.__typename ?? '';
+	const t = entry.__typename;
+	const cls: string[] = ['activity-icon'];
 
-	// Scale
-	if (t.includes('ApplicationScaled')) {
-		const dir = entry.appScaled?.direction?.toUpperCase();
-		if (dir === 'UP') return `${base} scale-up`;
-		if (dir === 'DOWN') return `${base} scale-down`;
-		return `${base} scale-neutral`;
+	// Application scaled
+	if (t === 'ApplicationScaledActivityLogEntry') {
+		const dir = (entry.appScaled?.direction || '').toUpperCase();
+		if (dir === 'UP') return cls.concat('scale-up').join(' ');
+		if (dir === 'DOWN') return cls.concat('scale-down').join(' ');
+		return cls.concat('scale-neutral').join(' ');
 	}
 
-	// Cluster audit — farg etter action om mulig
-	if (t.includes('ClusterAudit')) {
-		if (auditAction) {
-			const a = auditAction.toLowerCase();
-			if (a.includes('create') || a === 'apply') return `${base} audit-create`;
-			if (a.includes('delete')) return `${base} audit-delete`;
-			if (a.includes('update') || a.includes('patch') || a.includes('replace'))
-				return `${base} audit-update`;
-			if (a.includes('get') || a.includes('list') || a.includes('read'))
-				return `${base} audit-read`;
-			if (a.includes('forbidden') || a.includes('deny')) return `${base} audit-forbidden`;
-		}
-		return `${base} audit`;
+	// Cluster audit (always include 'audit')
+	if (t === 'ClusterAuditActivityLogEntry') {
+		const a = (auditAction ?? entry.clusterAuditData?.action ?? '').toLowerCase();
+
+		if (a.includes('create') || a === 'apply') return cls.concat('audit', 'audit-create').join(' ');
+		if (a.includes('delete')) return cls.concat('audit', 'audit-delete').join(' ');
+		if (a.includes('update') || a.includes('patch') || a.includes('replace'))
+			return cls.concat('audit', 'audit-update').join(' ');
+		return cls.concat('audit').join(' ');
 	}
 
-	// Generiske mønstre
-	if (/(Added|Created)ActivityLogEntry$/.test(t)) return `${base} added`;
-	if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return `${base} deleted`;
-	if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return `${base} updated`;
-	if (/Maintenance/.test(t)) return `${base} maintenance`;
-	if (t.includes('Deployment') || t.includes('Restarted')) return `${base} deployment`;
+	// Generic buckets
+	if (/(Added|Created)ActivityLogEntry$/.test(t)) return cls.concat('added').join(' ');
+	if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return cls.concat('deleted').join(' ');
+	if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return cls.concat('updated').join(' ');
+	if (/Maintenance/.test(t)) return cls.concat('maintenance').join(' ');
+	if (t.includes('Deployment') || t.includes('Restarted'))
+		return cls.concat('deployment').join(' ');
 
-	// Temaer vi skiller ut som egne (valgfritt)
-	if (t.startsWith('Vulnerability')) return `${base} vulnerability`;
-	if (t.startsWith('Reconciler')) return `${base} reconciler`;
-
-	return `${base} neutral`;
+	return cls.concat('neutral').join(' ');
 }
