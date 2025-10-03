@@ -185,6 +185,8 @@
 				<List>
 					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
+					{:else}
+						<span>No issues found</span>
 					{/each}
 				</List>
 			</div>

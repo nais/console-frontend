@@ -32,10 +32,8 @@
 		<div class="content">
 			<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
 				<Heading level="2" size="small"
-					>{alerts.length} Alert{alerts.length > 1 ? 's' : ''} are {alertsState ===
-					AlertState.FIRING
-						? 'Firing'
-						: 'Pending'} for
+					>{alerts.length} Alert{alerts.length > 1 ? 's are' : ' is'}
+					{alertsState === AlertState.FIRING ? 'Firing' : 'Pending'} for
 					{teamSlug}</Heading
 				>
 				{#if collapsible}

@@ -193,6 +193,8 @@
 				<List>
 					{#each $OpenSearchInstance.data.team.environment.openSearch.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
+					{:else}
+						<span>No issues found</span>
 					{/each}
 				</List>
 			</div>

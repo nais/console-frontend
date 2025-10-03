@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { SecretOrderField } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
+	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
 	import IconLabel from '$lib/components/IconLabel.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';

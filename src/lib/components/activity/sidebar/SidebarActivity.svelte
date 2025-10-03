@@ -6,19 +6,10 @@
 		type SidebarActivityLogFragment$data
 	} from '$houdini';
 	import { Heading } from '@nais/ds-svelte-community';
-	import {
-		CaretUpDownIcon,
-		LayerMinusIcon,
-		LayersPlusIcon,
-		MinusCircleIcon,
-		NotePencilIcon,
-		PersonPencilIcon,
-		PlayIcon,
-		PlusCircleIcon,
-		RocketIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
+	import { icons } from '../activity-log-icons';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
@@ -133,22 +124,6 @@
 	type Kind =
 		| SidebarActivityLogFragment$data['activityLog']['nodes'][number]['__typename']
 		| 'JobTriggeredActivityLogEntry';
-
-	const icons: { [key in Kind]?: Component } = {
-		DeploymentActivityLogEntry: RocketIcon,
-		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
-		JobTriggeredActivityLogEntry: PlayIcon,
-		RepositoryAddedActivityLogEntry: PlusCircleIcon,
-		RepositoryRemovedActivityLogEntry: MinusCircleIcon,
-		SecretValueAddedActivityLogEntry: LayersPlusIcon,
-		SecretValueRemovedActivityLogEntry: LayerMinusIcon,
-		SecretValueUpdatedActivityLogEntry: NotePencilIcon,
-		SecretCreatedActivityLogEntry: PlusCircleIcon,
-		SecretDeletedActivityLogEntry: MinusCircleIcon,
-		TeamMemberAddedActivityLogEntry: PlusCircleIcon,
-		TeamMemberRemovedActivityLogEntry: MinusCircleIcon,
-		TeamMemberSetRoleActivityLogEntry: PersonPencilIcon
-	};
 
 	function textComponent(kind: Kind): Component<{ data: unknown }> {
 		switch (kind) {
