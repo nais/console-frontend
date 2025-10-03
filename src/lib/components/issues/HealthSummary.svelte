@@ -44,29 +44,38 @@
 
 <div class="issues-wrapper">
 	<Heading level="2" size="small" spacing><a href="/team/{teamSlug}/issues">Health</a></Heading>
-	{#if !$teamHealth.fetching}
-		{#if ($teamHealth.data?.team.issues.edges.length ?? 0) > 0}
+
+	{#if !$teamHealth.data}
+		<!-- Første innlasting: vis loader uansett fetching-flagget -->
+		<div style="display: flex; justify-content: center; align-items: center; height: 290px;">
+			<Loader size="3xlarge" />
+		</div>
+	{:else}
+		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
 			<List
-				title="{$teamHealth.data?.team.issues.edges.length ?? 0} of {$teamHealth.data?.team.issues
-					.pageInfo.totalCount ?? 0} issues"
+				title="{$teamHealth.data?.team?.issues?.edges?.length ?? 0} of {$teamHealth.data?.team
+					?.issues?.pageInfo?.totalCount ?? 0} issues"
 			>
-				{#each $teamHealth.data?.team.issues.edges ?? [] as issue (issue.node.id)}
+				{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
 					<IssueListItem item={issue.node} />
 				{/each}
 			</List>
-		{/if}
-
-		{#if ($teamHealth.data?.team.issues.edges.length ?? 0) == 0}
+		{:else if !$teamHealth.fetching}
+			<!-- Kun når vi har data, og ikke fetcher, men lista er tom -->
 			<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold">
 				No issues found
 			</span>
 		{/if}
-	{:else}
-		<div style="display: flex; justify-content: center; align-items: center; height: 290px;">
-			<Loader size="3xlarge" />
-		</div>
+
+		<!-- Valgfritt: liten “background” loader ved refetch/paginate -->
+		{#if $teamHealth.fetching}
+			<div style="display: flex; justify-content: center; align-items: center; height: 60px;">
+				<Loader size="large" />
+			</div>
+		{/if}
 	{/if}
-	{#if $teamHealth.data?.team?.issues.pageInfo.hasNextPage}
+
+	{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
 		<div class="load-more">
 			<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
 		</div>
