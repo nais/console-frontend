@@ -311,7 +311,7 @@
 
 		{#if $activityLogQuery.data?.team?.activityLog.pageInfo.hasNextPage}
 			<div class="load-more">
-				<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
+				<Button variant="tertiary" size="small" onclick={loadMore}>Load more acitivities</Button>
 			</div>
 		{/if}
 	{/if}
