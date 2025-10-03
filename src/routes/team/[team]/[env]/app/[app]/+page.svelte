@@ -2,7 +2,7 @@
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
+	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';

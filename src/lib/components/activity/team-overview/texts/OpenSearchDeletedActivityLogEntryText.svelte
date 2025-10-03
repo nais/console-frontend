@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TeamOverviewActivityLog$result } from '$houdini';
-	import { resourceTypeToText } from '$lib/components/activity/texts/utils';
+	import { resourceTypeToText } from '$lib/components/activity/sidebar/texts/utils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';

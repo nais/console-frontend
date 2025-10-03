@@ -1,24 +1,25 @@
 <script lang="ts">
 	import type { TeamOverviewActivityLog$result } from '$houdini';
+	import { resourceTypeToText } from '$lib/components/activity/sidebar/texts/utils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { resourceTypeToText } from '../../activity/texts/utils';
 
 	let {
 		data
 	}: {
 		data: Extract<
 			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ resourceType: string; resourceName: string; environmentName: string | null }
+			{ __typename: 'ValkeyCreatedActivityLogEntry' }
 		>;
 	} = $props();
 </script>
 
 <div>
 	{resourceTypeToText(data.resourceType)}
-	<strong>{data.resourceName}</strong> created in
-	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
+	<strong>{data.resourceName}</strong> created in <Tag
+		size="small"
+		variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
 	>.
 
 	<BodyShort textColor="subtle" size="small">

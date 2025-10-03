@@ -117,10 +117,12 @@
 				<dd>{instance.tier}</dd>
 			</dl>
 
-			<Heading level="3">Issues</Heading>
+			<Heading level="3" spacing>Issues</Heading>
 			<List>
 				{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
 					<IssueListItem item={edge.node} />
+				{:else}
+					<span>No issues found</span>
 				{/each}
 			</List>
 		</div>

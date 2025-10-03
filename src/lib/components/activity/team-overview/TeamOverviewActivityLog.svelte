@@ -1,33 +1,12 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
 	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
-	import {
-		CaretUpDownIcon,
-		CogIcon,
-		ExclamationmarkTriangleIcon,
-		FolderMinusIcon,
-		FolderPlusIcon,
-		KeyHorizontalIcon,
-		KeyVerticalIcon,
-		LayerMinusIcon,
-		LayersPlusIcon,
-		MinusCircleIcon,
-		NotePencilIcon,
-		PersonMinusIcon,
-		PersonPencilIcon,
-		PersonPlusIcon,
-		PlayIcon,
-		PlusCircleIcon,
-		RocketIcon,
-		RotateRightIcon,
-		TerminalIcon,
-		TrashIcon,
-		WrenchIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
-	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+	import { activityIconClassFromEntry, icons } from '../activity-log-icons';
+	import '../activity-log.css';
+	import ApplicationRestartedActivityLogEntryText from './texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
@@ -143,6 +122,9 @@
 									triggerURL
 								}
 							}
+							... on JobTriggeredActivityLogEntry {
+								__typename
+							}
 							... on OpenSearchCreatedActivityLogEntry {
 								__typename
 							}
@@ -249,7 +231,10 @@
 	function textComponent(kind: Kind): Component<{ data: unknown }> {
 		switch (kind) {
 			case 'ApplicationDeletedActivityLogEntry':
+			case 'JobDeletedActivityLogEntry':
 				return ResourceDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationRestartedActivityLogEntry':
+				return ApplicationRestartedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':
 				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
@@ -296,85 +281,6 @@
 	async function loadMore() {
 		await activityLogQuery.loadNextPage({ first: 10 });
 	}
-
-	const icons: { [key: string]: Component } = {
-		DeploymentActivityLogEntry: RocketIcon,
-		ApplicationRestartedActivityLogEntry: RotateRightIcon,
-		ApplicationScaledActivityLogEntry: CaretUpDownIcon,
-		JobTriggeredActivityLogEntry: PlayIcon,
-
-		ApplicationDeletedActivityLogEntry: TrashIcon,
-		JobDeletedActivityLogEntry: TrashIcon,
-
-		RepositoryAddedActivityLogEntry: FolderPlusIcon,
-		RepositoryRemovedActivityLogEntry: FolderMinusIcon,
-
-		SecretCreatedActivityLogEntry: PlusCircleIcon,
-		SecretDeletedActivityLogEntry: MinusCircleIcon,
-		SecretValueAddedActivityLogEntry: LayersPlusIcon,
-		SecretValueRemovedActivityLogEntry: LayerMinusIcon,
-		SecretValueUpdatedActivityLogEntry: NotePencilIcon,
-
-		TeamMemberAddedActivityLogEntry: PersonPlusIcon,
-		TeamMemberRemovedActivityLogEntry: PersonMinusIcon,
-		TeamMemberSetRoleActivityLogEntry: PersonPencilIcon,
-		TeamCreatedActivityLogEntry: PlusCircleIcon,
-		TeamUpdatedActivityLogEntry: NotePencilIcon,
-		TeamEnvironmentUpdatedActivityLogEntry: NotePencilIcon,
-
-		UnleashInstanceCreatedActivityLogEntry: KeyHorizontalIcon,
-		UnleashInstanceUpdatedActivityLogEntry: KeyVerticalIcon,
-
-		ServiceMaintenanceActivityLogEntry: WrenchIcon,
-
-		OpenSearchCreatedActivityLogEntry: OpenSearchIcon,
-		OpenSearchDeletedActivityLogEntry: OpenSearchIcon,
-		OpenSearchUpdatedActivityLogEntry: OpenSearchIcon,
-
-		ValkeyCreatedActivityLogEntry: ValkeyIcon,
-		ValkeyDeletedActivityLogEntry: ValkeyIcon,
-		ValkeyUpdatedActivityLogEntry: ValkeyIcon,
-		ValkeyMaintenanceStartedActivityLogEntry: WrenchIcon,
-
-		VulnerabilityUpdatedActivityLogEntry: ExclamationmarkTriangleIcon,
-
-		ClusterAuditActivityLogEntry: TerminalIcon,
-
-		TeamDeployKeyUpdatedActivityLogEntry: CogIcon,
-		ReconcilerConfiguredActivityLogEntry: CogIcon,
-		ReconcilerEnabledActivityLogEntry: CogIcon,
-		ReconcilerDisabledActivityLogEntry: CogIcon
-	};
-
-	function iconClass(entry: { __typename: string; appScaled?: { direction?: string } }): string {
-		const t = entry.__typename;
-
-		// Scale
-		if (t === 'ApplicationScaledActivityLogEntry') {
-			const dir = entry.appScaled?.direction;
-			if (dir === 'up') return 'icon scale-up';
-			if (dir === 'down') return 'icon scale-down';
-			return 'icon scale-neutral';
-		}
-
-		// Cluster audit
-		if (t === 'ClusterAuditActivityLogEntry') return 'icon audit';
-
-		// Vulnerabilities / Reconciler
-		if (t.startsWith('Vulnerability')) return 'icon vulnerability';
-		if (t.startsWith('Reconciler')) return 'icon reconciler';
-
-		// Generic patterns (now match "...ActivityLogEntry")
-		if (/(Added|Created)ActivityLogEntry$/.test(t)) return 'icon added';
-		if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return 'icon deleted';
-		if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return 'icon updated';
-		if (/Maintenance/.test(t)) return 'icon maintenance';
-
-		// Deploy / restart
-		if (t.includes('Deployment') || t.includes('Restarted')) return 'icon deployment';
-
-		return 'icon neutral';
-	}
 </script>
 
 <div class="wrapper">
@@ -390,7 +296,7 @@
 			{@const Icon = icons[entry.__typename] || RocketIcon}
 			{@const TextComponent = textComponent(entry.__typename)}
 			<div class="item">
-				<div class={iconClass(entry)}>
+				<div class={activityIconClassFromEntry(entry)}>
 					<Icon size="1em" />
 				</div>
 				<div class="content">
@@ -444,95 +350,6 @@
 
 	.item:last-child::before {
 		display: none;
-	}
-
-	.icon {
-		position: relative;
-		z-index: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		flex-shrink: 0;
-		border: 2px solid var(--ax-bg-default);
-		box-shadow:
-			0 1px 2px rgba(0, 0, 0, 0.05),
-			0 2px 6px rgba(0, 0, 0, 0.08);
-		color: white;
-		background: linear-gradient(145deg, var(--ax-bg-default), var(--ax-bg-raised));
-		transition:
-			transform 0.15s ease-in-out,
-			box-shadow 0.15s ease-in-out;
-	}
-
-	.icon:hover {
-		transform: scale(1.05);
-		box-shadow:
-			0 2px 4px rgba(0, 0, 0, 0.08),
-			0 4px 10px rgba(0, 0, 0, 0.12);
-	}
-
-	.icon.scale-up {
-		background: linear-gradient(145deg, #27ae60, #1e874b);
-	}
-	.icon.scale-down {
-		background: linear-gradient(145deg, #e74c3c, #c0392b);
-	}
-	.icon.scale-neutral {
-		background: linear-gradient(145deg, #95a5a6, #7f8c8d);
-	}
-
-	.icon.audit {
-		background: linear-gradient(145deg, #16a085, #0e7668);
-	}
-	.icon.audit {
-		background: linear-gradient(145deg, #16a085, #0e7668);
-	} /* default teal */
-	.icon.audit.audit-read {
-		background: linear-gradient(145deg, #3498db, #2c80b4);
-	} /* blue = read */
-	.icon.audit.audit-create {
-		background: linear-gradient(145deg, #27ae60, #1e874b);
-	} /* green = create */
-	.icon.audit.audit-update {
-		background: linear-gradient(145deg, #8e44ad, #6d3390);
-	} /* purple = change */
-	.icon.audit.audit-delete {
-		background: linear-gradient(145deg, #e74c3c, #c0392b);
-	} /* red = delete */
-	.icon.audit.audit-forbidden {
-		background: linear-gradient(145deg, #e67e22, #ca6b16);
-	} /* orange = forbidden */
-	.icon.added {
-		background: linear-gradient(145deg, #3bb273, #2d995f);
-	}
-	.icon.deleted {
-		background: linear-gradient(145deg, #e15241, #c0392b);
-	}
-	.icon.updated {
-		background: linear-gradient(145deg, #3498db, #2c80b4);
-	}
-	.icon.deployment {
-		background: linear-gradient(145deg, #8e44ad, #6d3390);
-	}
-	.icon.maintenance {
-		background: linear-gradient(145deg, #e67e22, #ca6b16);
-	}
-
-	/* Nye klasser */
-	.icon.vulnerability {
-		background: linear-gradient(145deg, #f1c40f, #d4ac0d);
-		color: black;
-	}
-	.icon.reconciler {
-		background: linear-gradient(145deg, #34495e, #2c3e50);
-	}
-
-	.icon.neutral {
-		background: linear-gradient(145deg, var(--ax-bg-default), var(--ax-bg-raised));
-		color: var(--ax-text-neutral-strong);
 	}
 
 	.content {

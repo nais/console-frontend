@@ -4,9 +4,8 @@
 		type ActivityLog$input,
 		type ActivityLogActivityType$options
 	} from '$houdini';
-	import ActivityLogItem from '$lib/components/ActivityLogItem.svelte';
+	import ActivityLogItem from '$lib/components/list/ActivityLogListItem.svelte';
 	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
@@ -170,9 +169,7 @@
 						</ActionMenu>
 					{/snippet}
 					{#each ae.nodes || [] as item (item.id)}
-						<ListItem>
-							<ActivityLogItem {item} />
-						</ListItem>
+						<ActivityLogItem {item} />
 					{/each}
 				</List>
 				{#if $ActivityLog.data.team.activityLog.pageInfo.hasPreviousPage || $ActivityLog.data.team.activityLog.pageInfo.hasNextPage}

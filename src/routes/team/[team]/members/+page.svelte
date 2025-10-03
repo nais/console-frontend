@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, TeamMemberOrderField } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
+	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
 	import Confirm from '$lib/components/Confirm.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';

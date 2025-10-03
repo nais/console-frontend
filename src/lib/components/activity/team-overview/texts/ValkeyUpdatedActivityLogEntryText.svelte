@@ -1,16 +1,16 @@
 <script lang="ts">
 	import type { TeamOverviewActivityLog$result } from '$houdini';
+	import { resourceTypeToText } from '$lib/components/activity/sidebar/texts/utils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, ReadMore, Tag } from '@nais/ds-svelte-community';
-	import { resourceTypeToText } from '../../activity/texts/utils';
 
 	let {
 		data
 	}: {
 		data: Extract<
 			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ __typename: 'OpenSearchUpdatedActivityLogEntry' }
+			{ __typename: 'ValkeyUpdatedActivityLogEntry' }
 		>;
 	} = $props();
 </script>
@@ -23,7 +23,7 @@
 	>.
 	<ReadMore header="Updated fields">
 		<dl>
-			{#each data.opensearchData.updatedFields as field (field)}
+			{#each data.valkeyUpdated.updatedFields as field (field)}
 				<dt>
 					<code>{field.field}</code>:
 				</dt>

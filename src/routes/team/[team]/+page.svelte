@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertState } from '$houdini';
-	import TeamOverviewActivityLog from '$lib/components/activity_team/TeamOverviewActivityLog.svelte';
+	import TeamOverviewActivityLog from '$lib/components/activity/team-overview/TeamOverviewActivityLog.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
 	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
