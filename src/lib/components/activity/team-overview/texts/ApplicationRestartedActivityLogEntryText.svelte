@@ -9,7 +9,7 @@
 	}: {
 		data: Extract<
 			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ __typename: 'ApplicationScaledActivityLogEntry' }
+			{ __typename: 'ApplicationRestartedActivityLogEntry' }
 		>;
 	} = $props();
 </script>
