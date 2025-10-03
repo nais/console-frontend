@@ -2,6 +2,7 @@
 	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
+	import { resourceLink } from '../../utils';
 
 	let {
 		data
@@ -16,7 +17,14 @@
 <div>
 	Value
 	<span class="valueName">{data.secretValueAdded.valueName}</span> was added to secret
-	<strong>{data.resourceName}</strong>
+	<a
+		href={resourceLink(
+			data.environmentName ?? '',
+			data.resourceType,
+			data.resourceName,
+			data.teamSlug
+		)}>{data.resourceName}</a
+	>
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

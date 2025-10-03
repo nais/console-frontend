@@ -4,6 +4,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { resourceLink } from '../../utils';
 
 	let {
 		data
@@ -17,9 +18,16 @@
 
 <div>
 	{resourceTypeToText(data.resourceType)}
-	<strong>{data.resourceName}</strong> created in <Tag
-		size="small"
-		variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
+	<a
+		href={resourceLink(
+			data.environmentName ?? '',
+			data.resourceType,
+			data.resourceName,
+			data.teamSlug
+		)}>{data.resourceName}</a
+	>
+	created in <Tag size="small" variant={envTagVariant(data.environmentName || '')}
+		>{data.environmentName}</Tag
 	>.
 
 	<BodyShort textColor="subtle" size="small">

@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		ActivityLogEntryResourceType,
-		fragment,
-		graphql,
-		type ActivityLogEntryFragment,
-		type ActivityLogEntryResourceType$options
-	} from '$houdini';
+	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
@@ -13,35 +7,8 @@
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
 	import '../activity/activity-log.css';
+	import { resourceLink } from '../activity/utils';
 	import ListItem from './ListItem.svelte';
-
-	const resourceLink = (
-		environmentName: string,
-		resourceType: ActivityLogEntryResourceType$options,
-		resourceName: string,
-		teamSlug: string | null
-	) => {
-		switch (resourceType) {
-			case ActivityLogEntryResourceType.APP:
-				return `/team/${teamSlug}/${environmentName}/app/${resourceName}`;
-			case ActivityLogEntryResourceType.JOB:
-				return `/team/${teamSlug}/${environmentName}/job/${resourceName}`;
-			case ActivityLogEntryResourceType.UNLEASH:
-				return `/team/${teamSlug}/unleash`;
-			case ActivityLogEntryResourceType.SECRET:
-				return `/team/${teamSlug}/${environmentName}/secret/${resourceName}`;
-			case ActivityLogEntryResourceType.TEAM:
-				return `/team/${teamSlug}`;
-			case ActivityLogEntryResourceType.OPENSEARCH:
-				return `/team/${teamSlug}/${environmentName}/opensearch/${resourceName}`;
-			case ActivityLogEntryResourceType.REPOSITORY:
-				return `/team/${teamSlug}/repositories`;
-			case ActivityLogEntryResourceType.VALKEY:
-				return `/team/${teamSlug}/${environmentName}/valkey/${resourceName}`;
-			default:
-				return null;
-		}
-	};
 
 	interface Props {
 		item: ActivityLogEntryFragment;

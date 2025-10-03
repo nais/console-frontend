@@ -3,6 +3,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { resourceLink } from '../../utils';
 
 	let {
 		data
@@ -15,8 +16,15 @@
 </script>
 
 <div>
-	Application <strong>{data.resourceName}</strong> scaled {data.appScaled.direction} to {data
-		.appScaled.newSize} instances in <Tag
+	Application <a
+		href={resourceLink(
+			data.environmentName ?? '',
+			data.resourceType,
+			data.resourceName,
+			data.teamSlug
+		)}>{data.resourceName}</a
+	>
+	scaled {data.appScaled.direction} to {data.appScaled.newSize} instances in <Tag
 		size="small"
 		variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
 	>
