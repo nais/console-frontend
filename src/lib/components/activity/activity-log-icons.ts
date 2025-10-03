@@ -3,6 +3,7 @@ import type { Component } from 'svelte';
 
 // Resource icons (same “shapes” you use elsewhere)
 import {
+	BranchingIcon,
 	BriefcaseClockIcon,
 	// Fallbacks / misc
 	CogIcon,
@@ -14,7 +15,6 @@ import {
 	VirusIcon
 } from '@nais/ds-svelte-community/icons';
 
-import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
 import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
@@ -51,8 +51,8 @@ export const icons: { [typename: string]: Component } = {
 	SecretValueUpdatedActivityLogEntry: PadlockLockedIcon,
 
 	/* Repositories */
-	RepositoryAddedActivityLogEntry: GitHubIcon,
-	RepositoryRemovedActivityLogEntry: GitHubIcon,
+	RepositoryAddedActivityLogEntry: BranchingIcon,
+	RepositoryRemovedActivityLogEntry: BranchingIcon,
 
 	/* Team & members */
 	TeamMemberAddedActivityLogEntry: PersonGroupIcon,

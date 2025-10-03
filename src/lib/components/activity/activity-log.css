@@ -25,10 +25,10 @@
 }
 
 .activity-icon:hover {
-	transform: scale(1.05);
+	transform: translateY(-1px);
 	box-shadow:
-		0 2px 4px rgba(0, 0, 0, 0.08),
-		0 4px 10px rgba(0, 0, 0, 0.12);
+		0 4px 8px rgba(0, 0, 0, 0.15),
+		0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* -------- Variants (same palette everywhere) -------- */

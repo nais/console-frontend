@@ -181,7 +181,7 @@
 						: null
 			})}
 		>
-			<Icon size="1em" />
+			<Icon size="1.25em" width="1.25em" height="1.25em" />
 		</div>
 		<div>
 			<BodyShort size="small" spacing>

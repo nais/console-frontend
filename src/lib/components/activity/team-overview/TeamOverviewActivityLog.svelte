@@ -297,7 +297,7 @@
 			{@const TextComponent = textComponent(entry.__typename)}
 			<div class="item">
 				<div class={activityIconClassFromEntry(entry)}>
-					<Icon size="1em" />
+					<Icon size="1.25em" width="1.25em" height="1.25em" />
 				</div>
 				<div class="content">
 					<TextComponent data={entry} />
