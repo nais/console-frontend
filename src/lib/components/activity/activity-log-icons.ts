@@ -119,7 +119,7 @@ export function activityIconClassFromEntry(
 	}
 
 	// Generic buckets
-	if (/(Added|Created)ActivityLogEntry$/.test(t)) return cls.concat('added').join(' ');
+	if (/(Added|Created|Triggered)ActivityLogEntry$/.test(t)) return cls.concat('added').join(' ');
 	if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return cls.concat('deleted').join(' ');
 	if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return cls.concat('updated').join(' ');
 	if (/Maintenance/.test(t)) return cls.concat('maintenance').join(' ');
