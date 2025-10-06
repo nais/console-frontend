@@ -4,7 +4,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { resourceLink } from '../../utils';
+	import { activityLogResourceLink } from '../../utils';
 
 	let {
 		data
@@ -19,7 +19,7 @@
 <div>
 	{resourceTypeToText(data.resourceType)}
 	<a
-		href={resourceLink(
+		href={activityLogResourceLink(
 			data.environmentName ?? '',
 			data.resourceType,
 			data.resourceName,

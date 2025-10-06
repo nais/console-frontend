@@ -7,7 +7,7 @@
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
 	import '../activity/activity-log.css';
-	import { resourceLink } from '../activity/utils';
+	import { activityLogResourceLink } from '../activity/utils';
 	import ListItem from './ListItem.svelte';
 
 	interface Props {
@@ -151,7 +151,7 @@
 				{#if $data.__typename === 'SecretValueAddedActivityLogEntry'}
 					Added value of
 					<strong>{$data.secretValueAdded?.valueName}</strong> to secret {@const link =
-						resourceLink(
+						activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -163,7 +163,7 @@
 				{:else if $data.__typename === 'SecretValueRemovedActivityLogEntry'}
 					Removed value of
 					<strong>{$data.secretValueRemoved?.valueName}</strong> from secret
-					{@const link = resourceLink(
+					{@const link = activityLogResourceLink(
 						$data.environmentName ? $data.environmentName : '',
 						$data.resourceType,
 						$data.resourceName,
@@ -175,7 +175,7 @@
 				{:else if $data.__typename === 'SecretValueUpdatedActivityLogEntry'}
 					Updated value of
 					<strong>{$data.secretValueUpdated?.valueName}</strong> in secret {@const link =
-						resourceLink(
+						activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -248,7 +248,7 @@
 				{:else if $data.__typename === 'DeploymentActivityLogEntry'}
 					{$data.resourceType === 'JOB' ? 'Job' : 'Application'}
 					<a
-						href={resourceLink(
+						href={activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -258,7 +258,7 @@
 				{:else if $data.__typename === 'ApplicationScaledActivityLogEntry'}
 					Scaled {$data.appScaled.direction} application
 					<a
-						href={resourceLink(
+						href={activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -268,7 +268,7 @@
 					to <strong>{$data.appScaled.newSize}</strong> replicas
 				{:else if $data.__typename === 'JobTriggeredActivityLogEntry'}
 					Job <a
-						href={resourceLink(
+						href={activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -283,7 +283,7 @@
 							? 'Valkey'
 							: 'service'}
 					<a
-						href={resourceLink(
+						href={activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -293,7 +293,7 @@
 				{:else if $data.__typename === 'ClusterAuditActivityLogEntry'}
 					{capitalizeFirstLetter($data.message.toLowerCase())} in
 					<a
-						href={resourceLink(
+						href={activityLogResourceLink(
 							$data.environmentName ? $data.environmentName : '',
 							$data.resourceType,
 							$data.resourceName,
@@ -302,7 +302,7 @@
 					>
 				{:else}
 					{$data.message}
-					{@const link = resourceLink(
+					{@const link = activityLogResourceLink(
 						$data.environmentName ? $data.environmentName : '',
 						$data.resourceType,
 						$data.resourceName,

@@ -1,6 +1,6 @@
 import { ActivityLogEntryResourceType, type ActivityLogEntryResourceType$options } from '$houdini';
 
-export const resourceLink = (
+export const activityLogResourceLink = (
 	environmentName: string,
 	resourceType: ActivityLogEntryResourceType$options,
 	resourceName: string,

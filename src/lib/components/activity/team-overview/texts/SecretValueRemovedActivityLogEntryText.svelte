@@ -2,7 +2,7 @@
 	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
-	import { resourceLink } from '../../utils';
+	import { activityLogResourceLink } from '../../utils';
 
 	let {
 		data
@@ -17,7 +17,7 @@
 <div>
 	Value <strong>{data.secretValueRemoved.valueName}</strong> in secret
 	<a
-		href={resourceLink(
+		href={activityLogResourceLink(
 			data.environmentName ?? '',
 			data.resourceType,
 			data.resourceName,
