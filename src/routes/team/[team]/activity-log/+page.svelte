@@ -45,11 +45,11 @@
 			ActivityLogActivityType.OPENSEARCH_UPDATED,
 			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED
 		],
-		Reconciler: [
-			ActivityLogActivityType.RECONCILER_CONFIGURED,
-			ActivityLogActivityType.RECONCILER_DISABLED,
-			ActivityLogActivityType.RECONCILER_ENABLED
-		],
+		// Reconciler: [
+		// 	ActivityLogActivityType.RECONCILER_CONFIGURED,
+		// 	ActivityLogActivityType.RECONCILER_DISABLED,
+		// 	ActivityLogActivityType.RECONCILER_ENABLED
+		// ],
 		Repository: [
 			ActivityLogActivityType.REPOSITORY_ADDED,
 			ActivityLogActivityType.REPOSITORY_REMOVED
