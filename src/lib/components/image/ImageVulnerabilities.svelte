@@ -44,6 +44,7 @@
 					workload(name: $workload) {
 						__typename
 						image {
+							name
 							vulnerabilities(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
 								pageInfo {
 									hasNextPage
@@ -239,6 +240,8 @@
 				finding={findingToSuppress}
 				workloads={image.workloadReferences.nodes.map((node) => node.workload)}
 				{authorized}
+				teamSlug={team}
+				imageName={image.name}
 				on:close={() => {
 					findingToSuppress = undefined;
 				}}

@@ -6795,6 +6795,12 @@ type UnleashInstanceUpdatedActivityLogEntryData {
 }
 
 input UpdateImageVulnerabilityInput {
+  """The unique identifier of the vulnerability. E.g. CVE-****-****."""
+  identifier: String!
+
+  """The image name the vulnerability belongs to."""
+  imageName: String!
+
   """The reason for suppressing the vulnerability."""
   reason: String!
 
@@ -6803,6 +6809,9 @@ input UpdateImageVulnerabilityInput {
 
   """Should the vulnerability be suppressed."""
   suppress: Boolean!
+
+  """The team slug the vulnerability belongs to."""
+  teamSlug: Slug!
 
   """The id of the vulnerability to suppress."""
   vulnerabilityID: ID!
@@ -7548,6 +7557,29 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
   oldValue: String
 }
 
+type VulnerabilityActivityLogEntryData {
+  """The environment where the image is deployed."""
+  environment: String!
+
+  """The unique identifier of the vulnerability. E.g. CVE-****-****."""
+  identifier: String!
+
+  """The container image reference."""
+  imageRef: String!
+
+  """New suppression state after the update."""
+  newSuppression: ImageVulnerabilitySuppression!
+
+  """Package name of the vulnerability."""
+  package: String!
+
+  """Previous suppression state (null if not previously suppressed)."""
+  previousSuppression: ImageVulnerabilitySuppression
+
+  """Severity of the vulnerability."""
+  severity: ImageVulnerabilitySeverity!
+}
+
 """Ordering options when fetching vulnerability summaries for workloads."""
 input VulnerabilitySummaryOrder {
   """The direction to order items by."""
@@ -7603,6 +7635,9 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """Creation time of the entry."""
   createdAt: Time!
+
+  """Data associated with the update."""
+  data: VulnerabilityActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String

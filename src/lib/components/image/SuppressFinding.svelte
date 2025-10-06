@@ -50,9 +50,11 @@
 			readonly name: string;
 		}[];
 		authorized: boolean;
+		imageName: string;
+		teamSlug: string;
 	}
 
-	let { open = $bindable(), finding, workloads, authorized }: Props = $props();
+	let { open = $bindable(), finding, workloads, authorized, imageName, teamSlug }: Props = $props();
 
 	let errormessage = $state('');
 
@@ -85,7 +87,10 @@
 			analysisState: null,
 			comment: '',
 			vulnerabilityID: finding.id,
-			suppress: false
+			suppress: false,
+			identifier: finding.identifier,
+			imageName: imageName,
+			teamSlug: teamSlug
 		});
 
 		if ($suppress.errors) {
@@ -120,7 +125,10 @@
 			analysisState: selectedReason,
 			comment: inputText,
 			vulnerabilityID: finding.id,
-			suppress: true
+			suppress: true,
+			identifier: finding.identifier,
+			imageName: imageName,
+			teamSlug: teamSlug
 		});
 
 		if ($suppress.errors) {
@@ -145,6 +153,9 @@
 			$comment: String!
 			$suppress: Boolean!
 			$vulnerabilityID: ID!
+			$identifier: String!
+			$imageName: String!
+			$teamSlug: Slug!
 		) {
 			updateImageVulnerability(
 				input: {
@@ -152,6 +163,9 @@
 					reason: $comment
 					suppress: $suppress
 					vulnerabilityID: $vulnerabilityID
+					identifier: $identifier
+					imageName: $imageName
+					teamSlug: $teamSlug
 				}
 			) {
 				vulnerability {
