@@ -7558,25 +7558,11 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
 }
 
 type VulnerabilityActivityLogEntryData {
-  """The environment where the image is deployed."""
-  environment: String!
-
-  """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
-
-  """The container image reference."""
   imageRef: String!
-
-  """New suppression state after the update."""
-  newSuppression: ImageVulnerabilitySuppression!
-
-  """Package name of the vulnerability."""
+  newSuppression: ImageVulnerabilitySuppression
   package: String!
-
-  """Previous suppression state (null if not previously suppressed)."""
   previousSuppression: ImageVulnerabilitySuppression
-
-  """Severity of the vulnerability."""
   severity: ImageVulnerabilitySeverity!
 }
 

@@ -151,6 +151,20 @@
 					}
 					... on VulnerabilityUpdatedActivityLogEntry {
 						__typename
+						vulnerabilityUpdated: data {
+							identifier
+							imageRef
+							newSuppression {
+								reason
+								state
+							}
+							package
+							previousSuppression {
+								reason
+								state
+							}
+							severity
+						}
 					}
 				}
 			`)

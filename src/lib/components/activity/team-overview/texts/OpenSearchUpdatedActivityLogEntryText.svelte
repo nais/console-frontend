@@ -29,7 +29,7 @@
 	updated in <Tag size="small" variant={envTagVariant(data.environmentName || '')}
 		>{data.environmentName}</Tag
 	>.
-	<ReadMore header="Updated fields">
+	<ReadMore header="Updated fields" size="small">
 		<dl>
 			{#each data.opensearchData.updatedFields as field (field)}
 				<dt>

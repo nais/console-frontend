@@ -28,6 +28,7 @@
 	import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogEntryText.svelte';
 	import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
 	import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
+	import VulnerabilityUpdatedActivityLogEntryText from './texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -218,6 +219,23 @@
 							... on ValkeyDeletedActivityLogEntry {
 								__typename
 							}
+							... on VulnerabilityUpdatedActivityLogEntry {
+								__typename
+								vulnerabilityUpdated: data {
+									identifier
+									imageRef
+									newSuppression {
+										reason
+										state
+									}
+									package
+									previousSuppression {
+										reason
+										state
+									}
+									severity
+								}
+							}
 						}
 					}
 				}
@@ -276,6 +294,8 @@
 				return ValkeyDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ValkeyUpdatedActivityLogEntry':
 				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'VulnerabilityUpdatedActivityLogEntry':
+				return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}
