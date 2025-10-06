@@ -58,7 +58,6 @@
 
 	let selectedReason: ValueOf<typeof ImageVulnerabilitySuppressionState> | '' = $state('');
 	let inputText = $state('');
-	let suppressed: boolean = $state(false);
 
 	let team = page.params.team;
 	let env = page.params.env;
@@ -121,7 +120,7 @@
 			analysisState: selectedReason,
 			comment: inputText,
 			vulnerabilityID: finding.id,
-			suppress: suppressed
+			suppress: true
 		});
 
 		if ($suppress.errors) {
@@ -176,7 +175,6 @@
 	const init = (finding: FindingType) => {
 		inputText = finding.suppression?.reason ?? '';
 		selectedReason = finding.suppression?.state ?? '';
-		suppressed = finding.suppression !== null;
 	};
 
 	$effect(() => {
