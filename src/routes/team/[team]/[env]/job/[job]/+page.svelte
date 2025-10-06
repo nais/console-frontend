@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/SidebarActivity.svelte';
+	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
 	import List from '$lib/components/list/List.svelte';

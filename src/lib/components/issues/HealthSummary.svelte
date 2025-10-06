@@ -1,91 +1,94 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { Heading, Loader } from '@nais/ds-svelte-community';
-	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { graphql } from '$houdini';
+	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import IssueListItem from '../list/IssueListItem.svelte';
+	import List from '../list/List.svelte';
 
 	interface Props {
-		todo: number | undefined;
-		warning: number | undefined;
-		critical: number | undefined;
-		teamSlug: string | undefined;
-		loading: boolean;
+		teamSlug: string;
 	}
 
-	let { todo, warning, critical, teamSlug, loading }: Props = $props();
+	let { teamSlug }: Props = $props();
+
+	const first = 5;
+
+	const teamHealth = graphql(`
+		query TeamHealth($teamSlug: Slug!, $first: Int!) {
+			team(slug: $teamSlug) {
+				issues(first: $first) @paginate(mode: Infinite) {
+					pageInfo {
+						endCursor
+						hasNextPage
+						totalCount
+					}
+					edges {
+						node {
+							id
+							severity
+							...IssueFragment
+						}
+					}
+				}
+			}
+		}
+	`);
+
+	$effect.pre(() => {
+		teamHealth.fetch({ variables: { teamSlug, first } });
+	});
+
+	async function loadMore() {
+		await teamHealth.loadNextPage({ first: 5 });
+	}
 </script>
 
-<div class="card issues">
-	<Heading level="2" size="small">Health</Heading>
-	{#if !loading}
-		{#if (critical ?? 0) > 0}
-			<div class="summary critical">
-				<CircleFillIcon />
-				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{(critical ?? 0) > 0 ? critical : 'No '}
-					critical issue{(critical ?? 0) !== 1 ? 's' : ''}</span
-				>
-			</div>
-		{/if}
-		{#if (warning ?? 0) > 0}
-			<div class="summary warning">
-				<CircleFillIcon />
-				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{(warning ?? 0) > 0 ? warning : 'No'}
-					warning{(warning ?? 0) !== 1 ? 's' : ''}</span
-				>
-			</div>
-		{/if}
-		{#if (todo ?? 0) > 0}
-			<div class="summary todo">
-				<CircleFillIcon />
+<div class="issues-wrapper">
+	<Heading level="2" size="small" spacing><a href="/team/{teamSlug}/issues">Health</a></Heading>
 
-				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
-					>{(todo ?? 0) > 0 ? todo : 'No'}
-					todo{(todo ?? 0) !== 1 ? 's' : ''}</span
-				>
-			</div>
-		{/if}
-		{#if (critical ?? 0) == 0 && (warning ?? 0) == 0 && (todo ?? 0) == 0}
+	{#if !$teamHealth.data}
+		<!-- Første innlasting: vis loader uansett fetching-flagget -->
+		<div style="display: flex; justify-content: center; align-items: center; height: 290px;">
+			<Loader size="3xlarge" />
+		</div>
+	{:else}
+		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
+			<List
+				title="{$teamHealth.data?.team?.issues?.edges?.length ?? 0} of {$teamHealth.data?.team
+					?.issues?.pageInfo?.totalCount ?? 0} issues"
+			>
+				{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
+					<IssueListItem item={issue.node} />
+				{/each}
+			</List>
+		{:else if !$teamHealth.fetching}
+			<!-- Kun når vi har data, og ikke fetcher, men lista er tom -->
 			<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold">
 				No issues found
 			</span>
 		{/if}
-	{:else}
-		<div style="display: flex; justify-content: center; align-items: center; height: 290px;">
-			<Loader size="3xlarge" />
-		</div>
+
+		<!-- Valgfritt: liten “background” loader ved refetch/paginate -->
+		{#if $teamHealth.fetching}
+			<div style="display: flex; justify-content: center; align-items: center; height: 60px;">
+				<Loader size="large" />
+			</div>
+		{/if}
 	{/if}
-	{#if !page.url.pathname.includes('/issues')}
-		<a href="/team/{teamSlug}/issues" style:align-self="end">View Team Issues</a>
+
+	{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
+		<div class="load-more">
+			<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
+		</div>
 	{/if}
 </div>
 
 <style>
-	.card {
-		/* padding: var(--ax-space-16) var(--ax-space-20); */
-		align-items: stretch;
+	.issues-wrapper {
+		padding-bottom: var(--spacing-layout);
 	}
-
-	.issues {
+	.load-more {
 		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		padding-bottom: var(--ax-space-32);
-	}
-
-	.summary {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.todo {
-		color: light-dark(var(--ax-bg-info-strong), var(--ax-bg-info-strong));
-	}
-	.warning {
-		color: light-dark(var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed));
-	}
-	.critical {
-		color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong));
+		justify-content: center;
+		padding: var(--ax-space-4) 0;
 	}
 </style>

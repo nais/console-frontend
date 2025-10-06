@@ -1,17 +1,20 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 
 	let {
 		data
 	}: {
-		data: SidebarActivityLogFragment$data['activityLog']['nodes'][number];
+		data: Extract<
+			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
+			{ __typename: 'SecretDeletedActivityLogEntry' }
+		>;
 	} = $props();
 </script>
 
 <div>
-	{data.message}<br />
+	Secret <strong>{data.resourceName}</strong> was deleted
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />

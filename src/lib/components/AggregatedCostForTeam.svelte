@@ -51,7 +51,9 @@
 
 <div class="wrapper">
 	<div class="header">
-		<Heading level="4" size="small" spacing>Aggregated Cost for {teamSlug}</Heading>
+		<Heading level="2" size="small" spacing
+			><a href="/team/{teamSlug}/cost">Aggregated Cost for {teamSlug}</a></Heading
+		>
 		<HelpText title="Aggregated team cost"
 			>Aggregated cost for team. Current month is estimated.</HelpText
 		>
@@ -98,10 +100,6 @@
 				valueField="cost"
 				class="h-[250px]"
 			/>
-
-			<a href="/team/{teamSlug}/cost" style:align-self="end" style:margin-top="auto"
-				>View Cost for Team</a
-			>
 		{:else}
 			<div class="loading h-[250px]">
 				<Loader size="3xlarge" />

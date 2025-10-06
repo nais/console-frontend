@@ -1,5 +1,4 @@
-query TeamOverview($team: Slug!, $activityLogFilter: ActivityLogFilter!)
-@cache(policy: NetworkOnly) {
+query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		firingAlerts: alerts(filter: { states: [FIRING] }) {
 			pageInfo {
@@ -95,7 +94,5 @@ query TeamOverview($team: Slug!, $activityLogFilter: ActivityLogFilter!)
 				triggerUrl
 			}
 		}
-
-		...SidebarActivityLogFragment @with(limit: 15, filter: $activityLogFilter) @mask_disable
 	}
 }
