@@ -1066,7 +1066,29 @@ type ConfirmTeamDeletionPayload {
 }
 
 """Container image."""
-type ContainerImage implements Node {
+type ContainerImage implements ActivityLogger & Node {
+  """Activity log associated with the container image."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+
   """
   Whether the image has a software bill of materials (SBOM) attached to it.
   """
@@ -3264,9 +3286,6 @@ input OpenSearchOrder {
 
 enum OpenSearchOrderField {
   ENVIRONMENT
-
-  """Order OpenSearches by issue severity"""
-  ISSUES
   NAME
   STATE
 }
@@ -5223,9 +5242,6 @@ enum SqlInstanceOrderField {
   CPU_UTILIZATION
   DISK_UTILIZATION
   ENVIRONMENT
-
-  """Order SqlInstances by issue severity"""
-  ISSUES
   MEMORY_UTILIZATION
   NAME
   STATE
@@ -7491,9 +7507,6 @@ input ValkeyOrder {
 
 enum ValkeyOrderField {
   ENVIRONMENT
-
-  """Order Valkeys by issue severity"""
-  ISSUES
   NAME
   STATE
 }
@@ -7557,6 +7570,23 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
   oldValue: String
 }
 
+type VulnerabilityActivityLogEntryData {
+  """The unique identifier of the vulnerability. E.g. CVE-****-****."""
+  identifier: String!
+
+  """The new suppression state of the vulnerability."""
+  newSuppression: ImageVulnerabilitySuppression
+
+  """The package affected by the vulnerability."""
+  package: String!
+
+  """The previous suppression state of the vulnerability."""
+  previousSuppression: ImageVulnerabilitySuppression
+
+  """The severity of the vulnerability."""
+  severity: ImageVulnerabilitySeverity!
+}
+
 """Ordering options when fetching vulnerability summaries for workloads."""
 input VulnerabilitySummaryOrder {
   """The direction to order items by."""
@@ -7612,6 +7642,9 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """Creation time of the entry."""
   createdAt: Time!
+
+  """Data associated with the update."""
+  data: VulnerabilityActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
