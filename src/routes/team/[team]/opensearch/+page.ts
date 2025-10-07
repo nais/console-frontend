@@ -33,7 +33,7 @@ export async function load(event) {
 			variables: {
 				team: event.params.team,
 				orderBy: {
-					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.STATE, event.url),
+					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows }),
