@@ -2,7 +2,7 @@
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, ReadMore, Tag } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
 	import '../activity/activity-log.css';
@@ -151,6 +151,19 @@
 					}
 					... on VulnerabilityUpdatedActivityLogEntry {
 						__typename
+						vulnerabilityUpdated: data {
+							identifier
+							package
+							severity
+							previousSuppression {
+								reason
+								state
+							}
+							newSuppression {
+								reason
+								state
+							}
+						}
 					}
 				}
 			`)
@@ -293,6 +306,56 @@
 					{:else if u.revokedTeamSlug}
 						Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance.
 					{/if}
+				{:else if $data.__typename === 'VulnerabilityUpdatedActivityLogEntry'}
+					{@const vuln = $data.vulnerabilityUpdated}
+					{@const hasStateChange = vuln?.previousSuppression?.state !== vuln?.newSuppression?.state}
+					{@const hasReasonChange =
+						vuln?.newSuppression?.reason !== vuln?.previousSuppression?.reason}
+					{@const isNewSuppression =
+						vuln?.newSuppression?.state && !vuln?.previousSuppression?.state}
+					{@const isUnsuppressed = vuln?.previousSuppression?.state && !vuln?.newSuppression?.state}
+					{@const isStateChange = vuln?.newSuppression?.state && vuln?.previousSuppression?.state}
+
+					{#if vuln}
+						{#if hasStateChange}
+							{#if isNewSuppression}
+								Suppressed vulnerability in image {@render ResourceName({
+									name: $data.resourceName,
+									href: link ?? undefined
+								})}
+							{:else if isUnsuppressed}
+								Unsuppressed vulnerability in image {@render ResourceName({
+									name: $data.resourceName,
+									href: link ?? undefined
+								})}
+							{:else if isStateChange}
+								Changed vulnerability suppression in image {@render ResourceName({
+									name: $data.resourceName,
+									href: link ?? undefined
+								})}
+							{:else}
+								Updated vulnerability in image {@render ResourceName({
+									name: $data.resourceName,
+									href: link ?? undefined
+								})}
+							{/if}
+						{:else if hasReasonChange}
+							Updated vulnerability suppression reason in image {@render ResourceName({
+								name: $data.resourceName,
+								href: link ?? undefined
+							})}
+						{:else}
+							Updated vulnerability in image {@render ResourceName({
+								name: $data.resourceName,
+								href: link ?? undefined
+							})}
+						{/if}
+					{:else}
+						Updated vulnerability in image {@render ResourceName({
+							name: $data.resourceName,
+							href: link ?? undefined
+						})}
+					{/if}
 				{:else}
 					{$data.message}
 					{#if link && !$data.message.startsWith('Deleted')}
@@ -309,6 +372,43 @@
 				{/if}
 			</BodyShort>
 
+			{#if $data.__typename === 'VulnerabilityUpdatedActivityLogEntry'}
+				{@const vuln = $data.vulnerabilityUpdated}
+				{@const hasStateChange = vuln?.previousSuppression?.state !== vuln?.newSuppression?.state}
+				{#if vuln}
+					<ReadMore header="Vulnerability details" size="small">
+						<div class="vulnerability-details">
+							<p><strong>Identifier:</strong> {vuln.identifier}</p>
+							<p><strong>Package:</strong> {vuln.package}</p>
+							{#if vuln.severity}
+								<p>
+									<strong>Severity:</strong>
+									<span class="vulnerability-severity severity-{vuln.severity.toLowerCase()}"
+										>{vuln.severity}</span
+									>
+								</p>
+							{/if}
+							{#if hasStateChange}
+								{#if vuln.previousSuppression?.state}
+									<p>
+										<strong>Previous state:</strong>
+										{vuln.previousSuppression.state.replace('_', ' ').toLowerCase()}
+									</p>
+								{/if}
+								{#if vuln.newSuppression?.state}
+									<p>
+										<strong>New state:</strong>
+										{vuln.newSuppression.state.replace('_', ' ').toLowerCase()}
+									</p>
+								{/if}
+							{/if}
+							{#if vuln.newSuppression?.reason}
+								<p><strong>Reason:</strong> {vuln.newSuppression.reason}</p>
+							{/if}
+						</div>
+					</ReadMore>
+				{/if}
+			{/if}
 			<div>
 				<BodyShort size="small" style="color: var(--ax-text-subtle)">
 					<Time time={$data.createdAt} distance={true} />
@@ -318,3 +418,43 @@
 		</div>
 	</div>
 </ListItem>
+
+<style>
+	.vulnerability-severity {
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.125rem 0.375rem;
+		border-radius: 0.25rem;
+		text-transform: uppercase;
+		margin-left: 0.5rem;
+	}
+
+	.severity-critical {
+		background-color: var(--ax-bg-danger);
+		color: var(--ax-text-on-danger);
+	}
+
+	.severity-high {
+		background-color: var(--ax-bg-warning);
+		color: var(--ax-text-on-warning);
+	}
+
+	.severity-medium {
+		background-color: var(--ax-bg-info);
+		color: var(--ax-text-on-info);
+	}
+
+	.severity-low {
+		background-color: var(--ax-bg-subtle);
+		color: var(--ax-text-subtle);
+	}
+
+	.vulnerability-details {
+		margin-top: 0.5rem;
+	}
+
+	.vulnerability-details p {
+		margin: 0.25rem 0;
+		font-size: 0.875rem;
+	}
+</style>
