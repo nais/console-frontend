@@ -1,4 +1,4 @@
-import { load_Valkeys, ValkeyOrderField } from '$houdini';
+import { load_Valkeys, OrderDirection, ValkeyOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
@@ -8,10 +8,19 @@ const rows = 25;
 
 export async function load(event) {
 	const parent = await event.parent();
-	const userInfoData = get(parent.UserInfo);
 
-	if (userInfoData.data?.features.valkey.enabled === false) {
-		error(404, 'Valkey not enabled');
+	const userInfoData = get(parent.UserInfo) as {
+		data?: {
+			features?: {
+				openSearch?: {
+					enabled?: boolean;
+				};
+			};
+		};
+	};
+
+	if (userInfoData.data?.features?.openSearch?.enabled === false) {
+		error(404, 'OpenSearch not enabled');
 	}
 
 	const after = event.url.searchParams.get('after') || '';
@@ -23,8 +32,8 @@ export async function load(event) {
 			variables: {
 				team: event.params.team,
 				orderBy: {
-					field: urlToOrderField(ValkeyOrderField, ValkeyOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url)
+					field: urlToOrderField(ValkeyOrderField, ValkeyOrderField.ISSUES, event.url),
+					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows }),
 				from: startOfMonth(subMonths(new Date(), 12)),
