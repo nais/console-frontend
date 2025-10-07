@@ -307,3 +307,43 @@
 		</div>
 	</div>
 </ListItem>
+
+<style>
+	.vulnerability-severity {
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.125rem 0.375rem;
+		border-radius: 0.25rem;
+		text-transform: uppercase;
+		margin-left: 0.5rem;
+	}
+
+	.severity-critical {
+		background-color: var(--ax-bg-danger);
+		color: var(--ax-text-on-danger);
+	}
+
+	.severity-high {
+		background-color: var(--ax-bg-warning);
+		color: var(--ax-text-on-warning);
+	}
+
+	.severity-medium {
+		background-color: var(--ax-bg-info);
+		color: var(--ax-text-on-info);
+	}
+
+	.severity-low {
+		background-color: var(--ax-bg-subtle);
+		color: var(--ax-text-subtle);
+	}
+
+	.vulnerability-details {
+		margin-top: 0.5rem;
+	}
+
+	.vulnerability-details p {
+		margin: 0.25rem 0;
+		font-size: 0.875rem;
+	}
+</style>
