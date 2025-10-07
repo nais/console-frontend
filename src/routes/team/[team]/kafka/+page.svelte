@@ -4,6 +4,7 @@
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
@@ -11,10 +12,24 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { KafkaTopics } = $derived(data);
+
+	let cost = $derived(() => {
+		const costData = $KafkaTopics.data?.team.cost;
+		const teamSlug = $KafkaTopics.data?.team.slug;
+
+		if (!costData || !teamSlug) return null;
+
+		return {
+			costData,
+			teamSlug,
+			pageName: 'Kafka'
+		};
+	});
 </script>
 
 <GraphErrors errors={$KafkaTopics.errors} />
@@ -70,6 +85,21 @@
 					}}
 				/>
 			</div>
+			<div class="right-column">
+				{#if cost()}
+					{@const costData = cost()!}
+					<div>
+						<PersistenceCost
+							pageName={costData.pageName}
+							costData={costData.costData}
+							teamSlug={costData.teamSlug}
+							from={startOfMonth(subMonths(new Date(), 1))}
+							to={endOfYesterday()}
+							service="Kafka Shared"
+						/>
+					</div>
+				{/if}
+			</div>
 		</div>
 	{:else}
 		<div class="content-wrapper">
@@ -89,6 +119,11 @@
 			display: grid;
 			gap: var(--ax-space-24);
 			grid-template-columns: 1fr 300px;
+		}
+
+		.right-column {
+			display: grid;
+			gap: var(--ax-space-24);
 		}
 	</style>
 {/if}
