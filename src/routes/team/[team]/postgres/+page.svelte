@@ -48,7 +48,7 @@
 				{#snippet menu()}
 					<OrderByMenu
 						orderField={SqlInstanceOrderField}
-						defaultOrderField={SqlInstanceOrderField.STATE}
+						defaultOrderField={SqlInstanceOrderField.ISSUES}
 						defaultOrderDirection={OrderDirection.DESC}
 					/>
 				{/snippet}
