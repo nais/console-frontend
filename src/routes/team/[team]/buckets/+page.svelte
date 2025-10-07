@@ -1,51 +1,154 @@
 <script lang="ts">
-	import { BucketOrderField } from '$houdini';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import { BucketOrderField, OrderDirection } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import PersistencePage from '$lib/components/persistence/PersistencePage.svelte';
+	import List from '$lib/components/list/List.svelte';
+	import ListItem from '$lib/components/list/ListItem.svelte';
+	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import CdnBucket from '$lib/components/persistence/CDNBucket.svelte';
+	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
+	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
+	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import { BodyLong } from '@nais/ds-svelte-community';
+	import { envTagVariant } from '$lib/envTagVariant';
+	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Pagination from '$lib/Pagination.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
+	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { Buckets, viewerIsMember } = $derived(data);
+
+	let cost = $derived(() => {
+		const costData = $Buckets.data?.team.cost;
+		const teamSlug = $Buckets.data?.team.slug;
+
+		if (!costData || !teamSlug) return null;
+
+		return {
+			costData,
+			teamSlug,
+			pageName: 'Buckets'
+		};
+	});
 </script>
 
 <GraphErrors errors={$Buckets.errors} />
 
 {#if $Buckets.data}
-	<PersistencePage
-		cdnBucket={$Buckets.data.team.externalResources.cdn?.bucket}
-		{viewerIsMember}
-		cost={{
-			costData: $Buckets.data.team.cost,
-			teamSlug: $Buckets.data.team.slug,
-			pageName: 'Buckets'
-		}}
-		list={$Buckets.data.team.buckets.nodes}
-		pageInfo={$Buckets.data.team.buckets.pageInfo}
-		orderField={BucketOrderField}
-		defaultOrderField={BucketOrderField.NAME}
-		service="Cloud Storage"
-	>
-		{#snippet description()}
-			<BodyLong spacing>
-				Storage buckets are containers for storing and managing data in the cloud.
-				<ExternalLink href={docURL('/persistence/buckets')}
-					>Learn more about Buckets and how to get started.</ExternalLink
-				>
-			</BodyLong>
-		{/snippet}
-		{#snippet notFound()}
+	{#if $Buckets.data.team.buckets.pageInfo.totalCount || $Buckets.data.team.externalResources.cdn?.bucket}
+		<div class="content-wrapper">
 			<div>
-				<BodyLong>
-					<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
-					data in the cloud.
-					<ExternalLink href={docURL('/persistence/buckets')}>
-						Learn more about Buckets and how to get started.
-					</ExternalLink>
+				<BodyLong spacing>
+					Storage buckets are containers for storing and managing data in the cloud.
+					<ExternalLink href={docURL('/persistence/buckets')}
+						>Learn more about Buckets and how to get started.</ExternalLink
+					>
 				</BodyLong>
+
+				{#if $Buckets.data.team.buckets.pageInfo.totalCount}
+					<List title="{$Buckets.data.team.buckets.pageInfo.totalCount} entries">
+						{#snippet menu()}
+							<OrderByMenu
+								orderField={BucketOrderField}
+								defaultOrderField={BucketOrderField.NAME}
+								defaultOrderDirection={OrderDirection.DESC}
+							/>
+						{/snippet}
+						{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
+							<ListItem>
+								<div>
+									<PersistenceLink {instance} />
+									<Tag
+										size="small"
+										variant={envTagVariant(instance.teamEnvironment.environment.name)}
+										>{instance.teamEnvironment.environment.name}</Tag
+									>
+								</div>
+								{#if instance.workload}
+									<div class="right">
+										Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
+									</div>
+								{/if}
+							</ListItem>
+						{/each}
+					</List>
+					<Pagination
+						page={$Buckets.data.team.buckets.pageInfo}
+						loaders={{
+							loadPreviousPage: () =>
+								changeParams(
+									{
+										after: '',
+										before: $Buckets.data?.team.buckets.pageInfo.startCursor ?? ''
+									},
+									{ noScroll: true }
+								),
+							loadNextPage: () =>
+								changeParams(
+									{ before: '', after: $Buckets.data?.team.buckets.pageInfo.endCursor ?? '' },
+									{ noScroll: true }
+								)
+						}}
+					/>
+				{/if}
 			</div>
-		{/snippet}
-	</PersistencePage>
+			<div class="right-column">
+				{#if cost()}
+					{@const costData = cost()!}
+					<div>
+						<PersistenceCost
+							pageName={costData.pageName}
+							costData={costData.costData}
+							teamSlug={costData.teamSlug}
+							from={startOfMonth(subMonths(new Date(), 1))}
+							to={endOfYesterday()}
+							service="Cloud Storage"
+						/>
+					</div>
+				{/if}
+				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+					<div>
+						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
+					</div>
+				{/if}
+			</div>
+		</div>
+	{:else}
+		<div class="content-wrapper">
+			<BodyLong>
+				<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
+				data in the cloud.
+				<ExternalLink href={docURL('/persistence/buckets')}>
+					Learn more about Buckets and how to get started.
+				</ExternalLink>
+			</BodyLong>
+			<div class="right-column">
+				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+					<div>
+						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
+
+	<style>
+		.content-wrapper {
+			display: grid;
+			gap: var(--ax-space-24);
+			grid-template-columns: 1fr 300px;
+		}
+		.right {
+			display: flex;
+			gap: var(--ax-space-6);
+			align-items: center;
+		}
+
+		.right-column {
+			display: grid;
+			gap: var(--ax-space-24);
+		}
+	</style>
 {/if}
