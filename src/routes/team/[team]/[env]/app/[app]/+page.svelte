@@ -76,6 +76,13 @@
 	};
 </script>
 
+{#if $App.data}
+	{@const app = $App.data.team.environment.application}
+	<div class="workload-deploy-wrapper">
+		<WorkloadDeploy workload={app} />
+	</div>
+{/if}
+
 <GraphErrors errors={$App.errors} />
 
 {#if $App.fetching}
@@ -89,8 +96,6 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				<WorkloadDeploy workload={app} />
-
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This application is being deleted. Deletion started <Time
@@ -99,14 +104,16 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-				<div>
-					<Heading level="3" spacing>Issues</Heading>
-					<List>
-						{#each $App.data.team.environment.application.issues.edges as edge (edge.node.id)}
-							<IssueListItem item={edge.node} />
-						{/each}
-					</List>
-				</div>
+				{#if $App.data.team.environment.application.issues.edges.length > 0}
+					<div>
+						<Heading level="3" spacing>Issues</Heading>
+						<List>
+							{#each $App.data.team.environment.application.issues.edges as edge (edge.node.id)}
+								<IssueListItem item={edge.node} />
+							{/each}
+						</List>
+					</div>
+				{/if}
 				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
 					<div class="instances-header">
 						<Heading level="3" size="medium">Instances</Heading>
@@ -210,5 +217,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.workload-deploy-wrapper {
+		margin-top: -2rem;
+		padding-bottom: var(--spacing-layout);
 	}
 </style>

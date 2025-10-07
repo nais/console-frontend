@@ -67,6 +67,13 @@
 	};
 </script>
 
+{#if $Job.data}
+	{@const job = $Job.data.team.environment.job}
+	<div class="workload-deploy-wrapper">
+		<WorkloadDeploy workload={job} />
+	</div>
+{/if}
+
 <GraphErrors errors={$Job.errors} />
 
 {#if $Job.fetching}
@@ -80,8 +87,6 @@
 	<div class="wrapper">
 		<div class="job-content">
 			<div class="main-section">
-				<WorkloadDeploy workload={job} />
-
 				{#if job.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This job is being deleted. Deletion started <Time
@@ -90,14 +95,16 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-				<div>
-					<Heading level="3" spacing>Issues</Heading>
-					<List>
-						{#each $Job.data.team.environment.job.issues.edges as edge (edge.node.id)}
-							<IssueListItem item={edge.node} />
-						{/each}
-					</List>
-				</div>
+				{#if $Job.data.team.environment.job.issues.edges.length > 0}
+					<div>
+						<Heading level="3" spacing>Issues</Heading>
+						<List>
+							{#each $Job.data.team.environment.job.issues.edges as edge (edge.node.id)}
+								<IssueListItem item={edge.node} />
+							{/each}
+						</List>
+					</div>
+				{/if}
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
 						<Heading level="2" size="medium">Runs</Heading>
@@ -157,6 +164,7 @@
 		flex-direction: column;
 		gap: var(--spacing-layout);
 	}
+
 	.job-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;
@@ -173,5 +181,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.workload-deploy-wrapper {
+		margin-top: -2rem;
+		padding-bottom: var(--spacing-layout);
 	}
 </style>
