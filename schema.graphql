@@ -3264,6 +3264,9 @@ input OpenSearchOrder {
 
 enum OpenSearchOrderField {
   ENVIRONMENT
+
+  """Order OpenSearches by issue severity"""
+  ISSUES
   NAME
   STATE
 }
@@ -5220,6 +5223,9 @@ enum SqlInstanceOrderField {
   CPU_UTILIZATION
   DISK_UTILIZATION
   ENVIRONMENT
+
+  """Order SqlInstances by issue severity"""
+  ISSUES
   MEMORY_UTILIZATION
   NAME
   STATE
@@ -7485,6 +7491,9 @@ input ValkeyOrder {
 
 enum ValkeyOrderField {
   ENVIRONMENT
+
+  """Order Valkeys by issue severity"""
+  ISSUES
   NAME
   STATE
 }
