@@ -2,16 +2,16 @@
 :root,
 html {
 	--activity-shadow-rest-1: rgba(0, 0, 0, 0.06);
-	--activity-shadow-hover-1: rgba(0, 0, 0, 0.12);
-	--activity-shadow-hover-2: rgba(0, 0, 0, 0.14);
+	/* --activity-shadow-hover-1: rgba(0, 0, 0, 0.12); */
+	/* --activity-shadow-hover-2: rgba(0, 0, 0, 0.14); */
 }
 
 @media (prefers-color-scheme: dark) {
 	:root,
 	html {
 		--activity-shadow-rest-1: rgba(255, 255, 255, 0.06);
-		--activity-shadow-hover-1: rgba(255, 255, 255, 0.1);
-		--activity-shadow-hover-2: rgba(255, 255, 255, 0.12);
+		/* --activity-shadow-hover-1: rgba(255, 255, 255, 0.1); */
+		/* --activity-shadow-hover-2: rgba(255, 255, 255, 0.12); */
 	}
 }
 
@@ -27,8 +27,8 @@ html {
 	.aksel-theme.dark
 ) {
 	--activity-shadow-rest-1: rgba(255, 255, 255, 0.06);
-	--activity-shadow-hover-1: rgba(255, 255, 255, 0.1);
-	--activity-shadow-hover-2: rgba(255, 255, 255, 0.12);
+	/* --activity-shadow-hover-1: rgba(255, 255, 255, 0.1); */
+	/* --activity-shadow-hover-2: rgba(255, 255, 255, 0.12); */
 }
 
 /* ---------- Timeline layout (optional container helpers) ---------- */
@@ -86,12 +86,12 @@ html {
 		box-shadow 0.15s ease-in-out;
 }
 
-.activity-icon:hover {
+/* .activity-icon:hover {
 	transform: translateY(-1px);
 	box-shadow:
 		0 4px 10px var(--activity-shadow-hover-1),
 		0 16px 28px var(--activity-shadow-hover-2);
-}
+} */
 
 /* Neutral fallback (uses theme surfaces) */
 .activity-icon.neutral {
