@@ -6,28 +6,28 @@
 
 	import { activityIconClassFromEntry, icons } from '../activity-log-icons';
 	import '../activity-log.css';
-	import ApplicationRestartedActivityLogEntryText from './texts/ApplicationRestartedActivityLogEntryText.svelte';
-	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
-	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
-	import DefaultText from './texts/DefaultText.svelte';
-	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
-	import OpenSearchCreatedActivityLogEntryText from './texts/OpenSearchCreatedActivityLogEntryText.svelte';
-	import OpenSearchDeletedActivityLogEntryText from './texts/OpenSearchDeletedActivityLogEntryText.svelte';
-	import OpenSearchUpdatedActivityLogEntryText from './texts/OpenSearchUpdatedActivityLogEntryText.svelte';
-	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
-	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
-	import ResourceDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
-	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
-	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
-	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
-	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
-	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
-	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
-	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
-	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
-	import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogEntryText.svelte';
-	import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
-	import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
+	import ApplicationRestartedActivityLogEntryText from '../shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
+	import ApplicationScaledActivityLogEntryText from '../shared/texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ClusterAuditActivityLogEntryText from '../shared/texts/ClusterAuditActivityLogEntryText.svelte';
+	import DefaultText from '../shared/texts/DefaultText.svelte';
+	import DeploymentActivityLogEntryText from '../shared/texts/DeploymentActivityLogEntryText.svelte';
+	import OpenSearchCreatedActivityLogEntryText from '../shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
+	import OpenSearchDeletedActivityLogEntryText from '../shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
+	import OpenSearchUpdatedActivityLogEntryText from '../shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import RepositoryAddedActivityLogEntryText from '../shared/texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from '../shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import ResourceDeletedActivityLogEntryText from '../shared/texts/ResourceDeletedActivityLogEntryText.svelte';
+	import SecretCreatedActivityLogEntryText from '../shared/texts/SecretCreatedActivityLogEntryText.svelte';
+	import SecretDeletedActivityLogEntryText from '../shared/texts/SecretDeletedActivityLogEntryText.svelte';
+	import SecretValueAddedActivityLogEntryText from '../shared/texts/SecretValueAddedActivityLogEntryText.svelte';
+	import SecretValueRemovedActivityLogEntryText from '../shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
+	import SecretValueUpdatedActivityLogEntryText from '../shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from '../shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from '../shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from '../shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import ValkeyCreatedActivityLogEntryText from '../shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
+	import ValkeyDeletedActivityLogEntryText from '../shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
+	import ValkeyUpdatedActivityLogEntryText from '../shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -204,7 +204,7 @@
 							... on ValkeyUpdatedActivityLogEntry {
 								__typename
 
-								valkeyUpdated: data {
+								valkeyData: data {
 									updatedFields {
 										field
 										newValue

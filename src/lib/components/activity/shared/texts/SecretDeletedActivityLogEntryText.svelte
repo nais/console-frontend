@@ -1,0 +1,19 @@
+<script lang="ts">
+	import Time from '$lib/Time.svelte';
+	import { BodyShort } from '@nais/ds-svelte-community';
+	import type { ActivityLogEntry } from './types';
+
+	let {
+		data
+	}: {
+		data: ActivityLogEntry<'SecretDeletedActivityLogEntry'>;
+	} = $props();
+</script>
+
+<div>
+	Secret <strong>{data.resourceName}</strong> was deleted
+	<BodyShort textColor="subtle" size="small">
+		By {data.actor}
+		<Time time={data.createdAt} distance />
+	</BodyShort>
+</div>
