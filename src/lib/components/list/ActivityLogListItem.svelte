@@ -281,7 +281,7 @@
 <ListItem>
 	<div style="display: flex; gap: 0.5rem;">
 		<div class={activityIconClassFromEntry($data)}>
-			<Icon size="1.25em" width="1.25em" height="1.25em" />
+			<Icon size="1em" width="1em" height="1em" />
 		</div>
 
 		<div>

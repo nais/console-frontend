@@ -1,7 +1,7 @@
 // src/lib/components/activity/activity-log-icons.ts
 import type { Component } from 'svelte';
 
-// Resource icons (same “shapes” you use elsewhere)
+// Resource icons (same "shapes" you use elsewhere)
 import {
 	BranchingIcon,
 	BriefcaseClockIcon,
@@ -11,7 +11,7 @@ import {
 	PadlockLockedIcon,
 	PersonGroupIcon,
 	RocketIcon,
-	ShieldLockIcon,
+	TerminalIcon,
 	VirusIcon
 } from '@nais/ds-svelte-community/icons';
 
@@ -21,7 +21,7 @@ import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 
 /**
  * ICON SHAPES (what is operated on)
- * Keep this aligned with Icon.svelte’s mental model:
+ * Keep this aligned with Icon.svelte's mental model:
  * - Applications → PackageIcon
  * - Jobs → BriefcaseClockIcon
  * - Secrets → PadlockLockedIcon
@@ -30,7 +30,7 @@ import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
  * - Unleash → UnleashIcon
  * - OpenSearch / Valkey → product icons
  * - Deployments → RocketIcon
- * - Cluster audit → ShieldLockIcon (or Terminal if you prefer)
+ * - Cluster audit → TerminalIcon
  */
 export const icons: { [typename: string]: Component } = {
 	/* Applications (various operations) */
@@ -78,7 +78,7 @@ export const icons: { [typename: string]: Component } = {
 
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
-	ClusterAuditActivityLogEntry: ShieldLockIcon,
+	ClusterAuditActivityLogEntry: TerminalIcon,
 
 	/* Fallback / infra ops */
 	TeamDeployKeyUpdatedActivityLogEntry: CogIcon,

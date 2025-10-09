@@ -1,17 +1,13 @@
-/* ---------- Mandatory shadow variables (yours) ---------- */
+/* ---------- Shadow variables ---------- */
 :root,
 html {
-	--activity-shadow-rest-1: rgba(0, 0, 0, 0.06);
-	--activity-shadow-hover-1: rgba(0, 0, 0, 0.12);
-	--activity-shadow-hover-2: rgba(0, 0, 0, 0.14);
+	--activity-shadow: rgba(0, 0, 0, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
 	:root,
 	html {
-		--activity-shadow-rest-1: rgba(255, 255, 255, 0.06);
-		--activity-shadow-hover-1: rgba(255, 255, 255, 0.1);
-		--activity-shadow-hover-2: rgba(255, 255, 255, 0.12);
+		--activity-shadow: rgba(255, 255, 255, 0.06);
 	}
 }
 
@@ -26,9 +22,7 @@ html {
 	.dark,
 	.aksel-theme.dark
 ) {
-	--activity-shadow-rest-1: rgba(255, 255, 255, 0.06);
-	--activity-shadow-hover-1: rgba(255, 255, 255, 0.1);
-	--activity-shadow-hover-2: rgba(255, 255, 255, 0.12);
+	--activity-shadow: rgba(255, 255, 255, 0.06);
 }
 
 /* ---------- Timeline layout (optional container helpers) ---------- */
@@ -49,8 +43,8 @@ html {
 .activity-item::before {
 	content: '';
 	position: absolute;
-	left: 20px; /* centers under 40px icon */
-	top: 48px;
+	left: 16px; /* centers under 32px icon */
+	top: 40px;
 	bottom: -1px;
 	width: 1px;
 	background: var(--ax-border-neutral-strong);
@@ -69,28 +63,18 @@ html {
 	align-items: center;
 	justify-content: center;
 
-	width: 40px;
-	height: 40px;
+	width: 32px;
+	height: 32px;
 	border-radius: 50%;
 	flex-shrink: 0;
 
-	/* ring + elevation using your vars */
-	border: 2px solid var(--ax-bg-default);
+	/* ring + elevation */
+	border: 1px solid var(--ax-bg-default);
 	box-shadow:
-		0 2px 6px var(--activity-shadow-rest-1),
-		0 10px 18px var(--activity-shadow-rest-1);
+		0 2px 6px var(--activity-shadow),
+		0 10px 18px var(--activity-shadow);
 
 	color: white;
-	transition:
-		transform 0.15s ease-in-out,
-		box-shadow 0.15s ease-in-out;
-}
-
-.activity-icon:hover {
-	transform: translateY(-1px);
-	box-shadow:
-		0 4px 10px var(--activity-shadow-hover-1),
-		0 16px 28px var(--activity-shadow-hover-2);
 }
 
 /* Neutral fallback (uses theme surfaces) */
