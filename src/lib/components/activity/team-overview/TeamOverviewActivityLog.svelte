@@ -339,8 +339,8 @@
 	.item::before {
 		content: '';
 		position: absolute;
-		left: 20px;
-		top: 48px;
+		left: 16px; /* centers under 32px icon */
+		top: 40px;
 		bottom: -1px;
 		width: 1px;
 		background: var(--ax-border-neutral-strong);
