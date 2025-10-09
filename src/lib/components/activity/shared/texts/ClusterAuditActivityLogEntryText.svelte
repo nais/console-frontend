@@ -1,23 +1,21 @@
 <script lang="ts">
-	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ __typename: 'ClusterAuditActivityLogEntry' }
-		>;
+		data: ActivityLogEntry<'ClusterAuditActivityLogEntry'>;
 	} = $props();
 </script>
 
 <div>
 	{data.message}
-	in
-	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag>
+	{#if data.environmentName}
+		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+	{/if}
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

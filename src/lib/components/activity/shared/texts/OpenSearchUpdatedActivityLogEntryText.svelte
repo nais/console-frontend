@@ -1,18 +1,15 @@
 <script lang="ts">
-	import type { TeamOverviewActivityLog$result } from '$houdini';
-	import { resourceTypeToText } from '$lib/components/activity/sidebar/texts/utils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, ReadMore, Tag } from '@nais/ds-svelte-community';
+	import { resourceTypeToText } from '../../sidebar/texts/utils';
 	import { activityLogResourceLink } from '../../utils';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ __typename: 'ValkeyUpdatedActivityLogEntry' }
-		>;
+		data: ActivityLogEntry<'OpenSearchUpdatedActivityLogEntry'>;
 	} = $props();
 </script>
 
@@ -26,12 +23,13 @@
 			data.teamSlug
 		)}>{data.resourceName}</a
 	>
-	updated in <Tag size="small" variant={envTagVariant(data.environmentName || '')}
-		>{data.environmentName}</Tag
-	>.
+	updated
+	{#if data.environmentName}
+		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+	{/if}.
 	<ReadMore header="Updated fields">
 		<dl>
-			{#each data.valkeyUpdated.updatedFields as field (field)}
+			{#each data.opensearchData.updatedFields as field (field)}
 				<dt>
 					<code>{field.field}</code>:
 				</dt>

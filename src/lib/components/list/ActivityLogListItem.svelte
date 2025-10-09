@@ -2,11 +2,40 @@
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import type { Component } from 'svelte';
 	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
+	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import '../activity/activity-log.css';
-	import { activityLogResourceLink } from '../activity/utils';
+	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
+	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
+	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ClusterAuditActivityLogEntryText from '../activity/shared/texts/ClusterAuditActivityLogEntryText.svelte';
+	import DeploymentActivityLogEntryText from '../activity/shared/texts/DeploymentActivityLogEntryText.svelte';
+	import JobDeletedActivityLogEntryText from '../activity/shared/texts/JobDeletedActivityLogEntryText.svelte';
+	import JobTriggeredActivityLogEntryText from '../activity/shared/texts/JobTriggeredActivityLogEntryText.svelte';
+	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
+	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
+	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import RepositoryAddedActivityLogEntryText from '../activity/shared/texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import SecretCreatedActivityLogEntryText from '../activity/shared/texts/SecretCreatedActivityLogEntryText.svelte';
+	import SecretDeletedActivityLogEntryText from '../activity/shared/texts/SecretDeletedActivityLogEntryText.svelte';
+	import SecretValueAddedActivityLogEntryText from '../activity/shared/texts/SecretValueAddedActivityLogEntryText.svelte';
+	import SecretValueRemovedActivityLogEntryText from '../activity/shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
+	import SecretValueUpdatedActivityLogEntryText from '../activity/shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import ServiceMaintenanceActivityLogEntryText from '../activity/shared/texts/ServiceMaintenanceActivityLogEntryText.svelte';
+	import TeamEnvironmentUpdatedActivityLogEntryText from '../activity/shared/texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from '../activity/shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from '../activity/shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from '../activity/shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import TeamUpdatedActivityLogEntryText from '../activity/shared/texts/TeamUpdatedActivityLogEntryText.svelte';
+	import UnleashInstanceUpdatedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceUpdatedActivityLogEntryText.svelte';
+	import ValkeyCreatedActivityLogEntryText from '../activity/shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
+	import ValkeyDeletedActivityLogEntryText from '../activity/shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
+	import ValkeyUpdatedActivityLogEntryText from '../activity/shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
+	import VulnerabilityUpdatedActivityLogEntryText from '../activity/shared/texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
 	import ListItem from './ListItem.svelte';
 
 	interface Props {
@@ -67,7 +96,13 @@
 						__typename
 					}
 					... on OpenSearchUpdatedActivityLogEntry {
-						__typename
+						opensearchData: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
 					}
 					... on RepositoryAddedActivityLogEntry {
 						__typename
@@ -147,10 +182,29 @@
 						__typename
 					}
 					... on ValkeyUpdatedActivityLogEntry {
-						__typename
+						valkeyData: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
 					}
 					... on VulnerabilityUpdatedActivityLogEntry {
 						__typename
+						vulnerabilityUpdated: data {
+							identifier
+							package
+							severity
+							previousSuppression {
+								reason
+								state
+							}
+							newSuppression {
+								reason
+								state
+							}
+						}
 					}
 				}
 			`)
@@ -159,162 +213,132 @@
 
 	const Icon = $derived(icons[$data.__typename] || RocketIcon);
 
-	const properServiceName = (t: string) =>
-		t === 'OPENSEARCH' ? 'OpenSearch' : t === 'VALKEY' ? 'Valkey' : 'service';
-
-	// Svelte 5 runes
-	const env = $derived($data.environmentName ?? '');
-	const link = $derived(
-		activityLogResourceLink(env, $data.resourceType, $data.resourceName, $data.teamSlug)
-	);
-	const isJob = $derived($data.resourceType === 'JOB');
-
-	const secretValue = $derived(() => {
-		switch ($data.__typename) {
+	function textComponent(typename: string): Component<{ data: unknown }> | null {
+		switch (typename) {
+			case 'ApplicationDeletedActivityLogEntry':
+				return ApplicationDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationRestartedActivityLogEntry':
+				return ApplicationRestartedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationScaledActivityLogEntry':
+				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ClusterAuditActivityLogEntry':
+				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
+			case 'DeploymentActivityLogEntry':
+				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobDeletedActivityLogEntry':
+				return JobDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobTriggeredActivityLogEntry':
+				return JobTriggeredActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchCreatedActivityLogEntry':
+				return OpenSearchCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchDeletedActivityLogEntry':
+				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchUpdatedActivityLogEntry':
+				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'RepositoryAddedActivityLogEntry':
+				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'RepositoryRemovedActivityLogEntry':
+				return RepositoryRemovedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretCreatedActivityLogEntry':
+				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretDeletedActivityLogEntry':
+				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretValueAddedActivityLogEntry':
-				return { verb: 'Added value of', prep: 'to', name: $data.secretValueAdded?.valueName };
+				return SecretValueAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretValueRemovedActivityLogEntry':
-				return {
-					verb: 'Removed value of',
-					prep: 'from',
-					name: $data.secretValueRemoved?.valueName
-				};
+				return SecretValueRemovedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretValueUpdatedActivityLogEntry':
-				return { verb: 'Updated value of', prep: 'in', name: $data.secretValueUpdated?.valueName };
+				return SecretValueUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ServiceMaintenanceActivityLogEntry':
+				return ServiceMaintenanceActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamEnvironmentUpdatedActivityLogEntry':
+				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamMemberAddedActivityLogEntry':
+				return TeamMemberAddedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamMemberRemovedActivityLogEntry':
+				return TeamMemberRemovedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamMemberSetRoleActivityLogEntry':
+				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamUpdatedActivityLogEntry':
+				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'UnleashInstanceUpdatedActivityLogEntry':
+				return UnleashInstanceUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyCreatedActivityLogEntry':
+				return ValkeyCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyDeletedActivityLogEntry':
+				return ValkeyDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyUpdatedActivityLogEntry':
+				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'VulnerabilityUpdatedActivityLogEntry':
+				return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return null;
 		}
-	});
-</script>
+	}
 
-{#snippet ResourceName({ name, href }: { name: string; href?: string })}
-	<strong
-		>{#if href}<a {href}>{name}</a>{:else}{name}{/if}</strong
-	>
-{/snippet}
+	const TextComponent = $derived(textComponent($data.__typename));
+</script>
 
 <ListItem>
 	<div style="display: flex; gap: 0.5rem;">
-		<div
-			class={activityIconClassFromEntry(
-				$data,
-				$data.__typename === 'ClusterAuditActivityLogEntry'
-					? $data.clusterAuditData?.action
-					: undefined
-			)}
-		>
-			<Icon size="1.25em" width="1.25em" height="1.25em" />
+		<div class={activityIconClassFromEntry($data)}>
+			<Tooltip content={activityTooltip($data.__typename)}>
+				<Icon size="1em" width="1em" height="1em" />
+			</Tooltip>
 		</div>
 
 		<div>
-			<BodyShort size="small" spacing>
-				{#if $data.__typename === 'ApplicationDeletedActivityLogEntry'}
-					Application {@render ResourceName({ name: $data.resourceName })} was deleted
-				{:else if $data.__typename === 'ApplicationRestartedActivityLogEntry'}
-					Application {@render ResourceName({ name: $data.resourceName, href: link ?? undefined })} was
-					restarted
-				{:else if $data.__typename === 'ApplicationScaledActivityLogEntry'}
-					Scaled {$data.appScaled.direction} application
-					{@render ResourceName({ name: $data.resourceName, href: link ?? undefined })}
-					to <strong>{$data.appScaled.newSize}</strong> replicas
-				{:else if $data.__typename === 'ClusterAuditActivityLogEntry'}
+			{#if TextComponent}
+				<TextComponent data={$data} />
+			{:else}
+				<BodyShort size="small" spacing>
 					{$data.message}
-				{:else if $data.__typename === 'DeploymentActivityLogEntry'}
-					{isJob ? 'Job' : 'Application'}
-					{@render ResourceName({ name: $data.resourceName, href: link ?? undefined })} was deployed
-				{:else if $data.__typename === 'JobDeletedActivityLogEntry'}
-					Job {@render ResourceName({ name: $data.resourceName })} was deleted
-				{:else if $data.__typename === 'JobTriggeredActivityLogEntry'}
-					Job {@render ResourceName({ name: $data.resourceName, href: link ?? undefined })} was triggered
-				{:else if $data.__typename === 'RepositoryRemovedActivityLogEntry'}
-					<a href="/team/{$data.teamSlug}/repositories">Repository</a>
-					<strong>{$data.resourceName}</strong> removed from team {$data.teamSlug}.
-				{:else if $data.__typename === 'RepositoryAddedActivityLogEntry'}
-					<a href="/team/{$data.teamSlug}/repositories">Repository</a>
-					<strong>{$data.resourceName}</strong> added to team {$data.teamSlug}.
-				{:else if $data.__typename === 'SecretCreatedActivityLogEntry'}
-					Created secret
-					{#if link}
-						{@render ResourceName({ name: $data.resourceName, href: link })}
-					{:else}
-						{@render ResourceName({ name: $data.resourceName })}
+					{#if $data.environmentName}
+						in <Tag size="small" variant={envTagVariant($data.environmentName)}>
+							{$data.environmentName}
+						</Tag>.
 					{/if}
-				{:else if $data.__typename === 'SecretDeletedActivityLogEntry'}
-					Deleted secret {@render ResourceName({ name: $data.resourceName })}
-				{:else if secretValue() !== null}
-					{secretValue()?.verb} <strong>{secretValue()?.name}</strong>
-					{secretValue()?.prep} secret
-					{#if link}
-						{@render ResourceName({ name: $data.resourceName, href: link })}
-					{:else}
-						{@render ResourceName({ name: $data.resourceName })}
-					{/if}
-				{:else if $data.__typename === 'ServiceMaintenanceActivityLogEntry'}
-					Started maintenance on {properServiceName($data.resourceType)}
-					{#if link}
-						{@render ResourceName({ name: $data.resourceName, href: link })}
-					{:else}
-						{@render ResourceName({ name: $data.resourceName })}
-					{/if}
-				{:else if $data.__typename === 'TeamEnvironmentUpdatedActivityLogEntry'}
-					{$data.message}
-					{#if $data.teamEnvironmentUpdated.updatedFields.length > 0}
-						{#each $data.teamEnvironmentUpdated.updatedFields as field (field)}
-							{field.field}. Changed from {field.oldValue} to {field.newValue}.
-						{/each}
-					{/if}
-				{:else if $data.__typename === 'TeamMemberAddedActivityLogEntry'}
-					{#if $data.teamMemberAdded}
-						Added member <strong>{$data.teamMemberAdded.userEmail || 'unknown email'}</strong>
-						to team as <strong>{$data.teamMemberAdded.role}</strong>.
-					{/if}
-				{:else if $data.__typename === 'TeamMemberRemovedActivityLogEntry'}
-					{#if $data.teamMemberRemoved}
-						Removed <strong>{$data.teamMemberRemoved.userEmail || 'unknown email'}</strong>
-						from team.
-					{/if}
-				{:else if $data.__typename === 'TeamMemberSetRoleActivityLogEntry'}
-					{#if $data.teamMemberSetRole}
-						Set role to <strong>{$data.teamMemberSetRole.role}</strong> for user
-						{$data.teamMemberSetRole.userEmail || 'unknown email'}.
-					{/if}
-				{:else if $data.__typename === 'TeamUpdatedActivityLogEntry'}
-					{$data.message}
-					{#if $data.teamUpdated?.updatedFields.length}
-						{#each $data.teamUpdated?.updatedFields as field (field)}
-							{field.field}. Changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
-						{/each}
-					{/if}
-				{:else if $data.__typename === 'UnleashInstanceUpdatedActivityLogEntry'}
-					{@const u = $data.unleashInstanceUpdated}
-					{$data.message}
-					{#if u.allowedTeamSlug}
-						Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance.
-					{:else if u.revokedTeamSlug}
-						Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance.
-					{/if}
-				{:else}
-					{$data.message}
-					{#if link && !$data.message.startsWith('Deleted')}
-						{@render ResourceName({ name: $data.resourceName, href: link })}
-					{:else}
-						{@render ResourceName({ name: $data.resourceName })}
-					{/if}
-				{/if}
-
-				{#if $data.environmentName}
-					in <Tag size="small" variant={envTagVariant($data.environmentName)}>
-						{$data.environmentName}
-					</Tag>.
-				{/if}
-			</BodyShort>
-
-			<div>
+				</BodyShort>
 				<BodyShort size="small" style="color: var(--ax-text-subtle)">
 					<Time time={$data.createdAt} distance={true} />
 					by {$data.actor}
 				</BodyShort>
-			</div>
+			{/if}
 		</div>
 	</div>
 </ListItem>
+
+<style>
+	.vulnerability-severity {
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.125rem 0.375rem;
+		border-radius: 0.25rem;
+		text-transform: uppercase;
+		margin-left: 0.5rem;
+	}
+
+	.severity-critical {
+		background-color: var(--ax-bg-danger);
+		color: var(--ax-text-on-danger);
+	}
+
+	.severity-high {
+		background-color: var(--ax-bg-warning);
+		color: var(--ax-text-on-warning);
+	}
+
+	.severity-medium {
+		background-color: var(--ax-bg-info);
+		color: var(--ax-text-on-info);
+	}
+
+	.severity-low {
+		background-color: var(--ax-bg-subtle);
+		color: var(--ax-text-subtle);
+	}
+
+	.vulnerability-details {
+		margin-top: 0.5rem;
+	}
+</style>

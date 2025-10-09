@@ -18,12 +18,12 @@
 
 	const allActivities = Object.values(ActivityLogActivityType).map((type) => type);
 
-	let filteredActivities = $state(allActivities);
+	let filtered = $state(allActivities);
 
 	let allActivitiesButtonState: boolean | 'indeterminate' = $derived(
-		filteredActivities.length === allActivities.length
+		filtered.length === allActivities.length
 			? true
-			: filteredActivities.length === 0
+			: filtered.length === 0
 				? false
 				: 'indeterminate'
 	);
@@ -97,8 +97,7 @@
 				first: 20,
 				after: undefined,
 				filter: {
-					activityTypes:
-						filteredActivities.length === allActivities.length ? [] : filteredActivities
+					activityTypes: filtered.length === allActivities.length ? [] : filtered.toSorted()
 				}
 			} as ActivityLog$input
 		});
@@ -140,7 +139,7 @@
 							<ActionMenuCheckboxItem
 								checked={allActivitiesButtonState}
 								onchange={(checked) => {
-									filteredActivities = checked ? [...allActivities] : [];
+									filtered = checked ? [...allActivities] : [];
 									filterActivities();
 								}}
 							>
@@ -151,12 +150,10 @@
 									<div class="activity-group-label">{group}</div>
 									{#each filteredGroup(types) as type (type)}
 										<ActionMenuCheckboxItem
-											checked={filteredActivities.includes(type as ActivityLogActivityType$options)}
+											checked={filtered.includes(type as ActivityLogActivityType$options)}
 											onchange={(checked) => {
 												const t = type as ActivityLogActivityType$options;
-												filteredActivities = checked
-													? [...filteredActivities, t]
-													: filteredActivities.filter((a) => a !== t);
+												filtered = checked ? [...filtered, t] : filtered.filter((a) => a !== t);
 
 												filterActivities();
 											}}

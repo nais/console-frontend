@@ -1,16 +1,13 @@
 <script lang="ts">
-	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ __typename: 'SecretValueAddedActivityLogEntry' }
-		>;
+		data: ActivityLogEntry<'SecretValueAddedActivityLogEntry'>;
 	} = $props();
 </script>
 

@@ -1,33 +1,34 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
-	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
 	import { activityIconClassFromEntry, icons } from '../activity-log-icons';
+	import { activityTooltip } from '../activity-log-tooltip';
 	import '../activity-log.css';
-	import ApplicationRestartedActivityLogEntryText from './texts/ApplicationRestartedActivityLogEntryText.svelte';
-	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
-	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
-	import DefaultText from './texts/DefaultText.svelte';
-	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
-	import OpenSearchCreatedActivityLogEntryText from './texts/OpenSearchCreatedActivityLogEntryText.svelte';
-	import OpenSearchDeletedActivityLogEntryText from './texts/OpenSearchDeletedActivityLogEntryText.svelte';
-	import OpenSearchUpdatedActivityLogEntryText from './texts/OpenSearchUpdatedActivityLogEntryText.svelte';
-	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
-	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
-	import ResourceDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
-	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
-	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
-	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
-	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
-	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
-	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
-	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
-	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
-	import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogEntryText.svelte';
-	import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
-	import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
+	import ApplicationRestartedActivityLogEntryText from '../shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
+	import ApplicationScaledActivityLogEntryText from '../shared/texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ClusterAuditActivityLogEntryText from '../shared/texts/ClusterAuditActivityLogEntryText.svelte';
+	import DefaultText from '../shared/texts/DefaultText.svelte';
+	import DeploymentActivityLogEntryText from '../shared/texts/DeploymentActivityLogEntryText.svelte';
+	import OpenSearchCreatedActivityLogEntryText from '../shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
+	import OpenSearchDeletedActivityLogEntryText from '../shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
+	import OpenSearchUpdatedActivityLogEntryText from '../shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import RepositoryAddedActivityLogEntryText from '../shared/texts/RepositoryAddedActivityLogEntryText.svelte';
+	import RepositoryRemovedActivityLogEntryText from '../shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import ResourceDeletedActivityLogEntryText from '../shared/texts/ResourceDeletedActivityLogEntryText.svelte';
+	import SecretCreatedActivityLogEntryText from '../shared/texts/SecretCreatedActivityLogEntryText.svelte';
+	import SecretDeletedActivityLogEntryText from '../shared/texts/SecretDeletedActivityLogEntryText.svelte';
+	import SecretValueAddedActivityLogEntryText from '../shared/texts/SecretValueAddedActivityLogEntryText.svelte';
+	import SecretValueRemovedActivityLogEntryText from '../shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
+	import SecretValueUpdatedActivityLogEntryText from '../shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import TeamMemberAddedActivityLogEntryText from '../shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
+	import TeamMemberRemovedActivityLogEntryText from '../shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
+	import TeamMemberSetRoleActivityLogEntryText from '../shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import ValkeyCreatedActivityLogEntryText from '../shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
+	import ValkeyDeletedActivityLogEntryText from '../shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
+	import ValkeyUpdatedActivityLogEntryText from '../shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -204,7 +205,7 @@
 							... on ValkeyUpdatedActivityLogEntry {
 								__typename
 
-								valkeyUpdated: data {
+								valkeyData: data {
 									updatedFields {
 										field
 										newValue
@@ -295,12 +296,15 @@
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
-		{#each $activityLogQuery.data?.team?.activityLog.edges || [] as { node: entry } (entry.id)}
+		{#each $activityLogQuery.data?.team?.activityLog.edges || [] as { node: entry }, i (entry.id)}
 			{@const Icon = icons[entry.__typename] || RocketIcon}
 			{@const TextComponent = textComponent(entry.__typename)}
-			<div class="item">
+			{@const isLast = i === ($activityLogQuery.data?.team?.activityLog.edges?.length ?? 0) - 1}
+			<div class="item" class:last-item={isLast}>
 				<div class={activityIconClassFromEntry(entry)}>
-					<Icon size="1.25em" width="1.25em" height="1.25em" />
+					<Tooltip content={activityTooltip(entry.__typename)}>
+						<Icon size="1em" width="1em" height="1em" />
+					</Tooltip>
 				</div>
 				<div class="content">
 					<TextComponent data={entry} />
@@ -330,24 +334,27 @@
 	.item {
 		display: flex;
 		position: relative;
-		padding: var(--ax-space-4) 0;
+		padding-bottom: var(--ax-space-4);
 		gap: var(--ax-space-12);
 		align-items: flex-start;
 	}
 
 	/* vertical timeline line */
-	.item::before {
+	.item:not(.last-item)::before {
 		content: '';
 		position: absolute;
-		left: 20px;
-		top: 48px;
-		bottom: -1px;
-		width: 1px;
-		background: var(--ax-border-neutral-strong);
+		left: 16px; /* centers under 32px icon */
+		top: 20px;
+		bottom: 0;
+		width: 2px;
+		background: var(--ax-border-neutral-subtleA);
 		z-index: 0;
 	}
-	.item:last-child::before {
-		display: none;
+
+	/* Add background to icon to block the line */
+	.item :global(.activity-icon) {
+		background: var(--ax-bg-default);
+		border-radius: 50%;
 	}
 
 	.content {

@@ -1,18 +1,15 @@
 <script lang="ts">
-	import type { TeamOverviewActivityLog$result } from '$houdini';
+	import { resourceTypeToText } from '$lib/components/activity/sidebar/texts/utils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { resourceTypeToText } from '../../sidebar/texts/utils';
 	import { activityLogResourceLink } from '../../utils';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ resourceType: string; resourceName: string; environmentName: string | null }
-		>;
+		data: ActivityLogEntry<'OpenSearchCreatedActivityLogEntry'>;
 	} = $props();
 </script>
 
@@ -26,9 +23,10 @@
 			data.teamSlug
 		)}>{data.resourceName}</a
 	>
-	created in
-	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag
-	>.
+	created
+	{#if data.environmentName}
+		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+	{/if}.
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

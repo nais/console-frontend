@@ -1,22 +1,18 @@
 <script lang="ts">
-	import type { TeamOverviewActivityLog$result } from '$houdini';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			TeamOverviewActivityLog$result['team']['activityLog']['edges'][number]['node'],
-			{ __typename: 'SecretValueRemovedActivityLogEntry' }
-		>;
+		data: ActivityLogEntry<'SecretCreatedActivityLogEntry'>;
 	} = $props();
 </script>
 
 <div>
-	Value <strong>{data.secretValueRemoved.valueName}</strong> in secret
-	<a
+	Secret <a
 		href={activityLogResourceLink(
 			data.environmentName ?? '',
 			data.resourceType,
@@ -24,7 +20,7 @@
 			data.teamSlug
 		)}>{data.resourceName}</a
 	>
-	was removed
+	created
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />
