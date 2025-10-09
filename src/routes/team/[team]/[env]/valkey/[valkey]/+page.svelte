@@ -243,7 +243,7 @@
 				{/if}
 			</div>
 			<div>
-				<Heading level="3">Status</Heading>
+				<Heading level="3">State</Heading>
 				<BodyShort>{instance.state}</BodyShort>
 			</div>
 			<div>
