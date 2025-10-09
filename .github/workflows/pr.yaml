@@ -11,28 +11,32 @@ jobs:
     name: Lint and check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: npm install
-        run: |-
-          npm install --ci
-          npx svelte-kit sync
-      - name: npm run check
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Sync SvelteKit
+        run: npx svelte-kit sync
+      - name: Type check
         run: npm run check
-      - name: npm run lint
+      - name: Lint
         run: npm run lint
-      - name: npm run build
+      - name: Build
         run: npm run build
-      - name: helm lint
+      - name: Helm lint
         run: helm lint --strict ./charts
 
   build_push:
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     name: Build and push
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: nais/platform-build-push-sign@main
         id: build-push-sign
         with:
@@ -41,9 +45,9 @@ jobs:
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
           push: true
       - uses: azure/setup-helm@v4
-        name: 'Setup Helm'
+        name: "Setup Helm"
         with:
-          version: '3.8.0'
+          version: "3.8.0"
       - name: Build Chart
         run: |-
           sed -i "s/^version: .*/version: ${{ steps.build-push-sign.outputs.version }}/g" charts/Chart.yaml

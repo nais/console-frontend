@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - main
-    paths-ignore: scripts/tunnel.sh
+    paths-ignore:
+      - "**.md"
 
 env:
   NAME: console-frontend
@@ -13,24 +14,35 @@ jobs:
     outputs:
       version: ${{ steps.build-push-sign.outputs.version }}
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
     name: Build and push
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
-      - run: npm install && npm run lint && npm run build && npm run check
-      - uses: nais/platform-build-push-sign@main # ratchet:nais/platform-build-push-sign@main
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Type check
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - uses: nais/platform-build-push-sign@main
         id: build-push-sign
         with:
           name: ${{ env.NAME }}
           google_service_account: gh-${{ env.NAME }}
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
           push: true
-      - uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab # ratchet:azure/setup-helm@v1
-        name: 'Setup Helm'
+      - uses: azure/setup-helm@v4
+        name: "Setup Helm"
         with:
-          version: '3.8.0'
+          version: "3.8.0"
       - name: Build Chart
         run: |-
           sed -i "s/^version: .*/version: ${{ steps.build-push-sign.outputs.version }}/g" charts/Chart.yaml
