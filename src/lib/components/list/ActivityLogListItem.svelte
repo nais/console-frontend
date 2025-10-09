@@ -2,10 +2,11 @@
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
+	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import '../activity/activity-log.css';
 	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
 	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
@@ -281,7 +282,9 @@
 <ListItem>
 	<div style="display: flex; gap: 0.5rem;">
 		<div class={activityIconClassFromEntry($data)}>
-			<Icon size="1em" width="1em" height="1em" />
+			<Tooltip content={activityTooltip($data.__typename)}>
+				<Icon size="1em" width="1em" height="1em" />
+			</Tooltip>
 		</div>
 
 		<div>

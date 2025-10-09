@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
-	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
 	import { activityIconClassFromEntry, icons } from '../activity-log-icons';
+	import { activityTooltip } from '../activity-log-tooltip';
 	import '../activity-log.css';
 	import ApplicationRestartedActivityLogEntryText from '../shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../shared/texts/ApplicationScaledActivityLogEntryText.svelte';
@@ -300,7 +301,9 @@
 			{@const TextComponent = textComponent(entry.__typename)}
 			<div class="item">
 				<div class={activityIconClassFromEntry(entry)}>
-					<Icon size="1em" width="1em" height="1em" />
+					<Tooltip content={activityTooltip(entry.__typename)}>
+						<Icon size="1em" width="1em" height="1em" />
+					</Tooltip>
 				</div>
 				<div class="content">
 					<TextComponent data={entry} />
