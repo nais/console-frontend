@@ -296,10 +296,11 @@
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
-		{#each $activityLogQuery.data?.team?.activityLog.edges || [] as { node: entry } (entry.id)}
+		{#each $activityLogQuery.data?.team?.activityLog.edges || [] as { node: entry }, i (entry.id)}
 			{@const Icon = icons[entry.__typename] || RocketIcon}
 			{@const TextComponent = textComponent(entry.__typename)}
-			<div class="item">
+			{@const isLast = i === ($activityLogQuery.data?.team?.activityLog.edges?.length ?? 0) - 1}
+			<div class="item" class:last-item={isLast}>
 				<div class={activityIconClassFromEntry(entry)}>
 					<Tooltip content={activityTooltip(entry.__typename)}>
 						<Icon size="1em" width="1em" height="1em" />
@@ -333,24 +334,27 @@
 	.item {
 		display: flex;
 		position: relative;
-		padding: var(--ax-space-4) 0;
+		padding-bottom: var(--ax-space-4);
 		gap: var(--ax-space-12);
 		align-items: flex-start;
 	}
 
 	/* vertical timeline line */
-	.item::before {
+	.item:not(.last-item)::before {
 		content: '';
 		position: absolute;
 		left: 16px; /* centers under 32px icon */
-		top: 40px;
-		bottom: -1px;
-		width: 1px;
-		background: var(--ax-border-neutral-strong);
+		top: 20px;
+		bottom: 0;
+		width: 2px;
+		background: var(--ax-border-neutral-subtleA);
 		z-index: 0;
 	}
-	.item:last-child::before {
-		display: none;
+
+	/* Add background to icon to block the line */
+	.item :global(.activity-icon) {
+		background: var(--ax-bg-default);
+		border-radius: 50%;
 	}
 
 	.content {

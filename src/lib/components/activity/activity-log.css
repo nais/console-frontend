@@ -46,9 +46,8 @@ html {
 	left: 16px; /* centers under 32px icon */
 	top: 40px;
 	bottom: -1px;
-	width: 1px;
-	background: var(--ax-border-neutral-strong);
-	opacity: 0.7;
+	width: 2px;
+	background: var(--ax-border-neutral-subtleA);
 }
 
 .activity-item:last-child::before {
