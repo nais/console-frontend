@@ -280,14 +280,7 @@
 
 <ListItem>
 	<div style="display: flex; gap: 0.5rem;">
-		<div
-			class={activityIconClassFromEntry(
-				$data,
-				$data.__typename === 'ClusterAuditActivityLogEntry'
-					? $data.clusterAuditData?.action
-					: undefined
-			)}
-		>
+		<div class={activityIconClassFromEntry($data)}>
 			<Icon size="1.25em" width="1.25em" height="1.25em" />
 		</div>
 

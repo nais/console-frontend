@@ -88,43 +88,80 @@ export const icons: { [typename: string]: Component } = {
 };
 
 // activity-log-icons.ts
-export function activityIconClassFromEntry(
-	entry: {
-		__typename: string;
-		appScaled?: { direction?: string | null } | null;
-		clusterAuditData?: { action?: string | null } | null;
-	},
-	auditAction?: string | null
-): string {
+export function activityIconClassFromEntry(entry: {
+	__typename: string;
+	appScaled?: { direction?: string | null } | null;
+	clusterAuditData?: { action?: string | null } | null;
+}): string {
 	const t = entry.__typename;
 	const cls: string[] = ['activity-icon'];
 
-	// Application scaled
-	if (t === 'ApplicationScaledActivityLogEntry') {
-		const dir = (entry.appScaled?.direction || '').toUpperCase();
-		if (dir === 'UP') return cls.concat('scale-up').join(' ');
-		if (dir === 'DOWN') return cls.concat('scale-down').join(' ');
-		return cls.concat('scale-neutral').join(' ');
+	// Resource-based colors (aligned with serviceColor palette)
+
+	// Applications
+	if (/^Application/.test(t)) {
+		return cls.concat('resource-application').join(' ');
 	}
 
-	// Cluster audit (always include 'audit')
+	// Jobs
+	if (/^Job/.test(t)) {
+		return cls.concat('resource-job').join(' ');
+	}
+
+	// Deployments (special event, keep distinct)
+	if (t === 'DeploymentActivityLogEntry') {
+		return cls.concat('resource-deployment').join(' ');
+	}
+
+	// Secrets
+	if (/^Secret/.test(t)) {
+		return cls.concat('resource-secret').join(' ');
+	}
+
+	// Repositories
+	if (/^Repository/.test(t)) {
+		return cls.concat('resource-repository').join(' ');
+	}
+
+	// Team & Members
+	if (/^Team/.test(t)) {
+		return cls.concat('resource-team').join(' ');
+	}
+
+	// OpenSearch (matches chart color)
+	if (/^OpenSearch/.test(t)) {
+		return cls.concat('resource-opensearch').join(' ');
+	}
+
+	// Valkey (matches chart color)
+	if (/^Valkey/.test(t)) {
+		return cls.concat('resource-valkey').join(' ');
+	}
+
+	// Unleash
+	if (/^Unleash/.test(t)) {
+		return cls.concat('resource-unleash').join(' ');
+	}
+
+	// Vulnerabilities (keep distinct for visibility)
+	if (/^Vulnerability/.test(t)) {
+		return cls.concat('resource-vulnerability').join(' ');
+	}
+
+	// Cluster/Kubernetes (matches Kubernetes Engine chart color)
 	if (t === 'ClusterAuditActivityLogEntry') {
-		const a = (auditAction ?? entry.clusterAuditData?.action ?? '').toLowerCase();
-
-		if (a.includes('create') || a === 'apply') return cls.concat('audit', 'audit-create').join(' ');
-		if (a.includes('delete')) return cls.concat('audit', 'audit-delete').join(' ');
-		if (a.includes('update') || a.includes('patch') || a.includes('replace'))
-			return cls.concat('audit', 'audit-update').join(' ');
-		return cls.concat('audit').join(' ');
+		return cls.concat('resource-kubernetes').join(' ');
 	}
 
-	// Generic buckets
-	if (/(Added|Created|Triggered)ActivityLogEntry$/.test(t)) return cls.concat('added').join(' ');
-	if (/(Removed|Deleted)ActivityLogEntry$/.test(t)) return cls.concat('deleted').join(' ');
-	if (/(Updated|SetRole)ActivityLogEntry$/.test(t)) return cls.concat('updated').join(' ');
-	if (/Maintenance/.test(t)) return cls.concat('maintenance').join(' ');
-	if (t.includes('Deployment') || t.includes('Restarted'))
-		return cls.concat('deployment').join(' ');
+	// Reconciler / System operations
+	if (/^Reconciler/.test(t)) {
+		return cls.concat('resource-system').join(' ');
+	}
 
-	return cls.concat('neutral').join(' ');
+	// Service Maintenance (for OpenSearch/Valkey maintenance)
+	if (/Maintenance/.test(t)) {
+		return cls.concat('resource-maintenance').join(' ');
+	}
+
+	return cls.concat('resource-neutral').join(' ');
 }
