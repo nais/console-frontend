@@ -5,6 +5,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import TeamMeanTimeToFixHistoryGraph from '$lib/components/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 
 	let { data }: PageProps = $props();
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
@@ -19,6 +20,9 @@
 				<TeamVulnerabilityHistoryGraph {teamSlug} />
 			</div>
 			<VulnerabilitySummary {teamSlug} />
+			<div>
+				<TeamMeanTimeToFixHistoryGraph {teamSlug} />
+			</div>
 		</div>
 
 		<div>
