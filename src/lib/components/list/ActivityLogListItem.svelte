@@ -341,9 +341,4 @@
 	.vulnerability-details {
 		margin-top: 0.5rem;
 	}
-
-	.vulnerability-details p {
-		margin: 0.25rem 0;
-		font-size: 0.875rem;
-	}
 </style>
