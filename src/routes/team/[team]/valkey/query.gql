@@ -45,6 +45,7 @@ query Valkeys(
 						name
 					}
 				}
+				state
 				issues {
 					pageInfo {
 						totalCount

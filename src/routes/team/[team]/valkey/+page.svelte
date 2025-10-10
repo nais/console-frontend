@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { OrderDirection, ValkeyOrderField } from '$houdini';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import IconLabel from '$lib/components/IconLabel.svelte';
 	import List from '$lib/components/list/List.svelte';
 	import ListItem from '$lib/components/list/ListItem.svelte';
 	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
 	import PageModal, { pageModalClick } from '$lib/components/PageModal.svelte';
 	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/components/persistence/PersistenceLink.svelte';
+	import RunningIndicator from '$lib/components/RunningIndicator.svelte';
+	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
@@ -14,7 +16,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Tag } from '@nais/ds-svelte-community';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 	import CreatePage from './create/+page.svelte';
@@ -86,12 +88,53 @@
 					{/snippet}
 					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
 						<ListItem>
-							<div>
-								<PersistenceLink {instance} />
-								<Tag size="small" variant={envTagVariant(instance.teamEnvironment.environment.name)}
-									>{instance.teamEnvironment.environment.name}</Tag
-								>
-							</div>
+							<IconLabel
+								level="4"
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/app/{instance.name}"
+								size="large"
+								label={instance.name}
+								tag={{
+									label: instance.teamEnvironment.environment.name,
+									variant: envTagVariant(instance.teamEnvironment.environment.name)
+								}}
+							>
+								{#snippet icon()}
+									<TooltipAlignHack
+										content={{
+											RUNNING: 'Instance is running',
+											UNKNOWN: 'Unknown status',
+											POWEROFF: 'Powered off',
+											REBALANCING: 'Rebalancing',
+											REBUILDING: 'Rebuilding'
+										}[instance.state] ?? ''}
+									>
+										{#if instance.state === 'RUNNING'}
+											<RunningIndicator />
+										{:else if instance.state === 'REBALANCING'}
+											<div class="status-indicator rebalancing">
+												<CircleFillIcon />
+											</div>
+										{:else if instance.state === 'REBUILDING'}
+											<div class="status-indicator rebuilding">
+												<CircleFillIcon />
+											</div>
+										{:else if instance.state === 'POWEROFF'}
+											<div
+												style="width: 24px; color: var(--ax-bg-danger-strong); font-size: 0.7rem"
+											>
+												<CircleFillIcon />
+											</div>
+										{:else}
+											<div
+												style="width: 24px; color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
+											>
+												<CircleFillIcon />
+											</div>
+										{/if}
+									</TooltipAlignHack>
+								{/snippet}
+							</IconLabel>
 							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
 								{@const criticalCount = instance.issues?.edges.filter(
 									(e) => e.node.severity === 'CRITICAL'
@@ -210,6 +253,35 @@
 			gap: var(--ax-space-16);
 			width: 100%;
 			align-items: center;
+		}
+
+		/* Valkey state indicators */
+		.status-indicator {
+			width: 24px;
+			font-size: 0.7rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.status-indicator.rebalancing {
+			color: var(--ax-bg-warning-moderate-pressed);
+			animation: pulse 2s ease-in-out infinite;
+		}
+
+		.status-indicator.rebuilding {
+			color: var(--ax-bg-info-strong);
+			animation: pulse 2s ease-in-out infinite;
+		}
+
+		@keyframes pulse {
+			0%,
+			100% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.4;
+			}
 		}
 	</style>
 {/if}
