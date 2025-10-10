@@ -98,15 +98,15 @@
 				data={$costQuery.data.team.cost.monthlySummary.series}
 				dateField="date"
 				valueField="cost"
-				class="h-[250px]"
+				class="h-[300px]"
 			/>
 		{:else}
-			<div class="loading h-[250px]">
+			<div class="loading h-[300px]">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
 	{:else}
-		<div class="loading h-[250px]">
+		<div class="loading h-[300px]">
 			<Loader size="3xlarge" />
 		</div>
 	{/if}

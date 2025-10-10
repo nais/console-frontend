@@ -60,8 +60,7 @@
 	</TooltipAlignHack>
 	<IconLabel
 		href="/team/{teamSlug}/{environmentName}/{resourceType}/{resourceName}"
-		size="large"
-		level="4"
+		size="small"
 		icon={resourceIcon}
 		label={resourceName}
 		tag={{
