@@ -4,7 +4,8 @@
 	import TeamOverviewActivityLog from '$lib/components/activity/team-overview/TeamOverviewActivityLog.svelte';
 	import AggregatedCostForTeam from '$lib/components/AggregatedCostForTeam.svelte';
 	import PrometheusAlert from '$lib/components/errors/PrometheusAlert.svelte';
-	import HealthSummary from '$lib/components/issues/HealthSummary.svelte';
+	import CriticalIssues from '$lib/components/issues/CriticalIssues.svelte';
+	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
@@ -48,17 +49,20 @@
 		{/if}
 
 		<div style="display: flex; flex-direction: column; gap: var(--ax-space-8);">
-			<HealthSummary {teamSlug} />
+			<CriticalIssues {teamSlug} />
 			<TeamOverviewActivityLog {teamSlug} />
 		</div>
 	</div>
 	<div class="right">
-		<div>
-			<VulnerabilitySummary {teamSlug} />
-		</div>
-		<div>
-			<AggregatedCostForTeam {teamSlug} />
-		</div>
+		<IssueSummary
+			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
+			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
+			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
+			{teamSlug}
+			loading={$TeamOverview.fetching}
+		/>
+		<VulnerabilitySummary {teamSlug} />
+		<AggregatedCostForTeam {teamSlug} />
 	</div>
 </div>
 
@@ -71,6 +75,7 @@
 	.left {
 		display: flex;
 		flex-direction: column;
+		gap: var(--spacing-layout);
 	}
 	.right {
 		display: flex;

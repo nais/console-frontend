@@ -2,7 +2,6 @@
 	import { graphql } from '$houdini';
 	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import IssueListItem from '../list/IssueListItem.svelte';
-	import List from '../list/List.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -15,7 +14,7 @@
 	const teamHealth = graphql(`
 		query TeamHealth($teamSlug: Slug!, $first: Int!) {
 			team(slug: $teamSlug) {
-				issues(first: $first) @paginate(mode: Infinite) {
+				issues(first: $first, filter: { severity: CRITICAL }) @paginate(mode: Infinite) {
 					pageInfo {
 						endCursor
 						hasNextPage
@@ -43,7 +42,9 @@
 </script>
 
 <div class="issues-wrapper">
-	<Heading level="2" size="small" spacing><a href="/team/{teamSlug}/issues">Health</a></Heading>
+	<Heading level="2" size="small" spacing
+		><a href="/team/{teamSlug}/issues?severity=CRITICAL">Critical Issues</a></Heading
+	>
 
 	{#if !$teamHealth.data}
 		<!-- Første innlasting: vis loader uansett fetching-flagget -->
@@ -52,18 +53,15 @@
 		</div>
 	{:else}
 		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
-			<List
-				title="{$teamHealth.data?.team?.issues?.edges?.length ?? 0} of {$teamHealth.data?.team
-					?.issues?.pageInfo?.totalCount ?? 0} issues"
-			>
+			<div class="issues-list">
 				{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
 					<IssueListItem item={issue.node} />
 				{/each}
-			</List>
+			</div>
 		{:else if !$teamHealth.fetching}
 			<!-- Kun når vi har data, og ikke fetcher, men lista er tom -->
 			<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold">
-				No issues found
+				No critical issues found
 			</span>
 		{/if}
 
@@ -84,11 +82,29 @@
 
 <style>
 	.issues-wrapper {
-		padding-bottom: var(--spacing-layout);
+		padding-bottom: var(--ax-space-8);
 	}
+
+	.issues-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* Remove card backgrounds but preserve tag/badge styling */
+	.issues-list :global(.list-item) {
+		background-color: transparent !important;
+		border: none !important;
+		padding: var(--ax-space-8) 0 !important;
+	}
+
+	.issues-list :global(.list-item:hover) {
+		background-color: transparent !important;
+	}
+
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding: var(--ax-space-4) 0;
+		padding: var(--ax-space-8) 0;
+		margin-top: var(--ax-space-8);
 	}
 </style>
