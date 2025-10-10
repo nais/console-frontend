@@ -1,5 +1,4 @@
 <script lang="ts">
-	import CriticalIndicator from '$lib/components/CriticalIndicator.svelte';
 	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 
@@ -21,7 +20,7 @@
 		>
 		{#if (critical ?? 0) > 0}
 			<a href="/team/{teamSlug}/issues?severity=CRITICAL" class="summary critical">
-				<CriticalIndicator />
+				<CircleFillIcon style="font-size: 0.7rem" />
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
 					>{(critical ?? 0) > 0 ? critical : 'No '}
 					critical issue{(critical ?? 0) !== 1 ? 's' : ''}</span
