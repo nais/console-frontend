@@ -46,6 +46,7 @@ query OpenSearch(
 				team {
 					slug
 				}
+				state
 				issues {
 					pageInfo {
 						totalCount
