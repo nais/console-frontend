@@ -90,7 +90,7 @@
 							<IconLabel
 								level="4"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/app/{instance.name}"
+									.name}/opensearch/{instance.name}"
 								size="large"
 								label={instance.name}
 								tag={{
