@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Button, Heading } from '@nais/ds-svelte-community';
 	import IssueListItem from '../list/IssueListItem.svelte';
 
 	interface Props {
@@ -39,46 +39,30 @@
 	async function loadMore() {
 		await teamHealth.loadNextPage({ first: 5 });
 	}
+
+	const hasCriticalIssues = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0 > 0);
 </script>
 
-<div class="issues-wrapper">
-	<Heading level="2" size="small" spacing
-		><a href="/team/{teamSlug}/issues?severity=CRITICAL">Critical Issues</a></Heading
-	>
-
-	{#if !$teamHealth.data}
-		<!-- Første innlasting: vis loader uansett fetching-flagget -->
-		<div style="display: flex; justify-content: center; align-items: center; height: 290px;">
-			<Loader size="3xlarge" />
-		</div>
-	{:else}
+{#if $teamHealth.data && hasCriticalIssues && !$teamHealth.fetching}
+	<div class="issues-wrapper">
 		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
+			<Heading level="2" size="small" spacing
+				><a href="/team/{teamSlug}/issues?severity=CRITICAL">Critical Issues</a></Heading
+			>
 			<div class="issues-list">
 				{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
 					<IssueListItem item={issue.node} />
 				{/each}
 			</div>
-		{:else if !$teamHealth.fetching}
-			<!-- Kun når vi har data, og ikke fetcher, men lista er tom -->
-			<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold">
-				No critical issues found
-			</span>
 		{/if}
 
-		<!-- Valgfritt: liten “background” loader ved refetch/paginate -->
-		{#if $teamHealth.fetching}
-			<div style="display: flex; justify-content: center; align-items: center; height: 60px;">
-				<Loader size="large" />
+		{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
+			<div class="load-more">
+				<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
 			</div>
 		{/if}
-	{/if}
-
-	{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
-		<div class="load-more">
-			<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
-		</div>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.issues-wrapper {

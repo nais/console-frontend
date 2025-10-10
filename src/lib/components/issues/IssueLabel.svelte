@@ -22,51 +22,54 @@
 	}
 
 	let { teamSlug, environmentName, resourceType, resourceName, severity }: Props = $props();
+
+	const resourceIcon = $derived.by(() => {
+		switch (resourceType) {
+			case 'app':
+				return PackageIcon;
+			case 'job':
+				return BriefcaseClockIcon;
+			case 'opensearch':
+				return OpenSearchIcon;
+			case 'postgres':
+				return DatabaseIcon;
+			case 'valkey':
+				return ValkeyIcon;
+		}
+	});
 </script>
 
-<IconLabel
-	href="/team/{teamSlug}/{environmentName}/{resourceType}/{resourceName}"
-	size="medium"
-	tag={{
-		label: environmentName,
-		variant: envTagVariant(environmentName)
-	}}
->
-	{#snippet icon()}
-		<TooltipAlignHack
-			content={{
-				TODO: 'Todo',
-				WARNING: 'Warning',
-				CRITICAL: 'Critical'
-			}[severity] ?? ''}
-		>
-			{#if severity === 'CRITICAL'}
-				<CriticalIndicator />
-			{:else}
-				<CircleFillIcon
-					style="color: light-dark({{
-						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
-						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[severity] ?? 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
-				/>
-			{/if}
-		</TooltipAlignHack>
-	{/snippet}
-	{#snippet label()}
-		{#if resourceType === 'app'}
-			<PackageIcon />
-		{:else if resourceType === 'job'}
-			<BriefcaseClockIcon />
-		{:else if resourceType === 'opensearch'}
-			<OpenSearchIcon />
-		{:else if resourceType === 'postgres'}
-			<DatabaseIcon />
-		{:else if resourceType === 'valkey'}
-			<ValkeyIcon />
+<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
+	<TooltipAlignHack
+		content={{
+			TODO: 'Todo',
+			WARNING: 'Warning',
+			CRITICAL: 'Critical'
+		}[severity] ?? ''}
+	>
+		{#if severity === 'CRITICAL'}
+			<CriticalIndicator />
+		{:else}
+			<CircleFillIcon
+				style="color: light-dark({{
+					TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
+					WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
+				}[severity] ?? 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
+			/>
 		{/if}
-		{resourceName}
-	{/snippet}
-</IconLabel>
+	</TooltipAlignHack>
+	<IconLabel
+		href="/team/{teamSlug}/{environmentName}/{resourceType}/{resourceName}"
+		size="large"
+		level="4"
+		icon={resourceIcon}
+		label={resourceName}
+		tag={{
+			label: environmentName,
+			variant: envTagVariant(environmentName)
+		}}
+	/>
+</div>
 
 <style>
 	@media (prefers-reduced-motion: reduce) {
