@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - "**.md"
+      - '**.md'
 
 env:
   NAME: console-frontend
@@ -14,16 +14,16 @@ jobs:
     outputs:
       version: ${{ steps.build-push-sign.outputs.version }}
     permissions:
-      contents: "read"
-      id-token: "write"
+      contents: 'read'
+      id-token: 'write'
     name: Build and push
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Lint
@@ -38,9 +38,9 @@ jobs:
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
           push: true
       - uses: azure/setup-helm@v4
-        name: "Setup Helm"
+        name: 'Setup Helm'
         with:
-          version: "3.8.0"
+          version: '3.8.0'
       - name: Build Chart
         run: |-
           sed -i "s/^version: .*/version: ${{ steps.build-push-sign.outputs.version }}/g" charts/Chart.yaml
