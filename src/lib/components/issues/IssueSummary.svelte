@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CriticalIndicator from '$lib/components/CriticalIndicator.svelte';
 	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 
@@ -16,13 +17,11 @@
 <div class="issues">
 	{#if !loading}
 		<Heading level="2" size="small" spacing
-			><a href="/team/{teamSlug}/issues">Health summary</a></Heading
+			><a href="/team/{teamSlug}/issues">Health Summary</a></Heading
 		>
 		{#if (critical ?? 0) > 0}
 			<a href="/team/{teamSlug}/issues?severity=CRITICAL" class="summary critical">
-				<div class="critical-icon pulse">
-					<CircleFillIcon />
-				</div>
+				<CriticalIndicator />
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
 					>{(critical ?? 0) > 0 ? critical : 'No '}
 					critical issue{(critical ?? 0) !== 1 ? 's' : ''}</span
@@ -31,7 +30,7 @@
 		{/if}
 		{#if (warning ?? 0) > 0}
 			<a href="/team/{teamSlug}/issues?severity=WARNING" class="summary warning">
-				<CircleFillIcon />
+				<CircleFillIcon style="font-size: 0.7rem" />
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
 					>{(warning ?? 0) > 0 ? warning : 'No'}
 					warning{(warning ?? 0) !== 1 ? 's' : ''}</span
@@ -40,7 +39,7 @@
 		{/if}
 		{#if (todo ?? 0) > 0}
 			<a href="/team/{teamSlug}/issues?severity=TODO" class="summary todo">
-				<CircleFillIcon />
+				<CircleFillIcon style="font-size: 0.7rem" />
 
 				<span style="color: var(--ax-text-neutral); font-size: 1.2rem; font-weight: bold"
 					>{(todo ?? 0) > 0 ? todo : 'No'}
@@ -90,42 +89,6 @@
 		color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong));
 	}
 
-	.critical-icon {
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.pulse::before {
-		content: '';
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		border-radius: 50%;
-		background-color: currentColor;
-		animation: pulse 2s infinite ease-in-out;
-	}
-
-	@keyframes pulse {
-		0% {
-			transform: scale(1);
-			opacity: 1;
-		}
-		50% {
-			transform: scale(1);
-			opacity: 1;
-		}
-		100% {
-			transform: scale(1.5);
-			opacity: 0;
-		}
-	}
-
 	@media (prefers-reduced-motion: reduce) {
-		.pulse::before {
-			animation: none;
-			display: none;
-		}
 	}
 </style>
