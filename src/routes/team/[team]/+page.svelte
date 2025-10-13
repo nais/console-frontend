@@ -25,33 +25,25 @@
 
 <GraphErrors errors={$TeamOverview.errors} />
 
-<div class="wrapper">
-	{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
-		<div class="alerts-wrapper">
-			<PrometheusAlert
-				{teamSlug}
-				alerts={$TeamOverview.data?.team.firingAlerts.nodes}
-				collapsible={false}
-				alertsState={AlertState.FIRING}
-			/>
-		</div>
-	{/if}
-	{#if $TeamOverview.data?.team.pendingAlerts.pageInfo.totalCount}
-		<div class="alerts-wrapper">
-			<PrometheusAlert
-				{teamSlug}
-				alerts={$TeamOverview.data?.team.pendingAlerts.nodes}
-				collapsible={false}
-				alertsState={AlertState.PENDING}
-			/>
-		</div>
-	{/if}
-
-	<div class="summary-cards">
-		<VulnerabilitySummary {teamSlug} />
+{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
+	<div class="alerts-wrapper">
+		<PrometheusAlert
+			{teamSlug}
+			alerts={$TeamOverview.data?.team.firingAlerts.nodes}
+			collapsible={false}
+			alertsState={AlertState.FIRING}
+		/>
 	</div>
+{/if}
 
-	<div class="criticals-row">
+<div class="wrapper">
+	<div class="main-content">
+		<CriticalIssues {teamSlug} />
+		<div>
+			<AggregatedCostForTeam {teamSlug} />
+		</div>
+	</div>
+	<div class="summary-cards">
 		<IssueSummary
 			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
 			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
@@ -59,17 +51,19 @@
 			{teamSlug}
 			loading={$TeamOverview.fetching}
 		/>
-		<CriticalIssues {teamSlug} />
-	</div>
-
-	<div class="detail-section">
-		<AggregatedCostForTeam {teamSlug} />
+		<VulnerabilitySummary {teamSlug} />
 		<TeamOverviewActivityLog {teamSlug} />
 	</div>
 </div>
 
 <style>
 	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+
+	.main-content {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
@@ -81,29 +75,10 @@
 		gap: var(--spacing-layout);
 	}
 
-	.criticals-row {
-		display: grid;
-		grid-template-columns: minmax(250px, max-content) 1fr;
-		gap: var(--spacing-layout);
-		align-items: start;
-	}
-
-	@media (max-width: 768px) {
-		.summary-cards,
-		.criticals-row {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	.detail-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
 	.alerts-wrapper {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
+		padding-bottom: var(--spacing-layout);
 	}
 </style>

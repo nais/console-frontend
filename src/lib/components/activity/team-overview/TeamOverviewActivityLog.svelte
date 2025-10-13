@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
-	import { Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
@@ -78,18 +78,9 @@
 	};
 
 	const activityLogQuery = graphql(`
-		query TeamOverviewActivityLog(
-			$teamSlug: Slug!
-			$first: Int!
-			$after: Cursor
-			$filter: ActivityLogFilter
-		) {
+		query TeamOverviewActivityLog($teamSlug: Slug!, $filter: ActivityLogFilter) {
 			team(slug: $teamSlug) {
-				activityLog(first: $first, after: $after, filter: $filter) @paginate(mode: Infinite) {
-					pageInfo {
-						hasNextPage
-						endCursor
-					}
+				activityLog(first: 10, filter: $filter) {
 					edges {
 						node {
 							id
@@ -227,7 +218,7 @@
 	`);
 
 	$effect.pre(() => {
-		activityLogQuery.fetch({ variables: { teamSlug, first: 10, filter } });
+		activityLogQuery.fetch({ variables: { teamSlug, filter } });
 	});
 
 	type Kind = string;
@@ -281,10 +272,6 @@
 				return DefaultText as Component<{ data: unknown }>;
 		}
 	}
-
-	async function loadMore() {
-		await activityLogQuery.loadNextPage({ first: 10 });
-	}
 </script>
 
 <div class="wrapper">
@@ -314,12 +301,6 @@
 
 		{#if !$activityLogQuery.fetching && ($activityLogQuery.data?.team?.activityLog.edges || []).length === 0}
 			<p class="empty">No recent activity found.</p>
-		{/if}
-
-		{#if $activityLogQuery.data?.team?.activityLog.pageInfo.hasNextPage}
-			<div class="load-more">
-				<Button variant="tertiary" size="small" onclick={loadMore}>Load more activities</Button>
-			</div>
 		{/if}
 	{/if}
 </div>
