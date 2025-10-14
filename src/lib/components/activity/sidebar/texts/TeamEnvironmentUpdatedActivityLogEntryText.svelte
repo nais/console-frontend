@@ -18,7 +18,8 @@
 	Updated team <strong>{data.resourceName}</strong>.
 	{#if data.teamEnvironmentUpdatedData.updatedFields.length > 0}
 		{#each data.teamEnvironmentUpdatedData.updatedFields as field (field)}
-			<strong>{field.field}</strong> changed from {field.oldValue} to {field.newValue}.
+			<strong>{field.field}</strong> changed from <i>{field.oldValue}</i> to
+			<i>{field.newValue}</i>.
 		{/each}
 	{/if}
 

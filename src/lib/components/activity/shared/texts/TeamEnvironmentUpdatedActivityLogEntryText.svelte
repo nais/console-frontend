@@ -15,7 +15,8 @@
 	{data.message}.
 	{#if data.teamEnvironmentUpdated.updatedFields.length > 0}
 		{#each data.teamEnvironmentUpdated.updatedFields as field (field)}
-			<strong>{field.field}</strong>: Changed from {field.oldValue} to {field.newValue}.
+			<strong>{field.field}</strong>: Changed from <i>{field.oldValue}</i> to
+			<i>{field.newValue}</i>.
 		{/each}
 	{/if}
 
