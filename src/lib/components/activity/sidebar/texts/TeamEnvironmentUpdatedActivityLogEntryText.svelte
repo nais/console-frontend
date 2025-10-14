@@ -1,21 +1,24 @@
 <script lang="ts">
+	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: ActivityLogEntry<'TeamEnvironmentUpdatedActivityLogEntry'>;
+		data: Extract<
+			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
+			{ __typename: 'TeamEnvironmentUpdatedActivityLogEntry' }
+		>;
 	} = $props();
 </script>
 
 <div>
-	{data.message}.
-	{#if data.teamEnvironmentUpdated.updatedFields.length > 0}
-		{#each data.teamEnvironmentUpdated.updatedFields as field (field)}
-			<strong>{field.field}</strong>: Changed from {field.oldValue} to {field.newValue}.
+	Updated team <strong>{data.resourceName}</strong>.
+	{#if data.teamEnvironmentUpdatedData.updatedFields.length > 0}
+		{#each data.teamEnvironmentUpdatedData.updatedFields as field (field)}
+			<strong>{field.field}</strong> changed from {field.oldValue} to {field.newValue}.
 		{/each}
 	{/if}
 

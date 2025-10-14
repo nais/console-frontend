@@ -34,5 +34,19 @@ query TeamSettings($team: Slug!) {
 				slug
 			}
 		}
+		...SidebarActivityLogFragment
+			@with(
+				filter: {
+					activityTypes: [
+						TEAM_DEPLOY_KEY_UPDATED
+						TEAM_CREATED
+						TEAM_UPDATED
+						TEAM_ENVIRONMENT_UPDATED
+						TEAM_CONFIRM_DELETE_KEY
+						TEAM_CREATE_DELETE_KEY
+					]
+				}
+			)
+			@mask_disable
 	}
 }

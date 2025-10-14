@@ -11,7 +11,7 @@
 </script>
 
 <div>
-	Default ({data.__typename}): {data.message}<br />
+	{data.message}
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />

@@ -6,6 +6,7 @@
 		graphql,
 		type QueryResult
 	} from '$houdini';
+	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -304,7 +305,7 @@
 				</div>
 			{/if}
 		</div>
-		<div>
+		<div class="right">
 			<div class="card">
 				<Heading level="2" size="small">Managed Resources</Heading>
 				<dl>
@@ -357,6 +358,12 @@
 					{/each}
 				</dl>
 			</div>
+			{#if $TeamSettings.data?.team}
+				<SidebarActivity
+					activityLog={$TeamSettings.data.team}
+					direct={$TeamSettings.data.team.activityLog}
+				/>
+			{/if}
 		</div>
 		<p class="last-sync">
 			{#if teamSettings.lastSuccessfulSync}
@@ -469,6 +476,11 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 320px;
+		gap: var(--spacing-layout);
+	}
+	.right {
+		display: flex;
+		flex-direction: column;
 		gap: var(--spacing-layout);
 	}
 	.card {

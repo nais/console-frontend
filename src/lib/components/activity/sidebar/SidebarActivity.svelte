@@ -21,9 +21,11 @@
 	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import TeamEnvironmentUpdatedActivityLogEntryText from './texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
 	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import TeamUpdatedActivityLogEntryText from './texts/TeamUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		activityLog: SidebarActivityLogFragment;
@@ -95,6 +97,19 @@
 								valueName
 							}
 						}
+						... on TeamEnvironmentUpdatedActivityLogEntry {
+							id
+							teamEnvironmentUpdatedData: data {
+								updatedFields {
+									field
+									oldValue
+									newValue
+								}
+							}
+						}
+						... on TeamDeployKeyUpdatedActivityLogEntry {
+							id
+						}
 						... on TeamMemberAddedActivityLogEntry {
 							addedData: data {
 								role
@@ -113,6 +128,16 @@
 								role
 								userEmail
 								userID
+							}
+						}
+						... on TeamUpdatedActivityLogEntry {
+							id
+							teamUpdatedData: data {
+								updatedFields {
+									field
+									oldValue
+									newValue
+								}
 							}
 						}
 					}
@@ -145,12 +170,16 @@
 				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretDeletedActivityLogEntry':
 				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamEnvironmentUpdatedActivityLogEntry':
+				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
 				return TeamMemberAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberRemovedActivityLogEntry':
 				return TeamMemberRemovedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberSetRoleActivityLogEntry':
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamUpdatedActivityLogEntry':
+				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
 			default:
