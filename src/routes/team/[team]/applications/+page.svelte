@@ -49,11 +49,13 @@
 			environments?: string;
 		} = {}
 	) => {
+		const currentEnvironments =
+			filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 		changeParams({
 			before: params.before ?? before,
 			after: params.after ?? after,
 			filter: params.newFilter ?? filter,
-			environments: params.environments ?? ''
+			environments: params.environments ?? currentEnvironments
 		});
 	};
 </script>
