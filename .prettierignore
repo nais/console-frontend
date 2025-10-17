@@ -14,3 +14,6 @@ schema.graphql
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+
+# Because of Helm templating, the prettier formatter creates invalid YAML files.
+/charts/templates
