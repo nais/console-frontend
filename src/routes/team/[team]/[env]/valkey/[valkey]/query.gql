@@ -48,18 +48,6 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 					}
 				}
 
-				workload {
-					name
-					__typename
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					team {
-						slug
-					}
-				}
 				access(first: 10, orderBy: $orderBy) @paginate(mode: SinglePage) {
 					pageInfo {
 						hasNextPage

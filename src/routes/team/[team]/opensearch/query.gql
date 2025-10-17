@@ -57,18 +57,6 @@ query OpenSearch(
 						}
 					}
 				}
-				workload {
-					__typename
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					team {
-						slug
-					}
-				}
 			}
 		}
 	}

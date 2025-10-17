@@ -9,7 +9,6 @@
 	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
 	import RunningIndicator from '$lib/components/RunningIndicator.svelte';
 	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/GraphErrors.svelte';
@@ -162,11 +161,6 @@
 											>{todoCount ?? 0} todo{(todoCount ?? 0) > 1 ? 's' : ''}</Tag
 										>
 									{/if}
-								</div>
-							{/if}
-							{#if instance.workload}
-								<div class="right">
-									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 								</div>
 							{/if}
 						</ListItem>

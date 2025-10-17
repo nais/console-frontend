@@ -233,16 +233,6 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3">Owner</Heading>
-				{#if instance.workload}
-					<WorkloadLink workload={instance.workload} />
-				{:else}
-					<div class="inline">
-						<i>No owner</i>
-					</div>
-				{/if}
-			</div>
-			<div>
 				<Heading level="3">State</Heading>
 				<BodyShort>{instance.state}</BodyShort>
 			</div>
