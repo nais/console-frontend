@@ -625,6 +625,9 @@ type Application implements ActivityLogger & Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
+
+  """Get the mean time to fix history for an application."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 }
 
 """Authentication integrations for the application."""
@@ -2387,6 +2390,9 @@ type Job implements ActivityLogger & Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
+
+  """Get the mean time to fix history for a job."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -3093,7 +3099,7 @@ type OpenSearch implements ActivityLogger & Node & Persistence {
 
   """Fetch version for the OpenSearch instance."""
   version: OpenSearchVersion!
-  workload: Workload
+  workload: Workload @deprecated(reason: "OpenSearch does not have a owner, so this field will always be null.")
 }
 
 type OpenSearchAccess {
@@ -3669,6 +3675,9 @@ type Query {
     """Ordering options for items returned from the connection."""
     orderBy: UserOrder
   ): UserConnection!
+
+  """Get the mean time to fix history for all teams."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 
   """Get the vulnerability summary for the tenant."""
   vulnerabilitySummary: TenantVulnerabilitySummary!
@@ -5745,6 +5754,9 @@ type Team implements ActivityLogger & Node {
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
 
+  """Get the mean time to fix history for a team."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+
   """Fetch vulnerability summaries for workloads in the team."""
   vulnerabilitySummaries(
     """Get items after this cursor."""
@@ -7296,7 +7308,7 @@ type Valkey implements ActivityLogger & Node & Persistence {
 
   """Availability tier for the Valkey instance."""
   tier: ValkeyTier!
-  workload: Workload
+  workload: Workload @deprecated(reason: "Owners of valkeys have been removed, so this will always be null.")
 }
 
 type ValkeyAccess {
@@ -7596,6 +7608,36 @@ type VulnerabilityActivityLogEntryData {
   severity: ImageVulnerabilitySeverity!
 }
 
+"""Trend of mean time to fix vulnerabilities grouped by severity."""
+type VulnerabilityFixHistory {
+  """Mean time to fix samples."""
+  samples: [VulnerabilityFixSample!]!
+}
+
+"""One MTTR sample for a severity at a point in time."""
+type VulnerabilityFixSample {
+  """Snapshot date of the sample."""
+  date: Time!
+
+  """Mean time to fix in days."""
+  days: Int!
+
+  """Earliest time a vulnerability was fixed in this sample."""
+  firstFixedAt: Time
+
+  """Number of vulnerabilities fixed in this sample."""
+  fixedCount: Int!
+
+  """Latest time a vulnerability was fixed in this sample."""
+  lastFixedAt: Time
+
+  """Severity of vulnerabilities in this sample."""
+  severity: ImageVulnerabilitySeverity!
+
+  """Total number of workloads with this severity of vulnerabilities."""
+  totalWorkloads: Int!
+}
+
 """Ordering options when fetching vulnerability summaries for workloads."""
 input VulnerabilitySummaryOrder {
   """The direction to order items by."""
@@ -7879,6 +7921,9 @@ interface Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
+
+  """Get the mean time to fix history for a workload."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 }
 
 """Workload connection."""

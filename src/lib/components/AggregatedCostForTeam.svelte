@@ -101,8 +101,8 @@
 				class="h-[300px]"
 			/>
 		{:else}
-			<div class="loading h-[300px]">
-				<Loader size="3xlarge" />
+			<div class="no-data">
+				<p>No cost data available</p>
 			</div>
 		{/if}
 	{:else}
@@ -132,5 +132,14 @@
 		align-items: center;
 		height: 200px;
 		width: 100%;
+	}
+
+	.no-data {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 300px;
+		color: var(--ax-text-neutral-subtle);
+		font-style: italic;
 	}
 </style>
