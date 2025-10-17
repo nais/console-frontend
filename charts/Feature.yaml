@@ -27,3 +27,15 @@ values:
     computed:
       template: |
         {{ .Env.teams_github_org | quote }}
+  resources.requests.cpu:
+    displayName: CPU requests
+    config:
+      type: string
+  resources.requests.memory:
+    displayName: Memory requests
+    config:
+      type: string
+  resources.limits.memory:
+    displayName: Memory limits
+    config:
+      type: string

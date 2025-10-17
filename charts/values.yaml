@@ -12,3 +12,10 @@ gitHub:
 slack:
   token:
   feedbackChannel: '#console-user-feedback'
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 512Mi
