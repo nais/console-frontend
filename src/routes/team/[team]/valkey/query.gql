@@ -56,18 +56,6 @@ query Valkeys(
 						}
 					}
 				}
-				workload {
-					__typename
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					team {
-						slug
-					}
-				}
 			}
 		}
 	}
