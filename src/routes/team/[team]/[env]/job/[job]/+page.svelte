@@ -108,7 +108,7 @@
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
 						<Heading level="2" size="medium">Runs</Heading>
-						{#if viewerIsMember && job.schedule}
+						{#if viewerIsMember}
 							<Button
 								variant="secondary"
 								size="small"
