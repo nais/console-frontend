@@ -29,7 +29,7 @@ query AllIssues {
 							__typename
 						}
 					}
-					... on FailedJobRunsIssue {
+					... on LastRunFailedIssue {
 						job {
 							name
 						}
