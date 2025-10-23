@@ -3,7 +3,7 @@
 	import DefaultIssue from '$lib/components/issues/DefaultIssue.svelte';
 	import DeprecatedIngressIssue from '$lib/components/issues/DeprecatedIngressIssue.svelte';
 	import DeprecatedRegistryIssue from '$lib/components/issues/DeprecatedRegistryIssue.svelte';
-	import FailedJobRunsIssue from '$lib/components/issues/FailedJobRunsIssue.svelte';
+	import LastRunFailedIssue from '$lib/components/issues/LastRunFailedIssue.svelte';
 	import FailedSynchronizationIssue from '$lib/components/issues/FailedSynchronizationIssue.svelte';
 	import InvalidSpecIssue from '$lib/components/issues/InvalidSpecIssue.svelte';
 	import NoRunningInstancesIssue from '$lib/components/issues/NoRunningInstancesIssue.svelte';
@@ -52,7 +52,7 @@
 							}
 						}
 					}
-					... on FailedJobRunsIssue {
+					... on LastRunFailedIssue {
 						job {
 							name
 						}
@@ -128,8 +128,8 @@
 				return DeprecatedIngressIssue as Component<{ data: unknown }>;
 			case 'DeprecatedRegistryIssue':
 				return DeprecatedRegistryIssue as Component<{ data: unknown }>;
-			case 'FailedJobRunsIssue':
-				return FailedJobRunsIssue as Component<{ data: unknown }>;
+			case 'LastRunFailedIssue':
+				return LastRunFailedIssue as Component<{ data: unknown }>;
 			case 'FailedSynchronizationIssue':
 				return FailedSynchronizationIssue as Component<{ data: unknown }>;
 			case 'InvalidSpecIssue':

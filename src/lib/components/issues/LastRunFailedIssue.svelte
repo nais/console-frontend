@@ -6,7 +6,7 @@
 	let {
 		data
 	}: {
-		data: Extract<IssueFragment$data, { __typename: 'FailedJobRunsIssue' }>;
+		data: Extract<IssueFragment$data, { __typename: 'LastRunFailedIssue' }>;
 	} = $props();
 </script>
 

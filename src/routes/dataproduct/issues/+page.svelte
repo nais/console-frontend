@@ -13,7 +13,7 @@
 </script>
 
 <select bind:value>
-	{#each ['DeprecatedIngressIssue', 'DeprecatedRegistryIssue', 'MissingSbomIssue', 'InvalidSpecIssue', 'VulnerableImageIssue', 'FailedSynchronizationIssue', 'OpenSearchIssue', 'SqlInstanceStateIssue', 'SqlInstanceVersionIssue', 'ValkeyIssue', 'FailedJobRunsIssue', 'NoRunningInstancesIssue'] as type (type)}
+	{#each ['DeprecatedIngressIssue', 'DeprecatedRegistryIssue', 'MissingSbomIssue', 'InvalidSpecIssue', 'VulnerableImageIssue', 'FailedSynchronizationIssue', 'OpenSearchIssue', 'SqlInstanceStateIssue', 'SqlInstanceVersionIssue', 'ValkeyIssue', 'LastRunFailedIssue', 'NoRunningInstancesIssue'] as type (type)}
 		<option value={type}>{type}</option>
 	{/each}
 </select>
