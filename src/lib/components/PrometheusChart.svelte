@@ -50,6 +50,7 @@
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { LineChart, Tooltip } from 'layerchart';
+	import { untrack } from 'svelte';
 
 	const minScale = 1;
 
@@ -106,6 +107,7 @@
 	let htmlRef = $state<HTMLDivElement | null>(null);
 	let observer: IntersectionObserver | undefined = undefined;
 	let allowLoading = $state(false);
+	let firstTimeLoad = $state(false);
 
 	const fetchGQL = () => {
 		const end = new Date();
@@ -115,6 +117,7 @@
 	};
 
 	$effect(() => {
+		// Set up IntersectionObserver to track when chart is in view
 		if (!htmlRef) {
 			return;
 		}
@@ -127,7 +130,12 @@
 					return;
 				}
 
-				allowLoading = true;
+				if (!allowLoading) {
+					allowLoading = true;
+				}
+				if (!firstTimeLoad) {
+					firstTimeLoad = true;
+				}
 			});
 			observer.observe(htmlRef);
 		}
@@ -136,8 +144,18 @@
 	});
 
 	$effect(() => {
-		if (allowLoading) {
+		// Load data when needed and the chart is within view
+		const allowed = untrack(() => allowLoading);
+		if (firstTimeLoad && allowed) {
 			fetchGQL();
+		}
+	});
+
+	$effect(() => {
+		// Ensure we refetch data when interval changes, but first when the chart is within view
+		const allowed = untrack(() => allowLoading);
+		if ((interval as string) != '' && !allowed) {
+			firstTimeLoad = false;
 		}
 	});
 

@@ -9,11 +9,12 @@
 
 	const aivenServiceName = $derived.by(() => {
 		return 'valkey-teampam-stillingsok';
-		const teamSlug = 'aap';
-		if (isManagedByConsole) {
-			return `valkey-${teamSlug!}-${$Valkey.data?.team.environment.valkey.name}`;
-		}
-		return $Valkey.data?.team.environment.valkey.name;
+		// TODO(thokra): Make this use actual data
+		// const teamSlug = 'aap';
+		// if (isManagedByConsole) {
+		// 	return `valkey-${teamSlug!}-${$Valkey.data?.team.environment.valkey.name}`;
+		// }
+		// return $Valkey.data?.team.environment.valkey.name;
 	});
 </script>
 
@@ -27,7 +28,7 @@
 
 <PrometheusChart
 	{interval}
-	query={`100-cpu_usage_idle{service="${aivenServiceName}"}`}
+	query={`100 - cpu_usage_idle{service="${aivenServiceName}"}`}
 	environmentName="dev-gcp"
 	height="300px"
 	labelFormatter={(labels) => labels.find((l) => l.name === 'cpu')?.value ?? 'Missing label'}
@@ -40,7 +41,7 @@
 />
 <PrometheusChart
 	{interval}
-	query={`100-mem_available_percent{service="${aivenServiceName}"}`}
+	query={`100 - mem_available_percent{service="${aivenServiceName}"}`}
 	environmentName="dev-gcp"
 	height="300px"
 	labelFormatter={() => 'Memory used'}
