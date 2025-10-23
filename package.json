@@ -23,7 +23,7 @@
 		"@eslint/compat": "^1.4.0",
 		"@nais/ds-svelte-community": "^1.0.2",
 		"@navikt/ds-css": "7.22.0",
-		"@navikt/ds-tailwind": "^7.31.0",
+		"@navikt/ds-tailwind": "^7.32.3",
 		"@storybook/addon-docs": "^9.1.13",
 		"@storybook/addon-svelte-csf": "^5.0.10",
 		"@storybook/addon-themes": "^9.1.13",
