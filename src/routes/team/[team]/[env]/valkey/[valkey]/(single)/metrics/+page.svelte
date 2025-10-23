@@ -10,15 +10,23 @@
 	const aivenServiceName = $derived.by(() => {
 		return 'valkey-teampam-stillingsok';
 		// TODO(thokra): Make this use actual data
+		// FIXME(tronghn): do not push this to main
 		// const teamSlug = 'aap';
 		// if (isManagedByConsole) {
 		// 	return `valkey-${teamSlug!}-${$Valkey.data?.team.environment.valkey.name}`;
 		// }
 		// return $Valkey.data?.team.environment.valkey.name;
 	});
+
+	const formatPercentage = (value: number) => {
+		if (value % 1 !== 0) {
+			return value.toFixed(2) + '%';
+		}
+		return value.toString() + '%';
+	};
 </script>
 
-<div class="my-2 flex justify-end">
+<div class="mb-2 flex justify-end">
 	<ToggleGroup bind:value={interval}>
 		{#each Object.values(PrometheusChartQueryInterval) as interval (interval)}
 			<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
@@ -32,29 +40,26 @@
 	environmentName="dev-gcp"
 	height="300px"
 	labelFormatter={(labels) => labels.find((l) => l.name === 'cpu')?.value ?? 'Missing label'}
-	formatYValue={(value: number) => {
-		if (value % 1 !== 0) {
-			return value.toFixed(2) + '%';
-		}
-		return value.toString() + '%';
-	}}
+	formatYValue={formatPercentage}
 />
+
 <PrometheusChart
 	{interval}
 	query={`100 - mem_available_percent{service="${aivenServiceName}"}`}
 	environmentName="dev-gcp"
 	height="300px"
 	labelFormatter={() => 'Memory used'}
-	formatYValue={(value: number) => value.toFixed(2) + '%'}
+	formatYValue={formatPercentage}
+	colorizer={() => '#91dc75'}
 />
 
 <PrometheusChart
 	{interval}
-	query={`disk_free{service="${aivenServiceName}"}`}
+	query={`disk_used_percent{service="${aivenServiceName}"}`}
 	environmentName="dev-gcp"
 	height="300px"
-	labelFormatter={() => 'Disk free'}
-	formatYValue={(value: number) => prettyBytes(value)}
+	labelFormatter={() => 'Disk used'}
+	formatYValue={formatPercentage}
 />
 
 <PrometheusChart
@@ -64,6 +69,7 @@
 	height="300px"
 	labelFormatter={() => 'Network received'}
 	formatYValue={(value: number) => prettyBytes(value) + '/s'}
+	colorizer={() => '#2ca02c'}
 />
 
 <PrometheusChart
@@ -73,4 +79,5 @@
 	height="300px"
 	labelFormatter={() => 'Network sent'}
 	formatYValue={(value: number) => prettyBytes(value) + '/s'}
+	colorizer={() => '#d62728'}
 />

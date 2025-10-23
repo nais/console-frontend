@@ -23,5 +23,7 @@
 		>
 	</TabList>
 
-	{@render children()}
+	<div class="mt-4">
+		{@render children()}
+	</div>
 </Tabs>
