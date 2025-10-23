@@ -1832,14 +1832,6 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
-type FailedJobRunsIssue implements Issue & Node {
-  id: ID!
-  job: Job!
-  message: String!
-  severity: Severity!
-  teamEnvironment: TeamEnvironment!
-}
-
 type FailedSynchronizationIssue implements Issue & Node {
   id: ID!
   message: String!
@@ -2185,9 +2177,9 @@ enum IssueOrderField {
 enum IssueType {
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
-  FAILED_JOB_RUNS
   FAILED_SYNCHRONIZATION
   INVALID_SPEC
+  LAST_RUN_FAILED
   MISSING_SBOM
   NO_RUNNING_INSTANCES
   OPENSEARCH
@@ -2744,6 +2736,14 @@ input KafkaTopicOrder {
 enum KafkaTopicOrderField {
   ENVIRONMENT
   NAME
+}
+
+type LastRunFailedIssue implements Issue & Node {
+  id: ID!
+  job: Job!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
 }
 
 interface LogDestination {
