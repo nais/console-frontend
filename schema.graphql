@@ -872,6 +872,11 @@ type AssignRoleToServiceAccountPayload {
   serviceAccount: ServiceAccount
 }
 
+type AuditLog {
+  """Link to the audit log for this SQL instance."""
+  logUrl: String!
+}
+
 """
 Interface for authentication and authorization integrations.
 
@@ -2757,6 +2762,48 @@ type LogDestinationLoki implements LogDestination & Node {
 type LogDestinationSecureLogs implements LogDestination & Node {
   """The globally unique ID of the log destination."""
   id: ID!
+}
+
+type LogLine {
+  """Labels attached to the log line."""
+  labels: [LogLineLabel!]!
+
+  """The log line message."""
+  message: String!
+
+  """Timestamp of the log line."""
+  time: Time!
+}
+
+type LogLineLabel {
+  """The key of the label."""
+  key: String!
+
+  """The value of the label."""
+  value: String!
+}
+
+input LogSubscriptionFilter {
+  """Specify the environment to stream log lines from."""
+  environmentName: String!
+
+  """
+  Specify an initial batch of log lines to be sent when the subscription starts.
+  """
+  initialBatch: LogSubscriptionInitialBatch = {limit: 100}
+
+  """Filter log lines by specifying a query."""
+  query: String!
+}
+
+input LogSubscriptionInitialBatch {
+  """Initial batch of past log lines before streaming starts."""
+  limit: Int = 100
+
+  """
+  Specifies the start timestamp of the initial batch. Defaults to one hour ago.
+  """
+  start: Time
 }
 
 type MaintenanceWindow {
@@ -5127,6 +5174,10 @@ type SqlDatabase implements Node & Persistence {
 }
 
 type SqlInstance implements Node & Persistence {
+  """
+  Indicates whether audit logging is enabled for this SQL instance and provides a link to the logs if set.
+  """
+  auditLog: AuditLog
   backupConfiguration: SqlInstanceBackupConfiguration
   cascadingDelete: Boolean!
   connectionName: String
@@ -5342,7 +5393,15 @@ type StartValkeyMaintenancePayload {
   error: String
 }
 
+"""The subscription root for the Nais GraphQL API."""
 type Subscription {
+  """
+  Subscribe to log lines
+  
+  This subscription is used to stream log lines.
+  """
+  log(filter: LogSubscriptionFilter!): LogLine!
+
   """
   Subscribe to workload logs
   
