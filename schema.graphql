@@ -1734,6 +1734,13 @@ type Environment implements Node {
   """The globally unique ID of the team."""
   id: ID!
 
+  """
+  Query Prometheus metrics directly using PromQL for this environment.
+  This allows for flexible metric queries within the specific environment.
+  Supports both instant queries and range queries.
+  """
+  metrics(input: MetricsQueryInput!): MetricsQueryResult!
+
   """Unique name of the environment."""
   name: String!
 
@@ -2822,6 +2829,104 @@ Read more: https://docs.nais.io/auth/maskinporten/
 type MaskinportenAuthIntegration implements AuthIntegration {
   """The name of the integration."""
   name: String!
+}
+
+"""A key-value pair representing a Prometheus label."""
+type MetricLabel {
+  """The label name."""
+  name: String!
+
+  """The label value."""
+  value: String!
+}
+
+"""A time series with its labels and data points."""
+type MetricSeries {
+  """The metric labels as key-value pairs."""
+  labels: [MetricLabel!]!
+
+  """
+  The data points for this time series.
+  Instant queries will have a single value.
+  Range queries will have multiple values over time.
+  """
+  values: [MetricValue!]!
+}
+
+"""A single data point in a time series."""
+type MetricValue {
+  """The timestamp of the data point."""
+  timestamp: Time!
+
+  """The value at the given timestamp."""
+  value: Float!
+}
+
+"""Input for querying Prometheus metrics."""
+input MetricsQueryInput {
+  """
+  The PromQL query to execute.
+  Example: "rate(http_requests_total[5m])"
+  """
+  query: String!
+
+  """
+  Optional range query parameters.
+  If provided, executes a range query instead of an instant query.
+  
+  Limits to prevent excessive memory usage:
+  - Minimum step: 10 seconds
+  - Maximum time range: 30 days
+  - Maximum data points: 11,000
+  """
+  range: MetricsRangeInput
+
+  """
+  Optional timestamp for instant queries.
+  Specifies the exact point in time to evaluate the query.
+  If not provided, defaults to current time minus 5 minutes.
+  This parameter is ignored when range is provided.
+  """
+  time: Time
+}
+
+"""Result from a Prometheus metrics query."""
+type MetricsQueryResult {
+  """
+  Time series data from the query.
+  For instant queries, each series contains a single value.
+  For range queries, each series contains multiple values over time.
+  """
+  series: [MetricSeries!]!
+
+  """Warnings returned by Prometheus, if any."""
+  warnings: [String!]
+}
+
+"""
+Input for Prometheus range queries.
+
+To prevent excessive memory usage, queries are subject to limits:
+- Step must be at least 10 seconds
+- Time range (end - start) cannot exceed 30 days
+- Total data points cannot exceed 11,000
+"""
+input MetricsRangeInput {
+  """
+  End timestamp for the range query.
+  Must be after start time.
+  """
+  end: Time!
+
+  """Start timestamp for the range query."""
+  start: Time!
+
+  """
+  Query resolution step width in seconds.
+  Must be at least 10 seconds.
+  Example: 60 for 1-minute intervals
+  """
+  step: Int!
 }
 
 type MissingSbomIssue implements Issue & Node {
