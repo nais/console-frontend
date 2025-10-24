@@ -4,7 +4,6 @@
 		PrometheusChartQueryInterval
 	} from '$lib/components/PrometheusChart.svelte';
 	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
-	import prettyBytes from 'pretty-bytes';
 
 	let interval: PrometheusChartQueryInterval = $state('7d');
 
@@ -45,7 +44,7 @@
 	formatYValue={formatPercentage}
 />
 
-<PrometheusChart
+<!-- <PrometheusChart
 	{interval}
 	query={`100 - avg(mem_available_percent{service="${aivenServiceName}"})`}
 	environmentName={envName}
@@ -82,4 +81,4 @@
 	labelFormatter={() => 'Network sent'}
 	formatYValue={(value: number) => prettyBytes(value) + '/s'}
 	colorizer={() => '#d62728'}
-/>
+/> -->

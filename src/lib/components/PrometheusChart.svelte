@@ -75,6 +75,7 @@
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
+	import * as d3 from 'd3-time';
 	import { LineChart, Tooltip } from 'layerchart';
 	import { untrack } from 'svelte';
 
@@ -88,7 +89,6 @@
 		colorizer?: (label: string, index: number) => string;
 		formatYValue?: (value: number) => string;
 		formatXValue?: (value: number) => string;
-		formatXAxis?: (value: number) => string;
 		interval?: PrometheusChartQueryInterval;
 	};
 
@@ -105,8 +105,6 @@
 			return value.toString();
 		},
 		formatXValue = (value: number) => new Date(value).toLocaleString('en-GB'),
-		formatXAxis = (value: number) =>
-			new Date(value).toLocaleString('en-GB', { month: 'short', day: 'numeric' }),
 		interval = PrometheusChartQueryInterval.SevenDays
 	}: PrometheusChartProps = $props();
 
@@ -139,6 +137,7 @@
 	const processedQuery = $derived(replaceQueryVariables(query, interval));
 
 	const fetchGQL = () => {
+		console.log('Fetch gql');
 		const end = new Date();
 		const start = getStartFromInterval(interval);
 		const step = getStepFromInterval(interval);
@@ -236,6 +235,18 @@
 		}, -Infinity)
 	);
 
+	const minTimestampDate = $derived.by(() => {
+		let minTimestamp = new Date();
+		series.forEach((item) => {
+			item.data.forEach((point) => {
+				if (point.timestamp < minTimestamp) {
+					minTimestamp = point.timestamp;
+				}
+			});
+		});
+		return new Date(minTimestamp);
+	});
+
 	// Determine overlay state
 	const overlayState = $derived.by(() => {
 		if ($q.fetching) {
@@ -246,6 +257,38 @@
 		}
 		return null;
 	});
+
+	function ticksFromInterval(interval: PrometheusChartQueryInterval) {
+		switch (interval) {
+			case PrometheusChartQueryInterval.OneHour:
+				return d3.timeMinute.every(5);
+			case PrometheusChartQueryInterval.SixHours:
+				return d3.timeMinute.every(30);
+			case PrometheusChartQueryInterval.OneDay:
+				return d3.timeHour.every(2);
+			case PrometheusChartQueryInterval.SevenDays:
+				return d3.timeDay.every(1);
+			case PrometheusChartQueryInterval.ThirtyDays:
+				return d3.timeDay.every(3);
+			default:
+				return d3.timeHour.every(1);
+		}
+	}
+
+	function formatXAxis(value: number) {
+		switch (interval) {
+			case PrometheusChartQueryInterval.OneHour:
+			case PrometheusChartQueryInterval.SixHours:
+			case PrometheusChartQueryInterval.OneDay:
+				return new Date(value).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+			case PrometheusChartQueryInterval.SevenDays:
+				return new Date(value).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+			case PrometheusChartQueryInterval.ThirtyDays:
+				return new Date(value).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+			default:
+				return new Date(value).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+		}
+	}
 </script>
 
 <div class="prometheus-chart-wrapper">
@@ -258,12 +301,16 @@
 			yNice={true}
 			legend={legendSnippet}
 			yDomain={[0, maxValue > minScale ? null : minScale]}
+			xDomain={[minTimestampDate, new Date()]}
 			props={{
 				spline: {
 					class: 'stroke-2'
 				},
 				xAxis: {
-					format: formatXAxis
+					format: formatXAxis,
+					ticks: {
+						interval: ticksFromInterval(interval)
+					}
 				},
 				yAxis: {
 					format: formatYValue
@@ -330,7 +377,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem;
-		background: var(--ax-bg-sunken);
+		background: var(--ax-bg-overlay);
 		border-radius: 0.5rem;
 		font-weight: 500;
 		color: var(--ax-text-default);
