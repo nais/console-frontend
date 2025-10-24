@@ -242,7 +242,7 @@
 					{#snippet children({ data, payload })}
 						<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
 						<Tooltip.List>
-							{#each payload.filter((p) => p.value !== undefined)  as p, i (p.key ?? i)}
+							{#each payload.filter((p) => p.value !== undefined) as p, i (p.key ?? i)}
 								<Tooltip.Item label={p.key} color={p.color}>
 									{formatYValue(p.value)}
 								</Tooltip.Item>
