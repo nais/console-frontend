@@ -225,7 +225,6 @@
 			yNice={true}
 			legend={legendSnippet}
 			yDomain={[0, maxValue > minScale ? null : minScale]}
-			padding={{ left: 48, right: 0, top: 0, bottom: 0 }}
 			props={{
 				spline: {
 					class: 'stroke-2'
@@ -275,6 +274,7 @@
 	.prometheus-chart-wrapper {
 		position: relative;
 		margin-bottom: 3rem;
+		padding-left: 24px;
 	}
 
 	.prometheus-chart-overlay {
