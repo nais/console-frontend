@@ -1,76 +1,3 @@
-<script lang="ts" module>
-	export const PrometheusChartQueryInterval = {
-		OneHour: '1h',
-		SixHours: '6h',
-		OneDay: '1d',
-		SevenDays: '7d',
-		ThirtyDays: '30d'
-	} as const;
-
-	export type PrometheusChartQueryInterval =
-		(typeof PrometheusChartQueryInterval)[keyof typeof PrometheusChartQueryInterval];
-
-	export function getStepFromInterval(interval: PrometheusChartQueryInterval): number {
-		switch (interval) {
-			case PrometheusChartQueryInterval.OneHour:
-				return 30; // 30s step → 120 points
-			case PrometheusChartQueryInterval.SixHours:
-				return 180; // 3m step → 120 points
-			case PrometheusChartQueryInterval.OneDay:
-				return 720; // 12m step → 120 points
-			case PrometheusChartQueryInterval.SevenDays:
-				return 3600; // 1h step → 168 points
-			case PrometheusChartQueryInterval.ThirtyDays:
-				return 14400; // 4h step → 180 points
-			default:
-				return 30;
-		}
-	}
-
-	export function getStartFromInterval(interval: PrometheusChartQueryInterval): Date {
-		const now = new Date();
-		switch (interval) {
-			case PrometheusChartQueryInterval.OneHour:
-				return new Date(now.getTime() - 1 * 60 * 60 * 1000);
-			case PrometheusChartQueryInterval.SixHours:
-				return new Date(now.getTime() - 6 * 60 * 60 * 1000);
-			case PrometheusChartQueryInterval.OneDay:
-				return new Date(now.getTime() - 24 * 60 * 60 * 1000);
-			case PrometheusChartQueryInterval.SevenDays:
-				return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-			case PrometheusChartQueryInterval.ThirtyDays:
-				return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-			default:
-				return new Date(now.getTime() - 1 * 60 * 60 * 1000);
-		}
-	}
-
-	export function getRateIntervalFromStep(stepSeconds: number): string {
-		// Calculate optimal rate interval as 4x the step interval
-		// with a minimum of the scrape interval (30s) and maximum of 5m
-		const rateIntervalSeconds = Math.max(30, Math.min(300, stepSeconds * 4));
-
-		if (rateIntervalSeconds >= 60) {
-			return `${Math.floor(rateIntervalSeconds / 60)}m`;
-		}
-		return `${rateIntervalSeconds}s`;
-	}
-
-	export function replaceQueryVariables(
-		query: string,
-		interval: PrometheusChartQueryInterval
-	): string {
-		const stepSeconds = getStepFromInterval(interval);
-		const rateInterval = getRateIntervalFromStep(stepSeconds);
-
-		// Replace Grafana-style variables
-		return query
-			.replace(/\$__rate_interval/g, rateInterval)
-			.replace(/\$__interval/g, `${stepSeconds}s`)
-			.replace(/\$__interval_ms/g, `${stepSeconds * 1000}`);
-	}
-</script>
-
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
@@ -78,6 +5,12 @@
 	import * as d3 from 'd3-time';
 	import { LineChart, Tooltip } from 'layerchart';
 	import { untrack } from 'svelte';
+	import {
+		getStartFromInterval,
+		getStepFromInterval,
+		PrometheusChartQueryInterval,
+		replaceQueryVariables
+	} from './util';
 
 	const minScale = 1;
 
@@ -235,18 +168,6 @@
 		}, -Infinity)
 	);
 
-	const minTimestampDate = $derived.by(() => {
-		let minTimestamp = new Date();
-		series.forEach((item) => {
-			item.data.forEach((point) => {
-				if (point.timestamp < minTimestamp) {
-					minTimestamp = point.timestamp;
-				}
-			});
-		});
-		return new Date(minTimestamp);
-	});
-
 	// Determine overlay state
 	const overlayState = $derived.by(() => {
 		if ($q.fetching) {
@@ -301,7 +222,7 @@
 			yNice={true}
 			legend={legendSnippet}
 			yDomain={[0, maxValue > minScale ? null : minScale]}
-			xDomain={[minTimestampDate, new Date()]}
+			xDomain={[getStartFromInterval(interval), new Date()]}
 			props={{
 				spline: {
 					class: 'stroke-2'

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import PrometheusChart, {
-		PrometheusChartQueryInterval
-	} from '$lib/components/PrometheusChart.svelte';
+	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
+	import { PrometheusChartQueryInterval } from '$lib/chart/util';
 	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 
