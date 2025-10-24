@@ -49,6 +49,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import { LineChart, Tooltip } from 'layerchart';
 	import { untrack } from 'svelte';
 
@@ -203,43 +204,111 @@
 			return seriesMax > max ? seriesMax : max;
 		}, -Infinity)
 	);
+
+	// Determine overlay state
+	const overlayState = $derived.by(() => {
+		if ($q.fetching) {
+			return 'loading';
+		}
+		if ($q.data && series.length === 0) {
+			return 'no-data';
+		}
+		return null;
+	});
 </script>
 
-<LegendWrapper {height} bind:ref={htmlRef}>
-	<LineChart
-		{series}
-		x="timestamp"
-		y="value"
-		legend={legendSnippet}
-		yDomain={[0, maxValue > minScale ? null : minScale]}
-		props={{
-			spline: {
-				class: 'stroke-2'
-			},
-			tooltip: {
-				hideTotal: true
-			},
-			xAxis: {
-				format: formatXAxis
-			},
-			yAxis: {
-				format: formatYValue
-			}
-		}}
-	>
-		{#snippet tooltip({ context })}
-			<Tooltip.Root>
-				{#snippet children({ data, payload })}
-					<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
-					<Tooltip.List>
-						{#each payload as p, i (p.key ?? i)}
-							<Tooltip.Item label={p.key} color={p.color}>
-								{formatYValue(p.value)}
-							</Tooltip.Item>
-						{/each}
-					</Tooltip.List>
-				{/snippet}
-			</Tooltip.Root>
-		{/snippet}
-	</LineChart>
-</LegendWrapper>
+<div class="prometheus-chart-wrapper">
+	<LegendWrapper {height} bind:ref={htmlRef}>
+		<LineChart
+			{series}
+			x="timestamp"
+			y="value"
+			yPadding={[0, 30]}
+			yNice={true}
+			legend={legendSnippet}
+			yDomain={[0, maxValue > minScale ? null : minScale]}
+			padding={{ left: 48, right: 0, top: 0, bottom: 0 }}
+			props={{
+				spline: {
+					class: 'stroke-2'
+				},
+				xAxis: {
+					format: formatXAxis
+				},
+				yAxis: {
+					format: formatYValue
+				}
+			}}
+		>
+			{#snippet tooltip({ context })}
+				<Tooltip.Root>
+					{#snippet children({ data, payload })}
+						<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
+						<Tooltip.List>
+							{#each payload as p, i (p.key ?? i)}
+								<Tooltip.Item label={p.key} color={p.color}>
+									{formatYValue(p.value)}
+								</Tooltip.Item>
+							{/each}
+						</Tooltip.List>
+					{/snippet}
+				</Tooltip.Root>
+			{/snippet}
+		</LineChart>
+	</LegendWrapper>
+
+	{#if overlayState}
+		<div class="prometheus-chart-overlay">
+			<div class="prometheus-chart-overlay-content">
+				{#if overlayState === 'loading'}
+					<div class="prometheus-chart-loading">
+						<Loader />
+						<span>Loading...</span>
+					</div>
+				{:else if overlayState === 'no-data'}
+					<span>No data available</span>
+				{/if}
+			</div>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.prometheus-chart-wrapper {
+		position: relative;
+		margin-bottom: 3rem;
+	}
+
+	.prometheus-chart-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
+		backdrop-filter: blur(2px);
+		pointer-events: none;
+	}
+
+	.prometheus-chart-overlay-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem;
+		background: var(--ax-bg-overlay);
+		border-radius: 0.5rem;
+		font-weight: 500;
+		color: var(--ax-text-default);
+	}
+
+	.prometheus-chart-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+	}
+</style>

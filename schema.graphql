@@ -2900,7 +2900,7 @@ type MetricsQueryResult {
   series: [MetricSeries!]!
 
   """Warnings returned by Prometheus, if any."""
-  warnings: [String!]
+  warnings: [String!]!
 }
 
 """
