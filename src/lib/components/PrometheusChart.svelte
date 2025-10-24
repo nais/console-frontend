@@ -165,7 +165,7 @@
 			const metrics = $q.data.environment.metrics.series;
 			if (metrics.length == 0) return [];
 
-			const series = metrics.map((metric, i) => {
+			return metrics.map((metric, i) => {
 				const lbl = labelFormatter(metric.labels);
 				return {
 					key: lbl,
@@ -173,8 +173,6 @@
 					color: colorizer(lbl, i)
 				};
 			});
-
-			return series;
 		}
 		return [];
 	});
@@ -245,7 +243,7 @@
 					{#snippet children({ data, payload })}
 						<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
 						<Tooltip.List>
-							{#each payload as p, i (p.key ?? i)}
+							{#each payload.filter((p) => p.value !== undefined)  as p, i (p.key ?? i)}
 								<Tooltip.Item label={p.key} color={p.color}>
 									{formatYValue(p.value)}
 								</Tooltip.Item>
