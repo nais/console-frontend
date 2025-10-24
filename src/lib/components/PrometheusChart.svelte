@@ -186,17 +186,10 @@
 	});
 
 	$effect(() => {
-		// Ensure we refetch data when interval or query changes
+		// Ensure we refetch data when interval changes, but first when the chart is within view
 		const allowed = untrack(() => allowLoading);
-		const currentQuery = untrack(() => processedQuery);
-
 		if ((interval as string) !== '' && !allowed) {
 			firstTimeLoad = false;
-		}
-
-		// Refetch when query variables change and chart is visible
-		if (firstTimeLoad && allowed && currentQuery) {
-			fetchGQL();
 		}
 	});
 
