@@ -330,7 +330,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem;
-		background: var(--ax-bg-overlay);
+		background: var(--ax-bg-sunken);
 		border-radius: 0.5rem;
 		font-weight: 500;
 		color: var(--ax-text-default);
