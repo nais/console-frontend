@@ -13,17 +13,17 @@
 	export function getStepFromInterval(interval: PrometheusChartQueryInterval): number {
 		switch (interval) {
 			case PrometheusChartQueryInterval.OneHour:
-				return 60;
+				return 30; // 30s step → 120 points
 			case PrometheusChartQueryInterval.SixHours:
-				return 6 * 60;
+				return 180; // 3m step → 120 points
 			case PrometheusChartQueryInterval.OneDay:
-				return 24 * 60;
+				return 720; // 12m step → 120 points
 			case PrometheusChartQueryInterval.SevenDays:
-				return 7 * 24 * 60;
+				return 3600; // 1h step → 168 points
 			case PrometheusChartQueryInterval.ThirtyDays:
-				return 30 * 24 * 60;
+				return 14400; // 4h step → 180 points
 			default:
-				return 60;
+				return 30;
 		}
 	}
 
@@ -43,6 +43,31 @@
 			default:
 				return new Date(now.getTime() - 1 * 60 * 60 * 1000);
 		}
+	}
+
+	export function getRateIntervalFromStep(stepSeconds: number): string {
+		// Calculate optimal rate interval as 4x the step interval
+		// with a minimum of the scrape interval (30s) and maximum of 5m
+		const rateIntervalSeconds = Math.max(30, Math.min(300, stepSeconds * 4));
+
+		if (rateIntervalSeconds >= 60) {
+			return `${Math.floor(rateIntervalSeconds / 60)}m`;
+		}
+		return `${rateIntervalSeconds}s`;
+	}
+
+	export function replaceQueryVariables(
+		query: string,
+		interval: PrometheusChartQueryInterval
+	): string {
+		const stepSeconds = getStepFromInterval(interval);
+		const rateInterval = getRateIntervalFromStep(stepSeconds);
+
+		// Replace Grafana-style variables
+		return query
+			.replace(/\$__rate_interval/g, rateInterval)
+			.replace(/\$__interval/g, `${stepSeconds}s`)
+			.replace(/\$__interval_ms/g, `${stepSeconds * 1000}`);
 	}
 </script>
 
@@ -110,11 +135,19 @@
 	let allowLoading = $state(false);
 	let firstTimeLoad = $state(false);
 
+	// Process query with variable replacement
+	const processedQuery = $derived(replaceQueryVariables(query, interval));
+
 	const fetchGQL = () => {
 		const end = new Date();
 		const start = getStartFromInterval(interval);
 		const step = getStepFromInterval(interval);
-		q.fetch({ variables: { input: { query, range: { start, end, step } }, environmentName } });
+		q.fetch({
+			variables: {
+				input: { query: processedQuery, range: { start, end, step } },
+				environmentName
+			}
+		});
 	};
 
 	$effect(() => {
@@ -153,10 +186,17 @@
 	});
 
 	$effect(() => {
-		// Ensure we refetch data when interval changes, but first when the chart is within view
+		// Ensure we refetch data when interval or query changes
 		const allowed = untrack(() => allowLoading);
-		if ((interval as string) != '' && !allowed) {
+		const currentQuery = untrack(() => processedQuery);
+
+		if ((interval as string) !== '' && !allowed) {
 			firstTimeLoad = false;
+		}
+
+		// Refetch when query variables change and chart is visible
+		if (firstTimeLoad && allowed && currentQuery) {
+			fetchGQL();
 		}
 	});
 

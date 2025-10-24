@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import PrometheusChart, {
 		PrometheusChartQueryInterval
 	} from '$lib/components/PrometheusChart.svelte';
 	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
-	import { page } from '$app/state';
 
 	let interval: PrometheusChartQueryInterval = $state('7d');
 
@@ -66,7 +66,7 @@
 
 <PrometheusChart
 	{interval}
-	query={`avg(rate(net_bytes_recv{service="${aivenServiceName}"}[5m]))`}
+	query={`avg(rate(net_bytes_recv{service="${aivenServiceName}"}[$__rate_interval]))`}
 	environmentName={envName}
 	height="300px"
 	labelFormatter={() => 'Network received'}
@@ -76,7 +76,7 @@
 
 <PrometheusChart
 	{interval}
-	query={`avg(rate(net_bytes_sent{service="${aivenServiceName}"}[5m]))`}
+	query={`avg(rate(net_bytes_sent{service="${aivenServiceName}"}[$__rate_interval]))`}
 	environmentName={envName}
 	height="300px"
 	labelFormatter={() => 'Network sent'}
