@@ -22,7 +22,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
 
@@ -102,28 +102,6 @@
 	)}
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember && isManagedByConsole}
-				<div class="button">
-					<Button
-						as="a"
-						variant="secondary"
-						size="small"
-						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
-						icon={PencilIcon}
-					>
-						Edit Valkey
-					</Button>
-					<Button
-						as="a"
-						variant="danger"
-						size="small"
-						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/delete"
-						icon={TrashIcon}
-					>
-						Delete Valkey
-					</Button>
-				</div>
-			{/if}
 			{#if viewerIsMember && !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This Valkey instance is managed outside Console.<br />
@@ -243,6 +221,14 @@
 				{#if instance.maxMemoryPolicy}
 					<BodyShort>Max memory policy: {instance.maxMemoryPolicy}</BodyShort>
 				{/if}
+				{#if viewerIsMember && isManagedByConsole}
+					<a
+						class="mt-2"
+						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
+					>
+						Edit
+					</a>
+				{/if}
 			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
@@ -253,6 +239,18 @@
 			{/if}
 
 			<Manifest valkey={instance} teamSlug={page.params.team!} />
+			{#if viewerIsMember && isManagedByConsole}
+				<Button
+					as="a"
+					variant="danger"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/delete"
+					icon={TrashIcon}
+					class="self-start"
+				>
+					Delete Valkey
+				</Button>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -278,11 +276,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
-	}
-
-	.button {
-		display: flex;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
 	}
 </style>

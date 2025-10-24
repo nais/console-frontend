@@ -11,7 +11,11 @@
 		type LegendSnippetProps
 	} from './LegendWrapperData.svelte';
 
-	let { children, height }: { children: Snippet; height: `${number}px` } = $props();
+	let {
+		children,
+		height,
+		ref = $bindable()
+	}: { children: Snippet; height: `${number}px`; ref?: HTMLDivElement | null } = $props();
 
 	const ctx = createLegendContext();
 </script>
@@ -20,14 +24,16 @@
 	<LegendWrapperData {data} />
 {/snippet}
 
-{#if ctx.data}
-	{@const props = ctx.data.getLegendProps()}
-	<div class="wrapper">
-		<Legend {...props} />
+<div bind:this={ref}>
+	{#if ctx.data}
+		{@const props = ctx.data.getLegendProps()}
+		<div class="wrapper">
+			<Legend {...props} />
+		</div>
+	{/if}
+	<div class="chart" style="height: {height};">
+		{@render children()}
 	</div>
-{/if}
-<div class="chart" style="height: {height};">
-	{@render children()}
 </div>
 
 <style>

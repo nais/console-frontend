@@ -85,7 +85,8 @@
 				: undefined}
 			props={{
 				spline: {
-					class: 'stroke-2'
+					class: 'stroke-2',
+					motion: 'none'
 				},
 				yAxis: {
 					format: euroAxisFormatter
