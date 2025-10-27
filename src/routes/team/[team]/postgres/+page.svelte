@@ -15,7 +15,7 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, BodyShort, Heading, Tag } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import prettyBytes from 'pretty-bytes';
@@ -28,7 +28,11 @@
 
 <GraphErrors errors={$SqlInstances.errors} />
 
-{#if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
+{#if $SqlInstances.fetching}
+	<div class="loading h-[300px]">
+		<Loader size="3xlarge" />
+	</div>
+{:else if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const si = $SqlInstances.data.team.sqlInstances}
 	{@const u = $SqlInstances.data.team.serviceUtilization.sqlInstances}
@@ -242,5 +246,13 @@
 				align-items: center;
 			}
 		}
+	}
+
+	.loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 200px;
+		width: 100%;
 	}
 </style>
