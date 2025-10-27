@@ -27,14 +27,16 @@ export const actions = {
 		const tier = data.get('tier') as ValkeyTier$options | null;
 		const memory = data.get('memory') as ValkeyMemory$options | null;
 		const max_memory_policy = data.get('max_memory_policy') as ValkeyMaxMemoryPolicy$options | null;
+		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 
 		if (!tier || !memory) {
 			return fail(400, {
 				success: false,
-				error: 'All fields are required',
+				error: 'Missing required fields',
 				tier,
 				memory,
-				max_memory_policy
+				max_memory_policy,
+				notify_keyspace_events
 			});
 		}
 
@@ -48,7 +50,8 @@ export const actions = {
 					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
 					maxMemoryPolicy: !max_memory_policy
 						? null
-						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy]
+						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
+					notifyKeyspaceEvents: notify_keyspace_events // empty strings are always passed along to clear any previously set value
 				}
 			},
 			{ event }
@@ -60,7 +63,8 @@ export const actions = {
 				error: res.errors![0].message,
 				tier,
 				memory,
-				max_memory_policy
+				max_memory_policy,
+				notify_keyspace_events
 			});
 		} else if (!res.data) {
 			return fail(500, {
@@ -68,7 +72,8 @@ export const actions = {
 				error: 'Failed to update Valkey',
 				tier,
 				memory,
-				max_memory_policy
+				max_memory_policy,
+				notify_keyspace_events
 			});
 		}
 

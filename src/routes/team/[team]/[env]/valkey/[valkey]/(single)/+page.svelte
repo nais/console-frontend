@@ -221,6 +221,9 @@
 				{#if instance.maxMemoryPolicy}
 					<BodyShort>Max memory policy: {instance.maxMemoryPolicy}</BodyShort>
 				{/if}
+				{#if instance.notifyKeyspaceEvents}
+					<BodyShort>Notify keyspace events: {instance.notifyKeyspaceEvents}</BodyShort>
+				{/if}
 				{#if viewerIsMember && isManagedByConsole}
 					<a
 						class="mt-2"

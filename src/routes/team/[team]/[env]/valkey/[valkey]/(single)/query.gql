@@ -13,6 +13,7 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 				tier
 				memory
 				maxMemoryPolicy
+				notifyKeyspaceEvents
 				state
 				teamEnvironment {
 					environment {
