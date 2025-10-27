@@ -39,3 +39,7 @@ values:
     displayName: Memory limits
     config:
       type: string
+  replicaCount:
+    displayName: Number of replicas
+    config:
+      type: int
