@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import { intersect } from '$lib/utils/intersectionObserver';
 	import { Loader } from '@nais/ds-svelte-community';
 	import * as d3 from 'd3-time';
 	import { LineChart, Tooltip } from 'layerchart';
@@ -62,9 +63,26 @@
 	`);
 
 	let htmlRef = $state<HTMLDivElement | null>(null);
-	let observer: IntersectionObserver | undefined = undefined;
 	let allowLoading = $state(false);
 	let firstTimeLoad = $state(false);
+
+	// Intersection observer callback
+	const handleIntersection = (isVisible: boolean) => {
+		if (!isVisible) {
+			// Only allow loading when in view
+			allowLoading = false;
+			return;
+		}
+
+		// Set allow loading when in view, but only when not already true
+		// This prevents repeated state changes when the observer fires multiple times
+		if (!allowLoading) {
+			allowLoading = true;
+		}
+		if (!firstTimeLoad) {
+			firstTimeLoad = true;
+		}
+	};
 
 	// Compute series from GraphQL data
 	const series = $derived.by(() => {
@@ -177,36 +195,6 @@
 	};
 
 	$effect(() => {
-		// Set up IntersectionObserver to track when chart is in view
-		if (!htmlRef) {
-			return;
-		}
-
-		if (!observer) {
-			observer = new IntersectionObserver((entries) => {
-				const isIntersecting = entries.find((e) => e.target === htmlRef)?.isIntersecting;
-				if (!isIntersecting) {
-					// Only allow loading when in view
-					allowLoading = false;
-					return;
-				}
-
-				// Set allow loading when in view, but only when not already true
-				// This prevents repeated state changes when the observer fires multiple times
-				if (!allowLoading) {
-					allowLoading = true;
-				}
-				if (!firstTimeLoad) {
-					firstTimeLoad = true;
-				}
-			});
-			observer.observe(htmlRef);
-		}
-
-		return () => observer?.disconnect();
-	});
-
-	$effect(() => {
 		// Load data when needed and the chart is within view
 		const allowed = untrack(() => allowLoading);
 		if (firstTimeLoad && allowed) {
@@ -257,7 +245,7 @@
 	}
 </script>
 
-<div class="prometheus-chart-wrapper">
+<div class="prometheus-chart-wrapper" use:intersect={handleIntersection}>
 	<LegendWrapper {height} bind:ref={htmlRef}>
 		<LineChart
 			series={chartData.series}
