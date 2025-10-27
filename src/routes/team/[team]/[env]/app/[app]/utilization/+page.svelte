@@ -442,160 +442,6 @@
 			</ReadMore>
 		{/if}
 
-		<div class="section" bind:clientWidth={chartWidth}>
-			<div class="heading-with-toggle">
-				<Heading level="2" size="medium" spacing>Memory Usage</Heading>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
-			</div>
-
-			<div class="chart h-[330px]">
-				<AreaChart
-					series={memoryChartData}
-					x="timestamp"
-					y="value"
-					brush={{
-						onBrushEnd(detail) {
-							brushXDomain = detail.xDomain as [Date, Date];
-						}
-					}}
-					yDomain={[0, memoryMax]}
-					xDomain={[
-						$ResourceUtilizationForApp.variables?.start,
-						$ResourceUtilizationForApp.variables?.end
-					]}
-					props={{
-						yAxis: {
-							format: prettyBytes
-						},
-						highlight: {
-							points: false
-						},
-						area: {
-							motion: 'none'
-						}
-					}}
-					{annotations}
-				>
-					{#snippet aboveMarks()}
-						<AnnotationSeries
-							data={utilization.requested_memory_series}
-							colorClass="stroke-warning [stroke-dasharray:2,2]"
-							label="Request"
-							labelColorClass="fill-warning"
-						/>
-						<AnnotationSeries
-							data={utilization.limit_memory_series}
-							colorClass="stroke-danger [stroke-dasharray:2,2]"
-							label="Limit"
-							labelColorClass="fill-danger"
-							labelPosition="below"
-						/>
-					{/snippet}
-					{#snippet tooltip({ context })}
-						<Tooltip.Root>
-							{#snippet children({ data, payload })}
-								{#if data.annotation}
-									{@const log = data.annotation.details as groupedLogs}
-									{#each log.logs as l (l.id)}
-										<div class="whitespace-nowrap">
-											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
-											{#if l.__typename == 'DeploymentActivityLogEntry'}
-												New release
-											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.appScaled.direction} to
-												{l.appScaled.newSize}
-											{:else}
-												{l.__typename}
-											{/if}
-										</div>
-									{/each}
-								{:else}
-									{@const request = utilization.requested_memory_series.find(
-										(d) => d.timestamp.getTime() === context.x(data).getTime()
-									)?.value}
-									{@const limit = utilization.limit_memory_series.find(
-										(d) => d.timestamp.getTime() === context.x(data).getTime()
-									)?.value}
-									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
-									<Tooltip.List>
-										{#each payload.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
-												{prettyBytes(p.value)}
-											</Tooltip.Item>
-										{/each}
-										{#if request || limit}
-											<Tooltip.Separator />
-										{/if}
-										{#if request}
-											<Tooltip.Item
-												label="Request"
-												color="var(--color-warning)"
-												value={request}
-												format={prettyBytes}
-												valueAlign="right"
-											/>
-										{/if}
-										{#if limit}
-											<Tooltip.Item
-												label="Limit"
-												color="var(--color-danger)"
-												value={limit}
-												format={prettyBytes}
-												valueAlign="right"
-											/>
-										{/if}
-									</Tooltip.List>
-								{/if}
-							{/snippet}
-						</Tooltip.Root>
-					{/snippet}
-				</AreaChart>
-			</div>
-			<ReadMore header="Analyzing Your Memory Usage">
-				<BodyLong>
-					This graph show your workloads's memory usage over time. <ul>
-						<li>
-							<strong>Requests</strong> (grey line): The minimum amount of memory guaranteed to your
-							app.
-						</li>
-						<li>
-							<strong>Limits</strong> (red line, if present): The maximum amount of memory your app can
-							use.
-						</li>
-						<li>Shaded Areas: The actual memory usage of each running instance over time.</li>
-					</ul>
-					Your app can use more than its requested memory if available, but exceeding the memory
-					<strong>limit</strong>
-					will cause the instance to be terminated (<code>OOMKilled</code>).
-
-					<div><strong>Optimize your memory settings:</strong></div>
-					<div>
-						✅ If memory usage is consistently below the request, consider lowering the request to
-						reduce overall cost and resource waste.
-					</div>
-					<div>
-						✅ Memory limits are useful for containing runaway memory usage, but setting them too
-						low may cause instability.
-					</div>
-					<div>
-						Read more about memory best practices in the <a
-							href={docURL(
-								'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
-							)}
-						>
-							Nais documentation.
-						</a>
-					</div>
-				</BodyLong>
-			</ReadMore>
-		</div>
 		<div class="section">
 			<div class="heading-with-toggle">
 				<Heading level="2" size="medium" spacing>CPU Usage</Heading>
@@ -747,6 +593,160 @@
 					</div>
 					<div>
 						Read more about CPU best practices in the <a
+							href={docURL(
+								'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
+							)}
+						>
+							Nais documentation.
+						</a>
+					</div>
+				</BodyLong>
+			</ReadMore>
+		</div>
+		<div class="section" bind:clientWidth={chartWidth}>
+			<div class="heading-with-toggle">
+				<Heading level="2" size="medium" spacing>Memory Usage</Heading>
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
+
+			<div class="chart h-[330px]">
+				<AreaChart
+					series={memoryChartData}
+					x="timestamp"
+					y="value"
+					brush={{
+						onBrushEnd(detail) {
+							brushXDomain = detail.xDomain as [Date, Date];
+						}
+					}}
+					yDomain={[0, memoryMax]}
+					xDomain={[
+						$ResourceUtilizationForApp.variables?.start,
+						$ResourceUtilizationForApp.variables?.end
+					]}
+					props={{
+						yAxis: {
+							format: prettyBytes
+						},
+						highlight: {
+							points: false
+						},
+						area: {
+							motion: 'none'
+						}
+					}}
+					{annotations}
+				>
+					{#snippet aboveMarks()}
+						<AnnotationSeries
+							data={utilization.requested_memory_series}
+							colorClass="stroke-warning [stroke-dasharray:2,2]"
+							label="Request"
+							labelColorClass="fill-warning"
+						/>
+						<AnnotationSeries
+							data={utilization.limit_memory_series}
+							colorClass="stroke-danger [stroke-dasharray:2,2]"
+							label="Limit"
+							labelColorClass="fill-danger"
+							labelPosition="below"
+						/>
+					{/snippet}
+					{#snippet tooltip({ context })}
+						<Tooltip.Root>
+							{#snippet children({ data, payload })}
+								{#if data.annotation}
+									{@const log = data.annotation.details as groupedLogs}
+									{#each log.logs as l (l.id)}
+										<div class="whitespace-nowrap">
+											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
+											{#if l.__typename == 'DeploymentActivityLogEntry'}
+												New release
+											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
+												Scaled {l.appScaled.direction} to
+												{l.appScaled.newSize}
+											{:else}
+												{l.__typename}
+											{/if}
+										</div>
+									{/each}
+								{:else}
+									{@const request = utilization.requested_memory_series.find(
+										(d) => d.timestamp.getTime() === context.x(data).getTime()
+									)?.value}
+									{@const limit = utilization.limit_memory_series.find(
+										(d) => d.timestamp.getTime() === context.x(data).getTime()
+									)?.value}
+									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
+									<Tooltip.List>
+										{#each payload.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
+											<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
+												{prettyBytes(p.value)}
+											</Tooltip.Item>
+										{/each}
+										{#if request || limit}
+											<Tooltip.Separator />
+										{/if}
+										{#if request}
+											<Tooltip.Item
+												label="Request"
+												color="var(--color-warning)"
+												value={request}
+												format={prettyBytes}
+												valueAlign="right"
+											/>
+										{/if}
+										{#if limit}
+											<Tooltip.Item
+												label="Limit"
+												color="var(--color-danger)"
+												value={limit}
+												format={prettyBytes}
+												valueAlign="right"
+											/>
+										{/if}
+									</Tooltip.List>
+								{/if}
+							{/snippet}
+						</Tooltip.Root>
+					{/snippet}
+				</AreaChart>
+			</div>
+			<ReadMore header="Analyzing Your Memory Usage">
+				<BodyLong>
+					This graph show your workloads's memory usage over time. <ul>
+						<li>
+							<strong>Requests</strong> (grey line): The minimum amount of memory guaranteed to your
+							app.
+						</li>
+						<li>
+							<strong>Limits</strong> (red line, if present): The maximum amount of memory your app can
+							use.
+						</li>
+						<li>Shaded Areas: The actual memory usage of each running instance over time.</li>
+					</ul>
+					Your app can use more than its requested memory if available, but exceeding the memory
+					<strong>limit</strong>
+					will cause the instance to be terminated (<code>OOMKilled</code>).
+
+					<div><strong>Optimize your memory settings:</strong></div>
+					<div>
+						✅ If memory usage is consistently below the request, consider lowering the request to
+						reduce overall cost and resource waste.
+					</div>
+					<div>
+						✅ Memory limits are useful for containing runaway memory usage, but setting them too
+						low may cause instability.
+					</div>
+					<div>
+						Read more about memory best practices in the <a
 							href={docURL(
 								'/workloads/explanations/good-practices/?h=limit#set-reasonable-resource-requests-and-limits'
 							)}
