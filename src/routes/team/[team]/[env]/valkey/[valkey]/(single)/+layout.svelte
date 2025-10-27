@@ -16,10 +16,10 @@
 			>Overview</Tab
 		>
 		<Tab
-			value="/team/[team]/[env]/valkey/[valkey]/(single)/metrics"
+			value="/team/[team]/[env]/valkey/[valkey]/(single)/insights"
 			as="a"
-			href={resolve('/team/[team]/[env]/valkey/[valkey]/(single)/metrics', page.params as never)}
-			>Metrics</Tab
+			href={resolve('/team/[team]/[env]/valkey/[valkey]/(single)/insights', page.params as never)}
+			>Insights</Tab
 		>
 	</TabList>
 

@@ -129,13 +129,13 @@ export const urlToPageHeader = (
 } => {
 	const split = url.pathname.split('/');
 
-	// Special handling for metrics pages
-	if (split.at(-1) === 'metrics' && split.length === 7) {
+	// Special handling for insights pages
+	if (split.at(-1) === 'insights' && split.length === 7) {
 		const env = split[3];
 		const resource = split[5];
 		return {
 			breadcrumbs: [...urlToBreadcrumbs(url)],
-			heading: `Metrics for ${resource}`,
+			heading: `Insights for ${resource}`,
 			tag: { label: env, variant: envTagVariant(env) }
 		};
 	}
@@ -192,9 +192,9 @@ export function pathToFavoriteLabel(path: string): string {
 	}
 
 	if (subpage) {
-		// Special handling for metrics subpage
-		if (subpage === 'metrics') {
-			labelParts.push('Metrics');
+		// Special handling for insights subpage
+		if (subpage === 'insights') {
+			labelParts.push('Insights');
 		} else {
 			const subpageInfo = label(subpage);
 			if (subpageInfo.pageName) {

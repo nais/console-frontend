@@ -69,7 +69,7 @@ describe('urlToBreadcrumbs', () => {
 			}
 		],
 		[
-			'http://localhost:5173/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok/metrics',
+			'http://localhost:5173/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok/insights',
 			{
 				breadcrumbs: [
 					{ label: 'teampam', href: '/team/teampam' },
@@ -79,31 +79,31 @@ describe('urlToBreadcrumbs', () => {
 						href: '/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok'
 					}
 				],
-				heading: 'Metrics for valkey-teampam-stillingsok',
+				heading: 'Insights for valkey-teampam-stillingsok',
 				tag: { label: 'prod-gcp', variant: 'info-moderate' }
 			}
 		],
 		[
-			'http://localhost:5173/team/myteam/dev/opensearch/search-instance/metrics',
+			'http://localhost:5173/team/myteam/dev/opensearch/search-instance/insights',
 			{
 				breadcrumbs: [
 					{ label: 'myteam', href: '/team/myteam' },
 					{ label: 'OpenSearch Instances', href: '/team/myteam/opensearch' },
 					{ label: 'search-instance', href: '/team/myteam/dev/opensearch/search-instance' }
 				],
-				heading: 'Metrics for search-instance',
+				heading: 'Insights for search-instance',
 				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
 		],
 		[
-			'http://localhost:5173/team/myteam/dev/kafka/my-topic/metrics',
+			'http://localhost:5173/team/myteam/dev/kafka/my-topic/insights',
 			{
 				breadcrumbs: [
 					{ label: 'myteam', href: '/team/myteam' },
 					{ label: 'Kafka Topics', href: '/team/myteam/kafka' },
 					{ label: 'my-topic', href: '/team/myteam/dev/kafka/my-topic' }
 				],
-				heading: 'Metrics for my-topic',
+				heading: 'Insights for my-topic',
 				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
 		]
@@ -118,14 +118,17 @@ describe('pathToFavoriteLabel', () => {
 		['/team/devteam/applications', 'devteam · Applications'],
 		['/team/devteam/prod/app/myapp', 'devteam · prod · Applications · myapp'],
 		[
-			'/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok/metrics',
-			'teampam · prod-gcp · Valkey Instances · valkey-teampam-stillingsok · Metrics'
+			'/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok/insights',
+			'teampam · prod-gcp · Valkey Instances · valkey-teampam-stillingsok · Insights'
 		],
 		[
-			'/team/myteam/dev/opensearch/search-instance/metrics',
-			'myteam · dev · OpenSearch Instances · search-instance · Metrics'
+			'/team/myteam/dev/opensearch/search-instance/insights',
+			'myteam · dev · OpenSearch Instances · search-instance · Insights'
 		],
-		['/team/myteam/dev/kafka/my-topic/metrics', 'myteam · dev · Kafka Topics · my-topic · Metrics']
+		[
+			'/team/myteam/dev/kafka/my-topic/insights',
+			'myteam · dev · Kafka Topics · my-topic · Insights'
+		]
 	])('%s should return "%s"', (path, expected) => {
 		expect(pathToFavoriteLabel(path)).toEqual(expected);
 	});

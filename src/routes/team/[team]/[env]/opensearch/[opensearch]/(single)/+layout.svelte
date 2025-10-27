@@ -20,12 +20,12 @@
 			>Overview</Tab
 		>
 		<Tab
-			value="/team/[team]/[env]/opensearch/[opensearch]/(single)/metrics"
+			value="/team/[team]/[env]/opensearch/[opensearch]/(single)/insights"
 			as="a"
 			href={resolve(
-				'/team/[team]/[env]/opensearch/[opensearch]/(single)/metrics',
+				'/team/[team]/[env]/opensearch/[opensearch]/(single)/insights',
 				page.params as never
-			)}>Metrics</Tab
+			)}>Insights</Tab
 		>
 	</TabList>
 

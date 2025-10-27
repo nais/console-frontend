@@ -16,10 +16,10 @@
 			>Overview</Tab
 		>
 		<Tab
-			value="/team/[team]/[env]/kafka/[kafka]/(single)/metrics"
+			value="/team/[team]/[env]/kafka/[kafka]/(single)/insights"
 			as="a"
-			href={resolve('/team/[team]/[env]/kafka/[kafka]/(single)/metrics', page.params as never)}
-			>Metrics</Tab
+			href={resolve('/team/[team]/[env]/kafka/[kafka]/(single)/insights', page.params as never)}
+			>Insights</Tab
 		>
 	</TabList>
 
