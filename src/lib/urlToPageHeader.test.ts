@@ -1,4 +1,4 @@
-import { urlToPageHeader } from './urlToPageHeader';
+import { pathToFavoriteLabel, urlToPageHeader } from './urlToPageHeader';
 
 describe('urlToBreadcrumbs', () => {
 	test.each([
@@ -67,8 +67,53 @@ describe('urlToBreadcrumbs', () => {
 				heading: 'Manifest',
 				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
+		],
+		[
+			'http://localhost:5173/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok/metrics',
+			{
+				breadcrumbs: [
+					{ label: 'teampam', href: '/team/teampam' },
+					{ label: 'Valkey Instances', href: '/team/teampam/valkey' },
+					{
+						label: 'valkey-teampam-stillingsok',
+						href: '/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok'
+					}
+				],
+				heading: 'Metrics for valkey-teampam-stillingsok',
+				tag: { label: 'prod-gcp', variant: 'info-moderate' }
+			}
+		],
+		[
+			'http://localhost:5173/team/myteam/dev/opensearch/search-instance/metrics',
+			{
+				breadcrumbs: [
+					{ label: 'myteam', href: '/team/myteam' },
+					{ label: 'OpenSearch Instances', href: '/team/myteam/opensearch' },
+					{ label: 'search-instance', href: '/team/myteam/dev/opensearch/search-instance' }
+				],
+				heading: 'Metrics for search-instance',
+				tag: { label: 'dev', variant: 'neutral-filled' }
+			}
 		]
 	])('%s', (url, expected) => {
 		expect(urlToPageHeader(new URL(url))).toEqual(expected);
+	});
+});
+
+describe('pathToFavoriteLabel', () => {
+	test.each([
+		['/team/devteam', 'devteam'],
+		['/team/devteam/applications', 'devteam · Applications'],
+		['/team/devteam/prod/app/myapp', 'devteam · prod · Applications · myapp'],
+		[
+			'/team/teampam/prod-gcp/valkey/valkey-teampam-stillingsok/metrics',
+			'teampam · prod-gcp · Valkey Instances · valkey-teampam-stillingsok · Metrics'
+		],
+		[
+			'/team/myteam/dev/opensearch/search-instance/metrics',
+			'myteam · dev · OpenSearch Instances · search-instance · Metrics'
+		]
+	])('%s should return "%s"', (path, expected) => {
+		expect(pathToFavoriteLabel(path)).toEqual(expected);
 	});
 });

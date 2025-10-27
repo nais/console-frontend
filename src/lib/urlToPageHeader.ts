@@ -129,6 +129,17 @@ export const urlToPageHeader = (
 } => {
 	const split = url.pathname.split('/');
 
+	// Special handling for metrics pages
+	if (split.at(-1) === 'metrics' && split.length === 7) {
+		const env = split[3];
+		const resource = split[5];
+		return {
+			breadcrumbs: [...urlToBreadcrumbs(url)],
+			heading: `Metrics for ${resource}`,
+			tag: { label: env, variant: envTagVariant(env) }
+		};
+	}
+
 	return {
 		breadcrumbs: [...urlToBreadcrumbs(url)],
 		heading:
@@ -181,11 +192,16 @@ export function pathToFavoriteLabel(path: string): string {
 	}
 
 	if (subpage) {
-		const subpageInfo = label(subpage);
-		if (subpageInfo.pageName) {
-			labelParts.push(subpageInfo.pageName);
+		// Special handling for metrics subpage
+		if (subpage === 'metrics') {
+			labelParts.push('Metrics');
 		} else {
-			labelParts.push(capitalize(subpage));
+			const subpageInfo = label(subpage);
+			if (subpageInfo.pageName) {
+				labelParts.push(subpageInfo.pageName);
+			} else {
+				labelParts.push(capitalize(subpage));
+			}
 		}
 	}
 
