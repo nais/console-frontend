@@ -15,11 +15,13 @@
 		BodyShort,
 		Button,
 		ErrorMessage,
+		ReadMore,
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { getTeamContext } from '../../teamContext.svelte';
 	import type { PageProps } from './$houdini';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	let { data }: PageProps = $props();
 
@@ -89,6 +91,23 @@
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
+
+	<ReadMore header="Advanced options" size="small">
+		<TextField
+			size="small"
+			label="Notify keyspace events"
+			name="notify_keyspace_events"
+			value={form?.notify_keyspace_events ?? ''}
+		>
+			{#snippet description()}
+				Example: <i>Exd</i><br />
+				See the
+				<a href="https://valkey.io/topics/notifications">
+					Valkey documentation<ExternalLinkIcon />
+				</a> for details.
+			{/snippet}
+		</TextField>
+	</ReadMore>
 
 	<BodyShort>
 		Estimated cost: <strong

@@ -17,9 +17,11 @@
 		CopyButton,
 		ErrorMessage,
 		ReadMore,
-		Select
+		Select,
+		TextField
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	let { form, data }: PageProps = $props();
 
@@ -40,11 +42,17 @@
 			$UpdateValkeyData.data?.team.environment.valkey.maxMemoryPolicy ??
 			''
 	);
+	let notifyKeyspaceEvents = $derived(
+		(form?.notify_keyspace_events as string) ??
+			$UpdateValkeyData.data?.team.environment.valkey.notifyKeyspaceEvents ??
+			''
+	);
 
 	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
 tier = "${tier}"
 memory = "${memory}"
-${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
+${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}
+${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : ``}`);
 </script>
 
 <form method="POST" use:enhance>
@@ -77,6 +85,23 @@ ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}`);
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
+
+	<ReadMore header="Advanced options" size="small" open={notifyKeyspaceEvents !== ''}>
+		<TextField
+			size="small"
+			label="Notify keyspace events"
+			name="notify_keyspace_events"
+			bind:value={notifyKeyspaceEvents}
+		>
+			{#snippet description()}
+				Example: <i>Exd</i><br />
+				See the
+				<a href="https://valkey.io/topics/notifications">
+					Valkey documentation<ExternalLinkIcon />
+				</a> for details.
+			{/snippet}
+		</TextField>
+	</ReadMore>
 
 	<BodyShort>
 		Estimated cost: <strong

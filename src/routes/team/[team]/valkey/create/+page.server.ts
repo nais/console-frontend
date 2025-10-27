@@ -26,16 +26,18 @@ export const actions = {
 		const tier = data.get('tier') as string | null;
 		const memory = data.get('memory') as string | null;
 		const max_memory_policy = data.get('max_memory_policy') as string | null;
+		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 
 		if (!name || !environment || !tier || !memory) {
 			return fail(400, {
 				success: false,
-				error: 'All fields are required',
+				error: 'Missing required fields',
 				name,
 				environment,
 				tier,
 				memory,
-				max_memory_policy
+				max_memory_policy,
+				notify_keyspace_events
 			});
 		}
 
@@ -49,7 +51,8 @@ export const actions = {
 					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
 					maxMemoryPolicy: !max_memory_policy
 						? null
-						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy]
+						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
+					notifyKeyspaceEvents: !notify_keyspace_events ? null : notify_keyspace_events
 				}
 			},
 			{ event }
@@ -63,7 +66,8 @@ export const actions = {
 				environment,
 				tier,
 				memory,
-				max_memory_policy
+				max_memory_policy,
+				notify_keyspace_events
 			});
 		} else if (!res.data) {
 			return fail(500, {
@@ -73,7 +77,8 @@ export const actions = {
 				environment,
 				tier,
 				memory,
-				max_memory_policy
+				max_memory_policy,
+				notify_keyspace_events
 			});
 		}
 
