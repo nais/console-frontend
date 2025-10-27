@@ -94,6 +94,18 @@ describe('urlToBreadcrumbs', () => {
 				heading: 'Metrics for search-instance',
 				tag: { label: 'dev', variant: 'neutral-filled' }
 			}
+		],
+		[
+			'http://localhost:5173/team/myteam/dev/kafka/my-topic/metrics',
+			{
+				breadcrumbs: [
+					{ label: 'myteam', href: '/team/myteam' },
+					{ label: 'Kafka Topics', href: '/team/myteam/kafka' },
+					{ label: 'my-topic', href: '/team/myteam/dev/kafka/my-topic' }
+				],
+				heading: 'Metrics for my-topic',
+				tag: { label: 'dev', variant: 'neutral-filled' }
+			}
 		]
 	])('%s', (url, expected) => {
 		expect(urlToPageHeader(new URL(url))).toEqual(expected);
@@ -112,7 +124,8 @@ describe('pathToFavoriteLabel', () => {
 		[
 			'/team/myteam/dev/opensearch/search-instance/metrics',
 			'myteam · dev · OpenSearch Instances · search-instance · Metrics'
-		]
+		],
+		['/team/myteam/dev/kafka/my-topic/metrics', 'myteam · dev · Kafka Topics · my-topic · Metrics']
 	])('%s should return "%s"', (path, expected) => {
 		expect(pathToFavoriteLabel(path)).toEqual(expected);
 	});
