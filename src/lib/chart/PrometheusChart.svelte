@@ -171,9 +171,26 @@
 		};
 	});
 
+	// Calculate dynamic padding based on content
+	const dynamicPadding = $derived.by(() => {
+		const { maxValue } = chartData;
+
+		// Estimate Y-axis label width based on formatted max value
+		const maxValueText = formatYValue(maxValue);
+		// Rough estimation: ~8px per character + some buffer
+		const estimatedLabelWidth = Math.max(20, maxValueText.length * 8 + 20);
+
+		return {
+			left: estimatedLabelWidth,
+			right: 30,
+			top: 20,
+			bottom: 40
+		};
+	});
+
 	// Determine overlay state
 	const overlayState = $derived.by(() => {
-		if ($q.fetching) {
+		if ($q.fetching || $q.data === null) {
 			return 'loading';
 		}
 		if ($q.data && series.length === 0) {
@@ -255,7 +272,7 @@
 			series={chartData.series}
 			x="timestamp"
 			y="value"
-			yPadding={[0, 30]}
+			padding={dynamicPadding}
 			xDomain={chartData.xDomain}
 			legend={legendSnippet}
 			yDomain={chartData.yDomain}
@@ -313,7 +330,6 @@
 	.prometheus-chart-wrapper {
 		position: relative;
 		margin-bottom: 3rem;
-		padding-left: 24px;
 	}
 
 	.prometheus-chart-overlay {

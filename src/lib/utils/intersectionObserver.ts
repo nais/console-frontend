@@ -41,7 +41,6 @@ class SharedIntersectionObserver {
 
 		this.callbacks.set(element, callback);
 		this.observer.observe(element);
-		console.log('Observing element', element);
 	}
 
 	/**
@@ -52,7 +51,6 @@ class SharedIntersectionObserver {
 
 		this.callbacks.delete(element);
 		this.observer.unobserve(element);
-		console.log('Unobserving element', element);
 	}
 }
 
