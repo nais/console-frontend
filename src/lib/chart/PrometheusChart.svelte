@@ -176,7 +176,7 @@
 		const { maxValue } = chartData;
 
 		// Estimate Y-axis label width based on formatted max value
-		const maxValueText = formatYValue(maxValue);
+		const maxValueText = formatYValue(maxValue + 0.1);
 		// Rough estimation: ~8px per character + some buffer
 		const estimatedLabelWidth = Math.max(20, maxValueText.length * 8 + 20);
 
