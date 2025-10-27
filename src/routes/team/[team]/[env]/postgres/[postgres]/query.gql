@@ -12,6 +12,10 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 					}
 				}
 
+				auditLog {
+					logUrl
+				}
+
 				cascadingDelete
 				healthy
 				connectionName
