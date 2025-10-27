@@ -9,13 +9,13 @@
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { SqlInstance } = $derived(data);
+	let { SqlInstance, viewerIsMember } = $derived(data);
 	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
 	let postgres = $derived(page.params.postgres);
 
@@ -29,14 +29,6 @@
 		</Alert>
 	{/each}
 {:else if instance}
-	<BodyShort spacing>
-		View in
-		<ExternalLink
-			href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
-		>
-			Google Cloud Console
-		</ExternalLink>
-	</BodyShort>
 	<div class="summary-grid">
 		<div class="card">
 			<SummaryCard
@@ -115,6 +107,22 @@
 				<dd>{instance.version}</dd>
 				<dt>Tier:</dt>
 				<dd>{instance.tier}</dd>
+				{#if viewerIsMember}
+					<dt>Console:</dt>
+					<dd>
+						<ExternalLink
+							href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
+						>
+							Google Cloud Console
+						</ExternalLink>
+					</dd>
+					{#if instance.auditLog?.logUrl}
+						<dt>Audit Logs:</dt>
+						<dd>
+							<ExternalLink href={instance.auditLog.logUrl}>View Logs</ExternalLink>
+						</dd>
+					{/if}
+				{/if}
 			</dl>
 
 			<Heading level="3" spacing>Issues</Heading>
