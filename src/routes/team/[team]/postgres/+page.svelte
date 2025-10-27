@@ -29,7 +29,7 @@
 <GraphErrors errors={$SqlInstances.errors} />
 
 {#if $SqlInstances.fetching}
-	<div class="loading h-[300px]">
+	<div class="loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
@@ -252,7 +252,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		height: 200px;
+		height: 300px;
 		width: 100%;
 	}
 </style>
