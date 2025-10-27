@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { intersect } from '$lib/utils/intersectionObserver';
@@ -183,6 +184,9 @@
 	const processedQuery = $derived(replaceQueryVariables(query, interval));
 
 	const fetchGQL = () => {
+		if (!browser) {
+			return;
+		}
 		const end = new Date();
 		const start = getStartFromInterval(interval);
 		const step = getStepFromInterval(interval);
