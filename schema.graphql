@@ -1338,6 +1338,11 @@ input CreateValkeyInput {
   """Name of the Valkey instance."""
   name: String!
 
+  """
+  Configure keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
+  """
+  notifyKeyspaceEvents: String
+
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
 
@@ -7166,6 +7171,11 @@ input UpdateValkeyInput {
   """Name of the Valkey instance."""
   name: String!
 
+  """
+  Configure keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
+  """
+  notifyKeyspaceEvents: String
+
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
 
@@ -7460,11 +7470,18 @@ type Valkey implements ActivityLogger & Node & Persistence {
 
   """Fetch maintenances updates for the Valkey instance."""
   maintenance: ValkeyMaintenance!
+
+  """Maximum memory policy for the Valkey instance."""
   maxMemoryPolicy: ValkeyMaxMemoryPolicy
 
   """Available memory for the Valkey instance."""
   memory: ValkeyMemory!
   name: String!
+
+  """
+  Keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
+  """
+  notifyKeyspaceEvents: String
   state: ValkeyState!
   team: Team!
   teamEnvironment: TeamEnvironment!

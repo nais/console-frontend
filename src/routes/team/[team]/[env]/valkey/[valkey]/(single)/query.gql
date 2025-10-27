@@ -3,6 +3,9 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 	team(slug: $team) {
 		slug
 		environment(name: $environment) {
+			environment {
+				name
+			}
 			valkey(name: $name) {
 				__typename
 				id
