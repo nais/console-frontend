@@ -2,8 +2,10 @@
 	import { browser } from '$app/environment';
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import CodeBlockPromQL from '$lib/components/CodeBlockPromQL.svelte';
 	import { intersect } from '$lib/utils/intersectionObserver';
-	import { Loader } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Heading, Loader, Modal } from '@nais/ds-svelte-community';
+	import { InformationIcon } from '@nais/ds-svelte-community/icons';
 	import * as d3 from 'd3-time';
 	import { LineChart, Tooltip } from 'layerchart';
 	import { untrack } from 'svelte';
@@ -66,6 +68,7 @@
 	let htmlRef = $state<HTMLDivElement | null>(null);
 	let allowLoading = $state(false);
 	let firstTimeLoad = $state(false);
+	let showQueryModal = $state(false);
 
 	// Intersection observer callback
 	const handleIntersection = (isVisible: boolean) => {
@@ -267,6 +270,15 @@
 </script>
 
 <div class="prometheus-chart-wrapper" use:intersect={handleIntersection}>
+	<button
+		class="query-info-button"
+		onclick={() => (showQueryModal = true)}
+		title="View PromQL Query"
+		aria-label="View PromQL Query"
+	>
+		<InformationIcon />
+	</button>
+
 	<LegendWrapper {height} bind:ref={htmlRef}>
 		<LineChart
 			series={chartData.series}
@@ -326,6 +338,63 @@
 	{/if}
 </div>
 
+{#if showQueryModal}
+	<Modal
+		open={showQueryModal}
+		onclose={() => (showQueryModal = false)}
+		header="PromQL Query Information"
+	>
+		<div class="query-details">
+			<div class="query-section">
+				<div class="query-heading">
+					<Heading size="xsmall" level="3">Query</Heading>
+					<CopyButton
+						text="Copy query"
+						activeText="Query copied"
+						variant="action"
+						copyText={query}
+						size="small"
+					/>
+				</div>
+				<CodeBlockPromQL code={processedQuery} />
+			</div>
+
+			<div class="query-section">
+				<Heading size="xsmall" level="3">Start Time</Heading>
+				<BodyShort>
+					{#if $q.variables?.input?.range?.start}
+						{new Date($q.variables.input.range.start).toLocaleString('en-GB')}
+					{:else}
+						Not fetched yet
+					{/if}
+				</BodyShort>
+			</div>
+
+			<div class="query-section">
+				<Heading size="xsmall" level="3">End Time</Heading>
+				<BodyShort>
+					{#if $q.variables?.input?.range?.end}
+						{new Date($q.variables.input.range.end).toLocaleString('en-GB')}
+					{:else}
+						Not fetched yet
+					{/if}
+				</BodyShort>
+			</div>
+
+			<div class="query-section">
+				<Heading size="xsmall" level="3">Step Interval</Heading>
+				<BodyShort>
+					{#if $q.variables?.input?.range?.step}
+						{$q.variables.input.range.step} seconds
+					{:else}
+						Not fetched yet
+					{/if}
+				</BodyShort>
+			</div>
+		</div>
+	</Modal>
+{/if}
+
 <style>
 	.prometheus-chart-wrapper {
 		position: relative;
@@ -363,5 +432,49 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.75rem;
+	}
+
+	.query-info-button {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		background: var(--ax-bg-subtle);
+		border: 1px solid var(--ax-border-default);
+		border-radius: 0.25rem;
+		padding: 0.5rem;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		z-index: 15;
+		opacity: 0.7;
+		transition: opacity 0.2s ease;
+	}
+
+	.query-info-button:hover {
+		opacity: 1;
+		background: var(--ax-bg-default);
+	}
+
+	.query-details {
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.query-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.query-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
 	}
 </style>
