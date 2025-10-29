@@ -4,11 +4,16 @@ import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMen
 const rows = 25;
 export async function load(event) {
 	const filter = event.url.searchParams.get('filter') || '';
+	const nameFilter = event.url.searchParams.get('nameFilter') || '';
 
 	let filterVar: SecretFilter | undefined = undefined;
 
 	if (filter === 'inUse' || filter === 'notInUse') {
 		filterVar = { inUse: filter === 'inUse' ? true : false };
+	}
+
+	if (nameFilter) {
+		filterVar = { ...filterVar, name: nameFilter };
 	}
 
 	const after = event.url.searchParams.get('after') || '';

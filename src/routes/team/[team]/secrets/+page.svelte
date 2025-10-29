@@ -11,7 +11,7 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, Detail } from '@nais/ds-svelte-community';
+	import { Button, Detail, Search } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuRadioGroup,
@@ -23,6 +23,11 @@
 
 	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
+
+	let filter = $state(page.url.searchParams.get('nameFilter') ?? '');
+
+	let after: string = $derived($Secrets.variables?.after ?? '');
+	let before: string = $derived($Secrets.variables?.before ?? '');
 
 	let usage: 'all' | 'inUse' | 'notInUse' = $derived(
 		(page.url.searchParams.get('filter') as 'all' | 'inUse' | 'notInUse') || 'all'
@@ -37,6 +42,20 @@
 			}
 			changeParams({ filter: value });
 		}
+	};
+
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+			newFilter?: string;
+		} = {}
+	) => {
+		changeParams({
+			before: params.before ?? before,
+			after: params.after ?? after,
+			nameFilter: params.newFilter ?? filter
+		});
 	};
 
 	let createSecretOpen = $state(false);
@@ -77,6 +96,31 @@
 				<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
 					Create Secret
 				</Button>
+			</div>
+			<div class="search">
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						changeQuery({ newFilter: filter });
+					}}
+				>
+					<Search
+						clearButton={false}
+						clearButtonLabel="Clear"
+						label="filter secrets"
+						placeholder="Filter by name"
+						hideLabel={true}
+						size="small"
+						variant="simple"
+						width="100%"
+						autocomplete="off"
+						bind:value={filter}
+						onclear={() => {
+							filter = '';
+							changeQuery({ newFilter: '' });
+						}}
+					/>
+				</form>
 			</div>
 			<div>
 				<List
@@ -157,10 +201,12 @@
 				<Pagination
 					page={secrets.pageInfo}
 					loaders={{
-						loadPreviousPage: () =>
-							changeParams({ after: '', before: secrets.pageInfo.startCursor ?? '' }),
-						loadNextPage: () =>
-							changeParams({ before: '', after: secrets.pageInfo.endCursor ?? '' })
+						loadPreviousPage: () => {
+							changeQuery({ before: secrets.pageInfo.startCursor ?? '', after: '' });
+						},
+						loadNextPage: () => {
+							changeQuery({ after: secrets.pageInfo.endCursor ?? '', before: '' });
+						}
 					}}
 				/>
 			</div>
@@ -184,6 +230,11 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: var(--spacing-layout);
+	}
+	.search {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
 	}
 	.right {
 		display: flex;
