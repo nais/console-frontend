@@ -78,7 +78,7 @@
 					}}
 				>
 					<Search
-						clearButton={false}
+						clearButton={true}
 						clearButtonLabel="Clear"
 						label="filter jobs"
 						placeholder="Filter by name"

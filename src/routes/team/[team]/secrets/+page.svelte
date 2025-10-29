@@ -105,7 +105,7 @@
 					}}
 				>
 					<Search
-						clearButton={false}
+						clearButton={true}
 						clearButtonLabel="Clear"
 						label="filter secrets"
 						placeholder="Filter by name"
