@@ -54,22 +54,30 @@ export const openSearchPlanCosts: Record<
 
 export const storageRequirements: Record<
 	OpenSearchTier$options,
-	Record<OpenSearchMemory$options, { min: number; max: number }>
+	Record<
+		OpenSearchMemory$options,
+		{
+			min: number;
+			max: number;
+			// increments must be 10 * number of VMs for a given Aiven plan
+			increments: number;
+		}
+	>
 > = {
 	[OpenSearchTier.SINGLE_NODE]: {
-		[OpenSearchMemory.GB_2]: { min: 16, max: 16 },
-		[OpenSearchMemory.GB_4]: { min: 80, max: 400 },
-		[OpenSearchMemory.GB_8]: { min: 175, max: 875 },
-		[OpenSearchMemory.GB_16]: { min: 350, max: 1750 },
-		[OpenSearchMemory.GB_32]: { min: 700, max: 3500 },
-		[OpenSearchMemory.GB_64]: { min: 1400, max: 5120 }
+		[OpenSearchMemory.GB_2]: { min: 16, max: 16, increments: 10 },
+		[OpenSearchMemory.GB_4]: { min: 80, max: 400, increments: 10 },
+		[OpenSearchMemory.GB_8]: { min: 175, max: 875, increments: 10 },
+		[OpenSearchMemory.GB_16]: { min: 350, max: 1750, increments: 10 },
+		[OpenSearchMemory.GB_32]: { min: 700, max: 3500, increments: 10 },
+		[OpenSearchMemory.GB_64]: { min: 1400, max: 5120, increments: 10 }
 	},
 	[OpenSearchTier.HIGH_AVAILABILITY]: {
-		[OpenSearchMemory.GB_2]: { min: 0, max: 0 }, // Not available
-		[OpenSearchMemory.GB_4]: { min: 240, max: 1200 },
-		[OpenSearchMemory.GB_8]: { min: 525, max: 2625 },
-		[OpenSearchMemory.GB_16]: { min: 1050, max: 5250 },
-		[OpenSearchMemory.GB_32]: { min: 2100, max: 10500 },
-		[OpenSearchMemory.GB_64]: { min: 4200, max: 15360 }
+		[OpenSearchMemory.GB_2]: { min: 0, max: 0, increments: 0 }, // Not available
+		[OpenSearchMemory.GB_4]: { min: 240, max: 1200, increments: 30 },
+		[OpenSearchMemory.GB_8]: { min: 525, max: 2625, increments: 30 },
+		[OpenSearchMemory.GB_16]: { min: 1050, max: 5250, increments: 30 },
+		[OpenSearchMemory.GB_32]: { min: 2100, max: 10500, increments: 30 },
+		[OpenSearchMemory.GB_64]: { min: 4200, max: 15360, increments: 30 }
 	}
 };
