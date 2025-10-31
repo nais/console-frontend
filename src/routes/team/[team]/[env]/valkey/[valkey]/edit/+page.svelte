@@ -40,7 +40,7 @@
 	let maxMemoryPolicy = $derived(
 		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ??
 			$UpdateValkeyData.data?.team.environment.valkey.maxMemoryPolicy ??
-			''
+			ValkeyMaxMemoryPolicy.NO_EVICTION
 	);
 	let notifyKeyspaceEvents = $derived(
 		(form?.notify_keyspace_events as string) ??
@@ -78,9 +78,6 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 		name="max_memory_policy"
 		bind:value={maxMemoryPolicy}
 	>
-		{#if !maxMemoryPolicy}
-			<option value="">Default (unset)</option>
-		{/if}
 		{#each Object.values(ValkeyMaxMemoryPolicy) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}

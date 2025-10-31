@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import {
 		ValkeyMaxMemoryPolicy,
+		type ValkeyMaxMemoryPolicy$options,
 		ValkeyMemory,
 		type ValkeyMemory$options,
 		ValkeyTier,
@@ -35,6 +36,9 @@
 
 	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
 	let memory = $derived((form?.size as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
+	let maxMemoryPolicy = $derived(
+		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ?? ValkeyMaxMemoryPolicy.NO_EVICTION
+	);
 
 	const teamCtx = getTeamContext();
 </script>
@@ -84,9 +88,8 @@
 		size="small"
 		label="Max memory policy"
 		name="max_memory_policy"
-		value={form?.max_memory_policy ?? ''}
+		bind:value={maxMemoryPolicy}
 	>
-		<option value="">Default (unset)</option>
 		{#each Object.values(ValkeyMaxMemoryPolicy) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
