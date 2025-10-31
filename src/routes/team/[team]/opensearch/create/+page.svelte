@@ -130,6 +130,7 @@
 		required
 		min={minStorage}
 		max={maxStorage}
+		step={storageRequirements[tier][memory].increments}
 		readonly={minStorage === maxStorage}
 		bind:value={storage}
 	>
@@ -137,7 +138,10 @@
 			{#if minStorage === maxStorage}
 				<BodyShort>Storage: {minStorage} GB (fixed)</BodyShort>
 			{:else}
-				<BodyShort>Available storage: {minStorage} - {maxStorage} GB.</BodyShort>
+				<BodyShort>
+					Available storage: {minStorage} - {maxStorage} GB.<br />
+					Must be an increment of {storageRequirements[tier][memory].increments} GB.
+				</BodyShort>
 			{/if}
 		{/snippet}
 	</TextField>

@@ -116,6 +116,7 @@ storageGB = "${storage}"
 		required
 		min={minStorage}
 		max={maxStorage}
+		step={storageRequirements[tier][memory].increments}
 		readonly={minStorage === maxStorage}
 		bind:value={storage}
 	>
@@ -123,9 +124,11 @@ storageGB = "${storage}"
 			{#if minStorage === maxStorage}
 				<BodyShort>Storage: {minStorage} GB (fixed)</BodyShort>
 			{:else}
-				<BodyShort
-					>Available storage: {minStorage} - {maxStorage} GB. Reducing will result in the service re-balancing.</BodyShort
-				>
+				<BodyShort>
+					Available storage: {minStorage} - {maxStorage} GB.<br />
+					Must be an increment of {storageRequirements[tier][memory].increments} GB.<br />
+					Reducing will result in the service re-balancing.
+				</BodyShort>
 			{/if}
 		{/snippet}
 	</TextField>
