@@ -31,23 +31,42 @@
 			$UpdateOpenSearchData.data?.team.environment.openSearch.tier ??
 			OpenSearchTier.SINGLE_NODE
 	);
-	let memory = $derived(
-		(form?.memory as OpenSearchMemory$options) ??
+
+	let memory = $derived.by(() => {
+		const formMemory =
+			(form?.memory as OpenSearchMemory$options) ??
 			$UpdateOpenSearchData.data?.team.environment.openSearch.memory ??
-			OpenSearchMemory.GB_4
-	);
+			OpenSearchMemory.GB_4;
+
+		// prevent invalid memory when tier changes
+		if (tier === OpenSearchTier.HIGH_AVAILABILITY && formMemory === OpenSearchMemory.GB_2) {
+			return OpenSearchMemory.GB_4;
+		}
+		return formMemory;
+	});
+
 	let version = $derived(
 		(form?.version as OpenSearchMajorVersion$options) ??
 			$UpdateOpenSearchData.data?.team.environment.openSearch.version.desiredMajor ??
 			''
 	);
-	let storage = $derived(
-		(form?.storageGB as string) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.storageGB ??
-			storageRequirements[tier][memory].min
-	);
 
-	const availableMemory = $derived(
+	let minStorage = $derived(storageRequirements[tier][memory].min);
+	let maxStorage = $derived(storageRequirements[tier][memory].max);
+
+	let storage = $derived.by(() => {
+		const formStorage =
+			Number(form?.storageGB) ||
+			$UpdateOpenSearchData.data?.team.environment.openSearch.storageGB ||
+			minStorage;
+
+		if (formStorage < minStorage || formStorage > maxStorage) {
+			return minStorage;
+		}
+		return formStorage;
+	});
+
+	let availableMemories = $derived(
 		Object.values(OpenSearchMemory).filter((memory) => {
 			if (tier == OpenSearchTier.HIGH_AVAILABILITY && memory == OpenSearchMemory.GB_2) {
 				return false;
@@ -55,9 +74,6 @@
 			return true;
 		})
 	);
-
-	const minStorage = $derived(storageRequirements[tier][memory].min);
-	const maxStorage = $derived(storageRequirements[tier][memory].max);
 
 	const tomlManifest =
 		$derived(`[openSearch.${$UpdateOpenSearchData.data?.team.environment.openSearch.name}]
@@ -86,7 +102,7 @@ storageGB = "${storage}"
 	</Select>
 
 	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
-		{#each availableMemory as opt (opt)}
+		{#each availableMemories as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
 	</Select>
@@ -98,13 +114,13 @@ storageGB = "${storage}"
 		name="storageGB"
 		htmlSize={7}
 		required
-		min={storageRequirements[tier][memory].min}
-		max={storageRequirements[tier][memory].max}
-		readonly={minStorage == maxStorage}
+		min={minStorage}
+		max={maxStorage}
+		readonly={minStorage === maxStorage}
 		bind:value={storage}
 	>
 		{#snippet description()}
-			{#if minStorage == maxStorage}
+			{#if minStorage === maxStorage}
 				<BodyShort>Storage: {minStorage} GB (fixed)</BodyShort>
 			{:else}
 				<BodyShort

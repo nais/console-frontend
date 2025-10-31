@@ -35,16 +35,34 @@
 	const form = $derived(page.form);
 
 	let tier = $derived((form?.tier as OpenSearchTier$options) ?? OpenSearchTier.SINGLE_NODE);
-	let memory = $derived((form?.memory as OpenSearchMemory$options) ?? OpenSearchMemory.GB_4);
+
+	let memory = $derived.by(() => {
+		const formMemory = (form?.memory as OpenSearchMemory$options) ?? OpenSearchMemory.GB_4;
+
+		// prevent invalid memory when tier changes
+		if (tier === OpenSearchTier.HIGH_AVAILABILITY && formMemory === OpenSearchMemory.GB_2) {
+			return OpenSearchMemory.GB_4;
+		}
+		return formMemory;
+	});
+
 	let version = $derived(
 		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V2
 	);
 
-	let storage = $derived((form?.storageGB as number) ?? storageRequirements[tier][memory].min);
+	let minStorage = $derived(storageRequirements[tier][memory].min);
+	let maxStorage = $derived(storageRequirements[tier][memory].max);
 
-	const teamCtx = getTeamContext();
+	let storage = $derived.by(() => {
+		const formStorage = Number(form?.storageGB) || minStorage;
 
-	const availableMemories = $derived(
+		if (formStorage < minStorage || formStorage > maxStorage) {
+			return minStorage;
+		}
+		return formStorage;
+	});
+
+	let availableMemories = $derived(
 		Object.values(OpenSearchMemory).filter((memory) => {
 			if (tier == OpenSearchTier.HIGH_AVAILABILITY && memory == OpenSearchMemory.GB_2) {
 				return false;
@@ -53,8 +71,7 @@
 		})
 	);
 
-	const minStorage = $derived(storageRequirements[tier][memory].min);
-	const maxStorage = $derived(storageRequirements[tier][memory].max);
+	const teamCtx = getTeamContext();
 </script>
 
 <form
@@ -111,13 +128,13 @@
 		name="storageGB"
 		htmlSize={7}
 		required
-		min={storageRequirements[tier][memory].min}
-		max={storageRequirements[tier][memory].max}
-		readonly={minStorage == maxStorage}
+		min={minStorage}
+		max={maxStorage}
+		readonly={minStorage === maxStorage}
 		bind:value={storage}
 	>
 		{#snippet description()}
-			{#if minStorage == maxStorage}
+			{#if minStorage === maxStorage}
 				<BodyShort>Storage: {minStorage} GB (fixed)</BodyShort>
 			{:else}
 				<BodyShort>Available storage: {minStorage} - {maxStorage} GB.</BodyShort>
