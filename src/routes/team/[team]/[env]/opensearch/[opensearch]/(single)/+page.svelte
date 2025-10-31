@@ -22,7 +22,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon, PencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
 
@@ -106,30 +106,6 @@
 
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember && isManagedByConsole}
-				<div class="button">
-					<Button
-						as="a"
-						variant="secondary"
-						size="small"
-						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
-							.opensearch}/edit"
-						icon={PencilIcon}
-					>
-						Edit OpenSearch
-					</Button>
-					<Button
-						as="a"
-						variant="danger"
-						size="small"
-						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
-							.opensearch}/delete"
-						icon={TrashIcon}
-					>
-						Delete OpenSearch
-					</Button>
-				</div>
-			{/if}
 			{#if viewerIsMember && !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This OpenSearch instance is managed outside Console.<br />
@@ -249,6 +225,15 @@
 				<BodyShort>Tier: {instance.tier}</BodyShort>
 				<BodyShort>Memory: {instance.memory}</BodyShort>
 				<BodyShort>Storage: {instance.storageGB}GB</BodyShort>
+				{#if viewerIsMember && isManagedByConsole}
+					<a
+						class="mt-2"
+						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+							.opensearch}/edit"
+					>
+						Edit <NotePencilIcon />
+					</a>
+				{/if}
 			</div>
 			<div>
 				<Heading level="3">Version</Heading>
@@ -263,6 +248,20 @@
 			{/if}
 
 			<Manifest openSearch={instance} teamSlug={page.params.team!} />
+
+			{#if viewerIsMember && isManagedByConsole}
+				<Button
+					as="a"
+					variant="danger"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+						.opensearch}/delete"
+					icon={TrashIcon}
+					class="self-start"
+				>
+					Delete OpenSearch
+				</Button>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -288,11 +287,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
-	}
-
-	.button {
-		display: flex;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
 	}
 </style>

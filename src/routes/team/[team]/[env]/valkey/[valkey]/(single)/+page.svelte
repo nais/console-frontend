@@ -22,7 +22,7 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
 
@@ -229,7 +229,7 @@
 						class="mt-2"
 						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
 					>
-						Edit
+						Edit <NotePencilIcon />
 					</a>
 				{/if}
 			</div>
