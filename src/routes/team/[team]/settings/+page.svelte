@@ -415,7 +415,7 @@
 		{:else if deleteKeyResp?.data}
 			{@const key =
 				window.location + '/confirm_delete?key=' + deleteKeyResp.data.requestTeamDeletion.key?.key}
-			<Alert>
+			<Alert variant="info">
 				Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion send
 				this link to another team owner and let them confirm the deletion.
 

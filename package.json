@@ -21,8 +21,7 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "^4.1.1",
 		"@eslint/compat": "^1.4.0",
-		"@nais/ds-svelte-community": "^1.0.2",
-		"@navikt/ds-css": "7.22.0",
+		"@nais/ds-svelte-community": "^2.0.0-next.2",
 		"@navikt/ds-tailwind": "^7.32.3",
 		"@storybook/addon-docs": "^9.1.15",
 		"@storybook/addon-svelte-csf": "^5.0.10",
