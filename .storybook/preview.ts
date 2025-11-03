@@ -2,7 +2,7 @@ import { Theme } from '@nais/ds-svelte-community';
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview, SvelteRenderer } from '@storybook/sveltekit';
 
-import '@nais/ds-svelte-community/css/darkside.css';
+import '@nais/ds-svelte-community/css';
 import '../src/styles/colors.css';
 import './storybook-override.css';
 

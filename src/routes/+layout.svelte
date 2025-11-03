@@ -7,7 +7,6 @@
 	import ProgressBar from '$lib/ProgressBar.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Page, Theme } from '@nais/ds-svelte-community';
-	import '@nais/ds-svelte-community/css/darkside.css';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
