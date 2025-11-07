@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import Reconciler from './Reconciler.svelte';
 
@@ -9,7 +8,6 @@
 	let reconcilers = $derived($AdminReconcilers.data?.reconcilers.nodes);
 </script>
 
-<Heading level="2" size="medium" spacing>Reconcilers</Heading>
 {#each reconcilers || [] as r (r.id)}
 	<Reconciler reconciler={r} />
 {:else}

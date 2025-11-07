@@ -1,5 +1,6 @@
 import type { OrderDirection$options, TeamFilter, TeamOrderField$options } from '$houdini';
 import { load_Teams, TeamOrderField } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
@@ -21,6 +22,7 @@ export async function load(event) {
 
 	return {
 		filter,
+		...(await addPageMeta(event, { title: 'Teams' })),
 		...(await load_Teams({
 			event,
 			variables: {

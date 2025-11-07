@@ -1,6 +1,7 @@
 import { AlertOrderField, load_Alerts, load_AlertsMetadata, OrderDirection } from '$houdini';
 import type { TeamAlertsFilter } from '$houdini/runtime/generated';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
@@ -15,6 +16,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Alerts' })),
 		...(await load_Alerts({
 			event,
 			variables: {

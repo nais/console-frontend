@@ -1,5 +1,6 @@
-import { error } from '@sveltejs/kit';
 import { load_DeleteValkeyData } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
+import { error } from '@sveltejs/kit';
 
 export async function load(event) {
 	const { parent, params } = event;
@@ -16,6 +17,7 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, { title: 'Delete' })),
 		...(await load_DeleteValkeyData({
 			event,
 			variables: {

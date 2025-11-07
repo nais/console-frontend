@@ -1,5 +1,6 @@
 import { IssueOrderField, load_JobIssues, OrderDirection, type IssueFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
@@ -10,6 +11,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Issues' })),
 		...(await load_JobIssues({
 			event,
 			variables: {

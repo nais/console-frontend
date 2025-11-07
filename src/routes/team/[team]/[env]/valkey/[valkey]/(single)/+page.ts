@@ -4,6 +4,7 @@ import {
 	ValkeyAccessOrderField,
 	type ValkeyAccessOrderField$options
 } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
@@ -29,6 +30,7 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, { title: event.params.valkey })),
 		...loadValkey
 	};
 }

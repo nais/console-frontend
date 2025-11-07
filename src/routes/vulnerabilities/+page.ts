@@ -1,5 +1,6 @@
 import { load_TenantVulnerabilites, OrderDirection, TeamOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta.js';
 
 const rows = 20;
 
@@ -11,6 +12,9 @@ export async function load(event) {
 
 	return {
 		interval,
+		...(await addPageMeta(event, {
+			title: 'Tenant Vulnerabilities'
+		})),
 		...(await load_TenantVulnerabilites({
 			event,
 			variables: {

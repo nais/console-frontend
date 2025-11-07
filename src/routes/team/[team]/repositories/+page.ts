@@ -1,5 +1,6 @@
 import { load_Repositories, RepositoryOrderField, type TeamRepositoryFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
@@ -9,6 +10,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Repositories' })),
 		...(await load_Repositories({
 			event,
 			variables: {

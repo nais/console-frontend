@@ -1,4 +1,5 @@
 import { load_TeamCost } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { subDays, subMonths, subYears } from 'date-fns';
 
 export async function load(event) {
@@ -22,6 +23,7 @@ export async function load(event) {
 	const from = getFrom(interval);
 
 	return {
+		...(await addPageMeta(event, { title: 'Cost' })),
 		interval,
 		to,
 		from,

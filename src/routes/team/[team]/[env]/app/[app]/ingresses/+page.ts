@@ -1,4 +1,5 @@
 import { load_IngressMetrics } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 function getStart(interval: string | null) {
 	switch (interval) {
@@ -23,6 +24,9 @@ export async function load(event) {
 
 	return {
 		interval,
+		...(await addPageMeta(event, {
+			title: 'Ingresses'
+		})),
 		...(await load_IngressMetrics({
 			event,
 			variables: {

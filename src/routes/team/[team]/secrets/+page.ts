@@ -1,5 +1,6 @@
 import { load_Secrets, OrderDirection, SecretOrderField, type SecretFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 export async function load(event) {
@@ -20,6 +21,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Secrets' })),
 		...(await load_Secrets({
 			event,
 			variables: {

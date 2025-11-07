@@ -1,4 +1,5 @@
 import { load_UpdateOpenSearchData } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {
@@ -16,6 +17,7 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, { title: 'Edit' })),
 		...(await load_UpdateOpenSearchData({
 			event,
 			variables: {

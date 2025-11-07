@@ -1,4 +1,5 @@
 import { load_Unleash } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
@@ -11,6 +12,7 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, { title: 'Unleash' })),
 		...(await load_Unleash({
 			event,
 			variables: {
