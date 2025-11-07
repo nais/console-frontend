@@ -79,7 +79,6 @@
 	}
 </script>
 
-<svelte:head><title>Tenant Cost - Nais Console</title></svelte:head>
 <div class="page">
 	<div class="container">
 		<div class="wrapper">

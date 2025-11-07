@@ -6,6 +6,7 @@ import {
 	TeamOrderField
 } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta.js';
 import { subDays, subMonths, subYears } from 'date-fns';
 
 const rows = 20;
@@ -33,6 +34,7 @@ export async function load(event) {
 
 	return {
 		interval,
+		...(await addPageMeta(event, { title: 'Tenant Cost' })),
 		...(await loadAll(
 			load_TenantCost({
 				event,

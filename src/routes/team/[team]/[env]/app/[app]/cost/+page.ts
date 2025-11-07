@@ -1,4 +1,5 @@
 import { load_AppCost } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta.js';
 import { subDays, subMonths, subYears } from 'date-fns';
 
 export async function load(event) {
@@ -25,6 +26,7 @@ export async function load(event) {
 		interval,
 		to,
 		from,
+		...(await addPageMeta(event, { title: 'Cost' })),
 		...(await load_AppCost({
 			event,
 			variables: {
