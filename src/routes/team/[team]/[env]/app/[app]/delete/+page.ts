@@ -1,4 +1,5 @@
 import { load_DeleteAppPage } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 import type { BeforeLoadEvent } from './$houdini';
 
@@ -12,6 +13,7 @@ export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
 
 export async function load(event) {
 	return {
+		...(await addPageMeta(event, { title: `Delete ${event.params.app}` })),
 		...(await load_DeleteAppPage({
 			event,
 			variables: {

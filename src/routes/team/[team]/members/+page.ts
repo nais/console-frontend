@@ -1,5 +1,6 @@
 import { load_Members, OrderDirection, TeamMemberOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
@@ -7,6 +8,7 @@ export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 	return {
+		...(await addPageMeta(event, { title: 'Members' })),
 		...(await load_Members({
 			event,
 			variables: {

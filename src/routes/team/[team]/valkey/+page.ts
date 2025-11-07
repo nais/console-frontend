@@ -1,5 +1,6 @@
 import { load_Valkeys, OrderDirection, ValkeyOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';
 import { get } from 'svelte/store';
@@ -27,6 +28,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Valkey Instances' })),
 		...(await load_Valkeys({
 			event,
 			variables: {

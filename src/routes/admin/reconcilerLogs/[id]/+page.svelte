@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -10,7 +10,6 @@
 </script>
 
 {#if $ReconcilerLogs.data && $ReconcilerLogs.data.node?.__typename === 'Reconciler'}
-	<Heading level="2" spacing>{$ReconcilerLogs.data.node.displayName} Logs</Heading>
 	<Table size="small">
 		<Thead>
 			<Tr>

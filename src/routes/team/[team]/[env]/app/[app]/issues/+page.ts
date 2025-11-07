@@ -5,6 +5,7 @@ import {
 	type IssueFilter
 } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta.js';
 
 const rows = 25;
 
@@ -15,6 +16,9 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, {
+			title: 'Issues'
+		})),
 		...(await load_ApplicationIssues({
 			event,
 			variables: {

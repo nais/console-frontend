@@ -1,4 +1,5 @@
 import { load_DeleteOpenSearchData } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {
@@ -16,6 +17,7 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, { title: 'Delete' })),
 		...(await load_DeleteOpenSearchData({
 			event,
 			variables: {

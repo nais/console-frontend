@@ -1,5 +1,6 @@
 import { KafkaTopicOrderField, load_KafkaTopics } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { startOfMonth, subMonths } from 'date-fns';
 
 const rows = 25;
@@ -9,6 +10,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Kafka Topics' })),
 		...(await load_KafkaTopics({
 			event,
 			variables: {

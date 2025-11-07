@@ -1,4 +1,5 @@
 import { load_TeamDeleteKey } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {
@@ -17,6 +18,7 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, { title: 'Confirm Delete' })),
 		...(await load_TeamDeleteKey({
 			event,
 			variables: {

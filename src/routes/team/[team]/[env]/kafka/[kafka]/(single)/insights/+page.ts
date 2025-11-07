@@ -4,9 +4,11 @@ import {
 	type KafkaTopicAclOrderField$options,
 	type OrderDirection$options
 } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
+		...(await addPageMeta(event, { title: 'Insights' })),
 		...(await load_KafkaTopic({
 			event,
 			variables: {

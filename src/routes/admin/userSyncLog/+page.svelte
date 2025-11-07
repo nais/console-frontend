@@ -2,14 +2,13 @@
 	import GraphErrors from '$lib/GraphErrors.svelte';
 	import Pagination from '$lib/Pagination.svelte';
 	import Time from '$lib/Time.svelte';
-	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { UserSyncLogs } = $derived(data);
 </script>
 
-<Heading level="2" size="medium" spacing>User Synchronization Log</Heading>
 <GraphErrors errors={$UserSyncLogs.errors} />
 {#if $UserSyncLogs.data}
 	<Table size="small">

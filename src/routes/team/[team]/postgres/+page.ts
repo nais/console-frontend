@@ -1,5 +1,6 @@
 import { load_SqlInstances, OrderDirection, SqlInstanceOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { startOfMonth, subMonths } from 'date-fns';
 
 const rows = 25;
@@ -9,6 +10,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Postgres Instances' })),
 		...(await load_SqlInstances({
 			event,
 			variables: {

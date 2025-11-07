@@ -1,4 +1,5 @@
 import { load_CreateOpenSearchEnvironments } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {
@@ -11,6 +12,15 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, {
+			title: 'Create ',
+			breadcrumbs: [
+				{
+					label: 'OpenSearch Instances',
+					href: `/team/[team]/opensearch`
+				}
+			]
+		})),
 		...(await load_CreateOpenSearchEnvironments({ event, variables: { slug: event.params.team } }))
 	};
 }

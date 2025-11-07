@@ -1,4 +1,5 @@
 import { load_CreateValkeyEnvironments } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {
@@ -11,6 +12,15 @@ export async function load(event) {
 	}
 
 	return {
+		...(await addPageMeta(event, {
+			title: 'Create',
+			breadcrumbs: [
+				{
+					label: 'Valkey Instances',
+					href: `/team/[team]/valkey`
+				}
+			]
+		})),
 		...(await load_CreateValkeyEnvironments({ event, variables: { slug: event.params.team } }))
 	};
 }

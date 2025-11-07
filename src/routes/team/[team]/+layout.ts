@@ -1,4 +1,5 @@
 import { load_TeamRoles } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta.js';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
@@ -27,7 +28,20 @@ export async function load(event) {
 		error(500, 'Something went wrong when loading the page');
 	}
 
+	const meta = await addPageMeta(event, {
+		breadcrumbs:
+			event.route.id === '/team/[team]'
+				? undefined
+				: [
+						{
+							label: event.params.team,
+							href: '/team/[team]'
+						}
+					]
+	});
+
 	return {
+		...meta,
 		...(current.data
 			? current.data.team
 			: {

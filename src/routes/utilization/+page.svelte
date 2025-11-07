@@ -131,8 +131,6 @@
 	}
 </script>
 
-<svelte:head><title>Tenant Utilization - Nais Console</title></svelte:head>
-
 <div class="page">
 	<div class="container">
 		<GraphErrors errors={$TenantUtilization.errors} />

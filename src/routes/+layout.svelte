@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import { localizeLayerChart } from '$lib/chart/util';
@@ -61,7 +62,24 @@
 	afterNavigate(() => {
 		loading = false;
 	});
+
+	const title = $derived.by(() => {
+		const parts = [];
+		if (page.data.meta.breadcrumbs && page.data.meta.breadcrumbs.length > 0) {
+			parts.push(...page.data.meta.breadcrumbs.map((b) => b.label));
+		}
+		if (page.data.meta.title) {
+			parts.unshift(page.data.meta.title);
+		}
+		return parts.join(' - ') + ' - Nais Console';
+	});
 </script>
+
+<svelte:head>
+	<title>
+		{title}
+	</title>
+</svelte:head>
 
 <Theme theme={themeSwitch.theme}>
 	<Page contentBlockPadding="none">

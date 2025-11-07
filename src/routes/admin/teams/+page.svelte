@@ -3,7 +3,6 @@
 	import Pagination from '$lib/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Heading,
 		Loader,
 		Table,
 		Tbody,
@@ -18,7 +17,7 @@
 
 	let { data }: PageProps = $props();
 
-	let { Teams, tenantName, filter } = $derived(data);
+	let { Teams, filter } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Teams.variables?.orderBy?.field,
@@ -62,8 +61,6 @@
 
 	let workloadsToggle = $derived(filter || 'all');
 </script>
-
-<Heading level="2" size="large" spacing>Teams in {tenantName}</Heading>
 
 <div class="toggles">
 	<ToggleGroup

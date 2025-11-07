@@ -1,4 +1,5 @@
 import { load_JobDeploys } from '$houdini';
+import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
@@ -7,6 +8,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
+		...(await addPageMeta(event, { title: 'Deployments' })),
 		...(await load_JobDeploys({
 			event,
 			variables: {

@@ -43,10 +43,8 @@
 	};
 </script>
 
-<svelte:head><title>Admin - Nais Console</title></svelte:head>
-
 <div class="page">
-	<PageHeader heading="Administration" />
+	<PageHeader />
 	<Tabs>
 		{#each nav as { tab, routeId, withSubRoutes } (routeId)}
 			<Tab

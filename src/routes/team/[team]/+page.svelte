@@ -8,12 +8,18 @@
 	import IssueSummary from '$lib/components/issues/IssueSummary.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/GraphErrors.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamOverview, teamSlug } = $derived(data);
+	let { TeamOverview, teamSlug, purpose } = $derived(data);
 </script>
+
+<div class="team-info">
+	<div>
+		<BodyShort>{purpose}</BodyShort>
+	</div>
+</div>
 
 {#if page.url.searchParams.has('deleted')}
 	{@const msgParts = (page.url.searchParams.get('deleted') || '').split('/')}
@@ -80,5 +86,13 @@
 		flex-direction: column;
 		gap: var(--ax-space-8);
 		padding-bottom: var(--spacing-layout);
+	}
+
+	.team-info {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+		margin-top: calc(-1 * var(--spacing-layout));
+		margin-bottom: var(--spacing-layout);
 	}
 </style>

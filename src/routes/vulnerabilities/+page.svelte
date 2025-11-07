@@ -19,8 +19,6 @@
 	let { TenantVulnerabilites } = $derived(data);
 </script>
 
-<svelte:head><title>Tenant Vulnerabilities - Nais Console</title></svelte:head>
-
 <div class="page">
 	<div class="container">
 		<div class="wrapper">
