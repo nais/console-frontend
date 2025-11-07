@@ -9,33 +9,122 @@
 	});
 </script>
 
-<Story name="Manifest" asChild>
-	<PageHeader
-		breadcrumbs={[
-			{ label: 'nais', href: '/team/nais' },
-			{ label: 'Jobs', href: '/team/nais/jobs' },
-			{ label: 'slack-teams-notification', href: '/team/nais/dev/job/slack-teams-notification' }
-		]}
-		heading="Manifest"
-		tag={{ label: 'dev-gcp', variant: envTagVariant('dev-gcp') }}
-	/>
+<Story
+	name="Manifest"
+	asChild
+	parameters={{
+		sveltekit_experimental: {
+			state: {
+				page: {
+					data: {
+						meta: {
+							title: 'Manifest',
+							tag: { label: 'dev-gcp', variant: envTagVariant('dev-gcp') },
+							breakcrumbs: [
+								{
+									label: 'nais',
+									href: '/team/nais'
+								},
+								{
+									label: 'Jobs',
+									href: '/team/nais/jobs'
+								},
+								{
+									label: 'slack-teams-notification',
+									href: '/team/nais/dev/job/slack-teams-notification'
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	}}
+>
+	<PageHeader />
 </Story>
 
-<Story name="Job" asChild>
-	<PageHeader
-		breadcrumbs={[
-			{ label: 'nais', href: '/team/nais' },
-			{ label: 'Jobs', href: '/team/nais/jobs' }
-		]}
-		heading="slack-teams-notification"
-		tag={{ label: 'prod-gcp', variant: envTagVariant('prod-gcp') }}
-	/>
+<Story
+	name="Job"
+	asChild
+	parameters={{
+		docs: {
+			disable: true
+		},
+		sveltekit_experimental: {
+			state: {
+				page: {
+					data: {
+						meta: {
+							title: 'slack-teams-notification',
+							tag: { label: 'prod-gcp', variant: envTagVariant('prod-gcp') },
+							breadcrumbs: [
+								{
+									label: 'nais',
+									href: '/team/nais'
+								},
+								{
+									label: 'Jobs',
+									href: '/team/nais/jobs'
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	}}
+>
+	<PageHeader />
 </Story>
 
-<Story name="Jobs" asChild>
-	<PageHeader breadcrumbs={[{ label: 'nais', href: '/team/nais' }]} heading="Jobs" />
+<Story
+	name="Jobs"
+	asChild
+	parameters={{
+		docs: {
+			disable: true
+		},
+		sveltekit_experimental: {
+			state: {
+				page: {
+					data: {
+						meta: {
+							title: 'Jobs',
+							breadcrumbs: [
+								{
+									label: 'nais',
+									href: '/team/nais'
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	}}
+>
+	<PageHeader />
 </Story>
 
-<Story name="Team" asChild>
-	<PageHeader heading="nais" />
+<Story
+	name="Team"
+	parameters={{
+		docs: {
+			disable: true
+		},
+		sveltekit_experimental: {
+			state: {
+				page: {
+					data: {
+						meta: {
+							title: 'nais'
+						}
+					}
+				}
+			}
+		}
+	}}
+>
+	<PageHeader />
 </Story>
