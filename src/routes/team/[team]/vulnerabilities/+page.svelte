@@ -1,4 +1,5 @@
 <script lang="ts">
+	import TeamMeanTimeToFixHistoryGraph from '$lib/components/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '$lib/components/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '$lib/components/vulnerability/VulnerabilitySummary.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/components/vulnerability/WorkloadsWithVulnerabilities.svelte';
@@ -15,8 +16,9 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		<div class="columns">
-			<div>
+			<div class="graphs">
 				<TeamVulnerabilityHistoryGraph {teamSlug} />
+				<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 			</div>
 			<VulnerabilitySummary {teamSlug} />
 		</div>
@@ -28,9 +30,8 @@
 						>Most Vulnerable Workloads</Heading
 					>
 					<BodyLong spacing>
-						A list of this team's workloads with the highest security risk, based on Risk Score
-						(default sorting). Use this list to focus remediation efforts where they’ll have the
-						greatest impact.
+						This team's workloads ranked by security risk using Risk Score (default sorting). Focus
+						remediation efforts where they'll have the greatest impact.
 					</BodyLong>
 				</div>
 			</div>
@@ -62,5 +63,10 @@
 		grid-template-columns: 1fr 300px;
 		gap: 1rem;
 		align-items: start;
+	}
+
+	.graphs {
+		display: grid;
+		gap: var(--ax-space-32);
 	}
 </style>
