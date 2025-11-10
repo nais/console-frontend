@@ -17,14 +17,14 @@
 <script lang="ts" generics="T extends MeanTimeToFixHistory">
 	import type { intervalOptionsVulnerabilityHistory } from '$lib/components/vulnerability/dateUtils';
 	import { isReducedMotion } from '$lib/reducedMotion';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import { allSeverities, severityToColor, type Severity } from '$lib/utils/vulnerabilities';
 	import { format } from 'date-fns';
 	import { accessor, AreaChart, Tooltip } from 'layerchart';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import LegendWrapper, { legendSnippet } from './LegendWrapper.svelte';
 
-	const UPPERCASE_SEVERITIES = ['UNASSIGNED', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
-	type UppercaseSeverity = (typeof UPPERCASE_SEVERITIES)[number];
+	// Reverse order for stacked area chart so Critical appears on top
+	const severitiesForChart = [...allSeverities].reverse();
 
 	const {
 		data,
@@ -50,8 +50,10 @@
 		const mergedDataMap = new SvelteMap<number, MTTFixChartData>();
 
 		for (const sample of data.samples) {
-			const severity = sample.severity.toUpperCase() as UppercaseSeverity;
-			if (!UPPERCASE_SEVERITIES.includes(severity)) continue;
+			// Normalize severity from GraphQL (e.g., "CRITICAL" -> "Critical")
+			const severityLower = sample.severity.toLowerCase();
+			const severity = (severityLower.charAt(0).toUpperCase() + severityLower.slice(1)) as Severity;
+			if (!allSeverities.includes(severity)) continue;
 
 			const dateKey = new SvelteDate(sample.date).setHours(0, 0, 0, 0);
 			const entry = mergedDataMap.get(dateKey) ?? { date: new Date(dateKey) };
@@ -64,7 +66,7 @@
 			mergedDataMap.set(dateKey, entry);
 		}
 
-		const series = UPPERCASE_SEVERITIES.map((severity) => ({
+		const series = severitiesForChart.map((severity) => ({
 			key: severity,
 			color: severityToColor({ severity: severity.toLowerCase() })
 		}));
@@ -109,7 +111,7 @@
 				{#snippet children({ data })}
 					<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy')}</Tooltip.Header>
 					<Tooltip.List>
-						{#each UPPERCASE_SEVERITIES as severityKey (severityKey)}
+						{#each severitiesForChart as severityKey (severityKey)}
 							{@const seriesItem = series.find((s) => s.key === severityKey)}
 							{@const valueAccessor = accessor(severityKey)}
 							<Tooltip.Item label={severityKey} color={seriesItem?.color}>

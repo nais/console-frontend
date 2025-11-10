@@ -33,9 +33,8 @@
 						>
 						<div class="info">
 							<BodyLong>
-								This stacked line chart displays the accumulation of image vulnerabilities over
-								time, categorized by severity level. Use the interval selector to adjust the time
-								range. Enable the Risk Score toggle to weight each severity by its impact.
+								Track the accumulation of image vulnerabilities by severity level over time. Use the
+								interval selector to adjust the time range and monitor trends.
 							</BodyLong>
 							{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
 								<VulnerabilitySummaryTenant
