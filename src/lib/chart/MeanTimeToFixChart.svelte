@@ -23,7 +23,7 @@
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import LegendWrapper, { legendSnippet } from './LegendWrapper.svelte';
 
-	const UPPERCASE_SEVERITIES = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNASSIGNED'] as const;
+	const UPPERCASE_SEVERITIES = ['UNASSIGNED', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
 	type UppercaseSeverity = (typeof UPPERCASE_SEVERITIES)[number];
 
 	const {

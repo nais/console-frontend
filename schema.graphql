@@ -569,9 +569,6 @@ type Application implements ActivityLogger & Node & Workload {
   """The application manifest."""
   manifest: ApplicationManifest!
 
-  """Get the mean time to fix history for an application."""
-  meanTimeToFixHistory(from: Date!): MeanTimeToFixHistory!
-
   """The name of the application."""
   name: String!
 
@@ -2325,9 +2322,6 @@ type Job implements ActivityLogger & Node & Workload {
   """The job manifest."""
   manifest: JobManifest!
 
-  """Get the mean time to fix history for a job."""
-  meanTimeToFixHistory(from: Date!): MeanTimeToFixHistory!
-
   """The name of the job."""
   name: String!
 
@@ -2842,12 +2836,6 @@ type MaskinportenAuthIntegration implements AuthIntegration {
   name: String!
 }
 
-"""Trend of mean time to fix vulnerabilities grouped by severity."""
-type MeanTimeToFixHistory {
-  """Mean time to fix samples."""
-  samples: [MeanTimeToFixSample!]!
-}
-
 """A key-value pair representing a Prometheus label."""
 type MetricLabel {
   """The label name."""
@@ -2944,27 +2932,6 @@ input MetricsRangeInput {
   Example: 60 for 1-minute intervals
   """
   step: Int!
-}
-
-"""One MTTR sample for a severity at a point in time."""
-type MeanTimeToFixSample {
-  """Snapshot date of the sample."""
-  date: Time!
-
-  """Mean time to fix in days."""
-  days: Int!
-
-  """Earliest time a vulnerability was fixed in this sample."""
-  firstFixedAt: Time
-
-  """Number of vulnerabilities fixed in this sample."""
-  fixedCount: Int!
-
-  """Latest time a vulnerability was fixed in this sample."""
-  lastFixedAt: Time
-
-  """Severity of vulnerabilities in this sample."""
-  severity: ImageVulnerabilitySeverity!
 }
 
 type MissingSbomIssue implements Issue & Node {
@@ -3703,9 +3670,6 @@ type Query {
 
   """The currently authenticated user."""
   me: AuthenticatedUser!
-
-  """Get the mean time to fix history for all teams."""
-  meanTimeToFixHistory(from: Date!): MeanTimeToFixHistory!
 
   """Fetch an object using its globally unique ID."""
   node(
@@ -5807,9 +5771,6 @@ type Team implements ActivityLogger & Node {
 
   """Timestamp of the last successful synchronization of the team."""
   lastSuccessfulSync: Time
-
-  """Get the mean time to fix history for a team."""
-  meanTimeToFixHistory(from: Date!): MeanTimeToFixHistory!
 
   """Get a specific member of the team."""
   member(email: String!): TeamMember!
@@ -8091,9 +8052,6 @@ interface Workload {
 
   """The workload manifest."""
   manifest: WorkloadManifest!
-
-  """Get the mean time to fix history for a workload."""
-  meanTimeToFixHistory(from: Date!): MeanTimeToFixHistory!
 
   """The name of the workload."""
   name: String!
