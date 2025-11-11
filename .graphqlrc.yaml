@@ -3,6 +3,7 @@ projects:
     schema:
       - ./schema.graphql
       - ./.houdini/graphql/schema.graphql
+      - ./houdini-directives.graphql
     documents:
       - '**/*.gql'
       - '**/*.svelte'

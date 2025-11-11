@@ -1,0 +1,14 @@
+# Houdini custom directives for GraphQL validation
+# This file tells the GraphQL language server about Houdini's custom directives
+
+directive @arguments(filter: InputObjectValue, limit: InputObjectValue) on FRAGMENT_DEFINITION
+
+directive @with(filter: InputObjectValue, limit: Int) on FRAGMENT_SPREAD
+
+directive @mask_disable on FRAGMENT_SPREAD
+
+directive @paginate(mode: String) on FIELD
+
+directive @cache(policy: String) on QUERY
+
+scalar InputObjectValue
