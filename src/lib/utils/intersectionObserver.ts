@@ -55,7 +55,7 @@ class SharedIntersectionObserver {
 }
 
 // Create a singleton instance to be shared across the application
-export const sharedIntersectionObserver = new SharedIntersectionObserver();
+const sharedIntersectionObserver = new SharedIntersectionObserver();
 
 /**
  * Svelte action for intersection observation

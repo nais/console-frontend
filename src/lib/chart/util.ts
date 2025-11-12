@@ -125,7 +125,7 @@ export function getStartFromInterval(interval: PrometheusChartQueryInterval): Da
 	}
 }
 
-export function getRateIntervalFromStep(stepSeconds: number): string {
+function getRateIntervalFromStep(stepSeconds: number): string {
 	// Calculate optimal rate interval as 4x the step interval
 	// with a minimum of the scrape interval (30s) and maximum of 5m
 	const rateIntervalSeconds = Math.max(30, Math.min(300, stepSeconds * 4));

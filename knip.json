@@ -1,0 +1,6 @@
+{
+	"ignoreDependencies": ["houdini-svelte"],
+	"ignoreUnresolved": ["\\$app/.+", "\\$env/.+"],
+	"ignore": ["houdini.config.js", "src/client.ts"],
+	"ignoreFiles": ["find-missing-css-vars.mjs"]
+}

@@ -1,10 +1,7 @@
 import { subDays, subMonths, subYears } from 'date-fns';
 
-export const costIntervalOptions = ['1y', '6m', '90d', '30d'] as const;
-export const tenantCostIntervalOptions = ['5y', '3y', '1y', '6m'] as const;
-
-export type CostInterval = (typeof costIntervalOptions)[number];
-export type TenantCostInterval = (typeof tenantCostIntervalOptions)[number];
+export type CostInterval = '1y' | '6m' | '90d' | '30d';
+export type TenantCostInterval = '5y' | '3y' | '1y' | '6m';
 
 export function getFromForCost(interval: CostInterval, to: Date = new Date()): Date {
 	switch (interval) {
