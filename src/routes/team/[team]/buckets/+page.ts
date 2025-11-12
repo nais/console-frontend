@@ -1,5 +1,5 @@
 import { BucketOrderField, load_Buckets } from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { startOfMonth, subMonths } from 'date-fns';
 

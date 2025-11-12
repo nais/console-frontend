@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { type DeleteAppPage$result, graphql } from '$houdini';
-	import PersistenceList from '$lib/components/persistence/PersistenceList.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceList from '$lib/domain/persistence/PersistenceList.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import Time from '$lib/Time.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import { getTeamContext } from '../../../../teamContext.svelte';

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Time from '$lib/Time.svelte';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Time from '$lib/ui/Time.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {

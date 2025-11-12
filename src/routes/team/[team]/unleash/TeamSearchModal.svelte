@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, type QueryResult } from '$houdini';
-	import Search from '$lib/components/search/Search.svelte';
+	import Search from '$lib/domain/search/Search.svelte';
 	import { Modal } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 

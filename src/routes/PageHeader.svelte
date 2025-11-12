@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import SearchButton from '$lib/components/search/SearchButton.svelte';
+	import SearchButton from '$lib/domain/search/SearchButton.svelte';
 	import { docURL, tenantURL } from '$lib/doc';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';

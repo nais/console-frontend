@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Time from '$lib/Time.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {

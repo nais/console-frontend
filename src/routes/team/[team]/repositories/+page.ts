@@ -1,5 +1,5 @@
 import { load_Repositories, RepositoryOrderField, type TeamRepositoryFilter } from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;

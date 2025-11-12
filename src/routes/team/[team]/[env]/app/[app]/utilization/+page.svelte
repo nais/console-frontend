@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	// import EChart from '$lib/chart/EChart.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	// import type { EChartsOption } from 'echarts';
 
 	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';

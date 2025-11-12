@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { type App$result } from '$houdini';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import {

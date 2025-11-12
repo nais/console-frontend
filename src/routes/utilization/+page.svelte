@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		getTeamsOverageData,

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
+	import List from '$lib/ui/List.svelte';
 	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';

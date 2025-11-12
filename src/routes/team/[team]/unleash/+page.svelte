@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import Confirm from '$lib/components/Confirm.svelte';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import Confirm from '$lib/ui/Confirm.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import SummaryCard from '$lib/ui/SummaryCard.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import {

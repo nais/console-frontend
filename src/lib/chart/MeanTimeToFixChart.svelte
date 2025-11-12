@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts" generics="T extends MeanTimeToFixHistory">
-	import type { intervalOptionsVulnerabilityHistory } from '$lib/components/vulnerability/dateUtils';
+	import type { intervalOptionsVulnerabilityHistory } from '$lib/domain/vulnerability/dateUtils';
 	import { isReducedMotion } from '$lib/reducedMotion';
 	import { allSeverities, severityToColor, type Severity } from '$lib/utils/vulnerabilities';
 	import { format } from 'date-fns';

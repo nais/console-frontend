@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Manifest from '$lib/components/Manifest.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import Manifest from '$lib/domain/resources/Manifest.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

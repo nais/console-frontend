@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import Confirm from '$lib/components/Confirm.svelte';
+	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
 		BodyShort,
@@ -20,8 +20,8 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';

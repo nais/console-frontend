@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { TeamOrderField } from '$houdini';
-	import Pagination from '$lib/Pagination.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Loader,

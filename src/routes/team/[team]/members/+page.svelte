@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { graphql, TeamMemberOrderField } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
-	import Confirm from '$lib/components/Confirm.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import Confirm from '$lib/ui/Confirm.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';

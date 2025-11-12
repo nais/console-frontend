@@ -1,19 +1,19 @@
 <script lang="ts">
-	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
-	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import PersistenceCost from '$lib/components/persistence/PersistenceCost.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import CircleProgressBar from '$lib/ui/CircleProgressBar.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, BodyShort, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';

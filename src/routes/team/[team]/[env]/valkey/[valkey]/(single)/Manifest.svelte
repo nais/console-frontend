@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type ValkeyManifestFragment } from '$houdini';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 

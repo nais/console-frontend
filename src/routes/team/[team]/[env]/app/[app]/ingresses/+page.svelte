@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';

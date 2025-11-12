@@ -1,5 +1,5 @@
 import { load_OpenSearch, OpenSearchOrderField, OrderDirection } from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 import { startOfMonth, subMonths } from 'date-fns';

@@ -2,8 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType } from '$houdini';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		getTeamOverageData,

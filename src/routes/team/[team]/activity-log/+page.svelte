@@ -4,9 +4,9 @@
 		type ActivityLog$input,
 		type ActivityLogActivityType$options
 	} from '$houdini';
-	import ActivityLogItem from '$lib/components/list/ActivityLogListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import ActivityLogItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
+	import List from '$lib/ui/List.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';

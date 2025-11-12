@@ -12,7 +12,7 @@
 	import { goto } from '$app/navigation';
 
 	import { graphql } from '$houdini';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 
 	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import ServiceMaintenanceListItem from '$lib/components/list/ServiceMaintenanceListItem.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ServiceMaintenanceListItem from '$lib/domain/list-items/ServiceMaintenanceListItem.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
