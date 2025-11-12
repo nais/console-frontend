@@ -1,4 +1,4 @@
-export interface AddPageMetaOptions {
+interface AddPageMetaOptions {
 	title?: string;
 	breadcrumbs?: App.LayoutData['meta']['breadcrumbs'];
 	tag?: App.LayoutData['meta']['tag'];

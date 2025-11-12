@@ -1,5 +1,4 @@
 import {
-	PendingValue,
 	UtilizationResourceType,
 	type TeamResourceUsage$result,
 	type TenantUtilization$result,
@@ -30,38 +29,6 @@ export function yearlyOverageCost(
 	}
 
 	return cost > 0.0 ? cost : 0.0;
-}
-
-export type utilization = (
-	| typeof PendingValue
-	| {
-			readonly requested: number;
-			readonly used: number;
-			readonly workload: {
-				readonly name: string;
-				readonly teamEnvironment: {
-					readonly environment: {
-						readonly name: string;
-					};
-				};
-			};
-	  }
-)[];
-
-export function teamUtilization(data: utilization | undefined) {
-	if (data === undefined) return 0;
-	let totalRequested = 0;
-	let totalUsed = 0;
-	data.forEach((d) => {
-		if (d === PendingValue) {
-			totalRequested += 0;
-			totalUsed += 0;
-		} else {
-			totalRequested += d.requested;
-			totalUsed += d.used;
-		}
-	});
-	return Math.round((totalUsed / totalRequested) * 100);
 }
 
 export type TeamOverageData = {

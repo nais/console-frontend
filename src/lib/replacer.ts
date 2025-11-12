@@ -1,4 +1,4 @@
-export interface Data {
+interface Data {
 	[key: string]: string;
 }
 export const replacer = (routeId: string, params: Data) => {

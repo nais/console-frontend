@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	// import EChart from '$lib/chart/EChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	// import type { EChartsOption } from 'echarts';
 
 	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
+	import AnnotationSeries from '$lib/chart/AnnotationSeries.svelte';
 	import { docURL } from '$lib/doc';
 	import {
 		euroValueFormatter,
@@ -13,6 +12,7 @@
 	} from '$lib/utils/formatters';
 	import { round, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { visualizationColors } from '$lib/visualizationColors';
 	import {
 		BodyLong,
 		BodyShort,
@@ -30,9 +30,6 @@
 	} from '@nais/ds-svelte-community';
 	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
-	// import type { CallbackDataParams } from 'echarts/types/dist/shared';
-	import AnnotationSeries from '$lib/chart/AnnotationSeries.svelte';
-	import { visualizationColors } from '$lib/visualizationColors';
 	import { AreaChart, Tooltip, type ChartAnnotations } from 'layerchart';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
