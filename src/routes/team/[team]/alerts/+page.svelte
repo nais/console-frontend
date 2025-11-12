@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertOrderField } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
+	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
-	import { docURL } from '$lib/doc';
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
@@ -335,14 +335,14 @@
 
 	.rule {
 		padding: 12px 14px 14px calc(14px + 22px);
-		background: var(--ax-bg-subtle);
+		background: var(--ax-bg-default);
 		border-top: 1px dashed var(--ax-border-neutral-subtle);
 	}
 
 	.alarms {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-10);
+		gap: var(--ax-space-8);
 	}
 
 	.query-heading {

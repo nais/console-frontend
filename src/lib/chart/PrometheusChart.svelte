@@ -438,7 +438,7 @@
 		position: absolute;
 		top: 0.5rem;
 		right: 0.5rem;
-		background: var(--ax-bg-subtle);
+		background: var(--ax-bg-default);
 		border: 1px solid var(--ax-border-default);
 		border-radius: 0.25rem;
 		padding: 0.5rem;

@@ -73,7 +73,7 @@
 		grid-template-columns: auto 1fr;
 		gap: var(--ax-space-2) var(--ax-space-6);
 		align-items: start;
-		margin-top: var(--ax-space-3);
+		margin-top: var(--ax-space-2);
 		font-size: 0.9rem;
 	}
 	.kv dt {

@@ -532,7 +532,7 @@
 										{#if request}
 											<Tooltip.Item
 												label="Request"
-												color="var(--color-warning)"
+												color="var(--ax-text-warning-decoration)"
 												value={request}
 												format={(v) => {
 													return v.toFixed(3);
@@ -543,7 +543,7 @@
 										{#if limit}
 											<Tooltip.Item
 												label="Limit"
-												color="var(--color-danger)"
+												color="var(--ax-text-danger-decoration)"
 												value={limit}
 												format={(v) => {
 													return v.toFixed(3);
@@ -694,7 +694,7 @@
 										{#if request}
 											<Tooltip.Item
 												label="Request"
-												color="var(--color-warning)"
+												color="var(--ax-text-warning-decoration)"
 												value={request}
 												format={prettyBytes}
 												valueAlign="right"
@@ -703,7 +703,7 @@
 										{#if limit}
 											<Tooltip.Item
 												label="Limit"
-												color="var(--color-danger)"
+												color="var(--ax-text-danger-decoration)"
 												value={limit}
 												format={prettyBytes}
 												valueAlign="right"
@@ -809,7 +809,7 @@
 		margin-top: var(--ax-space-16);
 
 		:global(.annotation) {
-			background-color: var(--ax-bg-neutral-strong);
+			background-color: var(--ax-bg-neutral-soft);
 		}
 
 		:global(.annotation-text) {

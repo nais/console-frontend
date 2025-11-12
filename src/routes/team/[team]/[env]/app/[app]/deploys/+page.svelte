@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { docURL } from '$lib/doc';
+	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
@@ -162,7 +162,6 @@
 	.highlight-in {
 		background-color: var(--ax-accent-400);
 		padding-left: 0.5rem;
-		border-radius: var(--a-border-radius);
 		opacity: 1;
 		border-left-width: 4px;
 	}
