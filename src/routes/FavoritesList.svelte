@@ -1,9 +1,9 @@
 <script lang="ts">
+	import FavoritesListItem from '$lib/domain/list-items/FavoritesListItem.svelte';
 	import { favorites } from '$lib/stores/favorites.svelte';
+	import SortableList from '$lib/ui/SortableList.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import { StarIcon } from '@nais/ds-svelte-community/icons';
-	import FavoritesListItem from './FavoritesListItem.svelte';
-	import SortableList from './SortableList.svelte';
 </script>
 
 <div class="favorites-list">

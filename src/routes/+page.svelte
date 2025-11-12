@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FavoritesList from '$lib/domain/list-items/FavoritesList.svelte';
+	import FavoritesList from './FavoritesList.svelte';
 	import List from '$lib/ui/List.svelte';
 	import TeamListItem from '$lib/domain/list-items/TeamListItem.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
