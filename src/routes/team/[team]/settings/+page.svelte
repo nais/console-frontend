@@ -6,13 +6,13 @@
 		graphql,
 		type QueryResult
 	} from '$houdini';
-	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import Time from '$lib/Time.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import {
 		Alert,
 		BodyLong,

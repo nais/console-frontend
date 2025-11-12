@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import DeploymentListItem from '$lib/components/list/DeploymentListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import { idFromTriggerUrl } from '$lib/components/list/utils';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
+	import List from '$lib/ui/List.svelte';
+	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
@@ -107,7 +107,7 @@
 				)}"
 			>
 				{#each $JobDeploys.data.team.environment.job.deployments.nodes as deployment (deployment.id)}
-					{@const id = idFromTriggerUrl(deployment.triggerUrl ?? '')}
+					{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
 					<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
 						<DeploymentListItem {deployment} />
 					</div>

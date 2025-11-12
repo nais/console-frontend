@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { type DeleteJobPage$result, graphql } from '$houdini';
-	import PersistenceList from '$lib/components/persistence/PersistenceList.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
+	import PersistenceItem from '$lib/domain/persistence/PersistenceItem.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import Time from '$lib/Time.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import { getTeamContext } from '../../../../teamContext.svelte';
@@ -90,28 +90,28 @@
 
 			<div>
 				{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
-					<PersistenceList persistence={node}>
+					<PersistenceItem persistence={node}>
 						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
 						the manifest.
-					</PersistenceList>
+					</PersistenceItem>
 				{/each}
 				{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
-					<PersistenceList persistence={node}>
+					<PersistenceItem persistence={node}>
 						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
 						the manifest.
-					</PersistenceList>
+					</PersistenceItem>
 				{/each}
 				{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
-					<PersistenceList persistence={node}
+					<PersistenceItem persistence={node}
 						>This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
 						the manifest.
-					</PersistenceList>
+					</PersistenceItem>
 				{/each}
 				{#each job.valkeys.nodes.filter((s) => !s.terminationProtection) as node (node.id)}
-					<PersistenceList persistence={node}
+					<PersistenceItem persistence={node}
 						>If this Valkey instance is defined at the team level, it won't be deleted. If it was
 						created by the application, it will be permanently deleted.
-					</PersistenceList>
+					</PersistenceItem>
 				{/each}
 			</div>
 
@@ -122,16 +122,16 @@
 				</BodyShort>
 				<div>
 					{#each job.sqlInstances.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
-						<PersistenceList persistence={node} />
+						<PersistenceItem persistence={node} />
 					{/each}
 					{#each job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
-						<PersistenceList persistence={node} />
+						<PersistenceItem persistence={node} />
 					{/each}
 					{#each job.buckets.nodes.filter((s) => !s.cascadingDelete) as node (node.id)}
-						<PersistenceList persistence={node} />
+						<PersistenceItem persistence={node} />
 					{/each}
 					{#each job.valkeys.nodes.filter((s) => s.terminationProtection) as node (node.id)}
-						<PersistenceList persistence={node} />
+						<PersistenceItem persistence={node} />
 					{/each}
 				</div>
 			{/if}

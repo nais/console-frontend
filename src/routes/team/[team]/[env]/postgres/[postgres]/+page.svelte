@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import CircleProgressBar from '$lib/components/CircleProgressBar.svelte';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import SummaryCard from '$lib/components/SummaryCard.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import CircleProgressBar from '$lib/ui/CircleProgressBar.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import List from '$lib/ui/List.svelte';
+	import SummaryCard from '$lib/ui/SummaryCard.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';

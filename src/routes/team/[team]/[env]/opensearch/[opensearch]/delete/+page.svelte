@@ -3,7 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import { getTeamContext } from '../../../../teamContext.svelte';

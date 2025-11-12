@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

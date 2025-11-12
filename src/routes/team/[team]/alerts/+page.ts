@@ -1,6 +1,6 @@
 import { AlertOrderField, load_Alerts, load_AlertsMetadata, OrderDirection } from '$houdini';
 import type { TeamAlertsFilter } from '$houdini/runtime/generated';
-import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;

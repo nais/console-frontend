@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import Menu from '$lib/components/Menu.svelte';
+	import Menu from '$lib/ui/Menu.svelte';
 	import { menuItems } from '$lib/menuItems';
 	import { setInventoryRefetcher } from './teamContext.svelte';
 

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { SecretOrderField } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Detail, Search } from '@nais/ds-svelte-community';
 	import {

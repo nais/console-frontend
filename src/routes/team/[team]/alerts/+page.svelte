@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertOrderField } from '$houdini';
-	import CodeBlockPromQl from '$lib/components/CodeBlockPromQL.svelte';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import { formatSeconds } from '$lib/components/vulnerability/dateUtils';
+	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import List from '$lib/ui/List.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import Pagination from '$lib/Pagination.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';

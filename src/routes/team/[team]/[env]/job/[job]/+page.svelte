@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import SidebarActivity from '$lib/components/activity/sidebar/SidebarActivity.svelte';
-	import AggregatedCostForWorkload from '$lib/components/AggregatedCostForWorkload.svelte';
-	import IssueListItem from '$lib/components/list/IssueListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import NetworkPolicy from '$lib/components/NetworkPolicy.svelte';
-	import Persistence from '$lib/components/persistence/Persistence.svelte';
-	import Secrets from '$lib/components/Secrets.svelte';
-	import WorkloadVulnerabilitySummary from '$lib/components/vulnerability/WorkloadVulnerabilitySummary.svelte';
-	import WorkloadDeploy from '$lib/components/WorkloadDeploy.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Time from '$lib/Time.svelte';
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
+	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import List from '$lib/ui/List.svelte';
+	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
+	import Persistence from '$lib/domain/persistence/Persistence.svelte';
+	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
+	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';

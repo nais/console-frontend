@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { TeamOrderField } from '$houdini';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import VulnerabilitySummaryTenant from '$lib/components/vulnerability/VulnerabilitySummaryTenant.svelte';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import VulnerabilitySummaryTenant from '$lib/domain/vulnerability/VulnerabilitySummaryTenant.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Detail, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';

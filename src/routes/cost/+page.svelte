@@ -3,12 +3,12 @@
 	import { TeamOrderField } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import ListItem from '$lib/components/list/ListItem.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
-	import Pagination from '$lib/Pagination.svelte';
-	import Time from '$lib/Time.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {

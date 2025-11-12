@@ -1,11 +1,11 @@
 <script lang="ts">
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
-	import Pagination from '$lib/Pagination.svelte';
-	import IconLabel from '$lib/components/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/components/TooltipAlignHack.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';

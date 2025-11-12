@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type Secret$result } from '$houdini';
-	import WorkloadLink from '$lib/components/WorkloadLink.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {

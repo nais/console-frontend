@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { docURL } from '$lib/doc.js';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 </script>
 
 <div>

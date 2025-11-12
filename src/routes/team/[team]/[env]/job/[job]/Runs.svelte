@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { JobRuns } from '$houdini';
 	import { fragment, graphql } from '$houdini';
-	import JobRunListItem from '$lib/components/list/JobRunListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
+	import JobRunListItem from '$lib/domain/list-items/JobRunListItem.svelte';
+	import List from '$lib/ui/List.svelte';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 

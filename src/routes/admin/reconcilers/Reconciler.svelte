@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type ReconcilerFragment } from '$houdini';
-	import Confirm from '$lib/components/Confirm.svelte';
+	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Accordion,
 		AccordionItem,

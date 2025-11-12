@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { App$result } from '$houdini';
-	import AppInstanceListItem from '$lib/components/list/AppInstanceListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
+	import AppInstanceListItem from '$lib/domain/list-items/AppInstanceListItem.svelte';
+	import List from '$lib/ui/List.svelte';
 	import { Alert, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 

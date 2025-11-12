@@ -5,32 +5,18 @@ import {
 	OrderDirection,
 	TeamOrderField
 } from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '$lib/components/OrderByMenu.svelte';
+import { getFromForTenantCost, type TenantCostInterval } from '$lib/domain/cost/dateUtils';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta.js';
-import { subDays, subMonths, subYears } from 'date-fns';
+import { subDays } from 'date-fns';
 
 const rows = 20;
 
 export async function load(event) {
-	const interval = event.url.searchParams.get('interval') ?? '6m';
+	const interval = (event.url.searchParams.get('interval') ?? '6m') as TenantCostInterval;
 	const to = subDays(new Date(), 2);
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
-
-	const getFrom = (interval: string): Date => {
-		switch (interval) {
-			case '5y':
-				return subYears(to, 5);
-			case '3y':
-				return subYears(to, 3);
-			case '1y':
-				return subYears(to, 1);
-			case '6m':
-				return subMonths(to, 6);
-			default:
-				return subMonths(to, 6);
-		}
-	};
 
 	return {
 		interval,
@@ -49,7 +35,7 @@ export async function load(event) {
 			load_CostMonthly({
 				event,
 				variables: {
-					from: getFrom(interval),
+					from: getFromForTenantCost(interval, to),
 					to: subDays(new Date(), 2)
 				}
 			})

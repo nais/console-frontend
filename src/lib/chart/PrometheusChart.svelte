@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
-	import CodeBlockPromQL from '$lib/components/CodeBlockPromQL.svelte';
+	import CodeBlockPromQL from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { intersect } from '$lib/utils/intersectionObserver';
 	import { BodyShort, CopyButton, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { InformationIcon } from '@nais/ds-svelte-community/icons';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Pagination from '$lib/Pagination.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

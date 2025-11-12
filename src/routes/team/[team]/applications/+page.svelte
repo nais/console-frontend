@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { ApplicationOrderField, OrderDirection } from '$houdini';
-	import AggregatedCostForApplications from '$lib/components/AggregatedCostForApplications.svelte';
-	import ExternalLink from '$lib/components/ExternalLink.svelte';
-	import AppListItem from '$lib/components/list/AppListItem.svelte';
-	import List from '$lib/components/list/List.svelte';
-	import OrderByMenu from '$lib/components/OrderByMenu.svelte';
+	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
+	import List from '$lib/ui/List.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/GraphErrors.svelte';
-	import Pagination from '$lib/Pagination.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';

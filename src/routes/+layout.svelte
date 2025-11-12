@@ -5,7 +5,7 @@
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import { localizeLayerChart } from '$lib/chart/util';
 	import '$lib/font.css';
-	import ProgressBar from '$lib/ProgressBar.svelte';
+	import ProgressBar from '$lib/ui/ProgressBar.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Page, Theme } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
