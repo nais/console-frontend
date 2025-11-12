@@ -3,8 +3,8 @@
 	import GraphErrors from './GraphErrors.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Lib/GraphErrors',
 		component: GraphErrors,
+		title: 'Lib/GraphErrors',
 		tags: ['autodocs']
 	});
 </script>

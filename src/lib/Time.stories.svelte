@@ -3,8 +3,8 @@
 	import Time from './Time.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Lib/Time',
 		component: Time,
+		title: 'Lib/Time',
 		tags: ['autodocs']
 	});
 

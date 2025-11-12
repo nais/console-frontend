@@ -3,8 +3,8 @@
 	import Pagination from './Pagination.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Lib/Pagination',
 		component: Pagination,
+		title: 'Lib/Pagination',
 		tags: ['autodocs']
 	});
 </script>
