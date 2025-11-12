@@ -3,7 +3,7 @@
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { yaml } from 'svelte-highlight/languages';
-	import '../../styles/aksel-highlight.css';
+	import '../../../styles/aksel-highlight.css';
 
 	interface Props {
 		workload: Manifest;
