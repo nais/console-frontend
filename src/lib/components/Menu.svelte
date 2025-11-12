@@ -75,6 +75,10 @@
 
 			&.active {
 				background-color: var(--active-color);
+
+				.icon {
+					color: var(--ax-text-subtle);
+				}
 			}
 
 			&:not(.active) .icon {
