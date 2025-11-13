@@ -4,7 +4,7 @@
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
-	import { activityIconClassFromEntry, icons } from '../activity-log-icons';
+	import { icons } from '../activity-log-icons';
 	import { activityTooltip } from '../activity-log-tooltip';
 	import '../activity-log.css';
 	import ApplicationRestartedActivityLogEntryText from '../shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
@@ -288,7 +288,7 @@
 			{@const TextComponent = textComponent(entry.__typename)}
 			{@const isLast = i === ($activityLogQuery.data?.team?.activityLog.edges?.length ?? 0) - 1}
 			<div class="item" class:last-item={isLast}>
-				<div class={activityIconClassFromEntry(entry)}>
+				<div class="activity-icon">
 					<Tooltip content={activityTooltip(entry.__typename)}>
 						<Icon size="1em" width="1em" height="1em" />
 					</Tooltip>
@@ -349,11 +349,5 @@
 		color: var(--ax-text-subtle);
 		padding: var(--ax-space-8) var(--ax-space-4);
 		font-style: italic;
-	}
-
-	.load-more {
-		display: flex;
-		justify-content: center;
-		padding: var(--ax-space-4) 0;
 	}
 </style>

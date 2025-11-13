@@ -6,7 +6,7 @@
 	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
-	import { activityIconClassFromEntry, icons } from '../activity/activity-log-icons';
+	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import '../activity/activity-log.css';
 	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
@@ -281,7 +281,7 @@
 
 <ListItem>
 	<div style="display: flex; gap: 0.5rem;">
-		<div class={activityIconClassFromEntry($data)}>
+		<div class="activity-icon">
 			<Tooltip content={activityTooltip($data.__typename)}>
 				<Icon size="1em" width="1em" height="1em" />
 			</Tooltip>
