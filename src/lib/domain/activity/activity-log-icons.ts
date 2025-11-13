@@ -61,6 +61,8 @@ export const icons: { [typename: string]: Component } = {
 	TeamCreatedActivityLogEntry: PersonGroupIcon,
 	TeamUpdatedActivityLogEntry: PersonGroupIcon,
 	TeamEnvironmentUpdatedActivityLogEntry: PersonGroupIcon,
+	TeamCreateDeleteKeyActivityLogEntry: CogIcon,
+	TeamConfirmDeleteKeyActivityLogEntry: CogIcon,
 
 	/* Unleash */
 	UnleashInstanceCreatedActivityLogEntry: UnleashIcon,
@@ -125,6 +127,13 @@ export function activityIconClassFromEntry(entry: {
 
 	// Team & Members
 	if (/^Team/.test(t)) {
+		// Delete key operations are security-related, use secret color
+		if (
+			t === 'TeamCreateDeleteKeyActivityLogEntry' ||
+			t === 'TeamConfirmDeleteKeyActivityLogEntry'
+		) {
+			return cls.concat('resource-secret').join(' ');
+		}
 		return cls.concat('resource-team').join(' ');
 	}
 
