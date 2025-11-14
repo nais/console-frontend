@@ -52,7 +52,7 @@
 		}
 	`);
 
-	$effect.pre(() => {
+	$effect(() => {
 		costQuery.fetch({
 			variables: {
 				teamSlug,

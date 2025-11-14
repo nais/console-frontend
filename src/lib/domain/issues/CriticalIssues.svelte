@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { Button, Heading } from '@nais/ds-svelte-community';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import { Button, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		teamSlug: string;
@@ -32,7 +32,7 @@
 		}
 	`);
 
-	$effect.pre(() => {
+	$effect(() => {
 		teamHealth.fetch({ variables: { teamSlug, first } });
 	});
 

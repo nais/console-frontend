@@ -27,7 +27,7 @@
 		}
 	`);
 
-	$effect.pre(() => {
+	$effect(() => {
 		store.fetch({
 			variables: {
 				team: team,

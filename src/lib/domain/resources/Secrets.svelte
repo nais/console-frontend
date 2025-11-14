@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 
 	const secrets = graphql(`
 		query WorkloadSecrets($name: String!, $team: Slug!, $env: String!) {
@@ -34,7 +34,9 @@
 		teamSlug: string;
 	}
 
-	$effect.pre(() => {
+	let { environment, workload, teamSlug }: Props = $props();
+
+	$effect(() => {
 		secrets.fetch({
 			variables: {
 				name: workload,
@@ -43,8 +45,6 @@
 			}
 		});
 	});
-
-	let { environment, workload, teamSlug }: Props = $props();
 </script>
 
 <div class="wrapper">

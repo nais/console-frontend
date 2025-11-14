@@ -217,7 +217,7 @@
 		}
 	`);
 
-	$effect.pre(() => {
+	$effect(() => {
 		activityLogQuery.fetch({ variables: { teamSlug, filter } });
 	});
 

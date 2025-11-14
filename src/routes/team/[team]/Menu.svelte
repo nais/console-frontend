@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import Menu from '$lib/ui/Menu.svelte';
 	import { menuItems } from '$lib/menuItems';
+	import Menu from '$lib/ui/Menu.svelte';
 	import { setInventoryRefetcher } from './teamContext.svelte';
 
 	const {
@@ -57,7 +57,7 @@
 		`)
 	);
 
-	$effect.pre(() => {
+	$effect(() => {
 		Inventory.fetch({
 			variables: {
 				team: teamSlug
