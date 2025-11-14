@@ -27,7 +27,7 @@ export async function load(event) {
 				filter: { severity, environments } as IssueFilter,
 				orderBy: {
 					field: urlToOrderField(IssueOrderField, IssueOrderField.SEVERITY, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
