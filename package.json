@@ -17,7 +17,7 @@
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"lint-staged": "lint-staged",
-		"find-unused-gql": "node find-unused-gql.mjs"
+		"unused": "node find-unused-gql.mjs && echo '---' && node find-missing-css-vars.mjs"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^4.1.2",
