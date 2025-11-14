@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { docURL } from '$lib/doc';
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import List from '$lib/ui/List.svelte';
 	import ServiceMaintenanceListItem from '$lib/domain/list-items/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
@@ -262,6 +263,8 @@
 					Delete OpenSearch
 				</Button>
 			{/if}
+
+			<SidebarActivity activityLog={instance} direct={instance.activityLog} />
 		</div>
 	</div>
 {/if}

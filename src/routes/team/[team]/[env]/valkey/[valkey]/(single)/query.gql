@@ -84,6 +84,7 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 				}
 
 				...ValkeyManifestFragment
+				...SidebarActivityLogFragment @with(limit: 20) @mask_disable
 			}
 		}
 	}

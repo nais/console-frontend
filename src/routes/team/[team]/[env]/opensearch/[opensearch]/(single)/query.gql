@@ -101,6 +101,7 @@ query OpenSearchInstance(
 					}
 				}
 				...OpenSearchManifestFragment
+				...SidebarActivityLogFragment @with(limit: 20) @mask_disable
 			}
 		}
 	}
