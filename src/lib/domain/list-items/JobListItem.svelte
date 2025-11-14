@@ -2,16 +2,22 @@
 	import { JobState, type JobRunState$options } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { getLocalizedCronDescription } from '$lib/utils/cron';
 	import { Detail, Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
-	import { CircleFillIcon, QuestionmarkIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		CalendarIcon,
+		CircleFillIcon,
+		QuestionmarkIcon,
+		RocketIcon
+	} from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
 
 	const {
 		job
@@ -22,6 +28,10 @@
 			teamEnvironment: { environment: { name: string } };
 			team: { slug: string };
 			state: string;
+			schedule: {
+				expression: string;
+				timeZone: string;
+			} | null;
 			issues: {
 				pageInfo: { totalCount: number };
 				edges: { node: { severity: string } }[];
@@ -35,6 +45,8 @@
 			};
 		};
 	} = $props();
+
+	const nextRun = $derived(job.schedule ? getLocalizedCronDescription(job.schedule) : null);
 </script>
 
 <ListItem>
@@ -129,6 +141,11 @@
 					</TooltipAlignHack>
 				{/if}
 			</div>
+			{#if nextRun && nextRun.nextRun}
+				<TooltipAlignHack content="Next scheduled run: {nextRun.nextRun}">
+					<IconLabel size="small" icon={CalendarIcon} label={nextRun.nextRun} />
+				</TooltipAlignHack>
+			{/if}
 		{:else}
 			<Detail>No runs</Detail>
 		{/if}

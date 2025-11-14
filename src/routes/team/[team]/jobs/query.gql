@@ -38,6 +38,10 @@ query Jobs(
 				__typename
 				id
 				name
+				schedule {
+					expression
+					timeZone
+				}
 				teamEnvironment {
 					environment {
 						name
