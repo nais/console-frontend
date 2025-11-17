@@ -54,19 +54,29 @@ export function formatKubernetesMemory(bytes: number): string {
 			// Calculate the raw value in the current unit.
 			const raw = bytes / unitSize;
 
-			// If the value would have decimals in the current unit,
+			// Check if this divides evenly (is a whole number in this unit)
+			const isWholeNumber = bytes % unitSize === 0;
+
+			// If it's a whole number in this unit, use it (e.g., 3Gi instead of 3072Mi)
+			if (isWholeNumber) {
+				return `${Math.floor(raw)}${units[i]}`;
+			}
+
+			// If value is >= 10, round up and use this unit
+			if (raw >= 10) {
+				return `${Math.ceil(raw)}${units[i]}`;
+			}
+
+			// If the value would have decimals and is < 10,
 			// use the next smaller unit instead to get an integer value.
 			// This ensures Kubernetes manifest compatibility (pattern: ^\d+[KMG]i$)
-			if (raw < 10 && i < units.length - 1) {
-				// Use the next smaller unit
+			if (i < units.length - 1) {
 				const smallerUnitSize = Math.pow(factor, powers[i + 1]);
 				const valueInSmallerUnit = Math.ceil(bytes / smallerUnitSize);
 				return `${valueInSmallerUnit}${units[i + 1]}`;
 			}
 
-			// Round to the nearest integer for values >= 10
-			const rounded = Math.ceil(raw);
-			return `${rounded}${units[i]}`;
+			return `${Math.ceil(raw)}${units[i]}`;
 		}
 	}
 
