@@ -51,25 +51,22 @@ export function formatKubernetesMemory(bytes: number): string {
 
 		// Check if the byte size is greater than or equal to the current unit size.
 		if (bytes >= unitSize) {
-			// Ensure the smallest unit is used if no match
 			// Calculate the raw value in the current unit.
 			const raw = bytes / unitSize;
 
-			// Round the value based on its size:
-			// - If >= 10, round to the nearest integer.
-			// - Otherwise, round to two decimal places.
-			const rounded = raw >= 10 ? Math.floor(raw) : Math.round(raw * 100) / 100;
-
-			let str = rounded.toString();
-			if (str.includes('.')) {
-				str = str.replace(/0+$/, '');
-				if (str.endsWith('.')) {
-					str = str.slice(0, -1);
-				}
+			// If the value would have decimals in the current unit,
+			// use the next smaller unit instead to get an integer value.
+			// This ensures Kubernetes manifest compatibility (pattern: ^\d+[KMG]i$)
+			if (raw < 10 && i < units.length - 1) {
+				// Use the next smaller unit
+				const smallerUnitSize = Math.pow(factor, powers[i + 1]);
+				const valueInSmallerUnit = Math.ceil(bytes / smallerUnitSize);
+				return `${valueInSmallerUnit}${units[i + 1]}`;
 			}
 
-			// Return the formatted string with the appropriate unit.
-			return `${str}${units[i]}`;
+			// Round to the nearest integer for values >= 10
+			const rounded = Math.ceil(raw);
+			return `${rounded}${units[i]}`;
 		}
 	}
 
