@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { type App$result } from '$houdini';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	import {
 		CloudDownIcon,
@@ -36,7 +36,7 @@
 				>
 					{#snippet icon()}
 						{#each app.team.environment.application.issues.edges as issue (issue.node.id)}
-							{#if issue.node.__typename === 'DeprecatedIngressIssue'}
+							{#if issue.node.__typename === 'DeprecatedIngressIssue' && issue.node.message.includes(ingress.url)}
 								<TooltipAlignHack content="Deprecated ingress: {ingress.url}"
 									><WarningIcon /></TooltipAlignHack
 								>
