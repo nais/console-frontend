@@ -1932,6 +1932,9 @@ type IDPortenAuthIntegration implements AuthIntegration {
 }
 
 type ImageVulnerability implements Node {
+  """CVSS score of the vulnerability."""
+  cvssScore: Float
+
   """Description of the vulnerability."""
   description: String!
 
