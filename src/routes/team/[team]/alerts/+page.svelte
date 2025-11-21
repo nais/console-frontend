@@ -82,7 +82,8 @@
 			{#if totalAlerts == 0}
 				<strong>No alerts found.</strong>
 			{/if}
-			Alerts notify you when something needs your attention.
+			Alerts notify you when something needs your attention. If your alert rules don't appear here, check
+			that each rule has a <code>team</code> or <code>namespace</code> label set.
 			<ExternalLink href={docURL('/observability/alerting')}
 				>Learn more about alerts and how to get started.</ExternalLink
 			>
