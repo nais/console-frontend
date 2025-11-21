@@ -59,6 +59,17 @@
 							}
 						}
 					}
+					... on Postgres {
+						name
+						team {
+							slug
+						}
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+					}
 					... on Valkey {
 						name
 						team {
@@ -144,6 +155,12 @@
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},
+		Postgres: {
+			icon: DatabaseIcon,
+			urlName: 'postgres',
+			prefix: 'postgres',
+			type: 'POSTGRES'
+		},
 		Valkey: {
 			icon: ValkeyIcon,
 			urlName: 'valkey',
@@ -209,12 +226,7 @@
 		loading={$store.fetching}
 		results={query
 			? $store.data?.search.nodes.map((result) => {
-					if (result.__typename === "non-exhaustive; don't match this") {
-						return { icon: PersonGroupIcon, label: '', description: '', href: '#', type: 'link' };
-					}
-
 					const { icon, urlName } = categories[result.__typename];
-
 					if (result.__typename === 'Team') {
 						return {
 							icon,
