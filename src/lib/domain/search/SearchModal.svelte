@@ -209,6 +209,10 @@
 		loading={$store.fetching}
 		results={query
 			? $store.data?.search.nodes.map((result) => {
+					if (result.__typename === "non-exhaustive; don't match this") {
+						return { icon: PersonGroupIcon, label: '', description: '', href: '#', type: 'link' };
+					}
+
 					const { icon, urlName } = categories[result.__typename];
 
 					if (result.__typename === 'Team') {
@@ -220,7 +224,6 @@
 							type: 'link'
 						};
 					}
-
 					return {
 						icon,
 						label: result.name,
