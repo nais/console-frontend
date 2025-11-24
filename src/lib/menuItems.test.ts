@@ -34,6 +34,8 @@ describe('menuItems', () => {
 					{ label: 'Unleash', href: '/team/devteam/unleash' }
 				],
 				[
+					{ label: 'Alerts', href: '/team/devteam/alerts' },
+					{ label: 'Issues', href: '/team/devteam/issues' },
 					{ label: 'Deployments', href: '/team/devteam/deploy' },
 					{ label: 'Cost', href: '/team/devteam/cost' },
 					{ label: 'Utilization', href: '/team/devteam/utilization' },
@@ -178,6 +180,7 @@ describe('menuItems', () => {
 						href: '/team/devteam/dev/app/app-w-all-storage/deploys'
 					},
 					{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
+					{ label: 'Issues', href: '/team/devteam/dev/app/app-w-all-storage/issues' },
 					{
 						label: 'Utilization',
 						href: '/team/devteam/dev/app/app-w-all-storage/utilization',
