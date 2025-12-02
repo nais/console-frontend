@@ -1,0 +1,12 @@
+{
+	"allowed-hosts": ["npm", "europe-north1-npm.pkg.dev"],
+	"validate-https": true,
+	"validate-integrity": true,
+	"validate-package-names": true,
+	"empty-hostname": false,
+	"allowed-package-name-aliases": [
+		"string-width-cjs:string-width",
+		"strip-ansi-cjs:strip-ansi",
+		"wrap-ansi-cjs:wrap-ansi"
+	]
+}

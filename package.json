@@ -17,6 +17,7 @@
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"lint-staged": "lint-staged",
+		"lockfile-lint": "lockfile-lint --path package-lock.json",
 		"unused": "node find-unused-gql.mjs && echo '---' && node find-missing-css-vars.mjs"
 	},
 	"devDependencies": {
@@ -40,12 +41,14 @@
 		"date-fns": "^4.1.0",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-storybook": "10.0.8",
 		"eslint-plugin-svelte": "^3.13.0",
 		"globals": "^16.5.0",
 		"houdini": "^2.0.0-next.11",
 		"houdini-svelte": "^3.0.0-next.13",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.7",
+		"lockfile-lint": "^4.14.1",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.7.1",
@@ -56,8 +59,7 @@
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.48.0",
 		"vite": "^7.2.4",
-		"vitest": "^4.0.13",
-		"eslint-plugin-storybook": "10.0.8"
+		"vitest": "^4.0.13"
 	},
 	"type": "module",
 	"dependencies": {
