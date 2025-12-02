@@ -23,7 +23,7 @@ npm run lockfile-lint # Validate package-lock.json security
 
 This project uses enhanced security measures for dependency management:
 
-- **npm-check-updates**: Configured with a 14-day cooldown period to protect against supply chain attacks (see `.ncurc.cjs`)
+- **npm-check-updates**: Configured with a 14-day cooldown period to filter out updates for packages published within the last 14 days (see `.ncurc.cjs`). This is a policy for updating dependencies to reduce risk, not a security enforcement mechanism—direct installation or transitive dependencies may still include recently published packages.
 - **lockfile-lint**: Validates package-lock.json for security issues - HTTPS, integrity checks, hostname verification (see `.lockfile-lintrc.json`)
 - **npq**: Recommended for package installation to check for security issues before installing
 
