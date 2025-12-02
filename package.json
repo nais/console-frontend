@@ -24,7 +24,7 @@
 		"@chromatic-com/storybook": "^4.1.3",
 		"@eslint/compat": "^2.0.0",
 		"@eslint/js": "^9.39.1",
-		"@layerstack/utils": "^2.0.0-next.14",
+		"@layerstack/utils": "^2.0.0-next.16",
 		"@nais/ds-svelte-community": "^2.0.0-next.4",
 		"@storybook/addon-docs": "^10.0.8",
 		"@storybook/addon-svelte-csf": "^5.0.10",
@@ -76,7 +76,7 @@
 		"eslint-plugin-unicorn": "^62.0.0",
 		"graphql": "^16.12.0",
 		"graphql-sse": "^2.6.0",
-		"layerchart": "^2.0.0-next.42",
+		"layerchart": "^2.0.0-next.43",
 		"luxon": "^3.7.2",
 		"pretty-bytes": "^7.1.0",
 		"sortablejs": "^1.15.6",
@@ -92,7 +92,8 @@
 		"*.{js,ts,svelte,gql}": [
 			"eslint --fix .",
 			"svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
-		]
+		],
+		"package-lock.json": "npm run lockfile-lint"
 	},
 	"graphql": {
 		"schema": "https://localhost:3000/graphql",
