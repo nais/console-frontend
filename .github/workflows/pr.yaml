@@ -31,6 +31,7 @@ jobs:
         run: helm lint --strict ./charts
 
   build_push:
+    if: github.actor != 'dependabot[bot]'
     permissions:
       contents: "read"
       id-token: "write"
