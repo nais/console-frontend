@@ -28,7 +28,7 @@ This project uses enhanced security measures for dependency management:
 - **npq**: Recommended for package installation to check for security issues before installing
 
 ```bash
-ncu -u # Update dependencies (respects 14-day cooldown)
+npx npm-check-updates -i # Update dependencies interactively (respects 14-day cooldown)
 npm run lockfile-lint # Validate lockfile security
 ```
 
