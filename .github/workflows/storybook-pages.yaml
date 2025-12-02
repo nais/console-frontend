@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - "main"
+    paths:
+      - "src/**/*.svelte"
+      - "src/**/*.stories.*"
+      - ".storybook/**"
+      - "package.json"
+      - "package-lock.json"
 
 permissions:
   contents: read
