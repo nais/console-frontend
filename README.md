@@ -47,7 +47,6 @@ alias npm='npq-hero'
 npm install <package-name>
 ```
 
-```
 
 ## User
 
