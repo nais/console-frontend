@@ -2,7 +2,13 @@ name: storybook-to-github-pages
 on:
   push:
     branches:
-      - 'main'
+      - "main"
+    paths:
+      - "src/**/*.svelte"
+      - "src/**/*.stories.*"
+      - ".storybook/**"
+      - "package.json"
+      - "package-lock.json"
 
 permissions:
   contents: read

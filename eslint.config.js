@@ -20,6 +20,12 @@ export default ts.config(
 	...svelte.configs['flat/prettier'],
 	{ plugins: { unicorn: eslintPluginUnicorn } },
 	{
+		files: ['.ncurc.cjs'],
+		rules: {
+			'@typescript-eslint/no-require-imports': 'off'
+		}
+	},
+	{
 		languageOptions: {
 			globals: {
 				...globals.browser,
