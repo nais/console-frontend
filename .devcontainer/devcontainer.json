@@ -18,7 +18,6 @@
 			}
 		}
 	},
-	"onAutoForward": "notify",
 	"forwardPorts": [5173, 6006],
 	"portsAttributes": {
 		"5173": {
