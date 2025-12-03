@@ -4,6 +4,25 @@
 
 ## Development
 
+### Dev Container (Recommended)
+
+For enhanced security and isolation, we recommend using VS Code Dev Containers:
+
+1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+2. Open the project in VS Code
+3. Click "Reopen in Container" when prompted (or run command: `Dev Containers: Reopen in Container`)
+4. The container will automatically install dependencies
+5. Use the integrated terminal in VS Code to run commands (all terminals opened in VS Code will run inside the container)
+
+Benefits:
+
+- Isolated development environment (protection against supply chain attacks)
+- Consistent Node.js version across team
+- Pre-configured extensions and settings
+- All npm commands run in a secure, sandboxed environment
+
+### Local Development
+
 The following snippet contains the most important commands for development.
 
 ```bash
