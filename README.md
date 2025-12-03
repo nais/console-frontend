@@ -4,9 +4,11 @@
 
 ## Development
 
-### Dev Container (Recommended)
+### Containerized Development (Recommended)
 
-For enhanced security and isolation, we recommend using VS Code Dev Containers:
+For enhanced security and isolation, we recommend using a containerized development environment:
+
+#### VS Code Dev Containers
 
 1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 2. Open the project in VS Code
@@ -14,11 +16,29 @@ For enhanced security and isolation, we recommend using VS Code Dev Containers:
 4. The container will automatically install dependencies
 5. Use the integrated terminal in VS Code to run commands (all terminals opened in VS Code will run inside the container)
 
-Benefits:
+#### JetBrains IDEs (IntelliJ, WebStorm, etc.)
+
+Use the built-in [Dev Containers support](https://www.jetbrains.com/help/idea/connect-to-devcontainer.html) available in recent versions.
+
+#### Other Editors (Zed, Vim, etc.)
+
+Manually use Docker to run the development environment:
+
+```bash
+# Build and run the container
+docker build -t console-frontend-dev .
+docker run -it -v $(pwd):/workspaces/console-frontend -w /workspaces/console-frontend -p 5173:5173 -p 6006:6006 console-frontend-dev bash
+
+# Inside the container, run your development commands
+npm install
+npm run dev
+```
+
+#### Benefits
 
 - Isolated development environment (protection against supply chain attacks)
 - Consistent Node.js version across team
-- Pre-configured extensions and settings
+- Pre-configured extensions and settings (VS Code/JetBrains)
 - All npm commands run in a secure, sandboxed environment
 
 ### Local Development
