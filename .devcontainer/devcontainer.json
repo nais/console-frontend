@@ -29,7 +29,7 @@
 			"onAutoForward": "notify"
 		}
 	},
-	"postCreateCommand": "npm install && npx allow-scripts auto",
+	"postCreateCommand": "npm install && npx allow-scripts auto && npm run prepare",
 	"remoteUser": "node",
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {}

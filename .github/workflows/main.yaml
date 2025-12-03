@@ -28,6 +28,8 @@ jobs:
         run: npm ci
       - name: Lockfile lint
         run: npm run lockfile-lint
+      - name: Sync SvelteKit
+        run: npx svelte-kit sync
       - name: Lint
         run: npm run lint
       - name: Type check
