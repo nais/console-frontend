@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"prepare": "husky && svelte-kit sync || echo ''",
+		"allow-scripts": "allow-scripts",
 		"dev": "vite dev",
 		"dev-live-share": "vite dev --host ::",
 		"build": "vite build",
@@ -24,6 +25,8 @@
 		"@chromatic-com/storybook": "^4.1.3",
 		"@eslint/compat": "^2.0.0",
 		"@eslint/js": "^9.39.1",
+		"@lavamoat/allow-scripts": "^3.4.1",
+		"@lavamoat/preinstall-always-fail": "^2.1.1",
 		"@layerstack/utils": "^2.0.0-next.14",
 		"@nais/ds-svelte-community": "^2.0.0-next.4",
 		"@storybook/addon-docs": "^10.0.8",
@@ -97,5 +100,11 @@
 	"graphql": {
 		"schema": "https://localhost:3000/graphql",
 		"documents": "**/*.{graphql,js,ts,jsx,tsx,svelte}"
+	},
+	"lavamoat": {
+		"allowScripts": {
+			"@lavamoat/preinstall-always-fail": false,
+			"vite>esbuild": true
+		}
 	}
 }

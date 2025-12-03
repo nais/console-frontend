@@ -23,6 +23,7 @@ npm run lockfile-lint # Validate package-lock.json security
 
 This project uses enhanced security measures for dependency management:
 
+- **Lifecycle scripts disabled**: `.npmrc` disables `preinstall`, `install`, and `postinstall` scripts by default to protect against supply chain attacks that abuse these hooks. Only explicitly allowed packages (via `@lavamoat/allow-scripts`) can run scripts.
 - **npm-check-updates**: Configured with a 14-day cooldown period to filter out updates for packages published within the last 14 days (see `.ncurc.cjs`). This is a policy for updating dependencies to reduce risk, not a security enforcement mechanism—direct installation or transitive dependencies may still include recently published packages.
 - **lockfile-lint**: Validates package-lock.json for security issues - HTTPS, integrity checks, hostname verification (see `.lockfile-lintrc.json`)
 - **npq**: Recommended for package installation to check for security issues before installing
@@ -30,6 +31,18 @@ This project uses enhanced security measures for dependency management:
 ```bash
 npx npm-check-updates -i # Update dependencies interactively (respects 14-day cooldown)
 npm run lockfile-lint # Validate lockfile security
+npm run allow-scripts # View/manage which packages can run lifecycle scripts
+```
+
+### Managing lifecycle scripts
+
+If you need to allow a new package to run scripts:
+
+```bash
+# Automatically detect and add packages that need scripts
+npx allow-scripts auto
+
+# Or manually add to package.json lavamoat.allowScripts configuration
 ```
 
 ### Using npq for safer installations
