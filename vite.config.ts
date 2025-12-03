@@ -24,6 +24,7 @@ export default defineConfig((mode) => {
 	return {
 		plugins: [tailwindcss(), houdini(), sveltekit()],
 		server: {
+			host: '0.0.0.0',
 			proxy: {
 				'/graphql': {
 					target: targetProxy,
