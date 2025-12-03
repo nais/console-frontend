@@ -1,0 +1,38 @@
+{
+	"name": "Console Frontend",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"svelte.svelte-vscode",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss"
+			],
+			"settings": {
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"editor.formatOnSave": true,
+				"[svelte]": {
+					"editor.defaultFormatter": "svelte.svelte-vscode"
+				}
+			}
+		}
+	},
+	"onAutoForward": "notify",
+	"forwardPorts": [5173, 6006],
+	"portsAttributes": {
+		"5173": {
+			"label": "Vite Dev Server",
+			"onAutoForward": "notify"
+		},
+		"6006": {
+			"label": "Storybook",
+			"onAutoForward": "notify"
+		}
+	},
+	"postCreateCommand": "npm install && npx allow-scripts auto",
+	"remoteUser": "node",
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {}
+	}
+}
