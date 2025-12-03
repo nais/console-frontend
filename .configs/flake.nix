@@ -1,5 +1,5 @@
 {
-  description = "Example JavaScript development environment for Zero to Nix";
+  description = "Console Frontend development environment";
 
   # Flake inputs
   inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; };
@@ -8,7 +8,6 @@
   outputs = { self, nixpkgs }:
     let
       # Systems supported
-
       allSystems = [
         "x86_64-linux" # 64-bit Intel/AMD Linux
         "aarch64-linux" # 64-bit ARM Linux
@@ -25,8 +24,20 @@
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
           # The Nix packages provided in the environment
-          packages = with pkgs; [ bun nodejs_22 ];
+          # Matches Node.js 22 from devcontainer setup
+          packages = with pkgs; [
+            nodejs_22
+            git
+          ];
 
+          shellHook = ''
+            echo "Console Frontend development environment"
+            echo "Node.js version: $(node --version)"
+            echo "npm version: $(npm --version)"
+            echo ""
+            echo "Run 'npm install' to install dependencies"
+            echo "Run 'npm run dev' to start the development server"
+          '';
         };
       });
     };
