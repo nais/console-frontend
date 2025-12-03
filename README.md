@@ -40,6 +40,17 @@ npm run dev
 - Pre-configured extensions and settings (VS Code/JetBrains)
 - All npm commands run in a secure, sandboxed environment
 
+### Nix
+
+For users with [Nix](https://nixos.org/) installed, you can use the provided flake for a reproducible development environment:
+
+```bash
+cd .configs
+nix develop
+```
+
+This provides the same Node.js 22 and Git setup as the devcontainer. The flake is regularly updated to track the latest nixpkgs-unstable.
+
 ### Local Development
 
 The following snippet contains the most important commands for development.
