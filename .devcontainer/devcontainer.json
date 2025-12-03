@@ -1,13 +1,14 @@
 {
 	"name": "Console Frontend",
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+	"image": "mcr.microsoft.com/devcontainers/base:debian",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"svelte.svelte-vscode",
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
-				"bradlc.vscode-tailwindcss"
+				"bradlc.vscode-tailwindcss",
+				"hverlin.mise-vscode"
 			],
 			"settings": {
 				"editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -29,9 +30,16 @@
 			"onAutoForward": "notify"
 		}
 	},
-	"postCreateCommand": "npm install && npx allow-scripts auto && npm run prepare",
-	"remoteUser": "node",
+	"onCreateCommand": "bash -c 'eval \"$(mise activate bash)\" && mise install'",
+	"postCreateCommand": "bash -c 'eval \"$(mise activate bash)\" && npm install && npx allow-scripts auto'",
+	"postStartCommand": "bash -c 'eval \"$(mise activate bash)\" && npm run prepare'",
 	"features": {
-		"ghcr.io/devcontainers/features/git:1": {}
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": false,
+			"installOhMyZsh": false,
+			"upgradePackages": false
+		},
+		"ghcr.io/devcontainers-extra/features/mise:1": {}
 	}
 }
