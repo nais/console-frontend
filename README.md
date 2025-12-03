@@ -68,6 +68,24 @@ npm run test # Run tests with Vitest
 npm run lockfile-lint # Validate package-lock.json security
 ```
 
+#### Using the nais API proxy
+
+To connect to a nais-api instance, run the [nais CLI](https://github.com/nais/cli) proxy on your **host machine** (outside the devcontainer):
+
+```bash
+# On your host machine
+nais auth login -n
+nais alpha api proxy
+```
+
+Inside the devcontainer, update your `.env` to use `host.docker.internal` to access the host machine:
+
+```bash
+VITE_GRAPHQL_ENDPOINT="http://host.docker.internal:4242/graphql"
+VITE_PROXY_ENDPOINT="http://host.docker.internal:4242"
+VITE_SCHEMA_ENDPOINT="http://host.docker.internal:4242/graphql"
+```
+
 ## Dependency Management
 
 This project uses enhanced security measures for dependency management:
