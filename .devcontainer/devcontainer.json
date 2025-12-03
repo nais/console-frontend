@@ -15,12 +15,17 @@
 				"editor.formatOnSave": true,
 				"[svelte]": {
 					"editor.defaultFormatter": "svelte.svelte-vscode"
-				}
+				},
+				"terminal.integrated.defaultProfile.linux": "zsh"
 			}
 		}
 	},
-	"forwardPorts": [5173, 6006],
+	"forwardPorts": [4173, 5173, 6006],
 	"portsAttributes": {
+		"4173": {
+			"label": "Vite Preview Server",
+			"onAutoForward": "notify"
+		},
 		"5173": {
 			"label": "Vite Dev Server",
 			"onAutoForward": "notify"
@@ -30,16 +35,11 @@
 			"onAutoForward": "notify"
 		}
 	},
-	"onCreateCommand": "bash -c 'eval \"$(mise activate bash)\" && mise install'",
-	"postCreateCommand": "bash -c 'eval \"$(mise activate bash)\" && npm install && npx allow-scripts auto'",
-	"postStartCommand": "bash -c 'eval \"$(mise activate bash)\" && npm run prepare'",
+	"onCreateCommand": "bash .devcontainer/hooks/onCreateCommand.sh",
+	"postCreateCommand": "bash .devcontainer/hooks/postCreateCommand.sh",
+	"postStartCommand": "bash .devcontainer/hooks/postStartCommand.sh",
+	"runArgs": ["--add-host=host.docker.internal:host-gateway"],
 	"features": {
-		"ghcr.io/devcontainers/features/git:1": {},
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"installZsh": false,
-			"installOhMyZsh": false,
-			"upgradePackages": false
-		},
 		"ghcr.io/devcontainers-extra/features/mise:1": {}
 	}
 }
