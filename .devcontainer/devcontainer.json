@@ -18,6 +18,7 @@
 			}
 		}
 	},
+	"onAutoForward": "notify",
 	"forwardPorts": [5173, 6006],
 	"portsAttributes": {
 		"5173": {
@@ -29,7 +30,7 @@
 			"onAutoForward": "notify"
 		}
 	},
-	"postCreateCommand": "npm install",
+	"postCreateCommand": "npm install && npx allow-scripts auto",
 	"remoteUser": "node",
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {}

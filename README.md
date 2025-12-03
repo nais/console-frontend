@@ -13,7 +13,7 @@ For enhanced security and isolation, we recommend using a containerized developm
 1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 2. Open the project in VS Code
 3. Click "Reopen in Container" when prompted (or run command: `Dev Containers: Reopen in Container`)
-4. The container will automatically install dependencies
+4. The container will automatically install dependencies and configure allowed scripts
 5. Use the integrated terminal in VS Code to run commands (all terminals opened in VS Code will run inside the container)
 
 #### JetBrains IDEs (IntelliJ, WebStorm, etc.)
@@ -25,12 +25,11 @@ Use the built-in [Dev Containers support](https://www.jetbrains.com/help/idea/co
 Manually use Docker to run the development environment:
 
 ```bash
-# Build and run the container
-docker build -t console-frontend-dev .
-docker run -it -v $(pwd):/workspaces/console-frontend -w /workspaces/console-frontend -p 5173:5173 -p 6006:6006 console-frontend-dev bash
+# Use the devcontainer image directly
+docker run -it -v $(pwd):/workspaces/console-frontend -w /workspaces/console-frontend -p 5173:5173 -p 6006:6006 mcr.microsoft.com/devcontainers/javascript-node:22 bash
 
 # Inside the container, run your development commands
-npm install
+npm install && npx allow-scripts auto
 npm run dev
 ```
 
