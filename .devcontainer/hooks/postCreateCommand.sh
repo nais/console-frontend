@@ -8,6 +8,6 @@ echo "Installing npm dependencies..."
 npm install
 
 echo "Running allow-scripts..."
-npx allow-scripts auto
+npm run allow-scripts
 
 echo "postCreateCommand completed successfully!"
