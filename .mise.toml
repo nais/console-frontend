@@ -1,4 +1,6 @@
+[settings]
+pin = true
 [tools]
-node = "22.15.0"
-go = "latest"
-"go:github.com/sethvargo/ratchet" = "latest"
+node = "24.11.1"
+go = "1.25.5"
+"go:github.com/sethvargo/ratchet" = "0.11.4"
