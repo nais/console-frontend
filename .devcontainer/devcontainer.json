@@ -1,25 +1,31 @@
 {
 	"name": "Console Frontend",
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+	"image": "mcr.microsoft.com/devcontainers/base:debian",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"svelte.svelte-vscode",
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
-				"bradlc.vscode-tailwindcss"
+				"bradlc.vscode-tailwindcss",
+				"hverlin.mise-vscode"
 			],
 			"settings": {
 				"editor.defaultFormatter": "esbenp.prettier-vscode",
 				"editor.formatOnSave": true,
 				"[svelte]": {
 					"editor.defaultFormatter": "svelte.svelte-vscode"
-				}
+				},
+				"terminal.integrated.defaultProfile.linux": "zsh"
 			}
 		}
 	},
-	"forwardPorts": [5173, 6006],
+	"forwardPorts": [4173, 5173, 6006],
 	"portsAttributes": {
+		"4173": {
+			"label": "Vite Preview Server",
+			"onAutoForward": "notify"
+		},
 		"5173": {
 			"label": "Vite Dev Server",
 			"onAutoForward": "notify"
@@ -29,9 +35,12 @@
 			"onAutoForward": "notify"
 		}
 	},
-	"postCreateCommand": "npm install && npx allow-scripts auto && npm run prepare",
-	"remoteUser": "node",
+	"onCreateCommand": "bash .devcontainer/hooks/onCreateCommand.sh",
+	"postCreateCommand": "bash .devcontainer/hooks/postCreateCommand.sh",
+	"postStartCommand": "bash .devcontainer/hooks/postStartCommand.sh",
+	// Allows the container to access services running on the host via host.docker.internal
+	"runArgs": ["--add-host=host.docker.internal:host-gateway"],
 	"features": {
-		"ghcr.io/devcontainers/features/git:1": {}
+		"ghcr.io/devcontainers-extra/features/mise:1": {}
 	}
 }

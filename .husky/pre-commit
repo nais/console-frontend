@@ -1,1 +1,4 @@
-npx lint-staged
+#!/bin/bash
+. "$(dirname "$0")/_/husky.sh"
+
+eval "$(mise activate bash --shims)" && npx lint-staged
