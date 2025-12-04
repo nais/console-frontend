@@ -10,6 +10,7 @@ echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
 echo "Trusting mise directory..."
 mise trust -y
 
+# Installing go before other tools to allow mise to install go-based tools
 echo "Installing Go..."
 mise install go
 
