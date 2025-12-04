@@ -38,6 +38,7 @@
 	"onCreateCommand": "bash .devcontainer/hooks/onCreateCommand.sh",
 	"postCreateCommand": "bash .devcontainer/hooks/postCreateCommand.sh",
 	"postStartCommand": "bash .devcontainer/hooks/postStartCommand.sh",
+	// Allows the container to access services running on the host via host.docker.internal
 	"runArgs": ["--add-host=host.docker.internal:host-gateway"],
 	"features": {
 		"ghcr.io/devcontainers-extra/features/mise:1": {}
