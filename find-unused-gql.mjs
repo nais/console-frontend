@@ -113,7 +113,7 @@ async function findUnusedGqlFiles() {
 
 	// Find all .ts and .svelte files
 	console.log('🔍 Scanning for .ts and .svelte files...\n');
-	const tsFiles = await findFiles(srcDir, /(\.ts)|(\.js)$/);
+	const tsFiles = await findFiles(srcDir, /\.(ts|js)$/);
 	const svelteFiles = await findFiles(srcDir, /\.svelte$/);
 	console.log(`Found ${tsFiles.length} .ts/.js files and ${svelteFiles.length} .svelte files\n`);
 
