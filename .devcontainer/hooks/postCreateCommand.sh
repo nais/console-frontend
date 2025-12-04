@@ -10,4 +10,7 @@ npm install
 echo "Running allow-scripts..."
 npx allow-scripts auto
 
+echo "Installing Ratchet tool via Go..."
+go install github.com/sethvargo/ratchet@latest
+
 echo "postCreateCommand completed successfully!"
