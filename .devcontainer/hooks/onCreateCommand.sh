@@ -2,7 +2,9 @@
 set -e
 
 echo "Setting up shell configurations..."
+# shellcheck disable=SC2016
 echo 'eval "$(mise activate bash)"' >> ~/.bashrc
+# shellcheck disable=SC2016
 echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
 
 echo "Trusting mise directory..."
