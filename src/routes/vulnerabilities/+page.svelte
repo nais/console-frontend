@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { TeamOrderField } from '$houdini';
+	import CveSearch from '$lib/domain/vulnerability/CveSearch.svelte';
+	import VulnerabilitySummaryTenant from '$lib/domain/vulnerability/VulnerabilitySummaryTenant.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import VulnerabilitySummaryTenant from '$lib/domain/vulnerability/VulnerabilitySummaryTenant.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Detail, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
@@ -32,10 +33,19 @@
 							></Heading
 						>
 						<div class="info">
-							<BodyLong>
-								Track the accumulation of image vulnerabilities by severity level over time. Use the
-								interval selector to adjust the time range and monitor trends.
-							</BodyLong>
+							<div class="info-left">
+								<BodyLong>
+									Track the accumulation of image vulnerabilities by severity level over time. Use
+									the interval selector to adjust the time range and monitor trends.
+								</BodyLong>
+								<div class="cve-search-section">
+									<Heading level="3" size="xsmall">Search for CVE</Heading>
+									<BodyLong size="small">
+										Enter a CVE ID to see details and find workloads that might be affected.
+									</BodyLong>
+									<CveSearch />
+								</div>
+							</div>
 							{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
 								<VulnerabilitySummaryTenant
 									vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
@@ -269,6 +279,18 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.info-left {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-24);
+	}
+
+	.cve-search-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
 	}
 
 	.graph {
