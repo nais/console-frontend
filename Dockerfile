@@ -1,4 +1,5 @@
-FROM node:22-alpine AS node-with-deps
+ARG NODE_VERSION="24"
+FROM node:${NODE_VERSION}-alpine AS node-with-deps
 WORKDIR /usr/app
 
 COPY package*.json svelte.config.js .npmrc ./
@@ -11,7 +12,7 @@ ENV VITE_GRAPHQL_ENDPOINT=http://nais-api/graphql
 
 RUN npm run build
 
-FROM node:22-alpine
+FROM node:${NODE_VERSION}-alpine
 WORKDIR /usr/app
 
 ENV NODE_ENV=production
