@@ -12,12 +12,13 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { CVEDetails } = $derived(data);
+	let { CVEDetails, CVEWorkloads } = $derived(data);
 </script>
 
 <div class="page">
 	<div class="container">
 		<GraphErrors errors={$CVEDetails.errors} />
+		<GraphErrors errors={$CVEWorkloads.errors} />
 
 		{#if $CVEDetails.fetching}
 			<div class="loading">
@@ -80,87 +81,90 @@
 					</div>
 				{/if}
 
-				<Heading level="2" size="small">
-					Affected Workloads
-					{#if cve.workloads.pageInfo.totalCount > 0}
-						<span class="count">({cve.workloads.pageInfo.totalCount})</span>
-					{/if}
-				</Heading>
+				{#if $CVEWorkloads.data}
+					{@const workloads = $CVEWorkloads.data.cve.workloads}
+					<Heading level="2" size="small">
+						Affected Workloads
+						{#if workloads.pageInfo.totalCount > 0}
+							<span class="count">({workloads.pageInfo.totalCount})</span>
+						{/if}
+					</Heading>
 
-				{#if cve.workloads.nodes.length > 0}
-					<List>
-						{#each cve.workloads.nodes as node (node.workload.name + node.workload.team.slug + node.workload.teamEnvironment.environment.name + node.vulnerability.package)}
-							{@const workload = node.workload}
-							{@const vuln = node.vulnerability}
-							<ListItem>
-								<div class="workload-container">
-									<WorkloadLink {workload} />
-									<dl class="workload-details">
-										<div class="detail-row">
-											<Detail as="dt">Package</Detail>
-											<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
-										</div>
-										<div class="detail-row">
-											<Detail as="dt">Image</Detail>
-											{#if workload.image}
-												<BodyShort as="dd">
-													<code>{workload.image.name}:{workload.image.tag}</code>
-												</BodyShort>
-											{:else}
-												<BodyShort as="dd">-</BodyShort>
-											{/if}
-										</div>
-										<div class="detail-row">
-											{#if vuln.suppression}
-												<Detail as="dt">Suppression</Detail>
-												<BodyShort as="dd">
-													<code
-														>{vuln.suppression?.state ===
-														ImageVulnerabilitySuppressionState.FALSE_POSITIVE
-															? 'False Positive'
-															: vuln.suppression?.state ===
-																  ImageVulnerabilitySuppressionState.NOT_AFFECTED
-																? 'Not Affected'
+					{#if workloads.nodes.length > 0 || $CVEWorkloads.fetching}
+						<List>
+							{#each workloads.nodes as node (node.workload.name + node.workload.team.slug + node.workload.teamEnvironment.environment.name + node.vulnerability.package)}
+								{@const workload = node.workload}
+								{@const vuln = node.vulnerability}
+								<ListItem>
+									<div class="workload-container">
+										<WorkloadLink {workload} />
+										<dl class="workload-details">
+											<div class="detail-row">
+												<Detail as="dt">Package</Detail>
+												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
+											</div>
+											<div class="detail-row">
+												<Detail as="dt">Image</Detail>
+												{#if workload.image}
+													<BodyShort as="dd">
+														<code>{workload.image.name}:{workload.image.tag}</code>
+													</BodyShort>
+												{:else}
+													<BodyShort as="dd">-</BodyShort>
+												{/if}
+											</div>
+											<div class="detail-row">
+												{#if vuln.suppression}
+													<Detail as="dt">Suppression</Detail>
+													<BodyShort as="dd">
+														<code
+															>{vuln.suppression?.state ===
+															ImageVulnerabilitySuppressionState.FALSE_POSITIVE
+																? 'False Positive'
 																: vuln.suppression?.state ===
-																	  ImageVulnerabilitySuppressionState.IN_TRIAGE
-																	? 'In Triage'
+																	  ImageVulnerabilitySuppressionState.NOT_AFFECTED
+																	? 'Not Affected'
 																	: vuln.suppression?.state ===
-																		  ImageVulnerabilitySuppressionState.RESOLVED
-																		? 'Resolved'
-																		: 'Unknown'}</code
-													>
-												</BodyShort>
-											{/if}
-										</div>
-									</dl>
-								</div>
-							</ListItem>
-						{/each}
-					</List>
-					<Pagination
-						page={cve.workloads.pageInfo}
-						fetching={$CVEDetails.fetching}
-						loaders={{
-							loadPreviousPage: () =>
-								changeParams(
-									{
-										after: '',
-										before: cve.workloads.pageInfo.startCursor ?? ''
-									},
-									{ noScroll: true }
-								),
-							loadNextPage: () =>
-								changeParams(
-									{
-										after: cve.workloads.pageInfo.endCursor ?? '',
-										before: ''
-									},
-									{ noScroll: true }
-								)
-						}}
-					/>
-				{:else}
-					<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+																		  ImageVulnerabilitySuppressionState.IN_TRIAGE
+																		? 'In Triage'
+																		: vuln.suppression?.state ===
+																			  ImageVulnerabilitySuppressionState.RESOLVED
+																			? 'Resolved'
+																			: 'Unknown'}</code
+														>
+													</BodyShort>
+												{/if}
+											</div>
+										</dl>
+									</div>
+								</ListItem>
+							{/each}
+						</List>
+						<Pagination
+							page={workloads.pageInfo}
+							fetching={$CVEWorkloads.fetching}
+							loaders={{
+								loadPreviousPage: () =>
+									changeParams(
+										{
+											after: '',
+											before: workloads.pageInfo.startCursor ?? ''
+										},
+										{ noScroll: true }
+									),
+								loadNextPage: () =>
+									changeParams(
+										{
+											after: workloads.pageInfo.endCursor ?? '',
+											before: ''
+										},
+										{ noScroll: true }
+									)
+							}}
+						/>
+					{:else}
+						<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+					{/if}
 				{/if}
 			</div>
 		{/if}

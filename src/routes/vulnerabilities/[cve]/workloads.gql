@@ -1,13 +1,7 @@
-query CVEDetails($identifier: String!, $first: Int, $last: Int, $after: Cursor, $before: Cursor)
+query CVEWorkloads($identifier: String!, $first: Int, $last: Int, $after: Cursor, $before: Cursor)
 @cache(policy: CacheAndNetwork) {
 	cve(identifier: $identifier) {
 		id
-		identifier
-		title
-		description
-		severity
-		cvssScore
-		detailsLink
 		workloads(first: $first, last: $last, after: $after, before: $before) {
 			pageInfo {
 				hasNextPage
