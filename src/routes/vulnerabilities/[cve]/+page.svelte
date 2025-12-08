@@ -13,6 +13,13 @@
 
 	let { data }: PageProps = $props();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
+
+	const suppressionStateLabels = {
+		[ImageVulnerabilitySuppressionState.FALSE_POSITIVE]: 'False Positive',
+		[ImageVulnerabilitySuppressionState.NOT_AFFECTED]: 'Not Affected',
+		[ImageVulnerabilitySuppressionState.IN_TRIAGE]: 'In Triage',
+		[ImageVulnerabilitySuppressionState.RESOLVED]: 'Resolved'
+	};
 </script>
 
 <div class="page">
@@ -118,19 +125,7 @@
 													<Detail as="dt">Suppression</Detail>
 													<BodyShort as="dd">
 														<code
-															>{vuln.suppression?.state ===
-															ImageVulnerabilitySuppressionState.FALSE_POSITIVE
-																? 'False Positive'
-																: vuln.suppression?.state ===
-																	  ImageVulnerabilitySuppressionState.NOT_AFFECTED
-																	? 'Not Affected'
-																	: vuln.suppression?.state ===
-																		  ImageVulnerabilitySuppressionState.IN_TRIAGE
-																		? 'In Triage'
-																		: vuln.suppression?.state ===
-																			  ImageVulnerabilitySuppressionState.RESOLVED
-																			? 'Resolved'
-																			: 'Unknown'}</code
+															>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code
 														>
 													</BodyShort>
 												{/if}
