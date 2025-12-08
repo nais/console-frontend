@@ -39,6 +39,9 @@ query CVEDetails($identifier: String!, $first: Int, $last: Int, $after: Cursor, 
 					identifier
 					severity
 					package
+					suppression {
+						state
+					}
 				}
 			}
 		}

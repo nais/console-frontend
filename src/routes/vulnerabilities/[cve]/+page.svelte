@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ImageVulnerabilitySuppressionState } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -92,22 +93,46 @@
 							{@const workload = node.workload}
 							{@const vuln = node.vulnerability}
 							<ListItem>
-								<div class="workload-row">
+								<div class="workload-container">
 									<WorkloadLink {workload} />
-									<div class="vuln-info">
-										<div>
-											<Detail>Package</Detail>
-											<BodyShort size="small"><code>{vuln.package}</code></BodyShort>
+									<dl class="workload-details">
+										<div class="detail-row">
+											<Detail as="dt">Package</Detail>
+											<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 										</div>
-										{#if workload.image}
-											<div>
-												<Detail>Image</Detail>
-												<BodyShort size="small">
-													<code class="truncate">{workload.image.name}:{workload.image.tag}</code>
+										<div class="detail-row">
+											<Detail as="dt">Image</Detail>
+											{#if workload.image}
+												<BodyShort as="dd">
+													<code>{workload.image.name}:{workload.image.tag}</code>
 												</BodyShort>
-											</div>
-										{/if}
-									</div>
+											{:else}
+												<BodyShort as="dd">-</BodyShort>
+											{/if}
+										</div>
+										<div class="detail-row">
+											{#if vuln.suppression}
+												<Detail as="dt">Suppression</Detail>
+												<BodyShort as="dd">
+													<code
+														>{vuln.suppression?.state ===
+														ImageVulnerabilitySuppressionState.FALSE_POSITIVE
+															? 'False Positive'
+															: vuln.suppression?.state ===
+																  ImageVulnerabilitySuppressionState.NOT_AFFECTED
+																? 'Not Affected'
+																: vuln.suppression?.state ===
+																	  ImageVulnerabilitySuppressionState.IN_TRIAGE
+																	? 'In Triage'
+																	: vuln.suppression?.state ===
+																		  ImageVulnerabilitySuppressionState.RESOLVED
+																		? 'Resolved'
+																		: 'Unknown'}</code
+													>
+												</BodyShort>
+											{/if}
+										</div>
+									</dl>
 								</div>
 							</ListItem>
 						{/each}
@@ -190,24 +215,33 @@
 		color: var(--ax-text-neutral);
 	}
 
-	.workload-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: var(--ax-space-16);
-		flex-wrap: wrap;
-	}
-
-	.vuln-info {
-		display: flex;
+	.workload-container {
+		display: grid;
+		grid-template-columns: minmax(200px, 300px) 1fr;
 		gap: var(--ax-space-24);
+		align-items: start;
 	}
 
-	.truncate {
-		max-width: 250px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		display: block;
+	.workload-details {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
+		margin: 0;
+		padding-left: var(--ax-space-12);
+		border-left: 2px solid var(--ax-border-subtle);
+	}
+
+	.detail-row {
+		display: grid;
+		grid-template-columns: 100px 1fr;
+		gap: var(--ax-space-12);
+		align-items: baseline;
+	}
+
+	.detail-row code {
+		word-break: break-all;
+	}
+	code {
+		font-size: 0.9rem;
 	}
 </style>
