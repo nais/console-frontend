@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ImageVulnerabilitySuppressionState } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -11,12 +12,20 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { CVEDetails } = $derived(data);
+	let { CVEDetails, CVEWorkloads } = $derived(data);
+
+	const suppressionStateLabels = {
+		[ImageVulnerabilitySuppressionState.FALSE_POSITIVE]: 'False Positive',
+		[ImageVulnerabilitySuppressionState.NOT_AFFECTED]: 'Not Affected',
+		[ImageVulnerabilitySuppressionState.IN_TRIAGE]: 'In Triage',
+		[ImageVulnerabilitySuppressionState.RESOLVED]: 'Resolved'
+	};
 </script>
 
 <div class="page">
 	<div class="container">
 		<GraphErrors errors={$CVEDetails.errors} />
+		<GraphErrors errors={$CVEWorkloads.errors} />
 
 		{#if $CVEDetails.fetching}
 			<div class="loading">
@@ -79,63 +88,78 @@
 					</div>
 				{/if}
 
-				<Heading level="2" size="small">
-					Affected Workloads
-					{#if cve.workloads.pageInfo.totalCount > 0}
-						<span class="count">({cve.workloads.pageInfo.totalCount})</span>
-					{/if}
-				</Heading>
+				{#if $CVEWorkloads.data}
+					{@const workloads = $CVEWorkloads.data.cve.workloads}
+					<Heading level="2" size="small">
+						Affected Workloads
+						{#if workloads.pageInfo.totalCount > 0}
+							<span class="count">({workloads.pageInfo.totalCount})</span>
+						{/if}
+					</Heading>
 
-				{#if cve.workloads.nodes.length > 0}
-					<List>
-						{#each cve.workloads.nodes as node (node.workload.name + node.workload.team.slug + node.workload.teamEnvironment.environment.name)}
-							{@const workload = node.workload}
-							{@const vuln = node.vulnerability}
-							<ListItem>
-								<div class="workload-row">
-									<WorkloadLink {workload} />
-									<div class="vuln-info">
-										<div>
-											<Detail>Package</Detail>
-											<BodyShort size="small"><code>{vuln.package}</code></BodyShort>
-										</div>
-										{#if workload.image}
-											<div>
-												<Detail>Image</Detail>
-												<BodyShort size="small">
-													<code class="truncate">{workload.image.name}:{workload.image.tag}</code>
-												</BodyShort>
+					{#if workloads.nodes.length > 0 || $CVEWorkloads.fetching}
+						<List>
+							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
+								{@const workload = node.workload}
+								{@const vuln = node.vulnerability}
+								<ListItem>
+									<div class="workload-container">
+										<WorkloadLink {workload} />
+										<dl class="workload-details">
+											<div class="detail-row">
+												<Detail as="dt">Package</Detail>
+												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
-										{/if}
+											<div class="detail-row">
+												<Detail as="dt">Image</Detail>
+												{#if workload.image}
+													<BodyShort as="dd">
+														<code>{workload.image.name}:{workload.image.tag}</code>
+													</BodyShort>
+												{:else}
+													<BodyShort as="dd">-</BodyShort>
+												{/if}
+											</div>
+											{#if vuln.suppression}
+												<div class="detail-row">
+													<Detail as="dt">Suppression</Detail>
+													<BodyShort as="dd">
+														<code
+															>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code
+														>
+													</BodyShort>
+												</div>
+											{/if}
+										</dl>
 									</div>
-								</div>
-							</ListItem>
-						{/each}
-					</List>
-					<Pagination
-						page={cve.workloads.pageInfo}
-						fetching={$CVEDetails.fetching}
-						loaders={{
-							loadPreviousPage: () =>
-								changeParams(
-									{
-										after: '',
-										before: cve.workloads.pageInfo.startCursor ?? ''
-									},
-									{ noScroll: true }
-								),
-							loadNextPage: () =>
-								changeParams(
-									{
-										after: cve.workloads.pageInfo.endCursor ?? '',
-										before: ''
-									},
-									{ noScroll: true }
-								)
-						}}
-					/>
-				{:else}
-					<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+								</ListItem>
+							{/each}
+						</List>
+						<Pagination
+							page={workloads.pageInfo}
+							fetching={$CVEWorkloads.fetching}
+							loaders={{
+								loadPreviousPage: () =>
+									changeParams(
+										{
+											after: '',
+											before: workloads.pageInfo.startCursor ?? ''
+										},
+										{ noScroll: true }
+									),
+								loadNextPage: () =>
+									changeParams(
+										{
+											after: workloads.pageInfo.endCursor ?? '',
+											before: ''
+										},
+										{ noScroll: true }
+									)
+							}}
+						/>
+					{:else}
+						<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+					{/if}
 				{/if}
 			</div>
 		{/if}
@@ -190,24 +214,33 @@
 		color: var(--ax-text-neutral);
 	}
 
-	.workload-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: var(--ax-space-16);
-		flex-wrap: wrap;
-	}
-
-	.vuln-info {
-		display: flex;
+	.workload-container {
+		display: grid;
+		grid-template-columns: minmax(200px, 300px) 1fr;
 		gap: var(--ax-space-24);
+		align-items: start;
 	}
 
-	.truncate {
-		max-width: 250px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		display: block;
+	.workload-details {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
+		margin: 0;
+		padding-left: var(--ax-space-12);
+		border-left: 2px solid var(--ax-border-subtle);
+	}
+
+	.detail-row {
+		display: grid;
+		grid-template-columns: 100px 1fr;
+		gap: var(--ax-space-12);
+		align-items: baseline;
+	}
+
+	.detail-row code {
+		word-break: break-all;
+	}
+	code {
+		font-size: 0.9rem;
 	}
 </style>

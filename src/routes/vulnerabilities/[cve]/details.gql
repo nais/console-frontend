@@ -1,0 +1,11 @@
+query CVEDetails($identifier: String!) @cache(policy: CacheAndNetwork) {
+	cve(identifier: $identifier) {
+		id
+		identifier
+		title
+		description
+		severity
+		cvssScore
+		detailsLink
+	}
+}
