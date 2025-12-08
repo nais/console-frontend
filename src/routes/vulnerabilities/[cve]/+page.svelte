@@ -120,16 +120,16 @@
 													<BodyShort as="dd">-</BodyShort>
 												{/if}
 											</div>
-											<div class="detail-row">
-												{#if vuln.suppression}
+											{#if vuln.suppression}
+												<div class="detail-row">
 													<Detail as="dt">Suppression</Detail>
 													<BodyShort as="dd">
 														<code
 															>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code
 														>
 													</BodyShort>
-												{/if}
-											</div>
+												</div>
+											{/if}
 										</dl>
 									</div>
 								</ListItem>
