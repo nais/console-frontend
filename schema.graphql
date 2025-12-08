@@ -1011,6 +1011,48 @@ type CPUScalingStrategy {
   threshold: Int!
 }
 
+type CVE implements Node {
+  """CVSS score of the CVE."""
+  cvssScore: Float
+
+  """Description of the CVE."""
+  description: String!
+
+  """Link to the CVE details."""
+  detailsLink: String!
+
+  """The globally unique ID of the CVE."""
+  id: ID!
+
+  """The unique identifier of the CVE. E.g. CVE-****-****."""
+  identifier: String!
+
+  """Severity of the CVE."""
+  severity: ImageVulnerabilitySeverity!
+
+  """Title of the CVE"""
+  title: String!
+
+  """Affected workloads"""
+  workloads(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): WorkloadWithVulnerabilityConnection!
+}
+
 input ChangeDeploymentKeyInput {
   """The name of the team to update the deploy key for."""
   teamSlug: Slug!
@@ -1608,6 +1650,11 @@ type DeploymentEdge {
 
   """The deployment."""
   node: Deployment!
+}
+
+input DeploymentFilter {
+  """Get deployments from a given date until today."""
+  from: Time
 }
 
 """Deployment key type."""
@@ -3716,6 +3763,31 @@ type Query {
 
   """Get current prices for resources."""
   currentUnitPrices: CurrentUnitPrices!
+
+  """Get a specific CVE by its identifier."""
+  cve(identifier: String!): CVE!
+
+  """Get a list of deployments."""
+  deployments(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter options for the deployments returned from the connection."""
+    filter: DeploymentFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): DeploymentConnection!
 
   """Get a single environment."""
   environment(
@@ -8436,4 +8508,28 @@ type WorkloadVulnerabilitySummaryEdge {
 
   """The workload vulnerability summary."""
   node: WorkloadVulnerabilitySummary!
+}
+
+type WorkloadWithVulnerability {
+  vulnerability: ImageVulnerability!
+  workload: Workload!
+}
+
+type WorkloadWithVulnerabilityConnection {
+  """List of edges."""
+  edges: [WorkloadWithVulnerabilityEdge!]!
+
+  """List of nodes."""
+  nodes: [WorkloadWithVulnerability!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type WorkloadWithVulnerabilityEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The vulnerability."""
+  node: WorkloadWithVulnerability!
 }
