@@ -89,7 +89,7 @@
 
 				{#if cve.workloads.nodes.length > 0}
 					<List>
-						{#each cve.workloads.nodes as node (node.workload.name + node.workload.team.slug + node.workload.teamEnvironment.environment.name)}
+						{#each cve.workloads.nodes as node (node.workload.name + node.workload.team.slug + node.workload.teamEnvironment.environment.name + node.vulnerability.package)}
 							{@const workload = node.workload}
 							{@const vuln = node.vulnerability}
 							<ListItem>

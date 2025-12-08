@@ -7,7 +7,6 @@ export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
-	console.log('Loading cve', event.params.cve);
 	return {
 		...(await addPageMeta(event, { title: event.params.cve })),
 		...(await load_CVEDetails({
