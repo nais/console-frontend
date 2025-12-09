@@ -56,6 +56,7 @@
 					variant="simple"
 					hideLabel={false}
 					size="small"
+					name="vulnerability"
 				/>
 			</div>
 			<Button type="submit" variant="primary" size="small" icon={MagnifyingGlassIcon}>Search</Button
@@ -228,6 +229,7 @@
 	.search-input {
 		flex: 1;
 		min-width: 0;
+		align-items: flex-start;
 	}
 
 	.loading {
