@@ -3,7 +3,7 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: 'Vulnerability Report' })),
+		...(await addPageMeta(event, { title: 'Vulnerabilities' })),
 		...(await load_JobImageDetails({
 			event,
 			variables: {

@@ -21,7 +21,7 @@
 <Story name="Many tabs" asChild>
 	<Tabs>
 		<Tab href="/overview" title="Overview" />
-		<Tab href="/vulnerability-report" title="Vulnerability Report" active />
+		<Tab href="/vulnerabilities" title="Vulnerabilities" active />
 		<Tab href="/deployments" title="Deployments" />
 		<Tab href="/cost" title="Cost" />
 		<Tab href="/utilization" title="Utilization" />

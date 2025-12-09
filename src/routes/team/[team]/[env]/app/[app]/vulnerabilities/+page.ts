@@ -7,7 +7,7 @@ export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 	return {
-		...(await addPageMeta(event, { title: 'Vulnerability Report' })),
+		...(await addPageMeta(event, { title: 'Vulnerabilities' })),
 		...(await load_ApplicationImageDetails({
 			event,
 			variables: {

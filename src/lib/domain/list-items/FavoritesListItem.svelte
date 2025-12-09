@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { favorites } from '$lib/stores/favorites.svelte';
-	import { Button, Tooltip } from '@nais/ds-svelte-community';
-	import { DragVerticalIcon, StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
+	import { Button, Tooltip } from '@nais/ds-svelte-community';
+	import { DragVerticalIcon, StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 
 	const {
 		path
@@ -80,9 +80,9 @@
 				return {
 					pageName: 'Confirm Team Deletion'
 				};
-			case 'vulnerability-report':
+			case 'vulnerabilities':
 				return {
-					pageName: 'Vulnerability Report'
+					pageName: 'Vulnerabilities'
 				};
 			default:
 				return {

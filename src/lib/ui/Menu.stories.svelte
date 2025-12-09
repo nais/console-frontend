@@ -1,6 +1,6 @@
 <script module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import Menu from '$lib/ui/Menu.svelte';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
 
 	const { Story } = defineMeta({
 		component: Menu,
@@ -51,8 +51,8 @@
 			[{ label: 'App Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 			[
 				{
-					label: 'Vulnerability Report',
-					href: '/team/devteam/dev/app/app-w-all-storage/vulnerability-report'
+					label: 'Vulnerabilities',
+					href: '/team/devteam/dev/app/app-w-all-storage/vulnerabilities'
 				},
 				{ label: 'Deployments', href: '/team/devteam/dev/app/app-w-all-storage/deploys' },
 				{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
@@ -75,8 +75,8 @@
 			[{ label: 'Job Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 			[
 				{
-					label: 'Vulnerability Report',
-					href: '/team/devteam/dev/app/app-w-all-storage/vulnerability-report'
+					label: 'Vulnerabilities',
+					href: '/team/devteam/dev/app/app-w-all-storage/vulnerabilities'
 				},
 				{ label: 'Deployments', href: '/team/devteam/dev/app/app-w-all-storage/deploys' },
 				{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
