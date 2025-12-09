@@ -78,9 +78,9 @@ export const suppressionStateOptions: Array<{
 	value: ImageVulnerabilitySuppressionState$options | '';
 	text: string;
 }> = [
-	{ value: '', text: 'Suppress reason' },
-	{ value: ImageVulnerabilitySuppressionState.IN_TRIAGE, text: 'In triage' },
+	{ value: '', text: 'Suppress Reason' },
+	{ value: ImageVulnerabilitySuppressionState.IN_TRIAGE, text: 'In Triage' },
 	{ value: ImageVulnerabilitySuppressionState.RESOLVED, text: 'Resolved' },
-	{ value: ImageVulnerabilitySuppressionState.FALSE_POSITIVE, text: 'False positive' },
-	{ value: ImageVulnerabilitySuppressionState.NOT_AFFECTED, text: 'Not affected' }
+	{ value: ImageVulnerabilitySuppressionState.FALSE_POSITIVE, text: 'False Positive' },
+	{ value: ImageVulnerabilitySuppressionState.NOT_AFFECTED, text: 'Not Affected' }
 ];
