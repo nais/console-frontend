@@ -2,9 +2,12 @@
 	import { page } from '$app/state';
 	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
 	import { PrometheusChartQueryInterval } from '$lib/chart/util';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import type { PageProps } from './$types';
 
-	let interval: PrometheusChartQueryInterval = $state('7d');
+	let { data }: PageProps = $props();
+	let { interval } = $derived(data);
 
 	// Get the topic name and environment name from route params
 	const teamSlug = $derived(page.params.team!);
@@ -16,7 +19,12 @@
 </script>
 
 <div class="mb-2 flex justify-end">
-	<ToggleGroup bind:value={interval}>
+	<ToggleGroup
+		bind:value={interval}
+		onchange={() => {
+			changeParams({ interval });
+		}}
+	>
 		{#each Object.values(PrometheusChartQueryInterval) as intervalOption (intervalOption)}
 			<ToggleGroupItem value={intervalOption}>{intervalOption}</ToggleGroupItem>
 		{/each}
