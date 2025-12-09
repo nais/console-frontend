@@ -1,5 +1,5 @@
-import type { ImageVulnerabilitySuppressionState$options } from '$houdini';
-import { ImageVulnerabilitySuppressionState } from '$houdini';
+import type { ImageVulnerabilitySuppressionState$options } from '$houdini/graphql/enums';
+import { ImageVulnerabilitySuppressionState } from '$houdini/graphql/enums';
 
 export function severityToColor({
 	severity,
