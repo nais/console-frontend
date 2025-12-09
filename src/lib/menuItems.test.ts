@@ -172,8 +172,8 @@ describe('menuItems', () => {
 				[{ label: 'App Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
 				[
 					{
-						label: 'Vulnerability Report',
-						href: '/team/devteam/dev/app/app-w-all-storage/vulnerability-report'
+						label: 'Vulnerabilities',
+						href: '/team/devteam/dev/app/app-w-all-storage/vulnerabilities'
 					},
 					{
 						label: 'Deployments',
@@ -205,7 +205,7 @@ describe('menuItems', () => {
 		test('when not member', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerability-report',
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
 					member: false,
 					isAdmin: false
 				})

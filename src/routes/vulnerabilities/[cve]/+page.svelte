@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ImageVulnerabilitySuppressionState } from '$houdini';
+	import { goto } from '$app/navigation';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -7,30 +7,70 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { BodyLong, BodyShort, Detail, Heading, Loader, Tag } from '@nais/ds-svelte-community';
+	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import {
+		Alert,
+		BodyShort,
+		Button,
+		Detail,
+		Heading,
+		Loader,
+		ReadMore,
+		Search,
+		Tag
+	} from '@nais/ds-svelte-community';
+	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
 
-	const suppressionStateLabels = {
-		[ImageVulnerabilitySuppressionState.FALSE_POSITIVE]: 'False Positive',
-		[ImageVulnerabilitySuppressionState.NOT_AFFECTED]: 'Not Affected',
-		[ImageVulnerabilitySuppressionState.IN_TRIAGE]: 'In Triage',
-		[ImageVulnerabilitySuppressionState.RESOLVED]: 'Resolved'
+	let searchValue = $state('');
+
+	const handleSearch = async (event: SubmitEvent) => {
+		event.preventDefault();
+		const identifier = searchValue.trim();
+		if (identifier) {
+			searchValue = ''; // Clear the input after submitting
+			await goto(`/vulnerabilities/${encodeURIComponent(identifier)}`);
+		}
+	};
+
+	const isNotFoundError = (errors?: { message: string }[] | null) => {
+		return errors?.some((e) => e.message.includes('NotFound') || e.message.includes('not found'));
+	};
+
+	const hasOtherErrors = (errors?: { message: string }[] | null) => {
+		return errors?.some((e) => !e.message.includes('NotFound') && !e.message.includes('not found'));
 	};
 </script>
 
 <div class="page">
 	<div class="container">
-		<GraphErrors errors={$CVEDetails.errors} />
-		<GraphErrors errors={$CVEWorkloads.errors} />
+		<form class="search-form" onsubmit={handleSearch}>
+			<div class="search-input">
+				<Search
+					label="Search for vulnerability"
+					placeholder="Enter vulnerability ID (e.g., CVE-2024-1234)"
+					bind:value={searchValue}
+					variant="simple"
+					hideLabel={false}
+					size="small"
+					name="vulnerability"
+				/>
+			</div>
+			<Button type="submit" variant="primary" size="small" icon={MagnifyingGlassIcon}>Search</Button
+			>
+		</form>
 
 		{#if $CVEDetails.fetching}
 			<div class="loading">
 				<Loader size="3xlarge" />
 			</div>
+		{:else if isNotFoundError($CVEDetails.errors) || isNotFoundError($CVEWorkloads.errors)}
+			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
+				Vulnerability not found. The ID you entered doesn't exist in our database.
+			</Alert>
 		{:else if $CVEDetails.data}
 			{@const cve = $CVEDetails.data.cve}
 			<div class="wrapper">
@@ -45,7 +85,7 @@
 						</Tag>
 					</div>
 					{#if cve.title}
-						<BodyLong>{cve.title}</BodyLong>
+						<Detail>{cve.title}</Detail>
 					{/if}
 				</div>
 
@@ -82,12 +122,10 @@
 				</div>
 
 				{#if cve.description}
-					<div class="card">
-						<Heading level="2" size="small" spacing>Description</Heading>
-						<BodyLong>{cve.description}</BodyLong>
-					</div>
+					<ReadMore header="Description" size="medium">
+						{cve.description}
+					</ReadMore>
 				{/if}
-
 				{#if $CVEWorkloads.data}
 					{@const workloads = $CVEWorkloads.data.cve.workloads}
 					<Heading level="2" size="small">
@@ -162,6 +200,13 @@
 					{/if}
 				{/if}
 			</div>
+		{:else}
+			{#if hasOtherErrors($CVEDetails.errors)}
+				<GraphErrors errors={$CVEDetails.errors} />
+			{/if}
+			{#if hasOtherErrors($CVEWorkloads.errors)}
+				<GraphErrors errors={$CVEWorkloads.errors} />
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -169,6 +214,20 @@
 <style>
 	.container {
 		margin-top: var(--spacing-layout);
+	}
+
+	.search-form {
+		display: flex;
+		gap: var(--ax-space-12);
+		align-items: flex-end;
+		margin-bottom: var(--ax-space-16);
+		max-width: 600px;
+	}
+
+	.search-input {
+		flex: 1;
+		min-width: 0;
+		align-items: flex-start;
 	}
 
 	.loading {
@@ -181,25 +240,26 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-16);
 	}
 
 	.header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--ax-space-4);
+		margin-bottom: var(--ax-space-8);
 	}
 
 	.title-row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-12);
 	}
 
 	.card {
 		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-24);
-		border-radius: 12px;
+		padding: var(--ax-space-16);
+		border-radius: 8px;
 	}
 
 	.details-list {

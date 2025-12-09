@@ -39,9 +39,9 @@
 									the interval selector to adjust the time range and monitor trends.
 								</BodyLong>
 								<div class="cve-search-section">
-									<Heading level="3" size="xsmall">Search for CVE</Heading>
+									<Heading level="3" size="xsmall">Search for vulnerability</Heading>
 									<BodyLong size="small">
-										Enter a CVE ID to see details and find workloads that might be affected.
+										Find details and affected workloads for a specific vulnerability.
 									</BodyLong>
 									<CveSearch />
 								</div>

@@ -68,7 +68,6 @@
 			case 'utilization':
 				return LineGraphStackedIcon;
 			case 'vulnerabilities':
-			case 'vulnerability report':
 				return VirusIcon;
 			case 'members':
 				return PersonGroupIcon;
