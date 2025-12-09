@@ -63,23 +63,14 @@
 			>
 		</form>
 
-		{#if isNotFoundError($CVEDetails.errors) || isNotFoundError($CVEWorkloads.errors)}
-			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
-				Vulnerability not found. The ID you entered doesn't exist in our database.
-			</Alert>
-		{/if}
-
-		{#if hasOtherErrors($CVEDetails.errors)}
-			<GraphErrors errors={$CVEDetails.errors} />
-		{/if}
-		{#if hasOtherErrors($CVEWorkloads.errors)}
-			<GraphErrors errors={$CVEWorkloads.errors} />
-		{/if}
-
 		{#if $CVEDetails.fetching}
 			<div class="loading">
 				<Loader size="3xlarge" />
 			</div>
+		{:else if isNotFoundError($CVEDetails.errors) || isNotFoundError($CVEWorkloads.errors)}
+			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
+				Vulnerability not found. The ID you entered doesn't exist in our database.
+			</Alert>
 		{:else if $CVEDetails.data}
 			{@const cve = $CVEDetails.data.cve}
 			<div class="wrapper">
@@ -209,6 +200,13 @@
 					{/if}
 				{/if}
 			</div>
+		{:else}
+			{#if hasOtherErrors($CVEDetails.errors)}
+				<GraphErrors errors={$CVEDetails.errors} />
+			{/if}
+			{#if hasOtherErrors($CVEWorkloads.errors)}
+				<GraphErrors errors={$CVEWorkloads.errors} />
+			{/if}
 		{/if}
 	</div>
 </div>
