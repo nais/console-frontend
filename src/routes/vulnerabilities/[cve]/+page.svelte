@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ImageVulnerabilitySuppressionState } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -7,19 +6,12 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToColor } from '$lib/utils/vulnerabilities';
+	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import { BodyShort, Detail, Heading, Loader, ReadMore, Tag } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
-
-	const suppressionStateLabels = {
-		[ImageVulnerabilitySuppressionState.FALSE_POSITIVE]: 'False Positive',
-		[ImageVulnerabilitySuppressionState.NOT_AFFECTED]: 'Not Affected',
-		[ImageVulnerabilitySuppressionState.IN_TRIAGE]: 'In Triage',
-		[ImageVulnerabilitySuppressionState.RESOLVED]: 'Resolved'
-	};
 </script>
 
 <div class="page">
