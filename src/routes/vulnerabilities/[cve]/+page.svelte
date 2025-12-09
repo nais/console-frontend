@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -7,17 +8,73 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
-	import { BodyShort, Detail, Heading, Loader, ReadMore, Tag } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		BodyShort,
+		Button,
+		Detail,
+		Heading,
+		Loader,
+		ReadMore,
+		Search,
+		Tag
+	} from '@nais/ds-svelte-community';
+	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
+
+	let searchValue = $state('');
+
+	const handleSearch = async (event: SubmitEvent) => {
+		event.preventDefault();
+		const identifier = searchValue.trim();
+		if (identifier) {
+			searchValue = ''; // Clear the input after submitting
+			await goto(`/vulnerabilities/${encodeURIComponent(identifier)}`);
+		}
+	};
+
+	const isNotFoundError = (errors?: { message: string }[] | null) => {
+		return errors?.some((e) => e.message.includes('NotFound') || e.message.includes('not found'));
+	};
+
+	const hasOtherErrors = (errors?: { message: string }[] | null) => {
+		return errors?.some((e) => !e.message.includes('NotFound') && !e.message.includes('not found'));
+	};
 </script>
 
 <div class="page">
 	<div class="container">
-		<GraphErrors errors={$CVEDetails.errors} />
-		<GraphErrors errors={$CVEWorkloads.errors} />
+		<form class="search-form" onsubmit={handleSearch}>
+			<div class="search-input">
+				<Search
+					label="Search for vulnerability"
+					placeholder="Enter vulnerability ID (e.g., CVE-2024-1234)"
+					bind:value={searchValue}
+					variant="simple"
+					hideLabel={false}
+					size="small"
+				/>
+			</div>
+			<Button type="submit" variant="primary" size="small" icon={MagnifyingGlassIcon}>Search</Button
+			>
+		</form>
+
+		{#if isNotFoundError($CVEDetails.errors) || isNotFoundError($CVEWorkloads.errors)}
+			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
+				Vulnerability not found. The ID you entered doesn't exist in our database or may not have
+				any affected workloads in your environment.
+			</Alert>
+		{/if}
+
+		{#if hasOtherErrors($CVEDetails.errors)}
+			<GraphErrors errors={$CVEDetails.errors} />
+		{/if}
+		{#if hasOtherErrors($CVEWorkloads.errors)}
+			<GraphErrors errors={$CVEWorkloads.errors} />
+		{/if}
 
 		{#if $CVEDetails.fetching}
 			<div class="loading">
@@ -159,6 +216,19 @@
 <style>
 	.container {
 		margin-top: var(--spacing-layout);
+	}
+
+	.search-form {
+		display: flex;
+		gap: var(--ax-space-12);
+		align-items: flex-end;
+		margin-bottom: var(--ax-space-16);
+		max-width: 600px;
+	}
+
+	.search-input {
+		flex: 1;
+		min-width: 0;
 	}
 
 	.loading {
