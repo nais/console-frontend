@@ -8,7 +8,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor } from '$lib/utils/vulnerabilities';
-	import { BodyLong, BodyShort, Detail, Heading, Loader, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail, Heading, Loader, ReadMore, Tag } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -45,7 +45,7 @@
 						</Tag>
 					</div>
 					{#if cve.title}
-						<BodyLong>{cve.title}</BodyLong>
+						<Detail>{cve.title}</Detail>
 					{/if}
 				</div>
 
@@ -82,12 +82,10 @@
 				</div>
 
 				{#if cve.description}
-					<div class="card">
-						<Heading level="2" size="small" spacing>Description</Heading>
-						<BodyLong>{cve.description}</BodyLong>
-					</div>
+					<ReadMore header="Description" size="medium">
+						{cve.description}
+					</ReadMore>
 				{/if}
-
 				{#if $CVEWorkloads.data}
 					{@const workloads = $CVEWorkloads.data.cve.workloads}
 					<Heading level="2" size="small">
@@ -181,25 +179,26 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-16);
 	}
 
 	.header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--ax-space-4);
+		margin-bottom: var(--ax-space-8);
 	}
 
 	.title-row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-12);
 	}
 
 	.card {
 		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-24);
-		border-radius: 12px;
+		padding: var(--ax-space-16);
+		border-radius: 8px;
 	}
 
 	.details-list {
