@@ -3,6 +3,8 @@
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
@@ -12,8 +14,6 @@
 		Button,
 		Detail,
 		Heading,
-		List,
-		ListItem,
 		Loader,
 		ReadMore,
 		Search,
