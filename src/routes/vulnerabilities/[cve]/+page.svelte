@@ -64,8 +64,7 @@
 
 		{#if isNotFoundError($CVEDetails.errors) || isNotFoundError($CVEWorkloads.errors)}
 			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
-				Vulnerability not found. The ID you entered doesn't exist in our database or may not have
-				any affected workloads in your environment.
+				Vulnerability not found. The ID you entered doesn't exist in our database.
 			</Alert>
 		{/if}
 
