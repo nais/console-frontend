@@ -12,7 +12,7 @@ echo "Setting up npm alias..."
 echo 'alias npm="npq-hero"' >> ~/.bashrc
 
 echo "Installing npm dependencies..."
-npm install
+npq-hero install
 
 echo "Running allow-scripts..."
 npm run allow-scripts

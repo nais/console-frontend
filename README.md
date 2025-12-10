@@ -133,11 +133,7 @@ The devcontainer automatically aliases `npm` to `npq-hero`, which provides inter
 - Verify package popularity and trustworthiness
 - Alert you to suspicious patterns
 
-**Note:** This alias only affects terminal sessions in the devcontainer. If you need to bypass npq for any reason, use the full path:
-
-```bash
-/home/vscode/.local/share/mise/installs/node/24.11.0/bin/npm install <package>
-```
+**Note:** This alias only affects terminal sessions in the devcontainer.
 
 ## User
 
