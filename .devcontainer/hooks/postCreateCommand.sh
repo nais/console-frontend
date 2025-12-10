@@ -10,6 +10,7 @@ npm install -g npq
 
 echo "Setting up npm alias..."
 echo 'alias npm="npq-hero"' >> ~/.bashrc
+source ~/.bashrc
 
 echo "Installing npm dependencies..."
 npq-hero install
