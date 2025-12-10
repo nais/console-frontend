@@ -2,7 +2,14 @@
 set -e
 
 echo "Activating mise..."
+export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise activate bash)"
+
+echo "Installing npq globally..."
+npm install -g npq
+
+echo "Setting up npm alias..."
+echo 'alias npm="npq-hero"' >> ~/.bashrc
 
 echo "Installing npm dependencies..."
 npm install

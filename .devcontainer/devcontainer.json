@@ -1,6 +1,6 @@
 {
 	"name": "Console Frontend",
-	"image": "mcr.microsoft.com/devcontainers/base:debian",
+	"image": "mcr.microsoft.com/devcontainers/base:debian-12",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -8,7 +8,8 @@
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
 				"bradlc.vscode-tailwindcss",
-				"hverlin.mise-vscode"
+				"hverlin.mise-vscode",
+				"tamasfe.even-better-toml"
 			],
 			"settings": {
 				"editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -16,7 +17,7 @@
 				"[svelte]": {
 					"editor.defaultFormatter": "svelte.svelte-vscode"
 				},
-				"terminal.integrated.defaultProfile.linux": "zsh"
+				"terminal.integrated.defaultProfile.linux": "bash"
 			}
 		}
 	},
@@ -41,6 +42,10 @@
 	// Allows the container to access services running on the host via host.docker.internal
 	"runArgs": ["--add-host=host.docker.internal:host-gateway"],
 	"features": {
-		"ghcr.io/devcontainers-extra/features/mise:1": {}
+		"ghcr.io/devcontainers-extra/features/mise:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"installDirectlyFromGitHubRelease": true,
+			"version": "latest"
+		}
 	}
 }

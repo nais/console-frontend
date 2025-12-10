@@ -2,6 +2,7 @@
 	"name": "console-frontend",
 	"version": "0.0.1",
 	"private": true,
+	"packageManager": "npm@11.6.1",
 	"scripts": {
 		"prepare": "svelte-kit sync || echo ''",
 		"allow-scripts": "allow-scripts",
@@ -14,6 +15,7 @@
 		"lint": "prettier --check . && eslint .",
 		"eslint": "eslint .",
 		"format": "prettier --write .",
+		"check-outdated-interactive": "ncu -x '@nais/ds-svelte-community' -i -u && npm install",
 		"test": "vitest",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
