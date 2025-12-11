@@ -15,7 +15,7 @@
 		"lint": "prettier --check . && eslint .",
 		"eslint": "eslint .",
 		"format": "prettier --write .",
-		"check-outdated-interactive": "ncu -x '@nais/ds-svelte-community' -i -u && npq-hero install",
+		"check-outdated-interactive": "ncu -x '@nais/ds-svelte-community' -i -u && npm install",
 		"test": "vitest",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",

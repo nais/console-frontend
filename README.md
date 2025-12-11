@@ -135,6 +135,11 @@ The devcontainer automatically aliases `npm` to `npq-hero`, which provides inter
 
 **Note:** This alias only affects terminal sessions in the devcontainer.
 
+**Additional info:**
+
+- When running `npm install` without package names (i.e., to install all dependencies), or when running `npm ci`, `npq-hero` does **not** perform interactive security checks.
+- Security checks are only performed when installing or updating specific packages (e.g., `npm install <package>`).
+
 ## User
 
 In production `api` uses oauth2 to authenticate users.
