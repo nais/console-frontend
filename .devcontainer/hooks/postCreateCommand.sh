@@ -9,7 +9,7 @@ echo "Installing npq globally..."
 npm install -g npq@3.14.0
 
 echo "Installing npm dependencies..."
-npq-hero install
+npm install
 
 echo "Running allow-scripts..."
 npm run allow-scripts
