@@ -14,7 +14,7 @@ npm install
 echo "Running allow-scripts..."
 npm run allow-scripts
 
-echo "Setting up npm alias..."
+echo "Setting up npm alias for future use..."
 echo 'alias npm="npq-hero"' >> "$HOME/.bashrc"
 
 echo "postCreateCommand completed successfully!"
