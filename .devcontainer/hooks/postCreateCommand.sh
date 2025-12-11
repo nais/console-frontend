@@ -9,11 +9,10 @@ echo "Installing npq globally..."
 npm install -g npq@3.14.0
 
 echo "Setting up npm alias..."
-echo 'alias npm="npq-hero"' >> ~/.bashrc
-source ~/.bashrc
+echo 'alias npm="npq-hero"' >> "$HOME/.bashrc"
 
 echo "Installing npm dependencies..."
-npq-hero install
+npm install
 
 echo "Running allow-scripts..."
 npm run allow-scripts
