@@ -6,7 +6,7 @@ export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise activate bash)"
 
 echo "Installing npq globally..."
-npm install -g npq
+npm install -g npq@3.14.0
 
 echo "Setting up npm alias..."
 echo 'alias npm="npq-hero"' >> ~/.bashrc
