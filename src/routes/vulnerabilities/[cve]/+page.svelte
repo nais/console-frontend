@@ -130,85 +130,83 @@
 		{:else if hasOtherErrors($CVEDetails.errors)}
 			<GraphErrors errors={$CVEDetails.errors} />
 		{/if}
-		<Heading level="2" size="small">
-			Affected Workloads
-			{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
-				<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
-			{/if}
-		</Heading>
-		{#if $CVEWorkloads.fetching}
-			<div class="loading">
-				<Loader size="3xlarge" />
-			</div>
-		{:else if isNotFoundError($CVEWorkloads.errors)}
-			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
-				Vulnerability not found. The ID you entered doesn't exist in our database.
-			</Alert>
-		{:else if $CVEWorkloads.data}
-			{@const workloads = $CVEWorkloads.data.cve.workloads}
-			{#if workloads.nodes.length > 0}
-				<List>
-					{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
-						{@const workload = node.workload}
-						{@const vuln = node.vulnerability}
-						<ListItem>
-							<div class="workload-container">
-								<WorkloadLink {workload} />
-								<dl class="workload-details">
-									<div class="detail-row">
-										<Detail as="dt">Package</Detail>
-										<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
-									</div>
-									<div class="detail-row">
-										<Detail as="dt">Image</Detail>
-										{#if workload.image}
-											<BodyShort as="dd">
-												<code>{workload.image.name}:{workload.image.tag}</code>
-											</BodyShort>
-										{:else}
-											<BodyShort as="dd">-</BodyShort>
-										{/if}
-									</div>
-									{#if vuln.suppression}
+		{#if !isNotFoundError($CVEDetails.errors)}
+			<Heading level="2" size="small">
+				Affected Workloads
+				{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
+					<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
+				{/if}
+			</Heading>
+			{#if $CVEWorkloads.fetching}
+				<div class="loading">
+					<Loader size="3xlarge" />
+				</div>
+			{:else if $CVEWorkloads.data}
+				{@const workloads = $CVEWorkloads.data.cve.workloads}
+				{#if workloads.nodes.length > 0}
+					<List>
+						{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
+							{@const workload = node.workload}
+							{@const vuln = node.vulnerability}
+							<ListItem>
+								<div class="workload-container">
+									<WorkloadLink {workload} />
+									<dl class="workload-details">
 										<div class="detail-row">
-											<Detail as="dt">Suppression</Detail>
-											<BodyShort as="dd">
-												<code>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code>
-											</BodyShort>
+											<Detail as="dt">Package</Detail>
+											<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 										</div>
-									{/if}
-								</dl>
-							</div>
-						</ListItem>
-					{/each}
-				</List>
-				<Pagination
-					page={workloads.pageInfo}
-					fetching={$CVEWorkloads.fetching}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: workloads.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{
-									after: workloads.pageInfo.endCursor ?? '',
-									before: ''
-								},
-								{ noScroll: true }
-							)
-					}}
-				/>
-			{:else}
-				<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+										<div class="detail-row">
+											<Detail as="dt">Image</Detail>
+											{#if workload.image}
+												<BodyShort as="dd">
+													<code>{workload.image.name}:{workload.image.tag}</code>
+												</BodyShort>
+											{:else}
+												<BodyShort as="dd">-</BodyShort>
+											{/if}
+										</div>
+										{#if vuln.suppression}
+											<div class="detail-row">
+												<Detail as="dt">Suppression</Detail>
+												<BodyShort as="dd">
+													<code>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code>
+												</BodyShort>
+											</div>
+										{/if}
+									</dl>
+								</div>
+							</ListItem>
+						{/each}
+					</List>
+					<Pagination
+						page={workloads.pageInfo}
+						fetching={$CVEWorkloads.fetching}
+						loaders={{
+							loadPreviousPage: () =>
+								changeParams(
+									{
+										after: '',
+										before: workloads.pageInfo.startCursor ?? ''
+									},
+									{ noScroll: true }
+								),
+							loadNextPage: () =>
+								changeParams(
+									{
+										after: workloads.pageInfo.endCursor ?? '',
+										before: ''
+									},
+									{ noScroll: true }
+								)
+						}}
+					/>
+				{:else}
+					<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+				{/if}
+			{:else if hasOtherErrors($CVEWorkloads.errors)}
+				<GraphErrors errors={$CVEWorkloads.errors} />
 			{/if}
-		{:else if hasOtherErrors($CVEWorkloads.errors)}
-			<GraphErrors errors={$CVEWorkloads.errors} />
 		{/if}
 	</div>
 </div>
