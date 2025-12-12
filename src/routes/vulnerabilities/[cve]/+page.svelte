@@ -130,7 +130,7 @@
 		{:else if hasOtherErrors($CVEDetails.errors)}
 			<GraphErrors errors={$CVEDetails.errors} />
 		{/if}
-		{#if !isNotFoundError($CVEDetails.errors)}
+		{#if !isNotFoundError($CVEWorkloads.errors)}
 			<Heading level="2" size="small">
 				Affected Workloads
 				{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
