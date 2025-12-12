@@ -86,46 +86,59 @@ VITE_PROXY_ENDPOINT="http://host.docker.internal:4242"
 VITE_SCHEMA_ENDPOINT="http://host.docker.internal:4242/graphql"
 ```
 
-## Dependency Management
+## Security Hardening
 
-This project uses enhanced security measures for dependency management:
+This project implements several security measures to protect against supply chain attacks:
 
-- **Lifecycle scripts disabled**: `.npmrc` disables `preinstall`, `install`, and `postinstall` scripts by default to protect against supply chain attacks that abuse these hooks. Only explicitly allowed packages (via `@lavamoat/allow-scripts`) can run scripts.
-- **npm-check-updates**: Configured with a 14-day cooldown period to filter out updates for packages published within the last 14 days (see `.ncurc.cjs`). This is a policy for updating dependencies to reduce risk, not a security enforcement mechanism—direct installation or transitive dependencies may still include recently published packages.
-- **lockfile-lint**: Validates package-lock.json for security issues - HTTPS, integrity checks, hostname verification (see `.lockfile-lintrc.json`)
-- **npq**: Recommended for package installation to check for security issues before installing
+### Lifecycle Script Control
 
-```bash
-npx npm-check-updates -i # Update dependencies interactively (respects 14-day cooldown)
-npm run lockfile-lint # Validate lockfile security
-npm run allow-scripts # View/manage which packages can run lifecycle scripts
-```
+- **`.npmrc`**: Contains `ignore-scripts=true` to disable all lifecycle scripts (preinstall, install, postinstall) by default
+- **`@lavamoat/allow-scripts`**: Explicitly allowlists packages that need to run lifecycle scripts
+- **`@lavamoat/preinstall-always-fail`**: Prevents accidental script execution during development
 
-### Managing lifecycle scripts
-
-If you need to allow a new package to run scripts:
+Only packages listed in `package.json` under `lavamoat.allowScripts` can run lifecycle scripts. To update the allowlist:
 
 ```bash
-# Automatically detect and add packages that need scripts
-npx allow-scripts auto
-
-# Or manually add to package.json lavamoat.allowScripts configuration
+npm run allow-scripts
 ```
 
-### Using npq for safer installations
+### Dependency Update Policy
 
-We recommend using [npq](https://github.com/lirantal/npq) instead of `npm install` to scan packages for security issues before installation:
+- **`.ncurc.cjs`**: Configures `npm-check-updates` with a 14-day cooldown period
+- Only allows updates to packages published at least 14 days ago
+- Reduces risk of compromised packages with malicious updates
+
+To check and/or update dependencies (with interactive selection):
 
 ```bash
-# Install npq globally
-npm install -g npq
-
-# Alias npm to npq (add to your shell config: ~/.zshrc, ~/.bashrc, etc.)
-alias npm='npq-hero'
-
-# Now when you run npm install, it will use npq automatically
-npm install <package-name>
+npm run check-outdated-interactive
 ```
+
+### Lockfile Validation
+
+- **`lockfile-lint`**: Validates `package-lock.json` integrity
+- Runs in CI/CD to detect tampering or unexpected changes
+
+To manually validate the lockfile:
+
+```bash
+npm run lockfile-lint
+```
+
+### Package Installation Security (npq)
+
+The devcontainer automatically aliases `npm` to `npq-hero`, which provides interactive security checks before installing packages. When you run `npm install <package>` in the container, npq will:
+
+- Check packages against known security vulnerabilities
+- Verify package popularity and trustworthiness
+- Alert you to suspicious patterns
+
+**Note:** This alias only affects terminal sessions in the devcontainer.
+
+**Additional info:**
+
+- When running `npm install` without package names (i.e., to install all dependencies), or when running `npm ci`, `npq-hero` does **not** perform interactive security checks.
+- Security checks are only performed when installing or updating specific packages (e.g., `npm install <package>`).
 
 ## User
 
