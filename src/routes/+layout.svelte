@@ -2,6 +2,7 @@
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
+	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import { localizeLayerChart } from '$lib/chart/util';
 	import '$lib/font.css';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
@@ -87,8 +88,7 @@
 				<ProgressBar />
 			{/if}
 
-			<!-- {#if !$isAuthenticated || isUnauthenticated($UserInfo.errors)} -->
-			{#if true}
+			{#if !$isAuthenticated || isUnauthenticated($UserInfo.errors)}
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}
