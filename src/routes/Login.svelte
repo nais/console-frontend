@@ -25,6 +25,25 @@
 
 <div class="wrapper">
 	<div class="login">
+		{#if isNaisdevice()}
+			<div class="naisdevice-banner">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="icon"
+				>
+					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+					<polyline points="22 4 12 14.01 9 11.01"></polyline>
+				</svg>
+				<span>Naisdevice successfully connected.</span>
+			</div>
+		{/if}
+
 		<Heading level="1" size="large" spacing>
 			<Logo height=".8em" />
 			Nais Console
@@ -80,6 +99,32 @@
 	.login {
 		text-align: center;
 		max-width: 600px;
+	}
+
+	.naisdevice-banner {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-16) var(--ax-space-24);
+		background: var(--ax-surface-success-subtle);
+		color: var(--ax-text-success);
+		border: 2px solid var(--ax-border-success);
+		border-radius: var(--ax-radius-medium);
+		margin-bottom: var(--ax-space-32);
+		font-size: var(--ax-font-size-18);
+		font-weight: 600;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	.naisdevice-banner .icon {
+		width: 24px;
+		height: 24px;
+		flex-shrink: 0;
+	}
+
+	.naisdevice-banner span {
+		flex: 1;
 	}
 
 	.help {

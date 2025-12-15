@@ -97,9 +97,9 @@
 				{/if}
 
 				{@render children?.()}
-			{/if}
 
-			<Naisdevice />
+				<Naisdevice />
+			{/if}
 		</div>
 	</Page>
 </Theme>

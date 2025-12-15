@@ -11,12 +11,13 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { isAuthenticated } from '$lib/authentication';
 	import { Alert } from '@nais/ds-svelte-community';
 
 	import { fade } from 'svelte/transition';
 </script>
 
-{#if isNaisdevice()}
+{#if isNaisdevice() && $isAuthenticated}
 	<div class="naisdevice" out:fade>
 		<Alert
 			variant="success"
