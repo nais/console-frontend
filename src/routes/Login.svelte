@@ -108,8 +108,8 @@
 		gap: var(--ax-space-12);
 		padding: var(--ax-space-20) var(--ax-space-32);
 		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-		color: #155724;
-		border: 1px solid #28a745;
+		color: var(--ax-text-success-subtle);
+		border: 1px solid var(--ax-border-success);
 		border-radius: var(--ax-border-radius-medium);
 		margin-bottom: var(--ax-space-32);
 		font-size: var(--ax-font-size-20);
