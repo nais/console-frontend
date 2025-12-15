@@ -106,20 +106,20 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--ax-space-12);
-		padding: var(--ax-space-16) var(--ax-space-24);
-		background: var(--ax-surface-success-subtle);
-		color: var(--ax-text-success);
-		border: 2px solid var(--ax-border-success);
-		border-radius: var(--ax-radius-medium);
+		padding: var(--ax-space-20) var(--ax-space-32);
+		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+		color: #155724;
+		border: 1px solid #28a745;
+		border-radius: var(--ax-border-radius-medium);
 		margin-bottom: var(--ax-space-32);
-		font-size: var(--ax-font-size-18);
-		font-weight: 600;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		font-size: var(--ax-font-size-20);
+		font-weight: 700;
+		box-shadow: 0 4px 16px rgba(40, 167, 69, 0.25);
 	}
 
 	.naisdevice-banner .icon {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		flex-shrink: 0;
 	}
 
@@ -135,7 +135,6 @@
 
 	.line {
 		display: flex;
-		gap: 1rem;
 		align-items: center;
 
 		:global(> *:first-child) {

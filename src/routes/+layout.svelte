@@ -5,8 +5,8 @@
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import { localizeLayerChart } from '$lib/chart/util';
 	import '$lib/font.css';
-	import ProgressBar from '$lib/ui/ProgressBar.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import ProgressBar from '$lib/ui/ProgressBar.svelte';
 	import { Page, Theme } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
@@ -89,6 +89,7 @@
 			{/if}
 
 			{#if !$isAuthenticated || isUnauthenticated($UserInfo.errors)}
+				<!-- {#if true} -->
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}
