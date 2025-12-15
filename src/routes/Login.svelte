@@ -10,7 +10,7 @@
 
 	let { userAgent }: { userAgent: string } = $props();
 
-	let chrome: boolean = $derived(userAgent.indexOf('Chrome/') > 0);
+	let chromiumBased: boolean = $derived(userAgent.indexOf('Chrome/') > 0);
 </script>
 
 <svelte:head>
@@ -42,20 +42,21 @@
 			</Alert>
 		{/if}
 
-		<p>To access this page you need to log in with your Google Workspace account.</p>
+		<p>Welcome to Nais Console. Please log in with your Google Workspace account to continue.</p>
 
 		<Button as="a" href="/oauth2/login?redirect_uri={redirectPath($page.url)}" variant="primary">
 			Log in to Nais Console
 		</Button>
 
-		{#if isNaisdevice() && chrome}
+		{#if isNaisdevice() && chromiumBased}
 			<p class="help">
-				If you tried to open a page before logging into naisdevice, Chrome will not notice it until
-				you have deleted the open sockets. You can do this by navigating to:
+				If anything Chrome-related tried to open a page before logging into naisdevice, your browser
+				will not notice that naisdevice is now connected until you have deleted the open sockets.
+				You can do this by navigating to:
 			</p>
 			<div class="line">
 				<TextField
-					label="Chrome net-internals url"
+					label="Chromium net-internals url"
 					hideLabel={true}
 					type="text"
 					readonly
@@ -63,6 +64,7 @@
 				/>
 				<CopyButton copyText="chrome://net-internals#sockets" />
 			</div>
+			<p class="note">This works in Brave, Edge, and other Chromium-based browsers too.</p>
 		{/if}
 	</div>
 </div>
@@ -94,5 +96,13 @@
 		:global(> *:first-child) {
 			flex-grow: 1;
 		}
+	}
+
+	.note {
+		margin-top: var(--ax-space-8);
+		margin-bottom: 0;
+		font-size: var(--ax-font-size-14);
+		color: var(--ax-text-neutral-subtle);
+		text-align: left;
 	}
 </style>
