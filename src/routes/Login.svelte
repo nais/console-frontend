@@ -10,7 +10,9 @@
 
 	let { userAgent }: { userAgent: string } = $props();
 
-	let chromiumBased: boolean = $derived(userAgent.indexOf('Chrome/') > 0);
+	let chromiumBasedOnMac: boolean = $derived(
+		userAgent.indexOf('Chrome/') > 0 && userAgent.indexOf('Mac') > -1
+	);
 </script>
 
 <svelte:head>
@@ -67,7 +69,7 @@
 			Log in to Nais Console
 		</Button>
 
-		{#if isNaisdevice() && chromiumBased}
+		{#if isNaisdevice() && chromiumBasedOnMac}
 			<p class="help">
 				If anything Chrome-related tried to open a page before logging into naisdevice, your browser
 				will not notice that naisdevice is now connected until you have deleted the open sockets.
