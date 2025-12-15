@@ -81,7 +81,12 @@
 					readonly
 					value="chrome://net-internals#sockets"
 				/>
-				<CopyButton copyText="chrome://net-internals#sockets" />
+				<CopyButton
+					variant="action"
+					text="Copy URL"
+					activeText="URL copied"
+					copyText="chrome://net-internals#sockets"
+				/>
 			</div>
 			<p class="note">This works in Brave, Edge, and other Chromium-based browsers too.</p>
 		{/if}
@@ -98,7 +103,7 @@
 
 	.login {
 		text-align: center;
-		max-width: 600px;
+		max-width: 800px;
 	}
 
 	.naisdevice-banner {
@@ -109,12 +114,11 @@
 		padding: var(--ax-space-20) var(--ax-space-32);
 		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
 		color: var(--ax-text-success-subtle);
-		border: 1px solid var(--ax-border-success);
 		border-radius: var(--ax-border-radius-medium);
 		margin-bottom: var(--ax-space-32);
-		font-size: var(--ax-font-size-20);
+		font-size: var(--ax-font-size-xlarge);
 		font-weight: 700;
-		box-shadow: 0 4px 16px rgba(40, 167, 69, 0.25);
+		box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
 	}
 
 	.naisdevice-banner .icon {
@@ -136,6 +140,7 @@
 	.line {
 		display: flex;
 		align-items: center;
+		gap: var(--ax-space-8);
 
 		:global(> *:first-child) {
 			flex-grow: 1;
