@@ -25,9 +25,9 @@
 		padding: var(--ax-space-16) var(--ax-space-24);
 		color: inherit;
 		text-decoration: none;
+	}
 
-		&:hover {
-			background-color: var(--ax-neutral-300);
-		}
+	a.list-item:hover {
+		background-color: var(--ax-neutral-300);
 	}
 </style>
