@@ -30,4 +30,9 @@
 	a.list-item:hover {
 		background-color: var(--ax-neutral-300);
 	}
+
+	a.list-item:focus-visible {
+		outline: 2px solid var(--ax-border-focus);
+		outline-offset: 2px;
+	}
 </style>
