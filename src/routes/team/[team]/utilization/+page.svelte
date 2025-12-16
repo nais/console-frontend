@@ -148,8 +148,8 @@
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
 				>
 				<BodyShort spacing
-					>Estimate of annual cost of unutilized CPU for <strong>{teamSlug}</strong> calculated from
-					current utilization data.</BodyShort
+					>Estimate of annual cost of unutilized CPU for <strong>{teamSlug}</strong> calculated from current
+					utilization data.</BodyShort
 				>
 
 				<div class="cost-wrapper">

@@ -97,9 +97,9 @@
 		}
 	},
 	"lint-staged": {
-		"*.{js,ts,svelte,gql,css,md,json}": "prettier --write .",
+		"*.{js,ts,svelte,gql,css,md,json}": "prettier --write",
 		"*.{js,ts,svelte,gql}": [
-			"eslint --fix .",
+			"eslint --fix",
 			"svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
 		]
 	},
