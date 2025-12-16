@@ -25,31 +25,33 @@
 	let reconcileLoading = $state(false);
 	let configLoading = $state(false);
 
-	let r = fragment(
-		reconciler,
-		graphql(`
-			fragment ReconcilerFragment on Reconciler {
-				id
-				configured
-				description
-				displayName
-				enabled
-				name
-				config {
+	let r = $derived(
+		fragment(
+			reconciler,
+			graphql(`
+				fragment ReconcilerFragment on Reconciler {
+					id
 					configured
 					description
 					displayName
-					key
-					value
-					secret
-				}
-				errors {
-					pageInfo {
-						totalCount
+					enabled
+					name
+					config {
+						configured
+						description
+						displayName
+						key
+						value
+						secret
+					}
+					errors {
+						pageInfo {
+							totalCount
+						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
 	const enableReconciler = graphql(`

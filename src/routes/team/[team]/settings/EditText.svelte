@@ -13,7 +13,13 @@
 
 	const distpatch = createEventDispatcher<{ save: string }>();
 
-	let newText = $state(text);
+	// eslint-disable-next-line svelte/prefer-writable-derived
+	let newText = $state('');
+
+	$effect(() => {
+		newText = text;
+	});
+
 	let edit = $state(false);
 	let height: number | undefined = $state(undefined);
 

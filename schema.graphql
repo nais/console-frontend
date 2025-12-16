@@ -1368,6 +1368,14 @@ type CreateTeamPayload {
 }
 
 input CreateUnleashForTeamInput {
+  """
+  Subscribe the instance to a release channel for automatic version updates.
+  If not specified, the default version will be used.
+  Use the unleashReleaseChannels query to see available channels.
+  """
+  releaseChannel: String
+
+  """The team that will own this Unleash instance."""
   teamSlug: Slug!
 }
 
@@ -3089,6 +3097,9 @@ type Mutation {
   
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
+  
+  By default, instances are created with the default version.
+  Optionally specify a releaseChannel to subscribe to automatic version updates.
   """
   createUnleashForTeam(input: CreateUnleashForTeamInput!): CreateUnleashForTeamPayload!
 
@@ -3223,6 +3234,13 @@ type Mutation {
 
   """Update an environment for a team"""
   updateTeamEnvironment(input: UpdateTeamEnvironmentInput!): UpdateTeamEnvironmentPayload!
+
+  """
+  Update an Unleash instance's release channel.
+  
+  Use this mutation to change to a different release channel.
+  """
+  updateUnleashInstance(input: UpdateUnleashInstanceInput!): UpdateUnleashInstancePayload!
 
   """Update an existing Valkey instance."""
   updateValkey(input: UpdateValkeyInput!): UpdateValkeyPayload!
@@ -3930,6 +3948,12 @@ type Query {
     orderBy: TeamOrder
   ): TeamConnection!
   teamsUtilization(resourceType: UtilizationResourceType!): [TeamUtilizationData!]!
+
+  """
+  Get a list of available release channels for Unleash instances.
+  Release channels provide automatic version updates based on the channel's update policy.
+  """
+  unleashReleaseChannels: [UnleashReleaseChannel!]!
 
   """Get a user by an identifier."""
   user(email: String): User!
@@ -7069,6 +7093,18 @@ type UnleashInstance implements Node {
   metrics: UnleashInstanceMetrics!
   name: String!
   ready: Boolean!
+
+  """
+  Release channel details if using channel-based version management.
+  Returns the full release channel object with current version and update policy.
+  """
+  releaseChannel: UnleashReleaseChannel
+
+  """
+  Release channel name if using channel-based version management.
+  Populated from CRD spec.releaseChannel.name field.
+  """
+  releaseChannelName: String
   version: String!
   webIngress: String!
 }
@@ -7147,6 +7183,34 @@ type UnleashInstanceUpdatedActivityLogEntryData {
 
   """Revoked team slug."""
   revokedTeamSlug: Slug
+
+  """Updated release channel."""
+  updatedReleaseChannel: String
+}
+
+"""
+UnleashReleaseChannel represents an available release channel for Unleash instances.
+Release channels provide automatic version updates based on the channel's update policy.
+"""
+type UnleashReleaseChannel {
+  """Current Unleash version on this channel."""
+  currentVersion: String!
+
+  """When the channel version was last updated."""
+  lastUpdated: Time
+
+  """
+  Unique name of the release channel (e.g., 'stable', 'rapid', 'regular').
+  """
+  name: String!
+
+  """
+  Rollout strategy type for version updates:
+  - 'sequential': Updates instances one-by-one in order
+  - 'canary': Gradual rollout with canary deployment
+  - 'parallel': Updates multiple instances simultaneously
+  """
+  type: String!
 }
 
 input UpdateImageVulnerabilityInput {
@@ -7302,6 +7366,21 @@ input UpdateTeamInput {
 type UpdateTeamPayload {
   """The updated team."""
   team: Team
+}
+
+input UpdateUnleashInstanceInput {
+  """
+  Subscribe the instance to a release channel for automatic version updates.
+  If not specified, the release channel will not be changed.
+  """
+  releaseChannel: String
+
+  """The team that owns the Unleash instance to update."""
+  teamSlug: Slug!
+}
+
+type UpdateUnleashInstancePayload {
+  unleash: UnleashInstance
 }
 
 input UpdateValkeyInput {

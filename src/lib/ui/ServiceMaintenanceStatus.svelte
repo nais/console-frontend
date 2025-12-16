@@ -7,9 +7,11 @@
 
 	let { status }: Props = $props();
 
-	let statusType: { variant: 'warning-moderate' | 'info-moderate'; title: string } = status
-		? { variant: 'warning-moderate', title: 'DEADLINE' }
-		: { variant: 'info-moderate', title: 'NO DEADLINE' };
+	let statusType = $derived<{ variant: 'warning-moderate' | 'info-moderate'; title: string }>(
+		status
+			? { variant: 'warning-moderate', title: 'DEADLINE' }
+			: { variant: 'info-moderate', title: 'NO DEADLINE' }
+	);
 </script>
 
 <Tag variant={statusType.variant} size="small"><span>{statusType.title}</span></Tag>

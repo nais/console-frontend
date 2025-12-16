@@ -98,7 +98,7 @@
 		}
 	};
 
-	const Component = getComponent(icon);
+	const Component = $derived(getComponent(icon));
 </script>
 
 <Component />

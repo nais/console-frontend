@@ -31,7 +31,6 @@
 	} = $props();
 
 	const ctx = getLegendContext();
-	ctx.data = data;
 
 	$effect(() => {
 		ctx.data = data;
