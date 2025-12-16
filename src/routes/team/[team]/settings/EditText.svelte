@@ -13,11 +13,12 @@
 
 	const distpatch = createEventDispatcher<{ save: string }>();
 
-	// eslint-disable-next-line svelte/prefer-writable-derived
 	let newText = $state('');
 
-	$effect(() => {
-		newText = text;
+	$effect.pre(() => {
+		if (edit) {
+			newText = text;
+		}
 	});
 
 	let edit = $state(false);
