@@ -2,7 +2,7 @@
 
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import { satisfies, gt, coerce } from 'semver';
+import { gt, coerce } from 'semver';
 
 const COOLDOWN_DAYS = 14;
 const EXCLUDE_PACKAGES = ['@nais/ds-svelte-community'];
@@ -157,7 +157,7 @@ async function main() {
 					execSync(command, { stdio: 'inherit' });
 					console.log(`✅ Storybook upgraded successfully to ${storybookVersion}\n`);
 				} catch (error) {
-					console.error(`❌ Failed to upgrade Storybook\n`);
+					console.error(`❌ Failed to upgrade Storybook:`, error.message, '\n');
 				}
 			} else {
 				console.log(
@@ -177,7 +177,7 @@ async function main() {
 					execSync(command, { stdio: 'inherit' });
 					console.log(`✅ ${packageName}@${newVersion} upgraded successfully\n`);
 				} catch (error) {
-					console.error(`❌ Failed to upgrade ${packageName}@${newVersion}\n`);
+					console.error(`❌ Failed to upgrade ${packageName}@${newVersion}:`, error.message, '\n');
 				}
 			} else {
 				console.log(`📦 Installing ${packageName}@${newVersion}...`);
@@ -187,7 +187,7 @@ async function main() {
 					});
 					console.log(`✅ ${packageName}@${newVersion} installed successfully\n`);
 				} catch (error) {
-					console.error(`❌ Failed to install ${packageName}@${newVersion}\n`);
+					console.error(`❌ Failed to install ${packageName}@${newVersion}:`, error.message, '\n');
 				}
 			}
 		}
