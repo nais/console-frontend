@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 const args = process.argv.slice(2);
 
@@ -13,7 +13,7 @@ if (args.length < 2) {
 const [packageName, version] = args;
 
 try {
-	const output = execSync(`npm view ${packageName}@${version} time --json`, {
+	const output = execFileSync('npm', ['view', `${packageName}@${version}`, 'time', '--json'], {
 		encoding: 'utf-8'
 	});
 
