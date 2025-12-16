@@ -15,7 +15,7 @@
 		items={favorites.getFavorites()}
 		onReorder={(newOrder) => favorites.setFavorites(newOrder)}
 	>
-		{#each favorites.getFavorites().filter(Boolean) as fav (fav)}
+		{#each favorites.getFavorites() as fav (fav)}
 			<FavoritesListItem path={fav} />
 		{:else}
 			<BodyLong>
