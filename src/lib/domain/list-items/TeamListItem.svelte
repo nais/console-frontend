@@ -12,14 +12,13 @@
 	} = $props();
 </script>
 
-<ListItem>
+<ListItem href="/team/{team.slug}">
 	<IconLabel
 		label={team.slug}
 		icon={PersonGroupIcon}
 		description={team.purpose}
 		size="large"
 		level="3"
-		href="/team/{team.slug}"
 	/>
 	<!-- {#if badge}
 		<Badge {...badge} />
