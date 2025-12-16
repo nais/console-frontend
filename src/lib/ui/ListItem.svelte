@@ -1,12 +1,18 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	const { children }: { children: Snippet } = $props();
+	const { children, href }: { children: Snippet; href?: string } = $props();
 </script>
 
-<div class="list-item">
-	{@render children()}
-</div>
+{#if href}
+	<a {href} class="list-item">
+		{@render children()}
+	</a>
+{:else}
+	<div class="list-item">
+		{@render children()}
+	</div>
+{/if}
 
 <style>
 	.list-item {
@@ -17,6 +23,8 @@
 		align-items: center;
 		column-gap: var(--ax-space-16);
 		padding: var(--ax-space-16) var(--ax-space-24);
+		color: inherit;
+		text-decoration: none;
 
 		&:hover {
 			background-color: var(--ax-neutral-300);

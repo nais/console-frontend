@@ -11,8 +11,20 @@
 		path: string;
 	} = $props();
 
-	function removeFavorite() {
+	function removeFavorite(event: MouseEvent) {
+		event.stopPropagation();
 		favorites.removeFavorite(path);
+	}
+
+	function handleDragHandleClick(event: MouseEvent | KeyboardEvent) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+
+	function handleDragHandleKeydown(event: KeyboardEvent) {
+		if (event.key === ' ' || event.key === 'Enter') {
+			handleDragHandleClick(event);
+		}
 	}
 
 	function capitalize(str: string): string {
@@ -97,6 +109,8 @@
 	};
 
 	function pathToFavoriteLabel(path: string): string {
+		if (!path) return '';
+
 		const parts = path.split('/').filter(Boolean);
 
 		if (parts.length < 2 || parts[0] !== 'team') {
@@ -157,14 +171,21 @@
 	}
 </script>
 
-<ListItem>
-	<IconLabel label={pathToFavoriteLabel(path)} icon={StarFillIcon} size="medium" href={path} />
+<ListItem href={path}>
+	<IconLabel label={pathToFavoriteLabel(path)} icon={StarFillIcon} size="medium" />
 	<div class="right">
 		<Tooltip placement="bottom" content="Remove from favorites">
 			<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
 		</Tooltip>
 	</div>
-	<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
+	<div
+		class="drag-handle"
+		role="button"
+		tabindex="0"
+		aria-label="Drag to reorder"
+		onclick={handleDragHandleClick}
+		onkeydown={handleDragHandleKeydown}
+	>
 		<DragVerticalIcon />
 	</div>
 </ListItem>
