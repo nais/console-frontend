@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql, type QueryResult } from '$houdini';
+	import { graphql } from '$houdini';
 	import Search from '$lib/domain/search/Search.svelte';
 	import { Modal } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
@@ -39,8 +39,8 @@
 		teamsWithAccess
 	}: {
 		open: boolean;
-		addTeam: (teamname: string) => Promise<QueryResult>;
-		removeTeam: (teamname: string) => Promise<QueryResult>;
+		addTeam: (teamname: string) => Promise<unknown>;
+		removeTeam: (teamname: string) => Promise<unknown>;
 		currentTeam: string;
 		teamsWithAccess: string[];
 	} = $props();

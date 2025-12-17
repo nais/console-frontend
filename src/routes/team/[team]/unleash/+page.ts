@@ -1,4 +1,4 @@
-import { load_Unleash } from '$houdini';
+import { load_Unleash, load_UnleashReleaseChannels } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
@@ -18,6 +18,7 @@ export async function load(event) {
 			variables: {
 				team: event.params.team
 			}
-		}))
+		})),
+		...(await load_UnleashReleaseChannels({ event }))
 	};
 }

@@ -173,6 +173,7 @@
 						unleashInstanceUpdated: data {
 							allowedTeamSlug
 							revokedTeamSlug
+							updatedReleaseChannel
 						}
 					}
 					... on ValkeyCreatedActivityLogEntry {
