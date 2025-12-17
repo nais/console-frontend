@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { graphql, type TeamMemberRole$options } from '$houdini';
 	import { Alert, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
-	import { createEventDispatcher } from 'svelte';
 
 	interface Props {
 		open: boolean;
 		team: string;
 		email: string;
+		onupdated?: () => void;
+		onclosed?: () => void;
 	}
 
-	let { open = $bindable(), team, email }: Props = $props();
-
-	const dispatcher = createEventDispatcher<{ updated: null }>();
+	let { open = $bindable(), team, email, onupdated, onclosed }: Props = $props();
 
 	const store = graphql(`
 		query TeamMember($team: Slug!, $email: String!) {
@@ -34,6 +33,12 @@
 				email: email
 			}
 		});
+	});
+
+	$effect(() => {
+		if (!open) {
+			onclosed?.();
+		}
 	});
 
 	const alterRole = graphql(`
@@ -59,7 +64,8 @@
 			}
 		});
 		store.fetch({ policy: 'NetworkOnly' });
-		dispatcher('updated', null);
+		onupdated?.();
+		open = false;
 	};
 </script>
 

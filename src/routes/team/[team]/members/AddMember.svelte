@@ -2,16 +2,14 @@
 	import { graphql, type AddTeamMemberInput } from '$houdini';
 	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
-	import { createEventDispatcher } from 'svelte';
 
 	interface Props {
 		open: boolean;
 		team: string;
+		oncreated?: () => void;
 	}
 
-	let { open = $bindable(), team }: Props = $props();
-
-	const dispatcher = createEventDispatcher<{ created: null }>();
+	let { open = $bindable(), team, oncreated }: Props = $props();
 
 	const store = graphql(`
 		query AddMemberQuery($team: Slug!) {
@@ -100,7 +98,7 @@
 		open = false;
 		email = '';
 
-		dispatcher('created', null);
+		oncreated?.();
 	};
 </script>
 
