@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { Alert, Button, CopyButton, Heading, TextField } from '@nais/ds-svelte-community';
+	import { CheckmarkCircleIcon } from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 	import { isNaisdevice } from './Naisdevice.svelte';
 
@@ -29,19 +30,7 @@
 	<div class="login">
 		{#if isNaisdevice()}
 			<div class="naisdevice-banner">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					class="icon"
-				>
-					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-					<polyline points="22 4 12 14.01 9 11.01"></polyline>
-				</svg>
+				<CheckmarkCircleIcon />
 				<span>Naisdevice successfully connected.</span>
 			</div>
 		{/if}
@@ -123,7 +112,7 @@
 		box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
 	}
 
-	.naisdevice-banner .icon {
+	.naisdevice-banner :global(svg) {
 		width: 28px;
 		height: 28px;
 		flex-shrink: 0;
