@@ -6,12 +6,12 @@
 		graphql,
 		type QueryResult
 	} from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import {
 		Alert,
@@ -115,12 +115,12 @@
 				<Heading level="2">Description</Heading>
 				<EditText
 					text={teamSettings.purpose}
-					on:save={async (e) => {
+					onsave={async (text) => {
 						descriptionErrors = undefined;
 						const data = await updateTeam.mutate({
 							input: {
 								slug: teamSlug,
-								purpose: e.detail
+								purpose: text
 							}
 						});
 
@@ -142,12 +142,12 @@
 						<EditText
 							text={teamSettings.slackChannel}
 							variant="textfield"
-							on:save={async (e) => {
+							onsave={async (text) => {
 								defaultSlackChannelErrors = undefined;
 								const data = await updateTeam.mutate({
 									input: {
 										slug: teamSlug,
-										slackChannel: e.detail
+										slackChannel: text
 									}
 								});
 
@@ -169,7 +169,7 @@
 								<EditText
 									text={env.slackAlertsChannel}
 									variant="textfield"
-									on:save={async (e) => {
+									onsave={async (text) => {
 										slackChannelsErrors = undefined;
 										if (!teamSettings) {
 											return;
@@ -179,7 +179,7 @@
 											input: {
 												slug: teamSlug,
 												environmentName: env.environment.name,
-												slackAlertsChannel: e.detail
+												slackAlertsChannel: text
 											}
 										});
 

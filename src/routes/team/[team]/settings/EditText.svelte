@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { Button, TextField } from '@nais/ds-svelte-community';
 	import { PencilIcon } from '@nais/ds-svelte-community/icons';
-	import { createEventDispatcher } from 'svelte';
 
 	interface Props {
 		text: string;
 		isMember: boolean;
 		variant?: 'textfield' | 'textarea';
+		onsave?: (text: string) => void;
 	}
 
-	let { text, variant = 'textarea', isMember }: Props = $props();
-
-	const dispatch = createEventDispatcher<{ save: string }>();
+	let { text, variant = 'textarea', isMember, onsave }: Props = $props();
 
 	let edit = $state(false);
 	let newText = $state('');
@@ -30,7 +28,7 @@
 	};
 
 	const save = () => {
-		dispatch('save', newText);
+		onsave?.(newText);
 		edit = false;
 	};
 </script>
