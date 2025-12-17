@@ -22,7 +22,7 @@
 		<div class="naisdevice-banner">
 			<CheckmarkCircleIcon />
 			<span>Naisdevice successfully connected.</span>
-			<button type="button"
+			<button
 				type="button"
 				class="close-button"
 				onclick={() => {
