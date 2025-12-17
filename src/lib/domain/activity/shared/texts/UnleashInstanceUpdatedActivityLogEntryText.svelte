@@ -19,6 +19,8 @@
 		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance.
 	{:else if u.revokedTeamSlug}
 		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance.
+	{:else if u.updatedReleaseChannel}
+		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>.
 	{/if}
 
 	{#if data.environmentName}
