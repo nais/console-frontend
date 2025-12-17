@@ -565,13 +565,12 @@
 							<strong>Requests</strong> (grey line): The minimum amount of CPU guaranteed to your app.
 						</li>
 						<li>
-							<strong>Limits</strong> (red line, if present): The maximum amount of CPU your app can
-							use.
+							<strong>Limits</strong> (red line, if present): The maximum amount of CPU your app can use.
 						</li>
 						<li>Shaded Areas: The actual CPU usage of each running instance over time.</li>
 					</ul>
-					Your app can use more than its requested CPU if available, but exceeding the request might
-					lead to
+					Your app can use more than its requested CPU if available, but exceeding the request might lead
+					to
 					<strong>CPU throttling</strong>, which can impact performance. However, this is usually
 					not a problem for most applications, as Kubernetes is designed to handle resource
 					contention gracefully. In many cases, workloads can burst beyond their requests when
@@ -720,8 +719,7 @@
 				<BodyLong>
 					This graph show your workloads's memory usage over time. <ul>
 						<li>
-							<strong>Requests</strong> (grey line): The minimum amount of memory guaranteed to your
-							app.
+							<strong>Requests</strong> (grey line): The minimum amount of memory guaranteed to your app.
 						</li>
 						<li>
 							<strong>Limits</strong> (red line, if present): The maximum amount of memory your app can

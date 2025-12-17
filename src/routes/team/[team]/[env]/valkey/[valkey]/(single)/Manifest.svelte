@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type ValkeyManifestFragment } from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
@@ -11,16 +11,18 @@
 
 	let { valkey, teamSlug }: Props = $props();
 
-	const data = fragment(
-		valkey,
-		graphql(`
-			fragment ValkeyManifestFragment on Valkey {
-				name
-				memory
-				tier
-				maxMemoryPolicy
-			}
-		`)
+	const data = $derived(
+		fragment(
+			valkey,
+			graphql(`
+				fragment ValkeyManifestFragment on Valkey {
+					name
+					memory
+					tier
+					maxMemoryPolicy
+				}
+			`)
+		)
 	);
 
 	const niceName = $derived($data.name.replace(`valkey-${teamSlug}-`, ''));

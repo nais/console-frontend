@@ -34,116 +34,118 @@
 
 	let { activityLog, direct }: Props = $props();
 
-	const data = fragment(
-		activityLog,
-		graphql(`
-			fragment SidebarActivityLogFragment on ActivityLogger
-			@arguments(filter: { type: "ActivityLogFilter" }, limit: { type: "Int" }) {
-				activityLog(first: $limit, filter: $filter) {
-					nodes {
-						id
-						actor
-						message
-						createdAt
-						resourceName
-						resourceType
-						environmentName
-						teamSlug
-						__typename
+	const data = $derived(
+		fragment(
+			activityLog,
+			graphql(`
+				fragment SidebarActivityLogFragment on ActivityLogger
+				@arguments(filter: { type: "ActivityLogFilter" }, limit: { type: "Int" }) {
+					activityLog(first: $limit, filter: $filter) {
+						nodes {
+							id
+							actor
+							message
+							createdAt
+							resourceName
+							resourceType
+							environmentName
+							teamSlug
+							__typename
 
-						... on DeploymentActivityLogEntry {
-							deploymentData: data {
-								triggerURL
-							}
-						}
-						... on ApplicationScaledActivityLogEntry {
-							appScaled: data {
-								newSize
-								direction
-							}
-						}
-						... on ClusterAuditActivityLogEntry {
-							id
-							clusterAuditData: data {
-								action
-								resourceKind
-							}
-						}
-
-						... on RepositoryAddedActivityLogEntry {
-							id
-						}
-						... on RepositoryRemovedActivityLogEntry {
-							id
-						}
-						... on SecretCreatedActivityLogEntry {
-							id
-						}
-						... on SecretDeletedActivityLogEntry {
-							id
-						}
-						... on SecretValueAddedActivityLogEntry {
-							secretValueAddedData: data {
-								valueName
-							}
-						}
-						... on SecretValueUpdatedActivityLogEntry {
-							secretValueUpdatedData: data {
-								valueName
-							}
-						}
-						... on SecretValueRemovedActivityLogEntry {
-							secretValueRemovedData: data {
-								valueName
-							}
-						}
-						... on TeamEnvironmentUpdatedActivityLogEntry {
-							id
-							teamEnvironmentUpdatedData: data {
-								updatedFields {
-									field
-									oldValue
-									newValue
+							... on DeploymentActivityLogEntry {
+								deploymentData: data {
+									triggerURL
 								}
 							}
-						}
-						... on TeamDeployKeyUpdatedActivityLogEntry {
-							id
-						}
-						... on TeamMemberAddedActivityLogEntry {
-							addedData: data {
-								role
-								userEmail
-								userID
+							... on ApplicationScaledActivityLogEntry {
+								appScaled: data {
+									newSize
+									direction
+								}
 							}
-						}
-						... on TeamMemberRemovedActivityLogEntry {
-							removedData: data {
-								userEmail
-								userID
+							... on ClusterAuditActivityLogEntry {
+								id
+								clusterAuditData: data {
+									action
+									resourceKind
+								}
 							}
-						}
-						... on TeamMemberSetRoleActivityLogEntry {
-							setRoleData: data {
-								role
-								userEmail
-								userID
+
+							... on RepositoryAddedActivityLogEntry {
+								id
 							}
-						}
-						... on TeamUpdatedActivityLogEntry {
-							id
-							teamUpdatedData: data {
-								updatedFields {
-									field
-									oldValue
-									newValue
+							... on RepositoryRemovedActivityLogEntry {
+								id
+							}
+							... on SecretCreatedActivityLogEntry {
+								id
+							}
+							... on SecretDeletedActivityLogEntry {
+								id
+							}
+							... on SecretValueAddedActivityLogEntry {
+								secretValueAddedData: data {
+									valueName
+								}
+							}
+							... on SecretValueUpdatedActivityLogEntry {
+								secretValueUpdatedData: data {
+									valueName
+								}
+							}
+							... on SecretValueRemovedActivityLogEntry {
+								secretValueRemovedData: data {
+									valueName
+								}
+							}
+							... on TeamEnvironmentUpdatedActivityLogEntry {
+								id
+								teamEnvironmentUpdatedData: data {
+									updatedFields {
+										field
+										oldValue
+										newValue
+									}
+								}
+							}
+							... on TeamDeployKeyUpdatedActivityLogEntry {
+								id
+							}
+							... on TeamMemberAddedActivityLogEntry {
+								addedData: data {
+									role
+									userEmail
+									userID
+								}
+							}
+							... on TeamMemberRemovedActivityLogEntry {
+								removedData: data {
+									userEmail
+									userID
+								}
+							}
+							... on TeamMemberSetRoleActivityLogEntry {
+								setRoleData: data {
+									role
+									userEmail
+									userID
+								}
+							}
+							... on TeamUpdatedActivityLogEntry {
+								id
+								teamUpdatedData: data {
+									updatedFields {
+										field
+										oldValue
+										newValue
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
 	type Kind =

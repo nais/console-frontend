@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type OpenSearchManifestFragment } from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
@@ -11,18 +11,20 @@
 
 	let { openSearch, teamSlug }: Props = $props();
 
-	const data = fragment(
-		openSearch,
-		graphql(`
-			fragment OpenSearchManifestFragment on OpenSearch {
-				name
-				memory
-				tier
-				version {
-					desiredMajor
+	const data = $derived(
+		fragment(
+			openSearch,
+			graphql(`
+				fragment OpenSearchManifestFragment on OpenSearch {
+					name
+					memory
+					tier
+					version {
+						desiredMajor
+					}
 				}
-			}
-		`)
+			`)
+		)
 	);
 
 	const niceName = $derived($data.name.replace(`opensearch-${teamSlug}-`, ''));

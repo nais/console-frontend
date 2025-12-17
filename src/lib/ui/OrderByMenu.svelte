@@ -60,6 +60,16 @@
 			defaultOrderDirection
 	);
 
+	const filteredAndSortedFields = $derived(
+		Object.values(orderField)
+			.filter((field) => !onlyInclude || onlyInclude.includes(field as ValueOf<T>))
+			.sort((a, b) => {
+				const aWeight = orderFieldWeights[a as string] ?? 9999;
+				const bWeight = orderFieldWeights[b as string] ?? 9999;
+				return aWeight - bWeight;
+			})
+	);
+
 	export const orderFieldWeights: Record<string, number> = {
 		NAME: 0,
 		DEPLOYMENT_TIME: 10,
@@ -162,13 +172,7 @@
 	{/snippet}
 	{#key orderField}
 		<ActionMenuRadioGroup value={currentOrderField} label="Order by">
-			{#each Object.values(orderField)
-				.filter((field) => !onlyInclude || onlyInclude.includes(field as ValueOf<T>))
-				.sort((a, b) => {
-					const aWeight = orderFieldWeights[a as string] ?? 9999;
-					const bWeight = orderFieldWeights[b as string] ?? 9999;
-					return aWeight - bWeight;
-				}) as field (field)}
+			{#each filteredAndSortedFields as field (field)}
 				<ActionMenuRadioItem
 					value={field}
 					onselect={(value) =>

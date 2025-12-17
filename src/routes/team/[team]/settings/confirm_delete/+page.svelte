@@ -59,8 +59,8 @@
 
 		<Modal bind:open={showConfirmDeleteTeam} header="Confirm team deletion">
 			<BodyLong>
-				Confirm that you intend to delete <strong>{key.team.slug}</strong> and all resources related
-				to it.
+				Confirm that you intend to delete <strong>{key.team.slug}</strong> and all resources related to
+				it.
 			</BodyLong>
 
 			{#if deleteTeamResp?.errors}

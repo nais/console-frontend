@@ -21,7 +21,9 @@
 
 	localizeLayerChart();
 
-	themeSwitch.theme = data.theme;
+	$effect(() => {
+		themeSwitch.theme = data.theme;
+	});
 
 	let user = $derived(
 		$UserInfo.data?.me as

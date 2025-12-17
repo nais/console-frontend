@@ -2,8 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { type DeleteJobPage$result, graphql } from '$houdini';
 	import PersistenceItem from '$lib/domain/persistence/PersistenceItem.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
@@ -91,14 +91,14 @@
 			<div>
 				{#each job.sqlInstances.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 					<PersistenceItem persistence={node}>
-						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
-						the manifest.
+						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
+						manifest.
 					</PersistenceItem>
 				{/each}
 				{#each job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}
 					<PersistenceItem persistence={node}>
-						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in
-						the manifest.
+						This will be deleted because <code>cascadingDelete</code> is set to <code>true</code> in the
+						manifest.
 					</PersistenceItem>
 				{/each}
 				{#each job.buckets.nodes.filter((s) => s.cascadingDelete) as node (node.id)}

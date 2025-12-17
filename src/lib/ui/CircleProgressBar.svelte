@@ -14,10 +14,10 @@
 		endColor = 'red',
 		children
 	}: Props = $props();
-	const angle = 360 * progress;
-	const background = `radial-gradient(var(--ax-bg-sunken) 50%, transparent 0%),
+	const angle = $derived(360 * progress);
+	const background = $derived(`radial-gradient(var(--ax-bg-sunken) 50%, transparent 0%),
     conic-gradient(transparent 0deg ${angle}deg, light-dark(var(--ax-bg-raised), var(--ax-bg-raised)) ${angle}deg 360deg),
-    conic-gradient(${startColor} 0deg, ${startColor} 90deg, orange 240deg, ${endColor});`;
+    conic-gradient(${startColor} 0deg, ${startColor} 90deg, orange 240deg, ${endColor});`);
 	let cssVarStyles = $derived(
 		`--background:${background};--size:${size};display: grid;place-items: center;`
 	);

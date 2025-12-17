@@ -1,7 +1,7 @@
 {
 	"svelte.enable-ts-plugin": true,
 	"[svelte]": {
-		"editor.defaultFormatter": "svelte.svelte-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
 		"editor.codeActionsOnSave": {
 			"source.organizeImports": "explicit"
 		}

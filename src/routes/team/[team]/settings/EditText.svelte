@@ -11,10 +11,17 @@
 
 	let { text, variant = 'textarea', isMember }: Props = $props();
 
-	const distpatch = createEventDispatcher<{ save: string }>();
+	const dispatch = createEventDispatcher<{ save: string }>();
 
-	let newText = $state(text);
 	let edit = $state(false);
+	let newText = $state('');
+
+	$effect.pre(() => {
+		if (edit) {
+			newText = text;
+		}
+	});
+
 	let height: number | undefined = $state(undefined);
 
 	const reset = () => {
@@ -23,7 +30,7 @@
 	};
 
 	const save = () => {
-		distpatch('save', newText);
+		dispatch('save', newText);
 		edit = false;
 	};
 </script>

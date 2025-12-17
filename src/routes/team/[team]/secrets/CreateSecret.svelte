@@ -24,9 +24,15 @@
 
 	let { team, environments, open = $bindable() }: Props = $props();
 
-	let selectedEnvironment = $state(environments[0].name);
-
+	let selectedEnvironment = $state('');
 	let name = $state('');
+
+	$effect(() => {
+		// Only set if empty or current selection is not in the list
+		if (selectedEnvironment === '' || !environments.some((e) => e.name === selectedEnvironment)) {
+			selectedEnvironment = environments[0]?.name ?? '';
+		}
+	});
 
 	const close = () => {
 		open = false;

@@ -22,7 +22,7 @@
 		dateFormat?: string;
 	} & ({ distance?: false; short?: never } | { distance: true; short?: boolean }) = $props();
 
-	let title = format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB });
+	let title = $derived(format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
 
 	function distanceText(): string {
 		return formatDistanceStrict(time, Date.now(), { addSuffix: true });
