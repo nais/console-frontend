@@ -11,7 +11,7 @@
 
 	let { text, variant = 'textarea', isMember }: Props = $props();
 
-	const distpatch = createEventDispatcher<{ save: string }>();
+	const dispatch = createEventDispatcher<{ save: string }>();
 
 	let edit = $state(false);
 	let newText = $state('');
@@ -30,7 +30,7 @@
 	};
 
 	const save = () => {
-		distpatch('save', newText);
+		dispatch('save', newText);
 		edit = false;
 	};
 </script>

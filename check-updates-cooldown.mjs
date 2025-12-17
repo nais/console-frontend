@@ -71,6 +71,7 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 	eligibleVersions.sort((a, b) => {
 		const vA = coerce(a.version);
 		const vB = coerce(b.version);
+		if (!vA || !vB) return 0;
 		return gt(vA, vB) ? -1 : 1;
 	});
 
