@@ -13,6 +13,7 @@
 
 	const distpatch = createEventDispatcher<{ save: string }>();
 
+	let edit = $state(false);
 	let newText = $state('');
 
 	$effect.pre(() => {
@@ -21,7 +22,6 @@
 		}
 	});
 
-	let edit = $state(false);
 	let height: number | undefined = $state(undefined);
 
 	const reset = () => {

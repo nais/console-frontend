@@ -29,7 +29,7 @@
 
 	$effect(() => {
 		// Only set if empty or current selection is not in the list
-		if (!selectedEnvironment || !environments.some((e) => e.name === selectedEnvironment)) {
+		if (selectedEnvironment === '' || !environments.some((e) => e.name === selectedEnvironment)) {
 			selectedEnvironment = environments[0]?.name ?? '';
 		}
 	});
