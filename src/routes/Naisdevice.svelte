@@ -27,7 +27,7 @@
 				onclick={() => {
 					const url = page.url;
 					url.searchParams.delete('naisdevice');
-					goto(page.url.toString(), { replaceState: true });
+					goto(url.toString(), { replaceState: true });
 				}}
 				aria-label="Close"
 			>
