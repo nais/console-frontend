@@ -35,10 +35,12 @@
 		});
 	});
 
+	let previousOpen = $state(open);
 	$effect(() => {
-		if (!open) {
+		if (previousOpen && !open) {
 			onclosed?.();
 		}
+		previousOpen = open;
 	});
 
 	const alterRole = graphql(`
