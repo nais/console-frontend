@@ -108,10 +108,23 @@ npm run allow-scripts
 - Only allows updates to packages published at least 14 days ago
 - Reduces risk of compromised packages with malicious updates
 
-To check and/or update dependencies (with interactive selection):
+To check for outdated dependencies:
 
 ```bash
-npm run check-outdated-interactive
+npm run check-outdated
+```
+
+To update outdated dependencies (respects 14-day cooldown):
+
+```bash
+npm run update-outdated
+```
+
+To check when a specific package version was published:
+
+```bash
+npm run check-age <package-name> <version>
+# Example: npm run check-age storybook 10.1.3
 ```
 
 ### Lockfile Validation
