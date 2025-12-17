@@ -12,25 +12,29 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/authentication';
-	import { Alert } from '@nais/ds-svelte-community';
 
+	import { CheckmarkCircleIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import { fade } from 'svelte/transition';
 </script>
 
 {#if isNaisdevice() && $isAuthenticated}
 	<div class="naisdevice" out:fade>
-		<Alert
-			variant="success"
-			closeButton
-			onclose={() => {
-				const url = page.url;
-				url.searchParams.delete('naisdevice');
-
-				goto(page.url.toString(), { replaceState: true });
-			}}
-		>
-			Naisdevice successfully connected.
-		</Alert>
+		<div class="naisdevice-banner">
+			<CheckmarkCircleIcon />
+			<span>Naisdevice successfully connected.</span>
+			<button
+				type="button"
+				class="close-button"
+				onclick={() => {
+					const url = page.url;
+					url.searchParams.delete('naisdevice');
+					goto(url.toString(), { replaceState: true });
+				}}
+				aria-label="Close"
+			>
+				<XMarkIcon />
+			</button>
+		</div>
 	</div>
 {/if}
 
@@ -40,5 +44,51 @@
 		bottom: 0;
 		right: 0;
 		padding: var(--ax-space-8);
+		z-index: 1000;
+	}
+
+	.naisdevice-banner {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-20) var(--ax-space-32);
+		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+		color: var(--ax-text-success-subtle);
+		border-radius: var(--ax-border-radius-medium);
+		font-size: var(--ax-font-size-xlarge);
+		font-weight: 700;
+		box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+	}
+
+	.naisdevice-banner :global(svg) {
+		width: 28px;
+		height: 28px;
+		flex-shrink: 0;
+	}
+
+	.naisdevice-banner span {
+		flex: 1;
+	}
+
+	.close-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: var(--ax-space-4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--ax-text-success-subtle);
+		border-radius: var(--ax-border-radius-small);
+		transition: background-color 0.2s;
+	}
+
+	.close-button:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	.close-button :global(svg) {
+		width: 20px;
+		height: 20px;
 	}
 </style>

@@ -2,10 +2,10 @@
 	import { graphql, TeamMemberOrderField } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
@@ -165,15 +165,15 @@
 		</div>
 	</div>
 	{#if team}
-		<AddMember bind:open={addMemberOpen} team={team.slug} on:created={refetch} />
+		<AddMember bind:open={addMemberOpen} team={team.slug} oncreated={refetch} />
 
 		{#if editUser && editUserOpen}
 			<EditMember
 				bind:open={editUserOpen}
 				team={team.slug}
 				email={editUser}
-				on:updated={refetch}
-				on:closed={() => {
+				onupdated={refetch}
+				onclosed={() => {
 					editUser = null;
 				}}
 			/>

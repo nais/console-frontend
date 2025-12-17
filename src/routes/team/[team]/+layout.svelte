@@ -1,5 +1,4 @@
 <script lang="ts">
-	// import { page } from '$app/stores';
 	import PageHeader from '$lib/ui/PageHeader.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
