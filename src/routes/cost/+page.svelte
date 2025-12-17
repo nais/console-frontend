@@ -172,8 +172,8 @@
 			<div>
 				<Heading level="3" spacing>Team Cost last 12 months</Heading>
 				<BodyLong spacing>
-					This table shows the monthly cost for each team over the last 12 months. The cost is
-					aggregated from all services used by the team.
+					This table shows the cost for each team over the last 12 months. The cost is aggregated
+					from all services used by the team.
 				</BodyLong>
 
 				<List title="Team Cost Breakdown">
