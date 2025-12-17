@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Alert, Button, CopyButton, Heading, TextField } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import { isNaisdevice } from './Naisdevice.svelte';
@@ -50,8 +50,8 @@
 			<Logo height=".8em" />
 			Nais Console
 		</Heading>
-		{#if $page.url.searchParams?.get('error')}
-			{@const error = $page.url.searchParams.get('error')}
+		{#if page.url.searchParams?.get('error')}
+			{@const error = page.url.searchParams.get('error')}
 			<Alert variant="error">
 				{#if error == 'unknown-user'}
 					Error during login: Unknown user.<br />
@@ -65,7 +65,7 @@
 
 		<p>Welcome to Nais Console. Please log in with your Google Workspace account to continue.</p>
 
-		<Button as="a" href="/oauth2/login?redirect_uri={redirectPath($page.url)}" variant="primary">
+		<Button as="a" href="/oauth2/login?redirect_uri={redirectPath(page.url)}" variant="primary">
 			Log in to Nais Console
 		</Button>
 
