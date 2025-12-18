@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
-	import List from '$lib/ui/List.svelte';
 	import { docURL } from '$lib/doc';
+	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
@@ -64,7 +64,7 @@
 					)}"
 				>
 					{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
-						<div><DeploymentListItem {deployment} showEnv /></div>
+						<DeploymentListItem {deployment} showEnv />
 					{/each}
 				</List>
 

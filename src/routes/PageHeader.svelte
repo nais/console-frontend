@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import SearchButton from '$lib/domain/search/SearchButton.svelte';
 	import { docURL, tenantURL } from '$lib/doc';
+	import SearchButton from '$lib/domain/search/SearchButton.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
@@ -64,6 +64,13 @@
 		class={{ active: page.url.pathname === '/vulnerabilities' }}
 	>
 		Vulnerabilities
+	</InternalHeaderButton>
+	<InternalHeaderButton
+		as="a"
+		href="/deployments"
+		class={{ active: page.url.pathname === '/deployments' }}
+	>
+		Deployments
 	</InternalHeaderButton>
 
 	<Spacer />
