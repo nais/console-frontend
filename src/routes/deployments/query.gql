@@ -1,5 +1,11 @@
-query TenantDeployments($first: Int, $last: Int, $before: Cursor, $after: Cursor) {
-	deployments(first: $first, last: $last, before: $before, after: $after)
+query TenantDeployments(
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$filter: DeploymentFilter
+) {
+	deployments(first: $first, last: $last, before: $before, after: $after, filter: $filter)
 		@paginate(mode: SinglePage) {
 		pageInfo {
 			hasNextPage
