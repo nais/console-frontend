@@ -4,7 +4,7 @@
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
 	import type { PageProps } from './$types';
 
@@ -29,7 +29,11 @@
 <div class="page">
 	<div class="container">
 		<GraphErrors errors={$TenantDeployments.errors} />
-		{#if $TenantDeployments.data}
+		{#if $TenantDeployments.fetching}
+			<div class="loading">
+				<Loader size="3xlarge" />
+			</div>
+		{:else if $TenantDeployments.data}
 			<div>
 				<Heading level="2" spacing>Deployments</Heading>
 
@@ -79,6 +83,13 @@
 <style>
 	.container {
 		margin-top: var(--spacing-layout);
+
+		.loading {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 400px;
+		}
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
