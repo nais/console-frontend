@@ -7,10 +7,13 @@
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 
 	const {
 		deployment,
-		showEnv
+		showEnv,
+		showTeam
 	}: {
 		deployment: {
 			id: string;
@@ -37,11 +40,21 @@
 			triggerUrl: string | null;
 		};
 		showEnv?: boolean;
+		showTeam?: boolean;
 	} = $props();
 </script>
 
 <ListItem>
-	<div>
+	<div class="grid">
+		{#if showTeam}
+			<IconLabel
+				label={deployment.teamSlug}
+				icon={PersonGroupIcon}
+				size="large"
+				level="3"
+				href="/team/{deployment.teamSlug}/deployments"
+			/>
+		{/if}
 		<BodyLong size="small" as="div">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
 				Commit
@@ -133,5 +146,10 @@
 		justify-content: center;
 		gap: var(--ax-space-4);
 		font-size: 16px;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: 50ch auto;
 	}
 </style>
