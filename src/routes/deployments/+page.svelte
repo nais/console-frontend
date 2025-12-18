@@ -1,12 +1,12 @@
 <script lang="ts">
+	import DeploymentWithTeamListItem from '$lib/domain/list-items/DeploymentWithTeamListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Heading } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$types';
+	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { Heading } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
-	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
-	import List from '$lib/ui/List.svelte';
+	import type { PageProps } from './$types';
 
 	const changeQuery = (
 		params: {
@@ -49,7 +49,7 @@
 						)}"
 					>
 						{#each $TenantDeployments.data.deployments.nodes as deployment (deployment.id)}
-							<div><DeploymentListItem {deployment} showEnv showTeam /></div>
+							<div><DeploymentWithTeamListItem {deployment} /></div>
 						{/each}
 					</List>
 				{/if}
