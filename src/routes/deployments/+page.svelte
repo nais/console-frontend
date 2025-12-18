@@ -6,7 +6,6 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
-	import { format } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	const intervalOptions = ['7d', '30d', '6m', 'all'] as const;
@@ -51,7 +50,7 @@
 	}
 </script>
 
-<div class="page">
+<div>
 	<div class="container">
 		<GraphErrors errors={$TenantDeployments.errors} />
 		{#if $TenantDeployments.fetching}
@@ -81,15 +80,7 @@
 						title="{$TenantDeployments.data.deployments.pageInfo
 							.totalCount} deployment{$TenantDeployments.data.deployments.pageInfo.totalCount !== 1
 							? 's'
-							: ''} - showing {$TenantDeployments.data.deployments.pageInfo.pageEnd -
-							$TenantDeployments.data.deployments.pageInfo.pageStart +
-							1} from {format(
-							$TenantDeployments.data.deployments.nodes.at(0)?.createdAt ?? '',
-							'dd/MM/yyyy'
-						)} to {format(
-							$TenantDeployments.data.deployments.nodes.at(-1)?.createdAt ?? '',
-							'dd/MM/yyyy'
-						)}"
+							: ''}"
 					>
 						{#each $TenantDeployments.data.deployments.nodes as deployment (deployment.id)}
 							<div><DeploymentWithTeamListItem {deployment} /></div>
@@ -132,6 +123,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+	.header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
 	}
 	.toggles {
 		display: flex;

@@ -141,7 +141,7 @@
 	.note {
 		margin-top: var(--ax-space-8);
 		margin-bottom: 0;
-		font-size: var(--ax-font-size-14);
+		font-size: var(--ax-font-size-medium);
 		color: var(--ax-text-neutral-subtle);
 		text-align: left;
 	}
