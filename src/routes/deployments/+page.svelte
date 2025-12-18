@@ -50,7 +50,7 @@
 	}
 </script>
 
-<div>
+<div class="page">
 	<div class="container">
 		<GraphErrors errors={$TenantDeployments.errors} />
 		{#if $TenantDeployments.fetching}
@@ -83,7 +83,7 @@
 							: ''}"
 					>
 						{#each $TenantDeployments.data.deployments.nodes as deployment (deployment.id)}
-							<div><DeploymentWithTeamListItem {deployment} /></div>
+							<DeploymentWithTeamListItem {deployment} />
 						{/each}
 					</List>
 				{/if}
