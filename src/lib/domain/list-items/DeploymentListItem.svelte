@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { DeploymentStatusState, ValueOf } from '$houdini';
-	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 
 	const {
 		deployment,
@@ -45,14 +45,14 @@
 </script>
 
 <ListItem>
-	<div class="grid">
+	<div class:grid={showTeam}>
 		{#if showTeam}
 			<IconLabel
 				label={deployment.teamSlug}
 				icon={PersonGroupIcon}
 				size="large"
 				level="3"
-				href="/team/{deployment.teamSlug}/deployments"
+				href="/team/{deployment.teamSlug}/deploy"
 			/>
 		{/if}
 		<BodyLong size="small" as="div">
