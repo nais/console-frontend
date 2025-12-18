@@ -113,6 +113,9 @@
 <style>
 	.container {
 		margin-top: var(--spacing-layout);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
 
 		.loading {
 			display: flex;
@@ -120,9 +123,6 @@
 			align-items: center;
 			min-height: 400px;
 		}
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
 	}
 	.header {
 		display: flex;
