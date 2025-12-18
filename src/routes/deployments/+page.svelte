@@ -20,12 +20,9 @@
 	) => {
 		const updateParams: Record<string, string> = {
 			before: params.before ?? before,
-			after: params.after ?? after
+			after: params.after ?? after,
+			interval: params.interval ?? interval
 		};
-
-		if (params.interval !== undefined) {
-			updateParams.interval = params.interval;
-		}
 
 		changeParams(updateParams);
 	};
