@@ -1,0 +1,38 @@
+query TenantDeployments($first: Int, $last: Int, $before: Cursor, $after: Cursor) {
+	deployments(first: $first, last: $last, before: $before, after: $after)
+		@paginate(mode: SinglePage) {
+		pageInfo {
+			hasNextPage
+			endCursor
+			hasPreviousPage
+			pageEnd
+			pageStart
+			startCursor
+			totalCount
+		}
+		nodes {
+			id
+			statuses {
+				nodes {
+					state
+					message
+					createdAt
+				}
+			}
+			resources {
+				nodes {
+					id
+					kind
+					name
+				}
+			}
+			environmentName
+			createdAt
+			teamSlug
+			repository
+			commitSha
+			deployerUsername
+			triggerUrl
+		}
+	}
+}
