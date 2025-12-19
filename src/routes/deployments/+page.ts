@@ -1,4 +1,4 @@
-import { load_TenantDeployments } from '$houdini';
+import { load_DeploymentsMetadata, load_TenantDeployments, type DeploymentFilter } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { subDays, subMonths } from 'date-fns';
 
@@ -29,6 +29,14 @@ export async function load(event) {
 	const intervalParam = event.url.searchParams.get('interval') as Interval | null;
 	const interval = intervalParam && intervalOptions.includes(intervalParam) ? intervalParam : '7d';
 	const from = getFromDate(interval);
+	const environments: string[] | undefined =
+		event.url.searchParams.get('environments')?.split(',') || undefined;
+
+	const filter: DeploymentFilter = {
+		...(from ? { from } : {}),
+		...(environments ? { environments } : {})
+	};
+
 	return {
 		...(await addPageMeta(event, {
 			title: 'Tenant Deployments'
@@ -37,8 +45,11 @@ export async function load(event) {
 			event,
 			variables: {
 				...(before ? { before, last: rows } : after ? { after, first: rows } : { first: rows }),
-				...(from ? { filter: { from } } : {})
+				...(Object.keys(filter).length > 0 ? { filter } : {})
 			}
+		})),
+		...(await load_DeploymentsMetadata({
+			event
 		}))
 	};
 }

@@ -1661,6 +1661,9 @@ type DeploymentEdge {
 }
 
 input DeploymentFilter {
+  """Filter deployments by environments."""
+  environments: [String!]
+
   """Get deployments from a given date until today."""
   from: Time
 }
