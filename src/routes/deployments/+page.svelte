@@ -5,7 +5,9 @@
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import { Button, Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	const intervalOptions = ['7d', '30d', '6m', 'all'] as const;
@@ -16,19 +18,21 @@
 			after?: string;
 			before?: string;
 			interval?: Interval;
+			environments?: string;
 		} = {}
 	) => {
 		const updateParams: Record<string, string> = {
 			before: params.before ?? before,
 			after: params.after ?? after,
-			interval: params.interval ?? interval
+			interval: params.interval ?? interval,
+			environments: params.environments ?? currentEnvironments
 		};
 
 		changeParams(updateParams);
 	};
 
 	let { data }: PageProps = $props();
-	let { TenantDeployments } = $derived(data);
+	let { TenantDeployments, DeploymentsMetadata } = $derived(data);
 	let after: string = $derived($TenantDeployments.variables?.after ?? '');
 	let before: string = $derived($TenantDeployments.variables?.before ?? '');
 
@@ -36,6 +40,24 @@
 	let interval = $state<Interval>(
 		intervalParam && intervalOptions.includes(intervalParam) ? intervalParam : '7d'
 	);
+
+	const allEnvs = $derived(
+		$DeploymentsMetadata.data?.environments.nodes.map((env) => env.name) ?? []
+	);
+
+	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
+
+	const currentEnvironments = $derived(
+		filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',')
+	);
+
+	$effect(() => {
+		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+
+		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
+			changeQuery({ environments });
+		}
+	});
 
 	function handleIntervalChange(newInterval: Interval) {
 		interval = newInterval;
@@ -79,6 +101,44 @@
 							? 's'
 							: ''}"
 					>
+						{#snippet menu()}
+							<ActionMenu>
+								{#snippet trigger(props)}
+									<Button
+										variant="tertiary-neutral"
+										size="small"
+										iconPosition="right"
+										{...props}
+										icon={ChevronDownIcon}
+									>
+										<span style="font-weight: normal">Environment</span>
+									</Button>
+								{/snippet}
+								<ActionMenuCheckboxItem
+									checked={$DeploymentsMetadata.data?.environments.nodes.every((env) =>
+										filteredEnvs.includes(env.name)
+									)
+										? true
+										: filteredEnvs.length > 0
+											? 'indeterminate'
+											: false}
+									onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+								>
+									All environments
+								</ActionMenuCheckboxItem>
+								{#each $DeploymentsMetadata.data?.environments.nodes ?? [] as { name, id } (id)}
+									<ActionMenuCheckboxItem
+										checked={filteredEnvs.includes(name)}
+										onchange={(checked) =>
+											(filteredEnvs = checked
+												? [...filteredEnvs, name]
+												: filteredEnvs.filter((env) => env !== name))}
+									>
+										{name}
+									</ActionMenuCheckboxItem>
+								{/each}
+							</ActionMenu>
+						{/snippet}
 						{#each $TenantDeployments.data.deployments.nodes as deployment (deployment.id)}
 							<DeploymentWithTeamListItem {deployment} />
 						{/each}

@@ -1,0 +1,8 @@
+query DeploymentsMetadata @cache(policy: CacheAndNetwork) {
+	environments {
+		nodes {
+			id
+			name
+		}
+	}
+}
