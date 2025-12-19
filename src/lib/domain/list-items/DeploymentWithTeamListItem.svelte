@@ -3,14 +3,15 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 
 	const {
-		deployment,
-		showEnv
+		deployment
 	}: {
 		deployment: {
 			id: string;
@@ -36,12 +37,18 @@
 			deployerUsername: string | null;
 			triggerUrl: string | null;
 		};
-		showEnv?: boolean;
 	} = $props();
 </script>
 
 <ListItem>
-	<div>
+	<div class="grid">
+		<IconLabel
+			label={deployment.teamSlug}
+			icon={PersonGroupIcon}
+			size="large"
+			level="3"
+			href="/team/{deployment.teamSlug}/deploy"
+		/>
 		<BodyLong size="small" as="div">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
 				Commit
@@ -51,18 +58,14 @@
 						>{deployment?.commitSha.slice(0, 7)}</span
 					>
 				</ExternalLink>
-				by {deployment.deployerUsername} triggered a
+				by {deployment.deployerUsername}
 				{#if deployment.triggerUrl}
-					{#if showEnv}
-						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<Time time={deployment.createdAt} distance={true} /> to deploy to
-						<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
-							{deployment.environmentName}
-						</Tag>:
-					{:else}
-						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<Time time={deployment.createdAt} distance={true} /> to deploy:
-					{/if}
+					· <Time time={deployment.createdAt} dateFormat="dd/MM/yyyy HH:mm" /> ·
+					<ExternalLink href={deployment.triggerUrl}>GitHub action</ExternalLink>
+					to deploy to
+					<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
+						{deployment.environmentName}
+					</Tag>:
 				{/if}
 
 				{#if deployment.resources.nodes.length > 0}
@@ -86,7 +89,10 @@
 					</ul>
 				{/if}
 			{:else}
-				Something triggered a deploy <Time time={deployment.createdAt} distance={true} /> of:
+				<Time time={deployment.createdAt} dateFormat="dd/MM/yyyy HH:mm" /> · Deploy to
+				<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
+					{deployment.environmentName}
+				</Tag>:
 				{#if deployment.resources.nodes.length > 0}
 					<ul>
 						{#each deployment.resources.nodes as r (r.id)}
@@ -123,7 +129,8 @@
 	}
 
 	ul {
-		margin: 0.5rem;
+		margin: 0.25rem 0.5rem;
+		line-height: 1.4;
 	}
 
 	.status {
@@ -133,5 +140,12 @@
 		justify-content: center;
 		gap: var(--ax-space-4);
 		font-size: 16px;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: 50ch auto;
+		align-items: start;
+		gap: var(--ax-space-12);
 	}
 </style>
