@@ -73,9 +73,9 @@ export function euroAxisFormatter(value: number) {
 	const kValue = value / 1000;
 	// Use 1 decimal place if needed to avoid duplicates
 	if (kValue % 1 === 0) {
-		return '€' + kValue.toFixed(0) + 'K';
+		return kValue.toFixed(0) + 'K' + ' €';
 	} else {
-		return '€' + kValue.toFixed(1) + 'K';
+		return kValue.toFixed(1) + 'K' + ' €';
 	}
 }
 
