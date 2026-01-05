@@ -66,7 +66,7 @@ export function serviceColor(serviceName: ServiceName | string): string {
 }
 
 export function euroAxisFormatter(value: number) {
-	if (value === 0) return '€0';
+	if (value === 0) return '0 €';
 	if (value < 1000) {
 		return euroValueFormatter(value);
 	}
