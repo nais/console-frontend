@@ -44,10 +44,12 @@
 
 	let { data }: PageProps = $props();
 	let { Unleash, UnleashReleaseChannels, teamSlug, viewerIsMember } = $derived(data);
-	let unleash = $derived($Unleash.data?.team?.unleash);
-	let releaseChannels = $derived($UnleashReleaseChannels.data?.unleashReleaseChannels ?? []);
-	let metrics = $derived(
-		$Unleash.data?.team?.unleash?.metrics || {
+
+	// Derived state
+	const unleash = $derived($Unleash.data?.team?.unleash);
+	const releaseChannels = $derived($UnleashReleaseChannels.data?.unleashReleaseChannels ?? []);
+	const metrics = $derived(
+		unleash?.metrics ?? {
 			apiTokens: 0,
 			cpuUtilization: 0,
 			cpuRequests: 0,
@@ -56,8 +58,9 @@
 			toggles: 0
 		}
 	);
-	let enabled = $derived(true);
+	const enabled = $derived(true);
 
+	// GraphQL mutations
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
 			createUnleashForTeam(input: { teamSlug: $team }) {
@@ -103,22 +106,23 @@
 		}
 	`);
 
+	// Component state
 	let releaseChannelLoading = $state(false);
 	let editingReleaseChannel = $state(false);
 	let creatingUnleash = $state(false);
 	let pollingInterval: number | undefined = $state(undefined);
 
-	// Extract version from docker image path (e.g., "...nais-unleash:v5-5.12.8-1ea28db" -> "5.12.8")
+	// Helper functions
+	/**
+	 * Extract version from docker image path
+	 * @example "nais-unleash:v5-5.12.8-1ea28db" -> "5.12.8"
+	 */
 	const extractVersion = (imageOrVersion: string): string => {
-		// Try to extract version from docker image tag format: name:vX-VERSION-hash
 		const tagMatch = imageOrVersion.match(/:v\d+-(\d+\.\d+\.\d+)/);
-		if (tagMatch) {
-			return tagMatch[1];
-		}
-		// If it's already just a version, return it
-		return imageOrVersion;
+		return tagMatch?.[1] ?? imageOrVersion;
 	};
 
+	// Event handlers
 	const updateReleaseChannel = async (e: Event) => {
 		if (!e.target || !(e.target instanceof HTMLSelectElement)) return;
 		const newChannel = e.target.value;
@@ -126,39 +130,16 @@
 
 		releaseChannelLoading = true;
 		try {
-			// Log the mutation details for debugging backend issues.
-			// NOTE: If you see generic error messages from the API without specific details,
-			// this is a backend issue that needs investigation. The logs below will help
-			// identify what was being attempted when the error occurred.
-			console.log('Calling UpdateUnleashInstance mutation:', {
-				variables: { team: teamSlug, releaseChannel: newChannel },
-				currentChannel: unleash?.releaseChannelName,
-				instanceName: unleash?.name
-			});
-
 			const result = await updateUnleashInstance.mutate({
 				team: teamSlug,
 				releaseChannel: newChannel
 			});
 
-			// Log the full result for debugging
-			console.log('UpdateUnleashInstance result:', {
-				data: result.data,
-				errors: result.errors,
-				hasErrors: !!result.errors,
-				errorDetails: result.errors?.map((err: any) => ({
-					message: err.message,
-					path: err.path,
-					extensions: err.extensions
-				}))
-			});
-
 			if (!result.errors) {
-				// Success - refetch the data
 				await Unleash.fetch({ policy: 'CacheAndNetwork' });
 			}
 		} catch (error) {
-			console.error('Network error during updateReleaseChannel:', error);
+			console.error('Network error updating release channel:', error);
 		} finally {
 			releaseChannelLoading = false;
 		}
@@ -236,7 +217,7 @@
 			})
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 
-	const removeTeamClickHandler = async (teamName: string) => {
+	const handleRemoveTeamClick = (teamName: string) => {
 		removeTeamName = teamName;
 		removeTeamConfirmOpen = true;
 	};
@@ -464,7 +445,7 @@
 											disabled={unleash.ready === false}
 											variant="tertiary-neutral"
 											title="Remove team access"
-											onclick={() => removeTeamClickHandler(team.slug)}
+											onclick={() => handleRemoveTeamClick(team.slug)}
 										>
 											{#snippet icon()}
 												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
