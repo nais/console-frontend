@@ -1,0 +1,46 @@
+query AppInstances(
+	$app: String!
+	$team: Slug!
+	$env: String!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
+	team(slug: $team) {
+		environment(name: $env) {
+			application(name: $app) {
+				instances(first: $first, after: $after, last: $last, before: $before)
+					@paginate(mode: SinglePage) {
+					pageInfo {
+						totalCount
+						hasNextPage
+						hasPreviousPage
+						pageEnd
+						pageStart
+						startCursor
+						endCursor
+					}
+					edges {
+						node {
+							id
+							name
+							restarts
+							status {
+								state
+								message
+							}
+							created
+							memory: instanceUtilization(resourceType: MEMORY) {
+								current
+							}
+							cpu: instanceUtilization(resourceType: CPU) {
+								current
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
