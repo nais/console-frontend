@@ -19,7 +19,7 @@
 		operation?: string;
 	}
 
-	let { size = 'medium', errors = $bindable(), dismissable = false, operation }: Props = $props();
+	let { size = 'small', errors = $bindable(), dismissable = false, operation }: Props = $props();
 
 	// Log errors when they appear (useful for debugging)
 	$effect(() => {
@@ -47,15 +47,9 @@
 				{error}<br />
 			{/each}
 			{#if isGenericBackendError(errors)}
-				<div
-					style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--ax-border-error-subtle);"
-				>
-					<small>
-						<strong>Debugging tip:</strong> Check the browser console (F12) for detailed error logs.
-						If this issue persists, please report it to the Nais team with the error details from the
-						console.
-					</small>
-				</div>
+				<small style="display: block; margin-top: 0.5rem; opacity: 0.9;">
+					💡 Check browser console (F12) for details. Report to Nais team if persistent.
+				</small>
 			{/if}
 			{#if dismissable}
 				<Button variant="tertiary" size="small" onclick={() => (errors = [])}>Dismiss</Button>

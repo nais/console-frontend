@@ -154,21 +154,21 @@ The `GraphErrors` component is a reusable error display component that:
 
 **Props**:
 - `errors`: Array of GraphQL error objects
-- `size`: 'small' | 'medium' (default: 'medium')
+- `size`: 'small' | 'medium' (default: 'small')
 - `dismissable`: boolean (default: false) - Shows a dismiss button
 - `operation`: string (optional) - Name of the operation for logging
 
 **Usage examples**:
 
 ```svelte
-<!-- Non-dismissable query errors -->
+<!-- Query errors -->
 <GraphErrors errors={$query.errors} operation="FetchTeamData" />
 
 <!-- Dismissable mutation errors -->
 <GraphErrors errors={$createValkey.errors} dismissable operation="CreateValkey" />
 
-<!-- Small size for inline display -->
-<GraphErrors errors={$mutation.errors} size="small" />
+<!-- Medium size for prominent display -->
+<GraphErrors errors={$mutation.errors} size="medium" />
 ```
 
 ## Best Practices
