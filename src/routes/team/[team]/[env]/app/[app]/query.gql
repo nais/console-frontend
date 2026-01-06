@@ -90,6 +90,8 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					requested_memory: requested(resourceType: MEMORY)
 					limit_cpu: limit(resourceType: CPU)
 					limit_memory: limit(resourceType: MEMORY)
+					current_cpu: current(resourceType: CPU)
+					current_memory: current(resourceType: MEMORY)
 					recommendations {
 						cpuRequestCores
 						memoryLimitBytes

@@ -16,19 +16,9 @@
 		instances?.team.environment.application.instances.edges.map((edge) => edge.node) ?? []
 	);
 
-	const cpu_usage = $derived(
-		appInstances
-			.map((instance) => instance.cpu.current)
-			.filter((value): value is number => typeof value === 'number')
-			.reduce((a, b) => a + b, 0)
-	);
+	const cpu_usage = $derived(app?.team.environment.application.utilization.current_cpu ?? 0);
 
-	const memory_usage = $derived(
-		appInstances
-			.map((instance) => instance.memory.current)
-			.filter((value): value is number => typeof value === 'number')
-			.reduce((a, b) => a + b, 0)
-	);
+	const memory_usage = $derived(app?.team.environment.application.utilization.current_memory ?? 0);
 
 	const usage_cpu_percent = $derived(
 		app?.team.environment.application.resources.requests.cpu !== null &&
@@ -233,24 +223,26 @@
 	{/if}
 {/if}
 
-{#if app && instances && appInstances.length === 0}
-	<BodyShort>No instances found</BodyShort>
-{:else if app && instances}
-	<List
-		title="{String(
-			instances?.team.environment.application.instances.pageInfo.totalCount ?? 0
-		)} application instance{appInstances.length === 1 ? '' : 's'}"
-	>
-		{#each appInstances as instance (instance.id)}
-			<AppInstanceListItem
-				{instance}
-				urlBase="/team/{app.team.environment.application.team.slug}/{app.team.environment
-					.application.teamEnvironment.environment.name}/app/{app.team.environment.application
-					.name}/logs?instance="
-				utilization={app.team.environment.application.utilization}
-			/>
-		{/each}
-	</List>
+{#if app}
+	{#if appInstances.length === 0}
+		<BodyShort>No instances found</BodyShort>
+	{:else if app && instances}
+		<List
+			title="{String(
+				instances.team.environment.application.instances.pageInfo.totalCount ?? 0
+			)} application instance{appInstances.length === 1 ? '' : 's'}"
+		>
+			{#each appInstances as instance (instance.id)}
+				<AppInstanceListItem
+					{instance}
+					urlBase="/team/{app.team.environment.application.team.slug}/{app.team.environment
+						.application.teamEnvironment.environment.name}/app/{app.team.environment.application
+						.name}/logs?instance="
+					utilization={app.team.environment.application.utilization}
+				/>
+			{/each}
+		</List>
+	{/if}
 {/if}
 
 <style>
