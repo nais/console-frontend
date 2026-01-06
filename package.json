@@ -89,7 +89,6 @@
 		"layerchart": "^2.0.0-next.43",
 		"luxon": "^3.7.2",
 		"pino": "^9.7.0",
-		"pino-http": "^10.4.0",
 		"pretty-bytes": "^7.1.0",
 		"sortablejs": "^1.15.6",
 		"svelte-highlight": "^7.9.0"
