@@ -1,12 +1,4 @@
-query App(
-	$app: String!
-	$team: Slug!
-	$env: String!
-	$first: Int
-	$last: Int
-	$before: Cursor
-	$after: Cursor
-) {
+query App($app: String!, $team: Slug!, $env: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			application(name: $app) {
@@ -32,6 +24,8 @@ query App(
 					edges {
 						node {
 							id
+							__typename
+							message
 							...IssueFragment
 						}
 					}
@@ -55,36 +49,7 @@ query App(
 						}
 					}
 				}
-				instances(first: $first, after: $after, last: $last, before: $before)
-					@paginate(mode: SinglePage) {
-					pageInfo {
-						totalCount
-						hasNextPage
-						hasPreviousPage
-						pageEnd
-						pageStart
-						startCursor
-						endCursor
-					}
-					edges {
-						node {
-							id
-							name
-							restarts
-							status {
-								state
-								message
-							}
-							created
-							memory: instanceUtilization(resourceType: MEMORY) {
-								current
-							}
-							cpu: instanceUtilization(resourceType: CPU) {
-								current
-							}
-						}
-					}
-				}
+
 				ingresses {
 					type
 					url
@@ -93,16 +58,7 @@ query App(
 						requestsPerSecond
 					}
 				}
-				issues {
-					edges {
-						node {
-							__typename
-							id
-							message
-							severity
-						}
-					}
-				}
+
 				resources {
 					scaling {
 						maxInstances
