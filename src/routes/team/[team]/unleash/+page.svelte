@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import { docURL } from '$lib/doc';
+	import CpuIcon from '$lib/icons/CpuIcon.svelte';
+	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import SummaryCard from '$lib/ui/SummaryCard.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import {
 		Alert,
 		BodyLong,
@@ -17,6 +17,8 @@
 		CopyButton,
 		Heading,
 		HelpText,
+		Loader,
+		Select,
 		Table,
 		Tbody,
 		Td,
@@ -28,6 +30,7 @@
 	import {
 		BulletListIcon,
 		CheckmarkIcon,
+		PencilIcon,
 		PlusCircleFillIcon,
 		PlusIcon,
 		TokenIcon,
@@ -35,14 +38,36 @@
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
+	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
 
+	type GraphQLError = {
+		message: string;
+		extensions?: Record<string, unknown>;
+		path?: (string | number)[];
+	};
+
+	function extractErrorMessages(errors: GraphQLError[] | null | undefined): string[] {
+		if (!errors || errors.length === 0) {
+			return [];
+		}
+		return errors.map((error) => {
+			if (error.extensions?.code) {
+				return `${error.message} (${error.extensions.code})`;
+			}
+			return error.message;
+		});
+	}
+
 	let { data }: PageProps = $props();
-	let { Unleash, teamSlug } = $derived(data);
-	let unleash = $derived($Unleash.data?.team?.unleash);
-	let metrics = $derived(
-		$Unleash.data?.team?.unleash?.metrics || {
+	let { Unleash, UnleashReleaseChannels, teamSlug, viewerIsMember } = $derived(data);
+
+	// Derived state
+	const unleash = $derived($Unleash.data?.team?.unleash);
+	const releaseChannels = $derived($UnleashReleaseChannels.data?.unleashReleaseChannels ?? []);
+	const metrics = $derived(
+		unleash?.metrics ?? {
 			apiTokens: 0,
 			cpuUtilization: 0,
 			cpuRequests: 0,
@@ -51,14 +76,16 @@
 			toggles: 0
 		}
 	);
-	let enabled = $derived(true);
+	const enabled = $derived(true);
 
+	// GraphQL mutations
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
 			createUnleashForTeam(input: { teamSlug: $team }) {
 				unleash {
 					name
 					version
+					releaseChannelName
 					allowedTeams {
 						nodes {
 							slug
@@ -80,17 +107,103 @@
 		}
 	`);
 
+	const updateUnleashInstance = graphql(`
+		mutation UpdateUnleashInstance($team: Slug!, $releaseChannel: String!) {
+			updateUnleashInstance(input: { teamSlug: $team, releaseChannel: $releaseChannel }) {
+				unleash {
+					name
+					releaseChannelName
+					releaseChannel {
+						name
+						currentVersion
+						type
+						lastUpdated
+					}
+				}
+			}
+		}
+	`);
+
+	// Component state
+	let releaseChannelLoading = $state(false);
+	let editingReleaseChannel = $state(false);
+	let creatingUnleash = $state(false);
+	let pollingInterval: number | undefined = $state(undefined);
+
+	// Helper functions
+	/**
+	 * Extract version from docker image path
+	 * @example "nais-unleash:v5-5.12.8-1ea28db" -> "5.12.8"
+	 */
+	const extractVersion = (imageOrVersion: string): string => {
+		const tagMatch = imageOrVersion.match(/:v\d+-(\d+\.\d+\.\d+)/);
+		return tagMatch?.[1] ?? imageOrVersion;
+	};
+
+	// Event handlers
+	const updateReleaseChannel = async (e: Event) => {
+		if (!e.target || !(e.target instanceof HTMLSelectElement)) return;
+		const newChannel = e.target.value;
+		if (!newChannel || newChannel === unleash?.releaseChannelName) return;
+
+		releaseChannelLoading = true;
+		try {
+			const result = await updateUnleashInstance.mutate({
+				team: teamSlug,
+				releaseChannel: newChannel
+			});
+
+			if (!result.errors) {
+				await Unleash.fetch({ policy: 'CacheAndNetwork' });
+			}
+		} catch (error) {
+			console.error('Network error updating release channel:', error);
+		} finally {
+			releaseChannelLoading = false;
+		}
+	};
+
 	const createNewUnleash = async () => {
+		creatingUnleash = true;
 		await createUnleashForTeam.mutate({
 			team: teamSlug
 		});
 
 		if ($createUnleashForTeam.errors) {
+			creatingUnleash = false;
 			return;
 		}
 
 		Unleash.fetch({ policy: 'CacheAndNetwork' });
+		// Start polling until Unleash is ready
+		startPolling();
 	};
+
+	const startPolling = () => {
+		if (pollingInterval) return; // Already polling
+		pollingInterval = window.setInterval(() => {
+			Unleash.fetch({ policy: 'NetworkOnly' });
+		}, 3000); // Poll every 3 seconds
+	};
+
+	const stopPolling = () => {
+		if (pollingInterval) {
+			window.clearInterval(pollingInterval);
+			pollingInterval = undefined;
+		}
+		creatingUnleash = false;
+	};
+
+	// Watch for when unleash becomes ready
+	$effect(() => {
+		if (unleash?.ready && (creatingUnleash || pollingInterval)) {
+			stopPolling();
+		}
+	});
+
+	onDestroy(() => {
+		stopPolling();
+	});
 
 	const allowTeamAccess = graphql(`
 		mutation AllowTeamAccess($team: Slug!, $allowedTeamSlug: Slug!) {
@@ -122,7 +235,7 @@
 			})
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 
-	const removeTeamClickHandler = async (teamName: string) => {
+	const handleRemoveTeamClick = (teamName: string) => {
 		removeTeamName = teamName;
 		removeTeamConfirmOpen = true;
 	};
@@ -138,8 +251,65 @@
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 </script>
 
-<GraphErrors errors={$Unleash.errors} />
-<GraphErrors errors={$createUnleashForTeam.errors} />
+{#if $Unleash.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($Unleash.errors)) as error (error)}
+			{error}<br />
+		{/each}
+	</Alert>
+{/if}
+
+{#if $UnleashReleaseChannels.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error (error)}
+			{error}<br />
+		{/each}
+	</Alert>
+{/if}
+
+{#if $createUnleashForTeam.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error (error)}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($createUnleashForTeam.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $updateUnleashInstance.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error (error)}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($updateUnleashInstance.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $allowTeamAccess.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error (error)}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($allowTeamAccess.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $revokeTeamAccess.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error (error)}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($revokeTeamAccess.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
 
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
@@ -153,6 +323,18 @@
 			>Learn more about Unleash and how to get started.</ExternalLink
 		>
 	</BodyLong>
+	{#if !unleash.ready}
+		<Alert variant="info" size="small" style="margin-bottom: 1rem;">
+			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
+		</Alert>
+	{/if}
+	{#if !unleash.releaseChannelName}
+		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+			No release channel configured. All Unleash instances are being transitioned to release
+			channels for automatic version management. Please select a release channel to ensure your
+			instance receives updates.
+		</Alert>
+	{/if}
 	<Confirm
 		confirmText="Delete"
 		variant="danger"
@@ -210,6 +392,86 @@
 						{unleash.version}
 					{/if}
 				</p>
+				<div style="display: flex; align-items: center; gap: 0.5rem;">
+					<strong>Release Channel</strong>
+					{#if releaseChannels.length > 0}
+						<HelpText title="Available Release Channels">
+							<dl style="margin: 0; padding: 0;">
+								{#each releaseChannels as channel (channel.name)}
+									<dt style="font-weight: bold; margin-top: 0.5rem;">{channel.name}</dt>
+									<dd style="margin: 0; margin-left: 1rem;">
+										Version: {extractVersion(channel.currentVersion)}
+										{#if channel.lastUpdated}
+											(<Time time={new Date(channel.lastUpdated)} />)
+										{/if}<br />
+										Rollout: {channel.type}
+									</dd>
+								{/each}
+							</dl>
+						</HelpText>
+					{/if}
+				</div>
+				<div class="release-channel-row">
+					{#if editingReleaseChannel}
+						<Select
+							size="small"
+							label="Release Channel"
+							hideLabel
+							value={unleash.releaseChannelName ?? ''}
+							onchange={(e) => {
+								updateReleaseChannel(e);
+								editingReleaseChannel = false;
+							}}
+							disabled={!unleash.ready || releaseChannelLoading || releaseChannels.length === 0}
+						>
+							{#if releaseChannels.length === 0}
+								<option value="">No channels available</option>
+							{:else}
+								{#each releaseChannels as channel (channel.name)}
+									<option value={channel.name}>
+										{channel.name} (v{extractVersion(
+											channel.currentVersion
+										)}{#if channel.lastUpdated}, {channel.lastUpdated}{/if})
+									</option>
+								{/each}
+							{/if}
+						</Select>
+						{#if releaseChannelLoading}
+							<Loader size="small" title="Updating release channel..." />
+						{/if}
+						<Button
+							size="xsmall"
+							variant="tertiary-neutral"
+							onclick={() => (editingReleaseChannel = false)}
+						>
+							Cancel
+						</Button>
+					{:else}
+						<span>
+							{#if unleash.releaseChannelName}
+								{unleash.releaseChannelName}
+								{#if unleash.releaseChannel}
+									(v{extractVersion(
+										unleash.releaseChannel.currentVersion
+									)}{#if unleash.releaseChannel.lastUpdated}, <Time
+											time={new Date(unleash.releaseChannel.lastUpdated)}
+										/>{/if})
+								{/if}
+							{:else}
+								<span style="color: var(--ax-text-subtle)">Not set</span>
+							{/if}
+						</span>
+						{#if viewerIsMember && unleash.ready}
+							<Button
+								size="xsmall"
+								variant="tertiary-neutral"
+								title="Change release channel"
+								onclick={() => (editingReleaseChannel = true)}
+								icon={PencilIcon}
+							/>
+						{/if}
+					{/if}
+				</div>
 				<p><strong>Web UI</strong></p>
 				<p>
 					<ExternalLink href="https://{unleash.webIngress}"
@@ -244,13 +506,13 @@
 									<a href="/team/{team.slug}">{team.slug}</a>
 								</Td>
 								<Td align="right">
-									{#if team.slug !== teamSlug}
+									{#if viewerIsMember && team.slug !== teamSlug}
 										<Button
 											size="small"
 											disabled={unleash.ready === false}
 											variant="tertiary-neutral"
-											title="Delete key and value"
-											onclick={() => removeTeamClickHandler(team.slug)}
+											title="Remove team access"
+											onclick={() => handleRemoveTeamClick(team.slug)}
 										>
 											{#snippet icon()}
 												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
@@ -263,16 +525,18 @@
 					</Tbody>
 				</Table>
 				<p>
-					<Button
-						title="Add team"
-						variant="tertiary"
-						disabled={unleash.ready === false}
-						size="small"
-						onclick={() => (addTeamModalOpen = true)}
-						icon={PlusCircleFillIcon}
-					>
-						Add team
-					</Button>
+					{#if viewerIsMember}
+						<Button
+							title="Add team"
+							variant="tertiary"
+							disabled={unleash.ready === false}
+							size="small"
+							onclick={() => (addTeamModalOpen = true)}
+							icon={PlusCircleFillIcon}
+						>
+							Add team
+						</Button>
+					{/if}
 				</p>
 			</div>
 		</div>
@@ -357,9 +621,20 @@
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
 		</p>
-		<Button variant="secondary" size="medium" onclick={createNewUnleash} icon={PlusIcon}>
-			Enable Unleash
-		</Button>
+		{#if viewerIsMember}
+			<Button
+				variant="secondary"
+				size="medium"
+				onclick={createNewUnleash}
+				icon={PlusIcon}
+				disabled={creatingUnleash}
+				loading={creatingUnleash}
+			>
+				{creatingUnleash ? 'Creating Unleash...' : 'Enable Unleash'}
+			</Button>
+		{:else}
+			<p>You must be a team member to enable Unleash.</p>
+		{/if}
 	</div>
 {/if}
 
@@ -387,6 +662,12 @@
 		column-gap: 0.5rem;
 		row-gap: 0.5rem;
 		align-items: center;
+	}
+
+	.release-channel-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.card {

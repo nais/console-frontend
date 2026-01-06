@@ -1,0 +1,8 @@
+query UnleashReleaseChannels {
+	unleashReleaseChannels {
+		name
+		currentVersion
+		type
+		lastUpdated
+	}
+}
