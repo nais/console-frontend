@@ -39,8 +39,8 @@ The Houdini client handles all GraphQL operations. It includes plugins for error
 
 ```typescript
 export default new HoudiniClient({
-  url: browser || !graphqlEndpoint ? '/graphql' : graphqlEndpoint,
-  plugins: [subscription(sseSockets), handleMissingLogin('UserInfo')]
+	url: browser || !graphqlEndpoint ? '/graphql' : graphqlEndpoint,
+	plugins: [subscription(sseSockets), handleMissingLogin('UserInfo')]
 });
 ```
 
@@ -89,18 +89,18 @@ import { fail, redirect } from '@sveltejs/kit';
 const res = await mutation.mutate({ input }, { event });
 
 if (res.errors?.length ?? 0 > 0) {
-  return fail(400, {
-    success: false,
-    error: formatGraphQLErrors(res.errors), // Formats ALL errors with additional context
-    // ... other form data
-  });
+	return fail(400, {
+		success: false,
+		error: formatGraphQLErrors(res.errors) // Formats ALL errors with additional context
+		// ... other form data
+	});
 }
 
 if (!res.data) {
-  return fail(500, {
-    success: false,
-    error: 'Failed to perform operation'
-  });
+	return fail(500, {
+		success: false,
+		error: 'Failed to perform operation'
+	});
 }
 
 return redirect(303, '/success-url');
@@ -111,6 +111,7 @@ return redirect(303, '/success-url');
 **File**: `src/lib/graphql-errors.ts`
 
 ### `extractGraphQLErrorMessages(errors)`
+
 Extracts all error messages from a GraphQL response, including error codes from extensions.
 
 ```typescript
@@ -119,6 +120,7 @@ const messages = extractGraphQLErrorMessages(res.errors);
 ```
 
 ### `formatGraphQLErrors(errors)`
+
 Formats multiple error messages into a single user-friendly string suitable for form error displays.
 
 ```typescript
@@ -127,15 +129,17 @@ const errorString = formatGraphQLErrors(res.errors);
 ```
 
 ### `hasErrorCode(errors, code)`
+
 Checks if errors include a specific error code from the backend.
 
 ```typescript
 if (hasErrorCode(res.errors, 'RESOURCE_ALREADY_EXISTS')) {
-  // Handle duplicate resource error
+	// Handle duplicate resource error
 }
 ```
 
 ### `logGraphQLErrors(operation, errors, context)`
+
 Logs errors for debugging. In production, this should be connected to an error tracking service.
 
 ```typescript
@@ -147,12 +151,14 @@ logGraphQLErrors('CreateValkey', res.errors, { teamSlug: team, env });
 **File**: `src/lib/ui/GraphErrors.svelte`
 
 The `GraphErrors` component is a reusable error display component that:
+
 - De-duplicates error messages
 - Extracts error codes from extensions
 - Optionally allows users to dismiss errors
 - Automatically logs errors for debugging
 
 **Props**:
+
 - `errors`: Array of GraphQL error objects
 - `size`: 'small' | 'medium' (default: 'small')
 - `dismissable`: boolean (default: false) - Shows a dismiss button
@@ -176,58 +182,68 @@ The `GraphErrors` component is a reusable error display component that:
 ### ✅ DO
 
 1. **Always check for errors after mutations**:
+
    ```typescript
    const res = await mutation.mutate(variables, { event });
    if (res.errors) {
-     return fail(400, { error: formatGraphQLErrors(res.errors) });
+   	return fail(400, { error: formatGraphQLErrors(res.errors) });
    }
    ```
 
 2. **Use GraphErrors component for displaying errors**:
+
    ```svelte
    <GraphErrors errors={$store.errors} operation="MyOperation" />
    ```
 
 3. **Include operation names for better debugging**:
+
    ```svelte
    <GraphErrors errors={$errors} operation="UpdateUnleashInstance" />
    ```
 
 4. **Handle both GraphQL errors and missing data**:
+
    ```typescript
-   if (res.errors) { /* handle errors */ }
-   else if (!res.data) { /* handle missing data */ }
+   if (res.errors) {
+   	/* handle errors */
+   } else if (!res.data) {
+   	/* handle missing data */
+   }
    ```
 
 5. **Return formatted errors from server actions**:
    ```typescript
    return fail(400, {
-     error: formatGraphQLErrors(res.errors),
-     ...formData
+   	error: formatGraphQLErrors(res.errors),
+   	...formData
    });
    ```
 
 ### ❌ DON'T
 
 1. **Don't only show the first error**:
+
    ```typescript
    // ❌ BAD: Only shows one error
-   error: res.errors![0].message
+   error: res.errors![0].message;
 
    // ✅ GOOD: Shows all errors with context
-   error: formatGraphQLErrors(res.errors)
+   error: formatGraphQLErrors(res.errors);
    ```
 
 2. **Don't ignore error extensions**:
+
    ```typescript
    // ❌ BAD: Loses error code information
-   message: error.message
+   message: error.message;
 
    // ✅ GOOD: Includes error code
-   message: extractGraphQLErrorMessages([error])[0]
+   message: extractGraphQLErrorMessages([error])[0];
    ```
 
 3. **Don't forget to check for null errors**:
+
    ```typescript
    // ❌ BAD: Could cause null reference error
    if (res.errors.length > 0)
@@ -239,19 +255,24 @@ The `GraphErrors` component is a reusable error display component that:
 ## Error Types
 
 ### Network Errors
+
 Network errors (connection refused, timeout, etc.) are handled by the fetch layer and typically result in no response. These should be caught with try/catch blocks.
 
 ### Authentication Errors
+
 Authentication errors (`Unauthorized`) are caught by the `handleMissingLogin` plugin and trigger the login flow.
 
 ### GraphQL Errors
+
 GraphQL errors are returned in the `errors` array of the response. They may include:
+
 - `message`: Human-readable error message
 - `path`: GraphQL path where the error occurred
 - `extensions.code`: Machine-readable error code (e.g., `VALIDATION_ERROR`, `NOT_FOUND`)
 - `extensions`: Additional error metadata
 
 ### Validation Errors
+
 Input validation errors are returned as GraphQL errors with detailed messages about which fields are invalid.
 
 ## Testing Error Handling
@@ -273,81 +294,76 @@ import { formatGraphQLErrors } from '$lib/graphql-errors';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
-  mutation CreateResource($input: CreateResourceInput!) {
-    createResource(input: $input) {
-      resource { id name }
-    }
-  }
+	mutation CreateResource($input: CreateResourceInput!) {
+		createResource(input: $input) {
+			resource {
+				id
+				name
+			}
+		}
+	}
 `);
 
 export const actions = {
-  default: async (event) => {
-    const { request, params } = event;
-    const data = await request.formData();
+	default: async (event) => {
+		const { request, params } = event;
+		const data = await request.formData();
 
-    const name = data.get('name') as string | null;
+		const name = data.get('name') as string | null;
 
-    if (!name) {
-      return fail(400, {
-        success: false,
-        error: 'Name is required',
-        name
-      });
-    }
+		if (!name) {
+			return fail(400, {
+				success: false,
+				error: 'Name is required',
+				name
+			});
+		}
 
-    const res = await mutation.mutate(
-      { input: { name, teamSlug: params.team } },
-      { event }
-    );
+		const res = await mutation.mutate({ input: { name, teamSlug: params.team } }, { event });
 
-    // Handle GraphQL errors - includes ALL errors with error codes
-    if (res.errors?.length ?? 0 > 0) {
-      return fail(400, {
-        success: false,
-        error: formatGraphQLErrors(res.errors),
-        name
-      });
-    }
+		// Handle GraphQL errors - includes ALL errors with error codes
+		if (res.errors?.length ?? 0 > 0) {
+			return fail(400, {
+				success: false,
+				error: formatGraphQLErrors(res.errors),
+				name
+			});
+		}
 
-    // Handle unexpected missing data
-    if (!res.data) {
-      return fail(500, {
-        success: false,
-        error: 'Failed to create resource',
-        name
-      });
-    }
+		// Handle unexpected missing data
+		if (!res.data) {
+			return fail(500, {
+				success: false,
+				error: 'Failed to create resource',
+				name
+			});
+		}
 
-    // Success - redirect to the created resource
-    return redirect(303, `/team/${params.team}/resource/${res.data.createResource.resource.id}`);
-  }
+		// Success - redirect to the created resource
+		return redirect(303, `/team/${params.team}/resource/${res.data.createResource.resource.id}`);
+	}
 };
 ```
 
 ```svelte
 <!-- src/routes/team/[team]/resource/create/+page.svelte -->
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import GraphErrors from '$lib/ui/GraphErrors.svelte';
-  import { Alert, Button, TextField } from '@nais/ds-svelte-community';
+	import { enhance } from '$app/forms';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { Alert, Button, TextField } from '@nais/ds-svelte-community';
 
-  let { form } = $props();
+	let { form } = $props();
 </script>
 
 {#if form?.error}
-  <Alert variant="error" style="margin-bottom: 1rem;">
-    {form.error}
-  </Alert>
+	<Alert variant="error" style="margin-bottom: 1rem;">
+		{form.error}
+	</Alert>
 {/if}
 
 <form method="POST" use:enhance>
-  <TextField
-    name="name"
-    label="Resource Name"
-    value={form?.name || ''}
-    error={form?.error}
-  />
-  <Button type="submit">Create Resource</Button>
+	<TextField name="name" label="Resource Name" value={form?.name || ''} error={form?.error} />
+	<Button type="submit">Create Resource</Button>
 </form>
 ```
 
@@ -362,27 +378,27 @@ The error logging is structured to provide maximum debugging information:
 ```typescript
 // src/lib/graphql-errors.ts
 export function logGraphQLErrors(
-  operation: string,
-  errors: GraphQLError[] | null | undefined,
-  context?: Record<string, unknown>
+	operation: string,
+	errors: GraphQLError[] | null | undefined,
+	context?: Record<string, unknown>
 ): void {
-  if (!errors || errors.length === 0) return;
+	if (!errors || errors.length === 0) return;
 
-  // Log detailed error information for debugging
-  console.group(`GraphQL errors in ${operation}`);
-  errors.forEach((err, index) => {
-    console.error(`Error ${index + 1}:`, {
-      message: err.message,
-      path: err.path,
-      extensions: err.extensions,
-      // Log the full error object for debugging
-      fullError: err
-    });
-  });
-  if (context) {
-    console.log('Context:', context);
-  }
-  console.groupEnd();
+	// Log detailed error information for debugging
+	console.group(`GraphQL errors in ${operation}`);
+	errors.forEach((err, index) => {
+		console.error(`Error ${index + 1}:`, {
+			message: err.message,
+			path: err.path,
+			extensions: err.extensions,
+			// Log the full error object for debugging
+			fullError: err
+		});
+	});
+	if (context) {
+		console.log('Context:', context);
+	}
+	console.groupEnd();
 }
 ```
 
@@ -392,23 +408,23 @@ When calling mutations, log the full result for debugging:
 
 ```typescript
 const updateResource = async () => {
-  try {
-    const result = await mutation.mutate({ input });
+	try {
+		const result = await mutation.mutate({ input });
 
-    // Log the full result for debugging
-    console.log('Mutation result:', {
-      data: result.data,
-      errors: result.errors,
-      hasErrors: !!result.errors
-    });
+		// Log the full result for debugging
+		console.log('Mutation result:', {
+			data: result.data,
+			errors: result.errors,
+			hasErrors: !!result.errors
+		});
 
-    if (!result.errors) {
-      // Success - refetch or redirect
-      await refetchData();
-    }
-  } catch (error) {
-    console.error('Network error during mutation:', error);
-  }
+		if (!result.errors) {
+			// Success - refetch or redirect
+			await refetchData();
+		}
+	} catch (error) {
+		console.error('Network error during mutation:', error);
+	}
 };
 ```
 
@@ -440,13 +456,13 @@ If mutations fail without GraphQL errors, check for network errors:
 
 ```typescript
 try {
-  const result = await mutation.mutate({ input });
-  if (!result.errors) {
-    // Success
-  }
+	const result = await mutation.mutate({ input });
+	if (!result.errors) {
+		// Success
+	}
 } catch (error) {
-  // Network error (connection refused, timeout, etc.)
-  console.error('Network error:', error);
+	// Network error (connection refused, timeout, etc.)
+	console.error('Network error:', error);
 }
 ```
 

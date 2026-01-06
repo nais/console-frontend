@@ -45,10 +45,7 @@ export function formatGraphQLErrors(errors: GraphQLError[] | null | undefined): 
 /**
  * Check if errors include a specific error code from the backend.
  */
-export function hasErrorCode(
-	errors: GraphQLError[] | null | undefined,
-	code: string
-): boolean {
+export function hasErrorCode(errors: GraphQLError[] | null | undefined, code: string): boolean {
 	if (!errors) return false;
 	return errors.some((error) => error.extensions?.code === code);
 }
