@@ -7,7 +7,6 @@ import {
 	OpenSearchTier,
 	type OpenSearchTier$options
 } from '$houdini';
-import { formatGraphQLErrors } from '$lib/graphql-errors';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
@@ -73,7 +72,7 @@ export const actions = {
 			return fail(400, {
 				...allProps,
 				success: false,
-				error: formatGraphQLErrors(res.errors)
+				error: res.errors![0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {

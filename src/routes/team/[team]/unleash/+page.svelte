@@ -252,7 +252,7 @@
 
 {#if $Unleash.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($Unleash.errors)) as error}
+		{#each new Set(extractErrorMessages($Unleash.errors)) as error (error)}
 			{error}<br />
 		{/each}
 	</Alert>
@@ -260,7 +260,7 @@
 
 {#if $UnleashReleaseChannels.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error}
+		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error (error)}
 			{error}<br />
 		{/each}
 	</Alert>
@@ -268,7 +268,7 @@
 
 {#if $createUnleashForTeam.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error}
+		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error (error)}
 			{error}<br />
 		{/each}
 		<Button variant="tertiary" size="small" onclick={() => ($createUnleashForTeam.errors = [])}>
@@ -279,7 +279,7 @@
 
 {#if $updateUnleashInstance.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error}
+		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
 		<Button variant="tertiary" size="small" onclick={() => ($updateUnleashInstance.errors = [])}>
@@ -290,7 +290,7 @@
 
 {#if $allowTeamAccess.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error}
+		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
 		<Button variant="tertiary" size="small" onclick={() => ($allowTeamAccess.errors = [])}>
@@ -301,7 +301,7 @@
 
 {#if $revokeTeamAccess.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error}
+		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
 		<Button variant="tertiary" size="small" onclick={() => ($revokeTeamAccess.errors = [])}>

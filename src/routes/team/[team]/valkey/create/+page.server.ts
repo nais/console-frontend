@@ -1,5 +1,4 @@
 import { graphql, ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$houdini';
-import { formatGraphQLErrors } from '$lib/graphql-errors';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
@@ -62,7 +61,7 @@ export const actions = {
 		if (res.errors?.length ?? 0 > 0) {
 			return fail(400, {
 				success: false,
-				error: formatGraphQLErrors(res.errors),
+				error: res.errors![0].message,
 				name,
 				environment,
 				tier,
