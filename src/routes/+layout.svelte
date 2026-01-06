@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
@@ -83,7 +84,7 @@
 	</title>
 </svelte:head>
 
-<Theme theme={themeSwitch.theme}>
+<Theme theme={browser ? themeSwitch.theme : data.theme}>
 	<Page contentBlockPadding="none">
 		<div class="full-wrapper">
 			{#if loading}
