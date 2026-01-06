@@ -5,7 +5,6 @@
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import SummaryCard from '$lib/ui/SummaryCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
@@ -41,6 +40,24 @@
 	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
+
+	type GraphQLError = {
+		message: string;
+		extensions?: Record<string, unknown>;
+		path?: (string | number)[];
+	};
+
+	function extractErrorMessages(errors: GraphQLError[] | null | undefined): string[] {
+		if (!errors || errors.length === 0) {
+			return [];
+		}
+		return errors.map((error) => {
+			if (error.extensions?.code) {
+				return `${error.message} (${error.extensions.code})`;
+			}
+			return error.message;
+		});
+	}
 
 	let { data }: PageProps = $props();
 	let { Unleash, UnleashReleaseChannels, teamSlug, viewerIsMember } = $derived(data);
@@ -233,12 +250,65 @@
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 </script>
 
-<GraphErrors errors={$Unleash.errors} operation="Unleash" />
-<GraphErrors errors={$UnleashReleaseChannels.errors} operation="UnleashReleaseChannels" />
-<GraphErrors errors={$createUnleashForTeam.errors} dismissable operation="CreateUnleashForTeam" />
-<GraphErrors errors={$updateUnleashInstance.errors} dismissable operation="UpdateUnleashInstance" />
-<GraphErrors errors={$allowTeamAccess.errors} dismissable operation="AllowTeamAccess" />
-<GraphErrors errors={$revokeTeamAccess.errors} dismissable operation="RevokeTeamAccess" />
+{#if $Unleash.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($Unleash.errors)) as error}
+			{error}<br />
+		{/each}
+	</Alert>
+{/if}
+
+{#if $UnleashReleaseChannels.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error}
+			{error}<br />
+		{/each}
+	</Alert>
+{/if}
+
+{#if $createUnleashForTeam.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($createUnleashForTeam.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $updateUnleashInstance.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($updateUnleashInstance.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $allowTeamAccess.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($allowTeamAccess.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $revokeTeamAccess.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($revokeTeamAccess.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
 
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
