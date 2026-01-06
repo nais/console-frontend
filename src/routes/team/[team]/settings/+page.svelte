@@ -315,7 +315,7 @@
 							<Heading level="3" size="xsmall">Google Artifact Registry</Heading>
 							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
-									href="https://console.cloud.google.com/gcr/images/{formatGARRepo(
+									href="https://console.cloud.google.com/artifacts/images/{formatGARRepo(
 										external.googleArtifactRegistry.repository
 									)}"
 								>
