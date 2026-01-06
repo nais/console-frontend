@@ -1,6 +1,7 @@
 import { CronExpressionParser } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import { DateTime } from 'luxon';
+import { logger } from '$lib/logger';
 
 function getNextRunTime(expression: string, cronTimeZone: string, localTimeZone: string): string {
 	try {
@@ -25,7 +26,7 @@ function getNextRunTime(expression: string, cronTimeZone: string, localTimeZone:
 
 		return nextRunInLocalTZ.toFormat('cccc, dd LLL yyyy HH:mm');
 	} catch (error) {
-		console.error('Error calculating next run time:', error);
+		logger.error({ error, expression, cronTimeZone, localTimeZone }, 'Error calculating next run time');
 		return 'Invalid cron expression or time zone';
 	}
 }
