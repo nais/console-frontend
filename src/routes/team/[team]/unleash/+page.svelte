@@ -7,6 +7,7 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import SummaryCard from '$lib/ui/SummaryCard.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import {
 		Alert,
@@ -327,7 +328,6 @@
 			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
 		</Alert>
 	{/if}
-	<!-- TODO: Re-enable after release channel functionality is verified
 	{#if !unleash.releaseChannelName}
 		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
 			No release channel configured. All Unleash instances are being transitioned to release
@@ -335,7 +335,6 @@
 			instance receives updates.
 		</Alert>
 	{/if}
-	-->
 	<Confirm
 		confirmText="Delete"
 		variant="danger"
@@ -403,7 +402,7 @@
 									<dd style="margin: 0; margin-left: 1rem;">
 										Version: {extractVersion(channel.currentVersion)}
 										{#if channel.lastUpdated}
-											({new Date(channel.lastUpdated).toLocaleDateString()})
+											(<Time time={new Date(channel.lastUpdated)} />)
 										{/if}<br />
 										Rollout: {channel.type}
 									</dd>
@@ -432,9 +431,7 @@
 									<option value={channel.name}>
 										{channel.name} (v{extractVersion(
 											channel.currentVersion
-										)}{#if channel.lastUpdated}, {new Date(
-												channel.lastUpdated
-											).toLocaleDateString()}{/if})
+										)}{#if channel.lastUpdated}, {channel.lastUpdated}{/if})
 									</option>
 								{/each}
 							{/if}
@@ -456,9 +453,9 @@
 								{#if unleash.releaseChannel}
 									(v{extractVersion(
 										unleash.releaseChannel.currentVersion
-									)}{#if unleash.releaseChannel.lastUpdated}, {new Date(
-											unleash.releaseChannel.lastUpdated
-										).toLocaleDateString()}{/if})
+									)}{#if unleash.releaseChannel.lastUpdated}, <Time
+											time={new Date(unleash.releaseChannel.lastUpdated)}
+										/>{/if})
 								{/if}
 							{:else}
 								<span style="color: var(--ax-text-subtle)">Not set</span>
