@@ -125,17 +125,43 @@
 		if (!newChannel || newChannel === unleash?.releaseChannelName) return;
 
 		releaseChannelLoading = true;
-		await updateUnleashInstance.mutate({
-			team: teamSlug,
-			releaseChannel: newChannel
-		});
-		releaseChannelLoading = false;
+		try {
+			// Log the mutation details for debugging backend issues.
+			// NOTE: If you see generic error messages from the API without specific details,
+			// this is a backend issue that needs investigation. The logs below will help
+			// identify what was being attempted when the error occurred.
+			console.log('Calling UpdateUnleashInstance mutation:', {
+				variables: { team: teamSlug, releaseChannel: newChannel },
+				currentChannel: unleash?.releaseChannelName,
+				instanceName: unleash?.name
+			});
 
-		if ($updateUnleashInstance.errors) {
-			return;
+			const result = await updateUnleashInstance.mutate({
+				team: teamSlug,
+				releaseChannel: newChannel
+			});
+
+			// Log the full result for debugging
+			console.log('UpdateUnleashInstance result:', {
+				data: result.data,
+				errors: result.errors,
+				hasErrors: !!result.errors,
+				errorDetails: result.errors?.map((err: any) => ({
+					message: err.message,
+					path: err.path,
+					extensions: err.extensions
+				}))
+			});
+
+			if (!result.errors) {
+				// Success - refetch the data
+				await Unleash.fetch({ policy: 'CacheAndNetwork' });
+			}
+		} catch (error) {
+			console.error('Network error during updateReleaseChannel:', error);
+		} finally {
+			releaseChannelLoading = false;
 		}
-
-		Unleash.fetch({ policy: 'CacheAndNetwork' });
 	};
 
 	const createNewUnleash = async () => {
@@ -226,11 +252,12 @@
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
 </script>
 
-<GraphErrors errors={$Unleash.errors} />
-<GraphErrors errors={$createUnleashForTeam.errors} dismissable />
-<GraphErrors errors={$updateUnleashInstance.errors} dismissable />
-<GraphErrors errors={$allowTeamAccess.errors} dismissable />
-<GraphErrors errors={$revokeTeamAccess.errors} dismissable />
+<GraphErrors errors={$Unleash.errors} operation="Unleash" />
+<GraphErrors errors={$UnleashReleaseChannels.errors} operation="UnleashReleaseChannels" />
+<GraphErrors errors={$createUnleashForTeam.errors} dismissable operation="CreateUnleashForTeam" />
+<GraphErrors errors={$updateUnleashInstance.errors} dismissable operation="UpdateUnleashInstance" />
+<GraphErrors errors={$allowTeamAccess.errors} dismissable operation="AllowTeamAccess" />
+<GraphErrors errors={$revokeTeamAccess.errors} dismissable operation="RevokeTeamAccess" />
 
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">

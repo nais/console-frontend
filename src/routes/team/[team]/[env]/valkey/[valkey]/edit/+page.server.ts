@@ -1,12 +1,13 @@
 import {
-	graphql,
-	ValkeyMaxMemoryPolicy,
-	type ValkeyMaxMemoryPolicy$options,
-	ValkeyMemory,
-	type ValkeyMemory$options,
-	ValkeyTier,
-	type ValkeyTier$options
+    graphql,
+    ValkeyMaxMemoryPolicy,
+    type ValkeyMaxMemoryPolicy$options,
+    ValkeyMemory,
+    type ValkeyMemory$options,
+    ValkeyTier,
+    type ValkeyTier$options
 } from '$houdini';
+import { formatGraphQLErrors } from '$lib/graphql-errors';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
@@ -60,7 +61,7 @@ export const actions = {
 		if (res.errors?.length ?? 0 > 0) {
 			return fail(400, {
 				success: false,
-				error: res.errors![0].message,
+				error: formatGraphQLErrors(res.errors),
 				tier,
 				memory,
 				max_memory_policy,
