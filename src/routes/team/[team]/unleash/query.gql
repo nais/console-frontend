@@ -4,6 +4,13 @@ query Unleash($team: Slug!) {
 			__typename
 			name
 			version
+			releaseChannelName
+			releaseChannel {
+				name
+				currentVersion
+				type
+				lastUpdated
+			}
 			allowedTeams(first: 20) @paginate {
 				nodes {
 					slug
