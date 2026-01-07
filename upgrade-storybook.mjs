@@ -19,7 +19,7 @@ try {
 		stdio: ['ignore', 'pipe', 'pipe']
 	});
 	console.log('✓ Version exists\n');
-} catch (error) {
+} catch {
 	console.error(`\n❌ Error: storybook@${version} does not exist or cannot be found`);
 	console.error('Please check the version number and try again.');
 	process.exit(1);
