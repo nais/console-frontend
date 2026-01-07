@@ -54,9 +54,12 @@ try {
 	} else {
 		console.log(`✓ Meets 14-day cooldown\n`);
 	}
-} catch {
+} catch (error) {
 	console.error(`\n❌ Error: storybook@${version} does not exist or cannot be found`);
 	console.error('Please check the version number and try again.');
+	if (error.message) {
+		console.error(`\nDebug info: ${error.message}`);
+	}
 	process.exit(1);
 }
 

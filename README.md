@@ -105,7 +105,7 @@ This will upgrade all Storybook packages together and reformat all project files
 - `@chromatic-com/storybook`
 - `eslint-plugin-storybook`
 
-Note: The 14-day cooldown policy applies to Storybook updates as well. Check `npm run check-age storybook <version>` before upgrading.
+Note: The upgrade script automatically checks the 14-day cooldown policy. To manually check a version's age before upgrading, use `npm run check-age storybook <version>`.
 
 #### Using the nais API proxy
 
