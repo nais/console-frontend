@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { spawn, execFileSync } from 'node:child_process';
-
+import { spawn, execFileSync } from 'child_process';
+import * as readline from 'readline';
 const version = process.argv[2];
 
 if (!version) {
@@ -14,11 +14,46 @@ if (!version) {
 // Validate that the version exists
 try {
 	console.log(`🔍 Validating storybook@${version} exists...`);
-	execFileSync('npm', ['view', `storybook@${version}`, 'version'], {
+	const output = execFileSync('npm', ['view', `storybook@${version}`, 'time', '--json'], {
 		encoding: 'utf-8',
 		stdio: ['ignore', 'pipe', 'pipe']
 	});
 	console.log('✓ Version exists\n');
+
+	// Check 14-day cooldown policy
+	const data = JSON.parse(output);
+	const releaseDate = new Date(data[version] || data);
+	const ageInDays = Math.floor((Date.now() - releaseDate.getTime()) / (1000 * 60 * 60 * 24));
+
+	console.log(`📦 storybook@${version}`);
+	console.log(`📅 Released: ${releaseDate.toISOString().split('T')[0]}`);
+	console.log(`⏱️  Age: ${ageInDays} days old`);
+
+	if (ageInDays < 14) {
+		console.log(`\n⚠️  WARNING: This version is less than 14 days old!`);
+		console.log(`⚠️  The 14-day cooldown policy is not met.`);
+		console.log(`⚠️  Consider waiting to reduce the risk of compromised packages.\n`);
+
+		const rl = readline.createInterface({
+			input: process.stdin,
+			output: process.stdout
+		});
+
+		const answer = await new Promise((resolve) => {
+			rl.question('Do you want to continue anyway? (y/N): ', (answer) => {
+				rl.close();
+				resolve(answer);
+			});
+		});
+
+		if (answer.toLowerCase() !== 'y') {
+			console.log('\n❌ Upgrade cancelled.');
+			process.exit(0);
+		}
+		console.log('');
+	} else {
+		console.log(`✓ Meets 14-day cooldown\n`);
+	}
 } catch {
 	console.error(`\n❌ Error: storybook@${version} does not exist or cannot be found`);
 	console.error('Please check the version number and try again.');
