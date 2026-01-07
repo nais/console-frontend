@@ -22,6 +22,7 @@
 		"test": "vitest",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
+		"upgrade-storybook": "node upgrade-storybook.mjs",
 		"lint-staged": "lint-staged",
 		"lockfile-lint": "lockfile-lint --path package-lock.json",
 		"unused": "node find-unused-gql.mjs && echo '---' && node find-missing-css-vars.mjs"

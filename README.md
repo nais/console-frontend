@@ -68,6 +68,45 @@ npm run test # Run tests with Vitest
 npm run lockfile-lint # Validate package-lock.json security
 ```
 
+#### Storybook
+
+The project includes a component library documented with Storybook:
+
+```bash
+npm run storybook # Start Storybook dev server on port 6006
+npm run build-storybook # Build static Storybook for deployment
+```
+
+**Story files:**
+
+Component stories are located throughout the codebase alongside their components:
+
+- `src/lib/ui/*.stories.svelte` - UI component stories
+- `src/lib/domain/**/*.stories.svelte` - Domain-specific component stories
+
+Storybook configuration files are in `.storybook/`.
+
+**Upgrading Storybook:**
+
+When upgrading Storybook, use the upgrade script which automatically updates all related packages and reformats the files:
+
+```bash
+npm run upgrade-storybook <version>
+# Example: npm run upgrade-storybook 10.1.11
+```
+
+This will upgrade all Storybook packages together and reformat all project files:
+
+- `storybook`
+- `@storybook/sveltekit`
+- `@storybook/addon-docs`
+- `@storybook/addon-themes`
+- `@storybook/addon-svelte-csf`
+- `@chromatic-com/storybook`
+- `eslint-plugin-storybook`
+
+Note: The upgrade script automatically checks the 14-day cooldown policy. To manually check a version's age before upgrading, use `npm run check-age storybook <version>`.
+
 #### Using the nais API proxy
 
 To connect to a nais-api instance, run the [nais CLI](https://github.com/nais/cli) proxy on your **host machine** (outside the devcontainer):
