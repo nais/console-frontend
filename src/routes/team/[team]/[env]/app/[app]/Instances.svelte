@@ -21,22 +21,14 @@
 	const memory_usage = $derived(app?.team.environment.application.utilization.current_memory ?? 0);
 
 	const usage_cpu_percent = $derived(
-		app?.team.environment.application.resources.requests.cpu !== null &&
-			app?.team.environment.application.resources.requests.cpu !== undefined &&
-			appInstances.length > 0
-			? (cpu_usage /
-					(app.team.environment.application.resources.requests.cpu * appInstances.length)) *
-					100
+		app?.team.environment.application.utilization.requested_cpu
+			? (cpu_usage / app?.team.environment.application.utilization.requested_cpu) * 100
 			: 0
 	);
 
 	const usage_memory_percent = $derived(
-		app?.team.environment.application.resources.requests.memory !== null &&
-			app?.team.environment.application.resources.requests.memory !== undefined &&
-			appInstances.length > 0
-			? (memory_usage /
-					(app.team.environment.application.resources.requests.memory * appInstances.length)) *
-					100
+		app?.team.environment.application.utilization.requested_memory
+			? (memory_usage / app?.team.environment.application.utilization.requested_memory) * 100
 			: 0
 	);
 
