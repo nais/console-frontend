@@ -101,6 +101,8 @@ This will upgrade all Storybook packages together and reformat the files to use 
 - `@storybook/sveltekit`
 - `@storybook/addon-docs`
 - `@storybook/addon-themes`
+- `@storybook/addon-svelte-csf`
+- `@chromatic-com/storybook`
 - `eslint-plugin-storybook`
 
 Note: The 14-day cooldown policy applies to Storybook updates as well. Check `npm run check-age storybook <version>` before upgrading.
