@@ -79,12 +79,7 @@
 						</dl>
 					{/if}
 				</section>
-				{#if workload.image.hasSBOM}
-					<BodyShort spacing>
-						Review and fix vulnerabilities by updating dependencies, or suppress them if no patch is
-						available.
-					</BodyShort>
-				{:else}
+				{#if !workload.image.hasSBOM}
 					<BodyShort spacing>
 						<WarningIcon class="text-aligned-icon" /> No vulnerability data available. Learn how to generate
 						SBOMs and attestations for your workloads in the
