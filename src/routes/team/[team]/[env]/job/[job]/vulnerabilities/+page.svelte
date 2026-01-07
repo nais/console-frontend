@@ -1,16 +1,15 @@
 <script lang="ts">
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
+	import { docURL } from '$lib/doc';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
-	import List from '$lib/ui/List.svelte';
+	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
 	import WorkloadVulnerabilityHistoryGraph from '$lib/domain/vulnerability/WorkloadVulnerabilityHistoryGraph.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
-	import { docURL } from '$lib/doc';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { BodyShort, CopyButton, Detail, Heading, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -82,17 +81,8 @@
 				</section>
 				{#if workload.image.hasSBOM}
 					<BodyShort spacing>
-						This page provides a list of vulnerabilities in <strong>{workload.name}</strong>
-						in <Tag variant={envTagVariant(workload.teamEnvironment.environment.name)}
-							>{workload.teamEnvironment.environment.name}</Tag
-						>. It includes a summary of the security status and a complete list of identified
-						vulnerabilities.
-					</BodyShort>
-
-					<BodyShort spacing>
-						Review detailed information on each vulnerability and update affected dependencies to
-						the latest patched version. If no upgrade path is available, vulnerabilities can be
-						reviewed and suppressed by the team responsible for the workload.
+						Review and fix vulnerabilities by updating dependencies, or suppress them if no patch is
+						available.
 					</BodyShort>
 				{:else}
 					<BodyShort spacing>
