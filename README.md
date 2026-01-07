@@ -95,7 +95,7 @@ npm run upgrade-storybook <version>
 # Example: npm run upgrade-storybook 10.1.11
 ```
 
-This will upgrade all Storybook packages together and reformat the files to use tabs:
+This will upgrade all Storybook packages together and reformat all project files:
 
 - `storybook`
 - `@storybook/sveltekit`
