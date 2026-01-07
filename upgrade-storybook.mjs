@@ -38,6 +38,10 @@ async function runCommand(cmd, args) {
 			stdio: 'inherit'
 		});
 
+		proc.on('error', (error) => {
+			reject(new Error(`Failed to start command: ${error.message}`));
+		});
+
 		proc.on('close', (code) => {
 			if (code === 0) {
 				resolve();
