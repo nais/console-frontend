@@ -22,13 +22,13 @@
 
 	const usage_cpu_percent = $derived(
 		app?.team.environment.application.utilization.requested_cpu
-			? (cpu_usage / app.team.environment.application.utilization.requested_cpu) * 100
+			? (cpu_usage / app?.team.environment.application.utilization.requested_cpu) * 100
 			: 0
 	);
 
 	const usage_memory_percent = $derived(
 		app?.team.environment.application.utilization.requested_memory
-			? (memory_usage / app.team.environment.application.utilization.requested_memory) * 100
+			? (memory_usage / app?.team.environment.application.utilization.requested_memory) * 100
 			: 0
 	);
 
