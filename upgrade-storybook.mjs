@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 
 const version = process.argv[2];
 
@@ -8,6 +8,20 @@ if (!version) {
 	console.error('Error: Please provide a Storybook version');
 	console.error('Usage: npm run upgrade-storybook <version>');
 	console.error('Example: npm run upgrade-storybook 10.1.11');
+	process.exit(1);
+}
+
+// Validate that the version exists
+try {
+	console.log(`🔍 Validating storybook@${version} exists...`);
+	execFileSync('npm', ['view', `storybook@${version}`, 'version'], {
+		encoding: 'utf-8',
+		stdio: ['ignore', 'pipe', 'pipe']
+	});
+	console.log('✓ Version exists\n');
+} catch (error) {
+	console.error(`\n❌ Error: storybook@${version} does not exist or cannot be found`);
+	console.error('Please check the version number and try again.');
 	process.exit(1);
 }
 
