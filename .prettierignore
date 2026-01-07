@@ -10,9 +10,8 @@ schema.graphql
 .env.*
 !.env.example
 
-# Ignore files for PNPM, NPM and YARN
+# Ignore files for PNPM and YARN
 pnpm-lock.yaml
-package-lock.json
 yarn.lock
 
 # Because of Helm templating, the prettier formatter creates invalid YAML files.
