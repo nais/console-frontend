@@ -88,13 +88,14 @@ Storybook configuration files are in `.storybook/`.
 
 **Upgrading Storybook:**
 
-When upgrading Storybook, use the official upgrade command which automatically updates all related packages to ensure compatibility:
+When upgrading Storybook, use the upgrade script which automatically updates all related packages and reformats the files:
 
 ```bash
-npx storybook@<version> upgrade && npm run format
+npm run upgrade-storybook <version>
+# Example: npm run upgrade-storybook 10.1.11
 ```
 
-This will upgrade all Storybook packages together and reformat the files to use tabs (as configured in Prettier):
+This will upgrade all Storybook packages together and reformat the files to use tabs:
 
 - `storybook`
 - `@storybook/sveltekit`
