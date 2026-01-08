@@ -218,12 +218,12 @@
 						<dd><Time time={deployKey.created} distance={true} /></dd>
 						<dt>Expires:</dt>
 						<dd><Time time={deployKey.expires} distance={true} /></dd>
-						<dt>Key:</dt>
-						<dd>
-							<div class="deployKey">
-								{#if showKey}
-									{deployKey.key}
-									{#if viewerIsMember}
+						{#if viewerIsMember}
+							<dt>Key:</dt>
+							<dd>
+								<div class="deployKey">
+									{#if showKey}
+										{deployKey.key}
 										<Button
 											size="xsmall"
 											variant="tertiary"
@@ -232,10 +232,8 @@
 											}}
 											icon={EyeSlashIcon}
 										/>
-									{/if}
-								{:else}
-									{deployKey.key.replaceAll(/./g, '*')}
-									{#if viewerIsMember}
+									{:else}
+										{deployKey.key.replaceAll(/./g, '*')}
 										<Button
 											size="xsmall"
 											variant="tertiary"
@@ -243,12 +241,11 @@
 												showKey = !showKey;
 											}}
 											icon={EyeIcon}
-											disabled={!viewerIsMember}
 										/>
 									{/if}
-								{/if}
-							</div>
-						</dd>
+								</div>
+							</dd>
+						{/if}
 					</dl>
 					{#if viewerIsMember}
 						<div class="buttons">
@@ -259,7 +256,6 @@
 									variant="action"
 									copyText={deployKey.key}
 									size="small"
-									disabled={!viewerIsMember}
 								/>
 							</div>
 							<div class="button">
@@ -270,7 +266,6 @@
 										showRotateKey = !showRotateKey;
 									}}
 									icon={ArrowsCirclepathIcon}
-									disabled={!viewerIsMember}
 								>
 									Rotate key
 								</Button>
