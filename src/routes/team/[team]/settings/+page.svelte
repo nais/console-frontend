@@ -218,59 +218,60 @@
 						<dd><Time time={deployKey.created} distance={true} /></dd>
 						<dt>Expires:</dt>
 						<dd><Time time={deployKey.expires} distance={true} /></dd>
-						<dt>Key:</dt>
-						<dd>
-							<div class="deployKey">
-								{#if showKey}
-									{deployKey.key}
-									<Button
-										size="xsmall"
-										variant="tertiary"
-										onclick={() => {
-											showKey = !showKey;
-										}}
-										icon={EyeSlashIcon}
-									/>
-								{:else}
-									{deployKey.key.replaceAll(/./g, '*')}
-									<Button
-										size="xsmall"
-										variant="tertiary"
-										onclick={() => {
-											showKey = !showKey;
-										}}
-										icon={EyeIcon}
-										disabled={!viewerIsMember}
-									/>
-								{/if}
-							</div>
-						</dd>
+						{#if viewerIsMember}
+							<dt>Key:</dt>
+							<dd>
+								<div class="deployKey">
+									{#if showKey}
+										{deployKey.key}
+										<Button
+											size="xsmall"
+											variant="tertiary"
+											onclick={() => {
+												showKey = !showKey;
+											}}
+											icon={EyeSlashIcon}
+										/>
+									{:else}
+										{deployKey.key.replaceAll(/./g, '*')}
+										<Button
+											size="xsmall"
+											variant="tertiary"
+											onclick={() => {
+												showKey = !showKey;
+											}}
+											icon={EyeIcon}
+										/>
+									{/if}
+								</div>
+							</dd>
+						{/if}
 					</dl>
-					<div class="buttons">
-						<div class="button">
-							<CopyButton
-								text="Copy key"
-								activeText="Key copied"
-								variant="action"
-								copyText={deployKey.key}
-								size="small"
-								disabled={!viewerIsMember}
-							/>
+					{#if viewerIsMember}
+						<div class="buttons">
+							<div class="button">
+								<CopyButton
+									text="Copy key"
+									activeText="Key copied"
+									variant="action"
+									copyText={deployKey.key}
+									size="small"
+								/>
+							</div>
+							<div class="button">
+								<Button
+									size="small"
+									variant="danger"
+									onclick={() => {
+										showRotateKey = !showRotateKey;
+									}}
+									icon={ArrowsCirclepathIcon}
+								>
+									Rotate key
+								</Button>
+							</div>
 						</div>
-						<div class="button">
-							<Button
-								size="small"
-								variant="danger"
-								onclick={() => {
-									showRotateKey = !showRotateKey;
-								}}
-								icon={ArrowsCirclepathIcon}
-								disabled={!viewerIsMember}
-							>
-								Rotate key
-							</Button>
-						</div>
-					</div>
+					{/if}
 				{:else}
 					<Alert variant="error">Error getting deploy key. Try again later.</Alert>
 				{/if}
