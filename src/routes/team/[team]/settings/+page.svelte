@@ -291,9 +291,7 @@
 						</div>
 					</div>
 				{:else}
-					<BodyShort class="mt-2">
-						No deploy key has been created yet.
-					</BodyShort>
+					<BodyShort class="mt-2">No deploy key has been created yet.</BodyShort>
 				{/if}
 			</div>
 
