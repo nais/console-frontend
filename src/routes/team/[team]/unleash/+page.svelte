@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
@@ -22,6 +24,7 @@
 		Table,
 		Tbody,
 		Td,
+		TextField,
 		Th,
 		Thead,
 		Tooltip,
@@ -39,6 +42,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import { onDestroy } from 'svelte';
+	import { getTeamContext } from '../teamContext.svelte';
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
 
@@ -249,6 +253,30 @@
 				allowedTeamSlug: teamName
 			})
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+
+	// Delete Unleash instance
+	const deleteUnleashInstance = graphql(`
+		mutation DeleteUnleashInstance($team: Slug!) {
+			deleteUnleashInstance(input: { teamSlug: $team }) {
+				unleashDeleted
+			}
+		}
+	`);
+
+	const teamCtx = getTeamContext();
+	let deleteConfirmOpen = $state(false);
+	let deleteConfirmation = $state('');
+	const allowedTeamsCount = $derived(unleash?.allowedTeams.nodes.length ?? 0);
+	const canDelete = $derived(allowedTeamsCount === 1 && unleash?.ready);
+	const deleteConfirmed = $derived(deleteConfirmation === unleash?.name);
+
+	const deleteUnleash = async () => {
+		const result = await deleteUnleashInstance.mutate({ team: teamSlug });
+		if (result.data?.deleteUnleashInstance.unleashDeleted) {
+			teamCtx.refetchInventory();
+			goto(`/team/${page.params.team}?deleted=unleash`);
+		}
+	};
 </script>
 
 {#if $Unleash.errors}
@@ -306,6 +334,17 @@
 			{error}<br />
 		{/each}
 		<Button variant="tertiary" size="small" onclick={() => ($revokeTeamAccess.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if $deleteUnleashInstance.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($deleteUnleashInstance.errors)) as error (error)}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($deleteUnleashInstance.errors = [])}>
 			Dismiss
 		</Button>
 	</Alert>
@@ -608,6 +647,68 @@
 			</div>
 		</div>
 	</div>
+
+	{#if viewerIsMember}
+		<div class="danger-zone" style="margin-top: var(--spacing-layout);">
+			<Heading level="2" size="medium" spacing>Danger Zone</Heading>
+			<BodyShort spacing>
+				Permanently delete this Unleash instance. This action cannot be undone.
+			</BodyShort>
+
+			{#if !canDelete}
+				<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+					{#if !unleash.ready}
+						The Unleash instance must be ready before it can be deleted.
+					{:else if allowedTeamsCount > 1}
+						Revoke access for all other teams before deleting the Unleash instance. Currently {allowedTeamsCount -
+							1} other team{allowedTeamsCount > 2 ? 's have' : ' has'} access.
+					{/if}
+				</Alert>
+			{/if}
+
+			<Button
+				variant="danger"
+				size="small"
+				disabled={!canDelete}
+				onclick={() => (deleteConfirmOpen = true)}
+				icon={TrashIcon}
+			>
+				Delete Unleash Instance
+			</Button>
+		</div>
+
+		<Confirm
+			confirmText="Delete"
+			variant="danger"
+			bind:open={deleteConfirmOpen}
+			onconfirm={() => {
+				if (deleteConfirmed) {
+					deleteUnleash();
+				}
+			}}
+		>
+			{#snippet header()}
+				<Heading>Delete Unleash Instance</Heading>
+			{/snippet}
+			<BodyShort spacing>
+				This will permanently delete the Unleash instance <b>{unleash.name}</b> and all its data.
+			</BodyShort>
+			<BodyShort spacing>
+				This action cannot be undone. To confirm, type <b>{unleash.name}</b> below:
+			</BodyShort>
+			<TextField
+				label="Confirm instance name"
+				hideLabel
+				bind:value={deleteConfirmation}
+				placeholder={unleash.name}
+			/>
+			{#if !deleteConfirmed && deleteConfirmation.length > 0}
+				<Alert variant="error" size="small" style="margin-top: 0.5rem;">
+					The instance name does not match.
+				</Alert>
+			{/if}
+		</Confirm>
+	{/if}
 {:else}
 	<div>
 		<BodyLong
@@ -685,5 +786,11 @@
 		margin: 0;
 		font-size: 1rem;
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.danger-zone {
+		padding: var(--ax-space-16);
+		border-radius: 8px;
+		border: 1px solid var(--ax-border-danger);
 	}
 </style>

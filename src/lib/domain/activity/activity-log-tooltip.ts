@@ -32,6 +32,7 @@ export function activityTooltip(typename: string): string {
 		case 'TeamDeployKeyUpdatedActivityLogEntry':
 			return 'Team';
 		case 'UnleashInstanceCreatedActivityLogEntry':
+		case 'UnleashInstanceDeletedActivityLogEntry':
 		case 'UnleashInstanceUpdatedActivityLogEntry':
 			return 'Unleash';
 		case 'OpenSearchCreatedActivityLogEntry':
