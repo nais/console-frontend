@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { resolve } from '$app/paths';
 	import {
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
@@ -27,6 +28,7 @@
 		ArrowsCirclepathIcon,
 		EyeIcon,
 		EyeSlashIcon,
+		TokenIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -94,6 +96,7 @@
 
 	let showKey = $state(false);
 	let showRotateKey = $state(false);
+	let showCreateKey = $state(false);
 	let showDeleteTeam = $state(false);
 
 	let descriptionErrors: { message: string }[] | undefined = $state();
@@ -218,61 +221,77 @@
 						<dd><Time time={deployKey.created} distance={true} /></dd>
 						<dt>Expires:</dt>
 						<dd><Time time={deployKey.expires} distance={true} /></dd>
-						<dt>Key:</dt>
-						<dd>
-							<div class="deployKey">
-								{#if showKey}
-									{deployKey.key}
-									<Button
-										size="xsmall"
-										variant="tertiary"
-										onclick={() => {
-											showKey = !showKey;
-										}}
-										icon={EyeSlashIcon}
-									/>
-								{:else}
-									{deployKey.key.replaceAll(/./g, '*')}
-									<Button
-										size="xsmall"
-										variant="tertiary"
-										onclick={() => {
-											showKey = !showKey;
-										}}
-										icon={EyeIcon}
-										disabled={!viewerIsMember}
-									/>
-								{/if}
-							</div>
-						</dd>
+						{#if viewerIsMember}
+							<dt>Key:</dt>
+							<dd>
+								<div class="deployKey">
+									{#if showKey}
+										{deployKey.key}
+										<Button
+											size="xsmall"
+											variant="tertiary"
+											onclick={() => {
+												showKey = !showKey;
+											}}
+											icon={EyeSlashIcon}
+										/>
+									{:else}
+										{deployKey.key.replaceAll(/./g, '*')}
+										<Button
+											size="xsmall"
+											variant="tertiary"
+											onclick={() => {
+												showKey = !showKey;
+											}}
+											icon={EyeIcon}
+										/>
+									{/if}
+								</div>
+							</dd>
+						{/if}
 					</dl>
-					<div class="buttons">
-						<div class="button">
-							<CopyButton
-								text="Copy key"
-								activeText="Key copied"
-								variant="action"
-								copyText={deployKey.key}
-								size="small"
-								disabled={!viewerIsMember}
-							/>
+					{#if viewerIsMember}
+						<div class="buttons">
+							<div class="button">
+								<CopyButton
+									text="Copy key"
+									activeText="Key copied"
+									variant="action"
+									copyText={deployKey.key}
+									size="small"
+								/>
+							</div>
+							<div class="button">
+								<Button
+									size="small"
+									variant="danger"
+									onclick={() => {
+										showRotateKey = !showRotateKey;
+									}}
+									icon={ArrowsCirclepathIcon}
+								>
+									Rotate key
+								</Button>
+							</div>
 						</div>
-						<div class="button">
+					{/if}
+				{:else if viewerIsMember}
+					<div class="buttons">
+						<div class="button mt-2">
 							<Button
 								size="small"
-								variant="danger"
+								variant="secondary"
 								onclick={() => {
-									showRotateKey = !showRotateKey;
+									showCreateKey = !showCreateKey;
 								}}
-								icon={ArrowsCirclepathIcon}
-								disabled={!viewerIsMember}
+								icon={TokenIcon}
 							>
-								Rotate key
+								Create key
 							</Button>
 						</div>
 					</div>
 				{:else}
-					<Alert variant="error">Error getting deploy key. Try again later.</Alert>
+					<BodyShort class="mt-2">No deploy key has been created yet.</BodyShort>
 				{/if}
 			</div>
 
@@ -392,8 +411,38 @@
 				}}>Rotate key</Button
 			>
 			<Button
+				variant="secondary-neutral"
 				onclick={() => {
 					showRotateKey = !showRotateKey;
+				}}>Cancel</Button
+			>
+		{/snippet}
+	</Modal>
+
+	<Modal bind:open={showCreateKey} closeButton={false}>
+		{#snippet header()}
+			<Heading level="1" size="medium">Create deploy key</Heading>
+		{/snippet}
+		<BodyShort spacing>
+			Are you sure you need to create a deploy key? <br />
+			If you deploy through GitHub,
+			<a href={resolve('/team/[team]/repositories', { team: teamSlug })}>
+				add a repository instead
+			</a>.
+		</BodyShort>
+
+		{#snippet footer()}
+			<Button
+				variant="primary"
+				onclick={async () => {
+					showCreateKey = !showCreateKey;
+					await rotateKey.mutate({ team: teamSlug });
+				}}>Create key</Button
+			>
+			<Button
+				variant="secondary-neutral"
+				onclick={() => {
+					showCreateKey = !showCreateKey;
 				}}>Cancel</Button
 			>
 		{/snippet}

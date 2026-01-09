@@ -3,10 +3,10 @@
 	import { graphql, RepositoryOrderField } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
@@ -217,18 +217,18 @@
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem>
 										<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
-
-										<div class="right">
-											<Button
-												variant="danger"
-												size="xsmall"
-												disabled={!team.viewerIsOwner && !team.viewerIsMember}
-												onclick={() => removeRepository(repo.team.slug, repo.name)}
-												icon={TrashIcon}
-											>
-												Remove
-											</Button>
-										</div>
+										{#if viewerIsMember}
+											<div class="right">
+												<Button
+													variant="danger"
+													size="xsmall"
+													onclick={() => removeRepository(repo.team.slug, repo.name)}
+													icon={TrashIcon}
+												>
+													Remove
+												</Button>
+											</div>
+										{/if}
 									</ListItem>
 								{/each}
 							</List>
