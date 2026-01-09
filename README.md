@@ -217,30 +217,14 @@ This repository uses GitHub Copilot to generate code.
 
 ## Logging
 
-The application uses [Pino](https://github.com/pinojs/pino) for structured JSON logging in production.
+The application uses [Pino](https://github.com/pinojs/pino) for structured JSON logging.
 
-### Configuration
+- **Development**: Human-readable logs with colors via `pino-pretty`
+- **Production**: Structured JSON logs to stdout
 
-Logging is automatically configured based on the `NODE_ENV` environment variable:
+Set `LOG_LEVEL` environment variable to control verbosity (trace, debug, info, warn, error, fatal). Default is `info`.
 
-- **Production** (`NODE_ENV=production`): Outputs structured JSON logs to stdout
-- **Development** (default): Uses `pino-pretty` for human-readable colored logs
-
-### Log Level
-
-Set the `LOG_LEVEL` environment variable to control log verbosity:
-
-```bash
-LOG_LEVEL=debug  # trace, debug, info, warn, error, fatal
-```
-
-Default levels:
-- Development: `debug`
-- Production: `info`
-
-### Usage
-
-Import and use the logger in server-side code:
+Server-side code should use the logger:
 
 ```typescript
 import { logger } from '$lib/logger';
@@ -249,9 +233,4 @@ logger.info({ userId: 123 }, 'User logged in');
 logger.error({ error, context: 'some-context' }, 'An error occurred');
 ```
 
-HTTP requests are automatically logged via middleware in `hooks.server.ts` with the following fields:
-- `method`: HTTP method
-- `url`: Request path and query string
-- `status`: Response status code
-- `duration`: Request duration in milliseconds
-- `userAgent`: Client user agent
+HTTP requests are automatically logged in `hooks.server.ts` (errors and slow requests only).
