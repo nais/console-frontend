@@ -66,6 +66,7 @@ export const icons: { [typename: string]: Component } = {
 
 	/* Unleash */
 	UnleashInstanceCreatedActivityLogEntry: UnleashIcon,
+	UnleashInstanceDeletedActivityLogEntry: UnleashIcon,
 	UnleashInstanceUpdatedActivityLogEntry: UnleashIcon,
 
 	/* Stores */
