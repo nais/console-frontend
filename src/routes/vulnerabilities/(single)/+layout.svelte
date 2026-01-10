@@ -13,27 +13,23 @@
 
 <GraphErrors errors={$TenantVulnerabilites.errors} />
 
-<Heading level="1" as="h1" size="large" spacing
-	>Vulnerabilities Overview for {page.data.tenantName?.toUpperCase()}</Heading
->
-<BodyLong spacing>
-	Overview of security vulnerabilities across all workloads in your tenant. Track CVEs, assess risk,
-	and monitor remediation progress.
-</BodyLong>
-
-<div class="info">
-	<div class="cve-search-section">
-		<Heading level="2" as="h2" size="xsmall">Search for vulnerability</Heading>
-		<BodyLong size="small">
-			Find details and affected workloads for a specific vulnerability.
-		</BodyLong>
-		<CveSearch />
-	</div>
+<div class="header">
+	<Heading level="1" as="h1" size="medium" spacing
+		>Vulnerabilities Overview for {page.data.tenantName?.toUpperCase()}</Heading
+	>
 	{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
 		<VulnerabilitySummaryTenant
 			vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
 		/>
 	{/if}
+</div>
+
+<div class="cve-search-section">
+	<Heading level="2" as="h2" size="xsmall">Search for vulnerability</Heading>
+	<BodyLong size="small">
+		Find details and affected workloads for a specific vulnerability.
+	</BodyLong>
+	<CveSearch />
 </div>
 
 <Tabs value={page.route.id ?? ''} size="small">
@@ -59,11 +55,10 @@
 </Tabs>
 
 <style>
-	.info {
-		display: grid;
-		grid-template-columns: 1fr 350px;
-		gap: 1rem;
-		align-items: start;
+	.header {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
 		margin-bottom: var(--ax-space-8);
 	}
 
@@ -71,5 +66,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
+		margin-bottom: var(--spacing-layout);
 	}
 </style>
