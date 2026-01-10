@@ -1,0 +1,33 @@
+query CVES($first: Int, $last: Int, $before: Cursor, $after: Cursor) {
+	cves(
+		first: $first
+		last: $last
+		before: $before
+		after: $after
+		orderBy: { field: CVSS_SCORE, direction: DESC }
+	) @paginate(mode: SinglePage) {
+		pageInfo {
+			endCursor
+			hasNextPage
+			hasPreviousPage
+			pageEnd
+			pageStart
+			startCursor
+			totalCount
+		}
+		nodes {
+			id
+			identifier
+			severity
+			title
+			description
+			detailsLink
+			cvssScore
+			workloads {
+				pageInfo {
+					totalCount
+				}
+			}
+		}
+	}
+}
