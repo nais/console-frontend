@@ -64,7 +64,7 @@
 		grid-template-columns: 1fr 350px;
 		gap: 1rem;
 		align-items: start;
-		margin-bottom: var(--a-spacing-8);
+		margin-bottom: var(--ax-space-8);
 	}
 
 	.cve-search-section {
