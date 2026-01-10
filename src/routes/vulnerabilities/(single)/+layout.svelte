@@ -46,6 +46,11 @@
 			as="a"
 			href={resolve('/vulnerabilities/(single)/teams')}>Teams</Tab
 		>
+		<Tab
+			value="/vulnerabilities/(single)/cves"
+			as="a"
+			href={resolve('/vulnerabilities/(single)/cves')}>CVEs</Tab
+		>
 	</TabList>
 
 	<div>
