@@ -23,7 +23,7 @@
 
 <div class="info">
 	<div class="cve-search-section">
-		<Heading level="3" as="h3" size="xsmall">Search for vulnerability</Heading>
+		<Heading level="2" as="h2" size="xsmall">Search for vulnerability</Heading>
 		<BodyLong size="small">
 			Find details and affected workloads for a specific vulnerability.
 		</BodyLong>
