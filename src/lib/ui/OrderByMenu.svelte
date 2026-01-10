@@ -145,6 +145,10 @@
 				return 'Disk Utilization';
 			case 'MEMORY_UTILIZATION':
 				return 'Memory Utilization';
+			case 'CVSS_SCORE':
+				return 'CVSS Score';
+			case 'AFFECTED_WORKLOADS_COUNT':
+				return 'Affected workloads';
 			default:
 				return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
 		}
