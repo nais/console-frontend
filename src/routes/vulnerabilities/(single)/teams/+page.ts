@@ -8,15 +8,13 @@ export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
-	const interval = event.url.searchParams.get('interval') ?? '7d';
-
 	return {
-		interval,
 		...(await addPageMeta(event, {
-			title: 'Tenant Vulnerabilities'
+			title: 'Team Security Posture'
 		})),
 		...(await load_TenantVulnerabilites({
 			event,
+			blocking: true,
 			variables: {
 				orderBy: {
 					field: urlToOrderField(TeamOrderField, TeamOrderField.RISK_SCORE, event.url),
