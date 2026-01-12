@@ -15,7 +15,7 @@
 
 <div class="wrapper">
 	<div>
-		<Heading as="h2" spacing>CVE Database</Heading>
+		<Heading as="h3" spacing>CVE Database</Heading>
 		<BodyLong spacing>
 			Browse the complete list of Common Vulnerabilities and Exposures (CVEs) affecting your
 			workloads. Each CVE entry includes severity rating, CVSS score, description, and the number of
