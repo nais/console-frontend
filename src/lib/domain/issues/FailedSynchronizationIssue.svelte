@@ -25,7 +25,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall">Workload Failed Synchronization</Heading>
+		<Heading as="h4" size="xsmall">Workload Failed Synchronization</Heading>
 		<Detail><strong>Details:</strong> {data.message}</Detail>
 	</div>
 </div>

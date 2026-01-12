@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall">Deprecated SQL Instance Version</Heading>
+		<Heading as="h4" size="xsmall">Deprecated SQL Instance Version</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>

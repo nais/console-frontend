@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall">
+		<Heading as="h4" size="xsmall">
 			Issues with OpenSearch {data.openSearch.name}
 		</Heading>
 		<Detail>{data.message}</Detail>

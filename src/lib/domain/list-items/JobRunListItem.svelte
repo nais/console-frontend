@@ -1,12 +1,12 @@
 <script lang="ts">
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { Detail, Loader } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon, TimerIcon } from '@nais/ds-svelte-community/icons';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
 
 	const {
 		run,
@@ -41,12 +41,7 @@
 </script>
 
 <ListItem>
-	<IconLabel
-		size="large"
-		label={run.name}
-		href={urlBase ? urlBase + run.name : undefined}
-		level="4"
-	>
+	<IconLabel size="large" label={run.name} href={urlBase ? urlBase + run.name : undefined} as="h4">
 		{#snippet description()}
 			{#if run.trigger.type === 'MANUAL'}
 				Manually triggered

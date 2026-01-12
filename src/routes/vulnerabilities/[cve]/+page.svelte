@@ -76,7 +76,7 @@
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
-						<Heading level="1" size="large">{cve.identifier}</Heading>
+						<Heading as="h1" size="large">{cve.identifier}</Heading>
 						<Tag
 							variant="neutral"
 							style="background-color: {severityToColor({ severity: cve.severity.toLowerCase() })};"
@@ -90,7 +90,7 @@
 				</div>
 
 				<div class="card">
-					<Heading level="2" size="small" spacing>Details</Heading>
+					<Heading as="h2" size="small" spacing>Details</Heading>
 					<dl class="details-list">
 						{#if cve.cvssScore}
 							<div>
@@ -131,7 +131,7 @@
 		{/if}
 		{#if !isNotFoundError($CVEWorkloads.errors)}
 			<div>
-				<Heading level="2" as="h2" size="small" spacing>
+				<Heading as="h2" size="small" spacing>
 					Affected Workloads
 					{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
 						<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>

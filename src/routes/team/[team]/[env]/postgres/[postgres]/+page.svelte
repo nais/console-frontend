@@ -125,7 +125,7 @@
 				{/if}
 			</dl>
 
-			<Heading level="3" spacing>Issues</Heading>
+			<Heading as="h3" spacing>Issues</Heading>
 			<List>
 				{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
 					<IssueListItem item={edge.node} />
@@ -135,7 +135,7 @@
 			</List>
 		</div>
 		<div>
-			<Heading level="2" size="small">Owner</Heading>
+			<Heading as="h2" size="small">Owner</Heading>
 			{#if instance.workload}
 				<WorkloadLink workload={instance.workload} />
 			{:else}

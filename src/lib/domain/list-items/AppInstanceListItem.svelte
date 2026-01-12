@@ -1,14 +1,14 @@
 <script lang="ts">
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
 
 	const {
 		instance,
@@ -35,7 +35,7 @@
 </script>
 
 <ListItem>
-	<IconLabel size="large" href="{urlBase}{instance.name}" label={instance.name} level="4">
+	<IconLabel size="large" href="{urlBase}{instance.name}" label={instance.name} as="h4">
 		{#snippet description()}
 			Created <Time time={instance.created} distance={true} />, {instance.status
 				.message}{#if instance.restarts > 0}, {instance.restarts} restart{instance.restarts === 1

@@ -21,7 +21,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall">{data.__typename}</Heading>
+		<Heading as="h4" size="xsmall">{data.__typename}</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>

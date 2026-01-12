@@ -60,7 +60,7 @@
 					<ListItem>
 						<div>
 							<IconLabel
-								level="4"
+								as="h4"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
 									.name}/postgres/{instance.name}"
 								size="large"
@@ -167,7 +167,7 @@
 			{/if}
 
 			<div class="utilization">
-				<Heading level="2" size="small">Utilization</Heading>
+				<Heading as="h2" size="small">Utilization</Heading>
 				<BodyShort>Current utilization for all Postgres instances owned by the team.</BodyShort>
 
 				<div>

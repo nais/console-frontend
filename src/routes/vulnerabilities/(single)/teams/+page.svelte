@@ -18,7 +18,7 @@
 <div class="wrapper">
 	<GraphErrors errors={$TenantVulnerabilites.errors} />
 	<div>
-		<Heading level="2" as="h2" spacing>Team Security Posture</Heading>
+		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
 			A detailed breakdown of all teams with workloads, showing the number of vulnerabilities by
 			severity, total risk score, SBOM coverage, and workload count. Use this table to explore and
@@ -56,7 +56,7 @@
 						href="/team/{team.slug}"
 						icon={PersonGroupIcon}
 						size="large"
-						level="3"
+						as="h3"
 					/>
 
 					<div class="right">

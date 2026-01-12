@@ -90,7 +90,7 @@
 <Theme theme={themeSwitch.theme}>
 	<Modal open width="medium" onclose={close}>
 		{#snippet header()}
-			<Heading level="1">Nais Console Feedback</Heading>
+			<Heading as="h1">Nais Console Feedback</Heading>
 		{/snippet}
 
 		{#if feedbackSent}

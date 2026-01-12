@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 
 	const {
 		team
@@ -18,9 +18,6 @@
 		icon={PersonGroupIcon}
 		description={team.purpose}
 		size="large"
-		level="3"
+		as="h3"
 	/>
-	<!-- {#if badge}
-		<Badge {...badge} />
-	{/if} -->
 </ListItem>

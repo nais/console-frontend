@@ -362,7 +362,7 @@
 		/>
 	{/if}
 
-	<Heading level="2" size="large" spacing>
+	<Heading as="h2" size="large" spacing>
 		{unleash.name}
 	</Heading>
 	<div class="wrapper">
@@ -491,7 +491,7 @@
 				</p>
 			</div>
 			<div>
-				<Heading level="2" spacing>Team Access</Heading>
+				<Heading as="h2" spacing>Team Access</Heading>
 				<Table>
 					<Thead>
 						<Tr>
@@ -568,7 +568,7 @@
 			<div class="card">
 				<div class="summary">
 					<div class="heading">
-						<Heading level="2" size="xsmall" spacing>Utilization</Heading>
+						<Heading as="h2" size="xsmall" spacing>Utilization</Heading>
 						<HelpText title="Resource Utilization">Resource usage over the past hour</HelpText>
 					</div>
 					<div>

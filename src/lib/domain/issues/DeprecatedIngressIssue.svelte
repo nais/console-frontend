@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall">Deprecated Ingress</Heading>
+		<Heading as="h4" size="xsmall">Deprecated Ingress</Heading>
 		<Detail>
 			{#if data.ingresses.length === 1}
 				Application {data.application.name} is using a deprecated ingress:

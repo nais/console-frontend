@@ -22,7 +22,7 @@
 	let { app }: Props = $props();
 </script>
 
-<Heading level="2" size="medium" spacing>Ingresses</Heading>
+<Heading as="h2" size="medium" spacing>Ingresses</Heading>
 
 <List>
 	{#each Object.entries(Object.groupBy(app.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}

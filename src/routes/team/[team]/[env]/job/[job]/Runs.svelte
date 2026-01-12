@@ -68,7 +68,7 @@
 </script>
 
 <div>
-	<Heading level="4" size="small">Resources:</Heading>
+	<Heading as="h4" size="small">Resources:</Heading>
 	<ul class="resource-list">
 		<li>
 			Requests:

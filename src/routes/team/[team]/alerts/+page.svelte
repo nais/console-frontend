@@ -169,7 +169,7 @@
 							</div>
 							<div class="titleblock">
 								<div class="titleline">
-									<Heading size="xsmall" level="2" title={alert.name}>{alert.name}</Heading>
+									<Heading size="xsmall" as="h2" title={alert.name}>{alert.name}</Heading>
 								</div>
 								<div class="subtitle">
 									<Tag size="small" variant={envTagVariant(alert.teamEnvironment.environment.name)}>
@@ -205,7 +205,7 @@
 								{/if}
 
 								<div class="query-heading">
-									<Heading level="2" size="xsmall">Query</Heading>
+									<Heading as="h2" size="xsmall">Query</Heading>
 									<div class="query-actions">
 										<ExternalLink
 											href={makePrometheusQueryUrl(

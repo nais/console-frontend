@@ -14,8 +14,8 @@
 </script>
 
 <div class="card">
-	<Heading level="2" size="medium" spacing>Metadata</Heading>
-	<Heading level="3" size="xsmall">Last Modified</Heading>
+	<Heading as="h2" size="medium" spacing>Metadata</Heading>
+	<Heading as="h3" size="xsmall">Last Modified</Heading>
 	<div class="value">
 		{#if lastModifiedAt}
 			<Time time={lastModifiedAt} distance />
@@ -23,7 +23,7 @@
 			<code>n/a</code>
 		{/if}
 	</div>
-	<Heading level="3" size="xsmall">Last Modified by</Heading>
+	<Heading as="h3" size="xsmall">Last Modified by</Heading>
 	<div class="value">
 		Last modified by
 		{#if lastModifiedBy}

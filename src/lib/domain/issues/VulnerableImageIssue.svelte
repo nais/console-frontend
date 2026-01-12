@@ -25,7 +25,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall" spacing>Vulnerable Image</Heading>
+		<Heading as="h4" size="xsmall" spacing>Vulnerable Image</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>

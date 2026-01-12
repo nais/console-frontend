@@ -34,7 +34,7 @@
 	{/if}
 	<div style="display: flex; align-items: center; justify-content: space-between;">
 		<div class="heading-wrapper">
-			<Heading level="1" size="xlarge">{heading}</Heading>
+			<Heading as="h1" size="xlarge">{heading}</Heading>
 			{#if tag}
 				<Tag variant={tag.variant}>{tag.label}</Tag>
 			{/if}
