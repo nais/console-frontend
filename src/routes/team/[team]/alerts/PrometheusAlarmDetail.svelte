@@ -25,7 +25,7 @@
 			<Tag variant={alarm.state === 'FIRING' ? 'error' : 'warning'} size="small">
 				{alarm.state}
 			</Tag>
-			<Heading level="3" size="xsmall">
+			<Heading as="h3" size="xsmall">
 				{alarm.summary !== '' ? alarm.summary : `Alarm ${i + 1}`}
 			</Heading>
 		</div>

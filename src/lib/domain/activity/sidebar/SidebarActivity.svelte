@@ -193,7 +193,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Activity</Heading>
+	<Heading as="h3" size="small">Activity</Heading>
 	{#each list as entry (entry.id)}
 		{@const Icon = icons[entry.__typename] || RocketIcon}
 		{@const TextComponent = textComponent(entry.__typename)}

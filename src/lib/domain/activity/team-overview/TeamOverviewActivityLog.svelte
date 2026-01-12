@@ -275,7 +275,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="2" size="small" spacing
+	<Heading as="h2" size="small" spacing
 		><a href="/team/{teamSlug}/activity-log">Activity log</a></Heading
 	>
 	{#if $activityLogQuery.fetching || !$activityLogQuery.data}

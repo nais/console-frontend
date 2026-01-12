@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { OrderDirection, ValkeyOrderField } from '$houdini';
+	import { docURL } from '$lib/doc';
+	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { docURL } from '$lib/doc';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
@@ -88,7 +88,7 @@
 					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
 						<ListItem>
 							<IconLabel
-								level="4"
+								as="h4"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
 									.name}/valkey/{instance.name}"
 								size="large"

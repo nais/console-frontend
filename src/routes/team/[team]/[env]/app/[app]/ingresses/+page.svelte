@@ -108,7 +108,7 @@
 			{#each ingresses as ingress (ingress.url)}
 				{(() => console.log(options(ingress)))()}
 				<div class="section" id={ingress.url}>
-					<IconLabel size="large" level="2" label={ingress.url}>
+					<IconLabel size="large" as="h2" label={ingress.url}>
 						{#snippet icon()}
 							<TooltipAlignHack
 								content={`${ingress.type[0]}${ingress.type.slice(1).toLowerCase()} Ingress`}
@@ -155,7 +155,7 @@
 		{/each}
 	{:else}
 		<div class="no-data">
-			<Heading level="2" size="medium" spacing>No Ingress Data Available</Heading>
+			<Heading as="h2" size="medium" spacing>No Ingress Data Available</Heading>
 		</div>
 	{/if}
 </div>

@@ -97,7 +97,7 @@
 				{/if}
 				{#if $Job.data.team.environment.job.issues.edges.length > 0}
 					<div>
-						<Heading level="3" spacing>Issues</Heading>
+						<Heading as="h3" spacing>Issues</Heading>
 						<List>
 							{#each $Job.data.team.environment.job.issues.edges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
@@ -107,7 +107,7 @@
 				{/if}
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
-						<Heading level="2" size="medium">Runs</Heading>
+						<Heading as="h2" size="medium">Runs</Heading>
 						{#if viewerIsMember}
 							<Button
 								variant="secondary"
@@ -134,7 +134,7 @@
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 				{/if}
 				<div>
-					<Heading level="2" size="small">Vulnerabilities</Heading>
+					<Heading as="h2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>
 

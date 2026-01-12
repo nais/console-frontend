@@ -96,7 +96,7 @@
 
 <div>
 	<div class="content">
-		<Heading level="2" spacing>10 Most Expensive Applications by Environment</Heading>
+		<Heading as="h2" spacing>10 Most Expensive Applications by Environment</Heading>
 		<BodyLong spacing>
 			Accumulated cost for each application over time, including persistence, broken down by
 			environment. Displaying the 10 most expensive applications for the chosen time interval.
@@ -109,7 +109,7 @@
 	{:else}
 		{#each appsByEnv as env (env.id)}
 			<div class="heading">
-				<Heading level="3" size="small">{env.environment.name}</Heading>
+				<Heading as="h3" size="small">{env.environment.name}</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}

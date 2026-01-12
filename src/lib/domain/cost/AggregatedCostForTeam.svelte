@@ -51,7 +51,7 @@
 
 <div class="wrapper">
 	<div class="header">
-		<Heading level="2" size="small" spacing
+		<Heading as="h2" size="small" spacing
 			><a href="/team/{teamSlug}/cost">Aggregated Cost for {teamSlug}</a></Heading
 		>
 		<HelpText title="Aggregated team cost"

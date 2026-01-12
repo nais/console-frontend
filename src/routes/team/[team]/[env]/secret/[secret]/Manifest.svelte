@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { CopyButton, Heading, Tooltip } from '@nais/ds-svelte-community';
 
 	interface Props {
@@ -15,14 +15,14 @@
 </script>
 
 <div class="card">
-	<Heading level="2" size="medium" spacing>Use this secret</Heading>
+	<Heading as="h2" size="medium" spacing>Use this secret</Heading>
 
-	<Heading level="3" size="xsmall">Documentation</Heading>
+	<Heading as="h3" size="xsmall">Documentation</Heading>
 	<div class="value">
 		<ExternalLink href={docURL('/services/secrets/how-to/workload/')}>How-to guide</ExternalLink>
 	</div>
 
-	<Heading level="3" size="xsmall">Manifest</Heading>
+	<Heading as="h3" size="xsmall">Manifest</Heading>
 	<pre class="manifest">{workloadManifest()}</pre>
 	<Tooltip content="Copy manifest to clipboard">
 		<CopyButton

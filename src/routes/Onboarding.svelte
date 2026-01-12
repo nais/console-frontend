@@ -110,7 +110,7 @@
 </script>
 
 <div class="onboarding">
-	<Heading level="1" size="xlarge" spacing>Welcome to Nais Console! 🎉</Heading>
+	<Heading as="h1" size="xlarge" spacing>Welcome to Nais Console! 🎉</Heading>
 	{#if $teamsQuery.fetching}
 		<Loader size="3xlarge" />
 	{:else if teams}
@@ -125,7 +125,7 @@
 			</Button>
 
 			<div>
-				<Heading level="2" size="medium" spacing>Find a Team</Heading>
+				<Heading as="h2" size="medium" spacing>Find a Team</Heading>
 				<BodyShort spacing>
 					Once you've found your team, ask one of the team owners to add you as a member.
 				</BodyShort>

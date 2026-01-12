@@ -46,7 +46,7 @@
 			label={deployment.teamSlug}
 			icon={PersonGroupIcon}
 			size="large"
-			level="3"
+			as="h3"
 			href="/team/{deployment.teamSlug}/deploy"
 		/>
 		<BodyLong size="small" as="div">

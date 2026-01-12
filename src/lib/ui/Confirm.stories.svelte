@@ -24,7 +24,7 @@
 		onconfirm={() => console.log('Deleted')}
 	>
 		{#snippet header()}
-			<Heading level="1" size="large">Delete Resource</Heading>
+			<Heading as="h1" size="large">Delete Resource</Heading>
 		{/snippet}
 		<p>Are you sure you want to delete this resource? This action cannot be undone.</p>
 	</Confirm>
@@ -39,7 +39,7 @@
 		onconfirm={() => console.log('Confirmed')}
 	>
 		{#snippet header()}
-			<Heading level="1" size="large">Confirm Action</Heading>
+			<Heading as="h1" size="large">Confirm Action</Heading>
 		{/snippet}
 		<p>Please confirm that you want to proceed with this action.</p>
 	</Confirm>
@@ -54,7 +54,7 @@
 		onconfirm={() => console.log('Team deleted')}
 	>
 		{#snippet header()}
-			<Heading level="1" size="large">Delete Team</Heading>
+			<Heading as="h1" size="large">Delete Team</Heading>
 		{/snippet}
 		<p>This will permanently delete the team <b>myteam</b>.</p>
 		<p>These resources will be affected:</p>

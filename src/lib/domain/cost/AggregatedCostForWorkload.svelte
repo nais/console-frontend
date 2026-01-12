@@ -74,7 +74,7 @@
 
 <div class="wrapper">
 	<div class="container">
-		<Heading level="3" size="small">Cost</Heading>
+		<Heading as="h3" size="small">Cost</Heading>
 		<HelpText title="Aggregated workload cost"
 			>Aggregated cost for workload. Current month is estimated.</HelpText
 		>

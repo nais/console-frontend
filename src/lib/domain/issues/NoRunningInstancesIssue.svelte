@@ -26,7 +26,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall">No Running Instances for {data.workload.name}</Heading>
+		<Heading as="h4" size="xsmall">No Running Instances for {data.workload.name}</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>

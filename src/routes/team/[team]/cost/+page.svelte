@@ -23,7 +23,7 @@
 	<div class="graph">
 		<div class="heading">
 			<div class="content">
-				<Heading level="2" spacing>Cost by Service</Heading>
+				<Heading as="h2" spacing>Cost by Service</Heading>
 				<BodyLong>
 					Distribution of team costs across various services. Cost information is best-effort and
 					originates from Google Cloud and Aiven. For Kafka we are using a shared base cost for

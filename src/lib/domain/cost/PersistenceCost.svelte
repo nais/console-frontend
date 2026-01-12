@@ -113,7 +113,7 @@
 
 <div>
 	<div class="heading">
-		<Heading size="small" level="3">{pageName} Cost</Heading>
+		<Heading size="small" as="h3">{pageName} Cost</Heading>
 		<HelpText title="Cost description"
 			>Total cost for the previous month and a projected estimate for this month.</HelpText
 		>

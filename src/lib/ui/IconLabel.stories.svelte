@@ -1,4 +1,5 @@
 <script module>
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 	import {
@@ -9,7 +10,6 @@
 		WalletIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
 
 	const { Story } = defineMeta({
@@ -23,7 +23,7 @@
 		label="dataproduct-apps-topics-28896705"
 		href="/team/devteam/dev/job/dataproduct-apps-topics/logs?name=dataproduct-apps-topics-28896705"
 		size="large"
-		level="4"
+		as="h4"
 	>
 		{#snippet description()}
 			Manually triggered <Time time={new Date()} distance={true} /> by Roger Bjørnstad
@@ -55,7 +55,7 @@
 </Story>
 
 <Story name="Team without desc" asChild>
-	<IconLabel label="nais" href="/team/nais" icon={PersonGroupIcon} size="large" level="3" />
+	<IconLabel label="nais" href="/team/nais" icon={PersonGroupIcon} size="large" as="h3" />
 </Story>
 
 <Story name="Team" asChild>
@@ -65,7 +65,7 @@
 		icon={PersonGroupIcon}
 		description="The Nais platform team"
 		size="large"
-		level="3"
+		as="h3"
 	/>
 </Story>
 
@@ -76,7 +76,7 @@
 		icon={PersonGroupIcon}
 		description="The Nais platform team lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 		size="large"
-		level="3"
+		as="h3"
 	/>
 </Story>
 

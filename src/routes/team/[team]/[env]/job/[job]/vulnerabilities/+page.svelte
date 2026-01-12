@@ -30,7 +30,7 @@
 			<div>
 				<section class="image-info" aria-labelledby="image-info-title">
 					<div style="display: flex; justify-content: space-between; align-items: center;">
-						<Heading id="image-info-title" level="3" size="small" spacing>Image</Heading>
+						<Heading id="image-info-title" as="h3" size="small" spacing>Image</Heading>
 						<CopyButton
 							copyText={$JobImageDetails.data?.team.environment.workload.image.name +
 								':' +
@@ -92,7 +92,7 @@
 			<div class="cards">
 				{#if workload.image.hasSBOM}
 					<div class="card">
-						<Heading level="2" size="small">Summary</Heading>
+						<Heading as="h2" size="small">Summary</Heading>
 
 						<WorkloadVulnerabilitySummary {workload} />
 					</div>
@@ -116,7 +116,7 @@
 			<div>
 				{#if $JobImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
 					<div class="activity-log">
-						<Heading level="3" size="small" spacing>Image Activity Log</Heading>
+						<Heading as="h3" size="small" spacing>Image Activity Log</Heading>
 
 						<List>
 							{#each $JobImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
@@ -126,7 +126,7 @@
 					</div>
 				{:else}
 					<div class="activity-log">
-						<Heading level="3" size="small" spacing>Image Activity Log</Heading>
+						<Heading as="h3" size="small" spacing>Image Activity Log</Heading>
 						<p class="no-activity">No activity log entries found for this image.</p>
 					</div>
 				{/if}

@@ -25,7 +25,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall">Workload Has Invalid Spec</Heading>
+		<Heading as="h4" size="xsmall">Workload Has Invalid Spec</Heading>
 		<Detail><strong>Details:</strong> {data.message}</Detail>
 	</div>
 </div>

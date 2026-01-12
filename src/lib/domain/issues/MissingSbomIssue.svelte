@@ -25,7 +25,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall">Workload is Missing SBOM</Heading>
+		<Heading as="h4" size="xsmall">Workload is Missing SBOM</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>
