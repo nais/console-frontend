@@ -2892,6 +2892,14 @@ interface LogDestination {
   id: ID!
 }
 
+type LogDestinationGeneric implements LogDestination & Node {
+  """The globally unique ID of the log destination."""
+  id: ID!
+
+  """Name defined in the manifest"""
+  name: String!
+}
+
 type LogDestinationLoki implements LogDestination & Node {
   """Grafana URL to view the logs."""
   grafanaURL: String!
