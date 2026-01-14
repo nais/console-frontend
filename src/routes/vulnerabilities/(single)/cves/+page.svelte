@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CVEOrderField, OrderDirection } from '$houdini';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -14,6 +15,7 @@
 </script>
 
 <div class="wrapper">
+	<GraphErrors errors={$CVES.errors} />
 	<div>
 		<Heading as="h3" spacing>CVE Database</Heading>
 		<BodyLong spacing>
@@ -22,49 +24,54 @@
 			affected workloads.
 		</BodyLong>
 	</div>
-
-	<List title="CVEs">
-		{#snippet menu()}
-			<OrderByMenu
-				orderField={CVEOrderField}
-				defaultOrderField={CVEOrderField.CVSS_SCORE}
-				defaultOrderDirection={OrderDirection.DESC}
-			/>
-		{/snippet}
-		{#if $CVES.fetching}
-			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-				<Loader size="3xlarge" />
-			</div>
-		{:else if $CVES.data?.cves.nodes}
-			{#each $CVES.data.cves.nodes as cve (cve.identifier)}
-				<ListItem href="/vulnerabilities/{cve.identifier}">
-					<div class="cve-row">
-						<div class="cve-main">
-							<div class="cve-id-section">
-								<BodyShort weight="semibold">{cve.identifier}</BodyShort>
-								<Tag variant={severityToVariant(cve.severity)} size="small">{cve.severity}</Tag>
+	{#if $CVES.fetching && !$CVES.data}
+		<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+			<Loader size="3xlarge" />
+		</div>
+	{:else}
+		<List title="CVEs">
+			{#snippet menu()}
+				<OrderByMenu
+					orderField={CVEOrderField}
+					defaultOrderField={CVEOrderField.CVSS_SCORE}
+					defaultOrderDirection={OrderDirection.DESC}
+				/>
+			{/snippet}
+			{#if $CVES.fetching}
+				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+					<Loader size="3xlarge" />
+				</div>
+			{:else if $CVES.data?.cves.nodes}
+				{#each $CVES.data.cves.nodes as cve (cve.identifier)}
+					<ListItem href="/vulnerabilities/{cve.identifier}">
+						<div class="cve-row">
+							<div class="cve-main">
+								<div class="cve-id-section">
+									<BodyShort weight="semibold">{cve.identifier}</BodyShort>
+									<Tag variant={severityToVariant(cve.severity)} size="small">{cve.severity}</Tag>
+								</div>
+								<Detail>{cve.title}</Detail>
 							</div>
-							<Detail>{cve.title}</Detail>
+							<div class="cve-stats">
+								<div class="cve-stat">
+									<Detail textColor="subtle">CVSS:</Detail>
+									<Detail>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Detail>
+								</div>
+								<div class="cve-stat">
+									<Detail textColor="subtle">Workloads:</Detail>
+									<Detail>{cve.workloads.pageInfo.totalCount}</Detail>
+								</div>
+							</div>
 						</div>
-						<div class="cve-stats">
-							<div class="cve-stat">
-								<Detail textColor="subtle">CVSS:</Detail>
-								<Detail>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Detail>
-							</div>
-							<div class="cve-stat">
-								<Detail textColor="subtle">Workloads:</Detail>
-								<Detail>{cve.workloads.pageInfo.totalCount}</Detail>
-							</div>
-						</div>
-					</div>
-				</ListItem>
-			{/each}
-		{:else}
-			<div style="text-align: center; padding: 2rem;">
-				<Detail>No CVEs found</Detail>
-			</div>
-		{/if}
-	</List>
+					</ListItem>
+				{/each}
+			{:else}
+				<div style="text-align: center; padding: 2rem;">
+					<Detail>No CVEs found</Detail>
+				</div>
+			{/if}
+		</List>
+	{/if}
 
 	{#if $CVES.data?.cves.pageInfo}
 		<Pagination
