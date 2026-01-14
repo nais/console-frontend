@@ -14,7 +14,7 @@ export async function load(event) {
 		})),
 		...(await load_CVES({
 			event,
-			blocking: true,
+			// blocking: true,
 			variables: {
 				orderBy: {
 					field: urlToOrderField(CVEOrderField, CVEOrderField.CVSS_SCORE, event.url),
