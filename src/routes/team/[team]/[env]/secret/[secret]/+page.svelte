@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { graphql, CheckSecretElevationStore, FetchSecretValuesStore } from '$houdini';
 	import { SvelteMap } from 'svelte/reactivity';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
@@ -42,6 +42,7 @@
 
 	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
+	let viewerIsMember = $derived($Secret.data?.team.viewerIsMember ?? false);
 
 	let secretName = $derived(page.params.secret ?? '');
 	let env = $derived(page.params.env ?? '');
@@ -59,36 +60,9 @@
 	let secretsRevealed = $state(false);
 	let elevationExpiresAt = $state<Date | null>(null);
 
-	// Check if we have an active elevation on page load
-	const checkElevation = graphql(`
-		query CheckSecretElevation($input: ElevationInput!) @cache(policy: NetworkOnly) {
-			me {
-				... on User {
-					elevations(input: $input) {
-						id
-						expiresAt
-					}
-				}
-			}
-		}
-	`);
-
-	// Fetch secret values after elevation (requires elevation to succeed)
-	const fetchSecretValues = graphql(`
-		query FetchSecretValues($secret: String!, $team: Slug!, $env: String!)
-		@cache(policy: NetworkOnly) {
-			team(slug: $team) {
-				environment(name: $env) {
-					secret(name: $secret) {
-						values {
-							name
-							value
-						}
-					}
-				}
-			}
-		}
-	`);
+	// Use imported Houdini stores for queries
+	const checkElevation = new CheckSecretElevationStore();
+	const fetchSecretValues = new FetchSecretValuesStore();
 
 	// Store for revealed secret values
 	let revealedValues = new SvelteMap<string, string>();
@@ -111,14 +85,56 @@
 							? $checkElevation.data.me.elevations
 							: []) ?? [];
 					if (elevations.length > 0) {
+						const elevation = elevations[0];
+						const expiresAt = new Date(elevation.expiresAt);
+						const now = new Date();
+
+						// Only set expiry timer if elevation hasn't expired yet
+						if (expiresAt.getTime() > now.getTime()) {
+							elevationExpiresAt = expiresAt;
+						}
+
+						// Always try to load values - RBAC might still be valid even if
+						// elevation metadata says it's expired (euthanaisa hasn't cleaned up)
 						secretsRevealed = true;
-						elevationExpiresAt = new Date(elevations[0].expiresAt);
-						// Fetch the actual secret values now that we have elevation
 						await loadSecretValues();
+					} else {
+						// No elevation found for this specific secret, but there might be
+						// other RBAC access. Try fetching values directly.
+						await tryLoadSecretValuesWithoutElevation();
 					}
 				});
 		}
 	});
+
+	// Try to load secret values without requiring a specific elevation
+	// This handles cases where the user has RBAC access via other means
+	// (e.g., elevation Role/RoleBinding exists but euthanaisa hasn't cleaned it up yet)
+	const tryLoadSecretValuesWithoutElevation = async () => {
+		await fetchSecretValues.fetch({
+			variables: {
+				secret: secretName,
+				team: teamSlug,
+				env: env
+			}
+		});
+
+		// Check for GraphQL errors (e.g., RBAC denied)
+		if ($fetchSecretValues.errors && $fetchSecretValues.errors.length > 0) {
+			// User doesn't have access, they'll need to request elevation
+			return;
+		}
+
+		const values = $fetchSecretValues.data?.team.environment.secret?.values ?? [];
+		if (values.length > 0) {
+			// User has access, reveal the values
+			secretsRevealed = true;
+			revealedValues.clear();
+			for (const v of values) {
+				revealedValues.set(v.name, v.value);
+			}
+		}
+	};
 
 	const loadSecretValues = async () => {
 		await fetchSecretValues.fetch({
@@ -136,20 +152,44 @@
 	};
 
 	// Auto-hide secrets when elevation expires
+	// Note: We don't immediately hide if expiresAt is in the past, because
+	// the RBAC (Role/RoleBinding) might still exist in Kubernetes even if
+	// euthanaisa hasn't cleaned it up yet. The user should still be able
+	// to see values as long as they have valid RBAC access.
 	$effect(() => {
 		if (elevationExpiresAt) {
 			const now = new Date();
 			const msUntilExpiry = elevationExpiresAt.getTime() - now.getTime();
 			if (msUntilExpiry > 0) {
-				const timeout = setTimeout(() => {
-					secretsRevealed = false;
+				const timeout = setTimeout(async () => {
+					// When elevation expires, try to fetch values again
+					// If RBAC is still valid (euthanaisa hasn't cleaned up), keep showing values
+					// If RBAC is gone, the fetch will fail and we hide values
+					try {
+						await fetchSecretValues.fetch({
+							variables: {
+								secret: secretName,
+								team: teamSlug,
+								env: env
+							}
+						});
+						const values = $fetchSecretValues.data?.team.environment.secret?.values;
+						if (!values || values.length === 0) {
+							secretsRevealed = false;
+							revealedValues.clear();
+						}
+						// If values were returned, keep secretsRevealed = true
+					} catch {
+						// Fetch failed, hide secrets
+						secretsRevealed = false;
+						revealedValues.clear();
+					}
 					elevationExpiresAt = null;
 				}, msUntilExpiry);
 				return () => clearTimeout(timeout);
-			} else {
-				secretsRevealed = false;
-				elevationExpiresAt = null;
 			}
+			// If expiresAt is in the past, don't auto-hide - let the initial
+			// value fetch determine if user still has access
 		}
 	});
 
@@ -405,6 +445,14 @@
 				{#if $deleteMutation.errors}
 					<GraphErrors errors={$deleteMutation.errors} />
 				{/if}
+				{#if !viewerIsMember}
+					<Alert variant="info" size="small">
+						<BodyShort>
+							Du har ikke tilgang til å se eller endre verdier i denne hemmeligheten fordi du ikke
+							er medlem av teamet.
+						</BodyShort>
+					</Alert>
+				{/if}
 			</div>
 			<div class="data-heading">
 				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
@@ -414,37 +462,39 @@
 					</HelpText>
 				</div>
 				<div class="header-buttons">
-					{#if secretsRevealed}
+					{#if viewerIsMember}
+						{#if secretsRevealed}
+							<Button
+								variant="secondary"
+								size="small"
+								onclick={hideSecrets}
+								icon={EyeSlashIcon}
+								title="Skjul hemmeligheter"
+							>
+								Skjul verdier
+							</Button>
+						{:else}
+							<Button
+								variant="secondary"
+								size="small"
+								onclick={revealSecrets}
+								icon={PadlockLockedIcon}
+								title="Vis hemmeligheter (krever begrunnelse)"
+							>
+								Vis verdier
+							</Button>
+						{/if}
 						<Button
-							variant="secondary"
+							class="delete-secret"
+							title="Delete secret from environment"
+							variant="danger"
 							size="small"
-							onclick={hideSecrets}
-							icon={EyeSlashIcon}
-							title="Skjul hemmeligheter"
+							onclick={openDeleteModal}
+							icon={TrashIcon}
 						>
-							Skjul verdier
-						</Button>
-					{:else}
-						<Button
-							variant="secondary"
-							size="small"
-							onclick={revealSecrets}
-							icon={PadlockLockedIcon}
-							title="Vis hemmeligheter (krever begrunnelse)"
-						>
-							Vis verdier
+							Delete
 						</Button>
 					{/if}
-					<Button
-						class="delete-secret"
-						title="Delete secret from environment"
-						variant="danger"
-						size="small"
-						onclick={openDeleteModal}
-						icon={TrashIcon}
-					>
-						Delete
-					</Button>
 				</div>
 			</div>
 
@@ -474,52 +524,61 @@
 								</code>
 							</Td>
 							<Td style="width: 120px" align="right">
-								<div class="buttons">
-									{#if secretsRevealed && revealedValues.has(keyName)}
-										<CopyButton
-											activeText="Value copied"
-											variant="action"
-											size="small"
-											copyText={revealedValues.get(keyName) ?? ''}
-										/>
-										<Button
-											size="small"
-											variant="tertiary"
-											title="Show or edit secret value"
-											onclick={() => {
-												openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
-											}}
-											icon={DocPencilIcon}
-										/>
-									{:else}
-										<Button
-											size="small"
-											variant="tertiary"
-											title="Krev elevering for å se eller kopiere verdier"
-											onclick={revealSecrets}
-											icon={PadlockLockedIcon}
-										/>
-									{/if}
+								{#if viewerIsMember}
+									<div class="buttons">
+										{#if secretsRevealed && revealedValues.has(keyName)}
+											<CopyButton
+												activeText="Value copied"
+												variant="action"
+												size="small"
+												copyText={revealedValues.get(keyName) ?? ''}
+											/>
+											<Button
+												size="small"
+												variant="tertiary"
+												title="Show or edit secret value"
+												onclick={() => {
+													openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
+												}}
+												icon={DocPencilIcon}
+											/>
+										{:else}
+											<Button
+												size="small"
+												variant="tertiary"
+												title="Krev elevering for å se eller kopiere verdier"
+												onclick={revealSecrets}
+												icon={PadlockLockedIcon}
+											/>
+										{/if}
 
-									<Button
-										size="small"
-										variant="tertiary-neutral"
-										title="Delete key and value"
-										onclick={() => {
-											openDeleteValueModal(keyName);
-										}}
-									>
-										{#snippet icon()}
-											<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-										{/snippet}
-									</Button>
-								</div>
+										<Button
+											size="small"
+											variant="tertiary-neutral"
+											title="Delete key and value"
+											onclick={() => {
+												openDeleteValueModal(keyName);
+											}}
+										>
+											{#snippet icon()}
+												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+											{/snippet}
+										</Button>
+									</div>
+								{/if}
 							</Td>
 						</Tr>
 					{/each}
 				</Tbody>
 			</Table>
-			<AddKeyValue initial={secret.keys.map((k) => ({ name: k }))} {teamSlug} {env} {secretName} />
+			{#if viewerIsMember}
+				<AddKeyValue
+					initial={secret.keys.map((k) => ({ name: k }))}
+					{teamSlug}
+					{env}
+					{secretName}
+				/>
+			{/if}
 		</div>
 		<div class="sidebar">
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
