@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { graphql, type SecretValueInput } from '$houdini';
+	import { graphql } from '$houdini';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Textarea from './Textarea.svelte';
 
 	interface Props {
-		initial: SecretValueInput[];
+		initial: { name: string }[];
 		teamSlug: string;
 		env: string;
 		secretName: string;
@@ -49,10 +49,7 @@
 			addSecretValue(input: { environment: $env, name: $name, team: $team, value: $value }) {
 				secret {
 					id
-					values {
-						name
-						value
-					}
+					keys
 					lastModifiedBy {
 						name
 						email
