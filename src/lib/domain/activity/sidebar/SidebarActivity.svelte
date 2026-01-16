@@ -14,6 +14,7 @@
 	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
+	import ElevationCreatedActivityLogEntryText from './texts/ElevationCreatedActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
@@ -98,6 +99,14 @@
 									valueName
 								}
 							}
+							... on ElevationCreatedActivityLogEntry {
+								elevationData: data {
+									elevationType
+									targetResourceName
+									reason
+									expiresAt
+								}
+							}
 							... on TeamEnvironmentUpdatedActivityLogEntry {
 								id
 								teamEnvironmentUpdatedData: data {
@@ -172,6 +181,8 @@
 				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretDeletedActivityLogEntry':
 				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ElevationCreatedActivityLogEntry':
+				return ElevationCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
 				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
