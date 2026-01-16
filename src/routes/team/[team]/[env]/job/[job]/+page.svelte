@@ -140,7 +140,7 @@
 
 				<SidebarActivity activityLog={job} />
 
-				{#if viewerIsMember && jobName && environment}
+				{#if jobName && environment}
 					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
 			</div>

@@ -90,7 +90,7 @@ export const menuItems = ({
 		[menuItem('Team Overview')],
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
-			member && menuItem('Secrets', 'secrets', 'secret'),
+			menuItem('Secrets', 'secrets', 'secret'),
 			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),

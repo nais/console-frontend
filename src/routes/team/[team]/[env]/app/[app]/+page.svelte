@@ -176,7 +176,7 @@
 				</div>
 				<SidebarActivity activityLog={app} direct={app.activityLog} />
 
-				{#if viewerIsMember && environment}
+				{#if environment}
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
