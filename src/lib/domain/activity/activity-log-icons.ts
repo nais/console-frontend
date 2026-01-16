@@ -50,6 +50,9 @@ export const icons: { [typename: string]: Component } = {
 	SecretValueRemovedActivityLogEntry: PadlockLockedIcon,
 	SecretValueUpdatedActivityLogEntry: PadlockLockedIcon,
 
+	/* Elevations */
+	ElevationCreatedActivityLogEntry: PadlockLockedIcon,
+
 	/* Repositories */
 	RepositoryAddedActivityLogEntry: BranchingIcon,
 	RepositoryRemovedActivityLogEntry: BranchingIcon,

@@ -21,6 +21,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
+	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import {
@@ -324,17 +325,6 @@
 		keyToEdit = '';
 		valueToEdit = '';
 	};
-
-	const formatTimeRemaining = (expiresAt: Date): string => {
-		const now = new Date();
-		const diff = expiresAt.getTime() - now.getTime();
-		const minutes = Math.floor(diff / 60000);
-		const seconds = Math.floor((diff % 60000) / 1000);
-		if (minutes > 0) {
-			return `${minutes} min ${seconds} sek`;
-		}
-		return `${seconds} sek`;
-	};
 </script>
 
 <GraphErrors errors={$Secret.errors} />
@@ -458,17 +448,6 @@
 				</div>
 			</div>
 
-			{#if secretsRevealed && elevationExpiresAt}
-				<div class="elevation-info">
-					<Alert variant="info" size="small">
-						<BodyShort>
-							Du har tilgang til å se hemmeligheter. Tilgangen utløper om
-							<strong>{formatTimeRemaining(elevationExpiresAt)}</strong>.
-						</BodyShort>
-					</Alert>
-				</div>
-			{/if}
-
 			<Table size="small" style="margin-top: 2rem">
 				<Thead>
 					<Tr>
@@ -546,6 +525,9 @@
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
 			<Workloads workloads={secret.workloads} />
 			<Manifest {secretName} />
+			{#if $Secret.data?.team}
+				<SidebarActivity activityLog={$Secret.data.team} direct={$Secret.data.team.activityLog} />
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -607,10 +589,6 @@
 	.header-buttons {
 		display: flex;
 		gap: var(--ax-space-8);
-	}
-
-	.elevation-info {
-		margin-top: var(--ax-space-16);
 	}
 
 	.value {
