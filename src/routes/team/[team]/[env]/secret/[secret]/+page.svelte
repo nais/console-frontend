@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
+	import { SvelteMap } from 'svelte/reactivity';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
@@ -22,9 +23,15 @@
 
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		DocPencilIcon,
+		EyeSlashIcon,
+		PadlockLockedIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
+	import ElevationModal from './ElevationModal.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
 	import Textarea from './Textarea.svelte';
@@ -41,10 +48,149 @@
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);
 	let editValueOpen = $state(false);
+	let elevationModalOpen = $state(false);
 
 	let keyToDelete = $state('');
 	let keyToEdit = $state('');
 	let valueToEdit = $state('');
+
+	// Elevation state - secrets are hidden by default
+	let secretsRevealed = $state(false);
+	let elevationExpiresAt = $state<Date | null>(null);
+
+	// Check if we have an active elevation on page load
+	const checkElevation = graphql(`
+		query CheckSecretElevation($input: ElevationInput!) @cache(policy: NetworkOnly) {
+			me {
+				... on User {
+					elevations(input: $input) {
+						id
+						expiresAt
+					}
+				}
+			}
+		}
+	`);
+
+	// Fetch secret values after elevation (requires elevation to succeed)
+	const fetchSecretValues = graphql(`
+		query FetchSecretValues($secret: String!, $team: Slug!, $env: String!)
+		@cache(policy: NetworkOnly) {
+			team(slug: $team) {
+				environment(name: $env) {
+					secret(name: $secret) {
+						values {
+							name
+							value
+						}
+					}
+				}
+			}
+		}
+	`);
+
+	// Store for revealed secret values
+	let revealedValues = new SvelteMap<string, string>();
+	$effect(() => {
+		if (teamSlug && env && secretName) {
+			checkElevation
+				.fetch({
+					variables: {
+						input: {
+							type: 'SECRET',
+							team: teamSlug,
+							environmentName: env,
+							resourceName: secretName
+						}
+					}
+				})
+				.then(async () => {
+					const elevations =
+						($checkElevation.data?.me?.__typename === 'User'
+							? $checkElevation.data.me.elevations
+							: []) ?? [];
+					if (elevations.length > 0) {
+						secretsRevealed = true;
+						elevationExpiresAt = new Date(elevations[0].expiresAt);
+						// Fetch the actual secret values now that we have elevation
+						await loadSecretValues();
+					}
+				});
+		}
+	});
+
+	const loadSecretValues = async () => {
+		await fetchSecretValues.fetch({
+			variables: {
+				secret: secretName,
+				team: teamSlug,
+				env: env
+			}
+		});
+		const values = $fetchSecretValues.data?.team.environment.secret?.values ?? [];
+		revealedValues.clear();
+		for (const v of values) {
+			revealedValues.set(v.name, v.value);
+		}
+	};
+
+	// Auto-hide secrets when elevation expires
+	$effect(() => {
+		if (elevationExpiresAt) {
+			const now = new Date();
+			const msUntilExpiry = elevationExpiresAt.getTime() - now.getTime();
+			if (msUntilExpiry > 0) {
+				const timeout = setTimeout(() => {
+					secretsRevealed = false;
+					elevationExpiresAt = null;
+				}, msUntilExpiry);
+				return () => clearTimeout(timeout);
+			} else {
+				secretsRevealed = false;
+				elevationExpiresAt = null;
+			}
+		}
+	});
+
+	const handleElevationSuccess = async () => {
+		secretsRevealed = true;
+		// Set expiry to 5 minutes from now (matches the durationMinutes in ElevationModal)
+		elevationExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+		// Fetch the actual secret values now that we have elevation
+		await loadSecretValues();
+	};
+
+	const hideSecrets = () => {
+		secretsRevealed = false;
+		revealedValues.clear();
+	};
+
+	const revealSecrets = async () => {
+		// First check if we already have an active elevation
+		await checkElevation.fetch({
+			variables: {
+				input: {
+					type: 'SECRET',
+					team: teamSlug,
+					environmentName: env,
+					resourceName: secretName
+				}
+			}
+		});
+
+		const elevations =
+			($checkElevation.data?.me?.__typename === 'User' ? $checkElevation.data.me.elevations : []) ??
+			[];
+		if (elevations.length > 0) {
+			// Already have elevation, just reveal
+			secretsRevealed = true;
+			elevationExpiresAt = new Date(elevations[0].expiresAt);
+			await loadSecretValues();
+		} else {
+			// Need to request elevation
+			elevationModalOpen = true;
+		}
+	};
 
 	const updateSecretValue = graphql(`
 		mutation updateSecretValue(
@@ -56,10 +202,7 @@
 			updateSecretValue(input: { environment: $env, name: $name, team: $team, value: $value }) {
 				secret {
 					id
-					values {
-						name
-						value
-					}
+					keys
 					lastModifiedBy {
 						name
 						email
@@ -88,6 +231,11 @@
 			return;
 		}
 
+		// Update the local revealed values map with the new value
+		if (secretsRevealed) {
+			revealedValues.set(keyToEdit, valueToEdit);
+		}
+
 		editValueOpen = false;
 		keyToEdit = '';
 	};
@@ -99,10 +247,7 @@
 			) {
 				secret {
 					id
-					values {
-						name
-						value
-					}
+					keys
 					lastModifiedBy {
 						name
 						email
@@ -126,6 +271,11 @@
 
 		if ($removeSecretValue.errors) {
 			return;
+		}
+
+		// Remove from local revealed values map
+		if (secretsRevealed) {
+			revealedValues.delete(keyToDelete);
 		}
 
 		deleteValueOpen = false;
@@ -174,6 +324,17 @@
 		keyToEdit = '';
 		valueToEdit = '';
 	};
+
+	const formatTimeRemaining = (expiresAt: Date): string => {
+		const now = new Date();
+		const diff = expiresAt.getTime() - now.getTime();
+		const minutes = Math.floor(diff / 60000);
+		const seconds = Math.floor((diff % 60000) / 1000);
+		if (minutes > 0) {
+			return `${minutes} min ${seconds} sek`;
+		}
+		return `${seconds} sek`;
+	};
 </script>
 
 <GraphErrors errors={$Secret.errors} />
@@ -191,7 +352,8 @@
 			<Heading as="h1" size="large">Delete Secret</Heading>
 		{/snippet}
 		<p>
-			This will permanently delete the secret named <b>{secret.name}</b> from <b>{env}</b>.
+			This will permanently delete the secret named <b>{secret.name}</b>
+			from <b>{env}</b>.
 		</p>
 		{#if secret.workloads.nodes.length > 0}
 			<p>These workloads still reference the secret:</p>
@@ -235,6 +397,15 @@
 
 		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
 	</Confirm>
+
+	<ElevationModal
+		bind:open={elevationModalOpen}
+		{teamSlug}
+		environmentName={env}
+		{secretName}
+		onSuccess={handleElevationSuccess}
+	/>
+
 	<div
 		style="display: flex; flex-direction: row; justify-content: flex-end; padding-bottom: var(--spacing-layout);"
 	></div>
@@ -252,56 +423,111 @@
 						A secret contains a set of key-value pairs.
 					</HelpText>
 				</div>
-				<Button
-					class="delete-secret"
-					title="Delete secret from environment"
-					variant="danger"
-					size="small"
-					onclick={openDeleteModal}
-					icon={TrashIcon}
-				>
-					Delete
-				</Button>
+				<div class="header-buttons">
+					{#if secretsRevealed}
+						<Button
+							variant="secondary"
+							size="small"
+							onclick={hideSecrets}
+							icon={EyeSlashIcon}
+							title="Skjul hemmeligheter"
+						>
+							Skjul verdier
+						</Button>
+					{:else}
+						<Button
+							variant="secondary"
+							size="small"
+							onclick={revealSecrets}
+							icon={PadlockLockedIcon}
+							title="Vis hemmeligheter (krever begrunnelse)"
+						>
+							Vis verdier
+						</Button>
+					{/if}
+					<Button
+						class="delete-secret"
+						title="Delete secret from environment"
+						variant="danger"
+						size="small"
+						onclick={openDeleteModal}
+						icon={TrashIcon}
+					>
+						Delete
+					</Button>
+				</div>
 			</div>
+
+			{#if secretsRevealed && elevationExpiresAt}
+				<div class="elevation-info">
+					<Alert variant="info" size="small">
+						<BodyShort>
+							Du har tilgang til å se hemmeligheter. Tilgangen utløper om
+							<strong>{formatTimeRemaining(elevationExpiresAt)}</strong>.
+						</BodyShort>
+					</Alert>
+				</div>
+			{/if}
+
 			<Table size="small" style="margin-top: 2rem">
 				<Thead>
 					<Tr>
 						<Th>Key</Th>
+						<Th>Value</Th>
 						<Th align="right">Actions</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each secret.values as value (value.name)}
+					{#each secret.keys as keyName (keyName)}
 						<Tr>
 							<Td>
 								<p class="key">
-									{value.name}
+									{keyName}
 								</p>
 							</Td>
-							<Td style="width: 100px" align="right">
+							<Td>
+								<code class="value">
+									{#if secretsRevealed && revealedValues.has(keyName)}
+										{revealedValues.get(keyName)}
+									{:else}
+										••••••••••••••••••••
+									{/if}
+								</code>
+							</Td>
+							<Td style="width: 120px" align="right">
 								<div class="buttons">
-									<CopyButton
-										activeText="Value copied"
-										variant="action"
-										size="small"
-										copyText={value.value}
-									/>
-									<Button
-										size="small"
-										variant="tertiary"
-										title="Show or edit secret value"
-										onclick={() => {
-											openEditValueModal(value.name, value.value);
-										}}
-										icon={DocPencilIcon}
-									/>
+									{#if secretsRevealed && revealedValues.has(keyName)}
+										<CopyButton
+											activeText="Value copied"
+											variant="action"
+											size="small"
+											copyText={revealedValues.get(keyName) ?? ''}
+										/>
+										<Button
+											size="small"
+											variant="tertiary"
+											title="Show or edit secret value"
+											onclick={() => {
+												openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
+											}}
+											icon={DocPencilIcon}
+										/>
+									{:else}
+										<Button
+											size="small"
+											variant="tertiary"
+											title="Krev elevering for å se eller kopiere verdier"
+											onclick={revealSecrets}
+											icon={PadlockLockedIcon}
+										/>
+									{/if}
 
 									<Button
 										size="small"
 										variant="tertiary-neutral"
 										title="Delete key and value"
 										onclick={() => {
-											openDeleteValueModal(value.name);
+											openDeleteValueModal(keyName);
 										}}
 									>
 										{#snippet icon()}
@@ -314,7 +540,7 @@
 					{/each}
 				</Tbody>
 			</Table>
-			<AddKeyValue initial={secret.values} {teamSlug} {env} {secretName} />
+			<AddKeyValue initial={secret.keys.map((k) => ({ name: k }))} {teamSlug} {env} {secretName} />
 		</div>
 		<div class="sidebar">
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
@@ -376,6 +602,21 @@
 		display: flex;
 		justify-content: space-between;
 		gap: 0.5rem;
+	}
+
+	.header-buttons {
+		display: flex;
+		gap: var(--ax-space-8);
+	}
+
+	.elevation-info {
+		margin-top: var(--ax-space-16);
+	}
+
+	.value {
+		font-family: var(--ax-font-family-mono);
+		font-size: var(--ax-font-size-small);
+		word-break: break-all;
 	}
 
 	ul {
