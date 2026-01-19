@@ -61,7 +61,7 @@
 	}
 
 	let { data }: PageProps = $props();
-	let { Unleash, UnleashReleaseChannels, teamSlug, userIsMember } = $derived(data);
+	let { Unleash, UnleashReleaseChannels, teamSlug, userCanElevate } = $derived(data);
 
 	// Derived state
 	const unleash = $derived($Unleash.data?.team?.unleash);
@@ -461,7 +461,7 @@
 								<span style="color: var(--ax-text-subtle)">Not set</span>
 							{/if}
 						</span>
-						{#if userIsMember && unleash.ready}
+						{#if userCanElevate && unleash.ready}
 							<Button
 								size="xsmall"
 								variant="tertiary-neutral"
@@ -506,7 +506,7 @@
 									<a href="/team/{team.slug}">{team.slug}</a>
 								</Td>
 								<Td align="right">
-									{#if userIsMember && team.slug !== teamSlug}
+									{#if userCanElevate && team.slug !== teamSlug}
 										<Button
 											size="small"
 											disabled={unleash.ready === false}
@@ -525,7 +525,7 @@
 					</Tbody>
 				</Table>
 				<p>
-					{#if userIsMember}
+					{#if userCanElevate}
 						<Button
 							title="Add team"
 							variant="tertiary"
@@ -621,7 +621,7 @@
 			Enabling Unleash will create a new Unleash server for your team, and cost will be attributed
 			to your team.
 		</p>
-		{#if userIsMember}
+		{#if userCanElevate}
 			<Button
 				variant="secondary"
 				size="medium"

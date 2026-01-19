@@ -46,6 +46,7 @@ export async function load(event) {
 			? current.data.team
 			: {
 					userIsOwner: false,
+					userCanElevate: false,
 					deletionInProgress: false,
 					lastSuccessfulSync: null,
 					userIsMember: false,

@@ -6,7 +6,7 @@ import type { BeforeLoadEvent } from './$houdini';
 export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
 	const pd = await parent();
 
-	if (!pd.userIsMember) {
+	if (!pd.userCanElevate) {
 		error(403, 'You are not allowed to view this page');
 	}
 }

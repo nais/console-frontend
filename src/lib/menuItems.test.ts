@@ -15,6 +15,7 @@ describe('menuItems', () => {
 					path: '/team/devteam',
 					features,
 					member: true,
+					canModify: true,
 					isAdmin: false
 				})
 			).toEqual([
@@ -55,6 +56,7 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/nais/prod-gcp/secret/github-backup-config',
 					member: true,
+					canModify: true,
 					isAdmin: false
 				})
 					.flatMap((g) => g)
@@ -67,6 +69,7 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/nais/prod-gcp/postgres/gemini',
 					member: true,
+					canModify: true,
 					isAdmin: false
 				})
 					.flatMap((g) => g)
@@ -80,6 +83,7 @@ describe('menuItems', () => {
 					path: '/team/nais/prod-gcp/valkey/gemini',
 					features,
 					member: true,
+					canModify: true,
 					isAdmin: false
 				})
 					.flatMap((g) => g)
@@ -92,6 +96,7 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/devteam/jobs',
 					member: true,
+					canModify: true,
 					isAdmin: false
 				})
 					.flatMap((g) => g)
@@ -105,10 +110,11 @@ describe('menuItems', () => {
 					path: '/team/tbd/jobs',
 					features,
 					member: false,
+					canModify: false,
 					isAdmin: false
 				})
 					.flatMap((g) => g)
-					.find((i) => ['Secrets', 'Settings'].includes(i.label))
+					.find((i) => ['Settings'].includes(i.label))
 			).toBeUndefined();
 		});
 
@@ -117,6 +123,7 @@ describe('menuItems', () => {
 				path: '/team/tbd/jobs',
 				features,
 				member: true,
+				canModify: true,
 				isAdmin: false,
 				inventory: {
 					applications: { total: 42 },
@@ -152,6 +159,7 @@ describe('menuItems', () => {
 					path: '/team/nais',
 					features,
 					member: false,
+					canModify: false,
 					isAdmin: true
 				})
 					.flatMap((g) => g)
@@ -166,6 +174,7 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/devteam/dev/app/app-w-all-storage/utilization',
 					member: true,
+					canModify: true,
 					isAdmin: false
 				})
 			).toEqual([
@@ -207,6 +216,7 @@ describe('menuItems', () => {
 				menuItems({
 					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
 					member: false,
+					canModify: false,
 					isAdmin: false
 				})
 					.flatMap((g) => g)

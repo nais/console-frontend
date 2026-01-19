@@ -7,11 +7,13 @@
 
 	const {
 		member,
+		canModify,
 		isAdmin,
 		features,
 		teamSlug
 	}: {
 		member: boolean;
+		canModify: boolean;
 		isAdmin: boolean;
 		features?: {
 			unleash: { enabled: boolean };
@@ -78,6 +80,7 @@
 	items={menuItems({
 		path: page.url.pathname,
 		member,
+		canModify,
 		inventory: $Inventory.fetching ? undefined : $Inventory.data?.team.inventoryCounts,
 		features,
 		isAdmin

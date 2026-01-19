@@ -15,7 +15,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { SqlInstance, userIsMember } = $derived(data);
+	let { SqlInstance, userCanElevate } = $derived(data);
 	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
 	let postgres = $derived(page.params.postgres);
 
@@ -107,7 +107,7 @@
 				<dd>{instance.version}</dd>
 				<dt>Tier:</dt>
 				<dd>{instance.tier}</dd>
-				{#if userIsMember}
+				{#if userCanElevate}
 					<dt>Console:</dt>
 					<dd>
 						<ExternalLink

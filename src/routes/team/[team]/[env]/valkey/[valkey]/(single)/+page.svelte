@@ -58,7 +58,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { Valkey, userIsMember, teamSlug } = $derived(data);
+	let { Valkey, userCanElevate, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $Valkey.variables?.orderBy?.field,
@@ -103,7 +103,7 @@
 	)}
 	<div class="wrapper">
 		<div>
-			{#if userIsMember && !isManagedByConsole}
+			{#if userCanElevate && !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This Valkey instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
@@ -184,7 +184,7 @@
 							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
 								>Maintenance running</Button
 							>
-						{:else if userIsMember}
+						{:else if userCanElevate}
 							<Button
 								icon={CogRotationIcon}
 								variant="secondary"
@@ -225,7 +225,7 @@
 				{#if instance.notifyKeyspaceEvents}
 					<BodyShort>Notify keyspace events: {instance.notifyKeyspaceEvents}</BodyShort>
 				{/if}
-				{#if userIsMember && isManagedByConsole}
+				{#if userCanElevate && isManagedByConsole}
 					<a
 						class="mt-2"
 						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
@@ -243,7 +243,7 @@
 			{/if}
 
 			<Manifest valkey={instance} teamSlug={page.params.team!} />
-			{#if userIsMember && isManagedByConsole}
+			{#if userCanElevate && isManagedByConsole}
 				<Button
 					as="a"
 					variant="danger"
