@@ -35,7 +35,7 @@
 	import EditText from './EditText.svelte';
 
 	let { data }: PageProps = $props();
-	let { TeamSettings, userIsOwner, teamSlug, userCanElevate } = $derived(data);
+	let { TeamSettings, viewerIsOwner, teamSlug, viewerIsMember } = $derived(data);
 
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
@@ -131,7 +131,7 @@
 							descriptionErrors = data.errors;
 						}
 					}}
-					isMember={userCanElevate}
+					isMember={viewerIsMember}
 				/>
 
 				<GraphErrors errors={descriptionErrors} size="small" />
@@ -158,7 +158,7 @@
 									defaultSlackChannelErrors = data.errors;
 								}
 							}}
-							isMember={userCanElevate}
+							isMember={viewerIsMember}
 						/>
 					</p>
 					<GraphErrors errors={defaultSlackChannelErrors} size="small" />
@@ -190,7 +190,7 @@
 											slackChannelsErrors = data.errors;
 										}
 									}}
-									isMember={userCanElevate}
+									isMember={viewerIsMember}
 								/>
 							</div>
 						{/each}
@@ -200,7 +200,7 @@
 				{/if}
 			</div>
 
-			{#if userCanElevate}
+			{#if viewerIsMember}
 				<div>
 					<Heading as="h2">Deploy Key</Heading>
 					<BodyShort>
@@ -291,7 +291,7 @@
 				</div>
 			{/if}
 
-			{#if userIsOwner}
+			{#if viewerIsOwner}
 				<div>
 					<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 					<div class="danger-zone">

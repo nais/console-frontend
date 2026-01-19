@@ -141,15 +141,12 @@
 		<Select label="Role" style="width:150px" bind:value={role}>
 			<option value="OWNER">Owner</option>
 			<option value="EDITOR">Editor</option>
-			<option value="VIEWER">Viewer</option>
 		</Select>
 		<Detail style="margin-top: 0.5rem; color: var(--ax-text-subtle)">
 			{#if role === 'OWNER'}
 				Full access including member administration
-			{:else if role === 'EDITOR'}
-				Can modify resources and view secrets
 			{:else}
-				Can view resources, but cannot make changes or perform actions
+				Can modify resources and view secrets
 			{/if}
 		</Detail>
 	</form>

@@ -15,7 +15,7 @@
 
 	let { data }: PageProps = $props();
 
-	let { ApplicationImageDetails, userCanElevate } = $derived(data);
+	let { ApplicationImageDetails, viewerIsMember } = $derived(data);
 
 	const { registry, repository, name } = $derived(
 		parseImage($ApplicationImageDetails.data?.team.environment.workload.image.name)
@@ -106,7 +106,7 @@
 					team={$ApplicationImageDetails.data?.team.slug}
 					environment={$ApplicationImageDetails.data?.team.environment.environment.name}
 					workload={$ApplicationImageDetails.data?.team.environment.workload.name}
-					authorized={userCanElevate}
+					authorized={viewerIsMember}
 				/>
 			</div>
 			<div>

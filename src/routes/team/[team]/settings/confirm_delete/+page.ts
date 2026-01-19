@@ -9,11 +9,11 @@ export async function load(event) {
 	}
 
 	const p = await event.parent();
-	if (!p.userIsMember) {
+	if (!p.viewerIsMember) {
 		error(403, 'You are not a member of this team.');
 	}
 
-	if (!p.userIsOwner) {
+	if (!p.viewerIsOwner) {
 		error(403, 'You are not an owner of this team.');
 	}
 

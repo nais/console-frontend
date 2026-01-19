@@ -7,7 +7,7 @@ export async function load(event) {
 
 	const data = await parent();
 
-	if (!data.userCanElevate) {
+	if (!data.viewerIsMember) {
 		error(403, 'You do not have access to this page');
 	}
 

@@ -14,7 +14,7 @@
 
 	let { data }: PageProps = $props();
 
-	let { JobImageDetails, userCanElevate } = $derived(data);
+	let { JobImageDetails, viewerIsMember } = $derived(data);
 
 	const { registry, repository, name } = $derived(
 		parseImage($JobImageDetails.data?.team.environment.workload.image.name)
@@ -105,7 +105,7 @@
 					team={$JobImageDetails.data?.team.slug}
 					environment={$JobImageDetails.data?.team.environment.environment.name}
 					workload={$JobImageDetails.data?.team.environment.workload.name}
-					authorized={userCanElevate}
+					authorized={viewerIsMember}
 				/>
 			</div>
 			<WorkloadVulnerabilityHistoryGraph

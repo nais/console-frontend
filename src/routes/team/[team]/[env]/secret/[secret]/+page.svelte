@@ -42,7 +42,7 @@
 
 	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
-	let userCanElevate = $derived($Secret.data?.team.userCanElevate ?? false);
+	let viewerCanElevate = $derived($Secret.data?.team.viewerCanElevate ?? false);
 
 	let secretName = $derived(page.params.secret ?? '');
 	let env = $derived(page.params.env ?? '');
@@ -454,7 +454,7 @@
 					</HelpText>
 				</div>
 				<div class="header-buttons">
-					{#if userCanElevate}
+					{#if viewerCanElevate}
 						{#if secretsRevealed}
 							<Button
 								variant="secondary"
@@ -477,7 +477,7 @@
 							</Button>
 						{/if}
 					{/if}
-					{#if userCanElevate}
+					{#if viewerCanElevate}
 						<Button
 							class="delete-secret"
 							title="Delete secret from environment"
@@ -519,7 +519,7 @@
 							</Td>
 							<Td style="width: 120px" align="right">
 								<div class="buttons">
-									{#if userCanElevate}
+									{#if viewerCanElevate}
 										{#if secretsRevealed && revealedValues.has(keyName)}
 											<CopyButton
 												activeText="Value copied"
@@ -527,7 +527,7 @@
 												size="small"
 												copyText={revealedValues.get(keyName) ?? ''}
 											/>
-											{#if userCanElevate}
+											{#if viewerCanElevate}
 												<Button
 													size="small"
 													variant="tertiary"
@@ -548,7 +548,7 @@
 											/>
 										{/if}
 									{/if}
-									{#if userCanElevate}
+									{#if viewerCanElevate}
 										<Button
 											size="small"
 											variant="tertiary-neutral"
@@ -568,7 +568,7 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{#if userCanElevate}
+			{#if viewerCanElevate}
 				<AddKeyValue
 					initial={secret.keys.map((k) => ({ name: k }))}
 					{teamSlug}

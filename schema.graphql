@@ -6316,13 +6316,13 @@ type Team implements ActivityLogger & Node {
   unleash: UnleashInstance
 
   """Whether or not the current user can create elevations for the team."""
-  userCanElevate: Boolean!
+  viewerCanElevate: Boolean!
 
   """Whether or not the current user is a member of the team."""
-  userIsMember: Boolean!
+  viewerIsMember: Boolean!
 
   """Whether or not the current user is an owner of the team."""
-  userIsOwner: Boolean!
+  viewerIsOwner: Boolean!
 
   """Valkey instances owned by the team."""
   valkeys(

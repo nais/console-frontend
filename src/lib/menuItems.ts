@@ -2,7 +2,6 @@ export const menuItems = ({
 	path,
 	features,
 	member,
-	canModify,
 	inventory,
 	isAdmin
 }: {
@@ -14,7 +13,6 @@ export const menuItems = ({
 		openSearch: { enabled: boolean };
 	};
 	member: boolean;
-	canModify: boolean;
 	inventory?: {
 		applications: { total: number };
 		jobs: { total: number };
@@ -83,7 +81,7 @@ export const menuItems = ({
 				menuItem('Logs', 'logs')
 			].filter(Boolean),
 			[menuItem('Manifest', 'manifest')],
-			canModify && [menuItem('Delete', 'delete')]
+			member && [menuItem('Delete', 'delete')]
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[][];
 	}
 	const [, , team, page] = split;

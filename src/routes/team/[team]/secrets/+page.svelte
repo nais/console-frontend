@@ -23,7 +23,7 @@
 
 	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
-	let userCanElevate = $derived($Secrets.data?.team.userCanElevate ?? false);
+	let viewerCanElevate = $derived($Secrets.data?.team.viewerCanElevate ?? false);
 
 	let filter = $state(page.url.searchParams.get('nameFilter') ?? '');
 
@@ -93,7 +93,7 @@
 	{@const secrets = $Secrets.data.team.secrets}
 	<div class="wrapper">
 		<div>
-			{#if userCanElevate}
+			{#if viewerCanElevate}
 				<div class="button">
 					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
 						Create Secret

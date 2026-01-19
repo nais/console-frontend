@@ -23,7 +23,7 @@
 	import Instances from './Instances.svelte';
 
 	let { data }: PageProps = $props();
-	let { App, AppInstances, teamSlug, userCanElevate } = $derived(data);
+	let { App, AppInstances, teamSlug, viewerIsMember } = $derived(data);
 
 	const restartAppMutation = () =>
 		graphql(`
@@ -120,7 +120,7 @@
 				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
 					<div class="instances-header">
 						<Heading as="h3" size="medium">Instances</Heading>
-						{#if userCanElevate}
+						{#if viewerIsMember}
 							<Button
 								variant="secondary"
 								size="small"

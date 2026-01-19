@@ -8,8 +8,8 @@ query Repositories(
 	$filter: TeamRepositoryFilter
 ) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
-		userIsMember
-		userIsOwner
+		viewerIsMember
+		viewerIsOwner
 		repositories(
 			first: $first
 			last: $last
