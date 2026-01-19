@@ -35,7 +35,7 @@
 	import EditText from './EditText.svelte';
 
 	let { data }: PageProps = $props();
-	let { TeamSettings, viewerIsOwner, teamSlug, viewerIsMember } = $derived(data);
+	let { TeamSettings, userIsOwner, teamSlug, userIsMember } = $derived(data);
 
 	const rotateKey = graphql(`
 		mutation RotateDeployKey($team: Slug!) {
@@ -131,7 +131,7 @@
 							descriptionErrors = data.errors;
 						}
 					}}
-					isMember={viewerIsMember}
+					isMember={userIsMember}
 				/>
 
 				<GraphErrors errors={descriptionErrors} size="small" />
@@ -158,7 +158,7 @@
 									defaultSlackChannelErrors = data.errors;
 								}
 							}}
-							isMember={viewerIsMember}
+							isMember={userIsMember}
 						/>
 					</p>
 					<GraphErrors errors={defaultSlackChannelErrors} size="small" />
@@ -190,7 +190,7 @@
 											slackChannelsErrors = data.errors;
 										}
 									}}
-									isMember={viewerIsMember}
+									isMember={userIsMember}
 								/>
 							</div>
 						{/each}
@@ -221,7 +221,7 @@
 						<dd><Time time={deployKey.created} distance={true} /></dd>
 						<dt>Expires:</dt>
 						<dd><Time time={deployKey.expires} distance={true} /></dd>
-						{#if viewerIsMember}
+						{#if userIsMember}
 							<dt>Key:</dt>
 							<dd>
 								<div class="deployKey">
@@ -250,7 +250,7 @@
 							</dd>
 						{/if}
 					</dl>
-					{#if viewerIsMember}
+					{#if userIsMember}
 						<div class="buttons">
 							<div class="button">
 								<CopyButton
@@ -275,7 +275,7 @@
 							</div>
 						</div>
 					{/if}
-				{:else if viewerIsMember}
+				{:else if userIsMember}
 					<div class="buttons">
 						<div class="button mt-2">
 							<Button
@@ -295,7 +295,7 @@
 				{/if}
 			</div>
 
-			{#if viewerIsOwner}
+			{#if userIsOwner}
 				<div>
 					<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 					<div class="danger-zone">

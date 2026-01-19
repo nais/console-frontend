@@ -15,7 +15,7 @@
 
 	let { data }: PageProps = $props();
 
-	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
+	let { Repositories, teamSlug, userIsMember } = $derived(data);
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
@@ -140,7 +140,7 @@
 		<div>
 			{#if $Repositories.data.team}
 				{@const team = $Repositories.data.team}
-				{#if viewerIsMember}
+				{#if userIsMember}
 					<div class="repository">
 						<Heading as="h2" size="small">Add Repository</Heading>
 						<Detail>
@@ -217,7 +217,7 @@
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem>
 										<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
-										{#if viewerIsMember}
+										{#if userIsMember}
 											<div class="right">
 												<Button
 													variant="danger"

@@ -5,8 +5,8 @@ query TeamRoles($team: Slug!) {
 				totalCount
 			}
 		}
-		viewerIsOwner
-		viewerIsMember
+		userIsOwner
+		userIsMember
 		deletionInProgress
 		lastSuccessfulSync
 		externalResources {

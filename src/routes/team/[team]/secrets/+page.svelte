@@ -11,7 +11,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, BodyShort, Button, Detail, Search } from '@nais/ds-svelte-community';
+	import { Button, Detail, Search } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuRadioGroup,
@@ -23,7 +23,7 @@
 
 	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
-	let viewerIsMember = $derived($Secrets.data?.team.viewerIsMember ?? false);
+	let userCanElevate = $derived($Secrets.data?.team.userCanElevate ?? false);
 
 	let filter = $state(page.url.searchParams.get('nameFilter') ?? '');
 
@@ -93,15 +93,7 @@
 	{@const secrets = $Secrets.data.team.secrets}
 	<div class="wrapper">
 		<div>
-			{#if !viewerIsMember}
-				<Alert variant="info" size="small" style="margin-bottom: var(--spacing-layout);">
-					<BodyShort>
-						Du har ikke tilgang til å opprette eller endre hemmeligheter fordi du ikke er medlem av
-						teamet.
-					</BodyShort>
-				</Alert>
-			{/if}
-			{#if viewerIsMember}
+			{#if userCanElevate}
 				<div class="button">
 					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
 						Create Secret

@@ -89,7 +89,8 @@
 
 			<Select label="Role" style="width:150px" value={member.role} onchange={updateRole}>
 				<option value="OWNER">Owner</option>
-				<option value="MEMBER">Member</option>
+				<option value="EDITOR">Editor</option>
+				<option value="VIEWER">Viewer</option>
 			</Select>
 		</div>
 	{/if}

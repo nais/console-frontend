@@ -68,7 +68,7 @@
 		return allEmails.filter((email) => !teamMemberEmails.has(email));
 	});
 
-	let role: AddTeamMemberInput['role'] = $state('MEMBER');
+	let role: AddTeamMemberInput['role'] = $state('EDITOR');
 	let email: string = $state('');
 
 	let errors: string[] = $state([]);
@@ -132,7 +132,8 @@
 		<br />
 		<Select label="Role" style="width:150px" bind:value={role}>
 			<option value="OWNER">Owner</option>
-			<option value="MEMBER">Member</option>
+			<option value="EDITOR">Editor</option>
+			<option value="VIEWER">Viewer</option>
 		</Select>
 	</form>
 

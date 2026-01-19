@@ -45,10 +45,10 @@ export async function load(event) {
 		...(current.data
 			? current.data.team
 			: {
-					viewerIsOwner: false,
+					userIsOwner: false,
 					deletionInProgress: false,
 					lastSuccessfulSync: null,
-					viewerIsMember: false,
+					userIsMember: false,
 					externalResources: { gitHubTeam: null },
 					purpose: '',
 					slackChannel: '',

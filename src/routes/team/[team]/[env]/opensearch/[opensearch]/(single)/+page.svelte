@@ -59,7 +59,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { OpenSearchInstance, viewerIsMember, teamSlug } = $derived(data);
+	let { OpenSearchInstance, userIsMember, teamSlug } = $derived(data);
 
 	let tableSort = $derived({
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
@@ -107,7 +107,7 @@
 
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember && !isManagedByConsole}
+			{#if userIsMember && !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This OpenSearch instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
@@ -190,7 +190,7 @@
 							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
 								>Maintenance running</Button
 							>
-						{:else if viewerIsMember}
+						{:else if userIsMember}
 							<Button
 								icon={CogRotationIcon}
 								variant="secondary"
@@ -226,7 +226,7 @@
 				<BodyShort>Tier: {instance.tier}</BodyShort>
 				<BodyShort>Memory: {instance.memory}</BodyShort>
 				<BodyShort>Storage: {instance.storageGB}GB</BodyShort>
-				{#if viewerIsMember && isManagedByConsole}
+				{#if userIsMember && isManagedByConsole}
 					<a
 						class="mt-2"
 						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
@@ -250,7 +250,7 @@
 
 			<Manifest openSearch={instance} teamSlug={page.params.team!} />
 
-			{#if viewerIsMember && isManagedByConsole}
+			{#if userIsMember && isManagedByConsole}
 				<Button
 					as="a"
 					variant="danger"

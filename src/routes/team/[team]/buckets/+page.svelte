@@ -18,7 +18,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Buckets, viewerIsMember } = $derived(data);
+	let { Buckets, userIsMember } = $derived(data);
 
 	let cost = $derived(() => {
 		const costData = $Buckets.data?.team.cost;
@@ -108,7 +108,7 @@
 						/>
 					</div>
 				{/if}
-				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+				{#if $Buckets.data.team.externalResources.cdn?.bucket && userIsMember}
 					<div>
 						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
 					</div>
@@ -125,7 +125,7 @@
 				</ExternalLink>
 			</BodyLong>
 			<div class="right-column">
-				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+				{#if $Buckets.data.team.externalResources.cdn?.bucket && userIsMember}
 					<div>
 						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
 					</div>

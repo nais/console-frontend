@@ -21,7 +21,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { OpenSearch, viewerIsMember } = $derived(data);
+	let { OpenSearch, userIsMember } = $derived(data);
 
 	let cost = $derived(() => {
 		const costData = $OpenSearch.data?.team.cost;
@@ -41,7 +41,7 @@
 		url: `/team/${$OpenSearch.data?.team.slug}/opensearch/create`,
 		page: CreatePage,
 		header: 'Create OpenSearch',
-		viewerIsMember: viewerIsMember
+		userIsMember: userIsMember
 	});
 </script>
 
@@ -49,7 +49,7 @@
 
 {#if $OpenSearch.data}
 	{#snippet createButton()}
-		{#if create && create.viewerIsMember}
+		{#if create && create.userIsMember}
 			<div class="button">
 				<Button
 					variant="secondary"

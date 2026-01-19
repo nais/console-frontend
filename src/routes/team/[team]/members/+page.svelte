@@ -15,7 +15,7 @@
 	import EditMember from './EditMember.svelte';
 
 	let { data }: PageProps = $props();
-	let { Members, UserInfo, viewerIsOwner } = $derived(data);
+	let { Members, UserInfo, userIsOwner } = $derived(data);
 	let team = $derived($Members.data?.team);
 
 	const deleteTeamMember = graphql(`
@@ -41,8 +41,7 @@
 	let deleteUserOpen = $state(false);
 
 	let canEdit = $derived(
-		viewerIsOwner === true ||
-			($UserInfo.data?.me.__typename == 'User' && $UserInfo.data?.me.isAdmin)
+		userIsOwner === true || ($UserInfo.data?.me.__typename == 'User' && $UserInfo.data?.me.isAdmin)
 	);
 
 	let after: string = $state($Members.variables?.after ?? '');

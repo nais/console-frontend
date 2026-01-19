@@ -1377,7 +1377,7 @@ input CreateServiceAccountTokenInput {
 
   """
   Optional expiry date of the token.
-
+  
   If not specified, the token will never expire.
   """
   expiresAt: Date
@@ -1392,11 +1392,11 @@ input CreateServiceAccountTokenInput {
 type CreateServiceAccountTokenPayload {
   """
   The secret of the service account token.
-
+  
   This value is only returned once, and can not be retrieved at a later stage. If the secret is lost, a new token must be created.
-
+  
   Once obtained, the secret can be used to authenticate as the service account using the HTTP `Authorization` request header:
-
+  
   ```
   Authorization: Bearer <secret>
   ```
@@ -1413,7 +1413,7 @@ type CreateServiceAccountTokenPayload {
 input CreateTeamInput {
   """
   The purpose / description of the team.
-
+  
   What is the team for? What is the team working on? This value is meant for human consumption, and should be enough
   to give a newcomer an idea of what the team is about.
   """
@@ -1421,14 +1421,14 @@ input CreateTeamInput {
 
   """
   The main Slack channel for the team.
-
+  
   Where does the team communicate? This value is used to link to the team's main Slack channel.
   """
   slackChannel: String!
 
   """
   Unique team slug.
-
+  
   After creation, this value can not be changed. Also, after a potential deletion of the team, the slug can not be
   reused, so please choose wisely.
   """
@@ -3157,7 +3157,7 @@ input MetricsQueryInput {
   """
   Optional range query parameters.
   If provided, executes a range query instead of an instant query.
-
+  
   Limits to prevent excessive memory usage:
   - Minimum step: 10 seconds
   - Maximum time range: 30 days
@@ -3231,7 +3231,7 @@ type Mutation {
 
   """
   Add a team member
-
+  
   If the user is already a member or an owner of the team, the mutation will result in an error.
   """
   addTeamMember(input: AddTeamMemberInput!): AddTeamMemberPayload!
@@ -3250,12 +3250,12 @@ type Mutation {
 
   """
   Confirm a team deletion
-
+  
   This will start the actual team deletion process, which will be done in an asynchronous manner. All external
   entities controlled by Nais will also be deleted.
-
+  
   WARNING: There is no going back after starting this process.
-
+  
   Note: Service accounts are not allowed to confirm a team deletion.
   """
   confirmTeamDeletion(input: ConfirmTeamDeletionInput!): ConfirmTeamDeletionPayload!
@@ -3277,23 +3277,23 @@ type Mutation {
 
   """
   Create a service account token.
-
+  
   The secret is automatically generated, and is returned as a part of the payload for this mutation. The secret can
   not be retrieved at a later stage.
-
+  
   A service account can have multiple active tokens at the same time.
   """
   createServiceAccountToken(input: CreateServiceAccountTokenInput!): CreateServiceAccountTokenPayload!
 
   """
   Create a new Nais team
-
+  
   The user creating the team will be granted team ownership, unless the user is a service account, in which case the
   team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
-
+  
   Creation of a team will also create external resources for the team, which will be managed by the Nais API
   reconcilers. This will be done asynchronously.
-
+  
   Refer to the [official Nais documentation](https://docs.nais.io/explanations/team/) for more information regarding
   Nais teams.
   """
@@ -3301,10 +3301,10 @@ type Mutation {
 
   """
   Create a new Unleash instance.
-
+  
   This mutation will create a new Unleash instance for the given team. The team
   will be set as owner of the Unleash instance and will be able to manage it.
-
+  
   By default, instances are created with the default version.
   Optionally specify a releaseChannel to subscribe to automatic version updates.
   """
@@ -3336,7 +3336,7 @@ type Mutation {
 
   """
   Delete an Unleash instance.
-
+  
   The Unleash instance can only be deleted if no other teams have access to it.
   Revoke access for all other teams before deleting the instance.
   """
@@ -3347,14 +3347,14 @@ type Mutation {
 
   """
   Disable a reconciler
-
+  
   The reconciler configuration will be left intact.
   """
   disableReconciler(input: DisableReconcilerInput!): Reconciler!
 
   """
   Enable a reconciler
-
+  
   A reconciler must be fully configured before it can be enabled.
   """
   enableReconciler(input: EnableReconcilerInput!): Reconciler!
@@ -3370,19 +3370,19 @@ type Mutation {
 
   """
   Remove a team member
-
+  
   If the user is not already a member or an owner of the team, the mutation will result in an error.
   """
   removeTeamMember(input: RemoveTeamMemberInput!): RemoveTeamMemberPayload!
 
   """
   Request a key that can be used to trigger a team deletion process
-
+  
   Deleting a team is a two step process. First an owner of the team (or an admin) must request a team deletion key,
   and then a second owner of the team (or an admin) must confirm the deletion using the confirmTeamDeletion mutation.
-
+  
   The returned delete key is valid for an hour, and can only be used once.
-
+  
   Note: Service accounts are not allowed to request team delete keys.
   """
   requestTeamDeletion(input: RequestTeamDeletionInput!): RequestTeamDeletionPayload!
@@ -3403,7 +3403,7 @@ type Mutation {
 
   """
   Assign a role to a team member
-
+  
   The user must already be a member of the team for this mutation to succeed.
   """
   setTeamMemberRole(input: SetTeamMemberRoleInput!): SetTeamMemberRolePayload!
@@ -3434,14 +3434,14 @@ type Mutation {
 
   """
   Update a service account token.
-
+  
   Note that the secret itself can not be updated, only the metadata.
   """
   updateServiceAccountToken(input: UpdateServiceAccountTokenInput!): UpdateServiceAccountTokenPayload!
 
   """
   Update an existing Nais team
-
+  
   This mutation can be used to update the team purpose and the main Slack channel. It is not possible to update the
   team slug.
   """
@@ -3452,7 +3452,7 @@ type Mutation {
 
   """
   Update an Unleash instance's release channel.
-
+  
   Use this mutation to change to a different release channel.
   """
   updateUnleashInstance(input: UpdateUnleashInstanceInput!): UpdateUnleashInstancePayload!
@@ -4970,16 +4970,16 @@ type Secret implements Node {
     last: Int
   ): JobConnection!
 
+  """
+  The names of the keys in the secret. This does not require elevation to access.
+  """
+  keys: [String!]!
+
   """Last time the secret was modified."""
   lastModifiedAt: Time
 
   """User who last modified the secret."""
   lastModifiedBy: User
-
-  """
-  The names of the keys in the secret. This does not require elevation to access.
-  """
-  keys: [String!]!
 
   """The name of the secret."""
   name: String!
@@ -4990,8 +4990,10 @@ type Secret implements Node {
   """The environment the secret exists in."""
   teamEnvironment: TeamEnvironment!
 
-  """The secret values contained within the secret."""
-  values: [SecretValue!]!
+  """
+  The secret values contained within the secret. Requires elevation to access the values. Returns null if not authorized.
+  """
+  values: [SecretValue!]
 
   """Workloads that use the secret."""
   workloads(
@@ -5925,14 +5927,14 @@ type StartValkeyMaintenancePayload {
 type Subscription {
   """
   Subscribe to log lines
-
+  
   This subscription is used to stream log lines.
   """
   log(filter: LogSubscriptionFilter!): LogLine!
 
   """
   Subscribe to workload logs
-
+  
   This subscription is used to stream logs from a specific workload. When filtering logs you must either specify an
   application or a job owned by a team that is running in a specific environment. You can also filter logs on instance
   name(s).
@@ -6313,6 +6315,15 @@ type Team implements ActivityLogger & Node {
   ): SqlInstanceConnection!
   unleash: UnleashInstance
 
+  """Whether or not the current user can create elevations for the team."""
+  userCanElevate: Boolean!
+
+  """Whether or not the current user is a member of the team."""
+  userIsMember: Boolean!
+
+  """Whether or not the current user is an owner of the team."""
+  userIsOwner: Boolean!
+
   """Valkey instances owned by the team."""
   valkeys(
     """Get items after this cursor."""
@@ -6334,12 +6345,6 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
-
-  """Whether or not the viewer is a member of the team."""
-  viewerIsMember: Boolean!
-
-  """Whether or not the viewer is an owner of the team."""
-  viewerIsOwner: Boolean!
 
   """Get the mean time to fix history for a team."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
@@ -7001,11 +7006,14 @@ type TeamMemberRemovedActivityLogEntryData {
 
 """Team member roles."""
 enum TeamMemberRole {
-  """Regular member, read only access."""
-  MEMBER
+  """Editor, full access including elevation."""
+  EDITOR
 
-  """Team owner, full access to the team."""
+  """Team owner, full access to the team including member management."""
   OWNER
+
+  """Viewer, can see resources but cannot elevate or make changes."""
+  VIEWER
 }
 
 type TeamMemberSetRoleActivityLogEntry implements ActivityLogEntry & Node {
@@ -7558,7 +7566,7 @@ type UpdateSecretValuePayload {
 input UpdateServiceAccountInput {
   """
   The new description of the service account.
-
+  
   If not specified, the description will remain unchanged.
   """
   description: String
@@ -7575,14 +7583,14 @@ type UpdateServiceAccountPayload {
 input UpdateServiceAccountTokenInput {
   """
   The new description of the service account token.
-
+  
   If not specified, the description will remain unchanged.
   """
   description: String
 
   """
   The new name of the service account token.
-
+  
   If not specified, the name will remain unchanged.
   """
   name: String
@@ -7623,14 +7631,14 @@ type UpdateTeamEnvironmentPayload {
 input UpdateTeamInput {
   """
   An optional new purpose / description of the team.
-
+  
   When omitted the existing value will not be updated.
   """
   purpose: String
 
   """
   An optional new Slack channel for the team.
-
+  
   When omitted the existing value will not be updated.
   """
   slackChannel: String

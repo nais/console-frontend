@@ -21,7 +21,7 @@
 	import CreatePage from './create/+page.svelte';
 
 	let { data }: PageProps = $props();
-	let { Valkeys, viewerIsMember } = $derived(data);
+	let { Valkeys, userIsMember } = $derived(data);
 
 	let cost = $derived(() => {
 		const costData = $Valkeys.data?.team.cost;
@@ -41,7 +41,7 @@
 		url: `/team/${$Valkeys.data?.team.slug}/valkey/create`,
 		page: CreatePage,
 		header: 'Create Valkey',
-		viewerIsMember: viewerIsMember
+		userIsMember: userIsMember
 	});
 </script>
 
@@ -49,7 +49,7 @@
 
 {#if $Valkeys.data}
 	{#snippet createButton()}
-		{#if create && create.viewerIsMember}
+		{#if create && create.userIsMember}
 			<div class="button">
 				<Button
 					variant="secondary"

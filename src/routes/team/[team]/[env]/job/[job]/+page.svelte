@@ -19,7 +19,7 @@
 	import TriggerRunModal from './TriggerRunModal.svelte';
 
 	let { data }: PageProps = $props();
-	let { Job, teamSlug, viewerIsMember } = $derived(data);
+	let { Job, teamSlug, userIsMember } = $derived(data);
 
 	const triggerRunMutation = () =>
 		graphql(`
@@ -108,7 +108,7 @@
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
 						<Heading as="h2" size="medium">Runs</Heading>
-						{#if viewerIsMember}
+						{#if userIsMember}
 							<Button
 								variant="secondary"
 								size="small"

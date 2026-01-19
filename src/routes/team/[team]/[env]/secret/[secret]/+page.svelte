@@ -42,7 +42,7 @@
 
 	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
-	let viewerIsMember = $derived($Secret.data?.team.viewerIsMember ?? false);
+	let userCanElevate = $derived($Secret.data?.team.userCanElevate ?? false);
 
 	let secretName = $derived(page.params.secret ?? '');
 	let env = $derived(page.params.env ?? '');
@@ -445,14 +445,6 @@
 				{#if $deleteMutation.errors}
 					<GraphErrors errors={$deleteMutation.errors} />
 				{/if}
-				{#if !viewerIsMember}
-					<Alert variant="info" size="small">
-						<BodyShort>
-							Du har ikke tilgang til å se eller endre verdier i denne hemmeligheten fordi du ikke
-							er medlem av teamet.
-						</BodyShort>
-					</Alert>
-				{/if}
 			</div>
 			<div class="data-heading">
 				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
@@ -462,7 +454,7 @@
 					</HelpText>
 				</div>
 				<div class="header-buttons">
-					{#if viewerIsMember}
+					{#if userCanElevate}
 						{#if secretsRevealed}
 							<Button
 								variant="secondary"
@@ -484,6 +476,8 @@
 								Vis verdier
 							</Button>
 						{/if}
+					{/if}
+					{#if userCanElevate}
 						<Button
 							class="delete-secret"
 							title="Delete secret from environment"
@@ -524,8 +518,8 @@
 								</code>
 							</Td>
 							<Td style="width: 120px" align="right">
-								{#if viewerIsMember}
-									<div class="buttons">
+								<div class="buttons">
+									{#if userCanElevate}
 										{#if secretsRevealed && revealedValues.has(keyName)}
 											<CopyButton
 												activeText="Value copied"
@@ -533,15 +527,17 @@
 												size="small"
 												copyText={revealedValues.get(keyName) ?? ''}
 											/>
-											<Button
-												size="small"
-												variant="tertiary"
-												title="Show or edit secret value"
-												onclick={() => {
-													openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
-												}}
-												icon={DocPencilIcon}
-											/>
+											{#if userCanElevate}
+												<Button
+													size="small"
+													variant="tertiary"
+													title="Show or edit secret value"
+													onclick={() => {
+														openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
+													}}
+													icon={DocPencilIcon}
+												/>
+											{/if}
 										{:else}
 											<Button
 												size="small"
@@ -551,7 +547,8 @@
 												icon={PadlockLockedIcon}
 											/>
 										{/if}
-
+									{/if}
+									{#if userCanElevate}
 										<Button
 											size="small"
 											variant="tertiary-neutral"
@@ -564,14 +561,14 @@
 												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
 											{/snippet}
 										</Button>
-									</div>
-								{/if}
+									{/if}
+								</div>
 							</Td>
 						</Tr>
 					{/each}
 				</Tbody>
 			</Table>
-			{#if viewerIsMember}
+			{#if userCanElevate}
 				<AddKeyValue
 					initial={secret.keys.map((k) => ({ name: k }))}
 					{teamSlug}

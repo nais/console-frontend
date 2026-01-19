@@ -10,7 +10,7 @@ export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
 	const userInfoData = get(pd.UserInfo);
 
 	if (
-		!pd.viewerIsMember &&
+		!pd.userIsMember &&
 		!(userInfoData.data?.me.__typename === 'User' && userInfoData.data?.me.isAdmin)
 	) {
 		error(403, 'You are not allowed to view this page');
