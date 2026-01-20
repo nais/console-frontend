@@ -76,7 +76,7 @@
 		return allEmails.filter((email) => !teamMemberEmails.has(email));
 	});
 
-	let role: AddTeamMemberInput['role'] = $state('EDITOR');
+	let role: AddTeamMemberInput['role'] = $state('MEMBER');
 	let email: string = $state('');
 
 	let errors: string[] = $state([]);
@@ -140,7 +140,7 @@
 		<br />
 		<Select label="Role" style="width:150px" bind:value={role}>
 			<option value="OWNER">Owner</option>
-			<option value="EDITOR">Editor</option>
+			<option value="MEMBER">Member</option>
 		</Select>
 		<Detail style="margin-top: 0.5rem; color: var(--ax-text-subtle)">
 			{#if role === 'OWNER'}
