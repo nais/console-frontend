@@ -13,15 +13,15 @@ export async function load(event) {
 	const userInfoData = get(parent.UserInfo) as {
 		data?: {
 			features?: {
-				openSearch?: {
+				valkey?: {
 					enabled?: boolean;
 				};
 			};
 		};
 	};
 
-	if (userInfoData.data?.features?.openSearch?.enabled === false) {
-		error(404, 'OpenSearch not enabled');
+	if (userInfoData.data?.features?.valkey?.enabled === false) {
+		error(404, 'Valkey not enabled');
 	}
 
 	const after = event.url.searchParams.get('after') || '';
