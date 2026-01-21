@@ -47,7 +47,7 @@
 	});
 
 	let version = $derived(
-		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V2
+		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V3_3
 	);
 
 	let minStorage = $derived(storageRequirements[tier][memory].min);
