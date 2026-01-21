@@ -89,7 +89,7 @@ storageGB = "${storage}"
 		>Changing these settings may cause a restart of this OpenSearch instance.</Alert
 	>
 
-	<Select size="small" label="Major version" name="version" required bind:value={version}>
+	<Select size="small" label="Desired version" name="version" required bind:value={version}>
 		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
