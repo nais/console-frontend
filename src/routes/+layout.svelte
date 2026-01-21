@@ -6,7 +6,9 @@
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import { localizeLayerChart } from '$lib/chart/util';
 	import '$lib/font.css';
+	import { chatPanel } from '$lib/stores/chatPanel.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import ChatPanel from '$lib/ui/ChatPanel.svelte';
 	import ProgressBar from '$lib/ui/ProgressBar.svelte';
 	import { Page, Theme } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
@@ -84,6 +86,8 @@
 		}
 		return parts.join(' - ') + ' - Nais Console';
 	});
+
+	let isLoggedIn = $derived($isAuthenticated && !isUnauthenticated($UserInfo.errors));
 </script>
 
 <svelte:head>
@@ -99,17 +103,26 @@
 				<ProgressBar />
 			{/if}
 
-			{#if !$isAuthenticated || isUnauthenticated($UserInfo.errors)}
-				<!-- logged out. We check both to support both  -->
+			{#if !isLoggedIn}
 				<Login {userAgent} />
 			{:else}
-				{#if user?.__typename === 'User'}
-					<PageHeader {user} />
-				{/if}
+				<div
+					class="app-layout"
+					class:chat-open={chatPanel.isOpen}
+					style:--chat-panel-width="{chatPanel.width}px"
+				>
+					<div class="main-content">
+						{#if user?.__typename === 'User'}
+							<PageHeader {user} />
+						{/if}
 
-				{@render children?.()}
+						{@render children?.()}
 
-				<Naisdevice />
+						<Naisdevice />
+					</div>
+
+					<ChatPanel />
+				</div>
 			{/if}
 		</div>
 	</Page>
@@ -130,5 +143,20 @@
 
 	.full-wrapper {
 		padding-bottom: 1rem;
+	}
+
+	.app-layout {
+		display: block;
+	}
+
+	.main-content {
+		transition: margin-right 0.2s ease;
+	}
+
+	/* Desktop: push content aside when chat is open */
+	@media (min-width: 769px) {
+		.app-layout.chat-open .main-content {
+			margin-right: var(--chat-panel-width);
+		}
 	}
 </style>
