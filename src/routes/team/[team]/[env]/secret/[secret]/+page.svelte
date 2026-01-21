@@ -100,42 +100,12 @@
 						secretsRevealed = true;
 						await loadSecretValues();
 					} else {
-						// No elevation found for this specific secret, but there might be
-						// other RBAC access. Try fetching values directly.
-						await tryLoadSecretValuesWithoutElevation();
+						// No elevation found - user must request elevation to view secret values
+						secretsRevealed = false;
 					}
 				});
 		}
 	});
-
-	// Try to load secret values without requiring a specific elevation
-	// This handles cases where the user has RBAC access via other means
-	// (e.g., elevation Role/RoleBinding exists but euthanaisa hasn't cleaned it up yet)
-	const tryLoadSecretValuesWithoutElevation = async () => {
-		await fetchSecretValues.fetch({
-			variables: {
-				secret: secretName,
-				team: teamSlug,
-				env: env
-			}
-		});
-
-		// Check for GraphQL errors (e.g., RBAC denied)
-		if ($fetchSecretValues.errors && $fetchSecretValues.errors.length > 0) {
-			// User doesn't have access, they'll need to request elevation
-			return;
-		}
-
-		const values = $fetchSecretValues.data?.team.environment.secret?.values ?? [];
-		if (values.length > 0) {
-			// User has access, reveal the values
-			secretsRevealed = true;
-			revealedValues.clear();
-			for (const v of values) {
-				revealedValues.set(v.name, v.value);
-			}
-		}
-	};
 
 	const loadSecretValues = async () => {
 		await fetchSecretValues.fetch({
@@ -156,19 +126,19 @@
 	};
 
 	// Auto-hide secrets when elevation expires
-	// Note: We don't immediately hide if expiresAt is in the past, because
-	// the RBAC (Role/RoleBinding) might still exist in Kubernetes even if
-	// euthanaisa hasn't cleaned it up yet. The user should still be able
-	// to see values as long as they have valid RBAC access.
+	// We allow graceful degradation: if elevation metadata expires but RBAC cleanup
+	// is delayed (euthanaisa hasn't processed it yet), we keep showing values until
+	// Kubernetes actually denies access. This prevents premature hiding while maintaining
+	// security - access is still controlled by Kubernetes RBAC, not just metadata.
 	$effect(() => {
 		if (elevationExpiresAt) {
 			const now = new Date();
 			const msUntilExpiry = elevationExpiresAt.getTime() - now.getTime();
 			if (msUntilExpiry > 0) {
 				const timeout = setTimeout(async () => {
-					// When elevation expires, try to fetch values again
-					// If RBAC is still valid (euthanaisa hasn't cleaned up), keep showing values
-					// If RBAC is gone, the fetch will fail and we hide values
+					// When elevation expires, verify RBAC access one more time
+					// If Kubernetes RBAC still allows access (cleanup delayed), keep showing values
+					// If Kubernetes denies access, hide values immediately
 					try {
 						await fetchSecretValues.fetch({
 							variables: {
@@ -192,8 +162,7 @@
 				}, msUntilExpiry);
 				return () => clearTimeout(timeout);
 			}
-			// If expiresAt is in the past, don't auto-hide - let the initial
-			// value fetch determine if user still has access
+			// If expiresAt is already in the past, initial load will handle access check
 		}
 	});
 
