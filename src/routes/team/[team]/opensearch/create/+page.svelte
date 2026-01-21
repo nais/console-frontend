@@ -47,7 +47,7 @@
 	});
 
 	let version = $derived(
-		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V2
+		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V3_3
 	);
 
 	let minStorage = $derived(storageRequirements[tier][memory].min);
@@ -103,7 +103,7 @@
 		{/each}
 	</Select>
 
-	<Select size="small" label="Major version" name="version" required bind:value={version}>
+	<Select size="small" label="Desired version" name="version" required bind:value={version}>
 		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}

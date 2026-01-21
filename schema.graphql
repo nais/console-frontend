@@ -25,6 +25,9 @@ enum ActivityLogActivityType {
   """Activity log entry for deployment activity."""
   DEPLOYMENT
 
+  """Elevation was created."""
+  ELEVATION_CREATED
+
   """Activity log entries related to job deletion."""
   JOB_DELETED
 
@@ -216,6 +219,11 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to deploy keys will use this resource type.
   """
   DEPLOY_KEY
+
+  """
+  All activity log entries related to elevations will use this resource type.
+  """
+  ELEVATION
 
   """All activity log entries related to jobs will use this resource type."""
   JOB
@@ -1276,6 +1284,33 @@ type CostMonthlySummary {
   series: [ServiceCostSeries!]!
 }
 
+"""Input for creating an elevation."""
+input CreateElevationInput {
+  """Duration of the elevation in minutes. Maximum 60 minutes."""
+  durationMinutes: Int! = 60
+
+  """Environment name."""
+  environmentName: String!
+
+  """Reason for requesting the elevation. Must be at least 10 characters."""
+  reason: String!
+
+  """Name of the resource to elevate access to."""
+  resourceName: String!
+
+  """Team slug."""
+  team: Slug!
+
+  """Type of elevation to create."""
+  type: ElevationType!
+}
+
+"""Payload returned when creating an elevation."""
+type CreateElevationPayload {
+  """The created elevation."""
+  elevation: Elevation!
+}
+
 input CreateOpenSearchInput {
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
@@ -1827,6 +1862,113 @@ type DeprecatedRegistryIssue implements Issue & Node {
 input DisableReconcilerInput {
   """The name of the reconciler to disable."""
   name: String!
+}
+
+"""
+An active elevation grants temporary elevated privileges to a specific resource.
+"""
+type Elevation implements Node {
+  """When the elevation was created."""
+  createdAt: Time!
+
+  """When the elevation will expire."""
+  expiresAt: Time!
+
+  """Unique ID of the elevation."""
+  id: ID!
+
+  """Reason provided for the elevation."""
+  reason: String!
+
+  """Name of the resource being elevated to."""
+  resourceName: String!
+
+  """Team that owns the resource."""
+  team: Team!
+
+  """Environment where the resource is located."""
+  teamEnvironment: TeamEnvironment!
+
+  """Type of elevation."""
+  type: ElevationType!
+
+  """User who requested the elevation."""
+  user: User!
+}
+
+"""Activity log entry for elevation creation."""
+type ElevationCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who created the elevation."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: ElevationCreatedActivityLogEntryData!
+
+  """The environment name."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the elevation resource."""
+  resourceName: String!
+
+  """Resource type (ELEVATION)."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug."""
+  teamSlug: Slug!
+}
+
+"""Data associated with an elevation creation activity log entry."""
+type ElevationCreatedActivityLogEntryData {
+  """Type of elevation that was created."""
+  elevationType: ElevationType!
+
+  """When the elevation will expire."""
+  expiresAt: Time!
+
+  """Reason provided for the elevation."""
+  reason: String!
+
+  """Target resource name that was elevated to."""
+  targetResourceName: String!
+}
+
+"""Input for looking up an existing elevation."""
+input ElevationInput {
+  """Environment name."""
+  environmentName: String!
+
+  """Name of the resource."""
+  resourceName: String!
+
+  """Team slug."""
+  team: Slug!
+
+  """Type of elevation."""
+  type: ElevationType!
+}
+
+"""Type of elevation that can be requested."""
+enum ElevationType {
+  """Access to debug an instance with ephemeral containers."""
+  INSTANCE_DEBUG
+
+  """Access to execute commands in an instance."""
+  INSTANCE_EXEC
+
+  """Access to port-forward to an instance."""
+  INSTANCE_PORT_FORWARD
+
+  """Access to read secrets in plain text."""
+  SECRET
 }
 
 input EnableReconcilerInput {
@@ -3118,6 +3260,12 @@ type Mutation {
   """
   confirmTeamDeletion(input: ConfirmTeamDeletionInput!): ConfirmTeamDeletionPayload!
 
+  """
+  Create a temporary elevation of privileges for a specific resource.
+  The elevation expires automatically after the specified duration.
+  """
+  createElevation(input: CreateElevationInput!): CreateElevationPayload!
+
   """Create a new OpenSearch instance."""
   createOpenSearch(input: CreateOpenSearchInput!): CreateOpenSearchPayload!
 
@@ -3584,11 +3732,17 @@ type OpenSearchMaintenanceUpdateEdge {
 }
 
 enum OpenSearchMajorVersion {
-  """OpenSearch Version 1.x"""
+  """OpenSearch Version 1.3.x"""
   V1
 
-  """OpenSearch Version 2.x"""
+  """OpenSearch Version 2.17.x"""
   V2
+
+  """OpenSearch Version 2.19.x"""
+  V2_19
+
+  """OpenSearch Version 3.3.x"""
+  V3_3
 }
 
 enum OpenSearchMemory {
@@ -7534,6 +7688,12 @@ type UpdateValkeyPayload {
 The user type represents a user of the Nais platform and the Nais GraphQL API.
 """
 type User implements Node {
+  """
+  Get active elevations for this user matching the given parameters.
+  Returns an empty list if no active elevations match.
+  """
+  elevations(input: ElevationInput!): [Elevation!]!
+
   """The email address of the user."""
   email: String!
 
