@@ -3,6 +3,7 @@
 	import { Alert, BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { ELEVATION_DURATION_MINUTES } from '$lib/elevation';
 	import Textarea from './Textarea.svelte';
 
 	interface Props {
@@ -51,7 +52,7 @@
 				environmentName: environmentName,
 				resourceName: secretName,
 				reason: reason,
-				durationMinutes: 5
+				durationMinutes: ELEVATION_DURATION_MINUTES
 			}
 		});
 
@@ -85,7 +86,8 @@
 			<BodyShort>
 				You are about to request access to view the values in the secret <strong
 					>{secretName}</strong
-				>. This access will be logged and will automatically expire after 5 minutes.
+				>. This access will be logged and will automatically expire after {ELEVATION_DURATION_MINUTES}
+				minutes.
 			</BodyShort>
 		</Alert>
 

@@ -4,6 +4,7 @@
 	import { graphql, CheckSecretElevationStore, FetchSecretValuesStore } from '$houdini';
 	import { SvelteMap } from 'svelte/reactivity';
 	import Confirm from '$lib/ui/Confirm.svelte';
+	import { ELEVATION_DURATION_MINUTES } from '$lib/elevation';
 	import {
 		Alert,
 		BodyShort,
@@ -144,6 +145,9 @@
 				env: env
 			}
 		});
+		if ($fetchSecretValues.errors && $fetchSecretValues.errors.length > 0) {
+			return;
+		}
 		const values = $fetchSecretValues.data?.team.environment.secret?.values ?? [];
 		revealedValues.clear();
 		for (const v of values) {
@@ -195,8 +199,7 @@
 
 	const handleElevationSuccess = async () => {
 		secretsRevealed = true;
-		// Set expiry to 5 minutes from now (matches the durationMinutes in ElevationModal)
-		elevationExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+		elevationExpiresAt = new Date(Date.now() + ELEVATION_DURATION_MINUTES * 60 * 1000);
 		// Fetch the actual secret values now that we have elevation
 		await loadSecretValues();
 	};
@@ -444,6 +447,9 @@
 			<div class="alerts">
 				{#if $deleteMutation.errors}
 					<GraphErrors errors={$deleteMutation.errors} />
+				{/if}
+				{#if $fetchSecretValues.errors}
+					<GraphErrors errors={$fetchSecretValues.errors} />
 				{/if}
 			</div>
 			<div class="data-heading">
