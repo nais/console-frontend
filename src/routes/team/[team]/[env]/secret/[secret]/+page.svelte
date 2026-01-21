@@ -461,9 +461,9 @@
 								size="small"
 								onclick={hideSecrets}
 								icon={EyeSlashIcon}
-								title="Skjul hemmeligheter"
+								title="Hide secrets"
 							>
-								Skjul verdier
+								Hide values
 							</Button>
 						{:else}
 							<Button
@@ -471,9 +471,9 @@
 								size="small"
 								onclick={revealSecrets}
 								icon={PadlockLockedIcon}
-								title="Vis hemmeligheter (krever begrunnelse)"
+								title="View secrets (requires justification)"
 							>
-								Vis verdier
+								View values
 							</Button>
 						{/if}
 					{/if}
@@ -542,7 +542,7 @@
 											<Button
 												size="small"
 												variant="tertiary"
-												title="Krev elevering for å se eller kopiere verdier"
+												title="Requires elevation to view or copy values"
 												onclick={revealSecrets}
 												icon={PadlockLockedIcon}
 											/>
@@ -574,6 +574,7 @@
 					{teamSlug}
 					{env}
 					{secretName}
+					onSuccess={secretsRevealed ? loadSecretValues : undefined}
 				/>
 			{/if}
 		</div>

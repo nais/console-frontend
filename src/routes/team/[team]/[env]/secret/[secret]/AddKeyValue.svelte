@@ -9,9 +9,10 @@
 		teamSlug: string;
 		env: string;
 		secretName: string;
+		onSuccess?: () => void | Promise<void>;
 	}
 
-	let { initial, teamSlug, env, secretName }: Props = $props();
+	let { initial, teamSlug, env, secretName, onSuccess }: Props = $props();
 
 	let open: boolean = $state(false);
 
@@ -81,6 +82,11 @@
 		open = false;
 		key = '';
 		value = '';
+
+		// Reload secret values if user has active elevation
+		if (onSuccess) {
+			await onSuccess();
+		}
 	};
 
 	let key: string = $state('');
@@ -126,7 +132,7 @@
 	</div>
 
 	{#snippet footer()}
-		{#if key === '' || value === ''}
+		{#if key === '' || value === '' || validKey(key) !== ''}
 			<Button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</Button>
 		{:else}
 			<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>

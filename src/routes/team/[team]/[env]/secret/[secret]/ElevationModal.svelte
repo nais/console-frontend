@@ -76,16 +76,16 @@
 	{#snippet header()}
 		<div class="header">
 			<PadlockLockedIcon style="font-size: 1.5rem;" />
-			<Heading as="h1" size="medium">Vis hemmeligheter</Heading>
+			<Heading as="h1" size="medium">View secret values</Heading>
 		</div>
 	{/snippet}
 
 	<div class="content">
 		<Alert variant="warning" size="small">
 			<BodyShort>
-				Du er i ferd med å be om tilgang til å se verdiene i hemmeligheten <strong
+				You are about to request access to view the values in the secret <strong
 					>{secretName}</strong
-				>. Tilgangen logges og vil automatisk utløpe etter 5 minutter.
+				>. This access will be logged and will automatically expire after 5 minutes.
 			</BodyShort>
 		</Alert>
 
@@ -98,12 +98,12 @@
 		<div class="form">
 			<Textarea
 				bind:text={reason}
-				label="Hvorfor trenger du å se denne hemmeligheten?"
-				description="Skriv en kort begrunnelse (minst 10 tegn)"
+				label="Why do you need to view this secret?"
+				description="Provide a brief justification (minimum 10 characters)"
 				rows={3}
 			/>
 			{#if reasonTooShort}
-				<p class="error-message">Begrunnelsen må være minst 10 tegn</p>
+				<p class="error-message">Justification must be at least 10 characters</p>
 			{/if}
 		</div>
 	</div>
@@ -115,9 +115,9 @@
 			disabled={reason.length < 10 || isSubmitting}
 			loading={isSubmitting}
 		>
-			Bekreft og vis hemmeligheter
+			Confirm and view secrets
 		</Button>
-		<Button variant="tertiary" onclick={handleClose} disabled={isSubmitting}>Avbryt</Button>
+		<Button variant="tertiary" onclick={handleClose} disabled={isSubmitting}>Cancel</Button>
 	{/snippet}
 </Modal>
 
