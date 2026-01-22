@@ -40,10 +40,14 @@
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();
-
 	let { Secret, teamSlug } = $derived(data);
 	let secret = $derived($Secret.data?.team.environment.secret);
+	let viewerIsMember = $derived($Secret.data?.team.viewerIsMember ?? false);
+	let isAdmin = $derived($Secret.data?.me?.__typename === 'User' ? $Secret.data.me.isAdmin : false);
 	let viewerCanElevate = $derived($Secret.data?.team.viewerCanElevate ?? false);
+
+	// Admin can mutate (create/update/delete) but cannot elevate unless they are team members
+	let canMutate = $derived(viewerIsMember || isAdmin);
 
 	let secretName = $derived(page.params.secret ?? '');
 	let env = $derived(page.params.env ?? '');
@@ -452,7 +456,7 @@
 							</Button>
 						{/if}
 					{/if}
-					{#if viewerCanElevate}
+					{#if canMutate}
 						<Button
 							class="delete-secret"
 							title="Delete secret from environment"
@@ -494,7 +498,7 @@
 							</Td>
 							<Td style="width: 120px" align="right">
 								<div class="buttons">
-									{#if viewerCanElevate}
+									{#if canMutate}
 										{#if secretsRevealed && revealedValues.has(keyName)}
 											<CopyButton
 												activeText="Value copied"
@@ -502,7 +506,7 @@
 												size="small"
 												copyText={revealedValues.get(keyName) ?? ''}
 											/>
-											{#if viewerCanElevate}
+											{#if canMutate}
 												<Button
 													size="small"
 													variant="tertiary"
@@ -523,7 +527,7 @@
 											/>
 										{/if}
 									{/if}
-									{#if viewerCanElevate}
+									{#if canMutate}
 										<Button
 											size="small"
 											variant="tertiary-neutral"
@@ -543,7 +547,7 @@
 					{/each}
 				</Tbody>
 			</Table>
-			{#if viewerCanElevate}
+			{#if canMutate}
 				<AddKeyValue
 					initial={secret.keys.map((k) => ({ name: k }))}
 					{teamSlug}
