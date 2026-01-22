@@ -1,4 +1,16 @@
+import { page } from '$app/state';
+
 export type MessageRole = 'user' | 'assistant';
+
+export interface ToolUsed {
+	name: string;
+	description: string;
+}
+
+export interface Source {
+	title: string;
+	url: string;
+}
 
 export interface ChatMessage {
 	id: string;
@@ -6,29 +18,65 @@ export interface ChatMessage {
 	content: string;
 	isStreaming?: boolean;
 	timestamp: Date;
+	toolsUsed?: ToolUsed[];
+	sources?: Source[];
 }
 
-export interface StreamCallbacks {
-	onToken: (token: string) => void;
-	onComplete: (fullMessage: string) => void;
-	onError: (error: Error) => void;
+export interface ChatContext {
+	path: string;
+	team: string;
+	app: string;
+	env: string;
+}
+
+// SSE Event types from the API
+type StreamEventType =
+	| 'metadata'
+	| 'content'
+	| 'tool_start'
+	| 'tool_end'
+	| 'sources'
+	| 'done'
+	| 'error';
+
+interface StreamEvent {
+	type: StreamEventType;
+	conversation_id?: string;
+	message_id?: string;
+	content?: string;
+	tool_name?: string;
+	description?: string;
+	tool_success?: boolean;
+	sources?: Source[];
+	error_code?: string;
+	error_message?: string;
 }
 
 function generateId(): string {
 	return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
+function getContextFromPage(): ChatContext {
+	const params = page.params as Record<string, string | undefined>;
+	return {
+		path: page.url?.pathname ?? '',
+		team: params.team ?? '',
+		app: params.app ?? '',
+		env: params.env ?? ''
+	};
+}
+
 class ChatService {
 	messages: ChatMessage[] = $state([]);
 	isLoading = $state(false);
 	error: string | null = $state(null);
+	conversationId: string | null = $state(null);
+	currentToolName: string | null = $state(null);
 
 	private abortController: AbortController | null = null;
 
 	/**
-	 * Send a message and get a response.
-	 * Currently uses a mock implementation, but designed to support
-	 * streaming responses via SSE or GraphQL subscriptions.
+	 * Send a message and get a streaming response from the agent API.
 	 */
 	async sendMessage(content: string): Promise<void> {
 		if (!content.trim() || this.isLoading) return;
@@ -50,7 +98,9 @@ class ChatService {
 			role: 'assistant',
 			content: '',
 			isStreaming: true,
-			timestamp: new Date()
+			timestamp: new Date(),
+			toolsUsed: [],
+			sources: []
 		};
 		this.messages.push(assistantMessage);
 
@@ -58,50 +108,186 @@ class ChatService {
 		this.abortController = new AbortController();
 
 		try {
-			await this.mockStreamResponse(assistantMessage);
+			await this.streamResponse(content, assistantMessage);
 		} catch (err) {
 			if (err instanceof Error && err.name === 'AbortError') {
 				// Request was cancelled, remove the incomplete message
 				this.messages = this.messages.filter((m) => m.id !== assistantMessage.id);
 			} else {
 				this.error = err instanceof Error ? err.message : 'An error occurred';
-				assistantMessage.content = 'Sorry, an error occurred. Please try again.';
+				if (!assistantMessage.content) {
+					assistantMessage.content = 'Sorry, an error occurred. Please try again.';
+				}
 				assistantMessage.isStreaming = false;
 			}
 		} finally {
 			this.isLoading = false;
 			this.abortController = null;
+			this.currentToolName = null;
 		}
 	}
 
 	/**
-	 * Mock streaming response for development.
-	 * Replace this with actual SSE/GraphQL subscription when ready.
+	 * Stream response from the agent API using Server-Sent Events.
 	 */
-	private async mockStreamResponse(message: ChatMessage): Promise<void> {
-		const mockResponses = [
-			"I'm here to help you with your Nais applications. What would you like to know?",
-			'I can assist you with deployments, monitoring, and troubleshooting your applications on the Nais platform.',
-			"That's a great question! Let me help you understand how that works in Nais.",
-			'Based on your query, here are some suggestions for your application configuration.'
-		];
+	private async streamResponse(content: string, message: ChatMessage): Promise<void> {
+		const context = getContextFromPage();
 
-		const response = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-		const words = response.split(' ');
+		const response = await fetch('/agent/chat/stream', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'text/event-stream'
+			},
+			body: JSON.stringify({
+				message: content,
+				conversation_id: this.conversationId,
+				context
+			}),
+			signal: this.abortController?.signal
+		});
 
-		for (let i = 0; i < words.length; i++) {
-			// Check if request was aborted
-			if (this.abortController?.signal.aborted) {
-				throw new DOMException('Aborted', 'AbortError');
-			}
-
-			// Simulate streaming delay
-			await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100));
-
-			message.content += (i > 0 ? ' ' : '') + words[i];
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			throw new Error(errorData.error || `Request failed with status ${response.status}`);
 		}
 
+		if (!response.body) {
+			throw new Error('Response body is empty');
+		}
+
+		console.log('[SSE] Starting to read stream');
+
+		// Use the streaming text decoder approach with async iteration
+		for await (const line of this.readLines(response.body)) {
+			console.log('[SSE] Received line:', line);
+			if (line.startsWith('data: ')) {
+				const jsonStr = line.slice(6).trim();
+				console.log('[SSE] Parsed data:', jsonStr);
+				if (jsonStr) {
+					try {
+						const event: StreamEvent = JSON.parse(jsonStr);
+						console.log('[SSE] Parsed event:', event.type, event);
+						this.handleStreamEvent(event, message);
+					} catch (e) {
+						console.error('[SSE] Failed to parse SSE event:', jsonStr, e);
+					}
+				}
+			}
+		}
+
+		console.log('[SSE] Stream ended');
+
 		message.isStreaming = false;
+	}
+
+	/**
+	 * Async generator that yields lines from a ReadableStream.
+	 */
+	private async *readLines(body: ReadableStream<Uint8Array>): AsyncGenerator<string> {
+		const reader = body.getReader();
+		const decoder = new TextDecoder();
+		let buffer = '';
+
+		console.log('[SSE readLines] Starting to read');
+
+		try {
+			while (true) {
+				const { done, value } = await reader.read();
+				console.log('[SSE readLines] Read chunk, done:', done, 'value length:', value?.length);
+				if (done) break;
+
+				const chunk = decoder.decode(value, { stream: true });
+				console.log('[SSE readLines] Decoded chunk:', chunk);
+				buffer += chunk;
+
+				const lines = buffer.split('\n');
+				buffer = lines.pop() ?? '';
+				console.log(
+					'[SSE readLines] Split into',
+					lines.length,
+					'lines, buffer remaining:',
+					buffer.length
+				);
+
+				for (const line of lines) {
+					yield line;
+				}
+			}
+
+			// Yield any remaining content
+			if (buffer) {
+				console.log('[SSE readLines] Yielding remaining buffer:', buffer);
+				yield buffer;
+			}
+		} finally {
+			console.log('[SSE readLines] Releasing reader lock');
+			reader.releaseLock();
+		}
+	}
+
+	/**
+	 * Handle individual stream events from the API.
+	 */
+	private handleStreamEvent(event: StreamEvent, message: ChatMessage): void {
+		console.log('[SSE handleStreamEvent] Handling event type:', event.type);
+
+		// Find the message index for triggering reactivity
+		const messageIndex = this.messages.findIndex((m) => m.id === message.id);
+
+		switch (event.type) {
+			case 'metadata':
+				if (event.conversation_id) {
+					this.conversationId = event.conversation_id;
+				}
+				if (event.message_id) {
+					message.id = event.message_id;
+				}
+				break;
+
+			case 'tool_start':
+				this.currentToolName = event.tool_name ?? null;
+				break;
+
+			case 'tool_end':
+				if (event.tool_name && message.toolsUsed) {
+					message.toolsUsed = [
+						...message.toolsUsed,
+						{
+							name: event.tool_name,
+							description: event.description ?? ''
+						}
+					];
+				}
+				this.currentToolName = null;
+				break;
+
+			case 'content':
+				if (event.content) {
+					message.content += event.content;
+				}
+				break;
+
+			case 'sources':
+				if (event.sources && message.sources) {
+					message.sources = [...message.sources, ...event.sources];
+				}
+				break;
+
+			case 'done':
+				message.isStreaming = false;
+				break;
+
+			case 'error':
+				this.error = event.error_message ?? 'An unknown error occurred';
+				message.isStreaming = false;
+				break;
+		}
+
+		// Trigger Svelte 5 reactivity by reassigning the array element
+		if (messageIndex !== -1) {
+			this.messages[messageIndex] = { ...message };
+		}
 	}
 
 	/**
@@ -119,7 +305,16 @@ class ChatService {
 	clearMessages(): void {
 		this.messages = [];
 		this.error = null;
+		this.conversationId = null;
+		this.currentToolName = null;
 		this.cancelRequest();
+	}
+
+	/**
+	 * Start a new conversation (clears messages but keeps UI open).
+	 */
+	newConversation(): void {
+		this.clearMessages();
 	}
 
 	/**

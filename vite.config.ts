@@ -34,6 +34,11 @@ export default defineConfig((mode) => {
 				'/oauth2': {
 					target: targetProxy,
 					changeOrigin: targetProxy.indexOf('127.0.0.1') < 0
+				},
+				'/agent': {
+					target: targetProxy,
+					headers: headers(),
+					changeOrigin: targetProxy.indexOf('127.0.0.1') < 0
 				}
 			}
 		}

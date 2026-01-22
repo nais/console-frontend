@@ -4,7 +4,8 @@
 	import { chatService } from '$lib/chat/chatService.svelte';
 	import ChatWelcome from '$lib/chat/ChatWelcome.svelte';
 	import { chatPanel } from '$lib/stores/chatPanel.svelte';
-	import { XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import { Button } from '@nais/ds-svelte-community';
+	import { PlusIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import { tick } from 'svelte';
 
 	let isResizing = $state(false);
@@ -46,6 +47,10 @@
 
 	function closePanel() {
 		chatPanel.close();
+	}
+
+	function handleNewChat() {
+		chatService.newConversation();
 	}
 
 	async function handleSendMessage(message: string) {
@@ -92,9 +97,22 @@
 		<div class="panel-content">
 			<header class="panel-header">
 				<h2>Chat</h2>
-				<button class="close-button" onclick={closePanel} aria-label="Close chat panel">
-					<XMarkIcon aria-hidden="true" />
-				</button>
+				<div class="header-actions">
+					{#if chatService.hasMessages}
+						<Button
+							variant="tertiary"
+							size="small"
+							icon={PlusIcon}
+							onclick={handleNewChat}
+							aria-label="New chat"
+						>
+							New
+						</Button>
+					{/if}
+					<button class="close-button" onclick={closePanel} aria-label="Close chat panel">
+						<XMarkIcon aria-hidden="true" />
+					</button>
+				</div>
 			</header>
 
 			<div class="chat-body">
@@ -108,6 +126,19 @@
 					<ChatWelcome />
 				{/if}
 			</div>
+
+			{#if chatService.currentToolName}
+				<div class="tool-status">
+					<span class="tool-indicator"></span>
+					<span class="tool-text">Using {chatService.currentToolName}...</span>
+				</div>
+			{/if}
+
+			{#if chatService.error}
+				<div class="error-banner">
+					{chatService.error}
+				</div>
+			{/if}
 
 			<ChatInput onSend={handleSendMessage} disabled={chatService.isLoading} />
 		</div>
@@ -191,6 +222,12 @@
 		font-weight: var(--ax-font-weight-semibold);
 	}
 
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
 	.close-button {
 		display: flex;
 		align-items: center;
@@ -220,5 +257,46 @@
 		flex: 1;
 		overflow-y: auto;
 		padding: var(--ax-space-16);
+	}
+
+	.tool-status {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-8) var(--ax-space-16);
+		background-color: var(--ax-bg-subtle);
+		border-top: 1px solid var(--ax-border-default);
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-subtle);
+	}
+
+	.tool-indicator {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background-color: var(--ax-text-action);
+		animation: pulse 1.5s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.4;
+		}
+	}
+
+	.tool-text {
+		font-family: var(--ax-font-family-mono, monospace);
+	}
+
+	.error-banner {
+		padding: var(--ax-space-8) var(--ax-space-16);
+		background-color: var(--ax-bg-danger-subtle);
+		border-top: 1px solid var(--ax-border-danger);
+		color: var(--ax-text-danger);
+		font-size: var(--ax-font-size-small);
 	}
 </style>
