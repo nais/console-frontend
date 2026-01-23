@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, type TeamMemberRole$options } from '$houdini';
-	import { Alert, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
+	import { Alert, Detail, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
 
 	interface Props {
 		open: boolean;
@@ -91,6 +91,13 @@
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>
+			<Detail style="margin-top: 0.5rem; color: var(--ax-text-subtle)">
+				{#if member.role === 'OWNER'}
+					Full access including member administration
+				{:else}
+					Can modify resources and view secrets
+				{/if}
+			</Detail>
 		</div>
 	{/if}
 </Modal>

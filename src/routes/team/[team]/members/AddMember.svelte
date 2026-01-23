@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { graphql, type AddTeamMemberInput } from '$houdini';
-	import { Alert, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Detail,
+		Heading,
+		Modal,
+		Select,
+		TextField
+	} from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -134,6 +142,13 @@
 			<option value="OWNER">Owner</option>
 			<option value="MEMBER">Member</option>
 		</Select>
+		<Detail style="margin-top: 0.5rem; color: var(--ax-text-subtle)">
+			{#if role === 'OWNER'}
+				Full access including member administration
+			{:else}
+				Can modify resources and view secrets
+			{/if}
+		</Detail>
 	</form>
 
 	{#snippet footer()}

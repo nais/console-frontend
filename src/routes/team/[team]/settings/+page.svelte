@@ -200,28 +200,28 @@
 				{/if}
 			</div>
 
-			<div>
-				<Heading as="h2">Deploy Key</Heading>
-				<BodyShort>
-					Deploy keys can be used to authenticate for deployments instead of using
-					<a
-						href={docURL(
-							'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
-						)}
-					>
-						repository authorization
-					</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from
-					local machines.
-				</BodyShort>
+			{#if viewerIsMember}
+				<div>
+					<Heading as="h2">Deploy Key</Heading>
+					<BodyShort>
+						Deploy keys can be used to authenticate for deployments instead of using
+						<a
+							href={docURL(
+								'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
+							)}
+						>
+							repository authorization
+						</a>. This allows for deploying from other CI systems than GitHub Actions, as well as
+						from local machines.
+					</BodyShort>
 
-				{#if teamSettings.deploymentKey}
-					{@const deployKey = teamSettings.deploymentKey}
-					<dl>
-						<dt>Created:</dt>
-						<dd><Time time={deployKey.created} distance={true} /></dd>
-						<dt>Expires:</dt>
-						<dd><Time time={deployKey.expires} distance={true} /></dd>
-						{#if viewerIsMember}
+					{#if teamSettings.deploymentKey}
+						{@const deployKey = teamSettings.deploymentKey}
+						<dl>
+							<dt>Created:</dt>
+							<dd><Time time={deployKey.created} distance={true} /></dd>
+							<dt>Expires:</dt>
+							<dd><Time time={deployKey.expires} distance={true} /></dd>
 							<dt>Key:</dt>
 							<dd>
 								<div class="deployKey">
@@ -248,9 +248,7 @@
 									{/if}
 								</div>
 							</dd>
-						{/if}
-					</dl>
-					{#if viewerIsMember}
+						</dl>
 						<div class="buttons">
 							<div class="button">
 								<CopyButton
@@ -274,26 +272,24 @@
 								</Button>
 							</div>
 						</div>
-					{/if}
-				{:else if viewerIsMember}
-					<div class="buttons">
-						<div class="button mt-2">
-							<Button
-								size="small"
-								variant="secondary"
-								onclick={() => {
-									showCreateKey = !showCreateKey;
-								}}
-								icon={TokenIcon}
-							>
-								Create key
-							</Button>
+					{:else}
+						<div class="buttons">
+							<div class="button mt-2">
+								<Button
+									size="small"
+									variant="secondary"
+									onclick={() => {
+										showCreateKey = !showCreateKey;
+									}}
+									icon={TokenIcon}
+								>
+									Create key
+								</Button>
+							</div>
 						</div>
-					</div>
-				{:else}
-					<BodyShort class="mt-2">No deploy key has been created yet.</BodyShort>
-				{/if}
-			</div>
+					{/if}
+				</div>
+			{/if}
 
 			{#if viewerIsOwner}
 				<div>

@@ -4970,6 +4970,11 @@ type Secret implements Node {
     last: Int
   ): JobConnection!
 
+  """
+  The names of the keys in the secret. This does not require elevation to access.
+  """
+  keys: [String!]!
+
   """Last time the secret was modified."""
   lastModifiedAt: Time
 
@@ -4985,8 +4990,10 @@ type Secret implements Node {
   """The environment the secret exists in."""
   teamEnvironment: TeamEnvironment!
 
-  """The secret values contained within the secret."""
-  values: [SecretValue!]!
+  """
+  The secret values contained within the secret. Requires elevation to access the values. Returns null if not authorized.
+  """
+  values: [SecretValue!]
 
   """Workloads that use the secret."""
   workloads(
@@ -6330,6 +6337,9 @@ type Team implements ActivityLogger & Node {
     orderBy: ValkeyOrder
   ): ValkeyConnection!
 
+  """Whether or not the viewer can create elevations for the team."""
+  viewerCanElevate: Boolean!
+
   """Whether or not the viewer is a member of the team."""
   viewerIsMember: Boolean!
 
@@ -6996,10 +7006,10 @@ type TeamMemberRemovedActivityLogEntryData {
 
 """Team member roles."""
 enum TeamMemberRole {
-  """Regular member, read only access."""
+  """Member, full access including elevation."""
   MEMBER
 
-  """Team owner, full access to the team."""
+  """Team owner, full access to the team including member management."""
   OWNER
 }
 

@@ -140,7 +140,11 @@
 	<GraphErrors errors={$createSecret.errors} />
 
 	{#snippet footer()}
-		<Button variant="primary" size="small" onclick={create}>Create</Button>
+		{#if name === '' || validate(name) !== ''}
+			<Button variant="primary" size="small" onclick={create} disabled={true}>Create</Button>
+		{:else}
+			<Button variant="primary" size="small" onclick={create}>Create</Button>
+		{/if}
 		<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 	{/snippet}
 </Modal>
