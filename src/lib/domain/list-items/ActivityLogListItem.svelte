@@ -37,6 +37,7 @@
 	import ValkeyDeletedActivityLogEntryText from '../activity/shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
 	import ValkeyUpdatedActivityLogEntryText from '../activity/shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
 	import VulnerabilityUpdatedActivityLogEntryText from '../activity/shared/texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
+	import ElevationCreatedActivityLogEntryText from '../activity/shared/texts/ElevationCreatedActivityLogEntryText.svelte';
 
 	interface Props {
 		item: ActivityLogEntryFragment;
@@ -207,6 +208,14 @@
 							}
 						}
 					}
+					... on ElevationCreatedActivityLogEntry {
+						elevationData: data {
+							elevationType
+							targetResourceName
+							reason
+							expiresAt
+						}
+					}
 				}
 			`)
 		)
@@ -272,6 +281,8 @@
 				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'VulnerabilityUpdatedActivityLogEntry':
 				return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ElevationCreatedActivityLogEntry':
+				return ElevationCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return null;
 		}

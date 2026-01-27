@@ -31,9 +31,11 @@
 	interface Props {
 		activityLog: SidebarActivityLogFragment;
 		direct?: SidebarActivityLogFragment$data['activityLog'];
+		limit?: number;
+		seeMoreHref?: string;
 	}
 
-	let { activityLog, direct }: Props = $props();
+	let { activityLog, direct, limit, seeMoreHref }: Props = $props();
 
 	const data = $derived(
 		fragment(
@@ -201,11 +203,13 @@
 	}
 
 	const list = $derived(data && $data ? $data.activityLog.nodes : (direct?.nodes ?? []));
+	const displayList = $derived(limit ? list.slice(0, limit) : list);
+	const hasMore = $derived(limit ? list.length > limit : false);
 </script>
 
 <div class="wrapper">
 	<Heading as="h3" size="small">Activity</Heading>
-	{#each list as entry (entry.id)}
+	{#each displayList as entry (entry.id)}
 		{@const Icon = icons[entry.__typename] || RocketIcon}
 		{@const TextComponent = textComponent(entry.__typename)}
 		<div class="item">
@@ -219,6 +223,9 @@
 	{:else}
 		<p>No activity log entries found.</p>
 	{/each}
+	{#if hasMore && seeMoreHref}
+		<a href={seeMoreHref} class="see-more">See more activities</a>
+	{/if}
 </div>
 
 <style>
@@ -257,5 +264,14 @@
 		top: 20px;
 		width: 2px;
 		z-index: 0;
+	}
+	.see-more {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-action);
+		text-decoration: none;
+		margin-left: 46px;
+	}
+	.see-more:hover {
+		text-decoration: underline;
 	}
 </style>

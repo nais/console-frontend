@@ -1,15 +1,12 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ElevationCreatedActivityLogEntry' }
-		>;
+		data: ActivityLogEntry<'ElevationCreatedActivityLogEntry'>;
 	} = $props();
 
 	const formatDuration = (start: string | Date, end: string | Date): string => {
