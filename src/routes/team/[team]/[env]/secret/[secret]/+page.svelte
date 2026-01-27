@@ -562,7 +562,20 @@
 			<Workloads workloads={secret.workloads} />
 			<Manifest {secretName} />
 			{#if $Secret.data?.team}
-				<SidebarActivity activityLog={$Secret.data.team} direct={$Secret.data.team.activityLog} />
+				{@const filteredActivityLog = {
+					nodes: $Secret.data.team.activityLog.nodes.filter((entry) => {
+						if (entry.__typename === 'ElevationCreatedActivityLogEntry') {
+							return entry.elevationData.targetResourceName === secretName;
+						}
+						return entry.resourceName === secretName;
+					})
+				}}
+				<SidebarActivity
+					activityLog={$Secret.data.team}
+					direct={filteredActivityLog}
+					limit={5}
+					seeMoreHref={`/team/${teamSlug}/activity-log`}
+				/>
 			{/if}
 		</div>
 	</div>
