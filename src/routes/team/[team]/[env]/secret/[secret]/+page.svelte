@@ -628,7 +628,7 @@
 	}
 
 	.value {
-		font-family: var(--ax-font-family-mono);
+		font-family: monospace;
 		font-size: var(--ax-font-size-small);
 		word-break: break-all;
 	}
