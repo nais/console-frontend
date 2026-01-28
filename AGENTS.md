@@ -62,7 +62,7 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 ### Rules for CSS Variables:
 
-1. **Before using ANY CSS variable**, verify it exists in the codebase by searching for it
+1. **Before using ANY CSS variable**, search the codebase first for existing usage patterns. For new tokens, verify they exist in the @nais/ds-svelte-community design system or rely on `npm run unused` for validation
 2. **Never invent** CSS variable names like `--ax-font-family-mono`, `--ax-color-*`, etc.
 3. **For font-family**: Use `font-family: monospace` directly (not a CSS variable)
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
