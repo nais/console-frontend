@@ -107,6 +107,25 @@ This will upgrade all Storybook packages together and reformat all project files
 
 Note: The upgrade script automatically checks the 14-day cooldown policy. To manually check a version's age before upgrading, use `npm run check-age storybook <version>`.
 
+#### AI-Assisted Development
+
+The project is configured with AI assistant guidelines and the Svelte MCP (Model Context Protocol) server:
+
+- **[AGENTS.md](AGENTS.md)** - Project guidelines for AI assistants (GitHub Copilot, Cursor, Claude Code, etc.)
+  - Svelte 5 runes patterns
+  - Houdini GraphQL conventions
+  - CSS variable validation rules
+  - Component library usage
+  - Code quality standards
+  - Security patterns
+
+- **Svelte MCP Server** - Provides comprehensive Svelte 5 and SvelteKit documentation to AI assistants
+  - Configuration: `.mcp.json` (Cursor, Claude Code, Zed) and `.vscode/mcp.json` (VSCode)
+  - Remote endpoint: `https://mcp.svelte.dev/mcp`
+  - Tools: `list-sections`, `get-documentation`, `svelte-autofixer`, `playground-link`
+
+The MCP server helps AI assistants provide accurate, up-to-date Svelte 5 guidance and catch common issues before you run linters.
+
 #### Using the nais API proxy
 
 To connect to a nais-api instance, run the [nais CLI](https://github.com/nais/cli) proxy on your **host machine** (outside the devcontainer):
