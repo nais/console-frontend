@@ -107,7 +107,7 @@ This will upgrade all Storybook packages together and reformat all project files
 
 Note: The upgrade script automatically checks the 14-day cooldown policy. To manually check a version's age before upgrading, use `npm run check-age storybook <version>`.
 
-### AI-Assisted Development
+#### AI-Assisted Development
 
 The project is configured with AI assistant guidelines and the Svelte MCP (Model Context Protocol) server:
 

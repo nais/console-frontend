@@ -99,27 +99,64 @@ This project uses **Houdini** for GraphQL, not Apollo or other clients.
 
 ### Patterns:
 
-- Import stores: `import { graphql, MyQueryStore } from '$houdini'`
-- Query/mutation definitions use the `graphql()` function
-- Store access uses `$` prefix: `$MyQuery.data`
-- Mutations: `await myMutation.mutate({ variables })`
+- **Separate .gql files**: For page/layout queries, use `.gql` files and `load_QueryName` functions
+- **Inline queries**: Use `const myQuery = graphql(\`...\`)` for component-level queries/mutations
+- Access store data/errors via the `$` prefix: `$myQuery.data`, `$myQuery.errors`
+- Mutations pass variables directly: `await myMutation.mutate({ id, name })`
 - Check for errors: `if ($myQuery.errors) { ... }`
-- Use `$MyQuery.fetching` for loading states
+- Use `$myQuery.fetching` for loading states
 
-### Example:
+### Example (.gql file for routes):
+
+```graphql
+# src/routes/+page.gql
+query MyPageData {
+	items {
+		id
+		name
+	}
+}
+```
+
+```typescript
+// src/routes/+page.ts
+import { load_MyPageData } from '$houdini';
+
+export async function load(event) {
+	return {
+		...(await load_MyPageData({ event }))
+	};
+}
+```
+
+### Example (inline for components):
 
 ```svelte
 <script lang="ts">
-	const myQuery = graphql(`
-		query MyQuery($id: ID!) {
-			item(id: $id) {
-				name
+	import { graphql } from '$houdini';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+
+	const myMutation = graphql(`
+		mutation UpdateItem($id: ID!, $name: String!) {
+			updateItem(input: { id: $id, name: $name }) {
+				item {
+					id
+					name
+				}
 			}
 		}
 	`);
 
-	let data = $derived($myQuery.data);
+	async function update() {
+		await myMutation.mutate({ id: '123', name: 'New Name' });
+		if ($myMutation.errors) {
+			return; // Display errors with GraphErrors component
+		}
+		// Success - continue with next steps
+	}
 </script>
+
+<GraphErrors errors={$myMutation.errors} />
 ```
 
 ---
