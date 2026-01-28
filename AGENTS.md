@@ -30,9 +30,10 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 ### Available CSS Variable Categories:
 
-#### Spacing (use these, not arbitrary values)
+#### Spacing (use these design tokens, not arbitrary values)
 
-- `--ax-space-4`, `--ax-space-6`, `--ax-space-8`, `--ax-space-12`, `--ax-space-16`, `--ax-space-24`
+- Common tokens include: `--ax-space-1`, `--ax-space-2`, `--ax-space-4`, `--ax-space-6`, `--ax-space-8`, `--ax-space-12`, `--ax-space-16`, `--ax-space-20`, `--ax-space-24`, `--ax-space-32`, `--ax-space-40`, `--ax-space-64`
+- This list is not exhaustive; follow existing spacing tokens in the codebase and rely on `npm run unused` to validate new usages
 
 #### Typography
 
@@ -43,8 +44,9 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 #### Colors - Text
 
-- `--ax-text-neutral`, `--ax-text-subtle`, `--ax-text-accent`
-- `--ax-text-danger-decoration`, `--ax-text-success`, `--ax-text-warning`
+- Common tokens: `--ax-text-neutral`, `--ax-text-subtle`, `--ax-text-accent`
+- Semantic colors: `--ax-text-danger`, `--ax-text-danger-decoration`, `--ax-text-success`, `--ax-text-success-decoration`, `--ax-text-success-subtle`, `--ax-text-warning`, `--ax-text-neutral-subtle`
+- Many other text variants exist (`--ax-text-bg-*`, `--ax-text-border-*`, etc.); search the codebase for patterns
 
 #### Colors - Borders
 
@@ -54,6 +56,10 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 - `--ax-neutral-000`, `--ax-neutral-100`, `--ax-neutral-200`
 
+#### Custom Project Variables
+
+- `--spacing-layout` (defined in app.css, uses `--ax-space-40`)
+
 ### Rules for CSS Variables:
 
 1. **Before using ANY CSS variable**, verify it exists in the codebase by searching for it
@@ -62,6 +68,7 @@ After completing the code, ask the user if they want a playground link. Only cal
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
 5. **Run validation**: The project has `npm run unused` which includes `find-missing-css-vars.mjs` - this validates CSS variables
 6. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
+7. **Lists are non-exhaustive**: The design system has more tokens than listed here; use validation scripts to confirm
 
 ---
 
