@@ -43,10 +43,10 @@
 	let secret = $derived($Secret.data?.team.environment.secret);
 	let viewerIsMember = $derived($Secret.data?.team.viewerIsMember ?? false);
 	let isAdmin = $derived($Secret.data?.me?.__typename === 'User' ? $Secret.data.me.isAdmin : false);
-	let viewerCanElevate = $derived($Secret.data?.team.viewerCanElevate ?? false);
 
-	// Admin can mutate (create/update/delete) but cannot elevate unless they are team members
+	// Admin can mutate (create/update/delete) but only team members can view secret values
 	let canMutate = $derived(viewerIsMember || isAdmin);
+	let canViewValues = $derived(viewerIsMember);
 
 	let secretName = $derived(page.params.secret ?? '');
 	let env = $derived(page.params.env ?? '');
@@ -309,7 +309,7 @@
 					</HelpText>
 				</div>
 				<div class="header-buttons">
-					{#if viewerCanElevate}
+					{#if canViewValues}
 						{#if secretsRevealed}
 							<Button
 								variant="secondary"
@@ -381,7 +381,7 @@
 											size="small"
 											copyText={revealedValues.get(keyName) ?? ''}
 										/>
-										{#if viewerCanElevate}
+										{#if canViewValues}
 											<Button
 												size="small"
 												variant="tertiary"

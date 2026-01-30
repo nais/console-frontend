@@ -83,7 +83,7 @@
 		key = '';
 		value = '';
 
-		// Reload secret values if user has active elevation
+		// Reload secret after adding new key
 		if (onSuccess) {
 			await onSuccess();
 		}
