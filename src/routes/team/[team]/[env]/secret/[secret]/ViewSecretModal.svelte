@@ -1,17 +1,21 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { RevealSecretValuesStore } from '$houdini';
 	import { Alert, BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { ELEVATION_DURATION_MINUTES } from '$lib/elevation';
 	import Textarea from './Textarea.svelte';
+
+	interface SecretValue {
+		name: string;
+		value: string;
+	}
 
 	interface Props {
 		open?: boolean;
 		teamSlug: string;
 		environmentName: string;
 		secretName: string;
-		onSuccess: () => void;
+		onSuccess: (values: SecretValue[]) => void;
 		onClose?: () => void;
 	}
 
@@ -27,16 +31,7 @@
 	let reason = $state('');
 	let isSubmitting = $state(false);
 
-	const createElevation = graphql(`
-		mutation CreateSecretElevation($input: CreateElevationInput!) {
-			createElevation(input: $input) {
-				elevation {
-					id
-					expiresAt
-				}
-			}
-		}
-	`);
+	const revealSecrets = new RevealSecretValuesStore();
 
 	const handleSubmit = async () => {
 		if (reason.length < 10) {
@@ -45,21 +40,19 @@
 
 		isSubmitting = true;
 
-		await createElevation.mutate({
+		await revealSecrets.mutate({
 			input: {
-				type: 'SECRET',
+				name: secretName,
+				environment: environmentName,
 				team: teamSlug,
-				environmentName: environmentName,
-				resourceName: secretName,
-				reason: reason,
-				durationMinutes: ELEVATION_DURATION_MINUTES
+				reason: reason
 			}
 		});
 
 		isSubmitting = false;
 
-		if (!$createElevation.errors) {
-			onSuccess();
+		if (!$revealSecrets.errors && $revealSecrets.data?.viewSecretValues?.values) {
+			onSuccess($revealSecrets.data.viewSecretValues.values);
 			handleClose();
 		}
 	};
@@ -84,16 +77,14 @@
 	<div class="content">
 		<Alert variant="warning" size="small">
 			<BodyShort>
-				You are about to request access to view the values in the secret <strong
-					>{secretName}</strong
-				>. This access will be logged and will automatically expire after {ELEVATION_DURATION_MINUTES}
-				minutes.
+				You are about to view the values in the secret <strong>{secretName}</strong>. This access
+				will be logged for auditing purposes.
 			</BodyShort>
 		</Alert>
 
-		{#if $createElevation.errors}
+		{#if $revealSecrets.errors}
 			<div class="errors">
-				<GraphErrors errors={$createElevation.errors} />
+				<GraphErrors errors={$revealSecrets.errors} />
 			</div>
 		{/if}
 

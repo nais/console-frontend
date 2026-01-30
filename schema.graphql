@@ -70,6 +70,9 @@ enum ActivityLogActivityType {
   """Secret was deleted."""
   SECRET_DELETED
 
+  """Secret values were viewed."""
+  SECRET_VALUES_VIEWED
+
   """Secret value was added."""
   SECRET_VALUE_ADDED
 
@@ -3459,6 +3462,12 @@ type Mutation {
 
   """Update an existing Valkey instance."""
   updateValkey(input: UpdateValkeyInput!): UpdateValkeyPayload!
+
+  """
+  View the values of a secret. Requires team membership and a reason for access.
+  This creates a temporary elevation and logs the access for auditing purposes.
+  """
+  viewSecretValues(input: ViewSecretValuesInput!): ViewSecretValuesPayload!
 }
 
 type NetworkPolicy {
@@ -4925,7 +4934,29 @@ enum SearchType {
 }
 
 """A secret is a collection of secret values."""
-type Secret implements Node {
+type Secret implements ActivityLogger & Node {
+  """Activity log associated with the secret."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+
   """Applications that use the secret."""
   applications(
     """Get items after this cursor."""
@@ -5240,6 +5271,44 @@ type SecretValueUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 type SecretValueUpdatedActivityLogEntryData {
   """The name of the updated value."""
   valueName: String!
+}
+
+"""Activity log entry for viewing secret values."""
+type SecretValuesViewedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: SecretValuesViewedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+"""Data associated with a secret values viewed activity log entry."""
+type SecretValuesViewedActivityLogEntryData {
+  """The reason provided for viewing the secret values."""
+  reason: String!
 }
 
 """
@@ -8282,6 +8351,27 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+"""Input for viewing secret values."""
+input ViewSecretValuesInput {
+  """The environment the secret exists in."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """Reason for viewing the secret values. Must be at least 10 characters."""
+  reason: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+}
+
+"""Payload returned when viewing secret values."""
+type ViewSecretValuesPayload {
+  """The secret values."""
+  values: [SecretValue!]!
 }
 
 type VulnerabilityActivityLogEntryData {

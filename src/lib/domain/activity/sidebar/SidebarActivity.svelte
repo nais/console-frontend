@@ -22,6 +22,7 @@
 	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import SecretValuesViewedActivityLogEntryText from './texts/SecretValuesViewedActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from './texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
@@ -107,6 +108,11 @@
 									expiresAt
 								}
 							}
+							... on SecretValuesViewedActivityLogEntry {
+								secretValuesViewedData: data {
+									reason
+								}
+							}
 							... on TeamEnvironmentUpdatedActivityLogEntry {
 								id
 								teamEnvironmentUpdatedData: data {
@@ -183,6 +189,8 @@
 				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ElevationCreatedActivityLogEntry':
 				return ElevationCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValuesViewedActivityLogEntry':
+				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
 				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':

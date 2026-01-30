@@ -49,6 +49,7 @@ export const icons: { [typename: string]: Component } = {
 	SecretValueAddedActivityLogEntry: PadlockLockedIcon,
 	SecretValueRemovedActivityLogEntry: PadlockLockedIcon,
 	SecretValueUpdatedActivityLogEntry: PadlockLockedIcon,
+	SecretValuesViewedActivityLogEntry: PadlockLockedIcon,
 
 	/* Elevations */
 	ElevationCreatedActivityLogEntry: PadlockLockedIcon,
