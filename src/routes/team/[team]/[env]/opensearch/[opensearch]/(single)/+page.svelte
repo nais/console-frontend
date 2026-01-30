@@ -107,7 +107,7 @@
 
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember && !isManagedByConsole}
+			{#if !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This OpenSearch instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
