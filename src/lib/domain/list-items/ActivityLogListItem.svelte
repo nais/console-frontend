@@ -26,6 +26,7 @@
 	import SecretValueAddedActivityLogEntryText from '../activity/shared/texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from '../activity/shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from '../activity/shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import SecretValuesViewedActivityLogEntryText from '../activity/shared/texts/SecretValuesViewedActivityLogEntryText.svelte';
 	import ServiceMaintenanceActivityLogEntryText from '../activity/shared/texts/ServiceMaintenanceActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from '../activity/shared/texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from '../activity/shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
@@ -129,6 +130,11 @@
 					... on SecretValueUpdatedActivityLogEntry {
 						secretValueUpdated: data {
 							valueName
+						}
+					}
+					... on SecretValuesViewedActivityLogEntry {
+						secretValuesViewed: data {
+							reason
 						}
 					}
 					... on ServiceMaintenanceActivityLogEntry {
@@ -250,6 +256,8 @@
 				return SecretValueRemovedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretValueUpdatedActivityLogEntry':
 				return SecretValueUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValuesViewedActivityLogEntry':
+				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ServiceMaintenanceActivityLogEntry':
 				return ServiceMaintenanceActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
