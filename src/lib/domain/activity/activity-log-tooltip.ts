@@ -19,6 +19,7 @@ export function activityTooltip(typename: string): string {
 		case 'SecretValueAddedActivityLogEntry':
 		case 'SecretValueRemovedActivityLogEntry':
 		case 'SecretValueUpdatedActivityLogEntry':
+		case 'SecretValuesViewedActivityLogEntry':
 			return 'Secret';
 		case 'RepositoryAddedActivityLogEntry':
 		case 'RepositoryRemovedActivityLogEntry':

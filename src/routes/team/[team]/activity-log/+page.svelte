@@ -59,7 +59,8 @@
 			ActivityLogActivityType.SECRET_DELETED,
 			ActivityLogActivityType.SECRET_VALUE_ADDED,
 			ActivityLogActivityType.SECRET_VALUE_REMOVED,
-			ActivityLogActivityType.SECRET_VALUE_UPDATED
+			ActivityLogActivityType.SECRET_VALUE_UPDATED,
+			ActivityLogActivityType.SECRET_VALUES_VIEWED
 		],
 		Team: [
 			ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
