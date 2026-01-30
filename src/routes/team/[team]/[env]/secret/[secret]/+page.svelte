@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql, CheckSecretElevationStore, FetchSecretValuesStore } from '$houdini';
+	import { graphql } from '$houdini';
 	import { SvelteMap } from 'svelte/reactivity';
 	import Confirm from '$lib/ui/Confirm.svelte';
-	import { ELEVATION_DURATION_MINUTES } from '$lib/elevation';
 	import {
 		Alert,
 		BodyShort,
@@ -33,7 +32,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import ElevationModal from './ElevationModal.svelte';
+	import ViewSecretModal from './ViewSecretModal.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
 	import Textarea from './Textarea.svelte';
@@ -55,126 +54,26 @@
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);
 	let editValueOpen = $state(false);
-	let elevationModalOpen = $state(false);
+	let viewSecretsModalOpen = $state(false);
 
 	let keyToDelete = $state('');
 	let keyToEdit = $state('');
 	let valueToEdit = $state('');
 
-	// Elevation state - secrets are hidden by default
+	// Secrets are hidden by default - revealed when user provides justification
 	let secretsRevealed = $state(false);
-	let elevationExpiresAt = $state<Date | null>(null);
-
-	// Use imported Houdini stores for queries
-	const checkElevation = new CheckSecretElevationStore();
-	const fetchSecretValues = new FetchSecretValuesStore();
 
 	// Store for revealed secret values
 	let revealedValues = new SvelteMap<string, string>();
-	$effect(() => {
-		if (teamSlug && env && secretName) {
-			checkElevation
-				.fetch({
-					variables: {
-						input: {
-							type: 'SECRET',
-							team: teamSlug,
-							environmentName: env,
-							resourceName: secretName
-						}
-					}
-				})
-				.then(async () => {
-					const elevations =
-						($checkElevation.data?.me?.__typename === 'User'
-							? $checkElevation.data.me.elevations
-							: []) ?? [];
-					if (elevations.length > 0) {
-						const elevation = elevations[0];
-						const expiresAt = new Date(elevation.expiresAt);
-						const now = new Date();
 
-						// Only set expiry timer if elevation hasn't expired yet
-						if (expiresAt.getTime() > now.getTime()) {
-							elevationExpiresAt = expiresAt;
-						}
-
-						// Always try to load values - RBAC might still be valid even if
-						// elevation metadata says it's expired (euthanaisa hasn't cleaned up)
-						secretsRevealed = true;
-						await loadSecretValues();
-					} else {
-						// No elevation found - user must request elevation to view secret values
-						secretsRevealed = false;
-					}
-				});
-		}
-	});
-
-	const loadSecretValues = async () => {
-		await fetchSecretValues.fetch({
-			variables: {
-				secret: secretName,
-				team: teamSlug,
-				env: env
-			}
-		});
-		if ($fetchSecretValues.errors && $fetchSecretValues.errors.length > 0) {
-			return;
-		}
-		const values = $fetchSecretValues.data?.team.environment.secret?.values ?? [];
+	// Handle successful secret reveal - receives values directly from the mutation
+	const handleRevealSuccess = (values: { name: string; value: string }[]) => {
+		secretsRevealed = true;
 		revealedValues.clear();
 		for (const v of values) {
 			revealedValues.set(v.name, v.value);
 		}
-	};
-
-	// Auto-hide secrets when elevation expires
-	// We allow graceful degradation: if elevation metadata expires but RBAC cleanup
-	// is delayed (euthanaisa hasn't processed it yet), we keep showing values until
-	// Kubernetes actually denies access. This prevents premature hiding while maintaining
-	// security - access is still controlled by Kubernetes RBAC, not just metadata.
-	$effect(() => {
-		if (elevationExpiresAt) {
-			const now = new Date();
-			const msUntilExpiry = elevationExpiresAt.getTime() - now.getTime();
-			if (msUntilExpiry > 0) {
-				const timeout = setTimeout(async () => {
-					// When elevation expires, verify RBAC access one more time
-					// If Kubernetes RBAC still allows access (cleanup delayed), keep showing values
-					// If Kubernetes denies access, hide values immediately
-					try {
-						await fetchSecretValues.fetch({
-							variables: {
-								secret: secretName,
-								team: teamSlug,
-								env: env
-							}
-						});
-						const values = $fetchSecretValues.data?.team.environment.secret?.values;
-						if (!values || values.length === 0) {
-							secretsRevealed = false;
-							revealedValues.clear();
-						}
-						// If values were returned, keep secretsRevealed = true
-					} catch {
-						// Fetch failed, hide secrets
-						secretsRevealed = false;
-						revealedValues.clear();
-					}
-					elevationExpiresAt = null;
-				}, msUntilExpiry);
-				return () => clearTimeout(timeout);
-			}
-			// If expiresAt is already in the past, initial load will handle access check
-		}
-	});
-
-	const handleElevationSuccess = async () => {
-		secretsRevealed = true;
-		elevationExpiresAt = new Date(Date.now() + ELEVATION_DURATION_MINUTES * 60 * 1000);
-		// Fetch the actual secret values now that we have elevation
-		await loadSecretValues();
+		Secret.fetch();
 	};
 
 	const hideSecrets = () => {
@@ -182,31 +81,9 @@
 		revealedValues.clear();
 	};
 
-	const revealSecrets = async () => {
-		// First check if we already have an active elevation
-		await checkElevation.fetch({
-			variables: {
-				input: {
-					type: 'SECRET',
-					team: teamSlug,
-					environmentName: env,
-					resourceName: secretName
-				}
-			}
-		});
-
-		const elevations =
-			($checkElevation.data?.me?.__typename === 'User' ? $checkElevation.data.me.elevations : []) ??
-			[];
-		if (elevations.length > 0) {
-			// Already have elevation, just reveal
-			secretsRevealed = true;
-			elevationExpiresAt = new Date(elevations[0].expiresAt);
-			await loadSecretValues();
-		} else {
-			// Need to request elevation
-			elevationModalOpen = true;
-		}
+	const revealSecrets = () => {
+		// Open modal to get justification - values will be returned directly from the mutation
+		viewSecretsModalOpen = true;
 	};
 
 	const updateSecretValue = graphql(`
@@ -255,6 +132,7 @@
 
 		editValueOpen = false;
 		keyToEdit = '';
+		Secret.fetch();
 	};
 
 	const removeSecretValue = graphql(`
@@ -296,6 +174,7 @@
 		}
 
 		deleteValueOpen = false;
+		Secret.fetch();
 		keyToDelete = '';
 	};
 
@@ -404,12 +283,12 @@
 		Are you sure you want to delete <b>{keyToDelete}</b> from this secret?
 	</Confirm>
 
-	<ElevationModal
-		bind:open={elevationModalOpen}
+	<ViewSecretModal
+		bind:open={viewSecretsModalOpen}
 		{teamSlug}
 		environmentName={env}
 		{secretName}
-		onSuccess={handleElevationSuccess}
+		onSuccess={handleRevealSuccess}
 	/>
 
 	<div
@@ -420,9 +299,6 @@
 			<div class="alerts">
 				{#if $deleteMutation.errors}
 					<GraphErrors errors={$deleteMutation.errors} />
-				{/if}
-				{#if $fetchSecretValues.errors}
-					<GraphErrors errors={$fetchSecretValues.errors} />
 				{/if}
 			</div>
 			<div class="data-heading">
@@ -498,32 +374,22 @@
 							</Td>
 							<Td style="width: 120px" align="right">
 								<div class="buttons">
-									{#if canMutate}
-										{#if secretsRevealed && revealedValues.has(keyName)}
-											<CopyButton
-												activeText="Value copied"
-												variant="action"
-												size="small"
-												copyText={revealedValues.get(keyName) ?? ''}
-											/>
-											{#if canMutate}
-												<Button
-													size="small"
-													variant="tertiary"
-													title="Show or edit secret value"
-													onclick={() => {
-														openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
-													}}
-													icon={DocPencilIcon}
-												/>
-											{/if}
-										{:else}
+									{#if secretsRevealed && revealedValues.has(keyName)}
+										<CopyButton
+											activeText="Value copied"
+											variant="action"
+											size="small"
+											copyText={revealedValues.get(keyName) ?? ''}
+										/>
+										{#if viewerCanElevate}
 											<Button
 												size="small"
 												variant="tertiary"
-												title="Requires elevation to view or copy values"
-												onclick={revealSecrets}
-												icon={PadlockLockedIcon}
+												title="Edit secret value"
+												onclick={() => {
+													openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
+												}}
+												icon={DocPencilIcon}
 											/>
 										{/if}
 									{/if}
@@ -553,7 +419,9 @@
 					{teamSlug}
 					{env}
 					{secretName}
-					onSuccess={secretsRevealed ? loadSecretValues : undefined}
+					onSuccess={() => {
+						Secret.fetch();
+					}}
 				/>
 			{/if}
 		</div>
@@ -561,8 +429,8 @@
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
 			<Workloads workloads={secret.workloads} />
 			<Manifest {secretName} />
-			{#if $Secret.data?.team}
-				<SidebarActivity activityLog={$Secret.data.team} direct={$Secret.data.team.activityLog} />
+			{#if secret}
+				<SidebarActivity activityLog={secret} direct={secret.activityLog} />
 			{/if}
 		</div>
 	</div>
@@ -606,6 +474,7 @@
 	}
 
 	.buttons {
+		justify-content: flex-end;
 		display: flex;
 	}
 
