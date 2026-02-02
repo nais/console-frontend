@@ -19,7 +19,7 @@
 	import { isReducedMotion } from '$lib/reducedMotion';
 	import { allSeverities, severityToColor, type Severity } from '$lib/utils/vulnerabilities';
 	import { format } from 'date-fns';
-	import { accessor, AreaChart, Tooltip } from 'layerchart';
+	import { accessor, LineChart, Tooltip } from 'layerchart';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 	import LegendWrapper, { legendSnippet } from './LegendWrapper.svelte';
 
@@ -87,16 +87,15 @@
 </script>
 
 <LegendWrapper {height}>
-	<AreaChart
+	<LineChart
 		yNice
 		padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
 		data={chartData.data}
 		series={chartData.series}
-		seriesLayout="stack"
 		x="date"
 		legend={legendSnippet}
 		props={{
-			area: { fillOpacity: 0.8, class: 'pl-4', motion: isReducedMotion ? 'none' : 'tween' },
+			spline: { class: 'stroke-2', motion: isReducedMotion ? 'none' : 'tween' },
 			yAxis: { label: 'Days to fix', labelPlacement: 'start' },
 			xAxis: {
 				motion: isReducedMotion ? 'none' : 'tween',
@@ -129,5 +128,5 @@
 				{/snippet}
 			</Tooltip.Root>
 		{/snippet}
-	</AreaChart>
+	</LineChart>
 </LegendWrapper>

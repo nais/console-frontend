@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
@@ -106,7 +106,6 @@
 		</div>
 		{#each Object.entries(Object.groupBy($IngressMetrics.data.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
 			{#each ingresses as ingress (ingress.url)}
-				{(() => console.log(options(ingress)))()}
 				<div class="section" id={ingress.url}>
 					<IconLabel size="large" as="h2" label={ingress.url}>
 						{#snippet icon()}
@@ -127,7 +126,6 @@
 					</IconLabel>
 
 					<div class="chart-wrapper">
-						<!-- <EChart options={options(ingress)} /> -->
 						<LegendWrapper height="300px">
 							<LineChart
 								{...options(ingress)}
