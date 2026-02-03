@@ -33,6 +33,7 @@
 	import TeamMemberRemovedActivityLogEntryText from '../activity/shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
 	import TeamMemberSetRoleActivityLogEntryText from '../activity/shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
 	import TeamUpdatedActivityLogEntryText from '../activity/shared/texts/TeamUpdatedActivityLogEntryText.svelte';
+	import UnleashInstanceDeletedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceDeletedActivityLogEntryText.svelte';
 	import UnleashInstanceUpdatedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceUpdatedActivityLogEntryText.svelte';
 	import ValkeyCreatedActivityLogEntryText from '../activity/shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
 	import ValkeyDeletedActivityLogEntryText from '../activity/shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
@@ -175,6 +176,9 @@
 							}
 						}
 					}
+					... on UnleashInstanceDeletedActivityLogEntry {
+						__typename
+					}
 					... on UnleashInstanceUpdatedActivityLogEntry {
 						unleashInstanceUpdated: data {
 							allowedTeamSlug
@@ -270,6 +274,8 @@
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamUpdatedActivityLogEntry':
 				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'UnleashInstanceDeletedActivityLogEntry':
+				return UnleashInstanceDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'UnleashInstanceUpdatedActivityLogEntry':
 				return UnleashInstanceUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ValkeyCreatedActivityLogEntry':

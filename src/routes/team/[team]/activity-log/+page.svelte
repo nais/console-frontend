@@ -81,6 +81,7 @@
 		],
 		Unleash: [
 			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
+			ActivityLogActivityType.UNLEASH_INSTANCE_DELETED,
 			ActivityLogActivityType.UNLEASH_INSTANCE_UPDATED
 		],
 		Vulnerability: [ActivityLogActivityType.VULNERABILITY_UPDATED]
