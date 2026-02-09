@@ -82,7 +82,12 @@
 	let errors: string[] = $state([]);
 	const submit = async () => {
 		errors = [];
-		const userID = $store.data?.users.nodes.find((u) => u.email === email)?.email;
+		const userID = $store.data?.users.nodes.find(
+			(u) =>
+				email.localeCompare(u.email, undefined, {
+					sensitivity: 'base'
+				}) === 0
+		)?.email;
 		if (!userID) {
 			errors = ['User not found'];
 			return;
