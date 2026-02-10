@@ -50,7 +50,7 @@ function getPackageVersionsWithDates(packageName) {
 /**
  * @param {string} packageName
  * @param {string} version
- * @returns {boolean}
+ * @returns {boolean | null} - true if deprecated, false if not, null if check failed
  */
 function isVersionDeprecated(packageName, version) {
 	try {
@@ -61,9 +61,13 @@ function isVersionDeprecated(packageName, version) {
 		const deprecated = output.trim();
 		// npm returns empty string or 'undefined' if not deprecated
 		return Boolean(deprecated && deprecated !== 'undefined' && deprecated !== '""');
-	} catch {
-		// If error, assume not deprecated
-		return false;
+	} catch (error) {
+		// Network/registry errors - log warning and treat as unknown
+		console.warn(
+			`    ⚠️  Failed to check deprecation for ${packageName}@${version}:`,
+			error instanceof Error ? error.message : String(error)
+		);
+		return null;
 	}
 }
 
@@ -79,6 +83,7 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 	const cooldownDate = getCooldownDate();
 	const eligibleVersions = [];
 
+	// First pass: collect all eligible versions based on date and version criteria
 	for (const [version, timeStr] of Object.entries(versionTimes)) {
 		const releaseDate = new Date(timeStr);
 
@@ -93,9 +98,6 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 		const coercedCurrent = coerce(currentVersion);
 		if (!coercedVersion || !coercedCurrent) continue;
 		if (!gt(coercedVersion.version, coercedCurrent.version)) continue;
-
-		// Skip deprecated versions
-		if (isVersionDeprecated(packageName, version)) continue;
 
 		eligibleVersions.push({
 			version,
@@ -112,7 +114,21 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 		return gt(vA, vB) ? -1 : 1;
 	});
 
-	return eligibleVersions[0] || null;
+	// Second pass: check deprecation only on sorted list until we find a non-deprecated version
+	for (const versionInfo of eligibleVersions) {
+		const deprecationStatus = isVersionDeprecated(packageName, versionInfo.version);
+
+		// Skip if deprecated
+		if (deprecationStatus === true) continue;
+
+		// If check failed (null), skip to be safe
+		if (deprecationStatus === null) continue;
+
+		// Found non-deprecated version
+		return versionInfo;
+	}
+
+	return null;
 }
 
 /**
