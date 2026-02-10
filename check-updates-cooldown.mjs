@@ -61,7 +61,7 @@ function isVersionDeprecated(packageName, version) {
 		const deprecated = output.trim();
 		// npm returns empty string or 'undefined' if not deprecated
 		return Boolean(deprecated && deprecated !== 'undefined' && deprecated !== '""');
-	} catch (error) {
+	} catch {
 		// If error, assume not deprecated
 		return false;
 	}
