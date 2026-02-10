@@ -9,6 +9,7 @@ const EXCLUDE_PACKAGES = ['@nais/ds-svelte-community'];
 const SHOULD_INSTALL = process.argv.includes('--install');
 
 // Packages that require special upgrade commands
+/** @type {Record<string, (version: string) => string>} */
 const SPECIAL_UPGRADES = {
 	storybook: (version) => `npx storybook@${version} upgrade`
 };
@@ -19,6 +20,10 @@ function getCooldownDate() {
 	return date;
 }
 
+/**
+ * @param {string} packageName
+ * @returns {Record<string, string> | null}
+ */
 function getPackageVersionsWithDates(packageName) {
 	try {
 		const output = execSync(`npm view ${packageName} time --json`, {
@@ -33,11 +38,43 @@ function getPackageVersionsWithDates(packageName) {
 
 		return times;
 	} catch (error) {
-		console.error(`  ⚠️  Error fetching ${packageName}:`, error.message);
+		console.error(
+			`  ⚠️  Error fetching ${packageName}:`,
+			error instanceof Error ? error.message : String(error)
+		);
 		return null;
 	}
 }
 
+/**
+ * @param {string} packageName
+ * @param {string} version
+ * @returns {boolean | null} - true if deprecated, false if not, null if check failed
+ */
+function isVersionDeprecated(packageName, version) {
+	try {
+		const output = execSync(`npm view ${packageName}@${version} deprecated --json`, {
+			encoding: 'utf-8',
+			stdio: ['pipe', 'pipe', 'ignore']
+		});
+		const deprecated = output.trim();
+		// npm returns empty string or 'undefined' if not deprecated
+		return Boolean(deprecated && deprecated !== 'undefined' && deprecated !== '""');
+	} catch (error) {
+		// Network/registry errors - log warning and treat as unknown
+		console.warn(
+			`    ⚠️  Failed to check deprecation for ${packageName}@${version}:`,
+			error instanceof Error ? error.message : String(error)
+		);
+		return null;
+	}
+}
+
+/**
+ * @param {string} currentVersion
+ * @param {string} packageName
+ * @returns {{version: string, releaseDate: Date, age: number} | null}
+ */
 function findNewestEligibleVersion(currentVersion, packageName) {
 	const versionTimes = getPackageVersionsWithDates(packageName);
 	if (!versionTimes) return null;
@@ -45,6 +82,7 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 	const cooldownDate = getCooldownDate();
 	const eligibleVersions = [];
 
+	// First pass: collect all eligible versions based on date and version criteria
 	for (const [version, timeStr] of Object.entries(versionTimes)) {
 		const releaseDate = new Date(timeStr);
 
@@ -75,9 +113,28 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 		return gt(vA, vB) ? -1 : 1;
 	});
 
-	return eligibleVersions[0] || null;
+	// Second pass: check deprecation only on sorted list until we find a non-deprecated version
+	for (const versionInfo of eligibleVersions) {
+		const deprecationStatus = isVersionDeprecated(packageName, versionInfo.version);
+
+		// Skip if deprecated
+		if (deprecationStatus === true) continue;
+
+		// If check failed (null), skip to be safe
+		if (deprecationStatus === null) continue;
+
+		// Found non-deprecated version
+		return versionInfo;
+	}
+
+	return null;
 }
 
+/**
+ * @param {Record<string, string> | undefined} deps
+ * @param {string} type
+ * @returns {Array<{packageName: string, currentVersion: string, newVersion: string, age: number}>}
+ */
 function checkDependencies(deps, type) {
 	if (!deps) return [];
 
@@ -158,7 +215,11 @@ async function main() {
 					execSync(command, { stdio: 'inherit' });
 					console.log(`✅ Storybook upgraded successfully to ${storybookVersion}\n`);
 				} catch (error) {
-					console.error(`❌ Failed to upgrade Storybook:`, error.message, '\n');
+					console.error(
+						`❌ Failed to upgrade Storybook:`,
+						error instanceof Error ? error.message : String(error),
+						'\n'
+					);
 				}
 			} else {
 				console.log(
@@ -178,7 +239,11 @@ async function main() {
 					execSync(command, { stdio: 'inherit' });
 					console.log(`✅ ${packageName}@${newVersion} upgraded successfully\n`);
 				} catch (error) {
-					console.error(`❌ Failed to upgrade ${packageName}@${newVersion}:`, error.message, '\n');
+					console.error(
+						`❌ Failed to upgrade ${packageName}@${newVersion}:`,
+						error instanceof Error ? error.message : String(error),
+						'\n'
+					);
 				}
 			} else {
 				console.log(`📦 Installing ${packageName}@${newVersion}...`);
@@ -188,7 +253,11 @@ async function main() {
 					});
 					console.log(`✅ ${packageName}@${newVersion} installed successfully\n`);
 				} catch (error) {
-					console.error(`❌ Failed to install ${packageName}@${newVersion}:`, error.message, '\n');
+					console.error(
+						`❌ Failed to install ${packageName}@${newVersion}:`,
+						error instanceof Error ? error.message : String(error),
+						'\n'
+					);
 				}
 			}
 		}
