@@ -2,7 +2,6 @@
 
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-// @ts-expect-error - no types available
 import { gt, coerce } from 'semver';
 
 const COOLDOWN_DAYS = 14;
