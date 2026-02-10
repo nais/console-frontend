@@ -2,6 +2,7 @@
 
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
+// @ts-expect-error - no types available
 import { gt, coerce } from 'semver';
 
 const COOLDOWN_DAYS = 14;
@@ -9,6 +10,7 @@ const EXCLUDE_PACKAGES = ['@nais/ds-svelte-community'];
 const SHOULD_INSTALL = process.argv.includes('--install');
 
 // Packages that require special upgrade commands
+/** @type {Record<string, (version: string) => string>} */
 const SPECIAL_UPGRADES = {
 	storybook: (version) => `npx storybook@${version} upgrade`
 };
@@ -19,6 +21,10 @@ function getCooldownDate() {
 	return date;
 }
 
+/**
+ * @param {string} packageName
+ * @returns {Record<string, string> | null}
+ */
 function getPackageVersionsWithDates(packageName) {
 	try {
 		const output = execSync(`npm view ${packageName} time --json`, {
@@ -33,11 +39,39 @@ function getPackageVersionsWithDates(packageName) {
 
 		return times;
 	} catch (error) {
-		console.error(`  ⚠️  Error fetching ${packageName}:`, error.message);
+		console.error(
+			`  ⚠️  Error fetching ${packageName}:`,
+			error instanceof Error ? error.message : String(error)
+		);
 		return null;
 	}
 }
 
+/**
+ * @param {string} packageName
+ * @param {string} version
+ * @returns {boolean}
+ */
+function isVersionDeprecated(packageName, version) {
+	try {
+		const output = execSync(`npm view ${packageName}@${version} deprecated --json`, {
+			encoding: 'utf-8',
+			stdio: ['pipe', 'pipe', 'ignore']
+		});
+		const deprecated = output.trim();
+		// npm returns empty string or 'undefined' if not deprecated
+		return Boolean(deprecated && deprecated !== 'undefined' && deprecated !== '""');
+	} catch (error) {
+		// If error, assume not deprecated
+		return false;
+	}
+}
+
+/**
+ * @param {string} currentVersion
+ * @param {string} packageName
+ * @returns {{version: string, releaseDate: Date, age: number} | null}
+ */
 function findNewestEligibleVersion(currentVersion, packageName) {
 	const versionTimes = getPackageVersionsWithDates(packageName);
 	if (!versionTimes) return null;
@@ -60,6 +94,9 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 		if (!coercedVersion || !coercedCurrent) continue;
 		if (!gt(coercedVersion.version, coercedCurrent.version)) continue;
 
+		// Skip deprecated versions
+		if (isVersionDeprecated(packageName, version)) continue;
+
 		eligibleVersions.push({
 			version,
 			releaseDate,
@@ -78,6 +115,11 @@ function findNewestEligibleVersion(currentVersion, packageName) {
 	return eligibleVersions[0] || null;
 }
 
+/**
+ * @param {Record<string, string> | undefined} deps
+ * @param {string} type
+ * @returns {Array<{packageName: string, currentVersion: string, newVersion: string, age: number}>}
+ */
 function checkDependencies(deps, type) {
 	if (!deps) return [];
 
@@ -158,7 +200,11 @@ async function main() {
 					execSync(command, { stdio: 'inherit' });
 					console.log(`✅ Storybook upgraded successfully to ${storybookVersion}\n`);
 				} catch (error) {
-					console.error(`❌ Failed to upgrade Storybook:`, error.message, '\n');
+					console.error(
+						`❌ Failed to upgrade Storybook:`,
+						error instanceof Error ? error.message : String(error),
+						'\n'
+					);
 				}
 			} else {
 				console.log(
@@ -178,7 +224,11 @@ async function main() {
 					execSync(command, { stdio: 'inherit' });
 					console.log(`✅ ${packageName}@${newVersion} upgraded successfully\n`);
 				} catch (error) {
-					console.error(`❌ Failed to upgrade ${packageName}@${newVersion}:`, error.message, '\n');
+					console.error(
+						`❌ Failed to upgrade ${packageName}@${newVersion}:`,
+						error instanceof Error ? error.message : String(error),
+						'\n'
+					);
 				}
 			} else {
 				console.log(`📦 Installing ${packageName}@${newVersion}...`);
@@ -188,7 +238,11 @@ async function main() {
 					});
 					console.log(`✅ ${packageName}@${newVersion} installed successfully\n`);
 				} catch (error) {
-					console.error(`❌ Failed to install ${packageName}@${newVersion}:`, error.message, '\n');
+					console.error(
+						`❌ Failed to install ${packageName}@${newVersion}:`,
+						error instanceof Error ? error.message : String(error),
+						'\n'
+					);
 				}
 			}
 		}
