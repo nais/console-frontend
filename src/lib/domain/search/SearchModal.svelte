@@ -59,7 +59,7 @@
 							}
 						}
 					}
-					... on Postgres {
+					... on PostgresInstance {
 						name
 						team {
 							slug
@@ -155,7 +155,7 @@
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},
-		Postgres: {
+		PostgresInstance: {
 			icon: DatabaseIcon,
 			urlName: 'postgres',
 			prefix: 'postgres',
