@@ -19,6 +19,7 @@
 	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import PostgresGrantAccessActivityLogEntryText from '../activity/shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from '../activity/shared/texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from '../activity/shared/texts/SecretCreatedActivityLogEntryText.svelte';
@@ -103,6 +104,13 @@
 								newValue
 								oldValue
 							}
+						}
+					}
+					... on PostgresGrantAccessActivityLogEntry {
+						__typename
+						postgresGrantAccessData: data {
+							grantee
+							until
 						}
 					}
 					... on RepositoryAddedActivityLogEntry {
@@ -242,6 +250,8 @@
 				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchUpdatedActivityLogEntry':
 				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'PostgresGrantAccessActivityLogEntry':
+				return PostgresGrantAccessActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryAddedActivityLogEntry':
 				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryRemovedActivityLogEntry':
@@ -300,14 +310,12 @@
 			{#if TextComponent}
 				<TextComponent data={$data} />
 			{:else}
-				<BodyShort size="small" spacing>
-					{$data.message}
-					{#if $data.environmentName}
-						in <Tag size="small" variant={envTagVariant($data.environmentName)}>
-							{$data.environmentName}
-						</Tag>.
-					{/if}
-				</BodyShort>
+				{$data.message}
+				{#if $data.environmentName}
+					in <Tag size="small" variant={envTagVariant($data.environmentName)}>
+						{$data.environmentName}
+					</Tag>.
+				{/if}
 				<BodyShort size="small" style="color: var(--ax-text-subtle)">
 					<Time time={$data.createdAt} distance={true} />
 					by {$data.actor}
