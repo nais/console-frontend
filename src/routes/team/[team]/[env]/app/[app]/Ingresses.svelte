@@ -6,8 +6,9 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import {
+		ArrowRightIcon,
 		CloudDownIcon,
 		ExclamationmarkTriangleIcon,
 		GlobeIcon,
@@ -28,12 +29,7 @@
 	{#each Object.entries(Object.groupBy(app.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
 		{#each ingresses as ingress (ingress)}
 			<ListItem>
-				<IconLabel
-					size="medium"
-					label={ingress.url}
-					href="/team/{page.params.team}/{page.params.env}/app/{page.params
-						.app}/ingresses?ingress={encodeURIComponent(ingress.url)}"
-				>
+				<IconLabel size="medium" label={ingress.url} href={ingress.url}>
 					{#snippet icon()}
 						{#each app.team.environment.application.issues.edges as issue (issue.node.id)}
 							{#if issue.node.__typename === 'DeprecatedIngressIssue' && issue.node.message.includes(ingress.url)}
@@ -79,6 +75,18 @@
 							/>
 						</TooltipAlignHack>
 					</div>
+					<div>
+						<Button
+							variant="tertiary"
+							size="small"
+							as="a"
+							href="/team/{page.params.team}/{page.params.env}/app/{page.params
+								.app}/ingresses?ingress={encodeURIComponent(ingress.url)}"
+							icon={ArrowRightIcon}
+						>
+							Metrics
+						</Button>
+					</div>
 				</div>
 			</ListItem>
 		{/each}
@@ -86,6 +94,3 @@
 		<BodyShort>No ingresses configured for this app.</BodyShort>
 	{/each}
 </List>
-
-<style>
-</style>
