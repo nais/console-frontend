@@ -43,7 +43,7 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
-  """A user was granted access to a postgres cluster"""
+  """A user was granted access to a Postgres cluster"""
   POSTGRES_GRANT_ACCESS
 
   """Reconciler configured activity log entry."""
@@ -229,7 +229,7 @@ enum ActivityLogEntryResourceType {
   OPENSEARCH
 
   """
-  All activity log entries related to postgres clusters will use this resource type.
+  All activity log entries related to Postgres clusters will use this resource type.
   """
   POSTGRES
 
@@ -591,6 +591,14 @@ type Application implements ActivityLogger & Node & Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
+
+  """
+  Postgres instances referenced by the application. This does not currently support pagination, but will return all available Postgres instances.
+  """
+  postgresInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -1734,6 +1742,20 @@ type DeploymentKey implements Node {
   key: String!
 }
 
+input DeploymentOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: DeploymentOrderField!
+}
+
+"""Possible fields to order deployments by."""
+enum DeploymentOrderField {
+  """The time the deployment was created at."""
+  CREATED_AT
+}
+
 """Resource connected to a deployment."""
 type DeploymentResource implements Node {
   """Globally unique ID of the deployment resource."""
@@ -2020,6 +2042,8 @@ type Features implements Node {
 
 input GrantPostgresAccessInput {
   clusterName: String!
+
+  """Duration of the access grant (maximum 4 hours)."""
   duration: String!
   environmentName: String!
   grantee: String!
@@ -2462,6 +2486,14 @@ type Job implements ActivityLogger & Node & Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
+
+  """
+  Postgres instances referenced by the job. This does not currently support pagination, but will return all available Postgres instances.
+  """
+  postgresInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
 
   """Resources for the job."""
   resources: JobResources!
@@ -3214,7 +3246,7 @@ type Mutation {
   """
   enableReconciler(input: EnableReconcilerInput!): Reconciler!
 
-  """Grant access to this postgres cluster"""
+  """Grant temporary access to a Postgres cluster."""
   grantPostgresAccess(input: GrantPostgresAccessInput!): GrantPostgresAccessPayload!
 
   """Remove a team repository."""
@@ -3752,14 +3784,6 @@ interface Persistence {
   teamEnvironment: TeamEnvironment!
 }
 
-type Postgres implements Node & Persistence {
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-  id: ID!
-  name: String!
-  team: Team!
-  teamEnvironment: TeamEnvironment!
-}
-
 type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3794,6 +3818,47 @@ type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
 type PostgresGrantAccessActivityLogEntryData {
   grantee: String!
   until: Time!
+}
+
+type PostgresInstance implements Node & Persistence {
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
+  id: ID!
+
+  """Major version of PostgreSQL."""
+  majorVersion: String!
+  name: String!
+
+  """Resource allocation for the Postgres cluster."""
+  resources: PostgresInstanceResources!
+  team: Team!
+  teamEnvironment: TeamEnvironment!
+}
+
+type PostgresInstanceConnection {
+  edges: [PostgresInstanceEdge!]!
+  nodes: [PostgresInstance!]!
+  pageInfo: PageInfo!
+}
+
+type PostgresInstanceEdge {
+  cursor: Cursor!
+  node: PostgresInstance!
+}
+
+input PostgresInstanceOrder {
+  direction: OrderDirection!
+  field: PostgresInstanceOrderField!
+}
+
+enum PostgresInstanceOrderField {
+  ENVIRONMENT
+  NAME
+}
+
+type PostgresInstanceResources {
+  cpu: String!
+  diskSize: String!
+  memory: String!
 }
 
 type Price {
@@ -3909,6 +3974,9 @@ type Query {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: DeploymentOrder
   ): DeploymentConnection!
 
   """Get a single environment."""
@@ -4745,7 +4813,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Team | Valkey
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresInstance | SqlInstance | Team | Valkey
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -6152,6 +6220,28 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
+  """Postgres instances owned by the team."""
+  postgresInstances(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
+
   """Purpose of the team."""
   purpose: String!
   repositories(
@@ -6598,6 +6688,9 @@ type TeamEnvironment implements Node {
 
   """OpenSearch instance in the team environment."""
   openSearch(name: String!): OpenSearch!
+
+  """Postgres instance in the team environment."""
+  postgresInstance(name: String!): PostgresInstance!
 
   """Get a secret by name."""
   secret(name: String!): Secret!
@@ -8498,6 +8591,14 @@ interface Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
+
+  """
+  Postgres instances referenced by the workload. This does not currently support pagination, but will return all available Postgres instances.
+  """
+  postgresInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!
