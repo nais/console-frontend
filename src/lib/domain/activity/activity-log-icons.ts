@@ -43,9 +43,6 @@ export const icons: { [typename: string]: Component } = {
 	JobTriggeredActivityLogEntry: BriefcaseClockIcon,
 	JobDeletedActivityLogEntry: BriefcaseClockIcon,
 
-	/* Elevations */
-	PostgresGrantAccessActivityLogEntry: PadlockLockedIcon,
-
 	/* Secrets */
 	SecretCreatedActivityLogEntry: PadlockLockedIcon,
 	SecretDeletedActivityLogEntry: PadlockLockedIcon,
@@ -85,6 +82,7 @@ export const icons: { [typename: string]: Component } = {
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
 	ClusterAuditActivityLogEntry: TerminalIcon,
+	PostgresGrantAccessActivityLogEntry: PadlockLockedIcon,
 
 	/* Fallback / infra ops */
 	TeamDeployKeyUpdatedActivityLogEntry: CogIcon,
