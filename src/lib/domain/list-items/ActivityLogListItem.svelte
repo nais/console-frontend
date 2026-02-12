@@ -4,7 +4,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
@@ -226,7 +226,7 @@
 		)
 	);
 
-	const Icon = $derived(icons[$data.__typename] || RocketIcon);
+	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
 	function textComponent(typename: string): Component<{ data: unknown }> | null {
 		switch (typename) {
@@ -316,9 +316,9 @@
 						{$data.environmentName}
 					</Tag>.
 				{/if}
-				<BodyShort size="small" style="color: var(--ax-text-subtle)">
+				<BodyShort textColor="subtle" size="small">
+					By {$data.actor}
 					<Time time={$data.createdAt} distance={true} />
-					by {$data.actor}
 				</BodyShort>
 			{/if}
 		</div>
