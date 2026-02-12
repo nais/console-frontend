@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { BodyShort, Button, Modal, TextField } from '@nais/ds-svelte-community';
-	import { ArrowsCirclepathIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		jobName: string;
@@ -52,11 +51,6 @@
 			error = valid.error;
 		}
 	};
-
-	const regenerate = () => {
-		runName = generateJobRunName(jobName);
-		error = '';
-	};
 </script>
 
 <Modal open onclose={close} header="Trigger run" width="medium">
@@ -66,43 +60,17 @@
 			<strong>{jobName}</strong> in
 			<strong>{environment}</strong>.
 		</BodyShort>
-		<div class="name-input-wrapper">
-			<div class="text-field-wrapper">
-				<TextField type="text" bind:value={runName} {error} autofocus size="small">
-					{#snippet label()}
-						Run name
-					{/snippet}
-					{#snippet description()}
-						Auto-generated name (editable)
-					{/snippet}
-				</TextField>
-			</div>
-			<Button
-				type="button"
-				variant="tertiary"
-				size="small"
-				icon={ArrowsCirclepathIcon}
-				onclick={regenerate}
-				title="Generate new name"
-			>
-				Regenerate
-			</Button>
-		</div>
+		<TextField type="text" bind:value={runName} {error} autofocus size="small">
+			{#snippet label()}
+				Run name
+			{/snippet}
+			{#snippet description()}
+				Auto-generated name (editable)
+			{/snippet}
+		</TextField>
 	</form>
 	{#snippet footer()}
 		<Button form="trigger-run-form">Confirm</Button>
 		<Button variant="secondary" type="button" onclick={close}>Cancel</Button>
 	{/snippet}
 </Modal>
-
-<style>
-	.name-input-wrapper {
-		display: flex;
-		gap: var(--ax-space-8);
-		align-items: end;
-	}
-
-	.text-field-wrapper {
-		flex: 1;
-	}
-</style>
