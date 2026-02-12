@@ -13,7 +13,13 @@
 
 	let error: string = $state('');
 
-	let runName = $derived(generateJobRunName(jobName));
+	let runName = $state('');
+
+	$effect.pre(() => {
+		if (!runName) {
+			runName = generateJobRunName(jobName);
+		}
+	});
 
 	function validateRunName(runName: string): { isValid: true } | { isValid: false; error: string } {
 		const k8sNameRegex = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
