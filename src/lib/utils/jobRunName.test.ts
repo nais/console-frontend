@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { generateJobRunName } from './jobRunName';
 
 describe('generateJobRunName', () => {
-	const mockDate = new Date('2026-02-12T14:30:15');
+	const mockDate = new Date(2026, 1, 12, 14, 30, 15);
 
 	beforeEach(() => {
 		vi.useFakeTimers();
