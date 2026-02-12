@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { BodyShort, Button, Modal, TextField } from '@nais/ds-svelte-community';
 	import { ArrowsCirclepathIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
 
 	interface Props {
 		jobName: string;
@@ -13,13 +13,7 @@
 
 	let error: string = $state('');
 
-	const generateRunName = (): string => {
-		const timestamp = format(new Date(), 'yyyyMMdd-HHmmss');
-		const sanitized = jobName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-		return `${sanitized}-${timestamp}`.slice(0, 63);
-	};
-
-	let runName = $state(generateRunName());
+	let runName = $derived(generateJobRunName(jobName));
 
 	function validateRunName(runName: string): { isValid: true } | { isValid: false; error: string } {
 		const k8sNameRegex = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
@@ -60,7 +54,7 @@
 	};
 
 	const regenerate = () => {
-		runName = generateRunName();
+		runName = generateJobRunName(jobName);
 		error = '';
 	};
 </script>
