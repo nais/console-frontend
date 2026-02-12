@@ -60,7 +60,14 @@
 			<strong>{jobName}</strong> in
 			<strong>{environment}</strong>.
 		</BodyShort>
-		<TextField type="text" bind:value={runName} {error} autofocus size="small">
+		<TextField
+			type="text"
+			bind:value={runName}
+			{error}
+			autofocus
+			size="small"
+			oninput={() => (error = '')}
+		>
 			{#snippet label()}
 				Run name
 			{/snippet}
