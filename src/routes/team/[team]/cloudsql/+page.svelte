@@ -1,10 +1,13 @@
 <script lang="ts">
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
+	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CircleProgressBar from '$lib/ui/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -12,23 +15,27 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Loader } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	let { PostgresInstances } = $derived(data);
+	let { SqlInstances } = $derived(data);
 </script>
 
-<GraphErrors errors={$PostgresInstances.errors} />
+<GraphErrors errors={$SqlInstances.errors} />
 
-{#if $PostgresInstances.fetching}
+{#if $SqlInstances.fetching}
 	<div class="loading">
 		<Loader size="3xlarge" />
 	</div>
-{:else if $PostgresInstances.data && $PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
-	{@const si = $PostgresInstances.data.team.postgresInstances}
+{:else if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
+	{@const cost = $SqlInstances.data.team.cost}
+	{@const si = $SqlInstances.data.team.sqlInstances}
+	{@const u = $SqlInstances.data.team.serviceUtilization.sqlInstances}
 
 	<div class="content-wrapper">
 		<div>
@@ -55,7 +62,7 @@
 							<IconLabel
 								as="h4"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/postgres/{instance.name}"
+									.name}/cloudsql/{instance.name}"
 								size="large"
 								label={instance.name}
 								tag={{
@@ -74,7 +81,7 @@
 											SUSPENDED: 'SUSPENDED',
 											UNSPECIFIED: 'UNSPECIFIED',
 											STOPPED: 'STOPPED'
-										}['RUNNABLE'] ?? ''}
+										}[instance.state] ?? ''}
 									>
 										<CircleFillIcon
 											style="color: var({{
@@ -86,7 +93,7 @@
 												SUSPENDED: '--ax-bg-info-strong',
 												UNSPECIFIED: '--ax-bg-info-strong',
 												STOPPED: '--ax-bg-info-strong'
-											}['RUNNABLE'] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
 										/>
 									</TooltipAlignHack>
 								{/snippet}
@@ -94,14 +101,14 @@
 						</div>
 
 						<div class="right">
-							<!-- {#if instance.workload}
+							{#if instance.workload}
 								<div style:display="flex" style:gap="var(--ax-space-6)">
 									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 								</div>
-							{/if} -->
+							{/if}
 
-							<div>Version: <code>{instance.majorVersion}</code></div>
-							<!-- {#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
+							<div>Version: <code>{instance.version}</code></div>
+							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
 								{@const criticalCount = instance.issues?.edges.filter(
 									(e) => e.node.severity === 'CRITICAL'
 								).length}
@@ -129,7 +136,7 @@
 										>
 									{/if}
 								</div>
-							{/if} -->
+							{/if}
 						</div>
 					</ListItem>
 				{/each}
@@ -145,21 +152,21 @@
 				}}
 			/>
 		</div>
-		<!-- <div class="right-column"> -->
-		<!-- {#if cost}
+		<div class="right-column">
+			{#if cost}
 				<div>
 					<PersistenceCost
 						pageName="SQL Instances"
-						teamSlug={$PostgresInstances.data.team.slug}
+						teamSlug={$SqlInstances.data.team.slug}
 						costData={cost}
 						from={startOfMonth(subMonths(new Date(), 1))}
 						to={endOfYesterday()}
 						service="Cloud SQL"
 					/>
 				</div>
-			{/if} -->
+			{/if}
 
-		<!-- <div class="utilization">
+			<div class="utilization">
 				<Heading as="h2" size="small">Utilization</Heading>
 				<BodyShort>Current utilization for all Postgres instances owned by the team.</BodyShort>
 
@@ -176,8 +183,8 @@
 					<div>
 						<CircleProgressBar size="1.5rem" progress={u.cpu.utilization} />
 						{(u.cpu.utilization * 100).toFixed(1)}% of
-						{u.cpu.requested.toFixed(0)} CPU{$PostgresInstances.data.team.serviceUtilization
-							.sqlInstances.cpu.requested > 1
+						{u.cpu.requested.toFixed(0)} CPU{$SqlInstances.data.team.serviceUtilization.sqlInstances
+							.cpu.requested > 1
 							? 's'
 							: ''}
 					</div>
@@ -190,8 +197,8 @@
 						{prettyBytes(u.memory.requested)}
 					</div>
 				</div>
-			</div> -->
-		<!-- </div> -->
+			</div>
+		</div>
 	</div>
 {:else}
 	<div class="content-wrapper">
@@ -219,15 +226,15 @@
 		align-items: flex-end;
 	}
 
-	/* .right-column {
+	.right-column {
 		display: grid;
 		gap: var(--ax-space-24);
-	} */
+	}
 	code {
 		font-size: 0.9rem;
 	}
 
-	/* .utilization {
+	.utilization {
 		display: grid;
 		gap: var(--ax-space-6);
 		div {
@@ -239,7 +246,7 @@
 				align-items: center;
 			}
 		}
-	} */
+	}
 
 	.loading {
 		display: flex;

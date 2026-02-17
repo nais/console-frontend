@@ -1,43 +1,21 @@
-query SqlInstances(
+query PostgresInstances(
 	$team: Slug!
-	$orderBy: SqlInstanceOrder
+	$orderBy: PostgresInstanceOrder
 	$first: Int
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-	$from: Date!
-	$to: Date!
 ) {
 	team(slug: $team) {
 		slug
 
-		cost {
-			daily(from: $from, to: $to, filter: { services: ["Cloud SQL"] }) {
-				series {
-					date
-					sum
-				}
-			}
-		}
-
-		serviceUtilization {
-			sqlInstances {
-				cpu {
-					requested
-					utilization
-				}
-				disk {
-					requested
-					utilization
-				}
-				memory {
-					requested
-					utilization
-				}
-			}
-		}
-		sqlInstances(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
-			@paginate(mode: SinglePage) {
+		postgresInstances(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
@@ -59,50 +37,7 @@ query SqlInstances(
 				team {
 					slug
 				}
-				connectionName
-				state
-				version
-				cost {
-					sum
-				}
-				metrics {
-					cpu {
-						cores
-						utilization
-					}
-					memory {
-						quotaBytes
-						utilization
-					}
-					disk {
-						quotaBytes
-						utilization
-					}
-				}
-				issues {
-					pageInfo {
-						totalCount
-					}
-					edges {
-						node {
-							id
-							severity
-						}
-					}
-				}
-
-				workload {
-					__typename
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					team {
-						slug
-					}
-				}
+				majorVersion
 			}
 		}
 	}

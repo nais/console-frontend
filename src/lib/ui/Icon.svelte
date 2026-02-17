@@ -43,7 +43,7 @@
 				return BriefcaseClockIcon;
 			case 'secrets':
 				return PadlockLockedIcon;
-			case 'sqlinstance':
+			case 'cloudsql':
 			case 'postgres':
 				return DatabaseIcon;
 			case 'buckets':

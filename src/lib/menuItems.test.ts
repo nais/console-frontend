@@ -25,7 +25,7 @@ describe('menuItems', () => {
 				],
 				[
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
-					{ label: 'Postgres', href: '/team/devteam/postgres' },
+					{ label: 'Postgres', href: '/team/devteam/cloudsql' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
@@ -65,7 +65,7 @@ describe('menuItems', () => {
 		test('postgres active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/postgres/gemini',
+					path: '/team/nais/prod-gcp/cloudsql/gemini',
 					member: true,
 					isAdmin: false
 				})

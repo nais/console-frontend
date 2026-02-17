@@ -31,7 +31,7 @@ export const menuItems = ({
 		const pageNameToInventory = {
 			applications: 'applications',
 			jobs: 'jobs',
-			postgres: 'sqlInstances',
+			cloudsql: 'sqlInstances',
 			buckets: 'buckets',
 			valkey: 'valkeys',
 			opensearch: 'openSearches',
@@ -91,6 +91,7 @@ export const menuItems = ({
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
 			menuItem('Secrets', 'secrets', 'secret'),
+			menuItem('CloudSQL', 'cloudsql', 'cloudsql'),
 			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),

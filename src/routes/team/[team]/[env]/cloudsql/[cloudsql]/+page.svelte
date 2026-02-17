@@ -1,25 +1,36 @@
 <script lang="ts">
-	import { Alert } from '@nais/ds-svelte-community';
+	import { page } from '$app/state';
+	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import CircleProgressBar from '$lib/ui/CircleProgressBar.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import List from '$lib/ui/List.svelte';
+	import SummaryCard from '$lib/ui/SummaryCard.svelte';
+	import { euroValueFormatter } from '$lib/utils/formatters';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { PostgresInstance } = $derived(data);
-	let instance = $derived($PostgresInstance.data?.team.environment.postgresInstance);
-	// let postgres = $derived(page.params.postgres);
+	let { SqlInstance, viewerIsMember } = $derived(data);
+	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
+	let postgres = $derived(page.params.cloudsql);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $PostgresInstance.errors}
-	{#each distinctErrors($PostgresInstance.errors) as error (error)}
+{#if $SqlInstance.errors}
+	{#each distinctErrors($SqlInstance.errors) as error (error)}
 		<Alert style="margin-bottom: 1rem;" variant="error">
 			{error}
 		</Alert>
 	{/each}
 {:else if instance}
-	<pre>{JSON.stringify(instance, null, 2)}</pre>
 	<div class="summary-grid">
-		<!-- <div class="card">
+		<div class="card">
 			<SummaryCard
 				title="Cost"
 				helpText="Total SQL instance cost for the last 30 days"
@@ -30,8 +41,8 @@
 				{/snippet}
 				{euroValueFormatter(instance.cost.sum)}
 			</SummaryCard>
-		</div> -->
-		<!-- <div class="card">
+		</div>
+		<div class="card">
 			<SummaryCard
 				title="CPU utilization"
 				helpText="Current CPU utilization"
@@ -44,8 +55,8 @@
 				{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
 				core{instance.metrics.cpu.cores > 1 ? 's' : ''}
 			</SummaryCard>
-		</div> -->
-		<!-- <div class="card">
+		</div>
+		<div class="card">
 			<SummaryCard
 				title="Memory utilization"
 				helpText="Current memory utilization"
@@ -59,8 +70,8 @@
 					instance.metrics.memory.quotaBytes
 				)}
 			</SummaryCard>
-		</div> -->
-		<!-- <div class="card">
+		</div>
+		<div class="card">
 			<SummaryCard
 				title="Disk utilization"
 				helpText="Current disk utilization"
@@ -74,12 +85,12 @@
 					instance.metrics.disk.quotaBytes
 				)}
 			</SummaryCard>
-		</div> -->
+		</div>
 	</div>
 
 	<div class="grid">
 		<div>
-			<!-- <dl>
+			<dl>
 				<dt>Instance status:</dt>
 				<dd>
 					{#if instance.state === 'RUNNABLE'}
@@ -112,18 +123,18 @@
 						</dd>
 					{/if}
 				{/if}
-			</dl> -->
+			</dl>
 
-			<!-- <Heading as="h3" spacing>Issues</Heading>
+			<Heading as="h3" spacing>Issues</Heading>
 			<List>
 				{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
 					<IssueListItem item={edge.node} />
 				{:else}
 					<span>No issues found</span>
 				{/each}
-			</List> -->
+			</List>
 		</div>
-		<!-- <div>
+		<div>
 			<Heading as="h2" size="small">Owner</Heading>
 			{#if instance.workload}
 				<WorkloadLink workload={instance.workload} />
@@ -131,12 +142,12 @@
 				<WarningIcon title="The SQL instance does not belong to any workload" />
 				Instance does not belong to any workload
 			{/if}
-		</div> -->
+		</div>
 	</div>
 {/if}
 
 <style>
-	/* dl {
+	dl {
 		display: grid;
 		gap: var(--ax-space-8);
 		grid-template-columns: max-content max-content;
@@ -144,7 +155,7 @@
 		dd {
 			margin: 0;
 		}
-	} */
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr 300px;
@@ -157,10 +168,10 @@
 		row-gap: 1rem;
 		margin-bottom: 1rem;
 	}
-	/* .card {
+	.card {
 		border: 1px solid var(--ax-border-neutral);
 		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-20);
 		border-radius: 12px;
-	} */
+	}
 </style>
