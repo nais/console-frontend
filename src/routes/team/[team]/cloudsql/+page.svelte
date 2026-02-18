@@ -7,7 +7,6 @@
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import CircleProgressBar from '$lib/ui/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -15,10 +14,9 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, BodyShort, Heading, Loader, Tag } from '@nais/ds-svelte-community';
+	import { BodyLong, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
-	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -35,19 +33,18 @@
 {:else if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const si = $SqlInstances.data.team.sqlInstances}
-	{@const u = $SqlInstances.data.team.serviceUtilization.sqlInstances}
 
 	<div class="content-wrapper">
 		<div>
 			<BodyLong spacing>
-				Postgres instances provide managed relational databases in the cloud.
-				<ExternalLink href={docURL('/persistence/postgres')}
-					>Learn more about Postgres in Nais and how to get started.</ExternalLink
+				Cloud SQL instances provide managed relational databases in the cloud.
+				<ExternalLink href={docURL('/persistence/cloudsql')}
+					>Learn more about Cloud SQL in Nais and how to get started.</ExternalLink
 				>
 			</BodyLong>
 
 			<List
-				title="{si.pageInfo.totalCount} Postgres instance{si.pageInfo.totalCount !== 1 ? 's' : ''}"
+				title="{si.pageInfo.totalCount} Cloud SQL instance{si.pageInfo.totalCount !== 1 ? 's' : ''}"
 			>
 				{#snippet menu()}
 					<OrderByMenu
@@ -165,48 +162,15 @@
 					/>
 				</div>
 			{/if}
-
-			<div class="utilization">
-				<Heading as="h2" size="small">Utilization</Heading>
-				<BodyShort>Current utilization for all Postgres instances owned by the team.</BodyShort>
-
-				<div>
-					<BodyShort>Storage</BodyShort>
-					<div>
-						<CircleProgressBar size="1.5rem" progress={u.disk.utilization} />
-						{(u.disk.utilization * 100).toFixed(1)}% of
-						{prettyBytes(u.disk.requested)}
-					</div>
-				</div>
-				<div>
-					<BodyShort>CPU</BodyShort>
-					<div>
-						<CircleProgressBar size="1.5rem" progress={u.cpu.utilization} />
-						{(u.cpu.utilization * 100).toFixed(1)}% of
-						{u.cpu.requested.toFixed(0)} CPU{$SqlInstances.data.team.serviceUtilization.sqlInstances
-							.cpu.requested > 1
-							? 's'
-							: ''}
-					</div>
-				</div>
-				<div>
-					<BodyShort>Memory</BodyShort>
-					<div>
-						<CircleProgressBar size="1.5rem" progress={u.memory.utilization} />
-						{(u.memory.utilization * 100).toFixed(1)}% of
-						{prettyBytes(u.memory.requested)}
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 {:else}
 	<div class="content-wrapper">
 		<BodyLong>
-			<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
+			<strong>No Cloud SQL instances found.</strong> Cloud SQL instances provide managed relational
 			databases in the cloud.
-			<ExternalLink href={docURL('/persistence/postgres')}
-				>Learn more about Postgres in Nais and how to get started.</ExternalLink
+			<ExternalLink href={docURL('/persistence/cloudsql')}
+				>Learn more about Cloud SQL in Nais and how to get started.</ExternalLink
 			>
 		</BodyLong>
 	</div>
@@ -232,20 +196,6 @@
 	}
 	code {
 		font-size: 0.9rem;
-	}
-
-	.utilization {
-		display: grid;
-		gap: var(--ax-space-6);
-		div {
-			display: grid;
-			gap: var(--ax-space-6);
-			div {
-				display: flex;
-				gap: var(--ax-space-6);
-				align-items: center;
-			}
-		}
 	}
 
 	.loading {

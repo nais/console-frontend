@@ -5,7 +5,7 @@ export async function load(event) {
 		...(await addPageMeta(event, {
 			breadcrumbs: [
 				{
-					label: 'Postgres Instances',
+					label: 'Cloud SQL Instances',
 					href: '/team/[team]/cloudsql'
 				}
 			]

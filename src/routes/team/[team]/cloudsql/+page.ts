@@ -10,7 +10,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Postgres Instances' })),
+		...(await addPageMeta(event, { title: 'CloudSQL Instances' })),
 		...(await load_SqlInstances({
 			event,
 			variables: {
