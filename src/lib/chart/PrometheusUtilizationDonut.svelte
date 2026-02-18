@@ -3,7 +3,7 @@
 	import { graphql } from '$houdini';
 	import { intersect } from '$lib/utils/intersectionObserver';
 	import { Loader } from '@nais/ds-svelte-community';
-	import { Arc, Chart, Group, LinearGradient, Svg, Text } from 'layerchart';
+	import { Arc, Chart, Group, Svg, Text } from 'layerchart';
 	import { untrack } from 'svelte';
 
 	type PrometheusUtilizationDonutProps = {
@@ -100,16 +100,40 @@
 		return utilizationValue;
 	});
 
-	function hashValue(input: string): string {
-		let hash = 0;
-		for (let index = 0; index < input.length; index++) {
-			hash = (hash << 5) - hash + input.charCodeAt(index);
-			hash |= 0;
-		}
-		return Math.abs(hash).toString(36);
-	}
+	const segmentCount = 36;
+	const segmentIndices = Array.from({ length: segmentCount }, (_, index) => index);
+	const segmentRangeStart = -120;
+	const segmentRangeEnd = 120;
+	const segmentPadAngle = 0.03;
+	const WARNING_THRESHOLD = 70;
+	const DANGER_THRESHOLD = 90;
 
-	const gradientId = $derived(`utilization-donut-gradient-${hashValue(`${label}:${query}`)}`);
+	const activeSegments = $derived.by(() => {
+		if (domainMax <= 0) {
+			return 0;
+		}
+
+		const ratio = Math.max(0, Math.min(1, normalizedValue / domainMax));
+		return Math.round(ratio * segmentCount);
+	});
+
+	const segmentFill = (segmentIndex: number, isActive: boolean) => {
+		if (!isActive) {
+			return 'var(--ax-neutral-200)';
+		}
+
+		const segmentPercent = ((segmentIndex + 1) / segmentCount) * 100;
+
+		if (segmentPercent <= WARNING_THRESHOLD) {
+			return 'var(--ax-text-success-decoration)';
+		}
+
+		if (segmentPercent <= DANGER_THRESHOLD) {
+			return 'var(--ax-text-warning-decoration)';
+		}
+
+		return 'var(--ax-text-danger-decoration)';
+	};
 
 	const overlayState = $derived.by(() => {
 		if ($q.fetching || $q.data === null) {
@@ -145,28 +169,29 @@
 	});
 </script>
 
-<div class="utilization-donut-wrapper" style="height: {height};" use:intersect={handleIntersection}>
+<div
+	class="utilization-segmented-chart"
+	style="height: {height};"
+	use:intersect={handleIntersection}
+>
 	<Chart>
 		<Svg center>
 			<Group y={16}>
-				<LinearGradient
-					id={gradientId}
-					stops={[
-						'var(--ax-text-success-decoration)',
-						'var(--ax-text-warning-decoration)',
-						'var(--ax-text-danger-decoration)'
-					]}
-				/>
-				<Arc
-					value={normalizedValue}
-					domain={[0, domainMax]}
-					range={[-120, 120]}
-					outerRadius={70}
-					innerRadius={56}
-					cornerRadius={6}
-					fill={`url(#${gradientId})`}
-					track={{ fill: 'var(--ax-neutral-200)' }}
-				/>
+				{@const segmentAngle =
+					((segmentRangeEnd - segmentRangeStart) * Math.PI) / 180 / segmentCount}
+				{#each segmentIndices as segmentIndex (segmentIndex)}
+					{@const startAngle = (segmentRangeStart * Math.PI) / 180 + segmentIndex * segmentAngle}
+					{@const endAngle = startAngle + segmentAngle}
+					<Arc
+						{startAngle}
+						{endAngle}
+						innerRadius={56}
+						outerRadius={76}
+						cornerRadius={4}
+						padAngle={segmentPadAngle}
+						fill={segmentFill(segmentIndex, segmentIndex < activeSegments)}
+					/>
+				{/each}
 			</Group>
 			{#if overlayState !== 'no-data'}
 				<Text
@@ -202,7 +227,7 @@
 </div>
 
 <style>
-	.utilization-donut-wrapper {
+	.utilization-segmented-chart {
 		position: relative;
 		width: 100%;
 	}
@@ -226,13 +251,11 @@
 	}
 
 	:global(.utilization-value) {
-		fill: var(--ax-text-neutral);
 		font-size: var(--ax-font-size-large);
-		font-weight: var(--ax-font-weight-semibold);
+		font-weight: var(--ax-font-weight-bold);
 	}
 
 	:global(.utilization-label) {
-		fill: var(--ax-text-subtle);
 		font-size: var(--ax-font-size-small);
 		font-weight: var(--ax-font-weight-regular);
 	}
