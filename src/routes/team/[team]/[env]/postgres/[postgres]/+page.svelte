@@ -1,11 +1,127 @@
 <script lang="ts">
-	import { Alert } from '@nais/ds-svelte-community';
+	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { PostgresInstance } = $derived(data);
 	let instance = $derived($PostgresInstance.data?.team.environment.postgresInstance);
-	// let postgres = $derived(page.params.postgres);
+	let instanceName = $derived(instance?.name ?? '');
+	let environmentName = $derived(instance?.teamEnvironment.environment.name ?? '');
+	let teamSlug = $derived($PostgresInstance.data?.team.slug ?? '');
+
+	let postgresCpuUtilizationQuery = $derived(`(
+		sum(
+			rate(container_cpu_usage_seconds_total{
+				namespace="pg-${teamSlug}",
+				pod=~"${instanceName}-[0-9]+",
+				container="postgres",
+				image!=""
+			}[5m])
+			* on (namespace, pod) group_left()
+				max by (namespace, pod) (
+					1 - pg_replication_is_replica{
+						namespace="pg-${teamSlug}",
+						pod=~"${instanceName}-[0-9]+"
+					}
+				)
+		)
+	)
+	/
+	clamp_min(
+		sum(
+			kube_pod_container_resource_requests{
+				namespace="pg-${teamSlug}",
+				pod=~"${instanceName}-[0-9]+",
+				container="postgres",
+				resource="cpu",
+				unit="core"
+			}
+			* on (namespace, pod) group_left()
+				max by (namespace, pod) (
+					1 - pg_replication_is_replica{
+						namespace="pg-${teamSlug}",
+						pod=~"${instanceName}-[0-9]+"
+					}
+				)
+		),
+		0.001
+	)`);
+
+	let postgresMemoryUtilizationQuery = $derived(`(
+  sum(
+    container_memory_working_set_bytes{
+      namespace="pg-${teamSlug}",
+				pod=~"${instanceName}-[0-9]+",
+      container="postgres",
+      image!=""
+    }
+    * on (namespace, pod) group_left()
+      max by (namespace, pod) (
+        1 - pg_replication_is_replica{
+          namespace="pg-${teamSlug}",
+						pod=~"${instanceName}-[0-9]+"
+        }
+      )
+  )
+)
+/
+clamp_min(
+  sum(
+    kube_pod_container_resource_requests{
+      namespace="pg-${teamSlug}",
+				pod=~"${instanceName}-[0-9]+",
+      container="postgres",
+      resource="memory",
+      unit="byte"
+    }
+    * on (namespace, pod) group_left()
+      max by (namespace, pod) (
+        1 - pg_replication_is_replica{
+          namespace="pg-${teamSlug}",
+						pod=~"${instanceName}-[0-9]+"
+        }
+      )
+  ),
+  1
+)
+`);
+
+	let postgresDiskUtilizationQuery = $derived(`
+sum(
+  kubelet_volume_stats_used_bytes{namespace="pg-${teamSlug}"}
+  * on (namespace, persistentvolumeclaim) group_left(pod)
+    kube_pod_spec_volumes_persistentvolumeclaims_info{
+      namespace="pg-${teamSlug}",
+      pod=~"${instanceName}-[0-9]+"
+    }
+  * on (namespace, pod) group_left()
+    max by (namespace, pod) (
+      1 - pg_replication_is_replica{
+        namespace="pg-${teamSlug}",
+        pod=~"${instanceName}-[0-9]+"
+      }
+    )
+)
+/
+clamp_min(
+  sum(
+    kubelet_volume_stats_capacity_bytes{namespace="pg-${teamSlug}"}
+    * on (namespace, persistentvolumeclaim) group_left(pod)
+      kube_pod_spec_volumes_persistentvolumeclaims_info{
+        namespace="pg-${teamSlug}",
+        pod=~"${instanceName}-[0-9]+"
+      }
+    * on (namespace, pod) group_left()
+      max by (namespace, pod) (
+        1 - pg_replication_is_replica{
+          namespace="pg-${teamSlug}",
+          pod=~"${instanceName}-[0-9]+"
+        }
+      )
+  ),
+  1
+)`);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
@@ -17,64 +133,33 @@
 		</Alert>
 	{/each}
 {:else if instance}
-	<pre>{JSON.stringify(instance, null, 2)}</pre>
+	<!-- <pre>{JSON.stringify(instance, null, 2)}</pre> -->
+	<Heading as="h2">Utilization</Heading>
 	<div class="summary-grid">
-		<!-- <div class="card">
-			<SummaryCard
-				title="Cost"
-				helpText="Total SQL instance cost for the last 30 days"
-				color="grey"
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{euroValueFormatter(instance.cost.sum)}
-			</SummaryCard>
-		</div> -->
-		<!-- <div class="card">
-			<SummaryCard
-				title="CPU utilization"
-				helpText="Current CPU utilization"
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
-				{/snippet}
-				{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-				core{instance.metrics.cpu.cores > 1 ? 's' : ''}
-			</SummaryCard>
-		</div> -->
-		<!-- <div class="card">
-			<SummaryCard
-				title="Memory utilization"
-				helpText="Current memory utilization"
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
-				{/snippet}
-				{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-					instance.metrics.memory.quotaBytes
-				)}
-			</SummaryCard>
-		</div> -->
-		<!-- <div class="card">
-			<SummaryCard
-				title="Disk utilization"
-				helpText="Current disk utilization"
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
-				{/snippet}
-				{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-					instance.metrics.disk.quotaBytes
-				)}
-			</SummaryCard>
-		</div> -->
+		<PrometheusUtilizationDonut
+			{environmentName}
+			query={postgresCpuUtilizationQuery}
+			label="CPU"
+			height="200px"
+			domainMax={1}
+			formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+		/>
+		<PrometheusUtilizationDonut
+			{environmentName}
+			query={postgresMemoryUtilizationQuery}
+			label="Memory"
+			height="200px"
+			domainMax={1}
+			formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+		/>
+		<PrometheusUtilizationDonut
+			{environmentName}
+			query={postgresDiskUtilizationQuery}
+			label="Disk"
+			height="200px"
+			domainMax={1}
+			formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+		/>
 	</div>
 
 	<div class="grid">
@@ -157,10 +242,4 @@
 		row-gap: 1rem;
 		margin-bottom: 1rem;
 	}
-	/* .card {
-		border: 1px solid var(--ax-border-neutral);
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-20);
-		border-radius: 12px;
-	} */
 </style>
