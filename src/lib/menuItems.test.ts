@@ -25,7 +25,7 @@ describe('menuItems', () => {
 				],
 				[
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
-					{ label: 'Postgres', href: '/team/devteam/cloudsql' },
+					{ label: 'CloudSQL', href: '/team/devteam/cloudsql' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
@@ -70,7 +70,7 @@ describe('menuItems', () => {
 					isAdmin: false
 				})
 					.flatMap((g) => g)
-					.find((i) => i.label === 'Postgres')?.active
+					.find((i) => i.label === 'CloudSQL')?.active
 			).toBe(true);
 		});
 
@@ -139,6 +139,7 @@ describe('menuItems', () => {
 			).toEqual([
 				{ label: 'Applications', count: 42 },
 				{ label: 'Jobs', count: 1 },
+				{ label: 'CloudSQL', count: 7 },
 				{ label: 'Postgres', count: 7 },
 				{ label: 'Buckets', count: 1337 },
 				{ label: 'Valkey', count: 11 },
