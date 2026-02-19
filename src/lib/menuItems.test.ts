@@ -126,7 +126,8 @@ describe('menuItems', () => {
 					valkeys: { total: 11 },
 					openSearches: { total: 17 },
 					kafkaTopics: { total: 23 },
-					bigQueryDatasets: { total: 49 }
+					bigQueryDatasets: { total: 49 },
+					postgresInstances: { total: 7 }
 				}
 			});
 

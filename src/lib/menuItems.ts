@@ -22,6 +22,7 @@ export const menuItems = ({
 		openSearches: { total: number };
 		kafkaTopics: { total: number };
 		bigQueryDatasets: { total: number };
+		postgresInstances: { total: number };
 	};
 	isAdmin: boolean;
 }): { label: string; href: string; active?: boolean; count?: number }[][] => {
@@ -36,7 +37,8 @@ export const menuItems = ({
 			valkey: 'valkeys',
 			opensearch: 'openSearches',
 			kafka: 'kafkaTopics',
-			bigquery: 'bigQueryDatasets'
+			bigquery: 'bigQueryDatasets',
+			postgres: 'postgresInstances'
 		} as const;
 
 		if (pageName === 'applications' || pageName === 'jobs') {
@@ -92,7 +94,8 @@ export const menuItems = ({
 		[
 			menuItem('Secrets', 'secrets', 'secret'),
 			menuItem('CloudSQL', 'cloudsql', 'cloudsql'),
-			menuItem('Postgres', 'postgres', 'postgres'),
+			(inventory?.postgresInstances?.total ?? 0) > 0 &&
+				menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
 			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),
