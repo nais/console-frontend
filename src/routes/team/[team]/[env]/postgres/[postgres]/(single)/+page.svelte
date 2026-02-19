@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$types';
+	import type { PageProps } from '../$types';
 
 	let { data }: PageProps = $props();
 	let { PostgresInstance } = $derived(data);
