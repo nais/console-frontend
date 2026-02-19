@@ -167,7 +167,14 @@ clamp_min(
 					formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
 				/>
 			</div>
+			{#if instance.audit.enabled && instance.audit.url}
+				<BodyShort
+					>Audit enabled - <ExternalLink href={instance.audit.url}>View audit logs</ExternalLink
+					></BodyShort
+				>
+			{/if}
 		</div>
+
 		<div class="sidebar">
 			<div>
 				<Heading as="h3">Resources</Heading>

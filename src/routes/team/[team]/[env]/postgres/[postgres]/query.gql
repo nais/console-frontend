@@ -11,6 +11,10 @@ query PostgresInstance($env: String!, $team: Slug!, $name: String!) {
 						name
 					}
 				}
+				audit {
+					enabled
+					url
+				}
 				majorVersion
 				resources {
 					cpu

@@ -7,10 +7,12 @@ export async function load(event) {
 		interval = '7d';
 	}
 
+	const name = event.params.postgres;
+
 	return {
 		interval,
 		...(await addPageMeta(event, {
-			title: 'Insights'
+			title: name
 		}))
 	};
 }
