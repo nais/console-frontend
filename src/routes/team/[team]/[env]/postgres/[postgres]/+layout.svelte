@@ -14,18 +14,15 @@
 <Tabs value={page.route.id ?? ''} size="small">
 	<TabList>
 		<Tab
-			value="/team/[team]/[env]/postgres/[postgres]/(single)"
+			value="/team/[team]/[env]/postgres/[postgres]"
 			as="a"
-			href={resolve('/team/[team]/[env]/postgres/[postgres]/(single)', page.params as never)}
-			>Overview</Tab
+			href={resolve('/team/[team]/[env]/postgres/[postgres]', page.params as never)}>Overview</Tab
 		>
 		<Tab
-			value="/team/[team]/[env]/postgres/[postgres]/(single)/insights"
+			value="/team/[team]/[env]/postgres/[postgres]/insights"
 			as="a"
-			href={resolve(
-				'/team/[team]/[env]/postgres/[postgres]/(single)/insights',
-				page.params as never
-			)}>Insights</Tab
+			href={resolve('/team/[team]/[env]/postgres/[postgres]/insights', page.params as never)}
+			>Insights</Tab
 		>
 	</TabList>
 
