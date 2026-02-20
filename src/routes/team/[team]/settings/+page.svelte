@@ -105,7 +105,7 @@
 
 	const formatGARRepo = (repo: string) => {
 		const [, projectId, , location, , repository] = repo.split('/');
-		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
+		return `${projectId}/${location}/${repository}`;
 	};
 </script>
 
@@ -330,7 +330,7 @@
 							<Heading as="h3" size="xsmall">Google Artifact Registry</Heading>
 							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
-									href="https://console.cloud.google.com/artifacts/images/{formatGARRepo(
+									href="https://console.cloud.google.com/artifacts/docker/{formatGARRepo(
 										external.googleArtifactRegistry.repository
 									)}"
 								>
