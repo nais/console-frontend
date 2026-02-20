@@ -136,6 +136,10 @@
 	};
 
 	const overlayState = $derived.by(() => {
+		if ($q.errors) {
+			return 'error';
+		}
+
 		if ($q.fetching || $q.data === null) {
 			return 'loading';
 		}
@@ -219,6 +223,8 @@
 					<Loader />
 					<span>Loading...</span>
 				</div>
+			{:else if overlayState === 'error'}
+				<span>Failed to load data</span>
 			{:else}
 				<span>No data available</span>
 			{/if}
