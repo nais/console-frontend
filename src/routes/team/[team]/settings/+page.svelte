@@ -330,9 +330,7 @@
 							<Heading as="h3" size="xsmall">Google Artifact Registry</Heading>
 							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
-									href="https://console.cloud.google.com/artifacts/images/{formatGARRepo(
-										external.googleArtifactRegistry.repository
-									)}"
+									href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
 								>
 									{formatGARRepo(external.googleArtifactRegistry.repository)}
 								</ExternalLink>

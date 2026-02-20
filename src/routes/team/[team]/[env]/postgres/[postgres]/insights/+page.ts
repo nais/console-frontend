@@ -7,7 +7,7 @@ export async function load(event) {
 		interval = '7d';
 	}
 
-	const name = event.params.opensearch;
+	const name = event.params.postgres;
 
 	return {
 		interval,

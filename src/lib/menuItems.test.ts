@@ -25,7 +25,7 @@ describe('menuItems', () => {
 				],
 				[
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
-					{ label: 'Postgres', href: '/team/devteam/postgres' },
+					{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
@@ -65,12 +65,12 @@ describe('menuItems', () => {
 		test('postgres active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/postgres/gemini',
+					path: '/team/nais/prod-gcp/cloudsql/gemini',
 					member: true,
 					isAdmin: false
 				})
 					.flatMap((g) => g)
-					.find((i) => i.label === 'Postgres')?.active
+					.find((i) => i.label === 'Cloud SQL')?.active
 			).toBe(true);
 		});
 
@@ -126,7 +126,8 @@ describe('menuItems', () => {
 					valkeys: { total: 11 },
 					openSearches: { total: 17 },
 					kafkaTopics: { total: 23 },
-					bigQueryDatasets: { total: 49 }
+					bigQueryDatasets: { total: 49 },
+					postgresInstances: { total: 7 }
 				}
 			});
 
@@ -138,6 +139,7 @@ describe('menuItems', () => {
 			).toEqual([
 				{ label: 'Applications', count: 42 },
 				{ label: 'Jobs', count: 1 },
+				{ label: 'Cloud SQL', count: 7 },
 				{ label: 'Postgres', count: 7 },
 				{ label: 'Buckets', count: 1337 },
 				{ label: 'Valkey', count: 11 },

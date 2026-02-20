@@ -3821,8 +3821,18 @@ type PostgresGrantAccessActivityLogEntryData {
 }
 
 type PostgresInstance implements Node & Persistence {
+  """Audit logging configuration for the Postgres cluster."""
+  audit: PostgresInstanceAudit!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
+
+  """
+  Indicates whether the Postgres cluster is configured for high availability.
+  """
+  highAvailability: Boolean!
   id: ID!
+
+  """Maintenance window for the Postgres cluster, if configured."""
+  maintenanceWindow: PostgresInstanceMaintenanceWindow
 
   """Major version of PostgreSQL."""
   majorVersion: String!
@@ -3830,8 +3840,24 @@ type PostgresInstance implements Node & Persistence {
 
   """Resource allocation for the Postgres cluster."""
   resources: PostgresInstanceResources!
+
+  """Current state of the Postgres cluster."""
+  state: PostgresInstanceState!
   team: Team!
   teamEnvironment: TeamEnvironment!
+}
+
+type PostgresInstanceAudit {
+  """Indicates whether audit logging is enabled for the Postgres cluster."""
+  enabled: Boolean!
+
+  """
+  List of statement classes that are being logged, such as `ddl`, `dml`, and `read`.
+  """
+  statementClasses: [String!]
+
+  """URL for accessing the audit logs."""
+  url: String
 }
 
 type PostgresInstanceConnection {
@@ -3843,6 +3869,11 @@ type PostgresInstanceConnection {
 type PostgresInstanceEdge {
   cursor: Cursor!
   node: PostgresInstance!
+}
+
+type PostgresInstanceMaintenanceWindow {
+  day: Int!
+  hour: Int!
 }
 
 input PostgresInstanceOrder {
@@ -3859,6 +3890,12 @@ type PostgresInstanceResources {
   cpu: String!
   diskSize: String!
   memory: String!
+}
+
+enum PostgresInstanceState {
+  AVAILABLE
+  DEGRADED
+  PROGRESSING
 }
 
 type Price {
@@ -6848,6 +6885,11 @@ type TeamInventoryCountOpenSearches {
   total: Int!
 }
 
+type TeamInventoryCountPostgresInstances {
+  """Total number of Postgres instances."""
+  total: Int!
+}
+
 type TeamInventoryCountSqlInstances {
   """Total number of SQL instances."""
   total: Int!
@@ -6866,6 +6908,7 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearches: TeamInventoryCountOpenSearches!
+  postgresInstances: TeamInventoryCountPostgresInstances!
   sqlInstances: TeamInventoryCountSqlInstances!
   valkeys: TeamInventoryCountValkeys!
 }

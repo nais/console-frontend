@@ -51,6 +51,9 @@
 						bigQueryDatasets {
 							total
 						}
+						postgresInstances {
+							total
+						}
 					}
 				}
 			}
