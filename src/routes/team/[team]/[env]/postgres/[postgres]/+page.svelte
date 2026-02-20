@@ -186,7 +186,7 @@ clamp_min(
 				<Heading as="h3">Postgres Major Version</Heading>
 				<BodyShort>{instance.majorVersion}</BodyShort>
 			</div>
-			<div class="card">
+			<div>
 				<Heading as="h2" size="medium" spacing>Use this Postgres</Heading>
 
 				<Heading as="h3" size="xsmall">Documentation</Heading>
@@ -230,5 +230,13 @@ clamp_min(
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.manifest {
+		display: block;
+		font-size: var(--ax-font-size-small);
+		word-break: break-word;
+		white-space: pre-wrap;
+		margin: 0.5rem 1rem;
 	}
 </style>
