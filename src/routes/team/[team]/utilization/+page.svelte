@@ -203,7 +203,7 @@
 			reduce infrastructure costs by optimizing resource requests.
 		</BodyLong>
 
-		<div class="flex h-[350px] gap-20 pl-2">
+		<div class="flex h-87.5 gap-20 pl-2">
 			<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 			<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 		</div>
