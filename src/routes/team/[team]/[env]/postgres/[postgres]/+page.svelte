@@ -53,61 +53,61 @@
 	)`);
 
 	let postgresMemoryUtilizationQuery = $derived(`(
-  sum(
-    container_memory_working_set_bytes{
-      namespace="pg-${teamSlug}",
+		sum(
+			container_memory_working_set_bytes{
+				namespace="pg-${teamSlug}",
 				pod=~"${instanceName}-[0-9]+",
-      container="postgres",
-      image!=""
-    }
-    * on (namespace, pod) group_left()
-      max by (namespace, pod) (
-        1 - pg_replication_is_replica{
-          namespace="pg-${teamSlug}",
+				container="postgres",
+				image!=""
+			}
+			* on (namespace, pod) group_left()
+				max by (namespace, pod) (
+					1 - pg_replication_is_replica{
+						namespace="pg-${teamSlug}",
 						pod=~"${instanceName}-[0-9]+"
-        }
-      )
-  )
-)
-/
-clamp_min(
-  sum(
-    kube_pod_container_resource_requests{
-      namespace="pg-${teamSlug}",
+					}
+				)
+		)
+	)
+	/
+	clamp_min(
+		sum(
+			kube_pod_container_resource_requests{
+				namespace="pg-${teamSlug}",
 				pod=~"${instanceName}-[0-9]+",
-      container="postgres",
-      resource="memory",
-      unit="byte"
-    }
-    * on (namespace, pod) group_left()
-      max by (namespace, pod) (
-        1 - pg_replication_is_replica{
-          namespace="pg-${teamSlug}",
+				container="postgres",
+				resource="memory",
+				unit="byte"
+			}
+			* on (namespace, pod) group_left()
+				max by (namespace, pod) (
+					1 - pg_replication_is_replica{
+						namespace="pg-${teamSlug}",
 						pod=~"${instanceName}-[0-9]+"
-        }
-      )
-  ),
-  1
-)
-`);
+					}
+				)
+		),
+		1
+	)
+	`);
 
 	let postgresDiskUtilizationQuery = $derived(`
-sum(
-  kubelet_volume_stats_used_bytes{namespace="pg-${teamSlug}"}
-  * on (namespace, persistentvolumeclaim) group_left(pod)
-    kube_pod_spec_volumes_persistentvolumeclaims_info{
-      namespace="pg-${teamSlug}",
-      pod=~"${instanceName}-[0-9]+"
-    }
-  * on (namespace, pod) group_left()
-    max by (namespace, pod) (
-      1 - pg_replication_is_replica{
-        namespace="pg-${teamSlug}",
-        pod=~"${instanceName}-[0-9]+"
-      }
-    )
-)
-/
+		sum(
+			kubelet_volume_stats_used_bytes{namespace="pg-${teamSlug}"}
+			* on (namespace, persistentvolumeclaim) group_left(pod)
+				kube_pod_spec_volumes_persistentvolumeclaims_info{
+					namespace="pg-${teamSlug}",
+					pod=~"${instanceName}-[0-9]+"
+				}
+			* on (namespace, pod) group_left()
+				max by (namespace, pod) (
+					1 - pg_replication_is_replica{
+						namespace="pg-${teamSlug}",
+						pod=~"${instanceName}-[0-9]+"
+					}
+				)
+		)
+		/
 clamp_min(
   sum(
     kubelet_volume_stats_capacity_bytes{namespace="pg-${teamSlug}"}
