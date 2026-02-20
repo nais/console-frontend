@@ -9,8 +9,10 @@
 	let { data }: PageProps = $props();
 	let { interval } = $derived(data);
 
-	const teamSlug = $derived(page.params.team!);
-	const name = $derived(page.params.postgres!);
+	const sanitizePromLabel = (value: string) => value.replace(/[^a-zA-Z0-9_.-]/g, '');
+
+	const teamSlug = $derived(sanitizePromLabel(page.params.team!));
+	const name = $derived(sanitizePromLabel(page.params.postgres!));
 	const envName = $derived(page.params.env!);
 
 	const formatPercentage = (value: number) => {

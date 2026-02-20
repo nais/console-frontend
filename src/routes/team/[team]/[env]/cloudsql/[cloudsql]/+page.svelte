@@ -17,7 +17,7 @@
 	let { data }: PageProps = $props();
 	let { SqlInstance, viewerIsMember } = $derived(data);
 	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
-	let postgres = $derived(page.params.cloudsql);
+	let cloudsql = $derived(page.params.cloudsql);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
@@ -97,7 +97,7 @@
 						<CheckmarkIcon style="color: var(--ax-text-success-subtle); font-size: 1.5rem" />
 					{:else}
 						<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink
-							href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
+							href="https://console.cloud.google.com/sql/instances/{cloudsql}/overview?project={instance.projectID}&supportedpurview=project"
 						>
 							Google Cloud Console
 						</ExternalLink>
@@ -111,7 +111,7 @@
 					<dt>Console:</dt>
 					<dd>
 						<ExternalLink
-							href="https://console.cloud.google.com/sql/instances/{postgres}/overview?project={instance.projectID}&supportedpurview=project"
+							href="https://console.cloud.google.com/sql/instances/{cloudsql}/overview?project={instance.projectID}&supportedpurview=project"
 						>
 							Google Cloud Console
 						</ExternalLink>

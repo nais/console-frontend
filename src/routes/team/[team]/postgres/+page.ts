@@ -20,7 +20,7 @@ export async function load(event) {
 						PostgresInstanceOrderField.NAME,
 						event.url
 					),
-					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
+					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
