@@ -2,14 +2,13 @@
 	import { page } from '$app/state';
 	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
 	import { PrometheusChartQueryInterval } from '$lib/chart/util';
+	import { sanitizePromLabel } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { interval } = $derived(data);
-
-	const sanitizePromLabel = (value: string) => value.replace(/[^a-zA-Z0-9_.-]/g, '');
 
 	const teamSlug = $derived(sanitizePromLabel(page.params.team!));
 	const name = $derived(sanitizePromLabel(page.params.postgres!));

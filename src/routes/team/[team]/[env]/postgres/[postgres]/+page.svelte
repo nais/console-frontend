@@ -2,15 +2,17 @@
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
 	import { docURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { sanitizePromLabel } from '$lib/utils/formatters';
 	import { Alert, BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { PostgresInstance, viewerIsMember } = $derived(data);
+
 	let instance = $derived($PostgresInstance.data?.team.environment.postgresInstance);
-	let instanceName = $derived(instance?.name ?? '');
+	let instanceName = $derived(sanitizePromLabel(instance?.name ?? ''));
 	let environmentName = $derived(instance?.teamEnvironment.environment.name ?? '');
-	let teamSlug = $derived($PostgresInstance.data?.team.slug ?? '');
+	let teamSlug = $derived(sanitizePromLabel($PostgresInstance.data?.team.slug ?? ''));
 
 	let postgresCpuUtilizationQuery = $derived(`(
 		sum(
