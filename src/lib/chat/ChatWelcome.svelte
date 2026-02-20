@@ -1,6 +1,8 @@
 <script lang="ts">
 	import NaisChatIcon from '$lib/icons/NaisChatIcon.svelte';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { chatService } from './chatService.svelte';
+	import { Alert, BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { ClockDashedIcon } from '@nais/ds-svelte-community/icons';
 </script>
 
 <div class="welcome-container">
@@ -15,6 +17,11 @@
 			Ask questions about your applications, deployments, and the Nais platform. I'm here to help
 			you navigate and understand your infrastructure.
 		</BodyLong>
+
+		<button class="history-hint" onclick={() => chatService.toggleHistory()}>
+			<ClockDashedIcon />
+			<BodyShort size="small">View conversation history</BodyShort>
+		</button>
 
 		<Alert variant="warning" size="small">
 			<Heading size="xsmall" as="h4">Please note</Heading>
@@ -55,5 +62,22 @@
 		border-radius: 50%;
 		background-color: var(--ax-bg-subtle);
 		color: var(--ax-text-subtle);
+	}
+
+	.history-hint {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-8) var(--ax-space-16);
+		border: 1px solid var(--ax-border-default);
+		border-radius: var(--ax-border-radius-medium);
+		background: transparent;
+		color: var(--ax-text-action);
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+
+	.history-hint:hover {
+		background-color: var(--ax-bg-hover);
 	}
 </style>

@@ -3,9 +3,10 @@
 	import ChatMessage from '$lib/chat/ChatMessage.svelte';
 	import { chatService } from '$lib/chat/chatService.svelte';
 	import ChatWelcome from '$lib/chat/ChatWelcome.svelte';
+	import ConversationHistory from '$lib/chat/ConversationHistory.svelte';
 	import { chatPanel } from '$lib/stores/chatPanel.svelte';
 	import { Button } from '@nais/ds-svelte-community';
-	import { PlusIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import { ClockDashedIcon, PlusIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import { tick } from 'svelte';
 
 	let isResizing = $state(false);
@@ -53,6 +54,10 @@
 		chatService.newConversation();
 	}
 
+	function handleToggleHistory() {
+		chatService.toggleHistory();
+	}
+
 	async function handleSendMessage(message: string) {
 		await chatService.sendMessage(message);
 		await scrollToBottom();
@@ -98,6 +103,13 @@
 			<header class="panel-header">
 				<h2>Chat</h2>
 				<div class="header-actions">
+					<Button
+						variant="tertiary"
+						size="small"
+						icon={ClockDashedIcon}
+						onclick={handleToggleHistory}
+						aria-label="Conversation history"
+					/>
 					{#if chatService.hasMessages}
 						<Button
 							variant="tertiary"
@@ -116,7 +128,9 @@
 			</header>
 
 			<div class="chat-body">
-				{#if chatService.hasMessages}
+				{#if chatService.showHistory}
+					<ConversationHistory />
+				{:else if chatService.hasMessages}
 					<div class="messages-container" bind:this={messagesContainer}>
 						{#each chatService.messages as message (message.id)}
 							<ChatMessage {message} />
@@ -140,7 +154,9 @@
 				</div>
 			{/if}
 
-			<ChatInput onSend={handleSendMessage} disabled={chatService.isLoading} />
+			{#if !chatService.showHistory}
+				<ChatInput onSend={handleSendMessage} disabled={chatService.isLoading} />
+			{/if}
 		</div>
 	</aside>
 {/if}
@@ -190,7 +206,7 @@
 		width: 6px;
 		height: 100%;
 		cursor: ew-resize;
-		background: transparent;
+		background-color: var(--ax-border-subtle);
 		transition: background-color 0.15s ease;
 	}
 
@@ -239,7 +255,7 @@
 		background: transparent;
 		border-radius: var(--ax-border-radius-medium);
 		cursor: pointer;
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 	}
 
 	.close-button:hover {

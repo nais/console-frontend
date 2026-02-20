@@ -88,7 +88,7 @@
 		border: 1px solid var(--ax-border-default);
 		border-radius: var(--ax-border-radius-medium);
 		background-color: var(--ax-bg-default);
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 		font-family: inherit;
 		font-size: var(--ax-font-size-medium);
 		line-height: var(--ax-font-line-height-medium);
