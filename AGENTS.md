@@ -87,7 +87,7 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 #### Typography
 
 - Font sizes: `--ax-font-size-small`, `--ax-font-size-medium`, `--ax-font-size-large`, `--ax-font-size-xlarge`
-- Font weights: `--ax-font-weight-regular`, `--ax-font-weight-semibold`, `--ax-font-weight-bold`
+- Font weights: `--ax-font-weight-regular`, `--ax-font-weight-bold`
 - Line heights: `--ax-font-line-height-large`, `--ax-font-line-height-heading-medium`
 - **Font family**: Use `monospace` directly, NOT a CSS variable (there is no `--ax-font-family-mono`)
 
