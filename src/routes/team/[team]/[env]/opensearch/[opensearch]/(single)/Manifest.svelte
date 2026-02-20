@@ -29,7 +29,7 @@
     - instance: ${niceName}`);
 </script>
 
-<div>
+<div class="card">
 	<Heading as="h2" size="medium" spacing>Use this OpenSearch</Heading>
 
 	<Heading as="h3" size="xsmall">Documentation</Heading>

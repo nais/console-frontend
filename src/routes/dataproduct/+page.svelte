@@ -42,7 +42,7 @@
 			<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
 			<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
 		</ul>
-		<div class="h-175">
+		<div class="h-[700px]">
 			<PieChart
 				data={chartData}
 				key="fruit"
