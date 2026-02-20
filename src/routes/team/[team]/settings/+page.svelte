@@ -105,7 +105,7 @@
 
 	const formatGARRepo = (repo: string) => {
 		const [, projectId, , location, , repository] = repo.split('/');
-		return `${location}-docker.pkg.dev/${projectId}/${repository}`;
+		return `${projectId}/${location}/${repository}`;
 	};
 </script>
 
