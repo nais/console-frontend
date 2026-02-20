@@ -4,12 +4,16 @@
 
 	import { OrderDirection, PostgresInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyLong, Loader } from '@nais/ds-svelte-community';
+	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -48,13 +52,7 @@
 				{#each si.nodes as instance (instance.id)}
 					<ListItem>
 						<div>
-							<a
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/postgres/{instance.name}"
-							>
-								<Heading as="h4">{instance.name}</Heading>
-							</a>
-							<!-- <IconLabel
+							<IconLabel
 								as="h4"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
 									.name}/postgres/{instance.name}"
@@ -65,34 +63,24 @@
 									variant: envTagVariant(instance.teamEnvironment.environment.name)
 								}}
 							>
-									 {#snippet icon()}
-										<TooltipAlignHack
-											content={{
-												FAILED: 'FAILED',
-												MAINTENANCE: 'MAINTENANCE',
-												PENDING_CREATE: 'PENDING_CREATE',
-												PENDING_DELETE: 'PENDING_DELETE',
-												RUNNABLE: 'RUNNABLE',
-												SUSPENDED: 'SUSPENDED',
-												UNSPECIFIED: 'UNSPECIFIED',
-												STOPPED: 'STOPPED'
-											}[instance.state] ?? ''}
-										>
-											<CircleFillIcon
-												style="color: var({{
-													RUNNABLE: '--ax-bg-success-strong',
-													FAILED: '--ax-bg-danger-strong',
-													MAINTENANCE: '--ax-bg-warning-moderate-pressed',
-													PENDING_CREATE: '--ax-bg-info-strong',
-													PENDING_DELETE: '--ax-bg-info-strong',
-													SUSPENDED: '--ax-bg-info-strong',
-													UNSPECIFIED: '--ax-bg-info-strong',
-													STOPPED: '--ax-bg-info-strong'
-												}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-											/>
-										</TooltipAlignHack>
-									{/snippet}
-							</IconLabel> -->
+								{#snippet icon()}
+									<TooltipAlignHack
+										content={{
+											DEGRADED: 'DEGRADED',
+											PROGRESSING: 'PROGRESSING',
+											AVAILABLE: 'AVAILABLE'
+										}[instance.state] ?? ''}
+									>
+										<CircleFillIcon
+											style="color: var({{
+												AVAILABLE: '--ax-bg-success-strong',
+												DEGRADED: '--ax-bg-danger-strong',
+												PROGRESSING: '--ax-bg-warning-moderate-pressed'
+											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+										/>
+									</TooltipAlignHack>
+								{/snippet}
+							</IconLabel>
 						</div>
 
 						<div class="right">

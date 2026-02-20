@@ -38,6 +38,7 @@ query PostgresInstances(
 					slug
 				}
 				majorVersion
+				state
 			}
 		}
 	}
