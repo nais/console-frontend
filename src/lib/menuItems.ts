@@ -93,7 +93,7 @@ export const menuItems = ({
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
 			menuItem('Secrets', 'secrets', 'secret'),
-			menuItem('CloudSQL', 'cloudsql', 'cloudsql'),
+			menuItem('Cloud SQL', 'cloudsql', 'cloudsql'),
 			(inventory?.postgresInstances?.total ?? 0) > 0 &&
 				menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
