@@ -129,7 +129,7 @@ clamp_min(
 
 	const workloadManifest = $derived(`spec:
   postgres:
-    clusterName: ${instanceName}`);
+    clusterName: ${instance?.name || ''}`);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
