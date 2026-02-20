@@ -3821,6 +3821,8 @@ type PostgresGrantAccessActivityLogEntryData {
 }
 
 type PostgresInstance implements Node & Persistence {
+  """Audit logging configuration for the Postgres cluster."""
+  audit: PostgresInstanceAudit!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
@@ -3832,6 +3834,14 @@ type PostgresInstance implements Node & Persistence {
   resources: PostgresInstanceResources!
   team: Team!
   teamEnvironment: TeamEnvironment!
+}
+
+type PostgresInstanceAudit {
+  """Indicates whether audit logging is enabled for the Postgres cluster."""
+  enabled: Boolean!
+
+  """URL for accessing the audit logs."""
+  url: String
 }
 
 type PostgresInstanceConnection {
@@ -6848,6 +6858,11 @@ type TeamInventoryCountOpenSearches {
   total: Int!
 }
 
+type TeamInventoryCountPostgresInstances {
+  """Total number of Postgres instances."""
+  total: Int!
+}
+
 type TeamInventoryCountSqlInstances {
   """Total number of SQL instances."""
   total: Int!
@@ -6866,6 +6881,7 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearches: TeamInventoryCountOpenSearches!
+  postgresInstances: TeamInventoryCountPostgresInstances!
   sqlInstances: TeamInventoryCountSqlInstances!
   valkeys: TeamInventoryCountValkeys!
 }
