@@ -205,4 +205,11 @@
 		height: 300px;
 		width: 100%;
 	}
+	.issues-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-16);
+		width: 100%;
+		align-items: center;
+	}
 </style>
