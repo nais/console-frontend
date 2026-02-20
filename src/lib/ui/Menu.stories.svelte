@@ -21,7 +21,7 @@
 			],
 			[
 				{ label: 'Secrets', href: '/team/devteam/secrets' },
-				{ label: 'Postgres', href: '/team/devteam/postgres', count: 7 },
+				{ label: 'Cloud SQL', href: '/team/devteam/cloudsql', count: 7 },
 				{ label: 'Buckets', href: '/team/devteam/buckets', count: 1337 },
 				{ label: 'Valkey', href: '/team/devteam/valkey', count: 11 },
 				{ label: 'OpenSearch', href: '/team/devteam/opensearch', count: 17 },

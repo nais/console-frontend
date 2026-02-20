@@ -32,7 +32,7 @@
     - instance: ${niceName}`);
 </script>
 
-<div class="card">
+<div>
 	<Heading as="h2" size="medium" spacing>Use this Valkey</Heading>
 
 	<Heading as="h3" size="xsmall">Documentation</Heading>

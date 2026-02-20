@@ -222,7 +222,7 @@
 				underutilization. For a complete overview of all teams, please refer to the table below.
 			</BodyLong>
 
-			<div class="flex h-[350px]">
+			<div class="flex h-87.5">
 				<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 				<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 			</div>
