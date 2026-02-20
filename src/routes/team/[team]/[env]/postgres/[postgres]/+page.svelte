@@ -6,7 +6,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { PostgresInstance } = $derived(data);
+	let { PostgresInstance, viewerIsMember } = $derived(data);
 	let instance = $derived($PostgresInstance.data?.team.environment.postgresInstance);
 	let instanceName = $derived(instance?.name ?? '');
 	let environmentName = $derived(instance?.teamEnvironment.environment.name ?? '');
@@ -167,7 +167,7 @@ clamp_min(
 					formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
 				/>
 			</div>
-			{#if instance.audit.enabled && instance.audit.url}
+			{#if instance.audit.enabled && instance.audit.url && viewerIsMember}
 				<BodyShort
 					>Audit enabled - <ExternalLink href={instance.audit.url}>View audit logs</ExternalLink
 					></BodyShort
