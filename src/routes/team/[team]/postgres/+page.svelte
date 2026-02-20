@@ -2,7 +2,7 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 
-	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
+	import { OrderDirection, PostgresInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -44,9 +44,9 @@
 			>
 				{#snippet menu()}
 					<OrderByMenu
-						orderField={SqlInstanceOrderField}
-						defaultOrderField={SqlInstanceOrderField.ISSUES}
-						defaultOrderDirection={OrderDirection.DESC}
+						orderField={PostgresInstanceOrderField}
+						defaultOrderField={PostgresInstanceOrderField.NAME}
+						defaultOrderDirection={OrderDirection.ASC}
 					/>
 				{/snippet}
 				{#each si.nodes as instance (instance.id)}
@@ -94,42 +94,7 @@
 						</div>
 
 						<div class="right">
-							<!-- {#if instance.workload}
-								<div style:display="flex" style:gap="var(--ax-space-6)">
-									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
-								</div>
-							{/if} -->
-
 							<div>Version: <code>{instance.majorVersion}</code></div>
-							<!-- {#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-								{@const criticalCount = instance.issues?.edges.filter(
-									(e) => e.node.severity === 'CRITICAL'
-								).length}
-								{@const warningCount = instance.issues?.edges.filter(
-									(e) => e.node.severity === 'WARNING'
-								).length}
-								{@const todoCount = instance.issues?.edges.filter(
-									(e) => e.node.severity === 'TODO'
-								).length}
-
-								<div class="issues-container">
-									{#if criticalCount ?? 0 > 0}
-										<Tag variant="error" size="xsmall"
-											>{criticalCount ?? 0} critical issue{(criticalCount ?? 0) > 1 ? 's' : ''}</Tag
-										>
-									{/if}
-									{#if warningCount ?? 0 > 0}
-										<Tag variant="warning" size="xsmall"
-											>{warningCount ?? 0} warning{(warningCount ?? 0) > 1 ? 's' : ''}</Tag
-										>
-									{/if}
-									{#if todoCount ?? 0 > 0}
-										<Tag variant="info" size="xsmall"
-											>{todoCount ?? 0} todo{(todoCount ?? 0) > 1 ? 's' : ''}</Tag
-										>
-									{/if}
-								</div>
-							{/if} -->
 						</div>
 					</ListItem>
 				{/each}
@@ -145,53 +110,6 @@
 				}}
 			/>
 		</div>
-		<!-- <div class="right-column"> -->
-		<!-- {#if cost}
-				<div>
-					<PersistenceCost
-						pageName="SQL Instances"
-						teamSlug={$PostgresInstances.data.team.slug}
-						costData={cost}
-						from={startOfMonth(subMonths(new Date(), 1))}
-						to={endOfYesterday()}
-						service="Cloud SQL"
-					/>
-				</div>
-			{/if} -->
-
-		<!-- <div class="utilization">
-				<Heading as="h2" size="small">Utilization</Heading>
-				<BodyShort>Current utilization for all Postgres instances owned by the team.</BodyShort>
-
-				<div>
-					<BodyShort>Storage</BodyShort>
-					<div>
-						<CircleProgressBar size="1.5rem" progress={u.disk.utilization} />
-						{(u.disk.utilization * 100).toFixed(1)}% of
-						{prettyBytes(u.disk.requested)}
-					</div>
-				</div>
-				<div>
-					<BodyShort>CPU</BodyShort>
-					<div>
-						<CircleProgressBar size="1.5rem" progress={u.cpu.utilization} />
-						{(u.cpu.utilization * 100).toFixed(1)}% of
-						{u.cpu.requested.toFixed(0)} CPU{$PostgresInstances.data.team.serviceUtilization
-							.sqlInstances.cpu.requested > 1
-							? 's'
-							: ''}
-					</div>
-				</div>
-				<div>
-					<BodyShort>Memory</BodyShort>
-					<div>
-						<CircleProgressBar size="1.5rem" progress={u.memory.utilization} />
-						{(u.memory.utilization * 100).toFixed(1)}% of
-						{prettyBytes(u.memory.requested)}
-					</div>
-				</div>
-			</div> -->
-		<!-- </div> -->
 	</div>
 {:else}
 	<div class="content-wrapper">
@@ -219,27 +137,9 @@
 		align-items: flex-end;
 	}
 
-	/* .right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-	} */
 	code {
 		font-size: 0.9rem;
 	}
-
-	/* .utilization {
-		display: grid;
-		gap: var(--ax-space-6);
-		div {
-			display: grid;
-			gap: var(--ax-space-6);
-			div {
-				display: flex;
-				gap: var(--ax-space-6);
-				align-items: center;
-			}
-		}
-	} */
 
 	.loading {
 		display: flex;
