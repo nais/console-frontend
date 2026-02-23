@@ -225,15 +225,19 @@
 				{#if instance.notifyKeyspaceEvents}
 					<BodyShort>Notify keyspace events: {instance.notifyKeyspaceEvents}</BodyShort>
 				{/if}
-				{#if viewerIsMember && isManagedByConsole}
-					<a
-						class="mt-2"
-						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
-					>
-						Edit <NotePencilIcon />
-					</a>
-				{/if}
 			</div>
+			{#if viewerIsMember && isManagedByConsole}
+				<Button
+					as="a"
+					variant="secondary"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
+					class="self-start"
+					icon={NotePencilIcon}
+				>
+					Edit
+				</Button>
+			{/if}
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
 					<Heading as="h3">Maintenance window</Heading>
