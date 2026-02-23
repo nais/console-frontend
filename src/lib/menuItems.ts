@@ -23,6 +23,7 @@ export const menuItems = ({
 		kafkaTopics: { total: number };
 		bigQueryDatasets: { total: number };
 		postgresInstances: { total: number };
+		secrets: { total: number };
 	};
 	isAdmin: boolean;
 }): { label: string; href: string; active?: boolean; count?: number }[][] => {
@@ -38,7 +39,8 @@ export const menuItems = ({
 			opensearch: 'openSearches',
 			kafka: 'kafkaTopics',
 			bigquery: 'bigQueryDatasets',
-			postgres: 'postgresInstances'
+			postgres: 'postgresInstances',
+			secrets: 'secrets'
 		} as const;
 
 		if (pageName === 'applications' || pageName === 'jobs') {

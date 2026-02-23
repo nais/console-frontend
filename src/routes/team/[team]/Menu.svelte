@@ -54,6 +54,9 @@
 						postgresInstances {
 							total
 						}
+						secrets {
+							total
+						}
 					}
 				}
 			}
