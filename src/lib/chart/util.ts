@@ -1,6 +1,13 @@
 import { euroValueFormatter } from '$lib/utils/formatters';
 import { createLocaleSettings, DateToken, DayOfWeek, defaultLocale } from '@layerstack/utils';
 
+export function getEstimateForMonth(cost: number, date: Date) {
+	const daysKnown = date.getDate();
+	const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+	const costPerDay = cost / daysKnown;
+	return costPerDay * daysInMonth;
+}
+
 export function truncateString(str: string, num: number) {
 	if (str.length <= num) {
 		return str;

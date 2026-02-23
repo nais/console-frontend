@@ -1,11 +1,4 @@
 <script lang="ts" module>
-	export function getEstimateForMonth(cost: number, date: Date) {
-		const daysKnown = date.getDate();
-		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-		const costPerDay = cost / daysKnown;
-		return costPerDay * daysInMonth;
-	}
-
 	const minScale = 1; // EUR
 </script>
 
@@ -14,7 +7,7 @@
 
 	import { Highlight, LineChart, Tooltip } from 'layerchart';
 	import { SvelteDate } from 'svelte/reactivity';
-	import { euroAxisFormatter } from './util';
+	import { euroAxisFormatter, getEstimateForMonth } from './util';
 
 	let {
 		data,

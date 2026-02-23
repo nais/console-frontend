@@ -1,4 +1,4 @@
-import { getEstimateForMonth } from './CostChart.svelte';
+import { getEstimateForMonth } from './util';
 
 describe('CostChart', () => {
 	describe('getEstimateForMonth', () => {
