@@ -96,7 +96,6 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 			bind:value={notifyKeyspaceEvents}
 		>
 			{#snippet description()}
-				Example: <i>Exd</i><br />
 				See the
 				<ExternalLink href="https://valkey.io/topics/notifications">
 					Valkey documentation</ExternalLink

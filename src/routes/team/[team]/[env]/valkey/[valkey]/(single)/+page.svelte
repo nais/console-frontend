@@ -233,10 +233,8 @@
 					size="small"
 					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
 					class="self-start"
+					icon={NotePencilIcon}
 				>
-					{#snippet icon()}
-						<NotePencilIcon />
-					{/snippet}
 					Edit
 				</Button>
 			{/if}
