@@ -8,6 +8,7 @@
 		ValkeyTier,
 		type ValkeyTier$options
 	} from '$houdini';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
 	import {
 		Alert,
@@ -21,7 +22,6 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	let { form, data }: PageProps = $props();
 
@@ -78,6 +78,11 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 		name="max_memory_policy"
 		bind:value={maxMemoryPolicy}
 	>
+		{#snippet description()}
+			Automatically evict old data as you add new data, see the <ExternalLink
+				href="https://valkey.io/topics/lru-cache/">Valkey documentation</ExternalLink
+			> for details.
+		{/snippet}
 		{#each Object.values(ValkeyMaxMemoryPolicy) as opt (opt)}
 			<option value={opt}>{opt}</option>
 		{/each}
@@ -93,9 +98,9 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 			{#snippet description()}
 				Example: <i>Exd</i><br />
 				See the
-				<a href="https://valkey.io/topics/notifications">
-					Valkey documentation<ExternalLinkIcon />
-				</a> for details.
+				<ExternalLink href="https://valkey.io/topics/notifications">
+					Valkey documentation</ExternalLink
+				> for details.
 			{/snippet}
 		</TextField>
 	</ReadMore>
