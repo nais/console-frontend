@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "5.0.1",
 		"@eslint/compat": "2.0.2",
-		"@eslint/js": "9.39.2",
+		"@eslint/js": "9.39.3",
 		"@lavamoat/allow-scripts": "3.4.2",
 		"@lavamoat/preinstall-always-fail": "2.1.1",
 		"@layerstack/utils": "2.0.0-next.18",
