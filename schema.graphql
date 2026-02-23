@@ -6890,6 +6890,12 @@ type TeamInventoryCountPostgresInstances {
   total: Int!
 }
 
+"""Secret inventory count for a team."""
+type TeamInventoryCountSecrets {
+  """Total number of secrets."""
+  total: Int!
+}
+
 type TeamInventoryCountSqlInstances {
   """Total number of SQL instances."""
   total: Int!
@@ -6909,6 +6915,9 @@ type TeamInventoryCounts {
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearches: TeamInventoryCountOpenSearches!
   postgresInstances: TeamInventoryCountPostgresInstances!
+
+  """Secret inventory count for a team."""
+  secrets: TeamInventoryCountSecrets!
   sqlInstances: TeamInventoryCountSqlInstances!
   valkeys: TeamInventoryCountValkeys!
 }
