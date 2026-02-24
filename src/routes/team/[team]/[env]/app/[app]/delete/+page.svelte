@@ -64,13 +64,13 @@
 	}
 </script>
 
-<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 <div class="danger-zone">
 	{#if result?.team.environment.application}
 		{@const app = result.team.environment.application}
 		{#if app.deletionStartedAt}
 			<div class="heading-wrapper">
-				<Heading level="3" spacing>Deletion in Progress</Heading>
+				<Heading as="h3" spacing>Deletion in Progress</Heading>
 			</div>
 			<BodyShort
 				>This application is being deleted. Deletion started <Time
@@ -80,7 +80,7 @@
 			>
 		{:else}
 			<div class="heading-wrapper">
-				<Heading level="3" spacing>Delete Application {app.name}</Heading>
+				<Heading as="h3" spacing>Delete Application {app.name}</Heading>
 			</div>
 
 			{#if hasResourcesToDelete(app)}

@@ -137,7 +137,7 @@
 		{#if resourceUtilization}
 			<div class="grid">
 				<div class="card">
-					<Heading level="2" size="medium" spacing
+					<Heading as="h2" size="medium" spacing
 						><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
 					>
 					<BodyShort
@@ -172,7 +172,7 @@
 					{/if}
 				</div>
 				<div class="card">
-					<Heading level="2" size="medium" spacing
+					<Heading as="h2" size="medium" spacing
 						><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
 					>
 					<BodyShort
@@ -208,9 +208,7 @@
 				</div>
 			</div>
 
-			<Heading level="1" size="large"
-				>Teams with the Highest CPU and Memory Underutilization</Heading
-			>
+			<Heading as="h1" size="large">Teams with the Highest CPU and Memory Underutilization</Heading>
 			<BodyLong
 				>The chart below shows which teams are using less CPU and memory than they requested. While
 				resources are allocated based on anticipated needs, consistently underutilized resources
@@ -224,7 +222,7 @@
 				underutilization. For a complete overview of all teams, please refer to the table below.
 			</BodyLong>
 
-			<div class="flex h-[350px]">
+			<div class="flex h-87.5">
 				<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 				<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 			</div>
@@ -235,7 +233,7 @@
 			</BodyLong>
 
 			<div>
-				<Heading level="2" spacing>CPU and Memory Underutilization per Team</Heading>
+				<Heading as="h2" spacing>CPU and Memory Underutilization per Team</Heading>
 
 				<Table
 					size="small"

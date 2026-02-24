@@ -103,7 +103,7 @@
 	)}
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember && !isManagedByConsole}
+			{#if !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This Valkey instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
@@ -113,7 +113,7 @@
 				</Alert>
 			{/if}
 			<div class="spacing">
-				<Heading level="3" spacing>Valkey Access List</Heading>
+				<Heading as="h3" spacing>Valkey Access List</Heading>
 				<Table
 					size="small"
 					sort={{
@@ -160,7 +160,7 @@
 				/>
 			</div>
 			<div class="spacing">
-				<Heading level="3">Issues</Heading>
+				<Heading as="h3">Issues</Heading>
 				<List>
 					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
@@ -178,7 +178,7 @@
 
 				{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
 					<div class="service-maintenance-list-heading">
-						<Heading level="3">Pending maintenance</Heading>
+						<Heading as="h3">Pending maintenance</Heading>
 
 						{#if maintenanceError === ''}
 							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
@@ -212,11 +212,11 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3">State</Heading>
+				<Heading as="h3">State</Heading>
 				<BodyShort>{instance.state}</BodyShort>
 			</div>
 			<div>
-				<Heading level="3">Settings</Heading>
+				<Heading as="h3">Settings</Heading>
 				<BodyShort>Tier: {instance.tier}</BodyShort>
 				<BodyShort>Memory: {instance.memory}</BodyShort>
 				{#if instance.maxMemoryPolicy}
@@ -225,18 +225,22 @@
 				{#if instance.notifyKeyspaceEvents}
 					<BodyShort>Notify keyspace events: {instance.notifyKeyspaceEvents}</BodyShort>
 				{/if}
-				{#if viewerIsMember && isManagedByConsole}
-					<a
-						class="mt-2"
-						href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
-					>
-						Edit <NotePencilIcon />
-					</a>
-				{/if}
 			</div>
+			{#if viewerIsMember && isManagedByConsole}
+				<Button
+					as="a"
+					variant="secondary"
+					size="small"
+					href="/team/{page.params.team}/{page.params.env}/valkey/{page.params.valkey}/edit"
+					class="self-start"
+					icon={NotePencilIcon}
+				>
+					Edit
+				</Button>
+			{/if}
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
-					<Heading level="3">Maintenance window</Heading>
+					<Heading as="h3">Maintenance window</Heading>
 					<BodyShort>Day of week: {instance.maintenance.window.dayOfWeek}</BodyShort>
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>

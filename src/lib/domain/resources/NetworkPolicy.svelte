@@ -111,11 +111,11 @@
 	{/if}
 {/snippet}
 
-<Heading level="2" size="medium" spacing>Network Policy</Heading>
+<Heading as="h2" size="medium" spacing>Network Policy</Heading>
 {#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
 	<div class="grid">
 		<div>
-			<Heading level="3" size="small" spacing>Inbound</Heading>
+			<Heading as="h3" size="small" spacing>Inbound</Heading>
 			<ul>
 				{#each $data.networkPolicy.inbound.rules as rule (rule)}
 					<li>
@@ -130,9 +130,9 @@
 		</div>
 
 		<div>
-			<Heading level="3" size="small" spacing>Outbound</Heading>
+			<Heading as="h3" size="small" spacing>Outbound</Heading>
 			{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-				<Heading level="4" size="xsmall" spacing>External</Heading>
+				<Heading as="h4" size="xsmall" spacing>External</Heading>
 				<ul>
 					{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
 						{#each list as external (external)}
@@ -149,7 +149,7 @@
 					{/each}
 				</ul>
 				{#if $data.networkPolicy.outbound.rules.length > 0}
-					<Heading level="4" size="xsmall" spacing>Workloads</Heading>
+					<Heading as="h4" size="xsmall" spacing>Workloads</Heading>
 					<ul>
 						{#each $data.networkPolicy.outbound.rules as rule (rule)}
 							<li>

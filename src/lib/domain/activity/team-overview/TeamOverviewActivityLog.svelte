@@ -23,6 +23,7 @@
 	import SecretValueAddedActivityLogEntryText from '../shared/texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from '../shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from '../shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import SecretValuesViewedActivityLogEntryText from '../shared/texts/SecretValuesViewedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from '../shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from '../shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
 	import TeamMemberSetRoleActivityLogEntryText from '../shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
@@ -59,6 +60,7 @@
 			ActivityLogActivityType.SECRET_VALUE_ADDED,
 			ActivityLogActivityType.SECRET_VALUE_REMOVED,
 			ActivityLogActivityType.SECRET_VALUE_UPDATED,
+			ActivityLogActivityType.SECRET_VALUES_VIEWED,
 			ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
 			ActivityLogActivityType.TEAM_CREATED,
 			ActivityLogActivityType.TEAM_CREATE_DELETE_KEY,
@@ -172,6 +174,13 @@
 									valueName
 								}
 							}
+							... on SecretValuesViewedActivityLogEntry {
+								__typename
+
+								secretValuesViewed: data {
+									reason
+								}
+							}
 							... on TeamMemberAddedActivityLogEntry {
 								__typename
 
@@ -261,6 +270,8 @@
 				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretDeletedActivityLogEntry':
 				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValuesViewedActivityLogEntry':
+				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
 				return TeamMemberAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberRemovedActivityLogEntry':
@@ -282,7 +293,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="2" size="small" spacing
+	<Heading as="h2" size="small" spacing
 		><a href="/team/{teamSlug}/activity-log">Activity log</a></Heading
 	>
 	{#if $activityLogQuery.fetching || !$activityLogQuery.data}

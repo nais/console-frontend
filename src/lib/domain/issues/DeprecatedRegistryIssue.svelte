@@ -26,7 +26,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall">Deprecated Registry</Heading>
+		<Heading as="h4" size="xsmall">Deprecated Registry</Heading>
 		<Detail><span style="word-break: break-word;">{data.message}</span></Detail>
 	</div>
 </div>

@@ -109,7 +109,7 @@
 				{/if}
 				{#if $App.data.team.environment.application.issues.edges.length > 0}
 					<div>
-						<Heading level="3" spacing>Issues</Heading>
+						<Heading as="h3" spacing>Issues</Heading>
 						<List>
 							{#each $App.data.team.environment.application.issues.edges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
@@ -119,7 +119,7 @@
 				{/if}
 				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
 					<div class="instances-header">
-						<Heading level="3" size="medium">Instances</Heading>
+						<Heading as="h3" size="medium">Instances</Heading>
 						{#if viewerIsMember}
 							<Button
 								variant="secondary"
@@ -171,19 +171,19 @@
 					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				{/if}
 				<div>
-					<Heading level="2" size="small">Vulnerabilities</Heading>
+					<Heading as="h2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
 				<SidebarActivity activityLog={app} direct={app.activityLog} />
 
-				{#if viewerIsMember && environment}
+				{#if environment}
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
 		</div>
 		<Confirm bind:open={restart} onconfirm={submit}>
 			{#snippet header()}
-				<Heading level="1" size="medium">Restart {application}</Heading>
+				<Heading as="h1" size="medium">Restart {application}</Heading>
 			{/snippet}
 			This will restart all instances of
 			<strong>{application}</strong> in

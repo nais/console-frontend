@@ -128,7 +128,7 @@
 	});
 </script>
 
-<Heading level="2" size="medium" spacing>Persistence</Heading>
+<Heading as="h2" size="medium" spacing>Persistence</Heading>
 
 {#if Object.values(persistence).some((p) => p.length)}
 	<div class="content">

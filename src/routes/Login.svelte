@@ -35,7 +35,7 @@
 			</div>
 		{/if}
 
-		<Heading level="1" size="large" spacing>
+		<Heading as="h1" size="large" spacing>
 			<Logo height=".8em" />
 			Nais Console
 		</Heading>

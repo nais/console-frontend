@@ -59,6 +59,25 @@ export type Severity = 'Critical' | 'High' | 'Medium' | 'Low' | 'Unassigned';
 
 export const allSeverities: Severity[] = ['Critical', 'High', 'Medium', 'Low', 'Unassigned'];
 
+export function severityToVariant(
+	severity: Severity | string
+): 'error' | 'warning' | 'success' | 'neutral' | 'info' {
+	const normalizedSeverity = severity.toLowerCase();
+	switch (normalizedSeverity) {
+		case 'critical':
+			return 'error';
+		case 'high':
+			return 'error';
+		case 'medium':
+			return 'warning';
+		case 'low':
+			return 'success';
+		case 'unassigned':
+		default:
+			return 'neutral';
+	}
+}
+
 export const severityToRiskScore: Record<Severity, number> = {
 	Critical: 10,
 	High: 5,

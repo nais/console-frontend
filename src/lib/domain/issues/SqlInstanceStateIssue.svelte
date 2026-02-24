@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall"
+		<Heading as="h4" size="xsmall"
 			>SQL Instance {data.sqlInstance.name} is {data.state.toLocaleLowerCase()}</Heading
 		>
 		<Detail>{data.message}</Detail>

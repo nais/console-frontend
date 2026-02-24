@@ -43,7 +43,7 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
-  """A user was granted access to a postgres cluster"""
+  """A user was granted access to a Postgres cluster"""
   POSTGRES_GRANT_ACCESS
 
   """Reconciler configured activity log entry."""
@@ -66,6 +66,9 @@ enum ActivityLogActivityType {
 
   """Secret was deleted."""
   SECRET_DELETED
+
+  """Secret values were viewed."""
+  SECRET_VALUES_VIEWED
 
   """Secret value was added."""
   SECRET_VALUE_ADDED
@@ -226,7 +229,7 @@ enum ActivityLogEntryResourceType {
   OPENSEARCH
 
   """
-  All activity log entries related to postgres clusters will use this resource type.
+  All activity log entries related to Postgres clusters will use this resource type.
   """
   POSTGRES
 
@@ -588,6 +591,14 @@ type Application implements ActivityLogger & Node & Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
+
+  """
+  Postgres instances referenced by the application. This does not currently support pagination, but will return all available Postgres instances.
+  """
+  postgresInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -1054,6 +1065,41 @@ type CVE implements Node {
     """
     last: Int
   ): WorkloadWithVulnerabilityConnection!
+}
+
+type CVEConnection {
+  """List of edges."""
+  edges: [CVEEdge!]!
+
+  """List of nodes."""
+  nodes: [CVE!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type CVEEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The CVE."""
+  node: CVE!
+}
+
+"""Ordering options when fetching CVEs."""
+input CVEOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: CVEOrderField!
+}
+
+enum CVEOrderField {
+  AFFECTED_WORKLOADS_COUNT
+  CVSS_SCORE
+  IDENTIFIER
+  SEVERITY
 }
 
 input ChangeDeploymentKeyInput {
@@ -1528,6 +1574,16 @@ type DeleteServiceAccountTokenPayload {
   serviceAccountTokenDeleted: Boolean
 }
 
+input DeleteUnleashInstanceInput {
+  """The team that owns the Unleash instance to delete."""
+  teamSlug: Slug!
+}
+
+type DeleteUnleashInstancePayload {
+  """Whether the Unleash instance was successfully deleted."""
+  unleashDeleted: Boolean
+}
+
 input DeleteValkeyInput {
   """The environment name that the entry belongs to."""
   environmentName: String!
@@ -1694,6 +1750,20 @@ type DeploymentKey implements Node {
 
   """The actual key."""
   key: String!
+}
+
+input DeploymentOrder {
+  """The direction to order items by."""
+  direction: OrderDirection!
+
+  """The field to order items by."""
+  field: DeploymentOrderField!
+}
+
+"""Possible fields to order deployments by."""
+enum DeploymentOrderField {
+  """The time the deployment was created at."""
+  CREATED_AT
 }
 
 """Resource connected to a deployment."""
@@ -1982,6 +2052,8 @@ type Features implements Node {
 
 input GrantPostgresAccessInput {
   clusterName: String!
+
+  """Duration of the access grant (maximum 4 hours)."""
   duration: String!
   environmentName: String!
   grantee: String!
@@ -2425,6 +2497,14 @@ type Job implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
+  """
+  Postgres instances referenced by the job. This does not currently support pagination, but will return all available Postgres instances.
+  """
+  postgresInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
+
   """Resources for the job."""
   resources: JobResources!
 
@@ -2857,6 +2937,14 @@ interface LogDestination {
   id: ID!
 }
 
+type LogDestinationGeneric implements LogDestination & Node {
+  """The globally unique ID of the log destination."""
+  id: ID!
+
+  """Name defined in the manifest"""
+  name: String!
+}
+
 type LogDestinationLoki implements LogDestination & Node {
   """Grafana URL to view the logs."""
   grafanaURL: String!
@@ -3143,6 +3231,14 @@ type Mutation {
   """Delete a service account token."""
   deleteServiceAccountToken(input: DeleteServiceAccountTokenInput!): DeleteServiceAccountTokenPayload!
 
+  """
+  Delete an Unleash instance.
+  
+  The Unleash instance can only be deleted if no other teams have access to it.
+  Revoke access for all other teams before deleting the instance.
+  """
+  deleteUnleashInstance(input: DeleteUnleashInstanceInput!): DeleteUnleashInstancePayload!
+
   """Delete an existing Valkey instance."""
   deleteValkey(input: DeleteValkeyInput!): DeleteValkeyPayload!
 
@@ -3168,7 +3264,7 @@ type Mutation {
   """
   enableReconciler(input: EnableReconcilerInput!): Reconciler!
 
-  """Grant access to this postgres cluster"""
+  """Grant temporary access to a Postgres cluster."""
   grantPostgresAccess(input: GrantPostgresAccessInput!): GrantPostgresAccessPayload!
 
   """Remove a team repository."""
@@ -3268,6 +3364,12 @@ type Mutation {
 
   """Update an existing Valkey instance."""
   updateValkey(input: UpdateValkeyInput!): UpdateValkeyPayload!
+
+  """
+  View the values of a secret. Requires team membership and a reason for access.
+  This creates a temporary elevation and logs the access for auditing purposes.
+  """
+  viewSecretValues(input: ViewSecretValuesInput!): ViewSecretValuesPayload!
 }
 
 type NetworkPolicy {
@@ -3541,11 +3643,17 @@ type OpenSearchMaintenanceUpdateEdge {
 }
 
 enum OpenSearchMajorVersion {
-  """OpenSearch Version 1.x"""
+  """OpenSearch Version 1.3.x"""
   V1
 
-  """OpenSearch Version 2.x"""
+  """OpenSearch Version 2.17.x"""
   V2
+
+  """OpenSearch Version 2.19.x"""
+  V2_19
+
+  """OpenSearch Version 3.3.x"""
+  V3_3
 }
 
 enum OpenSearchMemory {
@@ -3694,14 +3802,6 @@ interface Persistence {
   teamEnvironment: TeamEnvironment!
 }
 
-type Postgres implements Node & Persistence {
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-  id: ID!
-  name: String!
-  team: Team!
-  teamEnvironment: TeamEnvironment!
-}
-
 type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3736,6 +3836,84 @@ type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
 type PostgresGrantAccessActivityLogEntryData {
   grantee: String!
   until: Time!
+}
+
+type PostgresInstance implements Node & Persistence {
+  """Audit logging configuration for the Postgres cluster."""
+  audit: PostgresInstanceAudit!
+  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
+
+  """
+  Indicates whether the Postgres cluster is configured for high availability.
+  """
+  highAvailability: Boolean!
+  id: ID!
+
+  """Maintenance window for the Postgres cluster, if configured."""
+  maintenanceWindow: PostgresInstanceMaintenanceWindow
+
+  """Major version of PostgreSQL."""
+  majorVersion: String!
+  name: String!
+
+  """Resource allocation for the Postgres cluster."""
+  resources: PostgresInstanceResources!
+
+  """Current state of the Postgres cluster."""
+  state: PostgresInstanceState!
+  team: Team!
+  teamEnvironment: TeamEnvironment!
+}
+
+type PostgresInstanceAudit {
+  """Indicates whether audit logging is enabled for the Postgres cluster."""
+  enabled: Boolean!
+
+  """
+  List of statement classes that are being logged, such as `ddl`, `dml`, and `read`.
+  """
+  statementClasses: [String!]
+
+  """URL for accessing the audit logs."""
+  url: String
+}
+
+type PostgresInstanceConnection {
+  edges: [PostgresInstanceEdge!]!
+  nodes: [PostgresInstance!]!
+  pageInfo: PageInfo!
+}
+
+type PostgresInstanceEdge {
+  cursor: Cursor!
+  node: PostgresInstance!
+}
+
+type PostgresInstanceMaintenanceWindow {
+  day: Int!
+  hour: Int!
+}
+
+input PostgresInstanceOrder {
+  direction: OrderDirection!
+  field: PostgresInstanceOrderField!
+}
+
+enum PostgresInstanceOrderField {
+  ENVIRONMENT
+  NAME
+}
+
+type PostgresInstanceResources {
+  cpu: String!
+  diskSize: String!
+  memory: String!
+}
+
+enum PostgresInstanceState {
+  AVAILABLE
+  DEGRADED
+  PROGRESSING
 }
 
 type Price {
@@ -3809,6 +3987,28 @@ type Query {
   """Get a specific CVE by its identifier."""
   cve(identifier: String!): CVE!
 
+  """List active CVEs for workloads in all environments."""
+  cves(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: CVEOrder
+  ): CVEConnection!
+
   """Get a list of deployments."""
   deployments(
     """Get items after this cursor."""
@@ -3829,6 +4029,9 @@ type Query {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: DeploymentOrder
   ): DeploymentConnection!
 
   """Get a single environment."""
@@ -4665,7 +4868,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Team | Valkey
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresInstance | SqlInstance | Team | Valkey
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -4706,7 +4909,29 @@ enum SearchType {
 }
 
 """A secret is a collection of secret values."""
-type Secret implements Node {
+type Secret implements ActivityLogger & Node {
+  """Activity log associated with the secret."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+
   """Applications that use the secret."""
   applications(
     """Get items after this cursor."""
@@ -4751,6 +4976,11 @@ type Secret implements Node {
     last: Int
   ): JobConnection!
 
+  """
+  The names of the keys in the secret. This does not require elevation to access.
+  """
+  keys: [String!]!
+
   """Last time the secret was modified."""
   lastModifiedAt: Time
 
@@ -4765,9 +4995,6 @@ type Secret implements Node {
 
   """The environment the secret exists in."""
   teamEnvironment: TeamEnvironment!
-
-  """The secret values contained within the secret."""
-  values: [SecretValue!]!
 
   """Workloads that use the secret."""
   workloads(
@@ -5014,6 +5241,44 @@ type SecretValueUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 type SecretValueUpdatedActivityLogEntryData {
   """The name of the updated value."""
   valueName: String!
+}
+
+"""Activity log entry for viewing secret values."""
+type SecretValuesViewedActivityLogEntry implements ActivityLogEntry & Node {
+  """
+  The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+  """
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the entry."""
+  data: SecretValuesViewedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+"""Data associated with a secret values viewed activity log entry."""
+type SecretValuesViewedActivityLogEntryData {
+  """The reason provided for viewing the secret values."""
+  reason: String!
 }
 
 """
@@ -6010,6 +6275,28 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
+  """Postgres instances owned by the team."""
+  postgresInstances(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
+
   """Purpose of the team."""
   purpose: String!
   repositories(
@@ -6457,6 +6744,9 @@ type TeamEnvironment implements Node {
   """OpenSearch instance in the team environment."""
   openSearch(name: String!): OpenSearch!
 
+  """Postgres instance in the team environment."""
+  postgresInstance(name: String!): PostgresInstance!
+
   """Get a secret by name."""
   secret(name: String!): Secret!
 
@@ -6613,6 +6903,17 @@ type TeamInventoryCountOpenSearches {
   total: Int!
 }
 
+type TeamInventoryCountPostgresInstances {
+  """Total number of Postgres instances."""
+  total: Int!
+}
+
+"""Secret inventory count for a team."""
+type TeamInventoryCountSecrets {
+  """Total number of secrets."""
+  total: Int!
+}
+
 type TeamInventoryCountSqlInstances {
   """Total number of SQL instances."""
   total: Int!
@@ -6631,6 +6932,10 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearches: TeamInventoryCountOpenSearches!
+  postgresInstances: TeamInventoryCountPostgresInstances!
+
+  """Secret inventory count for a team."""
+  secrets: TeamInventoryCountSecrets!
   sqlInstances: TeamInventoryCountSqlInstances!
   valkeys: TeamInventoryCountValkeys!
 }
@@ -6777,10 +7082,10 @@ type TeamMemberRemovedActivityLogEntryData {
 
 """Team member roles."""
 enum TeamMemberRole {
-  """Regular member, read only access."""
+  """Member, full access including elevation."""
   MEMBER
 
-  """Team owner, full access to the team."""
+  """Team owner, full access to the team including member management."""
   OWNER
 }
 
@@ -8049,6 +8354,27 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
   oldValue: String
 }
 
+"""Input for viewing secret values."""
+input ViewSecretValuesInput {
+  """The environment the secret exists in."""
+  environment: String!
+
+  """The name of the secret."""
+  name: String!
+
+  """Reason for viewing the secret values. Must be at least 10 characters."""
+  reason: String!
+
+  """The team that owns the secret."""
+  team: Slug!
+}
+
+"""Payload returned when viewing secret values."""
+type ViewSecretValuesPayload {
+  """The secret values."""
+  values: [SecretValue!]!
+}
+
 type VulnerabilityActivityLogEntryData {
   """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
@@ -8335,6 +8661,14 @@ interface Workload {
 
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
+
+  """
+  Postgres instances referenced by the workload. This does not currently support pagination, but will return all available Postgres instances.
+  """
+  postgresInstances(
+    """Ordering options for items returned from the connection."""
+    orderBy: PostgresInstanceOrder
+  ): PostgresInstanceConnection!
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!

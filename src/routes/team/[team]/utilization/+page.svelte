@@ -144,7 +144,7 @@
 		)}
 		<div class="grid">
 			<div class="card">
-				<Heading level="2" size="medium" spacing
+				<Heading as="h2" size="medium" spacing
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
 				>
 				<BodyShort spacing
@@ -170,7 +170,7 @@
 				</div>
 			</div>
 			<div class="card">
-				<Heading level="2" size="medium" spacing
+				<Heading as="h2" size="medium" spacing
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
 				>
 				<BodyShort spacing
@@ -196,18 +196,18 @@
 				</div>
 			</div>
 		</div>
-		<Heading level="2">Top Overprovisioned Applications</Heading>
+		<Heading as="h2">Top Overprovisioned Applications</Heading>
 		<BodyLong spacing>
 			These charts highlight the applications with the highest unused CPU and memory relative to
 			their requested resources. Large gaps may indicate overprovisioning and opportunities to
 			reduce infrastructure costs by optimizing resource requests.
 		</BodyLong>
 
-		<div class="flex h-[350px] gap-20 pl-2">
+		<div class="flex h-87.5 gap-20 pl-2">
 			<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 			<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 		</div>
-		<Heading level="3" spacing>CPU and Memory Underutilization per Application</Heading>
+		<Heading as="h3" spacing>CPU and Memory Underutilization per Application</Heading>
 		<BodyLong spacing>
 			This table shows unutilized CPU and memory for each application, along with estimated overage
 			costs. Use this overview to identify where you can reduce requests and cut infrastructure

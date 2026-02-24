@@ -4,7 +4,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
@@ -19,6 +19,7 @@
 	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import PostgresGrantAccessActivityLogEntryText from '../activity/shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from '../activity/shared/texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from '../activity/shared/texts/SecretCreatedActivityLogEntryText.svelte';
@@ -26,6 +27,7 @@
 	import SecretValueAddedActivityLogEntryText from '../activity/shared/texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from '../activity/shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from '../activity/shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import SecretValuesViewedActivityLogEntryText from '../activity/shared/texts/SecretValuesViewedActivityLogEntryText.svelte';
 	import ServiceMaintenanceActivityLogEntryText from '../activity/shared/texts/ServiceMaintenanceActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from '../activity/shared/texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from '../activity/shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
@@ -105,6 +107,13 @@
 							}
 						}
 					}
+					... on PostgresGrantAccessActivityLogEntry {
+						__typename
+						postgresGrantAccessData: data {
+							grantee
+							until
+						}
+					}
 					... on RepositoryAddedActivityLogEntry {
 						__typename
 					}
@@ -130,6 +139,11 @@
 					... on SecretValueUpdatedActivityLogEntry {
 						secretValueUpdated: data {
 							valueName
+						}
+					}
+					... on SecretValuesViewedActivityLogEntry {
+						secretValuesViewed: data {
+							reason
 						}
 					}
 					... on ServiceMaintenanceActivityLogEntry {
@@ -216,7 +230,7 @@
 		)
 	);
 
-	const Icon = $derived(icons[$data.__typename] || RocketIcon);
+	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
 	function textComponent(typename: string): Component<{ data: unknown }> | null {
 		switch (typename) {
@@ -240,6 +254,8 @@
 				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchUpdatedActivityLogEntry':
 				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'PostgresGrantAccessActivityLogEntry':
+				return PostgresGrantAccessActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryAddedActivityLogEntry':
 				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryRemovedActivityLogEntry':
@@ -254,6 +270,8 @@
 				return SecretValueRemovedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretValueUpdatedActivityLogEntry':
 				return SecretValueUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValuesViewedActivityLogEntry':
+				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ServiceMaintenanceActivityLogEntry':
 				return ServiceMaintenanceActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
@@ -298,17 +316,15 @@
 			{#if TextComponent}
 				<TextComponent data={$data} />
 			{:else}
-				<BodyShort size="small" spacing>
-					{$data.message}
-					{#if $data.environmentName}
-						in <Tag size="small" variant={envTagVariant($data.environmentName)}>
-							{$data.environmentName}
-						</Tag>.
-					{/if}
-				</BodyShort>
-				<BodyShort size="small" style="color: var(--ax-text-subtle)">
+				{$data.message}
+				{#if $data.environmentName}
+					in <Tag size="small" variant={envTagVariant($data.environmentName)}>
+						{$data.environmentName}
+					</Tag>.
+				{/if}
+				<BodyShort textColor="subtle" size="small">
+					By {$data.actor}
 					<Time time={$data.createdAt} distance={true} />
-					by {$data.actor}
 				</BodyShort>
 			{/if}
 		</div>

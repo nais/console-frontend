@@ -130,7 +130,7 @@
 
 <!-- <Card style="margin-bottom:1rem;"> -->
 <div class="card">
-	<Heading level="2">{$r.displayName}</Heading>
+	<Heading as="h2">{$r.displayName}</Heading>
 	{#if $r.errors.pageInfo.totalCount}
 		<span class="reconciler-error">
 			Reconciler has {$r.errors.pageInfo.totalCount} errors. Please consult the

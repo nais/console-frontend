@@ -13,7 +13,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Run Configuration</Heading>
+	<Heading as="h3" size="small">Run Configuration</Heading>
 	<div>
 		{#if schedule}
 			{@const runConfig = getLocalizedCronDescription(schedule)}

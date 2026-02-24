@@ -110,7 +110,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading level="1" size="large">Create New Secret</Heading>
+		<Heading as="h1" size="large">Create New Secret</Heading>
 	{/snippet}
 	<div class="row">
 		<BodyShort size="medium" spacing>A secret is a named set of key-value pairs.</BodyShort>
@@ -140,7 +140,11 @@
 	<GraphErrors errors={$createSecret.errors} />
 
 	{#snippet footer()}
-		<Button variant="primary" size="small" onclick={create}>Create</Button>
+		{#if name === '' || validate(name) !== ''}
+			<Button variant="primary" size="small" onclick={create} disabled={true}>Create</Button>
+		{:else}
+			<Button variant="primary" size="small" onclick={create}>Create</Button>
+		{/if}
 		<Button variant="secondary" size="small" onclick={close}>Cancel</Button>
 	{/snippet}
 </Modal>

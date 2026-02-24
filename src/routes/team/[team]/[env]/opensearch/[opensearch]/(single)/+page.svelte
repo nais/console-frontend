@@ -107,7 +107,7 @@
 
 	<div class="wrapper">
 		<div>
-			{#if viewerIsMember && !isManagedByConsole}
+			{#if !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This OpenSearch instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
@@ -117,7 +117,7 @@
 				</Alert>
 			{/if}
 			<div class="spacing">
-				<Heading level="2" spacing>OpenSearch Instance Access List</Heading>
+				<Heading as="h2" spacing>OpenSearch Instance Access List</Heading>
 
 				{#if instance.access.edges.length > 0}
 					<Table
@@ -166,7 +166,7 @@
 				{/if}
 			</div>
 			<div class="spacing">
-				<Heading level="3">Issues</Heading>
+				<Heading as="h3">Issues</Heading>
 				<List>
 					{#each $OpenSearchInstance.data.team.environment.openSearch.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
@@ -184,7 +184,7 @@
 
 				{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
 					<div class="service-maintenance-list-heading">
-						<Heading level="3">Pending maintenance</Heading>
+						<Heading as="h3">Pending maintenance</Heading>
 
 						{#if maintenanceError === ''}
 							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
@@ -218,11 +218,11 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3">State</Heading>
+				<Heading as="h3">State</Heading>
 				<BodyShort>{instance.state}</BodyShort>
 			</div>
 			<div>
-				<Heading level="3">Settings</Heading>
+				<Heading as="h3">Settings</Heading>
 				<BodyShort>Tier: {instance.tier}</BodyShort>
 				<BodyShort>Memory: {instance.memory}</BodyShort>
 				<BodyShort>Storage: {instance.storageGB}GB</BodyShort>
@@ -237,12 +237,12 @@
 				{/if}
 			</div>
 			<div>
-				<Heading level="3">Version</Heading>
+				<Heading as="h3">Version</Heading>
 				<BodyShort>{instance.version.actual ?? 'Unknown'}</BodyShort>
 			</div>
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
-					<Heading level="3">Maintenance window</Heading>
+					<Heading as="h3">Maintenance window</Heading>
 					<BodyShort>Day of week: {instance.maintenance.window.dayOfWeek}</BodyShort>
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>

@@ -48,7 +48,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Secrets</Heading>
+	<Heading as="h3" size="small">Secrets</Heading>
 	<GraphErrors errors={$secrets.errors} />
 
 	{#if $secrets.fetching}

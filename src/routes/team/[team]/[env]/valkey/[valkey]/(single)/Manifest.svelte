@@ -32,17 +32,17 @@
     - instance: ${niceName}`);
 </script>
 
-<div class="card">
-	<Heading level="2" size="medium" spacing>Use this Valkey</Heading>
+<div>
+	<Heading as="h2" size="medium" spacing>Use this Valkey</Heading>
 
-	<Heading level="3" size="xsmall">Documentation</Heading>
+	<Heading as="h3" size="xsmall">Documentation</Heading>
 	<div class="value">
 		<ExternalLink href={docURL('/persistence/valkey/how-to/use-in-workload/')}
 			>How-to guide</ExternalLink
 		>
 	</div>
 
-	<Heading level="3" size="xsmall">
+	<Heading as="h3" size="xsmall">
 		Manifest
 
 		<CopyButton

@@ -64,13 +64,13 @@
 	}
 </script>
 
-<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 <div class="danger-zone">
 	{#if result?.team.environment.job}
 		{@const job = result.team.environment.job}
 		{#if job.deletionStartedAt}
 			<div class="heading-wrapper">
-				<Heading level="3">Deletion in Progress</Heading>
+				<Heading as="h3">Deletion in Progress</Heading>
 			</div>
 			<BodyShort
 				>This job is being deleted. Deletion started <Time time={job.deletionStartedAt} distance />.
@@ -78,7 +78,7 @@
 			>
 		{:else}
 			<div class="heading-wrapper">
-				<Heading level="3" spacing>Delete Job {job.name}</Heading>
+				<Heading as="h3" spacing>Delete Job {job.name}</Heading>
 			</div>
 
 			{#if hasResourcesToDelete(job)}

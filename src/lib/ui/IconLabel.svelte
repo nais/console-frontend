@@ -29,7 +29,7 @@
 		  }
 		| {
 				size: 'large';
-				level: HeadingProps['level'];
+				as: HeadingProps['as'];
 		  }
 	) = $props();
 
@@ -73,7 +73,7 @@
 		{#if rest.size === 'small'}
 			<Detail>{@render linkOrText()}</Detail>
 		{:else if rest.size === 'large'}
-			<Heading size="small" level={rest.level}>{@render linkOrText()}</Heading>
+			<Heading size="small" as={rest.as}>{@render linkOrText()}</Heading>
 		{:else}
 			<BodyShort>{@render linkOrText()}</BodyShort>
 		{/if}

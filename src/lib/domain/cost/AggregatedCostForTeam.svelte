@@ -51,7 +51,7 @@
 
 <div class="wrapper">
 	<div class="header">
-		<Heading level="2" size="small" spacing
+		<Heading as="h2" size="small" spacing
 			><a href="/team/{teamSlug}/cost">Aggregated Cost for {teamSlug}</a></Heading
 		>
 		<HelpText title="Aggregated team cost"
@@ -98,7 +98,7 @@
 				data={$costQuery.data.team.cost.monthlySummary.series}
 				dateField="date"
 				valueField="cost"
-				class="h-[300px]"
+				class="h-75"
 			/>
 		{:else}
 			<div class="no-data">
@@ -106,7 +106,7 @@
 			</div>
 		{/if}
 	{:else}
-		<div class="loading h-[300px]">
+		<div class="loading h-75">
 			<Loader size="3xlarge" />
 		</div>
 	{/if}

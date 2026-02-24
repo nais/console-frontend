@@ -19,7 +19,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2">Bucket Details</Heading>
+			<Heading as="h2">Bucket Details</Heading>
 			<dl>
 				<dt>Bucket</dt>
 				<dd>
@@ -73,7 +73,7 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3" size="small">Owner</Heading>
+				<Heading as="h3" size="small">Owner</Heading>
 				{#if bucket.workload}
 					<WorkloadLink workload={bucket.workload} />
 				{:else}

@@ -15,7 +15,7 @@
 
 <div class="issues">
 	{#if !loading}
-		<Heading level="2" size="small" spacing
+		<Heading as="h2" size="small" spacing
 			><a href="/team/{teamSlug}/issues">Health Summary</a></Heading
 		>
 		{#if (critical ?? 0) > 0}

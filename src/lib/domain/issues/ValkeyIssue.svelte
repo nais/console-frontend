@@ -22,7 +22,7 @@
 	</div>
 
 	<div>
-		<Heading level="4" size="xsmall">Issues with Valkey {data.valkey.name}</Heading>
+		<Heading as="h4" size="xsmall">Issues with Valkey {data.valkey.name}</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>

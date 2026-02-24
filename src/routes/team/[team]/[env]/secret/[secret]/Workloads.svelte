@@ -11,7 +11,7 @@
 </script>
 
 <div class="card">
-	<Heading level="2" size="medium" spacing>Used by</Heading>
+	<Heading as="h2" size="medium" spacing>Used by</Heading>
 	{#if workloads.nodes.length > 0}
 		<ul>
 			{#each workloads.nodes as workload (workload.id)}

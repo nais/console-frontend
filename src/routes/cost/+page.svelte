@@ -87,7 +87,7 @@
 			<div class="graph">
 				<div class="heading">
 					<div class="content">
-						<Heading level="2" spacing>Cost by Service</Heading>
+						<Heading as="h2" spacing>Cost by Service</Heading>
 						<BodyLong>
 							Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
 							Some services are missing cost data. Figures are based on data from Google Cloud and
@@ -170,7 +170,7 @@
 				{/if}
 			</div>
 			<div>
-				<Heading level="3" spacing>Team Cost last 12 months</Heading>
+				<Heading as="h3" spacing>Team Cost last 12 months</Heading>
 				<BodyLong spacing>
 					This table shows the cost for each team over the last 12 months. The cost is aggregated
 					from all services used by the team.
@@ -192,7 +192,7 @@
 									href="/team/{team.slug}/cost"
 									icon={PersonGroupIcon}
 									size="large"
-									level="3"
+									as="h3"
 								/>
 								<div class="right">
 									<BodyShort

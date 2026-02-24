@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { BodyShort, Button, Modal, TextField } from '@nais/ds-svelte-community';
 
 	interface Props {
@@ -10,6 +11,8 @@
 	let { jobName, environment, submit, close }: Props = $props();
 
 	let error: string = $state('');
+
+	let runName = $derived(generateJobRunName(jobName));
 
 	function validateRunName(runName: string): { isValid: true } | { isValid: false; error: string } {
 		const k8sNameRegex = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
@@ -39,7 +42,6 @@
 
 	const onSubmit = (e: SubmitEvent) => {
 		e.preventDefault();
-		const runName = (new FormData(e.target as HTMLFormElement).get('runName') ?? '') as string;
 		const valid = validateRunName(runName);
 
 		if (valid.isValid) {
@@ -51,16 +53,26 @@
 	};
 </script>
 
-<Modal open onclose={close} header="Trigger run">
-	<form method="dialog" id="trigger-run-form" onsubmit={onSubmit} style="max-width: 512px">
+<Modal open onclose={close} header="Trigger run" width="medium">
+	<form method="dialog" id="trigger-run-form" onsubmit={onSubmit}>
 		<BodyShort spacing>
 			This will trigger a new run of
 			<strong>{jobName}</strong> in
 			<strong>{environment}</strong>.
 		</BodyShort>
-		<TextField type="text" name="runName" {error} autofocus>
+		<TextField
+			type="text"
+			bind:value={runName}
+			{error}
+			autofocus
+			size="small"
+			oninput={() => (error = '')}
+		>
 			{#snippet label()}
 				Run name
+			{/snippet}
+			{#snippet description()}
+				Auto-generated name (editable)
 			{/snippet}
 		</TextField>
 	</form>

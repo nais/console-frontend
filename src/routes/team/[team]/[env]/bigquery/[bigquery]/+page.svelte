@@ -30,7 +30,7 @@
 
 	<div class="wrapper">
 		<div>
-			<Heading level="2" spacing>Dataset Details</Heading>
+			<Heading as="h2" spacing>Dataset Details</Heading>
 
 			<BodyShort spacing>{bq.description ? bq.description : 'No description'}</BodyShort>
 
@@ -69,7 +69,7 @@
 					{/if}
 				</dd>
 			</dl>
-			<Heading level="3" size="small" spacing>Access</Heading>
+			<Heading as="h3" size="small" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
 				<Table size="small">
@@ -99,7 +99,7 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading level="3" size="small">Owner</Heading>
+				<Heading as="h3" size="small">Owner</Heading>
 				{#if bq.workload}
 					<WorkloadLink workload={bq.workload} />
 				{:else}
@@ -110,7 +110,7 @@
 				{/if}
 			</div>
 			<div>
-				<Heading level="3" size="small">Cost Last 30 Days</Heading>
+				<Heading as="h3" size="small">Cost Last 30 Days</Heading>
 				<BodyShort>
 					{bq.cost.sum ? euroValueFormatter(bq.cost.sum) : 'No cost data available'}
 				</BodyShort>

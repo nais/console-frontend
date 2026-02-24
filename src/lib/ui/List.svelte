@@ -8,7 +8,7 @@
 <div class="list">
 	{#if title}
 		<div class="header">
-			<Heading size="small" level="3">{title}</Heading>
+			<Heading size="small" as="h3">{title}</Heading>
 			{#if menu}
 				<div class="menu">{@render menu()}</div>
 			{/if}

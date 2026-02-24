@@ -115,7 +115,7 @@
 	<div class="wrapper">
 		<div style="display: flex; flex-direction: column; gap: var(--spacing-layout)">
 			<div>
-				<Heading level="2">Description</Heading>
+				<Heading as="h2">Description</Heading>
 				<EditText
 					text={teamSettings.purpose}
 					onsave={async (text) => {
@@ -138,7 +138,7 @@
 			</div>
 
 			<div>
-				<Heading level="2"><SlackIcon class="heading-aligned-icon" /> Slack Alert Channels</Heading>
+				<Heading as="h2"><SlackIcon class="heading-aligned-icon" /> Slack Alert Channels</Heading>
 				{#if teamSettings.slackChannel !== ''}
 					<p>
 						<b>Default slack-channel:</b>
@@ -200,28 +200,28 @@
 				{/if}
 			</div>
 
-			<div>
-				<Heading level="2">Deploy Key</Heading>
-				<BodyShort>
-					Deploy keys can be used to authenticate for deployments instead of using
-					<a
-						href={docURL(
-							'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
-						)}
-					>
-						repository authorization
-					</a>. This allows for deploying from other CI systems than GitHub Actions, as well as from
-					local machines.
-				</BodyShort>
+			{#if viewerIsMember}
+				<div>
+					<Heading as="h2">Deploy Key</Heading>
+					<BodyShort>
+						Deploy keys can be used to authenticate for deployments instead of using
+						<a
+							href={docURL(
+								'/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
+							)}
+						>
+							repository authorization
+						</a>. This allows for deploying from other CI systems than GitHub Actions, as well as
+						from local machines.
+					</BodyShort>
 
-				{#if teamSettings.deploymentKey}
-					{@const deployKey = teamSettings.deploymentKey}
-					<dl>
-						<dt>Created:</dt>
-						<dd><Time time={deployKey.created} distance={true} /></dd>
-						<dt>Expires:</dt>
-						<dd><Time time={deployKey.expires} distance={true} /></dd>
-						{#if viewerIsMember}
+					{#if teamSettings.deploymentKey}
+						{@const deployKey = teamSettings.deploymentKey}
+						<dl>
+							<dt>Created:</dt>
+							<dd><Time time={deployKey.created} distance={true} /></dd>
+							<dt>Expires:</dt>
+							<dd><Time time={deployKey.expires} distance={true} /></dd>
 							<dt>Key:</dt>
 							<dd>
 								<div class="deployKey">
@@ -248,9 +248,7 @@
 									{/if}
 								</div>
 							</dd>
-						{/if}
-					</dl>
-					{#if viewerIsMember}
+						</dl>
 						<div class="buttons">
 							<div class="button">
 								<CopyButton
@@ -274,30 +272,28 @@
 								</Button>
 							</div>
 						</div>
-					{/if}
-				{:else if viewerIsMember}
-					<div class="buttons">
-						<div class="button mt-2">
-							<Button
-								size="small"
-								variant="secondary"
-								onclick={() => {
-									showCreateKey = !showCreateKey;
-								}}
-								icon={TokenIcon}
-							>
-								Create key
-							</Button>
+					{:else}
+						<div class="buttons">
+							<div class="button mt-2">
+								<Button
+									size="small"
+									variant="secondary"
+									onclick={() => {
+										showCreateKey = !showCreateKey;
+									}}
+									icon={TokenIcon}
+								>
+									Create key
+								</Button>
+							</div>
 						</div>
-					</div>
-				{:else}
-					<BodyShort class="mt-2">No deploy key has been created yet.</BodyShort>
-				{/if}
-			</div>
+					{/if}
+				</div>
+			{/if}
 
 			{#if viewerIsOwner}
 				<div>
-					<Heading level="2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+					<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 					<div class="danger-zone">
 						<BodyLong spacing>
 							Deleting the team will permanently delete all managed resources and all resources
@@ -326,24 +322,22 @@
 		</div>
 		<div class="right">
 			<div class="card">
-				<Heading level="2" size="small">Managed Resources</Heading>
+				<Heading as="h2" size="small">Managed Resources</Heading>
 				<dl>
 					{#if $TeamSettings.data?.team.externalResources}
 						{@const external = $TeamSettings.data.team.externalResources}
 						{#if external.googleArtifactRegistry}
-							<Heading level="3" size="xsmall">Google Artifact Registry</Heading>
+							<Heading as="h3" size="xsmall">Google Artifact Registry</Heading>
 							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
-									href="https://console.cloud.google.com/artifacts/images/{formatGARRepo(
-										external.googleArtifactRegistry.repository
-									)}"
+									href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
 								>
 									{formatGARRepo(external.googleArtifactRegistry.repository)}
 								</ExternalLink>
 							</BodyShort>
 						{/if}
 						{#if external.entraIDGroup}
-							<Heading level="3" size="xsmall">Entra ID Group</Heading>
+							<Heading as="h3" size="xsmall">Entra ID Group</Heading>
 							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
 									href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}"
@@ -353,7 +347,7 @@
 							</BodyShort>
 						{/if}
 						{#if external.cdn}
-							<Heading level="3" size="xsmall">Team CDN bucket</Heading>
+							<Heading as="h3" size="xsmall">Team CDN bucket</Heading>
 							<BodyShort style="font-size: 0.9rem">
 								<ExternalLink
 									href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}"
@@ -364,7 +358,7 @@
 						{/if}
 					{/if}
 					{#each $TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
-						<Heading level="3" size="xsmall"
+						<Heading as="h3" size="xsmall"
 							>Team project in {teamEnvironment.environment.name}</Heading
 						>
 						<BodyShort style="font-size: 0.9rem">
@@ -396,7 +390,7 @@
 {#if browser}
 	<Modal bind:open={showRotateKey} closeButton={false}>
 		{#snippet header()}
-			<Heading level="1" size="medium">Rotate deploy key</Heading>
+			<Heading as="h1" size="medium">Rotate deploy key</Heading>
 		{/snippet}
 		<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
 
@@ -421,7 +415,7 @@
 
 	<Modal bind:open={showCreateKey} closeButton={false}>
 		{#snippet header()}
-			<Heading level="1" size="medium">Create deploy key</Heading>
+			<Heading as="h1" size="medium">Create deploy key</Heading>
 		{/snippet}
 		<BodyShort spacing>
 			Are you sure you need to create a deploy key? <br />
@@ -450,7 +444,7 @@
 
 	<Modal bind:open={showDeleteTeam}>
 		{#snippet header()}
-			<Heading level="1" size="medium">Request Team Deletion</Heading>
+			<Heading as="h1" size="medium">Request Team Deletion</Heading>
 		{/snippet}
 
 		{#if !deleteKeyResp?.data}

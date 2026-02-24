@@ -15,7 +15,7 @@
 
 <ListItem>
 	<div>
-		<Heading level="4" size="xsmall">{title}</Heading>
+		<Heading as="h4" size="xsmall">{title}</Heading>
 		<BodyShort>{description}</BodyShort>
 		{#if !!start_at}
 			<BodyShort

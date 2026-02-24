@@ -51,7 +51,7 @@
 
 <ListItem>
 	<IconLabel
-		level="4"
+		as="h4"
 		label={job.name}
 		href="/team/{job.team.slug}/{job.teamEnvironment.environment.name}/job/{job.name}"
 		size="large"

@@ -46,7 +46,7 @@
 {#if $teamHealth.data && hasCriticalIssues && !$teamHealth.fetching}
 	<div class="issues-wrapper">
 		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
-			<Heading level="2" size="small" spacing
+			<Heading as="h2" size="small" spacing
 				><a href="/team/{teamSlug}/issues?severity=CRITICAL">Critical Issues</a></Heading
 			>
 			<div class="issues-list">

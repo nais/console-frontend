@@ -79,7 +79,7 @@
 		{:else if $TenantDeployments.data}
 			<div>
 				<div class="header">
-					<Heading level="1" size="large">Tenant Deployments</Heading>
+					<Heading as="h1" size="large">Tenant Deployments</Heading>
 					<div class="toggles">
 						<ToggleGroup
 							size="small"

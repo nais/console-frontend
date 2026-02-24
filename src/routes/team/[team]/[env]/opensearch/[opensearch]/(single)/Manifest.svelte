@@ -17,11 +17,6 @@
 			graphql(`
 				fragment OpenSearchManifestFragment on OpenSearch {
 					name
-					memory
-					tier
-					version {
-						desiredMajor
-					}
 				}
 			`)
 		)
@@ -34,17 +29,17 @@
     - instance: ${niceName}`);
 </script>
 
-<div class="card">
-	<Heading level="2" size="medium" spacing>Use this OpenSearch</Heading>
+<div>
+	<Heading as="h2" size="medium" spacing>Use this OpenSearch</Heading>
 
-	<Heading level="3" size="xsmall">Documentation</Heading>
+	<Heading as="h3" size="xsmall">Documentation</Heading>
 	<div class="value">
 		<ExternalLink href={docURL('/persistence/opensearch/how-to/use-in-workload/')}
 			>How-to guide</ExternalLink
 		>
 	</div>
 
-	<Heading level="3" size="xsmall">
+	<Heading as="h3" size="xsmall">
 		Manifest
 
 		<CopyButton

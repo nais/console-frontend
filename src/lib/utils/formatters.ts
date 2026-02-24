@@ -1,3 +1,7 @@
+export function sanitizePromLabel(value: string): string {
+	return value.replace(/[^a-zA-Z0-9_.-]/g, '');
+}
+
 export function percentageFormatter(value: number, maximumFractionDigits: number = 2): string {
 	if (isNaN(value) || value === 0) {
 		return '0 %';

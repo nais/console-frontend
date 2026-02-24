@@ -140,7 +140,7 @@
 
 <div class="container" class:partOfModal={isPossiblyInModal()}>
 	{#if !isPossiblyInModal()}
-		<Heading level="1" size="large" spacing>Create a New Team</Heading>
+		<Heading as="h1" size="large" spacing>Create a New Team</Heading>
 	{/if}
 	{#if form?.errors && form.errors.length > 0}
 		<ErrorSummary heading="Error creating team">

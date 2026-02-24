@@ -18,7 +18,7 @@
 	{/each}
 </select>
 
-<Heading level="1" size="large" spacing>{issues.length}</Heading>
+<Heading as="h1" size="large" spacing>{issues.length}</Heading>
 <div class="grid">
 	{#if $AllIssues.data}
 		{#each issues as issue (issue.id)}

@@ -38,7 +38,7 @@
 	};
 </script>
 
-<Heading size="small" level="4">
+<Heading size="small" as="h4">
 	<a
 		href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
 			.name}/{urlName()}/{instance.name}"

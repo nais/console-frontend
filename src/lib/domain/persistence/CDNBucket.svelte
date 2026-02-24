@@ -10,7 +10,7 @@
 </script>
 
 <div>
-	<Heading size="small" level="3">Team CDN Bucket</Heading>
+	<Heading size="small" as="h3">Team CDN Bucket</Heading>
 
 	<ExternalLink href="https://console.cloud.google.com/storage/browser/{cdnBucket}">
 		{cdnBucket}

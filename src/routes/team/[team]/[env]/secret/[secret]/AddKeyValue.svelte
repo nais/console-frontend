@@ -1,17 +1,18 @@
 <script lang="ts">
-	import { graphql, type SecretValueInput } from '$houdini';
+	import { graphql } from '$houdini';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import Textarea from './Textarea.svelte';
 
 	interface Props {
-		initial: SecretValueInput[];
+		initial: { name: string }[];
 		teamSlug: string;
 		env: string;
 		secretName: string;
+		onSuccess?: () => void | Promise<void>;
 	}
 
-	let { initial, teamSlug, env, secretName }: Props = $props();
+	let { initial, teamSlug, env, secretName, onSuccess }: Props = $props();
 
 	let open: boolean = $state(false);
 
@@ -49,10 +50,7 @@
 			addSecretValue(input: { environment: $env, name: $name, team: $team, value: $value }) {
 				secret {
 					id
-					values {
-						name
-						value
-					}
+					keys
 					lastModifiedBy {
 						name
 						email
@@ -84,6 +82,11 @@
 		open = false;
 		key = '';
 		value = '';
+
+		// Reload secret after adding new key
+		if (onSuccess) {
+			await onSuccess();
+		}
 	};
 
 	let key: string = $state('');
@@ -113,7 +116,7 @@
 </div>
 <Modal bind:open onclose={reset} width="medium">
 	{#snippet header()}
-		<Heading level="1" size="large">Add new key and value</Heading>
+		<Heading as="h1" size="large">Add new key and value</Heading>
 	{/snippet}
 	<div class="text-input">
 		<TextField
@@ -129,7 +132,7 @@
 	</div>
 
 	{#snippet footer()}
-		{#if key === '' || value === ''}
+		{#if key === '' || value === '' || validKey(key) !== ''}
 			<Button variant="primary" size="small" onclick={addSecretValue} disabled={true}>Add</Button>
 		{:else}
 			<Button variant="primary" size="small" onclick={addSecretValue}>Add</Button>

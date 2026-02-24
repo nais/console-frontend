@@ -4,14 +4,15 @@
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
+	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
@@ -97,7 +98,7 @@
 				{/if}
 				{#if $Job.data.team.environment.job.issues.edges.length > 0}
 					<div>
-						<Heading level="3" spacing>Issues</Heading>
+						<Heading as="h3" spacing>Issues</Heading>
 						<List>
 							{#each $Job.data.team.environment.job.issues.edges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
@@ -107,13 +108,22 @@
 				{/if}
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
-						<Heading level="2" size="medium">Runs</Heading>
+						<Heading as="h2" size="medium">Runs</Heading>
 						{#if viewerIsMember}
 							<Button
 								variant="secondary"
 								size="small"
-								onclick={() => (open = true)}
+								onclick={(e: MouseEvent) => {
+									if (e.metaKey || e.ctrlKey) {
+										if (jobName && environment) {
+											submit(generateJobRunName(jobName));
+										}
+									} else {
+										open = true;
+									}
+								}}
 								disabled={job.deletionStartedAt !== null}
+								title="Click to configure run name, or Cmd/Ctrl+Click to trigger immediately"
 							>
 								Trigger run
 							</Button>
@@ -134,13 +144,13 @@
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 				{/if}
 				<div>
-					<Heading level="2" size="small">Vulnerabilities</Heading>
+					<Heading as="h2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>
 
 				<SidebarActivity activityLog={job} />
 
-				{#if viewerIsMember && jobName && environment}
+				{#if jobName && environment}
 					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
 			</div>

@@ -292,7 +292,7 @@
 		{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
 		<div class="grid">
 			<div class="card">
-				<Heading level="2" size="medium" spacing
+				<Heading as="h2" size="medium" spacing
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
 				>
 				<BodyShort spacing
@@ -319,7 +319,7 @@
 				</div>
 			</div>
 			<div class="card">
-				<Heading level="2" size="medium" spacing
+				<Heading as="h2" size="medium" spacing
 					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
 				>
 				<BodyShort spacing
@@ -347,7 +347,7 @@
 			</div>
 		</div>
 		{#if !$ResourceUtilizationForApp.errors && (!isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation))}
-			<Heading level="2" size="medium" spacing>Resource Settings and Recommendations</Heading>
+			<Heading as="h2" size="medium" spacing>Resource Settings and Recommendations</Heading>
 			<BodyLong>
 				<div>
 					⚠️ Your app's resource settings are outside the recommended range. Consider adjusting them
@@ -441,7 +441,7 @@
 
 		<div class="section">
 			<div class="heading-with-toggle">
-				<Heading level="2" size="medium" spacing>CPU Usage</Heading>
+				<Heading as="h2" size="medium" spacing>CPU Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -576,7 +576,7 @@
 					contention gracefully. In many cases, workloads can burst beyond their requests when
 					resources are available, ensuring smooth operation during short spikes in demand.
 				</BodyLong>
-				<Heading level="3" size="small" spacing>Optimize your CPU settings</Heading>
+				<Heading as="h3" size="small" spacing>Optimize your CPU settings</Heading>
 				<BodyLong>
 					<div>
 						✅ If CPU usage is consistently below the request, consider lowering the request to
@@ -601,7 +601,7 @@
 		</div>
 		<div class="section" bind:clientWidth={chartWidth}>
 			<div class="heading-with-toggle">
-				<Heading level="2" size="medium" spacing>Memory Usage</Heading>
+				<Heading as="h2" size="medium" spacing>Memory Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}

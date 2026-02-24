@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -40,14 +40,13 @@
 							{/each}
 						</ToggleGroup>
 					</div>
-					<div class="h-[500px]">
+					<div class="h-125">
 						<CostAreaChart
 							data={$AppCost.data.team.environment.application.cost.daily.series.map((item) => {
 								const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
 								item.services.forEach((service) => {
 									ret[service.service] = service.cost;
 								});
-								console.log(ret);
 								return ret;
 							})}
 						/>

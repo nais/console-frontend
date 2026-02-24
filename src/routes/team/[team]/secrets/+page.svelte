@@ -23,6 +23,11 @@
 
 	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
+	let viewerIsMember = $derived($Secrets.data?.team.viewerIsMember ?? false);
+	let isAdmin = $derived(
+		$Secrets.data?.me?.__typename === 'User' ? $Secrets.data.me.isAdmin : false
+	);
+	let canCreateSecret = $derived(viewerIsMember || isAdmin);
 
 	let filter = $state(page.url.searchParams.get('nameFilter') ?? '');
 
@@ -92,11 +97,13 @@
 	{@const secrets = $Secrets.data.team.secrets}
 	<div class="wrapper">
 		<div>
-			<div class="button">
-				<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
-					Create Secret
-				</Button>
-			</div>
+			{#if canCreateSecret}
+				<div class="button">
+					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
+						Create Secret
+					</Button>
+				</div>
+			{/if}
 			<div class="search">
 				<form
 					onsubmit={(e) => {

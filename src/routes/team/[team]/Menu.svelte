@@ -51,6 +51,12 @@
 						bigQueryDatasets {
 							total
 						}
+						postgresInstances {
+							total
+						}
+						secrets {
+							total
+						}
 					}
 				}
 			}

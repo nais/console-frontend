@@ -347,7 +347,7 @@
 		<div class="query-details">
 			<div class="query-section">
 				<div class="query-heading">
-					<Heading size="xsmall" level="3">Query</Heading>
+					<Heading size="xsmall" as="h3">Query</Heading>
 					<CopyButton
 						text="Copy query"
 						activeText="Query copied"
@@ -360,7 +360,7 @@
 			</div>
 
 			<div class="query-section">
-				<Heading size="xsmall" level="3">Start Time</Heading>
+				<Heading size="xsmall" as="h3">Start Time</Heading>
 				<BodyShort>
 					{#if $q.variables?.input?.range?.start}
 						{new Date($q.variables.input.range.start).toLocaleString('en-GB')}
@@ -371,7 +371,7 @@
 			</div>
 
 			<div class="query-section">
-				<Heading size="xsmall" level="3">End Time</Heading>
+				<Heading size="xsmall" as="h3">End Time</Heading>
 				<BodyShort>
 					{#if $q.variables?.input?.range?.end}
 						{new Date($q.variables.input.range.end).toLocaleString('en-GB')}
@@ -382,7 +382,7 @@
 			</div>
 
 			<div class="query-section">
-				<Heading size="xsmall" level="3">Step Interval</Heading>
+				<Heading size="xsmall" as="h3">Step Interval</Heading>
 				<BodyShort>
 					{#if $q.variables?.input?.range?.step}
 						{$q.variables.input.range.step} seconds

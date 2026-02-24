@@ -21,6 +21,7 @@
 	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
+	import SecretValuesViewedActivityLogEntryText from './texts/SecretValuesViewedActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from './texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
@@ -98,6 +99,11 @@
 									valueName
 								}
 							}
+							... on SecretValuesViewedActivityLogEntry {
+								secretValuesViewedData: data {
+									reason
+								}
+							}
 							... on TeamEnvironmentUpdatedActivityLogEntry {
 								id
 								teamEnvironmentUpdatedData: data {
@@ -172,6 +178,8 @@
 				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretDeletedActivityLogEntry':
 				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretValuesViewedActivityLogEntry':
+				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
 				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
@@ -193,7 +201,7 @@
 </script>
 
 <div class="wrapper">
-	<Heading level="3" size="small">Activity</Heading>
+	<Heading as="h3" size="small">Activity</Heading>
 	{#each list as entry (entry.id)}
 		{@const Icon = icons[entry.__typename] || RocketIcon}
 		{@const TextComponent = textComponent(entry.__typename)}

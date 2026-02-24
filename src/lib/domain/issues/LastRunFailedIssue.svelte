@@ -21,7 +21,7 @@
 		/>
 	</div>
 	<div>
-		<Heading level="4" size="xsmall">Failed Runs for {data.job.name}</Heading>
+		<Heading as="h4" size="xsmall">Failed Runs for {data.job.name}</Heading>
 		<Detail>{data.message}</Detail>
 	</div>
 </div>

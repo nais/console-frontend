@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { envTagVariant } from '$lib/envTagVariant';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { Detail, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
 
 	const {
 		app
@@ -36,7 +36,7 @@
 
 <ListItem>
 	<IconLabel
-		level="4"
+		as="h4"
 		href="/team/{app.team.slug}/{app.teamEnvironment.environment.name}/app/{app.name}"
 		size="large"
 		label={app.name}
