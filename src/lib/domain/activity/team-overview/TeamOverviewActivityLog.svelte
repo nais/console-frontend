@@ -27,6 +27,7 @@
 	import TeamMemberAddedActivityLogEntryText from '../shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from '../shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
 	import TeamMemberSetRoleActivityLogEntryText from '../shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
+	import UnleashInstanceDeletedActivityLogEntryText from '../shared/texts/UnleashInstanceDeletedActivityLogEntryText.svelte';
 	import ValkeyCreatedActivityLogEntryText from '../shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
 	import ValkeyDeletedActivityLogEntryText from '../shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
 	import ValkeyUpdatedActivityLogEntryText from '../shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
@@ -74,6 +75,7 @@
 			ActivityLogActivityType.VALKEY_UPDATED,
 			ActivityLogActivityType.VALKEY_MAINTENANCE_STARTED,
 			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
+			ActivityLogActivityType.UNLEASH_INSTANCE_DELETED,
 			ActivityLogActivityType.UNLEASH_INSTANCE_UPDATED,
 			ActivityLogActivityType.VULNERABILITY_UPDATED
 		]
@@ -219,6 +221,9 @@
 							... on ValkeyDeletedActivityLogEntry {
 								__typename
 							}
+							... on UnleashInstanceDeletedActivityLogEntry {
+								__typename
+							}
 						}
 					}
 				}
@@ -273,6 +278,8 @@
 				return TeamMemberRemovedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberSetRoleActivityLogEntry':
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
+			case 'UnleashInstanceDeletedActivityLogEntry':
+				return UnleashInstanceDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ValkeyCreatedActivityLogEntry':
 				return ValkeyCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ValkeyDeletedActivityLogEntry':
