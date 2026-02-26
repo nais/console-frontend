@@ -15,6 +15,8 @@
 	let { data }: PageProps = $props();
 	let { JobIssues } = $derived(data);
 	let issues = $derived($JobIssues.data?.team.environment.job.issues);
+	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
+	let totalCount = $derived($JobIssues.data?.team.environment.job.issues.pageInfo.totalCount ?? 0);
 
 	let after: string = $derived($JobIssues.variables?.after ?? '');
 	let before: string = $derived($JobIssues.variables?.before ?? '');
@@ -43,10 +45,8 @@
 <div class="wrapper">
 	<div>
 		<List
-			title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
-						{issues?.pageInfo.totalCount !== $JobIssues.data?.team.environment.job.issues.pageInfo.totalCount
-				? `(of total ${$JobIssues.data?.team.environment.job.issues.pageInfo.totalCount})`
-				: ''}"
+			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
+						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
 		>
 			{#snippet menu()}
 				<ActionMenu>

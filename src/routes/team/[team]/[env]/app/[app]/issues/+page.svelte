@@ -15,6 +15,10 @@
 	let { data }: PageProps = $props();
 	let { ApplicationIssues } = $derived(data);
 	let issues = $derived($ApplicationIssues.data?.team.environment.application.issues);
+	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
+	let totalCount = $derived(
+		$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount ?? 0
+	);
 
 	let after: string = $derived($ApplicationIssues.variables?.after ?? '');
 	let before: string = $derived($ApplicationIssues.variables?.before ?? '');
@@ -43,11 +47,8 @@
 <div class="wrapper">
 	<div>
 		<List
-			title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
-						{issues?.pageInfo.totalCount !==
-			$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount
-				? `(of total ${$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount})`
-				: ''}"
+			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
+						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
 		>
 			{#snippet menu()}
 				<ActionMenu>
