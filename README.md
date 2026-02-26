@@ -162,7 +162,8 @@ npm run allow-scripts
 
 ### Dependency Update Policy
 
-- **`.ncurc.cjs`**: Configures `npm-check-updates` with a 14-day cooldown period
+- **`check-updates-cooldown.mjs`**: Enforces a 14-day cooldown period for dependency updates
+- **`.ncurc.cjs`**: Optional `npm-check-updates` config for manual dependency review
 - Only allows updates to packages published at least 14 days ago
 - Reduces risk of compromised packages with malicious updates
 
