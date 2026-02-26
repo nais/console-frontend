@@ -44,14 +44,22 @@
 		}
 	`);
 
+	let refreshCookieInterval: ReturnType<typeof setInterval> | undefined;
+
 	onMount(() => {
-		setInterval(
+		refreshCookieInterval = setInterval(
 			async () => {
 				if (user?.__typename !== 'User') return;
 				refreshCookie.fetch({ policy: 'NoCache' });
 			},
 			1000 * 60 * 10
 		);
+
+		return () => {
+			if (refreshCookieInterval) {
+				clearInterval(refreshCookieInterval);
+			}
+		};
 	});
 
 	let loading = $state(false);
