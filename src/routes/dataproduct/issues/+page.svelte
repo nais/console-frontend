@@ -8,25 +8,20 @@
 
 	let { data }: PageProps = $props();
 	let { AllIssues } = $derived(data);
-	let value = $state(page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS);
-
-	$effect(() => {
-		const selectedType = page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS;
-		if (value !== selectedType) {
-			value = selectedType;
-		}
-	});
-
-	$effect(() => {
-		if (value !== (page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS)) {
-			changeParams({ issueType: value });
-		}
-	});
+	let selectedIssueType = $derived(
+		page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS
+	);
 
 	let issues = $derived($AllIssues.data?.teams.nodes.flatMap((team) => team.issues.nodes) ?? []);
 </script>
 
-<select bind:value>
+<select
+	value={selectedIssueType}
+	onchange={(event) => {
+		const target = event.currentTarget as HTMLSelectElement;
+		changeParams({ issueType: target.value });
+	}}
+>
 	{#each Object.values(IssueType) as type (type)}
 		<option value={type}>{issueTypeLabel(type)}</option>
 	{/each}
