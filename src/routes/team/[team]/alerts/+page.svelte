@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertOrderField } from '$houdini';
-	import { docURL } from '$lib/doc';
+	import { docURL, tenantURL } from '$lib/doc';
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
 	import { envTagVariant } from '$lib/envTagVariant';
@@ -21,15 +21,14 @@
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
-	let { Alerts, AlertsMetadata, tenantName } = $derived(data);
+	let { Alerts, AlertsMetadata } = $derived(data);
 
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
 
-	function makeGrafanaExploreUrl(tenantName: string, query: string): string {
-		const cleanTenantName = tenantName.trim();
+	function makeGrafanaExploreUrl(query: string): string {
 		const params = new URLSearchParams({
 			orgId: '1',
 			left: JSON.stringify({
@@ -50,7 +49,7 @@
 			})
 		});
 
-		return `https://grafana.${cleanTenantName}.cloud.nais.io/explore?${params.toString()}`;
+		return tenantURL('grafana', `/explore?${params.toString()}`);
 	}
 
 	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
@@ -217,7 +216,7 @@
 								<div class="query-heading">
 									<Heading as="h2" size="xsmall">Query</Heading>
 									<div class="query-actions">
-										<ExternalLink href={makeGrafanaExploreUrl(tenantName, alert.query)}>
+										<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
 											<span style="font-size: 16px;">Run in Grafana</span>
 										</ExternalLink>
 										<CopyButton
