@@ -1,6 +1,12 @@
 export const issueTypeLabel = (type: string) =>
 	type
-		.toLowerCase()
 		.split('_')
-		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.map((part) => {
+			if (part === 'SQLINSTANCE') {
+				return 'SQL Instance';
+			}
+
+			const lower = part.toLowerCase();
+			return lower.charAt(0).toUpperCase() + lower.slice(1);
+		})
 		.join(' ');

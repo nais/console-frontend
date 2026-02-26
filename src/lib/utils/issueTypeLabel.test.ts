@@ -11,8 +11,8 @@ describe('issueTypeLabel', () => {
 		['MISSING_SBOM', 'Missing Sbom'],
 		['NO_RUNNING_INSTANCES', 'No Running Instances'],
 		['OPENSEARCH', 'Opensearch'],
-		['SQLINSTANCE_STATE', 'Sqlinstance State'],
-		['SQLINSTANCE_VERSION', 'Sqlinstance Version'],
+		['SQLINSTANCE_STATE', 'SQL Instance State'],
+		['SQLINSTANCE_VERSION', 'SQL Instance Version'],
 		['UNLEASH_RELEASE_CHANNEL', 'Unleash Release Channel'],
 		['VALKEY', 'Valkey'],
 		['VULNERABLE_IMAGE', 'Vulnerable Image']
