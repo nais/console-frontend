@@ -5,15 +5,14 @@ type LogEntry = {
 };
 
 function toMilliseconds(value: LogTimestamp): number {
-	if (value instanceof Date) {
-		return value.getTime();
-	}
+	const milliseconds =
+		value instanceof Date
+			? value.getTime()
+			: typeof value === 'number'
+				? value
+				: new Date(value).getTime();
 
-	if (typeof value === 'number') {
-		return value;
-	}
-
-	return new Date(value).getTime();
+	return Number.isFinite(milliseconds) ? milliseconds : Number.POSITIVE_INFINITY;
 }
 
 export function appendSortedBoundedLog<T extends LogEntry>(
