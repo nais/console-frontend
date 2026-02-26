@@ -6,6 +6,7 @@ const rows = 25;
 
 export async function load(event) {
 	const severity: string | undefined = event.url.searchParams.get('severity') || undefined;
+	const issueType: string | undefined = event.url.searchParams.get('issueType') || undefined;
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
@@ -18,7 +19,7 @@ export async function load(event) {
 				team: event.params.team,
 				env: event.params.env,
 				job: event.params.job,
-				filter: { severity } as IssueFilter,
+				filter: { severity, issueType } as IssueFilter,
 				orderBy: {
 					field: urlToOrderField(IssueOrderField, IssueOrderField.SEVERITY, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.ASC)

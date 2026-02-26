@@ -1,8 +1,8 @@
-query AllIssues {
+query AllIssues($issueType: IssueType) {
 	teams(first: 500) {
 		nodes {
 			slug
-			issues(first: 500) {
+			issues(first: 500, filter: { issueType: $issueType }) {
 				nodes {
 					id
 					__typename
@@ -24,6 +24,14 @@ query AllIssues {
 						ingresses
 					}
 					... on DeprecatedRegistryIssue {
+						workload {
+							name
+							__typename
+						}
+					}
+					... on ExternalIngressCriticalVulnerabilityIssue {
+						cvssScore
+						ingresses
 						workload {
 							name
 							__typename

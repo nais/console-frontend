@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { IssueOrderField, Severity } from '$houdini';
+	import { IssueOrderField, IssueType, Severity } from '$houdini';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
@@ -44,6 +45,7 @@
 		params: {
 			environments?: string;
 			severity?: string | undefined;
+			issueType?: string | undefined;
 			after?: string;
 			before?: string;
 		} = {}
@@ -51,6 +53,7 @@
 		changeParams({
 			environments: params.environments ?? '',
 			severity: params.severity ?? '',
+			issueType: params.issueType ?? '',
 			before: params.before ?? before,
 			after: params.after ?? after
 		});
@@ -111,16 +114,32 @@
 							value={$TeamIssues.variables?.filter?.severity ?? ''}
 							label="Severity"
 						>
-							<ActionMenuRadioItem value="" onselect={() => changeParams({ severity: '' })}
+							<ActionMenuRadioItem value="" onselect={() => changeQuery({ severity: '' })}
 								>All severities</ActionMenuRadioItem
 							>
 
 							{#each Object.values(Severity) as severity (severity)}
 								<ActionMenuRadioItem
 									value={severity}
-									onselect={() => changeParams({ severity: String(severity) })}
+									onselect={() => changeQuery({ severity: String(severity) })}
 								>
 									{severity.charAt(0) + severity.slice(1).toLowerCase()}
+								</ActionMenuRadioItem>
+							{/each}
+						</ActionMenuRadioGroup>
+						<ActionMenuRadioGroup
+							value={$TeamIssues.variables?.filter?.issueType ?? ''}
+							label="Issue type"
+						>
+							<ActionMenuRadioItem value="" onselect={() => changeQuery({ issueType: '' })}
+								>All issue types</ActionMenuRadioItem
+							>
+							{#each Object.values(IssueType) as issueType (issueType)}
+								<ActionMenuRadioItem
+									value={issueType}
+									onselect={() => changeQuery({ issueType: String(issueType) })}
+								>
+									{issueTypeLabel(issueType)}
 								</ActionMenuRadioItem>
 							{/each}
 						</ActionMenuRadioGroup>

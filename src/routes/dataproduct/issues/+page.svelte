@@ -1,20 +1,34 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { IssueType } from '$houdini';
+	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { AllIssues } = $derived(data);
-	let value = $state('DeprecatedIngressIssue');
-	let issues = $derived(
-		$AllIssues.data?.teams.nodes.flatMap((team) =>
-			team.issues.nodes.filter((issue) => issue.__typename === value)
-		) ?? []
-	);
+	let value = $state(page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS);
+
+	$effect(() => {
+		const selectedType = page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS;
+		if (value !== selectedType) {
+			value = selectedType;
+		}
+	});
+
+	$effect(() => {
+		if (value !== (page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS)) {
+			changeParams({ issueType: value });
+		}
+	});
+
+	let issues = $derived($AllIssues.data?.teams.nodes.flatMap((team) => team.issues.nodes) ?? []);
 </script>
 
 <select bind:value>
-	{#each ['DeprecatedIngressIssue', 'DeprecatedRegistryIssue', 'MissingSbomIssue', 'InvalidSpecIssue', 'VulnerableImageIssue', 'FailedSynchronizationIssue', 'OpenSearchIssue', 'SqlInstanceStateIssue', 'SqlInstanceVersionIssue', 'ValkeyIssue', 'LastRunFailedIssue', 'NoRunningInstancesIssue'] as type (type)}
-		<option value={type}>{type}</option>
+	{#each Object.values(IssueType) as type (type)}
+		<option value={type}>{issueTypeLabel(type)}</option>
 	{/each}
 </select>
 

@@ -3,18 +3,19 @@
 	import DefaultIssue from '$lib/domain/issues/DefaultIssue.svelte';
 	import DeprecatedIngressIssue from '$lib/domain/issues/DeprecatedIngressIssue.svelte';
 	import DeprecatedRegistryIssue from '$lib/domain/issues/DeprecatedRegistryIssue.svelte';
-	import LastRunFailedIssue from '$lib/domain/issues/LastRunFailedIssue.svelte';
+	import ExternalIngressCriticalVulnerabilityIssue from '$lib/domain/issues/ExternalIngressCriticalVulnerabilityIssue.svelte';
 	import FailedSynchronizationIssue from '$lib/domain/issues/FailedSynchronizationIssue.svelte';
 	import InvalidSpecIssue from '$lib/domain/issues/InvalidSpecIssue.svelte';
+	import LastRunFailedIssue from '$lib/domain/issues/LastRunFailedIssue.svelte';
 	import NoRunningInstancesIssue from '$lib/domain/issues/NoRunningInstancesIssue.svelte';
 	import OpenSearchIssue from '$lib/domain/issues/OpenSearchIssue.svelte';
 	import SqlInstanceStateIssue from '$lib/domain/issues/SqlInstanceStateIssue.svelte';
 	import SqlInstanceVersionIssue from '$lib/domain/issues/SqlInstanceVersionIssue.svelte';
 	import ValkeyIssue from '$lib/domain/issues/ValkeyIssue.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import type { Component } from 'svelte';
 	import MissingSbomIssue from '../issues/MissingSbomIssue.svelte';
 	import VulnerableImageIssue from '../issues/VulnerableImageIssue.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
 
 	interface Props {
 		item: IssueFragment;
@@ -50,6 +51,14 @@
 							image {
 								name
 							}
+						}
+					}
+					... on ExternalIngressCriticalVulnerabilityIssue {
+						cvssScore
+						ingresses
+						workload {
+							__typename
+							name
 						}
 					}
 					... on LastRunFailedIssue {
@@ -128,6 +137,8 @@
 				return DeprecatedIngressIssue as Component<{ data: unknown }>;
 			case 'DeprecatedRegistryIssue':
 				return DeprecatedRegistryIssue as Component<{ data: unknown }>;
+			case 'ExternalIngressCriticalVulnerabilityIssue':
+				return ExternalIngressCriticalVulnerabilityIssue as Component<{ data: unknown }>;
 			case 'LastRunFailedIssue':
 				return LastRunFailedIssue as Component<{ data: unknown }>;
 			case 'FailedSynchronizationIssue':
