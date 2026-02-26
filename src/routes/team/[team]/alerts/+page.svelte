@@ -28,19 +28,29 @@
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
 
-	function makePrometheusQueryUrl(baseUrl: string, query: string): string {
-		const cleanBase = baseUrl.replace(/\/+$/, '');
+	function makeGrafanaExploreUrl(tenantName: string, query: string): string {
+		const cleanTenantName = tenantName.trim();
 		const params = new URLSearchParams({
-			'g0.expr': query,
-			'g0.show_tree': '0',
-			'g0.tab': 'table',
-			'g0.range_input': '1h',
-			'g0.res_type': 'auto',
-			'g0.res_density': 'medium',
-			'g0.display_mode': 'lines',
-			'g0.show_exemplars': '0'
+			orgId: '1',
+			left: JSON.stringify({
+				datasource: {
+					type: 'prometheus',
+					uid: 'Metrics'
+				},
+				queries: [
+					{
+						refId: 'A',
+						expr: query
+					}
+				],
+				range: {
+					from: 'now-1h',
+					to: 'now'
+				}
+			})
 		});
-		return `${cleanBase}/query?${params.toString()}`;
+
+		return `https://grafana.${cleanTenantName}.cloud.nais.io/explore?${params.toString()}`;
 	}
 
 	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
@@ -207,13 +217,8 @@
 								<div class="query-heading">
 									<Heading as="h2" size="xsmall">Query</Heading>
 									<div class="query-actions">
-										<ExternalLink
-											href={makePrometheusQueryUrl(
-												`https://prometheus.${alert.teamEnvironment.environment.name}.${tenantName}.cloud.nais.io`,
-												alert.query
-											)}
-										>
-											<span style="font-size: 16px;">Run in Prometheus</span>
+										<ExternalLink href={makeGrafanaExploreUrl(tenantName, alert.query)}>
+											<span style="font-size: 16px;">Run in Grafana</span>
 										</ExternalLink>
 										<CopyButton
 											text="Copy query"
