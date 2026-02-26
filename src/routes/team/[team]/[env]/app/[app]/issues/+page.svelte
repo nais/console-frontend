@@ -4,6 +4,7 @@
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
@@ -72,7 +73,9 @@
 			{#each issues?.nodes ?? [] as issue (issue.id)}
 				<IssueListItem item={issue} />
 			{:else}
-				<div>No issues found</div>
+				<ListItem>
+					<span class="empty-state">No issues found</span>
+				</ListItem>
 			{/each}
 		</List>
 		{#if (issues?.pageInfo.totalCount ?? 0) > 0}
@@ -93,5 +96,9 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+
+	.empty-state {
+		color: var(--ax-text-subtle);
 	}
 </style>
