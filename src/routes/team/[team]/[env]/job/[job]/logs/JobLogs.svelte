@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, JobRunState, type JobRunState$options } from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { appendSortedBoundedLog } from '$lib/utils/logStream';
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
 	import { onDestroy, onMount } from 'svelte';
@@ -104,13 +105,7 @@
 					return;
 				}
 
-				logs = [...logs, { ...result.data.workloadLog, m }];
-
-				logs = logs
-					.sort((a, b) => {
-						return new Date(a.time).getTime() - new Date(b.time).getTime();
-					})
-					.slice(-MAX_LOG_LINES);
+				logs = appendSortedBoundedLog(logs, { ...result.data.workloadLog, m }, MAX_LOG_LINES);
 			}
 		});
 		return store;
