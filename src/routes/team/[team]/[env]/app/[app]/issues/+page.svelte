@@ -1,29 +1,22 @@
 <script lang="ts">
-	import { IssueType, Severity } from '$houdini';
+	import { page } from '$app/state';
+	import IssueTypeSeverityFilters from '$lib/domain/issues/IssueTypeSeverityFilters.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
-	import {
-		ActionMenu,
-		ActionMenuRadioGroup,
-		ActionMenuRadioItem
-	} from '@nais/ds-svelte-community/experimental';
+	import { ActionMenu } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { ApplicationIssues } = $derived(data);
+	let issues = $derived($ApplicationIssues.data?.team.environment.application.issues);
 
 	let after: string = $derived($ApplicationIssues.variables?.after ?? '');
 	let before: string = $derived($ApplicationIssues.variables?.before ?? '');
-
-	const totalIssues = $derived(
-		$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount ?? 0
-	);
 
 	const changeQuery = (
 		params: {
@@ -47,68 +40,42 @@
 <GraphErrors errors={$ApplicationIssues.errors} />
 
 <div class="wrapper">
-	{#if totalIssues > 0}
-		{@const issues = $ApplicationIssues.data?.team.environment.application.issues}
-		<div>
-			<List
-				title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
+	<div>
+		<List
+			title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
 						{issues?.pageInfo.totalCount !==
-				$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount
-					? `(of total ${$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount})`
-					: ''}"
-			>
-				{#snippet menu()}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="tertiary-neutral"
-								size="small"
-								iconPosition="right"
-								{...props}
-								icon={ChevronDownIcon}
-							>
-								<span style="font-weight: normal">Filters</span>
-							</Button>
-						{/snippet}
-						<ActionMenuRadioGroup
-							value={$ApplicationIssues.variables?.filter?.severity ?? ''}
-							label="Severity"
+			$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount
+				? `(of total ${$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount})`
+				: ''}"
+		>
+			{#snippet menu()}
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button
+							variant="tertiary-neutral"
+							size="small"
+							iconPosition="right"
+							{...props}
+							icon={ChevronDownIcon}
 						>
-							<ActionMenuRadioItem value="" onselect={() => changeQuery({ severity: '' })}
-								>All severities</ActionMenuRadioItem
-							>
-
-							{#each Object.values(Severity) as severity (severity)}
-								<ActionMenuRadioItem
-									value={severity}
-									onselect={() => changeQuery({ severity: String(severity) })}
-								>
-									{severity.charAt(0) + severity.slice(1).toLowerCase()}
-								</ActionMenuRadioItem>
-							{/each}
-						</ActionMenuRadioGroup>
-						<ActionMenuRadioGroup
-							value={$ApplicationIssues.variables?.filter?.issueType ?? ''}
-							label="Issue type"
-						>
-							<ActionMenuRadioItem value="" onselect={() => changeQuery({ issueType: '' })}
-								>All issue types</ActionMenuRadioItem
-							>
-							{#each Object.values(IssueType) as issueType (issueType)}
-								<ActionMenuRadioItem
-									value={issueType}
-									onselect={() => changeQuery({ issueType: String(issueType) })}
-								>
-									{issueTypeLabel(issueType)}
-								</ActionMenuRadioItem>
-							{/each}
-						</ActionMenuRadioGroup>
-					</ActionMenu>
-				{/snippet}
-				{#each issues?.nodes ?? [] as issue (issue.id)}
-					<IssueListItem item={issue} />
-				{/each}
-			</List>
+							<span style="font-weight: normal">Filters</span>
+						</Button>
+					{/snippet}
+					<IssueTypeSeverityFilters
+						severity={page.url.searchParams.get('severity') ?? ''}
+						issueType={page.url.searchParams.get('issueType') ?? ''}
+						onSeverityChange={(severity) => changeQuery({ severity })}
+						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
+					/>
+				</ActionMenu>
+			{/snippet}
+			{#each issues?.nodes ?? [] as issue (issue.id)}
+				<IssueListItem item={issue} />
+			{:else}
+				<div>No issues found</div>
+			{/each}
+		</List>
+		{#if (issues?.pageInfo.totalCount ?? 0) > 0}
 			<Pagination
 				page={issues?.pageInfo}
 				loaders={{
@@ -117,10 +84,8 @@
 					loadNextPage: () => changeQuery({ after: issues?.pageInfo.endCursor ?? '', before: '' })
 				}}
 			/>
-		</div>
-	{:else}
-		<div>No issues found</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>
