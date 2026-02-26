@@ -4,7 +4,7 @@ describe('issueTypeLabel', () => {
 	test.each([
 		['DEPRECATED_INGRESS', 'Deprecated Ingress'],
 		['DEPRECATED_REGISTRY', 'Deprecated Registry'],
-		['EXTERNAL_INGRESS_CRITICAL_VULNERABILITY', 'External Ingress Critical Vulnerability'],
+		['EXTERNAL_INGRESS_CRITICAL_VULNERABILITY', 'Critical Vulnerability'],
 		['FAILED_SYNCHRONIZATION', 'Failed Synchronization'],
 		['INVALID_SPEC', 'Invalid Spec'],
 		['LAST_RUN_FAILED', 'Last Run Failed'],

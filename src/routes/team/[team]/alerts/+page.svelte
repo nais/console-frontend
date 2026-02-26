@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { AlertOrderField } from '$houdini';
-	import { docURL } from '$lib/doc';
+	import { docURL, tenantURL } from '$lib/doc';
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
 	import { envTagVariant } from '$lib/envTagVariant';
@@ -21,26 +21,35 @@
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
-	let { Alerts, AlertsMetadata, tenantName } = $derived(data);
+	let { Alerts, AlertsMetadata } = $derived(data);
 
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
 
-	function makePrometheusQueryUrl(baseUrl: string, query: string): string {
-		const cleanBase = baseUrl.replace(/\/+$/, '');
+	function makeGrafanaExploreUrl(query: string): string {
 		const params = new URLSearchParams({
-			'g0.expr': query,
-			'g0.show_tree': '0',
-			'g0.tab': 'table',
-			'g0.range_input': '1h',
-			'g0.res_type': 'auto',
-			'g0.res_density': 'medium',
-			'g0.display_mode': 'lines',
-			'g0.show_exemplars': '0'
+			orgId: '1',
+			left: JSON.stringify({
+				datasource: {
+					type: 'prometheus',
+					uid: 'Metrics'
+				},
+				queries: [
+					{
+						refId: 'A',
+						expr: query
+					}
+				],
+				range: {
+					from: 'now-1h',
+					to: 'now'
+				}
+			})
 		});
-		return `${cleanBase}/query?${params.toString()}`;
+
+		return tenantURL('grafana', `/explore?${params.toString()}`);
 	}
 
 	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
@@ -207,13 +216,8 @@
 								<div class="query-heading">
 									<Heading as="h2" size="xsmall">Query</Heading>
 									<div class="query-actions">
-										<ExternalLink
-											href={makePrometheusQueryUrl(
-												`https://prometheus.${alert.teamEnvironment.environment.name}.${tenantName}.cloud.nais.io`,
-												alert.query
-											)}
-										>
-											<span style="font-size: 16px;">Run in Prometheus</span>
+										<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
+											<span style="font-size: 16px;">Run in Grafana</span>
 										</ExternalLink>
 										<CopyButton
 											text="Copy query"

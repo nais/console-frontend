@@ -1,5 +1,9 @@
-export const issueTypeLabel = (type: string) =>
-	type
+export const issueTypeLabel = (type: string) => {
+	if (type === 'EXTERNAL_INGRESS_CRITICAL_VULNERABILITY') {
+		return 'Critical Vulnerability';
+	}
+
+	return type
 		.split('_')
 		.map((part) => {
 			if (part === 'SQLINSTANCE') {
@@ -10,3 +14,4 @@ export const issueTypeLabel = (type: string) =>
 			return lower.charAt(0).toUpperCase() + lower.slice(1);
 		})
 		.join(' ');
+};
