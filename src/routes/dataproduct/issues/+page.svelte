@@ -1,20 +1,29 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { IssueType } from '$houdini';
+	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { AllIssues } = $derived(data);
-	let value = $state('DeprecatedIngressIssue');
-	let issues = $derived(
-		$AllIssues.data?.teams.nodes.flatMap((team) =>
-			team.issues.nodes.filter((issue) => issue.__typename === value)
-		) ?? []
+	let selectedIssueType = $derived(
+		page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS
 	);
+
+	let issues = $derived($AllIssues.data?.teams.nodes.flatMap((team) => team.issues.nodes) ?? []);
 </script>
 
-<select bind:value>
-	{#each ['DeprecatedIngressIssue', 'DeprecatedRegistryIssue', 'MissingSbomIssue', 'InvalidSpecIssue', 'VulnerableImageIssue', 'FailedSynchronizationIssue', 'OpenSearchIssue', 'SqlInstanceStateIssue', 'SqlInstanceVersionIssue', 'ValkeyIssue', 'LastRunFailedIssue', 'NoRunningInstancesIssue'] as type (type)}
-		<option value={type}>{type}</option>
+<select
+	value={selectedIssueType}
+	onchange={(event) => {
+		const target = event.currentTarget as HTMLSelectElement;
+		changeParams({ issueType: target.value });
+	}}
+>
+	{#each Object.values(IssueType) as type (type)}
+		<option value={type}>{issueTypeLabel(type)}</option>
 	{/each}
 </select>
 

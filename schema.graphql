@@ -1968,6 +1968,16 @@ enum EnvironmentWorkloadOrderField {
   TEAM_SLUG
 }
 
+type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node {
+  cvssScore: Float!
+  id: ID!
+  ingresses: [String!]!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
 type ExternalNetworkPolicyHost implements ExternalNetworkPolicyTarget {
   ports: [Int!]!
   target: String!
@@ -2345,6 +2355,7 @@ enum IssueOrderField {
 enum IssueType {
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
+  EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
   FAILED_SYNCHRONIZATION
   INVALID_SPEC
   LAST_RUN_FAILED
@@ -2353,6 +2364,7 @@ enum IssueType {
   OPENSEARCH
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
+  UNLEASH_RELEASE_CHANNEL
   VALKEY
   VULNERABLE_IMAGE
 }
@@ -4636,6 +4648,7 @@ enum ResourceType {
   JOB
   OPENSEARCH
   SQLINSTANCE
+  UNLEASH
   VALKEY
 }
 
@@ -7406,16 +7419,13 @@ type UnleashInstance implements Node {
   ready: Boolean!
 
   """
-  Release channel details if using channel-based version management.
+  Release channel details.
   Returns the full release channel object with current version and update policy.
   """
   releaseChannel: UnleashReleaseChannel
 
-  """
-  Release channel name if using channel-based version management.
-  Populated from CRD spec.releaseChannel.name field.
-  """
-  releaseChannelName: String
+  """Release channel name for automatic version updates."""
+  releaseChannelName: String!
   version: String!
   webIngress: String!
 }
@@ -7550,6 +7560,22 @@ type UnleashReleaseChannel {
   - 'parallel': Updates multiple instances simultaneously
   """
   type: String!
+}
+
+type UnleashReleaseChannelIssue implements Issue & Node {
+  """The name of the release channel the instance is on."""
+  channelName: String!
+
+  """The current major version of Unleash available."""
+  currentMajorVersion: Int!
+  id: ID!
+
+  """The major version of Unleash the instance is running."""
+  majorVersion: Int!
+  message: String!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  unleash: UnleashInstance!
 }
 
 input UpdateImageVulnerabilityInput {

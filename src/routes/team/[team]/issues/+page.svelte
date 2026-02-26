@@ -1,30 +1,31 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { IssueOrderField, Severity } from '$houdini';
+	import { IssueOrderField } from '$houdini';
+	import IssueTypeSeverityFilters from '$lib/domain/issues/IssueTypeSeverityFilters.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
-		ActionMenuGroup,
-		ActionMenuRadioGroup,
-		ActionMenuRadioItem
+		ActionMenuGroup
 	} from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
+	let issues = $derived($TeamIssues.data?.team.issues);
+	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
+	let totalCount = $derived($TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
 
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
 	let before: string = $derived($TeamIssues.variables?.before ?? '');
-
-	const totalIssues = $derived($TeamIssuesMetadata.data?.team.total.pageInfo.totalCount ?? 0);
 
 	const allEnvs = $derived(
 		$TeamIssuesMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
@@ -44,6 +45,7 @@
 		params: {
 			environments?: string;
 			severity?: string | undefined;
+			issueType?: string | undefined;
 			after?: string;
 			before?: string;
 		} = {}
@@ -51,6 +53,7 @@
 		changeParams({
 			environments: params.environments ?? '',
 			severity: params.severity ?? '',
+			issueType: params.issueType ?? '',
 			before: params.before ?? before,
 			after: params.after ?? after
 		});
@@ -60,77 +63,67 @@
 <GraphErrors errors={$TeamIssues.errors} />
 
 <div class="wrapper">
-	{#if totalIssues > 0}
-		{@const issues = $TeamIssues.data?.team.issues}
-		<div>
-			<List
-				title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
-						{issues?.pageInfo.totalCount !== $TeamIssues.data?.team.total.pageInfo.totalCount
-					? `(of total ${$TeamIssues.data?.team.total.pageInfo.totalCount})`
-					: ''}"
-			>
-				{#snippet menu()}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="tertiary-neutral"
-								size="small"
-								iconPosition="right"
-								{...props}
-								icon={ChevronDownIcon}
-							>
-								<span style="font-weight: normal">Filters</span>
-							</Button>
-						{/snippet}
-						<ActionMenuGroup label="Environment">
-							<ActionMenuCheckboxItem
-								checked={$TeamIssues.data?.team.environments.every((env) =>
-									filteredEnvs.includes(env.environment.name)
-								)
-									? true
-									: filteredEnvs.length > 0
-										? 'indeterminate'
-										: false}
-								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-							>
-								All environments
-							</ActionMenuCheckboxItem>
-							{#each $TeamIssues.data?.team.environments ?? [] as { environment, id } (id)}
-								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(environment.name)}
-									onchange={(checked) =>
-										(filteredEnvs = checked
-											? [...filteredEnvs, environment.name]
-											: filteredEnvs.filter((env) => env !== environment.name))}
-								>
-									{environment.name}
-								</ActionMenuCheckboxItem>
-							{/each}
-						</ActionMenuGroup>
-						<ActionMenuRadioGroup
-							value={$TeamIssues.variables?.filter?.severity ?? ''}
-							label="Severity"
+	<div>
+		<List
+			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
+						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
+		>
+			{#snippet menu()}
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button
+							variant="tertiary-neutral"
+							size="small"
+							iconPosition="right"
+							{...props}
+							icon={ChevronDownIcon}
 						>
-							<ActionMenuRadioItem value="" onselect={() => changeParams({ severity: '' })}
-								>All severities</ActionMenuRadioItem
+							<span style="font-weight: normal">Filters</span>
+						</Button>
+					{/snippet}
+					<ActionMenuGroup label="Environment">
+						<ActionMenuCheckboxItem
+							checked={$TeamIssues.data?.team.environments.every((env) =>
+								filteredEnvs.includes(env.environment.name)
+							)
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $TeamIssues.data?.team.environments ?? [] as { environment, id } (id)}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(environment.name)}
+								onchange={(checked) =>
+									(filteredEnvs = checked
+										? [...filteredEnvs, environment.name]
+										: filteredEnvs.filter((env) => env !== environment.name))}
 							>
-
-							{#each Object.values(Severity) as severity (severity)}
-								<ActionMenuRadioItem
-									value={severity}
-									onselect={() => changeParams({ severity: String(severity) })}
-								>
-									{severity.charAt(0) + severity.slice(1).toLowerCase()}
-								</ActionMenuRadioItem>
-							{/each}
-						</ActionMenuRadioGroup>
-					</ActionMenu>
-					<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />
-				{/snippet}
-				{#each issues?.nodes ?? [] as issue (issue.id)}
-					<IssueListItem item={issue} />
-				{/each}
-			</List>
+								{environment.name}
+							</ActionMenuCheckboxItem>
+						{/each}
+					</ActionMenuGroup>
+					<IssueTypeSeverityFilters
+						severity={page.url.searchParams.get('severity') ?? ''}
+						issueType={page.url.searchParams.get('issueType') ?? ''}
+						onSeverityChange={(severity) => changeQuery({ severity })}
+						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
+					/>
+				</ActionMenu>
+				<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />
+			{/snippet}
+			{#each issues?.nodes ?? [] as issue (issue.id)}
+				<IssueListItem item={issue} />
+			{:else}
+				<ListItem>
+					<span class="empty-state">No issues found</span>
+				</ListItem>
+			{/each}
+		</List>
+		{#if (issues?.pageInfo.totalCount ?? 0) > 0}
 			<Pagination
 				page={issues?.pageInfo}
 				loaders={{
@@ -139,10 +132,8 @@
 					loadNextPage: () => changeQuery({ after: issues?.pageInfo.endCursor ?? '', before: '' })
 				}}
 			/>
-		</div>
-	{:else}
-		<div>No issues found</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -150,5 +141,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+	}
+
+	.empty-state {
+		color: var(--ax-text-subtle);
 	}
 </style>

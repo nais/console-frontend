@@ -12,6 +12,7 @@ const rows = 25;
 
 export async function load(event) {
 	const severity: string | undefined = event.url.searchParams.get('severity') || undefined;
+	const issueType: string | undefined = event.url.searchParams.get('issueType') || undefined;
 	const environments: string[] | undefined =
 		event.url.searchParams.get('environments')?.split(',') || undefined;
 
@@ -24,7 +25,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				filter: { severity, environments } as IssueFilter,
+				filter: { severity, issueType, environments } as IssueFilter,
 				orderBy: {
 					field: urlToOrderField(IssueOrderField, IssueOrderField.SEVERITY, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

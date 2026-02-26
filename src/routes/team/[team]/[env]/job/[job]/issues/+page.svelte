@@ -1,25 +1,31 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import IssueTypeSeverityFilters from '$lib/domain/issues/IssueTypeSeverityFilters.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import List from '$lib/ui/List.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { Button } from '@nais/ds-svelte-community';
+	import { ActionMenu } from '@nais/ds-svelte-community/experimental';
+	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { JobIssues } = $derived(data);
+	let issues = $derived($JobIssues.data?.team.environment.job.issues);
+	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
+	let totalCount = $derived($JobIssues.data?.team.environment.job.issues.pageInfo.totalCount ?? 0);
 
 	let after: string = $derived($JobIssues.variables?.after ?? '');
 	let before: string = $derived($JobIssues.variables?.before ?? '');
-
-	const totalIssues = $derived(
-		$JobIssues.data?.team.environment.job.issues.pageInfo.totalCount ?? 0
-	);
 
 	const changeQuery = (
 		params: {
 			environments?: string;
 			severity?: string | undefined;
+			issueType?: string | undefined;
 			after?: string;
 			before?: string;
 		} = {}
@@ -27,6 +33,7 @@
 		changeParams({
 			environments: params.environments ?? '',
 			severity: params.severity ?? '',
+			issueType: params.issueType ?? '',
 			before: params.before ?? before,
 			after: params.after ?? after
 		});
@@ -36,19 +43,41 @@
 <GraphErrors errors={$JobIssues.errors} />
 
 <div class="wrapper">
-	{#if totalIssues > 0}
-		{@const issues = $JobIssues.data?.team.environment.job.issues}
-		<div>
-			<List
-				title="{issues?.pageInfo.totalCount} issue{issues?.pageInfo.totalCount !== 1 ? 's' : ''}
-						{issues?.pageInfo.totalCount !== $JobIssues.data?.team.environment.job.issues.pageInfo.totalCount
-					? `(of total ${$JobIssues.data?.team.environment.job.issues.pageInfo.totalCount})`
-					: ''}"
-			>
-				{#each issues?.nodes ?? [] as issue (issue.id)}
-					<IssueListItem item={issue} />
-				{/each}
-			</List>
+	<div>
+		<List
+			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
+						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
+		>
+			{#snippet menu()}
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button
+							variant="tertiary-neutral"
+							size="small"
+							iconPosition="right"
+							{...props}
+							icon={ChevronDownIcon}
+						>
+							<span style="font-weight: normal">Filters</span>
+						</Button>
+					{/snippet}
+					<IssueTypeSeverityFilters
+						severity={page.url.searchParams.get('severity') ?? ''}
+						issueType={page.url.searchParams.get('issueType') ?? ''}
+						onSeverityChange={(severity) => changeQuery({ severity })}
+						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
+					/>
+				</ActionMenu>
+			{/snippet}
+			{#each issues?.nodes ?? [] as issue (issue.id)}
+				<IssueListItem item={issue} />
+			{:else}
+				<ListItem>
+					<span class="empty-state">No issues found</span>
+				</ListItem>
+			{/each}
+		</List>
+		{#if (issues?.pageInfo.totalCount ?? 0) > 0}
 			<Pagination
 				page={issues?.pageInfo}
 				loaders={{
@@ -57,10 +86,8 @@
 					loadNextPage: () => changeQuery({ after: issues?.pageInfo.endCursor ?? '', before: '' })
 				}}
 			/>
-		</div>
-	{:else}
-		<div>No issues found</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -68,5 +95,9 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+
+	.empty-state {
+		color: var(--ax-text-subtle);
 	}
 </style>
