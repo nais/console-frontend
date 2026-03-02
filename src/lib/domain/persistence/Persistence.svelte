@@ -60,6 +60,7 @@
 						}
 					}
 					openSearch {
+						id
 						name
 						access {
 							edges {
@@ -119,14 +120,14 @@
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
 			.map((acl) => ({
-				id: acl,
+				id: `${acl.topic.team.slug}/${acl.topic.teamEnvironment.environment.name}/${acl.topic.name}/${acl.workloadName}/${acl.access}`,
 				label: acl.topic.name,
 				href: `/team/${acl.topic.team.slug}/${acl.topic.teamEnvironment.environment.name}/kafka/${acl.topic.name}`,
 				icon: 'kafka',
 				description: acl.access
 			})),
 		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
-			id: os,
+			id: os.id,
 			label: os.name,
 			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/opensearch/${os.name}`,
 			icon: 'opensearch',
