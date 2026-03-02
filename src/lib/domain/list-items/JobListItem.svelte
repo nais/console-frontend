@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { JobState, type JobRunState$options } from '$houdini';
+	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -8,7 +9,8 @@
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { getLocalizedCronDescription } from '$lib/utils/cron';
-	import { Detail, Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
+	import { Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		CalendarIcon,
 		CircleFillIcon,
@@ -150,24 +152,12 @@
 			<Detail>No runs</Detail>
 		{/if}
 		{#if job.issues?.pageInfo.totalCount > 0}
-			{@const criticalCount = job.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
-			{@const warningCount = job.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
-			{@const todoCount = job.issues.edges.filter((e) => e.node.severity === 'TODO').length}
+			{@const criticalCount = countIssuesBySeverity(job.issues.edges, 'CRITICAL')}
+			{@const warningCount = countIssuesBySeverity(job.issues.edges, 'WARNING')}
+			{@const todoCount = countIssuesBySeverity(job.issues.edges, 'TODO')}
 
 			<div class="issues-container">
-				{#if criticalCount > 0}
-					<Tag variant="error" size="xsmall"
-						>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
-					>
-				{/if}
-				{#if warningCount > 0}
-					<Tag variant="warning" size="xsmall"
-						>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
-					>
-				{/if}
-				{#if todoCount > 0}
-					<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
-				{/if}
+				<IssueSeverityTags critical={criticalCount} warning={warningCount} todo={todoCount} />
 			</div>
 		{/if}
 	</div>
