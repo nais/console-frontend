@@ -14,6 +14,13 @@
 	let instanceName = $derived(sanitizePromLabel(instance?.name ?? ''));
 	let environmentName = $derived(instance?.teamEnvironment.environment.name ?? '');
 	let teamSlug = $derived(sanitizePromLabel($PostgresInstance.data?.team.slug ?? ''));
+	let grafanaPostgresOverviewUrl = $derived.by(() => {
+		const datasource = encodeURIComponent(environmentName);
+		const namespace = encodeURIComponent(`pg-${teamSlug}`);
+		const instancePod = encodeURIComponent(`${instanceName}-0`);
+
+		return `https://grafana.nav.cloud.nais.io/d/postgres/postgres-overview?orgId=1&from=now-15m&to=now&timezone=browser&var-datasource=${datasource}&var-namespace=${namespace}&var-instance=${instancePod}&var-datname=$__all&var-mode=$__all&refresh=15m`;
+	});
 
 	let postgresCpuUtilizationQuery = $derived(`(
 		sum(
@@ -259,6 +266,11 @@ clamp_min(
 					<ExternalLink href={docURL('/persistence/postgresql/explanations/postgres-cluster/')}
 						>How-to guide</ExternalLink
 					>
+				</div>
+
+				<Heading as="h3" size="xsmall">Observability</Heading>
+				<div class="value">
+					<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
 				</div>
 
 				<Heading as="h3" size="xsmall">
