@@ -12,7 +12,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Loader } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -29,9 +29,17 @@
 	</div>
 {:else if $PostgresInstances.data && $PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
 	{@const si = $PostgresInstances.data.team.postgresInstances}
+	{@const hasCloudSql = $PostgresInstances.data.team.inventoryCounts.sqlInstances.total > 0}
 
 	<div class="content-wrapper">
 		<div>
+			{#if hasCloudSql}
+				<Alert variant="info" size="small" style="margin-bottom: 1rem;">
+					Postgres instances running in Cloud SQL have moved to a new page. You can find them on
+					<a href="/team/{$PostgresInstances.data.team.slug}/cloudsql">Cloud SQL</a>.
+				</Alert>
+			{/if}
+
 			<BodyLong spacing>
 				Postgres instances provide managed relational databases in the cloud.
 				<ExternalLink href={docURL('/persistence/postgres')}
@@ -102,8 +110,19 @@
 		</div>
 	</div>
 {:else}
+	{@const hasCloudSql = ($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0}
+
 	<div class="content-wrapper">
 		<BodyLong>
+			{#if hasCloudSql}
+				<Alert variant="info" size="small" style="margin-bottom: 1rem;">
+					Postgres instances running in Cloud SQL have moved to a new page. You can find them on
+					<a href="/team/{$PostgresInstances.data?.team.slug ?? data.teamSlug}/cloudsql"
+						>Cloud SQL</a
+					>.
+				</Alert>
+			{/if}
+
 			<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
 			databases in the cloud.
 			<ExternalLink href={docURL('/persistence/postgres')}
