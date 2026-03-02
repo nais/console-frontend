@@ -11,6 +11,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import { Button, Detail, Search } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
@@ -27,7 +28,8 @@
 	let isAdmin = $derived(
 		$Secrets.data?.me?.__typename === 'User' ? $Secrets.data.me.isAdmin : false
 	);
-	let canCreateSecret = $derived(viewerIsMember || isAdmin);
+	let permissions = $derived(getSecretPermissions(viewerIsMember, isAdmin));
+	let canMutate = $derived(permissions.canMutate);
 
 	let filter = $state(page.url.searchParams.get('nameFilter') ?? '');
 
@@ -97,7 +99,7 @@
 	{@const secrets = $Secrets.data.team.secrets}
 	<div class="wrapper">
 		<div>
-			{#if canCreateSecret}
+			{#if canMutate}
 				<div class="button">
 					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
 						Create Secret
