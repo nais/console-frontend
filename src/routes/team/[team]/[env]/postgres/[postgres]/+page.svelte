@@ -4,6 +4,7 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { sanitizePromLabel } from '$lib/utils/formatters';
 	import { Alert, BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -169,25 +170,87 @@ clamp_min(
 					formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
 				/>
 			</div>
-			{#if instance.audit.enabled && instance.audit.url && viewerIsMember}
-				<BodyShort
-					>Audit enabled - <ExternalLink href={instance.audit.url}>View audit logs</ExternalLink
-					></BodyShort
-				>
-			{/if}
+
+			<div class="details">
+				<div class="details-sections">
+					<div>
+						<Heading as="h3" size="small">State</Heading>
+						<BodyShort>{instance.state}</BodyShort>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Settings</Heading>
+						<dl class="settings-list">
+							<dt>High availability</dt>
+							<dd>
+								{instance.highAvailability
+									? 'Enabled (primary + 2 replicas)'
+									: 'Standard (primary + replica)'}
+							</dd>
+						</dl>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Version</Heading>
+						<dl class="settings-list">
+							<dt>Postgres major version</dt>
+							<dd>{instance.majorVersion}</dd>
+						</dl>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Resources</Heading>
+						<dl class="settings-list">
+							<dt>CPU</dt>
+							<dd>{instance.resources.cpu}</dd>
+							<dt>Memory</dt>
+							<dd>{instance.resources.memory}</dd>
+							<dt>Storage</dt>
+							<dd>{instance.resources.diskSize}</dd>
+						</dl>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Maintenance window</Heading>
+						<BodyShort>
+							{instance.maintenanceWindow
+								? `${instance.maintenanceWindow.day} at ${instance.maintenanceWindow.hour}:00 UTC`
+								: 'Not configured (maintenance can run at any time)'}
+						</BodyShort>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Audit</Heading>
+						{#if instance.audit.enabled}
+							<div class="status">
+								<CheckmarkIcon style="color: var(--ax-text-success-subtle);" />
+								<BodyShort>Audit logging enabled</BodyShort>
+							</div>
+							<BodyShort>PGAudit statement classes:</BodyShort>
+							{#if instance.audit.statementClasses?.length}
+								<ul class="statement-classes">
+									{#each instance.audit.statementClasses as statementClass (statementClass)}
+										<li><span class="mono">{statementClass}</span></li>
+									{/each}
+								</ul>
+							{/if}
+							{#if instance.audit.url && viewerIsMember}
+								<BodyShort>
+									<ExternalLink href={instance.audit.url}>View audit logs</ExternalLink>
+								</BodyShort>
+							{/if}
+						{:else}
+							<div class="status">
+								<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
+								<BodyShort>Audit logging disabled</BodyShort>
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="sidebar">
-			<div>
-				<Heading as="h3">Resources</Heading>
-				<BodyShort>CPU: {instance.resources.cpu}</BodyShort>
-				<BodyShort>Memory: {instance.resources.memory}</BodyShort>
-				<BodyShort>Storage: {instance.resources.diskSize}</BodyShort>
-			</div>
-			<div>
-				<Heading as="h3">Postgres Major Version</Heading>
-				<BodyShort>{instance.majorVersion}</BodyShort>
-			</div>
 			<div>
 				<Heading as="h2" size="medium" spacing>Use this Postgres</Heading>
 
@@ -228,6 +291,50 @@ clamp_min(
 		row-gap: 1rem;
 		margin-bottom: 1rem;
 	}
+
+	.details {
+		margin-top: var(--ax-space-12);
+	}
+
+	.details-sections {
+		display: grid;
+		gap: var(--ax-space-12);
+		margin: var(--ax-space-8) 0 0;
+	}
+
+	.settings-list {
+		display: grid;
+		grid-template-columns: 18ch minmax(0, 1fr);
+		gap: var(--ax-space-4) var(--ax-space-8);
+		margin: 0;
+		align-items: baseline;
+	}
+
+	.settings-list dt {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.settings-list dd {
+		margin: 0;
+	}
+
+	.status {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
+	.mono {
+		font-family: monospace;
+		font-size: 0.95rem;
+	}
+
+	.statement-classes {
+		margin: 0;
+		padding-left: var(--ax-space-16);
+	}
+
 	.sidebar {
 		display: flex;
 		flex-direction: column;
