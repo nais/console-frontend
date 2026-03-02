@@ -173,6 +173,13 @@
 
 	type ColorRole = (typeof colorRoles)[number];
 	const colorSpreadStep = 7;
+	let instanceIndexByName = $derived.by(() => {
+		const byName: Record<string, number> = {};
+		team.environment.application.instances.nodes.forEach((instance, index) => {
+			byName[instance.name] = index;
+		});
+		return byName;
+	});
 
 	function colorForPosition(position: number): ColorRole {
 		const normalized = ((position % colorRoles.length) + colorRoles.length) % colorRoles.length;
@@ -180,9 +187,7 @@
 	}
 
 	function colorForInstance(instanceName: string): ColorRole {
-		const index = team.environment.application.instances.nodes.findIndex(
-			(instance) => instance.name === instanceName
-		);
+		const index = instanceIndexByName[instanceName] ?? 0;
 		return colorForPosition(index >= 0 ? index : 0);
 	}
 

@@ -200,6 +200,22 @@
 
 	type ColorRole = (typeof colorRoles)[number];
 	const colorSpreadStep = 7;
+	let instanceColorByName = $derived.by(() => {
+		const byName: Record<string, ColorRole> = {};
+		let runOffset = 0;
+
+		for (const run of team.environment.job.runs.nodes) {
+			for (let instanceIndex = 0; instanceIndex < run.instances.nodes.length; instanceIndex++) {
+				const instance = run.instances.nodes[instanceIndex];
+				if (byName[instance.name] === undefined) {
+					byName[instance.name] = colorForPosition(runOffset + instanceIndex);
+				}
+			}
+			runOffset += run.instances.nodes.length;
+		}
+
+		return byName;
+	});
 
 	function colorForPosition(position: number): ColorRole {
 		const normalized = ((position % colorRoles.length) + colorRoles.length) % colorRoles.length;
@@ -207,17 +223,7 @@
 	}
 
 	function colorForInstance(instanceName: string): ColorRole {
-		for (let i = 0; i < team.environment.job.runs.nodes.length; i++) {
-			const run = team.environment.job.runs.nodes[i];
-			const instanceIndex = run.instances.nodes.findIndex(
-				(instance) => instance.name === instanceName
-			);
-			if (instanceIndex >= 0) {
-				return colorForPosition(i + instanceIndex);
-			}
-		}
-
-		return colorForPosition(0);
+		return instanceColorByName[instanceName] ?? colorForPosition(0);
 	}
 
 	function getLogLevel(message: string) {
