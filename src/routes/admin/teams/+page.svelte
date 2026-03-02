@@ -113,8 +113,10 @@
 								`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
 							t.node.inventoryCounts.openSearches.total > 0 &&
 								`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
+							t.node.inventoryCounts.postgresInstances.total > 0 &&
+								`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
 							t.node.inventoryCounts.sqlInstances.total > 0 &&
-								`${t.node.inventoryCounts.sqlInstances.total} SQL instances`,
+								`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
 							t.node.inventoryCounts.valkeys.total > 0 &&
 								`${t.node.inventoryCounts.valkeys.total} Valkey instances`
 						]

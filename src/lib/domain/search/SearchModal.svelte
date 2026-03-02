@@ -151,7 +151,7 @@
 		},
 		SqlInstance: {
 			icon: DatabaseIcon,
-			urlName: 'postgres',
+			urlName: 'cloudsql',
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},

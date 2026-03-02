@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type Persistence } from '$houdini';
-	import { Heading } from '@nais/ds-svelte-community';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		workload: Persistence;
@@ -73,6 +73,14 @@
 							}
 						}
 					}
+					postgresInstances {
+						edges {
+							node {
+								id
+								name
+							}
+						}
+					}
 					valkeys {
 						edges {
 							node {
@@ -105,7 +113,8 @@
 	const persistence = $derived({
 		buckets: $data.buckets.edges.map(toIconLabel('bucket')),
 		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery')),
-		postgres: $data.sqlInstances.edges.map(toIconLabel('postgres')),
+		cloudSql: $data.sqlInstances.edges.map(toIconLabel('cloudsql')),
+		postgres: $data.postgresInstances.edges.map(toIconLabel('postgres')),
 		kafka: $data.kafkaTopicAcls.edges
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
