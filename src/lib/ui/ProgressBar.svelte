@@ -9,8 +9,8 @@
 		return () => clearInterval(id);
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	export function fade(node: HTMLElement) {
+		void node;
 		return {
 			delay: 300,
 			duration: 1,
@@ -18,11 +18,11 @@
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	function complete(node: HTMLElement) {
+		void node;
 		return {
 			duration: 200,
-			css: (t: number, u: number) => `
+			css: (_t: number, u: number) => `
                 width: ${progress + (100 - progress) * u}vw;
             `
 		};

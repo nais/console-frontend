@@ -2,17 +2,20 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
-	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
+	import { Heading, Tag } from '@nais/ds-svelte-community';
 
 	const breadcrumbs = $derived(page.data?.meta?.breadcrumbs ?? []);
 	const heading = $derived(page.data?.meta?.title ?? '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
+	const resolveUnsafe = resolve as unknown as (
+		href: string,
+		params?: Record<string, string>
+	) => string;
 
 	function resolveHack(href: RouteId) {
 		// Hack to work around SvelteKit issue with $app/paths in derived stores
-		// @ts-expect-error Resolve is so strongly typed that it causes issues here
-		return resolve(href, page.params);
+		return resolveUnsafe(href, page.params);
 	}
 </script>
 

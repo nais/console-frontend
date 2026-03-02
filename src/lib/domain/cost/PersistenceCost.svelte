@@ -71,9 +71,7 @@
 
 		// Otherwise, calculate based on the last two months present in the data
 		const lastMonthDate = new Date(sortedSeries.at(-1)!.date);
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity
-		const firstMonthDate = new Date(lastMonthDate);
-		firstMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+		const firstMonthDate = new Date(lastMonthDate.getFullYear(), lastMonthDate.getMonth() - 1, 1);
 
 		let firstMonthSum = 0;
 		let secondMonthSum = 0;
@@ -145,7 +143,7 @@
 			data={costData.daily.series}
 			dateField="date"
 			valueField="sum"
-			class="mt-3 mb-5 h-[220px] w-[93%] pl-[7%]"
+			class="mt-3 mb-5 h-55 w-[93%] pl-[7%]"
 			color={serviceColor(service)}
 		/>
 	</div>
