@@ -140,13 +140,11 @@
 								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
 								{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
 
-								<div class="issues-container">
-									<IssueSeverityTags
-										critical={criticalCount}
-										warning={warningCount}
-										todo={todoCount}
-									/>
-								</div>
+								<IssueSeverityTags
+									critical={criticalCount}
+									warning={warningCount}
+									todo={todoCount}
+								/>
 							{/if}
 						</ListItem>
 					{/each}
@@ -225,14 +223,6 @@
 			justify-content: flex-end;
 			margin-bottom: var(--spacing-layout);
 		}
-		.issues-container {
-			display: flex;
-			flex-wrap: wrap;
-			gap: var(--ax-space-16);
-			width: 100%;
-			align-items: center;
-		}
-
 		/* OpenSearch state indicators */
 		.status-indicator {
 			width: 24px;
