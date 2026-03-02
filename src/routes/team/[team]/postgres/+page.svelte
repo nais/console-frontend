@@ -19,9 +19,22 @@
 	let { data }: PageProps = $props();
 
 	let { PostgresInstances } = $derived(data);
+	let hasCloudSql = $derived(
+		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
+	);
+	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
 </script>
 
 <GraphErrors errors={$PostgresInstances.errors} />
+
+{#snippet cloudSqlRelocationAlert()}
+	{#if hasCloudSql}
+		<Alert variant="info" size="small" style="margin-bottom: 1rem;">
+			Postgres instances running in Cloud SQL have moved to a new page. You can find them on
+			<a href="/team/{cloudSqlTeamSlug}/cloudsql">Cloud SQL</a>.
+		</Alert>
+	{/if}
+{/snippet}
 
 {#if $PostgresInstances.fetching}
 	<div class="loading">
@@ -29,16 +42,10 @@
 	</div>
 {:else if $PostgresInstances.data && $PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
 	{@const si = $PostgresInstances.data.team.postgresInstances}
-	{@const hasCloudSql = $PostgresInstances.data.team.inventoryCounts.sqlInstances.total > 0}
 
 	<div class="content-wrapper">
 		<div>
-			{#if hasCloudSql}
-				<Alert variant="info" size="small" style="margin-bottom: 1rem;">
-					Postgres instances running in Cloud SQL have moved to a new page. You can find them on
-					<a href="/team/{$PostgresInstances.data.team.slug}/cloudsql">Cloud SQL</a>.
-				</Alert>
-			{/if}
+			{@render cloudSqlRelocationAlert()}
 
 			<BodyLong spacing>
 				Postgres instances provide managed relational databases in the cloud.
@@ -110,25 +117,18 @@
 		</div>
 	</div>
 {:else}
-	{@const hasCloudSql = ($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0}
-
 	<div class="content-wrapper">
-		<BodyLong>
-			{#if hasCloudSql}
-				<Alert variant="info" size="small" style="margin-bottom: 1rem;">
-					Postgres instances running in Cloud SQL have moved to a new page. You can find them on
-					<a href="/team/{$PostgresInstances.data?.team.slug ?? data.teamSlug}/cloudsql"
-						>Cloud SQL</a
-					>.
-				</Alert>
-			{/if}
+		<div>
+			{@render cloudSqlRelocationAlert()}
 
-			<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
-			databases in the cloud.
-			<ExternalLink href={docURL('/persistence/postgres')}
-				>Learn more about Postgres in Nais and how to get started.</ExternalLink
-			>
-		</BodyLong>
+			<BodyLong>
+				<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
+				databases in the cloud.
+				<ExternalLink href={docURL('/persistence/postgres')}
+					>Learn more about Postgres in Nais and how to get started.</ExternalLink
+				>
+			</BodyLong>
+		</div>
 	</div>
 {/if}
 
