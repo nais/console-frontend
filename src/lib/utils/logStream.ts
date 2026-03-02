@@ -25,6 +25,12 @@ export function appendSortedBoundedLog<T extends LogEntry>(
 	}
 
 	const entryTimestamp = toMilliseconds(entry.time);
+	const oldest = logs[0];
+
+	if (logs.length >= maxEntries && oldest && entryTimestamp < toMilliseconds(oldest.time)) {
+		return logs;
+	}
+
 	const last = logs.at(-1);
 
 	if (!last || toMilliseconds(last.time) <= entryTimestamp) {

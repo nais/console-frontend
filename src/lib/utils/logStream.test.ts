@@ -106,4 +106,20 @@ describe('appendSortedBoundedLog', () => {
 
 		expect(result.map((entry) => entry.message)).toEqual(['b', 'c']);
 	});
+
+	it('returns original logs when full and incoming entry is older than oldest', () => {
+		const logs: TestLog[] = [
+			{ time: '2026-01-01T10:00:01.000Z', message: 'b' },
+			{ time: '2026-01-01T10:00:02.000Z', message: 'c' }
+		];
+
+		const result = appendSortedBoundedLog(
+			logs,
+			{ time: '2026-01-01T10:00:00.000Z', message: 'a' },
+			2
+		);
+
+		expect(result).toBe(logs);
+		expect(result.map((entry) => entry.message)).toEqual(['b', 'c']);
+	});
 });
