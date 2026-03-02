@@ -185,7 +185,40 @@
 	let logLevels = new SvelteSet<string>();
 	let selectedLogLevels = new SvelteSet<string>();
 
-	const colors = ['green', 'orange', 'purple', 'limegreen', 'blue'];
+	const colorRoles = [
+		'accent',
+		'success',
+		'warning',
+		'danger',
+		'brand-magenta',
+		'meta-purple',
+		'meta-lime',
+		'brand-beige',
+		'info',
+		'brand-blue'
+	] as const;
+
+	type ColorRole = (typeof colorRoles)[number];
+	const colorSpreadStep = 7;
+
+	function colorForPosition(position: number): ColorRole {
+		const normalized = ((position % colorRoles.length) + colorRoles.length) % colorRoles.length;
+		return colorRoles[(normalized * colorSpreadStep) % colorRoles.length];
+	}
+
+	function colorForInstance(instanceName: string): ColorRole {
+		for (let i = 0; i < team.environment.job.runs.nodes.length; i++) {
+			const run = team.environment.job.runs.nodes[i];
+			const instanceIndex = run.instances.nodes.findIndex(
+				(instance) => instance.name === instanceName
+			);
+			if (instanceIndex >= 0) {
+				return colorForPosition(i + instanceIndex);
+			}
+		}
+
+		return colorForPosition(0);
+	}
 
 	function getLogLevel(message: string) {
 		const logLevel = message.match(/"level":"(\w+)"/);
@@ -218,14 +251,11 @@
 	<div class="controls">
 		<Chips style="flex-grow: 1">
 			<div class="chips">
-				{#each team.environment.job.runs.nodes as run, i (run.id)}
-					{#each run.instances.nodes as instance, j (instance.id)}
+				{#each team.environment.job.runs.nodes as run (run.id)}
+					{#each run.instances.nodes as instance (instance.id)}
+						{@const color = colorForInstance(instance.name)}
 						<ToggleChip
-							--ax-bg-accent-moderate="var(--{colors[(i + j) % colors.length]}-200)"
-							--ax-bg-accent-moderate-hover="var(--{colors[(i + j) % colors.length]}-300)"
-							--ax-bg-accent-strong-pressed="var(--{colors[(i + j) % colors.length]}-500)"
-							--ax-bg-accent-strong-hover="var(--{colors[(i + j) % colors.length]}-600)"
-							--ax-text-accent="var(--ax-neutral-000)"
+							data-color={color}
 							value={renderInstanceName(instance.name)}
 							selected={selectedInstances.includes(instance.name)}
 							onclick={() => {
@@ -349,6 +379,7 @@
 				<BodyShort size="small">Waiting for logs...</BodyShort>
 			{:else}
 				{#each logs.toReversed() as log, i (i)}
+					{@const color = colorForInstance(log.instance)}
 					<div class="log-line">
 						{#if selectedViewOptions.has('Time')}
 							<div class="date">{format(log.time, 'yyyy-MM-dd HH:mm:ss.SSS')}</div>
@@ -360,16 +391,8 @@
 						{/if}
 						<div
 							class="instance-color"
-							style:background-color="var(--{colors[
-								(team.environment.job.runs.nodes.findIndex((run) =>
-									log.instance.startsWith(run.name)
-								) +
-									(team.environment.job.runs.nodes
-										.find((run) => log.instance.startsWith(run.name))
-										?.instances.nodes.findIndex((instance) => instance.name === log.instance) ??
-										0)) %
-									colors.length
-							]}-500)"
+							data-color={color}
+							style:background-color="var(--ax-bg-strong-pressed)"
 						></div>
 						{#if selectedViewOptions.has('Level')}
 							<div class="level">{getLogLevel(log.message)}</div>
