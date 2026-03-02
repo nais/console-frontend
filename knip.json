@@ -1,6 +1,12 @@
 {
-	"ignoreDependencies": ["houdini-svelte"],
+	"ignoreDependencies": [
+		"houdini-svelte",
+		"pino-pretty",
+		"husky",
+		"@lavamoat/preinstall-always-fail",
+		"npm-check-updates"
+	],
 	"ignoreUnresolved": ["\\$app/.+", "\\$env/.+"],
 	"ignore": ["houdini.config.js", "src/client.ts"],
-	"ignoreFiles": ["find-missing-css-vars.mjs", "find-unused-gql.mjs"]
+	"ignoreFiles": [".ncurc.cjs"]
 }

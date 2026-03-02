@@ -2,11 +2,9 @@ import { load_TeamSettings } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
-import type { BeforeLoadEvent } from './$houdini';
 
-export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
-	const pd = await parent();
-
+export async function load(event) {
+	const pd = await event.parent();
 	const userInfoData = get(pd.UserInfo);
 
 	if (
@@ -15,9 +13,7 @@ export async function _houdini_beforeLoad({ parent }: BeforeLoadEvent) {
 	) {
 		error(403, 'You are not allowed to view this page');
 	}
-}
 
-export async function load(event) {
 	return {
 		...(await addPageMeta(event, { title: 'Settings' })),
 		...(await load_TeamSettings({
