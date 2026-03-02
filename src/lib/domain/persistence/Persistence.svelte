@@ -157,5 +157,9 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: var(--ax-space-4);
+
+		:global(.icon-label.icon-label--with-desc) {
+			font-size: 1.25rem;
+		}
 	}
 </style>
