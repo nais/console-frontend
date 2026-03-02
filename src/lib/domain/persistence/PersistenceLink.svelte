@@ -29,6 +29,8 @@
 			case 'OpenSearch':
 				return 'opensearch';
 			case 'SqlInstance':
+				return 'cloudsql';
+			case 'PostgresInstance':
 				return 'postgres';
 			case 'Valkey':
 				return 'valkey';

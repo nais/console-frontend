@@ -1,12 +1,13 @@
 <div>
-	You can filter your searches with prefixes. Try one of the following:
+	Filter search results by prefix. Try one of these:
 	<code>app:myApp</code>
 	<code>bq:myBigQueryDataSet</code>
 	<code>bucket:myBucket</code>
 	<code>job:myJob</code>
 	<code>kafka:myKafkaTopic</code>
 	<code>os:myOpenSearch</code>
-	<code>sql:mySqlinstance</code>
+	<code>postgres:myPostgresInstance</code>
+	<code>sql:myCloudSQLInstance</code>
 	<code>team:myTeam</code>
 	<code>valkey:myValkey</code>
 </div>

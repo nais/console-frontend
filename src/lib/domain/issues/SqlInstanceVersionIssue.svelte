@@ -17,7 +17,7 @@
 			teamSlug={data.teamEnvironment.team.slug}
 			severity={data.severity}
 			resourceName={data.sqlInstance.name}
-			resourceType="postgres"
+			resourceType="cloudsql"
 		/>
 	</div>
 

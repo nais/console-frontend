@@ -28,6 +28,9 @@ query DataProduct {
 				openSearches {
 					total
 				}
+				postgresInstances {
+					total
+				}
 				valkeys {
 					total
 				}

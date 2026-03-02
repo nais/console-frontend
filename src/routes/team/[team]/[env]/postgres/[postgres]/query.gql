@@ -3,7 +3,6 @@ query PostgresInstance($env: String!, $team: Slug!, $name: String!) {
 		slug
 		environment(name: $env) {
 			postgresInstance(name: $name) {
-				__typename
 				id
 				name
 				teamEnvironment {
@@ -14,6 +13,13 @@ query PostgresInstance($env: String!, $team: Slug!, $name: String!) {
 				audit {
 					enabled
 					url
+					statementClasses
+				}
+				highAvailability
+				state
+				maintenanceWindow {
+					day
+					hour
 				}
 				majorVersion
 				resources {
