@@ -7,12 +7,10 @@ export async function load(event) {
 		interval = '7d';
 	}
 
-	const name = event.params.opensearch;
-
 	return {
 		interval,
 		...(await addPageMeta(event, {
-			title: name
+			title: 'Insights'
 		}))
 	};
 }
