@@ -12,16 +12,29 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Loader } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	let { PostgresInstances } = $derived(data);
+	let hasCloudSql = $derived(
+		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
+	);
+	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
 </script>
 
 <GraphErrors errors={$PostgresInstances.errors} />
+
+{#snippet cloudSqlRelocationAlert()}
+	{#if hasCloudSql}
+		<Alert variant="info" size="small" style="margin-bottom: 1rem;">
+			Postgres instances running in Cloud SQL have moved to a new page. You can find them on
+			<a href="/team/{cloudSqlTeamSlug}/cloudsql">Cloud SQL</a>.
+		</Alert>
+	{/if}
+{/snippet}
 
 {#if $PostgresInstances.fetching}
 	<div class="loading">
@@ -32,6 +45,8 @@
 
 	<div class="content-wrapper">
 		<div>
+			{@render cloudSqlRelocationAlert()}
+
 			<BodyLong spacing>
 				Postgres instances provide managed relational databases in the cloud.
 				<ExternalLink href={docURL('/persistence/postgres')}
@@ -103,13 +118,17 @@
 	</div>
 {:else}
 	<div class="content-wrapper">
-		<BodyLong>
-			<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
-			databases in the cloud.
-			<ExternalLink href={docURL('/persistence/postgres')}
-				>Learn more about Postgres in Nais and how to get started.</ExternalLink
-			>
-		</BodyLong>
+		<div>
+			{@render cloudSqlRelocationAlert()}
+
+			<BodyLong>
+				<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
+				databases in the cloud.
+				<ExternalLink href={docURL('/persistence/postgres')}
+					>Learn more about Postgres in Nais and how to get started.</ExternalLink
+				>
+			</BodyLong>
+		</div>
 	</div>
 {/if}
 

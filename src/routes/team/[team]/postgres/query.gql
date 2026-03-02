@@ -8,6 +8,11 @@ query PostgresInstances(
 ) {
 	team(slug: $team) {
 		slug
+		inventoryCounts {
+			sqlInstances {
+				total
+			}
+		}
 
 		postgresInstances(
 			first: $first
