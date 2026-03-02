@@ -13,8 +13,7 @@
 		params?: Record<string, string>
 	) => string;
 
-	function resolveHack(href: RouteId) {
-		// Hack to work around SvelteKit issue with $app/paths in derived stores
+	function resolveRouteHref(href: RouteId) {
 		return resolveUnsafe(href, page.params);
 	}
 </script>
@@ -25,7 +24,7 @@
 			<div class="breadcrumbs">
 				{#each breadcrumbs as breadcrumb (breadcrumb)}
 					{#if breadcrumb.href}
-						<a href={resolveHack(breadcrumb.href)} class="link">{breadcrumb.label}</a>
+						<a href={resolveRouteHref(breadcrumb.href)} class="link">{breadcrumb.label}</a>
 					{:else}
 						{breadcrumb.label}
 					{/if}
