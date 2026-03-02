@@ -7,7 +7,7 @@
 	<code>kafka:myKafkaTopic</code>
 	<code>os:myOpenSearch</code>
 	<code>postgres:myPostgresInstance</code>
-	<code>sql:myCloudSQInstance</code>
+	<code>sql:myCloudSQLInstance</code>
 	<code>team:myTeam</code>
 	<code>valkey:myValkey</code>
 </div>
