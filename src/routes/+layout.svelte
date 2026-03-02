@@ -56,7 +56,7 @@
 		);
 
 		return () => {
-			if (refreshCookieInterval) {
+			if (refreshCookieInterval !== undefined) {
 				clearInterval(refreshCookieInterval);
 			}
 		};

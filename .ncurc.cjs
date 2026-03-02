@@ -5,12 +5,16 @@ const { defineConfig } = require('npm-check-updates');
  *
  * Optional tooling for manual dependency checks. Primary project enforcement
  * uses check-updates-cooldown.mjs scripts.
+ *
+ * Note: @nais/ds-svelte-community is intentionally exempt from cooldown.
  */
 module.exports = defineConfig({
 	cooldown: (packageName) => {
+		// Skip cooldown for trusted internal package
 		if (packageName === '@nais/ds-svelte-community') {
 			return 0;
 		}
+		// Apply 14-day cooldown for all other packages
 		return 14;
 	},
 	target: 'latest',
