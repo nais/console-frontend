@@ -1,5 +1,4 @@
 <script lang="ts">
-	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
@@ -11,6 +10,7 @@
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
+	import IssueSeverityTags from '../issues/IssueSeverityTags.svelte';
 
 	const {
 		app

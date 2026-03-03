@@ -14,7 +14,7 @@
     - secret: ${secretName}`;
 </script>
 
-<div class="card">
+<div>
 	<Heading as="h2" size="medium" spacing>Use this secret</Heading>
 
 	<Heading as="h3" size="xsmall">Documentation</Heading>
@@ -35,11 +35,6 @@
 </div>
 
 <style>
-	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-20) var(--ax-space-20);
-		border-radius: 12px;
-	}
 	.value {
 		margin: 0.5rem 1rem;
 	}

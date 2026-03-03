@@ -168,9 +168,7 @@
 		flex-direction: column;
 		gap: 1rem;
 		.card {
-			/* background-color: var(--ax-bg-sunken); */
 			padding: var(--ax-space-20);
-			border-radius: 12px;
 			width: 300px;
 		}
 		padding-bottom: var(--ax-space-32);

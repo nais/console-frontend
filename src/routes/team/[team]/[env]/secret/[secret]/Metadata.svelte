@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Time from '$lib/ui/Time.svelte';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		lastModifiedAt: Date | null;
@@ -13,39 +13,35 @@
 	let { lastModifiedAt, lastModifiedBy }: Props = $props();
 </script>
 
-<div class="card">
+<div>
 	<Heading as="h2" size="medium" spacing>Metadata</Heading>
-	<Heading as="h3" size="xsmall">Last Modified</Heading>
-	<div class="value">
-		{#if lastModifiedAt}
-			<Time time={lastModifiedAt} distance />
-		{:else}
-			<code>n/a</code>
-		{/if}
-	</div>
-	<Heading as="h3" size="xsmall">Last Modified by</Heading>
-	<div class="value">
-		Last modified by
-		{#if lastModifiedBy}
-			<span class="cap" title={lastModifiedBy.email}>{lastModifiedBy.name}</span>
-		{:else}
-			<code>n/a</code>
-		{/if}
-	</div>
+	<dl class="metadata-list">
+		<Detail as="dt">Last Modified</Detail>
+		<BodyShort as="dd">
+			{#if lastModifiedAt}
+				<Time time={lastModifiedAt} distance />
+			{:else}
+				<code>n/a</code>
+			{/if}
+		</BodyShort>
+		<Detail as="dt">By</Detail>
+		<BodyShort as="dd">
+			{#if lastModifiedBy}
+				<span class="cap" title={lastModifiedBy.email}>{lastModifiedBy.name}</span>
+			{:else}
+				<code>n/a</code>
+			{/if}
+		</BodyShort>
+	</dl>
 </div>
 
 <style>
-	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-20) var(--ax-space-20);
-		border-radius: 12px;
-	}
-	code {
-		font-size: 1rem;
+	.metadata-list {
+		margin: 0;
 	}
 
-	.value {
-		margin-left: 1rem;
+	code {
+		font-size: 1rem;
 	}
 
 	.cap {

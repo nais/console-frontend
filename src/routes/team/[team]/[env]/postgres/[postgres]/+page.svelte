@@ -260,6 +260,31 @@ clamp_min(
 
 		<div class="sidebar">
 			<div>
+				<Heading as="h2" size="medium" spacing>Used by</Heading>
+				{#if instance.workloads.nodes.length > 0}
+					<ul class="workloads-list">
+						{#each instance.workloads.nodes as workload (workload.id)}
+							<li><WorkloadLink {workload} hideTeam hideEnv /></li>
+						{/each}
+					</ul>
+					{#if instance.workloads.pageInfo.totalCount > instance.workloads.nodes.length}
+						<BodyShort>
+							Showing first {instance.workloads.nodes.length} of {instance.workloads.pageInfo
+								.totalCount}
+							workloads.
+						</BodyShort>
+					{/if}
+				{:else}
+					<BodyShort>Not used by any workloads.</BodyShort>
+				{/if}
+			</div>
+			<div>
+				<Heading as="h2" size="medium" spacing>Observability</Heading>
+				<div class="value">
+					<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
+				</div>
+			</div>
+			<div>
 				<Heading as="h2" size="medium" spacing>Use this Postgres</Heading>
 
 				<Heading as="h3" size="xsmall">Documentation</Heading>
@@ -280,31 +305,6 @@ clamp_min(
 					/>
 				</Heading>
 				<pre class="manifest">{workloadManifest}</pre>
-
-				<Heading as="h3" size="xsmall">Observability</Heading>
-				<div class="value">
-					<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
-				</div>
-			</div>
-
-			<div>
-				<Heading as="h2" size="medium" spacing>Used by</Heading>
-				{#if instance.workloads.nodes.length > 0}
-					<ul class="workloads-list">
-						{#each instance.workloads.nodes as workload (workload.id)}
-							<li><WorkloadLink {workload} hideTeam hideEnv /></li>
-						{/each}
-					</ul>
-					{#if instance.workloads.pageInfo.totalCount > instance.workloads.nodes.length}
-						<BodyShort>
-							Showing first {instance.workloads.nodes.length} of {instance.workloads.pageInfo
-								.totalCount}
-							workloads.
-						</BodyShort>
-					{/if}
-				{:else}
-					<BodyShort>Not used by any workloads.</BodyShort>
-				{/if}
 			</div>
 		</div>
 	</div>

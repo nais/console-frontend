@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { JobState, type JobRunState$options } from '$houdini';
-	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -20,6 +19,7 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
+	import IssueSeverityTags from '../issues/IssueSeverityTags.svelte';
 
 	const {
 		job
