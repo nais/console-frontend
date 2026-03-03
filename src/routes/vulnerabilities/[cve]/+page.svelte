@@ -43,6 +43,10 @@
 	const hasOtherErrors = (errors?: { message: string }[] | null) => {
 		return errors?.some((e) => !e.message.includes('cve not found'));
 	};
+
+	const hasDetailsLink = (detailsLink?: string | null) => {
+		return Boolean(detailsLink?.trim());
+	};
 </script>
 
 <div class="page">
@@ -115,7 +119,11 @@
 						<div>
 							<Detail as="dt">More Information</Detail>
 							<BodyShort as="dd">
-								<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
+								{#if hasDetailsLink(cve.detailsLink)}
+									<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
+								{:else}
+									No link available
+								{/if}
 							</BodyShort>
 						</div>
 					</dl>
