@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
 	import { docURL } from '$lib/doc';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { sanitizePromLabel } from '$lib/utils/formatters';
 	import { Alert, BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
@@ -268,11 +269,6 @@ clamp_min(
 					>
 				</div>
 
-				<Heading as="h3" size="xsmall">Observability</Heading>
-				<div class="value">
-					<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
-				</div>
-
 				<Heading as="h3" size="xsmall">
 					Manifest
 					<CopyButton
@@ -284,6 +280,31 @@ clamp_min(
 					/>
 				</Heading>
 				<pre class="manifest">{workloadManifest}</pre>
+
+				<Heading as="h3" size="xsmall">Observability</Heading>
+				<div class="value">
+					<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
+				</div>
+			</div>
+
+			<div>
+				<Heading as="h2" size="medium" spacing>Used by</Heading>
+				{#if instance.workloads.nodes.length > 0}
+					<ul class="workloads-list">
+						{#each instance.workloads.nodes as workload (workload.id)}
+							<li><WorkloadLink {workload} hideTeam hideEnv /></li>
+						{/each}
+					</ul>
+					{#if instance.workloads.pageInfo.totalCount > instance.workloads.nodes.length}
+						<BodyShort>
+							Showing first {instance.workloads.nodes.length} of {instance.workloads.pageInfo
+								.totalCount}
+							workloads.
+						</BodyShort>
+					{/if}
+				{:else}
+					<BodyShort>Not in use by any workloads.</BodyShort>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -345,6 +366,14 @@ clamp_min(
 	.statement-classes {
 		margin: 0;
 		padding-left: var(--ax-space-16);
+	}
+
+	.workloads-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: var(--ax-space-6);
 	}
 
 	.sidebar {
