@@ -303,7 +303,7 @@ clamp_min(
 						</BodyShort>
 					{/if}
 				{:else}
-					<BodyShort>Not in use by any workloads.</BodyShort>
+					<BodyShort>Not used by any workloads.</BodyShort>
 				{/if}
 			</div>
 		</div>
