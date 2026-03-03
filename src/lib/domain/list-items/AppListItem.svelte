@@ -1,11 +1,13 @@
 <script lang="ts">
+	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { Detail, Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
+	import { Detail, Tooltip } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
@@ -92,25 +94,16 @@
 			{/if}
 		</Detail>
 		{#if app.issues?.pageInfo.totalCount > 0}
-			{@const criticalCount = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL').length}
-			{@const warningCount = app.issues.edges.filter((e) => e.node.severity === 'WARNING').length}
-			{@const todoCount = app.issues.edges.filter((e) => e.node.severity === 'TODO').length}
+			{@const criticalCount = countIssuesBySeverity(app.issues.edges, 'CRITICAL')}
+			{@const warningCount = countIssuesBySeverity(app.issues.edges, 'WARNING')}
+			{@const todoCount = countIssuesBySeverity(app.issues.edges, 'TODO')}
 
-			<div class="issues-container">
-				{#if criticalCount > 0}
-					<Tag variant="error" size="xsmall"
-						>{criticalCount} critical issue{criticalCount > 1 ? 's' : ''}</Tag
-					>
-				{/if}
-				{#if warningCount > 0}
-					<Tag variant="warning" size="xsmall"
-						>{warningCount} warning{warningCount > 1 ? 's' : ''}</Tag
-					>
-				{/if}
-				{#if todoCount > 0}
-					<Tag variant="info" size="xsmall">{todoCount} todo{todoCount > 1 ? 's' : ''}</Tag>
-				{/if}
-			</div>
+			<IssueSeverityTags
+				critical={criticalCount}
+				warning={warningCount}
+				todo={todoCount}
+				layout="stacked"
+			/>
 		{/if}
 	</div>
 </ListItem>
@@ -121,13 +114,5 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
-	}
-
-	.issues-container {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		width: 100%;
-		align-items: end;
 	}
 </style>

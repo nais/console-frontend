@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import { SvelteMap } from 'svelte/reactivity';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
@@ -20,10 +19,12 @@
 		Thead,
 		Tr
 	} from '@nais/ds-svelte-community';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
 		DocPencilIcon,
 		EyeSlashIcon,
@@ -32,10 +33,10 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import ViewSecretModal from './ViewSecretModal.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
 	import Textarea from './Textarea.svelte';
+	import ViewSecretModal from './ViewSecretModal.svelte';
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();
@@ -43,10 +44,10 @@
 	let secret = $derived($Secret.data?.team.environment.secret);
 	let viewerIsMember = $derived($Secret.data?.team.viewerIsMember ?? false);
 	let isAdmin = $derived($Secret.data?.me?.__typename === 'User' ? $Secret.data.me.isAdmin : false);
-
-	// Admin can mutate (create/update/delete) but only team members can view secret values
-	let canMutate = $derived(viewerIsMember || isAdmin);
-	let canViewValues = $derived(viewerIsMember);
+	let permissions = $derived(getSecretPermissions(viewerIsMember, isAdmin));
+	let canMutate = $derived(permissions.canMutate);
+	let canRevealValues = $derived(permissions.canRevealValues);
+	let canEditValues = $derived(permissions.canEditValues);
 
 	let secretName = $derived(page.params.secret ?? '');
 	let env = $derived(page.params.env ?? '');
@@ -82,6 +83,9 @@
 	};
 
 	const revealSecrets = () => {
+		if (!canRevealValues) {
+			return;
+		}
 		// Open modal to get justification - values will be returned directly from the mutation
 		viewSecretsModalOpen = true;
 	};
@@ -210,6 +214,9 @@
 	};
 
 	const openEditValueModal = (key: string, value: string) => {
+		if (!canEditValues) {
+			return;
+		}
 		keyToEdit = key;
 		valueToEdit = value;
 		editValueOpen = true;
@@ -309,7 +316,7 @@
 					</HelpText>
 				</div>
 				<div class="header-buttons">
-					{#if canViewValues}
+					{#if canRevealValues}
 						{#if secretsRevealed}
 							<Button
 								variant="secondary"
@@ -381,7 +388,7 @@
 											size="small"
 											copyText={revealedValues.get(keyName) ?? ''}
 										/>
-										{#if canViewValues}
+										{#if canEditValues}
 											<Button
 												size="small"
 												variant="tertiary"

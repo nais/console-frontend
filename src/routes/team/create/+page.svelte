@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import { Button, ErrorSummary, Heading, TextField } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -32,104 +32,92 @@
 	const slackChannelPattern = /^[a-zæåø0-9_-]{1,80}$/;
 
 	function handleTeamSlugInput(event: Event) {
-		if (!event) return;
 		const input = event.target as HTMLInputElement | null;
-		if (input) {
-			const slug = input.value;
+		if (!input) return;
 
-			// Check if the slug is reserved
-			if (reservedSlugs.includes(slug)) {
-				teamSlugError = 'This slug is reserved.';
-				return;
-			}
+		const slug = input.value;
 
-			// Check if the slug starts with "nais"
-			if (slug.startsWith('nais')) {
-				teamSlugError =
-					"The name prefix 'nais' is reserved. Try again with a different name, perhaps just removing the prefix?";
-				return;
-			}
-
-			// Check if the slug starts with "team"
-			if (slug.startsWith('team')) {
-				teamSlugError =
-					"The name prefix 'team' is redundant. When you create a team, it is by definition a team. Try again with a different name, perhaps just removing the prefix?";
-				return;
-			}
-
-			// Check the length of the slug
-			if (slug.length < 3) {
-				teamSlugError = 'A team slug must be at least 3 characters long.';
-				return;
-			}
-
-			if (slug.length > 30) {
-				teamSlugError = 'A team slug must be at most 30 characters long.';
-				return;
-			}
-
-			// Validate the slug against the pattern
-			if (!slugPattern.test(slug)) {
-				teamSlugError =
-					'A team slug must begin with a lowercase letter and may include lowercase letters, numbers, and hyphens. However, it cannot start or end with a hyphen, nor can it contain consecutive hyphens.';
-				return;
-			}
-
-			// If all validations pass, clear the error
-			teamSlugError = 'no_error';
+		if (reservedSlugs.includes(slug)) {
+			teamSlugError = 'This slug is reserved.';
+			return;
 		}
+
+		if (slug.startsWith('nais')) {
+			teamSlugError =
+				"The name prefix 'nais' is reserved. Try again with a different name, perhaps just removing the prefix?";
+			return;
+		}
+
+		if (slug.startsWith('team')) {
+			teamSlugError =
+				"The name prefix 'team' is redundant. When you create a team, it is by definition a team. Try again with a different name, perhaps just removing the prefix?";
+			return;
+		}
+
+		if (slug.length < 3) {
+			teamSlugError = 'A team slug must be at least 3 characters long.';
+			return;
+		}
+
+		if (slug.length > 30) {
+			teamSlugError = 'A team slug must be at most 30 characters long.';
+			return;
+		}
+
+		if (!slugPattern.test(slug)) {
+			teamSlugError =
+				'A team slug must begin with a lowercase letter and may include lowercase letters, numbers, and hyphens. However, it cannot start or end with a hyphen, nor can it contain consecutive hyphens.';
+			return;
+		}
+
+		teamSlugError = 'no_error';
 	}
 
 	function handleSlackChannelInput(event: Event) {
-		if (!event) return;
 		const input = event.target as HTMLInputElement | null;
-		if (input) {
-			let cursorPosition = input.selectionStart ?? 0;
-			let value = input.value;
+		if (!input) return;
 
-			// Ensure the input value starts with a single '#'
-			if (!value.startsWith('#')) {
-				value = '#' + value.replace(/#+/, '');
-				cursorPosition++;
-			} else {
-				value = '#' + value.slice(1).replace(/#+/, '');
-			}
+		let cursorPosition = input.selectionStart ?? 0;
+		let value = input.value;
 
-			// Set the corrected value back to the input
-			input.value = value;
-
-			// Move cursor to the correct position
-			if (cursorPosition <= 1) {
-				input.setSelectionRange(1, 1); // Move cursor after the '#'
-			} else {
-				input.setSelectionRange(cursorPosition, cursorPosition);
-			}
-
-			// Validate the Slack channel name
-			const slackChannelName = input.value.slice(1); // Remove the leading '#'
-			const isValid = slackChannelPattern.test(slackChannelName);
-
-			if (!isValid) {
-				slackChannelError =
-					'Invalid Slack channel name. It must contain only lowercase letters, numbers, hyphens, and underscores, and be between 1 and 80 characters long.';
-			} else {
-				slackChannelError = 'no_error';
-			}
+		if (!value.startsWith('#')) {
+			value = '#' + value.replace(/#+/, '');
+			cursorPosition++;
+		} else {
+			value = '#' + value.slice(1).replace(/#+/, '');
 		}
-		if (form && input) {
+
+		input.value = value;
+
+		if (cursorPosition <= 1) {
+			input.setSelectionRange(1, 1);
+		} else {
+			input.setSelectionRange(cursorPosition, cursorPosition);
+		}
+
+		const slackChannelName = input.value.slice(1);
+		const isValid = slackChannelPattern.test(slackChannelName);
+
+		if (!isValid) {
+			slackChannelError =
+				'Invalid Slack channel name. It must contain only lowercase letters, numbers, hyphens, and underscores, and be between 1 and 80 characters long.';
+		} else {
+			slackChannelError = 'no_error';
+		}
+
+		if (form) {
 			form.input.slackChannel = input.value;
 		}
 	}
 
 	function handlePurposeInput(event: Event) {
-		if (!event) return;
 		const input = event.target as HTMLInputElement | null;
-		if (input) {
-			if (input.value.length < 3) {
-				purposeError = 'The purpose must be at least 3 characters long.';
-			} else {
-				purposeError = 'no_error';
-			}
+		if (!input) return;
+
+		if (input.value.length < 3) {
+			purposeError = 'The purpose must be at least 3 characters long.';
+		} else {
+			purposeError = 'no_error';
 		}
 	}
 </script>

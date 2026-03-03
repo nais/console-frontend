@@ -49,7 +49,7 @@
 		loading?: Snippet;
 	} = $props();
 
-	let modalData = $state();
+	let modalData: unknown = $state();
 
 	let open = $state(false);
 

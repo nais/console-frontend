@@ -10,7 +10,7 @@
 		formatDistanceStrict
 	} from 'date-fns';
 	import { enGB } from 'date-fns/locale';
-	import { onDestroy, untrack } from 'svelte';
+	import { onDestroy } from 'svelte';
 
 	const {
 		time,
@@ -67,27 +67,21 @@
 	});
 
 	$effect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		distance;
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		time;
+		text = getDisplayText();
 
-		untrack(() => {
-			if (distance) {
-				if (!interval) {
-					interval = setInterval(() => {
-						text = getDisplayText();
-					}, 1000);
-				}
-				text = getDisplayText();
-			} else {
-				if (interval) {
-					clearInterval(interval);
-					interval = undefined;
-				}
-				text = getDisplayText();
+		if (!distance) {
+			if (interval) {
+				clearInterval(interval);
+				interval = undefined;
 			}
-		});
+			return;
+		}
+
+		if (!interval) {
+			interval = setInterval(() => {
+				text = getDisplayText();
+			}, 1000);
+		}
 	});
 </script>
 

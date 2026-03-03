@@ -13,11 +13,9 @@ export async function load(event) {
 		interval = '7d';
 	}
 
-	const name = event.params.kafka;
-
 	return {
 		interval,
-		...(await addPageMeta(event, { title: name })),
+		...(await addPageMeta(event, { title: 'Insights' })),
 		...(await load_KafkaTopic({
 			event,
 			variables: {

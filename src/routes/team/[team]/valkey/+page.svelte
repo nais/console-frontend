@@ -2,6 +2,7 @@
 	import { OrderDirection, ValkeyOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -13,8 +14,9 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Tag } from '@nais/ds-svelte-community';
+	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
@@ -135,33 +137,15 @@
 								{/snippet}
 							</IconLabel>
 							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-								{@const criticalCount = instance.issues?.edges.filter(
-									(e) => e.node.severity === 'CRITICAL'
-								).length}
-								{@const warningCount = instance.issues?.edges.filter(
-									(e) => e.node.severity === 'WARNING'
-								).length}
-								{@const todoCount = instance.issues?.edges.filter(
-									(e) => e.node.severity === 'TODO'
-								).length}
+								{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
+								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
+								{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
 
-								<div class="issues-container">
-									{#if criticalCount ?? 0 > 0}
-										<Tag variant="error" size="xsmall"
-											>{criticalCount ?? 0} critical issue{(criticalCount ?? 0) > 1 ? 's' : ''}</Tag
-										>
-									{/if}
-									{#if warningCount ?? 0 > 0}
-										<Tag variant="warning" size="xsmall"
-											>{warningCount ?? 0} warning{(warningCount ?? 0) > 1 ? 's' : ''}</Tag
-										>
-									{/if}
-									{#if todoCount ?? 0 > 0}
-										<Tag variant="info" size="xsmall"
-											>{todoCount ?? 0} todo{(todoCount ?? 0) > 1 ? 's' : ''}</Tag
-										>
-									{/if}
-								</div>
+								<IssueSeverityTags
+									critical={criticalCount}
+									warning={warningCount}
+									todo={todoCount}
+								/>
 							{/if}
 						</ListItem>
 					{/each}
@@ -241,14 +225,6 @@
 			justify-content: flex-end;
 			margin-bottom: var(--spacing-layout);
 		}
-		.issues-container {
-			display: flex;
-			flex-wrap: wrap;
-			gap: var(--ax-space-16);
-			width: 100%;
-			align-items: center;
-		}
-
 		/* Valkey state indicators */
 		.status-indicator {
 			width: 24px;
