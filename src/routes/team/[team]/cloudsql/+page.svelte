@@ -1,5 +1,4 @@
 <script lang="ts">
-	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
@@ -7,6 +6,7 @@
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';

@@ -151,9 +151,7 @@
 							0
 						)}
 						{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
-						<div
-							style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
-						>
+						<div style="display: flex; gap: 1rem; justify-content: center;">
 							<div class="cost-amount">
 								{euroValueFormatter(
 									round(
@@ -189,9 +187,7 @@
 							(acc, { used }) => acc + used,
 							0
 						)}
-						<div
-							style="display: flex; gap: 1rem; justify-content: center; padding: var(--spacing-layout) 0;"
-						>
+						<div style="display: flex; gap: 1rem; justify-content: center;">
 							<div class="cost-amount">
 								{euroValueFormatter(
 									yearlyOverageCost(
@@ -293,10 +289,8 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		column-gap: 1rem;
-		row-gap: 1rem;
 	}
 	.card {
-		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;

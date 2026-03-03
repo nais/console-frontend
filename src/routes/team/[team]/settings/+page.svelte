@@ -20,6 +20,7 @@
 		BodyShort,
 		Button,
 		CopyButton,
+		Detail,
 		Heading,
 		Modal,
 		TextField
@@ -321,14 +322,14 @@
 			{/if}
 		</div>
 		<div class="right">
-			<div class="card">
+			<div class="managed-resources">
 				<Heading as="h2" size="small">Managed Resources</Heading>
 				<dl>
 					{#if $TeamSettings.data?.team.externalResources}
 						{@const external = $TeamSettings.data.team.externalResources}
 						{#if external.googleArtifactRegistry}
-							<Heading as="h3" size="xsmall">Google Artifact Registry</Heading>
-							<BodyShort style="font-size: 0.9rem">
+							<Detail as="dt">Google Artifact Registry</Detail>
+							<BodyShort as="dd">
 								<ExternalLink
 									href="https://{formatGARRepo(external.googleArtifactRegistry.repository)}"
 								>
@@ -337,8 +338,8 @@
 							</BodyShort>
 						{/if}
 						{#if external.entraIDGroup}
-							<Heading as="h3" size="xsmall">Entra ID Group</Heading>
-							<BodyShort style="font-size: 0.9rem">
+							<Detail as="dt">Entra ID Group</Detail>
+							<BodyShort as="dd">
 								<ExternalLink
 									href="https://myaccount.microsoft.com/groups/{external.entraIDGroup.groupID}"
 								>
@@ -347,8 +348,8 @@
 							</BodyShort>
 						{/if}
 						{#if external.cdn}
-							<Heading as="h3" size="xsmall">Team CDN bucket</Heading>
-							<BodyShort style="font-size: 0.9rem">
+							<Detail as="dt">Team CDN bucket</Detail>
+							<BodyShort as="dd">
 								<ExternalLink
 									href="https://console.cloud.google.com/storage/browser/{external.cdn.bucket}"
 								>
@@ -358,10 +359,8 @@
 						{/if}
 					{/if}
 					{#each $TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
-						<Heading as="h3" size="xsmall"
-							>Team project in {teamEnvironment.environment.name}</Heading
-						>
-						<BodyShort style="font-size: 0.9rem">
+						<Detail as="dt">Team project in {teamEnvironment.environment.name}</Detail>
+						<BodyShort as="dd">
 							<ExternalLink
 								href="https://console.cloud.google.com/home/dashboard?project={teamEnvironment.gcpProjectID}"
 							>
@@ -526,9 +525,7 @@
 		flex-direction: column;
 		gap: var(--spacing-layout);
 	}
-	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-16) var(--ax-space-20);
+	.managed-resources {
 		border-radius: 12px;
 		align-self: start;
 	}

@@ -451,7 +451,7 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<div class="chart h-[330px]">
+			<div class="chart h-82.5">
 				<AreaChart
 					series={cpuChartData}
 					x="timestamp"
@@ -612,7 +612,7 @@
 				</ToggleGroup>
 			</div>
 
-			<div class="chart h-[330px]">
+			<div class="chart h-82.5">
 				<AreaChart
 					series={memoryChartData}
 					x="timestamp"
@@ -782,8 +782,6 @@
 	}
 
 	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;
 	}

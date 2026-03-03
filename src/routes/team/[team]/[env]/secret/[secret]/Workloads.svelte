@@ -10,7 +10,7 @@
 	let { workloads }: Props = $props();
 </script>
 
-<div class="card">
+<div>
 	<Heading as="h2" size="medium" spacing>Used by</Heading>
 	{#if workloads.nodes.length > 0}
 		<ul>
@@ -26,11 +26,6 @@
 </div>
 
 <style>
-	.card {
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-20) var(--ax-space-20);
-		border-radius: 12px;
-	}
 	ul {
 		list-style: none;
 		margin: 0;

@@ -128,7 +128,7 @@
 						</div>
 					</dl>
 					{#if cve.description}
-						<ReadMore header="Description" size="medium">
+						<ReadMore header="Description" size="medium" open={true}>
 							{cve.description}
 						</ReadMore>
 					{/if}
@@ -271,7 +271,6 @@
 	}
 
 	.card {
-		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-16);
 		border-radius: 8px;
 	}
