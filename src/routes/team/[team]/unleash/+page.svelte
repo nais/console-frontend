@@ -6,7 +6,6 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import SummaryCard from '$lib/ui/SummaryCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import {
@@ -30,6 +29,7 @@
 	import {
 		BulletListIcon,
 		CheckmarkIcon,
+		LineGraphStackedIcon,
 		PencilIcon,
 		PlusCircleFillIcon,
 		PlusIcon,
@@ -316,7 +316,7 @@
 		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
-	<BodyLong
+	<BodyLong spacing
 		>Unleash is a feature toggle system, that gives you a great overview of all feature toggles
 		across all your applications and services
 		<ExternalLink href={docURL('/services/feature-toggling')}
@@ -325,7 +325,8 @@
 	</BodyLong>
 	{#if !unleash.ready}
 		<Alert variant="info" size="small" style="margin-bottom: 1rem;">
-			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
+			<Loader size="small" />Your Unleash instance is being created. This usually takes about a
+			minute...
 		</Alert>
 	{/if}
 	{#if !unleash.releaseChannelName}
@@ -541,68 +542,62 @@
 			</div>
 		</div>
 		<div class="sidebar">
-			<div class="card">
-				<SummaryCard
-					title="Toggles"
-					helpText="Number of feature toggles in the Unleash server"
-					color="grey"
-				>
-					{#snippet icon({ color })}
-						<BulletListIcon font-size="32" {color} />
-					{/snippet}
-					{metrics.toggles}
-				</SummaryCard>
+			<div>
+				<div class="sidebar-heading">
+					<IconLabel label="Toggles" icon={BulletListIcon} size="large" as="h2" />
+					<HelpText title="Toggles">Number of feature toggles in the Unleash server</HelpText>
+				</div>
+				<div class="sidebar-content">
+					<BodyShort>{metrics.toggles}</BodyShort>
+				</div>
 			</div>
-			<div class="card">
-				<SummaryCard
-					title="API clients"
-					helpText="Number of API clients that are using the Unleash server"
-					color="grey"
-				>
-					{#snippet icon({ color })}
-						<TokenIcon font-size="32" {color} />
-					{/snippet}
-					{metrics.apiTokens}
-				</SummaryCard>
+			<div>
+				<div class="sidebar-heading">
+					<IconLabel label="API clients" icon={TokenIcon} size="large" as="h2" />
+					<HelpText title="API clients"
+						>Number of API clients that are using the Unleash server</HelpText
+					>
+				</div>
+				<div class="sidebar-content">
+					<BodyShort>{metrics.apiTokens}</BodyShort>
+				</div>
 			</div>
-			<div class="card">
-				<div class="summary">
-					<div class="heading">
-						<Heading as="h2" size="xsmall" spacing>Utilization</Heading>
-						<HelpText title="Resource Utilization">Resource usage over the past hour</HelpText>
+			<div>
+				<div class="sidebar-heading">
+					<IconLabel label="Utilization" icon={LineGraphStackedIcon} size="large" as="h2" />
+					<HelpText title="Resource Utilization">Resource usage over the past hour</HelpText>
+				</div>
+				<div class="sidebar-content utilization-content">
+					<div>
+						<TooltipAlignHack
+							content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
+						>
+							<IconLabel
+								size="medium"
+								icon={MemoryIcon}
+								label={`${metrics.memoryUtilization.toLocaleString('en', {
+									maximumSignificantDigits: 3
+								})}% of ${prettyBytes(metrics.memoryRequests, {
+									locale: 'en',
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+									binary: true
+								})}`}
+							/>
+						</TooltipAlignHack>
 					</div>
 					<div>
-						<div>
-							<TooltipAlignHack
-								content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
-							>
-								<IconLabel
-									size="medium"
-									icon={MemoryIcon}
-									label={`${metrics.memoryUtilization.toLocaleString('en', {
-										maximumSignificantDigits: 3
-									})}% of ${prettyBytes(metrics.memoryRequests, {
-										locale: 'en',
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2,
-										binary: true
-									})}`}
-								/>
-							</TooltipAlignHack>
-						</div>
-						<div>
-							<TooltipAlignHack
-								content={`CPU usage compared to the requested ${metrics.cpuRequests}.`}
-							>
-								<IconLabel
-									size="medium"
-									icon={CpuIcon}
-									label={`${metrics.cpuUtilization.toLocaleString('en', {
-										maximumSignificantDigits: 3
-									})}% of ${metrics.cpuRequests} CPUs`}
-								/>
-							</TooltipAlignHack>
-						</div>
+						<TooltipAlignHack
+							content={`CPU usage compared to the requested ${metrics.cpuRequests}.`}
+						>
+							<IconLabel
+								size="medium"
+								icon={CpuIcon}
+								label={`${metrics.cpuUtilization.toLocaleString('en', {
+									maximumSignificantDigits: 3
+								})}% of ${metrics.cpuRequests} CPUs`}
+							/>
+						</TooltipAlignHack>
 					</div>
 				</div>
 			</div>
@@ -648,7 +643,7 @@
 	.sidebar {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--spacing-layout);
 	}
 
 	.wrapper p {
@@ -670,20 +665,19 @@
 		gap: 0.5rem;
 	}
 
-	.card {
-		border: 1px solid var(--ax-border-neutral);
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-20);
-		border-radius: 12px;
-	}
-	.summary {
-		width: 100%;
-	}
-	.heading {
+	.sidebar-heading {
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
-		margin: 0;
-		font-size: 1rem;
-		color: var(--ax-text-neutral-subtle);
+		gap: var(--ax-space-2);
+	}
+
+	.sidebar-content {
+		display: grid;
+		gap: var(--ax-space-2);
+	}
+
+	.utilization-content {
+		gap: var(--ax-space-4);
 	}
 </style>
