@@ -15,25 +15,31 @@
 
 <div>
 	<Heading as="h2" size="medium" spacing>Metadata</Heading>
-	<Detail as="dt">Last Modified</Detail>
-	<BodyShort as="dd">
-		{#if lastModifiedAt}
-			<Time time={lastModifiedAt} distance />
-		{:else}
-			<code>n/a</code>
-		{/if}
-	</BodyShort>
-	<Detail as="dt">By</Detail>
-	<BodyShort as="dd">
-		{#if lastModifiedBy}
-			<span class="cap" title={lastModifiedBy.email}>{lastModifiedBy.name}</span>
-		{:else}
-			<code>n/a</code>
-		{/if}
-	</BodyShort>
+	<dl class="metadata-list">
+		<Detail as="dt">Last Modified</Detail>
+		<BodyShort as="dd">
+			{#if lastModifiedAt}
+				<Time time={lastModifiedAt} distance />
+			{:else}
+				<code>n/a</code>
+			{/if}
+		</BodyShort>
+		<Detail as="dt">By</Detail>
+		<BodyShort as="dd">
+			{#if lastModifiedBy}
+				<span class="cap" title={lastModifiedBy.email}>{lastModifiedBy.name}</span>
+			{:else}
+				<code>n/a</code>
+			{/if}
+		</BodyShort>
+	</dl>
 </div>
 
 <style>
+	.metadata-list {
+		margin: 0;
+	}
+
 	code {
 		font-size: 1rem;
 	}
