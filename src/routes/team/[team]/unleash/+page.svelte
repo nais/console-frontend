@@ -325,8 +325,7 @@
 	</BodyLong>
 	{#if !unleash.ready}
 		<Alert variant="info" size="small" style="margin-bottom: 1rem;">
-			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a
-			minute...
+			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
 		</Alert>
 	{/if}
 	{#if !unleash.releaseChannelName}
