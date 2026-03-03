@@ -1,4 +1,4 @@
-import { serviceColor, truncateString } from './util';
+import { getSegmentFill, serviceColor, truncateString } from './util';
 
 describe('chart/util', () => {
 	describe('truncateString', () => {
@@ -126,6 +126,34 @@ describe('chart/util', () => {
 			// Service names are case-sensitive
 			expect(serviceColor('cloud sql')).toBe('#689FD3'); // default muted blue
 			expect(serviceColor('Cloud SQL')).toBe('#B45E5A'); // correct color
+		});
+	});
+
+	describe('getSegmentFill', () => {
+		test('returns neutral fill for inactive segment', () => {
+			expect(getSegmentFill(10, false, 36)).toBe('var(--ax-neutral-200)');
+		});
+
+		test('returns neutral fill when total segments is invalid', () => {
+			expect(getSegmentFill(0, true, 0)).toBe('var(--ax-neutral-200)');
+		});
+
+		test('returns success fill below warning threshold', () => {
+			expect(getSegmentFill(0, true, 36)).toBe('var(--ax-text-success-decoration)');
+			expect(getSegmentFill(24, true, 36)).toBe('var(--ax-text-success-decoration)');
+		});
+
+		test('returns warning fill between warning and danger thresholds', () => {
+			expect(getSegmentFill(28, true, 36)).toBe('var(--ax-text-warning-decoration)');
+		});
+
+		test('returns danger fill above danger threshold', () => {
+			expect(getSegmentFill(35, true, 36)).toBe('var(--ax-text-danger-decoration)');
+		});
+
+		test('supports custom threshold values', () => {
+			expect(getSegmentFill(7, true, 10, 50, 80)).toBe('var(--ax-text-warning-decoration)');
+			expect(getSegmentFill(9, true, 10, 50, 80)).toBe('var(--ax-text-danger-decoration)');
 		});
 	});
 });

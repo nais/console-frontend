@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import StaticUtilizationDonut from '$lib/chart/StaticUtilizationDonut.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import CircleProgressBar from '$lib/ui/CircleProgressBar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
-	import SummaryCard from '$lib/ui/SummaryCard.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { Alert, Heading } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Heading, HelpText } from '@nais/ds-svelte-community';
+	import { WalletIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -29,149 +27,190 @@
 		</Alert>
 	{/each}
 {:else if instance}
-	<div class="summary-grid">
-		<div class="card">
-			<SummaryCard
-				title="Cost"
-				helpText="Total SQL instance cost for the last 30 days"
-				color="grey"
-			>
-				{#snippet icon({ color })}
-					<WalletIcon height="32px" width="32px" {color} />
-				{/snippet}
-				{euroValueFormatter(instance.cost.sum)}
-			</SummaryCard>
-		</div>
-		<div class="card">
-			<SummaryCard
-				title="CPU utilization"
-				helpText="Current CPU utilization"
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={instance.metrics.cpu.utilization / 100} />
-				{/snippet}
-				{instance.metrics.cpu.utilization.toFixed(1)}% of {instance.metrics.cpu.cores.toLocaleString()}
-				core{instance.metrics.cpu.cores > 1 ? 's' : ''}
-			</SummaryCard>
-		</div>
-		<div class="card">
-			<SummaryCard
-				title="Memory utilization"
-				helpText="Current memory utilization"
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={instance.metrics.memory.utilization / 100} />
-				{/snippet}
-				{instance.metrics.memory.utilization.toFixed(1)}% of {prettyBytes(
-					instance.metrics.memory.quotaBytes
-				)}
-			</SummaryCard>
-		</div>
-		<div class="card">
-			<SummaryCard
-				title="Disk utilization"
-				helpText="Current disk utilization"
-				color="grey"
-				styled={false}
-			>
-				{#snippet icon()}
-					<CircleProgressBar progress={instance.metrics.disk.utilization / 100} />
-				{/snippet}
-				{instance.metrics.disk.utilization.toFixed(1)}% of {prettyBytes(
-					instance.metrics.disk.quotaBytes
-				)}
-			</SummaryCard>
-		</div>
-	</div>
-
-	<div class="grid">
+	<div class="wrapper">
 		<div>
-			<dl>
-				<dt>Instance status:</dt>
-				<dd>
-					{#if instance.state === 'RUNNABLE'}
-						<CheckmarkIcon style="color: var(--ax-text-success-subtle); font-size: 1.5rem" />
-					{:else}
-						<ErrorIcon class="text-aligned-icon" /> Not healthy. Check status in <ExternalLink
-							href="https://console.cloud.google.com/sql/instances/{cloudsql}/overview?project={instance.projectID}&supportedpurview=project"
-						>
-							Google Cloud Console
-						</ExternalLink>
-					{/if}
-				</dd>
-				<dt>Version:</dt>
-				<dd>{instance.version}</dd>
-				<dt>Tier:</dt>
-				<dd>{instance.tier}</dd>
-				{#if viewerIsMember}
-					<dt>Console:</dt>
-					<dd>
-						<ExternalLink
-							href="https://console.cloud.google.com/sql/instances/{cloudsql}/overview?project={instance.projectID}&supportedpurview=project"
-						>
-							Google Cloud Console
-						</ExternalLink>
-					</dd>
-					{#if instance.auditLog?.logUrl}
-						<dt>Audit Logs:</dt>
-						<dd>
-							<ExternalLink href={instance.auditLog.logUrl}>View Logs</ExternalLink>
-						</dd>
-					{/if}
-				{/if}
-			</dl>
+			<div class="summary-grid">
+				<StaticUtilizationDonut
+					value={instance.metrics.cpu.utilization}
+					label="CPU"
+					height="200px"
+					domainMax={100}
+				/>
+				<StaticUtilizationDonut
+					value={instance.metrics.memory.utilization}
+					label="Memory"
+					height="200px"
+					domainMax={100}
+				/>
+				<StaticUtilizationDonut
+					value={instance.metrics.disk.utilization}
+					label="Disk"
+					height="200px"
+					domainMax={100}
+				/>
+			</div>
 
-			<Heading as="h3" spacing>Issues</Heading>
-			<List>
-				{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
-					<IssueListItem item={edge.node} />
+			<div class="details">
+				<div class="details-sections">
+					<div>
+						<Heading as="h3" size="small">State</Heading>
+						<BodyShort>
+							{#if instance.state === 'RUNNABLE'}
+								Runnable
+							{:else}
+								Not healthy. Check status in
+								<ExternalLink
+									href="https://console.cloud.google.com/sql/instances/{cloudsql}/overview?project={instance.projectID}&supportedpurview=project"
+								>
+									Google Cloud Console
+								</ExternalLink>
+							{/if}
+						</BodyShort>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Version</Heading>
+						<dl class="settings-list">
+							<dt>Postgres version</dt>
+							<dd>{instance.version}</dd>
+						</dl>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Settings</Heading>
+						<dl class="settings-list">
+							<dt>Tier</dt>
+							<dd>{instance.tier}</dd>
+						</dl>
+					</div>
+
+					<div>
+						<Heading as="h3" size="small">Resources</Heading>
+						<dl class="settings-list">
+							<dt>CPU</dt>
+							<dd>
+								{instance.metrics.cpu.cores.toLocaleString()}
+								core{instance.metrics.cpu.cores > 1 ? 's' : ''}
+							</dd>
+							<dt>Memory</dt>
+							<dd>{prettyBytes(instance.metrics.memory.quotaBytes)}</dd>
+							<dt>Disk</dt>
+							<dd>{prettyBytes(instance.metrics.disk.quotaBytes)}</dd>
+						</dl>
+					</div>
+
+					{#if viewerIsMember}
+						<div>
+							<Heading as="h3" size="small">Console</Heading>
+							<BodyShort>
+								<ExternalLink
+									href="https://console.cloud.google.com/sql/instances/{cloudsql}/overview?project={instance.projectID}&supportedpurview=project"
+								>
+									Google Cloud Console
+								</ExternalLink>
+							</BodyShort>
+							{#if instance.auditLog?.logUrl}
+								<BodyShort>
+									<ExternalLink href={instance.auditLog.logUrl}>View audit logs</ExternalLink>
+								</BodyShort>
+							{/if}
+						</div>
+					{/if}
+
+					<div>
+						<Heading as="h3" size="small">Issues</Heading>
+						<List>
+							{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
+								<IssueListItem item={edge.node} />
+							{:else}
+								<span>No issues found</span>
+							{/each}
+						</List>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="sidebar">
+			<div>
+				<div class="cost-heading">
+					<IconLabel label="Cost" icon={WalletIcon} size="large" as="h2" />
+					<HelpText title="Cost details">Total SQL instance cost for the last 30 days</HelpText>
+				</div>
+				<div class="cost-content">
+					<BodyShort>{euroValueFormatter(instance.cost.sum)}</BodyShort>
+				</div>
+			</div>
+
+			<div>
+				<Heading as="h2" size="medium" spacing>Used by</Heading>
+				{#if instance.workload}
+					<WorkloadLink workload={instance.workload} />
 				{:else}
-					<span>No issues found</span>
-				{/each}
-			</List>
-		</div>
-		<div>
-			<Heading as="h2" size="small">Owner</Heading>
-			{#if instance.workload}
-				<WorkloadLink workload={instance.workload} />
-			{:else}
-				<WarningIcon title="The SQL instance does not belong to any workload" />
-				Instance does not belong to any workload
-			{/if}
+					<BodyShort>Instance does not belong to any workload</BodyShort>
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}
 
 <style>
-	dl {
-		display: grid;
-		gap: var(--ax-space-8);
-		grid-template-columns: max-content max-content;
-
-		dd {
-			margin: 0;
-		}
-	}
-	.grid {
+	.wrapper {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--ax-space-16);
+		gap: var(--spacing-layout);
 	}
+
+	.details {
+		margin-top: var(--ax-space-12);
+	}
+
+	.details-sections {
+		display: grid;
+		gap: var(--ax-space-12);
+		margin: var(--ax-space-8) 0 0;
+	}
+
+	.settings-list {
+		display: grid;
+		grid-template-columns: 18ch minmax(0, 1fr);
+		gap: var(--ax-space-4) var(--ax-space-8);
+		margin: 0;
+		align-items: baseline;
+	}
+
+	.settings-list dt {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.settings-list dd {
+		margin: 0;
+	}
+
 	.summary-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
 	}
-	.card {
-		border: 1px solid var(--ax-border-neutral);
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-20);
-		border-radius: 12px;
+
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
+	}
+
+	.cost-content {
+		display: grid;
+		gap: var(--ax-space-2);
+	}
+
+	.cost-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-2);
 	}
 </style>

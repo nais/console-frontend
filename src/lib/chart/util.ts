@@ -8,6 +8,34 @@ export function truncateString(str: string, num: number) {
 	return str.slice(0, num - 3) + '...';
 }
 
+export function getSegmentFill(
+	segmentIndex: number,
+	isActive: boolean,
+	totalSegments: number,
+	warningThreshold = 70,
+	dangerThreshold = 90
+) {
+	if (!isActive) {
+		return 'var(--ax-neutral-200)';
+	}
+
+	if (totalSegments <= 0) {
+		return 'var(--ax-neutral-200)';
+	}
+
+	const segmentPercent = ((segmentIndex + 1) / totalSegments) * 100;
+
+	if (segmentPercent <= warningThreshold) {
+		return 'var(--ax-text-success-decoration)';
+	}
+
+	if (segmentPercent <= dangerThreshold) {
+		return 'var(--ax-text-warning-decoration)';
+	}
+
+	return 'var(--ax-text-danger-decoration)';
+}
+
 export type ServiceName =
 	| 'Cloud SQL'
 	| 'Cloud Storage'
