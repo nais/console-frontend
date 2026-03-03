@@ -5,6 +5,24 @@ query PostgresInstance($env: String!, $team: Slug!, $name: String!) {
 			postgresInstance(name: $name) {
 				id
 				name
+				workloads(first: 50) {
+					pageInfo {
+						totalCount
+					}
+					nodes {
+						id
+						name
+						__typename
+						team {
+							slug
+						}
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+					}
+				}
 				teamEnvironment {
 					environment {
 						name
