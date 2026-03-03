@@ -65,6 +65,10 @@ describe('aggregateAndSortCostByDate', () => {
 	});
 
 	test('only one month of data', () => {
+		const recentDate = new Date();
+		recentDate.setMonth(recentDate.getMonth() - 1);
+		const expectedDate = new Date(recentDate.toISOString().split('T')[0]);
+
 		expect(
 			aggregateAndSortCostByDate([
 				{
@@ -72,7 +76,7 @@ describe('aggregateAndSortCostByDate', () => {
 						monthly: {
 							series: [
 								{
-									date: new Date('2025-02-31'),
+									date: recentDate,
 									sum: 1.0791141986846924
 								}
 							]
@@ -82,13 +86,16 @@ describe('aggregateAndSortCostByDate', () => {
 			])
 		).toEqual([
 			{
-				date: new Date('2025-02-31'),
+				date: expectedDate,
 				sum: 1.0791141986846924
 			}
 		]);
 	});
 
 	test('only one month of data for two workloads', () => {
+		const recentDate = new Date();
+		recentDate.setMonth(recentDate.getMonth() - 1);
+
 		expect(
 			aggregateAndSortCostByDate([
 				{
@@ -96,7 +103,7 @@ describe('aggregateAndSortCostByDate', () => {
 						monthly: {
 							series: [
 								{
-									date: new Date('2025-02-31'),
+									date: recentDate,
 									sum: 1.02
 								}
 							]
@@ -108,7 +115,7 @@ describe('aggregateAndSortCostByDate', () => {
 						monthly: {
 							series: [
 								{
-									date: new Date('2025-02-31'),
+									date: recentDate,
 									sum: 1.01
 								}
 							]
