@@ -406,7 +406,7 @@
 						{/if}
 
 						<div class="message" style:max-width={messageWidth}>
-							{log.m}
+							{log.parsedMessage}
 						</div>
 					</div>
 				{/each}

@@ -12,7 +12,7 @@ export type LogLine = {
 	timestamp: string;
 	message: string;
 	instance: string;
-	m: string;
+	parsedMessage: string;
 	level: string;
 };
 
@@ -61,7 +61,7 @@ function createLogLine(log: WorkloadLog, id: number): LogLine {
 		timestamp: Number.isNaN(time.getTime()) ? String(log.time) : formatTimestamp(time),
 		message: log.message,
 		instance: log.instance,
-		m: parseLogMessage(log.message),
+		parsedMessage: parseLogMessage(log.message),
 		level: getLogLevel(log.message)
 	};
 }
