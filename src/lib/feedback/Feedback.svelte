@@ -68,7 +68,6 @@
 					anonymous: anonymous
 				})
 			});
-			loading = false;
 			const data = await result.json();
 
 			if (data.error) {
@@ -82,6 +81,8 @@
 		} catch (error) {
 			console.error('Error:', error);
 			return 'Error sending message: ' + error;
+		} finally {
+			loading = false;
 		}
 	};
 </script>
