@@ -25,7 +25,7 @@ export async function POST(event) {
 	const body = await request.json();
 	const { anonymous, feedback, path, type } = body;
 
-	let blocks = [];
+	let blocks;
 
 	try {
 		blocks = createFeedbackMessage(anonymous, email, feedback, path, tenant, type);

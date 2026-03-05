@@ -73,16 +73,18 @@
 	const toggle = async () => {
 		errors = [];
 		reconcileLoading = true;
-		let resp: { errors?: { message: string }[] | null } = {};
-		if ($r.enabled) {
-			resp = await disableReconciler.mutate({ name: $r.name });
-		} else {
-			resp = await enableReconciler.mutate({ name: $r.name });
-		}
+		try {
+			const resp = $r.enabled
+				? await disableReconciler.mutate({ name: $r.name })
+				: await enableReconciler.mutate({ name: $r.name });
 
-		reconcileLoading = false;
-		if (resp.errors) {
-			errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+			if (resp.errors) {
+				errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+			}
+		} catch (error) {
+			errors = [error instanceof Error ? error.message : 'Failed to update reconciler state'];
+		} finally {
+			reconcileLoading = false;
 		}
 	};
 
@@ -91,12 +93,13 @@
 
 	$effect(() => {
 		untrack(() => {
-			config = config?.length
-				? config
-				: $r.config.map((c) => {
-						const r = { key: c.key, value: c.value || '', secret: c.secret };
-						return r;
-					});
+			if (config.length > 0) {
+				return;
+			}
+
+			config = $r.config.map((c) => {
+				return { key: c.key, value: c.value || '', secret: c.secret };
+			});
 		});
 	});
 
