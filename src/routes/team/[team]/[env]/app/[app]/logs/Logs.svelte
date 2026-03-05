@@ -2,9 +2,13 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import { appendSortedBoundedLog } from '$lib/utils/logStream';
+	import {
+		createBufferedLogAppender,
+		getLogLevel,
+		parseLogMessage,
+		type LogLine
+	} from '$lib/utils/logViewer';
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
-	import { format } from 'date-fns';
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -41,6 +45,21 @@
 		};
 	} = $props();
 
+	const MAX_LOG_LINES = 200;
+	const MAX_PENDING_LOG_LINES = 5000;
+	const FLUSH_INTERVAL_MS = 100;
+
+	let logs: LogLine[] = $state([]);
+	let logAppender = createBufferedLogAppender({
+		maxEntries: MAX_LOG_LINES,
+		maxPendingEntries: MAX_PENDING_LOG_LINES,
+		flushIntervalMs: FLUSH_INTERVAL_MS,
+		getLogs: () => logs,
+		setLogs: (nextLogs) => {
+			logs = nextLogs;
+		}
+	});
+
 	const newstore = () => {
 		const store = graphql(`
 			subscription NewLogsSubscription($filter: WorkloadLogSubscriptionFilter!) {
@@ -61,30 +80,19 @@
 			}
 
 			if (result.data) {
-				if (!selectedInstances.includes(result.data.workloadLog.instance)) {
-					console.debug('Log received but not for selected instances:', result.data.workloadLog);
-				}
-				let m: string | undefined;
-				try {
-					m = JSON.parse(result.data.workloadLog.message).message;
-				} catch (e) {
-					console.debug('Error parsing JSON message: ', e);
-					m = result.data.workloadLog.message;
-				}
+				const workloadLog = result.data.workloadLog;
+				const m = parseLogMessage(workloadLog.message);
 
-				if (m === undefined) {
-					m = result.data.workloadLog.message;
-				}
-
-				if (m === 'Subscription closed.' && result.data.workloadLog.instance === 'api') {
+				if (m === 'Subscription closed.' && workloadLog.instance === 'api') {
 					console.debug('Subscription closed');
 					isPaused = true;
+					logAppender.clear();
 					store.unlisten();
 					isStarted = false;
 					return;
 				}
 
-				let level: string = getLogLevel(result.data.workloadLog.message);
+				const level = getLogLevel(workloadLog.message);
 
 				if (!logLevels.has(level)) {
 					logLevels.add(level);
@@ -95,7 +103,7 @@
 					return;
 				}
 
-				logs = appendSortedBoundedLog(logs, { ...result.data.workloadLog, m }, MAX_LOG_LINES);
+				logAppender.enqueue(workloadLog);
 			}
 		});
 		return store;
@@ -107,6 +115,7 @@
 		if (selectedInstances.length === 0) {
 			return;
 		}
+		logAppender.clear();
 		logs = [];
 		isPaused = false;
 		isStarted = true;
@@ -122,13 +131,11 @@
 		});
 	}
 
-	let logs: { time: Date; message: string; instance: string; m?: string }[] = $state([]);
+	let displayedLogs = $derived(logs.toReversed());
 	let selectedInstances: string[] = $state([]);
 
 	let isStarted: boolean = $state(false);
 	let isPaused: boolean = $state(true);
-
-	const MAX_LOG_LINES = 200;
 
 	onMount(() => {
 		let instance = page.url.searchParams.get('instance');
@@ -142,6 +149,7 @@
 	});
 
 	onDestroy(() => {
+		logAppender.clear();
 		store.unlisten();
 	});
 
@@ -189,14 +197,6 @@
 	function colorForInstance(instanceName: string): ColorRole {
 		const index = instanceIndexByName[instanceName] ?? 0;
 		return colorForPosition(index >= 0 ? index : 0);
-	}
-
-	function getLogLevel(message: string): string {
-		const logLevel = message.match(/"level":"(\w+)"/);
-		if (logLevel) {
-			return logLevel[1].toUpperCase();
-		}
-		return 'INFO';
 	}
 
 	function renderInstanceName(i: string) {
@@ -272,6 +272,7 @@
 						size="medium"
 						variant="primary"
 						onclick={() => {
+							logAppender.clear();
 							logs = [];
 						}}
 					>
@@ -346,11 +347,11 @@
 			{#if logs.length === 0}
 				<BodyShort size="small">Waiting for logs...</BodyShort>
 			{:else}
-				{#each logs.toReversed() as log, i (i)}
+				{#each displayedLogs as log (log.id)}
 					{@const color = colorForInstance(log.instance)}
 					<div class="log-line">
 						{#if selectedViewOptions.has('Time')}
-							<div class="date">{format(log.time, 'yyyy-MM-dd HH:mm:ss.SSS')}</div>
+							<div class="date">{log.timestamp}</div>
 						{/if}
 						{#if selectedViewOptions.has('Instance')}
 							<div class="instance">
@@ -363,7 +364,7 @@
 							style:background-color="var(--ax-bg-strong-pressed)"
 						></div>
 						{#if selectedViewOptions.has('Level')}
-							<div class="level">{getLogLevel(log.message)}</div>
+							<div class="level">{log.level}</div>
 						{/if}
 
 						<div class="message" style:max-width={messageWidth}>
