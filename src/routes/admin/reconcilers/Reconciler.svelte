@@ -73,13 +73,18 @@
 	const toggle = async () => {
 		errors = [];
 		reconcileLoading = true;
-		const resp = $r.enabled
-			? await disableReconciler.mutate({ name: $r.name })
-			: await enableReconciler.mutate({ name: $r.name });
+		try {
+			const resp = $r.enabled
+				? await disableReconciler.mutate({ name: $r.name })
+				: await enableReconciler.mutate({ name: $r.name });
 
-		reconcileLoading = false;
-		if (resp.errors) {
-			errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+			if (resp.errors) {
+				errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+			}
+		} catch (error) {
+			errors = [error instanceof Error ? error.message : 'Failed to update reconciler state'];
+		} finally {
+			reconcileLoading = false;
 		}
 	};
 
