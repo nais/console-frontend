@@ -20,13 +20,10 @@ export function yearlyOverageCost(
 	const costPerCpuCorePerYear = cpuCost * 8760; // 8760 hours in a year
 	const costPerBytePerYear = (memCost / 1024 / 1024 / 1024) * 8760; // convert to GB and multiply by hours in a year
 
-	let cost = 0.0;
-
-	if (resourceType == UtilizationResourceType.CPU) {
-		cost = costPerCpuCorePerYear * unutilized;
-	} else {
-		cost = costPerBytePerYear * unutilized;
-	}
+	const cost =
+		resourceType == UtilizationResourceType.CPU
+			? costPerCpuCorePerYear * unutilized
+			: costPerBytePerYear * unutilized;
 
 	return cost > 0.0 ? cost : 0.0;
 }

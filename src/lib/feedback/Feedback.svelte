@@ -55,7 +55,6 @@
 		}
 
 		loading = true;
-		let response = '';
 		try {
 			const result = await fetch('/api/send-feedback', {
 				method: 'POST',
@@ -77,13 +76,13 @@
 				return;
 			}
 
-			response = data.ok ? 'Message sent!' : 'Failed to send message.';
+			const response = data.ok ? 'Message sent!' : 'Failed to send message.';
 			feedbackSent = true;
+			return response;
 		} catch (error) {
 			console.error('Error:', error);
-			response = 'Error sending message: ' + error;
+			return 'Error sending message: ' + error;
 		}
-		return response;
 	};
 </script>
 
