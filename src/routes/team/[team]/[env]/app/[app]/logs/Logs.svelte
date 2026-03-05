@@ -81,12 +81,12 @@
 
 			if (result.data) {
 				const workloadLog = result.data.workloadLog;
-				const m = parseLogMessage(workloadLog.message);
+				const parsedMessage = parseLogMessage(workloadLog.message);
 
-				if (m === 'Subscription closed.' && workloadLog.instance === 'api') {
+				if (parsedMessage === 'Subscription closed.' && workloadLog.instance === 'api') {
 					console.debug('Subscription closed');
 					isPaused = true;
-					logAppender.clear();
+					logAppender.flush();
 					store.unlisten();
 					isStarted = false;
 					return;

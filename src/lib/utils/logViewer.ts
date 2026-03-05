@@ -100,6 +100,12 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 			pendingLogs = appendSortedBoundedLog(pendingLogs, line, options.maxPendingEntries);
 			scheduleFlush();
 		},
+		flush() {
+			if (flushTimeout !== undefined) {
+				clearTimeout(flushTimeout);
+			}
+			flushPendingLogs();
+		},
 		clear() {
 			pendingLogs = [];
 			if (flushTimeout !== undefined) {
