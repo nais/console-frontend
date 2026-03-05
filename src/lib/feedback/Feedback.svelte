@@ -75,7 +75,7 @@
 				return;
 			}
 
-			const response = data.ok ? 'Message sent!' : 'Failed to send message.';
+			const response = result.ok ? 'Message sent!' : 'Failed to send message.';
 			feedbackSent = true;
 			return response;
 		} catch (error) {
