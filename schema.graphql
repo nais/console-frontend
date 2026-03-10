@@ -544,7 +544,7 @@ type Application implements ActivityLogger & Node & Workload {
     last: Int
   ): ApplicationInstanceConnection!
 
-  """Issues that affects the workload."""
+  """Issues that affect the application."""
   issues(
     """Get items after this cursor."""
     after: Cursor
@@ -2451,7 +2451,7 @@ type Job implements ActivityLogger & Node & Workload {
     from: Date!
   ): ImageVulnerabilityHistory!
 
-  """Issues that affects the workload."""
+  """Issues that affect the job."""
   issues(
     """Get items after this cursor."""
     after: Cursor
@@ -2643,7 +2643,7 @@ input JobOrder {
 }
 
 enum JobOrderField {
-  """Order applications by the deployment time."""
+  """Order jobs by the deployment time."""
   DEPLOYMENT_TIME
 
   """Order jobs by the name of the environment."""
@@ -8641,7 +8641,7 @@ interface Workload {
     from: Date!
   ): ImageVulnerabilityHistory!
 
-  """Issues that affects the workload."""
+  """Issues that affect the workload."""
   issues(
     """Get items after this cursor."""
     after: Cursor
