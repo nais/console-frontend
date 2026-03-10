@@ -171,12 +171,16 @@
 				: ''}"
 		>
 			{#each $data.runs?.edges ?? [] as run (run.node.id)}
-				{#if run.node.instances.pageInfo.totalCount > 0 && $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}
-					<JobRunListItem
-						run={run.node}
-						urlBase="/team/{$data.team?.slug}/{$data.teamEnvironment?.environment
-							.name}/job/{$data.name}/logs?instance="
-					/>
+				{#if run.node.instances.pageInfo.totalCount > 0}
+					{#if $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}
+						<JobRunListItem
+							run={run.node}
+							urlBase="/team/{$data.team?.slug}/{$data.teamEnvironment?.environment
+								.name}/job/{$data.name}/logs?instance="
+						/>
+					{:else}
+						<JobRunListItem run={run.node} />
+					{/if}
 				{:else}
 					<JobRunListItem run={run.node} />
 				{/if}
