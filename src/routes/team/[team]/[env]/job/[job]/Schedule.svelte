@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getLocalizedCronDescription } from '$lib/utils/cron';
+	import { getLocalizedCronDescription, type ScheduleContext } from '$lib/utils/cron';
 	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
@@ -7,11 +7,7 @@
 			readonly expression: string;
 			readonly timeZone: string;
 		} | null;
-		scheduleContext?: {
-			team: string;
-			environment: string;
-			job: string;
-		};
+		scheduleContext?: ScheduleContext;
 	}
 
 	let { schedule, scheduleContext }: Props = $props();

@@ -2,11 +2,13 @@ import { CronExpressionParser } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import { DateTime } from 'luxon';
 
-type CronContext = {
+export type CronContext = {
 	team?: string;
 	environment?: string;
 	job?: string;
 };
+
+export type ScheduleContext = CronContext;
 
 function getNextRunTime(
 	expression: string,
@@ -36,12 +38,13 @@ function getNextRunTime(
 
 		return nextRunInLocalTZ.toFormat('cccc, dd LLL yyyy HH:mm');
 	} catch (error) {
-		console.warn('Invalid cron schedule while calculating next run time', {
+		console.error('Invalid cron schedule while calculating next run time', {
 			expression,
 			cronTimeZone,
 			localTimeZone,
 			context,
-			error: error instanceof Error ? error.message : String(error)
+			error,
+			errorMessage: error instanceof Error ? error.message : String(error)
 		});
 		return 'Invalid cron expression or time zone';
 	}
@@ -68,11 +71,12 @@ export function getLocalizedCronDescription({
 
 		return { description: descriptionString, nextRun: nextRun, error: undefined };
 	} catch (error) {
-		console.warn('Invalid cron schedule while generating description', {
+		console.error('Invalid cron schedule while generating description', {
 			expression,
 			timeZone,
 			context,
-			error: error instanceof Error ? error.message : String(error)
+			error,
+			errorMessage: error instanceof Error ? error.message : String(error)
 		});
 		return { description: undefined, nextRun: undefined, error: String(error) };
 	}
