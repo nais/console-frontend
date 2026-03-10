@@ -65,6 +65,10 @@
 			`)
 		)
 	);
+
+	let runEdges = $derived($data?.runs?.edges ?? []);
+	let runCount = $derived(runEdges.length);
+	let runTitle = $derived(`${runCount} job run${runCount > 1 ? 's' : ''}`);
 </script>
 
 {#if $data}
@@ -162,15 +166,11 @@
 		</ul>
 	</div>
 
-	{#if ($data.runs?.edges ?? []).length === 0}
+	{#if runCount === 0}
 		<BodyShort>No runs found</BodyShort>
 	{:else}
-		<List
-			title="{($data.runs?.edges ?? []).length} job run{($data.runs?.edges ?? []).length > 1
-				? 's'
-				: ''}"
-		>
-			{#each $data.runs?.edges ?? [] as run (run.node.id)}
+		<List title={runTitle}>
+			{#each runEdges as run (run.node.id)}
 				{#if run.node.instances.pageInfo.totalCount > 0}
 					{#if $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}
 						<JobRunListItem
