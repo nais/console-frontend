@@ -139,7 +139,14 @@
 				</div>
 			</div>
 			<div class="sidebar">
-				<Schedule schedule={job.schedule} />
+				<Schedule
+					schedule={job.schedule}
+					scheduleContext={{
+						team: job.team.slug,
+						environment: job.teamEnvironment.environment.name,
+						job: job.name
+					}}
+				/>
 				{#if jobName && environment}
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 				{/if}
