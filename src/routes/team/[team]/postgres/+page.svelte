@@ -49,7 +49,7 @@
 
 			<BodyLong spacing>
 				Postgres instances provide managed relational databases in the cloud.
-				<ExternalLink href={docURL('/persistence/postgres')}
+				<ExternalLink href={docURL('/persistence/postgresql')}
 					>Learn more about Postgres in Nais and how to get started.</ExternalLink
 				>
 			</BodyLong>
@@ -124,7 +124,7 @@
 			<BodyLong>
 				<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
 				databases in the cloud.
-				<ExternalLink href={docURL('/persistence/postgres')}
+				<ExternalLink href={docURL('/persistence/postgresql')}
 					>Learn more about Postgres in Nais and how to get started.</ExternalLink
 				>
 			</BodyLong>
