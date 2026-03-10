@@ -37,7 +37,9 @@ export async function POST(event) {
 		const result = await client.chat.postMessage({
 			channel: channel,
 			blocks: blocks,
-			text: `${type} feedback`
+			text: `${type} feedback`,
+			unfurl_links: false,
+			unfurl_media: false
 		});
 
 		if (result.ok) {
