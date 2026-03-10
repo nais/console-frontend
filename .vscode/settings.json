@@ -33,9 +33,5 @@
 			"source.organizeImports": "explicit"
 		}
 	},
-	"editor.insertSpaces": false,
-	"chat.tools.terminal.autoApprove": {
-		"npm run generate": true,
-		"npx houdini": true
-	}
+	"editor.insertSpaces": false
 }
