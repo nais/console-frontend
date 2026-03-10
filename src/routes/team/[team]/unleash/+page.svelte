@@ -273,20 +273,23 @@
 	const deleteConfirmed = $derived(deleteConfirmation === unleash?.name);
 
 	const deleteUnleash = async () => {
-		if (!deleteConfirmed) {
-			deleteConfirmOpen = true;
-			return;
-		}
 		deleting = true;
 		deleteError = '';
-		const result = await deleteUnleashInstance.mutate({ team: teamSlug });
-		if (result.data?.deleteUnleashInstance.unleashDeleted) {
-			teamCtx.refetchInventory();
-			goto(`/team/${page.params.team}?deleted=unleash`);
-		} else if (!$deleteUnleashInstance.errors) {
-			deleteError = 'Failed to delete the Unleash instance. Please try again.';
+		try {
+			const result = await deleteUnleashInstance.mutate({ team: teamSlug });
+			if (result.errors && result.errors.length > 0) {
+				deleteError = extractErrorMessages(result.errors).join(', ');
+			} else if (result.data?.deleteUnleashInstance.unleashDeleted) {
+				teamCtx.refetchInventory();
+				goto(`/team/${page.params.team}?deleted=unleash`);
+			} else {
+				deleteError = 'Failed to delete the Unleash instance. Please try again.';
+			}
+		} catch (e) {
+			deleteError = e instanceof Error ? e.message : 'An unexpected error occurred.';
+		} finally {
+			deleting = false;
 		}
-		deleting = false;
 	};
 </script>
 
@@ -655,7 +658,7 @@
 
 	{#if viewerIsMember}
 		<div class="danger-zone" style="margin-top: var(--spacing-layout);">
-			<Heading level="2" size="medium" spacing>Danger Zone</Heading>
+			<Heading as="h2" size="medium" spacing>Danger Zone</Heading>
 			<BodyShort spacing>
 				Permanently delete this Unleash instance. This action cannot be undone.
 			</BodyShort>
@@ -692,6 +695,7 @@
 			variant="danger"
 			bind:open={deleteConfirmOpen}
 			onconfirm={deleteUnleash}
+			disabled={!deleteConfirmed}
 		>
 			{#snippet header()}
 				<Heading>Delete Unleash Instance</Heading>
