@@ -266,16 +266,27 @@
 	const teamCtx = getTeamContext();
 	let deleteConfirmOpen = $state(false);
 	let deleteConfirmation = $state('');
+	let deleting = $state(false);
+	let deleteError = $state('');
 	const allowedTeamsCount = $derived(unleash?.allowedTeams.nodes.length ?? 0);
 	const canDelete = $derived(allowedTeamsCount === 1 && unleash?.ready);
 	const deleteConfirmed = $derived(deleteConfirmation === unleash?.name);
 
 	const deleteUnleash = async () => {
+		if (!deleteConfirmed) {
+			deleteConfirmOpen = true;
+			return;
+		}
+		deleting = true;
+		deleteError = '';
 		const result = await deleteUnleashInstance.mutate({ team: teamSlug });
 		if (result.data?.deleteUnleashInstance.unleashDeleted) {
 			teamCtx.refetchInventory();
 			goto(`/team/${page.params.team}?deleted=unleash`);
+		} else if (!$deleteUnleashInstance.errors) {
+			deleteError = 'Failed to delete the Unleash instance. Please try again.';
 		}
+		deleting = false;
 	};
 </script>
 
@@ -663,11 +674,16 @@
 			<Button
 				variant="danger"
 				size="small"
-				disabled={!canDelete}
-				onclick={() => (deleteConfirmOpen = true)}
+				disabled={!canDelete || deleting}
+				loading={deleting}
+				onclick={() => {
+					deleteConfirmation = '';
+					deleteError = '';
+					deleteConfirmOpen = true;
+				}}
 				icon={TrashIcon}
 			>
-				Delete Unleash Instance
+				{deleting ? 'Deleting...' : 'Delete Unleash Instance'}
 			</Button>
 		</div>
 
@@ -675,11 +691,7 @@
 			confirmText="Delete"
 			variant="danger"
 			bind:open={deleteConfirmOpen}
-			onconfirm={() => {
-				if (deleteConfirmed) {
-					deleteUnleash();
-				}
-			}}
+			onconfirm={deleteUnleash}
 		>
 			{#snippet header()}
 				<Heading>Delete Unleash Instance</Heading>
@@ -699,6 +711,11 @@
 			{#if !deleteConfirmed && deleteConfirmation.length > 0}
 				<Alert variant="error" size="small" style="margin-top: 0.5rem;">
 					The instance name does not match.
+				</Alert>
+			{/if}
+			{#if deleteError}
+				<Alert variant="error" size="small" style="margin-top: 0.5rem;">
+					{deleteError}
 				</Alert>
 			{/if}
 		</Confirm>

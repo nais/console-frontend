@@ -1600,16 +1600,6 @@ type DeleteValkeyPayload {
   valkeyDeleted: Boolean
 }
 
-input DeleteUnleashInstanceInput {
-  """The team that owns the Unleash instance to delete."""
-  teamSlug: Slug!
-}
-
-type DeleteUnleashInstancePayload {
-  """Whether or not the Unleash instance was deleted."""
-  unleashDeleted: Boolean
-}
-
 """Description of a deployment."""
 type Deployment implements Node {
   """The git commit SHA that was deployed."""
@@ -3245,7 +3235,7 @@ type Mutation {
 
   """
   Delete an Unleash instance.
-  
+
   The Unleash instance can only be deleted if no other teams have access to it.
   Revoke access for all other teams before deleting the instance.
   """
@@ -3253,14 +3243,6 @@ type Mutation {
 
   """Delete an existing Valkey instance."""
   deleteValkey(input: DeleteValkeyInput!): DeleteValkeyPayload!
-
-  """
-  Delete an Unleash instance.
-
-  The Unleash instance can only be deleted if no other teams have access to it.
-  Revoke access for all other teams before deleting the instance.
-  """
-  deleteUnleashInstance(input: DeleteUnleashInstanceInput!): DeleteUnleashInstancePayload!
 
   """
   Disable a reconciler
