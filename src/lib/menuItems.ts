@@ -96,8 +96,7 @@ export const menuItems = ({
 		[
 			menuItem('Secrets', 'secrets', 'secret'),
 			menuItem('Cloud SQL', 'cloudsql', 'cloudsql'),
-			(inventory?.postgresInstances?.total ?? 0) > 0 &&
-				menuItem('Postgres', 'postgres', 'postgres'),
+			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
 			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),

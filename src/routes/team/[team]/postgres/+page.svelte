@@ -23,6 +23,7 @@
 		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
 	);
 	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
+	const postgresDocUrl = docURL('/persistence/postgresql');
 </script>
 
 <GraphErrors errors={$PostgresInstances.errors} />
@@ -49,7 +50,7 @@
 
 			<BodyLong spacing>
 				Postgres instances provide managed relational databases in the cloud.
-				<ExternalLink href={docURL('/persistence/postgres')}
+				<ExternalLink href={postgresDocUrl}
 					>Learn more about Postgres in Nais and how to get started.</ExternalLink
 				>
 			</BodyLong>
@@ -124,7 +125,7 @@
 			<BodyLong>
 				<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
 				databases in the cloud.
-				<ExternalLink href={docURL('/persistence/postgres')}
+				<ExternalLink href={postgresDocUrl}
 					>Learn more about Postgres in Nais and how to get started.</ExternalLink
 				>
 			</BodyLong>
