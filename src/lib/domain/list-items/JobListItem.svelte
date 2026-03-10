@@ -48,7 +48,18 @@
 		};
 	} = $props();
 
-	const nextRun = $derived(job.schedule ? getLocalizedCronDescription(job.schedule) : null);
+	const nextRun = $derived(
+		job.schedule
+			? getLocalizedCronDescription({
+					...job.schedule,
+					context: {
+						team: job.team.slug,
+						environment: job.teamEnvironment.environment.name,
+						job: job.name
+					}
+				})
+			: null
+	);
 </script>
 
 <ListItem>

@@ -7,16 +7,21 @@
 			readonly expression: string;
 			readonly timeZone: string;
 		} | null;
+		scheduleContext?: {
+			team: string;
+			environment: string;
+			job: string;
+		};
 	}
 
-	let { schedule }: Props = $props();
+	let { schedule, scheduleContext }: Props = $props();
 </script>
 
 <div class="wrapper">
 	<Heading as="h3" size="small">Run Configuration</Heading>
 	<div>
 		{#if schedule}
-			{@const runConfig = getLocalizedCronDescription(schedule)}
+			{@const runConfig = getLocalizedCronDescription({ ...schedule, context: scheduleContext })}
 			{#if runConfig.error}
 				<p style="color: red;">Error: {runConfig.error}</p>
 			{:else}
