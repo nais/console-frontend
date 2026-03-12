@@ -35,7 +35,7 @@
 				<dd>
 					{#if bucket.cascadingDelete}
 						<IconLabel
-							label="Deleting the application will also remove the bucket and all its contents."
+							label="The bucket is deleted with the application only if empty — otherwise it must be removed manually."
 						>
 							{#snippet icon()}
 								<TooltipAlignHack content="Cascading delete">
