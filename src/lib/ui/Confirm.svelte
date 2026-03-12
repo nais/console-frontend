@@ -5,6 +5,7 @@
 	interface Props {
 		confirmText?: string;
 		open?: boolean;
+		disabled?: boolean;
 		variant?:
 			| 'primary'
 			| 'primary-neutral'
@@ -23,6 +24,7 @@
 	let {
 		confirmText = 'Confirm',
 		open = $bindable(false),
+		disabled = false,
 		variant = 'primary',
 		header,
 		children,
@@ -48,7 +50,7 @@
 	</div>
 
 	{#snippet footer()}
-		<Button {variant} type="submit" onclick={confirm}>{confirmText}</Button>
+		<Button {variant} type="submit" onclick={confirm} {disabled}>{confirmText}</Button>
 		<Button variant="tertiary" type="reset" onclick={cancel}>Cancel</Button>
 	{/snippet}
 </Modal>
