@@ -1,8 +1,8 @@
 <script lang="ts">
 	import NaisChatIcon from '$lib/icons/NaisChatIcon.svelte';
-	import { chatService } from './chatService.svelte';
 	import { Alert, BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { ClockDashedIcon } from '@nais/ds-svelte-community/icons';
+	import { chatService } from './chatService.svelte';
 </script>
 
 <div class="welcome-container">
@@ -11,7 +11,7 @@
 			<NaisChatIcon size="48px" />
 		</div>
 
-		<Heading size="medium" as="h3">Welcome to nAIssistant</Heading>
+		<Heading size="medium" as="h3">Welcome to Nais assistant</Heading>
 
 		<BodyLong>
 			Ask questions about your applications, deployments, and the Nais platform. I'm here to help

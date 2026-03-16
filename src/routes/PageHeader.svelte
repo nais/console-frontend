@@ -4,6 +4,7 @@
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
+	import { chatPanel } from '$lib/stores/chatPanel.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Button, Spacer } from '@nais/ds-svelte-community';
 	import {
@@ -119,6 +120,10 @@
 			<InternalHeaderUserButton name={user ? user.name : 'unauthorized'} {...props} />
 		{/snippet}
 
+		<ActionMenuCheckboxItem checked={chatPanel.isOpen} onchange={() => chatPanel.toggle()}>
+			Assistant
+		</ActionMenuCheckboxItem>
+		<ActionMenuDivider />
 		{#if user?.isAdmin}
 			<ActionMenuItem>
 				<a href="/admin" class="action-menu-link" style="text-decoration: none;"><CogIcon />Admin</a
