@@ -142,29 +142,36 @@ interface ApiMessage {
 }
 
 function parseApiBlocks(apiBlocks: ApiContentBlock[]): ContentBlock[] {
-	return apiBlocks
-		.map((block): ContentBlock | null => {
-			switch (block.type) {
-				case 'thinking':
-					return block.thinking ? { type: 'thinking', thinking: block.thinking } : null;
-				case 'text':
-					return block.text ? { type: 'text', text: block.text } : null;
-				case 'tool_use':
-					return block.tool_name
-						? {
+	return apiBlocks.flatMap((block): ContentBlock[] => {
+		switch (block.type) {
+			case 'thinking':
+				// A single stored thinking block may contain multiple sections separated by
+				// a blank line before a ** heading. Split them into individual ThinkingBlocks.
+				if (!block.thinking) return [];
+				return block.thinking
+					.split(/\n\n(?=\*\*)/)
+					.map((section) => section.trim())
+					.filter(Boolean)
+					.map((section): ContentBlock => ({ type: 'thinking', thinking: section }));
+			case 'text':
+				return block.text ? [{ type: 'text', text: block.text }] : [];
+			case 'tool_use':
+				return block.tool_name
+					? [
+							{
 								type: 'tool_use',
 								tool_call_id: block.tool_call_id ?? block.tool_name,
 								tool_name: block.tool_name,
 								tool_success: block.tool_success ?? true
 							}
-						: null;
-				case 'chart':
-					return block.chart ? { type: 'chart', chart: block.chart } : null;
-				default:
-					return null;
-			}
-		})
-		.filter((block): block is ContentBlock => block !== null);
+						]
+					: [];
+			case 'chart':
+				return block.chart ? [{ type: 'chart', chart: block.chart }] : [];
+			default:
+				return [];
+		}
+	});
 }
 
 function parseApiMessage(msg: ApiMessage): ChatMessage {

@@ -139,10 +139,15 @@
 	<div class="message-body">
 		{#each message.blocks as block, i (blockKey(block, i))}
 			{#if block.type === 'thinking'}
-				<div class="thinking">
-					<span class="thinking-label">Thinking</span>
-					<div class="thinking-content">{block.thinking}</div>
-				</div>
+				{@const thinkingTitle = block.thinking.match(/^\*\*(.+?)\*\*/)?.[1]}
+				{@const thinkingBody = block.thinking.replace(/^\*\*.+?\*\*\n*/, '').trim()}
+				<details class="thinking">
+					<summary class="thinking-summary">
+						<span class="thinking-chevron" aria-hidden="true">›</span>
+						<span class="thinking-title">{thinkingTitle ?? 'Thinking'}</span>
+					</summary>
+					<div class="thinking-content">{thinkingBody}</div>
+				</details>
 			{:else if block.type === 'tool_use'}
 				<div class="tool-badge" class:tool-failed={!block.tool_success}>
 					<span class="tool-icon">{block.tool_success ? '🔧' : '❌'}</span>
@@ -293,21 +298,48 @@
 
 	.thinking {
 		margin: var(--ax-space-8) 0;
+	}
+
+	.thinking-summary {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+		list-style: none;
+		cursor: pointer;
+		user-select: none;
+		width: fit-content;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-subtle);
+	}
+
+	.thinking-summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.thinking-chevron {
+		font-size: 1rem;
+		line-height: 1;
+		transition: rotate 0.15s ease;
+	}
+
+	:global(details[open]) .thinking-chevron {
+		rotate: 90deg;
+	}
+
+	.thinking-title {
+		font-style: italic;
+	}
+
+	.thinking-summary:hover .thinking-title {
+		color: var(--ax-text-neutral);
+	}
+
+	.thinking-content {
+		margin-top: var(--ax-space-6);
 		padding: var(--ax-space-8);
 		background-color: var(--ax-bg-sunken);
 		border-radius: var(--ax-border-radius-small);
 		border-left: 3px solid var(--ax-border-action);
-	}
-
-	.thinking-label {
-		display: block;
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-semibold);
-		color: var(--ax-text-subtle);
-		margin-bottom: var(--ax-space-4);
-	}
-
-	.thinking-content {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-subtle);
 		white-space: pre-wrap;
