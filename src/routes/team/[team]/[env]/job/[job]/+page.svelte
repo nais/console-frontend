@@ -105,7 +105,9 @@
 
 			if (result.data?.deleteJobRun.success) {
 				deleteRunName = '';
-				Job.fetch({ policy: 'NetworkOnly' });
+				deleteError = '';
+				// Small delay to allow the watcher cache to process the delete event
+				setTimeout(() => Job.fetch({ policy: 'NetworkOnly' }), 500);
 			}
 		} catch (e: unknown) {
 			deleteError = e instanceof Error ? e.message : 'An unknown error occurred';
