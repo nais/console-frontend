@@ -1,0 +1,50 @@
+query Config($config: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly) {
+	me {
+		... on User {
+			isAdmin
+		}
+	}
+	team(slug: $team) {
+		viewerIsMember
+		environment(name: $env) {
+			config(name: $config) {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				values {
+					name
+					value
+				}
+				workloads {
+					nodes {
+						id
+						__typename
+						name
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+						team {
+							slug
+						}
+					}
+				}
+				lastModifiedAt
+				lastModifiedBy {
+					name
+					email
+				}
+				...SidebarActivityLogFragment
+					@with(
+						filter: { activityTypes: [CONFIG_CREATED, CONFIG_UPDATED, CONFIG_DELETED] }
+						limit: 20
+					)
+					@mask_disable
+			}
+		}
+	}
+}

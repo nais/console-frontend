@@ -37,6 +37,12 @@ To connect to local API, run `nais alpha api proxy` on host machine.
 
 ---
 
+### schema.graphql
+
+This file is auto-generated from [nais/api](https://github.com/nais/api) and must not be manually edited. Do not suggest or apply changes to `schema.graphql`.
+
+---
+
 ## Common Commands
 
 | Task              | Command          |
@@ -229,12 +235,18 @@ Use `@nais/ds-svelte-community` components, not custom implementations:
 
 ## Code Quality
 
-### Before submitting code:
+### Before committing and pushing:
 
-1. **Run linting**: `npm run lint` (Prettier + ESLint)
-2. **Type check**: `npm run check` (includes Houdini generation + svelte-check)
-3. **Validate CSS vars**: `npm run unused` (checks for missing CSS vars and unused GraphQL)
-4. **Test utilities**: Unit tests exist in `*.test.ts` files using Vitest
+Run these checks in order (mirrors the CI pipeline in `.github/workflows/pr.yaml`):
+
+1. `npm run lockfile-lint` — validate lockfile
+2. `npx svelte-kit sync` — sync SvelteKit generated files
+3. `npm run check` — Houdini generation + svelte-check (type check, `--fail-on-warnings`)
+4. `npm run lint` — Prettier + ESLint
+5. `npm run test -- --run` — run all tests
+6. `helm lint --strict ./charts` — Helm chart validation (requires helm CLI)
+
+All of these must pass before committing. If prettier reports issues, fix them with `npm run format` and include the formatting in the same commit.
 
 ### File Naming:
 

@@ -22,6 +22,9 @@
 	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
 	import SecretValuesViewedActivityLogEntryText from './texts/SecretValuesViewedActivityLogEntryText.svelte';
+	import ConfigCreatedActivityLogEntryText from './texts/ConfigCreatedActivityLogEntryText.svelte';
+	import ConfigDeletedActivityLogEntryText from './texts/ConfigDeletedActivityLogEntryText.svelte';
+	import ConfigUpdatedActivityLogEntryText from './texts/ConfigUpdatedActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from './texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
@@ -104,6 +107,21 @@
 									reason
 								}
 							}
+							... on ConfigCreatedActivityLogEntry {
+								id
+							}
+							... on ConfigDeletedActivityLogEntry {
+								id
+							}
+							... on ConfigUpdatedActivityLogEntry {
+								configUpdatedData: data {
+									updatedFields {
+										field
+										oldValue
+										newValue
+									}
+								}
+							}
 							... on TeamEnvironmentUpdatedActivityLogEntry {
 								id
 								teamEnvironmentUpdatedData: data {
@@ -180,6 +198,12 @@
 				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretValuesViewedActivityLogEntry':
 				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ConfigCreatedActivityLogEntry':
+				return ConfigCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ConfigDeletedActivityLogEntry':
+				return ConfigDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ConfigUpdatedActivityLogEntry':
+				return ConfigUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
 				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
