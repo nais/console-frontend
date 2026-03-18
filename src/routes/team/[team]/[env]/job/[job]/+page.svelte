@@ -9,11 +9,12 @@
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
+	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -46,6 +47,16 @@
 			}
 		`);
 
+	const deleteJobRunMutation = graphql(`
+		mutation DeleteJobRun($teamSlug: Slug!, $environment: String!, $runName: String!) {
+			deleteJobRun(
+				input: { teamSlug: $teamSlug, environmentName: $environment, runName: $runName }
+			) {
+				success
+			}
+		}
+	`);
+
 	let triggerRun = $state(triggerRunMutation());
 
 	let jobName = $derived(page.params.job);
@@ -65,6 +76,28 @@
 			runName,
 			jobId: $Job.data!.team.environment.job.id
 		});
+	};
+
+	let deleteConfirmOpen = $state(false);
+	let deleteRunName = $state('');
+
+	const handleDeleteRun = (runName: string) => {
+		deleteRunName = runName;
+		deleteConfirmOpen = true;
+	};
+
+	const confirmDeleteRun = async () => {
+		if (!jobName || !environment) return;
+
+		const result = await deleteJobRunMutation.mutate({
+			teamSlug,
+			environment,
+			runName: deleteRunName
+		});
+
+		if (result.data?.deleteJobRun.success) {
+			Job.fetch({ policy: 'NetworkOnly' });
+		}
 	};
 </script>
 
@@ -129,7 +162,7 @@
 							</Button>
 						{/if}
 					</div>
-					<Runs {job} />
+					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
 				</div>
 				<div>
 					<NetworkPolicy workload={job} />
@@ -166,6 +199,20 @@
 		{#if open && jobName && environment}
 			<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
 		{/if}
+
+		<Confirm
+			confirmText="Delete"
+			variant="danger"
+			bind:open={deleteConfirmOpen}
+			onconfirm={confirmDeleteRun}
+		>
+			{#snippet header()}
+				<Heading>Delete job run</Heading>
+			{/snippet}
+			<BodyShort>
+				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
+			</BodyShort>
+		</Confirm>
 	</div>
 {/if}
 

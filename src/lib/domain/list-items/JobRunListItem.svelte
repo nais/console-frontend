@@ -4,13 +4,14 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { Detail, Loader } from '@nais/ds-svelte-community';
-	import { QuestionmarkIcon, TimerIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Detail, Loader } from '@nais/ds-svelte-community';
+	import { QuestionmarkIcon, TimerIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 
 	const {
 		run,
-		urlBase
+		urlBase,
+		ondelete
 	}: {
 		run: {
 			name: string;
@@ -20,6 +21,7 @@
 			trigger: { type: 'MANUAL' | 'AUTOMATIC'; actor: string | null };
 		};
 		urlBase?: string;
+		ondelete?: (runName: string) => void;
 	} = $props();
 
 	const formatDuration = (duration: number) => {
@@ -84,6 +86,14 @@
 	<div class="right">
 		<IconLabel size="small" label={formatDuration(run.duration)} icon={TimerIcon} />
 		<Detail>{run.status.message}</Detail>
+		{#if ondelete}
+			<Button
+				variant="tertiary-neutral"
+				size="xsmall"
+				icon={TrashIcon}
+				onclick={() => ondelete(run.name)}
+			/>
+		{/if}
 	</div>
 </ListItem>
 
