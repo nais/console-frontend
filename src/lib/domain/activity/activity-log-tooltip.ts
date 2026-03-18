@@ -13,6 +13,7 @@ export function activityTooltip(typename: string): string {
 			return 'Deployment';
 		case 'JobTriggeredActivityLogEntry':
 		case 'JobDeletedActivityLogEntry':
+		case 'JobRunDeletedActivityLogEntry':
 			return 'Job';
 		case 'SecretCreatedActivityLogEntry':
 		case 'SecretDeletedActivityLogEntry':

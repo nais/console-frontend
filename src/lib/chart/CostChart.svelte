@@ -113,11 +113,11 @@
 					{#snippet children({ data })}
 						<Tooltip.List>
 							<Tooltip.Item
-								label={data.date.toLocaleString('en-GB', {
+								label={data?.date?.toLocaleString('en-GB', {
 									month: 'long',
 									day: daily ? 'numeric' : undefined
-								})}
-								value={euroValueFormatter(data.value)}
+								}) ?? ''}
+								value={euroValueFormatter(data?.value)}
 							/>
 						</Tooltip.List>
 					{/snippet}

@@ -12,8 +12,13 @@
 	import { icons } from '../activity-log-icons';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
+	import ConfigCreatedActivityLogEntryText from './texts/ConfigCreatedActivityLogEntryText.svelte';
+	import ConfigDeletedActivityLogEntryText from './texts/ConfigDeletedActivityLogEntryText.svelte';
+	import ConfigUpdatedActivityLogEntryText from './texts/ConfigUpdatedActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
+	import JobRunDeletedActivityLogEntryText from './texts/JobRunDeletedActivityLogEntryText.svelte';
+	import JobTriggeredActivityLogEntryText from './texts/JobTriggeredActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
@@ -22,9 +27,6 @@
 	import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
 	import SecretValuesViewedActivityLogEntryText from './texts/SecretValuesViewedActivityLogEntryText.svelte';
-	import ConfigCreatedActivityLogEntryText from './texts/ConfigCreatedActivityLogEntryText.svelte';
-	import ConfigDeletedActivityLogEntryText from './texts/ConfigDeletedActivityLogEntryText.svelte';
-	import ConfigUpdatedActivityLogEntryText from './texts/ConfigUpdatedActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from './texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from './texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
@@ -135,6 +137,15 @@
 							... on TeamDeployKeyUpdatedActivityLogEntry {
 								id
 							}
+							... on JobRunDeletedActivityLogEntry {
+								id
+								jobRunDeletedData: data {
+									runName
+								}
+							}
+							... on JobTriggeredActivityLogEntry {
+								id
+							}
 							... on TeamMemberAddedActivityLogEntry {
 								addedData: data {
 									role
@@ -204,6 +215,10 @@
 				return ConfigDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ConfigUpdatedActivityLogEntry':
 				return ConfigUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobRunDeletedActivityLogEntry':
+				return JobRunDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobTriggeredActivityLogEntry':
+				return JobTriggeredActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
 				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
