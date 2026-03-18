@@ -93,30 +93,22 @@
 							createdAt
 							resourceName
 							resourceType
+							__typename
 							environmentName
 							teamSlug
-							... on ApplicationRestartedActivityLogEntry {
-								__typename
-							}
 							... on ApplicationScaledActivityLogEntry {
-								__typename
-
 								appScaled: data {
 									newSize
 									direction
 								}
 							}
 							... on ClusterAuditActivityLogEntry {
-								__typename
-
 								clusterAuditData: data {
 									action
 									resourceKind
 								}
 							}
 							... on CredentialsActivityLogEntry {
-								__typename
-
 								credentialsData: data {
 									serviceType
 									instanceName
@@ -125,24 +117,11 @@
 								}
 							}
 							... on DeploymentActivityLogEntry {
-								__typename
-
 								deploymentData: data {
 									triggerURL
 								}
 							}
-							... on JobTriggeredActivityLogEntry {
-								__typename
-							}
-							... on OpenSearchCreatedActivityLogEntry {
-								__typename
-							}
-							... on OpenSearchDeletedActivityLogEntry {
-								__typename
-							}
 							... on OpenSearchUpdatedActivityLogEntry {
-								__typename
-
 								opensearchData: data {
 									updatedFields {
 										field
@@ -151,72 +130,44 @@
 									}
 								}
 							}
-							... on RepositoryAddedActivityLogEntry {
-								__typename
-							}
-							... on RepositoryRemovedActivityLogEntry {
-								__typename
-							}
-							... on SecretCreatedActivityLogEntry {
-								__typename
-							}
-							... on SecretDeletedActivityLogEntry {
-								__typename
-							}
 							... on SecretValueAddedActivityLogEntry {
-								__typename
-
 								secretValueAdded: data {
 									valueName
 								}
 							}
 							... on SecretValueRemovedActivityLogEntry {
-								__typename
-
 								secretValueRemoved: data {
 									valueName
 								}
 							}
 							... on SecretValueUpdatedActivityLogEntry {
-								__typename
-
 								secretValueUpdated: data {
 									valueName
 								}
 							}
 							... on SecretValuesViewedActivityLogEntry {
-								__typename
-
 								secretValuesViewed: data {
 									reason
 								}
 							}
 							... on TeamMemberAddedActivityLogEntry {
-								__typename
-
 								teamMemberAdded: data {
 									role
 									userEmail
 								}
 							}
 							... on TeamMemberRemovedActivityLogEntry {
-								__typename
-
 								teamMemberRemoved: data {
 									userEmail
 								}
 							}
 							... on TeamMemberSetRoleActivityLogEntry {
-								__typename
-
 								teamMemberSetRole: data {
 									role
 									userEmail
 								}
 							}
 							... on ValkeyUpdatedActivityLogEntry {
-								__typename
-
 								valkeyData: data {
 									updatedFields {
 										field
@@ -224,12 +175,6 @@
 										oldValue
 									}
 								}
-							}
-							... on ValkeyCreatedActivityLogEntry {
-								__typename
-							}
-							... on ValkeyDeletedActivityLogEntry {
-								__typename
 							}
 						}
 					}
