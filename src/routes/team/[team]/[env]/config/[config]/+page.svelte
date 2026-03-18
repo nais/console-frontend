@@ -23,13 +23,13 @@
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
-	import Textarea from './Textarea.svelte';
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();

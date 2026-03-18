@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import Textarea from '$lib/ui/Textarea.svelte';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon } from '@nais/ds-svelte-community/icons';
-	import Textarea from './Textarea.svelte';
 
 	interface Props {
 		initial: { name: string }[];

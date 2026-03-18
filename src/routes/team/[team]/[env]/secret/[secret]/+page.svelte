@@ -24,6 +24,7 @@
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
 		DocPencilIcon,
@@ -35,7 +36,6 @@
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
-	import Textarea from './Textarea.svelte';
 	import ViewSecretModal from './ViewSecretModal.svelte';
 	import Workloads from './Workloads.svelte';
 
