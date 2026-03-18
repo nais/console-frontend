@@ -58,7 +58,9 @@
 			$env: String!
 			$value: ConfigValueInput!
 		) {
-			updateConfigValue(input: { environmentName: $env, name: $name, teamSlug: $team, value: $value }) {
+			updateConfigValue(
+				input: { environmentName: $env, name: $name, teamSlug: $team, value: $value }
+			) {
 				config {
 					id
 					values {
@@ -271,8 +273,8 @@
 				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
 					<Heading as="h2">Config Data</Heading>
 					<HelpText title="Config data" placement="right">
-						A config contains a set of key-value pairs that can be used as environment
-						variables (envFrom) or mounted as files (filesFrom) in your workloads.
+						A config contains a set of key-value pairs that can be used as environment variables
+						(envFrom) or mounted as files (filesFrom) in your workloads.
 					</HelpText>
 				</div>
 				<div class="header-buttons">

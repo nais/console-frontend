@@ -47,7 +47,9 @@
 			$env: String!
 			$value: ConfigValueInput!
 		) {
-			addConfigValue(input: { environmentName: $env, name: $name, teamSlug: $team, value: $value }) {
+			addConfigValue(
+				input: { environmentName: $env, name: $name, teamSlug: $team, value: $value }
+			) {
 				config {
 					id
 					values {

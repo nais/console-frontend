@@ -129,9 +129,9 @@ describe('menuItems', () => {
 					kafkaTopics: { total: 23 },
 					bigQueryDatasets: { total: 49 },
 					postgresInstances: { total: 7 },
-				secrets: { total: 3 },
-				configs: { total: 5 }
-			}
+					secrets: { total: 3 },
+					configs: { total: 5 }
+				}
 			});
 
 			expect(
@@ -142,9 +142,9 @@ describe('menuItems', () => {
 			).toEqual([
 				{ label: 'Applications', count: 42 },
 				{ label: 'Jobs', count: 1 },
-			{ label: 'Secrets', count: 3 },
-			{ label: 'Config', count: 5 },
-			{ label: 'Cloud SQL', count: 7 },
+				{ label: 'Secrets', count: 3 },
+				{ label: 'Config', count: 5 },
+				{ label: 'Cloud SQL', count: 7 },
 				{ label: 'Postgres', count: 7 },
 				{ label: 'Buckets', count: 1337 },
 				{ label: 'Valkey', count: 11 },

@@ -53,15 +53,7 @@ query Configs(
 			}
 		}
 		...SidebarActivityLogFragment
-			@with(
-				filter: {
-					activityTypes: [
-						CONFIG_CREATED
-						CONFIG_UPDATED
-						CONFIG_DELETED
-					]
-				}
-			)
+			@with(filter: { activityTypes: [CONFIG_CREATED, CONFIG_UPDATED, CONFIG_DELETED] })
 			@mask_disable
 	}
 }

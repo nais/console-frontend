@@ -38,19 +38,13 @@ query Config($config: String!, $team: Slug!, $env: String!) @cache(policy: Netwo
 					name
 					email
 				}
-			...SidebarActivityLogFragment
-				@with(
-					filter: {
-						activityTypes: [
-							CONFIG_CREATED
-							CONFIG_UPDATED
-							CONFIG_DELETED
-						]
-					}
-					limit: 20
-				)
-				@mask_disable
-		}
+				...SidebarActivityLogFragment
+					@with(
+						filter: { activityTypes: [CONFIG_CREATED, CONFIG_UPDATED, CONFIG_DELETED] }
+						limit: 20
+					)
+					@mask_disable
+			}
 		}
 	}
 }
