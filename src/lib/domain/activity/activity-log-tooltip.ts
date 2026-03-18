@@ -48,6 +48,8 @@ export function activityTooltip(typename: string): string {
 			return 'Vulnerability';
 		case 'ClusterAuditActivityLogEntry':
 			return 'Kubernetes audit';
+		case 'CredentialsActivityLogEntry':
+			return 'Credentials';
 		case 'ReconcilerConfiguredActivityLogEntry':
 		case 'ReconcilerEnabledActivityLogEntry':
 		case 'ReconcilerDisabledActivityLogEntry':

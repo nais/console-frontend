@@ -37,6 +37,12 @@ To connect to local API, run `nais alpha api proxy` on host machine.
 
 ---
 
+### schema.graphql
+
+This file is auto-generated from [nais/api](https://github.com/nais/api) and must not be manually edited. Do not suggest or apply changes to `schema.graphql`.
+
+---
+
 ## Common Commands
 
 | Task              | Command          |

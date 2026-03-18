@@ -10,6 +10,7 @@
 	import ApplicationRestartedActivityLogEntryText from '../shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../shared/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from '../shared/texts/ClusterAuditActivityLogEntryText.svelte';
+	import CredentialsActivityLogEntryText from '../shared/texts/CredentialsActivityLogEntryText.svelte';
 	import DefaultText from '../shared/texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from '../shared/texts/DeploymentActivityLogEntryText.svelte';
 	import OpenSearchCreatedActivityLogEntryText from '../shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
@@ -42,6 +43,7 @@
 			ActivityLogActivityType.APPLICATION_RESTARTED,
 			ActivityLogActivityType.APPLICATION_SCALED,
 			ActivityLogActivityType.CLUSTER_AUDIT,
+			ActivityLogActivityType.CREDENTIALS_CREATE,
 			ActivityLogActivityType.DEPLOYMENT,
 			ActivityLogActivityType.JOB_DELETED,
 			ActivityLogActivityType.JOB_TRIGGERED,
@@ -91,46 +93,35 @@
 							createdAt
 							resourceName
 							resourceType
+							__typename
 							environmentName
 							teamSlug
-							... on ApplicationRestartedActivityLogEntry {
-								__typename
-							}
 							... on ApplicationScaledActivityLogEntry {
-								__typename
-
 								appScaled: data {
 									newSize
 									direction
 								}
 							}
 							... on ClusterAuditActivityLogEntry {
-								__typename
-
 								clusterAuditData: data {
 									action
 									resourceKind
 								}
 							}
+							... on CredentialsActivityLogEntry {
+								credentialsData: data {
+									serviceType
+									instanceName
+									permission
+									ttl
+								}
+							}
 							... on DeploymentActivityLogEntry {
-								__typename
-
 								deploymentData: data {
 									triggerURL
 								}
 							}
-							... on JobTriggeredActivityLogEntry {
-								__typename
-							}
-							... on OpenSearchCreatedActivityLogEntry {
-								__typename
-							}
-							... on OpenSearchDeletedActivityLogEntry {
-								__typename
-							}
 							... on OpenSearchUpdatedActivityLogEntry {
-								__typename
-
 								opensearchData: data {
 									updatedFields {
 										field
@@ -139,72 +130,44 @@
 									}
 								}
 							}
-							... on RepositoryAddedActivityLogEntry {
-								__typename
-							}
-							... on RepositoryRemovedActivityLogEntry {
-								__typename
-							}
-							... on SecretCreatedActivityLogEntry {
-								__typename
-							}
-							... on SecretDeletedActivityLogEntry {
-								__typename
-							}
 							... on SecretValueAddedActivityLogEntry {
-								__typename
-
 								secretValueAdded: data {
 									valueName
 								}
 							}
 							... on SecretValueRemovedActivityLogEntry {
-								__typename
-
 								secretValueRemoved: data {
 									valueName
 								}
 							}
 							... on SecretValueUpdatedActivityLogEntry {
-								__typename
-
 								secretValueUpdated: data {
 									valueName
 								}
 							}
 							... on SecretValuesViewedActivityLogEntry {
-								__typename
-
 								secretValuesViewed: data {
 									reason
 								}
 							}
 							... on TeamMemberAddedActivityLogEntry {
-								__typename
-
 								teamMemberAdded: data {
 									role
 									userEmail
 								}
 							}
 							... on TeamMemberRemovedActivityLogEntry {
-								__typename
-
 								teamMemberRemoved: data {
 									userEmail
 								}
 							}
 							... on TeamMemberSetRoleActivityLogEntry {
-								__typename
-
 								teamMemberSetRole: data {
 									role
 									userEmail
 								}
 							}
 							... on ValkeyUpdatedActivityLogEntry {
-								__typename
-
 								valkeyData: data {
 									updatedFields {
 										field
@@ -212,12 +175,6 @@
 										oldValue
 									}
 								}
-							}
-							... on ValkeyCreatedActivityLogEntry {
-								__typename
-							}
-							... on ValkeyDeletedActivityLogEntry {
-								__typename
 							}
 						}
 					}
@@ -243,6 +200,8 @@
 				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
+			case 'CredentialsActivityLogEntry':
+				return CredentialsActivityLogEntryText as Component<{ data: unknown }>;
 			case 'DeploymentActivityLogEntry':
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchCreatedActivityLogEntry':
