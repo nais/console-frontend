@@ -24,6 +24,7 @@ export const menuItems = ({
 		bigQueryDatasets: { total: number };
 		postgresInstances: { total: number };
 		secrets: { total: number };
+		configs: { total: number };
 	};
 	isAdmin: boolean;
 }): { label: string; href: string; active?: boolean; count?: number }[][] => {
@@ -40,7 +41,8 @@ export const menuItems = ({
 			kafka: 'kafkaTopics',
 			bigquery: 'bigQueryDatasets',
 			postgres: 'postgresInstances',
-			secrets: 'secrets'
+			secrets: 'secrets',
+			configs: 'configs'
 		} as const;
 
 		if (pageName === 'applications' || pageName === 'jobs') {
@@ -95,6 +97,7 @@ export const menuItems = ({
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
 			menuItem('Secrets', 'secrets', 'secret'),
+			menuItem('Config', 'configs', 'config'),
 			menuItem('Cloud SQL', 'cloudsql', 'cloudsql'),
 			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),

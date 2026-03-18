@@ -7,6 +7,7 @@ import {
 	BriefcaseClockIcon,
 	// Fallbacks / misc
 	CogIcon,
+	FileTextIcon,
 	PackageIcon,
 	PadlockLockedIcon,
 	PersonGroupIcon,
@@ -53,6 +54,11 @@ export const icons: { [typename: string]: Component } = {
 	SecretValueRemovedActivityLogEntry: PadlockLockedIcon,
 	SecretValueUpdatedActivityLogEntry: PadlockLockedIcon,
 	SecretValuesViewedActivityLogEntry: PadlockLockedIcon,
+
+	/* Configs */
+	ConfigCreatedActivityLogEntry: FileTextIcon,
+	ConfigDeletedActivityLogEntry: FileTextIcon,
+	ConfigUpdatedActivityLogEntry: FileTextIcon,
 
 	/* Repositories */
 	RepositoryAddedActivityLogEntry: BranchingIcon,

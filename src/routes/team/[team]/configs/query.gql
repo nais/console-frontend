@@ -1,0 +1,59 @@
+query Configs(
+	$team: Slug!
+	$orderBy: ConfigOrder
+	$filter: ConfigFilter
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) @cache(policy: CacheAndNetwork) {
+	me {
+		... on User {
+			isAdmin
+		}
+	}
+	team(slug: $team) {
+		viewerIsMember
+		configs(
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+			orderBy: $orderBy
+			filter: $filter
+		) @paginate(mode: SinglePage) {
+			pageInfo {
+				totalCount
+				hasPreviousPage
+				hasNextPage
+				pageEnd
+				pageStart
+				startCursor
+				endCursor
+			}
+			nodes {
+				id
+				name
+				lastModifiedAt
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				workloads {
+					pageInfo {
+						totalCount
+					}
+				}
+			}
+		}
+		environments {
+			environment {
+				name
+			}
+		}
+		...SidebarActivityLogFragment
+			@with(filter: { activityTypes: [CONFIG_CREATED, CONFIG_UPDATED, CONFIG_DELETED] })
+			@mask_disable
+	}
+}
