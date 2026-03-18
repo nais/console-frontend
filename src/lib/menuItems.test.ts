@@ -25,6 +25,7 @@ describe('menuItems', () => {
 				],
 				[
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
+					{ label: 'Config', href: '/team/devteam/configs' },
 					{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
 					{ label: 'Postgres', href: '/team/devteam/postgres' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
