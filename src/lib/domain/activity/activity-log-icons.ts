@@ -43,6 +43,7 @@ export const icons: { [typename: string]: Component } = {
 	DeploymentActivityLogEntry: RocketIcon,
 	JobTriggeredActivityLogEntry: BriefcaseClockIcon,
 	JobDeletedActivityLogEntry: BriefcaseClockIcon,
+	JobRunDeletedActivityLogEntry: BriefcaseClockIcon,
 
 	/* Credentials */
 	CredentialsActivityLogEntry: PadlockLockedIcon,

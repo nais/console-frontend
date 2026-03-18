@@ -13,6 +13,7 @@
 	import CredentialsActivityLogEntryText from '../shared/texts/CredentialsActivityLogEntryText.svelte';
 	import DefaultText from '../shared/texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from '../shared/texts/DeploymentActivityLogEntryText.svelte';
+	import JobRunDeletedActivityLogEntryText from '../shared/texts/JobRunDeletedActivityLogEntryText.svelte';
 	import OpenSearchCreatedActivityLogEntryText from '../shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
@@ -46,6 +47,7 @@
 			ActivityLogActivityType.CREDENTIALS_CREATE,
 			ActivityLogActivityType.DEPLOYMENT,
 			ActivityLogActivityType.JOB_DELETED,
+			ActivityLogActivityType.JOB_RUN_DELETED,
 			ActivityLogActivityType.JOB_TRIGGERED,
 			ActivityLogActivityType.OPENSEARCH_CREATED,
 			ActivityLogActivityType.OPENSEARCH_DELETED,
@@ -194,6 +196,8 @@
 			case 'ApplicationDeletedActivityLogEntry':
 			case 'JobDeletedActivityLogEntry':
 				return ResourceDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobRunDeletedActivityLogEntry':
+				return JobRunDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationRestartedActivityLogEntry':
 				return ApplicationRestartedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':

@@ -38,7 +38,11 @@
 		],
 		'Cluster Audit': [ActivityLogActivityType.CLUSTER_AUDIT],
 		Deployment: [ActivityLogActivityType.DEPLOYMENT],
-		Job: [ActivityLogActivityType.JOB_DELETED, ActivityLogActivityType.JOB_TRIGGERED],
+		Job: [
+			ActivityLogActivityType.JOB_DELETED,
+			ActivityLogActivityType.JOB_RUN_DELETED,
+			ActivityLogActivityType.JOB_TRIGGERED
+		],
 		OpenSearch: [
 			ActivityLogActivityType.OPENSEARCH_CREATED,
 			ActivityLogActivityType.OPENSEARCH_DELETED,
