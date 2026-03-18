@@ -13,6 +13,7 @@
 	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from '../activity/shared/texts/ClusterAuditActivityLogEntryText.svelte';
+	import CredentialsActivityLogEntryText from '../activity/shared/texts/CredentialsActivityLogEntryText.svelte';
 	import DeploymentActivityLogEntryText from '../activity/shared/texts/DeploymentActivityLogEntryText.svelte';
 	import JobDeletedActivityLogEntryText from '../activity/shared/texts/JobDeletedActivityLogEntryText.svelte';
 	import JobTriggeredActivityLogEntryText from '../activity/shared/texts/JobTriggeredActivityLogEntryText.svelte';
@@ -78,6 +79,14 @@
 						clusterAuditData: data {
 							action
 							resourceKind
+						}
+					}
+					... on CredentialsActivityLogEntry {
+						credentialsData: data {
+							serviceType
+							instanceName
+							permission
+							ttl
 						}
 					}
 					... on DeploymentActivityLogEntry {
@@ -238,6 +247,8 @@
 				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
+			case 'CredentialsActivityLogEntry':
+				return CredentialsActivityLogEntryText as Component<{ data: unknown }>;
 			case 'DeploymentActivityLogEntry':
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
 			case 'JobDeletedActivityLogEntry':

@@ -43,6 +43,9 @@ export const icons: { [typename: string]: Component } = {
 	JobTriggeredActivityLogEntry: BriefcaseClockIcon,
 	JobDeletedActivityLogEntry: BriefcaseClockIcon,
 
+	/* Credentials */
+	CredentialsActivityLogEntry: PadlockLockedIcon,
+
 	/* Secrets */
 	SecretCreatedActivityLogEntry: PadlockLockedIcon,
 	SecretDeletedActivityLogEntry: PadlockLockedIcon,
