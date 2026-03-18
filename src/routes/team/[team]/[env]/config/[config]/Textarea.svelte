@@ -1,6 +1,7 @@
 <script lang="ts">
 	interface Props {
 		text: string | undefined;
+		id?: string;
 		label?: string;
 		description?: string;
 		readonly?: boolean;
@@ -10,6 +11,7 @@
 
 	let {
 		text = $bindable(),
+		id = crypto.randomUUID(),
 		label = '',
 		description = '',
 		readonly = false,
@@ -20,7 +22,7 @@
 
 <div class="aksel-form-field">
 	{#if label}
-		<label class="aksel-form-field__label aksel-label aksel-label--small" for="value">
+		<label class="aksel-form-field__label aksel-label aksel-label--small" for={id}>
 			{label}
 		</label>
 	{/if}
@@ -31,7 +33,7 @@
 	{/if}
 	<textarea
 		class="aksel-textarea__input aksel-body-short aksel-body-short--small textarea"
-		id="value"
+		{id}
 		{rows}
 		{cols}
 		bind:value={text}

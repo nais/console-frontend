@@ -44,10 +44,10 @@
 		const allowed: Array<'all' | 'inUse' | 'notInUse'> = ['all', 'inUse', 'notInUse'];
 		if (allowed.includes(value as 'all' | 'inUse' | 'notInUse')) {
 			if (value === 'all') {
-				changeParams({ filter: '' });
+				changeParams({ filter: '', before: '', after: '' });
 				return;
 			}
-			changeParams({ filter: value });
+			changeParams({ filter: value, before: '', after: '' });
 		}
 	};
 

@@ -259,9 +259,6 @@
 		Are you sure you want to delete <b>{keyToDelete}</b> from this config?
 	</Confirm>
 
-	<div
-		style="display: flex; flex-direction: row; justify-content: flex-end; padding-bottom: var(--spacing-layout);"
-	></div>
 	<div class="wrapper">
 		<div>
 			<div class="alerts">
