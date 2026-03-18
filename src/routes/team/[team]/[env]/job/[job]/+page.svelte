@@ -80,38 +80,26 @@
 
 	let deleteConfirmOpen = $state(false);
 	let deleteRunName = $state('');
-	let deleteError = $state('');
 
 	const handleDeleteRun = (runName: string) => {
 		deleteRunName = runName;
-		deleteError = '';
 		deleteConfirmOpen = true;
 	};
 
 	const confirmDeleteRun = async () => {
 		if (!jobName || !environment) return;
 
-		try {
-			const result = await deleteJobRunMutation.mutate({
-				teamSlug,
-				environment,
-				runName: deleteRunName
-			});
+		await deleteJobRunMutation.mutate({
+			teamSlug,
+			environment,
+			runName: deleteRunName
+		});
 
-			if (result.errors && result.errors.length > 0) {
-				deleteError = result.errors.map((e) => e.message).join(', ');
-				return;
-			}
+		if ($deleteJobRunMutation.errors) return;
 
-			if (result.data?.deleteJobRun.success) {
-				deleteRunName = '';
-				deleteError = '';
-				// Small delay to allow the watcher cache to process the delete event
-				setTimeout(() => Job.fetch({ policy: 'NetworkOnly' }), 500);
-			}
-		} catch (e: unknown) {
-			deleteError = e instanceof Error ? e.message : 'An unknown error occurred';
-		}
+		deleteRunName = '';
+		// Small delay to allow the watcher cache to process the delete event
+		setTimeout(() => Job.fetch({ policy: 'NetworkOnly' }), 500);
 	};
 </script>
 
@@ -221,15 +209,12 @@
 			onconfirm={confirmDeleteRun}
 			oncancel={() => {
 				deleteRunName = '';
-				deleteError = '';
 			}}
 		>
 			{#snippet header()}
 				<Heading>Delete job run</Heading>
 			{/snippet}
-			{#if deleteError}
-				<Alert variant="error" size="small">{deleteError}</Alert>
-			{/if}
+			<GraphErrors errors={$deleteJobRunMutation.errors} />
 			<BodyShort>
 				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
 			</BodyShort>
