@@ -91,6 +91,7 @@
 				variant="tertiary-neutral"
 				size="xsmall"
 				icon={TrashIcon}
+				aria-label="Delete run {run.name}"
 				onclick={() => ondelete(run.name)}
 			/>
 		{/if}

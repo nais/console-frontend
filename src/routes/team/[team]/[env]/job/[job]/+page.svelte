@@ -80,23 +80,35 @@
 
 	let deleteConfirmOpen = $state(false);
 	let deleteRunName = $state('');
+	let deleteError = $state('');
 
 	const handleDeleteRun = (runName: string) => {
 		deleteRunName = runName;
+		deleteError = '';
 		deleteConfirmOpen = true;
 	};
 
 	const confirmDeleteRun = async () => {
 		if (!jobName || !environment) return;
 
-		const result = await deleteJobRunMutation.mutate({
-			teamSlug,
-			environment,
-			runName: deleteRunName
-		});
+		try {
+			const result = await deleteJobRunMutation.mutate({
+				teamSlug,
+				environment,
+				runName: deleteRunName
+			});
 
-		if (result.data?.deleteJobRun.success) {
-			Job.fetch({ policy: 'NetworkOnly' });
+			if (result.errors && result.errors.length > 0) {
+				deleteError = result.errors.map((e) => e.message).join(', ');
+				return;
+			}
+
+			if (result.data?.deleteJobRun.success) {
+				deleteRunName = '';
+				Job.fetch({ policy: 'NetworkOnly' });
+			}
+		} catch (e: unknown) {
+			deleteError = e instanceof Error ? e.message : 'An unknown error occurred';
 		}
 	};
 </script>
@@ -205,10 +217,17 @@
 			variant="danger"
 			bind:open={deleteConfirmOpen}
 			onconfirm={confirmDeleteRun}
+			oncancel={() => {
+				deleteRunName = '';
+				deleteError = '';
+			}}
 		>
 			{#snippet header()}
 				<Heading>Delete job run</Heading>
 			{/snippet}
+			{#if deleteError}
+				<Alert variant="error" size="small">{deleteError}</Alert>
+			{/if}
 			<BodyShort>
 				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
 			</BodyShort>
