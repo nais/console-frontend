@@ -8,9 +8,10 @@
 
 	interface Props {
 		job: JobRuns;
+		ondelete?: (runName: string) => void;
 	}
 
-	let { job }: Props = $props();
+	let { job, ondelete }: Props = $props();
 
 	let data = $derived(
 		fragment(
@@ -177,12 +178,13 @@
 							run={run.node}
 							urlBase="/team/{$data.team?.slug}/{$data.teamEnvironment?.environment
 								.name}/job/{$data.name}/logs?instance="
+							{ondelete}
 						/>
 					{:else}
-						<JobRunListItem run={run.node} />
+						<JobRunListItem run={run.node} {ondelete} />
 					{/if}
 				{:else}
-					<JobRunListItem run={run.node} />
+					<JobRunListItem run={run.node} {ondelete} />
 				{/if}
 			{/each}
 		</List>
