@@ -14,7 +14,9 @@
 </script>
 
 <div>
-	Job run <strong>{data.resourceName}</strong> deleted<br />
+	Job run <strong>{data.jobRunDeletedData?.runName}</strong> from job
+	<strong>{data.resourceName}</strong>
+	deleted<br />
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />

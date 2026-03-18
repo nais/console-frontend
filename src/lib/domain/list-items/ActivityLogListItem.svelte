@@ -99,7 +99,9 @@
 						__typename
 					}
 					... on JobRunDeletedActivityLogEntry {
-						__typename
+						jobRunDeletedData: data {
+							runName
+						}
 					}
 					... on JobTriggeredActivityLogEntry {
 						__typename

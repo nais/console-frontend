@@ -139,6 +139,9 @@
 							}
 							... on JobRunDeletedActivityLogEntry {
 								id
+								jobRunDeletedData: data {
+									runName
+								}
 							}
 							... on JobTriggeredActivityLogEntry {
 								id

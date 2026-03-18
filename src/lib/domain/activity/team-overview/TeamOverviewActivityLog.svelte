@@ -178,6 +178,11 @@
 									}
 								}
 							}
+							... on JobRunDeletedActivityLogEntry {
+								jobRunDeletedData: data {
+									runName
+								}
+							}
 						}
 					}
 				}
