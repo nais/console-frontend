@@ -3240,6 +3240,9 @@ type JobRunDeletedActivityLogEntry implements ActivityLogEntry & Node {
   """Creation time of the entry."""
   createdAt: Time!
 
+  """Data associated with the entry."""
+  data: JobRunDeletedActivityLogEntryData
+
   """The environment name that the entry belongs to."""
   environmentName: String
 
@@ -3257,6 +3260,11 @@ type JobRunDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type JobRunDeletedActivityLogEntryData {
+  """The name of the deleted job run."""
+  runName: String!
 }
 
 type JobRunEdge {
