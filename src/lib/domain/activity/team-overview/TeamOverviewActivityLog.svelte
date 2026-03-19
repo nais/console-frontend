@@ -148,7 +148,7 @@
 								}
 							}
 							... on SecretValuesViewedActivityLogEntry {
-								secretValuesViewed: data {
+								secretValuesViewedData: data {
 									reason
 								}
 							}
