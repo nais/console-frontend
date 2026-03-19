@@ -3,7 +3,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
-	import { NotePencilIcon } from '@nais/ds-svelte-community/icons';
+	import { FileTextIcon } from '@nais/ds-svelte-community/icons';
 
 	const configs = graphql(`
 		query WorkloadConfigs($name: String!, $team: Slug!, $env: String!) {
@@ -57,7 +57,7 @@
 		{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
 			<IconLabel
 				label={config.node.name}
-				icon={NotePencilIcon}
+				icon={FileTextIcon}
 				href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
 					.name}/config/{config.node.name}"
 			/>
