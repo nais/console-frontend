@@ -192,8 +192,8 @@
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>
 				{#if jobName && environment}
-					<Secrets workload={jobName} {environment} {teamSlug} />
 					<Configs workload={jobName} {environment} {teamSlug} />
+					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
 				<SidebarActivity activityLog={job} />
 			</div>
