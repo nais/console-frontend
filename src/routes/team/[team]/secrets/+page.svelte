@@ -220,7 +220,7 @@
 				/>
 			</div>
 		</div>
-		<div>
+		<div style="margin-top: var(--spacing-layout);">
 			<SidebarActivity activityLog={$Secrets.data.team} direct={$Secrets.data.team.activityLog} />
 		</div>
 	</div>

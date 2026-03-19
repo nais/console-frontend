@@ -10,8 +10,8 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Detail, Search } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
@@ -220,7 +220,7 @@
 				/>
 			</div>
 		</div>
-		<div>
+		<div style="margin-top: var(--spacing-layout);">
 			<SidebarActivity activityLog={$Configs.data.team} direct={$Configs.data.team.activityLog} />
 		</div>
 	</div>
