@@ -10,17 +10,23 @@
 	import type { Component } from 'svelte';
 
 	import { icons } from '../activity-log-icons';
+	import ApplicationRestartedActivityLogEntryText from './texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from './texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from './texts/ClusterAuditActivityLogEntryText.svelte';
 	import ConfigCreatedActivityLogEntryText from './texts/ConfigCreatedActivityLogEntryText.svelte';
 	import ConfigDeletedActivityLogEntryText from './texts/ConfigDeletedActivityLogEntryText.svelte';
 	import ConfigUpdatedActivityLogEntryText from './texts/ConfigUpdatedActivityLogEntryText.svelte';
+	import CredentialsActivityLogEntryText from './texts/CredentialsActivityLogEntryText.svelte';
 	import DefaultText from './texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 	import JobRunDeletedActivityLogEntryText from './texts/JobRunDeletedActivityLogEntryText.svelte';
 	import JobTriggeredActivityLogEntryText from './texts/JobTriggeredActivityLogEntryText.svelte';
+	import OpenSearchCreatedActivityLogEntryText from './texts/OpenSearchCreatedActivityLogEntryText.svelte';
+	import OpenSearchDeletedActivityLogEntryText from './texts/OpenSearchDeletedActivityLogEntryText.svelte';
+	import OpenSearchUpdatedActivityLogEntryText from './texts/OpenSearchUpdatedActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
+	import ResourceDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
 	import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
 	import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
@@ -32,6 +38,9 @@
 	import TeamMemberRemovedActivityLogEntryText from './texts/TeamMemberRemovedActivityLogEntryText.svelte';
 	import TeamMemberSetRoleActivityLogEntryText from './texts/TeamMemberSetRoleActivityLogEntryText.svelte';
 	import TeamUpdatedActivityLogEntryText from './texts/TeamUpdatedActivityLogEntryText.svelte';
+	import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogEntryText.svelte';
+	import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
+	import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
 		activityLog: SidebarActivityLogFragment;
@@ -176,6 +185,53 @@
 									}
 								}
 							}
+							... on ApplicationRestartedActivityLogEntry {
+								id
+							}
+							... on ApplicationDeletedActivityLogEntry {
+								id
+							}
+							... on JobDeletedActivityLogEntry {
+								id
+							}
+							... on CredentialsActivityLogEntry {
+								credentialsData: data {
+									serviceType
+									instanceName
+									permission
+									ttl
+								}
+							}
+							... on ValkeyCreatedActivityLogEntry {
+								id
+							}
+							... on ValkeyDeletedActivityLogEntry {
+								id
+							}
+							... on ValkeyUpdatedActivityLogEntry {
+								valkeyData: data {
+									updatedFields {
+										field
+										newValue
+										oldValue
+									}
+								}
+							}
+							... on OpenSearchCreatedActivityLogEntry {
+								id
+							}
+							... on OpenSearchDeletedActivityLogEntry {
+								id
+							}
+							... on OpenSearchUpdatedActivityLogEntry {
+								opensearchData: data {
+									updatedFields {
+										field
+										newValue
+										oldValue
+									}
+								}
+							}
 						}
 					}
 				}
@@ -231,6 +287,25 @@
 				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationDeletedActivityLogEntry':
+			case 'JobDeletedActivityLogEntry':
+				return ResourceDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationRestartedActivityLogEntry':
+				return ApplicationRestartedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'CredentialsActivityLogEntry':
+				return CredentialsActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyCreatedActivityLogEntry':
+				return ValkeyCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyDeletedActivityLogEntry':
+				return ValkeyDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ValkeyUpdatedActivityLogEntry':
+				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchCreatedActivityLogEntry':
+				return OpenSearchCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchDeletedActivityLogEntry':
+				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'OpenSearchUpdatedActivityLogEntry':
+				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}
