@@ -8,6 +8,7 @@
 	interface SecretValue {
 		name: string;
 		value: string;
+		encoding: string;
 	}
 
 	interface Props {

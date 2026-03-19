@@ -13,6 +13,7 @@
 		Loader,
 		Modal,
 		Table,
+		Tag,
 		Tbody,
 		Td,
 		Th,
@@ -28,6 +29,7 @@
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
 		DocPencilIcon,
+		DownloadIcon,
 		EyeSlashIcon,
 		PadlockLockedIcon,
 		TrashIcon
@@ -64,15 +66,52 @@
 	// Secrets are hidden by default - revealed when user provides justification
 	let secretsRevealed = $state(false);
 
-	// Store for revealed secret values
-	let revealedValues = new SvelteMap<string, string>();
+	// Store for revealed secret values (value + encoding)
+	interface RevealedValue {
+		value: string;
+		encoding: string;
+	}
+	let revealedValues = new SvelteMap<string, RevealedValue>();
+
+	const isBinary = (keyName: string): boolean => {
+		const entry = revealedValues.get(keyName);
+		return entry?.encoding === 'BASE64';
+	};
+
+	const downloadBinaryValue = (keyName: string) => {
+		const entry = revealedValues.get(keyName);
+		if (!entry || entry.encoding !== 'BASE64') return;
+
+		const raw = atob(entry.value);
+		const bytes = new Uint8Array(raw.length);
+		for (let i = 0; i < raw.length; i++) {
+			bytes[i] = raw.charCodeAt(i);
+		}
+		const blob = new Blob([bytes]);
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = keyName;
+		a.click();
+		URL.revokeObjectURL(url);
+	};
+
+	const binarySize = (keyName: string): number => {
+		const entry = revealedValues.get(keyName);
+		if (!entry || entry.encoding !== 'BASE64') return 0;
+		try {
+			return atob(entry.value).length;
+		} catch {
+			return 0;
+		}
+	};
 
 	// Handle successful secret reveal - receives values directly from the mutation
-	const handleRevealSuccess = (values: { name: string; value: string }[]) => {
+	const handleRevealSuccess = (values: { name: string; value: string; encoding: string }[]) => {
 		secretsRevealed = true;
 		revealedValues.clear();
 		for (const v of values) {
-			revealedValues.set(v.name, v.value);
+			revealedValues.set(v.name, { value: v.value, encoding: v.encoding });
 		}
 		Secret.fetch();
 	};
@@ -131,7 +170,7 @@
 
 		// Update the local revealed values map with the new value
 		if (secretsRevealed) {
-			revealedValues.set(keyToEdit, valueToEdit);
+			revealedValues.set(keyToEdit, { value: valueToEdit, encoding: 'PLAIN_TEXT' });
 		}
 
 		editValueOpen = false;
@@ -215,6 +254,10 @@
 
 	const openEditValueModal = (key: string, value: string) => {
 		if (!canEditValues) {
+			return;
+		}
+		// Don't allow editing binary values through the text editor
+		if (isBinary(key)) {
 			return;
 		}
 		keyToEdit = key;
@@ -371,33 +414,49 @@
 								</p>
 							</Td>
 							<Td>
-								<code class="value">
-									{#if secretsRevealed && revealedValues.has(keyName)}
-										{revealedValues.get(keyName)}
+								{#if secretsRevealed && revealedValues.has(keyName)}
+									{#if isBinary(keyName)}
+										<Tag variant="neutral" size="small">binary, {binarySize(keyName)} bytes</Tag>
 									{:else}
-										••••••••••••••••••••
+										<code class="value">
+											{revealedValues.get(keyName)?.value}
+										</code>
 									{/if}
-								</code>
+								{:else}
+									<code class="value">
+										••••••••••••••••••••
+									</code>
+								{/if}
 							</Td>
 							<Td style="width: 120px" align="right">
 								<div class="buttons">
 									{#if secretsRevealed && revealedValues.has(keyName)}
-										<CopyButton
-											activeText="Value copied"
-											variant="action"
-											size="small"
-											copyText={revealedValues.get(keyName) ?? ''}
-										/>
-										{#if canEditValues}
+										{#if isBinary(keyName)}
 											<Button
 												size="small"
 												variant="tertiary"
-												title="Edit secret value"
-												onclick={() => {
-													openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
-												}}
-												icon={DocPencilIcon}
+												title="Download binary value"
+												onclick={() => downloadBinaryValue(keyName)}
+												icon={DownloadIcon}
 											/>
+										{:else}
+											<CopyButton
+												activeText="Value copied"
+												variant="action"
+												size="small"
+												copyText={revealedValues.get(keyName)?.value ?? ''}
+											/>
+											{#if canEditValues}
+												<Button
+													size="small"
+													variant="tertiary"
+													title="Edit secret value"
+													onclick={() => {
+														openEditValueModal(keyName, revealedValues.get(keyName)?.value ?? '');
+													}}
+													icon={DocPencilIcon}
+												/>
+											{/if}
 										{/if}
 									{/if}
 									{#if canMutate}
