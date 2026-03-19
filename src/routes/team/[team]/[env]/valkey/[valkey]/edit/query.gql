@@ -9,6 +9,7 @@ query UpdateValkeyData($environment: String!, $team: Slug!, $name: String!)
 				memory
 				maxMemoryPolicy
 				notifyKeyspaceEvents
+				databases
 			}
 		}
 	}

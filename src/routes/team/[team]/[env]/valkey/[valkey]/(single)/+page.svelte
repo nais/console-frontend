@@ -225,6 +225,9 @@
 				{#if instance.notifyKeyspaceEvents}
 					<BodyShort>Notify keyspace events: {instance.notifyKeyspaceEvents}</BodyShort>
 				{/if}
+				{#if instance.databases !== 16}
+					<BodyShort>Number of databases: {instance.databases}</BodyShort>
+				{/if}
 			</div>
 			{#if viewerIsMember && isManagedByConsole}
 				<Button
