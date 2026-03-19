@@ -27,6 +27,9 @@
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}.
+	{#if data.secretValuesViewedData?.reason}
+		<BodyShort size="small"><em>Reason: {data.secretValuesViewedData.reason}</em></BodyShort>
+	{/if}
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

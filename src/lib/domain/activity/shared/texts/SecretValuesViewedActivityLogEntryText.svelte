@@ -12,7 +12,7 @@
 </script>
 
 <div>
-	<strong>{data.actor}</strong> viewed secret values for
+	Viewed secret values for
 	<a
 		href={activityLogResourceLink(
 			data.environmentName ?? '',

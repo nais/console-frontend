@@ -133,17 +133,17 @@
 								}
 							}
 							... on SecretValueAddedActivityLogEntry {
-								secretValueAdded: data {
+								secretValueAddedData: data {
 									valueName
 								}
 							}
 							... on SecretValueRemovedActivityLogEntry {
-								secretValueRemoved: data {
+								secretValueRemovedData: data {
 									valueName
 								}
 							}
 							... on SecretValueUpdatedActivityLogEntry {
-								secretValueUpdated: data {
+								secretValueUpdatedData: data {
 									valueName
 								}
 							}
@@ -153,18 +153,18 @@
 								}
 							}
 							... on TeamMemberAddedActivityLogEntry {
-								teamMemberAdded: data {
+								addedData: data {
 									role
 									userEmail
 								}
 							}
 							... on TeamMemberRemovedActivityLogEntry {
-								teamMemberRemoved: data {
+								removedData: data {
 									userEmail
 								}
 							}
 							... on TeamMemberSetRoleActivityLogEntry {
-								teamMemberSetRole: data {
+								setRoleData: data {
 									role
 									userEmail
 								}
