@@ -16,14 +16,19 @@
 </script>
 
 <div>
-	Viewed secret values for <a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
+	Viewed secret values for
+	{#if data.environmentName}
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}.

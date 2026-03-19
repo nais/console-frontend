@@ -16,14 +16,19 @@
 </script>
 
 <div>
-	Valkey <a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
+	Valkey
+	{#if data.environmentName}
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
 	updated
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
