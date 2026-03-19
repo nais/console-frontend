@@ -9,16 +9,33 @@
 	}: {
 		data: Extract<
 			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ConfigDeletedActivityLogEntry' }
+			{ __typename: 'CredentialsActivityLogEntry' }
 		>;
 	} = $props();
+
+	const serviceTypeLabel: Record<string, string> = {
+		OPENSEARCH: 'OpenSearch',
+		VALKEY: 'Valkey',
+		KAFKA: 'Kafka'
+	};
+
+	const serviceLabel = $derived(
+		serviceTypeLabel[data.credentialsData.serviceType] ?? data.credentialsData.serviceType
+	);
 </script>
 
 <div>
-	Config <strong>{data.resourceName}</strong> deleted
+	{serviceLabel} credentials created
+	{#if data.credentialsData.instanceName}
+		for <strong>{data.credentialsData.instanceName}</strong>
+	{/if}
+	{#if data.credentialsData.permission}
+		with {data.credentialsData.permission} access
+	{/if}
+	(TTL: {data.credentialsData.ttl})
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
-	{/if}.
+	{/if}
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />

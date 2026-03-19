@@ -12,7 +12,7 @@
 </script>
 
 <div>
-	<strong>{data.actor}</strong> viewed secret values for
+	Viewed secret values for
 	<a
 		href={activityLogResourceLink(
 			data.environmentName ?? '',
@@ -26,6 +26,7 @@
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">
+		By {data.actor}
 		<Time time={data.createdAt} distance />
 	</BodyShort>
 </div>

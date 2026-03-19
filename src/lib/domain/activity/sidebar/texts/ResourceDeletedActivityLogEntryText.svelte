@@ -3,19 +3,18 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { resourceTypeToText } from './utils';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ConfigDeletedActivityLogEntry' }
-		>;
+		data: SidebarActivityLogFragment$data['activityLog']['nodes'][number];
 	} = $props();
 </script>
 
 <div>
-	Config <strong>{data.resourceName}</strong> deleted
+	{resourceTypeToText(data.resourceType)}
+	<strong>{data.resourceName}</strong> deleted
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}.

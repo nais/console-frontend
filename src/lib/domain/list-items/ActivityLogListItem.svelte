@@ -318,14 +318,14 @@
 </script>
 
 <ListItem>
-	<div style="display: flex; gap: 0.5rem;">
+	<div style="display: flex; gap: 0.5rem; min-width: 0;">
 		<div class="activity-icon">
 			<Tooltip content={activityTooltip($data.__typename)}>
 				<Icon size="1em" width="1em" height="1em" />
 			</Tooltip>
 		</div>
 
-		<div>
+		<div style="min-width: 0; overflow-wrap: anywhere;">
 			{#if TextComponent}
 				<TextComponent data={$data} />
 			{:else}

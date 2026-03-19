@@ -9,13 +9,13 @@
 	}: {
 		data: Extract<
 			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ConfigDeletedActivityLogEntry' }
+			{ __typename: 'ValkeyDeletedActivityLogEntry' }
 		>;
 	} = $props();
 </script>
 
 <div>
-	Config <strong>{data.resourceName}</strong> deleted
+	Valkey <strong>{data.resourceName}</strong> deleted
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}.
