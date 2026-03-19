@@ -289,6 +289,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
+		min-width: 0;
 	}
 
 	.item {
@@ -320,6 +321,7 @@
 	.content {
 		flex: 1;
 		min-width: 0;
+		overflow-wrap: anywhere;
 		padding-top: var(--ax-space-1);
 	}
 

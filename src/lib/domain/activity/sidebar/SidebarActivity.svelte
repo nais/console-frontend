@@ -337,6 +337,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
+		min-width: 0;
 	}
 	.item {
 		display: flex;
@@ -357,6 +358,8 @@
 	}
 	.content {
 		flex: 1 1 auto;
+		min-width: 0;
+		overflow-wrap: anywhere;
 		padding: 0 0 0 1rem;
 	}
 	.item:not(:last-child)::before {
