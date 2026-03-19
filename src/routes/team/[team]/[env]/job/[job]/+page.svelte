@@ -5,6 +5,7 @@
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
+	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
@@ -89,14 +90,13 @@
 	const confirmDeleteRun = async () => {
 		if (!jobName || !environment) return;
 
-		const resp = await deleteJobRunMutation.mutate({
+		await deleteJobRunMutation.mutate({
 			teamSlug,
 			environment,
 			runName: deleteRunName
 		});
 
 		if ($deleteJobRunMutation.errors) return;
-		if (!resp.data?.deleteJobRun.success) return;
 
 		deleteRunName = '';
 		// Small delay to allow the watcher cache to process the delete event
@@ -190,12 +190,11 @@
 					<Heading as="h2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>
-
-				<SidebarActivity activityLog={job} />
-
 				{#if jobName && environment}
 					<Secrets workload={jobName} {environment} {teamSlug} />
+					<Configs workload={jobName} {environment} {teamSlug} />
 				{/if}
+				<SidebarActivity activityLog={job} />
 			</div>
 		</div>
 
