@@ -3,10 +3,10 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
-	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { FileTextIcon } from '@nais/ds-svelte-community/icons';
 
-	const secrets = graphql(`
-		query WorkloadSecrets($name: String!, $team: Slug!, $env: String!) {
+	const configs = graphql(`
+		query WorkloadConfigs($name: String!, $team: Slug!, $env: String!) {
 			team(slug: $team) {
 				slug
 				environment(name: $env) {
@@ -14,7 +14,7 @@
 						name
 					}
 					workload(name: $name) {
-						secrets {
+						configs {
 							edges {
 								node {
 									id
@@ -37,7 +37,7 @@
 	let { environment, workload, teamSlug }: Props = $props();
 
 	$effect(() => {
-		secrets.fetch({
+		configs.fetch({
 			variables: {
 				name: workload,
 				team: teamSlug,
@@ -48,22 +48,22 @@
 </script>
 
 <div class="wrapper">
-	<Heading as="h3" size="small">Secrets</Heading>
-	<GraphErrors errors={$secrets.errors} />
+	<Heading as="h3" size="small">Configs</Heading>
+	<GraphErrors errors={$configs.errors} />
 
-	{#if $secrets.fetching}
+	{#if $configs.fetching}
 		<Loader />
-	{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
-		{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
+	{:else if $configs.data && $configs.data.team.environment.workload.configs.edges.length > 0}
+		{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
 			<IconLabel
-				label={secret.node.name}
-				icon={PadlockLockedIcon}
-				href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
-					.name}/secret/{secret.node.name}"
+				label={config.node.name}
+				icon={FileTextIcon}
+				href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
+					.name}/config/{config.node.name}"
 			/>
 		{/each}
 	{:else}
-		<BodyShort>No secrets referenced in nais.yaml.</BodyShort>
+		<BodyShort>No configs referenced in nais.yaml.</BodyShort>
 	{/if}
 </div>
 

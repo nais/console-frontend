@@ -5,6 +5,7 @@
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
+	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
@@ -190,12 +191,11 @@
 					<Heading as="h2" size="small">Vulnerabilities</Heading>
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>
-
-				<SidebarActivity activityLog={job} />
-
 				{#if jobName && environment}
+					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
+				<SidebarActivity activityLog={job} />
 			</div>
 		</div>
 
