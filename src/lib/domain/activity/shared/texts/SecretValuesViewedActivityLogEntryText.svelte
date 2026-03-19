@@ -26,6 +26,7 @@
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">
+		By {data.actor}
 		<Time time={data.createdAt} distance />
 	</BodyShort>
 </div>

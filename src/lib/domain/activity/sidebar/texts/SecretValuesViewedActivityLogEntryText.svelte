@@ -20,6 +20,7 @@
 		<BodyShort size="small"><em>Reason: {data.secretValuesViewedData.reason}</em></BodyShort>
 	{/if}
 	<BodyShort textColor="subtle" size="small">
+		By {data.actor}
 		<Time time={data.createdAt} distance />
 	</BodyShort>
 </div>
