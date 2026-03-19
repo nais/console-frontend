@@ -54,16 +54,14 @@
 	{#if $secrets.fetching}
 		<Loader />
 	{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
-		{#if $secrets.data.team.environment.workload.secrets.edges.length > 0}
-			{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
-				<IconLabel
-					label={secret.node.name}
-					icon={PadlockLockedIcon}
-					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
-						.name}/secret/{secret.node.name}"
-				/>
-			{/each}
-		{/if}
+		{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
+			<IconLabel
+				label={secret.node.name}
+				icon={PadlockLockedIcon}
+				href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
+					.name}/secret/{secret.node.name}"
+			/>
+		{/each}
 	{:else}
 		<BodyShort>No secrets referenced in nais.yaml.</BodyShort>
 	{/if}

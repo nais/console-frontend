@@ -54,16 +54,14 @@
 	{#if $configs.fetching}
 		<Loader />
 	{:else if $configs.data && $configs.data.team.environment.workload.configs.edges.length > 0}
-		{#if $configs.data.team.environment.workload.configs.edges.length > 0}
-			{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
-				<IconLabel
-					label={config.node.name}
-					icon={NotePencilIcon}
-					href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
-						.name}/config/{config.node.name}"
-				/>
-			{/each}
-		{/if}
+		{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
+			<IconLabel
+				label={config.node.name}
+				icon={NotePencilIcon}
+				href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
+					.name}/config/{config.node.name}"
+			/>
+		{/each}
 	{:else}
 		<BodyShort>No configs referenced in nais.yaml.</BodyShort>
 	{/if}
