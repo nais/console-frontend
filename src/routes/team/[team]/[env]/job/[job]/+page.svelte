@@ -90,13 +90,14 @@
 	const confirmDeleteRun = async () => {
 		if (!jobName || !environment) return;
 
-		await deleteJobRunMutation.mutate({
+		const resp = await deleteJobRunMutation.mutate({
 			teamSlug,
 			environment,
 			runName: deleteRunName
 		});
 
 		if ($deleteJobRunMutation.errors) return;
+		if (!resp.data?.deleteJobRun.success) return;
 
 		deleteRunName = '';
 		// Small delay to allow the watcher cache to process the delete event
