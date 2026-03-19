@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	let {
 		data
@@ -14,7 +15,10 @@
 </script>
 
 <div>
-	Workload scaled {data.appScaled.direction} to {data.appScaled.newSize} replicas.
+	Workload scaled {data.appScaled.direction} to {data.appScaled.newSize} replicas
+	{#if data.environmentName}
+		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+	{/if}.
 
 	<BodyShort textColor="subtle" size="small">
 		<Time time={data.createdAt} distance />

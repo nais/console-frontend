@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { activityLogResourceLink } from '../../utils';
 
 	let {
 		data
@@ -14,11 +16,18 @@
 </script>
 
 <div>
-	<strong>{data.actor}</strong> viewed secret values for <strong>{data.resourceName}</strong>
-	{#if data.secretValuesViewedData?.reason}
-		<br />
-		<BodyShort size="small"><em>Reason: {data.secretValuesViewedData.reason}</em></BodyShort>
-	{/if}
+	Viewed secret values for <a
+		href={activityLogResourceLink(
+			data.environmentName ?? '',
+			data.resourceType,
+			data.resourceName,
+			data.teamSlug
+		)}>{data.resourceName}</a
+	>
+	{#if data.environmentName}
+		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+	{/if}.
+
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />
