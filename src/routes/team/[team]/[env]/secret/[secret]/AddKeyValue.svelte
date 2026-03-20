@@ -2,7 +2,7 @@
 	import { ValueEncoding, graphql, type ValueEncoding$options } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
-	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon, UploadIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -112,6 +112,9 @@
 
 	let hasValue = $derived(fileName ? fileValue !== '' : value !== '');
 
+	const MAX_FILE_SIZE = 1024 * 1024; // 1 MiB
+	let fileSizeError: string = $state('');
+
 	const handleFileChange = (event: Event) => {
 		const input = event.target as HTMLInputElement;
 		const file = input.files?.[0];
@@ -120,6 +123,13 @@
 			return;
 		}
 
+		if (file.size > MAX_FILE_SIZE) {
+			clearFile();
+			fileSizeError = 'File exceeds the maximum size of 1 MiB';
+			return;
+		}
+
+		fileSizeError = '';
 		fileName = file.name;
 		value = '';
 
@@ -147,6 +157,7 @@
 		fileName = '';
 		fileValue = '';
 		fileEncoding = ValueEncoding.PLAIN_TEXT;
+		fileSizeError = '';
 		if (fileInput) {
 			fileInput.value = '';
 		}
@@ -214,6 +225,9 @@
 			<Button variant="secondary" size="small" icon={UploadIcon} onclick={() => fileInput?.click()}>
 				Upload from file
 			</Button>
+			{#if fileSizeError}
+				<Alert variant="error" size="small">{fileSizeError}</Alert>
+			{/if}
 		</div>
 	</div>
 
