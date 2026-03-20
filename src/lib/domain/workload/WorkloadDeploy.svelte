@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
@@ -19,6 +20,7 @@
 					deployments(first: 1) {
 						nodes {
 							createdAt
+							repository
 							statuses {
 								nodes {
 									state
@@ -42,6 +44,12 @@
 			<IconLabel icon={RocketIcon} size="medium">
 				{#snippet label()}
 					Last deployed <Time time={deploymentInfo.createdAt} distance={true} />
+					{#if deploymentInfo.repository}
+						from
+						<ExternalLink href="https://github.com/{deploymentInfo.repository}">
+							{deploymentInfo.repository}
+						</ExternalLink>
+					{/if}
 				{/snippet}
 			</IconLabel>
 		{/if}

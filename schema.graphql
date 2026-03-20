@@ -1841,6 +1841,11 @@ type CreateValkeyCredentialsPayload {
 }
 
 input CreateValkeyInput {
+  """
+  Number of databases. Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey service.
+  """
+  databases: Int
+
   """The environment name that the entry belongs to."""
   environmentName: String!
 
@@ -8462,6 +8467,11 @@ type UpdateUnleashInstancePayload {
 }
 
 input UpdateValkeyInput {
+  """
+  Number of databases. Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey service.
+  """
+  databases: Int
+
   """The environment name that the entry belongs to."""
   environmentName: String!
 
@@ -8743,6 +8753,11 @@ type Valkey implements ActivityLogger & Node & Persistence {
     last: Int
   ): ActivityLogEntryConnection!
   cost: ValkeyCost!
+
+  """
+  Number of databases the Valkey instance is configured with. Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey service.
+  """
+  databases: Int!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
