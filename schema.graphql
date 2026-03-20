@@ -5771,10 +5771,17 @@ enum SecretOrderField {
 }
 
 type SecretValue {
+  """
+  Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+  """
+  encoding: ValueEncoding!
+
   """The name of the secret value."""
   name: String!
 
-  """The secret value itself."""
+  """
+  The secret value itself. When encoding is BASE64, the value is Base64-encoded binary data.
+  """
   value: String!
 }
 
@@ -5815,6 +5822,11 @@ type SecretValueAddedActivityLogEntryData {
 }
 
 input SecretValueInput {
+  """
+  Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
+  """
+  encoding: ValueEncoding = PLAIN_TEXT
+
   """The name of the secret value."""
   name: String!
 
@@ -9105,6 +9117,15 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+"""Encoding of a secret or config value."""
+enum ValueEncoding {
+  """The value is Base64-encoded binary data."""
+  BASE64
+
+  """The value is plain text (UTF-8)."""
+  PLAIN_TEXT
 }
 
 """Input for viewing secret values."""
