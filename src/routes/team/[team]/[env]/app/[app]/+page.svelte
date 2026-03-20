@@ -182,6 +182,7 @@
 				<div>
 					<Ingresses app={$App.data} />
 				</div>
+
 				<div>
 					<NetworkPolicy workload={app} />
 				</div>

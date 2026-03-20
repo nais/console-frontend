@@ -1668,8 +1668,16 @@ type ContainerImage implements ActivityLogger & Node {
   """The globally unique ID of the container image node."""
   id: ID!
 
+  """True if the vulnerability summary for this image is stale."""
+  isSummaryStale: Boolean!
+
   """Name of the container image."""
   name: String!
+
+  """
+  The tag the vulnerability data actually comes from. Only relevant if isSummaryStale is true.
+  """
+  summaryStaleTag: String!
 
   """Tag of the container image."""
   tag: String!
@@ -10194,8 +10202,16 @@ type WorkloadVulnerabilitySummary implements Node {
   """The globally unique ID of the workload vulnerability summary node."""
   id: ID!
 
+  """True if the vulnerability summary is stale."""
+  isSummaryStale: Boolean!
+
   """The vulnerability summary for the workload."""
   summary: ImageVulnerabilitySummary!
+
+  """
+  Is the tag the vulnerability data actually comes from. This field is only relevant if stale is true.
+  """
+  summaryStaleTag: String!
 
   """The workload"""
   workload: Workload!
