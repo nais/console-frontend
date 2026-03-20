@@ -16,6 +16,8 @@
 	import List from '$lib/ui/List.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon, ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -169,6 +171,7 @@
 				<div>
 					<Ingresses app={$App.data} />
 				</div>
+
 				<div>
 					<NetworkPolicy workload={app} />
 				</div>

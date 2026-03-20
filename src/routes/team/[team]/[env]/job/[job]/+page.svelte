@@ -14,7 +14,8 @@
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { Alert, BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
