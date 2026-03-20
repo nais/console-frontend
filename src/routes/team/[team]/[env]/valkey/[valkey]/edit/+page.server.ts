@@ -54,7 +54,7 @@ export const actions = {
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
 					notifyKeyspaceEvents: notify_keyspace_events, // empty strings are always passed along to clear any previously set value
-					databases: databases ? parseInt(databases) : null
+					databases: databases ? parseInt(databases, 10) : null
 				}
 			},
 			{ event }

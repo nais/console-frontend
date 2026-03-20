@@ -117,6 +117,7 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 			type="number"
 			min={1}
 			max={128}
+			step={1}
 			bind:value={databases}
 		>
 			{#snippet description()}

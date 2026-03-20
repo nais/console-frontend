@@ -55,7 +55,7 @@ export const actions = {
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
 					notifyKeyspaceEvents: !notify_keyspace_events ? null : notify_keyspace_events,
-					databases: databases ? parseInt(databases) : null
+					databases: databases ? parseInt(databases, 10) : null
 				}
 			},
 			{ event }

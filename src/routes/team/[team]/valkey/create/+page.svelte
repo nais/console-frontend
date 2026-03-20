@@ -121,6 +121,7 @@
 			type="number"
 			min={1}
 			max={128}
+			step={1}
 			value={form?.databases ?? '16'}
 		>
 			{#snippet description()}
