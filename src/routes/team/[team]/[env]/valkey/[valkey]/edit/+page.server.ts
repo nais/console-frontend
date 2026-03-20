@@ -28,6 +28,7 @@ export const actions = {
 		const memory = data.get('memory') as ValkeyMemory$options | null;
 		const max_memory_policy = data.get('max_memory_policy') as ValkeyMaxMemoryPolicy$options | null;
 		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
+		const databases = data.get('databases') as string | null;
 
 		if (!tier || !memory) {
 			return fail(400, {
@@ -36,7 +37,8 @@ export const actions = {
 				tier,
 				memory,
 				max_memory_policy,
-				notify_keyspace_events
+				notify_keyspace_events,
+				databases
 			});
 		}
 
@@ -51,7 +53,8 @@ export const actions = {
 					maxMemoryPolicy: !max_memory_policy
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
-					notifyKeyspaceEvents: notify_keyspace_events // empty strings are always passed along to clear any previously set value
+					notifyKeyspaceEvents: notify_keyspace_events, // empty strings are always passed along to clear any previously set value
+					databases: databases ? parseInt(databases, 10) : null
 				}
 			},
 			{ event }
@@ -64,7 +67,8 @@ export const actions = {
 				tier,
 				memory,
 				max_memory_policy,
-				notify_keyspace_events
+				notify_keyspace_events,
+				databases
 			});
 		} else if (!res.data) {
 			return fail(500, {
@@ -73,7 +77,8 @@ export const actions = {
 				tier,
 				memory,
 				max_memory_policy,
-				notify_keyspace_events
+				notify_keyspace_events,
+				databases
 			});
 		}
 

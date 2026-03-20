@@ -47,6 +47,10 @@
 			$UpdateValkeyData.data?.team.environment.valkey.notifyKeyspaceEvents ??
 			''
 	);
+	let databases = $derived(
+		(form?.databases as string) ??
+			String($UpdateValkeyData.data?.team.environment.valkey.databases ?? 16)
+	);
 
 	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
 tier = "${tier}"
@@ -88,7 +92,11 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 		{/each}
 	</Select>
 
-	<ReadMore header="Advanced options" size="small" open={notifyKeyspaceEvents !== ''}>
+	<ReadMore
+		header="Advanced options"
+		size="small"
+		open={notifyKeyspaceEvents !== '' || databases !== '16'}
+	>
 		<TextField
 			size="small"
 			label="Notify keyspace events"
@@ -100,6 +108,21 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 				<ExternalLink href="https://valkey.io/topics/notifications">
 					Valkey documentation</ExternalLink
 				> for details.
+			{/snippet}
+		</TextField>
+		<TextField
+			size="small"
+			label="Number of databases"
+			name="databases"
+			type="number"
+			min={1}
+			max={128}
+			step={1}
+			bind:value={databases}
+		>
+			{#snippet description()}
+				Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey
+				service.
 			{/snippet}
 		</TextField>
 	</ReadMore>

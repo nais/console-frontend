@@ -114,6 +114,21 @@
 				> for details.
 			{/snippet}
 		</TextField>
+		<TextField
+			size="small"
+			label="Number of databases"
+			name="databases"
+			type="number"
+			min={1}
+			max={128}
+			step={1}
+			value={form?.databases ?? '16'}
+		>
+			{#snippet description()}
+				Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey
+				service.
+			{/snippet}
+		</TextField>
 	</ReadMore>
 
 	<BodyShort>
