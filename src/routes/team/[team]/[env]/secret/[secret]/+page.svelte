@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { ValueEncoding, graphql, type ValueEncoding$options } from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
@@ -28,6 +28,7 @@
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
 		DocPencilIcon,
+		DownloadIcon,
 		EyeSlashIcon,
 		PadlockLockedIcon,
 		TrashIcon
@@ -64,15 +65,21 @@
 	// Secrets are hidden by default - revealed when user provides justification
 	let secretsRevealed = $state(false);
 
-	// Store for revealed secret values
-	let revealedValues = new SvelteMap<string, string>();
+	// Store for revealed secret values (including encoding info)
+	interface RevealedValue {
+		value: string;
+		encoding: ValueEncoding$options;
+	}
+	let revealedValues = new SvelteMap<string, RevealedValue>();
 
 	// Handle successful secret reveal - receives values directly from the mutation
-	const handleRevealSuccess = (values: { name: string; value: string }[]) => {
+	const handleRevealSuccess = (
+		values: { name: string; value: string; encoding: ValueEncoding$options }[]
+	) => {
 		secretsRevealed = true;
 		revealedValues.clear();
 		for (const v of values) {
-			revealedValues.set(v.name, v.value);
+			revealedValues.set(v.name, { value: v.value, encoding: v.encoding });
 		}
 		Secret.fetch();
 	};
@@ -131,7 +138,7 @@
 
 		// Update the local revealed values map with the new value
 		if (secretsRevealed) {
-			revealedValues.set(keyToEdit, valueToEdit);
+			revealedValues.set(keyToEdit, { value: valueToEdit, encoding: ValueEncoding.PLAIN_TEXT });
 		}
 
 		editValueOpen = false;
@@ -226,6 +233,39 @@
 		editValueOpen = false;
 		keyToEdit = '';
 		valueToEdit = '';
+	};
+
+	const isBinaryKey = (keyName: string): boolean => {
+		const entry = revealedValues.get(keyName);
+		return entry?.encoding === ValueEncoding.BASE64;
+	};
+
+	const formatBinarySize = (base64Value: string): string => {
+		const bytes = Math.floor((base64Value.length * 3) / 4);
+		if (bytes < 1024) return `${bytes} B`;
+		if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+		return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+	};
+
+	const downloadBinaryValue = (keyName: string) => {
+		const entry = revealedValues.get(keyName);
+		if (!entry) return;
+
+		const binaryString = atob(entry.value);
+		const bytes = new Uint8Array(binaryString.length);
+		for (let i = 0; i < binaryString.length; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+
+		const blob = new Blob([bytes], { type: 'application/octet-stream' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = keyName;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
 	};
 </script>
 
@@ -371,33 +411,51 @@
 								</p>
 							</Td>
 							<Td>
-								<code class="value">
-									{#if secretsRevealed && revealedValues.has(keyName)}
-										{revealedValues.get(keyName)}
+								{#if secretsRevealed && revealedValues.has(keyName)}
+									{#if isBinaryKey(keyName)}
+										<span class="binary-label"
+											>Binary data ({formatBinarySize(
+												revealedValues.get(keyName)?.value ?? ''
+											)})</span
+										>
 									{:else}
-										••••••••••••••••••••
+										<code class="value">
+											{revealedValues.get(keyName)?.value}
+										</code>
 									{/if}
-								</code>
+								{:else}
+									<code class="value"> •••••••••••••••••••• </code>
+								{/if}
 							</Td>
 							<Td style="width: 120px" align="right">
 								<div class="buttons">
 									{#if secretsRevealed && revealedValues.has(keyName)}
-										<CopyButton
-											activeText="Value copied"
-											variant="action"
-											size="small"
-											copyText={revealedValues.get(keyName) ?? ''}
-										/>
-										{#if canEditValues}
+										{#if isBinaryKey(keyName)}
 											<Button
 												size="small"
 												variant="tertiary"
-												title="Edit secret value"
-												onclick={() => {
-													openEditValueModal(keyName, revealedValues.get(keyName) ?? '');
-												}}
-												icon={DocPencilIcon}
+												title="Download binary value"
+												onclick={() => downloadBinaryValue(keyName)}
+												icon={DownloadIcon}
 											/>
+										{:else}
+											<CopyButton
+												activeText="Value copied"
+												variant="action"
+												size="small"
+												copyText={revealedValues.get(keyName)?.value ?? ''}
+											/>
+											{#if canEditValues}
+												<Button
+													size="small"
+													variant="tertiary"
+													title="Edit secret value"
+													onclick={() => {
+														openEditValueModal(keyName, revealedValues.get(keyName)?.value ?? '');
+													}}
+													icon={DocPencilIcon}
+												/>
+											{/if}
 										{/if}
 									{/if}
 									{#if canMutate}
@@ -507,6 +565,12 @@
 		font-family: monospace;
 		font-size: var(--ax-font-size-small);
 		word-break: break-all;
+	}
+
+	.binary-label {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-subtle);
+		font-style: italic;
 	}
 
 	ul {

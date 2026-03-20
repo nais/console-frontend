@@ -5,9 +5,12 @@
 	import { Alert, BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
+	import type { ValueEncoding$options } from '$houdini';
+
 	interface SecretValue {
 		name: string;
 		value: string;
+		encoding: ValueEncoding$options;
 	}
 
 	interface Props {
