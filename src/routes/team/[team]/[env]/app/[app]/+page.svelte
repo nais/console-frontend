@@ -17,8 +17,8 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon, ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
@@ -172,7 +172,24 @@
 					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				{/if}
 				<div>
-					<Heading as="h2" size="small">Vulnerabilities</Heading>
+					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+						<Heading as="h2" size="small">Vulnerabilities</Heading>
+						{#if app.image.isSummaryStale}
+							<Tooltip
+								content="Stale SBOM{app.image.summaryStaleTag
+									? ` from: ${app.image.summaryStaleTag}`
+									: ''}"
+							>
+								<Loader size="xsmall" />
+							</Tooltip>
+						{:else if app.image.hasSBOM && app.image.vulnerabilitySummary}
+							<Tooltip content="SBOM up to date">
+								<ShieldCheckmarkIcon
+									style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
+								/>
+							</Tooltip>
+						{/if}
+					</div>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
 				{#if environment}

@@ -9,7 +9,15 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { BodyShort, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
+	import {
+		BodyShort,
+		CopyButton,
+		Detail,
+		Heading,
+		Loader,
+		Tooltip
+	} from '@nais/ds-svelte-community';
+	import { ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -25,6 +33,7 @@
 
 {#if $JobImageDetails.data}
 	{@const workload = $JobImageDetails.data.team.environment.workload}
+	{@const hasVulnerabilityData = workload.image.hasSBOM && workload.image.vulnerabilitySummary}
 	<div class="wrapper">
 		<div class="top">
 			<div>
@@ -79,7 +88,11 @@
 						</dl>
 					{/if}
 				</section>
-				{#if !workload.image.hasSBOM}
+				{#if workload.image.hasSBOM && workload.image.isSummaryStale}
+					<BodyShort spacing>
+						<Loader size="xsmall" /> New image tag detected. SBOM scan in progress…
+					</BodyShort>
+				{:else if !hasVulnerabilityData}
 					<BodyShort spacing>
 						<WarningIcon class="text-aligned-icon" /> No vulnerability data available. Learn how to generate
 						SBOMs and attestations for your workloads in the
@@ -90,16 +103,33 @@
 				{/if}
 			</div>
 			<div class="cards">
-				{#if workload.image.hasSBOM}
+				{#if hasVulnerabilityData}
 					<div class="card">
-						<Heading as="h2" size="small">Summary</Heading>
+						<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+							<Heading as="h2" size="small">Summary</Heading>
+							{#if workload.image.isSummaryStale}
+								<Tooltip
+									content="Stale SBOM{workload.image.summaryStaleTag
+										? ` from: ${workload.image.summaryStaleTag}`
+										: ''}"
+								>
+									<Loader size="xsmall" />
+								</Tooltip>
+							{:else}
+								<Tooltip content="SBOM up to date">
+									<ShieldCheckmarkIcon
+										style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
+									/>
+								</Tooltip>
+							{/if}
+						</div>
 
 						<WorkloadVulnerabilitySummary {workload} />
 					</div>
 				{/if}
 			</div>
 		</div>
-		{#if workload.image.hasSBOM}
+		{#if hasVulnerabilityData}
 			<div>
 				<ImageVulnerabilities
 					team={$JobImageDetails.data?.team.slug}

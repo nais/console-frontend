@@ -10,6 +10,8 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				}
 				image {
 					hasSBOM
+					isSummaryStale
+					summaryStaleTag
 					vulnerabilitySummary {
 						critical
 						high
