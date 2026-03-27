@@ -19,10 +19,10 @@
 		mode === 'env'
 			? `spec:
   envFrom:
-    - configMap: ${configName}`
+    - configmap: ${configName}`
 			: `spec:
   filesFrom:
-    - configMap: ${configName}`
+    - configmap: ${configName}`
 	);
 </script>
 
