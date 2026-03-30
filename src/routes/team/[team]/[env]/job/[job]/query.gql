@@ -11,8 +11,10 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				}
 				image {
 					hasSBOM
-					isSummaryStale
-					summaryStaleTag
+					staleness {
+						severity
+						reason
+					}
 					vulnerabilitySummary {
 						critical
 						high

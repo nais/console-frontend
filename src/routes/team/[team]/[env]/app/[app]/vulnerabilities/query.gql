@@ -23,8 +23,10 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					name
 					tag
 					hasSBOM
-					isSummaryStale
-					summaryStaleTag
+					staleness {
+						severity
+						reason
+					}
 					activityLog @paginate(mode: SinglePage) {
 						pageInfo {
 							hasNextPage

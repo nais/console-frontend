@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { graphql, StaleSeverity } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -14,7 +14,11 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import { ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ExclamationmarkTriangleFillIcon,
+		ShieldCheckmarkIcon,
+		ShieldIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -154,19 +158,25 @@
 				<div>
 					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 						<Heading as="h2" size="small">Vulnerabilities</Heading>
-						{#if job.image.isSummaryStale}
-							<Tooltip
-								content="Stale SBOM{job.image.summaryStaleTag
-									? ` from: ${job.image.summaryStaleTag}`
-									: ''}"
-							>
+						{#if job.image.staleness.severity === StaleSeverity.STALE_PROCESSING}
+							<Tooltip content={job.image.staleness.reason}>
 								<Loader size="xsmall" />
 							</Tooltip>
+						{:else if job.image.staleness.severity === StaleSeverity.STALE_PERMANENT}
+							<Tooltip content={job.image.staleness.reason}>
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--ax-text-warning); font-size: 1.25rem;"
+								/>
+							</Tooltip>
 						{:else if job.image.hasSBOM && job.image.vulnerabilitySummary}
-							<Tooltip content="SBOM up to date">
+							<Tooltip content={job.image.staleness.reason}>
 								<ShieldCheckmarkIcon
 									style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
 								/>
+							</Tooltip>
+						{:else}
+							<Tooltip content="No SBOM registered">
+								<ShieldIcon style="color: var(--ax-text-subtle); font-size: 1.25rem;" />
 							</Tooltip>
 						{/if}
 					</div>
