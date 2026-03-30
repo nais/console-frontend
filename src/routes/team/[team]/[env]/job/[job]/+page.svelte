@@ -1,21 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { graphql, StaleSeverity } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
-	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
-	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import { ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ExclamationmarkTriangleFillIcon,
+		ShieldCheckmarkIcon,
+		ShieldIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -48,16 +51,6 @@
 			}
 		`);
 
-	const deleteJobRunMutation = graphql(`
-		mutation DeleteJobRun($teamSlug: Slug!, $environment: String!, $runName: String!) {
-			deleteJobRun(
-				input: { teamSlug: $teamSlug, environmentName: $environment, runName: $runName }
-			) {
-				success
-			}
-		}
-	`);
-
 	let triggerRun = $state(triggerRunMutation());
 
 	let jobName = $derived(page.params.job);
@@ -77,31 +70,6 @@
 			runName,
 			jobId: $Job.data!.team.environment.job.id
 		});
-	};
-
-	let deleteConfirmOpen = $state(false);
-	let deleteRunName = $state('');
-
-	const handleDeleteRun = (runName: string) => {
-		deleteRunName = runName;
-		deleteConfirmOpen = true;
-	};
-
-	const confirmDeleteRun = async () => {
-		if (!jobName || !environment) return;
-
-		const resp = await deleteJobRunMutation.mutate({
-			teamSlug,
-			environment,
-			runName: deleteRunName
-		});
-
-		if ($deleteJobRunMutation.errors) return;
-		if (!resp.data?.deleteJobRun.success) return;
-
-		deleteRunName = '';
-		// Small delay to allow the watcher cache to process the delete event
-		setTimeout(() => Job.fetch({ policy: 'NetworkOnly' }), 500);
 	};
 </script>
 
@@ -143,14 +111,6 @@
 						</List>
 					</div>
 				{/if}
-				<Schedule
-					schedule={job.schedule}
-					scheduleContext={{
-						team: job.team.slug,
-						environment: job.teamEnvironment.environment.name,
-						job: job.name
-					}}
-				/>
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
 						<Heading as="h2" size="medium">Runs</Heading>
@@ -174,7 +134,7 @@
 							</Button>
 						{/if}
 					</div>
-					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
+					<Runs {job} />
 				</div>
 				<div>
 					<NetworkPolicy workload={job} />
@@ -184,38 +144,56 @@
 				</div>
 			</div>
 			<div class="sidebar">
+				<Schedule
+					schedule={job.schedule}
+					scheduleContext={{
+						team: job.team.slug,
+						environment: job.teamEnvironment.environment.name,
+						job: job.name
+					}}
+				/>
 				{#if jobName && environment}
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 				{/if}
+				<div>
+					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+						<Heading as="h2" size="small">Vulnerabilities</Heading>
+						{#if job.image.staleness.severity === StaleSeverity.STALE_PROCESSING}
+							<Tooltip content={job.image.staleness.reason}>
+								<Loader size="xsmall" />
+							</Tooltip>
+						{:else if job.image.staleness.severity === StaleSeverity.STALE_PERMANENT}
+							<Tooltip content={job.image.staleness.reason}>
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--ax-text-warning); font-size: 1.25rem;"
+								/>
+							</Tooltip>
+						{:else if job.image.hasSBOM && job.image.vulnerabilitySummary}
+							<Tooltip content={job.image.staleness.reason}>
+								<ShieldCheckmarkIcon
+									style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
+								/>
+							</Tooltip>
+						{:else}
+							<Tooltip content="No SBOM registered">
+								<ShieldIcon style="color: var(--ax-text-subtle); font-size: 1.25rem;" />
+							</Tooltip>
+						{/if}
+					</div>
+					<WorkloadVulnerabilitySummary workload={job} />
+				</div>
+
+				<SidebarActivity activityLog={job} />
+
 				{#if jobName && environment}
-					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
-				<SidebarActivity activityLog={job} direct={job.activityLog} />
 			</div>
 		</div>
 
 		{#if open && jobName && environment}
 			<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
 		{/if}
-
-		<Confirm
-			confirmText="Delete"
-			variant="danger"
-			bind:open={deleteConfirmOpen}
-			onconfirm={confirmDeleteRun}
-			oncancel={() => {
-				deleteRunName = '';
-			}}
-		>
-			{#snippet header()}
-				<Heading>Delete job run</Heading>
-			{/snippet}
-			<GraphErrors errors={$deleteJobRunMutation.errors} />
-			<BodyShort>
-				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
-			</BodyShort>
-		</Confirm>
 	</div>
 {/if}
 

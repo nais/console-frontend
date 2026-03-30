@@ -1668,16 +1668,11 @@ type ContainerImage implements ActivityLogger & Node {
   """The globally unique ID of the container image node."""
   id: ID!
 
-  """True if the vulnerability summary for this image is stale."""
-  isSummaryStale: Boolean!
-
   """Name of the container image."""
   name: String!
 
-  """
-  The tag the vulnerability data actually comes from. Only relevant if isSummaryStale is true.
-  """
-  summaryStaleTag: String!
+  """Information about whether the vulnerability data is stale."""
+  staleness: VulnerabilityStaleness!
 
   """Tag of the container image."""
   tag: String!
@@ -7065,6 +7060,12 @@ type SqlInstanceVersionIssue implements Issue & Node {
   teamEnvironment: TeamEnvironment!
 }
 
+enum StaleSeverity {
+  STALE_NONE
+  STALE_PERMANENT
+  STALE_PROCESSING
+}
+
 input StartOpenSearchMaintenanceInput {
   environmentName: String!
   serviceName: String!
@@ -9656,6 +9657,15 @@ type VulnerabilityFixSample {
   totalWorkloads: Int!
 }
 
+"""Information about whether vulnerability data is stale and why."""
+type VulnerabilityStaleness {
+  """A human-readable explanation of why the vulnerability data is stale."""
+  reason: String!
+
+  """The severity of the staleness."""
+  severity: StaleSeverity!
+}
+
 """Ordering options when fetching vulnerability summaries for workloads."""
 input VulnerabilitySummaryOrder {
   """The direction to order items by."""
@@ -10202,16 +10212,11 @@ type WorkloadVulnerabilitySummary implements Node {
   """The globally unique ID of the workload vulnerability summary node."""
   id: ID!
 
-  """True if the vulnerability summary is stale."""
-  isSummaryStale: Boolean!
+  """Information about whether the vulnerability data is stale."""
+  staleness: VulnerabilityStaleness!
 
   """The vulnerability summary for the workload."""
   summary: ImageVulnerabilitySummary!
-
-  """
-  Is the tag the vulnerability data actually comes from. This field is only relevant if stale is true.
-  """
-  summaryStaleTag: String!
 
   """The workload"""
   workload: Workload!

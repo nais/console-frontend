@@ -8,6 +8,22 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				team {
 					slug
 				}
+				image {
+					hasSBOM
+					staleness {
+						severity
+						reason
+					}
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+						lastUpdated
+					}
+				}
 				issues {
 					edges {
 						node {
@@ -47,23 +63,43 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 
-				instanceGroups {
-					id
-					name
-					image {
-						name
-						tag
-					}
-					created
-					readyInstances
-					desiredInstances
-					instances {
-						id
-						name
-						status {
-							state
+				resources {
+					scaling {
+						maxInstances
+						minInstances
+						strategies {
+							__typename
+							... on KafkaLagScalingStrategy {
+								consumerGroup
+								threshold
+								topicName
+							}
+							... on CPUScalingStrategy {
+								threshold
+							}
 						}
-						restarts
+					}
+					requests {
+						cpu
+						memory
+					}
+					limits {
+						cpu
+						memory
+					}
+				}
+
+				utilization {
+					requested_cpu: requested(resourceType: CPU)
+					requested_memory: requested(resourceType: MEMORY)
+					limit_cpu: limit(resourceType: CPU)
+					limit_memory: limit(resourceType: MEMORY)
+					current_cpu: current(resourceType: CPU)
+					current_memory: current(resourceType: MEMORY)
+					recommendations {
+						cpuRequestCores
+						memoryLimitBytes
+						memoryRequestBytes
 					}
 				}
 

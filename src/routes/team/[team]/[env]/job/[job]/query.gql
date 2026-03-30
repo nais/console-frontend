@@ -9,6 +9,22 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				team {
 					slug
 				}
+				image {
+					hasSBOM
+					staleness {
+						severity
+						reason
+					}
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+						lastUpdated
+					}
+				}
 				issues {
 					edges {
 						node {
@@ -39,7 +55,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 					}
 				}
 
-				...SidebarActivityLogFragment @with(limit: 20) @mask_disable
+				...SidebarActivityLogFragment
 				...JobRuns
 				...Persistence
 				...WorkloadDeploy

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { graphql, StaleSeverity } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -9,39 +9,27 @@
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import List from '$lib/ui/List.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, ShieldCheckmarkIcon } from '@nais/ds-svelte-community/icons';
-	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		ArrowCirclepathIcon,
+		ExclamationmarkTriangleFillIcon,
+		ShieldCheckmarkIcon,
+		ShieldIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
+	import Instances from './Instances.svelte';
 
 	let { data }: PageProps = $props();
-	let { App, teamSlug, viewerIsMember } = $derived(data);
-
-	const instanceGroups = $derived($App.data?.team.environment.application.instanceGroups ?? []);
-
-	// The newest group that isn't fully running is "incoming" (a rollout in progress).
-	// Everything else is "current". If there's only one group, it's always current.
-	const incoming = $derived(
-		instanceGroups.length > 1
-			? instanceGroups.reduce((newest, g) =>
-					new Date(g.created) > new Date(newest.created) ? g : newest
-				)
-			: null
-	);
-
-	function groupRole(group: (typeof instanceGroups)[number]) {
-		if (incoming && group.id === incoming.id) return 'incoming';
-		return 'current';
-	}
+	let { App, AppInstances, teamSlug, viewerIsMember } = $derived(data);
 
 	const restartAppMutation = () =>
 		graphql(`
@@ -76,6 +64,24 @@
 			environment,
 			team: teamSlug
 		});
+	};
+
+	let after: string = $derived($AppInstances.variables?.after ?? '');
+	let before: string = $derived($AppInstances.variables?.before ?? '');
+
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+		} = {}
+	) => {
+		changeParams(
+			{
+				before: params.before ?? before,
+				after: params.after ?? after
+			},
+			{ noScroll: true }
+		);
 	};
 </script>
 
@@ -119,7 +125,7 @@
 				{/if}
 				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
 					<div class="instances-header">
-						<Heading as="h3" size="medium">Instance groups</Heading>
+						<Heading as="h3" size="medium">Instances</Heading>
 						{#if viewerIsMember}
 							<Button
 								variant="secondary"
@@ -132,41 +138,28 @@
 							</Button>
 						{/if}
 					</div>
-					{#each app.instanceGroups as group (group.id)}
-						{@const role = groupRole(group)}
-						{@const hasFailing = group.instances.some((i) => i.status.state === 'FAILING')}
-
-						<a
-							href="/team/{app.team.slug}/{app.teamEnvironment.environment
-								.name}/app/{app.name}/instancegroup/{group.name}"
-							class="instance-group-link"
-							class:incoming={role === 'incoming'}
-						>
-							{#if role === 'incoming'}
-								<IncomingIndicator />
-							{:else}
-								<RunningIndicator />
-							{/if}
-							<div class="instance-group-info">
-								<span class="instance-group-status">
-									{group.readyInstances}/{group.desiredInstances} running
-								</span>
-								<span class="instance-group-meta">
-									{group.image.tag} &middot; Updated <Time time={group.created} distance />
-								</span>
-							</div>
-							{#if hasFailing}
-								<Tag size="small" variant="error">Failing</Tag>
-							{/if}
-							{#if incoming}
-								{#if role === 'incoming'}
-									<Tag size="small" variant="alt1">Incoming</Tag>
-								{:else}
-									<Tag size="small" variant="neutral">Current</Tag>
-								{/if}
-							{/if}
-						</a>
-					{/each}
+					<Instances app={$App.data} instances={$AppInstances.data} />
+					<Pagination
+						page={$AppInstances.data?.team.environment.application.instances.pageInfo}
+						loaders={{
+							loadPreviousPage: () => {
+								changeQuery({
+									after: '',
+									before:
+										$AppInstances.data?.team.environment.application.instances.pageInfo
+											.startCursor ?? ''
+								});
+							},
+							loadNextPage: () => {
+								changeQuery({
+									before: '',
+									after:
+										$AppInstances.data?.team.environment.application.instances.pageInfo.endCursor ??
+										''
+								});
+							}
+						}}
+					/>
 				</div>
 				<div>
 					<Ingresses app={$App.data} />
@@ -183,6 +176,33 @@
 				{#if environment}
 					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				{/if}
+				<div>
+					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+						<Heading as="h2" size="small">Vulnerabilities</Heading>
+						{#if app.image.staleness.severity === StaleSeverity.STALE_PROCESSING}
+							<Tooltip content={app.image.staleness.reason}>
+								<Loader size="xsmall" />
+							</Tooltip>
+						{:else if app.image.staleness.severity === StaleSeverity.STALE_PERMANENT}
+							<Tooltip content={app.image.staleness.reason}>
+								<ExclamationmarkTriangleFillIcon
+									style="color: var(--ax-text-warning); font-size: 1.25rem;"
+								/>
+							</Tooltip>
+						{:else if app.image.hasSBOM && app.image.vulnerabilitySummary}
+							<Tooltip content={app.image.staleness.reason}>
+								<ShieldCheckmarkIcon
+									style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
+								/>
+							</Tooltip>
+						{:else}
+							<Tooltip content="No SBOM registered">
+								<ShieldIcon style="color: var(--ax-text-subtle); font-size: 1.25rem;" />
+							</Tooltip>
+						{/if}
+					</div>
+					<WorkloadVulnerabilitySummary workload={app} />
+				</div>
 				{#if environment}
 					<Configs {environment} workload={app.name} {teamSlug} />
 					<Secrets workload={app.name} {environment} {teamSlug} />
@@ -237,68 +257,5 @@
 	.workload-deploy-wrapper {
 		margin-top: -2rem;
 		padding-bottom: var(--spacing-layout);
-	}
-
-	.instance-group-link {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12) var(--ax-space-16);
-		border: 1px solid var(--ax-border-neutral);
-		border-radius: var(--ax-radius-8);
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.instance-group-link:hover {
-		background-color: var(--ax-bg-neutral-moderate-hover);
-	}
-
-	.instance-group-link.incoming {
-		border-style: dashed;
-	}
-
-	.instance-group-info {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
-		flex: 1;
-		min-width: 0;
-	}
-
-	.instance-group-status {
-		font-weight: var(--ax-font-weight-bold);
-	}
-
-	.instance-group-meta {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-		overflow-wrap: anywhere;
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.app-content {
-			grid-template-columns: 1fr;
-		}
-
-		.workload-deploy-wrapper {
-			margin-top: 0;
-		}
-
-		.instances-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
-		.instance-group-link {
-			flex-wrap: wrap;
-			align-items: flex-start;
-		}
-
-		.instances-header :global(button) {
-			width: 100%;
-		}
 	}
 </style>
