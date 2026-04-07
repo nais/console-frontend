@@ -36,12 +36,12 @@
 		"@layerstack/utils": "2.0.0-next.18",
 		"@nais/ds-svelte-community": "2.0.0-next.6",
 		"@storybook/addon-docs": "10.3.3",
-		"@storybook/addon-svelte-csf": "5.0.11",
+		"@storybook/addon-svelte-csf": "5.1.0",
 		"@storybook/addon-themes": "10.3.3",
 		"@storybook/sveltekit": "10.3.3",
 		"@sveltejs/adapter-node": "5.5.4",
 		"@sveltejs/kit": "2.55.0",
-		"@sveltejs/vite-plugin-svelte": "6.2.4",
+		"@sveltejs/vite-plugin-svelte": "7.0.0",
 		"@tailwindcss/vite": "4.2.2",
 		"@types/d3-array": "3.2.2",
 		"@types/d3-time": "3.0.4",
@@ -70,10 +70,10 @@
 		"svelte": "5.55.0",
 		"svelte-check": "4.4.5",
 		"tailwindcss": "4.2.2",
-		"typescript": "5.9.3",
+		"typescript": "6.0.2",
 		"typescript-eslint": "8.57.2",
 		"vite": "7.3.2",
-		"vitest": "4.1.0"
+		"vitest": "4.1.1"
 	},
 	"type": "module",
 	"dependencies": {
