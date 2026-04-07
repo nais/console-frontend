@@ -1468,6 +1468,11 @@ type ConfigUpdatedActivityLogEntryDataUpdatedField {
 }
 
 type ConfigValue {
+  """
+  The encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+  """
+  encoding: ValueEncoding!
+
   """The name of the config value."""
   name: String!
 
@@ -1476,6 +1481,11 @@ type ConfigValue {
 }
 
 input ConfigValueInput {
+  """
+  Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
+  """
+  encoding: ValueEncoding = PLAIN_TEXT
+
   """The name of the config value."""
   name: String!
 
