@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
+	import { ValueEncoding, graphql } from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
@@ -25,7 +25,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
-	import { DocPencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
@@ -66,6 +66,7 @@
 					values {
 						name
 						value
+						encoding
 					}
 					lastModifiedBy {
 						name
@@ -120,6 +121,7 @@
 					values {
 						name
 						value
+						encoding
 					}
 					lastModifiedBy {
 						name
@@ -195,6 +197,35 @@
 		editValueOpen = false;
 		keyToEdit = '';
 		valueToEdit = '';
+	};
+
+	const isBinaryValue = (entry: { encoding: string }): boolean => {
+		return entry.encoding === ValueEncoding.BASE64;
+	};
+
+	const formatBinarySize = (base64Value: string): string => {
+		const bytes = Math.floor((base64Value.length * 3) / 4);
+		if (bytes < 1024) return `${bytes} B`;
+		if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+		return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+	};
+
+	const downloadBinaryValue = (name: string, base64Value: string) => {
+		const binaryString = atob(base64Value);
+		const bytes = new Uint8Array(binaryString.length);
+		for (let i = 0; i < binaryString.length; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+
+		const blob = new Blob([bytes], { type: 'application/octet-stream' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = name;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
 	};
 </script>
 
@@ -307,28 +338,44 @@
 								</p>
 							</Td>
 							<Td>
-								<code class="value">
-									{entry.value}
-								</code>
+								{#if isBinaryValue(entry)}
+									<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span>
+								{:else}
+									<code class="value">
+										{entry.value}
+									</code>
+								{/if}
 							</Td>
 							<Td style="width: 120px" align="right">
 								<div class="buttons">
-									<CopyButton
-										activeText="Value copied"
-										variant="action"
-										size="small"
-										copyText={entry.value}
-									/>
-									{#if canMutate}
+									{#if isBinaryValue(entry)}
 										<Button
 											size="small"
 											variant="tertiary"
-											title="Edit config value"
-											onclick={() => {
-												openEditValueModal(entry.name, entry.value);
-											}}
-											icon={DocPencilIcon}
+											title="Download binary value"
+											onclick={() => downloadBinaryValue(entry.name, entry.value)}
+											icon={DownloadIcon}
 										/>
+									{:else}
+										<CopyButton
+											activeText="Value copied"
+											variant="action"
+											size="small"
+											copyText={entry.value}
+										/>
+										{#if canMutate}
+											<Button
+												size="small"
+												variant="tertiary"
+												title="Edit config value"
+												onclick={() => {
+													openEditValueModal(entry.name, entry.value);
+												}}
+												icon={DocPencilIcon}
+											/>
+										{/if}
+									{/if}
+									{#if canMutate}
 										<Button
 											size="small"
 											variant="tertiary-neutral"
@@ -435,6 +482,12 @@
 		font-family: monospace;
 		font-size: var(--ax-font-size-small);
 		word-break: break-all;
+	}
+
+	.binary-label {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-subtle);
+		font-style: italic;
 	}
 
 	ul {

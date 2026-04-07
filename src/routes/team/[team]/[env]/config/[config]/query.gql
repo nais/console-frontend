@@ -17,6 +17,7 @@ query Config($config: String!, $team: Slug!, $env: String!) @cache(policy: Netwo
 				values {
 					name
 					value
+					encoding
 				}
 				workloads {
 					nodes {
