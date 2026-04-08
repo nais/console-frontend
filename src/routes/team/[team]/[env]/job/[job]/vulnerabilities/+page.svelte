@@ -1,19 +1,16 @@
 <script lang="ts">
-	import { StaleSeverity } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
+	import StalenessStatusIcon from '$lib/domain/vulnerability/StalenessStatusIcon.svelte';
 	import WorkloadVulnerabilityHistoryGraph from '$lib/domain/vulnerability/WorkloadVulnerabilityHistoryGraph.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { Alert, CopyButton, Detail, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import {
-		ExclamationmarkTriangleFillIcon,
-		ShieldCheckmarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { stalenessDetails } from '$lib/utils/vulnerabilities';
+	import { Alert, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -30,6 +27,7 @@
 {#if $JobImageDetails.data}
 	{@const workload = $JobImageDetails.data.team.environment.workload}
 	{@const hasVulnerabilityData = workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+	{@const imageStaleness = stalenessDetails(workload.image)}
 	<div class="wrapper">
 		<div class="top">
 			<div>
@@ -86,12 +84,12 @@
 				</section>
 				{#if !hasVulnerabilityData}
 					<Alert variant="info" size="small" fullWidth={false}>
-						No vulnerability data available for <code
-							>{workload.image.name}:{workload.image.tag}</code
-						>. Learn how to generate SBOMs and attestations in the
-						<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
-							>Nais documentation</ExternalLink
-						>.
+						{imageStaleness.text}
+						{#if imageStaleness.code === 'NO_SBOM'}
+							<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
+								>Read how to generate an SBOM</ExternalLink
+							>.
+						{/if}
 					</Alert>
 				{/if}
 			</div>
@@ -100,23 +98,10 @@
 					<div class="card">
 						<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 							<Heading as="h2" size="small">Summary</Heading>
-							{#if workload.image.staleness.severity === StaleSeverity.STALE_PROCESSING}
-								<Tooltip content={workload.image.staleness.reason}>
-									<Loader size="xsmall" />
-								</Tooltip>
-							{:else if workload.image.staleness.severity === StaleSeverity.STALE_PERMANENT}
-								<Tooltip content={workload.image.staleness.reason}>
-									<ExclamationmarkTriangleFillIcon
-										style="color: var(--ax-text-warning); font-size: 1.25rem;"
-									/>
-								</Tooltip>
-							{:else}
-								<Tooltip content={workload.image.staleness.reason}>
-									<ShieldCheckmarkIcon
-										style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
-									/>
-								</Tooltip>
-							{/if}
+							<StalenessStatusIcon
+								indicator={imageStaleness.indicator}
+								label={imageStaleness.label}
+							/>
 						</div>
 
 						<WorkloadVulnerabilitySummary {workload} />

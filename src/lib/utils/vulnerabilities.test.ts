@@ -1,4 +1,12 @@
-import { allSeverities, severityToColor, severityToRiskScore } from './vulnerabilities';
+import {
+	allSeverities,
+	severityToColor,
+	severityToRiskScore,
+	stalenessDetails,
+	stalenessIndicator,
+	stalenessStatusLabel,
+	stalenessStatusText
+} from './vulnerabilities';
 
 describe('vulnerabilities', () => {
 	describe('severityToColor', () => {
@@ -136,6 +144,87 @@ describe('vulnerabilities', () => {
 			// Documents the actual order: Critical(10), High(5), Medium(3), Low(1), Unassigned(5)
 			// Note: Not strictly descending because Unassigned (5) comes after Low (1)
 			expect(scores).toEqual([10, 5, 3, 1, 5]);
+		});
+	});
+
+	describe('staleness helpers', () => {
+		test('prefers reasonCode over severity for status labels', () => {
+			expect(
+				stalenessStatusLabel({
+					severity: 'STALE_PERMANENT',
+					hasSBOM: true,
+					reasonCode: 'PROCESSING_WITH_FALLBACK'
+				})
+			).toBe('Processing with fallback');
+		});
+
+		test('falls back to severity when reasonCode is missing', () => {
+			expect(
+				stalenessStatusLabel({
+					severity: 'STALE_PROCESSING',
+					hasSBOM: true
+				})
+			).toBe('Processing');
+		});
+
+		test('returns missing indicator when there is no sbom', () => {
+			expect(
+				stalenessIndicator({
+					severity: 'STALE_NONE',
+					hasSBOM: false
+				})
+			).toBe('missing');
+		});
+
+		test('maps warning codes to warning indicator', () => {
+			expect(
+				stalenessIndicator({
+					severity: 'STALE_NONE',
+					hasSBOM: true,
+					reasonCode: 'NO_ATTESTATION'
+				})
+			).toBe('warning');
+		});
+
+		test('uses readable backend text when available', () => {
+			expect(
+				stalenessStatusText({
+					severity: 'STALE_PROCESSING',
+					hasSBOM: true,
+					reasonCode: 'PROCESSING',
+					reason: 'The SBOM is still being processed for this image.'
+				})
+			).toBe('The SBOM is still being processed for this image.');
+		});
+
+		test('falls back to short label when readable text is missing', () => {
+			expect(
+				stalenessStatusText({
+					severity: 'STALE_PERMANENT',
+					hasSBOM: true,
+					reasonCode: 'SBOM_UPLOAD_FAILED'
+				})
+			).toBe('SBOM upload failed');
+		});
+
+		test('builds shared staleness details from a source object', () => {
+			expect(
+				stalenessDetails({
+					hasSBOM: true,
+					staleness: {
+						severity: 'STALE_PROCESSING',
+						code: 'PROCESSING_WITH_FALLBACK',
+						reason: 'Using fallback data while a fresh scan is processing.'
+					}
+				})
+			).toEqual({
+				code: 'PROCESSING_WITH_FALLBACK',
+				reason: 'Using fallback data while a fresh scan is processing.',
+				severity: 'STALE_PROCESSING',
+				indicator: 'processing',
+				label: 'Processing with fallback',
+				text: 'Using fallback data while a fresh scan is processing.'
+			});
 		});
 	});
 });

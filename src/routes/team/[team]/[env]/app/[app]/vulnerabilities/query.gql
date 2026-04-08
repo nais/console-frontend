@@ -24,6 +24,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					tag
 					hasSBOM
 					staleness {
+						code
 						severity
 						reason
 					}

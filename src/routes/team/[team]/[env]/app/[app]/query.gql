@@ -11,8 +11,8 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				image {
 					hasSBOM
 					staleness {
+						code
 						severity
-						reason
 					}
 					vulnerabilitySummary {
 						critical
