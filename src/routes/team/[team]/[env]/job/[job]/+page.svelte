@@ -1,24 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql, StaleSeverity } from '$houdini';
+	import { graphql } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import StalenessStatusIcon from '$lib/domain/vulnerability/StalenessStatusIcon.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import {
-		ExclamationmarkTriangleFillIcon,
-		ShieldCheckmarkIcon,
-		ShieldIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { stalenessDetails } from '$lib/utils/vulnerabilities';
+	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -71,6 +68,16 @@
 			jobId: $Job.data!.team.environment.job.id
 		});
 	};
+
+	const handleTriggerRunClick = (e: MouseEvent) => {
+		if (e.metaKey || e.ctrlKey) {
+			if (jobName && environment) {
+				submit(generateJobRunName(jobName));
+			}
+		} else {
+			open = true;
+		}
+	};
 </script>
 
 {#if $Job.data}
@@ -90,6 +97,7 @@
 
 {#if $Job.data}
 	{@const job = $Job.data.team.environment.job}
+	{@const imageStaleness = stalenessDetails(job.image)}
 	<div class="wrapper">
 		<div class="job-content">
 			<div class="main-section">
@@ -118,15 +126,7 @@
 							<Button
 								variant="secondary"
 								size="small"
-								onclick={(e: MouseEvent) => {
-									if (e.metaKey || e.ctrlKey) {
-										if (jobName && environment) {
-											submit(generateJobRunName(jobName));
-										}
-									} else {
-										open = true;
-									}
-								}}
+								onclick={handleTriggerRunClick}
 								disabled={job.deletionStartedAt !== null}
 								title="Click to configure run name, or Cmd/Ctrl+Click to trigger immediately"
 							>
@@ -158,27 +158,11 @@
 				<div>
 					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 						<Heading as="h2" size="small">Vulnerabilities</Heading>
-						{#if job.image.staleness.severity === StaleSeverity.STALE_PROCESSING}
-							<Tooltip content={job.image.staleness.reason}>
-								<Loader size="xsmall" />
-							</Tooltip>
-						{:else if job.image.staleness.severity === StaleSeverity.STALE_PERMANENT}
-							<Tooltip content={job.image.staleness.reason}>
-								<ExclamationmarkTriangleFillIcon
-									style="color: var(--ax-text-warning); font-size: 1.25rem;"
-								/>
-							</Tooltip>
-						{:else if job.image.hasSBOM && job.image.vulnerabilitySummary}
-							<Tooltip content={job.image.staleness.reason}>
-								<ShieldCheckmarkIcon
-									style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
-								/>
-							</Tooltip>
-						{:else}
-							<Tooltip content="No SBOM registered">
-								<ShieldIcon style="color: var(--ax-text-subtle); font-size: 1.25rem;" />
-							</Tooltip>
-						{/if}
+						<StalenessStatusIcon
+							indicator={imageStaleness.indicator}
+							label={imageStaleness.label}
+							hasVulnerabilityData={!!(job.image.hasSBOM && job.image.vulnerabilitySummary)}
+						/>
 					</div>
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>
