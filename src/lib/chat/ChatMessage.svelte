@@ -18,19 +18,12 @@
 		});
 	}
 
-	// Deduplicate sources by URL
 	function uniqueSources(
 		sources: { title: string; url: string }[]
 	): { title: string; url: string }[] {
-		const seen: Record<string, boolean> = {};
-		return sources.filter((source) => {
-			if (seen[source.url]) return false;
-			seen[source.url] = true;
-			return true;
-		});
+		return Array.from(new Map(sources.map((source) => [source.url, source])).values());
 	}
 
-	// Convert API interval string to PrometheusChartQueryInterval
 	function mapInterval(
 		interval?: string
 	): (typeof PrometheusChartQueryInterval)[keyof typeof PrometheusChartQueryInterval] {
@@ -50,13 +43,13 @@
 		}
 	}
 
-	// Create label formatter from template like "{pod}" or "{pod}/{container}"
 	function createLabelFormatter(
 		template?: string
 	): (labels: { name: string; value: string }[]) => string {
 		if (!template) {
-			return (labels) => labels.map((l) => l.value).join('/');
+			return (labels) => labels.map((label) => label.value).join('/');
 		}
+
 		return (labels) => {
 			let result = template;
 			for (const label of labels) {
@@ -66,7 +59,6 @@
 		};
 	}
 
-	// Format bytes to human readable
 	function formatBytes(bytes: number): string {
 		if (bytes === 0) return '0 B';
 		const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
@@ -75,7 +67,6 @@
 		return `${value.toFixed(value < 10 ? 2 : 1)} ${units[i]}`;
 	}
 
-	// Format duration in seconds to human readable
 	function formatDuration(seconds: number): string {
 		if (seconds < 1) return `${(seconds * 1000).toFixed(0)}ms`;
 		if (seconds < 60) return `${seconds.toFixed(1)}s`;
@@ -85,7 +76,6 @@
 		return `${hours}h ${mins}m`;
 	}
 
-	// Create Y-axis formatter based on format type
 	function createYValueFormatter(format?: string): (value: number) => string {
 		switch (format) {
 			case 'percentage':
@@ -102,7 +92,6 @@
 		}
 	}
 
-	// Generate stable key for each block
 	function blockKey(block: ContentBlock, index: number): string {
 		switch (block.type) {
 			case 'thinking':
@@ -115,15 +104,6 @@
 				return `chart-${block.chart.query}-${index}`;
 		}
 	}
-
-	// Format token count for display
-	function formatTokens(count?: number): string {
-		if (count === undefined) return '?';
-		if (count >= 1000) {
-			return `${(count / 1000).toFixed(1)}k`;
-		}
-		return count.toString();
-	}
 </script>
 
 <div
@@ -131,27 +111,26 @@
 	class:user={message.role === 'user'}
 	class:assistant={message.role === 'assistant'}
 >
-	<div class="message-header">
-		<span class="sender">{message.role === 'user' ? 'You' : 'Nais Assistant'}</span>
+	<div class="message-meta">
+		<span class="sender">{message.role === 'user' ? 'You' : 'Nais assistant'}</span>
 		<span class="timestamp">{formatTime(message.timestamp)}</span>
 	</div>
 
-	<div class="message-body">
+	<div class="message-content">
 		{#each message.blocks as block, i (blockKey(block, i))}
 			{#if block.type === 'thinking'}
 				{@const thinkingTitle = block.thinking.match(/^\*\*(.+?)\*\*/)?.[1]}
 				{@const thinkingBody = block.thinking.replace(/^\*\*.+?\*\*\n*/, '').trim()}
 				<details class="thinking">
 					<summary class="thinking-summary">
-						<span class="thinking-chevron" aria-hidden="true">›</span>
-						<span class="thinking-title">{thinkingTitle ?? 'Thinking'}</span>
+						<span class="thinking-label">{thinkingTitle ?? 'Reasoning'}</span>
 					</summary>
 					<div class="thinking-content">{thinkingBody}</div>
 				</details>
 			{:else if block.type === 'tool_use'}
-				<div class="tool-badge" class:tool-failed={!block.tool_success}>
-					<span class="tool-icon">{block.tool_success ? '🔧' : '❌'}</span>
+				<div class="tool-status" class:tool-failed={!block.tool_success}>
 					<span class="tool-name">{block.tool_name}</span>
+					<span class="tool-result">{block.tool_success ? 'completed' : 'failed'}</span>
 				</div>
 			{:else if block.type === 'text'}
 				<div class="text-block">
@@ -177,31 +156,23 @@
 		{/each}
 
 		{#if message.isStreaming}
-			<span class="streaming-indicator"><Muscox size="1em" /></span>
+			<div class="streaming-status" aria-live="polite">
+				<Muscox size="1em" />
+				<span>Writing…</span>
+			</div>
 		{/if}
 
 		{#if message.sources && message.sources.length > 0}
 			{@const dedupedSources = uniqueSources(message.sources)}
 			<div class="sources">
-				<span class="sources-label">Sources:</span>
+				<span class="sources-label">Sources</span>
 				<ul class="sources-list">
 					{#each dedupedSources as source (source.url)}
 						<li>
-							<a href={source.url} target="_blank" rel="noopener noreferrer">
-								{source.title}
-							</a>
+							<a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a>
 						</li>
 					{/each}
 				</ul>
-			</div>
-		{/if}
-
-		{#if message.usage}
-			<div class="usage">
-				<span class="usage-label">Tokens:</span>
-				<span class="usage-value">{formatTokens(message.usage.input_tokens)} in</span>
-				<span class="usage-separator">·</span>
-				<span class="usage-value">{formatTokens(message.usage.output_tokens)} out</span>
 			</div>
 		{/if}
 	</div>
@@ -211,103 +182,97 @@
 	.message {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: var(--ax-space-16);
-		padding: var(--ax-space-12);
-		border-radius: var(--ax-border-radius-large);
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-24);
 	}
 
 	.message.user {
-		background-color: var(--ax-bg-action-subtle);
-		margin-left: var(--ax-space-24);
+		align-items: flex-end;
 	}
 
 	.message.assistant {
-		background-color: var(--ax-bg-subtle);
-		margin-right: var(--ax-space-24);
+		align-items: flex-start;
 	}
 
-	.message-header {
+	.message-meta {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		margin-bottom: var(--ax-space-8);
+		gap: var(--ax-space-8);
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-subtle);
+	}
+
+	.message.user .message-meta {
+		padding-right: var(--ax-space-4);
 	}
 
 	.sender {
-		font-weight: var(--ax-font-weight-semibold);
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-	}
-
-	.message.user .sender {
-		color: var(--ax-text-action);
-	}
-
-	.message.assistant .sender {
-		color: var(--ax-text-subtle);
+		font-weight: var(--ax-font-weight-bold);
 	}
 
 	.timestamp {
-		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-subtle);
 	}
 
-	.message-body {
-		font-size: var(--ax-font-size-medium);
-		line-height: var(--ax-font-line-height-medium);
+	.message-content {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.message.user .message-content {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+
+	.message.assistant .message-content {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
 	}
 
 	.text-block {
-		color: var(--ax-text-neutral);
+		max-width: min(100%, 42rem);
+	}
+
+	.message.user .text-block {
+		padding: var(--ax-space-12) var(--ax-space-16);
+		border-radius: var(--ax-border-radius-medium);
+		background-color: var(--ax-bg-info-soft);
+		color: var(--ax-text-default);
+	}
+
+	.message.assistant .text-block {
+		padding: var(--ax-space-12) var(--ax-space-16);
+		border: 1px solid var(--ax-border-neutral-subtle);
+		border-radius: var(--ax-border-radius-medium);
+		background-color: var(--ax-bg-default);
+		color: var(--ax-text-default);
 	}
 
 	.user-text {
 		white-space: pre-wrap;
+		word-break: break-word;
 	}
 
-	.streaming-indicator {
-		display: inline-block;
-		margin-left: var(--ax-space-4);
-	}
-
-	.tool-badge {
+	.streaming-status {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-2) var(--ax-space-8);
-		margin: var(--ax-space-4) var(--ax-space-4) var(--ax-space-4) 0;
-		background-color: var(--ax-bg-default);
-		border: 1px solid var(--ax-border-default);
-		border-radius: var(--ax-border-radius-small);
+		gap: var(--ax-space-8);
+		margin-top: var(--ax-space-8);
+		padding-inline: var(--ax-space-4);
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-subtle);
 	}
 
-	.tool-badge.tool-failed {
-		border-color: var(--ax-border-danger);
-		background-color: var(--ax-bg-danger-subtle);
-	}
-
-	.tool-icon {
-		font-size: var(--ax-font-size-small);
-	}
-
-	.tool-name {
-		font-family: var(--ax-font-family-mono, monospace);
-	}
-
 	.thinking {
-		margin: var(--ax-space-8) 0;
+		margin-top: var(--ax-space-8);
+		max-width: min(100%, 42rem);
 	}
 
 	.thinking-summary {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-		list-style: none;
 		cursor: pointer;
-		user-select: none;
-		width: fit-content;
+		list-style: none;
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-subtle);
 	}
@@ -316,97 +281,99 @@
 		display: none;
 	}
 
-	.thinking-chevron {
-		font-size: 1rem;
-		line-height: 1;
-		transition: rotate 0.15s ease;
-	}
-
-	:global(details[open]) .thinking-chevron {
-		rotate: 90deg;
-	}
-
-	.thinking-title {
-		font-style: italic;
-	}
-
-	.thinking-summary:hover .thinking-title {
-		color: var(--ax-text-neutral);
+	.thinking-label {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-4) 0;
+		border-bottom: 1px dashed var(--ax-border-neutral-subtle);
 	}
 
 	.thinking-content {
-		margin-top: var(--ax-space-6);
-		padding: var(--ax-space-8);
-		background-color: var(--ax-bg-sunken);
-		border-radius: var(--ax-border-radius-small);
-		border-left: 3px solid var(--ax-border-action);
-		font-size: var(--ax-font-size-small);
+		margin-top: var(--ax-space-8);
+		padding: var(--ax-space-12);
+		border-radius: var(--ax-border-radius-medium);
+		background-color: var(--ax-bg-neutral-soft);
 		color: var(--ax-text-subtle);
+		font-size: var(--ax-font-size-small);
 		white-space: pre-wrap;
 	}
 
+	.tool-status {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		margin-top: var(--ax-space-8);
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border-radius: var(--ax-border-radius-small);
+		background-color: var(--ax-bg-neutral-soft);
+		color: var(--ax-text-subtle);
+		font-size: var(--ax-font-size-small);
+	}
+
+	.tool-status.tool-failed {
+		background-color: var(--ax-bg-danger-strong);
+		color: var(--ax-text-danger);
+	}
+
+	.tool-name {
+		font-family: monospace;
+	}
+
+	.tool-result {
+		color: inherit;
+	}
+
 	.chart-container {
-		margin: var(--ax-space-12) 0;
-		padding: var(--ax-space-12);
-		background-color: var(--ax-bg-default);
-		border: 1px solid var(--ax-border-subtle);
+		width: min(100%, 42rem);
+		margin-top: var(--ax-space-12);
+		padding: var(--ax-space-16);
+		border: 1px solid var(--ax-border-neutral-subtle);
 		border-radius: var(--ax-border-radius-medium);
+		background-color: var(--ax-bg-default);
 	}
 
 	.chart-title {
-		margin: 0 0 var(--ax-space-8) 0;
+		margin: 0 0 var(--ax-space-12) 0;
 		font-size: var(--ax-font-size-medium);
-		font-weight: var(--ax-font-weight-semibold);
-		color: var(--ax-text-neutral);
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-default);
 	}
 
 	.sources {
-		margin-top: var(--ax-space-12);
-		padding-top: var(--ax-space-8);
-		border-top: 1px solid var(--ax-border-subtle);
+		margin-top: var(--ax-space-8);
+		max-width: min(100%, 42rem);
+		padding: var(--ax-space-8) var(--ax-space-12);
+		border: 1px solid var(--ax-border-neutral-subtle);
+		border-radius: var(--ax-border-radius-medium);
+		background-color: var(--ax-bg-default);
 	}
 
 	.sources-label {
+		display: block;
+		margin-bottom: var(--ax-space-2);
 		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-semibold);
+		font-weight: var(--ax-font-weight-bold);
 		color: var(--ax-text-subtle);
 	}
 
 	.sources-list {
-		margin: var(--ax-space-4) 0 0 0;
-		padding-left: var(--ax-space-16);
+		margin: 0;
+		padding-left: var(--ax-space-12);
 		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-subtle);
 	}
 
-	.sources-list li {
-		margin-bottom: var(--ax-space-2);
+	.sources-list li + li {
+		margin-top: var(--ax-space-2);
 	}
 
 	.sources-list a {
-		color: var(--ax-text-action);
+		color: var(--ax-text-default);
 		text-decoration: none;
 	}
 
 	.sources-list a:hover {
 		text-decoration: underline;
-	}
-
-	.usage {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-		margin-top: var(--ax-space-8);
-		padding-top: var(--ax-space-8);
-		border-top: 1px solid var(--ax-border-subtle);
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
-	}
-
-	.usage-label {
-		font-weight: var(--ax-font-weight-semibold);
-	}
-
-	.usage-separator {
-		color: var(--ax-text-subtle);
 	}
 </style>

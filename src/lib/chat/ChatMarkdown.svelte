@@ -67,7 +67,7 @@
 	.chat-markdown :global(h3),
 	.chat-markdown :global(h4) {
 		margin: var(--ax-space-12) 0 var(--ax-space-8) 0;
-		font-weight: var(--ax-font-weight-semibold);
+		font-weight: var(--ax-font-weight-bold);
 	}
 
 	.chat-markdown :global(blockquote) {
@@ -81,6 +81,7 @@
 	.chat-markdown :global(pre) {
 		margin: var(--ax-space-8) 0;
 		border-radius: var(--ax-border-radius-medium);
+		background-color: var(--ax-bg-neutral-soft);
 		overflow-x: auto;
 	}
 
@@ -95,10 +96,11 @@
 
 	/* Inline code styling */
 	.chat-markdown :global(.inline-code) {
-		background-color: var(--ax-bg-subtle);
+		background-color: var(--ax-bg-neutral-soft);
 		border-radius: var(--ax-border-radius-small);
-		padding: 0.125em 0.375em;
-		font-family: var(--ax-font-family-mono, monospace);
+		padding: 0.1em 0.3em;
+		font-family:
+			ui-monospace, 'SFMono-Regular', 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 		font-size: 0.9em;
 	}
 
@@ -119,8 +121,8 @@
 	}
 
 	.chat-markdown :global(th) {
-		background-color: var(--ax-bg-subtle);
-		font-weight: var(--ax-font-weight-semibold);
+		background-color: var(--ax-bg-neutral-soft);
+		font-weight: var(--ax-font-weight-bold);
 	}
 
 	/* Horizontal rule */

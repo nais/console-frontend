@@ -75,6 +75,7 @@
 	</InternalHeaderButton>
 
 	<Spacer />
+
 	<div class="feedback-button-wrapper">
 		<Button
 			variant="tertiary-neutral"

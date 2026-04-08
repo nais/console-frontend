@@ -1,83 +1,197 @@
 <script lang="ts">
 	import NaisChatIcon from '$lib/icons/NaisChatIcon.svelte';
-	import { Alert, BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { ClockDashedIcon } from '@nais/ds-svelte-community/icons';
 	import { chatService } from './chatService.svelte';
+
+	const suggestions = [
+		'Why is my app not starting in dev?',
+		'Show me recent deployments for my team',
+		'How do I configure ingress on Nais?',
+		'What does this alert mean?'
+	];
+
+	function useSuggestion(prompt: string) {
+		void chatService.sendMessage(prompt);
+	}
+
+	function openHistory() {
+		chatService.toggleHistory();
+	}
 </script>
 
 <div class="welcome-container">
-	<div class="welcome-content">
-		<div class="icon-wrapper">
-			<NaisChatIcon size="48px" />
+	<div class="welcome-card">
+		<div class="hero">
+			<div class="icon-wrapper" aria-hidden="true">
+				<NaisChatIcon size="32px" />
+			</div>
+
+			<div class="hero-copy">
+				<Heading size="small" as="h3">Nais assistant</Heading>
+				<BodyLong size="small">
+					Ask about workloads, deployments, alerts, or how the platform works. I can help you
+					investigate what is happening and point you to the right docs or Console pages.
+				</BodyLong>
+			</div>
 		</div>
 
-		<Heading size="medium" as="h3">Welcome to Nais assistant</Heading>
+		<div class="suggestions">
+			<BodyShort size="small" class="section-title">Try one of these</BodyShort>
 
-		<BodyLong>
-			Ask questions about your applications, deployments, and the Nais platform. I'm here to help
-			you navigate and understand your infrastructure.
-		</BodyLong>
+			<div class="suggestion-list">
+				{#each suggestions as suggestion (suggestion)}
+					<button class="suggestion-button" onclick={() => useSuggestion(suggestion)}>
+						{suggestion}
+					</button>
+				{/each}
+			</div>
+		</div>
 
-		<button class="history-hint" onclick={() => chatService.toggleHistory()}>
-			<ClockDashedIcon />
-			<BodyShort size="small">View conversation history</BodyShort>
-		</button>
+		<div class="footer">
+			<button class="history-link" onclick={openHistory}>
+				<ClockDashedIcon aria-hidden="true" />
+				<span>Conversation history</span>
+			</button>
 
-		<Alert variant="warning" size="small">
-			<Heading size="xsmall" as="h4">Please note</Heading>
-			<BodyLong size="small">
-				This assistant is experimental and may occasionally provide inaccurate information. Always
-				verify important details through official documentation or your team before making critical
-				changes to your infrastructure.
-			</BodyLong>
-		</Alert>
+			<BodyShort size="small" class="disclaimer">
+				Experimental feature — verify important details before making changes.
+			</BodyShort>
+		</div>
 	</div>
 </div>
 
 <style>
 	.welcome-container {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
+		flex: 1;
+		align-items: flex-start;
 		justify-content: center;
-		height: 100%;
-		padding: var(--ax-space-24);
-		text-align: center;
+		padding: var(--ax-space-32);
+		background: var(--ax-bg-default);
 	}
 
-	.welcome-content {
+	.welcome-card {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		gap: var(--ax-space-16);
-		max-width: 320px;
+		gap: var(--ax-space-32);
+		width: 100%;
+		max-width: 38rem;
+		padding: var(--ax-space-32);
+		border: 1px solid var(--ax-border-neutral-subtle);
+		border-radius: var(--ax-border-radius-medium);
+		background: var(--ax-bg-default);
+	}
+
+	.hero {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--ax-space-20);
 	}
 
 	.icon-wrapper {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 64px;
-		height: 64px;
-		border-radius: 50%;
-		background-color: var(--ax-bg-subtle);
+		flex-shrink: 0;
+		width: 3rem;
+		height: 3rem;
+		border-radius: var(--ax-border-radius-medium);
+		background: var(--ax-bg-default);
 		color: var(--ax-text-subtle);
 	}
 
-	.history-hint {
+	.hero-copy {
 		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-8) var(--ax-space-16);
-		border: 1px solid var(--ax-border-default);
-		border-radius: var(--ax-border-radius-medium);
-		background: transparent;
-		color: var(--ax-text-action);
-		cursor: pointer;
-		transition: background-color 0.15s ease;
+		flex-direction: column;
+		gap: var(--ax-space-12);
+		min-width: 0;
 	}
 
-	.history-hint:hover {
-		background-color: var(--ax-bg-hover);
+	:global(.section-title),
+	:global(.disclaimer) {
+		color: var(--ax-text-subtle);
+	}
+
+	.suggestions {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+	}
+
+	.suggestion-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-12);
+	}
+
+	.suggestion-button {
+		padding: var(--ax-space-16);
+		border: 1px solid var(--ax-border-neutral-subtle);
+		border-radius: var(--ax-border-radius-medium);
+		background: var(--ax-bg-default);
+		color: var(--ax-text-default);
+		text-align: left;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			background-color 120ms ease,
+			border-color 120ms ease,
+			box-shadow 120ms ease;
+	}
+
+	.suggestion-button:hover {
+		background: var(--ax-bg-default);
+		border-color: var(--ax-border-default);
+	}
+
+	.suggestion-button:focus-visible {
+		outline: 3px solid var(--ax-border-focus);
+		outline-offset: 2px;
+	}
+
+	.footer {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		padding-top: var(--ax-space-8);
+	}
+
+	.history-link {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		width: fit-content;
+		padding: 0;
+		border: none;
+		background: transparent;
+		color: var(--ax-text-subtle);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.history-link:hover {
+		text-decoration: underline;
+	}
+
+	.history-link:focus-visible {
+		outline: 3px solid var(--ax-border-focus);
+		outline-offset: 2px;
+		border-radius: var(--ax-border-radius-small);
+	}
+
+	@media (max-width: 48rem) {
+		.welcome-container {
+			padding: var(--ax-space-20);
+		}
+
+		.welcome-card {
+			gap: var(--ax-space-24);
+			padding: var(--ax-space-24);
+		}
+
+		.hero {
+			gap: var(--ax-space-16);
+		}
 	}
 </style>
