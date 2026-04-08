@@ -24,8 +24,7 @@
 		"build-storybook": "storybook build",
 		"upgrade-storybook": "node upgrade-storybook.mjs",
 		"lint-staged": "lint-staged",
-		"lockfile-lint": "lockfile-lint --path package-lock.json",
-		"unused": "node find-unused-gql.mjs && echo '---' && node find-missing-css-vars.mjs"
+		"lockfile-lint": "lockfile-lint --path package-lock.json"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "5.0.2",

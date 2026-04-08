@@ -9,7 +9,18 @@ import globals from 'globals';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript-eslint';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+
+import missingCssVarsRule from './eslint-rules/missing-css-vars.js';
+import unusedGqlRule from './eslint-rules/unused-gql.js';
+
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
+
+const projectChecksPlugin = {
+	rules: {
+		'missing-css-vars': missingCssVarsRule,
+		'unused-gql': unusedGqlRule
+	}
+};
 
 export default ts.config(
 	includeIgnoreFile(gitignorePath),
@@ -18,7 +29,19 @@ export default ts.config(
 	...svelte.configs['flat/recommended'],
 	prettier,
 	...svelte.configs['flat/prettier'],
-	{ plugins: { unicorn: eslintPluginUnicorn } },
+	{
+		plugins: {
+			unicorn: eslintPluginUnicorn,
+			project: projectChecksPlugin
+		}
+	},
+	{
+		files: ['eslint.config.js'],
+		rules: {
+			'project/missing-css-vars': 'error',
+			'project/unused-gql': 'error'
+		}
+	},
 	{
 		files: ['.ncurc.cjs'],
 		rules: {
@@ -35,7 +58,6 @@ export default ts.config(
 	},
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts'],
-
 		languageOptions: {
 			parserOptions: {
 				parser: ts.parser,
