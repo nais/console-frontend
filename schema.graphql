@@ -6591,6 +6591,16 @@ type SqlInstanceVersionIssue implements Issue & Node {
   teamEnvironment: TeamEnvironment!
 }
 
+enum StaleReasonCode {
+  NO_ATTESTATION
+  NO_SBOM
+  PROCESSING
+  PROCESSING_WITH_FALLBACK
+  SBOM_UPLOAD_FAILED
+  UNSPECIFIED
+  UP_TO_DATE
+}
+
 enum StaleSeverity {
   STALE_NONE
   STALE_PERMANENT
@@ -9171,6 +9181,9 @@ type VulnerabilityFixSample {
 
 """Information about whether vulnerability data is stale and why."""
 type VulnerabilityStaleness {
+  """A machine-readable code identifying the reason for staleness."""
+  code: StaleReasonCode!
+
   """A human-readable explanation of why the vulnerability data is stale."""
   reason: String!
 

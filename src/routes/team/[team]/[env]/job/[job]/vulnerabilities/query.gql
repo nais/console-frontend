@@ -22,6 +22,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 					tag
 					hasSBOM
 					staleness {
+						code
 						severity
 						reason
 					}

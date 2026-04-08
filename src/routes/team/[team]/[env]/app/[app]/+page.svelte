@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql, StaleSeverity } from '$houdini';
+	import { graphql } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -9,6 +9,7 @@
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import StalenessStatusIcon from '$lib/domain/vulnerability/StalenessStatusIcon.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
@@ -17,13 +18,9 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, Button, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
-	import {
-		ArrowCirclepathIcon,
-		ExclamationmarkTriangleFillIcon,
-		ShieldCheckmarkIcon,
-		ShieldIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { stalenessDetails } from '$lib/utils/vulnerabilities';
+	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
 	import Instances from './Instances.svelte';
@@ -101,6 +98,7 @@
 {/if}
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
+	{@const imageStaleness = stalenessDetails(app.image)}
 
 	<div class="wrapper">
 		<div class="app-content">
@@ -179,27 +177,11 @@
 				<div>
 					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 						<Heading as="h2" size="small">Vulnerabilities</Heading>
-						{#if app.image.staleness.severity === StaleSeverity.STALE_PROCESSING}
-							<Tooltip content={app.image.staleness.reason}>
-								<Loader size="xsmall" />
-							</Tooltip>
-						{:else if app.image.staleness.severity === StaleSeverity.STALE_PERMANENT}
-							<Tooltip content={app.image.staleness.reason}>
-								<ExclamationmarkTriangleFillIcon
-									style="color: var(--ax-text-warning); font-size: 1.25rem;"
-								/>
-							</Tooltip>
-						{:else if app.image.hasSBOM && app.image.vulnerabilitySummary}
-							<Tooltip content={app.image.staleness.reason}>
-								<ShieldCheckmarkIcon
-									style="color: var(--ax-text-success-decoration); font-size: 1.25rem;"
-								/>
-							</Tooltip>
-						{:else}
-							<Tooltip content="No SBOM registered">
-								<ShieldIcon style="color: var(--ax-text-subtle); font-size: 1.25rem;" />
-							</Tooltip>
-						{/if}
+						<StalenessStatusIcon
+							indicator={imageStaleness.indicator}
+							label={imageStaleness.label}
+							hasVulnerabilityData={!!(app.image.hasSBOM && app.image.vulnerabilitySummary)}
+						/>
 					</div>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>
