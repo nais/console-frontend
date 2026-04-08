@@ -3,14 +3,14 @@ import path from 'node:path';
 
 const SKIP_DIRECTORIES = new Set(['node_modules', '.git', '.svelte-kit', 'build', '.houdini']);
 
-async function findFiles(dir, pattern) {
+function findFiles(dir, pattern) {
 	const files = [];
 
 	if (!fs.existsSync(dir)) {
 		return files;
 	}
 
-	const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+	const entries = fs.readdirSync(dir, { withFileTypes: true });
 
 	for (const entry of entries) {
 		const fullPath = path.join(dir, entry.name);
@@ -19,7 +19,7 @@ async function findFiles(dir, pattern) {
 			if (SKIP_DIRECTORIES.has(entry.name)) {
 				continue;
 			}
-			files.push(...(await findFiles(fullPath, pattern)));
+			files.push(...findFiles(fullPath, pattern));
 			continue;
 		}
 
@@ -31,13 +31,13 @@ async function findFiles(dir, pattern) {
 	return files;
 }
 
-async function extractQueryName(filePath) {
-	const content = await fs.promises.readFile(filePath, 'utf-8');
+function extractQueryName(filePath) {
+	const content = fs.readFileSync(filePath, 'utf-8');
 	const match = content.match(/(?:query|mutation|fragment)\s+(\w+)/);
 	return match ? match[1] : null;
 }
 
-async function isQueryUsed(queryName, tsFiles, svelteFiles) {
+function isQueryUsed(queryName, tsFiles, svelteFiles) {
 	const allFiles = [...tsFiles, ...svelteFiles];
 	const patterns = [
 		new RegExp(`load_${queryName}\\b`),
@@ -52,7 +52,7 @@ async function isQueryUsed(queryName, tsFiles, svelteFiles) {
 	];
 
 	for (const file of allFiles) {
-		const content = await fs.promises.readFile(file, 'utf-8');
+		const content = fs.readFileSync(file, 'utf-8');
 		if (patterns.some((pattern) => pattern.test(content))) {
 			return true;
 		}
@@ -61,21 +61,21 @@ async function isQueryUsed(queryName, tsFiles, svelteFiles) {
 	return false;
 }
 
-async function collectUnusedGqlFiles(projectRoot) {
+function collectUnusedGqlFiles(projectRoot) {
 	const srcDir = path.join(projectRoot, 'src');
-	const gqlFiles = await findFiles(srcDir, /\.gql$/);
-	const tsFiles = await findFiles(srcDir, /\.(ts|js)$/);
-	const svelteFiles = await findFiles(srcDir, /\.svelte$/);
+	const gqlFiles = findFiles(srcDir, /\.gql$/);
+	const tsFiles = findFiles(srcDir, /\.(ts|js)$/);
+	const svelteFiles = findFiles(srcDir, /\.svelte$/);
 
 	const unusedFiles = [];
 
 	for (const gqlFile of gqlFiles) {
-		const queryName = await extractQueryName(gqlFile);
+		const queryName = extractQueryName(gqlFile);
 		if (!queryName) {
 			continue;
 		}
 
-		const used = await isQueryUsed(queryName, tsFiles, svelteFiles);
+		const used = isQueryUsed(queryName, tsFiles, svelteFiles);
 		if (!used) {
 			unusedFiles.push({
 				path: path.relative(projectRoot, gqlFile),
@@ -105,8 +105,8 @@ export default {
 		}
 
 		return {
-			async 'Program:exit'() {
-				const unusedFiles = await collectUnusedGqlFiles(projectRoot);
+			'Program:exit'() {
+				const unusedFiles = collectUnusedGqlFiles(projectRoot);
 
 				for (const file of unusedFiles) {
 					context.report({

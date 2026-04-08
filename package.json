@@ -24,8 +24,7 @@
 		"build-storybook": "storybook build",
 		"upgrade-storybook": "node upgrade-storybook.mjs",
 		"lint-staged": "lint-staged",
-		"lockfile-lint": "lockfile-lint --path package-lock.json",
-		"unused": "eslint eslint.config.js"
+		"lockfile-lint": "lockfile-lint --path package-lock.json"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "5.0.2",

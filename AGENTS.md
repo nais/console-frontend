@@ -45,15 +45,14 @@ This file is auto-generated from [nais/api](https://github.com/nais/api) and mus
 
 ## Common Commands
 
-| Task              | Command          |
-| ----------------- | ---------------- |
-| Run locally       | `npm run dev`    |
-| Build             | `npm run build`  |
-| Type check        | `npm run check`  |
-| Lint              | `npm run lint`   |
-| Format code       | `npm run format` |
-| Run tests         | `npm run test`   |
-| Validate CSS vars | `npm run unused` |
+| Task        | Command          |
+| ----------- | ---------------- |
+| Run locally | `npm run dev`    |
+| Build       | `npm run build`  |
+| Type check  | `npm run check`  |
+| Lint        | `npm run lint`   |
+| Format code | `npm run format` |
+| Run tests   | `npm run test`   |
 
 ---
 
@@ -88,7 +87,7 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 #### Spacing (use these design tokens, not arbitrary values)
 
 - Common tokens include: `--ax-space-1`, `--ax-space-2`, `--ax-space-4`, `--ax-space-6`, `--ax-space-8`, `--ax-space-12`, `--ax-space-16`, `--ax-space-20`, `--ax-space-24`, `--ax-space-32`, `--ax-space-40`, `--ax-space-64`
-- This list is not exhaustive; follow existing spacing tokens in the codebase and rely on `npm run unused` to validate new usages
+- This list is not exhaustive; follow existing spacing tokens in the codebase and rely on the ESLint checks to validate new usages and unused GraphQL files
 
 #### Typography
 
@@ -117,13 +116,13 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 
 ### Rules for CSS Variables:
 
-1. **Before using ANY CSS variable**, search the codebase first for existing usage patterns. For new tokens, verify they exist in the @nais/ds-svelte-community design system or rely on `npm run unused` for validation
+1. **Before using ANY CSS variable**, search the codebase first for existing usage patterns. For new tokens, verify they exist in the @nais/ds-svelte-community design system or rely on the ESLint checks for validation
 2. **Never invent** CSS variable names like `--ax-font-family-mono`, `--ax-color-*`, etc.
 3. **For font-family**: Use `font-family: monospace` directly (not a CSS variable)
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
-5. **Run validation**: The project has `npm run unused` which includes `find-missing-css-vars.mjs` - this validates CSS variables
+5. **Run validation**: The project’s ESLint configuration includes project checks for missing CSS variables and unused GraphQL files
 6. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
-7. **Lists are non-exhaustive**: The design system has more tokens than listed here; use validation scripts to confirm
+7. **Lists are non-exhaustive**: The design system has more tokens than listed here; use the ESLint checks to confirm
 
 ---
 
