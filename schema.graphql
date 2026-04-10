@@ -589,6 +589,12 @@ type Application implements ActivityLogger & Node & Workload {
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
 
+  """
+  Instance groups for the application. An instance group represents a set of identical instances
+  backed by a Kubernetes ReplicaSet. All instances in a group share the same configuration.
+  """
+  instanceGroups: [InstanceGroup!]!
+
   """The application instances."""
   instances(
     """Get items after this cursor."""
@@ -2935,6 +2941,152 @@ enum IngressType {
   EXTERNAL
   INTERNAL
   UNKNOWN
+}
+
+"""
+An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
+All instances in the group share the same configuration (environment variables, mounted files, image).
+"""
+type InstanceGroup implements Node {
+  """When the instance group was created."""
+  created: Time!
+
+  """The desired number of instances."""
+  desiredInstances: Int!
+
+  """
+  Environment variables configured for instances in this group.
+  Variables from Secrets require elevation to view their values.
+  """
+  environmentVariables: [InstanceGroupEnvironmentVariable!]!
+
+  """
+  Recent Kubernetes events for this instance group and its instances,
+  translated into user-friendly messages. Sorted by timestamp, newest first.
+  """
+  events: [InstanceGroupEvent!]!
+
+  """The globally unique ID of the instance group."""
+  id: ID!
+
+  """The container image used by instances in this group."""
+  image: ContainerImage!
+
+  """The application instances belonging to this instance group."""
+  instances: [ApplicationInstance!]!
+
+  """Files mounted into instances in this group from Secrets or ConfigMaps."""
+  mountedFiles: [InstanceGroupMountedFile!]!
+
+  """The name of the instance group."""
+  name: String!
+
+  """The number of instances that are ready."""
+  readyInstances: Int!
+
+  """
+  The revision number of this instance group. Higher revision numbers are newer.
+  """
+  revision: Int!
+}
+
+"""An environment variable configured for an instance group."""
+type InstanceGroupEnvironmentVariable {
+  """The name of the environment variable."""
+  name: String!
+
+  """The source of the environment variable value."""
+  source: InstanceGroupValueSource!
+
+  """
+  The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
+  """
+  value: String
+}
+
+"""
+A translated Kubernetes event providing debugging information in user-friendly language.
+"""
+type InstanceGroupEvent {
+  """A user-friendly description of what happened."""
+  message: String!
+
+  """The severity of the event."""
+  severity: InstanceGroupEventSeverity!
+
+  """
+  The name of the instance (pod) this event relates to, if applicable.
+  Null for events that relate to the instance group itself.
+  """
+  sourceInstance: String
+
+  """When the event occurred."""
+  timestamp: Time!
+}
+
+"""The severity of an instance group event."""
+enum InstanceGroupEventSeverity {
+  """Error event (requires attention)."""
+  ERROR
+
+  """Informational event (normal operation)."""
+  INFO
+
+  """Warning event (potential issue, may resolve on its own)."""
+  WARNING
+}
+
+"""A file mounted into an instance group from a Secret or ConfigMap."""
+type InstanceGroupMountedFile {
+  """
+  The file content. Null for files from Secrets (requires elevation to view)
+  or when the source could not be resolved (check the error field).
+  For ConfigMap files, this is the raw string content or base64-encoded binary content.
+  """
+  content: String
+
+  """
+  Error message when the source Secret or ConfigMap could not be resolved.
+  When set, the file entry represents a failed mount rather than an actual file.
+  """
+  error: String
+
+  """
+  Whether the content is base64-encoded binary data.
+  When true, the content field contains base64-encoded data that should be downloaded rather than displayed.
+  """
+  isBinary: Boolean!
+
+  """The file path inside the container."""
+  path: String!
+
+  """The source of the mounted file."""
+  source: InstanceGroupValueSource!
+}
+
+"""
+Describes the source of a value (environment variable or mounted file).
+"""
+type InstanceGroupValueSource {
+  """The kind of source."""
+  kind: InstanceGroupValueSourceKind!
+
+  """The name of the source resource (e.g. Secret name, ConfigMap name)."""
+  name: String!
+}
+
+"""The kind of source for an environment variable or mounted file."""
+enum InstanceGroupValueSourceKind {
+  """The value comes from a Kubernetes ConfigMap."""
+  CONFIG_MAP
+
+  """The value comes from a Kubernetes Secret."""
+  SECRET
+
+  """
+  The value comes from the workload spec itself (inline value, fieldRef, etc.).
+  """
+  SPEC
 }
 
 type InvalidSpecIssue implements Issue & Node {

@@ -111,8 +111,8 @@
 	{/if}
 {/snippet}
 
-<Heading as="h2" size="medium" spacing>Network Policy</Heading>
 {#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
+	<Heading as="h2" size="medium" spacing>Network Policy</Heading>
 	<div class="grid">
 		<div>
 			<Heading as="h3" size="small" spacing>Inbound</Heading>
@@ -163,8 +163,6 @@
 			{/if}
 		</div>
 	</div>
-{:else}
-	No network policies configured for this {$data.__typename?.toLowerCase()}.
 {/if}
 
 <style>

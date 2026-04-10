@@ -6,7 +6,7 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { Button, Heading } from '@nais/ds-svelte-community';
 	import {
 		ArrowRightIcon,
 		CloudDownIcon,
@@ -23,74 +23,74 @@
 	let { app }: Props = $props();
 </script>
 
-<Heading as="h2" size="medium" spacing>Ingresses</Heading>
+{#if app.team.environment.application.ingresses.length > 0}
+	<Heading as="h2" size="medium" spacing>Ingresses</Heading>
 
-<List>
-	{#each Object.entries(Object.groupBy(app.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
-		{#each ingresses as ingress (ingress)}
-			<ListItem>
-				<IconLabel size="medium" label={ingress.url} href={ingress.url}>
-					{#snippet icon()}
-						{#each app.team.environment.application.issues.edges as issue (issue.node.id)}
-							{#if issue.node.__typename === 'DeprecatedIngressIssue' && issue.node.message.includes(ingress.url)}
-								<TooltipAlignHack content="Deprecated ingress: {ingress.url}"
-									><WarningIcon /></TooltipAlignHack
-								>
-							{/if}
-						{/each}
+	<List>
+		{#each Object.entries(Object.groupBy(app.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
+			{#each ingresses as ingress (ingress)}
+				<ListItem>
+					<IconLabel size="medium" label={ingress.url} href={ingress.url}>
+						{#snippet icon()}
+							{#each app.team.environment.application.issues.edges as issue (issue.node.id)}
+								{#if issue.node.__typename === 'DeprecatedIngressIssue' && issue.node.message.includes(ingress.url)}
+									<TooltipAlignHack content="Deprecated ingress: {ingress.url}"
+										><WarningIcon /></TooltipAlignHack
+									>
+								{/if}
+							{/each}
 
-						<TooltipAlignHack
-							content={group === 'UNKNOWN'
-								? 'Ingress not found'
-								: `${group[0]}${group.slice(1).toLowerCase()} ingress`}
-						>
-							{#if group === 'EXTERNAL'}
-								<GlobeIcon />
-							{:else if group === 'INTERNAL'}
-								<HouseIcon />
-							{:else if group === 'AUTHENTICATED'}
-								<PadlockLockedIcon />
-							{:else}
-								<WarningIcon />
-							{/if}
-						</TooltipAlignHack>
-					{/snippet}
-				</IconLabel>
-				<div>
+							<TooltipAlignHack
+								content={group === 'UNKNOWN'
+									? 'Ingress not found'
+									: `${group[0]}${group.slice(1).toLowerCase()} ingress`}
+							>
+								{#if group === 'EXTERNAL'}
+									<GlobeIcon />
+								{:else if group === 'INTERNAL'}
+									<HouseIcon />
+								{:else if group === 'AUTHENTICATED'}
+									<PadlockLockedIcon />
+								{:else}
+									<WarningIcon />
+								{/if}
+							</TooltipAlignHack>
+						{/snippet}
+					</IconLabel>
 					<div>
-						<TooltipAlignHack content="Requests per second">
-							<IconLabel
+						<div>
+							<TooltipAlignHack content="Requests per second">
+								<IconLabel
+									size="small"
+									icon={CloudDownIcon}
+									label="{ingress.metrics.requestsPerSecond.toFixed(2)} req/s"
+								/>
+							</TooltipAlignHack>
+						</div>
+						<div>
+							<TooltipAlignHack content="Errors per second">
+								<IconLabel
+									size="small"
+									icon={ExclamationmarkTriangleIcon}
+									label="{ingress.metrics.errorsPerSecond.toFixed(2)} err/s"
+								/>
+							</TooltipAlignHack>
+						</div>
+						<div>
+							<Button
+								variant="tertiary"
 								size="small"
-								icon={CloudDownIcon}
-								label="{ingress.metrics.requestsPerSecond.toFixed(2)} req/s"
-							/>
-						</TooltipAlignHack>
+								as="a"
+								href="/team/{page.params.team}/{page.params.env}/app/{page.params
+									.app}/ingresses?ingress={encodeURIComponent(ingress.url)}"
+								icon={ArrowRightIcon}
+							>
+								Metrics
+							</Button>
+						</div>
 					</div>
-					<div>
-						<TooltipAlignHack content="Errors per second">
-							<IconLabel
-								size="small"
-								icon={ExclamationmarkTriangleIcon}
-								label="{ingress.metrics.errorsPerSecond.toFixed(2)} err/s"
-							/>
-						</TooltipAlignHack>
-					</div>
-					<div>
-						<Button
-							variant="tertiary"
-							size="small"
-							as="a"
-							href="/team/{page.params.team}/{page.params.env}/app/{page.params
-								.app}/ingresses?ingress={encodeURIComponent(ingress.url)}"
-							icon={ArrowRightIcon}
-						>
-							Metrics
-						</Button>
-					</div>
-				</div>
-			</ListItem>
+				</ListItem>
+			{/each}
 		{/each}
-	{:else}
-		<BodyShort>No ingresses configured for this app.</BodyShort>
-	{/each}
-</List>
+	</List>
+{/if}
