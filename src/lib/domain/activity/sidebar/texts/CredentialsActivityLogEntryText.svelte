@@ -19,15 +19,13 @@
 		KAFKA: 'Kafka'
 	};
 
-	const serviceLabel = $derived(
-		serviceTypeLabel[data.credentialsData.serviceType] ?? data.credentialsData.serviceType
-	);
+	const serviceLabel = $derived(serviceTypeLabel[data.resourceType] ?? data.resourceType);
 </script>
 
 <div>
 	{serviceLabel} credentials created
-	{#if data.credentialsData.instanceName}
-		for <strong>{data.credentialsData.instanceName}</strong>
+	{#if data.resourceName}
+		for <strong>{data.resourceName}</strong>
 	{/if}
 	{#if data.credentialsData.permission}
 		with {data.credentialsData.permission} access
