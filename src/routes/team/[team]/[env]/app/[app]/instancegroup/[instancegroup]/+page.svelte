@@ -275,6 +275,7 @@
 						<Tr>
 							<Th>Name</Th>
 							<Th>Status</Th>
+							<Th>Message</Th>
 							<Th>Restarts</Th>
 							<Th>Created</Th>
 						</Tr>
@@ -298,15 +299,18 @@
 									>
 										{stateName(instance.status.state)}
 									</Tag>
+								</Td>
+								<Td>
 									{#if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
-										<span class="muted">{instance.status.message}</span>
-									{/if}
-									{#if instance.status.lastExitReason && instance.restarts > 0 && instance.status.state === 'RUNNING'}
-										<span class="muted exit-info">
+										{instance.status.message}
+									{:else if instance.status.lastExitReason && instance.restarts > 0 && instance.status.state === 'RUNNING'}
+										<span class="exit-info">
 											Last exit: {instance.status
 												.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
 												(code {instance.status.lastExitCode}){/if}
 										</span>
+									{:else}
+										<span class="muted">-</span>
 									{/if}
 								</Td>
 								<Td>{instance.restarts}</Td>
