@@ -44,7 +44,7 @@
 			ActivityLogActivityType.APPLICATION_RESTARTED,
 			ActivityLogActivityType.APPLICATION_SCALED,
 			ActivityLogActivityType.CLUSTER_AUDIT,
-			ActivityLogActivityType.CREDENTIALS_CREATE,
+			ActivityLogActivityType.CREDENTIALS_CREATED,
 			ActivityLogActivityType.DEPLOYMENT,
 			ActivityLogActivityType.JOB_DELETED,
 			ActivityLogActivityType.JOB_RUN_DELETED,
@@ -112,8 +112,6 @@
 							}
 							... on CredentialsActivityLogEntry {
 								credentialsData: data {
-									serviceType
-									instanceName
 									permission
 									ttl
 								}

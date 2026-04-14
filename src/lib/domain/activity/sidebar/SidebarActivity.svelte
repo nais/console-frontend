@@ -196,8 +196,6 @@
 							}
 							... on CredentialsActivityLogEntry {
 								credentialsData: data {
-									serviceType
-									instanceName
 									permission
 									ttl
 								}

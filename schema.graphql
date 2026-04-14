@@ -32,7 +32,7 @@ enum ActivityLogActivityType {
   CONFIG_UPDATED
 
   """Filter for credential creation events."""
-  CREDENTIALS_CREATE
+  CREDENTIALS_CREATED
 
   """Activity log entry for deployment activity."""
   DEPLOYMENT
@@ -240,11 +240,6 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to configs will use this resource type.
   """
   CONFIG
-
-  """
-  All activity log entries related to credential creation will use this resource type.
-  """
-  CREDENTIALS
 
   """
   All activity log entries related to deploy keys will use this resource type.
@@ -1991,14 +1986,8 @@ type CredentialsActivityLogEntry implements ActivityLogEntry & Node {
 }
 
 type CredentialsActivityLogEntryData {
-  """The instance name, if applicable."""
-  instanceName: String
-
   """The permission level, if applicable."""
   permission: String
-
-  """The service type (OPENSEARCH, VALKEY, KAFKA)."""
-  serviceType: String!
 
   """The TTL that was requested for the credentials."""
   ttl: String!
