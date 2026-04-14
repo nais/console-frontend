@@ -265,7 +265,7 @@
 	}
 
 	.instance-group-meta {
-		font-size: var(--ax-font-size-sm);
+		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral-subtle);
 	}
 </style>
