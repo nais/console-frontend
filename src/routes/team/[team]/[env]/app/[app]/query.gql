@@ -65,6 +65,9 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						}
 						restarts
 					}
+					events {
+						severity
+					}
 				}
 
 				...SidebarActivityLogFragment @with(limit: 20) @mask_disable

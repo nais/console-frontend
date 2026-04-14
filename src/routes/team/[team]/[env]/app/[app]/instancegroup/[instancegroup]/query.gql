@@ -12,6 +12,9 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 						name
 					}
 				}
+				manifest {
+					content
+				}
 				resources {
 					scaling {
 						maxInstances

@@ -3,14 +3,16 @@
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import DangerIcon from '$lib/icons/DangerIcon.svelte';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
-	import { getPageHeaderWarning } from '$lib/ui/pageHeaderState.svelte';
+	import { getPageHeaderWarning, getPageHeaderError } from '$lib/ui/pageHeaderState.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 
 	const breadcrumbs = $derived(page.data?.meta?.breadcrumbs ?? []);
 	const heading = $derived(page.data?.meta?.title ?? '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
 	const warning = $derived(getPageHeaderWarning());
+	const error = $derived(getPageHeaderError());
 	const resolveUnsafe = resolve as unknown as (
 		href: string,
 		params?: Record<string, string>
@@ -39,7 +41,9 @@
 	{/if}
 	<div style="display: flex; align-items: center; justify-content: space-between;">
 		<div class="heading-wrapper">
-			{#if warning}
+			{#if error}
+				<DangerIcon style="font-size: 1.5rem" />
+			{:else if warning}
 				<WarningIcon style="font-size: 1.5rem" />
 			{/if}
 			<Heading as="h1" size="xlarge">{heading}</Heading>

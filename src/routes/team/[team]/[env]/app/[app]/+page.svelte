@@ -132,25 +132,15 @@
 					</div>
 					{#each app.instanceGroups as group (group.id)}
 						{@const role = groupRole(group)}
-						{@const hasFailing = group.instances.some((i) => i.status.state === 'FAILING')}
+						{@const hasError = group.events.some((e) => e.severity === 'ERROR')}
+						{@const hasWarning = group.events.some((e) => e.severity === 'WARNING')}
 						<a
 							href="/team/{app.team.slug}/{app.teamEnvironment.environment
 								.name}/app/{app.name}/instancegroup/{group.name}"
 							class="instance-group-link"
 							class:incoming={role === 'incoming'}
 						>
-							{#if hasFailing}
-								<svg
-									class="status-indicator"
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<circle cx="12" cy="12" r="5" fill="var(--ax-bg-danger-strong)" />
-								</svg>
-							{:else if role === 'incoming'}
+							{#if role === 'incoming'}
 								<IncomingIndicator />
 							{:else}
 								<RunningIndicator />
@@ -163,11 +153,14 @@
 									{group.image.tag} &middot; Updated <Time time={group.created} distance />
 								</span>
 							</div>
+							{#if hasError}
+								<Tag size="small" variant="error">Failing</Tag>
+							{/if}
+							{#if hasWarning && !hasError}
+								<Tag size="small" variant="warning">Warning</Tag>
+							{/if}
 							{#if incoming}
-								{#if role === 'incoming' && hasFailing}
-									<Tag size="small" variant="error">Failing</Tag>
-									<Tag size="small" variant="alt1">Incoming</Tag>
-								{:else if role === 'incoming'}
+								{#if role === 'incoming'}
 									<Tag size="small" variant="alt1">Incoming</Tag>
 								{:else}
 									<Tag size="small" variant="neutral">Current</Tag>
@@ -274,9 +267,5 @@
 	.instance-group-meta {
 		font-size: var(--ax-font-size-sm);
 		color: var(--ax-text-neutral-subtle);
-	}
-
-	.status-indicator {
-		flex-shrink: 0;
 	}
 </style>

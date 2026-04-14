@@ -92,7 +92,8 @@
 		"pino": "10.3.1",
 		"pretty-bytes": "7.1.0",
 		"sortablejs": "1.15.7",
-		"svelte-highlight": "7.9.0"
+		"svelte-highlight": "7.9.0",
+		"yaml": "2.8.3"
 	},
 	"overrides": {
 		"@sveltejs/kit": {

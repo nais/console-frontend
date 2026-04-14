@@ -23,10 +23,11 @@
 		ToggleChip
 	} from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon, DownloadIcon } from '@nais/ds-svelte-community/icons';
-	import { setPageHeaderWarning } from '$lib/ui/pageHeaderState.svelte';
+	import { setPageHeaderWarning, setPageHeaderError } from '$lib/ui/pageHeaderState.svelte';
 	import type { PageProps } from './$types';
 	import type { ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
+	import { parse as parseYaml } from 'yaml';
 
 	type InstanceGroup =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number];
@@ -44,6 +45,24 @@
 	const allGroups = $derived(application?.instanceGroups ?? []);
 	const viewerIsMember = $derived($InstanceGroupDetail.data?.team.viewerIsMember ?? false);
 
+	// Parse manifest to extract user-defined env var names from spec.env
+	const specEnvNames = $derived.by(() => {
+		const content = application?.manifest?.content;
+		if (!content) return new Set<string>();
+		try {
+			const doc = parseYaml(content);
+			const envList = doc?.spec?.env;
+			if (!Array.isArray(envList)) return new Set<string>();
+			return new Set<string>(
+				envList
+					.map((e: { name?: string }) => e.name)
+					.filter((n): n is string => typeof n === 'string')
+			);
+		} catch {
+			return new Set<string>();
+		}
+	});
+
 	// Determine if this group is "current" or "incoming"
 	const incoming = $derived(
 		allGroups.length > 1
@@ -53,6 +72,9 @@
 			: null
 	);
 	const role = $derived(incoming && group?.id === incoming.id ? 'incoming' : 'current');
+
+	const hasError = $derived(group?.events.some((e) => e.severity === 'ERROR') ?? false);
+	const hasWarning = $derived(group?.events.some((e) => e.severity === 'WARNING') ?? false);
 
 	const baseUrl = $derived(
 		application
@@ -73,8 +95,12 @@
 	const mountErrors = $derived(group?.mountedFiles.filter((f) => f.error !== null) ?? []);
 
 	$effect(() => {
-		setPageHeaderWarning(mountErrors.length > 0);
-		return () => setPageHeaderWarning(false);
+		setPageHeaderWarning(hasWarning && !hasError);
+		setPageHeaderError(hasError);
+		return () => {
+			setPageHeaderWarning(false);
+			setPageHeaderError(false);
+		};
 	});
 
 	// Collect source names that have errors — used to filter out env vars and files from broken sources
@@ -238,13 +264,23 @@
 					<Th>Image</Th>
 					<Td><code>{group.image.name}:{group.image.tag}</code></Td>
 				</Tr>
-				{#if incoming}
+				{#if incoming || hasError || hasWarning}
 					<Tr>
 						<Th>Status</Th>
 						<Td>
-							<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
-								{role === 'incoming' ? 'Incoming' : 'Current'}
-							</Tag>
+							<span class="status-tags">
+								{#if hasError}
+									<Tag size="small" variant="error">Failing</Tag>
+								{/if}
+								{#if hasWarning && !hasError}
+									<Tag size="small" variant="warning">Warning</Tag>
+								{/if}
+								{#if incoming}
+									<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
+										{role === 'incoming' ? 'Incoming' : 'Current'}
+									</Tag>
+								{/if}
+							</span>
 						</Td>
 					</Tr>
 				{/if}
@@ -460,7 +496,7 @@
 						<Tr>
 							<Th>Name</Th>
 							<Th>Value</Th>
-							<Th>Source</Th>
+							<Th style="white-space: nowrap; min-width: 400px">Source</Th>
 						</Tr>
 					</Thead>
 					<Tbody>
@@ -500,11 +536,13 @@
 								<Td>
 									<span class="source">
 										{env.source.kind === 'SPEC'
-											? 'Spec'
+											? specEnvNames.has(env.name)
+												? 'Application manifest'
+												: 'Nais'
 											: env.source.kind === 'CONFIG_MAP'
 												? 'ConfigMap'
 												: 'Secret'}
-										{#if env.source.name}/ {env.source.name}{/if}
+										{#if env.source.kind !== 'SPEC' && env.source.name}/ {env.source.name}{/if}
 									</span>
 								</Td>
 							</Tr>
@@ -681,6 +719,11 @@
 
 	.muted {
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.status-tags {
+		display: flex;
+		gap: var(--ax-space-4);
 	}
 
 	a {
