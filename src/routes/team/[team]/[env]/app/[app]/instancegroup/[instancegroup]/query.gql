@@ -88,6 +88,9 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 						status {
 							state
 							message
+							ready
+							lastExitReason
+							lastExitCode
 						}
 						created
 						memory: instanceUtilization(resourceType: MEMORY) {
@@ -99,6 +102,7 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 					}
 					events {
 						timestamp
+						reason
 						message
 						severity
 						sourceInstance

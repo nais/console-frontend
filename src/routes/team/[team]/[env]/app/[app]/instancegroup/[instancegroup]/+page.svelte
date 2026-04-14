@@ -8,8 +8,6 @@
 	import {
 		Alert,
 		BodyShort,
-		Button,
-		CopyButton,
 		Heading,
 		Loader,
 		Table,
@@ -18,16 +16,16 @@
 		Th,
 		Thead,
 		Tr,
-		Tag,
-		Chips,
-		ToggleChip
+		Tag
 	} from '@nais/ds-svelte-community';
-	import { EyeIcon, EyeSlashIcon, DownloadIcon } from '@nais/ds-svelte-community/icons';
-	import { setPageHeaderWarning, setPageHeaderError } from '$lib/ui/pageHeaderState.svelte';
+	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import type { PageProps } from './$types';
 	import type { ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
 	import { parse as parseYaml } from 'yaml';
+	import EnvironmentVariables from './EnvironmentVariables.svelte';
+	import MountedFiles from './MountedFiles.svelte';
+	import Events from './Events.svelte';
 
 	type InstanceGroup =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number];
@@ -73,7 +71,7 @@
 	);
 	const role = $derived(incoming && group?.id === incoming.id ? 'incoming' : 'current');
 
-	const hasError = $derived(group?.events.some((e) => e.severity === 'ERROR') ?? false);
+	const hasFailing = $derived(group?.instances.some((i) => i.status.state === 'FAILING') ?? false);
 	const hasWarning = $derived(group?.events.some((e) => e.severity === 'WARNING') ?? false);
 
 	const baseUrl = $derived(
@@ -95,11 +93,11 @@
 	const mountErrors = $derived(group?.mountedFiles.filter((f) => f.error !== null) ?? []);
 
 	$effect(() => {
-		setPageHeaderWarning(hasWarning && !hasError);
-		setPageHeaderError(hasError);
+		pageHeaderState.warning = hasWarning && !hasFailing;
+		pageHeaderState.error = hasFailing;
 		return () => {
-			setPageHeaderWarning(false);
-			setPageHeaderError(false);
+			pageHeaderState.warning = false;
+			pageHeaderState.error = false;
 		};
 	});
 
@@ -152,26 +150,6 @@
 		revealedValues.clear();
 	}
 
-	let eventFilter = $state<string | null>(null);
-
-	const filteredEvents = $derived(
-		group?.events.filter((e) => {
-			if (eventFilter === null) return true;
-			return e.sourceInstance === eventFilter;
-		}) ?? []
-	);
-
-	function severityVariant(severity: string): 'error' | 'warning' | 'info' {
-		switch (severity) {
-			case 'ERROR':
-				return 'error';
-			case 'WARNING':
-				return 'warning';
-			default:
-				return 'info';
-		}
-	}
-
 	// Resources & scaling
 	const cpu_usage = $derived(application?.utilization.current_cpu ?? 0);
 	const memory_usage = $derived(application?.utilization.current_memory ?? 0);
@@ -215,6 +193,10 @@
 				return 'Running';
 			case 'FAILING':
 				return 'Failing';
+			case 'STARTING':
+				return 'Starting';
+			case 'TERMINATED':
+				return 'Terminated';
 			default:
 				return state;
 		}
@@ -242,10 +224,6 @@
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 	}
-
-	function fileNameFromPath(filePath: string): string {
-		return filePath.split('/').pop() ?? filePath;
-	}
 </script>
 
 <GraphErrors errors={$InstanceGroupDetail.errors} />
@@ -264,15 +242,15 @@
 					<Th>Image</Th>
 					<Td><code>{group.image.name}:{group.image.tag}</code></Td>
 				</Tr>
-				{#if incoming || hasError || hasWarning}
+				{#if incoming || hasFailing || hasWarning}
 					<Tr>
 						<Th>Status</Th>
 						<Td>
 							<span class="status-tags">
-								{#if hasError}
+								{#if hasFailing}
 									<Tag size="small" variant="error">Failing</Tag>
 								{/if}
-								{#if hasWarning && !hasError}
+								{#if hasWarning && !hasFailing}
 									<Tag size="small" variant="warning">Warning</Tag>
 								{/if}
 								{#if incoming}
@@ -314,12 +292,21 @@
 											? 'success'
 											: instance.status.state === 'FAILING'
 												? 'error'
-												: 'info'}
+												: instance.status.state === 'TERMINATED'
+													? 'neutral'
+													: 'info'}
 									>
 										{stateName(instance.status.state)}
 									</Tag>
 									{#if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
 										<span class="muted">{instance.status.message}</span>
+									{/if}
+									{#if instance.status.lastExitReason && instance.restarts > 0 && instance.status.state === 'RUNNING'}
+										<span class="muted exit-info">
+											Last exit: {instance.status
+												.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
+												(code {instance.status.lastExitCode}){/if}
+										</span>
 									{/if}
 								</Td>
 								<Td>{instance.restarts}</Td>
@@ -481,190 +468,30 @@
 			{/if}
 		{/if}
 
-		{#if visibleEnvVars.length > 0}
-			<section>
-				<div class="section-header">
-					<Heading as="h3" size="small" spacing>Environment Variables</Heading>
-					{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
-						<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={hideSecretValues}>
-							Hide secret values
-						</Button>
-					{/if}
-				</div>
-				<Table size="small" zebraStripes>
-					<Thead>
-						<Tr>
-							<Th>Name</Th>
-							<Th>Value</Th>
-							<Th style="white-space: nowrap; min-width: 400px">Source</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each visibleEnvVars as env (env.name)}
-							<Tr>
-								<Td><code>{env.name}</code></Td>
-								<Td>
-									{#if env.source.kind === 'SECRET' && revealedValues.has(env.name)}
-										<span class="env-value">
-											<code>{revealedValues.get(env.name)}</code>
-											<CopyButton size="xsmall" copyText={revealedValues.get(env.name) ?? ''} />
-										</span>
-									{:else if env.source.kind === 'SECRET'}
-										<span class="env-value">
-											<span class="masked">••••••••••••••••</span>
-											{#if viewerIsMember}
-												<Button
-													size="xsmall"
-													variant="tertiary-neutral"
-													icon={EyeIcon}
-													onclick={() => {
-														revealSecretName = env.source.name;
-														revealModalOpen = true;
-													}}
-												/>
-											{/if}
-										</span>
-									{:else if env.value !== null}
-										<span class="env-value">
-											<code>{env.value}</code>
-											<CopyButton size="xsmall" copyText={env.value} />
-										</span>
-									{:else}
-										<span class="muted">-</span>
-									{/if}
-								</Td>
-								<Td>
-									<span class="source">
-										{env.source.kind === 'SPEC'
-											? specEnvNames.has(env.name)
-												? 'Application manifest'
-												: 'Nais'
-											: env.source.kind === 'CONFIG_MAP'
-												? 'ConfigMap'
-												: 'Secret'}
-										{#if env.source.kind !== 'SPEC' && env.source.name}/ {env.source.name}{/if}
-									</span>
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</section>
-		{/if}
+		<EnvironmentVariables
+			envVars={visibleEnvVars}
+			{specEnvNames}
+			{viewerIsMember}
+			{revealedValues}
+			onReveal={(secretName) => {
+				revealSecretName = secretName;
+				revealModalOpen = true;
+			}}
+			onHideAll={hideSecretValues}
+		/>
 
-		{#if visibleMountedFiles.length > 0}
-			<section>
-				<Heading as="h3" size="small" spacing>Mounted Files</Heading>
-				<Table size="small" zebraStripes>
-					<Thead>
-						<Tr>
-							<Th>Path</Th>
-							<Th>Source</Th>
-							<Th style="width: 1%"></Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each visibleMountedFiles as file (file.path)}
-							<Tr>
-								<Td><code>{file.path}</code></Td>
-								<Td>
-									<span class="source">
-										{file.source.kind === 'CONFIG_MAP'
-											? 'ConfigMap'
-											: file.source.kind === 'SECRET'
-												? 'Secret'
-												: 'Spec'}
-										{#if file.source.name}/ {file.source.name}{/if}
-									</span>
-								</Td>
-								<Td>
-									{#if file.source.kind === 'CONFIG_MAP' && file.content !== null}
-										<Button
-											size="xsmall"
-											variant="tertiary-neutral"
-											icon={DownloadIcon}
-											title="Download {fileNameFromPath(file.path)}"
-											onclick={() =>
-												downloadMountedFile(file.path, file.content ?? '', file.isBinary)}
-										/>
-									{:else if file.source.kind === 'SECRET' && viewerIsMember}
-										<Button
-											size="xsmall"
-											variant="tertiary-neutral"
-											icon={DownloadIcon}
-											title="Download {fileNameFromPath(file.path)}"
-											onclick={() => {
-												pendingFileDownload = {
-													fileName: fileNameFromPath(file.path),
-													keyName: fileNameFromPath(file.path)
-												};
-												revealSecretName = file.source.name;
-												revealModalOpen = true;
-											}}
-										/>
-									{/if}
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</section>
-		{/if}
+		<MountedFiles
+			files={visibleMountedFiles}
+			{viewerIsMember}
+			onDownloadConfigMap={downloadMountedFile}
+			onDownloadSecret={(fileName, secretName) => {
+				pendingFileDownload = { fileName, keyName: fileName };
+				revealSecretName = secretName;
+				revealModalOpen = true;
+			}}
+		/>
 
-		{#if group.events.length > 0}
-			<section>
-				<Heading as="h3" size="small" spacing>
-					Events ({group.events.length})
-				</Heading>
-				<BodyShort size="small" style="color: var(--ax-text-neutral-subtle)" spacing>
-					Events are only available for approximately 30 minutes.
-				</BodyShort>
-				<Chips>
-					<ToggleChip
-						value="All"
-						selected={eventFilter === null}
-						onclick={() => (eventFilter = null)}
-					/>
-					{#each group.instances as instance (instance.id)}
-						<ToggleChip
-							value={instance.name}
-							selected={eventFilter === instance.name}
-							onclick={() => (eventFilter = instance.name)}
-						/>
-					{/each}
-				</Chips>
-				<Table size="small" zebraStripes>
-					<Thead>
-						<Tr>
-							<Th>Severity</Th>
-							<Th>Message</Th>
-							<Th>Instance</Th>
-							<Th>Time</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each filteredEvents as event, i (i)}
-							<Tr>
-								<Td>
-									<Tag size="small" variant={severityVariant(event.severity)}>
-										{event.severity}
-									</Tag>
-								</Td>
-								<Td>{event.message}</Td>
-								<Td>
-									{#if event.sourceInstance}
-										<code>{event.sourceInstance}</code>
-									{:else}
-										<span class="muted">-</span>
-									{/if}
-								</Td>
-								<Td><Time time={event.timestamp} distance /></Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</section>
-		{/if}
+		<Events events={group.events} instances={group.instances} />
 	</div>
 
 	{#if needsSecretModal && viewerIsMember}
@@ -690,35 +517,17 @@
 		flex-direction: column;
 	}
 
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-	}
-
-	.masked {
-		color: var(--ax-text-neutral-subtle);
-		user-select: none;
-	}
-
 	.page :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
 	}
 
-	.env-value {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-	}
-
-	.source {
-		color: var(--ax-text-neutral-subtle);
-		font-size: var(--ax-font-size-small);
-	}
-
 	.muted {
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.exit-info {
+		font-size: var(--ax-font-size-small);
 	}
 
 	.status-tags {

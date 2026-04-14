@@ -838,11 +838,28 @@ enum ApplicationInstanceState {
   FAILING
   RUNNING
   STARTING
+  TERMINATED
   UNKNOWN
 }
 
 type ApplicationInstanceStatus {
+  """The exit code from the last container termination, if applicable."""
+  lastExitCode: Int
+
+  """
+  The reason the container last terminated, if applicable.
+  This is populated even when the instance is currently running, to help debug restart loops.
+  Example values: "OOMKilled", "Error", "Completed".
+  """
+  lastExitReason: String
+
+  """A user-friendly description of the current state."""
   message: String!
+
+  """
+  Whether the container is passing its readiness check and can receive traffic.
+  """
+  ready: Boolean!
   state: ApplicationInstanceState!
 }
 
@@ -2961,8 +2978,8 @@ type InstanceGroup implements Node {
   environmentVariables: [InstanceGroupEnvironmentVariable!]!
 
   """
-  Recent Kubernetes events for this instance group and its instances,
-  translated into user-friendly messages. Sorted by timestamp, newest first.
+  Recent Kubernetes events for this instance group and its instances.
+  Sorted by timestamp, newest first.
   """
   events: [InstanceGroupEvent!]!
 
@@ -3005,11 +3022,16 @@ type InstanceGroupEnvironmentVariable {
 }
 
 """
-A translated Kubernetes event providing debugging information in user-friendly language.
+A Kubernetes event related to an instance group or one of its instances.
 """
 type InstanceGroupEvent {
-  """A user-friendly description of what happened."""
+  """The event message from Kubernetes."""
   message: String!
+
+  """
+  The Kubernetes event reason (e.g. "BackOff", "Unhealthy", "FailedScheduling").
+  """
+  reason: String!
 
   """The severity of the event."""
   severity: InstanceGroupEventSeverity!
@@ -3026,9 +3048,6 @@ type InstanceGroupEvent {
 
 """The severity of an instance group event."""
 enum InstanceGroupEventSeverity {
-  """Error event (requires attention)."""
-  ERROR
-
   """Informational event (normal operation)."""
   INFO
 

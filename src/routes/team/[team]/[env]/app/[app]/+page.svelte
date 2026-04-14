@@ -132,7 +132,7 @@
 					</div>
 					{#each app.instanceGroups as group (group.id)}
 						{@const role = groupRole(group)}
-						{@const hasError = group.events.some((e) => e.severity === 'ERROR')}
+						{@const hasFailing = group.instances.some((i) => i.status.state === 'FAILING')}
 						{@const hasWarning = group.events.some((e) => e.severity === 'WARNING')}
 						<a
 							href="/team/{app.team.slug}/{app.teamEnvironment.environment
@@ -153,10 +153,10 @@
 									{group.image.tag} &middot; Updated <Time time={group.created} distance />
 								</span>
 							</div>
-							{#if hasError}
+							{#if hasFailing}
 								<Tag size="small" variant="error">Failing</Tag>
 							{/if}
-							{#if hasWarning && !hasError}
+							{#if hasWarning && !hasFailing}
 								<Tag size="small" variant="warning">Warning</Tag>
 							{/if}
 							{#if incoming}
