@@ -169,10 +169,15 @@
 						</a>
 					{/each}
 				</div>
-				<Ingresses app={$App.data} />
-
-				<NetworkPolicy workload={app} />
-				<Persistence workload={app} />
+				<div>
+					<Ingresses app={$App.data} />
+				</div>
+				<div>
+					<NetworkPolicy workload={app} />
+				</div>
+				<div>
+					<Persistence workload={app} />
+				</div>
 			</div>
 			<div class="sidebar">
 				{#if environment}
