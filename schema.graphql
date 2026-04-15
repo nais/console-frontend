@@ -2977,12 +2977,6 @@ type InstanceGroup implements Node {
   """
   environmentVariables: [InstanceGroupEnvironmentVariable!]!
 
-  """
-  Recent Kubernetes events for this instance group and its instances.
-  Sorted by timestamp, newest first.
-  """
-  events: [InstanceGroupEvent!]!
-
   """The globally unique ID of the instance group."""
   id: ID!
 
@@ -3014,40 +3008,6 @@ type InstanceGroupEnvironmentVariable {
   The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
   """
   value: String
-}
-
-"""
-An event related to an instance group or one of its instances.
-"""
-type InstanceGroupEvent {
-  """The event message from Kubernetes."""
-  message: String!
-
-  """
-  The Kubernetes event reason (e.g. "BackOff", "Unhealthy", "FailedScheduling").
-  """
-  reason: String!
-
-  """The severity of the event."""
-  severity: InstanceGroupEventSeverity!
-
-  """
-  The name of the instance (pod) this event relates to, if applicable.
-  Null for events that relate to the instance group itself.
-  """
-  sourceInstance: String
-
-  """When the event occurred."""
-  timestamp: Time!
-}
-
-"""The severity of an instance group event."""
-enum InstanceGroupEventSeverity {
-  """Informational event (normal operation)."""
-  INFO
-
-  """Warning event (potential issue, may resolve on its own)."""
-  WARNING
 }
 
 """A file mounted into an instance group from a Secret or ConfigMap."""

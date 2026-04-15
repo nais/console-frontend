@@ -25,7 +25,6 @@
 	import { parse as parseYaml } from 'yaml';
 	import EnvironmentVariables from './EnvironmentVariables.svelte';
 	import MountedFiles from './MountedFiles.svelte';
-	import Events from './Events.svelte';
 
 	type InstanceGroup =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number];
@@ -72,7 +71,6 @@
 	const role = $derived(incoming && group?.id === incoming.id ? 'incoming' : 'current');
 
 	const hasFailing = $derived(group?.instances.some((i) => i.status.state === 'FAILING') ?? false);
-	const hasWarning = $derived(group?.events.some((e) => e.severity === 'WARNING') ?? false);
 
 	const baseUrl = $derived(
 		application
@@ -93,10 +91,8 @@
 	const mountErrors = $derived(group?.mountedFiles.filter((f) => f.error !== null) ?? []);
 
 	$effect(() => {
-		pageHeaderState.warning = hasWarning && !hasFailing;
 		pageHeaderState.error = hasFailing;
 		return () => {
-			pageHeaderState.warning = false;
 			pageHeaderState.error = false;
 		};
 	});
@@ -242,16 +238,13 @@
 					<Th>Image</Th>
 					<Td><code>{group.image.name}:{group.image.tag}</code></Td>
 				</Tr>
-				{#if incoming || hasFailing || hasWarning}
+				{#if incoming || hasFailing}
 					<Tr>
 						<Th>Status</Th>
 						<Td>
 							<span class="status-tags">
 								{#if hasFailing}
 									<Tag size="small" variant="error">Failing</Tag>
-								{/if}
-								{#if hasWarning && !hasFailing}
-									<Tag size="small" variant="warning">Warning</Tag>
 								{/if}
 								{#if incoming}
 									<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
@@ -494,8 +487,6 @@
 				revealModalOpen = true;
 			}}
 		/>
-
-		<Events events={group.events} instances={group.instances} />
 	</div>
 
 	{#if needsSecretModal && viewerIsMember}

@@ -133,7 +133,7 @@
 					{#each app.instanceGroups as group (group.id)}
 						{@const role = groupRole(group)}
 						{@const hasFailing = group.instances.some((i) => i.status.state === 'FAILING')}
-						{@const hasWarning = group.events.some((e) => e.severity === 'WARNING')}
+
 						<a
 							href="/team/{app.team.slug}/{app.teamEnvironment.environment
 								.name}/app/{app.name}/instancegroup/{group.name}"
@@ -155,9 +155,6 @@
 							</div>
 							{#if hasFailing}
 								<Tag size="small" variant="error">Failing</Tag>
-							{/if}
-							{#if hasWarning && !hasFailing}
-								<Tag size="small" variant="warning">Warning</Tag>
 							{/if}
 							{#if incoming}
 								{#if role === 'incoming'}

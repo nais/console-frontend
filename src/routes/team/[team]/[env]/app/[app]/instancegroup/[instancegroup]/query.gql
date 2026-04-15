@@ -100,13 +100,6 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 							current
 						}
 					}
-					events {
-						timestamp
-						reason
-						message
-						severity
-						sourceInstance
-					}
 				}
 			}
 		}
