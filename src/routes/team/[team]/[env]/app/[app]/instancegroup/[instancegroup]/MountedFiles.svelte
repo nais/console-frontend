@@ -37,7 +37,7 @@
 						<Td><code>{file.path}</code></Td>
 						<Td>
 							<span class="source">
-								{file.source.kind === 'CONFIG_MAP'
+								{file.source.kind === 'CONFIG'
 									? 'ConfigMap'
 									: file.source.kind === 'SECRET'
 										? 'Secret'
@@ -46,7 +46,7 @@
 							</span>
 						</Td>
 						<Td>
-							{#if file.source.kind === 'CONFIG_MAP' && file.content !== null}
+							{#if file.source.kind === 'CONFIG' && file.content !== null}
 								<Button
 									size="xsmall"
 									variant="tertiary-neutral"

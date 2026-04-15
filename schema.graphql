@@ -3000,11 +3000,6 @@ type InstanceGroup implements Node {
 
   """The number of instances that are ready."""
   readyInstances: Int!
-
-  """
-  The revision number of this instance group. Higher revision numbers are newer.
-  """
-  revision: Int!
 }
 
 """An environment variable configured for an instance group."""
@@ -3022,7 +3017,7 @@ type InstanceGroupEnvironmentVariable {
 }
 
 """
-A Kubernetes event related to an instance group or one of its instances.
+An event related to an instance group or one of its instances.
 """
 type InstanceGroupEvent {
   """The event message from Kubernetes."""
@@ -3096,10 +3091,10 @@ type InstanceGroupValueSource {
 
 """The kind of source for an environment variable or mounted file."""
 enum InstanceGroupValueSourceKind {
-  """The value comes from a Kubernetes ConfigMap."""
-  CONFIG_MAP
+  """The value comes from a ConfigMap."""
+  CONFIG
 
-  """The value comes from a Kubernetes Secret."""
+  """The value comes from a Secret."""
   SECRET
 
   """

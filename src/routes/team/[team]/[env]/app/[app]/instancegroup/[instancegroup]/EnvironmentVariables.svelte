@@ -87,7 +87,7 @@
 									? specEnvNames.has(env.name)
 										? 'Application manifest'
 										: 'Nais'
-									: env.source.kind === 'CONFIG_MAP'
+									: env.source.kind === 'CONFIG'
 										? 'ConfigMap'
 										: 'Secret'}
 								{#if env.source.kind !== 'SPEC' && env.source.name}/ {env.source.name}{/if}
