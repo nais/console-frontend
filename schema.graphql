@@ -2961,7 +2961,7 @@ enum IngressType {
 }
 
 """
-An instance group represents a set of identical instances.
+An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
 All instances in the group share the same configuration (environment variables, mounted files, image).
 """
 type InstanceGroup implements Node {
@@ -2986,7 +2986,7 @@ type InstanceGroup implements Node {
   """The application instances belonging to this instance group."""
   instances: [ApplicationInstance!]!
 
-  """Files mounted into instances in this group from Secrets or Configs."""
+  """Files mounted into instances in this group from Secrets or ConfigMaps."""
   mountedFiles: [InstanceGroupMountedFile!]!
 
   """The name of the instance group."""
@@ -3010,16 +3010,17 @@ type InstanceGroupEnvironmentVariable {
   value: String
 }
 
-"""A file mounted into an instance group from a Secret or Config."""
+"""A file mounted into an instance group from a Secret or ConfigMap."""
 type InstanceGroupMountedFile {
   """
   The file content. Null for files from Secrets (requires elevation to view)
   or when the source could not be resolved (check the error field).
+  For ConfigMap files, this is the raw string content or base64-encoded binary content.
   """
   content: String
 
   """
-  Error message when the source could not be resolved.
+  Error message when the source Secret or ConfigMap could not be resolved.
   When set, the file entry represents a failed mount rather than an actual file.
   """
   error: String
@@ -3030,7 +3031,7 @@ type InstanceGroupMountedFile {
   """
   isBinary: Boolean!
 
-  """The file path inside the instance."""
+  """The file path inside the container."""
   path: String!
 
   """The source of the mounted file."""
@@ -3044,19 +3045,21 @@ type InstanceGroupValueSource {
   """The kind of source."""
   kind: InstanceGroupValueSourceKind!
 
-  """The name of the source resource."""
+  """The name of the source resource (e.g. Secret name, ConfigMap name)."""
   name: String!
 }
 
 """The kind of source for an environment variable or mounted file."""
 enum InstanceGroupValueSourceKind {
-  """The value comes from a Config."""
+  """The value comes from a ConfigMap."""
   CONFIG
 
   """The value comes from a Secret."""
   SECRET
 
-  """The value is defined inline in the workload spec."""
+  """
+  The value comes from the workload spec itself (inline value, fieldRef, etc.).
+  """
   SPEC
 }
 
