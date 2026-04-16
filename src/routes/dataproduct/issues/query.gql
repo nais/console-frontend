@@ -67,6 +67,11 @@ query AllIssues($issueType: IssueType) {
 							name
 						}
 					}
+					... on ApplicationRestartLoopIssue {
+						workload {
+							name
+						}
+					}
 					... on OpenSearchIssue {
 						event
 						openSearch {
