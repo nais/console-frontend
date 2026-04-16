@@ -853,6 +853,12 @@ type ApplicationInstanceStatus {
   """
   lastExitReason: String
 
+  """
+  The timestamp of the last container termination, if applicable.
+  This is populated even when the instance is currently running, to help debug restart loops.
+  """
+  lastExitTimestamp: Time
+
   """A user-friendly description of the current state."""
   message: String!
 
@@ -3147,6 +3153,9 @@ enum IssueType {
   MISSING_SBOM
   NO_RUNNING_INSTANCES
   OPENSEARCH
+
+  """Raised when an application is stuck in a restart loop."""
+  APPLICATION_RESTART_LOOP
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   UNLEASH_RELEASE_CHANNEL
@@ -5682,6 +5691,33 @@ input RestartApplicationInput {
 type RestartApplicationPayload {
   """The application that was restarted."""
   application: Application
+}
+
+"""An issue raised when an application keeps restarting repeatedly."""
+type RestartLoopIssue implements Issue & Node {
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """The reason for the last container exit."""
+  lastExitReason: String!
+
+  """The timestamp of the last container exit."""
+  lastExitTimestamp: Time!
+
+  """A human-readable description of the issue."""
+  message: String!
+
+  """The number of container restarts."""
+  restartCount: Int!
+
+  """The severity of the issue."""
+  severity: Severity!
+
+  """The team environment where the issue was detected."""
+  teamEnvironment: TeamEnvironment!
+
+  """The workload that is stuck in a restart loop."""
+  workload: Workload!
 }
 
 input RevokeRoleFromServiceAccountInput {
