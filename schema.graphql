@@ -918,6 +918,33 @@ type ApplicationResources implements WorkloadResources {
   scaling: ApplicationScaling!
 }
 
+"""An issue raised when an application keeps restarting repeatedly."""
+type ApplicationRestartLoopIssue implements Issue & Node {
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """The reason for the last container exit."""
+  lastExitReason: String!
+
+  """The timestamp of the last container exit."""
+  lastExitTimestamp: Time!
+
+  """A human-readable description of the issue."""
+  message: String!
+
+  """The number of container restarts."""
+  restartCount: Int!
+
+  """The severity of the issue."""
+  severity: Severity!
+
+  """The team environment where the issue was detected."""
+  teamEnvironment: TeamEnvironment!
+
+  """The workload that is stuck in a restart loop."""
+  workload: Workload!
+}
+
 type ApplicationRestartedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3144,6 +3171,8 @@ enum IssueOrderField {
 }
 
 enum IssueType {
+  """Raised when an application is stuck in a restart loop."""
+  APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
   EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
@@ -3153,9 +3182,6 @@ enum IssueType {
   MISSING_SBOM
   NO_RUNNING_INSTANCES
   OPENSEARCH
-
-  """Raised when an application is stuck in a restart loop."""
-  APPLICATION_RESTART_LOOP
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   UNLEASH_RELEASE_CHANNEL
@@ -5691,33 +5717,6 @@ input RestartApplicationInput {
 type RestartApplicationPayload {
   """The application that was restarted."""
   application: Application
-}
-
-"""An issue raised when an application keeps restarting repeatedly."""
-type ApplicationRestartLoopIssue implements Issue & Node {
-  """Unique identifier for this issue."""
-  id: ID!
-
-  """The reason for the last container exit."""
-  lastExitReason: String!
-
-  """The timestamp of the last container exit."""
-  lastExitTimestamp: Time!
-
-  """A human-readable description of the issue."""
-  message: String!
-
-  """The number of container restarts."""
-  restartCount: Int!
-
-  """The severity of the issue."""
-  severity: Severity!
-
-  """The team environment where the issue was detected."""
-  teamEnvironment: TeamEnvironment!
-
-  """The workload that is stuck in a restart loop."""
-  workload: Workload!
 }
 
 input RevokeRoleFromServiceAccountInput {
