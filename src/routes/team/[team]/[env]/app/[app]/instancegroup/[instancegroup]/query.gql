@@ -78,7 +78,7 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 							name
 						}
 						content
-						isBinary
+						encoding
 						error
 					}
 					instances {

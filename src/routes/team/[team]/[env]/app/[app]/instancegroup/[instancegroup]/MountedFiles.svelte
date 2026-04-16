@@ -9,7 +9,7 @@
 	interface Props {
 		files: MountedFile[];
 		viewerIsMember: boolean;
-		onDownloadConfigMap: (filePath: string, content: string, isBinary: boolean) => void;
+		onDownloadConfigMap: (filePath: string, content: string, encoding: string) => void;
 		onDownloadSecret: (fileName: string, secretName: string) => void;
 	}
 
@@ -52,7 +52,7 @@
 									variant="tertiary-neutral"
 									icon={DownloadIcon}
 									title="Download {fileNameFromPath(file.path)}"
-									onclick={() => onDownloadConfigMap(file.path, file.content ?? '', file.isBinary)}
+									onclick={() => onDownloadConfigMap(file.path, file.content ?? '', file.encoding)}
 								/>
 							{:else if file.source.kind === 'SECRET' && viewerIsMember}
 								<Button

@@ -127,11 +127,7 @@
 			// Triggered for file download — find matching key and download
 			const match = values.find((v) => v.name === pendingFileDownload!.keyName);
 			if (match) {
-				downloadMountedFile(
-					pendingFileDownload.fileName,
-					match.value,
-					match.encoding === ValueEncoding.BASE64
-				);
+				downloadMountedFile(pendingFileDownload.fileName, match.value, match.encoding);
 			}
 			pendingFileDownload = null;
 		} else {
@@ -198,8 +194,9 @@
 		}
 	}
 
-	function downloadMountedFile(filePath: string, content: string, isBinary: boolean) {
+	function downloadMountedFile(filePath: string, content: string, encoding: string) {
 		const fileName = filePath.split('/').pop() ?? filePath;
+		const isBinary = encoding === ValueEncoding.BASE64;
 		let blob: Blob;
 		if (isBinary) {
 			const binaryString = atob(content);
