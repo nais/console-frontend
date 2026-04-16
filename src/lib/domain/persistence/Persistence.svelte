@@ -138,9 +138,9 @@
 	});
 </script>
 
-<Heading as="h2" size="medium" spacing>Persistence</Heading>
-
 {#if Object.values(persistence).some((p) => p.length)}
+	<Heading as="h2" size="medium" spacing>Persistence</Heading>
+
 	<div class="content">
 		{#each Object.entries(persistence) as [type, list] (type)}
 			{#each list as persistence (persistence.id)}
@@ -148,8 +148,6 @@
 			{/each}
 		{/each}
 	</div>
-{:else}
-	No persistence configured for this app.
 {/if}
 
 <style>

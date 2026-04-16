@@ -589,6 +589,12 @@ type Application implements ActivityLogger & Node & Workload {
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
 
+  """
+  Instance groups for the application. An instance group represents a set of identical instances.
+  All instances in a group share the same configuration.
+  """
+  instanceGroups: [InstanceGroup!]!
+
   """The application instances."""
   instances(
     """Get items after this cursor."""
@@ -832,11 +838,28 @@ enum ApplicationInstanceState {
   FAILING
   RUNNING
   STARTING
+  TERMINATED
   UNKNOWN
 }
 
 type ApplicationInstanceStatus {
+  """The exit code from the last container termination, if applicable."""
+  lastExitCode: Int
+
+  """
+  The reason the container last terminated, if applicable.
+  This is populated even when the instance is currently running, to help debug restart loops.
+  Example values: "OOMKilled", "Error", "Completed".
+  """
+  lastExitReason: String
+
+  """A user-friendly description of the current state."""
   message: String!
+
+  """
+  Whether the container is passing its readiness check and can receive traffic.
+  """
+  ready: Boolean!
   state: ApplicationInstanceState!
 }
 
@@ -2935,6 +2958,107 @@ enum IngressType {
   EXTERNAL
   INTERNAL
   UNKNOWN
+}
+
+"""
+An instance group represents a set of identical instances.
+All instances in the group share the same configuration (environment variables, mounted files, image).
+"""
+type InstanceGroup implements Node {
+  """When the instance group was created."""
+  created: Time!
+
+  """The desired number of instances."""
+  desiredInstances: Int!
+
+  """
+  Environment variables configured for instances in this group.
+  Variables from Secrets require elevation to view their values.
+  """
+  environmentVariables: [InstanceGroupEnvironmentVariable!]!
+
+  """The globally unique ID of the instance group."""
+  id: ID!
+
+  """The container image used by instances in this group."""
+  image: ContainerImage!
+
+  """The application instances belonging to this instance group."""
+  instances: [ApplicationInstance!]!
+
+  """Files mounted into instances in this group from Secrets or Configs."""
+  mountedFiles: [InstanceGroupMountedFile!]!
+
+  """The name of the instance group."""
+  name: String!
+
+  """The number of instances that are ready."""
+  readyInstances: Int!
+}
+
+"""An environment variable configured for an instance group."""
+type InstanceGroupEnvironmentVariable {
+  """The name of the environment variable."""
+  name: String!
+
+  """The source of the environment variable value."""
+  source: InstanceGroupValueSource!
+
+  """
+  The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
+  """
+  value: String
+}
+
+"""A file mounted into an instance group from a Secret or Config."""
+type InstanceGroupMountedFile {
+  """
+  The file content. Null for files from Secrets (requires elevation to view)
+  or when the source could not be resolved (check the error field).
+  """
+  content: String
+
+  """
+  The encoding of the content.
+  PLAIN_TEXT means the content can be displayed as-is.
+  BASE64 means the content is base64-encoded binary data that should be downloaded rather than displayed.
+  """
+  encoding: ValueEncoding!
+
+  """
+  Error message when the source could not be resolved.
+  When set, the file entry represents a failed mount rather than an actual file.
+  """
+  error: String
+
+  """The file path inside the instance."""
+  path: String!
+
+  """The source of the mounted file."""
+  source: InstanceGroupValueSource!
+}
+
+"""
+Describes the source of a value (environment variable or mounted file).
+"""
+type InstanceGroupValueSource {
+  """The kind of source."""
+  kind: InstanceGroupValueSourceKind!
+
+  """The name of the source resource."""
+  name: String!
+}
+
+"""The kind of source for an environment variable or mounted file."""
+enum InstanceGroupValueSourceKind {
+  """The value comes from a Config."""
+  CONFIG
+
+  """The value comes from a Secret."""
+  SECRET
+
+  """The value is defined inline in the workload spec."""
+  SPEC
 }
 
 type InvalidSpecIssue implements Issue & Node {

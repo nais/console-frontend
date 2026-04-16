@@ -1,0 +1,139 @@
+<script lang="ts">
+	import type { InstanceGroupDetail$result } from '$houdini';
+	import { SvelteMap } from 'svelte/reactivity';
+	import {
+		Button,
+		CopyButton,
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
+	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
+
+	type EnvironmentVariable =
+		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['environmentVariables'][number];
+
+	interface Props {
+		envVars: EnvironmentVariable[];
+		specEnvNames: Set<string>;
+		viewerIsMember: boolean;
+		revealedValues: SvelteMap<string, string>;
+		onReveal: (secretName: string) => void;
+		onHideAll: () => void;
+	}
+
+	let { envVars, specEnvNames, viewerIsMember, revealedValues, onReveal, onHideAll }: Props =
+		$props();
+
+	const hasSecrets = $derived(envVars.some((e) => e.source.kind === 'SECRET'));
+</script>
+
+{#if envVars.length > 0}
+	<section>
+		<div class="section-header">
+			<Heading as="h3" size="small" spacing>Environment Variables</Heading>
+			{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
+				<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>
+					Hide secret values
+				</Button>
+			{/if}
+		</div>
+		<Table size="small" zebraStripes>
+			<Thead>
+				<Tr>
+					<Th>Name</Th>
+					<Th>Value</Th>
+					<Th style="white-space: nowrap; min-width: 400px">Source</Th>
+				</Tr>
+			</Thead>
+			<Tbody>
+				{#each envVars as env (env.name)}
+					<Tr>
+						<Td><code>{env.name}</code></Td>
+						<Td>
+							{#if env.source.kind === 'SECRET' && revealedValues.has(env.name)}
+								<span class="env-value">
+									<code>{revealedValues.get(env.name)}</code>
+									<CopyButton size="xsmall" copyText={revealedValues.get(env.name) ?? ''} />
+								</span>
+							{:else if env.source.kind === 'SECRET'}
+								<span class="env-value">
+									<span class="masked">••••••••••••••••</span>
+									{#if viewerIsMember}
+										<Button
+											size="xsmall"
+											variant="tertiary-neutral"
+											icon={EyeIcon}
+											onclick={() => onReveal(env.source.name)}
+										/>
+									{/if}
+								</span>
+							{:else if env.value !== null}
+								<span class="env-value">
+									<code>{env.value}</code>
+									<CopyButton size="xsmall" copyText={env.value} />
+								</span>
+							{:else}
+								<span class="muted">-</span>
+							{/if}
+						</Td>
+						<Td>
+							<span class="source">
+								{env.source.kind === 'SPEC'
+									? specEnvNames.has(env.name)
+										? 'Application manifest'
+										: 'Nais'
+									: env.source.kind === 'CONFIG'
+										? 'ConfigMap'
+										: 'Secret'}
+								{#if env.source.kind !== 'SPEC' && env.source.name}/ {env.source.name}{/if}
+							</span>
+						</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+	</section>
+{/if}
+
+<style>
+	section {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+	}
+
+	.masked {
+		color: var(--ax-text-neutral-subtle);
+		user-select: none;
+	}
+
+	.env-value {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
+	.source {
+		color: var(--ax-text-neutral-subtle);
+		font-size: var(--ax-font-size-small);
+	}
+
+	.muted {
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	section :global(code) {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+	}
+</style>
