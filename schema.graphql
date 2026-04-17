@@ -853,6 +853,12 @@ type ApplicationInstanceStatus {
   """
   lastExitReason: String
 
+  """
+  The timestamp of the last container termination, if applicable.
+  This is populated even when the instance is currently running, to help debug restart loops.
+  """
+  lastExitTimestamp: Time
+
   """A user-friendly description of the current state."""
   message: String!
 
@@ -910,6 +916,33 @@ type ApplicationResources implements WorkloadResources {
 
   """Scaling strategies for the application."""
   scaling: ApplicationScaling!
+}
+
+"""An issue raised when an application keeps restarting repeatedly."""
+type ApplicationRestartLoopIssue implements Issue & Node {
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """The reason for the last container exit."""
+  lastExitReason: String!
+
+  """The timestamp of the last container exit."""
+  lastExitTimestamp: Time!
+
+  """A human-readable description of the issue."""
+  message: String!
+
+  """The number of container restarts."""
+  restartCount: Int!
+
+  """The severity of the issue."""
+  severity: Severity!
+
+  """The team environment where the issue was detected."""
+  teamEnvironment: TeamEnvironment!
+
+  """The workload that is stuck in a restart loop."""
+  workload: Workload!
 }
 
 type ApplicationRestartedActivityLogEntry implements ActivityLogEntry & Node {
@@ -3138,6 +3171,8 @@ enum IssueOrderField {
 }
 
 enum IssueType {
+  """Raised when an application is stuck in a restart loop."""
+  APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
   EXTERNAL_INGRESS_CRITICAL_VULNERABILITY

@@ -291,14 +291,18 @@
 									</Tag>
 								</Td>
 								<Td>
-									{#if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
-										{instance.status.message}
-									{:else if instance.status.lastExitReason && instance.restarts > 0 && instance.status.state === 'RUNNING'}
+									{#if instance.status.lastExitReason && instance.restarts > 0}
 										<span class="exit-info">
 											Last exit: {instance.status
 												.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
-												(code {instance.status.lastExitCode}){/if}
+												(code {instance.status
+													.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
+													time={instance.status.lastExitTimestamp}
+													distance
+												/>{/if}
 										</span>
+									{:else if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
+										{instance.status.message}
 									{:else}
 										<span class="muted">-</span>
 									{/if}

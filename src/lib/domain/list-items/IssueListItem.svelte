@@ -7,6 +7,7 @@
 	import FailedSynchronizationIssue from '$lib/domain/issues/FailedSynchronizationIssue.svelte';
 	import InvalidSpecIssue from '$lib/domain/issues/InvalidSpecIssue.svelte';
 	import LastRunFailedIssue from '$lib/domain/issues/LastRunFailedIssue.svelte';
+	import ApplicationRestartLoopIssue from '$lib/domain/issues/ApplicationRestartLoopIssue.svelte';
 	import NoRunningInstancesIssue from '$lib/domain/issues/NoRunningInstancesIssue.svelte';
 	import OpenSearchIssue from '$lib/domain/issues/OpenSearchIssue.svelte';
 	import SqlInstanceStateIssue from '$lib/domain/issues/SqlInstanceStateIssue.svelte';
@@ -96,6 +97,12 @@
 							name
 						}
 					}
+					... on ApplicationRestartLoopIssue {
+						workload {
+							__typename
+							name
+						}
+					}
 					... on OpenSearchIssue {
 						event
 						openSearch {
@@ -151,6 +158,8 @@
 				return VulnerableImageIssue as Component<{ data: unknown }>;
 			case 'NoRunningInstancesIssue':
 				return NoRunningInstancesIssue as Component<{ data: unknown }>;
+			case 'ApplicationRestartLoopIssue':
+				return ApplicationRestartLoopIssue as Component<{ data: unknown }>;
 			case 'OpenSearchIssue':
 				return OpenSearchIssue as Component<{ data: unknown }>;
 			case 'SqlInstanceStateIssue':

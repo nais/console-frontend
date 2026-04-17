@@ -91,6 +91,7 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 							ready
 							lastExitReason
 							lastExitCode
+							lastExitTimestamp
 						}
 						created
 						memory: instanceUtilization(resourceType: MEMORY) {
