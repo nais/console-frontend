@@ -19,15 +19,13 @@
 
 	interface Props {
 		envVars: EnvironmentVariable[];
-		specEnvNames: Set<string>;
 		viewerIsMember: boolean;
 		revealedValues: SvelteMap<string, string>;
 		onReveal: (secretName: string) => void;
 		onHideAll: () => void;
 	}
 
-	let { envVars, specEnvNames, viewerIsMember, revealedValues, onReveal, onHideAll }: Props =
-		$props();
+	let { envVars, viewerIsMember, revealedValues, onReveal, onHideAll }: Props = $props();
 
 	const hasSecrets = $derived(envVars.some((e) => e.source.kind === 'SECRET'));
 </script>
@@ -83,14 +81,15 @@
 						</Td>
 						<Td>
 							<span class="source">
-								{env.source.kind === 'SPEC'
-									? specEnvNames.has(env.name)
-										? 'Application manifest'
-										: 'Nais'
+								{env.source.kind === 'SECRET'
+									? 'Secret'
 									: env.source.kind === 'CONFIG'
-										? 'ConfigMap'
-										: 'Secret'}
-								{#if env.source.kind !== 'SPEC' && env.source.name}/ {env.source.name}{/if}
+										? 'Config'
+										: env.source.kind === 'SPEC'
+											? 'Application manifest'
+											: 'Nais'}
+								{#if (env.source.kind === 'SECRET' || env.source.kind === 'CONFIG') && env.source.name}/
+									{env.source.name}{/if}
 							</span>
 						</Td>
 					</Tr>

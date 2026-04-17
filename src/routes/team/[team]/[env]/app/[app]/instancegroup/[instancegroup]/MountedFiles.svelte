@@ -38,10 +38,12 @@
 						<Td>
 							<span class="source">
 								{file.source.kind === 'CONFIG'
-									? 'ConfigMap'
+									? 'Config'
 									: file.source.kind === 'SECRET'
 										? 'Secret'
-										: 'Spec'}
+										: file.source.kind === 'SPEC'
+											? 'Application manifest'
+											: 'Nais'}
 								{#if file.source.name}/ {file.source.name}{/if}
 							</span>
 						</Td>
