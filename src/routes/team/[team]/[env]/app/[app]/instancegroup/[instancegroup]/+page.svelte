@@ -22,7 +22,6 @@
 	import type { PageProps } from './$types';
 	import type { ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
-	import { parse as parseYaml } from 'yaml';
 	import EnvironmentVariables from './EnvironmentVariables.svelte';
 	import MountedFiles from './MountedFiles.svelte';
 
@@ -41,24 +40,6 @@
 	const application = $derived($InstanceGroupDetail.data?.team.environment.application);
 	const allGroups = $derived(application?.instanceGroups ?? []);
 	const viewerIsMember = $derived($InstanceGroupDetail.data?.team.viewerIsMember ?? false);
-
-	// Parse manifest to extract user-defined env var names from spec.env
-	const specEnvNames = $derived.by(() => {
-		const content = application?.manifest?.content;
-		if (!content) return new Set<string>();
-		try {
-			const doc = parseYaml(content);
-			const envList = doc?.spec?.env;
-			if (!Array.isArray(envList)) return new Set<string>();
-			return new Set<string>(
-				envList
-					.map((e: { name?: string }) => e.name)
-					.filter((n): n is string => typeof n === 'string')
-			);
-		} catch {
-			return new Set<string>();
-		}
-	});
 
 	// Determine if this group is "current" or "incoming"
 	const incoming = $derived(
@@ -468,7 +449,6 @@
 
 		<EnvironmentVariables
 			envVars={visibleEnvVars}
-			{specEnvNames}
 			{viewerIsMember}
 			{revealedValues}
 			onReveal={(secretName) => {
