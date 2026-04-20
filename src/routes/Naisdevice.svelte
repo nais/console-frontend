@@ -54,7 +54,7 @@
 		padding: var(--ax-space-20) var(--ax-space-32);
 		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
 		color: var(--ax-text-success-subtle);
-		border-radius: var(--ax-border-radius-medium);
+		border-radius: var(--ax-radius-8);
 		font-size: var(--ax-font-size-xlarge);
 		font-weight: 700;
 		box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
@@ -79,7 +79,7 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--ax-text-success-subtle);
-		border-radius: var(--ax-border-radius-small);
+		border-radius: var(--ax-radius-4);
 		transition: background-color 0.2s;
 	}
 

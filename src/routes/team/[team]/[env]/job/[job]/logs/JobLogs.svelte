@@ -478,7 +478,7 @@
 		}
 	}
 	.divider {
-		background-color: var(--a-blue-200);
+		background-color: var(--ax-bg-brand-blue-moderate);
 		min-width: 4px;
 		max-width: 4px;
 		border-radius: 0.25rem;
