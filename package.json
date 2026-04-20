@@ -33,7 +33,7 @@
 		"@lavamoat/allow-scripts": "4.0.0",
 		"@lavamoat/preinstall-always-fail": "3.0.0",
 		"@layerstack/utils": "2.0.0-next.18",
-		"@nais/ds-svelte-community": "2.0.0-next.6",
+		"@nais/ds-svelte-community": "2.0.0-next.8",
 		"@storybook/addon-docs": "10.3.4",
 		"@storybook/addon-svelte-csf": "5.0.11",
 		"@storybook/addon-themes": "10.3.4",
