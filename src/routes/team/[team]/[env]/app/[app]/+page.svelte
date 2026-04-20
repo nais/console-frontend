@@ -9,7 +9,7 @@
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
-	import StalenessStatusIcon from '$lib/domain/vulnerability/StalenessStatusIcon.svelte';
+	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
@@ -18,7 +18,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { stalenessDetails } from '$lib/utils/vulnerabilities';
+	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -98,7 +98,11 @@
 {/if}
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
-	{@const imageStaleness = stalenessDetails(app.image)}
+	{@const imageStaleness = sbomStatusDetails({
+		status: app.image.sbomStatus,
+		imageUpdatedAt: app.image.imageUpdatedAt,
+		hasVulnerabilityData: !!(app.image.hasSBOM && app.image.vulnerabilitySummary)
+	})}
 
 	<div class="wrapper">
 		<div class="app-content">
@@ -190,11 +194,7 @@
 				<div>
 					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 						<Heading as="h2" size="small">Vulnerabilities</Heading>
-						<StalenessStatusIcon
-							indicator={imageStaleness.indicator}
-							label={imageStaleness.label}
-							hasVulnerabilityData={!!(app.image.hasSBOM && app.image.vulnerabilitySummary)}
-						/>
+						<SbomStatusIcon indicator={imageStaleness.iconIndicator} label={imageStaleness.label} />
 					</div>
 					<WorkloadVulnerabilitySummary workload={app} />
 				</div>

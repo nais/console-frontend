@@ -7,14 +7,14 @@
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
-	import StalenessStatusIcon from '$lib/domain/vulnerability/StalenessStatusIcon.svelte';
+	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { stalenessDetails } from '$lib/utils/vulnerabilities';
+	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -98,7 +98,11 @@
 
 {#if $Job.data}
 	{@const job = $Job.data.team.environment.job}
-	{@const imageStaleness = stalenessDetails(job.image)}
+	{@const imageStaleness = sbomStatusDetails({
+		status: job.image.sbomStatus,
+		imageUpdatedAt: job.image.imageUpdatedAt,
+		hasVulnerabilityData: !!(job.image.hasSBOM && job.image.vulnerabilitySummary)
+	})}
 	<div class="wrapper">
 		<div class="job-content">
 			<div class="main-section">
@@ -172,11 +176,7 @@
 				<div>
 					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 						<Heading as="h2" size="small">Vulnerabilities</Heading>
-						<StalenessStatusIcon
-							indicator={imageStaleness.indicator}
-							label={imageStaleness.label}
-							hasVulnerabilityData={!!(job.image.hasSBOM && job.image.vulnerabilitySummary)}
-						/>
+						<SbomStatusIcon indicator={imageStaleness.iconIndicator} label={imageStaleness.label} />
 					</div>
 					<WorkloadVulnerabilitySummary workload={job} />
 				</div>

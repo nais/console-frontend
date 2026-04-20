@@ -21,11 +21,8 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 					name
 					tag
 					hasSBOM
-					staleness {
-						code
-						severity
-						reason
-					}
+					sbomStatus
+					imageUpdatedAt
 					activityLog {
 						pageInfo {
 							hasNextPage

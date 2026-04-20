@@ -1668,11 +1668,17 @@ type ContainerImage implements ActivityLogger & Node {
   """The globally unique ID of the container image node."""
   id: ID!
 
+  """
+  The timestamp when the image reference was last updated by a workload.
+  Useful as a progress indicator when status is PROCESSING.
+  """
+  imageUpdatedAt: Time
+
   """Name of the container image."""
   name: String!
 
-  """Information about whether the vulnerability data is stale."""
-  staleness: VulnerabilityStaleness!
+  """The SBOM pipeline status for this image."""
+  sbomStatus: SbomStatus!
 
   """Tag of the container image."""
   tag: String!
@@ -5951,6 +5957,14 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
   userName: String!
 }
 
+"""The SBOM pipeline status for an image or workload."""
+enum SbomStatus {
+  FAILED
+  NO_SBOM
+  PROCESSING
+  READY
+}
+
 enum ScalingDirection {
   """The scaling direction is down."""
   DOWN
@@ -7058,22 +7072,6 @@ type SqlInstanceVersionIssue implements Issue & Node {
   severity: Severity!
   sqlInstance: SqlInstance!
   teamEnvironment: TeamEnvironment!
-}
-
-enum StaleReasonCode {
-  NO_ATTESTATION
-  NO_SBOM
-  PROCESSING
-  PROCESSING_WITH_FALLBACK
-  SBOM_UPLOAD_FAILED
-  UNSPECIFIED
-  UP_TO_DATE
-}
-
-enum StaleSeverity {
-  STALE_NONE
-  STALE_PERMANENT
-  STALE_PROCESSING
 }
 
 input StartOpenSearchMaintenanceInput {
@@ -9667,18 +9665,6 @@ type VulnerabilityFixSample {
   totalWorkloads: Int!
 }
 
-"""Information about whether vulnerability data is stale and why."""
-type VulnerabilityStaleness {
-  """A machine-readable code identifying the reason for staleness."""
-  code: StaleReasonCode!
-
-  """A human-readable explanation of why the vulnerability data is stale."""
-  reason: String!
-
-  """The severity of the staleness."""
-  severity: StaleSeverity!
-}
-
 """Ordering options when fetching vulnerability summaries for workloads."""
 input VulnerabilitySummaryOrder {
   """The direction to order items by."""
@@ -10225,8 +10211,13 @@ type WorkloadVulnerabilitySummary implements Node {
   """The globally unique ID of the workload vulnerability summary node."""
   id: ID!
 
-  """Information about whether the vulnerability data is stale."""
-  staleness: VulnerabilityStaleness!
+  """
+  The timestamp when the workload's image reference was last updated. Useful as a progress indicator when status is PROCESSING.
+  """
+  imageUpdatedAt: Time
+
+  """The SBOM pipeline status for this workload."""
+  sbomStatus: SbomStatus!
 
   """The vulnerability summary for the workload."""
   summary: ImageVulnerabilitySummary!
