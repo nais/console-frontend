@@ -1,6 +1,6 @@
 import { appendSortedBoundedLog } from '$lib/utils/logStream';
 
-export type WorkloadLog = {
+type WorkloadLog = {
 	time: Date | string | number;
 	message: string;
 	instance: string;

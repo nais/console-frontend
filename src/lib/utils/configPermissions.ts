@@ -1,4 +1,4 @@
-export type ConfigPermissions = {
+type ConfigPermissions = {
 	canMutate: boolean;
 };
 
