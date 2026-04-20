@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { Tooltip } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
@@ -242,7 +240,7 @@
 
 	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
-	function textComponent(typename: string): Component<{ data: unknown }> | null {
+	function textComponent(typename: string): Component<{ data: unknown }> {
 		switch (typename) {
 			case 'ApplicationDeletedActivityLogEntry':
 				return ApplicationDeletedActivityLogEntryText as Component<{ data: unknown }>;
@@ -325,20 +323,7 @@
 		</div>
 
 		<div style="min-width: 0; overflow-wrap: anywhere;">
-			{#if TextComponent}
-				<TextComponent data={$data} />
-			{:else}
-				{$data.message}
-				{#if $data.environmentName}
-					in <Tag size="small" variant={envTagVariant($data.environmentName)}>
-						{$data.environmentName}
-					</Tag>.
-				{/if}
-				<BodyShort textColor="subtle" size="small">
-					By {$data.actor}
-					<Time time={$data.createdAt} distance={true} />
-				</BodyShort>
-			{/if}
+			<TextComponent data={$data} />
 		</div>
 	</div>
 </ListItem>
