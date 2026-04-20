@@ -1,50 +1,65 @@
 import type { ImageVulnerabilitySuppressionState$options } from '$houdini/graphql/enums';
 import { ImageVulnerabilitySuppressionState } from '$houdini/graphql/enums';
 
-const staleSeverity = {
-	STALE_NONE: 'STALE_NONE',
-	STALE_PROCESSING: 'STALE_PROCESSING',
-	STALE_PERMANENT: 'STALE_PERMANENT'
-} as const;
+export type SbomStatus = 'PROCESSING' | 'READY' | 'NO_SBOM' | 'FAILED';
 
-export type StaleReasonCode =
-	| 'UNSPECIFIED'
-	| 'UP_TO_DATE'
-	| 'PROCESSING'
-	| 'PROCESSING_WITH_FALLBACK'
-	| 'NO_SBOM'
-	| 'SBOM_UPLOAD_FAILED'
-	| 'NO_ATTESTATION';
+export type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
 
-const staleReasonLabels: Record<StaleReasonCode, string> = {
-	UNSPECIFIED: 'Status unknown',
-	UP_TO_DATE: 'Up to date',
-	PROCESSING: 'Processing',
-	PROCESSING_WITH_FALLBACK: 'Processing with fallback',
-	NO_SBOM: 'No SBOM registered',
-	SBOM_UPLOAD_FAILED: 'SBOM upload failed',
-	NO_ATTESTATION: 'No attestation found'
-};
+export type SbomStatusIconIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
 
-export type StalenessIndicator = 'healthy' | 'processing' | 'warning' | 'missing';
-
-export interface StalenessSource {
-	hasSBOM: boolean;
-	staleness: {
-		severity: string;
-		code?: string | null;
-		reason?: string | null;
-	};
+export interface SbomStatusSource {
+	status: SbomStatus;
+	imageUpdatedAt?: Date | null;
+	hasVulnerabilityData?: boolean;
 }
 
-const staleReasonIndicators: Record<StaleReasonCode, StalenessIndicator> = {
-	UNSPECIFIED: 'warning',
-	UP_TO_DATE: 'healthy',
+export interface SbomStatusDetails {
+	status: SbomStatus;
+	indicator: SbomStatusIndicator;
+	iconIndicator: SbomStatusIconIndicator;
+	label: string;
+}
+
+const sbomStatusIndicators: Record<SbomStatus, SbomStatusIndicator> = {
+	READY: 'healthy',
 	PROCESSING: 'processing',
-	PROCESSING_WITH_FALLBACK: 'processing',
-	NO_SBOM: 'missing',
-	SBOM_UPLOAD_FAILED: 'warning',
-	NO_ATTESTATION: 'warning'
+	NO_SBOM: 'no-sbom',
+	FAILED: 'warning'
+};
+
+const sbomStatusLabels: Record<SbomStatus, string> = {
+	READY: 'SBOM up to date',
+	PROCESSING: 'Processing',
+	NO_SBOM: 'No SBOM found',
+	FAILED: 'SBOM processing failed'
+};
+
+export function formatProcessingDuration(imageUpdatedAt: Date | null | undefined): string | null {
+	if (!imageUpdatedAt) return null;
+	const diffMs = Date.now() - imageUpdatedAt.getTime();
+	const diffMin = Math.floor(diffMs / 60_000);
+	if (diffMin < 1) return 'Processing for less than a minute';
+	if (diffMin < 60) return `Processing for ${diffMin} min`;
+	const diffH = Math.floor(diffMin / 60);
+	const remMin = diffMin % 60;
+	if (diffH < 24)
+		return remMin > 0 ? `Processing for ${diffH} h ${remMin} min` : `Processing for ${diffH} h`;
+	return `Processing for ${Math.floor(diffH / 24)} d`;
+}
+
+export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails => {
+	const status = source.status ?? 'NO_SBOM';
+	const indicator = sbomStatusIndicators[status] ?? 'no-sbom';
+	const baseLabel = sbomStatusLabels[status] ?? 'No SBOM found';
+	const iconIndicator =
+		indicator === 'no-sbom' || (indicator === 'healthy' && source.hasVulnerabilityData === false)
+			? 'no-sbom'
+			: indicator;
+	const label =
+		indicator === 'processing'
+			? (formatProcessingDuration(source.imageUpdatedAt) ?? baseLabel)
+			: baseLabel;
+	return { status, indicator, iconIndicator, label };
 };
 
 export function severityToColor({
@@ -149,105 +164,3 @@ export const suppressionStateOptions: Array<{
 	{ value: ImageVulnerabilitySuppressionState.FALSE_POSITIVE, text: 'False Positive' },
 	{ value: ImageVulnerabilitySuppressionState.NOT_AFFECTED, text: 'Not Affected' }
 ];
-
-export const stalenessStatusLabel = ({
-	severity,
-	hasSBOM,
-	reasonCode
-}: {
-	severity: string;
-	hasSBOM: boolean;
-	reasonCode?: string | null;
-}) => {
-	if (reasonCode && reasonCode in staleReasonLabels) {
-		return staleReasonLabels[reasonCode as StaleReasonCode];
-	}
-
-	if (!hasSBOM) {
-		return staleReasonLabels.NO_SBOM;
-	}
-
-	switch (severity) {
-		case staleSeverity.STALE_NONE:
-			return staleReasonLabels.UP_TO_DATE;
-		case staleSeverity.STALE_PROCESSING:
-			return staleReasonLabels.PROCESSING;
-		case staleSeverity.STALE_PERMANENT:
-			return 'Needs attention';
-		default:
-			return staleReasonLabels.UNSPECIFIED;
-	}
-};
-
-export const stalenessStatusText = ({
-	severity,
-	hasSBOM,
-	reasonCode,
-	reason
-}: {
-	severity: string;
-	hasSBOM: boolean;
-	reasonCode?: string | null;
-	reason?: string | null;
-}) => {
-	if (reason?.trim()) {
-		return reason;
-	}
-
-	return stalenessStatusLabel({
-		severity,
-		hasSBOM,
-		reasonCode
-	});
-};
-
-export const stalenessIndicator = ({
-	severity,
-	hasSBOM,
-	reasonCode
-}: {
-	severity: string;
-	hasSBOM: boolean;
-	reasonCode?: string | null;
-}): StalenessIndicator => {
-	if (reasonCode && reasonCode in staleReasonIndicators) {
-		return staleReasonIndicators[reasonCode as StaleReasonCode];
-	}
-
-	if (!hasSBOM) {
-		return 'missing';
-	}
-
-	switch (severity) {
-		case staleSeverity.STALE_NONE:
-			return 'healthy';
-		case staleSeverity.STALE_PROCESSING:
-			return 'processing';
-		case staleSeverity.STALE_PERMANENT:
-			return 'warning';
-		default:
-			return 'warning';
-	}
-};
-
-export const stalenessDetails = (source: StalenessSource) => ({
-	code: source.staleness.code ?? null,
-	reason: source.staleness.reason ?? null,
-	severity: source.staleness.severity,
-	indicator: stalenessIndicator({
-		severity: source.staleness.severity,
-		hasSBOM: source.hasSBOM,
-		reasonCode: source.staleness.code
-	}),
-	label: stalenessStatusLabel({
-		severity: source.staleness.severity,
-		hasSBOM: source.hasSBOM,
-		reasonCode: source.staleness.code
-	}),
-	text: stalenessStatusText({
-		severity: source.staleness.severity,
-		hasSBOM: source.hasSBOM,
-		reasonCode: source.staleness.code,
-		reason: source.staleness.reason
-	})
-});

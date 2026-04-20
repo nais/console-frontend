@@ -1,11 +1,9 @@
 import {
 	allSeverities,
+	formatProcessingDuration,
+	sbomStatusDetails,
 	severityToColor,
-	severityToRiskScore,
-	stalenessDetails,
-	stalenessIndicator,
-	stalenessStatusLabel,
-	stalenessStatusText
+	severityToRiskScore
 } from './vulnerabilities';
 
 describe('vulnerabilities', () => {
@@ -147,84 +145,90 @@ describe('vulnerabilities', () => {
 		});
 	});
 
-	describe('staleness helpers', () => {
-		test('prefers reasonCode over severity for status labels', () => {
-			expect(
-				stalenessStatusLabel({
-					severity: 'STALE_PERMANENT',
-					hasSBOM: true,
-					reasonCode: 'PROCESSING_WITH_FALLBACK'
-				})
-			).toBe('Processing with fallback');
-		});
-
-		test('falls back to severity when reasonCode is missing', () => {
-			expect(
-				stalenessStatusLabel({
-					severity: 'STALE_PROCESSING',
-					hasSBOM: true
-				})
-			).toBe('Processing');
-		});
-
-		test('returns missing indicator when there is no sbom', () => {
-			expect(
-				stalenessIndicator({
-					severity: 'STALE_NONE',
-					hasSBOM: false
-				})
-			).toBe('missing');
-		});
-
-		test('maps warning codes to warning indicator', () => {
-			expect(
-				stalenessIndicator({
-					severity: 'STALE_NONE',
-					hasSBOM: true,
-					reasonCode: 'NO_ATTESTATION'
-				})
-			).toBe('warning');
-		});
-
-		test('uses readable backend text when available', () => {
-			expect(
-				stalenessStatusText({
-					severity: 'STALE_PROCESSING',
-					hasSBOM: true,
-					reasonCode: 'PROCESSING',
-					reason: 'The SBOM is still being processed for this image.'
-				})
-			).toBe('The SBOM is still being processed for this image.');
-		});
-
-		test('falls back to short label when readable text is missing', () => {
-			expect(
-				stalenessStatusText({
-					severity: 'STALE_PERMANENT',
-					hasSBOM: true,
-					reasonCode: 'SBOM_UPLOAD_FAILED'
-				})
-			).toBe('SBOM upload failed');
-		});
-
-		test('builds shared staleness details from a source object', () => {
-			expect(
-				stalenessDetails({
-					hasSBOM: true,
-					staleness: {
-						severity: 'STALE_PROCESSING',
-						code: 'PROCESSING_WITH_FALLBACK',
-						reason: 'Using fallback data while a fresh scan is processing.'
-					}
-				})
-			).toEqual({
-				code: 'PROCESSING_WITH_FALLBACK',
-				reason: 'Using fallback data while a fresh scan is processing.',
-				severity: 'STALE_PROCESSING',
-				indicator: 'processing',
-				label: 'Processing with fallback',
-				text: 'Using fallback data while a fresh scan is processing.'
+	describe('SbomStatus helpers', () => {
+		test('READY status returns healthy indicator and SBOM up to date label', () => {
+			expect(sbomStatusDetails({ status: 'READY' })).toEqual({
+				status: 'READY',
+				indicator: 'healthy',
+				iconIndicator: 'healthy',
+				label: 'SBOM up to date'
 			});
+		});
+
+		test('READY status without vulnerability data returns a no-sbom icon indicator', () => {
+			expect(sbomStatusDetails({ status: 'READY', hasVulnerabilityData: false })).toEqual({
+				status: 'READY',
+				indicator: 'healthy',
+				iconIndicator: 'no-sbom',
+				label: 'SBOM up to date'
+			});
+		});
+
+		test('PROCESSING status returns processing indicator', () => {
+			const result = sbomStatusDetails({ status: 'PROCESSING' });
+			expect(result.status).toBe('PROCESSING');
+			expect(result.indicator).toBe('processing');
+			expect(result.iconIndicator).toBe('processing');
+		});
+
+		test('NO_SBOM status returns no-sbom indicator', () => {
+			expect(sbomStatusDetails({ status: 'NO_SBOM' })).toEqual({
+				status: 'NO_SBOM',
+				indicator: 'no-sbom',
+				iconIndicator: 'no-sbom',
+				label: 'No SBOM found'
+			});
+		});
+
+		test('FAILED status returns warning indicator', () => {
+			expect(sbomStatusDetails({ status: 'FAILED' })).toEqual({
+				status: 'FAILED',
+				indicator: 'warning',
+				iconIndicator: 'warning',
+				label: 'SBOM processing failed'
+			});
+		});
+
+		test('PROCESSING with imageUpdatedAt shows elapsed time as label', () => {
+			const now = new Date();
+			const fiveMinAgo = new Date(now.getTime() - 5 * 60_000);
+			const result = sbomStatusDetails({ status: 'PROCESSING', imageUpdatedAt: fiveMinAgo });
+			expect(result.label).toBe('Processing for 5 min');
+		});
+	});
+
+	describe('formatProcessingDuration', () => {
+		test('returns null for null input', () => {
+			expect(formatProcessingDuration(null)).toBeNull();
+		});
+
+		test('returns null for undefined input', () => {
+			expect(formatProcessingDuration(undefined)).toBeNull();
+		});
+
+		test('returns less than a minute for very recent date', () => {
+			const recent = new Date(Date.now() - 30_000);
+			expect(formatProcessingDuration(recent)).toBe('Processing for less than a minute');
+		});
+
+		test('returns minutes for sub-hour duration', () => {
+			const thirtyMinAgo = new Date(Date.now() - 30 * 60_000);
+			expect(formatProcessingDuration(thirtyMinAgo)).toBe('Processing for 30 min');
+		});
+
+		test('returns hours and minutes for multi-hour duration', () => {
+			const ninetyMinAgo = new Date(Date.now() - 90 * 60_000);
+			expect(formatProcessingDuration(ninetyMinAgo)).toBe('Processing for 1 h 30 min');
+		});
+
+		test('returns exact hours when no remainder minutes', () => {
+			const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60_000);
+			expect(formatProcessingDuration(twoHoursAgo)).toBe('Processing for 2 h');
+		});
+
+		test('returns days for multi-day duration', () => {
+			const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60_000);
+			expect(formatProcessingDuration(threeDaysAgo)).toBe('Processing for 3 d');
 		});
 	});
 });

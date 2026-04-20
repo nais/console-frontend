@@ -2,7 +2,7 @@
 	import { docURL } from '$lib/doc';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
-	import StalenessStatusIcon from '$lib/domain/vulnerability/StalenessStatusIcon.svelte';
+	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
 	import WorkloadVulnerabilityHistoryGraph from '$lib/domain/vulnerability/WorkloadVulnerabilityHistoryGraph.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -10,7 +10,7 @@
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { stalenessDetails } from '$lib/utils/vulnerabilities';
+	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
 	import { Alert, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -28,7 +28,10 @@
 {#if $ApplicationImageDetails.data}
 	{@const workload = $ApplicationImageDetails.data.team.environment.workload}
 	{@const hasVulnerabilityData = workload.image.hasSBOM && workload.image.vulnerabilitySummary}
-	{@const imageStaleness = stalenessDetails(workload.image)}
+	{@const imageStaleness = sbomStatusDetails({
+		status: workload.image.sbomStatus,
+		imageUpdatedAt: workload.image.imageUpdatedAt
+	})}
 	<div class="wrapper">
 		<div class="top">
 			<div>
@@ -85,8 +88,8 @@
 				</section>
 				{#if !hasVulnerabilityData}
 					<Alert variant="info" size="small" fullWidth={false}>
-						{imageStaleness.text}
-						{#if imageStaleness.code === 'NO_SBOM'}
+						{imageStaleness.label}
+						{#if imageStaleness.indicator === 'no-sbom'}
 							<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
 								>Read how to generate an SBOM</ExternalLink
 							>.
@@ -99,8 +102,8 @@
 					<div class="card">
 						<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
 							<Heading as="h2" size="small">Summary</Heading>
-							<StalenessStatusIcon
-								indicator={imageStaleness.indicator}
+							<SbomStatusIcon
+								indicator={imageStaleness.iconIndicator}
 								label={imageStaleness.label}
 							/>
 						</div>

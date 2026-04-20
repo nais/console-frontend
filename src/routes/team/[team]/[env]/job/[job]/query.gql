@@ -11,10 +11,8 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				}
 				image {
 					hasSBOM
-					staleness {
-						code
-						severity
-					}
+					sbomStatus
+					imageUpdatedAt
 					vulnerabilitySummary {
 						critical
 						high
