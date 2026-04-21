@@ -117,7 +117,7 @@
 				{/if}
 				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
 					<div class="instances-header">
-						<Heading as="h3" size="medium">Instances</Heading>
+						<Heading as="h3" size="medium">Instance groups</Heading>
 						{#if viewerIsMember}
 							<Button
 								variant="secondary"
